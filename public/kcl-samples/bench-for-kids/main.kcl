@@ -74,11 +74,11 @@ firstLeg = translate(
 
 // Pattern in X, then Y, to create all four legs.
 allFourLegs = patternLinear3d(
-       firstLeg,
-       instances = 2,
-       distance = legChassisWidth,
-       axis = [1, 0, 0],
-     )
+  firstLeg,
+  instances = 2,
+  distance = legChassisWidth,
+  axis = [1, 0, 0],
+)
   |> patternLinear3d(instances = 2, distance = legChassisLength, axis = [0, 1, 0])
 
 // EARS (two small cylinders, tilted sideways slightly)

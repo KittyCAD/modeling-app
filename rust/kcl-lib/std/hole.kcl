@@ -485,3 +485,122 @@ export fn holesLinear(
 
   return subtract(solid, tools = drilled)
 }
+
+/// Build the 3D shape of the hole which needs to be cut out.
+fn holeAtGeometry(@plane: Plane, holeBottom, holeBody, holeType) {
+  // Create a sketch plane where the cut axis (plane normal) is the sketch plane's -Y axis.
+  xAxis = [
+    plane.xAxis[0]: mm,
+    plane.xAxis[1]: mm,
+    plane.xAxis[2]: mm
+  ]
+  yAxis = [
+    plane.yAxis[0]: mm,
+    plane.yAxis[1]: mm,
+    plane.yAxis[2]: mm
+  ]
+  profilePlane = {
+    origin = plane.origin,
+    xAxis = xAxis,
+    yAxis = vector::cross(yAxis, v = xAxis)
+  }
+  profile = sketchHoleProfile(
+    startSketchOn(profilePlane),
+    holeBottom,
+    holeBody,
+    holeType,
+    shift = 0,
+  )
+  return revolveHole(profile.profile, edge = profile.axis)
+}
+
+/// From the hole's parts (bottom, middle, top), cut the hole into the given solid,
+/// using the custom plane.
+/// The plane's origin determines the hole's center.
+/// The plane's X and Y axis determine which way the hole is pointing
+/// (it points down the normal i.e. Z axis, following the right-hand rule).
+/// This can be used to insert a hole where there is no face, or into a non-planar face.
+/// ```kcl,legacySketch
+/// // Model a cube.
+/// cube1 = startSketchOn(XY)
+///   |> rectangle(width = 3, height = 3, center = [0, 0])
+///   |> extrude(length = 3)
+///
+/// // Define a custom plane, into which a hole will be cut.
+/// customPlane = {
+///   origin = { x = 1.5, y = -1.5, z = 3 },
+///   xAxis = { x = -0.5, y = -0.5, z = 0 },
+///   yAxis = { x = 0, y = 0.5, z = 0.5 }
+/// }
+///
+/// // Cut the hole through the cube, into the plane.
+/// hole::holeAt(
+///   [cube1],
+///   plane = customPlane,
+///   holeBottom = hole::flat(),
+///   holeBody = hole::blind(depth = 2, diameter = 1),
+///   holeType = hole::counterbore(diameter = 1.4, depth = 1),
+/// )
+/// ```
+/// ```kcl,sketchSolve
+/// // Model a cube.
+/// cubeProfile = sketch(on = XY) {
+///   line1 = line(start = [var -1.5mm, var -1.5mm], end = [var 1.5mm, var -1.5mm])
+///   line2 = line(start = [var 1.5mm, var -1.5mm], end = [var 1.5mm, var 1.5mm])
+///   line3 = line(start = [var 1.5mm, var 1.5mm], end = [var -1.5mm, var 1.5mm])
+///   line4 = line(start = [var -1.5mm, var 1.5mm], end = [var -1.5mm, var -1.5mm])
+///   coincident([line1.end, line2.start])
+///   coincident([line2.end, line3.start])
+///   coincident([line3.end, line4.start])
+///   coincident([line4.end, line1.start])
+///   parallel([line2, line4])
+///   parallel([line3, line1])
+///   perpendicular([line1, line2])
+///   horizontal(line3)
+///   equalLength([line2, line3])
+///   distance([line2.start, line2.end]) == 3mm
+/// }
+/// 
+/// cube1 = extrude(region(point = [0mm, 0mm], sketch = cubeProfile), length = 3mm)
+///
+/// // Define a custom plane, into which a hole will be cut.
+/// customPlane = {
+///   origin = { x = 1.5, y = -1.5, z = 3 },
+///   xAxis = { x = -0.5, y = -0.5, z = 0 },
+///   yAxis = { x = 0, y = 0.5, z = 0.5 }
+/// }
+///
+/// // Cut the hole through the cube, into the plane.
+/// hole::holeAt(
+///   [cube1],
+///   plane = customPlane,
+///   holeBottom = hole::flat(),
+///   holeBody = hole::blind(depth = 2, diameter = 1),
+///   holeType = hole::counterbore(diameter = 1.4, depth = 1),
+/// )
+/// ```
+@(feature_tree = false)
+export fn holeAt(
+  /// Which solid to add a hole to.
+  @solids: [Solid; 1+],
+  /// The plane's origin determines the hole's center.
+  /// The plane's X and Y axis determine which way the hole is pointing
+  /// (it points down the normal i.e. Z axis, following the right-hand rule).
+  plane: Plane,
+  /// Define bottom feature of the hole. E.g. drilled or flat.
+  holeBottom,
+  /// Define the main length of the hole. E.g. a blind distance.
+  holeBody,
+  /// Define the top feature of the hole. E.g. countersink, counterbore, simple.
+  holeType,
+) {
+  return subtract(
+    solids,
+    tools = holeAtGeometry(
+      plane,
+      holeBottom,
+      holeBody,
+      holeType,
+    ),
+  )
+}

@@ -36,81 +36,6 @@ description: Variables in memory after executing v-block.kcl
       }
     }
   },
-  "line1": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line1"
-  },
-  "line10": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line10"
-  },
-  "line11": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line11"
-  },
-  "line12": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line12"
-  },
-  "line13": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line13"
-  },
-  "line14": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line14"
-  },
-  "line15": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line15"
-  },
-  "line2": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line2"
-  },
-  "line3": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line3"
-  },
-  "line4": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line4"
-  },
-  "line5": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line5"
-  },
-  "line6": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line6"
-  },
-  "line7": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line7"
-  },
-  "line8": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line8"
-  },
-  "line9": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line9"
-  },
   "region001": {
     "type": "Sketch",
     "value": {
@@ -589,6 +514,7 @@ description: Variables in memory after executing v-block.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "in"
     }
   },
@@ -1354,6 +1280,7 @@ description: Variables in memory after executing v-block.kcl
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
+                "originSketchId": "[uuid]",
                 "units": "in"
               },
               "startCapId": "[uuid]",
@@ -2125,6 +2052,7 @@ description: Variables in memory after executing v-block.kcl
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
+                "originSketchId": "[uuid]",
                 "units": "in"
               },
               "startCapId": "[uuid]",
@@ -2878,6 +2806,7 @@ description: Variables in memory after executing v-block.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
           "units": "in"
         },
         "startCapId": "[uuid]",
@@ -3646,6 +3575,7 @@ description: Variables in memory after executing v-block.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
+                  "originSketchId": "[uuid]",
                   "units": "in"
                 },
                 "startCapId": "[uuid]",
@@ -4436,6 +4366,7 @@ description: Variables in memory after executing v-block.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
+                  "originSketchId": "[uuid]",
                   "units": "in"
                 },
                 "startCapId": "[uuid]",
@@ -5195,6 +5126,7 @@ description: Variables in memory after executing v-block.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",

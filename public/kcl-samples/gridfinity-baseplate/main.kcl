@@ -83,17 +83,17 @@ corners = patternCircular3d(
 )
 
 basePlateSides = patternLinear3d(
-       sides,
-       axis = [1.0, 0.0, 0.0],
-       instances = countBinWidth,
-       distance = binLength,
-     )
+  sides,
+  axis = [1.0, 0.0, 0.0],
+  instances = countBinWidth,
+  distance = binLength,
+)
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength)
 
 basePlateCorners = patternLinear3d(
-       corners,
-       axis = [1.0, 0.0, 0.0],
-       instances = countBinWidth,
-       distance = binLength,
-     )
+  corners,
+  axis = [1.0, 0.0, 0.0],
+  instances = countBinWidth,
+  distance = binLength,
+)
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength)

@@ -192,15 +192,15 @@ profile011 = circle(
 
 // Extrude the 4 circles into 4 rods.
 rods = extrude(
-       [
-         profile008,
-         profile009,
-         profile010,
-         profile011
-       ],
-       length = -6,
-       method = NEW,
-     )
+  [
+    profile008,
+    profile009,
+    profile010,
+    profile011
+  ],
+  length = -6,
+  method = NEW,
+)
   |> appearance(color = "#ff2222", roughness = 50, metalness = 90)
 
 // Subtract all 4 rods from both cubes.

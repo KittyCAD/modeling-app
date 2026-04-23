@@ -565,6 +565,7 @@ description: Variables in memory after executing bench.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -890,6 +891,7 @@ description: Variables in memory after executing bench.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -2121,6 +2123,7 @@ description: Variables in memory after executing bench.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -2441,6 +2444,7 @@ description: Variables in memory after executing bench.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -2778,6 +2782,7 @@ description: Variables in memory after executing bench.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -3103,6 +3108,7 @@ description: Variables in memory after executing bench.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -4464,6 +4470,7 @@ description: Variables in memory after executing bench.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -4784,6 +4791,7 @@ description: Variables in memory after executing bench.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -5186,11 +5194,11 @@ description: Variables in memory after executing bench.kcl
             "ccw": true,
             "center": [
               7.80491269792136,
-              -10.352474492187907
+              -10.352474492187905
             ],
             "from": [
               -16.599999969431963,
-              5.679999979926835
+              5.679999979926837
             ],
             "radius": 29.20000000000263,
             "tag": {
@@ -5202,8 +5210,8 @@ description: Variables in memory after executing bench.kcl
               "value": "arc4"
             },
             "to": [
-              -18.37999999998899,
-              2.5700000000665426
+              -18.379999999988993,
+              2.5700000000665337
             ],
             "type": "Arc",
             "units": "mm"
@@ -5214,8 +5222,8 @@ description: Variables in memory after executing bench.kcl
               "sourceRange": []
             },
             "from": [
-              -18.37999999998899,
-              2.5700000000665426
+              -18.379999999988993,
+              2.5700000000665337
             ],
             "tag": {
               "commentStart": 1327,
@@ -5389,8 +5397,8 @@ description: Variables in memory after executing bench.kcl
             },
             "ccw": true,
             "center": [
-              38.68382434857471,
-              10.24301490592152
+              38.6838243485747,
+              10.243014905921513
             ],
             "from": [
               22.449999999975425,
@@ -5406,8 +5414,8 @@ description: Variables in memory after executing bench.kcl
               "value": "arc12"
             },
             "to": [
-              22.020000135528473,
-              3.0500000584697364
+              22.020000135528466,
+              3.0500000584697293
             ],
             "type": "Arc",
             "units": "mm"
@@ -5760,6 +5768,7 @@ description: Variables in memory after executing bench.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -6153,11 +6162,11 @@ description: Variables in memory after executing bench.kcl
             "ccw": true,
             "center": [
               7.80491269792136,
-              -10.352474492187907
+              -10.352474492187905
             ],
             "from": [
               -16.599999969431963,
-              5.679999979926835
+              5.679999979926837
             ],
             "radius": 29.20000000000263,
             "tag": {
@@ -6169,8 +6178,8 @@ description: Variables in memory after executing bench.kcl
               "value": "arc4"
             },
             "to": [
-              -18.37999999998899,
-              2.5700000000665426
+              -18.379999999988993,
+              2.5700000000665337
             ],
             "type": "Arc",
             "units": "mm"
@@ -6181,8 +6190,8 @@ description: Variables in memory after executing bench.kcl
               "sourceRange": []
             },
             "from": [
-              -18.37999999998899,
-              2.5700000000665426
+              -18.379999999988993,
+              2.5700000000665337
             ],
             "tag": {
               "commentStart": 1327,
@@ -6356,8 +6365,8 @@ description: Variables in memory after executing bench.kcl
             },
             "ccw": true,
             "center": [
-              38.68382434857471,
-              10.24301490592152
+              38.6838243485747,
+              10.243014905921513
             ],
             "from": [
               22.449999999975425,
@@ -6373,8 +6382,8 @@ description: Variables in memory after executing bench.kcl
               "value": "arc12"
             },
             "to": [
-              22.020000135528473,
-              3.0500000584697364
+              22.020000135528466,
+              3.0500000584697293
             ],
             "type": "Arc",
             "units": "mm"
@@ -6727,6 +6736,7 @@ description: Variables in memory after executing bench.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -7120,11 +7130,11 @@ description: Variables in memory after executing bench.kcl
             "ccw": true,
             "center": [
               7.80491269792136,
-              -10.352474492187907
+              -10.352474492187905
             ],
             "from": [
               -16.599999969431963,
-              5.679999979926835
+              5.679999979926837
             ],
             "radius": 29.20000000000263,
             "tag": {
@@ -7136,8 +7146,8 @@ description: Variables in memory after executing bench.kcl
               "value": "arc4"
             },
             "to": [
-              -18.37999999998899,
-              2.5700000000665426
+              -18.379999999988993,
+              2.5700000000665337
             ],
             "type": "Arc",
             "units": "mm"
@@ -7148,8 +7158,8 @@ description: Variables in memory after executing bench.kcl
               "sourceRange": []
             },
             "from": [
-              -18.37999999998899,
-              2.5700000000665426
+              -18.379999999988993,
+              2.5700000000665337
             ],
             "tag": {
               "commentStart": 1327,
@@ -7323,8 +7333,8 @@ description: Variables in memory after executing bench.kcl
             },
             "ccw": true,
             "center": [
-              38.68382434857471,
-              10.24301490592152
+              38.6838243485747,
+              10.243014905921513
             ],
             "from": [
               22.449999999975425,
@@ -7340,8 +7350,8 @@ description: Variables in memory after executing bench.kcl
               "value": "arc12"
             },
             "to": [
-              22.020000135528473,
-              3.0500000584697364
+              22.020000135528466,
+              3.0500000584697293
             ],
             "type": "Arc",
             "units": "mm"
@@ -7694,6 +7704,7 @@ description: Variables in memory after executing bench.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -8087,11 +8098,11 @@ description: Variables in memory after executing bench.kcl
             "ccw": true,
             "center": [
               7.80491269792136,
-              -10.352474492187907
+              -10.352474492187905
             ],
             "from": [
               -16.599999969431963,
-              5.679999979926835
+              5.679999979926837
             ],
             "radius": 29.20000000000263,
             "tag": {
@@ -8103,8 +8114,8 @@ description: Variables in memory after executing bench.kcl
               "value": "arc4"
             },
             "to": [
-              -18.37999999998899,
-              2.5700000000665426
+              -18.379999999988993,
+              2.5700000000665337
             ],
             "type": "Arc",
             "units": "mm"
@@ -8115,8 +8126,8 @@ description: Variables in memory after executing bench.kcl
               "sourceRange": []
             },
             "from": [
-              -18.37999999998899,
-              2.5700000000665426
+              -18.379999999988993,
+              2.5700000000665337
             ],
             "tag": {
               "commentStart": 1327,
@@ -8290,8 +8301,8 @@ description: Variables in memory after executing bench.kcl
             },
             "ccw": true,
             "center": [
-              38.68382434857471,
-              10.24301490592152
+              38.6838243485747,
+              10.243014905921513
             ],
             "from": [
               22.449999999975425,
@@ -8307,8 +8318,8 @@ description: Variables in memory after executing bench.kcl
               "value": "arc12"
             },
             "to": [
-              22.020000135528473,
-              3.0500000584697364
+              22.020000135528466,
+              3.0500000584697293
             ],
             "type": "Arc",
             "units": "mm"
@@ -8661,6 +8672,7 @@ description: Variables in memory after executing bench.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -9054,11 +9066,11 @@ description: Variables in memory after executing bench.kcl
             "ccw": true,
             "center": [
               7.80491269792136,
-              -10.352474492187907
+              -10.352474492187905
             ],
             "from": [
               -16.599999969431963,
-              5.679999979926835
+              5.679999979926837
             ],
             "radius": 29.20000000000263,
             "tag": {
@@ -9070,8 +9082,8 @@ description: Variables in memory after executing bench.kcl
               "value": "arc4"
             },
             "to": [
-              -18.37999999998899,
-              2.5700000000665426
+              -18.379999999988993,
+              2.5700000000665337
             ],
             "type": "Arc",
             "units": "mm"
@@ -9082,8 +9094,8 @@ description: Variables in memory after executing bench.kcl
               "sourceRange": []
             },
             "from": [
-              -18.37999999998899,
-              2.5700000000665426
+              -18.379999999988993,
+              2.5700000000665337
             ],
             "tag": {
               "commentStart": 1327,
@@ -9257,8 +9269,8 @@ description: Variables in memory after executing bench.kcl
             },
             "ccw": true,
             "center": [
-              38.68382434857471,
-              10.24301490592152
+              38.6838243485747,
+              10.243014905921513
             ],
             "from": [
               22.449999999975425,
@@ -9274,8 +9286,8 @@ description: Variables in memory after executing bench.kcl
               "value": "arc12"
             },
             "to": [
-              22.020000135528473,
-              3.0500000584697364
+              22.020000135528466,
+              3.0500000584697293
             ],
             "type": "Arc",
             "units": "mm"
@@ -9628,6 +9640,7 @@ description: Variables in memory after executing bench.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -9734,11 +9747,11 @@ description: Variables in memory after executing bench.kcl
           "ccw": true,
           "center": [
             7.80491269792136,
-            -10.352474492187907
+            -10.352474492187905
           ],
           "from": [
             -16.599999969431963,
-            5.679999979926835
+            5.679999979926837
           ],
           "radius": 29.20000000000263,
           "tag": {
@@ -9750,8 +9763,8 @@ description: Variables in memory after executing bench.kcl
             "value": "arc4"
           },
           "to": [
-            -18.37999999998899,
-            2.5700000000665426
+            -18.379999999988993,
+            2.5700000000665337
           ],
           "type": "Arc",
           "units": "mm"
@@ -9762,8 +9775,8 @@ description: Variables in memory after executing bench.kcl
             "sourceRange": []
           },
           "from": [
-            -18.37999999998899,
-            2.5700000000665426
+            -18.379999999988993,
+            2.5700000000665337
           ],
           "tag": {
             "commentStart": 1327,
@@ -9937,8 +9950,8 @@ description: Variables in memory after executing bench.kcl
           },
           "ccw": true,
           "center": [
-            38.68382434857471,
-            10.24301490592152
+            38.6838243485747,
+            10.243014905921513
           ],
           "from": [
             22.449999999975425,
@@ -9954,8 +9967,8 @@ description: Variables in memory after executing bench.kcl
             "value": "arc12"
           },
           "to": [
-            22.020000135528473,
-            3.0500000584697364
+            22.020000135528466,
+            3.0500000584697293
           ],
           "type": "Arc",
           "units": "mm"
@@ -10308,6 +10321,7 @@ description: Variables in memory after executing bench.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -10696,11 +10710,11 @@ description: Variables in memory after executing bench.kcl
             "ccw": true,
             "center": [
               7.80491269792136,
-              -10.352474492187907
+              -10.352474492187905
             ],
             "from": [
               -16.599999969431963,
-              5.679999979926835
+              5.679999979926837
             ],
             "radius": 29.20000000000263,
             "tag": {
@@ -10712,8 +10726,8 @@ description: Variables in memory after executing bench.kcl
               "value": "arc4"
             },
             "to": [
-              -18.37999999998899,
-              2.5700000000665426
+              -18.379999999988993,
+              2.5700000000665337
             ],
             "type": "Arc",
             "units": "mm"
@@ -10724,8 +10738,8 @@ description: Variables in memory after executing bench.kcl
               "sourceRange": []
             },
             "from": [
-              -18.37999999998899,
-              2.5700000000665426
+              -18.379999999988993,
+              2.5700000000665337
             ],
             "tag": {
               "commentStart": 1327,
@@ -10899,8 +10913,8 @@ description: Variables in memory after executing bench.kcl
             },
             "ccw": true,
             "center": [
-              38.68382434857471,
-              10.24301490592152
+              38.6838243485747,
+              10.243014905921513
             ],
             "from": [
               22.449999999975425,
@@ -10916,8 +10930,8 @@ description: Variables in memory after executing bench.kcl
               "value": "arc12"
             },
             "to": [
-              22.020000135528473,
-              3.0500000584697364
+              22.020000135528466,
+              3.0500000584697293
             ],
             "type": "Arc",
             "units": "mm"
@@ -11270,6 +11284,7 @@ description: Variables in memory after executing bench.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -11328,7 +11343,7 @@ description: Variables in memory after executing bench.kcl
                         }
                       },
                       {
-                        "n": 3.0500000584532905,
+                        "n": 3.05000005845329,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -11346,7 +11361,7 @@ description: Variables in memory after executing bench.kcl
                         }
                       },
                       {
-                        "n": 10.243014905921516,
+                        "n": 10.243014905921514,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12374,7 +12389,7 @@ description: Variables in memory after executing bench.kcl
                         }
                       },
                       {
-                        "n": 5.679999979926835,
+                        "n": 5.679999979926837,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12402,7 +12417,7 @@ description: Variables in memory after executing bench.kcl
                     ],
                     "center": [
                       {
-                        "n": 7.80491269792136,
+                        "n": 7.804912697921362,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12410,7 +12425,7 @@ description: Variables in memory after executing bench.kcl
                         }
                       },
                       {
-                        "n": -10.35247449218791,
+                        "n": -10.352474492187902,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12536,7 +12551,7 @@ description: Variables in memory after executing bench.kcl
                     ],
                     "end": [
                       {
-                        "n": -6.909999832033125,
+                        "n": -6.909999832033124,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12554,7 +12569,7 @@ description: Variables in memory after executing bench.kcl
                     ],
                     "center": [
                       {
-                        "n": 1.882699068549383,
+                        "n": 1.8826990685493834,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12562,7 +12577,7 @@ description: Variables in memory after executing bench.kcl
                         }
                       },
                       {
-                        "n": 0.38149155891663666,
+                        "n": 0.38149155891663616,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -14100,7 +14115,7 @@ description: Variables in memory after executing bench.kcl
                   "tag": null,
                   "to": [
                     -16.599999969431963,
-                    5.679999979926835
+                    5.679999979926837
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -14113,11 +14128,11 @@ description: Variables in memory after executing bench.kcl
                   "ccw": true,
                   "center": [
                     7.80491269792136,
-                    -10.352474492187907
+                    -10.352474492187905
                   ],
                   "from": [
                     -16.599999969431963,
-                    5.679999979926835
+                    5.679999979926837
                   ],
                   "radius": 29.20000000000263,
                   "tag": {
@@ -14129,8 +14144,8 @@ description: Variables in memory after executing bench.kcl
                     "value": "arc4"
                   },
                   "to": [
-                    -18.37999999998899,
-                    2.5700000000665426
+                    -18.379999999988993,
+                    2.5700000000665337
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -14141,8 +14156,8 @@ description: Variables in memory after executing bench.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -18.37999999998899,
-                    2.5700000000665426
+                    -18.379999999988993,
+                    2.5700000000665337
                   ],
                   "tag": {
                     "commentStart": 1327,
@@ -14367,8 +14382,8 @@ description: Variables in memory after executing bench.kcl
                   },
                   "ccw": true,
                   "center": [
-                    38.68382434857471,
-                    10.24301490592152
+                    38.6838243485747,
+                    10.243014905921513
                   ],
                   "from": [
                     22.449999999975425,
@@ -14384,8 +14399,8 @@ description: Variables in memory after executing bench.kcl
                     "value": "arc12"
                   },
                   "to": [
-                    22.020000135528473,
-                    3.0500000584697364
+                    22.020000135528466,
+                    3.0500000584697293
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -14396,8 +14411,8 @@ description: Variables in memory after executing bench.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    22.020000135528473,
-                    3.0500000584697364
+                    22.020000135528466,
+                    3.0500000584697293
                   ],
                   "tag": null,
                   "to": [
@@ -15218,11 +15233,11 @@ description: Variables in memory after executing bench.kcl
             "ccw": true,
             "center": [
               7.80491269792136,
-              -10.352474492187907
+              -10.352474492187905
             ],
             "from": [
               -16.599999969431963,
-              5.679999979926835
+              5.679999979926837
             ],
             "radius": 29.20000000000263,
             "tag": {
@@ -15234,8 +15249,8 @@ description: Variables in memory after executing bench.kcl
               "value": "arc4"
             },
             "to": [
-              -18.37999999998899,
-              2.5700000000665426
+              -18.379999999988993,
+              2.5700000000665337
             ],
             "type": "Arc",
             "units": "mm"
@@ -15246,8 +15261,8 @@ description: Variables in memory after executing bench.kcl
               "sourceRange": []
             },
             "from": [
-              -18.37999999998899,
-              2.5700000000665426
+              -18.379999999988993,
+              2.5700000000665337
             ],
             "tag": {
               "commentStart": 1327,
@@ -15421,8 +15436,8 @@ description: Variables in memory after executing bench.kcl
             },
             "ccw": true,
             "center": [
-              38.68382434857471,
-              10.24301490592152
+              38.6838243485747,
+              10.243014905921513
             ],
             "from": [
               22.449999999975425,
@@ -15438,8 +15453,8 @@ description: Variables in memory after executing bench.kcl
               "value": "arc12"
             },
             "to": [
-              22.020000135528473,
-              3.0500000584697364
+              22.020000135528466,
+              3.0500000584697293
             ],
             "type": "Arc",
             "units": "mm"
@@ -15792,6 +15807,7 @@ description: Variables in memory after executing bench.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -15898,11 +15914,11 @@ description: Variables in memory after executing bench.kcl
           "ccw": true,
           "center": [
             7.80491269792136,
-            -10.352474492187907
+            -10.352474492187905
           ],
           "from": [
             -16.599999969431963,
-            5.679999979926835
+            5.679999979926837
           ],
           "radius": 29.20000000000263,
           "tag": {
@@ -15914,8 +15930,8 @@ description: Variables in memory after executing bench.kcl
             "value": "arc4"
           },
           "to": [
-            -18.37999999998899,
-            2.5700000000665426
+            -18.379999999988993,
+            2.5700000000665337
           ],
           "type": "Arc",
           "units": "mm"
@@ -15926,8 +15942,8 @@ description: Variables in memory after executing bench.kcl
             "sourceRange": []
           },
           "from": [
-            -18.37999999998899,
-            2.5700000000665426
+            -18.379999999988993,
+            2.5700000000665337
           ],
           "tag": {
             "commentStart": 1327,
@@ -16101,8 +16117,8 @@ description: Variables in memory after executing bench.kcl
           },
           "ccw": true,
           "center": [
-            38.68382434857471,
-            10.24301490592152
+            38.6838243485747,
+            10.243014905921513
           ],
           "from": [
             22.449999999975425,
@@ -16118,8 +16134,8 @@ description: Variables in memory after executing bench.kcl
             "value": "arc12"
           },
           "to": [
-            22.020000135528473,
-            3.0500000584697364
+            22.020000135528466,
+            3.0500000584697293
           ],
           "type": "Arc",
           "units": "mm"
@@ -16472,6 +16488,7 @@ description: Variables in memory after executing bench.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -16860,11 +16877,11 @@ description: Variables in memory after executing bench.kcl
             "ccw": true,
             "center": [
               7.80491269792136,
-              -10.352474492187907
+              -10.352474492187905
             ],
             "from": [
               -16.599999969431963,
-              5.679999979926835
+              5.679999979926837
             ],
             "radius": 29.20000000000263,
             "tag": {
@@ -16876,8 +16893,8 @@ description: Variables in memory after executing bench.kcl
               "value": "arc4"
             },
             "to": [
-              -18.37999999998899,
-              2.5700000000665426
+              -18.379999999988993,
+              2.5700000000665337
             ],
             "type": "Arc",
             "units": "mm"
@@ -16888,8 +16905,8 @@ description: Variables in memory after executing bench.kcl
               "sourceRange": []
             },
             "from": [
-              -18.37999999998899,
-              2.5700000000665426
+              -18.379999999988993,
+              2.5700000000665337
             ],
             "tag": {
               "commentStart": 1327,
@@ -17063,8 +17080,8 @@ description: Variables in memory after executing bench.kcl
             },
             "ccw": true,
             "center": [
-              38.68382434857471,
-              10.24301490592152
+              38.6838243485747,
+              10.243014905921513
             ],
             "from": [
               22.449999999975425,
@@ -17080,8 +17097,8 @@ description: Variables in memory after executing bench.kcl
               "value": "arc12"
             },
             "to": [
-              22.020000135528473,
-              3.0500000584697364
+              22.020000135528466,
+              3.0500000584697293
             ],
             "type": "Arc",
             "units": "mm"
@@ -17434,6 +17451,7 @@ description: Variables in memory after executing bench.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -17819,6 +17837,7 @@ description: Variables in memory after executing bench.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -18256,6 +18275,7 @@ description: Variables in memory after executing bench.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -19186,6 +19206,7 @@ description: Variables in memory after executing bench.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -20628,6 +20649,7 @@ description: Variables in memory after executing bench.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -20953,6 +20975,7 @@ description: Variables in memory after executing bench.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -21278,6 +21301,7 @@ description: Variables in memory after executing bench.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -22509,6 +22533,7 @@ description: Variables in memory after executing bench.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -22829,6 +22854,7 @@ description: Variables in memory after executing bench.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",

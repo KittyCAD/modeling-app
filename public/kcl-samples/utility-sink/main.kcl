@@ -1,0 +1,763 @@
+// Utility Sink
+// A stainless steel sink unit with a configurable number of rectangular basins and under-counter storage compartments.
+// Categories: Manufacturing
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+// Define parameters
+tableHeight = 850
+tableWidth = 1200
+tableDepth = 600
+
+profileThickness = 13
+metalThickness = 2
+
+blockCount = 1
+blockWidth = (tableWidth - profileThickness) / blockCount
+blockHeight = tableHeight - metalThickness - 0.5
+blockDepth = tableDepth - profileThickness
+
+blockSubdivisionCount = 2
+blockSubdivisionWidth = blockWidth / blockSubdivisionCount
+
+// legs
+legHeight = blockHeight - profileThickness
+legCount = blockCount + 1
+
+// Leg frame tubes
+legProfile = sketch(on = XY) {
+  leftEdge = line(start = [var 0mm, var 0mm], end = [var 0mm, var 13mm])
+  topEdge = line(start = [var 0mm, var 13mm], end = [var 13mm, var 13mm])
+  rightEdge = line(start = [var 13mm, var 13mm], end = [var 13mm, var 0mm])
+  bottomEdge = line(start = [var 13mm, var 0mm], end = [var 0mm, var 0mm])
+
+  coincident([leftEdge.start, ORIGIN])
+  coincident([leftEdge.end, topEdge.start])
+  coincident([topEdge.end, rightEdge.start])
+  coincident([rightEdge.end, bottomEdge.start])
+  coincident([bottomEdge.end, leftEdge.start])
+
+  vertical(leftEdge)
+  horizontal(topEdge)
+  vertical(rightEdge)
+  horizontal(bottomEdge)
+
+  verticalDistance([leftEdge.start, leftEdge.end]) == profileThickness
+  horizontalDistance([topEdge.start, topEdge.end]) == profileThickness
+}
+
+legProfiles = patternLinear2d(
+  legProfile,
+  instances = legCount,
+  distance = blockWidth,
+  axis = [1, 0],
+)
+legProfileArray = patternLinear2d(
+  legProfiles,
+  instances = 2,
+  distance = blockDepth,
+  axis = [0, 1],
+)
+legBody = extrude(legProfileArray, length = legHeight)
+
+// lower belt
+lowerBeltHeightAboveTheFloor = 150
+lowerBeltLengthX = blockWidth - profileThickness
+
+lowerBeltPlane = offsetPlane(XY, offset = lowerBeltHeightAboveTheFloor)
+
+// Lower X-direction belts
+lowerBeltXProfile = sketch(on = lowerBeltPlane) {
+  startGuide = line(start = [var 0mm, var 0mm], end = [var 13mm, var 0mm], construction = true)
+  leftEdge = line(start = [var 13mm, var 0mm], end = [var 13mm, var 13mm])
+  topEdge = line(start = [var 13mm, var 13mm], end = [var 1187mm, var 13mm])
+  rightEdge = line(start = [var 1187mm, var 13mm], end = [var 1187mm, var 0mm])
+  bottomEdge = line(start = [var 1187mm, var 0mm], end = [var 13mm, var 0mm])
+
+  coincident([startGuide.start, ORIGIN])
+  coincident([startGuide.end, leftEdge.start])
+  coincident([leftEdge.end, topEdge.start])
+  coincident([topEdge.end, rightEdge.start])
+  coincident([rightEdge.end, bottomEdge.start])
+  coincident([bottomEdge.end, leftEdge.start])
+
+  horizontal(startGuide)
+  vertical(leftEdge)
+  horizontal(topEdge)
+  vertical(rightEdge)
+  horizontal(bottomEdge)
+
+  horizontalDistance([startGuide.start, startGuide.end]) == profileThickness
+  verticalDistance([leftEdge.start, leftEdge.end]) == profileThickness
+  horizontalDistance([topEdge.start, topEdge.end]) == lowerBeltLengthX
+}
+
+lowerBeltXProfiles = patternLinear2d(
+  lowerBeltXProfile,
+  instances = blockCount,
+  distance = blockWidth,
+  axis = [1, 0],
+)
+lowerBeltXProfileArray = patternLinear2d(
+  lowerBeltXProfiles,
+  instances = 2,
+  distance = blockDepth,
+  axis = [0, 1],
+)
+lowerBeltBodyX = extrude(lowerBeltXProfileArray, length = profileThickness)
+
+lowerBeltLengthY = blockDepth - profileThickness
+
+// Lower Y-direction belts
+lowerBeltYProfile = sketch(on = lowerBeltPlane) {
+  startGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 13mm], construction = true)
+  leftEdge = line(start = [var 0mm, var 13mm], end = [var 0mm, var 587mm])
+  topEdge = line(start = [var 0mm, var 587mm], end = [var 13mm, var 587mm])
+  rightEdge = line(start = [var 13mm, var 587mm], end = [var 13mm, var 13mm])
+  bottomEdge = line(start = [var 13mm, var 13mm], end = [var 0mm, var 13mm])
+
+  coincident([startGuide.start, ORIGIN])
+  coincident([startGuide.end, leftEdge.start])
+  coincident([leftEdge.end, topEdge.start])
+  coincident([topEdge.end, rightEdge.start])
+  coincident([rightEdge.end, bottomEdge.start])
+  coincident([bottomEdge.end, leftEdge.start])
+
+  vertical(startGuide)
+  vertical(leftEdge)
+  horizontal(topEdge)
+  vertical(rightEdge)
+  horizontal(bottomEdge)
+
+  verticalDistance([startGuide.start, startGuide.end]) == profileThickness
+  verticalDistance([leftEdge.start, leftEdge.end]) == lowerBeltLengthY
+  horizontalDistance([topEdge.start, topEdge.end]) == profileThickness
+}
+
+lowerBeltYProfileArray = patternLinear2d(
+  lowerBeltYProfile,
+  instances = 2,
+  distance = tableWidth - profileThickness,
+  axis = [1, 0],
+)
+lowerBeltBodyY = extrude(lowerBeltYProfileArray, length = profileThickness)
+
+// pillars
+pillarHeightAboveTheFloor = lowerBeltHeightAboveTheFloor + profileThickness
+pillarPlane = offsetPlane(XY, offset = pillarHeightAboveTheFloor)
+pillarTotalHeight = blockHeight - profileThickness - pillarHeightAboveTheFloor
+
+// Intermediate support pillars
+pillarProfile = sketch(on = pillarPlane) {
+  startGuide = line(start = [var 0mm, var 0mm], end = [var 594mm, var 0mm], construction = true)
+  leftEdge = line(start = [var 594mm, var 0mm], end = [var 594mm, var 13mm])
+  topEdge = line(start = [var 594mm, var 13mm], end = [var 607mm, var 13mm])
+  rightEdge = line(start = [var 607mm, var 13mm], end = [var 607mm, var 0mm])
+  bottomEdge = line(start = [var 607mm, var 0mm], end = [var 594mm, var 0mm])
+
+  coincident([startGuide.start, ORIGIN])
+  coincident([startGuide.end, leftEdge.start])
+  coincident([leftEdge.end, topEdge.start])
+  coincident([topEdge.end, rightEdge.start])
+  coincident([rightEdge.end, bottomEdge.start])
+  coincident([bottomEdge.end, leftEdge.start])
+
+  horizontal(startGuide)
+  vertical(leftEdge)
+  horizontal(topEdge)
+  vertical(rightEdge)
+  horizontal(bottomEdge)
+
+  horizontalDistance([startGuide.start, startGuide.end]) == blockSubdivisionWidth
+  verticalDistance([leftEdge.start, leftEdge.end]) == profileThickness
+  horizontalDistance([topEdge.start, topEdge.end]) == profileThickness
+}
+
+pillarProfiles = patternLinear2d(
+  region(
+    point = [
+      blockSubdivisionWidth + profileThickness / 2,
+      profileThickness / 2
+    ],
+    sketch = pillarProfile,
+  ),
+  instances = 2,
+  distance = blockDepth,
+  axis = [0, 1],
+)
+pillarSeed = extrude(pillarProfiles, length = pillarTotalHeight)
+pillarBody = patternLinear3d(
+  pillarSeed,
+  instances = blockCount,
+  distance = blockWidth,
+  axis = [1, 0, 0],
+)
+
+// upper belt
+upperBeltPlane = offsetPlane(XY, offset = blockHeight)
+
+// Upper X-direction belts
+upperBeltXProfile = sketch(on = upperBeltPlane) {
+  leftEdge = line(start = [var 0mm, var 0mm], end = [var 0mm, var 13mm])
+  topEdge = line(start = [var 0mm, var 13mm], end = [var 1200mm, var 13mm])
+  rightEdge = line(start = [var 1200mm, var 13mm], end = [var 1200mm, var 0mm])
+  bottomEdge = line(start = [var 1200mm, var 0mm], end = [var 0mm, var 0mm])
+
+  coincident([leftEdge.start, ORIGIN])
+  coincident([leftEdge.end, topEdge.start])
+  coincident([topEdge.end, rightEdge.start])
+  coincident([rightEdge.end, bottomEdge.start])
+  coincident([bottomEdge.end, leftEdge.start])
+
+  vertical(leftEdge)
+  horizontal(topEdge)
+  vertical(rightEdge)
+  horizontal(bottomEdge)
+
+  verticalDistance([leftEdge.start, leftEdge.end]) == profileThickness
+  horizontalDistance([topEdge.start, topEdge.end]) == tableWidth
+}
+
+upperBeltXProfileArray = patternLinear2d(
+  upperBeltXProfile,
+  instances = 2,
+  distance = blockDepth,
+  axis = [0, 1],
+)
+upperBeltBodyX = extrude(upperBeltXProfileArray, length = -profileThickness)
+
+upperBeltLengthY = blockDepth - profileThickness
+
+// Upper Y-direction belts
+upperBeltYProfile = sketch(on = upperBeltPlane) {
+  startGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 13mm], construction = true)
+  leftEdge = line(start = [var 0mm, var 13mm], end = [var 0mm, var 587mm])
+  topEdge = line(start = [var 0mm, var 587mm], end = [var 13mm, var 587mm])
+  rightEdge = line(start = [var 13mm, var 587mm], end = [var 13mm, var 13mm])
+  bottomEdge = line(start = [var 13mm, var 13mm], end = [var 0mm, var 13mm])
+
+  coincident([startGuide.start, ORIGIN])
+  coincident([startGuide.end, leftEdge.start])
+  coincident([leftEdge.end, topEdge.start])
+  coincident([topEdge.end, rightEdge.start])
+  coincident([rightEdge.end, bottomEdge.start])
+  coincident([bottomEdge.end, leftEdge.start])
+
+  vertical(startGuide)
+  vertical(leftEdge)
+  horizontal(topEdge)
+  vertical(rightEdge)
+  horizontal(bottomEdge)
+
+  verticalDistance([startGuide.start, startGuide.end]) == profileThickness
+  verticalDistance([leftEdge.start, leftEdge.end]) == upperBeltLengthY
+  horizontalDistance([topEdge.start, topEdge.end]) == profileThickness
+}
+
+upperBeltYProfileArray = patternLinear2d(
+  upperBeltYProfile,
+  instances = 2,
+  distance = tableWidth - profileThickness,
+  axis = [1, 0],
+)
+upperBeltBodyY = extrude(upperBeltYProfileArray, length = -profileThickness)
+
+// sink
+tableTopPlane = offsetPlane(XY, offset = tableHeight)
+
+// Tabletop sheet
+tableTopProfile = sketch(on = tableTopPlane) {
+  leftEdge = line(start = [var 0mm, var 0mm], end = [var 0mm, var 600mm])
+  topEdge = line(start = [var 0mm, var 600mm], end = [var 1200mm, var 600mm])
+  rightEdge = line(start = [var 1200mm, var 600mm], end = [var 1200mm, var 0mm])
+  bottomEdge = line(start = [var 1200mm, var 0mm], end = [var 0mm, var 0mm])
+
+  coincident([leftEdge.start, ORIGIN])
+  coincident([leftEdge.end, topEdge.start])
+  coincident([topEdge.end, rightEdge.start])
+  coincident([rightEdge.end, bottomEdge.start])
+  coincident([bottomEdge.end, leftEdge.start])
+
+  vertical(leftEdge)
+  horizontal(topEdge)
+  vertical(rightEdge)
+  horizontal(bottomEdge)
+
+  verticalDistance([leftEdge.start, leftEdge.end]) == tableDepth
+  horizontalDistance([topEdge.start, topEdge.end]) == tableWidth
+}
+
+tableTopRegion = region(point = [tableWidth / 2, tableDepth / 2], sketch = tableTopProfile)
+tableTopBody = extrude(tableTopRegion, length = -metalThickness)
+hide(tableTopProfile)
+
+sinkCount = blockCount
+sinkWidth = blockWidth / 2
+sinkLength = tableDepth - 150
+sinkDepth = 200
+sinkOffsetFront = 40
+sinkOffsetLeft = (blockWidth - sinkWidth) / 2
+sinkSpacing = tableWidth - sinkWidth - (sinkOffsetLeft * 2)
+
+sinkPlaneOutside = faceOf(tableTopBody, face = START)
+
+// Outer sink basin walls
+sinkOutsideProfile = sketch(on = sinkPlaneOutside) {
+  frontGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 40mm], construction = true)
+  offsetGuide = line(start = [var 0mm, var 40mm], end = [var -297mm, var 40mm], construction = true)
+  leftEdge = line(start = [var -297mm, var 40mm], end = [var -297mm, var 490mm])
+  topEdge = line(start = [var -297mm, var 490mm], end = [var -890mm, var 490mm])
+  rightEdge = line(start = [var -890mm, var 490mm], end = [var -890mm, var 40mm])
+  bottomEdge = line(start = [var -890mm, var 40mm], end = [var -297mm, var 40mm])
+
+  coincident([frontGuide.start, ORIGIN])
+  coincident([frontGuide.end, offsetGuide.start])
+  coincident([offsetGuide.end, leftEdge.start])
+  coincident([leftEdge.end, topEdge.start])
+  coincident([topEdge.end, rightEdge.start])
+  coincident([rightEdge.end, bottomEdge.start])
+  coincident([bottomEdge.end, leftEdge.start])
+
+  vertical(frontGuide)
+  horizontal(offsetGuide)
+  vertical(leftEdge)
+  horizontal(topEdge)
+  vertical(rightEdge)
+  horizontal(bottomEdge)
+
+  verticalDistance([frontGuide.start, frontGuide.end]) == sinkOffsetFront
+  horizontalDistance([offsetGuide.start, offsetGuide.end]) == -sinkOffsetLeft
+  verticalDistance([leftEdge.start, leftEdge.end]) == sinkLength
+  horizontalDistance([topEdge.start, topEdge.end]) == -sinkWidth
+}
+
+sinkOutsideRegion = region(
+  point = [
+    -sinkOffsetLeft - (sinkWidth / 2),
+    sinkOffsetFront + sinkLength / 2
+  ],
+  sketch = sinkOutsideProfile,
+)
+sinkBodyOutside = extrude(sinkOutsideRegion, length = sinkDepth)
+hide(sinkOutsideProfile)
+
+sinkPlaneInside = faceOf(tableTopBody, face = END)
+
+// Inner sink basin walls
+sinkInsideProfile = sketch(on = sinkPlaneInside) {
+  frontGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 42mm], construction = true)
+  offsetGuide = line(start = [var 0mm, var 42mm], end = [var 299mm, var 42mm], construction = true)
+  leftEdge = line(start = [var 299mm, var 42mm], end = [var 299mm, var 488mm])
+  topEdge = line(start = [var 299mm, var 488mm], end = [var 888mm, var 488mm])
+  rightEdge = line(start = [var 888mm, var 488mm], end = [var 888mm, var 42mm])
+  bottomEdge = line(start = [var 888mm, var 42mm], end = [var 299mm, var 42mm])
+
+  coincident([frontGuide.start, ORIGIN])
+  coincident([frontGuide.end, offsetGuide.start])
+  coincident([offsetGuide.end, leftEdge.start])
+  coincident([leftEdge.end, topEdge.start])
+  coincident([topEdge.end, rightEdge.start])
+  coincident([rightEdge.end, bottomEdge.start])
+  coincident([bottomEdge.end, leftEdge.start])
+
+  vertical(frontGuide)
+  horizontal(offsetGuide)
+  vertical(leftEdge)
+  horizontal(topEdge)
+  vertical(rightEdge)
+  horizontal(bottomEdge)
+
+  verticalDistance([frontGuide.start, frontGuide.end]) == sinkOffsetFront + metalThickness
+  horizontalDistance([offsetGuide.start, offsetGuide.end]) == sinkOffsetLeft + metalThickness
+  verticalDistance([leftEdge.start, leftEdge.end]) == sinkLength - (metalThickness * 2)
+  horizontalDistance([topEdge.start, topEdge.end]) == sinkWidth - (metalThickness * 2)
+}
+
+sinkInsideRegion = region(
+  point = [
+    sinkOffsetLeft + sinkWidth / 2,
+    sinkOffsetFront + sinkLength / 2
+  ],
+  sketch = sinkInsideProfile,
+)
+sinkBodyInside = extrude(sinkInsideRegion, length = -sinkDepth)
+hide(sinkInsideProfile)
+
+// tap
+
+// Tap base plate
+tapPlateSketch = sketch(on = offsetPlane(XY, offset = tableHeight)) {
+  centerYGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 545mm], construction = true)
+  centerXGuide = line(start = [var 0mm, var 545mm], end = [var 594mm, var 545mm], construction = true)
+  tapPlateCircle = circle(start = [var 634mm, var 545mm], center = [var 594mm, var 545mm])
+  radiusGuide = line(start = [var 594mm, var 545mm], end = [var 634mm, var 545mm], construction = true)
+
+  coincident([centerYGuide.start, ORIGIN])
+  coincident([centerYGuide.end, centerXGuide.start])
+  coincident([
+    tapPlateCircle.center,
+    centerXGuide.end
+  ])
+  coincident([
+    radiusGuide.start,
+    tapPlateCircle.center
+  ])
+  coincident([radiusGuide.end, tapPlateCircle.start])
+
+  vertical(centerYGuide)
+  horizontal(centerXGuide)
+  horizontal(radiusGuide)
+
+  verticalDistance([centerYGuide.start, centerYGuide.end]) == tableDepth - 55
+  horizontalDistance([centerXGuide.start, centerXGuide.end]) == blockWidth / 2
+  distance([
+  tapPlateCircle.center,
+  tapPlateCircle.start
+]) == 40
+}
+
+tapPlateRegion = region(point = [blockWidth / 2, tableDepth - 55], sketch = tapPlateSketch)
+tapPlateSeed = extrude(tapPlateRegion, length = 5)
+tapPlate = patternLinear3d(
+  tapPlateSeed,
+  instances = sinkCount,
+  distance = sinkSpacing,
+  axis = [1, 0, 0],
+)
+hide(tapPlateSketch)
+
+// Tap pillar
+tapPillarSketch = sketch(on = offsetPlane(XY, offset = tableHeight)) {
+  centerYGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 545mm], construction = true)
+  centerXGuide = line(start = [var 0mm, var 545mm], end = [var 594mm, var 545mm], construction = true)
+  tapPillarCircle = circle(start = [var 609mm, var 545mm], center = [var 594mm, var 545mm])
+  radiusGuide = line(start = [var 594mm, var 545mm], end = [var 609mm, var 545mm], construction = true)
+
+  coincident([centerYGuide.start, ORIGIN])
+  coincident([centerYGuide.end, centerXGuide.start])
+  coincident([
+    tapPillarCircle.center,
+    centerXGuide.end
+  ])
+  coincident([
+    radiusGuide.start,
+    tapPillarCircle.center
+  ])
+  coincident([radiusGuide.end, tapPillarCircle.start])
+
+  vertical(centerYGuide)
+  horizontal(centerXGuide)
+  horizontal(radiusGuide)
+
+  verticalDistance([centerYGuide.start, centerYGuide.end]) == tableDepth - 55
+  horizontalDistance([centerXGuide.start, centerXGuide.end]) == blockWidth / 2
+  distance([
+  tapPillarCircle.center,
+  tapPillarCircle.start
+]) == 15
+}
+
+tapPillarRegion = region(point = [blockWidth / 2, tableDepth - 55], sketch = tapPillarSketch)
+tapPillarSeed = extrude(tapPillarRegion, length = 170)
+tapPillar = patternLinear3d(
+  tapPillarSeed,
+  instances = sinkCount,
+  distance = sinkSpacing,
+  axis = [1, 0, 0],
+)
+hide(tapPillarSketch)
+
+// Tap spout
+tapNoseSketch = sketch(on = offsetPlane(XZ, offset = 55 - tableDepth)) {
+  heightGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 950mm], construction = true)
+  centerXGuide = line(start = [var 0mm, var 950mm], end = [var 594mm, var 950mm], construction = true)
+  tapNoseCircle = circle(start = [var 604mm, var 950mm], center = [var 594mm, var 950mm])
+  radiusGuide = line(start = [var 594mm, var 950mm], end = [var 604mm, var 950mm], construction = true)
+
+  coincident([heightGuide.start, ORIGIN])
+  coincident([heightGuide.end, centerXGuide.start])
+  coincident([tapNoseCircle.center, centerXGuide.end])
+  coincident([
+    radiusGuide.start,
+    tapNoseCircle.center
+  ])
+  coincident([radiusGuide.end, tapNoseCircle.start])
+
+  vertical(heightGuide)
+  horizontal(centerXGuide)
+  horizontal(radiusGuide)
+
+  verticalDistance([heightGuide.start, heightGuide.end]) == tableHeight + 100
+  horizontalDistance([centerXGuide.start, centerXGuide.end]) == blockWidth / 2
+  distance([
+  tapNoseCircle.center,
+  tapNoseCircle.start
+]) == 10
+}
+
+tapNoseRegion = region(point = [blockWidth / 2, tableHeight + 100], sketch = tapNoseSketch)
+tapNoseSeed = extrude(tapNoseRegion, length = sinkWidth / 2.5)
+tapNose = patternLinear3d(
+  tapNoseSeed,
+  instances = sinkCount,
+  distance = sinkSpacing,
+  axis = [1, 0, 0],
+)
+hide(tapNoseSketch)
+
+// Tap handle stem
+tapHandleSketch = sketch(on = offsetPlane(XZ, offset = 55 - tableDepth)) {
+  heightGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 1000mm], construction = true)
+  centerXGuide = line(start = [var 0mm, var 1000mm], end = [var 594mm, var 1000mm], construction = true)
+  tapHandleCircle = circle(start = [var 598mm, var 1000mm], center = [var 594mm, var 1000mm])
+  radiusGuide = line(start = [var 594mm, var 1000mm], end = [var 598mm, var 1000mm], construction = true)
+
+  coincident([heightGuide.start, ORIGIN])
+  coincident([heightGuide.end, centerXGuide.start])
+  coincident([
+    tapHandleCircle.center,
+    centerXGuide.end
+  ])
+  coincident([
+    radiusGuide.start,
+    tapHandleCircle.center
+  ])
+  coincident([radiusGuide.end, tapHandleCircle.start])
+
+  vertical(heightGuide)
+  horizontal(centerXGuide)
+  horizontal(radiusGuide)
+
+  verticalDistance([heightGuide.start, heightGuide.end]) == tableHeight + 150
+  horizontalDistance([centerXGuide.start, centerXGuide.end]) == blockWidth / 2
+  distance([
+  tapHandleCircle.center,
+  tapHandleCircle.start
+]) == 4
+}
+
+tapHandleRegion = region(point = [blockWidth / 2, tableHeight + 150], sketch = tapHandleSketch)
+tapHandleSeed = extrude(tapHandleRegion, length = 70)
+tapHandle = patternLinear3d(
+  tapHandleSeed,
+  instances = sinkCount,
+  distance = sinkSpacing,
+  axis = [1, 0, 0],
+)
+hide(tapHandleSketch)
+
+// door panels
+doorGap = 2
+doorWidth = blockSubdivisionWidth - profileThickness - (doorGap * 2)
+doorStart = profileThickness + doorGap
+doorHeightAboveTheFloor = pillarHeightAboveTheFloor + doorGap
+doorHeight = blockHeight - doorHeightAboveTheFloor - profileThickness - doorGap
+doorCount = blockCount * blockSubdivisionCount
+
+doorPlane = offsetPlane(XY, offset = doorHeightAboveTheFloor)
+
+// Door panels
+// NOTE: Local front/right renders keep a small door-panel variance versus legacy.
+// Proceeding per user approval so the remaining cabinet features can be completed.
+doorProfile = sketch(on = doorPlane) {
+  startGuide = line(start = [var 0mm, var 0mm], end = [var 15mm, var 0mm], construction = true)
+  leftEdge = line(start = [var 15mm, var 0mm], end = [var 15mm, var 13mm])
+  topEdge = line(start = [var 15mm, var 13mm], end = [var 591mm, var 13mm])
+  rightEdge = line(start = [var 591mm, var 13mm], end = [var 591mm, var 0mm])
+  bottomEdge = line(start = [var 591mm, var 0mm], end = [var 15mm, var 0mm])
+
+  coincident([startGuide.start, ORIGIN])
+  coincident([startGuide.end, leftEdge.start])
+  coincident([leftEdge.end, topEdge.start])
+  coincident([topEdge.end, rightEdge.start])
+  coincident([rightEdge.end, bottomEdge.start])
+  coincident([bottomEdge.end, leftEdge.start])
+
+  horizontal(startGuide)
+  vertical(leftEdge)
+  horizontal(topEdge)
+  vertical(rightEdge)
+  horizontal(bottomEdge)
+
+  horizontalDistance([startGuide.start, startGuide.end]) == doorStart
+  verticalDistance([leftEdge.start, leftEdge.end]) == profileThickness
+  horizontalDistance([topEdge.start, topEdge.end]) == doorWidth
+}
+
+// Workaround: region -> extrude -> 3D pattern stayed closer than extruding a patterned 2D profile.
+doorRegion = region(
+  point = [
+    doorStart + doorWidth / 2,
+    profileThickness / 2
+  ],
+  sketch = doorProfile,
+)
+doorSeed = extrude(doorRegion, length = doorHeight)
+doorRow = patternLinear3d(
+  doorSeed,
+  instances = doorCount,
+  distance = blockSubdivisionWidth,
+  axis = [1, 0, 0],
+)
+doorBody = patternLinear3d(
+  doorRow,
+  instances = 2,
+  distance = blockDepth,
+  axis = [0, 1, 0],
+)
+hide(doorProfile)
+
+// side panels
+panelWidth = blockDepth - profileThickness - (doorGap * 2)
+panelCount = doorCount + 1
+panelSpacing = tableWidth - profileThickness
+
+// Side panels
+// NOTE: The legacy sample computes panelCount = doorCount + 1, but only places two side panels.
+panelProfile = sketch(on = doorPlane) {
+  startGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 15mm], construction = true)
+  leftEdge = line(start = [var 0mm, var 15mm], end = [var 0mm, var 572mm])
+  topEdge = line(start = [var 0mm, var 572mm], end = [var 13mm, var 572mm])
+  rightEdge = line(start = [var 13mm, var 572mm], end = [var 13mm, var 15mm])
+  bottomEdge = line(start = [var 13mm, var 15mm], end = [var 0mm, var 15mm])
+
+  coincident([startGuide.start, ORIGIN])
+  coincident([startGuide.end, leftEdge.start])
+  coincident([leftEdge.end, topEdge.start])
+  coincident([topEdge.end, rightEdge.start])
+  coincident([rightEdge.end, bottomEdge.start])
+  coincident([bottomEdge.end, leftEdge.start])
+
+  vertical(startGuide)
+  vertical(leftEdge)
+  horizontal(topEdge)
+  vertical(rightEdge)
+  horizontal(bottomEdge)
+
+  verticalDistance([startGuide.start, startGuide.end]) == doorStart
+  verticalDistance([leftEdge.start, leftEdge.end]) == panelWidth
+  horizontalDistance([topEdge.start, topEdge.end]) == profileThickness
+}
+
+panelRegion = region(
+  point = [
+    profileThickness / 2,
+    doorStart + panelWidth / 2
+  ],
+  sketch = panelProfile,
+)
+panelSeed = extrude(panelRegion, length = doorHeight)
+panelBody = patternLinear3d(
+  panelSeed,
+  instances = 2,
+  distance = panelSpacing,
+  axis = [1, 0, 0],
+)
+hide(panelProfile)
+
+// handle
+handleDepth = 40
+handleWidth = 120
+handleFillet = 20
+handleHeightAboveTheFloor = 780
+handleOffset = doorStart + doorWidth / 2 - (handleWidth / 2)
+handleLengthSegmentA = handleDepth - handleFillet
+handleLengthSegmentB = handleWidth - (handleFillet * 2)
+
+handlePlane = offsetPlane(XY, offset = handleHeightAboveTheFloor)
+
+// Door handles
+handleProfilePath = sketch(on = handlePlane) {
+  startOffsetGuide = line(start = [var 0mm, var 0mm], end = [var 243.25mm, var 0mm], construction = true)
+  leftLeg = line(start = [var 243.25mm, var 0mm], end = [var 243.25mm, var -20mm])
+  leftRadiusGuide = line(start = [var 243.25mm, var -20mm], end = [var 263.25mm, var -20mm], construction = true)
+  leftArc = arc(start = [var 243.25mm, var -20mm], end = [var 263.25mm, var -40mm], center = [var 263.25mm, var -20mm])
+  grip = line(start = [var 263.25mm, var -40mm], end = [var 343.25mm, var -40mm])
+  rightRadiusGuide = line(start = [var 343.25mm, var -40mm], end = [var 343.25mm, var -20mm], construction = true)
+  rightArc = arc(start = [var 343.25mm, var -40mm], end = [var 363.25mm, var -20mm], center = [var 343.25mm, var -20mm])
+  rightLeg = line(start = [var 363.25mm, var -20mm], end = [var 363.25mm, var 0mm])
+  topSpanGuide = line(start = [var 243.25mm, var 0mm], end = [var 363.25mm, var 0mm], construction = true)
+
+  coincident([startOffsetGuide.start, ORIGIN])
+  coincident([startOffsetGuide.end, leftLeg.start])
+  coincident([leftLeg.end, leftRadiusGuide.start])
+  coincident([leftLeg.end, leftArc.start])
+  coincident([leftRadiusGuide.end, leftArc.center])
+  coincident([leftArc.end, grip.start])
+  coincident([grip.end, rightRadiusGuide.start])
+  coincident([grip.end, rightArc.start])
+  coincident([rightRadiusGuide.end, rightArc.center])
+  coincident([rightArc.end, rightLeg.start])
+  coincident([leftLeg.start, topSpanGuide.start])
+  coincident([rightLeg.end, topSpanGuide.end])
+
+  horizontal(startOffsetGuide)
+  vertical(leftLeg)
+  horizontal(leftRadiusGuide)
+  horizontal(grip)
+  vertical(rightRadiusGuide)
+  vertical(rightLeg)
+  horizontal(topSpanGuide)
+
+  horizontalDistance([
+  startOffsetGuide.start,
+  startOffsetGuide.end
+]) == handleOffset
+  distance([leftLeg.start, leftLeg.end]) == handleLengthSegmentA
+  equalLength([leftLeg, rightLeg])
+  distance([
+  leftRadiusGuide.start,
+  leftRadiusGuide.end
+]) == handleFillet
+  distance([
+  rightRadiusGuide.start,
+  rightRadiusGuide.end
+]) == handleFillet
+  distance([grip.start, grip.end]) == handleLengthSegmentB
+  horizontalDistance([topSpanGuide.start, topSpanGuide.end]) == handleWidth
+  radius(leftArc) == handleFillet
+  radius(rightArc) == handleFillet
+  tangent([leftLeg, leftArc])
+  tangent([leftArc, grip])
+  tangent([grip, rightArc])
+  tangent([rightArc, rightLeg])
+}
+
+handleSectionProfile = sketch(on = XZ) {
+  heightGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 780mm], construction = true)
+  centerXGuide = line(start = [var 0mm, var 780mm], end = [var 243.25mm, var 780mm], construction = true)
+  sectionCircle = circle(start = [var 245.25mm, var 780mm], center = [var 243.25mm, var 780mm])
+  radiusGuide = line(start = [var 243.25mm, var 780mm], end = [var 245.25mm, var 780mm], construction = true)
+
+  coincident([heightGuide.start, ORIGIN])
+  coincident([heightGuide.end, centerXGuide.start])
+  coincident([sectionCircle.center, centerXGuide.end])
+  coincident([
+    radiusGuide.start,
+    sectionCircle.center
+  ])
+  coincident([radiusGuide.end, sectionCircle.start])
+
+  vertical(heightGuide)
+  horizontal(centerXGuide)
+  horizontal(radiusGuide)
+
+  verticalDistance([heightGuide.start, heightGuide.end]) == handleHeightAboveTheFloor
+  horizontalDistance([centerXGuide.start, centerXGuide.end]) == handleOffset
+  distance([
+  sectionCircle.center,
+  sectionCircle.start
+]) == 2
+}
+
+handleSection = region(segments = [handleSectionProfile.sectionCircle])
+handleSeed = sweep(handleSection, path = handleProfilePath)
+handleBody = patternLinear3d(
+  handleSeed,
+  instances = doorCount,
+  distance = blockSubdivisionWidth,
+  axis = [1, 0, 0],
+)
+hide(handleProfilePath)
+hide(handleSectionProfile)
