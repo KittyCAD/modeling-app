@@ -7532,8 +7532,7 @@ sketch(on = XY) {
         assert_eq!(
             src_delta.text.as_str(),
             "\
-@settings(experimentalFeatures = allow)
-splineSketch = sketch(on = XY) {
+sketch(on = XY) {
   point(at = [var 1mm, var 2mm])
   point(at = [var 5mm, var 6mm])
 }
