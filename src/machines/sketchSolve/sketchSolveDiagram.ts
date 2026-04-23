@@ -804,15 +804,12 @@ export const sketchSolveMachine = setup({
         'update selected code highlight',
         'refresh selection styling',
       ],
-},
-    'update hovered id':
-{
-  actions: ['update hovered id', 'refresh selection styling'],
-}
-,
-    'delete selected':
-{
-  actions: ({ self, context }) => {
+    },
+    'update hovered id': {
+      actions: ['update hovered id', 'refresh selection styling'],
+    },
+    'delete selected': {
+      actions: ({ self, context }) => {
         void (async () => {
           const selectedIds = getObjectSelectionIds(context.selectedIds)
 
@@ -863,11 +860,9 @@ export const sketchSolveMachine = setup({
           }
         })()
       },
-}
-,
-    'start editing constraint':
-{
-  actions: [
+    },
+    'start editing constraint': {
+      actions: [
         assign({
           editingConstraintId: ({ event }) => {
             assertEvent(event, 'start editing constraint')
@@ -875,20 +870,16 @@ export const sketchSolveMachine = setup({
           },
         }),
       ],
-}
-,
-    'stop editing constraint':
-{
-  actions: [
+    },
+    'stop editing constraint': {
+      actions: [
         assign({
           editingConstraintId: undefined,
         }),
       ],
-}
-,
+    },
   },
-  states:
-{
+  states: {
     'move and select': {
       entry: ['setUpOnDragAndSelectionClickCallbacks'],
       on: {
