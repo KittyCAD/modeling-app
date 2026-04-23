@@ -211,6 +211,7 @@ mod tests {
     use indexmap::IndexMap;
     use pretty_assertions::assert_eq;
     use serde_json::Value;
+    use serde_json::json;
 
     use super::NamedView;
     use super::PerProjectSettings;
@@ -222,7 +223,6 @@ mod tests {
     use super::ProjectMetaSettings;
     use super::ProjectModelingSettings;
     use crate::settings::types::UnitLength;
-    use serde_json::json;
 
     #[test]
     fn test_project_settings_empty_file_parses() {

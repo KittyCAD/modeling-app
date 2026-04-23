@@ -532,6 +532,7 @@ fn is_default<T: Default + PartialEq>(t: &T) -> bool {
 #[cfg(test)]
 mod tests {
     use pretty_assertions::assert_eq;
+    use serde_json::json;
 
     use super::AppSettings;
     use super::AppTheme;
@@ -547,7 +548,6 @@ mod tests {
     use super::Settings;
     use super::UnitLength;
     use super::default_backface_color;
-    use serde_json::json;
 
     #[test]
     fn test_settings_empty_file_parses() {

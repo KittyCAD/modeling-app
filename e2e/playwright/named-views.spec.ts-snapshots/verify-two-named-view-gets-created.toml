@@ -1,6 +1,5 @@
 [settings]
 modeling = { }
-text_editor = { }
 command_bar = { }
 
 [settings.app.named_views.0656fb1a-9640-473e-b334-591dc70c0138]

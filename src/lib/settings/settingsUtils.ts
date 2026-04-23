@@ -38,6 +38,7 @@ import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import { isArray } from '@src/lib/utils'
 
 const FEATURES_CACHE_TTL_MS = 30 * 1_000
 
@@ -147,7 +148,7 @@ type TomlJsonObject = { [key: string]: JsonValue }
 const APP_OWNED_TEXT_EDITOR_SECTION_KEY = 'text_editor'
 
 function asTomlJsonObject(value: unknown): TomlJsonObject | undefined {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+  if (!value || typeof value !== 'object' || isArray(value)) {
     return undefined
   }
 
