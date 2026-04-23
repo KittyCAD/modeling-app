@@ -646,6 +646,10 @@ impl KclError {
         KclError::Type { details }
     }
 
+    pub fn is_undefined_value(&self) -> bool {
+        matches!(self, KclError::UndefinedValue { .. })
+    }
+
     /// Get the error message.
     pub fn get_message(&self) -> String {
         format!("{}: {}", self.error_type(), self.message())
