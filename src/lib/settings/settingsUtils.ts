@@ -502,6 +502,29 @@ export function mergeProjectConfiguration(
   }
 }
 
+export function replaceProjectSettingsPreservingMetadata(
+  existingConfiguration: DeepPartial<ProjectConfiguration>,
+  updatedConfiguration: DeepPartial<ProjectConfiguration>
+): DeepPartial<ProjectConfiguration> {
+  const meta = compactRecord({
+    ...existingConfiguration.settings?.meta,
+    ...updatedConfiguration.settings?.meta,
+  })
+
+  const settings = compactRecord({
+    meta,
+    app: updatedConfiguration.settings?.app,
+    modeling: updatedConfiguration.settings?.modeling,
+    text_editor: updatedConfiguration.settings?.text_editor,
+    command_bar: updatedConfiguration.settings?.command_bar,
+  })
+
+  return {
+    ...existingConfiguration,
+    settings,
+  }
+}
+
 function setProjectConfigurationId(
   projectConfiguration: DeepPartial<ProjectConfiguration>,
   id: string
@@ -678,7 +701,7 @@ export async function saveSettings(
   )
   if (err(existingProjectSettings)) return
 
-  const mergedProjectSettings = mergeProjectConfiguration(
+  const mergedProjectSettings = replaceProjectSettingsPreservingMetadata(
     existingProjectSettings,
     settingsPayloadToProjectConfiguration(jsProjectSettings)
   )

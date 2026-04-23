@@ -16,6 +16,7 @@ import {
   hiddenOnPlatform,
   mergeProjectConfiguration,
   projectConfigurationToSettingsPayload,
+  replaceProjectSettingsPreservingMetadata,
   settingsPayloadToProjectConfiguration,
   setSettingsAtLevel,
 } from '@src/lib/settings/settingsUtils'
@@ -265,6 +266,63 @@ describe('project settings serialization regression', () => {
 
     expect(parsedProjectConfiguration.cloud?.['dev.zoo.dev']?.project_id).toBe(
       'e9632dae-19ca-49ea-bcc1-ee8e34ff9de3'
+    )
+  })
+
+  it('drops cleared project settings while preserving project metadata', async () => {
+    const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+    const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
+
+    const existingProjectConfiguration: DeepPartial<ProjectConfiguration> = {
+      settings: {
+        meta: {
+          id: 'e8f5178c-5227-4567-bb5a-f52b3caef5ea',
+        },
+        modeling: {
+          base_unit: 'cm',
+        },
+        app: {
+          named_views: {
+            '0656fb1a-9640-473e-b334-591dc70c0138': {
+              name: 'uuid1',
+              eye_offset: 1,
+              fov_y: 1,
+              ortho_scale_enabled: false,
+              ortho_scale_factor: 1,
+              pivot_position: [0, 0, 0],
+              pivot_rotation: [0, 0, 0, 1],
+              world_coord_system: 'right_handed_up_z',
+              is_ortho: false,
+              version: 1,
+            },
+          },
+        },
+      },
+      cloud: {
+        'dev.zoo.dev': {
+          project_id: 'e9632dae-19ca-49ea-bcc1-ee8e34ff9de3',
+        },
+      },
+    }
+
+    const rewrittenProjectConfiguration =
+      replaceProjectSettingsPreservingMetadata(
+        existingProjectConfiguration,
+        settingsPayloadToProjectConfiguration({})
+      )
+    const serializedToml = serializeProjectConfiguration(
+      rewrittenProjectConfiguration,
+      wasmInstance
+    )
+    if (serializedToml instanceof Error) throw serializedToml
+
+    expect(serializedToml).not.toContain('base_unit = "cm"')
+    expect(serializedToml).not.toContain('named_views')
+    expect(serializedToml).toContain(
+      'id = "e8f5178c-5227-4567-bb5a-f52b3caef5ea"'
+    )
+    expect(serializedToml).toContain(
+      '[cloud."dev.zoo.dev"]\nproject_id = "e9632dae-19ca-49ea-bcc1-ee8e34ff9de3"'
     )
   })
 })
