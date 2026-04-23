@@ -36,7 +36,8 @@ pub fn walk_stdlib() -> ModData {
 
     #[expect(clippy::single_element_loop)]
     for module_name in ["solver"] {
-        let module = visit_module(module_name, &format!("{module_name}::"), WalkForNames::All).unwrap();
+        let mut module = visit_module(module_name, &format!("{module_name}::"), WalkForNames::All).unwrap();
+        module.preferred_name = module_name.to_owned();
         stdlib
             .children
             .insert(format!("M:{}", module.qual_name), DocData::Mod(module));
