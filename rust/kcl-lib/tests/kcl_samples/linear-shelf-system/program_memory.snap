@@ -342,7 +342,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -1335,7 +1334,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -1586,7 +1584,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -2585,7 +2582,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -2830,7 +2826,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -3072,7 +3067,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -3314,7 +3308,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -3556,7 +3549,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -3798,7 +3790,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -4040,7 +4031,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -4282,7 +4272,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -4524,7 +4513,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -4766,7 +4754,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -5008,7 +4995,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -5250,7 +5236,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -5492,7 +5477,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -5734,7 +5718,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -5976,7 +5959,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -6218,7 +6200,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -6460,7 +6441,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -6702,7 +6682,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -6944,7 +6923,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -7186,7 +7164,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -7428,7 +7405,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -7670,7 +7646,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -7912,7 +7887,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -8154,7 +8128,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -8396,7 +8369,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -8638,7 +8610,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -8880,7 +8851,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -9122,7 +9092,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -9364,7 +9333,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -9606,7 +9574,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -9848,7 +9815,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -10090,7 +10056,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -10332,7 +10297,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -10574,7 +10538,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -10816,7 +10779,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -11058,7 +11020,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -11300,7 +11261,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -11542,7 +11502,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -11784,7 +11743,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -12026,7 +11984,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -12268,7 +12225,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -12510,7 +12466,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -12752,7 +12707,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -12994,7 +12948,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -13236,7 +13189,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -13478,7 +13430,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -13793,7 +13744,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -14035,7 +13985,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -14277,7 +14226,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -14519,7 +14467,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -14761,7 +14708,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -15003,7 +14949,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -15247,7 +15192,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -16222,7 +16166,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "m"
     }
   },
@@ -16462,7 +16405,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -16704,7 +16646,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",

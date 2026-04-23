@@ -415,7 +415,6 @@ description: Variables in memory after executing bracket.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",
@@ -663,7 +662,6 @@ description: Variables in memory after executing bracket.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "in"
     }
   },
@@ -2005,7 +2003,6 @@ description: Variables in memory after executing bracket.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",
@@ -2397,7 +2394,6 @@ description: Variables in memory after executing bracket.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",
@@ -2845,7 +2841,6 @@ description: Variables in memory after executing bracket.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",
@@ -3223,7 +3218,6 @@ description: Variables in memory after executing bracket.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",
@@ -3689,7 +3683,6 @@ description: Variables in memory after executing bracket.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",

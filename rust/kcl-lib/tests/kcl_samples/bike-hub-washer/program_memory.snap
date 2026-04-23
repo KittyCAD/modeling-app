@@ -457,7 +457,6 @@ description: Variables in memory after executing bike-hub-washer.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -994,7 +993,6 @@ description: Variables in memory after executing bike-hub-washer.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": null,

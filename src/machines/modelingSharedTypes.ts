@@ -7,6 +7,7 @@ import type { Coords2d } from '@src/lang/util'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { Setting } from '@src/lib/settings/initialSettings'
 import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveImpl'
+import type { ConstraintToolName } from '@src/machines/sketchSolve/tools/constraintToolModel'
 import type { KclManager } from '@src/lang/KclManager'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -263,7 +264,7 @@ export type ModelingMachineInternalContext = {
   initialSceneGraphDelta: SceneGraphDelta
   // TODO are these both used?
   sketchSolveTool: EquipTool | null
-  sketchSolveToolName: EquipTool | null
+  sketchSolveToolName: EquipTool | ConstraintToolName | null
 }
 export type ModelingMachineContext = ModelingMachineInput &
   ModelingMachineInternalContext

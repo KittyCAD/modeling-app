@@ -224,7 +224,6 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -346,7 +345,6 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -468,7 +466,6 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -590,7 +587,6 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -712,7 +708,6 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -834,7 +829,6 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -956,7 +950,6 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -1078,7 +1071,6 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -1200,7 +1192,6 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -1322,7 +1313,6 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -1444,7 +1434,6 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -1566,7 +1555,6 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -1688,7 +1676,6 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -1810,7 +1797,6 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -1932,7 +1918,6 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -2054,7 +2039,6 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -2178,7 +2162,6 @@ description: Variables in memory after executing pipe-straight.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -2646,7 +2629,6 @@ description: Variables in memory after executing pipe-straight.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -2772,7 +2754,6 @@ description: Variables in memory after executing pipe-straight.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -2898,7 +2879,6 @@ description: Variables in memory after executing pipe-straight.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -3031,7 +3011,6 @@ description: Variables in memory after executing pipe-straight.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -3545,7 +3524,6 @@ description: Variables in memory after executing pipe-straight.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": null,
@@ -3671,7 +3649,6 @@ description: Variables in memory after executing pipe-straight.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -3813,7 +3790,6 @@ description: Variables in memory after executing pipe-straight.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -4342,7 +4318,6 @@ description: Variables in memory after executing pipe-straight.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",

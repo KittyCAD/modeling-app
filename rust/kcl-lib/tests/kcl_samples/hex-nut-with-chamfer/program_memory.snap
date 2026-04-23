@@ -467,7 +467,6 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -630,7 +629,6 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -2427,7 +2425,6 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -2766,7 +2763,6 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -3005,7 +3001,6 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -3109,7 +3104,6 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
       "units": "mm"
     }
   }
