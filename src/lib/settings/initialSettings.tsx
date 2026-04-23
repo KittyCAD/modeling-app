@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
-import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
+import type { OnboardingStatus } from '@src/lib/onboardingPaths'
 import { type MlCopilotMode } from '@kittycad/lib'
 
 import { NIL as uuidNIL } from 'uuid'
