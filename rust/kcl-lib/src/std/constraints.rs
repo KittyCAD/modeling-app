@@ -64,6 +64,8 @@ use crate::front::PointCtor;
 #[cfg(feature = "artifact-graph")]
 use crate::front::SourceRef;
 #[cfg(feature = "artifact-graph")]
+use crate::front::Symmetric;
+#[cfg(feature = "artifact-graph")]
 use crate::front::Tangent;
 #[cfg(feature = "artifact-graph")]
 use crate::front::Vertical;
@@ -3030,6 +3032,275 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                 vec![range],
             )));
         };
+        sketch_state.sketch_constraints.push(constraint_id);
+        track_constraint(constraint_id, constraint, exec_state, &args);
+    }
+
+    Ok(KclValue::none())
+}
+
+#[derive(Debug, Clone, Copy)]
+struct SymmetricPointVars {
+    coords: [SketchVarId; 2],
+    object_id: ObjectId,
+}
+
+#[derive(Debug, Clone, Copy)]
+struct SymmetricLineVars {
+    start: [SketchVarId; 2],
+    end: [SketchVarId; 2],
+    object_id: ObjectId,
+}
+
+#[derive(Debug, Clone, Copy)]
+struct SymmetricArcVars {
+    center: [SketchVarId; 2],
+    start: [SketchVarId; 2],
+    end: [SketchVarId; 2],
+    object_id: ObjectId,
+}
+
+#[derive(Debug, Clone, Copy)]
+enum SymmetricInput {
+    Point(SymmetricPointVars),
+    Line(SymmetricLineVars),
+    Arc(SymmetricArcVars),
+}
+
+impl SymmetricInput {
+    fn type_name(self) -> &'static str {
+        match self {
+            SymmetricInput::Point(_) => "points",
+            SymmetricInput::Line(_) => "lines",
+            SymmetricInput::Arc(_) => "arcs",
+        }
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    fn object_id(self) -> ObjectId {
+        match self {
+            SymmetricInput::Point(point) => point.object_id,
+            SymmetricInput::Line(line) => line.object_id,
+            SymmetricInput::Arc(arc) => arc.object_id,
+        }
+    }
+}
+
+fn extract_symmetric_input(segment_value: &KclValue, range: crate::SourceRange) -> Result<SymmetricInput, KclError> {
+    let KclValue::Segment { value: segment } = segment_value else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "symmetric() arguments must be point, line, or arc segments, but found {}",
+                segment_value.human_friendly_type()
+            ),
+            vec![range],
+        )));
+    };
+    let SegmentRepr::Unsolved { segment: unsolved } = &segment.repr else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "symmetric() arguments must be unsolved segments".to_owned(),
+            vec![range],
+        )));
+    };
+
+    match &unsolved.kind {
+        UnsolvedSegmentKind::Point { position, .. } => {
+            let (UnsolvedExpr::Unknown(x), UnsolvedExpr::Unknown(y)) = (&position[0], &position[1]) else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "point coordinates must be sketch vars for symmetric()".to_owned(),
+                    vec![range],
+                )));
+            };
+            Ok(SymmetricInput::Point(SymmetricPointVars {
+                coords: [*x, *y],
+                object_id: unsolved.object_id,
+            }))
+        }
+        UnsolvedSegmentKind::Line { start, end, .. } => {
+            let (
+                UnsolvedExpr::Unknown(start_x),
+                UnsolvedExpr::Unknown(start_y),
+                UnsolvedExpr::Unknown(end_x),
+                UnsolvedExpr::Unknown(end_y),
+            ) = (&start[0], &start[1], &end[0], &end[1])
+            else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "line coordinates must be sketch vars for symmetric()".to_owned(),
+                    vec![range],
+                )));
+            };
+            Ok(SymmetricInput::Line(SymmetricLineVars {
+                start: [*start_x, *start_y],
+                end: [*end_x, *end_y],
+                object_id: unsolved.object_id,
+            }))
+        }
+        UnsolvedSegmentKind::Arc { center, start, end, .. } => {
+            let (
+                UnsolvedExpr::Unknown(center_x),
+                UnsolvedExpr::Unknown(center_y),
+                UnsolvedExpr::Unknown(start_x),
+                UnsolvedExpr::Unknown(start_y),
+                UnsolvedExpr::Unknown(end_x),
+                UnsolvedExpr::Unknown(end_y),
+            ) = (&center[0], &center[1], &start[0], &start[1], &end[0], &end[1])
+            else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "arc center/start/end coordinates must be sketch vars for symmetric()".to_owned(),
+                    vec![range],
+                )));
+            };
+            Ok(SymmetricInput::Arc(SymmetricArcVars {
+                center: [*center_x, *center_y],
+                start: [*start_x, *start_y],
+                end: [*end_x, *end_y],
+                object_id: unsolved.object_id,
+            }))
+        }
+        other => Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "symmetric() supports only point, line, and arc segments, you provided {}",
+                other.human_friendly_kind_with_article()
+            ),
+            vec![range],
+        ))),
+    }
+}
+
+fn extract_symmetric_axis_line(
+    segment_value: &KclValue,
+    range: crate::SourceRange,
+) -> Result<SymmetricLineVars, KclError> {
+    let KclValue::Segment { value: segment } = segment_value else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "symmetric() axis must be a line Segment, but found {}",
+                segment_value.human_friendly_type()
+            ),
+            vec![range],
+        )));
+    };
+    let SegmentRepr::Unsolved { segment: unsolved } = &segment.repr else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "symmetric() axis must be an unsolved line Segment".to_owned(),
+            vec![range],
+        )));
+    };
+    let UnsolvedSegmentKind::Line { start, end, .. } = &unsolved.kind else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "symmetric() axis must be a line Segment".to_owned(),
+            vec![range],
+        )));
+    };
+    let (
+        UnsolvedExpr::Unknown(start_x),
+        UnsolvedExpr::Unknown(start_y),
+        UnsolvedExpr::Unknown(end_x),
+        UnsolvedExpr::Unknown(end_y),
+    ) = (&start[0], &start[1], &end[0], &end[1])
+    else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "symmetric() axis line coordinates must be sketch vars".to_owned(),
+            vec![range],
+        )));
+    };
+
+    Ok(SymmetricLineVars {
+        start: [*start_x, *start_y],
+        end: [*end_x, *end_y],
+        object_id: unsolved.object_id,
+    })
+}
+
+pub async fn symmetric(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let input: Vec<KclValue> = args.get_unlabeled_kw_arg(
+        "input",
+        &RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Segment)),
+            ArrayLen::Known(2),
+        ),
+        exec_state,
+    )?;
+    let [item0, item1]: [KclValue; 2] = input.try_into().map_err(|_| {
+        KclError::new_semantic(KclErrorDetails::new(
+            "symmetric() requires exactly 2 input segments".to_owned(),
+            vec![args.source_range],
+        ))
+    })?;
+    let axis: KclValue = args.get_kw_arg("axis", &RuntimeType::Primitive(PrimitiveType::Segment), exec_state)?;
+    let range = args.source_range;
+
+    let input0 = extract_symmetric_input(&item0, range)?;
+    let input1 = extract_symmetric_input(&item1, range)?;
+    let axis_line = extract_symmetric_axis_line(&axis, range)?;
+
+    let solver_axis = DatumLineSegment::new(datum_point(axis_line.start, range)?, datum_point(axis_line.end, range)?);
+
+    let solver_constraints = match (input0, input1) {
+        (SymmetricInput::Point(point0), SymmetricInput::Point(point1)) => {
+            vec![SolverConstraint::Symmetric(
+                solver_axis,
+                datum_point(point0.coords, range)?,
+                datum_point(point1.coords, range)?,
+            )]
+        }
+        (SymmetricInput::Line(line0), SymmetricInput::Line(line1)) => vec![
+            SolverConstraint::Symmetric(
+                solver_axis,
+                datum_point(line0.start, range)?,
+                datum_point(line1.start, range)?,
+            ),
+            SolverConstraint::Symmetric(
+                solver_axis,
+                datum_point(line0.end, range)?,
+                datum_point(line1.end, range)?,
+            ),
+        ],
+        (SymmetricInput::Arc(arc0), SymmetricInput::Arc(arc1)) => vec![
+            SolverConstraint::Symmetric(
+                solver_axis,
+                datum_point(arc0.center, range)?,
+                datum_point(arc1.center, range)?,
+            ),
+            SolverConstraint::Symmetric(
+                solver_axis,
+                datum_point(arc0.start, range)?,
+                datum_point(arc1.start, range)?,
+            ),
+            SolverConstraint::Symmetric(
+                solver_axis,
+                datum_point(arc0.end, range)?,
+                datum_point(arc1.end, range)?,
+            ),
+        ],
+        _ => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "symmetric() inputs must be homogeneous. You provided {} and {}",
+                    input0.type_name(),
+                    input1.type_name()
+                ),
+                vec![range],
+            )));
+        }
+    };
+
+    #[cfg(feature = "artifact-graph")]
+    let constraint_id = exec_state.next_object_id();
+    let Some(sketch_state) = exec_state.sketch_block_mut() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "symmetric() can only be used inside a sketch block".to_owned(),
+            vec![range],
+        )));
+    };
+    sketch_state.solver_constraints.extend(solver_constraints);
+
+    #[cfg(feature = "artifact-graph")]
+    {
+        let constraint = crate::front::Constraint::Symmetric(Symmetric {
+            input: vec![input0.object_id(), input1.object_id()],
+            axis: axis_line.object_id,
+        });
         sketch_state.sketch_constraints.push(constraint_id);
         track_constraint(constraint_id, constraint, exec_state, &args);
     }

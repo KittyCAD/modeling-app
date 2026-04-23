@@ -431,6 +431,31 @@ export fn tangent(
   @input: [Segment; 2],
 ) {}
 
+/// Constrain two points, lines, or arcs to be symmetric across an axis line.
+///
+/// Supported homogeneous input pairs:
+/// - `Point` / `Point`
+/// - `Line` / `Line`
+/// - `CircularArc` / `CircularArc`
+///
+/// ```kcl,sketchSolve
+/// profile = sketch(on = XY) {
+///   left = line(start = [var 0mm, var 0mm], end = [var 0mm, var 4mm])
+///   right = line(start = [var 4mm, var 0mm], end = [var 4mm, var 4mm])
+///   axis = line(start = [var 2mm, var -1mm], end = [var 2mm, var 5mm])
+///   symmetric([left, right], axis = axis)
+/// }
+///
+/// solid = extrude(region(point = [2mm, 2mm], sketch = profile), length = 2)
+/// ```
+@(impl = std_rust_constraint, feature_tree = true)
+export fn symmetric(
+  /// Exactly two points, lines, or arcs of the same kind.
+  @input: [Segment; 2],
+  /// The line to mirror across.
+  axis: Segment,
+) {}
+
 /// Constrain a point to be fixed to a position.
 ///
 /// `fixed()` is an alias for `coincident()`. By convention, `fixed()` is used when one of the points is a known location, not solved with constraints and not another point in the sketch.
