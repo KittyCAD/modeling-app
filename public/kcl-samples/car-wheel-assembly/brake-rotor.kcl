@@ -95,11 +95,11 @@ ventRegion = region(segments = [ventSketch.line1, ventSketch.line2])
 hide([ventSketch])
 
 ventSet = patternCircular3d(
-       extrude(ventRegion, length = -tVent, method = NEW),
-       instances = nVentBosses,
-       axis = Y,
-       center = [0, 0, 0],
-     )
+  extrude(ventRegion, length = -tVent, method = NEW),
+  instances = nVentBosses,
+  axis = Y,
+  center = [0, 0, 0],
+)
   |> appearance(color = rotorColor, metalness = 70, roughness = 30)
 
 rearDiscPlane = offsetPlane(XZ, offset = -frontDiscInnerFaceOffset - tDiscHalf - tVent)

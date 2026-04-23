@@ -86,11 +86,11 @@ eyeEndProfile = sketch(on = eyeEndPlane) {
 }
 region004 = region(segments = [eyeEndProfile.circle1])
 eyeEndExtrude = extrude(
-       region004,
-       length = eyeEndMountLength,
-       tagStart = $capStart002,
-       tagEnd = $capEnd002,
-     )
+  region004,
+  length = eyeEndMountLength,
+  tagStart = $capStart002,
+  tagEnd = $capEnd002,
+)
   |> fillet(
        radius = eyeEndTipFillet,
        tags = [
