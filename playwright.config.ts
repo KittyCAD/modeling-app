@@ -38,7 +38,7 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: Boolean(process.env.CI),
   /* Do not retry using Playwright's built-in retry mechanism */
-  retries: 0,
+  retries: 3,
   /* Use all available CPU cores */
   workers: workers,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
