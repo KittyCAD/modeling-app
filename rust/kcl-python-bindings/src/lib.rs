@@ -450,7 +450,7 @@ async fn get_sketch_constraint_status_code(code: String) -> PyResult<SketchConst
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
+#[pyfunction(signature = (filepaths, format, image_format, *, zoom=true))]
 async fn import_and_snapshot(
     filepaths: Vec<String>,
     format: InputFormat3d,
@@ -478,7 +478,7 @@ fn relevant_file_extensions() -> PyResult<Vec<String>> {
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
+#[pyfunction(signature = (filepaths, format, image_format, snapshot_options, *, zoom=true))]
 async fn import_and_snapshot_views(
     filepaths: Vec<String>,
     format: InputFormat3d,
@@ -540,7 +540,7 @@ async fn import(ctx: &ExecutorContext, filepaths: Vec<String>, format: InputForm
 
 /// Execute a kcl file and snapshot it in a specific format.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
+#[pyfunction(signature = (path, image_format, *, zoom=true))]
 async fn execute_and_snapshot(path: String, image_format: ImageFormat, zoom: bool) -> PyResult<Vec<u8>> {
     let img = execute_and_snapshot_views(path, image_format, Vec::new(), zoom)
         .await?
@@ -549,7 +549,7 @@ async fn execute_and_snapshot(path: String, image_format: ImageFormat, zoom: boo
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
+#[pyfunction(signature = (path, image_format, snapshot_options, *, zoom=true))]
 async fn execute_and_snapshot_views(
     path: String,
     image_format: ImageFormat,
@@ -564,7 +564,7 @@ async fn execute_and_snapshot_views(
 
 /// Execute the kcl code and snapshot it in a specific format.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
+#[pyfunction(signature = (code, image_format, *, zoom=true))]
 async fn execute_code_and_snapshot(code: String, image_format: ImageFormat, zoom: bool) -> PyResult<Vec<u8>> {
     let mut snaps = execute_code_and_snapshot_views(code, image_format, Vec::new(), zoom).await?;
     Ok(snaps.pop().unwrap())
@@ -645,7 +645,7 @@ impl SnapshotOptions {
 /// Returns one image for each camera angle you provide.
 /// If you don't provide any camera angles, a default head-on camera angle will be used.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
+#[pyfunction(signature = (code, image_format, snapshot_options, *, zoom=true))]
 async fn execute_code_and_snapshot_views(
     code: String,
     image_format: ImageFormat,
