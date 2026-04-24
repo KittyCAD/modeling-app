@@ -244,6 +244,7 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
   })
 
   test('Deselecting line tool should mean nothing happens on click', async ({
+    context,
     page,
     homePage,
     toolbar,
@@ -255,6 +256,9 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
      * To continue to test this workflow, we now enter sketch mode and place a single point before exiting the line tool.
      */
     const u = await getUtils(page)
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, 'sketch001 = startSketchOn(XZ)')
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
@@ -263,11 +267,21 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     await expect(toolbar.startSketchBtn).not.toBeDisabled()
     await expect(toolbar.startSketchBtn).toBeVisible()
 
-    // click on "Start Sketch" button
-    await toolbar.startSketchOnDefaultPlane('Front plane')
+    const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
+    await op.dblclick()
+    await toolbar.waitUntilSketchingReady()
+    await toolbar.closeFeatureTreePane()
+    if (
+      (await page
+        .getByRole('button', { name: 'line Line', exact: true })
+        .getAttribute('aria-pressed')) !== 'true'
+    ) {
+      await page.keyboard.press('l')
+    }
+    await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
 
     await expect(page.locator('.cm-content')).toContainText(
-      /sketch001 = startSketchOn\(XZ\)|sketch001 = sketch\(on = XZ\)/
+      'sketch001 = startSketchOn(XZ)'
     )
 
     await page.waitForTimeout(600)

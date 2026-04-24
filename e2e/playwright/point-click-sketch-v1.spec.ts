@@ -570,7 +570,12 @@ openSketch = startSketchOn(XY)
         await editor.closePane()
         const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
         await op.dblclick()
-        await page.waitForTimeout(1000)
+        await toolbar.waitUntilSketchingReady()
+        await toolbar.closeFeatureTreePane()
+        if ((await toolbar.lineBtn.getAttribute('aria-pressed')) !== 'true') {
+          await page.keyboard.press('l')
+        }
+        await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
       })
       await test.step('Draw sketch', async () => {
         await clickFirstPoint()

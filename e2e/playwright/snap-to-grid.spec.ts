@@ -7,7 +7,12 @@ test.describe('Snap to Grid', { tag: '@desktop' }, () => {
     toolbar,
     scene,
     editor,
+    context,
   }) => {
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, 'sketch001 = startSketchOn(XZ)')
+
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
 
@@ -23,9 +28,11 @@ test.describe('Snap to Grid', { tag: '@desktop' }, () => {
       .click()
     await page.getByRole('option', { name: 'On', exact: true }).click()
 
-    // Enter sketch mode and select a default axis from the Feature Tree
-    await toolbar.startSketchOnDefaultPlane('Front plane')
-    await page.waitForTimeout(600)
+    // Enter the seeded sketch from the Feature Tree
+    const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
+    await op.dblclick()
+    await toolbar.waitUntilSketchingReady()
+    await toolbar.closeFeatureTreePane()
 
     // Ensure the line tool is equipped
     const lineTool = page.getByRole('button', {

@@ -335,6 +335,7 @@ test.describe('Testing segment overlays', { tag: '@desktop' }, () => {
       homePage,
       scene,
       cmdBar,
+      toolbar,
     }) => {
       await page.addInitScript(async () => {
         localStorage.setItem(
@@ -354,13 +355,7 @@ profile002 = circle(sketch001, center = [345, 0], radius = 238.38)
       await scene.connectionEstablished()
       await scene.settled(cmdBar)
 
-      // Click on the circle line to enter edit mode
-      await page
-        .getByText('circle(sketch001, center = [345, 0], radius = 238.38)')
-        .click()
-      await page.waitForTimeout(100)
-      await page.getByRole('button', { name: 'Edit Sketch' }).click()
-      await page.waitForTimeout(500)
+      await toolbar.editSketch(0)
 
       // Verify that the overlay is visible without hovering
       await expect(page.getByTestId('segment-overlay')).toHaveCount(1)

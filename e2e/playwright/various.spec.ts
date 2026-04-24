@@ -167,9 +167,12 @@ test(
 test(
   'First escape in tool pops you out of tool, second exits sketch mode',
   { tag: '@desktop' },
-  async ({ page, homePage, toolbar }) => {
+  async ({ page, context, homePage, toolbar }) => {
     // Wait for the app to be ready for use
     const u = await getUtils(page)
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, 'sketch001 = startSketchOn(XZ)')
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
@@ -182,11 +185,10 @@ test(
     await page.mouse.move(600, 250)
     await page.mouse.click(600, 250)
 
-    // Start a sketch
-    await page.keyboard.press('s')
-    await page.mouse.move(800, 300)
-    await page.mouse.click(800, 300)
-    await page.waitForTimeout(1000)
+    const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
+    await op.dblclick()
+    await toolbar.waitUntilSketchingReady()
+    await toolbar.closeFeatureTreePane()
     await expect(toolbar.lineBtn).toBeVisible()
     if ((await toolbar.lineBtn.getAttribute('aria-pressed')) !== 'true') {
       await page.keyboard.press('l')

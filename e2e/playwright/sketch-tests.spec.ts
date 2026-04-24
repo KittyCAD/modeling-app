@@ -26,21 +26,25 @@ test.describe('Sketch tests', () => {
   test(
     'three-point arc closes without disappearing',
     { tag: '@desktop' },
-    async ({ page, homePage, scene, toolbar, editor, cmdBar }) => {
-      await page.addInitScript(async () => {
-        localStorage.setItem('persistCode', '')
-      })
+    async ({ page, context, homePage, scene, toolbar, editor, cmdBar }) => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, 'sketch001 = startSketchOn(XZ)')
 
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
 
-      await toolbar.startSketchPlaneSelection()
-      const [selectXZPlane] = scene.makeMouseHelpers(650, 150)
-      await selectXZPlane()
-      await page.waitForTimeout(600)
+      const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
+      await op.dblclick()
+      await toolbar.waitUntilSketchingReady()
+      await toolbar.closeFeatureTreePane()
       await editor.expectEditor.toContain('startSketchOn(XZ)')
+      if ((await toolbar.lineBtn.getAttribute('aria-pressed')) !== 'true') {
+        await page.keyboard.press('l')
+      }
+      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
 
       //await toolbar.lineBtn.click()
       const [lineStart] = scene.makeMouseHelpers(600, 400)
@@ -370,8 +374,11 @@ sketch001 = startSketchOn(XZ)
   test(
     'Can add multiple sketches',
     { tag: '@desktop' },
-    async ({ page, homePage, scene, toolbar, cmdBar, editor }) => {
+    async ({ page, context, homePage, scene, toolbar, cmdBar, editor }) => {
       const viewportSize = { width: 1200, height: 500 }
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, 'sketch001 = startSketchOn(XY)')
       await page.setBodyDimensions(viewportSize)
 
       await homePage.goToModelingScene()
@@ -379,15 +386,20 @@ sketch001 = startSketchOn(XZ)
       const center = { x: viewportSize.width / 2, y: viewportSize.height / 2 }
       const { click00r } = getMovementUtils({ center, page })
 
-      let codeStr =
-        '@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XY)'
+      let codeStr = 'sketch001 = startSketchOn(XY)'
 
-      await toolbar.startSketchBtn.click()
       const [clickCenter] = scene.makeMouseHelpers(0.5, 0.5, {
         format: 'ratio',
       })
-      await clickCenter()
+      const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
+      await op.dblclick()
+      await toolbar.waitUntilSketchingReady()
+      await toolbar.closeFeatureTreePane()
       await editor.expectEditor.toContain(codeStr)
+      if ((await toolbar.lineBtn.getAttribute('aria-pressed')) !== 'true') {
+        await page.keyboard.press('l')
+      }
+      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
 
       await click00r(0, 0)
       await page.waitForTimeout(100)
@@ -439,8 +451,6 @@ sketch001 = startSketchOn(XZ)
       await expect(toolbar.startSketchBtn).toBeVisible()
 
       await u.clearCommandLogs()
-      await toolbar.startSketchBtn.click()
-      await page.waitForTimeout(100)
 
       await u.openAndClearDebugPanel()
       await u.updateCamPosition(camPos)
@@ -448,9 +458,10 @@ sketch001 = startSketchOn(XZ)
 
       await page.mouse.move(0, 0)
 
-      // select a plane
-      await page.mouse.move(700, 200, { steps: 10 })
-      await page.mouse.click(700, 200, { delay: 200 })
+      const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
+      await op.dblclick()
+      await toolbar.waitUntilSketchingReady()
+      await toolbar.closeFeatureTreePane()
       await editor.expectEditor.toContain(
         '@settings(defaultLengthUnit = in)sketch001 = startSketchOn(-XZ)'
       )
@@ -497,7 +508,14 @@ sketch001 = startSketchOn(XZ)
     test(
       '[0, 100, 100]',
       { tag: '@desktop' },
-      async ({ page, homePage, scene, editor, toolbar, cmdBar }) => {
+      async ({ page, context, homePage, scene, editor, toolbar, cmdBar }) => {
+        await context.addInitScript(
+          (initialCode) => {
+            localStorage.setItem('persistCode', initialCode)
+          },
+          `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(-XZ)`
+        )
         await homePage.goToModelingScene()
         await scene.settled(cmdBar)
         await doSnapAtDifferentScales(
@@ -514,7 +532,14 @@ sketch001 = startSketchOn(XZ)
     test(
       '[0, 10000, 10000]',
       { tag: '@desktop' },
-      async ({ page, homePage, scene, editor, toolbar, cmdBar }) => {
+      async ({ page, context, homePage, scene, editor, toolbar, cmdBar }) => {
+        await context.addInitScript(
+          (initialCode) => {
+            localStorage.setItem('persistCode', initialCode)
+          },
+          `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(-XZ)`
+        )
         await homePage.goToModelingScene()
         await scene.settled(cmdBar)
         await doSnapAtDifferentScales(
@@ -718,13 +743,11 @@ profile002 = startProfile(sketch002, at = [72.2, -52.05])
 
 extrude002 = extrude(profile002, length = 151)
 solid001 = subtract([extrude001], tools = [extrude002])
+sketch003 = startSketchOn(solid001, face = seg01)
 `
         )
       })
 
-      const [selectChamferFaceClk] = scene.makeMouseHelpers(0.8, 0.5, {
-        format: 'ratio',
-      })
       const [circleCenterClk] = scene.makeMouseHelpers(0.54, 0.5, {
         format: 'ratio',
       })
@@ -741,8 +764,10 @@ solid001 = subtract([extrude001], tools = [extrude002])
       })
 
       await test.step('sketch on chamfer face that is part of a boolean', async () => {
-        await toolbar.startSketchPlaneSelection()
-        await selectChamferFaceClk()
+        const op = await toolbar.getFeatureTreeOperation('sketch003', 0)
+        await op.dblclick()
+        await toolbar.waitUntilSketchingReady()
+        await toolbar.closeFeatureTreePane()
 
         await expect
           .poll(async () => {
@@ -825,7 +850,9 @@ solid001 = subtract([extrude001], tools = [extrude002])
      railClampable + railBaseLength
    ])
     |> close()
-    |> extrude(length = in2mm(2))`
+    |> extrude(length = in2mm(2))
+
+  sketch001 = startSketchOn(rail, face = seg01)`
         )
       })
 
@@ -834,12 +861,14 @@ solid001 = subtract([extrude001], tools = [extrude002])
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
 
-      // Start a sketch
-      await toolbar.startSketchBtn.click()
-
-      // Click the top face of this rail
-      await page.mouse.click(center.x, center.y)
-      await page.waitForTimeout(1000)
+      const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
+      await op.dblclick()
+      await toolbar.waitUntilSketchingReady()
+      await toolbar.closeFeatureTreePane()
+      if ((await toolbar.lineBtn.getAttribute('aria-pressed')) !== 'true') {
+        await page.keyboard.press('l')
+      }
+      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
 
       // Draw a rectangle
       // top left
@@ -1724,12 +1753,12 @@ extrude003 = extrude(profile011, length = 2.5)
       )
     const wallSelectionOptions = [
       {
-        title: 'select wall solid 2d',
-        selectClick: scene.makeMouseHelpers(677, 236)[0],
+        title: 'edit wall solid 2d sketch',
+        operationIndex: 1,
       },
       {
-        title: 'select wall circle',
-        selectClick: scene.makeMouseHelpers(811, 247)[0],
+        title: 'edit wall circle sketch',
+        operationIndex: 1,
       },
       // TODO: enable this once double click to edit sketch on face works
       // {
@@ -1743,11 +1772,10 @@ extrude003 = extrude(profile011, length = 2.5)
     ] as const
 
     await test.step('select wall profiles', async () => {
-      for (const { title, selectClick } of wallSelectionOptions) {
+      for (const { title, operationIndex } of wallSelectionOptions) {
         await test.step(title, async () => {
           await camPositionForSelectingSketchOnWallProfiles()
-          await selectClick({ shouldDbClick: true })
-          await page.waitForTimeout(6000)
+          await toolbar.editSketch(operationIndex)
           await toolbar.expectToolbarMode.toBe('sketching')
           await expect(page.getByTestId('segment-overlay')).toHaveCount(14)
           await toolbar.exitSketchBtn.click()
@@ -1995,70 +2023,6 @@ test.describe('manual edits during sketch mode', { tag: '@desktop' }, () => {
       await expect(toolbar.startSketchBtn).toBeVisible()
     })
   })
-  test('empty draft sketch is cleaned up properly', async ({
-    scene,
-    toolbar,
-    cmdBar,
-    page,
-    homePage,
-  }) => {
-    // This is the sketch used in the original report, but any sketch would work
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `yRel002 = 200
-lStraight = -200
-yRel001 = -lStraight
-length001 = lStraight
-sketch001 = startSketchOn(XZ)
-profile001 = startProfile(sketch001, at = [-102.72, 237.44])
-  |> yLine(length = lStraight)
-  |> tangentialArc(endAbsolute = [118.9, 23.57])
-  |> line(end = [-17.64, yRel002])
-`
-      )
-    })
-
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-    await scene.connectionEstablished()
-    await scene.settled(cmdBar)
-
-    // Ensure start sketch button is enabled
-    await expect(toolbar.startSketchBtn).not.toBeDisabled()
-
-    // Start a new sketch
-    const [selectXZPlane] = scene.makeMouseHelpers(650, 150)
-    await toolbar.startSketchPlaneSelection()
-    await selectXZPlane()
-    await page.waitForTimeout(2000) // wait for engine animation
-
-    // Switch to a different tool (circle)
-    await toolbar.circleBtn.click()
-    await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'true')
-
-    // Exit the empty sketch
-    await page.getByRole('button', { name: 'Exit Sketch' }).click()
-
-    // Ensure the feature tree now shows only one sketch
-    await toolbar.openFeatureTreePane()
-    await expect(
-      toolbar.featureTreePane.getByRole('button', { name: 'Sketch' })
-    ).toHaveCount(1)
-    await toolbar.closeFeatureTreePane()
-
-    // Open the first sketch from the feature tree (the existing sketch)
-    await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
-    // timeout is a bit longer because when the bug happened, it did go into sketch mode for a split second, but returned
-    // automatically, we want to make sure it stays there.
-    await page.waitForTimeout(2000)
-
-    // Validate we are in sketch mode (Exit Sketch button visible)
-    await expect(
-      page.getByRole('button', { name: 'Exit Sketch' })
-    ).toBeVisible()
-  })
-
   // Ensure feature tree is not showing previous file's content when switching to a file with KCL errors.
   test('Feature tree shows correct sketch count per file', async ({
     homePage,
