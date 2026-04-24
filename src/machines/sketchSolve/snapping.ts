@@ -179,13 +179,11 @@ export async function applyConstraintsForSnapTarget({
   const newObjectIds: number[] = []
 
   for (const [index, constraint] of constraints.entries()) {
-    result = await rustContext.addConstraint(
-      0,
-      sketchId,
-      constraint,
-      settings,
+    const shouldCreateCheckpoint =
       createCheckpoint && index === constraints.length - 1
-    )
+    result = shouldCreateCheckpoint
+      ? await rustContext.addConstraint(0, sketchId, constraint, settings, true)
+      : await rustContext.addConstraint(0, sketchId, constraint, settings)
     newObjectIds.push(...result.sceneGraphDelta.new_objects)
   }
 

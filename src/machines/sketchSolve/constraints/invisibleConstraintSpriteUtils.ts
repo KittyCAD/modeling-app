@@ -115,12 +115,6 @@ export function getInvisibleConstraintAnchor(
       )
     case 'Midpoint':
       return getLineAnchor(constraint.line, objects)
-    case 'Symmetric':
-      return averageVectors(
-        [...constraint.input, constraint.axis]
-          .map((objectId) => getObjectAnchor(objectId, objects))
-          .filter(isVector3)
-      )
     case 'Parallel':
       return (
         getLineAnchor(constraint.lines[0], objects, 0.7) ??
@@ -314,10 +308,6 @@ function isConstrainingPointCluster(
       )
     case 'Midpoint':
       return pointIds.includes(constraint.kind.constraint.point)
-    case 'Symmetric':
-      return constraint.kind.constraint.input.some((id) =>
-        pointIds.includes(id)
-      )
     default:
       return false
   }
