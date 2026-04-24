@@ -7,32 +7,40 @@ layout: manual
 When you sketch on a plane and extrude, a new solid is created.
 
 ```kcl
-cube = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(end = [1, 0])
-  |> line(end = [0, 1])
-  |> line(end = [-1, 0])
-  |> line(end = [0, -1])
-  |> close()
-  |> extrude(length = 1)
+squareSketch = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+  line2 = line(start = [var 1mm, var 0mm], end = [var 1mm, var 1mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 1mm, var 1mm], end = [var 0mm, var 1mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0mm, var 1mm], end = [var 0mm, var 0mm])
+  coincident([line3.end, line4.start])
+}
+region001 = region(segments = [squareSketch.line1, squareSketch.line2])
+cube = extrude(region001, length = 1)
 ```
 
 However, when you sketch on the face of an existing solid, extruding extends the
 existing solid.
 
 ```kcl
-cube = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(end = [1, 0])
-  |> line(end = [0, 1])
-  |> line(end = [-1, 0])
-  |> line(end = [0, -1])
-  |> close()
-  |> extrude(length = 1)
+squareSketch = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+  line2 = line(start = [var 1mm, var 0mm], end = [var 1mm, var 1mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 1mm, var 1mm], end = [var 0mm, var 1mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0mm, var 1mm], end = [var 0mm, var 0mm])
+  coincident([line3.end, line4.start])
+}
+region001 = region(segments = [squareSketch.line1, squareSketch.line2])
+cube = extrude(region001, length = 1)
 
-tower = startSketchOn(cube, face = END)
-  |> circle(center = [0.5, 0.5], diameter = 0.2)
-  |> extrude(length = 0.8)
+towerSketch = sketch(on = startSketchOn(cube, face = END)) {
+  circle1 = circle(start = [var 0.6mm, var 0.5mm], center = [var 0.5mm, var 0.5mm])
+}
+region002 = region(segments = [towerSketch.circle1])
+tower = extrude(region002, length = 0.8)
 ```
 
 The result is that there's only one solid. You can think about this as being
@@ -47,19 +55,24 @@ the sketch on the same plane. Since it's not directly on the first solid's face,
 extrusions do not modify the solid. They create new solids instead.
 
 ```kcl
-cube = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(end = [1, 0])
-  |> line(end = [0, 1])
-  |> line(end = [-1, 0])
-  |> line(end = [0, -1])
-  |> close()
-  |> extrude(length = 1)
+squareSketch = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+  line2 = line(start = [var 1mm, var 0mm], end = [var 1mm, var 1mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 1mm, var 1mm], end = [var 0mm, var 1mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0mm, var 1mm], end = [var 0mm, var 0mm])
+  coincident([line3.end, line4.start])
+}
+region001 = region(segments = [squareSketch.line1, squareSketch.line2])
+cube = extrude(region001, length = 1)
 
 // This tower is a separate solid from the cube.
-tower = startSketchOn(planeOf(cube, face = END))
-  |> circle(center = [0.5, 0.5], diameter = 0.2)
-  |> extrude(length = 0.8)
+towerSketch = sketch(on = planeOf(cube, face = END)) {
+  circle1 = circle(start = [var 0.6mm, var 0.5mm], center = [var 0.5mm, var 0.5mm])
+}
+region002 = region(segments = [towerSketch.circle1])
+tower = extrude(region002, length = 0.8)
 ```
 
 The second way to create a separate solid is by using the `method` parameter of
@@ -67,19 +80,24 @@ The second way to create a separate solid is by using the `method` parameter of
 that the method should create a new solid using `method = NEW`.
 
 ```kcl
-cube = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(end = [1, 0])
-  |> line(end = [0, 1])
-  |> line(end = [-1, 0])
-  |> line(end = [0, -1])
-  |> close()
-  |> extrude(length = 1)
+squareSketch = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+  line2 = line(start = [var 1mm, var 0mm], end = [var 1mm, var 1mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 1mm, var 1mm], end = [var 0mm, var 1mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0mm, var 1mm], end = [var 0mm, var 0mm])
+  coincident([line3.end, line4.start])
+}
+region001 = region(segments = [squareSketch.line1, squareSketch.line2])
+cube = extrude(region001, length = 1)
 
 // This tower is a separate solid from the cube.
-tower = startSketchOn(cube, face = END)
-  |> circle(center = [0.5, 0.5], diameter = 0.2)
-  |> extrude(method = NEW, length = 0.8)
+towerSketch = sketch(on = startSketchOn(cube, face = END)) {
+  circle1 = circle(start = [var 0.6mm, var 0.5mm], center = [var 0.5mm, var 0.5mm])
+}
+region002 = region(segments = [towerSketch.circle1])
+tower = extrude(region002, method = NEW, length = 0.8)
 ```
 
 Once you have a separate solid, you can translate or rotate it separately or use
