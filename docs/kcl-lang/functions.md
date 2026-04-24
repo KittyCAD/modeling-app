@@ -11,7 +11,6 @@ type of argument. Below is an example of the syntax:
 fn myFn(x) {
   return x
 }
-
 ```
 
 As you can see above `myFn` just returns whatever it is given.
@@ -26,7 +25,6 @@ fn add(left, right) {
 
 // You can call it like this:
 total = add(left = 1, right = 2)
-
 ```
 
 Functions can also declare one *unlabeled* arg. If you do want to declare an unlabeled arg, it must be the first arg and prefixed with @, like this:
@@ -44,7 +42,6 @@ fn add(@x, delta) {
 
 two = increment(1)
 three = add(1, delta = 2)
-
 ```
 
 Below shows how a custom function must be called if it has a labeled argument, and another example with an unlabeled argument:
@@ -67,17 +64,20 @@ fn cube2(@offsetX, offsetY, radius, length) {
 }
 
 // Function Calls
+
+// all labeled
 testCube1 = cube1(
   offsetX = 0,
   offsetY = 6,
   radius = 5,
   length = 5,
-) // all labeled
+)
+
+// first unlabeled works here
 testCube2 = cube2(
   0,
   offsetY = 10,
   radius = 5,
   length = 5,
-) // first unlabeled works here
-
+)
 ```

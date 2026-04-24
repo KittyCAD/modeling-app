@@ -15,7 +15,6 @@ Constants are defined with a name and a value, like so:
 
 ```kcl
 myBool = false
-
 ```
 
 Currently you cannot redeclare a constant.
@@ -27,7 +26,6 @@ An object is defined with `{}` braces. Here is an example object:
 
 ```kcl
 myObj = { a = 0, b = "thing" }
-
 ```
 
 To get the property of an object, you can call `myObj.a`, which in the above
