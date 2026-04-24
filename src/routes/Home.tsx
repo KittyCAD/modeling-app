@@ -13,7 +13,6 @@ import { ActionButton } from '@src/components/ActionButton'
 import { AppHeader } from '@src/components/AppHeader'
 import { BillingDialog } from '@kittycad/react-shared'
 import Loading from '@src/components/Loading'
-import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import ProjectCard from '@src/components/ProjectCard/ProjectCard'
 import {
@@ -363,9 +362,6 @@ const Home = () => {
                 <SketchSolveAnnouncement />
               </li>
             )}
-            <li className="contents">
-              <MakeathonAnnouncement />
-            </li>
             <li className="contents">
               <ActionButton
                 Element="externalLink"

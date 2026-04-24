@@ -17,6 +17,7 @@ import Tooltip from '@src/components/Tooltip'
 import { isExternalFileDrag } from '@src/components/Explorer/utils'
 import { takeViewportScreenshot } from '@src/lib/screenshot'
 import { isNonNullable } from '@src/lib/utils'
+import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
 
 const noop = () => {}
 
@@ -695,6 +696,10 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
             />
           </div>
         </div>
+        <MakeathonAnnouncement
+          presentation="dialog"
+          className="w-[min(28rem,100%)]"
+        />
       </div>
     </div>
   )
