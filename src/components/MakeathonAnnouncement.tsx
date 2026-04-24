@@ -8,7 +8,7 @@ import { withSiteBaseURL } from '@src/lib/withBaseURL'
 export const MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY =
   'zoo.makeathonAnnouncement.dismissed'
 
-export const MAKEATHON_ANNOUNCEMENT_TITLE = `Big news: We're launching a virtual Zoo Design Studio Makeathon and registration is open! 🎉`
+export const MAKEATHON_ANNOUNCEMENT_TITLE = `Big news: Registration is OPEN for our virtual Zoo Design Studio Makeathon! 🎉`
 
 export const MAKEATHON_ANNOUNCEMENT_COPY = `Any industry, any problem, any idea worth sharing. If you’ve got a CAD model idea you’ve been wanting to make, this is your moment! Zoo credits, Bambu Lab printers, and more to win.`
 
