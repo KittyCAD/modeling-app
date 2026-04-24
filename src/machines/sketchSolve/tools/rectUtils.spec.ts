@@ -406,8 +406,8 @@ describe('rectUtils.updateDraftRectangleAligned', () => {
         },
       },
       mode: 'center',
-      origin: [2, 3],
-      point: [4, 6],
+      startPoint: [2, 3],
+      currentPoint: [4, 6],
     })
 
     const edits = editSegmentsMock.mock.calls[0]?.[2]
@@ -476,8 +476,8 @@ describe('rectUtils.updateDraftRectangleAligned', () => {
         originPointId: 1,
       },
       mode: 'corner',
-      origin: [0, 0],
-      point: [-4, -6],
+      startPoint: [0, 0],
+      currentPoint: [-4, -6],
     })
 
     expect(editSegmentsMock.mock.calls[0]?.[2]).toEqual([

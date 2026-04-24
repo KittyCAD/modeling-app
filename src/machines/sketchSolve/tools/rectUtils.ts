@@ -452,16 +452,16 @@ export async function updateDraftRectangleAligned({
   sketchId,
   draft,
   mode,
-  origin,
-  point,
+  startPoint,
+  currentPoint,
 }: {
   rustContext: RustContext
   kclManager: KclManager
   sketchId: number
   draft: RectDraftIds
   mode: Extract<RectOriginMode, 'corner' | 'center'>
-  origin: Coords2d
-  point: Coords2d
+  startPoint: Coords2d
+  currentPoint: Coords2d
 }): Promise<{
   kclSource: SourceDelta
   sceneGraphDelta: SceneGraphDelta
@@ -479,8 +479,8 @@ export async function updateDraftRectangleAligned({
     units,
     corners: getAlignedRectangleCorners({
       mode,
-      origin,
-      point,
+      origin: startPoint,
+      point: currentPoint,
     }),
   })
 }

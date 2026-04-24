@@ -295,8 +295,8 @@ export const machine = setup({
                     sketchId: context.sketchId,
                     draft: context.draft,
                     mode: context.rectOriginMode,
-                    origin: start,
-                    point:
+                    startPoint: start,
+                    currentPoint:
                       context.rectOriginMode === 'center'
                         ? [max[0], max[1]]
                         : end,
