@@ -278,21 +278,22 @@ yzPlane = offsetPlane(YZ, offset = 0.05)
         coords: { x: 684, y: 427 },
         description: 'blue plane',
       },
-      {
-        plane: '-XY',
-        coords: { x: 600, y: 118 },
-        description: 'back of red plane',
-      },
-      {
-        plane: '-YZ',
-        coords: { x: 700, y: 219 },
-        description: 'back of green plane',
-      },
-      {
-        plane: '-XZ',
-        coords: { x: 560, y: 150 },
-        description: 'back of blue plane',
-      },
+      // TODO: figure out what we do with negative planes in sketch solve
+      // {
+      //   plane: '-XY',
+      //   coords: { x: 600, y: 118 },
+      //   description: 'back of red plane',
+      // },
+      // {
+      //   plane: '-YZ',
+      //   coords: { x: 700, y: 219 },
+      //   description: 'back of green plane',
+      // },
+      // {
+      //   plane: '-XZ',
+      //   coords: { x: 560, y: 150 },
+      //   description: 'back of blue plane',
+      // },
     ]
 
     for (const config of planeConfigs) {
