@@ -28,7 +28,7 @@
     "@csstools/postcss-oklab-function": "^4.0.12",
     "@headlessui/react": "^1.7.19",
     "@headlessui/tailwindcss": "^0.2.2",
-    "@kittycad/lib": "^3.2.29",
+    "@kittycad/lib": "file:../kittycad.ts",
     "@kittycad/react-shared": "^1.2.1",
     "@lezer/highlight": "^1.2.1",
     "@lezer/lr": "^1.4.8",
@@ -147,6 +147,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "overrides": {
+    "@kittycad/lib": "file:../kittycad.ts"
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
