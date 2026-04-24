@@ -9,15 +9,17 @@ Project specific settings for the app. These live in `project.toml` in the base 
 ## Project Configuration Structure
 
 ```toml
-[settings.app]
-# Set the appearance of the application
-name = "My Awesome Project"
+[cloud."zoo.dev"]
+project_id = "6ddf6fb1-4b7c-4945-bb5b-b3265577b34e"
 
-[settings.app.appearance]
-# Use dark mode theme
-theme = "dark" 
-# Set the app color to blue (240.0 = blue, 0.0 = red, 120.0 = green)
-color = 240.0
+[cloud."dev.zoo.dev"]
+project_id = "f1573aa5-2e77-4a2d-a092-116fad864bf0"
+
+[settings.meta]
+id = "b7af85a2-9e10-49f6-94fe-a0c8b3c0ea5f"
+
+[settings.app]
+show_debug_panel = true
 
 [settings.modeling]
 # Use inches as the default measurement unit
@@ -29,8 +31,15 @@ base_unit = "in"
 
 ### cloud
 
+Environment-scoped cloud metadata keyed by environment name. Use quoted table
+names for dotted environments, for example `[cloud."zoo.dev"]`.
+
+#### <environment>.project_id
 
 
+
+
+**Default:** None
 
 ### settings
 
@@ -45,9 +54,30 @@ The settings for the Design Studio.
 
 This setting has the following nested options:
 
+##### allow_orbit_in_sketch_mode
+
+When the user is idle, and this is true, the stream will be torn down.
+
+
+**Default:** None
+
 ##### named_views
 
 Settings that affect the behavior of the command bar.
+
+
+**Default:** None
+
+##### onboarding_status
+
+The onboarding status of the app.
+
+
+**Default:** None
+
+##### show_debug_panel
+
+Whether to show the debug panel, which lets you see various states of the app to aid in development.
 
 
 **Default:** None
@@ -62,6 +92,23 @@ When the user is idle, and this is true, the stream will be torn down.
 ##### zookeeper_mode
 
 Zookeeper reasoning mode. Uses the app default if not set.
+
+
+**Default:** None
+
+
+#### command_bar
+
+Settings that affect the behavior of the command bar.
+
+
+**Default:** None
+
+This setting has the following nested options:
+
+##### include_settings
+
+Whether to include settings in the command bar.
 
 
 **Default:** None
@@ -121,21 +168,75 @@ Highlight edges of 3D objects?
 
 **Default:** None
 
+##### major_grid_spacing
+
+The space between major grid lines, specified in the current unit.
+
+
+**Default:** None
+
+##### minor_grids_per_major
+
+The number of minor grid lines per major grid line.
+
+
+**Default:** None
+
+##### snap_to_grid
+
+When enabled, tools like line, rectangle, etc. will snap to the grid.
+
+
+**Default:** None
+
+##### snaps_per_minor
+
+The number of snaps between minor grid lines. 1 means snapping to each minor grid line.
+
+
+**Default:** None
+
+
+#### text_editor
+
+Settings that affect the behavior of the KCL text editor.
+
+
+**Default:** None
+
+This setting has the following nested options:
+
+##### blinking_cursor
+
+Whether to make the cursor blink in the editor.
+
+
+**Default:** None
+
+##### text_wrapping
+
+Whether to wrap text in the editor or overflow with scroll.
+
+
+**Default:** None
+
 
 
 
 ## Complete Example
 
 ```toml
-[settings.app]
-# Set the appearance of the application
-name = "My Awesome Project"
+[cloud."zoo.dev"]
+project_id = "6ddf6fb1-4b7c-4945-bb5b-b3265577b34e"
 
-[settings.app.appearance]
-# Use dark mode theme
-theme = "dark" 
-# Set the app color to blue (240.0 = blue, 0.0 = red, 120.0 = green)
-color = 240.0
+[cloud."dev.zoo.dev"]
+project_id = "f1573aa5-2e77-4a2d-a092-116fad864bf0"
+
+[settings.meta]
+id = "b7af85a2-9e10-49f6-94fe-a0c8b3c0ea5f"
+
+[settings.app]
+show_debug_panel = true
 
 [settings.modeling]
 # Use inches as the default measurement unit

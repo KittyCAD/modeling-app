@@ -33,12 +33,14 @@ Arithmetics and logic expressions can be arbitrairly combined with the usual rul
 
 ```
 myMathExpression = 3 + 1 * 2 / 3 - 7
+
 ```
 
 You can also nest expressions in parenthesis:
 
 ```
-myMathExpression = 3 + (1 * 2 / (3 - 7))
+myMathExpression = 3 + 1 * 2 / (3 - 7)
+
 ```
 
 KCL numbers are implemented using [floating point numbers](https://en.wikipedia.org/wiki/Floating-point_arithmetic). This means that there are occasionally representation and rounding issues, and some oddities such as supporting positive and negative zero.
