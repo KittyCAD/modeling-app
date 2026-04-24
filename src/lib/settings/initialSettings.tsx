@@ -30,6 +30,7 @@ import { reportRejection } from '@src/lib/trap'
 import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
 import { hexToRgba } from '@src/lib/utils'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 /**
  * A setting that can be set at the user or project level
@@ -192,7 +193,24 @@ export function createSettings() {
       zookeeperMode: new Setting<MlCopilotMode>({
         defaultValue: DEFAULT_ML_COPILOT_MODE,
         validate: (v) => v === 'fast' || v === 'thoughtful',
-        hideOnPlatform: 'both', // this setting is managed by the Zookeeper pane
+        hideOnPlatform: IS_STAGING_OR_DEBUG ? undefined : 'both',
+        description:
+          'In Staging only, configure which reasoning mode Zookeeper uses.',
+        commandConfig: {
+          inputType: 'options',
+          defaultValueFromContext: (context) =>
+            context.app.zookeeperMode.current,
+          options: (cmdContext, settingsContext) =>
+            (['fast', 'thoughtful'] as const).map((v) => ({
+              name: capitaliseFC(v),
+              value: v,
+              isCurrent:
+                settingsContext.app.zookeeperMode.shouldShowCurrentLabel(
+                  cmdContext.argumentsToSubmit.level as SettingsLevel,
+                  v
+                ),
+            })),
+        },
       }),
       /**
        * Stream resource saving behavior toggle

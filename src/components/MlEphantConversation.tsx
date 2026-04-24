@@ -20,6 +20,12 @@ import { isNonNullable } from '@src/lib/utils'
 
 const noop = () => {}
 
+/** The current focus is to optimize one reasoning mode before providing
+ * multiple options to users. On staging the project setting is available
+ * to select between modes.
+ */
+export const SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN = false
+
 export interface QueuedMessage {
   id: string
   text: string
@@ -146,12 +152,14 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
         {props.context && (
           <MlCopilotSelectionsContext selections={props.context} />
         )}
-        <MlCopilotModes onClick={props.onSetMode} current={props.mode}>
-          {ML_COPILOT_MODE_META[props.mode].icon({
-            className: 'w-5 h-5',
-          })}
-          {ML_COPILOT_MODE_META[props.mode].pretty}
-        </MlCopilotModes>
+        {SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN && (
+          <MlCopilotModes onClick={props.onSetMode} current={props.mode}>
+            {ML_COPILOT_MODE_META[props.mode].icon({
+              className: 'w-5 h-5',
+            })}
+            {ML_COPILOT_MODE_META[props.mode].pretty}
+          </MlCopilotModes>
+        )}
         <button
           type="button"
           data-testid="ml-ephant-attachments-button"
@@ -464,7 +472,6 @@ export const MlEphantConversationInput = (
             ))}
           </div>
         )}
-        {}
         <div className="flex items-end">
           <MlEphantExtraInputs
             context={selectionsContext}
