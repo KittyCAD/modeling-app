@@ -17,6 +17,8 @@ import Tooltip from '@src/components/Tooltip'
 import { isExternalFileDrag } from '@src/components/Explorer/utils'
 import { takeViewportScreenshot } from '@src/lib/screenshot'
 import { isNonNullable } from '@src/lib/utils'
+import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
+import { isPlaywright } from '@src/lib/isPlaywright'
 
 const noop = () => {}
 
@@ -695,6 +697,12 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
             />
           </div>
         </div>
+        {!isPlaywright() ? (
+          <MakeathonAnnouncement
+            presentation="dialog"
+            className="w-[min(28rem,100%)]"
+          />
+        ) : null}
       </div>
     </div>
   )
