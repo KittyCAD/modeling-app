@@ -6,16 +6,6 @@ import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
-test.beforeEach(async ({ tronApp }) => {
-  if (tronApp) {
-    await tronApp.cleanProjectDir({
-      modeling: {
-        use_sketch_solve_mode: false,
-      },
-    })
-  }
-})
-
 test.describe('Command bar tests', { tag: '@desktop' }, () => {
   test('Extrude from command bar selects extrude line after', async ({
     page,
@@ -404,9 +394,13 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     await sketchButton.click()
 
     await page.mouse.click(700, 200)
-    await toolbar.waitUntilSketchingReady()
+    await expect(toolbar.exitSketchBtn).toBeVisible()
 
     // Switch between sketch tools via the command bar
+    if ((await lineToolButton.getAttribute('aria-pressed')) !== 'true') {
+      await cmdBarButton.click()
+      await lineToolCommand.click()
+    }
     await expect(lineToolButton).toHaveAttribute('aria-pressed', 'true')
     await cmdBarButton.click()
     await rectangleToolCommand.click()

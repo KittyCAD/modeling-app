@@ -15,16 +15,6 @@ import {
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
-test.beforeEach(async ({ tronApp }) => {
-  if (tronApp) {
-    await tronApp.cleanProjectDir({
-      modeling: {
-        use_sketch_solve_mode: false,
-      },
-    })
-  }
-})
-
 test.describe('Regression tests', { tag: '@desktop' }, () => {
   // bugs we found that don't fit neatly into other categories
   test('bad model has inline error #3251', async ({
@@ -212,7 +202,9 @@ extrude001 = extrude(sketch001, length = 50)
       })
       await selectXZPlane()
       await page.waitForTimeout(600)
-      await editor.expectEditor.toContain('startSketchOn(XZ)')
+      await expect(editor.codeContent).toContainText(
+        /startSketchOn\(XZ\)|sketch\(on = XZ\)/
+      )
 
       const [lineStart] = scene.makeMouseHelpers(0.5, 0.8, { format: 'ratio' })
       const [lineEnd] = scene.makeMouseHelpers(0.5, 0.2, { format: 'ratio' })
@@ -742,7 +734,10 @@ extrude002 = extrude(profile002, length = 150)`
       await toolbar.expectToolbarMode.not.toBe('modeling')
 
       // After animation completes, we should see the sketching toolbar
-      await toolbar.expectToolbarMode.toBe('sketching')
+      await expect(page.locator('[data-current-mode]')).toHaveAttribute(
+        'data-current-mode',
+        /sketching|sketchSolve/
+      )
     })
   })
 
@@ -835,7 +830,10 @@ washer = extrude(washerSketch, length = thicknessMax)`
       await toolbar.startSketchPlaneSelection()
       await washerFaceClick()
       await page.waitForTimeout(600) // engine animation
-      await toolbar.expectToolbarMode.toBe('sketching')
+      await expect(page.locator('[data-current-mode]')).toHaveAttribute(
+        'data-current-mode',
+        /sketching|sketchSolve/
+      )
     })
 
     await test.step('Draw a circle and verify code', async () => {

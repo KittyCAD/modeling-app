@@ -7,16 +7,6 @@ import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import { deg, getUtils, wiggleMove } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.beforeEach(async ({ tronApp }) => {
-  if (tronApp) {
-    await tronApp.cleanProjectDir({
-      modeling: {
-        use_sketch_solve_mode: false,
-      },
-    })
-  }
-})
-
 test.describe('Testing segment overlays', { tag: '@desktop' }, () => {
   test.describe('Hover over a segment should show its overlay, hovering over the input overlays should show its popover, clicking the input overlay should constrain/unconstrain it', () => {
     /**

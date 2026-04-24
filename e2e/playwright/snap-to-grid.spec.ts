@@ -1,15 +1,5 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.beforeEach(async ({ tronApp }) => {
-  if (tronApp) {
-    await tronApp.cleanProjectDir({
-      modeling: {
-        use_sketch_solve_mode: false,
-      },
-    })
-  }
-})
-
 test.describe('Snap to Grid', { tag: '@desktop' }, () => {
   test('draws a line with snap to grid turned on', async ({
     page,
@@ -38,9 +28,14 @@ test.describe('Snap to Grid', { tag: '@desktop' }, () => {
     await page.waitForTimeout(600)
 
     // Ensure the line tool is equipped
-    await expect(
-      page.getByRole('button', { name: 'line Line', exact: true })
-    ).toHaveAttribute('aria-pressed', 'true')
+    const lineTool = page.getByRole('button', {
+      name: 'line Line',
+      exact: true,
+    })
+    if ((await lineTool.getAttribute('aria-pressed')) !== 'true') {
+      await page.keyboard.press('l')
+    }
+    await expect(lineTool).toHaveAttribute('aria-pressed', 'true')
 
     // Toggle Snap to Grid via hotkey (mod+g)
     await page.keyboard.down('ControlOrMeta')

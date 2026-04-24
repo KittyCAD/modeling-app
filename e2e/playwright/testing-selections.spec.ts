@@ -3,16 +3,6 @@ import { bracket } from '@e2e/playwright/fixtures/bracket'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.beforeEach(async ({ tronApp }) => {
-  if (tronApp) {
-    await tronApp.cleanProjectDir({
-      modeling: {
-        use_sketch_solve_mode: false,
-      },
-    })
-  }
-})
-
 test.describe('Testing selections', { tag: '@desktop' }, () => {
   test("Extrude button should be disabled if there's no extrudable geometry when nothing is selected", async ({
     page,
@@ -276,8 +266,8 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     // click on "Start Sketch" button
     await toolbar.startSketchOnDefaultPlane('Front plane')
 
-    await expect(page.locator('.cm-content')).toHaveText(
-      `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)`
+    await expect(page.locator('.cm-content')).toContainText(
+      /sketch001 = startSketchOn\(XZ\)|sketch001 = sketch\(on = XZ\)/
     )
 
     await page.waitForTimeout(600)

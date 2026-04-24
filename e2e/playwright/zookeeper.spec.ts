@@ -1,16 +1,6 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
-test.beforeEach(async ({ tronApp }) => {
-  if (tronApp) {
-    await tronApp.cleanProjectDir({
-      modeling: {
-        use_sketch_solve_mode: false,
-      },
-    })
-  }
-})
-
 test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
   test('Happy path: new project, easy prompt, good result', async ({
     page,
@@ -44,7 +34,9 @@ test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
 
       await toolbar.closePane(DefaultLayoutPaneID.TTC)
       await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain('startSketchOn')
+      await expect(editor.codeContent).toContainText(
+        /startSketchOn|sketch\(on =/
+      )
       await editor.expectEditor.toContain('extrude')
       await editor.expectEditor.toContain('10')
       await scene.settled(cmdBar)

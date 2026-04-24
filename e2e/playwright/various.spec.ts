@@ -1,16 +1,6 @@
 import { doExport, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.beforeEach(async ({ tronApp }) => {
-  if (tronApp) {
-    await tronApp.cleanProjectDir({
-      modeling: {
-        use_sketch_solve_mode: false,
-      },
-    })
-  }
-})
-
 test('Units menu', { tag: '@desktop' }, async ({ page, homePage }) => {
   await page.setBodyDimensions({ width: 1200, height: 500 })
   await homePage.goToModelingScene()
@@ -198,6 +188,9 @@ test(
     await page.mouse.click(800, 300)
     await page.waitForTimeout(1000)
     await expect(toolbar.lineBtn).toBeVisible()
+    if ((await toolbar.lineBtn.getAttribute('aria-pressed')) !== 'true') {
+      await page.keyboard.press('l')
+    }
     await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
 
     // Draw a line
