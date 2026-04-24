@@ -2894,6 +2894,8 @@ fn reflect_point_across_line(point: [f64; 2], axis_start: [f64; 2], axis_end: [f
     [2.0 * projected[0] - px, 2.0 * projected[1] - py]
 }
 
+/// Calculate some initial guesses for the given points,
+/// which are being constrained to symmetric across the given line.
 fn symmetric_hidden_point_guess(
     sketch_vars: &[KclValue],
     point: [SketchVarId; 2],
@@ -3452,6 +3454,7 @@ struct SymmetricPointVars {
     object_id: ObjectId,
 }
 
+/// The line that geometry should be symmetric across.
 #[derive(Debug, Clone, Copy)]
 struct SymmetricLineVars {
     start: [SketchVarId; 2],
