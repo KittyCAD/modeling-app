@@ -446,11 +446,17 @@ export fn tangent(
 /// profile = sketch(on = XY) {
 ///   left = line(start = [var 0mm, var 0mm], end = [var 0mm, var 4mm])
 ///   right = line(start = [var 4mm, var 0mm], end = [var 4mm, var 4mm])
-///   axis = line(start = [var 2mm, var -1mm], end = [var 2mm, var 5mm])
+///   axis = line(start = [var 2.26mm, var -1mm], end = [var 2.26mm, var 4.25mm], construction = true)
 ///   symmetric([left, right], axis = axis)
+///   coincident([left.end, axis.end])
+///   coincident([right.end, axis.end])
+///   line1 = line(start = [var 4.35mm, var 0mm], end = [var 0.43mm, var 0mm])
+///   coincident([line1.start, right.start])
+///   coincident([line1.end, left.start])
+///   coincident([axis.start, ORIGIN])
 /// }
-///
-/// solid = extrude(region(point = [2mm, 2mm], sketch = profile), length = 2)
+/// 
+/// solid = extrude(region(point = [0mm, 0.1mm], sketch = profile), length = 2)
 /// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn symmetric(
