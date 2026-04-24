@@ -863,11 +863,9 @@ impl ExecutorContext {
                 Ok(id)
             }
             ImportPath::Std { .. } => {
-                if matches!(resolved_path, ModulePath::Std { value } if value == "solver")
-                    && exec_state.mod_local.sketch_block.is_none()
-                {
+                if resolved_path.is_solver_module() && exec_state.mod_local.sketch_block.is_none() {
                     return Err(KclError::new_semantic(KclErrorDetails::new(
-                        "The `std::solver` module is only available inside sketch blocks.".to_owned(),
+                        format!("The `{resolved_path}` module is only available inside sketch blocks."),
                         vec![source_range],
                     )));
                 }
