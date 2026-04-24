@@ -1027,6 +1027,10 @@ mod sync {
             input: vec![ObjectId(1), ObjectId(2)],
             axis: ObjectId(77),
         });
+        let midpoint = Constraint::Midpoint(crate::frontend::sketch::Midpoint {
+            point: ObjectId(1),
+            segment: ObjectId(2),
+        });
 
         let Some(Constraint::Coincident(rewritten_coincident)) = rewrite_constraint_with_map(&coincident, &rewrite_map)
         else {
@@ -1057,6 +1061,13 @@ mod sync {
         };
         assert_eq!(rewritten_symmetric.input, vec![ObjectId(101), ObjectId(202)]);
         assert_eq!(rewritten_symmetric.axis, ObjectId(77));
+
+        let Some(Constraint::Midpoint(rewritten_midpoint)) = rewrite_constraint_with_map(&midpoint, &rewrite_map)
+        else {
+            panic!("expected midpoint rewrite");
+        };
+        assert_eq!(rewritten_midpoint.point, ObjectId(101));
+        assert_eq!(rewritten_midpoint.segment, ObjectId(202));
     }
 
     #[test]

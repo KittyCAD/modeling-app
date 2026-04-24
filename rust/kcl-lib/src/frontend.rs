@@ -39,6 +39,7 @@ use crate::front::ExecResult;
 use crate::front::FixedPoint;
 use crate::front::Freedom;
 use crate::front::LinesEqualLength;
+use crate::front::Midpoint;
 use crate::front::Object;
 use crate::front::Parallel;
 use crate::front::Perpendicular;
@@ -140,6 +141,8 @@ const VERTICAL_DISTANCE_FN: &str = "verticalDistance";
 const EQUAL_LENGTH_FN: &str = "equalLength";
 const EQUAL_RADIUS_FN: &str = "equalRadius";
 const HORIZONTAL_FN: &str = "horizontal";
+const MIDPOINT_FN: &str = "midpoint";
+const MIDPOINT_POINT_PARAM: &str = "point";
 const RADIUS_FN: &str = "radius";
 const SYMMETRIC_FN: &str = "symmetric";
 const SYMMETRIC_AXIS_PARAM: &str = "axis";
@@ -988,6 +991,10 @@ impl SketchApi for FrontendState {
                 .add_lines_equal_length(sketch, lines_equal_length, &mut new_ast)
                 .await
                 .map_err(KclErrorWithOutputs::no_outputs)?,
+            Constraint::Midpoint(midpoint) => self
+                .add_midpoint(sketch, midpoint, &mut new_ast)
+                .await
+                .map_err(KclErrorWithOutputs::no_outputs)?,
             Constraint::Parallel(parallel) => self
                 .add_parallel(sketch, parallel, &mut new_ast)
                 .await
@@ -1281,6 +1288,11 @@ impl SketchApi for FrontendState {
                 }
                 Constraint::LinesEqualLength(lines_equal_length) => {
                     self.add_lines_equal_length(sketch, lines_equal_length, &mut new_ast)
+                        .await
+                        .map_err(KclErrorWithOutputs::no_outputs)?;
+                }
+                Constraint::Midpoint(midpoint) => {
+                    self.add_midpoint(sketch, midpoint, &mut new_ast)
                         .await
                         .map_err(KclErrorWithOutputs::no_outputs)?;
                 }
@@ -3190,6 +3202,49 @@ impl FrontendState {
         Ok(sketch_block_ref)
     }
 
+    async fn add_midpoint(
+        &mut self,
+        sketch: ObjectId,
+        midpoint: Midpoint,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> Result<AstNodeRef, KclError> {
+        let sketch_id = sketch;
+        let point_ast = self.point_id_to_ast_reference(midpoint.point, new_ast)?;
+
+        let segment_object = self
+            .scene_graph
+            .objects
+            .get(midpoint.segment.0)
+            .ok_or_else(|| KclError::refactor(format!("Segment not found: {:?}", midpoint.segment)))?;
+        let ObjectKind::Segment {
+            segment: midpoint_segment,
+        } = &segment_object.kind
+        else {
+            return Err(KclError::refactor(format!(
+                "Object must be a segment, but it was {}",
+                segment_object.kind.human_friendly_kind_with_article()
+            )));
+        };
+        let segment_ast = match midpoint_segment {
+            Segment::Line(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, "line", None)?,
+            Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, "arc", None)?,
+            _ => {
+                return Err(KclError::refactor(format!(
+                    "Midpoint target must be a line or arc segment but it was {}",
+                    midpoint_segment.human_friendly_kind_with_article()
+                )));
+            }
+        };
+
+        let midpoint_ast = create_midpoint_ast(segment_ast, point_ast);
+        let (sketch_block_ref, _) = self.mutate_ast(
+            new_ast,
+            sketch_id,
+            AstMutateCommand::AddSketchBlockExprStmt { expr: midpoint_ast },
+        )?;
+        Ok(sketch_block_ref)
+    }
+
     async fn add_equal_radius(
         &mut self,
         sketch: ObjectId,
@@ -4042,6 +4097,21 @@ impl FrontendState {
                     .lines
                     .iter()
                     .any(|line_id| segment_ids_set.contains(line_id)),
+                Constraint::Midpoint(midpoint) => {
+                    segment_ids_set.contains(&midpoint.segment)
+                        || segment_ids_set.contains(&midpoint.point)
+                        || self
+                            .scene_graph
+                            .objects
+                            .get(midpoint.point.0)
+                            .and_then(|obj| match &obj.kind {
+                                ObjectKind::Segment {
+                                    segment: Segment::Point(point),
+                                } => point.owner,
+                                _ => None,
+                            })
+                            .is_some_and(|owner_id| segment_ids_set.contains(&owner_id))
+                }
                 Constraint::Parallel(parallel) => {
                     parallel.lines.iter().any(|line_id| segment_ids_set.contains(line_id))
                 }
@@ -5696,6 +5766,22 @@ pub(crate) fn create_symmetric_ast(input_exprs: Vec<ast::Expr>, axis_expr: ast::
     })))
 }
 
+/// Create an AST node for midpoint(segment, point = point)
+pub(crate) fn create_midpoint_ast(segment_expr: ast::Expr, point_expr: ast::Expr) -> ast::Expr {
+    let arguments = vec![ast::LabeledArg {
+        label: Some(ast::Identifier::new(MIDPOINT_POINT_PARAM)),
+        arg: point_expr,
+    }];
+
+    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        callee: ast::Node::no_src(ast_sketch2_name(MIDPOINT_FN)),
+        unlabeled: Some(segment_expr),
+        arguments,
+        digest: None,
+        non_code_meta: Default::default(),
+    })))
+}
+
 #[cfg(all(feature = "artifact-graph", test))]
 mod tests {
     use super::*;
@@ -5707,6 +5793,7 @@ mod tests {
     use crate::front::Distance;
     use crate::front::Fixed;
     use crate::front::FixedPoint;
+    use crate::front::Midpoint;
     use crate::front::Object;
     use crate::front::Plane;
     use crate::front::Sketch;
@@ -9549,6 +9636,59 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_point_midpoint() {
+        let initial_source = "\
+sketch(on = XY) {
+  point(at = [var 1, var 1])
+  line(start = [var 0, var 0], end = [var 6, var 4])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point_id = *sketch.segments.first().unwrap();
+        let line_id = *sketch.segments.get(3).unwrap();
+
+        let constraint = Constraint::Midpoint(Midpoint {
+            point: point_id,
+            segment: line_id,
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  point1 = point(at = [var 1, var 1])
+  line1 = line(start = [var 0, var 0], end = [var 6, var 4])
+  midpoint(line1, point = point1)
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            7,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_segments_symmetric() {
         let initial_source = "\
 sketch(on = XY) {
@@ -9597,6 +9737,59 @@ sketch(on = XY) {
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             12,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_point_arc_midpoint() {
+        let initial_source = "\
+sketch(on = XY) {
+  point(at = [var 6, var 3])
+  arc(start = [var 5, var 2], end = [var 7, var 2], center = [var 6, var 2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point_id = *sketch.segments.first().unwrap();
+        let arc_id = *sketch.segments.get(4).unwrap();
+
+        let constraint = Constraint::Midpoint(Midpoint {
+            point: point_id,
+            segment: arc_id,
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  point1 = point(at = [var 6, var 3])
+  arc1 = arc(start = [var 5, var 2], end = [var 7, var 2], center = [var 6, var 2])
+  midpoint(arc1, point = point1)
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            8,
             "{:#?}",
             scene_delta.new_graph.objects
         );

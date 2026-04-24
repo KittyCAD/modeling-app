@@ -450,14 +450,15 @@ async fn get_sketch_constraint_status_code(code: String) -> PyResult<SketchConst
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (filepaths, format, image_format, *, zoom=true))]
+#[pyfunction(signature = (filepaths, format, image_format, *, zoom=None))]
 async fn import_and_snapshot(
     filepaths: Vec<String>,
     format: InputFormat3d,
     image_format: ImageFormat,
-    zoom: bool,
+    zoom: Option<bool>,
 ) -> PyResult<Vec<u8>> {
-    let img = import_and_snapshot_views(filepaths, format, image_format, Vec::new(), zoom)
+    let zoom = zoom.unwrap_or(true);
+    let img = import_and_snapshot_views(filepaths, format, image_format, Vec::new(), Some(zoom))
         .await?
         .pop();
     Ok(img.unwrap())
@@ -478,14 +479,15 @@ fn relevant_file_extensions() -> PyResult<Vec<String>> {
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (filepaths, format, image_format, snapshot_options, *, zoom=true))]
+#[pyfunction(signature = (filepaths, format, image_format, snapshot_options, *, zoom=None))]
 async fn import_and_snapshot_views(
     filepaths: Vec<String>,
     format: InputFormat3d,
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
-    zoom: bool,
+    zoom: Option<bool>,
 ) -> PyResult<Vec<Vec<u8>>> {
+    let zoom = zoom.unwrap_or(true);
     spawn_py(async move {
         let (ctx, _state) = new_context_state(None, false).await.map_err(to_py_exception)?;
         import(&ctx, filepaths, format).await?;
@@ -540,22 +542,24 @@ async fn import(ctx: &ExecutorContext, filepaths: Vec<String>, format: InputForm
 
 /// Execute a kcl file and snapshot it in a specific format.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (path, image_format, *, zoom=true))]
-async fn execute_and_snapshot(path: String, image_format: ImageFormat, zoom: bool) -> PyResult<Vec<u8>> {
-    let img = execute_and_snapshot_views(path, image_format, Vec::new(), zoom)
+#[pyfunction(signature = (path, image_format, *, zoom=None))]
+async fn execute_and_snapshot(path: String, image_format: ImageFormat, zoom: Option<bool>) -> PyResult<Vec<u8>> {
+    let zoom = zoom.unwrap_or(true);
+    let img = execute_and_snapshot_views(path, image_format, Vec::new(), Some(zoom))
         .await?
         .pop();
     Ok(img.unwrap())
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (path, image_format, snapshot_options, *, zoom=true))]
+#[pyfunction(signature = (path, image_format, snapshot_options, *, zoom=None))]
 async fn execute_and_snapshot_views(
     path: String,
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
-    zoom: bool,
+    zoom: Option<bool>,
 ) -> PyResult<Vec<Vec<u8>>> {
+    let zoom = zoom.unwrap_or(true);
     spawn_py(async move {
         execute_and_snapshot_views_impl(KclInput::Path(path), image_format, snapshot_options, zoom).await
     })
@@ -564,9 +568,10 @@ async fn execute_and_snapshot_views(
 
 /// Execute the kcl code and snapshot it in a specific format.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (code, image_format, *, zoom=true))]
-async fn execute_code_and_snapshot(code: String, image_format: ImageFormat, zoom: bool) -> PyResult<Vec<u8>> {
-    let mut snaps = execute_code_and_snapshot_views(code, image_format, Vec::new(), zoom).await?;
+#[pyfunction(signature = (code, image_format, *, zoom=None))]
+async fn execute_code_and_snapshot(code: String, image_format: ImageFormat, zoom: Option<bool>) -> PyResult<Vec<u8>> {
+    let zoom = zoom.unwrap_or(true);
+    let mut snaps = execute_code_and_snapshot_views(code, image_format, Vec::new(), Some(zoom)).await?;
     Ok(snaps.pop().unwrap())
 }
 
@@ -645,13 +650,14 @@ impl SnapshotOptions {
 /// Returns one image for each camera angle you provide.
 /// If you don't provide any camera angles, a default head-on camera angle will be used.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (code, image_format, snapshot_options, *, zoom=true))]
+#[pyfunction(signature = (code, image_format, snapshot_options, *, zoom=None))]
 async fn execute_code_and_snapshot_views(
     code: String,
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
-    zoom: bool,
+    zoom: Option<bool>,
 ) -> PyResult<Vec<Vec<u8>>> {
+    let zoom = zoom.unwrap_or(true);
     spawn_py(async move {
         execute_and_snapshot_views_impl(KclInput::Code(code), image_format, snapshot_options, zoom).await
     })

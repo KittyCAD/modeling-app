@@ -346,6 +346,14 @@ const sketchSolveConstraintItems: ToolbarItem[] = [
     description: 'Constrain points or curves to be coincident.',
   }),
   createSketchSolveConstraintDropdownItem({
+    id: 'midpoint',
+    toolName: 'midpointConstraintTool',
+    icon: 'midpoint',
+    title: 'Midpoint',
+    hotkey: 'Shift+X',
+    description: 'Constrain a point to lie at the midpoint of a selected line.',
+  }),
+  createSketchSolveConstraintDropdownItem({
     id: 'Tangent',
     toolName: 'tangentConstraintTool',
     icon: 'tangent',

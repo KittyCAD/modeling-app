@@ -58,6 +58,7 @@ functions, because those are what actually constrain the solved result.
 * [`solver::horizontal`](/docs/kcl-std-legacy/functions/std-solver-horizontal)
 * [`solver::horizontalDistance`](/docs/kcl-std-legacy/functions/std-solver-horizontalDistance)
 * [`solver::line`](/docs/kcl-std-legacy/functions/std-solver-line)
+* [`solver::midpoint`](/docs/kcl-std-legacy/functions/std-solver-midpoint)
 * [`solver::parallel`](/docs/kcl-std-legacy/functions/std-solver-parallel)
 * [`solver::perpendicular`](/docs/kcl-std-legacy/functions/std-solver-perpendicular)
 * [`solver::point`](/docs/kcl-std-legacy/functions/std-solver-point)
