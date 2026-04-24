@@ -15,6 +15,16 @@ import {
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
+test.beforeEach(async ({ tronApp }) => {
+  if (tronApp) {
+    await tronApp.cleanProjectDir({
+      modeling: {
+        use_sketch_solve_mode: false,
+      },
+    })
+  }
+})
+
 test.describe('Regression tests', { tag: '@desktop' }, () => {
   // bugs we found that don't fit neatly into other categories
   test('bad model has inline error #3251', async ({

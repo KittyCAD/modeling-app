@@ -1,6 +1,16 @@
 import { TEST_COLORS, circleMove, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
+test.beforeEach(async ({ tronApp }) => {
+  if (tronApp) {
+    await tronApp.cleanProjectDir({
+      modeling: {
+        use_sketch_solve_mode: false,
+      },
+    })
+  }
+})
+
 test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
   test(
     'simulate network down and network little widget',
@@ -217,6 +227,9 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
       await tronApp.cleanProjectDir({
         app: {
           stream_idle_mode: 5000,
+        },
+        modeling: {
+          use_sketch_solve_mode: false,
         },
       })
 

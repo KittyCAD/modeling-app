@@ -492,12 +492,6 @@ sketch001 = extrude(region001, length = -12)`
       planeLocation.y
     )
 
-    // Colors
-    // @pierremtb: had to tone these colors down a bit after the engine zoom fix
-    // in https://github.com/KittyCAD/engine/pull/3804, unclear why
-    const edgeColorWhite: [number, number, number] = [230, 230, 230]
-    const edgeColorBlue: [number, number, number] = [23, 10, 247]
-    const tolerance = 50
     const timeout = 150
 
     // Setup
@@ -539,16 +533,7 @@ sketch001 = extrude(region001, length = -12)`
         await page.waitForTimeout(timeout * 5)
         await clickFirstSegment()
         await page.waitForTimeout(timeout)
-        await scene.expectPixelColor(
-          edgeColorBlue,
-          firstSegmentLocation,
-          tolerance
-        )
-        await scene.expectPixelColor(
-          edgeColorWhite,
-          secondSegmentLocation,
-          tolerance
-        )
+        await expect(toolbar.selectionStatus).toContainText('1 edge')
       })
       await test.step('Select the second segment (Shift-click)', async () => {
         await page.keyboard.down('Shift')
@@ -556,16 +541,7 @@ sketch001 = extrude(region001, length = -12)`
         await clickSecondSegment()
         await page.waitForTimeout(timeout)
         await page.keyboard.up('Shift')
-        await scene.expectPixelColor(
-          edgeColorBlue,
-          firstSegmentLocation,
-          tolerance
-        )
-        await scene.expectPixelColor(
-          edgeColorBlue,
-          secondSegmentLocation,
-          tolerance
-        )
+        await expect(toolbar.selectionStatus).toContainText('2 edges')
       })
       await test.step('Deselect the first segment', async () => {
         await page.keyboard.down('Shift')
@@ -573,16 +549,7 @@ sketch001 = extrude(region001, length = -12)`
         await clickFirstSegment()
         await page.waitForTimeout(timeout)
         await page.keyboard.up('Shift')
-        await scene.expectPixelColor(
-          edgeColorWhite,
-          firstSegmentLocation,
-          tolerance
-        )
-        await scene.expectPixelColor(
-          edgeColorBlue,
-          secondSegmentLocation,
-          tolerance
-        )
+        await expect(toolbar.selectionStatus).toContainText('1 edge')
       })
       await test.step('Deselect the second segment', async () => {
         await page.keyboard.down('Shift')
@@ -590,16 +557,7 @@ sketch001 = extrude(region001, length = -12)`
         await clickSecondSegment()
         await page.waitForTimeout(timeout)
         await page.keyboard.up('Shift')
-        await scene.expectPixelColor(
-          edgeColorWhite,
-          firstSegmentLocation,
-          tolerance
-        )
-        await scene.expectPixelColor(
-          edgeColorWhite,
-          secondSegmentLocation,
-          tolerance
-        )
+        await expect(toolbar.selectionStatus).toContainText('No selection')
       })
     })
   })

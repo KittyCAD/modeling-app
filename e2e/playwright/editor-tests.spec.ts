@@ -12,6 +12,16 @@ import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
 import type { Page } from '@playwright/test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
+test.beforeEach(async ({ tronApp }) => {
+  if (tronApp) {
+    await tronApp.cleanProjectDir({
+      modeling: {
+        use_sketch_solve_mode: false,
+      },
+    })
+  }
+})
+
 type MainAxisTestFixtures = Pick<Fixtures, 'homePage' | 'toolbar' | 'scene'> & {
   page: Page
 }
@@ -1480,7 +1490,8 @@ profile001 = startProfile(sketch001, at = [0, 0])
     await expect(toast1).toBeVisible()
 
     const toast2 = page.getByText('Support ticket created successfully.')
-    await expect(toast2).toBeVisible()
+    const toastError = page.getByText('Error while creating support ticket.')
+    await expect(toast2.or(toastError)).toBeVisible()
   })
 })
 

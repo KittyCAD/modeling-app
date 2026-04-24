@@ -9,6 +9,16 @@ import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
+test.beforeEach(async ({ tronApp }) => {
+  if (tronApp) {
+    await tronApp.cleanProjectDir({
+      modeling: {
+        use_sketch_solve_mode: false,
+      },
+    })
+  }
+})
+
 test.describe(
   'Can create sketches on all planes and their back sides',
   { tag: '@desktop' },

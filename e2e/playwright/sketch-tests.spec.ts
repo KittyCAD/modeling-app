@@ -12,6 +12,16 @@ import {
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
+test.beforeEach(async ({ tronApp }) => {
+  if (tronApp) {
+    await tronApp.cleanProjectDir({
+      modeling: {
+        use_sketch_solve_mode: false,
+      },
+    })
+  }
+})
+
 test.describe('Sketch tests', () => {
   test(
     'three-point arc closes without disappearing',

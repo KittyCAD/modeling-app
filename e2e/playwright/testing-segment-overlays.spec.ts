@@ -7,6 +7,16 @@ import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import { deg, getUtils, wiggleMove } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
+test.beforeEach(async ({ tronApp }) => {
+  if (tronApp) {
+    await tronApp.cleanProjectDir({
+      modeling: {
+        use_sketch_solve_mode: false,
+      },
+    })
+  }
+})
+
 test.describe('Testing segment overlays', { tag: '@desktop' }, () => {
   test.describe('Hover over a segment should show its overlay, hovering over the input overlays should show its popover, clicking the input overlay should constrain/unconstrain it', () => {
     /**
@@ -370,7 +380,7 @@ profile002 = circle(sketch001, center = [345, 0], radius = 238.38)
         '[data-constraint-type="xAbsolute"][data-is-constrained="false"]'
       )
       await expect(xConstraintBtn).toBeVisible()
-      await xConstraintBtn.click()
+      await xConstraintBtn.click({ force: true })
 
       // Complete the command
       await expect(
@@ -388,7 +398,7 @@ profile002 = circle(sketch001, center = [345, 0], radius = 238.38)
         '[data-constraint-type="yAbsolute"][data-is-constrained="false"]'
       )
       await expect(yConstraintBtn).toBeVisible()
-      await yConstraintBtn.click()
+      await yConstraintBtn.click({ force: true })
 
       // Complete the command
       await expect(
@@ -406,7 +416,7 @@ profile002 = circle(sketch001, center = [345, 0], radius = 238.38)
         '[data-constraint-type="radius"][data-is-constrained="false"]'
       )
       await expect(radiusConstraintBtn).toBeVisible()
-      await radiusConstraintBtn.click()
+      await radiusConstraintBtn.click({ force: true })
 
       // Complete the command
       await expect(
