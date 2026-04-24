@@ -51,6 +51,8 @@ use crate::front::LineCtor;
 #[cfg(feature = "artifact-graph")]
 use crate::front::LinesEqualLength;
 #[cfg(feature = "artifact-graph")]
+use crate::front::Midpoint;
+#[cfg(feature = "artifact-graph")]
 use crate::front::Object;
 use crate::front::ObjectId;
 #[cfg(feature = "artifact-graph")]
@@ -2407,6 +2409,132 @@ pub async fn vertical_distance(exec_state: &mut ExecState, args: Args) -> Result
             vec![args.source_range],
         ))),
     }
+}
+
+#[derive(Debug, Clone, Copy)]
+struct MidpointPointVars {
+    coords: [SketchVarId; 2],
+    object_id: ObjectId,
+}
+
+#[derive(Debug, Clone, Copy)]
+struct MidpointLineVars {
+    start: [SketchVarId; 2],
+    end: [SketchVarId; 2],
+    object_id: ObjectId,
+}
+
+fn extract_midpoint_point(segment_value: &KclValue, range: crate::SourceRange) -> Result<MidpointPointVars, KclError> {
+    let KclValue::Segment { value: segment } = segment_value else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "midpoint() point must be a point Segment, but found {}",
+                segment_value.human_friendly_type()
+            ),
+            vec![range],
+        )));
+    };
+    let SegmentRepr::Unsolved { segment: unsolved } = &segment.repr else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "midpoint() point must be an unsolved point Segment".to_owned(),
+            vec![range],
+        )));
+    };
+    let UnsolvedSegmentKind::Point { position, .. } = &unsolved.kind else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "midpoint() point must be a point Segment".to_owned(),
+            vec![range],
+        )));
+    };
+    let (UnsolvedExpr::Unknown(point_x), UnsolvedExpr::Unknown(point_y)) = (&position[0], &position[1]) else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "midpoint() point coordinates must be sketch vars".to_owned(),
+            vec![range],
+        )));
+    };
+
+    Ok(MidpointPointVars {
+        coords: [*point_x, *point_y],
+        object_id: unsolved.object_id,
+    })
+}
+
+fn extract_midpoint_line(segment_value: &KclValue, range: crate::SourceRange) -> Result<MidpointLineVars, KclError> {
+    let KclValue::Segment { value: segment } = segment_value else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "midpoint() line must be a line Segment, but found {}",
+                segment_value.human_friendly_type()
+            ),
+            vec![range],
+        )));
+    };
+    let SegmentRepr::Unsolved { segment: unsolved } = &segment.repr else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "midpoint() line must be an unsolved line Segment".to_owned(),
+            vec![range],
+        )));
+    };
+    let UnsolvedSegmentKind::Line { start, end, .. } = &unsolved.kind else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "midpoint() line must be a line Segment".to_owned(),
+            vec![range],
+        )));
+    };
+    let (
+        UnsolvedExpr::Unknown(start_x),
+        UnsolvedExpr::Unknown(start_y),
+        UnsolvedExpr::Unknown(end_x),
+        UnsolvedExpr::Unknown(end_y),
+    ) = (&start[0], &start[1], &end[0], &end[1])
+    else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "midpoint() line coordinates must be sketch vars".to_owned(),
+            vec![range],
+        )));
+    };
+
+    Ok(MidpointLineVars {
+        start: [*start_x, *start_y],
+        end: [*end_x, *end_y],
+        object_id: unsolved.object_id,
+    })
+}
+
+pub async fn midpoint(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let point: KclValue =
+        args.get_unlabeled_kw_arg("input", &RuntimeType::Primitive(PrimitiveType::Segment), exec_state)?;
+    let line: KclValue = args.get_kw_arg("line", &RuntimeType::Primitive(PrimitiveType::Segment), exec_state)?;
+    let range = args.source_range;
+
+    let point = extract_midpoint_point(&point, range)?;
+    let line = extract_midpoint_line(&line, range)?;
+
+    #[cfg(feature = "artifact-graph")]
+    let constraint_id = exec_state.next_object_id();
+    let Some(sketch_state) = exec_state.sketch_block_mut() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "midpoint() can only be used inside a sketch block".to_owned(),
+            vec![range],
+        )));
+    };
+
+    sketch_state.solver_constraints.push(SolverConstraint::Midpoint(
+        DatumLineSegment::new(datum_point(line.start, range)?, datum_point(line.end, range)?),
+        datum_point(point.coords, range)?,
+    ));
+
+    #[cfg(feature = "artifact-graph")]
+    {
+        let constraint = Constraint::Midpoint(Midpoint {
+            point: point.object_id,
+            line: line.object_id,
+        });
+        sketch_state.sketch_constraints.push(constraint_id);
+        track_constraint(constraint_id, constraint, exec_state, &args);
+    }
+
+    Ok(KclValue::none())
 }
 
 pub async fn equal_length(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {

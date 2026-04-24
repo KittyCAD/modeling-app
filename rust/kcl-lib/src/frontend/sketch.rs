@@ -412,6 +412,7 @@ pub enum Constraint {
     VerticalDistance(Distance),
     Horizontal(Horizontal),
     LinesEqualLength(LinesEqualLength),
+    Midpoint(Midpoint),
     Parallel(Parallel),
     Perpendicular(Perpendicular),
     Radius(Radius),
@@ -561,6 +562,13 @@ pub enum Horizontal {
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct LinesEqualLength {
     pub lines: Vec<ObjectId>,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+pub struct Midpoint {
+    pub point: ObjectId,
+    pub line: ObjectId,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
