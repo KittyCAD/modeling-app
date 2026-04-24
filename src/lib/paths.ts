@@ -5,6 +5,7 @@ import fsZds from '@src/lib/fs-zds'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { isArray } from '@src/lib/utils'
 
 const SETTINGS = '/settings'
 const HOME = '/home'
@@ -14,6 +15,22 @@ export type ProjectRoute = {
   projectPath: string
   currentFileName: string | null
   currentFilePath: string | null
+}
+
+function getProjectDirectorySetting(
+  configuration: DeepPartial<Configuration>
+): string | undefined {
+  const projectSettings = configuration.settings?.project
+  if (
+    !projectSettings ||
+    typeof projectSettings !== 'object' ||
+    isArray(projectSettings)
+  ) {
+    return undefined
+  }
+
+  const directory = projectSettings.directory
+  return typeof directory === 'string' ? directory : undefined
 }
 
 export const PATHS = {
@@ -68,19 +85,11 @@ export function parseProjectRoute(
   let projectPath = ''
   let currentFileName = null
   let currentFilePath = null
-  if (
-    configuration.settings?.project?.directory &&
-    id.startsWith(configuration.settings.project.directory)
-  ) {
-    const relativeToRoot = fsZds.relative(
-      configuration.settings.project.directory,
-      id
-    )
+  const projectDirectory = getProjectDirectorySetting(configuration)
+  if (projectDirectory && id.startsWith(projectDirectory)) {
+    const relativeToRoot = fsZds.relative(projectDirectory, id)
     projectName = relativeToRoot.split(fsZds.sep)[0]
-    projectPath = fsZds.join(
-      configuration.settings.project.directory,
-      projectName
-    )
+    projectPath = fsZds.join(projectDirectory, projectName)
     projectName = projectName === '' ? null : projectName
   } else {
     projectPath = id
