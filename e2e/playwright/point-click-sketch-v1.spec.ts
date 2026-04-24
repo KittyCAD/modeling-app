@@ -642,6 +642,7 @@ openSketch = startSketchOn(XY)
     editor,
     toolbar,
     cmdBar,
+    context,
   }) => {
     // Locators
     const firstPointLocation = { x: 200, y: 100 }
@@ -652,7 +653,6 @@ openSketch = startSketchOn(XY)
     // error margin but unclear why
     const firstSegmentLocation = { x: 799, y: 100 }
     const secondSegmentLocation = { x: 800, y: 399 }
-    const planeLocation = { x: 700, y: 200 }
 
     // Click helpers
     const [clickFirstPoint] = scene.makeMouseHelpers(
@@ -675,15 +675,13 @@ openSketch = startSketchOn(XY)
       secondSegmentLocation.x,
       secondSegmentLocation.y
     )
-    const [clickPlane] = scene.makeMouseHelpers(
-      planeLocation.x,
-      planeLocation.y
-    )
-
     const timeout = 150
 
     // Setup
     await test.step(`Initial test setup`, async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, `sketch001 = startSketchOn(XY)`)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
@@ -692,10 +690,8 @@ openSketch = startSketchOn(XY)
     await test.step('Select and deselect a single sketch segment', async () => {
       await test.step('Get into sketch mode', async () => {
         await editor.closePane()
-        await page.waitForTimeout(timeout)
-        await toolbar.startSketchBtn.click()
-        await page.waitForTimeout(timeout)
-        await clickPlane()
+        const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
+        await op.dblclick()
         await page.waitForTimeout(1000)
       })
       await test.step('Draw sketch', async () => {
