@@ -20,11 +20,7 @@ import { isNonNullable } from '@src/lib/utils'
 
 const noop = () => {}
 
-/** The current focus is to optimize one reasoning mode before providing
- * multiple options to users. On staging the project setting is available
- * to select between modes.
- */
-export const SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN = false
+export const SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN = true
 
 export interface QueuedMessage {
   id: string
