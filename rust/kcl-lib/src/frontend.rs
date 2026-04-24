@@ -7047,8 +7047,24 @@ sketch(on = XY) {
 "
         );
         assert_eq!(
-            scene_delta.new_graph.objects.len(),
-            12,
+            scene_delta
+                .new_graph
+                .objects
+                .iter()
+                .filter(|object| !matches!(object.kind, ObjectKind::Nil))
+                .count(),
+            11,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+        assert_eq!(
+            scene_delta
+                .new_graph
+                .objects
+                .iter()
+                .filter(|object| matches!(object.kind, ObjectKind::Constraint { .. }))
+                .count(),
+            3,
             "{:#?}",
             scene_delta.new_graph.objects
         );
