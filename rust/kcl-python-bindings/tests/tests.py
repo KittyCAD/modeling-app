@@ -228,7 +228,9 @@ async def test_kcl_execute_dir_assembly():
 @pytest.mark.asyncio
 async def test_kcl_execute_and_snapshot():
     # Read from a file.
-    image_bytes = await kcl.execute_and_snapshot(lego_file, kcl.ImageFormat.Jpeg)
+    image_bytes = await kcl.execute_and_snapshot(
+        lego_file, kcl.ImageFormat.Jpeg, zoom=False
+    )
     assert image_bytes is not None
     assert len(image_bytes) > 0
 

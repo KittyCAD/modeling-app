@@ -272,9 +272,10 @@ async fn execute_and_snapshot_views_impl(
     input: KclInput,
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
+    zoom: bool,
 ) -> PyResult<Vec<Vec<u8>>> {
     let ExecutedKcl { ctx, .. } = run_kcl(input, false).await?;
-    let result = take_snaps(&ctx, image_format, snapshot_options).await;
+    let result = take_snaps(&ctx, image_format, snapshot_options, zoom).await;
     ctx.close().await;
     result
 }
@@ -449,13 +450,15 @@ async fn get_sketch_constraint_status_code(code: String) -> PyResult<SketchConst
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
+#[pyfunction(signature = (filepaths, format, image_format, *, zoom=None))]
 async fn import_and_snapshot(
     filepaths: Vec<String>,
     format: InputFormat3d,
     image_format: ImageFormat,
+    zoom: Option<bool>,
 ) -> PyResult<Vec<u8>> {
-    let img = import_and_snapshot_views(filepaths, format, image_format, Vec::new())
+    let zoom = zoom.unwrap_or(true);
+    let img = import_and_snapshot_views(filepaths, format, image_format, Vec::new(), Some(zoom))
         .await?
         .pop();
     Ok(img.unwrap())
@@ -476,17 +479,19 @@ fn relevant_file_extensions() -> PyResult<Vec<String>> {
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
+#[pyfunction(signature = (filepaths, format, image_format, snapshot_options, *, zoom=None))]
 async fn import_and_snapshot_views(
     filepaths: Vec<String>,
     format: InputFormat3d,
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
+    zoom: Option<bool>,
 ) -> PyResult<Vec<Vec<u8>>> {
+    let zoom = zoom.unwrap_or(true);
     spawn_py(async move {
         let (ctx, _state) = new_context_state(None, false).await.map_err(to_py_exception)?;
         import(&ctx, filepaths, format).await?;
-        let result = take_snaps(&ctx, image_format, snapshot_options).await;
+        let result = take_snaps(&ctx, image_format, snapshot_options, zoom).await;
         ctx.close().await;
         result
     })
@@ -537,28 +542,36 @@ async fn import(ctx: &ExecutorContext, filepaths: Vec<String>, format: InputForm
 
 /// Execute a kcl file and snapshot it in a specific format.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn execute_and_snapshot(path: String, image_format: ImageFormat) -> PyResult<Vec<u8>> {
-    let img = execute_and_snapshot_views(path, image_format, Vec::new()).await?.pop();
+#[pyfunction(signature = (path, image_format, *, zoom=None))]
+async fn execute_and_snapshot(path: String, image_format: ImageFormat, zoom: Option<bool>) -> PyResult<Vec<u8>> {
+    let zoom = zoom.unwrap_or(true);
+    let img = execute_and_snapshot_views(path, image_format, Vec::new(), Some(zoom))
+        .await?
+        .pop();
     Ok(img.unwrap())
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
+#[pyfunction(signature = (path, image_format, snapshot_options, *, zoom=None))]
 async fn execute_and_snapshot_views(
     path: String,
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
+    zoom: Option<bool>,
 ) -> PyResult<Vec<Vec<u8>>> {
-    spawn_py(async move { execute_and_snapshot_views_impl(KclInput::Path(path), image_format, snapshot_options).await })
-        .await
+    let zoom = zoom.unwrap_or(true);
+    spawn_py(async move {
+        execute_and_snapshot_views_impl(KclInput::Path(path), image_format, snapshot_options, zoom).await
+    })
+    .await
 }
 
 /// Execute the kcl code and snapshot it in a specific format.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn execute_code_and_snapshot(code: String, image_format: ImageFormat) -> PyResult<Vec<u8>> {
-    let mut snaps = execute_code_and_snapshot_views(code, image_format, Vec::new()).await?;
+#[pyfunction(signature = (code, image_format, *, zoom=None))]
+async fn execute_code_and_snapshot(code: String, image_format: ImageFormat, zoom: Option<bool>) -> PyResult<Vec<u8>> {
+    let zoom = zoom.unwrap_or(true);
+    let mut snaps = execute_code_and_snapshot_views(code, image_format, Vec::new(), Some(zoom)).await?;
     Ok(snaps.pop().unwrap())
 }
 
@@ -637,23 +650,28 @@ impl SnapshotOptions {
 /// Returns one image for each camera angle you provide.
 /// If you don't provide any camera angles, a default head-on camera angle will be used.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
+#[pyfunction(signature = (code, image_format, snapshot_options, *, zoom=None))]
 async fn execute_code_and_snapshot_views(
     code: String,
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
+    zoom: Option<bool>,
 ) -> PyResult<Vec<Vec<u8>>> {
-    spawn_py(async move { execute_and_snapshot_views_impl(KclInput::Code(code), image_format, snapshot_options).await })
-        .await
+    let zoom = zoom.unwrap_or(true);
+    spawn_py(async move {
+        execute_and_snapshot_views_impl(KclInput::Code(code), image_format, snapshot_options, zoom).await
+    })
+    .await
 }
 
 async fn take_snaps(
     ctx: &ExecutorContext,
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
+    zoom: bool,
 ) -> PyResult<Vec<Vec<u8>>> {
     if snapshot_options.is_empty() {
-        let data_bytes = snapshot(ctx, image_format, 0.1).await?;
+        let data_bytes = snapshot(ctx, image_format, 0.1, zoom).await?;
         return Ok(vec![data_bytes]);
     }
 
@@ -671,13 +689,13 @@ async fn take_snaps(
                 .send_modeling_cmd(uuid::Uuid::new_v4(), Default::default(), &view_cmd)
                 .await?;
         }
-        let data_bytes = snapshot(ctx, image_format, pre_snap.padding).await?;
+        let data_bytes = snapshot(ctx, image_format, pre_snap.padding, zoom).await?;
         snaps.push(data_bytes);
     }
     Ok(snaps)
 }
 
-async fn snapshot(ctx: &ExecutorContext, image_format: ImageFormat, padding: f32) -> PyResult<Vec<u8>> {
+async fn snapshot(ctx: &ExecutorContext, image_format: ImageFormat, padding: f32, zoom: bool) -> PyResult<Vec<u8>> {
     // Set orthographic projection
     ctx.engine
         .send_modeling_cmd(
@@ -690,19 +708,21 @@ async fn snapshot(ctx: &ExecutorContext, image_format: ImageFormat, padding: f32
         .await?;
 
     // Zoom to fit.
-    ctx.engine
-        .send_modeling_cmd(
-            uuid::Uuid::new_v4(),
-            kcl_lib::SourceRange::default(),
-            &kittycad_modeling_cmds::ModelingCmd::ZoomToFit(
-                kittycad_modeling_cmds::ZoomToFit::builder()
-                    .padding(padding)
-                    .animated(false)
-                    .object_ids(Default::default())
-                    .build(),
-            ),
-        )
-        .await?;
+    if zoom {
+        ctx.engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                kcl_lib::SourceRange::default(),
+                &kittycad_modeling_cmds::ModelingCmd::ZoomToFit(
+                    kittycad_modeling_cmds::ZoomToFit::builder()
+                        .padding(padding)
+                        .animated(false)
+                        .object_ids(Default::default())
+                        .build(),
+                ),
+            )
+            .await?;
+    }
 
     // Send a snapshot request to the engine.
     let resp = ctx

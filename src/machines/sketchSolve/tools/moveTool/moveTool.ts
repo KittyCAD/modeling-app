@@ -51,7 +51,7 @@ import {
 import {
   type SnappingCandidate,
   allowSnapping,
-  getConstraintForSnapTarget,
+  getConstraintsForSnapTarget,
   getObjectIdForSnapTarget,
   getCoincidentSegmentsForSnapTarget,
   getSnappingCandidates,
@@ -85,6 +85,10 @@ type ClosestSelectionTarget = {
   apiObject: ApiObject | null
 }
 
+// This is only a settlement latch for "there is a preview solve in flight".
+// It is not used to carry a value or an error, so a reject path would not add
+// useful semantics here. `onDragEnd` only needs to wait until the preview solve
+// has finished its `finally` cleanup before finalizing the drag.
 type DeferredVoid = {
   promise: Promise<void>
   resolve: () => void
@@ -99,7 +103,7 @@ function createDeferredVoid(): DeferredVoid {
   return { promise, resolve }
 }
 
-function getClosestSelectionTarget(
+export function getClosestSelectionTarget(
   mousePosition: Coords2d,
   objects: ApiObject[],
   sceneInfra: SceneInfra
@@ -367,6 +371,23 @@ function hasCoincidentConstraintForSnapTarget(
   )
 }
 
+function hasMidpointConstraintForSnapTarget(
+  pointId: number,
+  target: SnappingCandidate['target'],
+  objects: ApiObject[]
+) {
+  if (target.type !== 'midpoint') {
+    return false
+  }
+
+  return objects.some(
+    (obj) =>
+      isConstraint(obj, 'Midpoint') &&
+      obj.kind.constraint.point === pointId &&
+      obj.kind.constraint.segment === target.id
+  )
+}
+
 function getAxisConstraintWithOrigin(
   pointId: number,
   constraintType: 'Horizontal' | 'Vertical',
@@ -402,11 +423,35 @@ function buildPreviewOutcomeWithPreservedGeometry({
   }
 }
 
+type CreateOnDragStartCallbackArgs = {
+  // Seeds the drag anchor used to compute relative drag vectors.
+  setLastSuccessfulDragFromPoint: (point: Vector2) => void
+  // Captures the object currently being dragged at drag start.
+  setDraggedEntityId: (entityId: number | null) => void
+  // Clears any previously cached valid preview from an earlier drag session.
+  setLastGoodPreview: (preview: DragCommitCandidate | null) => void
+  // Stores the frontend sketch outcome at drag start for preview fallback.
+  setDragStartOutcome: (outcome: DragSketchOutcome | null) => void
+  // Stores the committed Rust checkpoint so invalid releases can restore to it.
+  setPreDragCheckpointId: (checkpointId: number | null) => void
+  // Starts a fresh drag session so stale preview responses can be ignored.
+  beginDragSession: () => void
+  // Reads the current frontend sketch outcome at the moment drag begins.
+  getCurrentSketchOutcome: () => DragSketchOutcome | null
+  // Reads the currently committed checkpoint backing undo/redo.
+  getCurrentCommittedCheckpointId: () => number | null
+  // Reads the hovered selection id so drag start can lock onto it.
+  getHoveredId: () => SketchSolveSelectionId | null
+  // Clears transient hover UI that should not remain visible during drag.
+  dismissConstraintHoverPopup: () => void
+}
+
 /**
  * Creates the onDragStart callback for sketch solve drag operations.
- * Handles initialization of drag state.
- *
- * @param setLastSuccessfulDragFromPoint - Setter for the last successful drag start point
+ * Captures the drag baseline used by preview and recovery logic:
+ * - the current frontend sketch outcome
+ * - the current committed Rust checkpoint
+ * - the hovered entity being dragged
  */
 export function createOnDragStartCallback({
   setLastSuccessfulDragFromPoint,
@@ -419,18 +464,7 @@ export function createOnDragStartCallback({
   getCurrentCommittedCheckpointId,
   getHoveredId,
   dismissConstraintHoverPopup,
-}: {
-  setLastSuccessfulDragFromPoint: (point: Vector2) => void
-  setDraggedEntityId: (entityId: number | null) => void
-  setLastGoodPreview: (preview: DragCommitCandidate | null) => void
-  setDragStartOutcome: (outcome: DragSketchOutcome | null) => void
-  setPreDragCheckpointId: (checkpointId: number | null) => void
-  beginDragSession: () => void
-  getCurrentSketchOutcome: () => DragSketchOutcome | null
-  getCurrentCommittedCheckpointId: () => number | null
-  getHoveredId: () => SketchSolveSelectionId | null
-  dismissConstraintHoverPopup: () => void
-}): (arg: {
+}: CreateOnDragStartCallbackArgs): (arg: {
   intersectionPoint: { twoD: Vector2; threeD: Vector3 }
   selected?: Object3D
   mouseEvent: MouseEvent
@@ -1284,13 +1318,13 @@ export function setUpOnDragAndSelectionClickCallbacks({
           const units = baseUnitToNumericSuffix(
             context.kclManager.fileSettings.defaultLengthUnit
           )
-          const snapConstraint =
+          const snapConstraints =
             snappingCandidate && draggedEntityId !== null
-              ? getConstraintForSnapTarget(
+              ? getConstraintsForSnapTarget(
                   draggedEntityId,
                   snappingCandidate.target
                 )
-              : null
+              : []
           const settings = jsAppSettings(context.rustContext.settingsActor)
           let result: {
             kclSource: SourceDelta
@@ -1357,7 +1391,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
           } else if (
             snappingCandidate &&
             draggedEntityId !== null &&
-            snapConstraint !== null
+            snapConstraints.length > 0
           ) {
             const [x, y] = snappingCandidate.position
             const editResult = await context.rustContext.editSegments(
@@ -1387,14 +1421,17 @@ export function setUpOnDragAndSelectionClickCallbacks({
               true
             )
 
-            if (
-              snapConstraint.type === 'Horizontal' ||
-              snapConstraint.type === 'Vertical'
-            ) {
+            const axisConstraint = snapConstraints.find(
+              (constraint) =>
+                constraint.type === 'Horizontal' ||
+                constraint.type === 'Vertical'
+            )
+
+            if (axisConstraint) {
               const objects = currentSceneGraphDelta?.new_graph.objects ?? []
               const existingSameConstraint = getAxisConstraintWithOrigin(
                 draggedEntityId,
-                snapConstraint.type,
+                axisConstraint.type,
                 objects
               )
               if (existingSameConstraint) {
@@ -1402,7 +1439,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                 result = editResult
               } else {
                 const oppositeConstraintType =
-                  snapConstraint.type === 'Horizontal'
+                  axisConstraint.type === 'Horizontal'
                     ? 'Vertical'
                     : 'Horizontal'
                 const existingOppositeConstraint = getAxisConstraintWithOrigin(
@@ -1445,7 +1482,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                   result = await context.rustContext.addConstraint(
                     SKETCH_FILE_VERSION,
                     context.sketchId,
-                    snapConstraint,
+                    axisConstraint,
                     settings,
                     true
                   )
@@ -1453,22 +1490,42 @@ export function setUpOnDragAndSelectionClickCallbacks({
               }
             } else {
               const objects = currentSceneGraphDelta?.new_graph.objects ?? []
-              if (
-                hasCoincidentConstraintForSnapTarget(
-                  draggedEntityId,
-                  snappingCandidate.target,
-                  objects
-                )
-              ) {
+              const constraintsToAdd = snapConstraints.filter((constraint) => {
+                if (constraint.type === 'Coincident') {
+                  return !hasCoincidentConstraintForSnapTarget(
+                    draggedEntityId,
+                    snappingCandidate.target,
+                    objects
+                  )
+                }
+
+                if (constraint.type === 'Midpoint') {
+                  return !hasMidpointConstraintForSnapTarget(
+                    draggedEntityId,
+                    snappingCandidate.target,
+                    objects
+                  )
+                }
+
+                return true
+              })
+
+              if (constraintsToAdd.length === 0) {
                 result = editResult
               } else {
-                result = await context.rustContext.addConstraint(
-                  SKETCH_FILE_VERSION,
-                  context.sketchId,
-                  snapConstraint,
-                  settings,
-                  true
-                )
+                let latestResult = editResult
+
+                for (const [index, constraint] of constraintsToAdd.entries()) {
+                  latestResult = await context.rustContext.addConstraint(
+                    SKETCH_FILE_VERSION,
+                    context.sketchId,
+                    constraint,
+                    settings,
+                    index === constraintsToAdd.length - 1
+                  )
+                }
+
+                result = latestResult
               }
             }
           } else {
@@ -1534,7 +1591,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
           } else if (
             result.checkpointId == null &&
             (Boolean(lastGoodPreview?.segmentsToEdit.length) ||
-              Boolean(snapConstraint) ||
+              snapConstraints.length > 0 ||
               draggedEntityId !== null)
           ) {
             result = await recoverKnownGoodResult(

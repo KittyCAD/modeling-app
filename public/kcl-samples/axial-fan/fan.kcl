@@ -2,7 +2,7 @@
 // Spinning axial fan that moves airflow
 
 // Set units
-@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Import parameters
 import * from "parameters.kcl"
@@ -37,12 +37,12 @@ sketch001 = sketch(on = XZ) {
 region001 = region(segments = [sketch001.line1, sketch001.arc2])
 hidden001 = hide(sketch001)
 fanCenter = revolve(
-       region001,
-       axis = {
-         direction = [0.0, 1.0],
-         origin = [0.0, 0.0]
-       },
-     )
+  region001,
+  axis = {
+    direction = [0.0, 1.0],
+    origin = [0.0, 0.0]
+  },
+)
   |> appearance(color = "#f3e2d8")
 
 // Define blade construction
@@ -87,12 +87,12 @@ region002 = region(segments = [bladeBase.arc1, bladeBase.arc2])
 hidden002 = hide(bladeBase)
 // Create the twisted blade solid and pattern
 twistedBlade = extrude(
-       region002,
-       length = bladeLengthZ,
-       twistAngle = bladeTwist,
-       twistAngleStep = 12deg,
-       twistCenter = [0, 0],
-     )
+  region002,
+  length = bladeLengthZ,
+  twistAngle = bladeTwist,
+  twistAngleStep = 12deg,
+  twistCenter = [0, 0],
+)
   |> appearance(color = "#f3e2d8")
   |> patternCircular3d(
        instances = 9,

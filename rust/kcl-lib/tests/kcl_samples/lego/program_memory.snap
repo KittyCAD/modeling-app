@@ -253,6 +253,7 @@ description: Variables in memory after executing lego.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
           "units": "in"
         },
         "startCapId": "[uuid]",
@@ -545,6 +546,7 @@ description: Variables in memory after executing lego.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
           "units": "in"
         },
         "startCapId": "[uuid]",
@@ -987,6 +989,7 @@ description: Variables in memory after executing lego.kcl
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
+                "originSketchId": "[uuid]",
                 "units": "in"
               },
               "startCapId": "[uuid]",
@@ -1032,6 +1035,7 @@ description: Variables in memory after executing lego.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
           "units": "in"
         },
         "startCapId": "[uuid]",
@@ -1275,6 +1279,7 @@ description: Variables in memory after executing lego.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",
@@ -1690,6 +1695,7 @@ description: Variables in memory after executing lego.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
+                  "originSketchId": "[uuid]",
                   "units": "in"
                 },
                 "startCapId": "[uuid]",
@@ -1723,6 +1729,7 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -2038,6 +2045,7 @@ description: Variables in memory after executing lego.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
+                  "originSketchId": "[uuid]",
                   "units": "in"
                 },
                 "startCapId": "[uuid]",
@@ -2071,6 +2079,7 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -2386,6 +2395,7 @@ description: Variables in memory after executing lego.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
+                  "originSketchId": "[uuid]",
                   "units": "in"
                 },
                 "startCapId": "[uuid]",
@@ -2419,6 +2429,7 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -2734,6 +2745,7 @@ description: Variables in memory after executing lego.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
+                  "originSketchId": "[uuid]",
                   "units": "in"
                 },
                 "startCapId": "[uuid]",
@@ -2767,6 +2779,7 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -3082,6 +3095,7 @@ description: Variables in memory after executing lego.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
+                  "originSketchId": "[uuid]",
                   "units": "in"
                 },
                 "startCapId": "[uuid]",
@@ -3115,6 +3129,7 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -3430,6 +3445,7 @@ description: Variables in memory after executing lego.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
+                  "originSketchId": "[uuid]",
                   "units": "in"
                 },
                 "startCapId": "[uuid]",
@@ -3463,6 +3479,7 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -3759,6 +3776,7 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -3792,6 +3810,7 @@ description: Variables in memory after executing lego.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "in"
     }
   },
@@ -4102,6 +4121,7 @@ description: Variables in memory after executing lego.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
+              "originSketchId": "[uuid]",
               "units": "in"
             },
             "startCapId": "[uuid]",
@@ -4135,6 +4155,7 @@ description: Variables in memory after executing lego.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",
@@ -4435,6 +4456,7 @@ description: Variables in memory after executing lego.kcl
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
+                    "originSketchId": "[uuid]",
                     "units": "in"
                   },
                   "startCapId": "[uuid]",
@@ -4804,6 +4826,7 @@ description: Variables in memory after executing lego.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "in"
                     },
                     "startCapId": "[uuid]",
@@ -5151,6 +5174,7 @@ description: Variables in memory after executing lego.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "in"
                     },
                     "startCapId": "[uuid]",
@@ -5423,6 +5447,7 @@ description: Variables in memory after executing lego.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
           "units": "in"
         },
         "startCapId": "[uuid]",
@@ -5621,6 +5646,7 @@ description: Variables in memory after executing lego.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "in"
     }
   },
@@ -5976,6 +6002,7 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -6021,6 +6048,7 @@ description: Variables in memory after executing lego.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "in"
     }
   },
@@ -6439,6 +6467,7 @@ description: Variables in memory after executing lego.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
+              "originSketchId": "[uuid]",
               "units": "in"
             },
             "startCapId": "[uuid]",
@@ -6484,6 +6513,7 @@ description: Variables in memory after executing lego.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",
@@ -7489,6 +7519,7 @@ description: Variables in memory after executing lego.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "in"
                     },
                     "startCapId": "[uuid]",
@@ -7836,6 +7867,7 @@ description: Variables in memory after executing lego.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "in"
                     },
                     "startCapId": "[uuid]",
@@ -8183,6 +8215,7 @@ description: Variables in memory after executing lego.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "in"
                     },
                     "startCapId": "[uuid]",
@@ -8530,6 +8563,7 @@ description: Variables in memory after executing lego.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "in"
                     },
                     "startCapId": "[uuid]",
@@ -8904,6 +8938,7 @@ description: Variables in memory after executing lego.kcl
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
+                    "originSketchId": "[uuid]",
                     "units": "in"
                   },
                   "startCapId": "[uuid]",
@@ -9024,10 +9059,10 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3722,
-                "end": 3732,
+                "commentStart": 3697,
+                "end": 3707,
                 "moduleId": 0,
-                "start": 3722,
+                "start": 3697,
                 "type": "TagDeclarator",
                 "value": "tubeCircle"
               },
@@ -9055,10 +9090,10 @@ description: Variables in memory after executing lego.kcl
                 ],
                 "radius": 2.4,
                 "tag": {
-                  "commentStart": 3722,
-                  "end": 3732,
+                  "commentStart": 3697,
+                  "end": 3707,
                   "moduleId": 0,
-                  "start": 3722,
+                  "start": 3697,
                   "type": "TagDeclarator",
                   "value": "tubeCircle"
                 },
@@ -9501,6 +9536,7 @@ description: Variables in memory after executing lego.kcl
                         },
                         "artifactId": "[uuid]",
                         "originalId": "[uuid]",
+                        "originSketchId": "[uuid]",
                         "units": "in"
                       },
                       "startCapId": "[uuid]",
@@ -9546,6 +9582,7 @@ description: Variables in memory after executing lego.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
+                  "originSketchId": "[uuid]",
                   "units": "in"
                 },
                 "startCapId": "[uuid]",
@@ -9579,6 +9616,7 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -9599,10 +9637,10 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3722,
-                "end": 3732,
+                "commentStart": 3697,
+                "end": 3707,
                 "moduleId": 0,
-                "start": 3722,
+                "start": 3697,
                 "type": "TagDeclarator",
                 "value": "tubeCircle"
               },
@@ -9630,10 +9668,10 @@ description: Variables in memory after executing lego.kcl
                 ],
                 "radius": 2.4,
                 "tag": {
-                  "commentStart": 3722,
-                  "end": 3732,
+                  "commentStart": 3697,
+                  "end": 3707,
                   "moduleId": 0,
-                  "start": 3722,
+                  "start": 3697,
                   "type": "TagDeclarator",
                   "value": "tubeCircle"
                 },
@@ -10076,6 +10114,7 @@ description: Variables in memory after executing lego.kcl
                         },
                         "artifactId": "[uuid]",
                         "originalId": "[uuid]",
+                        "originSketchId": "[uuid]",
                         "units": "in"
                       },
                       "startCapId": "[uuid]",
@@ -10121,6 +10160,7 @@ description: Variables in memory after executing lego.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
+                  "originSketchId": "[uuid]",
                   "units": "in"
                 },
                 "startCapId": "[uuid]",
@@ -10154,6 +10194,7 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -10186,10 +10227,10 @@ description: Variables in memory after executing lego.kcl
           ],
           "radius": 2.4,
           "tag": {
-            "commentStart": 3722,
-            "end": 3732,
+            "commentStart": 3697,
+            "end": 3707,
             "moduleId": 0,
-            "start": 3722,
+            "start": 3697,
             "type": "TagDeclarator",
             "value": "tubeCircle"
           },
@@ -10632,6 +10673,7 @@ description: Variables in memory after executing lego.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
+                  "originSketchId": "[uuid]",
                   "units": "in"
                 },
                 "startCapId": "[uuid]",
@@ -10677,6 +10719,7 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "in"
           },
           "startCapId": "[uuid]",
@@ -10710,6 +10753,7 @@ description: Variables in memory after executing lego.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "in"
     }
   },
@@ -10725,10 +10769,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3722,
-            "end": 3732,
+            "commentStart": 3697,
+            "end": 3707,
             "moduleId": 0,
-            "start": 3722,
+            "start": 3697,
             "type": "TagDeclarator",
             "value": "tubeCircle"
           },
@@ -10756,10 +10800,10 @@ description: Variables in memory after executing lego.kcl
             ],
             "radius": 2.4,
             "tag": {
-              "commentStart": 3722,
-              "end": 3732,
+              "commentStart": 3697,
+              "end": 3707,
               "moduleId": 0,
-              "start": 3722,
+              "start": 3697,
               "type": "TagDeclarator",
               "value": "tubeCircle"
             },
@@ -11202,6 +11246,7 @@ description: Variables in memory after executing lego.kcl
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
+                    "originSketchId": "[uuid]",
                     "units": "in"
                   },
                   "startCapId": "[uuid]",
@@ -11247,6 +11292,7 @@ description: Variables in memory after executing lego.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
+              "originSketchId": "[uuid]",
               "units": "in"
             },
             "startCapId": "[uuid]",
@@ -11280,6 +11326,7 @@ description: Variables in memory after executing lego.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "in"
       },
       "startCapId": "[uuid]",
@@ -11316,10 +11363,10 @@ description: Variables in memory after executing lego.kcl
                   ],
                   "radius": 2.4,
                   "tag": {
-                    "commentStart": 3722,
-                    "end": 3732,
+                    "commentStart": 3697,
+                    "end": 3707,
                     "moduleId": 0,
-                    "start": 3722,
+                    "start": 3697,
                     "type": "TagDeclarator",
                     "value": "tubeCircle"
                   },
@@ -11762,6 +11809,7 @@ description: Variables in memory after executing lego.kcl
                           },
                           "artifactId": "[uuid]",
                           "originalId": "[uuid]",
+                          "originSketchId": "[uuid]",
                           "units": "in"
                         },
                         "startCapId": "[uuid]",
@@ -11807,6 +11855,7 @@ description: Variables in memory after executing lego.kcl
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
+                    "originSketchId": "[uuid]",
                     "units": "in"
                   },
                   "startCapId": "[uuid]",
@@ -12358,6 +12407,7 @@ description: Variables in memory after executing lego.kcl
                             },
                             "artifactId": "[uuid]",
                             "originalId": "[uuid]",
+                            "originSketchId": "[uuid]",
                             "units": "in"
                           },
                           "startCapId": "[uuid]",
@@ -12403,6 +12453,7 @@ description: Variables in memory after executing lego.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "in"
                     },
                     "startCapId": "[uuid]",
@@ -12932,6 +12983,7 @@ description: Variables in memory after executing lego.kcl
                             },
                             "artifactId": "[uuid]",
                             "originalId": "[uuid]",
+                            "originSketchId": "[uuid]",
                             "units": "in"
                           },
                           "startCapId": "[uuid]",
@@ -12977,6 +13029,7 @@ description: Variables in memory after executing lego.kcl
                       },
                       "artifactId": "[uuid]",
                       "originalId": "[uuid]",
+                      "originSketchId": "[uuid]",
                       "units": "in"
                     },
                     "startCapId": "[uuid]",
@@ -13431,6 +13484,7 @@ description: Variables in memory after executing lego.kcl
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
+                "originSketchId": "[uuid]",
                 "units": "in"
               },
               "startCapId": "[uuid]",
@@ -13476,6 +13530,7 @@ description: Variables in memory after executing lego.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
           "units": "in"
         },
         "startCapId": "[uuid]",

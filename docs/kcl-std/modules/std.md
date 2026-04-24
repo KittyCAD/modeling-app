@@ -27,7 +27,7 @@ You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL gui
 * [`runtime`](/docs/kcl-std/modules/std-runtime)
 * [`sketch`](/docs/kcl-std/modules/std-sketch)
 * [`solid`](/docs/kcl-std/modules/std-solid)
-* [`solver::solver`](/docs/kcl-std/modules/std-solver)
+* [`solver`](/docs/kcl-std/modules/std-solver)
 * [`sweep::sweep`](/docs/kcl-std/modules/std-sweep)
 * [`transform`](/docs/kcl-std/modules/std-transform)
 * [`turns::turns`](/docs/kcl-std/modules/std-turns)
