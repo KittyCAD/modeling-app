@@ -85,10 +85,12 @@ export const ClientSideScene = ({
   cameraControls,
   enableTouchControls,
   sketchSolveStreamDimming = DEFAULT_SKETCH_SOLVE_STREAM_DIMMING,
+  forceHide = false,
 }: {
   cameraControls: CameraSystem
   enableTouchControls: boolean
   sketchSolveStreamDimming?: number
+  forceHide?: boolean
 }) => {
   const {
     kclManager: { sceneEntitiesManager, sceneInfra, engineCommandManager },
@@ -210,6 +212,7 @@ export const ClientSideScene = ({
         ? sketchSolveStreamDimming
         : DEFAULT_SKETCH_SOLVE_STREAM_DIMMING
       : null
+  const effectiveHideClient = forceHide || hideClient
 
   const sceneStyle: CSSProperties & { '--tw-bg-opacity'?: number } = { cursor }
   if (streamDimmingOpacity !== null) {
@@ -223,16 +226,16 @@ export const ClientSideScene = ({
         style={sceneStyle}
         data-testid="client-side-scene"
         className={`absolute inset-0 h-full w-full transition-all duration-300 ${
-          hideClient ? 'opacity-0' : 'opacity-100'
+          effectiveHideClient ? 'pointer-events-none opacity-0' : 'opacity-100'
         } ${
           hideServer || shouldApplyStreamDimming
             ? 'bg-chalkboard-10 dark:bg-chalkboard-100'
             : ''
         }`}
       ></div>
-      <Overlays />
-      <SketchSolveToolIconOverlay />
-      <EditingConstraintInput />
+      {!forceHide && <Overlays />}
+      {!forceHide && <SketchSolveToolIconOverlay />}
+      {!forceHide && <EditingConstraintInput />}
     </>
   )
 }

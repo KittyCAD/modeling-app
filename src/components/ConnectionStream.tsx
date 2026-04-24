@@ -1,6 +1,7 @@
 import type { MouseEventHandler } from 'react'
 import { use, useCallback, useMemo, useRef, useState } from 'react'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
+import { LocalWebGPUScene } from '@src/clientSideScene/LocalWebGPUScene'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 import { btnName } from '@src/lib/cameraControls'
@@ -33,6 +34,7 @@ import { EngineDebugger } from '@src/lib/debugger'
 import { getResolvedTheme, Themes } from '@src/lib/theme'
 
 const TIME_TO_CONNECT = 30_000
+const WEBGPU_PORT_LOG_PREFIX = '[WEBGPU_POC]'
 
 export const ConnectionStream = (props: {
   authToken: string | undefined
@@ -46,6 +48,7 @@ export const ConnectionStream = (props: {
   const [showManualConnect, setShowManualConnect] = useState(false)
   const isIdle = useRef(false)
   const [isSceneReady, setIsSceneReady] = useState(false)
+  const [isLocalRenderVisible, setIsLocalRenderVisible] = useState(false)
   const settingsValues = settings.useSettings()
   const { setAppState } = useAppState()
   const { overallState } = useNetworkContext()
@@ -449,6 +452,21 @@ export const ConnectionStream = (props: {
     [sceneInfra.camControls.wasDragging]
   )
 
+  const handleLocalVisibilityChange = useCallback((isVisible: boolean) => {
+    EngineDebugger.addLog({
+      label: 'ConnectionStream.tsx',
+      message: 'local webgpu visibility changed',
+      metadata: { isVisible },
+    })
+    console.info(
+      `${WEBGPU_PORT_LOG_PREFIX}[ConnectionStream] local webgpu visibility changed`,
+      {
+        isVisible,
+      }
+    )
+    setIsLocalRenderVisible(isVisible)
+  }, [])
+
   return (
     <div
       role="presentation"
@@ -468,24 +486,31 @@ export const ConnectionStream = (props: {
         key={id + 'video'}
         ref={videoRef}
         controls={false}
-        className={`w-full cursor-pointer h-full${safariObjectFitClass}`}
+        className={`w-full cursor-pointer h-full transition-opacity duration-200 ${
+          isLocalRenderVisible ? 'opacity-0' : 'opacity-100'
+        }${safariObjectFitClass}`}
         disablePictureInPicture
         id="video-stream"
       />
       <canvas
         key={id + 'canvas'}
         ref={canvasRef}
-        className="cursor-pointer"
+        className={isLocalRenderVisible ? 'opacity-0' : 'cursor-pointer'}
         id="freeze-frame"
       >
         No canvas support
       </canvas>
+      <LocalWebGPUScene
+        backgroundColor={style.backgroundColor}
+        onVisibilityChange={handleLocalVisibilityChange}
+      />
       <ClientSideScene
         cameraControls={settingsValues.modeling.mouseControls.current}
         enableTouchControls={
           settingsValues.modeling.enableTouchControls.current
         }
         sketchSolveStreamDimming={props.sketchSolveStreamDimming}
+        forceHide={isLocalRenderVisible}
       />
       <ViewControlContextMenu
         event="mouseup"

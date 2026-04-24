@@ -270,6 +270,13 @@ interface SystemDeps {
 
 export enum KclManagerEvents {
   LongExecution = 'long-execution',
+  ExecutionDone = 'execution-done',
+}
+
+export interface KclExecutionDoneDetail {
+  successful: boolean
+  isInterrupted: boolean
+  hasErrors: boolean
 }
 
 declare global {
@@ -1944,6 +1951,22 @@ export class KclManager extends File {
         projectDirectoryWithoutEndingSlash: projectFsManager.dir,
       })
     }
+
+    this.dispatchEvent(
+      new CustomEvent<KclExecutionDoneDetail>(KclManagerEvents.ExecutionDone, {
+        detail: {
+          successful: !isInterrupted && errors.length === 0,
+          isInterrupted,
+          hasErrors: errors.length > 0,
+        },
+      })
+    )
+    console.info('[KclManager] dispatched execution-done', {
+      successful: !isInterrupted && errors.length === 0,
+      isInterrupted,
+      hasErrors: errors.length > 0,
+      codeLength: codeThatExecuted.length,
+    })
   }
 
   /**
