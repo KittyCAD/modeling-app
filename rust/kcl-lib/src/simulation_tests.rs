@@ -4808,6 +4808,27 @@ mod sketch_on_face_loft_subtract {
         super::execute(TEST_NAME, true).await
     }
 }
+mod get_common_edge_of_segment_edge_tag {
+    const TEST_NAME: &str = "get_common_edge_of_segment_edge_tag";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod pos_literals {
     const TEST_NAME: &str = "pos_literals";
 

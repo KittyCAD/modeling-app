@@ -306,10 +306,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9299,
-            "end": 9304,
+            "commentStart": 9259,
+            "end": 9264,
             "moduleId": 0,
-            "start": 9299,
+            "start": 9259,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -320,10 +320,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9377,
-            "end": 9382,
+            "commentStart": 9337,
+            "end": 9342,
             "moduleId": 0,
-            "start": 9377,
+            "start": 9337,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -334,10 +334,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9455,
-            "end": 9460,
+            "commentStart": 9415,
+            "end": 9420,
             "moduleId": 0,
-            "start": 9455,
+            "start": 9415,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -348,10 +348,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9532,
-            "end": 9537,
+            "commentStart": 9492,
+            "end": 9497,
             "moduleId": 0,
-            "start": 9532,
+            "start": 9492,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -373,10 +373,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               1.15
             ],
             "tag": {
-              "commentStart": 9299,
-              "end": 9304,
+              "commentStart": 9259,
+              "end": 9264,
               "moduleId": 0,
-              "start": 9299,
+              "start": 9259,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -397,10 +397,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               2.25
             ],
             "tag": {
-              "commentStart": 9377,
-              "end": 9382,
+              "commentStart": 9337,
+              "end": 9342,
               "moduleId": 0,
-              "start": 9377,
+              "start": 9337,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -421,10 +421,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               2.25
             ],
             "tag": {
-              "commentStart": 9455,
-              "end": 9460,
+              "commentStart": 9415,
+              "end": 9420,
               "moduleId": 0,
-              "start": 9455,
+              "start": 9415,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -445,10 +445,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               1.15
             ],
             "tag": {
-              "commentStart": 9532,
-              "end": 9537,
+              "commentStart": 9492,
+              "end": 9497,
               "moduleId": 0,
-              "start": 9532,
+              "start": 9492,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1065,10 +1065,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     1.15
                   ],
                   "tag": {
-                    "commentStart": 9299,
-                    "end": 9304,
+                    "commentStart": 9259,
+                    "end": 9264,
                     "moduleId": 0,
-                    "start": 9299,
+                    "start": 9259,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1089,10 +1089,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     2.25
                   ],
                   "tag": {
-                    "commentStart": 9377,
-                    "end": 9382,
+                    "commentStart": 9337,
+                    "end": 9342,
                     "moduleId": 0,
-                    "start": 9377,
+                    "start": 9337,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1113,10 +1113,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     2.25
                   ],
                   "tag": {
-                    "commentStart": 9455,
-                    "end": 9460,
+                    "commentStart": 9415,
+                    "end": 9420,
                     "moduleId": 0,
-                    "start": 9455,
+                    "start": 9415,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1137,10 +1137,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     1.15
                   ],
                   "tag": {
-                    "commentStart": 9532,
-                    "end": 9537,
+                    "commentStart": 9492,
+                    "end": 9497,
                     "moduleId": 0,
-                    "start": 9532,
+                    "start": 9492,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -1245,10 +1245,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             1.15
           ],
           "tag": {
-            "commentStart": 9299,
-            "end": 9304,
+            "commentStart": 9259,
+            "end": 9264,
             "moduleId": 0,
-            "start": 9299,
+            "start": 9259,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1269,10 +1269,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             2.25
           ],
           "tag": {
-            "commentStart": 9377,
-            "end": 9382,
+            "commentStart": 9337,
+            "end": 9342,
             "moduleId": 0,
-            "start": 9377,
+            "start": 9337,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1293,10 +1293,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             2.25
           ],
           "tag": {
-            "commentStart": 9455,
-            "end": 9460,
+            "commentStart": 9415,
+            "end": 9420,
             "moduleId": 0,
-            "start": 9455,
+            "start": 9415,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1317,10 +1317,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             1.15
           ],
           "tag": {
-            "commentStart": 9532,
-            "end": 9537,
+            "commentStart": 9492,
+            "end": 9497,
             "moduleId": 0,
-            "start": 9532,
+            "start": 9492,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1415,10 +1415,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6618,
-            "end": 6623,
+            "commentStart": 6578,
+            "end": 6583,
             "moduleId": 0,
-            "start": 6618,
+            "start": 6578,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1429,10 +1429,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6683,
-            "end": 6688,
+            "commentStart": 6643,
+            "end": 6648,
             "moduleId": 0,
-            "start": 6683,
+            "start": 6643,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1443,10 +1443,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6748,
-            "end": 6753,
+            "commentStart": 6708,
+            "end": 6713,
             "moduleId": 0,
-            "start": 6748,
+            "start": 6708,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1457,10 +1457,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6813,
-            "end": 6818,
+            "commentStart": 6773,
+            "end": 6778,
             "moduleId": 0,
-            "start": 6813,
+            "start": 6773,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1482,10 +1482,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               0.7499999963999998
             ],
             "tag": {
-              "commentStart": 6618,
-              "end": 6623,
+              "commentStart": 6578,
+              "end": 6583,
               "moduleId": 0,
-              "start": 6618,
+              "start": 6578,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1506,10 +1506,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               0.7499999941499996
             ],
             "tag": {
-              "commentStart": 6683,
-              "end": 6688,
+              "commentStart": 6643,
+              "end": 6648,
               "moduleId": 0,
-              "start": 6683,
+              "start": 6643,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1530,10 +1530,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               1.1499999950499995
             ],
             "tag": {
-              "commentStart": 6748,
-              "end": 6753,
+              "commentStart": 6708,
+              "end": 6713,
               "moduleId": 0,
-              "start": 6748,
+              "start": 6708,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1554,10 +1554,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               1.1499999957999998
             ],
             "tag": {
-              "commentStart": 6813,
-              "end": 6818,
+              "commentStart": 6773,
+              "end": 6778,
               "moduleId": 0,
-              "start": 6813,
+              "start": 6773,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1657,10 +1657,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6618,
-            "end": 6623,
+            "commentStart": 6578,
+            "end": 6583,
             "moduleId": 0,
-            "start": 6618,
+            "start": 6578,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1671,10 +1671,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6683,
-            "end": 6688,
+            "commentStart": 6643,
+            "end": 6648,
             "moduleId": 0,
-            "start": 6683,
+            "start": 6643,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1685,10 +1685,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6748,
-            "end": 6753,
+            "commentStart": 6708,
+            "end": 6713,
             "moduleId": 0,
-            "start": 6748,
+            "start": 6708,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1699,10 +1699,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6813,
-            "end": 6818,
+            "commentStart": 6773,
+            "end": 6778,
             "moduleId": 0,
-            "start": 6813,
+            "start": 6773,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1724,10 +1724,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               0.7499999963999998
             ],
             "tag": {
-              "commentStart": 6618,
-              "end": 6623,
+              "commentStart": 6578,
+              "end": 6583,
               "moduleId": 0,
-              "start": 6618,
+              "start": 6578,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1748,10 +1748,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               0.7499999941499996
             ],
             "tag": {
-              "commentStart": 6683,
-              "end": 6688,
+              "commentStart": 6643,
+              "end": 6648,
               "moduleId": 0,
-              "start": 6683,
+              "start": 6643,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1772,10 +1772,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               1.1499999950499995
             ],
             "tag": {
-              "commentStart": 6748,
-              "end": 6753,
+              "commentStart": 6708,
+              "end": 6713,
               "moduleId": 0,
-              "start": 6748,
+              "start": 6708,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1796,10 +1796,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               1.1499999957999998
             ],
             "tag": {
-              "commentStart": 6813,
-              "end": 6818,
+              "commentStart": 6773,
+              "end": 6778,
               "moduleId": 0,
-              "start": 6813,
+              "start": 6773,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -2416,10 +2416,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     0.7499999963999998
                   ],
                   "tag": {
-                    "commentStart": 6618,
-                    "end": 6623,
+                    "commentStart": 6578,
+                    "end": 6583,
                     "moduleId": 0,
-                    "start": 6618,
+                    "start": 6578,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -2457,10 +2457,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     0.7499999941499996
                   ],
                   "tag": {
-                    "commentStart": 6683,
-                    "end": 6688,
+                    "commentStart": 6643,
+                    "end": 6648,
                     "moduleId": 0,
-                    "start": 6683,
+                    "start": 6643,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -2498,10 +2498,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     1.1499999950499995
                   ],
                   "tag": {
-                    "commentStart": 6748,
-                    "end": 6753,
+                    "commentStart": 6708,
+                    "end": 6713,
                     "moduleId": 0,
-                    "start": 6748,
+                    "start": 6708,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -2539,10 +2539,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     1.1499999957999998
                   ],
                   "tag": {
-                    "commentStart": 6813,
-                    "end": 6818,
+                    "commentStart": 6773,
+                    "end": 6778,
                     "moduleId": 0,
-                    "start": 6813,
+                    "start": 6773,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -2647,10 +2647,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             0.7499999963999998
           ],
           "tag": {
-            "commentStart": 6618,
-            "end": 6623,
+            "commentStart": 6578,
+            "end": 6583,
             "moduleId": 0,
-            "start": 6618,
+            "start": 6578,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2671,10 +2671,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             0.7499999941499996
           ],
           "tag": {
-            "commentStart": 6683,
-            "end": 6688,
+            "commentStart": 6643,
+            "end": 6648,
             "moduleId": 0,
-            "start": 6683,
+            "start": 6643,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2695,10 +2695,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             1.1499999950499995
           ],
           "tag": {
-            "commentStart": 6748,
-            "end": 6753,
+            "commentStart": 6708,
+            "end": 6713,
             "moduleId": 0,
-            "start": 6748,
+            "start": 6708,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2719,10 +2719,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             1.1499999957999998
           ],
           "tag": {
-            "commentStart": 6813,
-            "end": 6818,
+            "commentStart": 6773,
+            "end": 6778,
             "moduleId": 0,
-            "start": 6813,
+            "start": 6773,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3392,10 +3392,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 11867,
-            "end": 11874,
+            "commentStart": 11827,
+            "end": 11834,
             "moduleId": 0,
-            "start": 11867,
+            "start": 11827,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -3423,10 +3423,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             ],
             "radius": 0.175000000005,
             "tag": {
-              "commentStart": 11867,
-              "end": 11874,
+              "commentStart": 11827,
+              "end": 11834,
               "moduleId": 0,
-              "start": 11867,
+              "start": 11827,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -3528,10 +3528,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           ],
           "radius": 0.175000000005,
           "tag": {
-            "commentStart": 11867,
-            "end": 11874,
+            "commentStart": 11827,
+            "end": 11834,
             "moduleId": 0,
-            "start": 11867,
+            "start": 11827,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -5693,10 +5693,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 14038,
-                "end": 14045,
+                "commentStart": 13998,
+                "end": 14005,
                 "moduleId": 0,
-                "start": 14038,
+                "start": 13998,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -5724,10 +5724,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 ],
                 "radius": 0.1599999993650001,
                 "tag": {
-                  "commentStart": 14038,
-                  "end": 14045,
+                  "commentStart": 13998,
+                  "end": 14005,
                   "moduleId": 0,
-                  "start": 14038,
+                  "start": 13998,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -5831,10 +5831,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 ],
                 "radius": 0.1599999993650001,
                 "tag": {
-                  "commentStart": 14038,
-                  "end": 14045,
+                  "commentStart": 13998,
+                  "end": 14005,
                   "moduleId": 0,
-                  "start": 14038,
+                  "start": 13998,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -5988,10 +5988,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               ],
               "radius": 0.1599999993650001,
               "tag": {
-                "commentStart": 14038,
-                "end": 14045,
+                "commentStart": 13998,
+                "end": 14005,
                 "moduleId": 0,
-                "start": 14038,
+                "start": 13998,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -6084,10 +6084,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               ],
               "radius": 0.1599999993650001,
               "tag": {
-                "commentStart": 14038,
-                "end": 14045,
+                "commentStart": 13998,
+                "end": 14005,
                 "moduleId": 0,
-                "start": 14038,
+                "start": 13998,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -6317,10 +6317,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   ],
                   "radius": 0.1599999993650001,
                   "tag": {
-                    "commentStart": 14038,
-                    "end": 14045,
+                    "commentStart": 13998,
+                    "end": 14005,
                     "moduleId": 0,
-                    "start": 14038,
+                    "start": 13998,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -7118,10 +7118,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10616,
-            "end": 10621,
+            "commentStart": 10576,
+            "end": 10581,
             "moduleId": 0,
-            "start": 10616,
+            "start": 10576,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -7132,10 +7132,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10695,
-            "end": 10700,
+            "commentStart": 10655,
+            "end": 10660,
             "moduleId": 0,
-            "start": 10695,
+            "start": 10655,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -7146,10 +7146,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10773,
-            "end": 10778,
+            "commentStart": 10733,
+            "end": 10738,
             "moduleId": 0,
-            "start": 10773,
+            "start": 10733,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -7160,10 +7160,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10850,
-            "end": 10855,
+            "commentStart": 10810,
+            "end": 10815,
             "moduleId": 0,
-            "start": 10850,
+            "start": 10810,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -7185,10 +7185,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               2.25
             ],
             "tag": {
-              "commentStart": 10616,
-              "end": 10621,
+              "commentStart": 10576,
+              "end": 10581,
               "moduleId": 0,
-              "start": 10616,
+              "start": 10576,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -7209,10 +7209,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               2.35
             ],
             "tag": {
-              "commentStart": 10695,
-              "end": 10700,
+              "commentStart": 10655,
+              "end": 10660,
               "moduleId": 0,
-              "start": 10695,
+              "start": 10655,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -7233,10 +7233,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               2.35
             ],
             "tag": {
-              "commentStart": 10773,
-              "end": 10778,
+              "commentStart": 10733,
+              "end": 10738,
               "moduleId": 0,
-              "start": 10773,
+              "start": 10733,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -7257,10 +7257,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               2.25
             ],
             "tag": {
-              "commentStart": 10850,
-              "end": 10855,
+              "commentStart": 10810,
+              "end": 10815,
               "moduleId": 0,
-              "start": 10850,
+              "start": 10810,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -7868,10 +7868,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     2.25
                   ],
                   "tag": {
-                    "commentStart": 10616,
-                    "end": 10621,
+                    "commentStart": 10576,
+                    "end": 10581,
                     "moduleId": 0,
-                    "start": 10616,
+                    "start": 10576,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -7892,10 +7892,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     2.35
                   ],
                   "tag": {
-                    "commentStart": 10695,
-                    "end": 10700,
+                    "commentStart": 10655,
+                    "end": 10660,
                     "moduleId": 0,
-                    "start": 10695,
+                    "start": 10655,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -7916,10 +7916,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     2.35
                   ],
                   "tag": {
-                    "commentStart": 10773,
-                    "end": 10778,
+                    "commentStart": 10733,
+                    "end": 10738,
                     "moduleId": 0,
-                    "start": 10773,
+                    "start": 10733,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -7940,10 +7940,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     2.25
                   ],
                   "tag": {
-                    "commentStart": 10850,
-                    "end": 10855,
+                    "commentStart": 10810,
+                    "end": 10815,
                     "moduleId": 0,
-                    "start": 10850,
+                    "start": 10810,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -8048,10 +8048,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             2.25
           ],
           "tag": {
-            "commentStart": 10616,
-            "end": 10621,
+            "commentStart": 10576,
+            "end": 10581,
             "moduleId": 0,
-            "start": 10616,
+            "start": 10576,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -8072,10 +8072,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             2.35
           ],
           "tag": {
-            "commentStart": 10695,
-            "end": 10700,
+            "commentStart": 10655,
+            "end": 10660,
             "moduleId": 0,
-            "start": 10695,
+            "start": 10655,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -8096,10 +8096,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             2.35
           ],
           "tag": {
-            "commentStart": 10773,
-            "end": 10778,
+            "commentStart": 10733,
+            "end": 10738,
             "moduleId": 0,
-            "start": 10773,
+            "start": 10733,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -8120,10 +8120,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             2.25
           ],
           "tag": {
-            "commentStart": 10850,
-            "end": 10855,
+            "commentStart": 10810,
+            "end": 10815,
             "moduleId": 0,
-            "start": 10850,
+            "start": 10810,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -8221,10 +8221,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 14912,
-                "end": 14917,
+                "commentStart": 14872,
+                "end": 14877,
                 "moduleId": 0,
-                "start": 14912,
+                "start": 14872,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -8235,10 +8235,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 14977,
-                "end": 14982,
+                "commentStart": 14937,
+                "end": 14942,
                 "moduleId": 0,
-                "start": 14977,
+                "start": 14937,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -8249,10 +8249,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15042,
-                "end": 15047,
+                "commentStart": 15002,
+                "end": 15007,
                 "moduleId": 0,
-                "start": 15042,
+                "start": 15002,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -8263,10 +8263,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15107,
-                "end": 15112,
+                "commentStart": 15067,
+                "end": 15072,
                 "moduleId": 0,
-                "start": 15107,
+                "start": 15067,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -8288,10 +8288,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   0.8299999963999998
                 ],
                 "tag": {
-                  "commentStart": 14912,
-                  "end": 14917,
+                  "commentStart": 14872,
+                  "end": 14877,
                   "moduleId": 0,
-                  "start": 14912,
+                  "start": 14872,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -8312,10 +8312,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   0.8299999939099996
                 ],
                 "tag": {
-                  "commentStart": 14977,
-                  "end": 14982,
+                  "commentStart": 14937,
+                  "end": 14942,
                   "moduleId": 0,
-                  "start": 14977,
+                  "start": 14937,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -8336,10 +8336,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   1.0699999957699997
                 ],
                 "tag": {
-                  "commentStart": 15042,
-                  "end": 15047,
+                  "commentStart": 15002,
+                  "end": 15007,
                   "moduleId": 0,
-                  "start": 15042,
+                  "start": 15002,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -8360,10 +8360,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   1.0699999961199997
                 ],
                 "tag": {
-                  "commentStart": 15107,
-                  "end": 15112,
+                  "commentStart": 15067,
+                  "end": 15072,
                   "moduleId": 0,
-                  "start": 15107,
+                  "start": 15067,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -8473,10 +8473,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   0.8299999963999998
                 ],
                 "tag": {
-                  "commentStart": 14912,
-                  "end": 14917,
+                  "commentStart": 14872,
+                  "end": 14877,
                   "moduleId": 0,
-                  "start": 14912,
+                  "start": 14872,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -8497,10 +8497,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   0.8299999939099996
                 ],
                 "tag": {
-                  "commentStart": 14977,
-                  "end": 14982,
+                  "commentStart": 14937,
+                  "end": 14942,
                   "moduleId": 0,
-                  "start": 14977,
+                  "start": 14937,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -8521,10 +8521,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   1.0699999957699997
                 ],
                 "tag": {
-                  "commentStart": 15042,
-                  "end": 15047,
+                  "commentStart": 15002,
+                  "end": 15007,
                   "moduleId": 0,
-                  "start": 15042,
+                  "start": 15002,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -8545,10 +8545,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   1.0699999961199997
                 ],
                 "tag": {
-                  "commentStart": 15107,
-                  "end": 15112,
+                  "commentStart": 15067,
+                  "end": 15072,
                   "moduleId": 0,
-                  "start": 15107,
+                  "start": 15067,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -8726,10 +8726,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 0.8299999963999998
               ],
               "tag": {
-                "commentStart": 14912,
-                "end": 14917,
+                "commentStart": 14872,
+                "end": 14877,
                 "moduleId": 0,
-                "start": 14912,
+                "start": 14872,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -8750,10 +8750,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 0.8299999939099996
               ],
               "tag": {
-                "commentStart": 14977,
-                "end": 14982,
+                "commentStart": 14937,
+                "end": 14942,
                 "moduleId": 0,
-                "start": 14977,
+                "start": 14937,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -8774,10 +8774,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 1.0699999957699997
               ],
               "tag": {
-                "commentStart": 15042,
-                "end": 15047,
+                "commentStart": 15002,
+                "end": 15007,
                 "moduleId": 0,
-                "start": 15042,
+                "start": 15002,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -8798,10 +8798,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 1.0699999961199997
               ],
               "tag": {
-                "commentStart": 15107,
-                "end": 15112,
+                "commentStart": 15067,
+                "end": 15072,
                 "moduleId": 0,
-                "start": 15107,
+                "start": 15067,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -8900,10 +8900,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 0.8299999963999998
               ],
               "tag": {
-                "commentStart": 14912,
-                "end": 14917,
+                "commentStart": 14872,
+                "end": 14877,
                 "moduleId": 0,
-                "start": 14912,
+                "start": 14872,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -8924,10 +8924,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 0.8299999939099996
               ],
               "tag": {
-                "commentStart": 14977,
-                "end": 14982,
+                "commentStart": 14937,
+                "end": 14942,
                 "moduleId": 0,
-                "start": 14977,
+                "start": 14937,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -8948,10 +8948,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 1.0699999957699997
               ],
               "tag": {
-                "commentStart": 15042,
-                "end": 15047,
+                "commentStart": 15002,
+                "end": 15007,
                 "moduleId": 0,
-                "start": 15042,
+                "start": 15002,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -8972,10 +8972,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 1.0699999961199997
               ],
               "tag": {
-                "commentStart": 15107,
-                "end": 15112,
+                "commentStart": 15067,
+                "end": 15072,
                 "moduleId": 0,
-                "start": 15107,
+                "start": 15067,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -9571,10 +9571,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     0.8299999963999998
                   ],
                   "tag": {
-                    "commentStart": 14912,
-                    "end": 14917,
+                    "commentStart": 14872,
+                    "end": 14877,
                     "moduleId": 0,
-                    "start": 14912,
+                    "start": 14872,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -9612,10 +9612,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     0.8299999939099996
                   ],
                   "tag": {
-                    "commentStart": 14977,
-                    "end": 14982,
+                    "commentStart": 14937,
+                    "end": 14942,
                     "moduleId": 0,
-                    "start": 14977,
+                    "start": 14937,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -9653,10 +9653,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     1.0699999957699997
                   ],
                   "tag": {
-                    "commentStart": 15042,
-                    "end": 15047,
+                    "commentStart": 15002,
+                    "end": 15007,
                     "moduleId": 0,
-                    "start": 15042,
+                    "start": 15002,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -9694,10 +9694,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     1.0699999961199997
                   ],
                   "tag": {
-                    "commentStart": 15107,
-                    "end": 15112,
+                    "commentStart": 15067,
+                    "end": 15072,
                     "moduleId": 0,
-                    "start": 15107,
+                    "start": 15067,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -9807,10 +9807,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7973,
-            "end": 7978,
+            "commentStart": 7933,
+            "end": 7938,
             "moduleId": 0,
-            "start": 7973,
+            "start": 7933,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -9821,10 +9821,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8052,
-            "end": 8057,
+            "commentStart": 8012,
+            "end": 8017,
             "moduleId": 0,
-            "start": 8052,
+            "start": 8012,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -9835,10 +9835,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8130,
-            "end": 8135,
+            "commentStart": 8090,
+            "end": 8095,
             "moduleId": 0,
-            "start": 8130,
+            "start": 8090,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -9849,10 +9849,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8207,
-            "end": 8212,
+            "commentStart": 8167,
+            "end": 8172,
             "moduleId": 0,
-            "start": 8207,
+            "start": 8167,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -9874,10 +9874,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               -0.81
             ],
             "tag": {
-              "commentStart": 7973,
-              "end": 7978,
+              "commentStart": 7933,
+              "end": 7938,
               "moduleId": 0,
-              "start": 7973,
+              "start": 7933,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -9898,10 +9898,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               -0.81
             ],
             "tag": {
-              "commentStart": 8052,
-              "end": 8057,
+              "commentStart": 8012,
+              "end": 8017,
               "moduleId": 0,
-              "start": 8052,
+              "start": 8012,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -9922,10 +9922,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               0.81
             ],
             "tag": {
-              "commentStart": 8130,
-              "end": 8135,
+              "commentStart": 8090,
+              "end": 8095,
               "moduleId": 0,
-              "start": 8130,
+              "start": 8090,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -9946,10 +9946,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               0.81
             ],
             "tag": {
-              "commentStart": 8207,
-              "end": 8212,
+              "commentStart": 8167,
+              "end": 8172,
               "moduleId": 0,
-              "start": 8207,
+              "start": 8167,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -10104,10 +10104,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             -0.81
           ],
           "tag": {
-            "commentStart": 7973,
-            "end": 7978,
+            "commentStart": 7933,
+            "end": 7938,
             "moduleId": 0,
-            "start": 7973,
+            "start": 7933,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -10128,10 +10128,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             -0.81
           ],
           "tag": {
-            "commentStart": 8052,
-            "end": 8057,
+            "commentStart": 8012,
+            "end": 8017,
             "moduleId": 0,
-            "start": 8052,
+            "start": 8012,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -10152,10 +10152,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             0.81
           ],
           "tag": {
-            "commentStart": 8130,
-            "end": 8135,
+            "commentStart": 8090,
+            "end": 8095,
             "moduleId": 0,
-            "start": 8130,
+            "start": 8090,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -10176,10 +10176,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             0.81
           ],
           "tag": {
-            "commentStart": 8207,
-            "end": 8212,
+            "commentStart": 8167,
+            "end": 8172,
             "moduleId": 0,
-            "start": 8207,
+            "start": 8167,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -10764,10 +10764,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     -0.81
                   ],
                   "tag": {
-                    "commentStart": 7973,
-                    "end": 7978,
+                    "commentStart": 7933,
+                    "end": 7938,
                     "moduleId": 0,
-                    "start": 7973,
+                    "start": 7933,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -10788,10 +10788,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     -0.81
                   ],
                   "tag": {
-                    "commentStart": 8052,
-                    "end": 8057,
+                    "commentStart": 8012,
+                    "end": 8017,
                     "moduleId": 0,
-                    "start": 8052,
+                    "start": 8012,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -10812,10 +10812,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     0.81
                   ],
                   "tag": {
-                    "commentStart": 8130,
-                    "end": 8135,
+                    "commentStart": 8090,
+                    "end": 8095,
                     "moduleId": 0,
-                    "start": 8130,
+                    "start": 8090,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -10836,10 +10836,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     0.81
                   ],
                   "tag": {
-                    "commentStart": 8207,
-                    "end": 8212,
+                    "commentStart": 8167,
+                    "end": 8172,
                     "moduleId": 0,
-                    "start": 8207,
+                    "start": 8167,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -12165,10 +12165,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11782,
-                "end": 11789,
+                "commentStart": 11742,
+                "end": 11749,
                 "moduleId": 0,
-                "start": 11782,
+                "start": 11742,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -12196,10 +12196,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 ],
                 "radius": 0.34999999997,
                 "tag": {
-                  "commentStart": 11782,
-                  "end": 11789,
+                  "commentStart": 11742,
+                  "end": 11749,
                   "moduleId": 0,
-                  "start": 11782,
+                  "start": 11742,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -12291,10 +12291,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11867,
-                "end": 11874,
+                "commentStart": 11827,
+                "end": 11834,
                 "moduleId": 0,
-                "start": 11867,
+                "start": 11827,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -12322,10 +12322,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 11867,
-                  "end": 11874,
+                  "commentStart": 11827,
+                  "end": 11834,
                   "moduleId": 0,
-                  "start": 11867,
+                  "start": 11827,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -12422,10 +12422,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11782,
-                "end": 11789,
+                "commentStart": 11742,
+                "end": 11749,
                 "moduleId": 0,
-                "start": 11782,
+                "start": 11742,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -12453,10 +12453,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 ],
                 "radius": 0.34999999997,
                 "tag": {
-                  "commentStart": 11782,
-                  "end": 11789,
+                  "commentStart": 11742,
+                  "end": 11749,
                   "moduleId": 0,
-                  "start": 11782,
+                  "start": 11742,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -12548,10 +12548,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11867,
-                "end": 11874,
+                "commentStart": 11827,
+                "end": 11834,
                 "moduleId": 0,
-                "start": 11867,
+                "start": 11827,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -12579,10 +12579,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 11867,
-                  "end": 11874,
+                  "commentStart": 11827,
+                  "end": 11834,
                   "moduleId": 0,
-                  "start": 11867,
+                  "start": 11827,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -12686,10 +12686,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           ],
           "radius": 0.34999999997,
           "tag": {
-            "commentStart": 11782,
-            "end": 11789,
+            "commentStart": 11742,
+            "end": 11749,
             "moduleId": 0,
-            "start": 11782,
+            "start": 11742,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -12779,10 +12779,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11782,
-                "end": 11789,
+                "commentStart": 11742,
+                "end": 11749,
                 "moduleId": 0,
-                "start": 11782,
+                "start": 11742,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -12810,10 +12810,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 ],
                 "radius": 0.34999999997,
                 "tag": {
-                  "commentStart": 11782,
-                  "end": 11789,
+                  "commentStart": 11742,
+                  "end": 11749,
                   "moduleId": 0,
-                  "start": 11782,
+                  "start": 11742,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -12905,10 +12905,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11867,
-                "end": 11874,
+                "commentStart": 11827,
+                "end": 11834,
                 "moduleId": 0,
-                "start": 11867,
+                "start": 11827,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -12936,10 +12936,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 11867,
-                  "end": 11874,
+                  "commentStart": 11827,
+                  "end": 11834,
                   "moduleId": 0,
-                  "start": 11867,
+                  "start": 11827,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -13036,10 +13036,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11782,
-                "end": 11789,
+                "commentStart": 11742,
+                "end": 11749,
                 "moduleId": 0,
-                "start": 11782,
+                "start": 11742,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -13067,10 +13067,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 ],
                 "radius": 0.34999999997,
                 "tag": {
-                  "commentStart": 11782,
-                  "end": 11789,
+                  "commentStart": 11742,
+                  "end": 11749,
                   "moduleId": 0,
-                  "start": 11782,
+                  "start": 11742,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -13162,10 +13162,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11867,
-                "end": 11874,
+                "commentStart": 11827,
+                "end": 11834,
                 "moduleId": 0,
-                "start": 11867,
+                "start": 11827,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -13193,10 +13193,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 11867,
-                  "end": 11874,
+                  "commentStart": 11827,
+                  "end": 11834,
                   "moduleId": 0,
-                  "start": 11867,
+                  "start": 11827,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -13667,10 +13667,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   ],
                   "radius": 0.34999999997,
                   "tag": {
-                    "commentStart": 11782,
-                    "end": 11789,
+                    "commentStart": 11742,
+                    "end": 11749,
                     "moduleId": 0,
-                    "start": 11782,
+                    "start": 11742,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -13714,10 +13714,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   ],
                   "radius": 0.175000000005,
                   "tag": {
-                    "commentStart": 11867,
-                    "end": 11874,
+                    "commentStart": 11827,
+                    "end": 11834,
                     "moduleId": 0,
-                    "start": 11867,
+                    "start": 11827,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },
@@ -13810,10 +13810,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 11782,
-            "end": 11789,
+            "commentStart": 11742,
+            "end": 11749,
             "moduleId": 0,
-            "start": 11782,
+            "start": 11742,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -13841,10 +13841,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             ],
             "radius": 0.34999999997,
             "tag": {
-              "commentStart": 11782,
-              "end": 11789,
+              "commentStart": 11742,
+              "end": 11749,
               "moduleId": 0,
-              "start": 11782,
+              "start": 11742,
               "type": "TagDeclarator",
               "value": "circle1"
             },

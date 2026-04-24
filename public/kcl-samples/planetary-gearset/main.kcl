@@ -15,12 +15,12 @@ gear::ring(
 
 // Create a central sun gear using a small helical gear
 gear::helical(
-       nTeeth = 12,
-       module = 1.5,
-       pressureAngle = 14deg,
-       helixAngle = 25deg,
-       gearHeight = 5,
-     )
+  nTeeth = 12,
+  module = 1.5,
+  pressureAngle = 14deg,
+  helixAngle = 25deg,
+  gearHeight = 5,
+)
   |> rotate(yaw = -4)
 
 // Create the first helical planet gear

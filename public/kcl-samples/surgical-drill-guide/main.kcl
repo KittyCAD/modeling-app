@@ -221,11 +221,11 @@ grip01Region = region(
 hide(grip01Sketch)
 
 grip01 = extrude(
-       grip01Region,
-       length = -10,
-       tagEnd = $capEnd005,
-       tagStart = $capStart003,
-     )
+  grip01Region,
+  length = -10,
+  tagEnd = $capEnd005,
+  tagStart = $capStart003,
+)
   |> fillet(
        radius = 1,
        tags = [
@@ -349,11 +349,11 @@ grip02Region = region(
 hide(grip02Sketch)
 
 grip02 = extrude(
-       grip02Region,
-       length = -10,
-       tagStart = $capStart002,
-       tagEnd = $capEnd002,
-     )
+  grip02Region,
+  length = -10,
+  tagStart = $capStart002,
+  tagEnd = $capEnd002,
+)
   |> fillet(
        radius = 1,
        tags = [

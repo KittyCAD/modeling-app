@@ -111,18 +111,18 @@ sectionSketch = sketch(on = XZ) {
 
 sectionRegion = region(segments = [sectionSketch.sectionCircle])
 hook = sweep(
-       sectionRegion,
-       path = [
-         hookPath.lowerTip,
-         hookPath.lowerBend,
-         hookPath.lowerBridge,
-         hookPath.upperEntry,
-         hookPath.connector,
-         hookPath.upperBottom,
-         hookPath.upperLowerBend,
-         hookPath.upperSide,
-         hookPath.upperTopBend,
-         hookPath.upperTop
-       ],
-     )
+  sectionRegion,
+  path = [
+    hookPath.lowerTip,
+    hookPath.lowerBend,
+    hookPath.lowerBridge,
+    hookPath.upperEntry,
+    hookPath.connector,
+    hookPath.upperBottom,
+    hookPath.upperLowerBend,
+    hookPath.upperSide,
+    hookPath.upperTopBend,
+    hookPath.upperTop
+  ],
+)
   |> appearance(color = "#8a8e93", metalness = 100, roughness = 50)
