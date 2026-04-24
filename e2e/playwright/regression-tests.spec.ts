@@ -202,23 +202,21 @@ extrude001 = extrude(sketch001, length = 50)
       })
       await selectXZPlane()
       await page.waitForTimeout(600)
-      await expect(editor.codeContent).toContainText(
-        /startSketchOn\(XZ\)|sketch\(on = XZ\)/
-      )
+      await editor.expectEditor.toContain('sketch(on = XZ)')
 
       const [lineStart] = scene.makeMouseHelpers(0.5, 0.8, { format: 'ratio' })
       const [lineEnd] = scene.makeMouseHelpers(0.5, 0.2, { format: 'ratio' })
       await lineStart()
       await page.waitForTimeout(300)
       await lineEnd()
-      await editor.expectEditor.toContain('|> yLine(')
+      await editor.expectEditor.toContain('line(')
       await toolbar.exitSketch()
       await page.waitForTimeout(2_000)
     })
 
     await test.step('Navigate to same file again to verify code persists', async () => {
       await page.reload()
-      await expect(editor.codeContent).toContainText('yLine')
+      await expect(editor.codeContent).toContainText('line(')
     })
   })
   test('ProgramMemory can be serialised', async ({ page, homePage, scene }) => {
@@ -734,10 +732,7 @@ extrude002 = extrude(profile002, length = 150)`
       await toolbar.expectToolbarMode.not.toBe('modeling')
 
       // After animation completes, we should see the sketching toolbar
-      await expect(page.locator('[data-current-mode]')).toHaveAttribute(
-        'data-current-mode',
-        /sketching|sketchSolve/
-      )
+      await toolbar.expectToolbarMode.toBe('sketchSolve')
     })
   })
 
@@ -830,10 +825,7 @@ washer = extrude(washerSketch, length = thicknessMax)`
       await toolbar.startSketchPlaneSelection()
       await washerFaceClick()
       await page.waitForTimeout(600) // engine animation
-      await expect(page.locator('[data-current-mode]')).toHaveAttribute(
-        'data-current-mode',
-        /sketching|sketchSolve/
-      )
+      await toolbar.expectToolbarMode.toBe('sketchSolve')
     })
 
     await test.step('Draw a circle and verify code', async () => {

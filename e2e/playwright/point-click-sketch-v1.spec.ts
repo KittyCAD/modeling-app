@@ -343,10 +343,6 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
     // Constants and locators
     // These are mappings from screenspace to KCL coordinates,
     // until we merge in our coordinate system helpers
-    const xzPlane = [
-      viewPortSize.width * 0.65,
-      viewPortSize.height * 0.3,
-    ] as const
     const originSloppy = {
       screen: [
         viewPortSize.width / 2 + 3, // 3px off the center of the screen
@@ -1140,15 +1136,6 @@ profile001 = ${circleCode}`
 extrude001 = extrude(sketch001, length = -12)
 `
     const firstFilletDeclaration = `fillet001 = fillet(extrude001, tags=getCommonEdge(faces=[seg01,capEnd001]), radius=5)`
-    const secondFilletDeclaration = `fillet002 = fillet(extrude001, tags=getCommonEdge(faces=[seg01,capStart001]), radius=5)`
-
-    // Locators
-    // TODO: find a way to not have hardcoded pixel values for sweepEdges
-    const secondEdgeLocation = { x: 600, y: 383 }
-    const [clickOnSecondEdge] = scene.makeMouseHelpers(
-      secondEdgeLocation.x,
-      secondEdgeLocation.y
-    )
 
     // Setup
     await test.step(`Initial test setup`, async () => {

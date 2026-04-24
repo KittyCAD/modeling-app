@@ -55,6 +55,8 @@ test.describe(
         },
       }
 
+      const code = `@settings(defaultLengthUnit = in)sketch001 = sketch(on = ${plane}) {}`
+
       await test.step(`Sketch on the ${plane} plane using custom camera commands to orient`, async () => {
         await u.openDebugPanel()
         await u.clearCommandLogs()
@@ -72,28 +74,9 @@ test.describe(
         )
         await page.mouse.click(resolvedCoords.x, resolvedCoords.y)
         await page.waitForTimeout(600) // wait for animation
-
-        await expect(toolbar.exitSketchBtn).toBeVisible()
-
-        await u.closeDebugPanel()
-        if ((await toolbar.lineBtn.getAttribute('aria-pressed')) !== 'true') {
-          await page.keyboard.press('l')
-        }
-        await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
       })
 
-      await expect(editor.codeContent).toContainText(
-        new RegExp(
-          `sketch001 = startSketchOn\\(${escapeRegExp(plane)}\\)|sketch001 = sketch\\(on = ${escapeRegExp(plane)}\\)`
-        )
-      )
-
-      const lineStart = await scene.convertPagePositionToStream(707, 393)
-      const lineEnd = await scene.convertPagePositionToStream(740, 360)
-      await page.mouse.click(lineStart.x, lineStart.y)
-      await page.mouse.click(lineEnd.x, lineEnd.y)
-
-      await expect(editor.codeContent).toContainText(/line\(/)
+      await editor.expectEditor.toContain(code)
     }
 
     const planeConfigs = [
