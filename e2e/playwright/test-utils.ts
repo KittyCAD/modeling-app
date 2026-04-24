@@ -947,6 +947,13 @@ export async function setup(
   page: Page,
   testInfo?: TestInfo
 ) {
+  const testProjectSettings =
+    TEST_SETTINGS.project &&
+    typeof TEST_SETTINGS.project === 'object' &&
+    !isArray(TEST_SETTINGS.project)
+      ? TEST_SETTINGS.project
+      : undefined
+
   await page.addInitScript(
     async ({
       token,
@@ -985,13 +992,13 @@ export async function setup(
               ...TEST_SETTINGS.app?.appearance,
               theme: 'dark',
             },
-            ...TEST_SETTINGS.project,
+            ...testProjectSettings,
             onboarding_status: 'dismissed',
           },
           project: {
-            ...TEST_SETTINGS.project,
-            ...(TEST_SETTINGS.project?.directory !== undefined
-              ? { directory: TEST_SETTINGS.project.directory }
+            ...testProjectSettings,
+            ...(typeof testProjectSettings?.directory === 'string'
+              ? { directory: testProjectSettings.directory }
               : {}),
           },
         },

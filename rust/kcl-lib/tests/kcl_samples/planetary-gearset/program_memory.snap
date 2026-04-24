@@ -26,7 +26,7 @@ description: Variables in memory after executing planetary-gearset.kcl
           "tag": {
             "commentStart": 1035,
             "end": 1041,
-            "moduleId": 16,
+            "moduleId": 15,
             "start": 1035,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -72,7 +72,7 @@ description: Variables in memory after executing planetary-gearset.kcl
             "tag": {
               "commentStart": 1035,
               "end": 1041,
-              "moduleId": 16,
+              "moduleId": 15,
               "start": 1035,
               "type": "TagDeclarator",
               "value": "seg01"

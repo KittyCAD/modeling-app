@@ -233,7 +233,7 @@ impl Backend {
         fs: crate::fs::FileManager,
         zoo_client: kittycad::Client,
     ) -> Result<Self, String> {
-        let kcl_std = crate::docs::kcl_doc::walk_prelude();
+        let kcl_std = crate::docs::kcl_doc::walk_stdlib();
         let stdlib_completions = get_completions_from_stdlib(&kcl_std).map_err(|e| e.to_string())?;
         let sketch_block_stdlib_completions =
             get_completions_from_stdlib_for_sketch_block(&kcl_std).map_err(|e| e.to_string())?;

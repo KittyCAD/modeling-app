@@ -63,7 +63,6 @@ describe(`testing settings initialization`, () => {
     const projectConfiguration: DeepPartial<ProjectConfiguration> = {
       settings: {
         app: {
-          // @ts-expect-error: our types are smart enough to know this isn't valid, but we're testing it.
           appearance: {
             theme: 'light',
           },
@@ -163,12 +162,35 @@ describe('testing hiddenOnPlatform', () => {
 // this regression test protects against that.
 
 describe('project settings serialization regression', () => {
-  it('preserves app-owned text editor settings through user settings wasm round-trip', async () => {
+  it('preserves app-owned user settings through wasm round-trip', async () => {
     const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
     const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
 
     const serializedToml = serializeConfiguration(
       settingsPayloadToConfiguration({
+        app: {
+          onboardingStatus: 'dismissed',
+          allowOrbitInSketchMode: true,
+          showDebugPanel: true,
+          machineApi: true,
+          projectDirectory: '/tmp/projects',
+        },
+        projects: {
+          defaultProjectName: 'plugin-template',
+        },
+        modeling: {
+          mouseControls: 'OnShape',
+          gizmoType: 'axis',
+          enableTouchControls: false,
+          useSketchSolveMode: false,
+          snapToGrid: true,
+          majorGridSpacing: 2.5,
+          minorGridsPerMajor: 5,
+          snapsPerMinor: 3,
+        },
+        commandBar: {
+          includeSettings: false,
+        },
         textEditor: {
           textWrapping: false,
           blinkingCursor: false,
@@ -178,6 +200,23 @@ describe('project settings serialization regression', () => {
     )
     if (serializedToml instanceof Error) throw serializedToml
 
+    expect(serializedToml).toContain('onboarding_status = "dismissed"')
+    expect(serializedToml).toContain('allow_orbit_in_sketch_mode = true')
+    expect(serializedToml).toContain('show_debug_panel = true')
+    expect(serializedToml).toContain('machine_api = true')
+    expect(serializedToml).toContain('mouse_controls = "onshape"')
+    expect(serializedToml).toContain('gizmo_type = "axis"')
+    expect(serializedToml).toContain('enable_touch_controls = false')
+    expect(serializedToml).toContain('use_sketch_solve_mode = false')
+    expect(serializedToml).toContain('snap_to_grid = true')
+    expect(serializedToml).toContain('major_grid_spacing = 2.5')
+    expect(serializedToml).toContain('minor_grids_per_major = 5')
+    expect(serializedToml).toContain('snaps_per_minor = 3')
+    expect(serializedToml).toContain('[settings.project]')
+    expect(serializedToml).toContain('directory = "/tmp/projects"')
+    expect(serializedToml).toContain('default_project_name = "plugin-template"')
+    expect(serializedToml).toContain('[settings.command_bar]')
+    expect(serializedToml).toContain('include_settings = false')
     expect(serializedToml).toContain('[settings.text_editor]')
     expect(serializedToml).toContain('text_wrapping = false')
     expect(serializedToml).toContain('blinking_cursor = false')
@@ -186,6 +225,21 @@ describe('project settings serialization regression', () => {
     if (parsedConfiguration instanceof Error) throw parsedConfiguration
 
     const parsedPayload = configurationToSettingsPayload(parsedConfiguration)
+    expect(parsedPayload.app?.onboardingStatus).toBe('dismissed')
+    expect(parsedPayload.app?.allowOrbitInSketchMode).toBe(true)
+    expect(parsedPayload.app?.showDebugPanel).toBe(true)
+    expect(parsedPayload.app?.machineApi).toBe(true)
+    expect(parsedPayload.app?.projectDirectory).toBe('/tmp/projects')
+    expect(parsedPayload.projects?.defaultProjectName).toBe('plugin-template')
+    expect(parsedPayload.modeling?.mouseControls).toBe('OnShape')
+    expect(parsedPayload.modeling?.gizmoType).toBe('axis')
+    expect(parsedPayload.modeling?.enableTouchControls).toBe(false)
+    expect(parsedPayload.modeling?.useSketchSolveMode).toBe(false)
+    expect(parsedPayload.modeling?.snapToGrid).toBe(true)
+    expect(parsedPayload.modeling?.majorGridSpacing).toBe(2.5)
+    expect(parsedPayload.modeling?.minorGridsPerMajor).toBe(5)
+    expect(parsedPayload.modeling?.snapsPerMinor).toBe(3)
+    expect(parsedPayload.commandBar?.includeSettings).toBe(false)
     expect(parsedPayload.textEditor?.textWrapping).toBe(false)
     expect(parsedPayload.textEditor?.blinkingCursor).toBe(false)
   })
@@ -299,12 +353,26 @@ describe('project settings serialization regression', () => {
     )
   })
 
-  it('preserves app-owned text editor settings through project settings wasm round-trip', async () => {
+  it('preserves app-owned project settings through wasm round-trip', async () => {
     const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
     const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
 
     const serializedToml = serializeProjectConfiguration(
       settingsPayloadToProjectConfiguration({
+        app: {
+          onboardingStatus: 'dismissed',
+          allowOrbitInSketchMode: true,
+          showDebugPanel: false,
+        },
+        modeling: {
+          snapToGrid: true,
+          majorGridSpacing: 2.5,
+          minorGridsPerMajor: 5,
+          snapsPerMinor: 3,
+        },
+        commandBar: {
+          includeSettings: false,
+        },
         textEditor: {
           textWrapping: false,
           blinkingCursor: true,
@@ -314,6 +382,15 @@ describe('project settings serialization regression', () => {
     )
     if (serializedToml instanceof Error) throw serializedToml
 
+    expect(serializedToml).toContain('onboarding_status = "dismissed"')
+    expect(serializedToml).toContain('allow_orbit_in_sketch_mode = true')
+    expect(serializedToml).toContain('show_debug_panel = false')
+    expect(serializedToml).toContain('snap_to_grid = true')
+    expect(serializedToml).toContain('major_grid_spacing = 2.5')
+    expect(serializedToml).toContain('minor_grids_per_major = 5')
+    expect(serializedToml).toContain('snaps_per_minor = 3')
+    expect(serializedToml).toContain('[settings.command_bar]')
+    expect(serializedToml).toContain('include_settings = false')
     expect(serializedToml).toContain('[settings.text_editor]')
     expect(serializedToml).toContain('text_wrapping = false')
     expect(serializedToml).toContain('blinking_cursor = true')
@@ -329,6 +406,14 @@ describe('project settings serialization regression', () => {
     const parsedProjectPayload = projectConfigurationToSettingsPayload(
       parsedProjectConfiguration
     )
+    expect(parsedProjectPayload.app?.onboardingStatus).toBe('dismissed')
+    expect(parsedProjectPayload.app?.allowOrbitInSketchMode).toBe(true)
+    expect(parsedProjectPayload.app?.showDebugPanel).toBe(false)
+    expect(parsedProjectPayload.modeling?.snapToGrid).toBe(true)
+    expect(parsedProjectPayload.modeling?.majorGridSpacing).toBe(2.5)
+    expect(parsedProjectPayload.modeling?.minorGridsPerMajor).toBe(5)
+    expect(parsedProjectPayload.modeling?.snapsPerMinor).toBe(3)
+    expect(parsedProjectPayload.commandBar?.includeSettings).toBe(false)
     expect(parsedProjectPayload.textEditor?.textWrapping).toBe(false)
     expect(parsedProjectPayload.textEditor?.blinkingCursor).toBe(true)
   })

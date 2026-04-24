@@ -2004,6 +2004,8 @@ impl ExtrudeSurface {
 pub struct SketchVarId(pub usize);
 
 impl SketchVarId {
+    pub const INVALID: Self = Self(usize::MAX);
+
     pub fn to_constraint_id(self, range: SourceRange) -> Result<ezpz::Id, KclError> {
         self.0.try_into().map_err(|_| {
             KclError::new_type(KclErrorDetails::new(

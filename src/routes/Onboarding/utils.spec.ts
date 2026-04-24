@@ -1,5 +1,4 @@
-import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
-import type { OnboardingPath } from '@src/lib/onboardingPaths'
+import type { OnboardingStatus, OnboardingPath } from '@src/lib/onboardingPaths'
 import {
   consumeRememberedOnboardingWorkflowPanes,
   needsToOnboard,
