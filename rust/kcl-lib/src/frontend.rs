@@ -117,9 +117,11 @@ struct ArcSizeConstraintParams {
 const POINT_FN: &str = "point";
 const POINT_AT_PARAM: &str = "at";
 const LINE_FN: &str = "line";
+const LINE_VARIABLE: &str = "line";
 const LINE_START_PARAM: &str = "start";
 const LINE_END_PARAM: &str = "end";
 const ARC_FN: &str = "arc";
+const ARC_VARIABLE: &str = "arc";
 const ARC_START_PARAM: &str = "start";
 const ARC_END_PARAM: &str = "end";
 const ARC_CENTER_PARAM: &str = "center";
@@ -2559,7 +2561,7 @@ impl FrontendState {
                     )));
                 };
 
-                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)
+                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), LINE_VARIABLE, None)
             })
             .collect::<Result<Vec<_>, _>>()?;
 
@@ -2612,7 +2614,7 @@ impl FrontendState {
                     )));
                 };
 
-                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)
+                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), LINE_VARIABLE, None)
             })
             .collect::<Result<Vec<_>, _>>()?;
 
@@ -2840,7 +2842,7 @@ impl FrontendState {
                             "Internal: Point is not part of owner's line segment: point={point_id:?}, line={owner_id:?}"
                         )));
                     };
-                    get_or_insert_ast_reference(new_ast, &owner_object.source, "line", Some(property))
+                    get_or_insert_ast_reference(new_ast, &owner_object.source, LINE_VARIABLE, Some(property))
                 }
                 Segment::Arc(arc) => {
                     let property = if arc.start == point_id {
@@ -2854,7 +2856,7 @@ impl FrontendState {
                             "Internal: Point is not part of owner's arc segment: point={point_id:?}, arc={owner_id:?}"
                         )));
                     };
-                    get_or_insert_ast_reference(new_ast, &owner_object.source, "arc", Some(property))
+                    get_or_insert_ast_reference(new_ast, &owner_object.source, ARC_VARIABLE, Some(property))
                 }
                 Segment::Circle(circle) => {
                     let property = if circle.start == point_id {
@@ -2900,8 +2902,10 @@ impl FrontendState {
 
                 match segment {
                     Segment::Point(_) => self.point_id_to_ast_reference(*segment_id, new_ast),
-                    Segment::Line(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, "line", None),
-                    Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, "arc", None),
+                    Segment::Line(_) => {
+                        get_or_insert_ast_reference(new_ast, &segment_object.source, LINE_VARIABLE, None)
+                    }
+                    Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, ARC_VARIABLE, None),
                     Segment::Circle(_) => {
                         get_or_insert_ast_reference(new_ast, &segment_object.source, CIRCLE_VARIABLE, None)
                     }
@@ -3042,7 +3046,7 @@ impl FrontendState {
                 "Only lines can be constrained to meet at an angle: {line0_object:?}",
             )));
         };
-        let l0_ast = get_or_insert_ast_reference(new_ast, &line0_object.source.clone(), "line", None)?;
+        let l0_ast = get_or_insert_ast_reference(new_ast, &line0_object.source.clone(), LINE_VARIABLE, None)?;
 
         let line1_object = self
             .scene_graph
@@ -3057,7 +3061,7 @@ impl FrontendState {
                 "Only lines can be constrained to meet at an angle: {line1_object:?}",
             )));
         };
-        let l1_ast = get_or_insert_ast_reference(new_ast, &line1_object.source.clone(), "line", None)?;
+        let l1_ast = get_or_insert_ast_reference(new_ast, &line1_object.source.clone(), LINE_VARIABLE, None)?;
 
         // Create the angle() call.
         let angle_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
@@ -3121,8 +3125,8 @@ impl FrontendState {
             return Err(KclError::refactor(format!("Object is not a segment: {seg0_object:?}")));
         };
         let seg0_ast = match seg0_segment {
-            Segment::Line(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, "line", None)?,
-            Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, "arc", None)?,
+            Segment::Line(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, LINE_VARIABLE, None)?,
+            Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, ARC_VARIABLE, None)?,
             Segment::Circle(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, CIRCLE_VARIABLE, None)?,
             _ => {
                 return Err(KclError::refactor(format!(
@@ -3140,8 +3144,8 @@ impl FrontendState {
             return Err(KclError::refactor(format!("Object is not a segment: {seg1_object:?}")));
         };
         let seg1_ast = match seg1_segment {
-            Segment::Line(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, "line", None)?,
-            Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, "arc", None)?,
+            Segment::Line(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, LINE_VARIABLE, None)?,
+            Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, ARC_VARIABLE, None)?,
             Segment::Circle(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, CIRCLE_VARIABLE, None)?,
             _ => {
                 return Err(KclError::refactor(format!(
@@ -3298,7 +3302,7 @@ impl FrontendState {
             return Err(KclError::refactor(format!("Object is not a segment: {arc_object:?}")));
         };
         let ref_type = match arc_segment {
-            Segment::Arc(_) => "arc",
+            Segment::Arc(_) => ARC_VARIABLE,
             Segment::Circle(_) => CIRCLE_VARIABLE,
             _ => {
                 return Err(KclError::refactor(format!(
@@ -3494,7 +3498,7 @@ impl FrontendState {
                         line_segment.human_friendly_kind_with_article(),
                     )));
                 };
-                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)?
+                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), LINE_VARIABLE, None)?
             }
             Horizontal::Points { points } => {
                 let point_asts = points
@@ -3555,7 +3559,7 @@ impl FrontendState {
                     )));
                 };
 
-                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)
+                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), LINE_VARIABLE, None)
             })
             .collect::<Result<Vec<_>, _>>()?;
 
@@ -3589,7 +3593,7 @@ impl FrontendState {
         };
 
         let ref_type = match segment {
-            Segment::Arc(_) => "arc",
+            Segment::Arc(_) => ARC_VARIABLE,
             Segment::Circle(_) => CIRCLE_VARIABLE,
             _ => {
                 return Err(KclError::refactor(format!(
@@ -3621,8 +3625,8 @@ impl FrontendState {
 
         match segment {
             Segment::Point(_) => self.point_id_to_ast_reference(segment_id, new_ast),
-            Segment::Line(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, "line", None),
-            Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, "arc", None),
+            Segment::Line(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, LINE_VARIABLE, None),
+            Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, ARC_VARIABLE, None),
             Segment::Circle(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, CIRCLE_VARIABLE, None),
         }
     }
@@ -3644,7 +3648,7 @@ impl FrontendState {
             )));
         };
         match segment {
-            Segment::Line(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, "line", None),
+            Segment::Line(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, LINE_VARIABLE, None),
             _ => Err(KclError::refactor(format!(
                 "Symmetric axis must be a line, got {}",
                 segment.human_friendly_kind_with_article()
@@ -3689,7 +3693,7 @@ impl FrontendState {
                     )));
                 };
 
-                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)
+                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), LINE_VARIABLE, None)
             })
             .collect::<Result<Vec<_>, _>>()?;
 
@@ -3761,7 +3765,7 @@ impl FrontendState {
                 line0_segment.human_friendly_kind_with_article(),
             )));
         };
-        let line0_ast = get_or_insert_ast_reference(new_ast, &line0_object.source.clone(), "line", None)?;
+        let line0_ast = get_or_insert_ast_reference(new_ast, &line0_object.source.clone(), LINE_VARIABLE, None)?;
 
         let line1_object = self
             .scene_graph
@@ -3781,7 +3785,7 @@ impl FrontendState {
                 line1_segment.human_friendly_kind_with_article(),
             )));
         };
-        let line1_ast = get_or_insert_ast_reference(new_ast, &line1_object.source.clone(), "line", None)?;
+        let line1_ast = get_or_insert_ast_reference(new_ast, &line1_object.source.clone(), LINE_VARIABLE, None)?;
 
         // Create the parallel() or perpendicular() call.
         let call_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
@@ -3835,7 +3839,7 @@ impl FrontendState {
                         line_segment.human_friendly_kind_with_article()
                     )));
                 };
-                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)?
+                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), LINE_VARIABLE, None)?
             }
             Vertical::Points { points } => {
                 let point_asts = points
@@ -4430,7 +4434,7 @@ fn sketch_face_of_scene_object_ast_expr(
                     range: segment_range.0,
                     node_path: segment_range.1.clone(),
                 },
-                "line",
+                LINE_VARIABLE,
                 None,
             )?;
 
