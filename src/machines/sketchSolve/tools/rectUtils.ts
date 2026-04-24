@@ -17,7 +17,7 @@ import {
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
   type SnapTarget,
-  getConstraintForSnapTarget,
+  applyConstraintsForSnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import { MIN_DRAFT_GEOMETRY_DELTA_MM } from '@src/machines/sketchSolve/tools/draftGeometryPolicy'
 
@@ -378,22 +378,29 @@ export async function createDraftRectangle({
     lastOperation = equalDiagonals
   }
 
-  const snapConstraint = getConstraintForSnapTarget(originPointId, snapTarget)
-  if (snapConstraint !== null) {
-    const snapResult = await rustContext.addConstraint(
-      0,
-      sketchId,
-      snapConstraint,
-      settings
-    )
-    const snapConstraintId = getConstraintFromDelta(snapResult.sceneGraphDelta)
-    if (snapConstraintId instanceof Error) {
-      return Promise.reject(snapConstraintId)
+  const snapResult = await applyConstraintsForSnapTarget({
+    segmentId: originPointId,
+    target: snapTarget,
+    rustContext,
+    sketchId,
+    settings,
+  })
+  if (snapResult.result !== null) {
+    const snapConstraintIds = snapResult.newObjectIds.filter((objId) => {
+      const obj = snapResult.result?.sceneGraphDelta.new_graph.objects[objId]
+      return obj?.kind.type === 'Constraint'
+    })
+    if (snapConstraintIds.length === 0) {
+      return Promise.reject(
+        new Error(
+          'Expected snap constraints to be created, but none were found'
+        )
+      )
     }
-    constraintIds.push(snapConstraintId)
+    constraintIds.push(...snapConstraintIds)
     lastOperation = {
-      ...snapResult,
-      constraintId: snapConstraintId,
+      ...snapResult.result,
+      constraintId: snapConstraintIds[snapConstraintIds.length - 1],
     }
   }
 

@@ -59,9 +59,10 @@ function createConstraintApiObject({
 }
 
 describe('constraintToolModel', () => {
-  it('defines all eight constraint tool names', () => {
+  it('defines all constraint tool names', () => {
     expect(constraintToolNames).toEqual([
       'coincidentConstraintTool',
+      'midpointConstraintTool',
       'tangentConstraintTool',
       'parallelConstraintTool',
       'equalLengthConstraintTool',
@@ -70,6 +71,30 @@ describe('constraintToolModel', () => {
       'perpendicularConstraintTool',
       'fixedConstraintTool',
     ])
+  })
+
+  it('recognizes midpoint selections in either point-line order', () => {
+    const point = createPointApiObject({ id: 1 })
+    const lineStart = createPointApiObject({ id: 2 })
+    const lineEnd = createPointApiObject({ id: 3 })
+    const line = createLineApiObject({ id: 10, start: 2, end: 3 })
+    const objects = createObjectsArray([point, lineStart, lineEnd, line])
+
+    const pointLine = getConstraintToolSelectionMatches(
+      'midpointConstraintTool',
+      [1, 10],
+      objects
+    )
+    expect(pointLine.status).toBe('complete')
+    expect(pointLine.bestMatch?.mode.id).toBe('point-line')
+
+    const linePoint = getConstraintToolSelectionMatches(
+      'midpointConstraintTool',
+      [10, 1],
+      objects
+    )
+    expect(linePoint.status).toBe('complete')
+    expect(linePoint.bestMatch?.mode.id).toBe('line-point')
   })
 
   it('classifies sketch solve selections into reusable kinds', () => {

@@ -30,6 +30,7 @@ export type InvisibleConstraint = Extract<
       | 'Horizontal'
       | 'Vertical'
       | 'LinesEqualLength'
+      | 'Midpoint'
       | 'EqualRadius'
       | 'Parallel'
       | 'Perpendicular'
@@ -59,6 +60,7 @@ export function isInvisibleConstraintObject(
     case 'Horizontal':
     case 'Vertical':
     case 'LinesEqualLength':
+    case 'Midpoint':
     case 'EqualRadius':
     case 'Parallel':
     case 'Perpendicular':
@@ -108,6 +110,14 @@ export function getInvisibleConstraintAnchor(
     case 'EqualRadius':
       return averageVectors(
         constraint.input
+          .map((objectId) => getObjectAnchor(objectId, objects))
+          .filter(isVector3)
+      )
+    case 'Midpoint':
+      return getLineAnchor(constraint.line, objects)
+    case 'Symmetric':
+      return averageVectors(
+        [...constraint.input, constraint.axis]
           .map((objectId) => getObjectAnchor(objectId, objects))
           .filter(isVector3)
       )
@@ -200,6 +210,11 @@ export function findSegmentsForInvisibleConstraint(
       case 'Parallel':
       case 'Perpendicular':
         return constraint.kind.constraint.lines
+      case 'Midpoint':
+        return [
+          constraint.kind.constraint.point,
+          constraint.kind.constraint.line,
+        ]
       case 'EqualRadius':
       case 'Tangent':
         return constraint.kind.constraint.input
@@ -266,6 +281,10 @@ export function isConstrainingSegment(
         isLineSegment(segment) &&
         constraint.kind.constraint.lines.includes(segment.id)
       )
+    case 'Midpoint':
+      return (
+        isLineSegment(segment) && constraint.kind.constraint.line === segment.id
+      )
     case 'EqualRadius':
       return (
         isArcLikeSegment(segment) &&
@@ -291,6 +310,12 @@ function isConstrainingPointCluster(
     case 'Horizontal':
     case 'Vertical':
       return getAxisConstraintPointIds(constraint.kind.constraint).some((id) =>
+        pointIds.includes(id)
+      )
+    case 'Midpoint':
+      return pointIds.includes(constraint.kind.constraint.point)
+    case 'Symmetric':
+      return constraint.kind.constraint.input.some((id) =>
         pointIds.includes(id)
       )
     default:

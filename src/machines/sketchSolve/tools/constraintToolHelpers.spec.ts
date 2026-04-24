@@ -151,6 +151,27 @@ describe('constraintToolHelpers', () => {
     })
   })
 
+  it('prepares midpoint payloads from point-line selections', () => {
+    const point = createPointApiObject({ id: 1 })
+    const lineStart = createPointApiObject({ id: 2 })
+    const lineEnd = createPointApiObject({ id: 3 })
+    const line = createLineApiObject({ id: 10, start: 2, end: 3 })
+    const objects = createObjectsArray([point, lineStart, lineEnd, line])
+
+    const apply = getConstraintToolPreparedApply(
+      'midpointConstraintTool',
+      [1, 10],
+      objects,
+      applyOptions
+    )
+
+    expect(apply?.payload).toEqual({
+      type: 'Midpoint',
+      point: 1,
+      line: 10,
+    })
+  })
+
   it('prepares equal-length payloads from the full valid current selection', () => {
     const pointA = createPointApiObject({ id: 1 })
     const pointB = createPointApiObject({ id: 2 })

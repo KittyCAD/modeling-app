@@ -30,6 +30,7 @@ type HorizontalVerticalPayload =
 
 export type ConstraintToolPayload =
   | Extract<ApiConstraint, { type: 'Coincident' }>
+  | Extract<ApiConstraint, { type: 'Midpoint' }>
   | Extract<ApiConstraint, { type: 'Tangent' }>
   | Extract<ApiConstraint, { type: 'Parallel' }>
   | Extract<ApiConstraint, { type: 'Perpendicular' }>
@@ -199,6 +200,27 @@ function buildConstraintToolPayloads(
           segments: toConstraintSegments(selectionIds),
         },
       ]
+    case 'midpointConstraintTool': {
+      const midpointPair = toPair(objectSelectionIds)
+      if (!midpointPair) {
+        return null
+      }
+
+      const [firstId, secondId] = midpointPair
+      return [
+        match.mode.id === 'point-line'
+          ? {
+              type: 'Midpoint',
+              point: firstId,
+              line: secondId,
+            }
+          : {
+              type: 'Midpoint',
+              point: secondId,
+              line: firstId,
+            },
+      ]
+    }
     case 'tangentConstraintTool': {
       const tangentInput = buildTangentConstraintInput(objectSelectionIds, [
         ...objects,

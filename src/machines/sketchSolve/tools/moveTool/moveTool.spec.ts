@@ -769,7 +769,7 @@ describe('createOnDragCallback', () => {
     expect(setDraggedEntityId).toHaveBeenCalledWith(null)
   })
 
-  it('does not add a duplicate coincident constraint when re-snapping a point to the same line', async () => {
+  it('does not add a duplicate coincident constraint when re-snapping near the same line midpoint', async () => {
     const lineTargetStart = createPointApiObject({
       id: 1,
       x: 60,
@@ -840,6 +840,11 @@ describe('createOnDragCallback', () => {
       checkpointId: 123,
     }
     ;(rustContext.editSegments as any).mockResolvedValue(editResult)
+    ;(rustContext.addConstraint as any).mockResolvedValue({
+      kclSource: { text: 'midpoint' },
+      sceneGraphDelta: editResult.sceneGraphDelta,
+      checkpointId: 124,
+    })
 
     onDragStart({
       intersectionPoint: {
@@ -863,14 +868,19 @@ describe('createOnDragCallback', () => {
 
     expect(rustContext.editSegments).toHaveBeenCalledOnce()
     expect(rustContext.editSegments.mock.calls[0]?.[4]).toBe(true)
-    expect(rustContext.addConstraint).not.toHaveBeenCalled()
+    expect(rustContext.addConstraint).toHaveBeenCalledOnce()
+    expect(rustContext.addConstraint.mock.calls[0]?.[2]).toEqual({
+      type: 'Midpoint',
+      point: 4,
+      line: 10,
+    })
     expect(send).toHaveBeenCalledWith(
       expect.objectContaining({
         type: 'update sketch outcome',
         data: expect.objectContaining({
-          sourceDelta: editResult.kclSource,
+          sourceDelta: { text: 'midpoint' },
           sceneGraphDelta: editResult.sceneGraphDelta,
-          checkpointId: 123,
+          checkpointId: 124,
         }),
       })
     )
@@ -2310,8 +2320,8 @@ describe('createOnDragCallback', () => {
 
     expect(dragSnappingDeps.onUpdateDragSnapping).toHaveBeenCalledWith(
       expect.objectContaining({
-        target: { type: 'line', id: 6 },
-        position: [32, 55],
+        target: { type: 'midpoint', id: 6 },
+        position: [32, 50],
       })
     )
   })
