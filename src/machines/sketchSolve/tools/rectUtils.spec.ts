@@ -405,10 +405,9 @@ describe('rectUtils.updateDraftRectangleAligned', () => {
           centerPointId: 15,
         },
       },
-      rect: {
-        min: [0, 0],
-        max: [4, 6],
-      },
+      mode: 'center',
+      origin: [2, 3],
+      point: [4, 6],
     })
 
     const edits = editSegmentsMock.mock.calls[0]?.[2]
@@ -453,5 +452,91 @@ describe('rectUtils.updateDraftRectangleAligned', () => {
         },
       },
     })
+  })
+
+  it('keeps the first corner pinned when dragging into the negative quadrant', async () => {
+    const rustContext = createMockRustContext()
+    const kclManager = createMockKclManager()
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    const editSegmentsMock = vi.mocked(rustContext.editSegments)
+
+    editSegmentsMock.mockResolvedValue({
+      kclSource: { text: 'updated' } as SourceDelta,
+      sceneGraphDelta: createSceneGraphDelta([]),
+    })
+
+    await updateDraftRectangleAligned({
+      rustContext,
+      kclManager,
+      sketchId: 9,
+      draft: {
+        lineIds: [1, 2, 3, 4],
+        segmentIds: [],
+        constraintIds: [],
+        originPointId: 1,
+      },
+      mode: 'corner',
+      origin: [0, 0],
+      point: [-4, -6],
+    })
+
+    expect(editSegmentsMock.mock.calls[0]?.[2]).toEqual([
+      {
+        id: 1,
+        ctor: {
+          type: 'Line',
+          start: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+          end: {
+            x: { type: 'Var', value: -4, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+        },
+      },
+      {
+        id: 2,
+        ctor: {
+          type: 'Line',
+          start: {
+            x: { type: 'Var', value: -4, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+          end: {
+            x: { type: 'Var', value: -4, units: 'Mm' },
+            y: { type: 'Var', value: -6, units: 'Mm' },
+          },
+        },
+      },
+      {
+        id: 3,
+        ctor: {
+          type: 'Line',
+          start: {
+            x: { type: 'Var', value: -4, units: 'Mm' },
+            y: { type: 'Var', value: -6, units: 'Mm' },
+          },
+          end: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: -6, units: 'Mm' },
+          },
+        },
+      },
+      {
+        id: 4,
+        ctor: {
+          type: 'Line',
+          start: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: -6, units: 'Mm' },
+          },
+          end: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+        },
+      },
+    ])
   })
 })
