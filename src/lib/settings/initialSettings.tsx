@@ -30,7 +30,6 @@ import { reportRejection } from '@src/lib/trap'
 import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
 import { hexToRgba } from '@src/lib/utils'
-import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 /**
  * A setting that can be set at the user or project level
@@ -193,9 +192,7 @@ export function createSettings() {
       zookeeperMode: new Setting<MlCopilotMode>({
         defaultValue: DEFAULT_ML_COPILOT_MODE,
         validate: (v) => v === 'fast' || v === 'thoughtful',
-        hideOnPlatform: IS_STAGING_OR_DEBUG ? undefined : 'both',
-        description:
-          'In Staging only, configure which reasoning mode Zookeeper uses.',
+        description: 'The default reasoning mode for Zookeeper.',
         commandConfig: {
           inputType: 'options',
           defaultValueFromContext: (context) =>

@@ -828,12 +828,12 @@ async def execute_and_measure(path:builtins.str, request:PhysicalPropertiesReque
     Execute a kcl file and measure physical properties of the resulting model.
     """
 
-async def execute_and_snapshot(path:builtins.str, image_format:ImageFormat) -> builtins.list[builtins.int]:
+async def execute_and_snapshot(path:builtins.str, image_format:ImageFormat, *, zoom:builtins.bool=True) -> builtins.list[builtins.int]:
     r"""
     Execute a kcl file and snapshot it in a specific format.
     """
 
-async def execute_and_snapshot_views(path:builtins.str, image_format:ImageFormat, snapshot_options:typing.Sequence[SnapshotOptions]) -> builtins.list[builtins.list[builtins.int]]: ...
+async def execute_and_snapshot_views(path:builtins.str, image_format:ImageFormat, snapshot_options:typing.Sequence[SnapshotOptions], *, zoom:builtins.bool=True) -> builtins.list[builtins.list[builtins.int]]: ...
 
 async def execute_code(code:builtins.str) -> None:
     r"""
@@ -855,12 +855,12 @@ async def execute_code_and_measure(code:builtins.str, request:PhysicalProperties
     Execute the kcl code and measure physical properties of the resulting model.
     """
 
-async def execute_code_and_snapshot(code:builtins.str, image_format:ImageFormat) -> builtins.list[builtins.int]:
+async def execute_code_and_snapshot(code:builtins.str, image_format:ImageFormat, *, zoom:builtins.bool=True) -> builtins.list[builtins.int]:
     r"""
     Execute the kcl code and snapshot it in a specific format.
     """
 
-async def execute_code_and_snapshot_views(code:builtins.str, image_format:ImageFormat, snapshot_options:typing.Sequence[SnapshotOptions]) -> builtins.list[builtins.list[builtins.int]]:
+async def execute_code_and_snapshot_views(code:builtins.str, image_format:ImageFormat, snapshot_options:typing.Sequence[SnapshotOptions], *, zoom:builtins.bool=True) -> builtins.list[builtins.list[builtins.int]]:
     r"""
     Execute the kcl code and snapshot it in a specific format.
     Returns one image for each camera angle you provide.
@@ -887,9 +887,9 @@ async def get_sketch_constraint_status_code(code:builtins.str) -> SketchConstrai
     Execute kcl code and return a report of sketch constraint status.
     """
 
-async def import_and_snapshot(filepaths:typing.Sequence[builtins.str], format:InputFormat3d, image_format:ImageFormat) -> builtins.list[builtins.int]: ...
+async def import_and_snapshot(filepaths:typing.Sequence[builtins.str], format:InputFormat3d, image_format:ImageFormat, *, zoom:builtins.bool=True) -> builtins.list[builtins.int]: ...
 
-async def import_and_snapshot_views(filepaths:typing.Sequence[builtins.str], format:InputFormat3d, image_format:ImageFormat, snapshot_options:typing.Sequence[SnapshotOptions]) -> builtins.list[builtins.list[builtins.int]]: ...
+async def import_and_snapshot_views(filepaths:typing.Sequence[builtins.str], format:InputFormat3d, image_format:ImageFormat, snapshot_options:typing.Sequence[SnapshotOptions], *, zoom:builtins.bool=True) -> builtins.list[builtins.list[builtins.int]]: ...
 
 def lint(code:builtins.str) -> builtins.list[Discovered]:
     r"""

@@ -57,9 +57,12 @@ pub use sketch_transpiler::transpile_all_old_sketches_to_new;
 pub use sketch_transpiler::transpile_old_sketch_to_new;
 pub use sketch_transpiler::transpile_old_sketch_to_new_ast;
 pub use sketch_transpiler::transpile_old_sketch_to_new_with_execution;
+pub(crate) use state::ConstraintKey;
+pub(crate) use state::ConstraintState;
 pub use state::ExecState;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
+pub(crate) use state::TangencyMode;
 use uuid::Uuid;
 
 use crate::CompilationIssue;
@@ -288,6 +291,7 @@ pub struct ExecOutcome {
 /// Per-segment freedom used by the constraint report. Mirrors
 /// [`crate::front::Freedom`] but adds an `Error` variant for when
 /// a point lookup fails.
+#[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
 #[derive(Debug, Clone, Copy, PartialEq)]
 enum SegmentFreedom {
     Free,
@@ -1089,6 +1093,7 @@ impl ExecutorContext {
         exec_state.global.module_infos = mem.module_infos;
         exec_state.global.path_to_source_id = mem.path_to_source_id;
         exec_state.global.id_to_source = mem.id_to_source;
+        exec_state.mod_local.constraint_state = mem.constraint_state;
         #[cfg(feature = "artifact-graph")]
         {
             let len = _mock_config
@@ -1151,6 +1156,7 @@ impl ExecutorContext {
         let module_infos = exec_state.global.module_infos.clone();
         let path_to_source_id = exec_state.global.path_to_source_id.clone();
         let id_to_source = exec_state.global.id_to_source.clone();
+        let constraint_state = exec_state.mod_local.constraint_state.clone();
         #[cfg(feature = "artifact-graph")]
         let scene_objects = exec_state.global.root_module_artifacts.scene_objects.clone();
         #[cfg(not(feature = "artifact-graph"))]
@@ -1163,6 +1169,7 @@ impl ExecutorContext {
             module_infos,
             path_to_source_id,
             id_to_source,
+            constraint_state,
             scene_objects,
         };
         cache::write_old_memory(state).await;
@@ -1746,6 +1753,7 @@ impl ExecutorContext {
                 module_infos: exec_state.global.module_infos.clone(),
                 path_to_source_id: exec_state.global.path_to_source_id.clone(),
                 id_to_source: exec_state.global.id_to_source.clone(),
+                constraint_state: exec_state.mod_local.constraint_state.clone(),
                 #[cfg(feature = "artifact-graph")]
                 scene_objects: exec_state.global.root_module_artifacts.scene_objects.clone(),
                 #[cfg(not(feature = "artifact-graph"))]
@@ -3305,11 +3313,18 @@ extrude001 = extrude(region001, length = 1)
         };
         ctx.run_mock(&crate::Program::empty(), &cold_start).await.unwrap();
 
-        let mem = cache::read_old_memory().await.unwrap();
+        let mut mem = cache::read_old_memory().await.unwrap();
         assert!(
             mem.path_to_source_id.len() > 3,
             "expected prelude imports to populate multiple modules, got {:?}",
             mem.path_to_source_id
+        );
+        mem.constraint_state.insert(
+            crate::front::ObjectId(1),
+            indexmap::indexmap! {
+                crate::execution::ConstraintKey::LineCircle([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) =>
+                    crate::execution::ConstraintState::Tangency(crate::execution::TangencyMode::LineCircle(ezpz::LineSide::Left))
+            },
         );
 
         let mut exec_state = ExecState::new_mock(&ctx, &MockConfig::default());
@@ -3318,6 +3333,7 @@ extrude001 = extrude(region001, length = 1)
         assert_eq!(exec_state.global.path_to_source_id, mem.path_to_source_id);
         assert_eq!(exec_state.global.id_to_source, mem.id_to_source);
         assert_eq!(exec_state.global.module_infos, mem.module_infos);
+        assert_eq!(exec_state.mod_local.constraint_state, mem.constraint_state);
 
         clear_mem_cache().await;
         ctx.close().await;
