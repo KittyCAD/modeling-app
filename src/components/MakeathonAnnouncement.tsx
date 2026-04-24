@@ -2,8 +2,8 @@ import { useState } from 'react'
 
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
-import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import { ActionButton } from '@src/components/ActionButton'
 
 export const MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY =
   'zoo.makeathonAnnouncement.dismissed'
@@ -66,18 +66,6 @@ export function MakeathonAnnouncement(props: MakeathonAnnouncementProps) {
           >
             {MAKEATHON_ANNOUNCEMENT_TITLE}
           </p>
-          <p className="mt-1 leading-5 text-chalkboard-90 dark:text-chalkboard-20">
-            {MAKEATHON_ANNOUNCEMENT_COPY}
-          </p>
-          <a
-            href={makeathonHref}
-            onClick={openExternalBrowserIfDesktop(makeathonHref)}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-2 inline-flex font-bold text-primary underline-offset-2 hover:underline focus-visible:outline-appForeground"
-          >
-            Register now
-          </a>
         </div>
         <button
           type="button"
@@ -91,6 +79,16 @@ export function MakeathonAnnouncement(props: MakeathonAnnouncementProps) {
           </Tooltip>
         </button>
       </div>
+      <p className="mt-1 leading-5 text-chalkboard-90 dark:text-chalkboard-20">
+        {MAKEATHON_ANNOUNCEMENT_COPY}
+      </p>
+      <ActionButton
+        Element="externalLink"
+        to={makeathonHref}
+        className="mt-2 py-2 w-fit !bg-primary !text-chalkboard-10"
+      >
+        Register now
+      </ActionButton>
     </section>
   )
 
