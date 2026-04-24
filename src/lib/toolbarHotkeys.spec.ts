@@ -5,7 +5,10 @@ import type {
   ToolbarItemResolved,
   ToolbarItemResolvedDropdown,
 } from '@src/lib/toolbar'
-import { collectToolbarHotkeyActions } from '@src/lib/toolbarHotkeys'
+import {
+  collectToolbarHotkeyActions,
+  isToolbarHotkeyCompatibleWithEventKey,
+} from '@src/lib/toolbarHotkeys'
 
 function makeResolvedItem(
   overrides: Partial<ToolbarItemResolved> = {}
@@ -146,5 +149,16 @@ describe('collectToolbarHotkeyActions', () => {
     ])
 
     expect(hotkeyActions.map((action) => action.hotkey)).toEqual(['E'])
+  })
+
+  it('matches letter hotkeys against the semantic event key', () => {
+    expect(isToolbarHotkeyCompatibleWithEventKey('v', 'V')).toBe(true)
+    expect(isToolbarHotkeyCompatibleWithEventKey('V', 'Shift+V')).toBe(true)
+    expect(isToolbarHotkeyCompatibleWithEventKey('k', 'V')).toBe(false)
+  })
+
+  it('does not add extra filtering for non-letter hotkeys', () => {
+    expect(isToolbarHotkeyCompatibleWithEventKey('.', '.')).toBe(true)
+    expect(isToolbarHotkeyCompatibleWithEventKey('Escape', 'Esc')).toBe(true)
   })
 })

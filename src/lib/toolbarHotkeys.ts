@@ -16,6 +16,30 @@ export type ToolbarHotkeyAction = {
   onTrigger: () => void
 }
 
+const TOOLBAR_HOTKEY_MODIFIERS = new Set([
+  'alt',
+  'ctrl',
+  'meta',
+  'mod',
+  'shift',
+])
+
+export function isToolbarHotkeyCompatibleWithEventKey(
+  eventKey: string,
+  hotkey: string
+): boolean {
+  const mainKey = hotkey
+    .split('+')
+    .map((part) => part.trim().toLowerCase())
+    .find((part) => !TOOLBAR_HOTKEY_MODIFIERS.has(part))
+
+  if (!mainKey || !/^[a-z]$/.test(mainKey)) {
+    return true
+  }
+
+  return eventKey.toLowerCase() === mainKey
+}
+
 export function collectToolbarHotkeyActions(
   items: ResolvedToolbarEntry[]
 ): ToolbarHotkeyAction[] {

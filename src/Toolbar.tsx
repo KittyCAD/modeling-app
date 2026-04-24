@@ -34,7 +34,10 @@ import {
   modelingMachineStateToToolbarModeName,
   useToolbarConfig,
 } from '@src/lib/toolbar'
-import { collectToolbarHotkeyActions } from '@src/lib/toolbarHotkeys'
+import {
+  collectToolbarHotkeyActions,
+  isToolbarHotkeyCompatibleWithEventKey,
+} from '@src/lib/toolbarHotkeys'
 import { EngineConnectionStateType } from '@src/network/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { useSignals } from '@preact/signals-react/runtime'
@@ -334,7 +337,16 @@ const Toolbar_ = memo(
 
     useHotkeys(
       hotkeyActions.map((action) => action.hotkey),
-      (_, hotkeysEvent) => {
+      (keyboardEvent, hotkeysEvent) => {
+        if (
+          !isToolbarHotkeyCompatibleWithEventKey(
+            keyboardEvent.key,
+            hotkeysEvent.hotkey
+          )
+        ) {
+          return
+        }
+
         hotkeyActionMap.get(hotkeysEvent.hotkey)?.onTrigger()
       },
       { enabled: hotkeyActions.length > 0 },
