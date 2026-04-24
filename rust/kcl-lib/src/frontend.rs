@@ -5570,6 +5570,7 @@ mod tests {
     use super::*;
     use crate::engine::PlaneName;
     use crate::execution::cache::SketchModeState;
+    use crate::execution::cache::bust_cache;
     use crate::execution::cache::clear_mem_cache;
     use crate::execution::cache::read_old_memory;
     use crate::execution::cache::write_old_memory;
@@ -6740,6 +6741,52 @@ bad = missing_name
 
         ctx.close().await;
         mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_sketch_after_comment() {
+        bust_cache().await;
+        clear_mem_cache().await;
+
+        let initial_source = "sketch001 = sketch(on = XZ) {
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_engine(
+            std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            Default::default(),
+        );
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let original_source = sketch_object.source.clone();
+
+        let commented_source = "// test 1
+sketch001 = sketch(on = XZ) {
+}
+";
+        let commented_program = Program::parse(commented_source).unwrap().0.unwrap();
+        frontend.engine_execute(&ctx, commented_program).await.unwrap();
+
+        let cached_sketch_object = &frontend.scene_graph.objects[sketch_id.0];
+        assert_eq!(cached_sketch_object.source, original_source);
+
+        let (src_delta, scene_delta) = frontend.delete_sketch(&ctx, version, sketch_id).await.unwrap();
+        assert!(
+            !src_delta.text.contains("sketch001"),
+            "sketch was not deleted: {}",
+            src_delta.text
+        );
+        assert_eq!(scene_delta.new_graph.objects.len(), 0);
+
+        bust_cache().await;
+        clear_mem_cache().await;
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
