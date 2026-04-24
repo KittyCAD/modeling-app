@@ -2044,7 +2044,7 @@ export function buildToolbarConfig(
           array: sketchSolveConstraintItems,
           display: 'recent',
           visibleItemCount: 3,
-          defaultVisibleItemIds: ['coincident', 'Tangent', 'Symmetric'],
+          defaultVisibleItemIds: ['coincident', 'Tangent', 'Parallel'],
         },
         {
           id: 'Dimension',

@@ -124,7 +124,6 @@ describe('toolbar state helpers', () => {
     expect(getSketchSolveToolIconMap(toolbarConfig)).toMatchObject({
       coincidentConstraintTool: 'coincident',
       tangentConstraintTool: 'tangent',
-      symmetricConstraintTool: 'symmetry',
       parallelConstraintTool: 'parallel',
       equalLengthConstraintTool: 'equal',
       horizontalConstraintTool: 'horizontal',
@@ -145,7 +144,7 @@ describe('toolbar state helpers', () => {
     expect(getDefaultRecentToolbarItemIds(constraintsDropdown)).toEqual([
       'coincident',
       'Tangent',
-      'Symmetric',
+      'Parallel',
     ])
   })
 
@@ -175,7 +174,7 @@ describe('toolbar state helpers', () => {
       return
     }
 
-    const visibleItemIds = ['coincident', 'Tangent', 'Symmetric']
+    const visibleItemIds = ['coincident', 'Tangent', 'Parallel']
     const recentItemIds = recordRecentToolbarItemId(
       'Tangent',
       [],
@@ -210,7 +209,7 @@ describe('toolbar state helpers', () => {
     const items = [
       { id: 'coincident', isActive: false },
       { id: 'Tangent', isActive: false },
-      { id: 'Symmetric', isActive: false },
+      { id: 'Parallel', isActive: false },
       { id: 'vertical', isActive: true },
     ]
 
@@ -219,9 +218,9 @@ describe('toolbar state helpers', () => {
         {
           array: items,
           visibleItemCount: 3,
-          defaultVisibleItemIds: ['coincident', 'Tangent', 'Symmetric'],
+          defaultVisibleItemIds: ['coincident', 'Tangent', 'Parallel'],
         },
-        ['coincident', 'Tangent', 'Symmetric']
+        ['coincident', 'Tangent', 'Parallel']
       ).visibleItems.map((item) => item.id)
     ).toEqual(['vertical', 'coincident', 'Tangent'])
   })
