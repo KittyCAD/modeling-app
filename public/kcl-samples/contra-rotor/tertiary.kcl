@@ -2,10 +2,7 @@
 // Short offset shaft with small gear
 // Categories: Aerospace
 
-@settings(defaultLengthUnit = mm)
-
-// Import gear and propeller
-import * from "helical.kcl"
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
 
 // Model the side shaft
 shaftSketch = sketch(on = YZ) {
@@ -34,6 +31,30 @@ shaftBody = revolve(shaftRegion, angle = 360deg, axis = X)
 hidden001 = hide(shaftSketch)
 
 // Insert a gear on the shaft
-helicalGear(nTeeth = 14, helixAngle = 25deg, bore = 100)
-  |> translate(x = 279, y = -200, z = -211)
-  |> rotate(pitch = 10)
+helicaGear = gear::helical(
+  nTeeth = 14,
+  module = 16,
+  pressureAngle = 20deg,
+  helixAngle = 25deg,
+  gearHeight = 100,
+)
+
+gearHoleSketch = sketch(on = XY) {
+  circle1 = circle(start = [var 100mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  diameter(circle1) == 100.1 // 0.1 tolerance
+}
+gearHoleRegion = region(point = [0mm, 0mm], sketch = gearHoleSketch)
+gearHoleTool = extrude(gearHoleRegion, length = 500, symmetric = true)
+hide(gearHoleSketch)
+gearWitHole = subtract(helicaGear, tools = gearHoleTool)
+
+gearPlaced = gearWitHole
+  |> rotate(axis = X, angle = 90deg)
+  |> rotate(axis = Y, angle = -3, global = true)
+  |> translate(
+       x = 279,
+       y = -200,
+       z = -211,
+       global = true,
+     )
