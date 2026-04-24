@@ -58,3 +58,5 @@ solid = extrude(region(point = [1, 2], sketch = profile), length = 5)
   touch-action="pan-y"
 >
 </model-viewer>
+
+

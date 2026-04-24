@@ -22,3 +22,6 @@ solver::midpoint(
 |----------|------|-------------|----------|
 | `input` | `Segment` | The line or circular arc whose midpoint is constrained. | Yes |
 | `point` | `Segment` | The point to place at the midpoint. | Yes |
+
+
+
