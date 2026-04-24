@@ -966,6 +966,7 @@ impl ModuleState {
             sketch_mode,
             freedom_analysis,
             artifacts: Default::default(),
+            constraint_state: Default::default(),
             allowed_warnings: Vec::new(),
             denied_warnings: Vec::new(),
             inside_stdlib: false,
