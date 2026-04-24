@@ -9,8 +9,10 @@ fn gearProfile(nTeeth: number(Count), module: number(Length), pressureAngle: num
   baseRadius = baseDiameter / 2
   tipDiameter = pitchDiameter + 2 * module
 
+  // `acos` requires an explicitly unitless ratio when the lengths carry concrete units.
+  helixRatio = (offsetHeight * tan(helixAngle) / (tipDiameter / 2)): number(_)
   // Calculate the amount to rotate each planar sketch of the gear given the gear helix angle and total gear height
-  helixCalc = acos(offsetHeight * tan(helixAngle) / (tipDiameter / 2))
+  helixCalc = acos(helixRatio)
 
   // Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter
   return startSketchOn(offsetPlane(XY, offset = offsetHeight))
@@ -109,8 +111,9 @@ export fn helical(nTeeth: number(Count),
   baseRadius = baseDiameter / 2
   tipDiameter = pitchDiameter + 2 * module
 
-  // Compute twist angle so the tooth helix matches helixAngle over the gear height
-  twistAngle = 360 * gearHeight * tan(helixAngle) / (3.14 * pitchDiameter)
+  // Compute twist angle so the tooth helix matches helixAngle over the gear height.
+  heightToPitchRatio = (gearHeight / pitchDiameter): number(_)
+  twistAngle = (360deg * heightToPitchRatio * tan(helixAngle) / PI): number(deg)
 
   helicalGear = gearProfile(nTeeth, module, pressureAngle, helixAngle, offsetHeight = 0)
     |> extrude(length = gearHeight, twistAngle, twistAngleStep = 0)
