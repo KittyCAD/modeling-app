@@ -3178,7 +3178,8 @@ impl FrontendState {
         } = &segment_object.kind
         else {
             return Err(KclError::refactor(format!(
-                "Object is not a segment: {segment_object:?}"
+                "Object must be a segment, but it was {}",
+                segment_object.kind.human_friendly_kind_with_article()
             )));
         };
         let segment_ast = match midpoint_segment {
@@ -3186,7 +3187,8 @@ impl FrontendState {
             Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, "arc", None)?,
             _ => {
                 return Err(KclError::refactor(format!(
-                    "Midpoint target must be a line or arc segment, got: {midpoint_segment:?}"
+                    "Midpoint target must be a line or arc segment but it was {}",
+                    midpoint_segment.human_friendly_kind_with_article()
                 )));
             }
         };
