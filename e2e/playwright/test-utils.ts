@@ -947,6 +947,13 @@ export async function setup(
   page: Page,
   testInfo?: TestInfo
 ) {
+  const testProjectSettings =
+    TEST_SETTINGS.project &&
+    typeof TEST_SETTINGS.project === 'object' &&
+    !isArray(TEST_SETTINGS.project)
+      ? TEST_SETTINGS.project
+      : undefined
+
   await page.addInitScript(
     async ({
       token,
@@ -985,12 +992,14 @@ export async function setup(
               ...TEST_SETTINGS.app?.appearance,
               theme: 'dark',
             },
-            ...TEST_SETTINGS.project,
+            ...testProjectSettings,
             onboarding_status: 'dismissed',
           },
           project: {
-            ...TEST_SETTINGS.project,
-            directory: TEST_SETTINGS.project?.directory,
+            ...testProjectSettings,
+            ...(typeof testProjectSettings?.directory === 'string'
+              ? { directory: testProjectSettings.directory }
+              : {}),
           },
         },
       }),
@@ -1211,10 +1220,11 @@ export async function pollEditorLinesSelectedLength(page: Page, lines: number) {
     .toBe(lines)
 }
 
-// TODO: fix type to allow for meta.id in configuration
-export function settingsToToml(
-  settings: DeepPartial<Configuration | { settings: { meta: { id: string } } }>
-) {
+type SettingsTomlConfiguration = {
+  settings?: Record<string, unknown>
+}
+
+export function settingsToToml(settings: SettingsTomlConfiguration) {
   // eslint-disable-next-line no-restricted-syntax
   return TOML.stringify(settings as any)
 }

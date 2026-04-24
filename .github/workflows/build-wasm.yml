@@ -26,7 +26,7 @@ jobs:
             rust:
               - 'rust/**'
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v6.3.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -75,7 +75,7 @@ jobs:
           cache: false # configured below
           rustflags: '' # use .cargo/config.toml
 
-      - uses: taiki-e/install-action@7a4939c09608b2a1986b484eca1d16fd0db8ebef
+      - uses: taiki-e/install-action@5939f3337e40968c39aa70f5ecb1417a92fb25a0
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         with:
           tool: wasm-pack

@@ -19,6 +19,8 @@ use crate::execution::Artifact;
 use crate::execution::CodeRef;
 use crate::execution::ConstrainablePoint2d;
 use crate::execution::ConstrainablePoint2dOrOrigin;
+use crate::execution::ConstraintKey;
+use crate::execution::ConstraintState;
 use crate::execution::ExecState;
 use crate::execution::KclValue;
 use crate::execution::SegmentRepr;
@@ -29,6 +31,7 @@ use crate::execution::SketchBlockConstraintType;
 use crate::execution::SketchConstraint;
 use crate::execution::SketchConstraintKind;
 use crate::execution::SketchVarId;
+use crate::execution::TangencyMode;
 use crate::execution::UnsolvedExpr;
 use crate::execution::UnsolvedSegment;
 use crate::execution::UnsolvedSegmentKind;
@@ -87,6 +90,132 @@ fn point2d_is_origin(point2d: &KclValue) -> bool {
     // Now that we've checked that they're lengths, the exact units don't
     // matter. We only care that the value is zero.
     x.n == 0.0 && y.n == 0.0
+}
+
+#[derive(Debug, Clone, Copy)]
+struct LineVars {
+    start: [SketchVarId; 2],
+    end: [SketchVarId; 2],
+}
+
+#[derive(Debug, Clone, Copy)]
+struct ArcVars {
+    center: [SketchVarId; 2],
+    start: [SketchVarId; 2],
+    end: Option<[SketchVarId; 2]>,
+}
+
+fn make_line_arc_tangency_key(line: LineVars, arc: ArcVars) -> ConstraintKey {
+    let [a0, a1, a2, a3] = flatten_line_vars(line);
+    let [b0, b1, b2, b3, b4, b5] = flatten_arc_vars(arc);
+    ConstraintKey::LineCircle([a0, a1, a2, a3, b0, b1, b2, b3, b4, b5])
+}
+
+fn make_arc_arc_tangency_key(arc_a: ArcVars, arc_b: ArcVars) -> ConstraintKey {
+    let flat_a = flatten_arc_vars(arc_a);
+    let flat_b = flatten_arc_vars(arc_b);
+    let (lhs, rhs) = if flat_a <= flat_b {
+        (flat_a, flat_b)
+    } else {
+        (flat_b, flat_a)
+    };
+    let [a0, a1, a2, a3, a4, a5] = lhs;
+    let [b0, b1, b2, b3, b4, b5] = rhs;
+    ConstraintKey::CircleCircle([a0, a1, a2, a3, a4, a5, b0, b1, b2, b3, b4, b5])
+}
+
+fn flatten_line_vars(line: LineVars) -> [usize; 4] {
+    [line.start[0].0, line.start[1].0, line.end[0].0, line.end[1].0]
+}
+
+fn flatten_arc_vars(arc: ArcVars) -> [usize; 6] {
+    let end = arc.end.unwrap_or([SketchVarId::INVALID; 2]);
+    [
+        arc.center[0].0,
+        arc.center[1].0,
+        arc.start[0].0,
+        arc.start[1].0,
+        end[0].0,
+        end[1].0,
+    ]
+}
+
+fn infer_line_tangent_side(
+    sketch_vars: &[KclValue],
+    line: LineVars,
+    circle_center: [SketchVarId; 2],
+    exec_state: &mut ExecState,
+    range: crate::SourceRange,
+) -> Result<LineSide, KclError> {
+    let [sx, sy] = point_initial_position(sketch_vars, line.start, exec_state, range)?;
+    let [ex, ey] = point_initial_position(sketch_vars, line.end, exec_state, range)?;
+    let [cx, cy] = point_initial_position(sketch_vars, circle_center, exec_state, range)?;
+    let cross = (ex - sx) * (cy - sy) - (ey - sy) * (cx - sx);
+    Ok(if cross >= 0.0 { LineSide::Left } else { LineSide::Right })
+}
+
+fn infer_arc_tangent_side(
+    sketch_vars: &[KclValue],
+    arc_a: ArcVars,
+    arc_b: ArcVars,
+    exec_state: &mut ExecState,
+    range: crate::SourceRange,
+) -> Result<CircleSide, KclError> {
+    let rad_a = arc_initial_radius(sketch_vars, arc_a, exec_state, range)?;
+    let rad_b = arc_initial_radius(sketch_vars, arc_b, exec_state, range)?;
+    infer_circle_tangent_side(sketch_vars, arc_a.center, arc_b.center, rad_a, rad_b, exec_state, range)
+}
+
+fn infer_circle_tangent_side(
+    sketch_vars: &[KclValue],
+    center_a: [SketchVarId; 2],
+    center_b: [SketchVarId; 2],
+    radius_a: f64,
+    radius_b: f64,
+    exec_state: &mut ExecState,
+    range: crate::SourceRange,
+) -> Result<CircleSide, KclError> {
+    let dist = points_initial_distance(sketch_vars, center_a, center_b, exec_state, range)?;
+    let r_int = ((radius_a - radius_b).abs() - dist).abs();
+    let r_ext = (radius_a + radius_b - dist).abs();
+    Ok(if r_int < r_ext {
+        CircleSide::Interior
+    } else {
+        CircleSide::Exterior
+    })
+}
+
+fn point_initial_position(
+    sketch_vars: &[KclValue],
+    point: [SketchVarId; 2],
+    exec_state: &mut ExecState,
+    range: crate::SourceRange,
+) -> Result<[f64; 2], KclError> {
+    Ok([
+        sketch_var_initial_value(sketch_vars, point[0], exec_state, range)?,
+        sketch_var_initial_value(sketch_vars, point[1], exec_state, range)?,
+    ])
+}
+
+fn points_initial_distance(
+    sketch_vars: &[KclValue],
+    point_a: [SketchVarId; 2],
+    point_b: [SketchVarId; 2],
+    exec_state: &mut ExecState,
+    range: crate::SourceRange,
+) -> Result<f64, KclError> {
+    let [a_x, a_y] = point_initial_position(sketch_vars, point_a, exec_state, range)?;
+    let [b_x, b_y] = point_initial_position(sketch_vars, point_b, exec_state, range)?;
+    Ok(libm::hypot(a_x - b_x, a_y - b_y))
+}
+
+fn arc_initial_radius(
+    sketch_vars: &[KclValue],
+    arc: ArcVars,
+    exec_state: &mut ExecState,
+    range: crate::SourceRange,
+) -> Result<f64, KclError> {
+    points_initial_distance(sketch_vars, arc.center, arc.start, exec_state, range)
 }
 
 /// Arcs have 6 scalar values (start, end and center; x and y).
@@ -2813,23 +2942,17 @@ pub async fn equal_radius(exec_state: &mut ExecState, args: Args) -> Result<KclV
 }
 
 pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    #[derive(Debug, Clone, Copy)]
-    struct ConstrainableLineVars {
-        start: [SketchVarId; 2],
-        end: [SketchVarId; 2],
-    }
-
-    #[derive(Debug, Clone, Copy)]
-    struct ConstrainableCircularVars {
-        center: [SketchVarId; 2],
-        start: [SketchVarId; 2],
-        end: Option<[SketchVarId; 2]>,
-    }
+    let Some(Some(sketch_id)) = exec_state.sketch_block().map(|sb| sb.sketch_id) else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "tangent() cannot be used outside a sketch block".to_owned(),
+            vec![args.source_range],
+        )));
+    };
 
     #[derive(Debug, Clone, Copy)]
     enum TangentInput {
-        Line(ConstrainableLineVars),
-        Circular(ConstrainableCircularVars),
+        Line(LineVars),
+        Circular(ArcVars),
     }
 
     fn extract_tangent_input(
@@ -2863,7 +2986,7 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                     )));
                 };
                 Ok((
-                    TangentInput::Line(ConstrainableLineVars {
+                    TangentInput::Line(LineVars {
                         start: [*start_x, *start_y],
                         end: [*end_x, *end_y],
                     }),
@@ -2886,7 +3009,7 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                     )));
                 };
                 Ok((
-                    TangentInput::Circular(ConstrainableCircularVars {
+                    TangentInput::Circular(ArcVars {
                         center: [*center_x, *center_y],
                         start: [*start_x, *start_y],
                         end: Some([*end_x, *end_y]),
@@ -2908,7 +3031,7 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                     )));
                 };
                 Ok((
-                    TangentInput::Circular(ConstrainableCircularVars {
+                    TangentInput::Circular(ArcVars {
                         center: [*center_x, *center_y],
                         start: [*start_x, *start_y],
                         end: None,
@@ -2941,8 +3064,8 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let _ = (input0_object_id, input1_object_id);
 
     enum TangentCase {
-        LineCircular(ConstrainableLineVars, ConstrainableCircularVars),
-        CircularCircular(ConstrainableCircularVars, ConstrainableCircularVars),
+        LineCircular(LineVars, ArcVars),
+        CircularCircular(ArcVars, ArcVars),
     }
     let tangent_case = match (input0, input1) {
         (TangentInput::Line(line), TangentInput::Circular(circular))
@@ -2975,6 +3098,19 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     // Hidden radius vars. Empty metadata keeps them out of source write-back.
     match tangent_case {
         TangentCase::LineCircular(line, circular) => {
+            let tangency_key = make_line_arc_tangency_key(line, circular);
+            let tangency_side = match exec_state.constraint_state(sketch_id, &tangency_key) {
+                Some(ConstraintState::Tangency(TangencyMode::LineCircle(side))) => side,
+                _ => {
+                    let side = infer_line_tangent_side(&sketch_vars, line, circular.center, exec_state, range)?;
+                    exec_state.set_constraint_state(
+                        sketch_id,
+                        tangency_key,
+                        ConstraintState::Tangency(TangencyMode::LineCircle(side)),
+                    );
+                    side
+                }
+            };
             let line_p0 = datum_point(line.start, range)?;
             let line_p1 = datum_point(line.end, range)?;
             let line_datum = DatumLineSegment::new(line_p0, line_p1);
@@ -3015,13 +3151,22 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             }
             sketch_state
                 .solver_constraints
-                .push(SolverConstraint::LineTangentToCircle(
-                    line_datum,
-                    circle,
-                    LineSide::Undefined,
-                ));
+                .push(SolverConstraint::LineTangentToCircle(line_datum, circle, tangency_side));
         }
         TangentCase::CircularCircular(circular0, circular1) => {
+            let tangency_key = make_arc_arc_tangency_key(circular0, circular1);
+            let tangency_side = match exec_state.constraint_state(sketch_id, &tangency_key) {
+                Some(ConstraintState::Tangency(TangencyMode::CircleCircle(side))) => side,
+                _ => {
+                    let side = infer_arc_tangent_side(&sketch_vars, circular0, circular1, exec_state, range)?;
+                    exec_state.set_constraint_state(
+                        sketch_id,
+                        tangency_key,
+                        ConstraintState::Tangency(TangencyMode::CircleCircle(side)),
+                    );
+                    side
+                }
+            };
             let center0 = datum_point(circular0.center, range)?;
             let start0 = datum_point(circular0.start, range)?;
             let end0 = circular0.end.map(|end| datum_point(end, range)).transpose()?;
@@ -3090,11 +3235,7 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             }
             sketch_state
                 .solver_constraints
-                .push(SolverConstraint::CircleTangentToCircle(
-                    circle0,
-                    circle1,
-                    CircleSide::Undefined,
-                ));
+                .push(SolverConstraint::CircleTangentToCircle(circle0, circle1, tangency_side));
         }
     }
 
@@ -3725,6 +3866,7 @@ impl AxisConstraintKind {
 struct AxisLineVars {
     start: [SketchVarId; 2],
     end: [SketchVarId; 2],
+    #[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
     object_id: ObjectId,
 }
 

@@ -2,6 +2,7 @@ import { users } from '@kittycad/lib'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+import type { JsonValue } from '@rust/kcl-lib/bindings/serde_json/JsonValue'
 import decamelize from 'decamelize'
 import { NIL as uuidNIL, v4 } from 'uuid'
 import {
@@ -37,6 +38,7 @@ import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import { isArray } from '@src/lib/utils'
 
 const FEATURES_CACHE_TTL_MS = 30 * 1_000
 
@@ -127,6 +129,352 @@ type OmitNull<T> = T extends null ? undefined : T
 const toUndefinedIfNull = (a: any): OmitNull<any> =>
   a === null ? undefined : a
 
+function compactRecord<T extends Record<string, unknown>>(
+  value: T
+): Partial<T> | undefined {
+  const compacted = Object.fromEntries(
+    Object.entries(value).filter(([, entry]) => entry !== undefined)
+  ) as Partial<T>
+
+  return Object.keys(compacted).length > 0 ? compacted : undefined
+}
+
+type TomlJsonObject = { [key: string]: JsonValue }
+
+function asTomlJsonObject(value: unknown): TomlJsonObject | undefined {
+  if (!value || typeof value !== 'object' || isArray(value)) {
+    return undefined
+  }
+
+  return value as TomlJsonObject
+}
+
+function getTomlSettingsSection(
+  settings: unknown,
+  key: string
+): TomlJsonObject | undefined {
+  const settingsObject = asTomlJsonObject(settings)
+  return asTomlJsonObject(settingsObject?.[key])
+}
+
+type AppOnlySettingsFieldSelector = {
+  category: keyof SaveSettingsPayload
+  field: string
+}
+
+type AppOnlySettingCodec = {
+  fromToml: (value: JsonValue | undefined) => unknown
+  toToml: (value: unknown) => JsonValue | undefined
+}
+
+type AppOnlySettingsFieldDefinition = {
+  selector: AppOnlySettingsFieldSelector
+  tomlKey: string
+  codec: AppOnlySettingCodec
+}
+
+type AppOnlySettingsSectionDefinition = {
+  sectionKey: string
+  fields: readonly AppOnlySettingsFieldDefinition[]
+}
+
+function getSettingsPayloadFieldValue(
+  payload: DeepPartial<SaveSettingsPayload>,
+  selector: AppOnlySettingsFieldSelector
+): unknown {
+  return (payload[selector.category] as Record<string, unknown> | undefined)?.[
+    selector.field
+  ]
+}
+
+function setSettingsPayloadFieldValue(
+  payload: DeepPartial<SaveSettingsPayload>,
+  selector: AppOnlySettingsFieldSelector,
+  value: unknown
+) {
+  payload[selector.category] = {
+    ...((payload[selector.category] as Record<string, unknown> | undefined) ??
+      {}),
+    [selector.field]: value,
+  } as SaveSettingsPayload[keyof SaveSettingsPayload]
+}
+
+function defineAppOnlySection(
+  sectionKey: string,
+  fields: readonly AppOnlySettingsFieldDefinition[]
+): AppOnlySettingsSectionDefinition {
+  return { sectionKey, fields }
+}
+
+function defineAppOnlyField(
+  selector: AppOnlySettingsFieldSelector,
+  tomlKey: string,
+  codec: AppOnlySettingCodec
+): AppOnlySettingsFieldDefinition {
+  return { selector, tomlKey, codec }
+}
+
+function defineBooleanAppOnlyField(
+  selector: AppOnlySettingsFieldSelector,
+  tomlKey: string
+): AppOnlySettingsFieldDefinition {
+  return defineAppOnlyField(selector, tomlKey, {
+    fromToml: (value) => (typeof value === 'boolean' ? value : undefined),
+    toToml: (value) => (typeof value === 'boolean' ? value : undefined),
+  })
+}
+
+function defineNumberAppOnlyField(
+  selector: AppOnlySettingsFieldSelector,
+  tomlKey: string
+): AppOnlySettingsFieldDefinition {
+  return defineAppOnlyField(selector, tomlKey, {
+    fromToml: (value) => (typeof value === 'number' ? value : undefined),
+    toToml: (value) => (typeof value === 'number' ? value : undefined),
+  })
+}
+
+function defineStringAppOnlyField(
+  selector: AppOnlySettingsFieldSelector,
+  tomlKey: string
+): AppOnlySettingsFieldDefinition {
+  return defineAppOnlyField(selector, tomlKey, {
+    fromToml: (value) => (typeof value === 'string' ? value : undefined),
+    toToml: (value) => (typeof value === 'string' ? value : undefined),
+  })
+}
+
+function defineMappedAppOnlyField(
+  selector: AppOnlySettingsFieldSelector,
+  tomlKey: string,
+  codec: AppOnlySettingCodec
+): AppOnlySettingsFieldDefinition {
+  return defineAppOnlyField(selector, tomlKey, codec)
+}
+
+function readAppOnlySettingsPayload(
+  settings: unknown,
+  sections: readonly AppOnlySettingsSectionDefinition[]
+): DeepPartial<SaveSettingsPayload> {
+  const payload = {} as DeepPartial<SaveSettingsPayload>
+
+  sections.forEach((sectionDef) => {
+    const section = getTomlSettingsSection(settings, sectionDef.sectionKey)
+
+    sectionDef.fields.forEach((fieldDef) => {
+      const value = fieldDef.codec.fromToml(section?.[fieldDef.tomlKey])
+      if (value !== undefined) {
+        setSettingsPayloadFieldValue(payload, fieldDef.selector, value)
+      }
+    })
+  })
+
+  return payload
+}
+
+function writeAppOnlySettingsSections(
+  payload: DeepPartial<SaveSettingsPayload>,
+  sections: readonly AppOnlySettingsSectionDefinition[]
+): Partial<Record<string, TomlJsonObject>> {
+  return Object.fromEntries(
+    sections
+      .map((sectionDef) => {
+        const section = compactRecord(
+          Object.fromEntries(
+            sectionDef.fields.map((fieldDef) => [
+              fieldDef.tomlKey,
+              fieldDef.codec.toToml(
+                getSettingsPayloadFieldValue(payload, fieldDef.selector)
+              ),
+            ])
+          )
+        ) as TomlJsonObject | undefined
+
+        return section ? [sectionDef.sectionKey, section] : undefined
+      })
+      .filter((entry) => entry !== undefined)
+      .map((entry) => entry as [string, TomlJsonObject])
+  )
+}
+
+function mergeSettingsPayloads(
+  ...payloads: DeepPartial<SaveSettingsPayload>[]
+): DeepPartial<SaveSettingsPayload> {
+  return payloads.reduce(
+    (merged, payload) => {
+      Object.entries(payload).forEach(([category, value]) => {
+        if (!value) {
+          return
+        }
+
+        merged[category as keyof SaveSettingsPayload] = {
+          ...((merged[category as keyof SaveSettingsPayload] as
+            | Record<string, unknown>
+            | undefined) ?? {}),
+          ...(value as Record<string, unknown>),
+        } as SaveSettingsPayload[keyof SaveSettingsPayload]
+      })
+
+      return merged
+    },
+    {} as DeepPartial<SaveSettingsPayload>
+  )
+}
+
+function mergeTomlSections(
+  ...sections: (Record<string, unknown> | undefined)[]
+): Record<string, unknown> | undefined {
+  return compactRecord(
+    Object.assign({}, ...sections.filter((section) => section !== undefined))
+  )
+}
+
+// App-owned settings sections are serialized through Rust as opaque TOML
+// sections or flattened fields so the app can evolve them without expanding
+// the CLI/KCL schema. This registry is the migration path for future
+// plugin-owned settings bundles as well.
+const USER_APP_ONLY_SETTINGS_SECTIONS = [
+  defineAppOnlySection('app', [
+    defineStringAppOnlyField(
+      { category: 'app', field: 'onboardingStatus' },
+      'onboarding_status'
+    ),
+    defineBooleanAppOnlyField(
+      { category: 'app', field: 'allowOrbitInSketchMode' },
+      'allow_orbit_in_sketch_mode'
+    ),
+    defineBooleanAppOnlyField(
+      { category: 'app', field: 'showDebugPanel' },
+      'show_debug_panel'
+    ),
+    defineBooleanAppOnlyField(
+      { category: 'app', field: 'machineApi' },
+      'machine_api'
+    ),
+  ]),
+  defineAppOnlySection('modeling', [
+    defineMappedAppOnlyField(
+      { category: 'modeling', field: 'mouseControls' },
+      'mouse_controls',
+      {
+        fromToml: (value) =>
+          typeof value === 'string'
+            ? mouseControlsToCameraSystem(value as never)
+            : undefined,
+        toToml: (value) =>
+          typeof value === 'string'
+            ? cameraSystemToMouseControl(value as never)
+            : undefined,
+      }
+    ),
+    defineStringAppOnlyField(
+      { category: 'modeling', field: 'gizmoType' },
+      'gizmo_type'
+    ),
+    defineBooleanAppOnlyField(
+      { category: 'modeling', field: 'enableTouchControls' },
+      'enable_touch_controls'
+    ),
+    defineBooleanAppOnlyField(
+      { category: 'modeling', field: 'useSketchSolveMode' },
+      'use_sketch_solve_mode'
+    ),
+    defineBooleanAppOnlyField(
+      { category: 'modeling', field: 'snapToGrid' },
+      'snap_to_grid'
+    ),
+    defineNumberAppOnlyField(
+      { category: 'modeling', field: 'majorGridSpacing' },
+      'major_grid_spacing'
+    ),
+    defineNumberAppOnlyField(
+      { category: 'modeling', field: 'minorGridsPerMajor' },
+      'minor_grids_per_major'
+    ),
+    defineNumberAppOnlyField(
+      { category: 'modeling', field: 'snapsPerMinor' },
+      'snaps_per_minor'
+    ),
+  ]),
+  defineAppOnlySection('project', [
+    defineStringAppOnlyField(
+      { category: 'app', field: 'projectDirectory' },
+      'directory'
+    ),
+    defineStringAppOnlyField(
+      { category: 'projects', field: 'defaultProjectName' },
+      'default_project_name'
+    ),
+  ]),
+  defineAppOnlySection('command_bar', [
+    defineBooleanAppOnlyField(
+      { category: 'commandBar', field: 'includeSettings' },
+      'include_settings'
+    ),
+  ]),
+  defineAppOnlySection('text_editor', [
+    defineBooleanAppOnlyField(
+      { category: 'textEditor', field: 'textWrapping' },
+      'text_wrapping'
+    ),
+    defineBooleanAppOnlyField(
+      { category: 'textEditor', field: 'blinkingCursor' },
+      'blinking_cursor'
+    ),
+  ]),
+] as const
+
+const PROJECT_APP_ONLY_SETTINGS_SECTIONS = [
+  defineAppOnlySection('app', [
+    defineStringAppOnlyField(
+      { category: 'app', field: 'onboardingStatus' },
+      'onboarding_status'
+    ),
+    defineBooleanAppOnlyField(
+      { category: 'app', field: 'allowOrbitInSketchMode' },
+      'allow_orbit_in_sketch_mode'
+    ),
+    defineBooleanAppOnlyField(
+      { category: 'app', field: 'showDebugPanel' },
+      'show_debug_panel'
+    ),
+  ]),
+  defineAppOnlySection('modeling', [
+    defineBooleanAppOnlyField(
+      { category: 'modeling', field: 'snapToGrid' },
+      'snap_to_grid'
+    ),
+    defineNumberAppOnlyField(
+      { category: 'modeling', field: 'majorGridSpacing' },
+      'major_grid_spacing'
+    ),
+    defineNumberAppOnlyField(
+      { category: 'modeling', field: 'minorGridsPerMajor' },
+      'minor_grids_per_major'
+    ),
+    defineNumberAppOnlyField(
+      { category: 'modeling', field: 'snapsPerMinor' },
+      'snaps_per_minor'
+    ),
+  ]),
+  defineAppOnlySection('command_bar', [
+    defineBooleanAppOnlyField(
+      { category: 'commandBar', field: 'includeSettings' },
+      'include_settings'
+    ),
+  ]),
+  defineAppOnlySection('text_editor', [
+    defineBooleanAppOnlyField(
+      { category: 'textEditor', field: 'textWrapping' },
+      'text_wrapping'
+    ),
+    defineBooleanAppOnlyField(
+      { category: 'textEditor', field: 'blinkingCursor' },
+      'blinking_cursor'
+    ),
+  ]),
+] as const
+
 /**
  * Convert from a rust settings struct into the JS settings struct.
  * We do this because the JS settings type has all the fancy shit
@@ -135,103 +483,93 @@ const toUndefinedIfNull = (a: any): OmitNull<any> =>
 export function configurationToSettingsPayload(
   configuration: DeepPartial<Configuration>
 ): DeepPartial<SaveSettingsPayload> {
-  return {
-    app: {
-      theme: appThemeToTheme(configuration?.settings?.app?.appearance?.theme),
-      onboardingStatus: configuration?.settings?.app?.onboarding_status,
-      streamIdleMode: toUndefinedIfNull(
-        configuration?.settings?.app?.stream_idle_mode
-      ),
-      allowOrbitInSketchMode:
-        configuration?.settings?.app?.allow_orbit_in_sketch_mode,
-      projectDirectory: configuration?.settings?.project?.directory,
-      showDebugPanel: configuration?.settings?.app?.show_debug_panel,
-      machineApi: configuration?.settings?.app?.machine_api,
+  return mergeSettingsPayloads(
+    {
+      app: {
+        theme: configuration?.settings?.app?.appearance?.theme
+          ? appThemeToTheme(configuration?.settings?.app?.appearance?.theme)
+          : undefined,
+        streamIdleMode: toUndefinedIfNull(
+          configuration?.settings?.app?.stream_idle_mode
+        ),
+      },
+      modeling: {
+        defaultUnit: toUndefinedIfNull(
+          configuration?.settings?.modeling?.base_unit
+        ),
+        cameraProjection: toUndefinedIfNull(
+          configuration?.settings?.modeling?.camera_projection
+        ),
+        cameraOrbit: toUndefinedIfNull(
+          configuration?.settings?.modeling?.camera_orbit
+        ),
+        highlightEdges: toUndefinedIfNull(
+          configuration?.settings?.modeling?.highlight_edges
+        ),
+        enableSSAO: toUndefinedIfNull(
+          configuration?.settings?.modeling?.enable_ssao
+        ),
+        backfaceColor: toUndefinedIfNull(
+          configuration?.settings?.modeling?.backface_color
+        ),
+        showScaleGrid: toUndefinedIfNull(
+          configuration?.settings?.modeling?.show_scale_grid
+        ),
+        fixedSizeGrid: toUndefinedIfNull(
+          configuration?.settings?.modeling?.fixed_size_grid
+        ),
+      },
     },
-    modeling: {
-      defaultUnit: configuration?.settings?.modeling?.base_unit,
-      cameraProjection: configuration?.settings?.modeling?.camera_projection,
-      cameraOrbit: configuration?.settings?.modeling?.camera_orbit,
-      mouseControls: mouseControlsToCameraSystem(
-        configuration?.settings?.modeling?.mouse_controls
-      ),
-      gizmoType: configuration?.settings?.modeling?.gizmo_type,
-      enableTouchControls:
-        configuration?.settings?.modeling?.enable_touch_controls,
-      useSketchSolveMode:
-        configuration?.settings?.modeling?.use_sketch_solve_mode,
-      highlightEdges: configuration?.settings?.modeling?.highlight_edges,
-      enableSSAO: configuration?.settings?.modeling?.enable_ssao,
-      backfaceColor: configuration?.settings?.modeling?.backface_color,
-      showScaleGrid: configuration?.settings?.modeling?.show_scale_grid,
-      fixedSizeGrid: configuration?.settings?.modeling?.fixed_size_grid,
-      snapToGrid: configuration?.settings?.modeling?.snap_to_grid,
-      majorGridSpacing: configuration?.settings?.modeling?.major_grid_spacing,
-      minorGridsPerMajor:
-        configuration?.settings?.modeling?.minor_grids_per_major,
-      snapsPerMinor: configuration?.settings?.modeling?.snaps_per_minor,
-    },
-    textEditor: {
-      textWrapping: configuration?.settings?.text_editor?.text_wrapping,
-      blinkingCursor: configuration?.settings?.text_editor?.blinking_cursor,
-    },
-    projects: {
-      defaultProjectName:
-        configuration?.settings?.project?.default_project_name,
-    },
-    commandBar: {
-      includeSettings: configuration?.settings?.command_bar?.include_settings,
-    },
-  }
+    readAppOnlySettingsPayload(
+      configuration?.settings,
+      USER_APP_ONLY_SETTINGS_SECTIONS
+    )
+  )
 }
 
 export function settingsPayloadToConfiguration(
   configuration: DeepPartial<SaveSettingsPayload>
 ): DeepPartial<Configuration> {
+  const appearance = compactRecord({
+    theme: toUndefinedIfNull(configuration?.app?.theme),
+  })
+
+  const typedAppSection = compactRecord({
+    appearance,
+    stream_idle_mode: toUndefinedIfNull(configuration?.app?.streamIdleMode),
+  })
+
+  const typedModelingSection = compactRecord({
+    base_unit: toUndefinedIfNull(configuration?.modeling?.defaultUnit),
+    camera_projection: toUndefinedIfNull(
+      configuration?.modeling?.cameraProjection
+    ),
+    camera_orbit: toUndefinedIfNull(configuration?.modeling?.cameraOrbit),
+    highlight_edges: toUndefinedIfNull(configuration?.modeling?.highlightEdges),
+    enable_ssao: toUndefinedIfNull(configuration?.modeling?.enableSSAO),
+    backface_color: toUndefinedIfNull(configuration?.modeling?.backfaceColor),
+    show_scale_grid: toUndefinedIfNull(configuration?.modeling?.showScaleGrid),
+    fixed_size_grid: toUndefinedIfNull(configuration?.modeling?.fixedSizeGrid),
+  })
+
+  const appOnlySections = writeAppOnlySettingsSections(
+    configuration,
+    USER_APP_ONLY_SETTINGS_SECTIONS
+  )
+
+  const settings = compactRecord({
+    ...appOnlySections,
+    app: mergeTomlSections(appOnlySections.app, typedAppSection) as
+      | TomlJsonObject
+      | undefined,
+    modeling: mergeTomlSections(
+      appOnlySections.modeling,
+      typedModelingSection
+    ) as TomlJsonObject | undefined,
+  })
+
   return {
-    settings: {
-      app: {
-        appearance: {
-          theme: configuration?.app?.theme,
-        },
-        onboarding_status: configuration?.app?.onboardingStatus,
-        stream_idle_mode: configuration?.app?.streamIdleMode,
-        allow_orbit_in_sketch_mode: configuration?.app?.allowOrbitInSketchMode,
-        show_debug_panel: configuration?.app?.showDebugPanel,
-        machine_api: configuration?.app?.machineApi,
-      },
-      modeling: {
-        base_unit: configuration?.modeling?.defaultUnit,
-        camera_projection: configuration?.modeling?.cameraProjection,
-        camera_orbit: configuration?.modeling?.cameraOrbit,
-        mouse_controls: configuration?.modeling?.mouseControls
-          ? cameraSystemToMouseControl(configuration?.modeling?.mouseControls)
-          : undefined,
-        gizmo_type: configuration?.modeling?.gizmoType,
-        enable_touch_controls: configuration?.modeling?.enableTouchControls,
-        use_sketch_solve_mode: configuration?.modeling?.useSketchSolveMode,
-        highlight_edges: configuration?.modeling?.highlightEdges,
-        enable_ssao: configuration?.modeling?.enableSSAO,
-        backface_color: configuration?.modeling?.backfaceColor,
-        show_scale_grid: configuration?.modeling?.showScaleGrid,
-        fixed_size_grid: configuration?.modeling?.fixedSizeGrid,
-        snap_to_grid: configuration?.modeling?.snapToGrid,
-        major_grid_spacing: configuration?.modeling?.majorGridSpacing,
-        minor_grids_per_major: configuration?.modeling?.minorGridsPerMajor,
-        snaps_per_minor: configuration?.modeling?.snapsPerMinor,
-      },
-      text_editor: {
-        text_wrapping: configuration?.textEditor?.textWrapping,
-        blinking_cursor: configuration?.textEditor?.blinkingCursor,
-      },
-      project: {
-        directory: configuration?.app?.projectDirectory,
-        default_project_name: configuration?.projects?.defaultProjectName,
-      },
-      command_bar: {
-        include_settings: configuration?.commandBar?.includeSettings,
-      },
-    },
+    ...(settings ? { settings } : {}),
   }
 }
 
@@ -275,93 +613,78 @@ function deepPartialNamedViewsToNamedViews(
 export function projectConfigurationToSettingsPayload(
   configuration: DeepPartial<ProjectConfiguration>
 ): DeepPartial<SaveSettingsPayload> {
-  return {
-    meta: {
-      id: configuration?.settings?.meta?.id,
+  return mergeSettingsPayloads(
+    {
+      meta: {
+        id: configuration?.settings?.meta?.id,
+      },
+      app: {
+        namedViews: deepPartialNamedViewsToNamedViews(
+          configuration?.settings?.app?.named_views
+        ),
+        zookeeperMode: (() => {
+          const v = configuration?.settings?.app?.zookeeper_mode
+          return v === 'fast' || v === 'thoughtful' ? v : undefined
+        })(),
+      },
+      modeling: {
+        defaultUnit: configuration?.settings?.modeling?.base_unit ?? undefined,
+        highlightEdges: configuration?.settings?.modeling?.highlight_edges,
+        enableSSAO: configuration?.settings?.modeling?.enable_ssao,
+        fixedSizeGrid: toUndefinedIfNull(
+          configuration?.settings?.modeling?.fixed_size_grid
+        ),
+      },
     },
-    app: {
-      // do not read in `theme`, because it is blocked on the project level
-      onboardingStatus: configuration?.settings?.app?.onboarding_status,
-      allowOrbitInSketchMode:
-        configuration?.settings?.app?.allow_orbit_in_sketch_mode,
-      namedViews: deepPartialNamedViewsToNamedViews(
-        configuration?.settings?.app?.named_views
-      ),
-      showDebugPanel:
-        configuration?.settings?.app?.show_debug_panel ?? undefined,
-      zookeeperMode: (() => {
-        const v = configuration?.settings?.app?.zookeeper_mode
-        return v === 'fast' || v === 'thoughtful' ? v : undefined
-      })(),
-    },
-    modeling: {
-      defaultUnit: configuration?.settings?.modeling?.base_unit ?? undefined,
-      highlightEdges: configuration?.settings?.modeling?.highlight_edges,
-      enableSSAO: configuration?.settings?.modeling?.enable_ssao,
-      fixedSizeGrid: toUndefinedIfNull(
-        configuration?.settings?.modeling?.fixed_size_grid
-      ),
-      snapToGrid: toUndefinedIfNull(
-        configuration?.settings?.modeling?.snap_to_grid
-      ),
-      majorGridSpacing: toUndefinedIfNull(
-        configuration?.settings?.modeling?.major_grid_spacing
-      ),
-      minorGridsPerMajor: toUndefinedIfNull(
-        configuration?.settings?.modeling?.minor_grids_per_major
-      ),
-      snapsPerMinor: toUndefinedIfNull(
-        configuration?.settings?.modeling?.snaps_per_minor
-      ),
-    },
-    textEditor: {
-      textWrapping:
-        configuration?.settings?.text_editor?.text_wrapping ?? undefined,
-      blinkingCursor:
-        configuration?.settings?.text_editor?.blinking_cursor ?? undefined,
-    },
-    commandBar: {
-      includeSettings:
-        configuration?.settings?.command_bar?.include_settings ?? undefined,
-    },
-  }
+    readAppOnlySettingsPayload(
+      configuration?.settings,
+      PROJECT_APP_ONLY_SETTINGS_SECTIONS
+    )
+  )
 }
 
 export function settingsPayloadToProjectConfiguration(
   configuration: DeepPartial<SaveSettingsPayload>
 ): DeepPartial<ProjectConfiguration> {
+  const namedViews = deepPartialNamedViewsToNamedViews(
+    configuration?.app?.namedViews
+  )
+
+  const meta = compactRecord({
+    id: configuration?.meta?.id,
+  })
+
+  const typedAppSection = compactRecord({
+    zookeeper_mode: configuration?.app?.zookeeperMode,
+    named_views: Object.keys(namedViews).length > 0 ? namedViews : undefined,
+  })
+
+  const typedModelingSection = compactRecord({
+    base_unit: configuration?.modeling?.defaultUnit,
+    highlight_edges: configuration?.modeling?.highlightEdges,
+    enable_ssao: configuration?.modeling?.enableSSAO,
+    fixed_size_grid: configuration?.modeling?.fixedSizeGrid,
+  })
+
+  const appOnlySections = writeAppOnlySettingsSections(
+    configuration,
+    PROJECT_APP_ONLY_SETTINGS_SECTIONS
+  )
+
+  const settings = compactRecord({
+    meta,
+    ...appOnlySections,
+    app: mergeTomlSections(appOnlySections.app, typedAppSection) as
+      | TomlJsonObject
+      | undefined,
+    modeling: mergeTomlSections(
+      appOnlySections.modeling,
+      typedModelingSection
+    ) as TomlJsonObject | undefined,
+  })
+
   return {
-    settings: {
-      meta: {
-        id: configuration?.meta?.id,
-      },
-      app: {
-        onboarding_status: configuration?.app?.onboardingStatus,
-        allow_orbit_in_sketch_mode: configuration?.app?.allowOrbitInSketchMode,
-        show_debug_panel: configuration?.app?.showDebugPanel,
-        zookeeper_mode: configuration?.app?.zookeeperMode,
-        named_views: deepPartialNamedViewsToNamedViews(
-          configuration?.app?.namedViews
-        ),
-      },
-      modeling: {
-        base_unit: configuration?.modeling?.defaultUnit,
-        highlight_edges: configuration?.modeling?.highlightEdges,
-        enable_ssao: configuration?.modeling?.enableSSAO,
-        fixed_size_grid: configuration?.modeling?.fixedSizeGrid,
-        snap_to_grid: configuration?.modeling?.snapToGrid,
-        major_grid_spacing: configuration?.modeling?.majorGridSpacing,
-        minor_grids_per_major: configuration?.modeling?.minorGridsPerMajor,
-        snaps_per_minor: configuration?.modeling?.snapsPerMinor,
-      },
-      text_editor: {
-        text_wrapping: configuration?.textEditor?.textWrapping,
-        blinking_cursor: configuration?.textEditor?.blinkingCursor,
-      },
-      command_bar: {
-        include_settings: configuration?.commandBar?.includeSettings,
-      },
-    },
+    ...(settings ? { settings } : {}),
   }
 }
 
@@ -369,33 +692,51 @@ export function mergeProjectConfiguration(
   existingConfiguration: DeepPartial<ProjectConfiguration>,
   updatedConfiguration: DeepPartial<ProjectConfiguration>
 ): DeepPartial<ProjectConfiguration> {
+  const existingSettings =
+    asTomlJsonObject(existingConfiguration.settings) ?? {}
+  const updatedSettings = asTomlJsonObject(updatedConfiguration.settings) ?? {}
+  const settings = compactRecord({
+    ...existingSettings,
+    ...updatedSettings,
+    meta: mergeTomlSections(
+      asTomlJsonObject(existingConfiguration.settings?.meta),
+      asTomlJsonObject(updatedConfiguration.settings?.meta)
+    ),
+    app: mergeTomlSections(
+      asTomlJsonObject(existingConfiguration.settings?.app),
+      asTomlJsonObject(updatedConfiguration.settings?.app)
+    ),
+    modeling: mergeTomlSections(
+      asTomlJsonObject(existingConfiguration.settings?.modeling),
+      asTomlJsonObject(updatedConfiguration.settings?.modeling)
+    ),
+  }) as DeepPartial<ProjectConfiguration>['settings']
+
   return {
     ...existingConfiguration,
     ...updatedConfiguration,
-    settings: {
-      ...existingConfiguration.settings,
-      ...updatedConfiguration.settings,
-      meta: {
-        ...existingConfiguration.settings?.meta,
-        ...updatedConfiguration.settings?.meta,
-      },
-      app: {
-        ...existingConfiguration.settings?.app,
-        ...updatedConfiguration.settings?.app,
-      },
-      modeling: {
-        ...existingConfiguration.settings?.modeling,
-        ...updatedConfiguration.settings?.modeling,
-      },
-      text_editor: {
-        ...existingConfiguration.settings?.text_editor,
-        ...updatedConfiguration.settings?.text_editor,
-      },
-      command_bar: {
-        ...existingConfiguration.settings?.command_bar,
-        ...updatedConfiguration.settings?.command_bar,
-      },
-    },
+    settings,
+  }
+}
+
+export function replaceProjectSettingsPreservingMetadata(
+  existingConfiguration: DeepPartial<ProjectConfiguration>,
+  updatedConfiguration: DeepPartial<ProjectConfiguration>
+): DeepPartial<ProjectConfiguration> {
+  const updatedSettings = asTomlJsonObject(updatedConfiguration.settings)
+  const meta = mergeTomlSections(
+    asTomlJsonObject(existingConfiguration.settings?.meta),
+    asTomlJsonObject(updatedConfiguration.settings?.meta)
+  )
+
+  const settings = compactRecord({
+    ...updatedSettings,
+    meta,
+  }) as DeepPartial<ProjectConfiguration>['settings'] | undefined
+
+  return {
+    ...existingConfiguration,
+    settings,
   }
 }
 
@@ -575,7 +916,7 @@ export async function saveSettings(
   )
   if (err(existingProjectSettings)) return
 
-  const mergedProjectSettings = mergeProjectConfiguration(
+  const mergedProjectSettings = replaceProjectSettingsPreservingMetadata(
     existingProjectSettings,
     settingsPayloadToProjectConfiguration(jsProjectSettings)
   )
@@ -670,7 +1011,7 @@ export function setSettingsAtLevel(
       // TODO: How do you get a valid type for allSettings[categoryKey][settingKey]?
       // it seems to always collapses to `never`, which is not correct
       // @ts-ignore
-      if (!allSettings[categoryKey][settingKey]) return // ignore unrecognized settings
+      if (!(settingKey in allSettings[categoryKey])) return // ignore unrecognized settings
       // @ts-ignore
       allSettings[categoryKey][settingKey][level] = settingValue as unknown
     })

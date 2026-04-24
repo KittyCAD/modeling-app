@@ -370,7 +370,7 @@ export const MlEphantConversationPane = (props: {
       subscriptionMlEphantManagerActor.unsubscribe()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [props.settings.meta.id.current])
+  }, [props.settings.meta.id.current, props.theProject?.path])
 
   // We watch the URL for a query parameter to set the defaultPrompt
   // for the conversation.

@@ -903,6 +903,83 @@ export function buildToolbarConfig(
             },
           ],
         },
+        {
+          id: 'gears',
+          array: [
+            {
+              id: 'gear-helical',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'Helical Gear', groupId: 'modeling' },
+                }),
+              icon: 'gear',
+              status: 'experimental',
+              title: 'Helical Gear',
+              description: 'Create a helical gear.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL('/docs/kcl-std/modules/std-gear'),
+                },
+              ],
+            },
+            {
+              id: 'gear-spur',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'Spur Gear', groupId: 'modeling' },
+                }),
+              icon: 'gear',
+              status: 'experimental',
+              title: 'Spur Gear',
+              description: 'Create a spur gear.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL('/docs/kcl-std/modules/std-gear'),
+                },
+              ],
+            },
+            {
+              id: 'gear-herringbone',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'Herringbone Gear', groupId: 'modeling' },
+                }),
+              icon: 'gear',
+              status: 'experimental',
+              title: 'Herringbone Gear',
+              description: 'Create a herringbone gear.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL('/docs/kcl-std/modules/std-gear'),
+                },
+              ],
+            },
+            {
+              id: 'gear-ring',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'Ring Gear', groupId: 'modeling' },
+                }),
+              icon: 'gear',
+              status: 'experimental',
+              title: 'Ring Gear',
+              description: 'Create a ring gear.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL('/docs/kcl-std/modules/std-gear'),
+                },
+              ],
+            },
+          ],
+        },
         'break',
         {
           id: 'insert',
