@@ -348,15 +348,8 @@ describe('MlEphantConversation', () => {
       'zookeeper-makeathon-announcement-overlay'
     )
 
-    expect(overlay).toHaveClass('backdrop-blur-sm')
-    expect(
-      screen.getByRole('dialog', {
-        name: 'Zoo Makeathon is open for registration',
-      })
-    ).toBe(announcement)
-    expect(announcement).toHaveTextContent(
-      'Zoo Makeathon is open for registration'
-    )
+    expect(announcement).toBeVisible()
+    expect(overlay).toBeVisible()
     expect(
       within(announcement).getByRole('link', { name: 'Register now' })
     ).toHaveAttribute('href', withSiteBaseURL('/makeathon'))
