@@ -1,0 +1,9 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing inconsistent_sketch.kcl
+---
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -10.64mm, var 26.44mm], end = [var 13.05mm, var 5.52mm])
+  fixed([line1.start, ORIGIN])
+  fixed([line1.start, [20, 21]])
+}
