@@ -421,11 +421,7 @@ impl ExecState {
         ObjectId(self.mod_local.artifacts.object_id_generator.peek_id())
     }
 
-    pub(crate) fn get_constraint_state(
-        &self,
-        sketch_block_id: ObjectId,
-        key: &ConstraintKey,
-    ) -> Option<ConstraintState> {
+    pub(crate) fn constraint_state(&self, sketch_block_id: ObjectId, key: &ConstraintKey) -> Option<ConstraintState> {
         let map = self.mod_local.constraint_state.get(&sketch_block_id)?;
         map.get(key).copied()
     }

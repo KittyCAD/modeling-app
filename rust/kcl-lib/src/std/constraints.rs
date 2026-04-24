@@ -3020,7 +3020,7 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     match tangent_case {
         TangentCase::LineCircular(line, circular) => {
             let tangency_key = make_line_arc_tangency_key(line, circular);
-            let tangency_side = match exec_state.get_constraint_state(sketch_id, &tangency_key) {
+            let tangency_side = match exec_state.constraint_state(sketch_id, &tangency_key) {
                 Some(ConstraintState::Tangency(TangencyMode::LineCircle(side))) => side,
                 _ => {
                     let side = infer_line_tangent_side(&sketch_vars, line, circular.center, exec_state, range)?;
@@ -3076,7 +3076,7 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         }
         TangentCase::CircularCircular(circular0, circular1) => {
             let tangency_key = make_arc_arc_tangency_key(circular0, circular1);
-            let tangency_side = match exec_state.get_constraint_state(sketch_id, &tangency_key) {
+            let tangency_side = match exec_state.constraint_state(sketch_id, &tangency_key) {
                 Some(ConstraintState::Tangency(TangencyMode::CircleCircle(side))) => side,
                 _ => {
                     let side = infer_arc_tangent_side(&sketch_vars, circular0, circular1, exec_state, range)?;
