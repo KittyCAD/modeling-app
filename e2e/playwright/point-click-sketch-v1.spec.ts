@@ -11,16 +11,6 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
-test.beforeEach(async ({ tronApp }) => {
-  if (tronApp) {
-    await tronApp.cleanProjectDir({
-      modeling: {
-        use_sketch_solve_mode: false,
-      },
-    })
-  }
-})
-
 test.describe('Point-and-click tests - sketch v1', { tag: '@desktop' }, () => {
   test('Verify in-pipe extrudes in bracket can be edited', async ({
     tronApp,

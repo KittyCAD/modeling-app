@@ -365,12 +365,15 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     scene,
     cmdBar,
     toolbar,
+    context,
   }) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, `sketch001 = startSketchOn(XZ)`)
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
-    const sketchButton = toolbar.startSketchBtn
     const cmdBarButton = page.getByRole('button', { name: 'Commands' })
     const rectangleToolCommand = page.getByRole('option', {
       name: 'rectangle',
@@ -390,8 +393,10 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
       name: 'arc Tangential Arc',
     })
 
-    // Start a sketch
-    await sketchButton.click()
+    // Enter a sketch
+    const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
+    await op.dblclick()
+    await toolbar.waitUntilSketchingReady()
 
     await page.mouse.click(700, 200)
     await expect(toolbar.exitSketchBtn).toBeVisible()
