@@ -435,12 +435,20 @@ export fn tangent(
 ///
 /// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
-///   edge = line(start = [var 0mm, var 0mm], end = [var 6mm, var 4mm])
-///   center = point(at = [var 1mm, var 1mm])
-///   midpoint(edge, point = center)
+///   line1 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 3mm])
+///   coincident([line1.start, ORIGIN])
+///   
+///   arc1 = arc(start = [var 2mm, var 1mm], end = [var -3mm, var -2mm], center = [var 0mm, var 0mm])
+///   coincident([arc1.center, line1.start])
+///   coincident([arc1.start, line1])
+///   midpoint(line1, point = arc1.start)
+///   
+///   line2 = line(start = [var -1mm, var 3mm], end = [var 0mm, var 0mm])
+///   coincident([line2.start, arc1])
+///   coincident([line2.end, arc1.center])
+///   midpoint(arc1, point = line2.start)
 /// }
-///
-/// solid = extrude(region(point = [3mm, 2mm], sketch = profile), length = 2)
+/// solid = extrude(region(point = [1, 2], sketch = profile), length = 5)
 /// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn midpoint(
