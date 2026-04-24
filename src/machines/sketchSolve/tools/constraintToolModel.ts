@@ -174,6 +174,18 @@ export const constraintToolConfigs = {
         slots: [['line'], ['point']],
         areaSelectionPolicy: 'consume-minimal',
       },
+      {
+        id: 'point-arc',
+        resultingConstraintType: 'Midpoint',
+        slots: [['point'], ['arc']],
+        areaSelectionPolicy: 'consume-minimal',
+      },
+      {
+        id: 'arc-point',
+        resultingConstraintType: 'Midpoint',
+        slots: [['arc'], ['point']],
+        areaSelectionPolicy: 'consume-minimal',
+      },
     ],
   },
   tangentConstraintTool: {

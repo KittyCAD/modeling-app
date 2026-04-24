@@ -172,6 +172,39 @@ describe('constraintToolHelpers', () => {
     })
   })
 
+  it('prepares midpoint payloads from point-arc selections', () => {
+    const point = createPointApiObject({ id: 1 })
+    const center = createPointApiObject({ id: 2 })
+    const arcStart = createPointApiObject({ id: 3 })
+    const arcEnd = createPointApiObject({ id: 4 })
+    const arc = createArcApiObject({ id: 10, center: 2, start: 3, end: 4 })
+    const objects = createObjectsArray([point, center, arcStart, arcEnd, arc])
+
+    const pointArcApply = getConstraintToolPreparedApply(
+      'midpointConstraintTool',
+      [1, 10],
+      objects,
+      applyOptions
+    )
+    expect(pointArcApply?.payload).toEqual({
+      type: 'Midpoint',
+      point: 1,
+      segment: 10,
+    })
+
+    const arcPointApply = getConstraintToolPreparedApply(
+      'midpointConstraintTool',
+      [10, 1],
+      objects,
+      applyOptions
+    )
+    expect(arcPointApply?.payload).toEqual({
+      type: 'Midpoint',
+      point: 1,
+      segment: 10,
+    })
+  })
+
   it('prepares equal-length payloads from the full valid current selection', () => {
     const pointA = createPointApiObject({ id: 1 })
     const pointB = createPointApiObject({ id: 2 })

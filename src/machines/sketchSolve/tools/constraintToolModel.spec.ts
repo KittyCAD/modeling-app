@@ -78,7 +78,8 @@ describe('constraintToolModel', () => {
     const lineStart = createPointApiObject({ id: 2 })
     const lineEnd = createPointApiObject({ id: 3 })
     const line = createLineApiObject({ id: 10, start: 2, end: 3 })
-    const objects = createObjectsArray([point, lineStart, lineEnd, line])
+    const arc = createArcApiObject({ id: 11, center: 1, start: 2, end: 3 })
+    const objects = createObjectsArray([point, lineStart, lineEnd, line, arc])
 
     const pointLine = getConstraintToolSelectionMatches(
       'midpointConstraintTool',
@@ -95,6 +96,22 @@ describe('constraintToolModel', () => {
     )
     expect(linePoint.status).toBe('complete')
     expect(linePoint.bestMatch?.mode.id).toBe('line-point')
+
+    const pointArc = getConstraintToolSelectionMatches(
+      'midpointConstraintTool',
+      [1, 11],
+      objects
+    )
+    expect(pointArc.status).toBe('complete')
+    expect(pointArc.bestMatch?.mode.id).toBe('point-arc')
+
+    const arcPoint = getConstraintToolSelectionMatches(
+      'midpointConstraintTool',
+      [11, 1],
+      objects
+    )
+    expect(arcPoint.status).toBe('complete')
+    expect(arcPoint.bestMatch?.mode.id).toBe('arc-point')
   })
 
   it('classifies sketch solve selections into reusable kinds', () => {

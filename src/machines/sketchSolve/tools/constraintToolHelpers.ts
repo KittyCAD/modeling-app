@@ -207,8 +207,10 @@ function buildConstraintToolPayloads(
       }
 
       const [firstId, secondId] = midpointPair
+      const pointIsFirst =
+        match.mode.id === 'point-line' || match.mode.id === 'point-arc'
       return [
-        match.mode.id === 'point-line'
+        pointIsFirst
           ? {
               type: 'Midpoint',
               point: firstId,
