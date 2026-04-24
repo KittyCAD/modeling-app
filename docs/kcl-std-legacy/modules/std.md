@@ -27,7 +27,7 @@ You might also want the KCL language reference or the KCL guide.
 * [`runtime`](/docs/kcl-std-legacy/modules/std-runtime)
 * [`sketch`](/docs/kcl-std-legacy/modules/std-sketch)
 * [`solid`](/docs/kcl-std-legacy/modules/std-solid)
-* [`solver::solver`](/docs/kcl-std-legacy/modules/std-solver)
+* [`solver`](/docs/kcl-std-legacy/modules/std-solver)
 * [`sweep::sweep`](/docs/kcl-std-legacy/modules/std-sweep)
 * [`transform`](/docs/kcl-std-legacy/modules/std-transform)
 * [`turns::turns`](/docs/kcl-std-legacy/modules/std-turns)
