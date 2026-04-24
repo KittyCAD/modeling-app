@@ -382,7 +382,7 @@ const sketchSolveConstraintItems: ToolbarItem[] = [
   createSketchSolveConstraintDropdownItem({
     id: 'Symmetric',
     toolName: 'symmetricConstraintTool',
-    icon: 'symmetry',
+    icon: 'symmetric',
     title: 'Symmetric',
     hotkey: 'Shift+E',
     description:
