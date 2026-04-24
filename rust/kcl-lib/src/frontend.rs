@@ -4792,7 +4792,7 @@ fn filter_and_process(
         }
     }
 
-    // Make sure the node matches the source range.
+    // Make sure the node matches the source ref.
     let node_path = <Option<ast::NodePath>>::try_from(&node).ok().flatten();
     if !source_ref_matches(ctx, node_range, node_path.as_ref()) {
         return TraversalReturn::new_continue(());
@@ -4804,7 +4804,10 @@ fn filter_and_process(
 }
 
 fn source_ref_matches(ctx: &AstMutateContext, node_range: SourceRange, node_path: Option<&ast::NodePath>) -> bool {
-    node_range == ctx.source_range || ctx.node_path.as_ref().is_some_and(|target| Some(target) == node_path)
+    match &ctx.node_path {
+        Some(target) => Some(target) == node_path,
+        None => node_range == ctx.source_range,
+    }
 }
 
 fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstMutateCommandReturn, KclError>> {
