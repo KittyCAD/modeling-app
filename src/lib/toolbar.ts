@@ -350,6 +350,7 @@ const sketchSolveConstraintItems: ToolbarItem[] = [
     toolName: 'midpointConstraintTool',
     icon: 'midpoint',
     title: 'Midpoint',
+    hotkey: 'Shift+X',
     description: 'Constrain a point to lie at the midpoint of a selected line.',
   }),
   createSketchSolveConstraintDropdownItem({
