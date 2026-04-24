@@ -872,7 +872,7 @@ describe('createOnDragCallback', () => {
     expect(rustContext.addConstraint.mock.calls[0]?.[2]).toEqual({
       type: 'Midpoint',
       point: 4,
-      line: 10,
+      segment: 10,
     })
     expect(send).toHaveBeenCalledWith(
       expect.objectContaining({

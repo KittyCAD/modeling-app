@@ -1025,7 +1025,7 @@ mod sync {
         });
         let midpoint = Constraint::Midpoint(crate::frontend::sketch::Midpoint {
             point: ObjectId(1),
-            line: ObjectId(2),
+            segment: ObjectId(2),
         });
 
         let Some(Constraint::Coincident(rewritten_coincident)) = rewrite_constraint_with_map(&coincident, &rewrite_map)
@@ -1056,7 +1056,7 @@ mod sync {
             panic!("expected midpoint rewrite");
         };
         assert_eq!(rewritten_midpoint.point, ObjectId(101));
-        assert_eq!(rewritten_midpoint.line, ObjectId(202));
+        assert_eq!(rewritten_midpoint.segment, ObjectId(202));
     }
 
     #[test]

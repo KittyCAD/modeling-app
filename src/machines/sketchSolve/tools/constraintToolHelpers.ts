@@ -212,12 +212,12 @@ function buildConstraintToolPayloads(
           ? {
               type: 'Midpoint',
               point: firstId,
-              line: secondId,
+              segment: secondId,
             }
           : {
               type: 'Midpoint',
               point: secondId,
-              line: firstId,
+              segment: firstId,
             },
       ]
     }

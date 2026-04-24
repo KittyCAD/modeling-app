@@ -431,23 +431,23 @@ export fn tangent(
   @input: [Segment; 2],
 ) {}
 
-/// Constrain a point to lie at the midpoint of a line segment.
+/// Constrain a point to lie at the midpoint of a line segment or circular arc.
 ///
 /// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
 ///   edge = line(start = [var 0mm, var 0mm], end = [var 6mm, var 4mm])
 ///   center = point(at = [var 1mm, var 1mm])
-///   midpoint(center, line = edge)
+///   midpoint(edge, point = center)
 /// }
 ///
 /// solid = extrude(region(point = [3mm, 2mm], sketch = profile), length = 2)
 /// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn midpoint(
-  /// The point to place at the midpoint.
+  /// The line or circular arc whose midpoint is constrained.
   @input: Segment,
-  /// The line whose midpoint is constrained.
-  line: Segment,
+  /// The point to place at the midpoint.
+  point: Segment,
 ) {}
 
 /// Constrain a point to be fixed to a position.

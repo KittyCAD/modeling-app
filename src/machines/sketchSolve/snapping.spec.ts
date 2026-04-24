@@ -77,7 +77,7 @@ describe('snapping', () => {
         {
           type: 'Midpoint',
           point: 5,
-          line: 10,
+          segment: 10,
         },
       ])
     })

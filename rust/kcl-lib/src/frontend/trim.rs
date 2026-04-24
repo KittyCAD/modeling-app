@@ -381,7 +381,7 @@ fn rewrite_constraint_with_map(
         })),
         Constraint::Midpoint(midpoint) => Some(Constraint::Midpoint(crate::frontend::sketch::Midpoint {
             point: rewrite_object_id(midpoint.point, rewrite_map),
-            line: rewrite_object_id(midpoint.line, rewrite_map),
+            segment: rewrite_object_id(midpoint.segment, rewrite_map),
         })),
         Constraint::Tangent(tangent) => Some(Constraint::Tangent(crate::frontend::sketch::Tangent {
             input: tangent
@@ -5184,7 +5184,7 @@ pub(crate) async fn execute_trim_operations_simple(
                         Constraint::Parallel(parallel) => parallel.lines.contains(segment_id),
                         Constraint::Perpendicular(perpendicular) => perpendicular.lines.contains(segment_id),
                         Constraint::Midpoint(midpoint) => {
-                            midpoint.line == *segment_id
+                            midpoint.segment == *segment_id
                                 || original_segment_end_point_id.is_some_and(|end_id| midpoint.point == end_id)
                         }
                         Constraint::Horizontal(Horizontal::Line { line }) => line == segment_id,

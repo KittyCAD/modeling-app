@@ -3,6 +3,7 @@ import type {
   ApiObject,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Coords2d } from '@src/lang/util'
+import { getAngleDiff } from '@src/lib/utils'
 import { lerp2d } from '@src/lib/utils2d'
 import { Vector3 } from 'three'
 
@@ -16,6 +17,7 @@ import {
   getArcPoints,
   getLinePoints,
   isArcLikeSegment,
+  isArcSegment,
   isConstraint,
   isLineSegment,
   isPointSegment,
@@ -114,7 +116,7 @@ export function getInvisibleConstraintAnchor(
           .filter(isVector3)
       )
     case 'Midpoint':
-      return getLineAnchor(constraint.line, objects)
+      return getMidpointTargetAnchor(constraint.segment, objects)
     case 'Parallel':
       return (
         getLineAnchor(constraint.lines[0], objects, 0.7) ??
@@ -207,7 +209,7 @@ export function findSegmentsForInvisibleConstraint(
       case 'Midpoint':
         return [
           constraint.kind.constraint.point,
-          constraint.kind.constraint.line,
+          constraint.kind.constraint.segment,
         ]
       case 'EqualRadius':
       case 'Tangent':
@@ -277,7 +279,8 @@ export function isConstrainingSegment(
       )
     case 'Midpoint':
       return (
-        isLineSegment(segment) && constraint.kind.constraint.line === segment.id
+        (isLineSegment(segment) || isArcSegment(segment)) &&
+        constraint.kind.constraint.segment === segment.id
       )
     case 'EqualRadius':
       return (
@@ -351,6 +354,47 @@ function getLineAnchor(
 
   const anchor = lerp2d(linePoints[0], linePoints[1], positionAlongLine)
   return new Vector3(anchor[0], anchor[1], 0)
+}
+
+function getMidpointTargetAnchor(
+  segmentId: number,
+  objects: ApiObject[]
+): Vector3 | null {
+  const segment = objects[segmentId]
+
+  if (isLineSegment(segment)) {
+    return getLineAnchor(segmentId, objects)
+  }
+
+  if (isArcSegment(segment)) {
+    const arcPoints = getArcPoints(segment, objects)
+    if (!arcPoints) {
+      return null
+    }
+
+    const startAngle = Math.atan2(
+      arcPoints.start[1] - arcPoints.center[1],
+      arcPoints.start[0] - arcPoints.center[0]
+    )
+    const endAngle = Math.atan2(
+      arcPoints.end[1] - arcPoints.center[1],
+      arcPoints.end[0] - arcPoints.center[0]
+    )
+    const midpointAngle =
+      startAngle + getAngleDiff(startAngle, endAngle, true) / 2
+    const radius = Math.hypot(
+      arcPoints.start[0] - arcPoints.center[0],
+      arcPoints.start[1] - arcPoints.center[1]
+    )
+
+    return new Vector3(
+      arcPoints.center[0] + Math.cos(midpointAngle) * radius,
+      arcPoints.center[1] + Math.sin(midpointAngle) * radius,
+      0
+    )
+  }
+
+  return null
 }
 
 function getAxisConstraintAnchor(

@@ -384,7 +384,7 @@ function hasMidpointConstraintForSnapTarget(
     (obj) =>
       isConstraint(obj, 'Midpoint') &&
       obj.kind.constraint.point === pointId &&
-      obj.kind.constraint.line === target.id
+      obj.kind.constraint.segment === target.id
   )
 }
 

@@ -168,7 +168,7 @@ describe('constraintToolHelpers', () => {
     expect(apply?.payload).toEqual({
       type: 'Midpoint',
       point: 1,
-      line: 10,
+      segment: 10,
     })
   })
 

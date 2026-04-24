@@ -139,7 +139,7 @@ const EQUAL_LENGTH_FN: &str = "equalLength";
 const EQUAL_RADIUS_FN: &str = "equalRadius";
 const HORIZONTAL_FN: &str = "horizontal";
 const MIDPOINT_FN: &str = "midpoint";
-const MIDPOINT_LINE_PARAM: &str = "line";
+const MIDPOINT_POINT_PARAM: &str = "point";
 const RADIUS_FN: &str = "radius";
 const TANGENT_FN: &str = "tangent";
 const VERTICAL_FN: &str = "vertical";
@@ -3168,22 +3168,30 @@ impl FrontendState {
         let sketch_id = sketch;
         let point_ast = self.point_id_to_ast_reference(midpoint.point, new_ast)?;
 
-        let line_object = self
+        let segment_object = self
             .scene_graph
             .objects
-            .get(midpoint.line.0)
-            .ok_or_else(|| KclError::refactor(format!("Line not found: {:?}", midpoint.line)))?;
-        let ObjectKind::Segment { segment: line_segment } = &line_object.kind else {
-            return Err(KclError::refactor(format!("Object is not a segment: {line_object:?}")));
-        };
-        let Segment::Line(_) = line_segment else {
+            .get(midpoint.segment.0)
+            .ok_or_else(|| KclError::refactor(format!("Segment not found: {:?}", midpoint.segment)))?;
+        let ObjectKind::Segment {
+            segment: midpoint_segment,
+        } = &segment_object.kind
+        else {
             return Err(KclError::refactor(format!(
-                "Midpoint line must be a line segment, got: {line_segment:?}"
+                "Object is not a segment: {segment_object:?}"
             )));
         };
-        let line_ast = get_or_insert_ast_reference(new_ast, &line_object.source, "line", None)?;
+        let segment_ast = match midpoint_segment {
+            Segment::Line(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, "line", None)?,
+            Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, "arc", None)?,
+            _ => {
+                return Err(KclError::refactor(format!(
+                    "Midpoint target must be a line or arc segment, got: {midpoint_segment:?}"
+                )));
+            }
+        };
 
-        let midpoint_ast = create_midpoint_ast(point_ast, line_ast);
+        let midpoint_ast = create_midpoint_ast(segment_ast, point_ast);
         let (sketch_block_ref, _) = self.mutate_ast(
             new_ast,
             sketch_id,
@@ -3995,7 +4003,7 @@ impl FrontendState {
                     .iter()
                     .any(|line_id| segment_ids_set.contains(line_id)),
                 Constraint::Midpoint(midpoint) => {
-                    segment_ids_set.contains(&midpoint.line)
+                    segment_ids_set.contains(&midpoint.segment)
                         || segment_ids_set.contains(&midpoint.point)
                         || self
                             .scene_graph
@@ -5625,16 +5633,16 @@ pub(crate) fn create_tangent_ast(seg1_expr: ast::Expr, seg2_expr: ast::Expr) -> 
     })))
 }
 
-/// Create an AST node for midpoint(point, line = line)
-pub(crate) fn create_midpoint_ast(point_expr: ast::Expr, line_expr: ast::Expr) -> ast::Expr {
+/// Create an AST node for midpoint(segment, point = point)
+pub(crate) fn create_midpoint_ast(segment_expr: ast::Expr, point_expr: ast::Expr) -> ast::Expr {
     let arguments = vec![ast::LabeledArg {
-        label: Some(ast::Identifier::new(MIDPOINT_LINE_PARAM)),
-        arg: line_expr,
+        label: Some(ast::Identifier::new(MIDPOINT_POINT_PARAM)),
+        arg: point_expr,
     }];
 
     ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(MIDPOINT_FN)),
-        unlabeled: Some(point_expr),
+        unlabeled: Some(segment_expr),
         arguments,
         digest: None,
         non_code_meta: Default::default(),
@@ -9505,7 +9513,7 @@ sketch(on = XY) {
 
         let constraint = Constraint::Midpoint(Midpoint {
             point: point_id,
-            line: line_id,
+            segment: line_id,
         });
         let (src_delta, scene_delta) = frontend
             .add_constraint(&ctx, version, sketch_id, constraint)
@@ -9517,13 +9525,66 @@ sketch(on = XY) {
 sketch(on = XY) {
   point1 = point(at = [var 1, var 1])
   line1 = line(start = [var 0, var 0], end = [var 6, var 4])
-  midpoint(point1, line = line1)
+  midpoint(line1, point = point1)
 }
 "
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             7,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_point_arc_midpoint() {
+        let initial_source = "\
+sketch(on = XY) {
+  point(at = [var 6, var 3])
+  arc(start = [var 5, var 2], end = [var 7, var 2], center = [var 6, var 2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point_id = *sketch.segments.first().unwrap();
+        let arc_id = *sketch.segments.get(4).unwrap();
+
+        let constraint = Constraint::Midpoint(Midpoint {
+            point: point_id,
+            segment: arc_id,
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  point1 = point(at = [var 6, var 3])
+  arc1 = arc(start = [var 5, var 2], end = [var 7, var 2], center = [var 6, var 2])
+  midpoint(arc1, point = point1)
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            8,
             "{:#?}",
             scene_delta.new_graph.objects
         );

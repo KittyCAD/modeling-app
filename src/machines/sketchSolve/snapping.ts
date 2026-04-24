@@ -134,7 +134,7 @@ export function getConstraintsForSnapTarget(
         constraints.push({
           type: 'Midpoint',
           point: segmentId,
-          line: target.id,
+          segment: target.id,
         })
       }
 
