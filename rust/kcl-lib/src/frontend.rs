@@ -2717,9 +2717,13 @@ impl FrontendState {
             let mut new_ast = self.program.ast.clone();
             for (var_range, value) in &outcome.var_solutions {
                 let rounded = value.round(3);
-                mutate_ast_node_by_source_range(
+                let source_ref = SourceRef::Simple {
+                    range: *var_range,
+                    node_path: None,
+                };
+                mutate_ast_node_by_source_ref(
                     &mut new_ast,
-                    *var_range,
+                    &source_ref,
                     AstMutateCommand::EditVarInitialValue { value: rounded },
                 )
                 .map_err(|err| KclErrorWithOutputs::from_error_outcome(err, outcome.clone()))?;
@@ -4068,14 +4072,7 @@ impl FrontendState {
             .objects
             .get(object_id.0)
             .ok_or_else(|| KclError::refactor(format!("Object not found: {object_id:?}")))?;
-        match &sketch_object.source {
-            SourceRef::Simple { range, node_path } => {
-                mutate_ast_node_by_source_range_or_node_path(ast, *range, node_path.clone(), command)
-            }
-            SourceRef::BackTrace { .. } => {
-                Err(KclError::refactor("BackTrace source refs not supported yet".to_owned()))
-            }
-        }
+        mutate_ast_node_by_source_ref(ast, &sketch_object.source, command)
     }
 }
 
@@ -4108,21 +4105,6 @@ fn expect_single_node_ref(object: &Object) -> Result<AstNodeRef, KclError> {
                 range: range.0,
                 node_path: range.1.clone(),
             })
-        }
-    }
-}
-
-fn expect_single_source_range(source_ref: &SourceRef) -> Result<SourceRange, KclError> {
-    match source_ref {
-        SourceRef::Simple { range, node_path: _ } => Ok(*range),
-        SourceRef::BackTrace { ranges } => {
-            if ranges.len() != 1 {
-                return Err(KclError::refactor(format!(
-                    "Expected single source range in SourceRef, got {}; ranges={ranges:#?}",
-                    ranges.len(),
-                )));
-            }
-            Ok(ranges[0].0)
         }
     }
 }
@@ -4545,11 +4527,10 @@ fn get_or_insert_ast_reference(
     prefix: &str,
     property: Option<&str>,
 ) -> Result<ast::Expr, KclError> {
-    let range = expect_single_source_range(source_ref)?;
     let command = AstMutateCommand::AddVariableDeclaration {
         prefix: prefix.to_owned(),
     };
-    let (_, ret) = mutate_ast_node_by_source_range(ast, range, command)?;
+    let (_, ret) = mutate_ast_node_by_source_ref(ast, source_ref, command)?;
     let AstMutateCommandReturn::Name(var_name) = ret else {
         return Err(KclError::refactor(
             "Expected variable name returned from AddVariableDeclaration".to_owned(),
@@ -4564,20 +4545,23 @@ fn get_or_insert_ast_reference(
     Ok(create_member_expression(var_expr, property))
 }
 
-fn mutate_ast_node_by_source_range(
+fn mutate_ast_node_by_source_ref(
     ast: &mut ast::Node<ast::Program>,
-    source_range: SourceRange,
+    source_ref: &SourceRef,
     command: AstMutateCommand,
 ) -> Result<(AstNodeRef, AstMutateCommandReturn), KclError> {
-    mutate_ast_node_by_source_range_or_node_path(ast, source_range, None, command)
-}
-
-fn mutate_ast_node_by_source_range_or_node_path(
-    ast: &mut ast::Node<ast::Program>,
-    source_range: SourceRange,
-    node_path: Option<ast::NodePath>,
-    command: AstMutateCommand,
-) -> Result<(AstNodeRef, AstMutateCommandReturn), KclError> {
+    let (source_range, node_path) = match source_ref {
+        SourceRef::Simple { range, node_path } => (*range, node_path.clone()),
+        SourceRef::BackTrace { ranges } => {
+            let [range] = ranges.as_slice() else {
+                return Err(KclError::refactor(format!(
+                    "Expected single source ref, got {}; ranges={ranges:#?}",
+                    ranges.len(),
+                )));
+            };
+            (range.0, range.1.clone())
+        }
+    };
     let mut context = AstMutateContext {
         source_range,
         node_path,
