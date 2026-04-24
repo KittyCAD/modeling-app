@@ -4069,7 +4069,9 @@ impl FrontendState {
             .get(object_id.0)
             .ok_or_else(|| KclError::refactor(format!("Object not found: {object_id:?}")))?;
         match &sketch_object.source {
-            SourceRef::Simple { range, node_path: _ } => mutate_ast_node_by_source_range(ast, *range, command),
+            SourceRef::Simple { range, node_path } => {
+                mutate_ast_node_by_source_range_or_node_path(ast, *range, node_path.clone(), command)
+            }
             SourceRef::BackTrace { .. } => {
                 Err(KclError::refactor("BackTrace source refs not supported yet".to_owned()))
             }
@@ -4567,15 +4569,33 @@ fn mutate_ast_node_by_source_range(
     source_range: SourceRange,
     command: AstMutateCommand,
 ) -> Result<(AstNodeRef, AstMutateCommandReturn), KclError> {
+    mutate_ast_node_by_source_range_or_node_path(ast, source_range, None, command)
+}
+
+fn mutate_ast_node_by_source_range_or_node_path(
+    ast: &mut ast::Node<ast::Program>,
+    source_range: SourceRange,
+    node_path: Option<ast::NodePath>,
+    command: AstMutateCommand,
+) -> Result<(AstNodeRef, AstMutateCommandReturn), KclError> {
     let mut context = AstMutateContext {
         source_range,
-        node_path: None,
+        node_path,
         command,
         defined_names_stack: Default::default(),
     };
     let control = dfs_mut(ast, &mut context);
     match control {
-        ControlFlow::Continue(_) => Err(KclError::refactor(format!("Source range not found: {source_range:?}"))),
+        ControlFlow::Continue(_) => {
+            let node_path = context
+                .node_path
+                .as_ref()
+                .map(|path| format!("; node_path={path:?}"))
+                .unwrap_or_default();
+            Err(KclError::refactor(format!(
+                "Source range not found: {source_range:?}{node_path}"
+            )))
+        }
         ControlFlow::Break(break_value) => break_value,
     }
 }
@@ -4759,7 +4779,8 @@ fn filter_and_process(
     // target; its init expression will.
     if let NodeMut::VariableDeclaration(var_decl) = &node {
         let expr_range = SourceRange::from(&var_decl.declaration.init);
-        if expr_range == ctx.source_range {
+        let expr_node_path = var_decl.declaration.init.node_path();
+        if source_ref_matches(ctx, expr_range, expr_node_path) {
             if let AstMutateCommand::AddVariableDeclaration { .. } = &ctx.command {
                 // We found the variable declaration expression. It doesn't need
                 // to be added.
@@ -4788,14 +4809,18 @@ fn filter_and_process(
     }
 
     // Make sure the node matches the source range.
-    // TODO: Should we also check the NodePath?
-    if node_range != ctx.source_range {
+    let node_path = <Option<ast::NodePath>>::try_from(&node).ok().flatten();
+    if !source_ref_matches(ctx, node_range, node_path.as_ref()) {
         return TraversalReturn::new_continue(());
     }
     let Ok(node_ref) = AstNodeRef::try_from(&node) else {
         return TraversalReturn::new_continue(());
     };
     process(ctx, node).map_break(|result| result.map(|cmd_return| (node_ref, cmd_return)))
+}
+
+fn source_ref_matches(ctx: &AstMutateContext, node_range: SourceRange, node_path: Option<&ast::NodePath>) -> bool {
+    node_range == ctx.source_range || ctx.node_path.as_ref().is_some_and(|target| Some(target) == node_path)
 }
 
 fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstMutateCommandReturn, KclError>> {
