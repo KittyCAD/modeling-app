@@ -16,6 +16,73 @@ export type ToolbarHotkeyAction = {
   onTrigger: () => void
 }
 
+const TOOLBAR_HOTKEY_MODIFIERS = new Set([
+  'alt',
+  'ctrl',
+  'meta',
+  'mod',
+  'shift',
+])
+
+const TOOLBAR_HOTKEY_MODIFIER_ORDER = ['meta', 'ctrl', 'alt', 'shift']
+
+function normalizeToolbarKey(key: string): string {
+  const normalizedKey = key.trim().toLowerCase()
+
+  if (normalizedKey === 'escape') {
+    return 'esc'
+  }
+
+  return normalizedKey
+}
+
+export function normalizeToolbarHotkey(hotkey: string): string {
+  const parts = hotkey
+    .split('+')
+    .map((part) => part.trim().toLowerCase())
+    .filter(Boolean)
+
+  const mainKey = parts.find((part) => !TOOLBAR_HOTKEY_MODIFIERS.has(part))
+  const modifiers = TOOLBAR_HOTKEY_MODIFIER_ORDER.filter((modifier) =>
+    parts.includes(modifier)
+  )
+
+  return [
+    ...modifiers,
+    ...(mainKey ? [normalizeToolbarKey(mainKey)] : []),
+  ].join('+')
+}
+
+export function getToolbarEventHotkey(
+  keyboardEvent: Pick<
+    KeyboardEvent,
+    'altKey' | 'ctrlKey' | 'key' | 'metaKey' | 'shiftKey'
+  >
+): string | null {
+  const mainKey = normalizeToolbarKey(keyboardEvent.key)
+
+  if (!mainKey || TOOLBAR_HOTKEY_MODIFIERS.has(mainKey)) {
+    return null
+  }
+
+  const modifiers = TOOLBAR_HOTKEY_MODIFIER_ORDER.filter((modifier) => {
+    switch (modifier) {
+      case 'meta':
+        return keyboardEvent.metaKey
+      case 'ctrl':
+        return keyboardEvent.ctrlKey
+      case 'alt':
+        return keyboardEvent.altKey
+      case 'shift':
+        return keyboardEvent.shiftKey
+      default:
+        return false
+    }
+  })
+
+  return [...modifiers, mainKey].join('+')
+}
+
 export function collectToolbarHotkeyActions(
   items: ResolvedToolbarEntry[]
 ): ToolbarHotkeyAction[] {

@@ -34,7 +34,11 @@ import {
   modelingMachineStateToToolbarModeName,
   useToolbarConfig,
 } from '@src/lib/toolbar'
-import { collectToolbarHotkeyActions } from '@src/lib/toolbarHotkeys'
+import {
+  collectToolbarHotkeyActions,
+  getToolbarEventHotkey,
+  normalizeToolbarHotkey,
+} from '@src/lib/toolbarHotkeys'
 import { EngineConnectionStateType } from '@src/network/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { useSignals } from '@preact/signals-react/runtime'
@@ -327,15 +331,34 @@ const Toolbar_ = memo(
       () => collectToolbarHotkeyActions(currentModeItems),
       [currentModeItems]
     )
-    const hotkeyActionMap = useMemo(
-      () => new Map(hotkeyActions.map((action) => [action.hotkey, action])),
-      [hotkeyActions]
-    )
+    const hotkeyActionMap = useMemo(() => {
+      const actionMap = new Map<string, (typeof hotkeyActions)[number]>()
+
+      for (const action of hotkeyActions) {
+        const normalizedHotkey = normalizeToolbarHotkey(action.hotkey)
+        if (actionMap.has(normalizedHotkey)) continue
+        actionMap.set(normalizedHotkey, action)
+      }
+
+      return actionMap
+    }, [hotkeyActions])
+    const handledHotkeyEventsRef = useRef(new WeakSet<KeyboardEvent>())
 
     useHotkeys(
       hotkeyActions.map((action) => action.hotkey),
-      (_, hotkeysEvent) => {
-        hotkeyActionMap.get(hotkeysEvent.hotkey)?.onTrigger()
+      (keyboardEvent) => {
+        if (handledHotkeyEventsRef.current.has(keyboardEvent)) {
+          return
+        }
+
+        handledHotkeyEventsRef.current.add(keyboardEvent)
+
+        const semanticHotkey = getToolbarEventHotkey(keyboardEvent)
+        if (!semanticHotkey) {
+          return
+        }
+
+        hotkeyActionMap.get(semanticHotkey)?.onTrigger()
       },
       { enabled: hotkeyActions.length > 0 },
       [hotkeyActionMap]
