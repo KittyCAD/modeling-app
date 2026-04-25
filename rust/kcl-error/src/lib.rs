@@ -12,6 +12,8 @@ mod source_range;
 pub struct CompilationIssue {
     #[serde(rename = "sourceRange")]
     pub source_range: SourceRange,
+    #[serde(rename = "sourceRanges")]
+    pub source_ranges: Vec<SourceRange>,
     pub message: String,
     pub suggestion: Option<Suggestion>,
     pub severity: Severity,
@@ -22,6 +24,7 @@ impl CompilationIssue {
     pub fn err(source_range: SourceRange, message: impl ToString) -> CompilationIssue {
         CompilationIssue {
             source_range,
+            source_ranges: vec![source_range],
             message: message.to_string(),
             suggestion: None,
             severity: Severity::Error,
@@ -32,9 +35,22 @@ impl CompilationIssue {
     pub fn fatal(source_range: SourceRange, message: impl ToString) -> CompilationIssue {
         CompilationIssue {
             source_range,
+            source_ranges: vec![source_range],
             message: message.to_string(),
             suggestion: None,
             severity: Severity::Fatal,
+            tag: Tag::None,
+        }
+    }
+
+    pub fn err_many(source_ranges: Vec<SourceRange>, message: impl ToString) -> CompilationIssue {
+        let source_range = SourceRange::merge(source_ranges.iter().copied());
+        CompilationIssue {
+            source_range,
+            source_ranges,
+            message: message.to_string(),
+            suggestion: None,
+            severity: Severity::Error,
             tag: Tag::None,
         }
     }

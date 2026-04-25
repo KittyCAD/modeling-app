@@ -901,12 +901,20 @@ impl From<KclError> for pyo3::PyErr {
 
 impl From<CompilationIssue> for KclErrorDetails {
     fn from(err: CompilationIssue) -> Self {
-        let backtrace = vec![BacktraceItem {
-            source_range: err.source_range,
-            fn_name: None,
-        }];
+        let source_ranges = if err.source_ranges.is_empty() {
+            vec![err.source_range]
+        } else {
+            err.source_ranges
+        };
+        let backtrace = source_ranges
+            .iter()
+            .map(|source_range| BacktraceItem {
+                source_range: *source_range,
+                fn_name: None,
+            })
+            .collect();
         KclErrorDetails {
-            source_ranges: vec![err.source_range],
+            source_ranges,
             backtrace,
             message: err.message,
         }

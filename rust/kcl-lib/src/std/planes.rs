@@ -48,6 +48,7 @@ pub(crate) async fn inner_plane_of(
     if args.ctx.no_engine_commands().await {
         exec_state.err(crate::CompilationIssue {
             source_range: args.source_range,
+            source_ranges: vec![args.source_range],
             message: "The engine isn't available, so returning an arbitrary incorrect plane".to_owned(),
             suggestion: None,
             severity: crate::errors::Severity::Error,

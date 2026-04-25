@@ -23,19 +23,34 @@ use crate::errors::Tag;
 
 impl IntoDiagnostic for CompilationIssue {
     fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
-        let edit = self.suggestion.as_ref().map(|s| to_lsp_edit(s, code));
+        let source_ranges = if self.source_ranges.is_empty() {
+            vec![self.source_range]
+        } else {
+            self.source_ranges.clone()
+        };
 
-        vec![Diagnostic {
-            range: self.source_range.to_lsp_range(code),
-            severity: Some(self.severity()),
-            code: None,
-            code_description: None,
-            source: Some("kcl".to_string()),
-            message: self.message.clone(),
-            related_information: None,
-            tags: tag_to_lsp_tags(self.tag),
-            data: edit.map(|e| serde_json::to_value(e).unwrap()),
-        }]
+        source_ranges
+            .into_iter()
+            .enumerate()
+            .map(|(index, source_range)| {
+                let edit = if index == 0 {
+                    self.suggestion.as_ref().map(|s| to_lsp_edit(s, code))
+                } else {
+                    None
+                };
+                Diagnostic {
+                    range: source_range.to_lsp_range(code),
+                    severity: Some(self.severity()),
+                    code: None,
+                    code_description: None,
+                    source: Some("kcl".to_string()),
+                    message: self.message.clone(),
+                    related_information: None,
+                    tags: tag_to_lsp_tags(self.tag),
+                    data: edit.map(|e| serde_json::to_value(e).unwrap()),
+                }
+            })
+            .collect()
     }
 
     fn severity(&self) -> DiagnosticSeverity {

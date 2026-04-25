@@ -309,6 +309,7 @@ impl ExecState {
         };
         let error = CompilationIssue {
             source_range,
+            source_ranges: vec![source_range],
             message: format!("Use of {feature_name} is experimental and may change or be removed."),
             suggestion: None,
             severity,
