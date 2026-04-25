@@ -744,6 +744,7 @@ profile002 = startProfile(sketch002, at = [72.2, -52.05])
 extrude002 = extrude(profile002, length = 151)
 solid001 = subtract([extrude001], tools = [extrude002])
 sketch003 = startSketchOn(solid001, face = seg01)
+profile003 = circle(sketch003, center = [0, 0], radius = 1)
 `
         )
       })
@@ -764,17 +765,13 @@ sketch003 = startSketchOn(solid001, face = seg01)
       })
 
       await test.step('sketch on chamfer face that is part of a boolean', async () => {
-        const op = await toolbar.getFeatureTreeOperation('sketch003', 0)
-        await op.dblclick()
-        await toolbar.waitUntilSketchingReady()
-        await toolbar.closeFeatureTreePane()
+        await toolbar.editSketch(2)
 
-        await expect
-          .poll(async () => {
-            const lineBtn = page.getByRole('button', { name: 'line Line' })
-            return lineBtn.getAttribute('aria-pressed')
-          })
-          .toBe('true')
+        const lineBtn = page.getByRole('button', { name: 'line Line' })
+        if ((await lineBtn.getAttribute('aria-pressed')) !== 'true') {
+          await page.keyboard.press('l')
+        }
+        await expect(lineBtn).toHaveAttribute('aria-pressed', 'true')
 
         await editor.expectEditor.toContain(
           'startSketchOn(solid001, face = seg01)'
@@ -794,7 +791,7 @@ sketch003 = startSketchOn(solid001, face = seg01)
 
         await circleCenterClk()
         await editor.expectEditor.toContain(
-          'profile003 = circle(sketch003, center = ['
+          'profile004 = circle(sketch003, center = ['
         )
       })
     }

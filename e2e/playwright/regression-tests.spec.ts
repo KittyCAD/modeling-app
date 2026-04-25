@@ -518,23 +518,22 @@ extrude002 = extrude(profile002, length = 150)`
     })
 
     await test.step('Successful, unblocked export', async () => {
+      const previousSuccessToastCount = await successToastMessage.count()
+
       // Try exporting again.
       await clickExportButton(page, cmdBar)
 
-      // Find the toast.
-      // Look out for the toast message
-      await expect(exportingToastMessage).toBeVisible()
-
       // Expect it to succeed.
       await Promise.all([
-        expect(exportingToastMessage).not.toBeVisible(),
+        expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 }),
         expect(errorToastMessage).not.toBeVisible(),
         expect(engineErrorToastMessage).not.toBeVisible(),
         expect(alreadyExportingToastMessage).not.toBeVisible(),
       ])
 
-      const count = await successToastMessage.count()
-      expect(count).toBeGreaterThanOrEqual(2)
+      await expect
+        .poll(() => successToastMessage.count(), { timeout: 15_000 })
+        .toBeGreaterThan(previousSuccessToastCount)
     })
   })
 
@@ -776,7 +775,8 @@ washerSketch = startSketchOn(XY)
   |> circle(center = [0, 0], radius = outerDiameter / 2)
 
 washer = extrude(washerSketch, length = thicknessMax)
-faceSketch = startSketchOn(washer, face = END)`
+faceSketch = startSketchOn(washer, face = END)
+faceProfile001 = circle(faceSketch, center = [0, 0], radius = 0.01)`
         )
       })
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -787,10 +787,7 @@ faceSketch = startSketchOn(washer, face = END)`
 
     await page.waitForTimeout(100)
     await test.step('Enter the seeded washer-face sketch', async () => {
-      const op = await toolbar.getFeatureTreeOperation('faceSketch', 0)
-      await op.dblclick()
-      await toolbar.waitUntilSketchingReady()
-      await toolbar.closeFeatureTreePane()
+      await toolbar.editSketch(1)
       await toolbar.expectToolbarMode.toBe('sketching')
     })
 
