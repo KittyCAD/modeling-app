@@ -1477,8 +1477,8 @@ impl Node<SketchBlock> {
                         let final_values = initial_guesses.iter().map(|(_, v)| *v).collect::<Vec<_>>();
                         (
                             Solved {
+                                inconsistent: true,
                                 final_values,
-                                unsatisfied_required_constraints: (0..num_required_constraints).collect(),
                                 unsatisfied_required_constraint_ranges: sketch_block_state
                                     .solver_constraint_source_ranges
                                     .clone(),
@@ -1517,7 +1517,7 @@ impl Node<SketchBlock> {
         };
         #[cfg(not(feature = "artifact-graph"))]
         let _ = solve_analysis;
-        if !solve_outcome.unsatisfied_required_constraints.is_empty() {
+        if solve_outcome.inconsistent {
             let source_ranges = if solve_outcome.unsatisfied_required_constraint_ranges.is_empty() {
                 vec![range]
             } else {

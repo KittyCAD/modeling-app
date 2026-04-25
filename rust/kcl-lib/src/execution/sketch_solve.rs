@@ -438,8 +438,8 @@ fn substitute_sketch_var_in_unsolved_expr(
 pub(crate) struct Solved {
     /// Each variable's final value.
     pub(crate) final_values: Vec<f64>,
-    /// Required constraints that could not be satisfied by the solver.
-    pub(crate) unsatisfied_required_constraints: Vec<usize>,
+    /// Some constraints couldn't be satisfied.
+    pub(crate) inconsistent: bool,
     /// Source ranges of KCL constraint calls that produced unsatisfied required constraints.
     pub(crate) unsatisfied_required_constraint_ranges: Vec<SourceRange>,
     /// How many iterations of Newton's method were required?
@@ -468,28 +468,28 @@ impl Solved {
         // Build a set of variables involved in unsatisfied constraints
         // Only include required constraints (not optional ones like from dragging)
         let mut variables_in_conflicts = AHashSet::new();
-        let mut unsatisfied_required_constraints = Vec::new();
-        for &constraint_id in value.unsatisfied() {
+        let mut unsatisfied_required_constraint_ranges = AHashSet::new();
+        let system_completely_solved = value.unsatisfied().is_empty();
+        for &constraint_idx in value.unsatisfied() {
             // Only mark as conflicted if it's a required constraint, not an optional one
-            if constraint_id < num_required_constraints
-                && let Some(constraint) = constraints.get(constraint_id)
+            if constraint_idx < num_required_constraints
+                && let Some(constraint) = constraints.get(constraint_idx)
             {
                 constraint.extend_associated_variable_ids(&mut variables_in_conflicts);
-                unsatisfied_required_constraints.push(constraint_id);
+                if let Some(v) = constraint_source_ranges.get(constraint_idx).copied() {
+                    unsatisfied_required_constraint_ranges.insert(v);
+                }
             }
         }
 
-        let mut unsatisfied_required_constraint_ranges = unsatisfied_required_constraints
-            .iter()
-            .filter_map(|&constraint_id| constraint_source_ranges.get(constraint_id).copied())
-            .collect::<Vec<_>>();
+        let mut unsatisfied_required_constraint_ranges: Vec<_> =
+            unsatisfied_required_constraint_ranges.into_iter().collect();
         unsatisfied_required_constraint_ranges.sort();
-        unsatisfied_required_constraint_ranges.dedup();
 
         Self {
+            inconsistent: !system_completely_solved,
             final_values: value.final_values().to_owned(),
             unsatisfied_required_constraint_ranges,
-            unsatisfied_required_constraints,
             iterations: value.iterations(),
             warnings: value.warnings().to_owned(),
             priority_solved: value.priority_solved(),
