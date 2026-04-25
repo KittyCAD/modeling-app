@@ -809,7 +809,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     // Save the segment to be sent to the engine after solving.
     sketch_state.needed_by_engine.push(segment.clone());
     // Save the constraints to be used for solving.
-    sketch_state.solver_constraints.extend(required_constraints);
+    sketch_state.extend_solver_constraints(required_constraints, args.source_range);
     // The constraint isn't added to scene objects since it's implicit in the
     // arc segment. You cannot have an arc without it.
 
@@ -1079,7 +1079,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                             vec![args.source_range],
                                         )));
                                     };
-                                    sketch_state.solver_constraints.push(constraint);
+                                    sketch_state.push_solver_constraint(constraint, args.source_range);
                                     #[cfg(feature = "artifact-graph")]
                                     {
                                         let constraint = crate::front::Constraint::Coincident(Coincident {
@@ -1113,8 +1113,8 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                             vec![args.source_range],
                                         )));
                                     };
-                                    sketch_state.solver_constraints.push(constraint_x);
-                                    sketch_state.solver_constraints.push(constraint_y);
+                                    sketch_state.push_solver_constraint(constraint_x, args.source_range);
+                                    sketch_state.push_solver_constraint(constraint_y, args.source_range);
                                     #[cfg(feature = "artifact-graph")]
                                     {
                                         let constraint = crate::front::Constraint::Coincident(Coincident {
@@ -1162,8 +1162,8 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                             vec![args.source_range],
                                         )));
                                     };
-                                    sketch_state.solver_constraints.push(constraint_x);
-                                    sketch_state.solver_constraints.push(constraint_y);
+                                    sketch_state.push_solver_constraint(constraint_x, args.source_range);
+                                    sketch_state.push_solver_constraint(constraint_y, args.source_range);
                                     #[cfg(feature = "artifact-graph")]
                                     {
                                         let constraint = crate::front::Constraint::Coincident(Coincident {
@@ -1257,7 +1257,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                             vec![args.source_range],
                                         )));
                                     };
-                                    sketch_state.solver_constraints.push(constraint);
+                                    sketch_state.push_solver_constraint(constraint, args.source_range);
                                     #[cfg(feature = "artifact-graph")]
                                     {
                                         let constraint = crate::front::Constraint::Coincident(Coincident {
@@ -1348,7 +1348,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                             vec![args.source_range],
                                         )));
                                     };
-                                    sketch_state.solver_constraints.push(constraint);
+                                    sketch_state.push_solver_constraint(constraint, args.source_range);
                                     #[cfg(feature = "artifact-graph")]
                                     {
                                         let constraint = crate::front::Constraint::Coincident(Coincident {
@@ -1440,7 +1440,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                             vec![args.source_range],
                                         )));
                                     };
-                                    sketch_state.solver_constraints.push(constraint);
+                                    sketch_state.push_solver_constraint(constraint, args.source_range);
                                     #[cfg(feature = "artifact-graph")]
                                     {
                                         let constraint = crate::front::Constraint::Coincident(Coincident {
@@ -1533,8 +1533,8 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                 )));
                             };
                             // Push both constraints to achieve collinearity
-                            sketch_state.solver_constraints.push(parallel_constraint);
-                            sketch_state.solver_constraints.push(distance_constraint);
+                            sketch_state.push_solver_constraint(parallel_constraint, args.source_range);
+                            sketch_state.push_solver_constraint(distance_constraint, args.source_range);
                             #[cfg(feature = "artifact-graph")]
                             {
                                 let constraint = crate::front::Constraint::Coincident(Coincident {
@@ -1609,8 +1609,8 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                     vec![args.source_range],
                                 )));
                             };
-                            sketch_state.solver_constraints.push(constraint_x);
-                            sketch_state.solver_constraints.push(constraint_y);
+                            sketch_state.push_solver_constraint(constraint_x, args.source_range);
+                            sketch_state.push_solver_constraint(constraint_y, args.source_range);
                             #[cfg(feature = "artifact-graph")]
                             {
                                 let constraint = crate::front::Constraint::Coincident(Coincident {
@@ -1847,7 +1847,7 @@ fn coincident_points(
             vec![args.source_range],
         )));
     };
-    sketch_state.solver_constraints.extend(solver_constraints);
+    sketch_state.extend_solver_constraints(solver_constraints, args.source_range);
 
     #[cfg(feature = "artifact-graph")]
     {
@@ -2695,22 +2695,26 @@ pub async fn midpoint(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     let solver_point = datum_point(point.coords, range)?;
     match target {
         MidpointTargetVars::Line { start, end, .. } => {
-            sketch_state.solver_constraints.push(SolverConstraint::Midpoint(
-                DatumLineSegment::new(datum_point(start, range)?, datum_point(end, range)?),
-                solver_point,
-            ));
+            sketch_state.push_solver_constraint(
+                SolverConstraint::Midpoint(
+                    DatumLineSegment::new(datum_point(start, range)?, datum_point(end, range)?),
+                    solver_point,
+                ),
+                range,
+            );
         }
         MidpointTargetVars::Arc { center, start, end, .. } => {
-            sketch_state
-                .solver_constraints
-                .extend(SolverConstraint::point_bisects_arc(
+            sketch_state.extend_solver_constraints(
+                SolverConstraint::point_bisects_arc(
                     DatumCircularArc {
                         center: datum_point(center, range)?,
                         start: datum_point(start, range)?,
                         end: datum_point(end, range)?,
                     },
                     solver_point,
-                ));
+                ),
+                range,
+            );
         }
     }
 
@@ -2814,10 +2818,10 @@ pub async fn equal_length(exec_state: &mut ExecState, args: Args) -> Result<KclV
     };
     let first_line = constrainable_lines[0];
     for line in constrainable_lines.iter().skip(1) {
-        sketch_state.solver_constraints.push(SolverConstraint::LinesEqualLength(
-            first_line.solver_line,
-            line.solver_line,
-        ));
+        sketch_state.push_solver_constraint(
+            SolverConstraint::LinesEqualLength(first_line.solver_line, line.solver_line),
+            args.source_range,
+        );
     }
     #[cfg(feature = "artifact-graph")]
     {
@@ -3503,11 +3507,10 @@ pub async fn parallel(exec_state: &mut ExecState, args: Args) -> Result<KclValue
             vec![args.source_range],
         )))?;
     for line in constrainable_lines_iter {
-        sketch_state.solver_constraints.push(SolverConstraint::LinesAtAngle(
-            first_line.solver_line,
-            line.solver_line,
-            AngleKind::Parallel,
-        ));
+        sketch_state.push_solver_constraint(
+            SolverConstraint::LinesAtAngle(first_line.solver_line, line.solver_line, AngleKind::Parallel),
+            args.source_range,
+        );
     }
     #[cfg(feature = "artifact-graph")]
     {
@@ -3825,7 +3828,7 @@ fn axis_constraint_line(
             vec![args.source_range],
         )));
     };
-    sketch_state.solver_constraints.push(constraint);
+    sketch_state.push_solver_constraint(constraint, args.source_range);
     #[cfg(feature = "artifact-graph")]
     {
         let constraint = kind.line_artifact_constraint(line.object_id);
@@ -3933,7 +3936,7 @@ fn axis_constraint_points(
             solver_constraints.push(kind.point_pair_constraint(anchor, solver_point));
         }
     }
-    sketch_state.solver_constraints.extend(solver_constraints);
+    sketch_state.extend_solver_constraints(solver_constraints, args.source_range);
 
     #[cfg(feature = "artifact-graph")]
     if let Some(point_ids) = trackable_point_ids {
@@ -4238,7 +4241,7 @@ async fn lines_at_angle(
             vec![args.source_range],
         )));
     };
-    sketch_state.solver_constraints.push(constraint);
+    sketch_state.push_solver_constraint(constraint, args.source_range);
     #[cfg(feature = "artifact-graph")]
     {
         let constraint = angle_kind.constraint(vec![unsolved0.object_id, unsolved1.object_id]);

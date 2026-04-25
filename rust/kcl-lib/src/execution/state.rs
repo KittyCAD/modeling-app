@@ -236,6 +236,7 @@ pub(crate) struct SketchBlockState {
     #[cfg(feature = "artifact-graph")]
     pub sketch_constraints: Vec<ObjectId>,
     pub solver_constraints: Vec<ezpz::Constraint>,
+    pub solver_constraint_source_ranges: Vec<SourceRange>,
     pub solver_optional_constraints: Vec<ezpz::Constraint>,
     pub needed_by_engine: Vec<UnsolvedSegment>,
     pub segment_tags: IndexMap<ObjectId, TagNode>,
@@ -980,6 +981,21 @@ impl ModuleState {
 impl SketchBlockState {
     pub(crate) fn next_sketch_var_id(&self) -> SketchVarId {
         SketchVarId(self.sketch_vars.len())
+    }
+
+    pub(crate) fn push_solver_constraint(&mut self, constraint: ezpz::Constraint, source_range: SourceRange) {
+        self.solver_constraints.push(constraint);
+        self.solver_constraint_source_ranges.push(source_range);
+    }
+
+    pub(crate) fn extend_solver_constraints(
+        &mut self,
+        constraints: impl IntoIterator<Item = ezpz::Constraint>,
+        source_range: SourceRange,
+    ) {
+        for constraint in constraints {
+            self.push_solver_constraint(constraint, source_range);
+        }
     }
 
     /// Given a solve outcome, return the solutions for the sketch variables and

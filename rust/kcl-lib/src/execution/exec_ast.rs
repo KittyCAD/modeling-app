@@ -1453,7 +1453,12 @@ impl Node<SketchBlock> {
 
         let (solve_outcome, solve_analysis) = match solve_result {
             Ok((solved, freedom)) => {
-                let outcome = Solved::from_ezpz_outcome(solved, &all_constraints, num_required_constraints);
+                let outcome = Solved::from_ezpz_outcome(
+                    solved,
+                    &all_constraints,
+                    &sketch_block_state.solver_constraint_source_ranges,
+                    num_required_constraints,
+                );
                 (outcome, freedom)
             }
             Err(failure) => {
@@ -1474,6 +1479,9 @@ impl Node<SketchBlock> {
                             Solved {
                                 final_values,
                                 unsatisfied_required_constraints: (0..num_required_constraints).collect(),
+                                unsatisfied_required_constraint_ranges: sketch_block_state
+                                    .solver_constraint_source_ranges
+                                    .clone(),
                                 iterations: Default::default(),
                                 warnings: failure.warnings,
                                 priority_solved: Default::default(),
@@ -1510,8 +1518,13 @@ impl Node<SketchBlock> {
         #[cfg(not(feature = "artifact-graph"))]
         let _ = solve_analysis;
         if !solve_outcome.unsatisfied_required_constraints.is_empty() {
-            exec_state.err(CompilationIssue::err(
-                range,
+            let source_ranges = if solve_outcome.unsatisfied_required_constraint_ranges.is_empty() {
+                vec![range]
+            } else {
+                solve_outcome.unsatisfied_required_constraint_ranges.clone()
+            };
+            exec_state.err(CompilationIssue::err_many(
+                source_ranges,
                 format!("Sketch is overconstrained or inconsistent. Some constraint(s) could not be satisfied",),
             ));
         }
@@ -2980,7 +2993,7 @@ impl Node<BinaryExpression> {
                         debug_assert!(false, "{}", &message);
                         return Err(internal_err(message, self));
                     };
-                    sketch_block_state.solver_constraints.push(constraint);
+                    sketch_block_state.push_solver_constraint(constraint, self.as_source_range());
                     return Ok(KclValue::none());
                 }
                 // One sketch variable, one number.
@@ -3006,7 +3019,7 @@ impl Node<BinaryExpression> {
                         debug_assert!(false, "{}", &message);
                         return Err(internal_err(message, self));
                     };
-                    sketch_block_state.solver_constraints.push(constraint);
+                    sketch_block_state.push_solver_constraint(constraint, self.as_source_range());
                     exec_state.warn_experimental("scalar fixed constraint", self.as_source_range());
                     return Ok(KclValue::none());
                 }
@@ -3115,7 +3128,7 @@ impl Node<BinaryExpression> {
                                 debug_assert!(false, "{}", &message);
                                 return Err(internal_err(message, self));
                             };
-                            sketch_block_state.solver_constraints.push(solver_constraint);
+                            sketch_block_state.push_solver_constraint(solver_constraint, range);
                             #[cfg(feature = "artifact-graph")]
                             {
                                 use crate::execution::Artifact;
@@ -3187,9 +3200,10 @@ impl Node<BinaryExpression> {
                                         p1.vars.x.to_constraint_id(range)?,
                                         p1.vars.y.to_constraint_id(range)?,
                                     );
-                                    sketch_block_state
-                                        .solver_constraints
-                                        .push(Constraint::Distance(solver_pt0, solver_pt1, n.n));
+                                    sketch_block_state.push_solver_constraint(
+                                        Constraint::Distance(solver_pt0, solver_pt1, n.n),
+                                        range,
+                                    );
                                 }
                                 (
                                     crate::execution::ConstrainablePoint2dOrOrigin::Point(point),
@@ -3219,22 +3233,17 @@ impl Node<BinaryExpression> {
                                     });
                                     let origin_x = origin_x_id.to_constraint_id(range)?;
                                     let origin_y = origin_y_id.to_constraint_id(range)?;
-                                    sketch_block_state
-                                        .solver_constraints
-                                        .push(Constraint::Fixed(origin_x, 0.0));
-                                    sketch_block_state
-                                        .solver_constraints
-                                        .push(Constraint::Fixed(origin_y, 0.0));
+                                    sketch_block_state.push_solver_constraint(Constraint::Fixed(origin_x, 0.0), range);
+                                    sketch_block_state.push_solver_constraint(Constraint::Fixed(origin_y, 0.0), range);
                                     let solver_point = ezpz::datatypes::inputs::DatumPoint::new_xy(
                                         point.vars.x.to_constraint_id(range)?,
                                         point.vars.y.to_constraint_id(range)?,
                                     );
                                     let origin_point = ezpz::datatypes::inputs::DatumPoint::new_xy(origin_x, origin_y);
-                                    sketch_block_state.solver_constraints.push(Constraint::Distance(
-                                        solver_point,
-                                        origin_point,
-                                        n.n,
-                                    ));
+                                    sketch_block_state.push_solver_constraint(
+                                        Constraint::Distance(solver_point, origin_point, n.n),
+                                        range,
+                                    );
                                 }
                                 (
                                     crate::execution::ConstrainablePoint2dOrOrigin::Origin,
@@ -3464,11 +3473,10 @@ impl Node<BinaryExpression> {
                                         center: center_point,
                                         radius,
                                     };
-                                    sketch_block_state.solver_constraints.push(Constraint::DistanceVar(
-                                        start_point,
-                                        center_point,
-                                        radius,
-                                    ));
+                                    sketch_block_state.push_solver_constraint(
+                                        Constraint::DistanceVar(start_point, center_point, radius),
+                                        range,
+                                    );
                                     Constraint::CircleRadius(solver_circle, radius_value)
                                 }
                             };
@@ -3481,7 +3489,7 @@ impl Node<BinaryExpression> {
                                 debug_assert!(false, "{}", &message);
                                 return Err(internal_err(message, self));
                             };
-                            sketch_block_state.solver_constraints.push(solver_constraint);
+                            sketch_block_state.push_solver_constraint(solver_constraint, range);
                             #[cfg(feature = "artifact-graph")]
                             {
                                 use crate::execution::Artifact;
@@ -5033,8 +5041,8 @@ s = sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 bad = sketch(on = XY) {
   p = point(at = [var 0mm, var 0mm])
-  p.at[0] == 0mm
-  p.at[0] == 1mm
+  fixed([p, ORIGIN])
+  fixed([p, [20mm, 20mm]])
 }
 after = 42
 "#;
@@ -5047,6 +5055,21 @@ after = 42
             panic!("found {issues:#?}");
         };
         assert_eq!(error.severity, Severity::Error);
+        let fixed_origin_range = SourceRange::new(
+            ast.find("fixed([p, ORIGIN])").unwrap(),
+            ast.find("fixed([p, ORIGIN])").unwrap() + "fixed([p, ORIGIN])".len(),
+            Default::default(),
+        );
+        let fixed_20_range = SourceRange::new(
+            ast.find("fixed([p, [20mm, 20mm]])").unwrap(),
+            ast.find("fixed([p, [20mm, 20mm]])").unwrap() + "fixed([p, [20mm, 20mm]])".len(),
+            Default::default(),
+        );
+        assert_eq!(error.source_ranges, vec![fixed_origin_range, fixed_20_range]);
+        assert_eq!(
+            error.source_range,
+            SourceRange::merge(error.source_ranges.iter().copied())
+        );
 
         let mem = result.exec_state.stack();
         let after = mem

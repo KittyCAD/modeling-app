@@ -440,6 +440,8 @@ pub(crate) struct Solved {
     pub(crate) final_values: Vec<f64>,
     /// Required constraints that could not be satisfied by the solver.
     pub(crate) unsatisfied_required_constraints: Vec<usize>,
+    /// Source ranges of KCL constraint calls that produced unsatisfied required constraints.
+    pub(crate) unsatisfied_required_constraint_ranges: Vec<SourceRange>,
     /// How many iterations of Newton's method were required?
     #[expect(dead_code, reason = "ezpz provides this info, but we aren't using it yet")]
     pub(crate) iterations: usize,
@@ -460,6 +462,7 @@ impl Solved {
     pub(crate) fn from_ezpz_outcome(
         value: ezpz::SolveOutcome,
         constraints: &[ezpz::Constraint],
+        constraint_source_ranges: &[SourceRange],
         num_required_constraints: usize,
     ) -> Self {
         // Build a set of variables involved in unsatisfied constraints
@@ -476,8 +479,16 @@ impl Solved {
             }
         }
 
+        let mut unsatisfied_required_constraint_ranges = unsatisfied_required_constraints
+            .iter()
+            .filter_map(|&constraint_id| constraint_source_ranges.get(constraint_id).copied())
+            .collect::<Vec<_>>();
+        unsatisfied_required_constraint_ranges.sort();
+        unsatisfied_required_constraint_ranges.dedup();
+
         Self {
             final_values: value.final_values().to_owned(),
+            unsatisfied_required_constraint_ranges,
             unsatisfied_required_constraints,
             iterations: value.iterations(),
             warnings: value.warnings().to_owned(),
