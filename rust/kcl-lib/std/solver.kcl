@@ -466,8 +466,10 @@ export fn midpoint(
 /// - `CircularArc` / `CircularArc`
 /// - `Circle` / `Circle`
 ///
-/// For circular geometry, symmetry constrains the underlying circles:
-/// mirrored centers plus a shared radius/diameter. Arc end points are not mirrored.
+/// `Line` and `CircularArc` endpoints are not constrained to be mirrored,
+/// and can be moved freely along the symmetric colinear geometry. To force
+/// their positions to be symmetric, add an additional explicit `symmetric`
+/// constraint between the endpoints.
 ///
 /// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
