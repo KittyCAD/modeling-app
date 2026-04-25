@@ -8,6 +8,7 @@ import {
   findInvisibleConstraintClusterIds,
   findInvisibleConstraintsForSegment,
   findSegmentsForInvisibleConstraint,
+  getInvisibleConstraintSegmentHoverColor,
   getInvisibleConstraintAnchor,
   isInvisibleConstraintObject,
   type InvisibleConstraintObject,
@@ -17,6 +18,7 @@ import {
   createLineApiObject,
   createPointApiObject,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
+import { SKETCH_HIGHLIGHT_SECONDARY_COLOR } from '@src/lib/constants'
 
 function createObjectsArray(objects: ApiObject[]) {
   const array: ApiObject[] = []
@@ -450,6 +452,47 @@ describe('invisibleConstraintSpriteUtils', () => {
 
     expect(findInvisibleConstraintsForSegment(axis, objects)).toEqual([20])
     expect(findInvisibleConstraintsForSegment(left, objects)).toEqual([20])
+  })
+
+  it('uses a more orange hover color for the symmetry axis only', () => {
+    const axisStart = createPointApiObject({ id: 1, x: 0, y: -10 })
+    const axisEnd = createPointApiObject({ id: 2, x: 0, y: 10 })
+    const leftStart = createPointApiObject({ id: 3, x: -10, y: 0 })
+    const leftEnd = createPointApiObject({ id: 4, x: -10, y: 5 })
+    const rightStart = createPointApiObject({ id: 5, x: 10, y: 0 })
+    const rightEnd = createPointApiObject({ id: 6, x: 10, y: 5 })
+    const axis = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const left = createLineApiObject({ id: 11, start: 3, end: 4 })
+    const right = createLineApiObject({ id: 12, start: 5, end: 6 })
+    const symmetric = createConstraintApiObject(20, {
+      type: 'Symmetric',
+      input: [11, 12],
+      axis: 10,
+    }) as InvisibleConstraintObject
+
+    createObjectsArray([
+      axisStart,
+      axisEnd,
+      leftStart,
+      leftEnd,
+      rightStart,
+      rightEnd,
+      axis,
+      left,
+      right,
+      symmetric,
+    ])
+
+    expect(getInvisibleConstraintSegmentHoverColor(10, symmetric)).toBe(
+      SKETCH_HIGHLIGHT_SECONDARY_COLOR
+    )
+    expect(
+      getInvisibleConstraintSegmentHoverColor(11, symmetric)
+    ).toBeUndefined()
+    expect(
+      getInvisibleConstraintSegmentHoverColor(12, symmetric)
+    ).toBeUndefined()
+    expect(getInvisibleConstraintSegmentHoverColor(10, null)).toBeUndefined()
   })
 
   it('finds symmetric constraints related to hovered symmetric points', () => {

@@ -53,6 +53,7 @@ import {
 import {
   type ConstraintHoverPopup,
   findSegmentsForInvisibleConstraint,
+  getInvisibleConstraintSegmentHoverColor,
   isInvisibleConstraintObject,
 } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
 import { updateOriginSprite } from '@src/machines/sketchSolve/originSprite'
@@ -1153,11 +1154,22 @@ function getSegmentRenderState(
   draftEntityIds: Array<number> | undefined,
   objects: ApiObject[]
 ): SegmentRenderState {
+  const hoveredObject = isObjectSelectionId(hoveredId)
+    ? objects[hoveredId]
+    : null
+  const hoveredInvisibleConstraint = isInvisibleConstraintObject(hoveredObject)
+    ? hoveredObject
+    : null
+
   return {
     selected:
       selectedIds.includes(segmentId) ||
       duringAreaSelectIds.includes(segmentId),
     hovered: hoveredId === segmentId || hoveredSegmentIds.includes(segmentId),
+    hoverColor: getInvisibleConstraintSegmentHoverColor(
+      segmentId,
+      hoveredInvisibleConstraint
+    ),
     draft: draftEntityIds?.includes(segmentId) ?? false,
     construction: isConstructionSegment(objects[segmentId]),
   }

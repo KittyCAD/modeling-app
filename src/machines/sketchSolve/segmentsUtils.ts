@@ -130,6 +130,7 @@ export function deriveSegmentFreedom(
 export function getSegmentColor({
   isDraft = false,
   isHovered,
+  hoverColor,
   isSelected,
   hasSolveErrors = false,
   freedom,
@@ -137,6 +138,7 @@ export function getSegmentColor({
 }: {
   isDraft?: boolean
   isHovered?: boolean
+  hoverColor?: number
   isSelected?: boolean
   hasSolveErrors?: boolean
   freedom?: Freedom | null
@@ -149,7 +151,7 @@ export function getSegmentColor({
 
   // Priority 2: Hover color
   if (isHovered) {
-    return SKETCH_HIGHLIGHT_COLOR
+    return hoverColor ?? SKETCH_HIGHLIGHT_COLOR
   }
 
   // Priority 3: Select color

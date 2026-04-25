@@ -23,6 +23,7 @@ import {
   isPointSegment,
   pointToVec3,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { SKETCH_HIGHLIGHT_SECONDARY_COLOR } from '@src/lib/constants'
 
 export type InvisibleConstraint = Extract<
   ApiConstraint,
@@ -233,6 +234,20 @@ export function findSegmentsForInvisibleConstraint(
   return Array.from(
     new Set(constrainedIds.filter((id) => objects[id]?.kind.type === 'Segment'))
   )
+}
+
+export function getInvisibleConstraintSegmentHoverColor(
+  segmentId: number,
+  constraint: InvisibleConstraintObject | null
+): number | undefined {
+  if (
+    constraint?.kind.constraint.type === 'Symmetric' &&
+    constraint.kind.constraint.axis === segmentId
+  ) {
+    return SKETCH_HIGHLIGHT_SECONDARY_COLOR
+  }
+
+  return undefined
 }
 
 function getCoincidentHighlightedSegmentIds(

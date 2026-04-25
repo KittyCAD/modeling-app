@@ -464,6 +464,19 @@ describe('getSegmentColor', () => {
     expect(color).not.toBe(UNCONSTRAINED_COLOR)
   })
 
+  it('should allow overriding the hover color for special segment roles', () => {
+    const color = getSegmentColor({
+      isDraft: false,
+      isHovered: true,
+      hoverColor: 0xff8c2a,
+      isSelected: true,
+      freedom: 'Conflict',
+      theme: DARK_THEME,
+    })
+
+    expect(color).toBe(0xff8c2a)
+  })
+
   it('should return selection color when isSelected is true (priority 3)', () => {
     const color = getSegmentColor({
       isDraft: false,

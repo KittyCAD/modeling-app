@@ -110,6 +110,12 @@ export const SKETCH_HIGHLIGHT_RGB = SKETCH_SELECTION_RGB.map((val) =>
 )
 /** The sketch mode revamp highlight rgb values as HEX */
 export const SKETCH_HIGHLIGHT_COLOR = packRgbToColor(SKETCH_HIGHLIGHT_RGB)
+/** The sketch mode revamp highlight for secondary items (like a symmetry axis) as RGB */
+export const SKETCH_HIGHLIGHT_SECONDARY_RGB = [242, 104, 3]
+/** The sketch mode revamp highlight for secondary items (like a symmetry axis) as HEX */
+export const SKETCH_HIGHLIGHT_SECONDARY_COLOR = packRgbToColor(
+  SKETCH_HIGHLIGHT_SECONDARY_RGB
+)
 
 /** Corresponding engine selections and highlights */
 export const SYSTEM_SELECTION_COLOR = {
