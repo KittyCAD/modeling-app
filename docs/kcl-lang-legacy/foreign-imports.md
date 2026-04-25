@@ -7,14 +7,12 @@ layout: manual
 `import` can also be used to import files from other CAD systems. The format of the statement is the
 same as for KCL files. You can only import the whole file, not items from it. E.g.,
 
-<!-- transpile failed -->
 ```norun
 import "tests/inputs/cube.obj"
 
 // Use `cube` just like a KCL object.
 ```
 
-<!-- transpile failed -->
 ```kcl
 import "tests/inputs/cube.sldprt" as cube
 
@@ -25,7 +23,6 @@ For formats lacking unit data (such as STL, OBJ, or PLY files), the default
 unit of measurement is millimeters. Alternatively you may specify the unit
 by using an attribute. Likewise, you can also specify a coordinate system. E.g.,
 
-<!-- transpile failed -->
 ```kcl
 @(lengthUnit = ft, coords = opengl)
 import "tests/inputs/cube.obj"
@@ -81,7 +78,6 @@ stages—reading, initializing (background render start), and invocation (blocki
 
 #### 1. Defer blocking calls
 
-<!-- transpile failed -->
 ```kcl
 import "tests/inputs/cube.step" as cube     // 1) Read / Background render starts
 

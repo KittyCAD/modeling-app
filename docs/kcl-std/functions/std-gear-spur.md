@@ -1,13 +1,13 @@
 ---
 title: "gear::spur"
 subtitle: "Function in std::gear"
-excerpt: "A spur gear."
+excerpt: "A spur gear (like a helical gear, with a helix angle of 0)."
 layout: manual
 ---
 
 **WARNING:** This function is experimental and may change or be removed.
 
-A spur gear.
+A spur gear (like a helical gear, with a helix angle of 0).
 
 ```kcl
 gear::spur(
@@ -18,7 +18,8 @@ gear::spur(
 ): Solid
 ```
 
-
+The gear will be placed at (0, 0, 0) in the global scene, and extruded up the Z axis.
+Use `translate()` and `rotate()` to move it around once it's created.
 
 ### Arguments
 
