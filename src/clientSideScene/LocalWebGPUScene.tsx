@@ -15,15 +15,19 @@ import {
   MeshBasicMaterial,
   OrthographicCamera,
   PerspectiveCamera,
+  Raycaster,
   Scene,
   type Material,
   type Object3D,
+  Vector2,
   Vector3,
 } from 'three'
 
 const WEBGPU_PORT_POC_STORAGE_KEY = 'webgpu-port-poc'
 const WEBGPU_PORT_DEBUG_STORAGE_KEY = 'webgpu-port-debug'
 const WEBGPU_PORT_LOG_PREFIX = '[WEBGPU_POC]'
+const HOVER_COLOR = new Color('#5dd6ff')
+const SELECTED_COLOR = new Color('#ff9d3f')
 
 function shouldEnableLocalWebGpuPreview() {
   return localStorage.getItem(WEBGPU_PORT_POC_STORAGE_KEY) !== 'false'
@@ -45,6 +49,8 @@ function logLocalWebGpuPreview(message: string, metadata?: unknown) {
     message === 'preview camera created' ||
     message === 'preview initialization failed' ||
     message === 'preview visibility changed' ||
+    message === 'local hover changed' ||
+    message === 'local selection changed' ||
     message === 'starting model refresh' ||
     message === 'export completed' ||
     message === 'gltf parsed and added to scene' ||
@@ -122,6 +128,7 @@ function prepareLoadedModelForPreview(root: Object3D) {
         color,
         side: DoubleSide,
       })
+      previewMaterial.userData.previewBaseColor = color.getHex()
       materialCount += 1
       materialTypes.add(material.type)
       disposeMaterial(material)
@@ -136,6 +143,182 @@ function prepareLoadedModelForPreview(root: Object3D) {
     meshCount,
     materialCount,
     materialTypes: Array.from(materialTypes.values()),
+  }
+}
+
+function getPreviewMaterials(mesh: Mesh): MeshBasicMaterial[] {
+  return (
+    isArray(mesh.material) ? mesh.material : [mesh.material]
+  ) as MeshBasicMaterial[]
+}
+
+type PreviewAssociation = {
+  type?: string
+  index?: number
+  [key: string]: unknown
+}
+
+type GltfParserJson = {
+  meshes?: Array<{
+    extras?: unknown
+    primitives?: Array<{
+      extras?: unknown
+    }>
+  }>
+  nodes?: Array<{
+    extras?: unknown
+    mesh?: number
+    name?: string
+  }>
+}
+
+type GltfParserState = {
+  associations: Map<unknown, unknown> | null
+  json: GltfParserJson | null
+}
+
+function summarizeAssociation(association: unknown) {
+  if (!association || typeof association !== 'object') {
+    return null
+  }
+
+  return Object.fromEntries(
+    Object.entries(association as Record<string, unknown>).filter(
+      ([, value]) =>
+        typeof value === 'string' ||
+        typeof value === 'number' ||
+        typeof value === 'boolean'
+    )
+  )
+}
+
+function getNumericAssociationIndex(
+  association: PreviewAssociation | null,
+  key: 'meshes' | 'nodes' | 'primitives'
+) {
+  const value = association?.[key]
+  return typeof value === 'number' ? value : null
+}
+
+function summarizeExtras(extras: unknown) {
+  if (!extras || typeof extras !== 'object') {
+    return null
+  }
+
+  return extras
+}
+
+function getPickedObjectMetadata(
+  object: Object3D,
+  parserState: GltfParserState | null
+) {
+  const association = summarizeAssociation(
+    parserState?.associations?.get(object) ?? null
+  )
+  const meshIndex = getNumericAssociationIndex(association, 'meshes')
+  const primitiveIndex = getNumericAssociationIndex(association, 'primitives')
+  const primitiveExtras =
+    meshIndex !== null && primitiveIndex !== null
+      ? summarizeExtras(
+          parserState?.json?.meshes?.[meshIndex]?.primitives?.[primitiveIndex]
+            ?.extras ?? null
+        )
+      : null
+  const meshExtras =
+    meshIndex !== null
+      ? summarizeExtras(parserState?.json?.meshes?.[meshIndex]?.extras ?? null)
+      : null
+
+  let nodeExtras: unknown = null
+  let nodeIndex: number | null = null
+  let current: Object3D | null = object
+  while (current && nodeExtras === null) {
+    const currentAssociation = summarizeAssociation(
+      parserState?.associations?.get(current) ?? null
+    )
+    nodeIndex = getNumericAssociationIndex(currentAssociation, 'nodes')
+    if (nodeIndex !== null) {
+      nodeExtras = summarizeExtras(
+        parserState?.json?.nodes?.[nodeIndex]?.extras
+      )
+    }
+    current = current.parent
+  }
+
+  const kittycadPrimitiveExtras =
+    primitiveExtras &&
+    typeof primitiveExtras === 'object' &&
+    'KITTYCAD' in primitiveExtras
+      ? (primitiveExtras as Record<string, unknown>).KITTYCAD
+      : null
+
+  return {
+    association,
+    primitiveExtras,
+    meshExtras,
+    nodeExtras,
+    nodeIndex,
+    kittycadPrimitiveExtras,
+  }
+}
+
+function setMeshHighlight(
+  mesh: Mesh | null,
+  mode: 'base' | 'hover' | 'selected'
+) {
+  if (!mesh) {
+    return
+  }
+
+  for (const material of getPreviewMaterials(mesh)) {
+    const baseColor = material.userData.previewBaseColor
+    const nextColor =
+      mode === 'selected'
+        ? SELECTED_COLOR
+        : mode === 'hover'
+          ? HOVER_COLOR
+          : (baseColor ?? '#d7dde8')
+    material.color.set(nextColor)
+    material.needsUpdate = true
+  }
+}
+
+function summarizePickedObject(
+  object: Object3D,
+  parserState: GltfParserState | null
+) {
+  const parentChain: string[] = []
+  const associationChain: Array<PreviewAssociation | null> = []
+  let current: Object3D | null = object
+  while (current && parentChain.length < 4) {
+    parentChain.push(current.name || current.type)
+    associationChain.push(
+      summarizeAssociation(parserState?.associations?.get(current) ?? null)
+    )
+    current = current.parent
+  }
+
+  const metadata = getPickedObjectMetadata(object, parserState)
+  const userDataEntries = Object.entries(object.userData ?? {}).filter(
+    ([, value]) =>
+      typeof value === 'string' ||
+      typeof value === 'number' ||
+      typeof value === 'boolean'
+  )
+
+  return {
+    type: object.type,
+    name: object.name || null,
+    parentChain,
+    association: metadata.association,
+    associationChain,
+    primitiveExtras: metadata.primitiveExtras,
+    meshExtras: metadata.meshExtras,
+    nodeExtras: metadata.nodeExtras,
+    nodeIndex: metadata.nodeIndex,
+    kittycadPrimitiveExtras: metadata.kittycadPrimitiveExtras,
+    userData: Object.fromEntries(userDataEntries),
+    userDataKeys: Object.keys(object.userData ?? {}),
   }
 }
 
@@ -175,6 +358,12 @@ export const LocalWebGPUScene = ({
     let refreshModel: (() => Promise<void>) | null = null
     let previewCamera: PerspectiveCamera | OrthographicCamera | null = null
     let previewTarget = new Vector3()
+    let hoveredMesh: Mesh | null = null
+    let selectedMesh: Mesh | null = null
+    let parserState: GltfParserState | null = null
+    const raycaster = new Raycaster()
+    const pointer = new Vector2()
+    let requestRender: (() => void) | null = null
 
     const setVisible = (nextVisible: boolean) => {
       if (isVisible === nextVisible) {
@@ -187,6 +376,7 @@ export const LocalWebGPUScene = ({
         isVisible: nextVisible,
       })
       onVisibilityChange(nextVisible)
+      requestRender?.()
     }
 
     const fitCameraToLoadedModel = (root: Object3D) => {
@@ -253,6 +443,7 @@ export const LocalWebGPUScene = ({
         target: target.toArray(),
         zoom: 'zoom' in camera ? camera.zoom : undefined,
       })
+      requestRender?.()
     }
 
     const requestRefresh = () => {
@@ -273,6 +464,113 @@ export const LocalWebGPUScene = ({
       }
 
       requestRefresh()
+    }
+
+    const applyMeshState = (mesh: Mesh | null) => {
+      if (!mesh) {
+        return
+      }
+
+      const mode =
+        mesh === selectedMesh
+          ? 'selected'
+          : mesh === hoveredMesh
+            ? 'hover'
+            : 'base'
+      setMeshHighlight(mesh, mode)
+      requestRender?.()
+    }
+
+    const clearHover = () => {
+      if (!hoveredMesh) {
+        return
+      }
+
+      const previousHoveredMesh = hoveredMesh
+      hoveredMesh = null
+      applyMeshState(previousHoveredMesh)
+    }
+
+    const pickMeshFromPointerEvent = (event: PointerEvent) => {
+      if (!isVisible || !previewCamera || !currentModel) {
+        return null
+      }
+
+      const interactionElement = container.parentElement
+      if (!interactionElement) {
+        return null
+      }
+
+      const rect = interactionElement.getBoundingClientRect()
+      if (rect.width === 0 || rect.height === 0) {
+        return null
+      }
+
+      pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
+      pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
+      raycaster.setFromCamera(pointer, previewCamera)
+
+      return raycaster
+        .intersectObject(currentModel, true)
+        .find((intersection) => intersection.object instanceof Mesh)
+    }
+
+    const updateHoverFromPointer = (event: PointerEvent) => {
+      const firstMeshHit = pickMeshFromPointerEvent(event)
+      if (!firstMeshHit) {
+        clearHover()
+        return
+      }
+
+      const nextHoveredMesh = (firstMeshHit?.object as Mesh | undefined) ?? null
+      if (nextHoveredMesh === hoveredMesh) {
+        return
+      }
+
+      const previousHoveredMesh = hoveredMesh
+      hoveredMesh = null
+      applyMeshState(previousHoveredMesh)
+      if (!nextHoveredMesh) {
+        return
+      }
+
+      hoveredMesh = nextHoveredMesh
+      applyMeshState(hoveredMesh)
+      logLocalWebGpuPreview('local hover changed', {
+        distance: firstMeshHit?.distance,
+        point: firstMeshHit?.point?.toArray(),
+        ...summarizePickedObject(nextHoveredMesh, parserState),
+      })
+    }
+
+    const updateSelectionFromPointer = (event: PointerEvent) => {
+      const firstMeshHit = pickMeshFromPointerEvent(event)
+      const nextSelectedMesh =
+        (firstMeshHit?.object as Mesh | undefined) ?? null
+      if (nextSelectedMesh === selectedMesh) {
+        return
+      }
+
+      const previousSelectedMesh = selectedMesh
+      selectedMesh = nextSelectedMesh
+      applyMeshState(previousSelectedMesh)
+      applyMeshState(hoveredMesh)
+      applyMeshState(selectedMesh)
+
+      const selectionSummary = nextSelectedMesh
+        ? {
+            distance: firstMeshHit?.distance,
+            point: firstMeshHit?.point?.toArray(),
+            ...summarizePickedObject(nextSelectedMesh, parserState),
+          }
+        : null
+      ;(
+        window as typeof window & { __WEBGPU_POC_SELECTION__?: unknown }
+      ).__WEBGPU_POC_SELECTION__ = selectionSummary
+
+      logLocalWebGpuPreview('local selection changed', {
+        selection: selectionSummary,
+      })
     }
 
     kclManager.addEventListener(KclManagerEvents.ExecutionDone, onExecutionDone)
@@ -400,6 +698,21 @@ export const LocalWebGPUScene = ({
       })
       const loader = new GLTFLoader()
 
+      requestRender = () => {
+        if (disposed || !previewCamera || animationFrameId !== -1) {
+          return
+        }
+
+        animationFrameId = requestAnimationFrame(() => {
+          animationFrameId = -1
+          if (disposed || !previewCamera) {
+            return
+          }
+
+          renderer.render(scene, previewCamera)
+        })
+      }
+
       const resize = () => {
         const width = container.clientWidth
         const height = container.clientHeight
@@ -411,6 +724,17 @@ export const LocalWebGPUScene = ({
           previewCamera.aspect = width / height
           previewCamera.updateProjectionMatrix()
         }
+        requestRender?.()
+      }
+
+      const interactionElement = container.parentElement
+      if (interactionElement) {
+        interactionElement.addEventListener(
+          'pointermove',
+          updateHoverFromPointer
+        )
+        interactionElement.addEventListener('pointerleave', clearHover)
+        interactionElement.addEventListener('click', updateSelectionFromPointer)
       }
 
       resize()
@@ -425,22 +749,10 @@ export const LocalWebGPUScene = ({
         scene.remove(currentModel)
         disposeObject3D(currentModel)
         currentModel = null
+        requestRender?.()
       }
-
-      const render = () => {
-        if (disposed) {
-          return
-        }
-
-        if (!previewCamera) {
-          return
-        }
-
-        renderer.render(scene, previewCamera)
-        animationFrameId = requestAnimationFrame(render)
-      }
-      render()
-      logLocalWebGpuPreview('render loop started')
+      requestRender()
+      logLocalWebGpuPreview('render mode set to on-demand')
 
       refreshModel = async () => {
         const refreshId = ++currentRefreshId
@@ -499,9 +811,32 @@ export const LocalWebGPUScene = ({
 
             clearModel()
             currentModel = gltf.scene
+            const gltfWithParser = gltf as {
+              parser?: {
+                associations?: Map<unknown, unknown>
+                json?: GltfParserJson
+              }
+            }
+            parserState = {
+              associations: gltfWithParser.parser?.associations ?? null,
+              json: gltfWithParser.parser?.json ?? null,
+            }
             currentModel.traverse((object) => {
               object.layers.mask =
                 previewCamera?.layers.mask ?? object.layers.mask
+
+              if (!(object instanceof Mesh)) {
+                return
+              }
+
+              const metadata = getPickedObjectMetadata(object, parserState)
+              if (metadata.primitiveExtras) {
+                object.userData.gltfPrimitiveExtras = metadata.primitiveExtras
+              }
+              if (metadata.kittycadPrimitiveExtras) {
+                object.userData.kittycadPrimitiveExtras =
+                  metadata.kittycadPrimitiveExtras
+              }
             })
             scene.add(currentModel)
             const loadedModelStats = prepareLoadedModelForPreview(currentModel)
@@ -515,8 +850,10 @@ export const LocalWebGPUScene = ({
               refreshId,
               childCount: currentModel.children.length,
               meshCount: loadedModelStats.meshCount,
+              hasParserJson: Boolean(parserState?.json),
             })
             setVisible(true)
+            requestRender?.()
           },
           (error) => {
             console.warn('Failed to load local WebGPU preview model', error)
@@ -547,11 +884,27 @@ export const LocalWebGPUScene = ({
           KclManagerEvents.ExecutionDone,
           onExecutionDone
         )
+        if (interactionElement) {
+          interactionElement.removeEventListener(
+            'pointermove',
+            updateHoverFromPointer
+          )
+          interactionElement.removeEventListener('pointerleave', clearHover)
+          interactionElement.removeEventListener(
+            'click',
+            updateSelectionFromPointer
+          )
+        }
+        clearHover()
+        const previousSelectedMesh = selectedMesh
+        selectedMesh = null
+        applyMeshState(previousSelectedMesh)
         clearModel()
         resizeObserver?.disconnect()
         if (animationFrameId !== -1) {
           cancelAnimationFrame(animationFrameId)
         }
+        requestRender = null
         renderer.dispose()
       }
     }
@@ -570,7 +923,6 @@ export const LocalWebGPUScene = ({
 
     return () => {
       disposed = true
-      console.log('[LocalWebGPUScene] effect cleanup')
       logLocalWebGpuPreview('effect cleanup')
       setVisible(false)
       refreshModel = null
