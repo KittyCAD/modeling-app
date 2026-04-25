@@ -389,6 +389,15 @@ description: Operations executed holes_cube.kcl
                   "len": "mm",
                   "angle": "degrees"
                 }
+              },
+              "headClearance": {
+                "type": "Number",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             }
           },
