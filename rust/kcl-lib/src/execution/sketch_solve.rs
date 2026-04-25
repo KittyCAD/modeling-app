@@ -438,6 +438,8 @@ fn substitute_sketch_var_in_unsolved_expr(
 pub(crate) struct Solved {
     /// Each variable's final value.
     pub(crate) final_values: Vec<f64>,
+    /// Required constraints that could not be satisfied by the solver.
+    pub(crate) unsatisfied_required_constraints: Vec<usize>,
     /// How many iterations of Newton's method were required?
     #[expect(dead_code, reason = "ezpz provides this info, but we aren't using it yet")]
     pub(crate) iterations: usize,
@@ -463,17 +465,20 @@ impl Solved {
         // Build a set of variables involved in unsatisfied constraints
         // Only include required constraints (not optional ones like from dragging)
         let mut variables_in_conflicts = AHashSet::new();
-        for &constraint_idx in value.unsatisfied() {
+        let mut unsatisfied_required_constraints = Vec::new();
+        for &constraint_id in value.unsatisfied() {
             // Only mark as conflicted if it's a required constraint, not an optional one
-            if constraint_idx < num_required_constraints
-                && let Some(constraint) = constraints.get(constraint_idx)
+            if constraint_id < num_required_constraints
+                && let Some(constraint) = constraints.get(constraint_id)
             {
                 constraint.extend_associated_variable_ids(&mut variables_in_conflicts);
+                unsatisfied_required_constraints.push(constraint_id);
             }
         }
 
         Self {
             final_values: value.final_values().to_owned(),
+            unsatisfied_required_constraints,
             iterations: value.iterations(),
             warnings: value.warnings().to_owned(),
             priority_solved: value.priority_solved(),

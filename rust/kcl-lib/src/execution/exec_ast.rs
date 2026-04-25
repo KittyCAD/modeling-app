@@ -1465,14 +1465,15 @@ impl Node<SketchBlock> {
                     | NonLinearSystemError::DidNotConverge => {
                         // Constraint solver failed to find a solution. Build a
                         // solution that is the initial guesses.
-                        exec_state.warn(
-                            CompilationIssue::err(range, "Constraint solver failed to find a solution".to_owned()),
-                            annotations::WARN_SOLVER,
-                        );
+                        exec_state.err(CompilationIssue::err(
+                            range,
+                            "Constraint solver failed to find a solution".to_owned(),
+                        ));
                         let final_values = initial_guesses.iter().map(|(_, v)| *v).collect::<Vec<_>>();
                         (
                             Solved {
                                 final_values,
+                                unsatisfied_required_constraints: (0..num_required_constraints).collect(),
                                 iterations: Default::default(),
                                 warnings: failure.warnings,
                                 priority_solved: Default::default(),
@@ -1508,6 +1509,12 @@ impl Node<SketchBlock> {
         };
         #[cfg(not(feature = "artifact-graph"))]
         let _ = solve_analysis;
+        if !solve_outcome.unsatisfied_required_constraints.is_empty() {
+            exec_state.err(CompilationIssue::err(
+                range,
+                format!("Sketch is overconstrained or inconsistent. Some constraint(s) could not be satisfied",),
+            ));
+        }
         // Propagate warnings.
         for warning in &solve_outcome.warnings {
             let message = if let Some(index) = warning.about_constraint.as_ref() {
@@ -5018,6 +5025,35 @@ s = sketch(on = XY) {
         // sketch block fields.
         assert!(!value.contains_key("line"));
         assert!(!value.contains_key("coincident"));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn overconstrained_sketch_block_reports_non_fatal_error() {
+        let ast = r#"
+@settings(experimentalFeatures = allow)
+bad = sketch(on = XY) {
+  p = point(at = [var 0mm, var 0mm])
+  p.at[0] == 0mm
+  p.at[0] == 1mm
+}
+after = 42
+"#;
+        let result = parse_execute(ast).await.unwrap();
+        let issues = result.exec_state.issues();
+        let Some(error) = issues
+            .iter()
+            .find(|issue| issue.message.contains("overconstrained or inconsistent"))
+        else {
+            panic!("found {issues:#?}");
+        };
+        assert_eq!(error.severity, Severity::Error);
+
+        let mem = result.exec_state.stack();
+        let after = mem
+            .memory
+            .get_from("after", result.mem_env, SourceRange::default(), 0)
+            .unwrap();
+        assert!(matches!(after, KclValue::Number { value: 42.0, .. }));
     }
 
     #[tokio::test(flavor = "multi_thread")]

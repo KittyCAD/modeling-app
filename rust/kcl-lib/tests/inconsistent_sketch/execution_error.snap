@@ -1,0 +1,16 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing inconsistent_sketch.kcl
+---
+KCL Semantic error
+
+  × semantic: Sketch is overconstrained or inconsistent. Some constraint(s)
+  │ could not be satisfied
+   ╭─[1:13]
+ 1 │ ╭─▶ sketch001 = sketch(on = XY) {
+ 2 │ │     line1 = line(start = [var -10.64mm, var 26.44mm], end = [var 13.05mm, var 5.52mm])
+ 3 │ │     fixed([line1.start, ORIGIN])
+ 4 │ │     fixed([line1.start, [20, 21]])
+ 5 │ ├─▶ }
+   · ╰──── main
+   ╰────
