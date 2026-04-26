@@ -1,0 +1,339 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing impeller_region_repro.kcl
+---
+// Turbine-style impeller
+// Parametric impeller with a 70 mm OD, 10 mm bore, and 8 backward-swept blades.
+
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+overallDiameter = 70mm
+outerRadius = overallDiameter / 2
+hubThickness = 12mm
+hubOuterDiameter = 22mm
+hubOuterRadius = hubOuterDiameter / 2
+boreDiameter = 10mm
+boreRadius = boreDiameter / 2
+bladeCount = 8
+stepAngle = 360deg / bladeCount
+bladeSweepAngle = 25deg
+slotInnerWidth = 6mm
+slotOuterWidth = 14mm
+slotWidthSpread = (slotOuterWidth - slotInnerWidth) / 2
+slotInnerY = hubOuterRadius + 1mm
+slotOuterY = 30mm
+slotReach = slotOuterY - slotInnerY
+cutDepth = hubThickness + 2mm
+slotPointRadius = 20mm
+
+slot1Angle = -bladeSweepAngle
+slot2Angle = stepAngle - bladeSweepAngle
+slot3Angle = 2 * stepAngle - bladeSweepAngle
+slot4Angle = 3 * stepAngle - bladeSweepAngle
+slot5Angle = 4 * stepAngle - bladeSweepAngle
+slot6Angle = 5 * stepAngle - bladeSweepAngle
+slot7Angle = 6 * stepAngle - bladeSweepAngle
+slot8Angle = 7 * stepAngle - bladeSweepAngle
+
+baseSketch = sketch(on = XY) {
+  circle1 = circle(start = [var 35mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  horizontalDistance([circle1.center, circle1.start]) == outerRadius
+  verticalDistance([circle1.center, circle1.start]) == 0mm
+}
+baseRegion = region(point = [0mm, 0mm], sketch = baseSketch)
+hide(baseSketch)
+baseDisk = extrude(baseRegion, length = hubThickness, tagEnd = $topFaceTag)
+
+boreFace = faceOf(baseDisk, face = topFaceTag)
+boreSketch = sketch(on = boreFace) {
+  circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  horizontalDistance([circle1.center, circle1.start]) == boreRadius
+  verticalDistance([circle1.center, circle1.start]) == 0mm
+}
+boreRegion = region(point = [0mm, 0mm], sketch = boreSketch)
+hide(boreSketch)
+afterBore = extrude(boreRegion, length = -cutDepth)
+
+slotFace1 = faceOf(afterBore, face = topFaceTag)
+slotSketchBase1 = sketch(on = slotFace1) {
+  line1 = line(start = [var -3mm, var 12mm], end = [var 3mm, var 12mm])
+  line2 = line(start = [var 3mm, var 12mm], end = [var 7mm, var 30mm])
+  line3 = line(start = [var 7mm, var 30mm], end = [var -7mm, var 30mm])
+  line4 = line(start = [var -7mm, var 30mm], end = [var -3mm, var 12mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line1)
+  horizontal(line3)
+  horizontalDistance([line1.start, line1.end]) == slotInnerWidth
+  distance([line3.start, line3.end]) == slotOuterWidth
+  horizontalDistance([ORIGIN, line1.start]) == -slotInnerWidth / 2
+  verticalDistance([ORIGIN, line1.start]) == slotInnerY
+  horizontalDistance([line1.start, line4.start]) == -slotWidthSpread
+  verticalDistance([line1.start, line4.start]) == slotReach
+}
+hide(slotSketchBase1)
+slot1Sketch = rotate(
+  slotSketchBase1,
+  axis = [0, 0, 1],
+  angle = slot1Angle,
+  global = true,
+)
+slot1Point = [
+  slotPointRadius * sin(-slot1Angle),
+  slotPointRadius * cos(slot1Angle)
+]
+slot1Region = region(point = slot1Point, sketch = slot1Sketch)
+hide(slot1Sketch)
+afterSlot1 = extrude(slot1Region, length = -cutDepth)
+
+slotFace2 = faceOf(afterSlot1, face = topFaceTag)
+slotSketchBase2 = sketch(on = slotFace2) {
+  line1 = line(start = [var -3mm, var 12mm], end = [var 3mm, var 12mm])
+  line2 = line(start = [var 3mm, var 12mm], end = [var 7mm, var 30mm])
+  line3 = line(start = [var 7mm, var 30mm], end = [var -7mm, var 30mm])
+  line4 = line(start = [var -7mm, var 30mm], end = [var -3mm, var 12mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line1)
+  horizontal(line3)
+  horizontalDistance([line1.start, line1.end]) == slotInnerWidth
+  distance([line3.start, line3.end]) == slotOuterWidth
+  horizontalDistance([ORIGIN, line1.start]) == -slotInnerWidth / 2
+  verticalDistance([ORIGIN, line1.start]) == slotInnerY
+  horizontalDistance([line1.start, line4.start]) == -slotWidthSpread
+  verticalDistance([line1.start, line4.start]) == slotReach
+}
+hide(slotSketchBase2)
+slot2Sketch = rotate(
+  slotSketchBase2,
+  axis = [0, 0, 1],
+  angle = slot2Angle,
+  global = true,
+)
+slot2Point = [
+  slotPointRadius * sin(-slot2Angle),
+  slotPointRadius * cos(slot2Angle)
+]
+slot2Region = region(point = slot2Point, sketch = slot2Sketch)
+hide(slot2Sketch)
+afterSlot2 = extrude(slot2Region, length = -cutDepth)
+
+slotFace3 = faceOf(afterSlot2, face = topFaceTag)
+slotSketchBase3 = sketch(on = slotFace3) {
+  line1 = line(start = [var -3mm, var 12mm], end = [var 3mm, var 12mm])
+  line2 = line(start = [var 3mm, var 12mm], end = [var 7mm, var 30mm])
+  line3 = line(start = [var 7mm, var 30mm], end = [var -7mm, var 30mm])
+  line4 = line(start = [var -7mm, var 30mm], end = [var -3mm, var 12mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line1)
+  horizontal(line3)
+  horizontalDistance([line1.start, line1.end]) == slotInnerWidth
+  distance([line3.start, line3.end]) == slotOuterWidth
+  horizontalDistance([ORIGIN, line1.start]) == -slotInnerWidth / 2
+  verticalDistance([ORIGIN, line1.start]) == slotInnerY
+  horizontalDistance([line1.start, line4.start]) == -slotWidthSpread
+  verticalDistance([line1.start, line4.start]) == slotReach
+}
+hide(slotSketchBase3)
+slot3Sketch = rotate(
+  slotSketchBase3,
+  axis = [0, 0, 1],
+  angle = slot3Angle,
+  global = true,
+)
+slot3Point = [
+  slotPointRadius * sin(-slot3Angle),
+  slotPointRadius * cos(slot3Angle)
+]
+slot3Region = region(point = slot3Point, sketch = slot3Sketch)
+hide(slot3Sketch)
+afterSlot3 = extrude(slot3Region, length = -cutDepth)
+
+slotFace4 = faceOf(afterSlot3, face = topFaceTag)
+slotSketchBase4 = sketch(on = slotFace4) {
+  line1 = line(start = [var -3mm, var 12mm], end = [var 3mm, var 12mm])
+  line2 = line(start = [var 3mm, var 12mm], end = [var 7mm, var 30mm])
+  line3 = line(start = [var 7mm, var 30mm], end = [var -7mm, var 30mm])
+  line4 = line(start = [var -7mm, var 30mm], end = [var -3mm, var 12mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line1)
+  horizontal(line3)
+  horizontalDistance([line1.start, line1.end]) == slotInnerWidth
+  distance([line3.start, line3.end]) == slotOuterWidth
+  horizontalDistance([ORIGIN, line1.start]) == -slotInnerWidth / 2
+  verticalDistance([ORIGIN, line1.start]) == slotInnerY
+  horizontalDistance([line1.start, line4.start]) == -slotWidthSpread
+  verticalDistance([line1.start, line4.start]) == slotReach
+}
+hide(slotSketchBase4)
+slot4Sketch = rotate(
+  slotSketchBase4,
+  axis = [0, 0, 1],
+  angle = slot4Angle,
+  global = true,
+)
+slot4Point = [
+  slotPointRadius * sin(-slot4Angle),
+  slotPointRadius * cos(slot4Angle)
+]
+slot4Region = region(point = slot4Point, sketch = slot4Sketch)
+hide(slot4Sketch)
+afterSlot4 = extrude(slot4Region, length = -cutDepth)
+
+slotFace5 = faceOf(afterSlot4, face = topFaceTag)
+slotSketchBase5 = sketch(on = slotFace5) {
+  line1 = line(start = [var -3mm, var 12mm], end = [var 3mm, var 12mm])
+  line2 = line(start = [var 3mm, var 12mm], end = [var 7mm, var 30mm])
+  line3 = line(start = [var 7mm, var 30mm], end = [var -7mm, var 30mm])
+  line4 = line(start = [var -7mm, var 30mm], end = [var -3mm, var 12mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line1)
+  horizontal(line3)
+  horizontalDistance([line1.start, line1.end]) == slotInnerWidth
+  distance([line3.start, line3.end]) == slotOuterWidth
+  horizontalDistance([ORIGIN, line1.start]) == -slotInnerWidth / 2
+  verticalDistance([ORIGIN, line1.start]) == slotInnerY
+  horizontalDistance([line1.start, line4.start]) == -slotWidthSpread
+  verticalDistance([line1.start, line4.start]) == slotReach
+}
+hide(slotSketchBase5)
+slot5Sketch = rotate(
+  slotSketchBase5,
+  axis = [0, 0, 1],
+  angle = slot5Angle,
+  global = true,
+)
+slot5Point = [
+  slotPointRadius * sin(-slot5Angle),
+  slotPointRadius * cos(slot5Angle)
+]
+slot5Region = region(point = slot5Point, sketch = slot5Sketch)
+hide(slot5Sketch)
+afterSlot5 = extrude(slot5Region, length = -cutDepth)
+
+slotFace6 = faceOf(afterSlot5, face = topFaceTag)
+slotSketchBase6 = sketch(on = slotFace6) {
+  line1 = line(start = [var -3mm, var 12mm], end = [var 3mm, var 12mm])
+  line2 = line(start = [var 3mm, var 12mm], end = [var 7mm, var 30mm])
+  line3 = line(start = [var 7mm, var 30mm], end = [var -7mm, var 30mm])
+  line4 = line(start = [var -7mm, var 30mm], end = [var -3mm, var 12mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line1)
+  horizontal(line3)
+  horizontalDistance([line1.start, line1.end]) == slotInnerWidth
+  distance([line3.start, line3.end]) == slotOuterWidth
+  horizontalDistance([ORIGIN, line1.start]) == -slotInnerWidth / 2
+  verticalDistance([ORIGIN, line1.start]) == slotInnerY
+  horizontalDistance([line1.start, line4.start]) == -slotWidthSpread
+  verticalDistance([line1.start, line4.start]) == slotReach
+}
+hide(slotSketchBase6)
+slot6Sketch = rotate(
+  slotSketchBase6,
+  axis = [0, 0, 1],
+  angle = slot6Angle,
+  global = true,
+)
+slot6Point = [
+  slotPointRadius * sin(-slot6Angle),
+  slotPointRadius * cos(slot6Angle)
+]
+slot6Region = region(point = slot6Point, sketch = slot6Sketch)
+hide(slot6Sketch)
+afterSlot6 = extrude(slot6Region, length = -cutDepth)
+
+slotFace7 = faceOf(afterSlot6, face = topFaceTag)
+slotSketchBase7 = sketch(on = slotFace7) {
+  line1 = line(start = [var -3mm, var 12mm], end = [var 3mm, var 12mm])
+  line2 = line(start = [var 3mm, var 12mm], end = [var 7mm, var 30mm])
+  line3 = line(start = [var 7mm, var 30mm], end = [var -7mm, var 30mm])
+  line4 = line(start = [var -7mm, var 30mm], end = [var -3mm, var 12mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line1)
+  horizontal(line3)
+  horizontalDistance([line1.start, line1.end]) == slotInnerWidth
+  distance([line3.start, line3.end]) == slotOuterWidth
+  horizontalDistance([ORIGIN, line1.start]) == -slotInnerWidth / 2
+  verticalDistance([ORIGIN, line1.start]) == slotInnerY
+  horizontalDistance([line1.start, line4.start]) == -slotWidthSpread
+  verticalDistance([line1.start, line4.start]) == slotReach
+}
+hide(slotSketchBase7)
+slot7Sketch = rotate(
+  slotSketchBase7,
+  axis = [0, 0, 1],
+  angle = slot7Angle,
+  global = true,
+)
+slot7Point = [
+  slotPointRadius * sin(-slot7Angle),
+  slotPointRadius * cos(slot7Angle)
+]
+slot7Region = region(point = slot7Point, sketch = slot7Sketch)
+hide(slot7Sketch)
+afterSlot7 = extrude(slot7Region, length = -cutDepth)
+
+slotFace8 = faceOf(afterSlot7, face = topFaceTag)
+slotSketchBase8 = sketch(on = slotFace8) {
+  line1 = line(start = [var -3mm, var 12mm], end = [var 3mm, var 12mm])
+  line2 = line(start = [var 3mm, var 12mm], end = [var 7mm, var 30mm])
+  line3 = line(start = [var 7mm, var 30mm], end = [var -7mm, var 30mm])
+  line4 = line(start = [var -7mm, var 30mm], end = [var -3mm, var 12mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line1)
+  horizontal(line3)
+  horizontalDistance([line1.start, line1.end]) == slotInnerWidth
+  distance([line3.start, line3.end]) == slotOuterWidth
+  horizontalDistance([ORIGIN, line1.start]) == -slotInnerWidth / 2
+  verticalDistance([ORIGIN, line1.start]) == slotInnerY
+  horizontalDistance([line1.start, line4.start]) == -slotWidthSpread
+  verticalDistance([line1.start, line4.start]) == slotReach
+}
+hide(slotSketchBase8)
+slot8Sketch = rotate(
+  slotSketchBase8,
+  axis = [0, 0, 1],
+  angle = slot8Angle,
+  global = true,
+)
+slot8Point = [
+  slotPointRadius * sin(-slot8Angle),
+  slotPointRadius * cos(slot8Angle)
+]
+slot8Region = region(point = slot8Point, sketch = slot8Sketch)
+hide(slot8Sketch)
+impeller = extrude(slot8Region, length = -cutDepth)
+
+hide(baseDisk)
+hide(afterBore)
+hide(afterSlot1)
+hide(afterSlot2)
+hide(afterSlot3)
+hide(afterSlot4)
+hide(afterSlot5)
+hide(afterSlot6)
+hide(afterSlot7)
