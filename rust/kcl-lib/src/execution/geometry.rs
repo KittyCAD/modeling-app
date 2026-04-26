@@ -1161,6 +1161,26 @@ pub enum SolidCreator {
 }
 
 impl Solid {
+    /// Keep the state a face needs without retaining the full creator chain.
+    ///
+    /// Repeated `faceOf(extrude(faceOf(...)))` operations otherwise nest prior
+    /// solids through `Face -> Solid -> Sketch -> Face`, making each clone grow
+    /// exponentially.
+    pub(crate) fn clone_for_face_reference(&self) -> Self {
+        Self {
+            id: self.id,
+            artifact_id: self.artifact_id,
+            value: self.value.clone(),
+            creator: SolidCreator::Procedural,
+            start_cap_id: self.start_cap_id,
+            end_cap_id: self.end_cap_id,
+            edge_cuts: self.edge_cuts.clone(),
+            units: self.units,
+            sectional: self.sectional,
+            meta: self.meta.clone(),
+        }
+    }
+
     pub fn sketch(&self) -> Option<&Sketch> {
         match &self.creator {
             SolidCreator::Sketch(sketch) => Some(sketch),

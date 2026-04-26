@@ -110,7 +110,7 @@ pub(super) async fn make_face(
         x_axis: sketch.on.x_axis(),
         y_axis: sketch.on.y_axis(),
         units: solid.units,
-        solid,
+        solid: Box::new(solid.clone_for_face_reference()),
         meta: vec![args.source_range.into()],
     }))
 }
