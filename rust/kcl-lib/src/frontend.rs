@@ -5662,7 +5662,6 @@ mod tests {
     use super::*;
     use crate::engine::PlaneName;
     use crate::execution::cache::SketchModeState;
-    use crate::execution::cache::bust_cache;
     use crate::execution::cache::clear_mem_cache;
     use crate::execution::cache::read_old_memory;
     use crate::execution::cache::write_old_memory;
@@ -6838,7 +6837,6 @@ bad = missing_name
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_delete_sketch_after_comment() {
-        bust_cache().await;
         clear_mem_cache().await;
 
         let initial_source = "sketch001 = sketch(on = XZ) {
@@ -6877,7 +6875,6 @@ sketch001 = sketch(on = XZ) {
         );
         assert_eq!(scene_delta.new_graph.objects.len(), 0);
 
-        bust_cache().await;
         clear_mem_cache().await;
         ctx.close().await;
     }
