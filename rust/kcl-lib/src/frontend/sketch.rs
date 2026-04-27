@@ -479,6 +479,9 @@ impl From<ObjectId> for ConstraintSegment {
 pub struct Distance {
     pub points: Vec<ConstraintSegment>,
     pub distance: Number,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub label: Option<Point2d<Number>>,
     pub source: ConstraintSource,
 }
 

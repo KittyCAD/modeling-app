@@ -2034,6 +2034,17 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
         exec_state,
     )?;
+    let label = args
+        .get_kw_arg_opt::<[TyF64; 2]>("label", &RuntimeType::point2d(), exec_state)?
+        .map(|label| {
+            TyF64::to_point2d(&label).map_err(|_| {
+                KclError::new_internal(KclErrorDetails::new(
+                    "Could not convert distance label to a Point2d".to_owned(),
+                    vec![args.source_range],
+                ))
+            })
+        })
+        .transpose()?;
     let [point0, point1]: [KclValue; 2] = points.try_into().map_err(|_| {
         KclError::new_semantic(KclErrorDetails::new(
             "must have two input points".to_owned(),
@@ -2082,6 +2093,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                                             object_id: unsolved1.object_id,
                                         }),
                                     ],
+                                    label: label.clone(),
                                 },
                                 meta: vec![args.source_range.into()],
                             };
@@ -2138,7 +2150,10 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                     };
                     Ok(KclValue::SketchConstraint {
                         value: Box::new(SketchConstraint {
-                            kind: SketchConstraintKind::Distance { points },
+                            kind: SketchConstraintKind::Distance {
+                                points,
+                                label: label.clone(),
+                            },
                             meta: vec![args.source_range.into()],
                         }),
                     })

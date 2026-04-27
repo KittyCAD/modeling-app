@@ -346,12 +346,14 @@ fn rewrite_constraint_with_map(
         Constraint::Distance(distance) => Some(Constraint::Distance(crate::frontend::sketch::Distance {
             points: rewrite_constraint_segments(&distance.points, rewrite_map),
             distance: distance.distance,
+            label: distance.label.clone(),
             source: distance.source.clone(),
         })),
         Constraint::HorizontalDistance(distance) => {
             Some(Constraint::HorizontalDistance(crate::frontend::sketch::Distance {
                 points: rewrite_constraint_segments(&distance.points, rewrite_map),
                 distance: distance.distance,
+                label: distance.label.clone(),
                 source: distance.source.clone(),
             }))
         }
@@ -359,6 +361,7 @@ fn rewrite_constraint_with_map(
             Some(Constraint::VerticalDistance(crate::frontend::sketch::Distance {
                 points: rewrite_constraint_segments(&distance.points, rewrite_map),
                 distance: distance.distance,
+                label: distance.label.clone(),
                 source: distance.source.clone(),
             }))
         }
@@ -5124,6 +5127,7 @@ pub(crate) async fn execute_trim_operations_simple(
                 // Find distance constraints that reference both endpoints of the original segment
                 let mut distance_constraints_to_re_add: Vec<(
                     crate::frontend::api::Number,
+                    Option<crate::frontend::sketch::Point2d<crate::frontend::api::Number>>,
                     crate::frontend::sketch::ConstraintSource,
                 )> = Vec::new();
                 if let (Some(original_start_id), Some(original_end_id)) =
@@ -5142,17 +5146,22 @@ pub(crate) async fn execute_trim_operations_simple(
                         let references_end = distance.contains_point(original_end_id);
 
                         if references_start && references_end {
-                            distance_constraints_to_re_add.push((distance.distance, distance.source.clone()));
+                            distance_constraints_to_re_add.push((
+                                distance.distance,
+                                distance.label.clone(),
+                                distance.source.clone(),
+                            ));
                         }
                     }
                 }
 
                 // Re-add distance constraints
                 if let Some(original_start_id) = original_segment_start_point_id {
-                    for (distance_value, source) in distance_constraints_to_re_add {
+                    for (distance_value, label, source) in distance_constraints_to_re_add {
                         batch_constraints.push(Constraint::Distance(crate::frontend::sketch::Distance {
                             points: vec![original_start_id.into(), new_segment_end_point_id.into()],
                             distance: distance_value,
+                            label,
                             source,
                         }));
                     }

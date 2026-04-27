@@ -39,7 +39,9 @@ use crate::front::ArcCtor;
 use crate::front::CircleCtor;
 use crate::front::Freedom;
 use crate::front::LineCtor;
+use crate::front::Number;
 use crate::front::ObjectId;
+use crate::front::Point2d as ApiPoint2d;
 use crate::front::PointCtor;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::NodeRef;
@@ -2277,6 +2279,9 @@ pub enum SketchConstraintKind {
     },
     Distance {
         points: [ConstrainablePoint2dOrOrigin; 2],
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(optional)]
+        label: Option<ApiPoint2d<Number>>,
     },
     Radius {
         points: [ConstrainablePoint2d; 2],

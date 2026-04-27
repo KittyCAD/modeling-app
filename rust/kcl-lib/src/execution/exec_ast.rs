@@ -3154,7 +3154,7 @@ impl Node<BinaryExpression> {
                                 );
                             }
                         }
-                        SketchConstraintKind::Distance { points } => {
+                        SketchConstraintKind::Distance { points, label } => {
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];
@@ -3276,6 +3276,7 @@ impl Node<BinaryExpression> {
                                     distance: n.try_into().map_err(|_| {
                                         internal_err("Failed to convert distance units numeric suffix:", range)
                                     })?,
+                                    label: label.clone(),
                                     source,
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);
@@ -3622,6 +3623,7 @@ impl Node<BinaryExpression> {
                                     distance: n.try_into().map_err(|_| {
                                         internal_err("Failed to convert distance units numeric suffix:", range)
                                     })?,
+                                    label: None,
                                     source,
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);
@@ -3738,6 +3740,7 @@ impl Node<BinaryExpression> {
                                     distance: n.try_into().map_err(|_| {
                                         internal_err("Failed to convert distance units numeric suffix:", range)
                                     })?,
+                                    label: None,
                                     source,
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);

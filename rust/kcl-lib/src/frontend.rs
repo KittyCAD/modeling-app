@@ -127,6 +127,7 @@ const CIRCLE_FN: &str = "circle";
 const CIRCLE_VARIABLE: &str = "circle";
 const CIRCLE_START_PARAM: &str = "start";
 const CIRCLE_CENTER_PARAM: &str = "center";
+const LABEL_PARAM: &str = "label";
 
 const COINCIDENT_FN: &str = "coincident";
 const DIAMETER_FN: &str = "diameter";
@@ -2972,6 +2973,14 @@ impl FrontendState {
             }
         };
 
+        let arguments = match &distance.label {
+            Some(label) => vec![ast::LabeledArg {
+                label: Some(ast::Identifier::new(LABEL_PARAM)),
+                arg: to_ast_point2d_number(label).map_err(|err| KclError::refactor(err.to_string()))?,
+            }],
+            None => Default::default(),
+        };
+
         // Create the distance() call.
         let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(DISTANCE_FN)),
@@ -2982,7 +2991,7 @@ impl FrontendState {
                     non_code_meta: Default::default(),
                 },
             )))),
-            arguments: Default::default(),
+            arguments,
             digest: None,
             non_code_meta: Default::default(),
         })));
@@ -5320,6 +5329,23 @@ pub(crate) fn to_ast_point2d(point: &Point2d<Expr>) -> anyhow::Result<ast::Expr>
         pre_comments: Default::default(),
         comment_start: Default::default(),
     })))
+}
+
+fn to_ast_point2d_number(point: &Point2d<Number>) -> anyhow::Result<ast::Expr> {
+    Ok(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+        ast::ArrayExpression {
+            elements: vec![
+                ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
+                    point.x,
+                )?)))),
+                ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
+                    point.y,
+                )?)))),
+            ],
+            non_code_meta: Default::default(),
+            digest: None,
+        },
+    ))))
 }
 
 fn to_source_expr(expr: &Expr) -> anyhow::Result<ast::Expr> {
@@ -8222,6 +8248,7 @@ sketch(on = XY) {
                 value: 2.0,
                 units: NumericSuffix::Mm,
             },
+            label: None,
             source: Default::default(),
         });
         let (src_delta, scene_delta) = frontend
@@ -8247,6 +8274,79 @@ sketch(on = XY) {
         );
 
         ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_distance_two_points_with_label() {
+        let initial_source = "\
+sketch(on = XY) {
+  point(at = [var 1, var 2])
+  point(at = [var 3, var 4])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point0_id = *sketch.segments.first().unwrap();
+        let point1_id = *sketch.segments.get(1).unwrap();
+
+        let label = Point2d {
+            x: Number {
+                value: 10.0,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: 11.0,
+                units: NumericSuffix::Mm,
+            },
+        };
+        let constraint = Constraint::Distance(Distance {
+            points: vec![point0_id.into(), point1_id.into()],
+            distance: Number {
+                value: 2.0,
+                units: NumericSuffix::Mm,
+            },
+            label: Some(label.clone()),
+            source: Default::default(),
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  point1 = point(at = [var 1, var 2])
+  point2 = point(at = [var 3, var 4])
+  distance([point1, point2], label = [10mm, 11mm]) == 2mm
+}
+"
+        );
+
+        let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
+        let sketch = expect_sketch(sketch_object);
+        let constraint_object = scene_delta.new_graph.objects.get(sketch.constraints[0].0).unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("Expected constraint object");
+        };
+        let Constraint::Distance(distance) = constraint else {
+            panic!("Expected distance constraint");
+        };
+        assert_eq!(distance.label, Some(label));
+
         mock_ctx.close().await;
     }
 
@@ -8280,6 +8380,7 @@ sketch(on = XY) {
                 value: 2.0,
                 units: NumericSuffix::Mm,
             },
+            label: None,
             source: Default::default(),
         });
         let (src_delta, scene_delta) = frontend
@@ -8406,6 +8507,7 @@ sketch(on = XY) {
                 value: 2.0,
                 units: NumericSuffix::Mm,
             },
+            label: None,
             source: Default::default(),
         });
         let (src_delta, scene_delta) = frontend
