@@ -2785,9 +2785,13 @@ impl FrontendState {
             let mut new_ast = self.program.ast.clone();
             for (var_range, value) in &outcome.var_solutions {
                 let rounded = value.round(3);
-                mutate_ast_node_by_source_range(
+                let source_ref = SourceRef::Simple {
+                    range: *var_range,
+                    node_path: None,
+                };
+                mutate_ast_node_by_source_ref(
                     &mut new_ast,
-                    *var_range,
+                    &source_ref,
                     AstMutateCommand::EditVarInitialValue { value: rounded },
                 )
                 .map_err(|err| KclErrorWithOutputs::from_error_outcome(err, outcome.clone()))?;
@@ -4187,12 +4191,7 @@ impl FrontendState {
             .objects
             .get(object_id.0)
             .ok_or_else(|| KclError::refactor(format!("Object not found: {object_id:?}")))?;
-        match &sketch_object.source {
-            SourceRef::Simple { range, node_path: _ } => mutate_ast_node_by_source_range(ast, *range, command),
-            SourceRef::BackTrace { .. } => {
-                Err(KclError::refactor("BackTrace source refs not supported yet".to_owned()))
-            }
-        }
+        mutate_ast_node_by_source_ref(ast, &sketch_object.source, command)
     }
 }
 
@@ -4225,21 +4224,6 @@ fn expect_single_node_ref(object: &Object) -> Result<AstNodeRef, KclError> {
                 range: range.0,
                 node_path: range.1.clone(),
             })
-        }
-    }
-}
-
-fn expect_single_source_range(source_ref: &SourceRef) -> Result<SourceRange, KclError> {
-    match source_ref {
-        SourceRef::Simple { range, node_path: _ } => Ok(*range),
-        SourceRef::BackTrace { ranges } => {
-            if ranges.len() != 1 {
-                return Err(KclError::refactor(format!(
-                    "Expected single source range in SourceRef, got {}; ranges={ranges:#?}",
-                    ranges.len(),
-                )));
-            }
-            Ok(ranges[0].0)
         }
     }
 }
@@ -4662,11 +4646,10 @@ fn get_or_insert_ast_reference(
     prefix: &str,
     property: Option<&str>,
 ) -> Result<ast::Expr, KclError> {
-    let range = expect_single_source_range(source_ref)?;
     let command = AstMutateCommand::AddVariableDeclaration {
         prefix: prefix.to_owned(),
     };
-    let (_, ret) = mutate_ast_node_by_source_range(ast, range, command)?;
+    let (_, ret) = mutate_ast_node_by_source_ref(ast, source_ref, command)?;
     let AstMutateCommandReturn::Name(var_name) = ret else {
         return Err(KclError::refactor(
             "Expected variable name returned from AddVariableDeclaration".to_owned(),
@@ -4681,20 +4664,34 @@ fn get_or_insert_ast_reference(
     Ok(create_member_expression(var_expr, property))
 }
 
-fn mutate_ast_node_by_source_range(
+fn mutate_ast_node_by_source_ref(
     ast: &mut ast::Node<ast::Program>,
-    source_range: SourceRange,
+    source_ref: &SourceRef,
     command: AstMutateCommand,
 ) -> Result<(AstNodeRef, AstMutateCommandReturn), KclError> {
+    let (source_range, node_path) = match source_ref {
+        SourceRef::Simple { range, node_path } => (*range, node_path.clone()),
+        SourceRef::BackTrace { ranges } => {
+            let [range] = ranges.as_slice() else {
+                return Err(KclError::refactor(format!(
+                    "Expected single source ref, got {}; ranges={ranges:#?}",
+                    ranges.len(),
+                )));
+            };
+            (range.0, range.1.clone())
+        }
+    };
     let mut context = AstMutateContext {
         source_range,
-        node_path: None,
+        node_path,
         command,
         defined_names_stack: Default::default(),
     };
     let control = dfs_mut(ast, &mut context);
     match control {
-        ControlFlow::Continue(_) => Err(KclError::refactor(format!("Source range not found: {source_range:?}"))),
+        ControlFlow::Continue(_) => Err(KclError::refactor(
+            "Could not find the KCL source for this edit. Try reloading the app, or update from code.".to_owned(),
+        )),
         ControlFlow::Break(break_value) => break_value,
     }
 }
@@ -4878,7 +4875,8 @@ fn filter_and_process(
     // target; its init expression will.
     if let NodeMut::VariableDeclaration(var_decl) = &node {
         let expr_range = SourceRange::from(&var_decl.declaration.init);
-        if expr_range == ctx.source_range {
+        let expr_node_path = var_decl.declaration.init.node_path();
+        if source_ref_matches(ctx, expr_range, expr_node_path) {
             if let AstMutateCommand::AddVariableDeclaration { .. } = &ctx.command {
                 // We found the variable declaration expression. It doesn't need
                 // to be added.
@@ -4897,6 +4895,30 @@ fn filter_and_process(
             }
         }
     }
+    // Similar thing with expression statement. We need to look at the
+    // expression inside it.
+    if let NodeMut::ExpressionStatement(expr_stmt) = &node {
+        let expr_range = SourceRange::from(&expr_stmt.expression);
+        let expr_node_path = expr_stmt.expression.node_path();
+        if source_ref_matches(ctx, expr_range, expr_node_path) {
+            if let AstMutateCommand::AddVariableDeclaration { .. } = &ctx.command {
+                // We found the node wrapped in an expression statement. Process
+                // the statement.
+                let Ok(node_ref) = AstNodeRef::try_from(&node) else {
+                    return TraversalReturn::new_continue(());
+                };
+                return process(ctx, node).map_break(|result| result.map(|cmd_return| (node_ref, cmd_return)));
+            }
+            if let AstMutateCommand::DeleteNode = &ctx.command {
+                // We found the node wrapped in an expression statement. Delete
+                // the whole statement.
+                return TraversalReturn {
+                    mutate_body_item: MutateBodyItem::Delete,
+                    control_flow: ControlFlow::Break(Ok((AstNodeRef::from(&*ctx), AstMutateCommandReturn::None))),
+                };
+            }
+        }
+    }
 
     if ctx.command.needs_defined_names_stack() {
         if let NodeMut::Program(program) = &node {
@@ -4906,15 +4928,22 @@ fn filter_and_process(
         }
     }
 
-    // Make sure the node matches the source range.
-    // TODO: Should we also check the NodePath?
-    if node_range != ctx.source_range {
+    // Make sure the node matches the source ref.
+    let node_path = <Option<ast::NodePath>>::try_from(&node).ok().flatten();
+    if !source_ref_matches(ctx, node_range, node_path.as_ref()) {
         return TraversalReturn::new_continue(());
     }
     let Ok(node_ref) = AstNodeRef::try_from(&node) else {
         return TraversalReturn::new_continue(());
     };
     process(ctx, node).map_break(|result| result.map(|cmd_return| (node_ref, cmd_return)))
+}
+
+fn source_ref_matches(ctx: &AstMutateContext, node_range: SourceRange, node_path: Option<&ast::NodePath>) -> bool {
+    match &ctx.node_path {
+        Some(target) => Some(target) == node_path,
+        None => node_range == ctx.source_range,
+    }
 }
 
 fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstMutateCommandReturn, KclError>> {
@@ -6876,6 +6905,47 @@ bad = missing_name
 
         ctx.close().await;
         mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_sketch_after_comment() {
+        let initial_source = "sketch001 = sketch(on = XZ) {
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_engine(
+            std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            Default::default(),
+        );
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let original_source = sketch_object.source.clone();
+
+        let commented_source = "// test 1
+sketch001 = sketch(on = XZ) {
+}
+";
+        let commented_program = Program::parse(commented_source).unwrap().0.unwrap();
+        frontend.engine_execute(&ctx, commented_program).await.unwrap();
+
+        let cached_sketch_object = &frontend.scene_graph.objects[sketch_id.0];
+        assert_eq!(cached_sketch_object.source, original_source);
+
+        let (src_delta, scene_delta) = frontend.delete_sketch(&ctx, version, sketch_id).await.unwrap();
+        assert!(
+            !src_delta.text.contains("sketch001"),
+            "sketch was not deleted: {}",
+            src_delta.text
+        );
+        assert_eq!(scene_delta.new_graph.objects.len(), 0);
+
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
