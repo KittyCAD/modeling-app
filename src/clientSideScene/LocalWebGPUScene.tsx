@@ -11,7 +11,6 @@ import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import { useEffect, useRef } from 'react'
 import {
-  Box3,
   Color,
   DoubleSide,
   Mesh,
@@ -30,6 +29,7 @@ const WEBGPU_PORT_POC_STORAGE_KEY = 'webgpu-port-poc'
 const WEBGPU_PORT_DEBUG_STORAGE_KEY = 'webgpu-port-debug'
 const WEBGPU_PORT_LOG_PREFIX = '[WEBGPU_POC]'
 const GLTF_METERS_TO_ENGINE_MILLIMETERS = 1000
+const ENGINE_MILLIMETERS_TO_GLTF_METERS = 1 / GLTF_METERS_TO_ENGINE_MILLIMETERS
 const HOVER_COLOR = new Color('#5dd6ff')
 const SELECTED_COLOR = new Color('#ff9d3f')
 
@@ -198,6 +198,13 @@ function toPoint3d(vector: Vector3) {
   }
 }
 
+function convertEngineWorldVectorToGltfWorld(
+  vector: Vector3,
+  scale = 1
+): Vector3 {
+  return new Vector3(vector.x * scale, vector.z * scale, -vector.y * scale)
+}
+
 function scalePoint3d(point: GetSketchModePlane['origin'], scale: number) {
   return {
     x: point.x * scale,
@@ -312,19 +319,19 @@ function deriveSketchModePlaneFromMesh(
     first
       .fromBufferAttribute(
         positionAttribute,
-        referencedVertexIndices[referencedIndex]!
+        referencedVertexIndices[referencedIndex]
       )
       .applyMatrix4(mesh.matrixWorld)
     second
       .fromBufferAttribute(
         positionAttribute,
-        referencedVertexIndices[referencedIndex + 1]!
+        referencedVertexIndices[referencedIndex + 1]
       )
       .applyMatrix4(mesh.matrixWorld)
     third
       .fromBufferAttribute(
         positionAttribute,
-        referencedVertexIndices[referencedIndex + 2]!
+        referencedVertexIndices[referencedIndex + 2]
       )
       .applyMatrix4(mesh.matrixWorld)
 
@@ -705,70 +712,82 @@ export const LocalWebGPUScene = ({
       requestRender?.()
     }
 
-    const fitCameraToLoadedModel = (root: Object3D) => {
-      const bounds = new Box3().setFromObject(root)
-      if (bounds.isEmpty()) {
+    const convertedSharedPosition = new Vector3()
+    const convertedSharedTarget = new Vector3()
+    const convertedSharedUp = new Vector3()
+    const syncPreviewCameraFromShared = () => {
+      const sharedCamera = kclManager.sceneInfra.camControls.camera
+      const sharedTarget = kclManager.sceneInfra.camControls.target
+      if (!previewCamera) {
         return
       }
 
-      const center = bounds.getCenter(new Vector3())
-      const size = bounds.getSize(new Vector3())
-      const maxDimension = Math.max(size.x, size.y, size.z, 0.001)
+      convertedSharedPosition.copy(
+        convertEngineWorldVectorToGltfWorld(
+          sharedCamera.position,
+          ENGINE_MILLIMETERS_TO_GLTF_METERS
+        )
+      )
+      convertedSharedTarget.copy(
+        convertEngineWorldVectorToGltfWorld(
+          sharedTarget,
+          ENGINE_MILLIMETERS_TO_GLTF_METERS
+        )
+      )
+      convertedSharedUp.copy(
+        convertEngineWorldVectorToGltfWorld(sharedCamera.up)
+      )
 
-      const camera = previewCamera
-      const target = previewTarget
-      if (!camera) {
-        return
+      if (
+        sharedCamera instanceof PerspectiveCamera &&
+        !(previewCamera instanceof PerspectiveCamera)
+      ) {
+        previewCamera = new PerspectiveCamera()
+      } else if (
+        sharedCamera instanceof OrthographicCamera &&
+        !(previewCamera instanceof OrthographicCamera)
+      ) {
+        previewCamera = new OrthographicCamera()
       }
-      const viewDirection = camera.position.clone().sub(target)
-      if (viewDirection.lengthSq() < 1e-6) {
-        viewDirection.set(1, -1, 1)
-      }
-      viewDirection.normalize()
 
-      if (camera instanceof PerspectiveCamera) {
-        const verticalFov = (camera.fov * Math.PI) / 180
-        const horizontalFov =
-          2 * Math.atan(Math.tan(verticalFov / 2) * camera.aspect)
-        const distanceForHeight = maxDimension / (2 * Math.tan(verticalFov / 2))
-        const distanceForWidth =
-          maxDimension / (2 * Math.tan(horizontalFov / 2))
-        const distance = Math.max(distanceForHeight, distanceForWidth) * 1.4
+      previewCamera.layers.mask = sharedCamera.layers.mask
+      previewCamera.position.copy(convertedSharedPosition)
+      previewCamera.up.copy(convertedSharedUp)
+      previewCamera.near = Math.max(
+        sharedCamera.near * ENGINE_MILLIMETERS_TO_GLTF_METERS,
+        0.0001
+      )
+      previewCamera.far = Math.max(
+        sharedCamera.far * ENGINE_MILLIMETERS_TO_GLTF_METERS,
+        previewCamera.near + 0.0001
+      )
+      previewTarget.copy(convertedSharedTarget)
 
-        target.copy(center)
-        camera.position.copy(center).add(viewDirection.multiplyScalar(distance))
-        camera.near = Math.max(distance / 100, 0.01)
-        camera.far = Math.max(distance * 100, maxDimension * 100)
-        camera.lookAt(center)
-        camera.updateProjectionMatrix()
-      } else if (camera instanceof OrthographicCamera) {
-        const aspect =
+      if (
+        sharedCamera instanceof PerspectiveCamera &&
+        previewCamera instanceof PerspectiveCamera
+      ) {
+        previewCamera.fov = sharedCamera.fov
+        previewCamera.aspect =
           Math.max(container.clientWidth, 1) /
           Math.max(container.clientHeight, 1)
-        const halfHeight = maxDimension * 0.75
-        const halfWidth = halfHeight * aspect
-        const distance = maxDimension * 2
-
-        target.copy(center)
-        camera.position.copy(center).add(viewDirection.multiplyScalar(distance))
-        camera.left = -halfWidth
-        camera.right = halfWidth
-        camera.top = halfHeight
-        camera.bottom = -halfHeight
-        camera.zoom = 1
-        camera.near = Math.max(distance / 100, 0.01)
-        camera.far = Math.max(distance * 100, maxDimension * 100)
-        camera.lookAt(center)
-        camera.updateProjectionMatrix()
+      } else if (
+        sharedCamera instanceof OrthographicCamera &&
+        previewCamera instanceof OrthographicCamera
+      ) {
+        previewCamera.left =
+          sharedCamera.left * ENGINE_MILLIMETERS_TO_GLTF_METERS
+        previewCamera.right =
+          sharedCamera.right * ENGINE_MILLIMETERS_TO_GLTF_METERS
+        previewCamera.top = sharedCamera.top * ENGINE_MILLIMETERS_TO_GLTF_METERS
+        previewCamera.bottom =
+          sharedCamera.bottom * ENGINE_MILLIMETERS_TO_GLTF_METERS
+        previewCamera.zoom = sharedCamera.zoom
       }
 
-      camera.updateMatrixWorld(true)
-      logLocalWebGpuPreview('camera fit applied to loaded model', {
-        cameraPosition: camera.position.toArray(),
-        cameraType: camera.type,
-        target: target.toArray(),
-        zoom: 'zoom' in camera ? camera.zoom : undefined,
-      })
+      previewCamera.lookAt(previewTarget)
+      previewCamera.updateProjectionMatrix()
+      previewCamera.updateMatrixWorld(true)
       requestRender?.()
     }
 
@@ -1035,6 +1054,10 @@ export const LocalWebGPUScene = ({
         layerMask: previewCamera.layers.mask,
       })
       const loader = new GLTFLoader()
+      const unregisterSharedCameraListener =
+        kclManager.sceneInfra.camControls.cameraChange.add(() => {
+          syncPreviewCameraFromShared()
+        })
 
       requestRender = () => {
         if (disposed || !previewCamera || animationFrameId !== -1) {
@@ -1061,6 +1084,8 @@ export const LocalWebGPUScene = ({
         if (previewCamera instanceof PerspectiveCamera) {
           previewCamera.aspect = width / height
           previewCamera.updateProjectionMatrix()
+        } else {
+          syncPreviewCameraFromShared()
         }
         requestRender?.()
       }
@@ -1400,6 +1425,7 @@ export const LocalWebGPUScene = ({
         })
 
       resize()
+      syncPreviewCameraFromShared()
       resizeObserver = new ResizeObserver(resize)
       resizeObserver.observe(container)
 
@@ -1533,13 +1559,13 @@ export const LocalWebGPUScene = ({
               setVisible(false)
               return
             }
-            fitCameraToLoadedModel(currentModel)
             logLocalWebGpuPreview('gltf parsed and added to scene', {
               refreshId,
               childCount: currentModel.children.length,
               meshCount: loadedModelStats.meshCount,
               hasParserJson: Boolean(parserState?.json),
             })
+            syncPreviewCameraFromShared()
             setVisible(true)
             requestRender?.()
           },
@@ -1579,6 +1605,7 @@ export const LocalWebGPUScene = ({
         previousSelectedMeshes.forEach(applyMeshState)
         clearModel()
         resizeObserver?.disconnect()
+        unregisterSharedCameraListener()
         if (animationFrameId !== -1) {
           cancelAnimationFrame(animationFrameId)
         }
