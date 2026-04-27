@@ -838,6 +838,7 @@ const prepareToEditHole: PrepareToEditCallback = async ({
     counterboreDiameter,
     countersinkAngle,
     countersinkDiameter,
+    countersinkHeadClearance,
   } = rType
 
   // 3. Assemble the default argument values for the command,
@@ -851,6 +852,7 @@ const prepareToEditHole: PrepareToEditCallback = async ({
     counterboreDiameter,
     countersinkAngle,
     countersinkDiameter,
+    countersinkHeadClearance,
     holeBody,
     blindDiameter,
     blindDepth,

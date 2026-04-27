@@ -191,9 +191,6 @@ export const MAKE_TOAST_MESSAGES = {
   SUCCESS: 'Started print successfully.',
 }
 
-/** Toast id for the app auto-updater toast */
-export const AUTO_UPDATER_TOAST_ID = 'auto-updater-toast'
-
 /** Toast id for the insert foreign part toast */
 export const INSERT_FOREIGN_TOAST_ID = 'insert-foreign-toast'
 

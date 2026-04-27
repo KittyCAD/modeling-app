@@ -2580,9 +2580,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.188"
+version = "0.2.189"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "48546fb3c3ac68d7d586d1e446ffe015778412c7a60640a2f50ead8f63234ffe"
+checksum = "03349615e4d1455f337228f4eff9982090c7cd8aa01b23d9964bdc2a2db15ad3"
 dependencies = [
  "anyhow",
  "bon",
@@ -2609,9 +2609,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds-macros"
-version = "0.1.12"
+version = "0.1.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fb9bb1a594541b878adc1c8dcb821328774bf7aa09b65b104a206b1291a5235c"
+checksum = "eb4ba190f74f6d32f4607ecac4bdebd4a935d4943b8ca8369305e6e7a59b5976"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -2621,9 +2621,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
-version = "0.1.13"
+version = "0.1.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fdb4ee23cc996aa2dca7584d410e8826e08161e1ac4335bb646d5ede33f37cb3"
+checksum = "743b6533d1848de67e3455a28614a2b7896807ab0d3358ccd3ea1863de3c4e6b"
 dependencies = [
  "proc-macro2",
  "quote",
