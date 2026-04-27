@@ -1132,6 +1132,11 @@ export const coincidentConstraintTool = createConstraintToolMachine({
   toolId: 'Coincident constraint tool',
 })
 
+export const midpointConstraintTool = createConstraintToolMachine({
+  toolName: 'midpointConstraintTool',
+  toolId: 'Midpoint constraint tool',
+})
+
 export const tangentConstraintTool = createConstraintToolMachine({
   toolName: 'tangentConstraintTool',
   toolId: 'Tangent constraint tool',
@@ -1169,6 +1174,7 @@ export const fixedConstraintTool = createConstraintToolMachine({
 
 export const constraintToolMachines = Object.freeze({
   coincidentConstraintTool,
+  midpointConstraintTool,
   tangentConstraintTool,
   parallelConstraintTool,
   equalLengthConstraintTool,
