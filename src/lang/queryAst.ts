@@ -1202,35 +1202,56 @@ export function getVariableExprsFromSelection(
           deepPath: PathToNode
         }
       | undefined
-    if (lastChildLookup && s.artifact) {
-      const children = findAllChildrenAndOrderByPlaceInCode(
-        s.artifact,
-        artifactGraph
-      )
-      const lastChildVariable = getLastVariable(
-        children,
-        ast,
-        wasmInstance,
-        artifactTypeFilter,
-        nodeToEdit
-      )
-      if (!lastChildVariable) {
-        continue
-      }
 
-      variable = lastChildVariable.variableDeclaration
-    } else {
+    if (
+      lastChildLookup &&
+      s.artifact &&
+      artifactTypeFilter?.includes(s.artifact.type) &&
+      'consumed' in s.artifact &&
+      !s.artifact.consumed
+    ) {
       const directLookup = getNodeFromPath<VariableDeclaration>(
         ast,
         s.codeRef.pathToNode,
         wasmInstance,
         'VariableDeclaration'
       )
-      if (err(directLookup)) {
-        continue
+      if (!err(directLookup)) {
+        variable = directLookup
       }
+    }
 
-      variable = directLookup
+    if (!variable) {
+      if (lastChildLookup && s.artifact) {
+        const children = findAllChildrenAndOrderByPlaceInCode(
+          s.artifact,
+          artifactGraph
+        )
+        const lastChildVariable = getLastVariable(
+          children,
+          ast,
+          wasmInstance,
+          artifactTypeFilter,
+          nodeToEdit
+        )
+        if (!lastChildVariable) {
+          continue
+        }
+
+        variable = lastChildVariable.variableDeclaration
+      } else {
+        const directLookup = getNodeFromPath<VariableDeclaration>(
+          ast,
+          s.codeRef.pathToNode,
+          wasmInstance,
+          'VariableDeclaration'
+        )
+        if (err(directLookup)) {
+          continue
+        }
+
+        variable = directLookup
+      }
     }
 
     if (variable.node.type === 'VariableDeclaration') {
