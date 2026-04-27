@@ -22,7 +22,6 @@ import {
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
-import { isPlaywright } from '@src/lib/isPlaywright'
 import {
   createSettings,
   type Setting,
@@ -787,8 +786,10 @@ export async function loadAndValidateSettings(
     configurationToSettingsPayload(appSettingsPayload)
   )
 
-  settingsNext.modeling.useSketchSolveMode.default =
-    !isPlaywright() && !(await userHasFeature('classic_sketch_mode', false))
+  settingsNext.modeling.useSketchSolveMode.default = !(await userHasFeature(
+    'classic_sketch_mode',
+    false
+  ))
 
   // Load the project settings if they exist
   if (projectPath) {

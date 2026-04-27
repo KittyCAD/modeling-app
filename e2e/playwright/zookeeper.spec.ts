@@ -34,7 +34,9 @@ test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
 
       await toolbar.closePane(DefaultLayoutPaneID.TTC)
       await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain('startSketchOn')
+      await expect(editor.codeContent).toContainText(
+        /startSketchOn|sketch\(on =/
+      )
       await editor.expectEditor.toContain('extrude')
       await editor.expectEditor.toContain('10')
       await scene.settled(cmdBar)
