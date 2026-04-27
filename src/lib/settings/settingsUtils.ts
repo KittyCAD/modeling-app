@@ -786,11 +786,6 @@ export async function loadAndValidateSettings(
     configurationToSettingsPayload(appSettingsPayload)
   )
 
-  settingsNext.modeling.useSketchSolveMode.default = !(await userHasFeature(
-    'classic_sketch_mode',
-    false
-  ))
-
   // Load the project settings if they exist
   if (projectPath) {
     let projectSettings = await readProjectSettingsFile(
