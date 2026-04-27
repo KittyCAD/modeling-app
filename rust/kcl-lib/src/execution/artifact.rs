@@ -102,6 +102,10 @@ pub struct CompositeSolid {
     /// Whether this artifact has been used in a subsequent operation
     pub consumed: bool,
     pub sub_type: CompositeSolidSubType,
+    /// Index of this output in the expression result, for operations that
+    /// return multiple selectable bodies from one KCL variable.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub output_index: Option<usize>,
     /// Constituent solids of the composite solid.
     pub solid_ids: Vec<ArtifactId>,
     /// Tool solids used for asymmetric operations like subtract.
@@ -119,6 +123,7 @@ pub struct CompositeSolid {
 pub enum CompositeSolidSubType {
     Intersect,
     Subtract,
+    Split,
     Union,
 }
 
@@ -628,6 +633,7 @@ impl CompositeSolid {
         merge_ids(&mut self.solid_ids, new.solid_ids);
         merge_ids(&mut self.tool_ids, new.tool_ids);
         merge_opt_id(&mut self.composite_solid_id, new.composite_solid_id);
+        self.output_index = new.output_index;
         self.consumed = new.consumed;
 
         None
@@ -1821,6 +1827,7 @@ fn artifacts_to_update(
                 id,
                 consumed: false,
                 sub_type: CompositeSolidSubType::Union,
+                output_index: None,
                 solid_ids: cmd.object_ids.iter().map(|id| id.into()).collect(),
                 tool_ids: vec![],
                 code_ref,
@@ -2026,6 +2033,7 @@ fn artifacts_to_update(
                     id: *solid_id,
                     consumed: false,
                     sub_type,
+                    output_index: None,
                     solid_ids: solid_ids.clone(),
                     tool_ids: tool_ids.clone(),
                     code_ref: code_ref.clone(),
@@ -2079,6 +2087,104 @@ fn artifacts_to_update(
 
                                 // We want to mark any sweeps of the path used in this operation
                                 // as consumed. The path itself is already consumed by sweeping
+                                if let Some(sweep_id) = new_path.sweep_id
+                                    && let Some(Artifact::Sweep(sweep)) = artifacts.get(&sweep_id)
+                                {
+                                    let mut new_sweep = sweep.clone();
+                                    new_sweep.consumed = true;
+                                    return_arr.push(Artifact::Sweep(new_sweep));
+                                }
+
+                                return_arr.push(Artifact::Path(new_path));
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+            }
+
+            return Ok(return_arr);
+        }
+        ModelingCmd::BooleanImprint(imprint) => {
+            let solid_ids = imprint
+                .body_ids
+                .iter()
+                .copied()
+                .map(ArtifactId::new)
+                .collect::<Vec<_>>();
+            let tool_ids = imprint
+                .tool_ids
+                .as_ref()
+                .map(|ids| ids.iter().copied().map(ArtifactId::new).collect::<Vec<_>>())
+                .unwrap_or_default();
+
+            let mut new_solid_ids = vec![id];
+            let not_cmd_id = move |solid_id: &ArtifactId| *solid_id != id;
+            if let Some(OkModelingCmdResponse::BooleanImprint(imprint)) = response {
+                imprint
+                    .extra_solid_ids
+                    .iter()
+                    .copied()
+                    .map(ArtifactId::new)
+                    .filter(not_cmd_id)
+                    .for_each(|id| new_solid_ids.push(id));
+            }
+
+            let mut return_arr = Vec::new();
+
+            for (output_index, solid_id) in new_solid_ids.iter().enumerate() {
+                return_arr.push(Artifact::CompositeSolid(CompositeSolid {
+                    id: *solid_id,
+                    consumed: false,
+                    sub_type: CompositeSolidSubType::Split,
+                    output_index: Some(output_index),
+                    solid_ids: solid_ids.clone(),
+                    tool_ids: tool_ids.clone(),
+                    code_ref: code_ref.clone(),
+                    composite_solid_id: None,
+                }));
+
+                for input_id in &solid_ids {
+                    if let Some(artifact) = artifacts.get(input_id) {
+                        match artifact {
+                            Artifact::CompositeSolid(comp) => {
+                                let mut new_comp = comp.clone();
+                                new_comp.composite_solid_id = Some(*solid_id);
+                                new_comp.consumed = true;
+                                return_arr.push(Artifact::CompositeSolid(new_comp));
+                            }
+                            Artifact::Path(path) => {
+                                let mut new_path = path.clone();
+                                new_path.composite_solid_id = Some(*solid_id);
+
+                                if let Some(sweep_id) = new_path.sweep_id
+                                    && let Some(Artifact::Sweep(sweep)) = artifacts.get(&sweep_id)
+                                {
+                                    let mut new_sweep = sweep.clone();
+                                    new_sweep.consumed = true;
+                                    return_arr.push(Artifact::Sweep(new_sweep));
+                                }
+
+                                return_arr.push(Artifact::Path(new_path));
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+
+                for tool_id in &tool_ids {
+                    if let Some(artifact) = artifacts.get(tool_id) {
+                        match artifact {
+                            Artifact::CompositeSolid(comp) => {
+                                let mut new_comp = comp.clone();
+                                new_comp.composite_solid_id = Some(*solid_id);
+                                new_comp.consumed = true;
+                                return_arr.push(Artifact::CompositeSolid(new_comp));
+                            }
+                            Artifact::Path(path) => {
+                                let mut new_path = path.clone();
+                                new_path.composite_solid_id = Some(*solid_id);
+
                                 if let Some(sweep_id) = new_path.sweep_id
                                     && let Some(Artifact::Sweep(sweep)) = artifacts.get(&sweep_id)
                                 {
