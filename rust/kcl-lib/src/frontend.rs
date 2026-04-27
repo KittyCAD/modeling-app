@@ -4640,16 +4640,10 @@ fn mutate_ast_node_by_source_ref(
     };
     let control = dfs_mut(ast, &mut context);
     match control {
-        ControlFlow::Continue(_) => {
-            let node_path = context
-                .node_path
-                .as_ref()
-                .map(|path| format!("; node_path={path:?}"))
-                .unwrap_or_default();
-            Err(KclError::refactor(format!(
-                "Source range not found: {source_range:?}{node_path}"
-            )))
-        }
+        ControlFlow::Continue(_) => Err(KclError::refactor(
+            "Could not find the KCL source for this edit. Try reloading the app, or delete it directly from code."
+                .to_owned(),
+        )),
         ControlFlow::Break(break_value) => break_value,
     }
 }
