@@ -351,9 +351,10 @@ openSketch = sketch(on = XY) {
 
     await homePage.goToModelingScene()
 
-    const [_clickOpenPath] = scene.makeMouseHelpers(0.65, 0.5, {
-      format: 'ratio',
-    })
+    const [_clickOpenPath, moveToOpenPath, dblClickOpenPath] =
+      scene.makeMouseHelpers(0.65, 0.5, {
+        format: 'ratio',
+      })
 
     const [_clickCircle, moveToCircle, dblClickCircle] = scene.makeMouseHelpers(
       0.63,
@@ -378,17 +379,16 @@ openSketch = sketch(on = XY) {
       await editor.closePane()
     })
 
-    // TODO: this triggers a rust panic, not sure why
-    // await test.step(`Double-click on the open sketch`, async () => {
-    //   await moveToOpenPath()
-    //   await dblClickOpenPath()
-    //   await expect(toolbar.exitSketchBtn).toBeVisible()
-    //   await expect(toolbar.exitSketchBtn).toBeEnabled()
-    //   await editor.openPane()
-    //   await editor.expectActiveLinesToBe([
-    //     'openSketch = sketch(on = XY) {',
-    //   ])
-    // })
+    await test.step(`Double-click on the open sketch`, async () => {
+      await moveToOpenPath()
+      await dblClickOpenPath()
+      await expect(toolbar.exitSketchBtn).toBeVisible()
+      await expect(toolbar.exitSketchBtn).toBeEnabled()
+      await editor.openPane()
+      await editor.expectActiveLinesToBe([
+        'arc3 = arc(start = [var 10mm, var 0mm], end = [var 5mm, var 5mm], center = [var 5mm, var 0mm])',
+      ])
+    })
   })
 
   test(`Shift-click to select and deselect faces`, async ({
