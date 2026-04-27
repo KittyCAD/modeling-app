@@ -3837,17 +3837,17 @@ fn is_callee_sketch_block(callee: &Name) -> bool {
     callee.name.name == SketchBlock::CALLEE_NAME && !callee.abs_path && callee.path.is_empty()
 }
 
-fn sketch_block_arg_shorthand_label(arg: &Expr) -> Option<Node<Identifier>> {
+fn is_sketch_block_arg_shorthand(arg: &Expr) -> bool {
     let Expr::Name(name) = arg else {
-        return None;
+        return false;
     };
     if name.abs_path || !name.path.is_empty() {
-        return None;
+        return false;
     }
     if name.name.name != crate::execution::SKETCH_BLOCK_PARAM_ON {
-        return None;
+        return false;
     }
-    Some(name.name.clone())
+    true
 }
 
 fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
@@ -3876,11 +3876,11 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
                 },
         } = fn_call;
         if let Some(unlabeled) = unlabeled {
-            if let Some(label) = sketch_block_arg_shorthand_label(&unlabeled) {
+            if is_sketch_block_arg_shorthand(&unlabeled) {
                 arguments.insert(
                     0,
                     LabeledArg {
-                        label: Some(label),
+                        label: None,
                         arg: unlabeled,
                     },
                 );
@@ -4287,7 +4287,7 @@ e
         };
         assert_eq!(sketch_block.arguments.len(), 1);
         let arg = &sketch_block.arguments[0];
-        assert_eq!(arg.label.as_ref().unwrap().name, "on");
+        assert!(arg.label.is_none());
         assert_eq!(arg.arg.ident_name(), Some("on"));
     }
 
