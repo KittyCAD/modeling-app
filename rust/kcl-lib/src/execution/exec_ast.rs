@@ -2224,7 +2224,7 @@ impl Node<SketchVar> {
         };
         let id = sketch_block_state.next_sketch_var_id();
         let sketch_var = if let Some(initial) = &self.initial {
-            KclValue::from_sketch_var_literal(initial, id, exec_state)
+            KclValue::from_sketch_var_literal(initial, id, self.node_path.clone(), exec_state)
         } else {
             let metadata = Metadata {
                 source_range: SourceRange::from(self),
@@ -3785,6 +3785,8 @@ impl Node<BinaryExpression> {
                                             id: origin_x_id,
                                             initial_value: 0.0,
                                             ty: sketch_var_ty,
+                                            // Synthesized origin coord for distance(); not source-backed.
+                                            node_path: None,
                                             meta: vec![],
                                         }),
                                     });
@@ -3794,6 +3796,8 @@ impl Node<BinaryExpression> {
                                             id: origin_y_id,
                                             initial_value: 0.0,
                                             ty: sketch_var_ty,
+                                            // Synthesized origin coord for distance(); not source-backed.
+                                            node_path: None,
                                             meta: vec![],
                                         }),
                                     });
@@ -4715,6 +4719,8 @@ impl Node<BinaryExpression> {
                                             id: radius_id,
                                             initial_value: radius_initial_value,
                                             ty: sketch_var_ty,
+                                            // Synthesized hidden radius for circle constraint; not source-backed.
+                                            node_path: None,
                                             meta: vec![],
                                         }),
                                     });

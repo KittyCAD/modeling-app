@@ -5947,15 +5947,17 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
             }
         }
         AstMutateCommand::EditVarInitialValue { value } => {
-            if let NodeMut::NumericLiteral(numeric_literal) = node {
-                // Update the initial value.
+            // We target the SketchVar itself (matched by NodePath) rather than
+            // the inner NumericLiteral so we can also write back into vars that
+            // were declared without an initial value (e.g. bare `var`).
+            if let NodeMut::SketchVar(sketch_var) = node {
                 let Ok(literal) = to_source_number(*value) else {
                     return TraversalReturn::new_break(Err(KclError::refactor(format!(
                         "Could not convert number to AST literal: {:?}",
                         *value
                     ))));
                 };
-                *numeric_literal = ast::Node::no_src(literal);
+                sketch_var.initial = Some(Box::new(ast::Node::no_src(literal)));
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
