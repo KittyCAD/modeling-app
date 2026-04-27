@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
-import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
+import type { OnboardingStatus } from '@src/lib/onboardingPaths'
 import { type MlCopilotMode } from '@kittycad/lib'
 
 import { NIL as uuidNIL } from 'uuid'
@@ -192,7 +192,22 @@ export function createSettings() {
       zookeeperMode: new Setting<MlCopilotMode>({
         defaultValue: DEFAULT_ML_COPILOT_MODE,
         validate: (v) => v === 'fast' || v === 'thoughtful',
-        hideOnPlatform: 'both', // this setting is managed by the Zookeeper pane
+        description: 'The default reasoning mode for Zookeeper.',
+        commandConfig: {
+          inputType: 'options',
+          defaultValueFromContext: (context) =>
+            context.app.zookeeperMode.current,
+          options: (cmdContext, settingsContext) =>
+            (['fast', 'thoughtful'] as const).map((v) => ({
+              name: capitaliseFC(v),
+              value: v,
+              isCurrent:
+                settingsContext.app.zookeeperMode.shouldShowCurrentLabel(
+                  cmdContext.argumentsToSubmit.level as SettingsLevel,
+                  v
+                ),
+            })),
+        },
       }),
       /**
        * Stream resource saving behavior toggle
@@ -684,7 +699,11 @@ export function createSettings() {
       }),
     },
     /**
-     * Settings that affect the behavior of project management.
+     * App-owned project-management settings.
+     *
+     * These stay in TypeScript and round-trip through opaque TOML sections so
+     * they can move into a future project-management extension without
+     * expanding the Rust/CLI schema.
      */
     projects: {
       /**
@@ -722,7 +741,10 @@ export function createSettings() {
       // }),
     },
     /**
-     * Settings that affect the behavior of the command bar.
+     * App-owned command bar settings.
+     *
+     * Keep these TS-only so the command palette can be bundled or extended
+     * independently of the Rust settings schema.
      */
     commandBar: {
       /**

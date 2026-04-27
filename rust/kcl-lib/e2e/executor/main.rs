@@ -2111,3 +2111,11 @@ async fn kcl_test_exporting_step_file() {
         );
     }
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_gear_with_units() {
+    // This tests export like how we do it in cli and kcl.py.
+    let code = kcl_input!("gear_units");
+
+    let (_, _, _files) = execute_and_export_step(code, None).await.unwrap();
+}

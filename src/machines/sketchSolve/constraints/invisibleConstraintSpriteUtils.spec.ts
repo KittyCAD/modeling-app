@@ -114,6 +114,72 @@ describe('invisibleConstraintSpriteUtils', () => {
     expect(anchor?.toArray()).toEqual([10, 0, 0])
   })
 
+  it('anchors and highlights midpoint constraints on both the point and line', () => {
+    const midpointPoint = createPointApiObject({ id: 1, x: 5, y: 0 })
+    const lineStart = createPointApiObject({ id: 2, x: 0, y: 0 })
+    const lineEnd = createPointApiObject({ id: 3, x: 10, y: 0 })
+    const line = createLineApiObject({ id: 10, start: 2, end: 3 })
+    const midpoint = createConstraintApiObject(20, {
+      type: 'Midpoint',
+      point: 1,
+      segment: 10,
+    })
+    const objects = createObjectsArray([
+      midpointPoint,
+      lineStart,
+      lineEnd,
+      line,
+      midpoint,
+    ])
+
+    expect(
+      getInvisibleConstraintAnchor(
+        midpoint as InvisibleConstraintObject,
+        objects
+      )?.toArray()
+    ).toEqual([5, 0, 0])
+    expect(
+      findSegmentsForInvisibleConstraint(
+        midpoint as InvisibleConstraintObject,
+        objects
+      )
+    ).toEqual([1, 10])
+    expect(findInvisibleConstraintsForSegment(midpointPoint, objects)).toEqual([
+      20,
+    ])
+    expect(findInvisibleConstraintsForSegment(line, objects)).toEqual([20])
+  })
+
+  it('anchors midpoint constraints on arcs at the half-sweep point', () => {
+    const midpointPoint = createPointApiObject({ id: 1, x: 0, y: 1 })
+    const center = createPointApiObject({ id: 2, x: 0, y: 0 })
+    const start = createPointApiObject({ id: 3, x: 1, y: 0 })
+    const end = createPointApiObject({ id: 4, x: -1, y: 0 })
+    const arc = createArcApiObject({ id: 10, center: 2, start: 3, end: 4 })
+    const midpoint = createConstraintApiObject(20, {
+      type: 'Midpoint',
+      point: 1,
+      segment: 10,
+    })
+    const objects = createObjectsArray([
+      midpointPoint,
+      center,
+      start,
+      end,
+      arc,
+      midpoint,
+    ])
+
+    const anchor = getInvisibleConstraintAnchor(
+      midpoint as InvisibleConstraintObject,
+      objects
+    )
+    expect(anchor?.x).toBeCloseTo(0)
+    expect(anchor?.y).toBeCloseTo(1)
+    expect(anchor?.z).toBeCloseTo(0)
+    expect(findInvisibleConstraintsForSegment(arc, objects)).toEqual([20])
+  })
+
   it('finds the invisible constraints related to a hovered line', () => {
     const start = createPointApiObject({ id: 1, x: 0, y: 0 })
     const end = createPointApiObject({ id: 2, x: 10, y: 0 })

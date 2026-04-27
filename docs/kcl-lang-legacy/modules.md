@@ -15,13 +15,11 @@ to other modules.
 export fn increment(@x) {
   return x + 1
 }
-
 ```
 
 Other files in the project can now import functions that have been exported.
 This makes them available to use in another file.
 
-<!-- transpile failed -->
 ```norun
 // main.kcl
 import increment from "util.kcl"
@@ -43,19 +41,16 @@ export fn increment(@x) {
 export fn decrement(@x) {
   return x - 1
 }
-
 ```
 
 When importing, you can import multiple functions at once.
 
-<!-- transpile failed -->
 ```norun
 import increment, decrement from "util.kcl"
 ```
 
 Imported symbols can be renamed for convenience or to avoid name collisions.
 
-<!-- transpile failed -->
 ```norun
 import increment as inc, decrement as dec from "util.kcl"
 ```
@@ -76,24 +71,17 @@ There are two common patterns for re‑using geometry:
 ### Parametric function example
 
 ```kcl
-fn cube(height) {
-  sketch001 = sketch(on = XY) {
-    line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 3mm])
-    coincident([line1.start, ORIGIN])
-    line2 = line(start = [var 0mm, var 3mm], end = [var 3mm, var 3mm])
-    coincident([line1.end, line2.start])
-    line3 = line(start = [var 3mm, var 3mm], end = [var 3mm, var 0mm])
-    coincident([line2.end, line3.start])
-    line4 = line(start = [var 3mm, var 0mm], end = [var 0mm, var 0mm])
-    coincident([line3.end, line4.start])
-    coincident([line4.end, line1.start])
-  }
-  region001 = region(point = [2mm, 2mm], sketch = sketch001)
-  return extrude(region001, length = height)
+fn cube(center) {
+  return startSketchOn(XY)
+    |> startProfile(at = [center[0] - 10, center[1] - 10])
+    |> line(endAbsolute = [center[0] + 10, center[1] - 10])
+    |> line(endAbsolute = [center[0] + 10, center[1] + 10])
+    |> line(endAbsolute = [center[0] - 10, center[1] + 10])
+    |> close()
+    |> extrude(length = 10)
 }
 
-myCube = cube(height = 2)
-
+myCube = cube(center = [0, 0])
 ```
 
 *Pros*
@@ -107,17 +95,12 @@ myCube = cube(height = 2)
 ### `clone` example
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
-sketch003 = sketch(on = -XZ) {
-  circle1 = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
-}
-region001 = region(segments = [sketch003.circle1])
-sketch001 = extrude(region001, length = 5)
+sketch001 = startSketchOn(-XZ)
+  |> circle(center = [0, 0], radius = 10)
+  |> extrude(length = 5) 
   |> appearance(color = "#ff0000", metalness = 90, roughness = 90)
 
-sketch002 = clone(sketch001) // ✓ instant copy
-
+sketch002 = clone(sketch001)  // ✓ instant copy
 ```
 
 *Pros*
@@ -144,7 +127,6 @@ Under the hood, the Design Studio runs **every module in parallel** where it can
 
 If you shoe‑horn everything into `main.kcl`, each statement runs sequentially:
 
-<!-- transpile failed -->
 ```norun
 import "big.step" as gizmo  // blocks main while reading
 
@@ -153,7 +135,6 @@ gizmo |> translate(x=50)    // blocks again while waiting for render
 
 Split `gizmo` into its own file and the read/render can overlap whatever else `main.kcl` is doing.
 
-<!-- transpile failed -->
 ```norun
 // gizmo.kcl                   (worker A)
 import "big.step"
@@ -172,17 +153,13 @@ Defining a function inside a module is instantaneous – we just record the byte
 
 ```norun
 // util.kcl
-export fn makeBolt(size) {
-  /* … expensive CAD … */
-}
-
+export fn makeBolt(size) { /* … expensive CAD … */ }
 ```
 
 If `main.kcl` waits until the very end to call `makeBolt`, *none* of that work was parallelised – you’ve pushed the cost back onto the serial tail of your script.
 
 **Better:** call it early or move the invocation into another module.
 
-<!-- transpile failed -->
 ```norun
 // bolt_instance.kcl
 import makeBolt from "util.kcl"
@@ -199,7 +176,6 @@ Now `main.kcl` can `import "bolt_instance.kcl" as bolt` and get the result that 
 You can also import the whole module. This is useful if you want to use the
 result of a module as a variable, like a part.
 
-<!-- transpile failed -->
 ```norun
 import "cube.kcl"
 cube
@@ -221,7 +197,6 @@ by whatever imports it.
 
 So for example, this is allowed:
 
-<!-- transpile failed -->
 ```norun
 ... a bunch of code to create cube and cube2 ...
 
@@ -230,7 +205,6 @@ myUnion = union([cube, cube2])
 
 You can also do this:
 
-<!-- transpile failed -->
 ```norun
 ... a bunch of code to create cube and cube2 ...
 
@@ -241,7 +215,6 @@ Either way, the last line will return the union of the two objects.
 
 Or what you could do instead is:
 
-<!-- transpile failed -->
 ```norun
 ... a bunch of code to create cube and cube2 ...
 
@@ -259,7 +232,6 @@ as a variable by the file that imports it.
 The name of the file or subdirectory is used as the name of the variable within the importing program.
 If you want to use a different name, you can do so by using the `as` keyword:
 
-<!-- transpile failed -->
 ```kcl,norun
 import "cube.kcl"                // Introduces a new variable called `cube`.
 import "cube.kcl" as block       // Introduces a new variable called `block`.
@@ -281,7 +253,6 @@ it will only be rendered once.
 If you want to have multiple instances of the same object, you can use the
 [`clone`](/docs/kcl/clone) function. This will render a new instance of the object in memory.
 
-<!-- transpile failed -->
 ```norun
 import cube from "cube.kcl"
 
@@ -298,7 +269,6 @@ separate objects in memory, and can be manipulated independently.
 
 Here is an example with a file from another CAD system:
 
-<!-- transpile failed -->
 ```kcl
 import "tests/inputs/cube.step"
 
