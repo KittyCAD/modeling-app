@@ -899,6 +899,128 @@ chamfer001 = chamfer(
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add a blend call with edge bounds', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        twoSurfacesForBlend,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const segments = [...artifactGraph.values()].filter(
+        (a) => a.type === 'segment'
+      )
+      expect(segments.length).toBe(2)
+      const edges = createSelectionFromArtifacts(segments, artifactGraph)
+
+      const firstEdgeLowerBound = (await stringToKclExpression(
+        '0.2',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const firstEdgeUpperBound = (await stringToKclExpression(
+        '0.8',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const secondEdgeLowerBound = (await stringToKclExpression(
+        '0.1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const secondEdgeUpperBound = (await stringToKclExpression(
+        '0.9',
+        rustContextInThisFile
+      )) as KclCommandValue
+
+      const result = addBlend({
+        ast,
+        artifactGraph,
+        edges,
+        firstEdgeLowerBound,
+        firstEdgeUpperBound,
+        secondEdgeLowerBound,
+        secondEdgeUpperBound,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+      expect(newCode).toContain('blend001 = blend([')
+      expect(newCode.match(/getBoundedEdge\(/g)?.length).toBe(2)
+      expect(newCode).toContain('lowerBound = 0.2')
+      expect(newCode).toContain('upperBound = 0.8')
+      expect(newCode).toContain('lowerBound = 0.1')
+      expect(newCode).toContain('upperBound = 0.9')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should edit a blend call with edge bounds', async () => {
+      const code = `${sketchSolveSurfacesForBlend}
+blend001 = blend([
+  getBoundedEdge(extrude001, edge = extrude001.sketch.tags.line1),
+  getBoundedEdge(extrude002, edge = extrude002.sketch.tags.line1)
+])
+`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const nodeToEdit: PathToNode = [
+        ['body', ''],
+        [ast.body.length - 1, 'index'],
+        ['declaration', 'VariableDeclaration'],
+        ['init', 'VariableDeclarator'],
+      ]
+
+      const firstEdgeLowerBound = (await stringToKclExpression(
+        '0.25',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const firstEdgeUpperBound = (await stringToKclExpression(
+        '0.75',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const secondEdgeLowerBound = (await stringToKclExpression(
+        '0.35',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const secondEdgeUpperBound = (await stringToKclExpression(
+        '0.65',
+        rustContextInThisFile
+      )) as KclCommandValue
+
+      const result = addBlend({
+        ast,
+        artifactGraph,
+        firstEdgeLowerBound,
+        firstEdgeUpperBound,
+        secondEdgeLowerBound,
+        secondEdgeUpperBound,
+        nodeToEdit,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+      expect(newCode).toContain(
+        'getBoundedEdge(extrude001, edge = extrude001.sketch.tags.line1, lowerBound = 0.25, upperBound = 0.75)'
+      )
+      expect(newCode).toContain(
+        'getBoundedEdge(extrude002, edge = extrude002.sketch.tags.line1, lowerBound = 0.35, upperBound = 0.65)'
+      )
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add a blend call from exactly two primitive edges', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         twoSurfacesForBlend,

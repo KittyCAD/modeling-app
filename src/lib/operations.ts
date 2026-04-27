@@ -28,8 +28,10 @@ import {
   getCodeRefsByArtifactId,
 } from '@src/lang/std/artifactGraph'
 import {
+  assertParse,
   type Program,
   type ArtifactGraph,
+  type CallExpressionKw,
   pathToNodeFromRustNodePath,
 } from '@src/lang/wasm'
 import type {
@@ -44,7 +46,10 @@ import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import type RustContext from '@src/lib/rustContext'
 import { err } from '@src/lib/trap'
 import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
-import { retrieveEdgeSelectionsFromOpArgs } from '@src/lang/modifyAst/edges'
+import {
+  retrieveBlendEdgeSelectionsFromBoundedEdgeExprs,
+  retrieveEdgeSelectionsFromOpArgs,
+} from '@src/lang/modifyAst/edges'
 import {
   type KclPreludeBodyType,
   KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
@@ -689,6 +694,134 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({
     secondLength,
     angle,
     tag,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+/**
+ * Gather up the argument values for the Blend command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditBlend: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  code,
+  artifactGraph,
+}) => {
+  const baseCommand = {
+    name: 'Blend',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const wasmInstance = await rustContext.wasmInstancePromise
+  let ast: Node<Program>
+  try {
+    ast = assertParse(code, wasmInstance)
+  } catch {
+    return { reason: 'Failed to parse code for blend edit flow' }
+  }
+
+  const blendCall = getNodeFromPath<CallExpressionKw>(
+    ast,
+    pathToNodeFromRustNodePath(operation.nodePath),
+    wasmInstance,
+    'CallExpressionKw'
+  )
+  if (err(blendCall)) {
+    return { reason: blendCall.message }
+  }
+
+  const edgeExprs = blendCall.node.unlabeled
+  if (
+    edgeExprs?.type !== 'ArrayExpression' ||
+    edgeExprs.elements.length !== 2
+  ) {
+    return { reason: 'Blend edit flow requires exactly two edge expressions.' }
+  }
+  if (
+    edgeExprs.elements.some(
+      (edgeExpr) =>
+        edgeExpr.type !== 'CallExpressionKw' ||
+        edgeExpr.callee.name.name !== 'getBoundedEdge'
+    )
+  ) {
+    return {
+      reason: 'Blend edit flow only supports getBoundedEdge edge expressions.',
+    }
+  }
+
+  const boundedEdgeCalls = edgeExprs.elements as [
+    Node<CallExpressionKw>,
+    Node<CallExpressionKw>,
+  ]
+  const edges = retrieveBlendEdgeSelectionsFromBoundedEdgeExprs(
+    boundedEdgeCalls,
+    artifactGraph,
+    ast,
+    wasmInstance
+  )
+  if (err(edges)) {
+    return { reason: edges.message }
+  }
+
+  const extractBlendBoundArg = async (
+    edgeIndex: 0 | 1,
+    kclArgName: 'lowerBound' | 'upperBound',
+    commandArgName: string,
+    defaultValue: string
+  ) => {
+    const arg = boundedEdgeCalls[edgeIndex].arguments.find(
+      (arg) => arg.label?.name === kclArgName
+    )
+    const valueText = arg
+      ? code.slice(toUtf16(arg.arg.start, code), toUtf16(arg.arg.end, code))
+      : defaultValue
+    const result = await stringToKclExpression(valueText, rustContext)
+    if (err(result) || 'errors' in result) {
+      return {
+        error: `Failed to parse ${commandArgName} argument as KCL expression`,
+      }
+    }
+    return result
+  }
+
+  const optionalArgs = await Promise.all([
+    extractBlendBoundArg(0, 'lowerBound', 'firstEdgeLowerBound', '0'),
+    extractBlendBoundArg(0, 'upperBound', 'firstEdgeUpperBound', '1'),
+    extractBlendBoundArg(1, 'lowerBound', 'secondEdgeLowerBound', '0'),
+    extractBlendBoundArg(1, 'upperBound', 'secondEdgeUpperBound', '1'),
+  ])
+
+  const errorArg = optionalArgs.find((arg) => 'error' in arg)
+  if (errorArg && 'error' in errorArg) {
+    return { reason: errorArg.error }
+  }
+
+  const [
+    firstEdgeLowerBound,
+    firstEdgeUpperBound,
+    secondEdgeLowerBound,
+    secondEdgeUpperBound,
+  ] = optionalArgs as [
+    KclCommandValue,
+    KclCommandValue,
+    KclCommandValue,
+    KclCommandValue,
+  ]
+
+  const argDefaultValues: ModelingCommandSchema['Blend'] = {
+    edges,
+    firstEdgeLowerBound,
+    firstEdgeUpperBound,
+    secondEdgeLowerBound,
+    secondEdgeUpperBound,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -2005,6 +2138,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   blend: {
     label: 'Blend',
     icon: 'blend',
+    prepareToEdit: prepareToEditBlend,
   },
   chamfer: {
     label: 'Chamfer',

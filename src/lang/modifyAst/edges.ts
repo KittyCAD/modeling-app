@@ -20,6 +20,8 @@ import {
 import {
   getNodeFromPath,
   getRegionTagExprFromSegmentId,
+  getSketchSegmentName,
+  getVariableNameFromNodePath,
   getVariableExprsFromSelection,
   locateVariableWithCallOrPipe,
   valueOrVariable,
@@ -47,6 +49,7 @@ import {
   getCodeRefsByArtifactId,
   getSweepArtifactFromSelection,
 } from '@src/lang/std/artifactGraph'
+import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import { getBodySelectionFromPrimitiveParentEntityId } from '@src/lang/modifyAst/faces'
 import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
@@ -263,45 +266,127 @@ export function addBlend({
   ast,
   artifactGraph,
   edges,
+  firstEdgeLowerBound,
+  firstEdgeUpperBound,
+  secondEdgeLowerBound,
+  secondEdgeUpperBound,
+  nodeToEdit,
   wasmInstance,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
-  edges: Selections
+  edges?: Selections
+  firstEdgeLowerBound?: KclCommandValue
+  firstEdgeUpperBound?: KclCommandValue
+  secondEdgeLowerBound?: KclCommandValue
+  secondEdgeUpperBound?: KclCommandValue
+  nodeToEdit?: PathToNode
   wasmInstance: ModuleType
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  // 1. Clone the ast so we can freely edit it
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
   let modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
+  const bounds = [
+    [firstEdgeLowerBound, firstEdgeUpperBound],
+    [secondEdgeLowerBound, secondEdgeUpperBound],
+  ] as const
+  bounds.flat().forEach((bound) => {
+    if (bound && 'variableName' in bound && bound.variableName) {
+      insertVariableAndOffsetPathToNode(bound, modifiedAst, mNodeToEdit)
+    }
+  })
 
   // 2. Validate the edge selection
-  const selectedEdges = getEdgeSelections(edges)
-  if (selectedEdges.length !== 2) {
-    return new Error('Blend requires exactly two selected edges.')
+  const edgeExprs: Expr[] = []
+  if (mNodeToEdit) {
+    const blendCall = getNodeFromPath<CallExpressionKw>(
+      modifiedAst,
+      mNodeToEdit,
+      wasmInstance,
+      'CallExpressionKw'
+    )
+    if (err(blendCall)) {
+      return blendCall
+    }
+    if (
+      blendCall.node.unlabeled?.type !== 'ArrayExpression' ||
+      blendCall.node.unlabeled.elements.length !== 2
+    ) {
+      return new Error('Blend requires exactly two selected edges.')
+    }
+    edgeExprs.push(
+      ...blendCall.node.unlabeled.elements.map((edgeExpr) =>
+        structuredClone(edgeExpr)
+      )
+    )
+  } else {
+    if (!edges) {
+      return new Error('Blend requires exactly two selected edges.')
+    }
+
+    const selectedEdges = getEdgeSelections(edges)
+    if (selectedEdges.length !== 2) {
+      return new Error('Blend requires exactly two selected edges.')
+    }
+
+    for (const edgeSelection of selectedEdges) {
+      const edgeResult = buildEdgeExpr(
+        edgeSelection,
+        modifiedAst,
+        artifactGraph,
+        wasmInstance
+      )
+      if (err(edgeResult)) {
+        return edgeResult
+      }
+      modifiedAst = edgeResult.modifiedAst
+      edgeExprs.push(edgeResult.edgeExpr)
+    }
   }
 
-  // 3. Build two edges and use them in blend([edge1, edge2])
-  const edgeExprs: Expr[] = []
-  for (const edgeSelection of selectedEdges) {
-    const edgeResult = buildEdgeExpr(
-      edgeSelection,
-      modifiedAst,
-      artifactGraph,
-      wasmInstance
+  const edgeExprsWithBounds: Expr[] = []
+  for (const [index, edgeExpr] of edgeExprs.entries()) {
+    const [lowerBound, upperBound] = bounds[index]
+    if (!lowerBound && !upperBound) {
+      edgeExprsWithBounds.push(edgeExpr)
+      continue
+    }
+    if (
+      edgeExpr.type !== 'CallExpressionKw' ||
+      edgeExpr.callee.name.name !== 'getBoundedEdge'
+    ) {
+      return new Error(
+        'Blend bounds can only be applied to getBoundedEdge expressions.'
+      )
+    }
+    const boundedEdgeExpr = structuredClone(edgeExpr)
+    boundedEdgeExpr.arguments = boundedEdgeExpr.arguments.filter(
+      (arg) =>
+        arg.label?.name !== 'lowerBound' && arg.label?.name !== 'upperBound'
     )
-    if (err(edgeResult)) return edgeResult
-    modifiedAst = edgeResult.modifiedAst
-    edgeExprs.push(edgeResult.edgeExpr)
+    if (lowerBound) {
+      boundedEdgeExpr.arguments.push(
+        createLabeledArg('lowerBound', valueOrVariable(lowerBound))
+      )
+    }
+    if (upperBound) {
+      boundedEdgeExpr.arguments.push(
+        createLabeledArg('upperBound', valueOrVariable(upperBound))
+      )
+    }
+    edgeExprsWithBounds.push(boundedEdgeExpr)
   }
 
   const call = createCallExpressionStdLibKw(
     'blend',
-    createArrayExpression(edgeExprs),
+    createArrayExpression(edgeExprsWithBounds),
     []
   )
 
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
+    pathToEdit: mNodeToEdit,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.BLEND,
     wasmInstance,
   })
@@ -916,6 +1001,201 @@ export function retrieveEdgeSelectionsFromOpArgs(
   }
 
   return { graphSelections, otherSelections: [] }
+}
+
+export function retrieveBlendEdgeSelectionsFromBoundedEdgeExprs(
+  boundedEdgeCalls: Node<CallExpressionKw>[],
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  wasmInstance: ModuleType
+): Error | Selections {
+  const graphSelections: Selection[] = []
+  const otherSelections: EnginePrimitiveSelection[] = []
+  for (const boundedEdgeCall of boundedEdgeCalls) {
+    const sourceSweep = getSweepFromExpr(
+      boundedEdgeCall.unlabeled,
+      artifactGraph,
+      ast,
+      wasmInstance
+    )
+    const edgeArg = boundedEdgeCall.arguments.find(
+      (arg) => arg.label?.name === 'edge'
+    )?.arg
+    if (!edgeArg) {
+      return new Error('Could not retrieve blend edge argument.')
+    }
+
+    let edgeExpr = edgeArg
+    let subType: 'opposite' | 'adjacent' | undefined
+    if (edgeArg.type === 'CallExpressionKw' && edgeArg.unlabeled) {
+      if (edgeArg.callee.name.name === 'getOppositeEdge') {
+        edgeExpr = edgeArg.unlabeled
+        subType = 'opposite'
+      } else if (edgeArg.callee.name.name === 'getNextAdjacentEdge') {
+        edgeExpr = edgeArg.unlabeled
+        subType = 'adjacent'
+      }
+    }
+
+    if (edgeExpr.type === 'Name') {
+      const primitiveSelection = getPrimitiveEdgeSelectionFromName(
+        edgeExpr.name.name,
+        artifactGraph,
+        ast,
+        wasmInstance
+      )
+      if (primitiveSelection) {
+        otherSelections.push(primitiveSelection)
+        continue
+      }
+    }
+
+    const edgeName =
+      edgeExpr.type === 'Name'
+        ? edgeExpr.name.name
+        : edgeExpr.type === 'MemberExpression' &&
+            edgeExpr.property.type === 'Name'
+          ? edgeExpr.property.name.name
+          : null
+    if (!edgeName) {
+      return new Error('Could not retrieve blend edge selection.')
+    }
+
+    const segment = [...artifactGraph.values()].find(
+      (artifact): artifact is Extract<Artifact, { type: 'segment' }> =>
+        artifact.type === 'segment' &&
+        (!sourceSweep || artifact.pathId === sourceSweep.pathId) &&
+        segmentMatchesName(artifact, edgeName, artifactGraph, ast, wasmInstance)
+    )
+    if (!segment) {
+      return new Error('Could not retrieve blend edge selection.')
+    }
+
+    const artifact:
+      | Extract<Artifact, { type: 'segment' | 'sweepEdge' }>
+      | undefined =
+      subType && sourceSweep
+        ? [...artifactGraph.values()].find(
+            (artifact): artifact is Extract<Artifact, { type: 'sweepEdge' }> =>
+              artifact.type === 'sweepEdge' &&
+              artifact.segId === segment.id &&
+              artifact.sweepId === sourceSweep.id &&
+              artifact.subType === subType
+          )
+        : segment
+    if (!artifact) {
+      return new Error('Could not retrieve blend edge selection.')
+    }
+
+    const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
+    if (!codeRefs?.length) {
+      return new Error('Could not retrieve blend edge selection.')
+    }
+
+    graphSelections.push({ artifact, codeRef: codeRefs[0] })
+  }
+
+  return { graphSelections, otherSelections }
+}
+
+function getSweepFromExpr(
+  expr: Expr | null,
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  wasmInstance: ModuleType
+): Extract<Artifact, { type: 'sweep' }> | undefined {
+  if (expr?.type !== 'Name') {
+    return undefined
+  }
+  return [...artifactGraph.values()].find(
+    (artifact): artifact is Extract<Artifact, { type: 'sweep' }> =>
+      artifact.type === 'sweep' &&
+      getVariableNameFromNodePath(
+        artifact.codeRef.pathToNode,
+        ast,
+        wasmInstance
+      ) === expr.name.name
+  )
+}
+
+function segmentMatchesName(
+  segment: Extract<Artifact, { type: 'segment' }>,
+  name: string,
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  wasmInstance: ModuleType
+): boolean {
+  if (
+    getSketchSegmentName(ast, segment.id, artifactGraph, wasmInstance) === name
+  ) {
+    return true
+  }
+  if (
+    segment.originalSegId &&
+    getSketchSegmentName(
+      ast,
+      segment.originalSegId,
+      artifactGraph,
+      wasmInstance
+    ) === name
+  ) {
+    return true
+  }
+
+  const call = getNodeFromPath<CallExpressionKw>(
+    ast,
+    segment.codeRef.pathToNode,
+    wasmInstance,
+    ['CallExpressionKw']
+  )
+  return (
+    !err(call) &&
+    call.node.arguments.some(
+      (arg) => arg.arg.type === 'TagDeclarator' && arg.arg.value === name
+    )
+  )
+}
+
+function getPrimitiveEdgeSelectionFromName(
+  name: string,
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  wasmInstance: ModuleType
+): EnginePrimitiveSelection | null {
+  const declaration = getVariableDeclaration(ast, name)
+  const edgeIdCall = declaration?.declaration.init
+  if (
+    edgeIdCall?.type !== 'CallExpressionKw' ||
+    edgeIdCall.callee.name.name !== 'edgeId'
+  ) {
+    return null
+  }
+
+  const sourceSweep = getSweepFromExpr(
+    edgeIdCall.unlabeled,
+    artifactGraph,
+    ast,
+    wasmInstance
+  )
+  const indexArg = edgeIdCall.arguments.find(
+    (arg) => arg.label?.name === 'index'
+  )?.arg
+  if (
+    !sourceSweep ||
+    indexArg?.type !== 'Literal' ||
+    typeof indexArg.value === 'string' ||
+    typeof indexArg.value === 'boolean'
+  ) {
+    return null
+  }
+
+  return {
+    type: 'enginePrimitive',
+    entityId: name,
+    parentEntityId: sourceSweep.id,
+    primitiveIndex: indexArg.value.value,
+    primitiveType: 'edge',
+  }
 }
 
 // Delete Edge Treatment

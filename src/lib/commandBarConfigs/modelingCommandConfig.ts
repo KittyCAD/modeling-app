@@ -470,7 +470,12 @@ export type ModelingCommandSchema = {
     keepTools?: boolean
   }
   Blend: {
+    nodeToEdit?: PathToNode
     edges: Selections
+    firstEdgeLowerBound?: KclCommandValue
+    firstEdgeUpperBound?: KclCommandValue
+    secondEdgeLowerBound?: KclCommandValue
+    secondEdgeUpperBound?: KclCommandValue
   }
   'Join Surfaces': {
     selection: Selections
@@ -2782,6 +2787,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(execRes)) return execRes
     },
     args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
       edges: {
         inputType: 'selection',
         selectionTypes: [
@@ -2791,8 +2799,33 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           'enginePrimitiveEdge',
         ],
         multiple: true,
-        required: true,
+        required: (context) => !Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
         description: 'Note: Only straight edges are supported now.',
+      },
+      firstEdgeLowerBound: {
+        inputType: 'kcl',
+        displayName: 'First edge lower bound',
+        defaultValue: '0',
+        required: false,
+      },
+      firstEdgeUpperBound: {
+        inputType: 'kcl',
+        displayName: 'First edge upper bound',
+        defaultValue: '1',
+        required: false,
+      },
+      secondEdgeLowerBound: {
+        inputType: 'kcl',
+        displayName: 'Second edge lower bound',
+        defaultValue: '0',
+        required: false,
+      },
+      secondEdgeUpperBound: {
+        inputType: 'kcl',
+        displayName: 'Second edge upper bound',
+        defaultValue: '1',
+        required: false,
       },
     },
   },
