@@ -1,5 +1,5 @@
 export interface ModelingStateMatcher {
-  matches: (value: string) => boolean
+  matches: (...args: any[]) => boolean
 }
 
 export type MlEphantProjectReloadBehavior =
