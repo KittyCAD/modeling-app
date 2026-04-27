@@ -71,4 +71,41 @@ test.describe('Electron app header tests', { tag: '@desktop' }, () => {
     await toolbar.openFile('main.kcl')
     await expect(shareButton).toBeDisabled({ timeout: 15_000 })
   })
+
+  test('Publish button is disabled until code is valid', async ({
+    page,
+    homePage,
+    editor,
+    scene,
+    cmdBar,
+    folderSetupFn,
+  }) => {
+    const projectName = 'publish-disabled-until-code'
+    await folderSetupFn(async (dir) => {
+      const testDir = join(dir, projectName)
+      await fsp.mkdir(testDir, { recursive: true })
+    })
+
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await homePage.openProject(projectName)
+    await scene.settled(cmdBar)
+
+    const publishButton = page.getByTestId('publish-button')
+
+    await test.step('Empty KCL', async () => {
+      await expect(publishButton).toBeDisabled()
+    })
+
+    await test.step('Valid KCL', async () => {
+      await editor.replaceCode('', 'x = 42')
+      await scene.settled(cmdBar)
+      await expect(publishButton).not.toBeDisabled()
+    })
+
+    await test.step('Invalid KCL', async () => {
+      await editor.replaceCode('', '(')
+      await scene.settled(cmdBar)
+      await expect(publishButton).toBeDisabled()
+    })
+  })
 })
