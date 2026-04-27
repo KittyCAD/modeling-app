@@ -8,7 +8,6 @@ Attributes are syntax which affects the language item they annotate. In KCL they
 
 There are two kinds of attributes: named and unnamed attributes. Named attributes (e.g., `@settings`) have a name immediately after the `@` (e.g., `settings`) and affect their surrounding scope. Unnamed attributes have no name and affect the following item, e.g.,
 
-<!-- transpile failed -->
 ```kcl,norun
 @(lengthUnit = ft, coords = opengl)
 import "tests/inputs/cube.obj"

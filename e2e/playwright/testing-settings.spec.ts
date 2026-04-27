@@ -22,7 +22,7 @@ import {
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import type { UnitLength } from '@kittycad/lib/dist/types/src'
-import { uuidv4 } from '@src/lib/utils'
+import { isArray, uuidv4 } from '@src/lib/utils'
 
 const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
   const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
@@ -78,9 +78,14 @@ test.describe(
         expect(storedSettings.settings?.modeling?.mouse_controls).toBe('zoo')
         // Commenting this out because tests need this to be set to work properly.
         // expect(storedSettings.settings?.app?.project_directory).toBe('')
-        expect(storedSettings.settings?.project?.default_project_name).toBe(
-          'untitled'
-        )
+        const projectSettings = storedSettings.settings?.project
+        expect(
+          projectSettings &&
+            typeof projectSettings === 'object' &&
+            !isArray(projectSettings)
+            ? projectSettings.default_project_name
+            : undefined
+        ).toBe('untitled')
       }
     )
 

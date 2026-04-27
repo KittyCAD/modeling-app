@@ -12,8 +12,6 @@ use serde::Deserializer;
 use serde::Serialize;
 use validator::Validate;
 
-const DEFAULT_PROJECT_NAME_TEMPLATE: &str = "untitled";
-
 /// User specific settings for the app.
 /// These live in `user.toml` in the app's configuration directory.
 /// Updating the settings in the app will update this file automatically.
@@ -45,25 +43,18 @@ impl Configuration {
 #[serde(rename_all = "snake_case")]
 pub struct Settings {
     /// The settings for the Design Studio.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     #[validate(nested)]
-    pub app: AppSettings,
+    pub app: Option<AppSettings>,
     /// Settings that affect the behavior while modeling.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     #[validate(nested)]
-    pub modeling: ModelingSettings,
-    /// Settings that affect the behavior of the KCL text editor.
-    #[serde(default, skip_serializing_if = "is_default")]
-    #[validate(nested)]
-    pub text_editor: TextEditorSettings,
-    /// Settings that affect the behavior of project management.
-    #[serde(default, skip_serializing_if = "is_default")]
-    #[validate(nested)]
-    pub project: ProjectSettings,
-    /// Settings that affect the behavior of the command bar.
-    #[serde(default, skip_serializing_if = "is_default")]
-    #[validate(nested)]
-    pub command_bar: CommandBarSettings,
+    pub modeling: Option<ModelingSettings>,
+    /// Other fields that weren't recognized by our schema.
+    /// App-owned extension settings can live here without Rust understanding
+    /// their inner structure.
+    #[serde(flatten)]
+    pub other: std::collections::HashMap<String, serde_json::Value>,
 }
 
 /// Application wide settings.
@@ -72,39 +63,20 @@ pub struct Settings {
 #[serde(rename_all = "snake_case")]
 pub struct AppSettings {
     /// The settings for the appearance of the app.
-    #[serde(default, skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     #[validate(nested)]
-    pub appearance: AppearanceSettings,
-    /// The onboarding status of the app.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub onboarding_status: OnboardingStatus,
+    pub appearance: Option<AppearanceSettings>,
     /// When the user is idle, teardown the stream after some time.
     #[serde(
         default,
         deserialize_with = "deserialize_stream_idle_mode",
         alias = "streamIdleMode",
-        skip_serializing_if = "is_default"
+        skip_serializing_if = "Option::is_none"
     )]
     stream_idle_mode: Option<u32>,
-    /// Allow orbiting in sketch mode.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub allow_orbit_in_sketch_mode: bool,
-    /// Whether to show the debug panel, which lets you see various states
-    /// of the app to aid in development.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub show_debug_panel: bool,
-    /// Whether to enable Machine API discovery and printing controls on desktop.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub machine_api: bool,
-}
-
-/// Default to true.
-fn make_it_so() -> bool {
-    true
-}
-
-fn is_true(b: &bool) -> bool {
-    *b
+    /// Other fields that weren't recognized by our schema.
+    #[serde(flatten)]
+    pub other: std::collections::HashMap<String, serde_json::Value>,
 }
 
 fn deserialize_stream_idle_mode<'de, D>(deserializer: D) -> Result<Option<u32>, D::Error>
@@ -157,8 +129,11 @@ impl From<FloatOrInt> for f64 {
 #[serde(rename_all = "snake_case")]
 pub struct AppearanceSettings {
     /// The overall theme of the app.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub theme: AppTheme,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub theme: Option<AppTheme>,
+    /// Other fields that weren't recognized by our schema.
+    #[serde(flatten)]
+    pub other: std::collections::HashMap<String, serde_json::Value>,
 }
 
 /// The overall appearance of the app.
@@ -202,64 +177,79 @@ impl From<AppTheme> for kittycad::types::Color {
     }
 }
 
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
+#[serde(transparent)]
+pub struct LengthDefaultMm(pub UnitLength);
+
+impl Default for LengthDefaultMm {
+    fn default() -> Self {
+        Self(default_length_unit_millimeters())
+    }
+}
+
+impl From<LengthDefaultMm> for UnitLength {
+    fn from(val: LengthDefaultMm) -> Self {
+        val.0
+    }
+}
+
+impl From<UnitLength> for LengthDefaultMm {
+    fn from(unit: UnitLength) -> Self {
+        Self(unit)
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
+#[serde(transparent)]
+pub struct BackfaceDefault(pub String);
+
+impl Default for BackfaceDefault {
+    fn default() -> Self {
+        Self(default_backface_color())
+    }
+}
+
+impl From<BackfaceDefault> for String {
+    fn from(val: BackfaceDefault) -> Self {
+        val.0
+    }
+}
+
 /// Settings that affect the behavior while modeling.
-#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate, Default)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct ModelingSettings {
     /// The default unit to use in modeling dimensions.
-    #[serde(default = "default_length_unit_millimeters", skip_serializing_if = "is_default")]
-    pub base_unit: UnitLength,
+    /// If not given, defaults to millimeters.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub base_unit: Option<LengthDefaultMm>,
     /// The projection mode the camera should use while modeling.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub camera_projection: CameraProjectionType,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub camera_projection: Option<CameraProjectionType>,
     /// The methodology the camera should use to orbit around the model.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub camera_orbit: CameraOrbitType,
-    /// The controls for how to navigate the 3D view.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub mouse_controls: MouseControlType,
-    /// Which type of orientation gizmo to use.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub gizmo_type: GizmoType,
-    /// Toggle touch controls for 3D view navigation
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub enable_touch_controls: DefaultTrue,
-    /// Default to the experimental solver-based sketch mode for all new sketches.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub use_sketch_solve_mode: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub camera_orbit: Option<CameraOrbitType>,
     /// Highlight edges of 3D objects?
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub highlight_edges: DefaultTrue,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub highlight_edges: Option<DefaultTrue>,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub enable_ssao: DefaultTrue,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub enable_ssao: Option<DefaultTrue>,
     /// The default color to use for surface backfaces.
-    #[serde(
-        default = "default_backface_color",
-        skip_serializing_if = "is_default_backface_color"
-    )]
-    pub backface_color: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub backface_color: Option<BackfaceDefault>,
     /// Whether or not to show a scale grid in the 3D modeling view
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub show_scale_grid: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_scale_grid: Option<bool>,
     /// When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.
     /// If true, the grid cells will be fixed-size, where the width is your default length unit.
     /// If false, the grid will get larger as you zoom out, and smaller as you zoom in.
-    #[serde(default = "make_it_so", skip_serializing_if = "is_true")]
-    pub fixed_size_grid: bool,
-    /// When enabled, tools like line, rectangle, etc. will snap to the grid.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub snap_to_grid: bool,
-    /// The space between major grid lines, specified in the current unit.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub major_grid_spacing: f64,
-    /// The number of minor grid lines per major grid line.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub minor_grids_per_major: f64,
-    /// The number of snaps between minor grid lines. 1 means snapping to each minor grid line.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub snaps_per_minor: f64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub fixed_size_grid: Option<DefaultTrue>,
+    /// Other fields that weren't recognized by our schema.
+    #[serde(flatten)]
+    pub other: std::collections::HashMap<String, serde_json::Value>,
 }
 
 fn default_length_unit_millimeters() -> UnitLength {
@@ -269,33 +259,6 @@ fn default_length_unit_millimeters() -> UnitLength {
 // Also defined at src/lib/constants.ts#L333-L335
 fn default_backface_color() -> String {
     "#00D5FF".to_string()
-}
-
-fn is_default_backface_color(color: &String) -> bool {
-    *color == default_backface_color()
-}
-
-impl Default for ModelingSettings {
-    fn default() -> Self {
-        Self {
-            base_unit: UnitLength::Millimeters,
-            camera_projection: Default::default(),
-            camera_orbit: Default::default(),
-            mouse_controls: Default::default(),
-            gizmo_type: Default::default(),
-            enable_touch_controls: Default::default(),
-            use_sketch_solve_mode: Default::default(),
-            highlight_edges: Default::default(),
-            enable_ssao: Default::default(),
-            backface_color: default_backface_color(),
-            show_scale_grid: Default::default(),
-            fixed_size_grid: true,
-            snap_to_grid: Default::default(),
-            major_grid_spacing: Default::default(),
-            minor_grids_per_major: Default::default(),
-            snaps_per_minor: Default::default(),
-        }
-    }
 }
 
 #[derive(Debug, Copy, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
@@ -319,28 +282,6 @@ impl From<bool> for DefaultTrue {
     fn from(b: bool) -> Self {
         Self(b)
     }
-}
-
-/// The types of controls for how to navigate the 3D view.
-#[derive(Debug, Default, Eq, PartialEq, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Display, FromStr)]
-#[ts(export)]
-#[serde(rename_all = "snake_case")]
-#[display(style = "snake_case")]
-pub enum MouseControlType {
-    #[default]
-    #[display("zoo")]
-    #[serde(rename = "zoo")]
-    Zoo,
-    #[display("onshape")]
-    #[serde(rename = "onshape")]
-    OnShape,
-    TrackpadFriendly,
-    Solidworks,
-    Nx,
-    Creo,
-    #[display("autocad")]
-    #[serde(rename = "autocad")]
-    AutoCad,
 }
 
 /// The types of camera projection for the 3D view.
@@ -371,167 +312,6 @@ pub enum CameraOrbitType {
     Trackball,
 }
 
-/// Which type of orientation gizmo to use.
-#[derive(Debug, Default, Eq, PartialEq, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Display, FromStr)]
-#[ts(export)]
-#[serde(rename_all = "snake_case")]
-#[display(style = "snake_case")]
-pub enum GizmoType {
-    /// 3D cube gizmo
-    #[default]
-    Cube,
-    /// 3-axis gizmo
-    Axis,
-}
-
-/// Settings that affect the behavior of the KCL text editor.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
-#[serde(rename_all = "snake_case")]
-#[ts(export)]
-pub struct TextEditorSettings {
-    /// Whether to wrap text in the editor or overflow with scroll.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub text_wrapping: DefaultTrue,
-    /// Whether to make the cursor blink in the editor.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub blinking_cursor: DefaultTrue,
-}
-
-/// Same as TextEditorSettings but applies to a per-project basis.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
-#[serde(rename_all = "snake_case")]
-#[ts(export)]
-pub struct ProjectTextEditorSettings {
-    /// Whether to wrap text in the editor or overflow with scroll.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub text_wrapping: Option<bool>,
-    /// Whether to make the cursor blink in the editor.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub blinking_cursor: Option<bool>,
-}
-
-/// Settings that affect the behavior of project management.
-#[derive(Debug, Clone, Default, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
-#[serde(rename_all = "snake_case")]
-#[ts(export)]
-pub struct ProjectSettings {
-    /// The directory to save and load projects from.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub directory: std::path::PathBuf,
-    /// The default project name to use when creating a new project.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub default_project_name: ProjectNameTemplate,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
-#[ts(export)]
-#[serde(transparent)]
-pub struct ProjectNameTemplate(pub String);
-
-impl Default for ProjectNameTemplate {
-    fn default() -> Self {
-        Self(DEFAULT_PROJECT_NAME_TEMPLATE.to_string())
-    }
-}
-
-impl From<ProjectNameTemplate> for String {
-    fn from(project_name: ProjectNameTemplate) -> Self {
-        project_name.0
-    }
-}
-
-impl From<String> for ProjectNameTemplate {
-    fn from(s: String) -> Self {
-        Self(s)
-    }
-}
-
-/// Settings that affect the behavior of the command bar.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
-#[serde(rename_all = "snake_case")]
-#[ts(export)]
-pub struct CommandBarSettings {
-    /// Whether to include settings in the command bar.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub include_settings: DefaultTrue,
-}
-
-/// Same as CommandBarSettings but applies to a per-project basis.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
-#[serde(rename_all = "snake_case")]
-#[ts(export)]
-pub struct ProjectCommandBarSettings {
-    /// Whether to include settings in the command bar.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub include_settings: Option<bool>,
-}
-
-/// The types of onboarding status.
-#[derive(Debug, Default, Eq, PartialEq, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Display, FromStr)]
-#[ts(export)]
-#[serde(rename_all = "snake_case")]
-#[display(style = "snake_case")]
-pub enum OnboardingStatus {
-    /// The unset state.
-    #[serde(rename = "")]
-    #[display("")]
-    Unset,
-    /// The user has completed onboarding.
-    Completed,
-    /// The user has not completed onboarding.
-    #[default]
-    Incomplete,
-    /// The user has dismissed onboarding.
-    Dismissed,
-
-    // Desktop Routes
-    #[serde(rename = "/desktop")]
-    #[display("/desktop")]
-    DesktopWelcome,
-    #[serde(rename = "/desktop/scene")]
-    #[display("/desktop/scene")]
-    DesktopScene,
-    #[serde(rename = "/desktop/toolbar")]
-    #[display("/desktop/toolbar")]
-    DesktopToolbar,
-    #[serde(rename = "/desktop/text-to-cad")]
-    #[display("/desktop/text-to-cad")]
-    DesktopTextToCadWelcome,
-    #[serde(rename = "/desktop/text-to-cad-prompt")]
-    #[display("/desktop/text-to-cad-prompt")]
-    DesktopTextToCadPrompt,
-    #[serde(rename = "/desktop/feature-tree-pane")]
-    #[display("/desktop/feature-tree-pane")]
-    DesktopFeatureTreePane,
-    #[serde(rename = "/desktop/code-pane")]
-    #[display("/desktop/code-pane")]
-    DesktopCodePane,
-    #[serde(rename = "/desktop/project-pane")]
-    #[display("/desktop/project-pane")]
-    DesktopProjectFilesPane,
-    #[serde(rename = "/desktop/other-panes")]
-    #[display("/desktop/other-panes")]
-    DesktopOtherPanes,
-    #[serde(rename = "/desktop/prompt-to-edit")]
-    #[display("/desktop/prompt-to-edit")]
-    DesktopPromptToEditWelcome,
-    #[serde(rename = "/desktop/prompt-to-edit-prompt")]
-    #[display("/desktop/prompt-to-edit-prompt")]
-    DesktopPromptToEditPrompt,
-    #[serde(rename = "/desktop/prompt-to-edit-result")]
-    #[display("/desktop/prompt-to-edit-result")]
-    DesktopPromptToEditResult,
-    #[serde(rename = "/desktop/imports")]
-    #[display("/desktop/imports")]
-    DesktopImports,
-    #[serde(rename = "/desktop/exports")]
-    #[display("/desktop/exports")]
-    DesktopExports,
-    #[serde(rename = "/desktop/conclusion")]
-    #[display("/desktop/conclusion")]
-    DesktopConclusion,
-}
-
 fn is_default<T: Default + PartialEq>(t: &T) -> bool {
     t == &T::default()
 }
@@ -539,20 +319,15 @@ fn is_default<T: Default + PartialEq>(t: &T) -> bool {
 #[cfg(test)]
 mod tests {
     use pretty_assertions::assert_eq;
+    use serde_json::json;
 
     use super::AppSettings;
     use super::AppTheme;
     use super::AppearanceSettings;
     use super::CameraProjectionType;
-    use super::CommandBarSettings;
     use super::Configuration;
     use super::ModelingSettings;
-    use super::MouseControlType;
-    use super::OnboardingStatus;
-    use super::ProjectNameTemplate;
-    use super::ProjectSettings;
     use super::Settings;
-    use super::TextEditorSettings;
     use super::UnitLength;
     use super::default_backface_color;
 
@@ -562,7 +337,17 @@ mod tests {
 
         let parsed = toml::from_str::<Configuration>(empty_settings_file).unwrap();
         assert_eq!(parsed, Configuration::default());
-        assert_eq!(parsed.settings.modeling.backface_color, default_backface_color());
+        assert_eq!(
+            parsed
+                .clone()
+                .settings
+                .modeling
+                .unwrap_or_default()
+                .backface_color
+                .unwrap_or_default()
+                .0,
+            default_backface_color()
+        );
 
         // Write the file back out.
         let serialized = toml::to_string(&parsed).unwrap();
@@ -570,69 +355,26 @@ mod tests {
 
         let parsed = Configuration::parse_and_validate(empty_settings_file).unwrap();
         assert_eq!(parsed, Configuration::default());
-        assert_eq!(parsed.settings.modeling.backface_color, default_backface_color());
+        assert_eq!(
+            parsed
+                .settings
+                .modeling
+                .unwrap_or_default()
+                .backface_color
+                .unwrap_or_default()
+                .0,
+            default_backface_color()
+        );
     }
 
     #[test]
     fn test_settings_parse_basic() {
         let settings_file = r#"[settings.app]
-default_project_name = "untitled"
-directory = ""
 onboarding_status = "dismissed"
-
-  [settings.app.appearance]
-  theme = "dark"
-
-[settings.modeling]
-enable_ssao = false
-base_unit = "in"
-mouse_controls = "zoo"
-camera_projection = "perspective"
-
-[settings.project]
-default_project_name = "untitled"
-directory = ""
-
-[settings.text_editor]
-text_wrapping = true"#;
-
-        let expected = Configuration {
-            settings: Settings {
-                app: AppSettings {
-                    onboarding_status: OnboardingStatus::Dismissed,
-                    appearance: AppearanceSettings { theme: AppTheme::Dark },
-                    ..Default::default()
-                },
-                modeling: ModelingSettings {
-                    enable_ssao: false.into(),
-                    base_unit: UnitLength::Inches,
-                    mouse_controls: MouseControlType::Zoo,
-                    camera_projection: CameraProjectionType::Perspective,
-                    fixed_size_grid: true,
-                    ..Default::default()
-                },
-                project: ProjectSettings {
-                    default_project_name: ProjectNameTemplate("untitled".to_string()),
-                    directory: "".into(),
-                },
-                text_editor: TextEditorSettings {
-                    text_wrapping: true.into(),
-                    ..Default::default()
-                },
-                command_bar: CommandBarSettings {
-                    include_settings: true.into(),
-                },
-            },
-        };
-        let parsed = toml::from_str::<Configuration>(settings_file).unwrap();
-        assert_eq!(parsed, expected);
-
-        // Write the file back out.
-        let serialized = toml::to_string(&parsed).unwrap();
-        assert_eq!(
-            serialized,
-            r#"[settings.app]
-onboarding_status = "dismissed"
+allow_orbit_in_sketch_mode = true
+show_debug_panel = true
+machine_api = true
+foo = "bar"
 
 [settings.app.appearance]
 theme = "dark"
@@ -640,9 +382,111 @@ theme = "dark"
 [settings.modeling]
 base_unit = "in"
 camera_projection = "perspective"
+mouse_controls = "zoo"
+gizmo_type = "axis"
+enable_touch_controls = false
+use_sketch_solve_mode = true
 enable_ssao = false
-"#
-        );
+snap_to_grid = true
+major_grid_spacing = 2.5
+minor_grids_per_major = 5
+snaps_per_minor = 3
+
+[settings.project]
+directory = ""
+default_project_name = "untitled"
+
+[settings.command_bar]
+include_settings = false
+
+[settings.text_editor]
+text_wrapping = true
+"#;
+
+        let expected = Configuration {
+            settings: Settings {
+                app: Some(AppSettings {
+                    appearance: Some(AppearanceSettings {
+                        theme: Some(AppTheme::Dark),
+                        other: Default::default(),
+                    }),
+                    other: std::collections::HashMap::from([
+                        ("allow_orbit_in_sketch_mode".to_owned(), true.into()),
+                        ("foo".to_owned(), "bar".into()),
+                        ("machine_api".to_owned(), true.into()),
+                        ("onboarding_status".to_owned(), "dismissed".into()),
+                        ("show_debug_panel".to_owned(), true.into()),
+                    ]),
+                    ..Default::default()
+                }),
+                modeling: Some(ModelingSettings {
+                    enable_ssao: Some(false.into()),
+                    base_unit: Some(From::from(UnitLength::Inches)),
+                    camera_projection: Some(CameraProjectionType::Perspective),
+                    fixed_size_grid: None,
+                    other: std::collections::HashMap::from([
+                        ("enable_touch_controls".to_owned(), false.into()),
+                        ("gizmo_type".to_owned(), "axis".into()),
+                        ("major_grid_spacing".to_owned(), json!(2.5)),
+                        ("minor_grids_per_major".to_owned(), json!(5)),
+                        ("mouse_controls".to_owned(), "zoo".into()),
+                        ("snap_to_grid".to_owned(), true.into()),
+                        ("snaps_per_minor".to_owned(), json!(3)),
+                        ("use_sketch_solve_mode".to_owned(), true.into()),
+                    ]),
+                    ..Default::default()
+                }),
+                other: std::collections::HashMap::from([
+                    (
+                        "command_bar".to_owned(),
+                        json!({
+                            "include_settings": false,
+                        }),
+                    ),
+                    (
+                        "project".to_owned(),
+                        json!({
+                            "default_project_name": "untitled",
+                            "directory": "",
+                        }),
+                    ),
+                    (
+                        "text_editor".to_owned(),
+                        json!({
+                            "text_wrapping": true,
+                        }),
+                    ),
+                ]),
+            },
+        };
+        let parsed = toml::from_str::<Configuration>(settings_file).unwrap();
+        assert_eq!(parsed, expected);
+
+        let serialized = toml::to_string(&parsed).unwrap();
+        assert!(serialized.contains("[settings.app]"));
+        assert!(serialized.contains("onboarding_status = \"dismissed\""));
+        assert!(serialized.contains("allow_orbit_in_sketch_mode = true"));
+        assert!(serialized.contains("show_debug_panel = true"));
+        assert!(serialized.contains("machine_api = true"));
+        assert!(serialized.contains("foo = \"bar\""));
+        assert!(serialized.contains("[settings.modeling]"));
+        assert!(serialized.contains("mouse_controls = \"zoo\""));
+        assert!(serialized.contains("gizmo_type = \"axis\""));
+        assert!(serialized.contains("enable_touch_controls = false"));
+        assert!(serialized.contains("use_sketch_solve_mode = true"));
+        assert!(serialized.contains("snap_to_grid = true"));
+        assert!(serialized.contains("major_grid_spacing = 2.5"));
+        assert!(serialized.contains("minor_grids_per_major = 5"));
+        assert!(serialized.contains("snaps_per_minor = 3"));
+        assert!(serialized.contains("[settings.project]"));
+        assert!(serialized.contains("directory = \"\""));
+        assert!(serialized.contains("default_project_name = \"untitled\""));
+        assert!(serialized.contains("[settings.command_bar]"));
+        assert!(serialized.contains("include_settings = false"));
+        assert!(serialized.contains("[settings.text_editor]"));
+        assert!(serialized.contains("text_wrapping = true"));
+        let reparsed = toml::from_str::<Configuration>(&serialized).unwrap();
+        assert_eq!(reparsed, expected);
 
         let parsed = Configuration::parse_and_validate(settings_file).unwrap();
         assert_eq!(parsed, expected);
@@ -655,7 +499,17 @@ backface_color = "#112233"
 "##;
 
         let parsed = toml::from_str::<Configuration>(settings_file).unwrap();
-        assert_eq!(parsed.settings.modeling.backface_color, "#112233");
+        assert_eq!(
+            parsed
+                .clone()
+                .settings
+                .modeling
+                .unwrap_or_default()
+                .backface_color
+                .unwrap_or_default()
+                .0,
+            "#112233"
+        );
 
         let serialized = toml::to_string(&parsed).unwrap();
         let reparsed = toml::from_str::<Configuration>(&serialized).unwrap();

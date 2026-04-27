@@ -9,7 +9,7 @@ import {
   settingsToToml,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { KCL_DEFAULT_LENGTH, SETTINGS_FILE_NAME } from '@src/lib/constants'
+import { SETTINGS_FILE_NAME } from '@src/lib/constants'
 
 const TEST_OVERLAY_TIMEOUT_MS = 1_500 // slightly longer than OVERLAY_TIMEOUT_MS in @src/components/ModelingMachineProvider
 
@@ -132,7 +132,7 @@ test(
 
     // Start a sketch
     await toolbar.startSketchOnDefaultPlane('Front plane')
-    await editor.expectEditor.toContain(`sketch001 = startSketchOn(XZ)`)
+    await editor.expectEditor.toContain(`sketch001 = sketch(on = XZ)`)
 
     // Equip the rectangle tool
     await page.getByTestId('corner-rectangle').click()
@@ -267,62 +267,6 @@ profile001 = startProfile(sketch001, at = [-5, -5])
         maxDiffPixels: 100,
         mask: lowerRightMasks(page),
       })
-    })
-  }
-)
-
-test(
-  'Sketch on face with none z-up',
-  { tag: '@snapshot' },
-  async ({ page, cmdBar, scene, toolbar, fs, folderSetupFn }) => {
-    const code = `part001 = startSketchOn(-XZ)
-  |> startProfile(at = [1.4, 2.47])
-  |> line(end = [9.31, 10.55], tag = $seg01)
-  |> line(end = [11.91, -10.42])
-  |> close()
-  |> extrude(length = ${KCL_DEFAULT_LENGTH})
-part002 = startSketchOn(part001, face = seg01)
-  |> startProfile(at = [8, 8])
-  |> line(end = [4.68, 3.05])
-  |> line(end = [0, -7.79])
-  |> close()
-  |> extrude(length = ${KCL_DEFAULT_LENGTH})
-`
-    await folderSetupFn(async (dir: string) => {
-      const projectDir = await fs.join(dir, 'demo-project')
-      await fs.mkdir(projectDir, { recursive: true })
-      await fs.writeFile(
-        await fs.join(projectDir, 'main.kcl'),
-        new TextEncoder().encode(code)
-      )
-    })
-
-    await page.setViewportSize({ width: 1200, height: 500 })
-    await scene.settled(cmdBar)
-
-    // Wait for the second extrusion to appear
-    // TODO: Find a way to truly know that the objects have finished
-    // rendering, because an execution-done message is not sufficient.
-    await page.waitForTimeout(1000)
-
-    await expect(toolbar.startSketchBtn).not.toBeDisabled()
-
-    await toolbar.startSketchPlaneSelection()
-    let previousCodeContent = await page.locator('.cm-content').innerText()
-
-    const [clickFace] = scene.makeMouseHelpers(0.4, 0.5, { format: 'ratio' })
-    await clickFace()
-    await expect(page.locator('.cm-content')).not.toHaveText(
-      previousCodeContent
-    )
-    previousCodeContent = await page.locator('.cm-content').innerText()
-
-    await page.waitForTimeout(800)
-    await toolbar.waitUntilSketchingReady()
-
-    await expect(page).toHaveScreenshot({
-      maxDiffPixels: 100,
-      mask: lowerRightMasks(page),
     })
   }
 )

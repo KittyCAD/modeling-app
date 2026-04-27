@@ -379,6 +379,10 @@ fn rewrite_constraint_with_map(
                 .map(|id| rewrite_object_id(*id, rewrite_map))
                 .collect(),
         })),
+        Constraint::Midpoint(midpoint) => Some(Constraint::Midpoint(crate::frontend::sketch::Midpoint {
+            point: rewrite_object_id(midpoint.point, rewrite_map),
+            segment: rewrite_object_id(midpoint.segment, rewrite_map),
+        })),
         Constraint::Tangent(tangent) => Some(Constraint::Tangent(crate::frontend::sketch::Tangent {
             input: tangent
                 .input
@@ -5179,6 +5183,10 @@ pub(crate) async fn execute_trim_operations_simple(
                     let should_migrate = match constraint {
                         Constraint::Parallel(parallel) => parallel.lines.contains(segment_id),
                         Constraint::Perpendicular(perpendicular) => perpendicular.lines.contains(segment_id),
+                        Constraint::Midpoint(midpoint) => {
+                            midpoint.segment == *segment_id
+                                || original_segment_end_point_id.is_some_and(|end_id| midpoint.point == end_id)
+                        }
                         Constraint::Horizontal(Horizontal::Line { line }) => line == segment_id,
                         Constraint::Horizontal(Horizontal::Points { points }) => original_segment_end_point_id
                             .is_some_and(|end_id| points.contains(&ConstraintSegment::from(end_id))),
@@ -5192,7 +5200,8 @@ pub(crate) async fn execute_trim_operations_simple(
                         && let Some(migrated_constraint) = rewrite_constraint_with_map(constraint, &angle_rewrite_map)
                         && matches!(
                             migrated_constraint,
-                            Constraint::Parallel(_)
+                            Constraint::Midpoint(_)
+                                | Constraint::Parallel(_)
                                 | Constraint::Perpendicular(_)
                                 | Constraint::Horizontal(_)
                                 | Constraint::Vertical(_)
