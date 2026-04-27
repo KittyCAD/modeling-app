@@ -26,6 +26,10 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import { useApp, useSingletons } from '@src/lib/boot'
 import {
+  autoUpdateDownloadProgressSignal,
+  autoUpdateReadySignal,
+} from '@src/lib/autoUpdate'
+import {
   DEFAULT_EXPERIMENTAL_FEATURES,
   ONBOARDING_TOAST_ID,
   WASM_INIT_FAILED_TOAST_ID,
@@ -90,6 +94,8 @@ export function OpenedProject() {
   const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
+  const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
+  const autoUpdateReady = autoUpdateReadySignal.value
   const lastOperation = useLastOperation()
   const projects = useFolders()
   const { onProjectOpen } = useLspContext()
@@ -433,7 +439,15 @@ export function OpenedProject() {
           globalItems={[
             networkHealthStatus,
             ...(isDesktop() && machineApiEnabled ? [networkMachineStatus] : []),
-            ...defaultGlobalStatusBarItems({ location, filePath }),
+            ...defaultGlobalStatusBarItems({
+              location,
+              filePath,
+              autoUpdateDownloadProgress,
+              autoUpdateReady,
+              onRestartToUpdate: () => {
+                window.electron?.appRestart()
+              },
+            }),
           ]}
           localItems={[
             ...(getSettings().app.showDebugPanel.current
