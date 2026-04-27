@@ -4570,7 +4570,7 @@ impl FrontendState {
         let default_length_unit = self.default_length_unit();
         let mut settled_ast = self.program.ast.clone();
         let mut committed_solver_value = false;
-        for (var_range, value) in &outcome.var_solutions {
+        for (var_range, node_path, value) in &outcome.var_solutions {
             let Some(current_literal) = numeric_literal_at_source_range(&settled_ast, *var_range) else {
                 return Err(commit_failure());
             };
@@ -4581,7 +4581,7 @@ impl FrontendState {
             let value = preserve_var_solution_literal_style(&current_literal, *value, default_length_unit);
             let source_ref = SourceRef::Simple {
                 range: *var_range,
-                node_path: None,
+                node_path: node_path.clone(),
             };
             mutate_ast_node_by_source_ref(
                 &mut settled_ast,

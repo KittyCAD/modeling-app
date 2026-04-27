@@ -2235,6 +2235,7 @@ impl Node<SketchVar> {
                     id,
                     initial_value: 0.0,
                     ty: NumericType::default(),
+                    node_path: self.node_path.clone(),
                     meta: vec![metadata],
                 }),
             }
