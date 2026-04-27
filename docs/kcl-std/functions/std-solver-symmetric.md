@@ -20,10 +20,11 @@ Supported homogeneous input pairs:
 - `CircularArc` / `CircularArc`
 - `Circle` / `Circle`
 
-`Line` and `CircularArc` endpoints are not constrained to be mirrored,
-and can be moved freely along the symmetric colinear geometry. To force
-their positions to be symmetric, add an additional explicit `symmetric`
-constraint between the endpoints.
+Symmetric `Line`s are at opposite angles (reflected across the axis). Symmetric
+`CircularArc`s have equal diameters and centers. Note that the `Symmetric` constraint
+does _not_ affect the position (i.e. the start and end points) of Lines or Arcs. To
+make their positions symmetric too, add another Symmetric constraint on their start
+and endpoints.
 
 ### Arguments
 
