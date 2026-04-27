@@ -4846,6 +4846,30 @@ fn filter_and_process(
             }
         }
     }
+    // Similar thing with expression statement. We need to look at the
+    // expression inside it.
+    if let NodeMut::ExpressionStatement(expr_stmt) = &node {
+        let expr_range = SourceRange::from(&expr_stmt.expression);
+        let expr_node_path = expr_stmt.expression.node_path();
+        if source_ref_matches(ctx, expr_range, expr_node_path) {
+            if let AstMutateCommand::AddVariableDeclaration { .. } = &ctx.command {
+                // We found the node wrapped in an expression statement. Process
+                // the statement.
+                let Ok(node_ref) = AstNodeRef::try_from(&node) else {
+                    return TraversalReturn::new_continue(());
+                };
+                return process(ctx, node).map_break(|result| result.map(|cmd_return| (node_ref, cmd_return)));
+            }
+            if let AstMutateCommand::DeleteNode = &ctx.command {
+                // We found the node wrapped in an expression statement. Delete
+                // the whole statement.
+                return TraversalReturn {
+                    mutate_body_item: MutateBodyItem::Delete,
+                    control_flow: ControlFlow::Break(Ok((AstNodeRef::from(&*ctx), AstMutateCommandReturn::None))),
+                };
+            }
+        }
+    }
 
     if ctx.command.needs_defined_names_stack() {
         if let NodeMut::Program(program) = &node {
