@@ -1332,7 +1332,6 @@ export function getVariableExprsFromSelection(
   return { exprs, pathIfPipe }
 }
 
-<<<<<<< pierremtb/issue11334-cant-select-parts-after-split
 function getSplitOutputExprFromSelection(
   selection: Selection,
   ast: Node<Program>,
@@ -1383,8 +1382,6 @@ function splitOutputExprKey(expr: Expr): string {
   return JSON.stringify(expr)
 }
 
-=======
->>>>>>> main
 function hasLaterMatchingArtifact(
   children: Artifact[],
   artifact: Artifact,
