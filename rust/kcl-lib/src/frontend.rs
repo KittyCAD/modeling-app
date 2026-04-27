@@ -6837,8 +6837,6 @@ bad = missing_name
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_delete_sketch_after_comment() {
-        clear_mem_cache().await;
-
         let initial_source = "sketch001 = sketch(on = XZ) {
 }
 ";
@@ -6875,7 +6873,6 @@ sketch001 = sketch(on = XZ) {
         );
         assert_eq!(scene_delta.new_graph.objects.len(), 0);
 
-        clear_mem_cache().await;
         ctx.close().await;
     }
 
