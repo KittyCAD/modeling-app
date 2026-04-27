@@ -1,7 +1,10 @@
+import type { GetSketchModePlane } from '@kittycad/lib'
 import type { KclExecutionDoneDetail } from '@src/lang/KclManager'
 import { KclManagerEvents } from '@src/lang/KclManager'
 import { useSingletons } from '@src/lib/boot'
+import { registerLocalSelectionCommandProvider } from '@src/clientSideScene/localSelectionCommandProxy'
 import { EngineDebugger } from '@src/lib/debugger'
+import type { ArtifactGraph } from '@src/lang/wasm'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
@@ -26,6 +29,7 @@ import {
 const WEBGPU_PORT_POC_STORAGE_KEY = 'webgpu-port-poc'
 const WEBGPU_PORT_DEBUG_STORAGE_KEY = 'webgpu-port-debug'
 const WEBGPU_PORT_LOG_PREFIX = '[WEBGPU_POC]'
+const GLTF_METERS_TO_ENGINE_MILLIMETERS = 1000
 const HOVER_COLOR = new Color('#5dd6ff')
 const SELECTED_COLOR = new Color('#ff9d3f')
 
@@ -46,16 +50,11 @@ function logLocalWebGpuPreview(message: string, metadata?: unknown) {
 
   const shouldPrintToConsole =
     shouldDebugLocalWebGpuPreview() ||
-    message === 'preview camera created' ||
     message === 'preview initialization failed' ||
-    message === 'preview visibility changed' ||
-    message === 'local hover changed' ||
-    message === 'local selection changed' ||
-    message === 'starting model refresh' ||
-    message === 'export completed' ||
-    message === 'gltf parsed and added to scene' ||
-    message === 'gltf parse failed' ||
-    message === 'received execution-done event'
+    message === 'local sketch mode plane missing for request' ||
+    message === 'local sketch mode plane derivation failed' ||
+    message === 'local sketch mode plane mesh missing' ||
+    message === 'gltf parse failed'
 
   if (shouldPrintToConsole) {
     console.info(
@@ -177,6 +176,208 @@ type GltfParserState = {
   json: GltfParserJson | null
 }
 
+type KittycadPrimitiveExtras = {
+  object_id: string
+  body_id: string
+  face_id: string
+  face_index: number
+  primitive_index: number
+}
+
+type ResolvedSelectionEntity = {
+  entityId: string
+  parentEntityId: string
+  primitiveIndex: number
+}
+
+function toPoint3d(vector: Vector3) {
+  return {
+    x: vector.x,
+    y: vector.y,
+    z: vector.z,
+  }
+}
+
+function scalePoint3d(point: GetSketchModePlane['origin'], scale: number) {
+  return {
+    x: point.x * scale,
+    y: point.y * scale,
+    z: point.z * scale,
+  }
+}
+
+function summarizeSketchModePlane(plane: GetSketchModePlane | null) {
+  if (!plane) {
+    return null
+  }
+
+  return {
+    origin: [plane.origin.x, plane.origin.y, plane.origin.z],
+    xAxis: [plane.x_axis.x, plane.x_axis.y, plane.x_axis.z],
+    yAxis: [plane.y_axis.x, plane.y_axis.y, plane.y_axis.z],
+    zAxis: [plane.z_axis.x, plane.z_axis.y, plane.z_axis.z],
+  }
+}
+
+function summarizeMeshWorldGeometry(mesh: Mesh) {
+  mesh.updateWorldMatrix(true, false)
+
+  const positionAttribute = mesh.geometry.getAttribute('position')
+  if (!positionAttribute || positionAttribute.count < 3) {
+    return {
+      meshWorldPosition: new Vector3().setFromMatrixPosition(mesh.matrixWorld),
+      firstTriangleWorld: null,
+    }
+  }
+
+  const indexAttribute = mesh.geometry.index
+  const a = new Vector3()
+    .fromBufferAttribute(
+      positionAttribute,
+      indexAttribute ? indexAttribute.getX(0) : 0
+    )
+    .applyMatrix4(mesh.matrixWorld)
+  const b = new Vector3()
+    .fromBufferAttribute(
+      positionAttribute,
+      indexAttribute ? indexAttribute.getX(1) : 1
+    )
+    .applyMatrix4(mesh.matrixWorld)
+  const c = new Vector3()
+    .fromBufferAttribute(
+      positionAttribute,
+      indexAttribute ? indexAttribute.getX(2) : 2
+    )
+    .applyMatrix4(mesh.matrixWorld)
+
+  return {
+    meshWorldPosition: new Vector3().setFromMatrixPosition(mesh.matrixWorld),
+    indexed: Boolean(indexAttribute),
+    firstTriangleWorld: [a.toArray(), b.toArray(), c.toArray()],
+  }
+}
+
+function deriveSketchModePlaneFromMesh(
+  mesh: Mesh,
+  camera: PerspectiveCamera | OrthographicCamera | null
+): GetSketchModePlane | null {
+  mesh.updateWorldMatrix(true, false)
+
+  const positionAttribute = mesh.geometry.getAttribute('position')
+  if (!positionAttribute || positionAttribute.count < 3) {
+    return null
+  }
+  const indexAttribute = mesh.geometry.index
+
+  const centroid = new Vector3()
+  const first = new Vector3()
+  const second = new Vector3()
+  const third = new Vector3()
+  const edgeA = new Vector3()
+  const edgeB = new Vector3()
+  const normal = new Vector3()
+  const yAxis = new Vector3()
+  const xAxis = new Vector3()
+  const viewDirection = new Vector3()
+  const epsilon = 1e-10
+
+  const referencedVertexIndices = indexAttribute
+    ? Array.from({ length: indexAttribute.count }, (_, arrayIndex) =>
+        indexAttribute.getX(arrayIndex)
+      )
+    : Array.from(
+        { length: positionAttribute.count },
+        (_, arrayIndex) => arrayIndex
+      )
+
+  if (referencedVertexIndices.length < 3) {
+    return null
+  }
+
+  for (const vertexIndex of referencedVertexIndices) {
+    centroid.add(
+      first
+        .fromBufferAttribute(positionAttribute, vertexIndex)
+        .applyMatrix4(mesh.matrixWorld)
+    )
+  }
+  centroid.multiplyScalar(1 / referencedVertexIndices.length)
+
+  let foundNormal = false
+  for (
+    let referencedIndex = 0;
+    referencedIndex <= referencedVertexIndices.length - 3;
+    referencedIndex += 3
+  ) {
+    first
+      .fromBufferAttribute(
+        positionAttribute,
+        referencedVertexIndices[referencedIndex]!
+      )
+      .applyMatrix4(mesh.matrixWorld)
+    second
+      .fromBufferAttribute(
+        positionAttribute,
+        referencedVertexIndices[referencedIndex + 1]!
+      )
+      .applyMatrix4(mesh.matrixWorld)
+    third
+      .fromBufferAttribute(
+        positionAttribute,
+        referencedVertexIndices[referencedIndex + 2]!
+      )
+      .applyMatrix4(mesh.matrixWorld)
+
+    edgeA.subVectors(second, first)
+    edgeB.subVectors(third, first)
+    normal.crossVectors(edgeA, edgeB)
+    if (normal.lengthSq() > epsilon) {
+      normal.normalize()
+      foundNormal = true
+      break
+    }
+  }
+
+  if (!foundNormal) {
+    return null
+  }
+
+  if (camera) {
+    viewDirection.subVectors(camera.position, centroid)
+    if (viewDirection.lengthSq() > epsilon && normal.dot(viewDirection) < 0) {
+      normal.negate()
+    }
+    yAxis.copy(camera.up)
+  } else {
+    yAxis.set(0, 1, 0)
+  }
+
+  yAxis.projectOnPlane(normal)
+  if (yAxis.lengthSq() <= epsilon) {
+    yAxis.set(0, 0, 1).projectOnPlane(normal)
+  }
+  if (yAxis.lengthSq() <= epsilon) {
+    yAxis.set(1, 0, 0).projectOnPlane(normal)
+  }
+  if (yAxis.lengthSq() <= epsilon) {
+    return null
+  }
+
+  yAxis.normalize()
+  xAxis.crossVectors(yAxis, normal).normalize()
+  yAxis.crossVectors(normal, xAxis).normalize()
+
+  return {
+    origin: scalePoint3d(
+      toPoint3d(centroid),
+      GLTF_METERS_TO_ENGINE_MILLIMETERS
+    ),
+    x_axis: toPoint3d(xAxis),
+    y_axis: toPoint3d(yAxis),
+    z_axis: toPoint3d(normal),
+  }
+}
+
 function summarizeAssociation(association: unknown) {
   if (!association || typeof association !== 'object') {
     return null
@@ -262,6 +463,85 @@ function getPickedObjectMetadata(
   }
 }
 
+function isKittycadPrimitiveExtras(
+  value: unknown
+): value is KittycadPrimitiveExtras {
+  return (
+    !!value &&
+    typeof value === 'object' &&
+    typeof (value as KittycadPrimitiveExtras).object_id === 'string' &&
+    typeof (value as KittycadPrimitiveExtras).body_id === 'string' &&
+    typeof (value as KittycadPrimitiveExtras).face_id === 'string' &&
+    typeof (value as KittycadPrimitiveExtras).face_index === 'number' &&
+    typeof (value as KittycadPrimitiveExtras).primitive_index === 'number'
+  )
+}
+
+function resolveSelectionEntityFromPrimitiveExtras(
+  extras: KittycadPrimitiveExtras,
+  artifactGraph: ArtifactGraph
+): ResolvedSelectionEntity {
+  const directArtifact = artifactGraph.get(extras.face_id)
+  if (directArtifact) {
+    if (directArtifact.type === 'primitiveFace') {
+      return {
+        entityId: directArtifact.id,
+        parentEntityId: directArtifact.solidId,
+        primitiveIndex: extras.primitive_index,
+      }
+    }
+
+    if (
+      directArtifact.type === 'wall' ||
+      directArtifact.type === 'cap' ||
+      directArtifact.type === 'edgeCut'
+    ) {
+      return {
+        entityId: directArtifact.id,
+        parentEntityId:
+          'sweepId' in directArtifact &&
+          typeof directArtifact.sweepId === 'string'
+            ? directArtifact.sweepId
+            : extras.object_id,
+        primitiveIndex: extras.primitive_index,
+      }
+    }
+
+    return {
+      entityId: directArtifact.id,
+      parentEntityId: extras.object_id,
+      primitiveIndex: extras.primitive_index,
+    }
+  }
+
+  const objectArtifact = artifactGraph.get(extras.object_id)
+  const sweepArtifact =
+    objectArtifact?.type === 'sweep'
+      ? objectArtifact
+      : objectArtifact?.type === 'path' && objectArtifact.sweepId
+        ? artifactGraph.get(objectArtifact.sweepId)
+        : null
+
+  if (sweepArtifact?.type === 'sweep') {
+    const surfaceEntityId =
+      sweepArtifact.surfaceIds[extras.primitive_index] ??
+      sweepArtifact.surfaceIds[extras.face_index]
+    if (surfaceEntityId) {
+      return {
+        entityId: surfaceEntityId,
+        parentEntityId: sweepArtifact.id,
+        primitiveIndex: extras.primitive_index,
+      }
+    }
+  }
+
+  return {
+    entityId: extras.face_id,
+    parentEntityId: extras.object_id,
+    primitiveIndex: extras.primitive_index,
+  }
+}
+
 function setMeshHighlight(
   mesh: Mesh | null,
   mode: 'base' | 'hover' | 'selected'
@@ -285,7 +565,8 @@ function setMeshHighlight(
 
 function summarizePickedObject(
   object: Object3D,
-  parserState: GltfParserState | null
+  parserState: GltfParserState | null,
+  resolvedSelectionEntity: ResolvedSelectionEntity | null = null
 ) {
   const parentChain: string[] = []
   const associationChain: Array<PreviewAssociation | null> = []
@@ -317,6 +598,7 @@ function summarizePickedObject(
     nodeExtras: metadata.nodeExtras,
     nodeIndex: metadata.nodeIndex,
     kittycadPrimitiveExtras: metadata.kittycadPrimitiveExtras,
+    resolvedSelectionEntity,
     userData: Object.fromEntries(userDataEntries),
     userDataKeys: Object.keys(object.userData ?? {}),
   }
@@ -325,12 +607,34 @@ function summarizePickedObject(
 export const LocalWebGPUScene = ({
   backgroundColor,
   onVisibilityChange,
+  forceHide = false,
+  commandProxyEnabled = true,
 }: {
   backgroundColor: string
   onVisibilityChange: (isVisible: boolean) => void
+  forceHide?: boolean
+  commandProxyEnabled?: boolean
 }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const { kclManager } = useSingletons()
+  const forceHideRef = useRef(forceHide)
+  const commandProxyEnabledRef = useRef(commandProxyEnabled)
+  const isVisibleRef = useRef(false)
+
+  useEffect(() => {
+    forceHideRef.current = forceHide
+    const container = containerRef.current
+    if (!container) {
+      return
+    }
+
+    container.style.opacity =
+      isVisibleRef.current && !forceHideRef.current ? '1' : '0'
+  }, [forceHide])
+
+  useEffect(() => {
+    commandProxyEnabledRef.current = commandProxyEnabled
+  }, [commandProxyEnabled])
 
   useEffect(() => {
     if (!shouldEnableLocalWebGpuPreview()) {
@@ -359,11 +663,32 @@ export const LocalWebGPUScene = ({
     let previewCamera: PerspectiveCamera | OrthographicCamera | null = null
     let previewTarget = new Vector3()
     let hoveredMesh: Mesh | null = null
-    let selectedMesh: Mesh | null = null
+    let selectedMeshes = new Set<Mesh>()
+    let selectionEntityIdToMesh = new Map<string, Mesh>()
     let parserState: GltfParserState | null = null
+    let activeSketchModePlane: GetSketchModePlane | null = null
     const raycaster = new Raycaster()
     const pointer = new Vector2()
     let requestRender: (() => void) | null = null
+
+    const getResolvedSelectionEntity = (mesh: Mesh | null) => {
+      if (!mesh) {
+        return null
+      }
+
+      const metadata = getPickedObjectMetadata(mesh, parserState)
+      const extras = isKittycadPrimitiveExtras(metadata.kittycadPrimitiveExtras)
+        ? metadata.kittycadPrimitiveExtras
+        : null
+      if (!extras) {
+        return null
+      }
+
+      return resolveSelectionEntityFromPrimitiveExtras(
+        extras,
+        kclManager.artifactGraph
+      )
+    }
 
     const setVisible = (nextVisible: boolean) => {
       if (isVisible === nextVisible) {
@@ -371,7 +696,8 @@ export const LocalWebGPUScene = ({
       }
 
       isVisible = nextVisible
-      container.style.opacity = nextVisible ? '1' : '0'
+      isVisibleRef.current = nextVisible
+      container.style.opacity = nextVisible && !forceHideRef.current ? '1' : '0'
       logLocalWebGpuPreview('preview visibility changed', {
         isVisible: nextVisible,
       })
@@ -471,12 +797,11 @@ export const LocalWebGPUScene = ({
         return
       }
 
-      const mode =
-        mesh === selectedMesh
-          ? 'selected'
-          : mesh === hoveredMesh
-            ? 'hover'
-            : 'base'
+      const mode = selectedMeshes.has(mesh)
+        ? 'selected'
+        : mesh === hoveredMesh
+          ? 'hover'
+          : 'base'
       setMeshHighlight(mesh, mode)
       requestRender?.()
     }
@@ -491,23 +816,29 @@ export const LocalWebGPUScene = ({
       applyMeshState(previousHoveredMesh)
     }
 
-    const pickMeshFromPointerEvent = (event: PointerEvent) => {
-      if (!isVisible || !previewCamera || !currentModel) {
+    const pickMeshFromWindowCoordinates = ({
+      x,
+      y,
+      streamWidth,
+      streamHeight,
+    }: {
+      x: number
+      y: number
+      streamWidth: number
+      streamHeight: number
+    }) => {
+      if (
+        !isVisible ||
+        !previewCamera ||
+        !currentModel ||
+        streamWidth <= 0 ||
+        streamHeight <= 0
+      ) {
         return null
       }
 
-      const interactionElement = container.parentElement
-      if (!interactionElement) {
-        return null
-      }
-
-      const rect = interactionElement.getBoundingClientRect()
-      if (rect.width === 0 || rect.height === 0) {
-        return null
-      }
-
-      pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
-      pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
+      pointer.x = (x / streamWidth) * 2 - 1
+      pointer.y = -(y / streamHeight) * 2 + 1
       raycaster.setFromCamera(pointer, previewCamera)
 
       return raycaster
@@ -515,14 +846,17 @@ export const LocalWebGPUScene = ({
         .find((intersection) => intersection.object instanceof Mesh)
     }
 
-    const updateHoverFromPointer = (event: PointerEvent) => {
-      const firstMeshHit = pickMeshFromPointerEvent(event)
-      if (!firstMeshHit) {
-        clearHover()
-        return
-      }
-
-      const nextHoveredMesh = (firstMeshHit?.object as Mesh | undefined) ?? null
+    const updateHoverFromIntersection = (
+      intersection:
+        | {
+            distance?: number
+            point?: Vector3
+            object?: Object3D
+          }
+        | null
+        | undefined
+    ) => {
+      const nextHoveredMesh = (intersection?.object as Mesh | undefined) ?? null
       if (nextHoveredMesh === hoveredMesh) {
         return
       }
@@ -536,34 +870,38 @@ export const LocalWebGPUScene = ({
 
       hoveredMesh = nextHoveredMesh
       applyMeshState(hoveredMesh)
+      const resolvedSelectionEntity =
+        getResolvedSelectionEntity(nextHoveredMesh)
       logLocalWebGpuPreview('local hover changed', {
-        distance: firstMeshHit?.distance,
-        point: firstMeshHit?.point?.toArray(),
-        ...summarizePickedObject(nextHoveredMesh, parserState),
+        distance: intersection?.distance,
+        point: intersection?.point?.toArray(),
+        ...summarizePickedObject(
+          nextHoveredMesh,
+          parserState,
+          resolvedSelectionEntity
+        ),
       })
     }
 
-    const updateSelectionFromPointer = (event: PointerEvent) => {
-      const firstMeshHit = pickMeshFromPointerEvent(event)
-      const nextSelectedMesh =
-        (firstMeshHit?.object as Mesh | undefined) ?? null
-      if (nextSelectedMesh === selectedMesh) {
+    const updateSelectedMeshes = ({
+      nextSelectedMeshes,
+      selectionSummary,
+    }: {
+      nextSelectedMeshes: Set<Mesh>
+      selectionSummary: unknown
+    }) => {
+      if (
+        nextSelectedMeshes.size === selectedMeshes.size &&
+        [...nextSelectedMeshes].every((mesh) => selectedMeshes.has(mesh))
+      ) {
         return
       }
 
-      const previousSelectedMesh = selectedMesh
-      selectedMesh = nextSelectedMesh
-      applyMeshState(previousSelectedMesh)
+      const previousSelectedMeshes = [...selectedMeshes]
+      selectedMeshes = nextSelectedMeshes
+      previousSelectedMeshes.forEach(applyMeshState)
       applyMeshState(hoveredMesh)
-      applyMeshState(selectedMesh)
-
-      const selectionSummary = nextSelectedMesh
-        ? {
-            distance: firstMeshHit?.distance,
-            point: firstMeshHit?.point?.toArray(),
-            ...summarizePickedObject(nextSelectedMesh, parserState),
-          }
-        : null
+      selectedMeshes.forEach(applyMeshState)
       ;(
         window as typeof window & { __WEBGPU_POC_SELECTION__?: unknown }
       ).__WEBGPU_POC_SELECTION__ = selectionSummary
@@ -727,15 +1065,339 @@ export const LocalWebGPUScene = ({
         requestRender?.()
       }
 
-      const interactionElement = container.parentElement
-      if (interactionElement) {
-        interactionElement.addEventListener(
-          'pointermove',
-          updateHoverFromPointer
-        )
-        interactionElement.addEventListener('pointerleave', clearHover)
-        interactionElement.addEventListener('click', updateSelectionFromPointer)
-      }
+      const unregisterLocalSelectionProvider =
+        registerLocalSelectionCommandProvider({
+          isActive: () => isVisible,
+          handleCommand: async (command, { streamDimensions }) => {
+            if (command.type !== 'modeling_cmd_req') {
+              return null
+            }
+
+            const { cmd, cmd_id } = command
+            switch (cmd.type) {
+              case 'highlight_set_entity': {
+                if (!commandProxyEnabledRef.current) {
+                  return null
+                }
+                const intersection = pickMeshFromWindowCoordinates({
+                  x: cmd.selected_at_window.x,
+                  y: cmd.selected_at_window.y,
+                  streamWidth: streamDimensions.width,
+                  streamHeight: streamDimensions.height,
+                })
+                updateHoverFromIntersection(intersection)
+                const mesh = (intersection?.object as Mesh | undefined) ?? null
+                const metadata = mesh
+                  ? getPickedObjectMetadata(mesh, parserState)
+                  : null
+                const extras = isKittycadPrimitiveExtras(
+                  metadata?.kittycadPrimitiveExtras
+                )
+                  ? metadata.kittycadPrimitiveExtras
+                  : null
+                const resolvedSelectionEntity = extras
+                  ? resolveSelectionEntityFromPrimitiveExtras(
+                      extras,
+                      kclManager.artifactGraph
+                    )
+                  : null
+                return {
+                  unreliableModelingResponse: {
+                    type: 'highlight_set_entity',
+                    data: {
+                      entity_id: resolvedSelectionEntity?.entityId ?? '',
+                      sequence: 'sequence' in cmd ? cmd.sequence : undefined,
+                    },
+                  },
+                }
+              }
+              case 'select_with_point': {
+                if (!commandProxyEnabledRef.current) {
+                  return null
+                }
+                const intersection = pickMeshFromWindowCoordinates({
+                  x: cmd.selected_at_window.x,
+                  y: cmd.selected_at_window.y,
+                  streamWidth: streamDimensions.width,
+                  streamHeight: streamDimensions.height,
+                })
+                const mesh = (intersection?.object as Mesh | undefined) ?? null
+                const metadata = mesh
+                  ? getPickedObjectMetadata(mesh, parserState)
+                  : null
+                const extras = isKittycadPrimitiveExtras(
+                  metadata?.kittycadPrimitiveExtras
+                )
+                  ? metadata.kittycadPrimitiveExtras
+                  : null
+                const resolvedSelectionEntity = extras
+                  ? resolveSelectionEntityFromPrimitiveExtras(
+                      extras,
+                      kclManager.artifactGraph
+                    )
+                  : null
+                const modelingResponse = {
+                  type: 'select_with_point',
+                  data: {
+                    entity_id: resolvedSelectionEntity?.entityId ?? '',
+                  },
+                }
+                return {
+                  modelingResponse,
+                  websocketResponse: {
+                    success: true,
+                    request_id: cmd_id,
+                    resp: {
+                      type: 'modeling',
+                      data: {
+                        modeling_response: modelingResponse,
+                      },
+                    },
+                  } as never,
+                }
+              }
+              case 'entity_get_parent_id': {
+                if (!commandProxyEnabledRef.current) {
+                  return null
+                }
+                const mesh = selectionEntityIdToMesh.get(cmd.entity_id) ?? null
+                const metadata = mesh
+                  ? getPickedObjectMetadata(mesh, parserState)
+                  : null
+                const extras = isKittycadPrimitiveExtras(
+                  metadata?.kittycadPrimitiveExtras
+                )
+                  ? metadata.kittycadPrimitiveExtras
+                  : null
+                const resolvedSelectionEntity = extras
+                  ? resolveSelectionEntityFromPrimitiveExtras(
+                      extras,
+                      kclManager.artifactGraph
+                    )
+                  : null
+                const modelingResponse = {
+                  type: 'entity_get_parent_id',
+                  data: {
+                    entity_id:
+                      resolvedSelectionEntity?.parentEntityId ??
+                      extras?.object_id ??
+                      '',
+                  },
+                }
+                return {
+                  websocketResponse: {
+                    success: true,
+                    request_id: cmd_id,
+                    resp: {
+                      type: 'modeling',
+                      data: {
+                        modeling_response: modelingResponse,
+                      },
+                    },
+                  } as never,
+                }
+              }
+              case 'entity_get_primitive_index': {
+                if (!commandProxyEnabledRef.current) {
+                  return null
+                }
+                const mesh = selectionEntityIdToMesh.get(cmd.entity_id) ?? null
+                const metadata = mesh
+                  ? getPickedObjectMetadata(mesh, parserState)
+                  : null
+                const extras = isKittycadPrimitiveExtras(
+                  metadata?.kittycadPrimitiveExtras
+                )
+                  ? metadata.kittycadPrimitiveExtras
+                  : null
+                const resolvedSelectionEntity = extras
+                  ? resolveSelectionEntityFromPrimitiveExtras(
+                      extras,
+                      kclManager.artifactGraph
+                    )
+                  : null
+                const modelingResponse = {
+                  type: 'entity_get_primitive_index',
+                  data: {
+                    entity_type: 'face',
+                    primitive_index:
+                      resolvedSelectionEntity?.primitiveIndex ??
+                      extras?.primitive_index ??
+                      -1,
+                  },
+                }
+                return {
+                  websocketResponse: {
+                    success: true,
+                    request_id: cmd_id,
+                    resp: {
+                      type: 'modeling',
+                      data: {
+                        modeling_response: modelingResponse,
+                      },
+                    },
+                  } as never,
+                }
+              }
+              case 'select_clear': {
+                if (!commandProxyEnabledRef.current) {
+                  return null
+                }
+                updateSelectedMeshes({
+                  nextSelectedMeshes: new Set<Mesh>(),
+                  selectionSummary: null,
+                })
+                return { websocketResponse: null }
+              }
+              case 'select_add': {
+                if (!commandProxyEnabledRef.current) {
+                  return null
+                }
+                const nextSelectedMeshes = new Set<Mesh>()
+                for (const entityId of cmd.entities) {
+                  const mesh = selectionEntityIdToMesh.get(entityId)
+                  if (mesh) {
+                    nextSelectedMeshes.add(mesh)
+                  }
+                }
+                const firstSelectedMesh =
+                  nextSelectedMeshes.values().next().value ?? null
+                const resolvedSelectionEntity =
+                  getResolvedSelectionEntity(firstSelectedMesh)
+                const selectionSummary = firstSelectedMesh
+                  ? summarizePickedObject(
+                      firstSelectedMesh,
+                      parserState,
+                      resolvedSelectionEntity
+                    )
+                  : null
+                updateSelectedMeshes({
+                  nextSelectedMeshes,
+                  selectionSummary,
+                })
+                return { websocketResponse: null }
+              }
+              case 'enable_sketch_mode': {
+                const mesh = selectionEntityIdToMesh.get(cmd.entity_id) ?? null
+                if (!mesh) {
+                  logLocalWebGpuPreview(
+                    'local sketch mode plane mesh missing',
+                    {
+                      entityId: cmd.entity_id,
+                      knownSelectionEntityIds: Array.from(
+                        selectionEntityIdToMesh.keys()
+                      ).slice(0, 20),
+                    }
+                  )
+                  return null
+                }
+                activeSketchModePlane = deriveSketchModePlaneFromMesh(
+                  mesh,
+                  kclManager.sceneInfra.camControls.camera
+                )
+                if (!activeSketchModePlane) {
+                  logLocalWebGpuPreview(
+                    'local sketch mode plane derivation failed',
+                    {
+                      entityId: cmd.entity_id,
+                      meshName: mesh.name || null,
+                      meshType: mesh.type,
+                      metadata: summarizePickedObject(
+                        mesh,
+                        parserState,
+                        getResolvedSelectionEntity(mesh)
+                      ),
+                    }
+                  )
+                  return null
+                }
+                logLocalWebGpuPreview('local sketch mode plane prepared', {
+                  entityId: cmd.entity_id,
+                  meshName: mesh.name || null,
+                  meshDebug: {
+                    ...summarizeMeshWorldGeometry(mesh),
+                    metadata: summarizePickedObject(
+                      mesh,
+                      parserState,
+                      getResolvedSelectionEntity(mesh)
+                    ),
+                  },
+                  plane: summarizeSketchModePlane(activeSketchModePlane),
+                })
+                const modelingResponse = {
+                  type: 'enable_sketch_mode',
+                  data: {},
+                }
+                return {
+                  modelingResponse,
+                  websocketResponse: {
+                    success: true,
+                    request_id: cmd_id,
+                    resp: {
+                      type: 'modeling',
+                      data: {
+                        modeling_response: modelingResponse,
+                      },
+                    },
+                  } as never,
+                }
+              }
+              case 'get_sketch_mode_plane': {
+                if (!activeSketchModePlane) {
+                  logLocalWebGpuPreview(
+                    'local sketch mode plane missing for request'
+                  )
+                  return null
+                }
+                logLocalWebGpuPreview('local sketch mode plane requested', {
+                  plane: summarizeSketchModePlane(activeSketchModePlane),
+                })
+                const modelingResponse = {
+                  type: 'get_sketch_mode_plane',
+                  data: activeSketchModePlane,
+                }
+                return {
+                  modelingResponse,
+                  websocketResponse: {
+                    success: true,
+                    request_id: cmd_id,
+                    resp: {
+                      type: 'modeling',
+                      data: {
+                        modeling_response: modelingResponse,
+                      },
+                    },
+                  } as never,
+                }
+              }
+              case 'sketch_mode_disable': {
+                logLocalWebGpuPreview('local sketch mode disabled', {
+                  plane: summarizeSketchModePlane(activeSketchModePlane),
+                })
+                activeSketchModePlane = null
+                const modelingResponse = {
+                  type: 'sketch_mode_disable',
+                  data: {},
+                }
+                return {
+                  modelingResponse,
+                  websocketResponse: {
+                    success: true,
+                    request_id: cmd_id,
+                    resp: {
+                      type: 'modeling',
+                      data: {
+                        modeling_response: modelingResponse,
+                      },
+                    },
+                  } as never,
+                }
+              }
+              default:
+                return null
+            }
+          },
+        })
 
       resize()
       resizeObserver = new ResizeObserver(resize)
@@ -743,12 +1405,14 @@ export const LocalWebGPUScene = ({
 
       const clearModel = () => {
         if (!currentModel) {
+          selectionEntityIdToMesh.clear()
           return
         }
 
         scene.remove(currentModel)
         disposeObject3D(currentModel)
         currentModel = null
+        selectionEntityIdToMesh.clear()
         requestRender?.()
       }
       requestRender()
@@ -821,6 +1485,7 @@ export const LocalWebGPUScene = ({
               associations: gltfWithParser.parser?.associations ?? null,
               json: gltfWithParser.parser?.json ?? null,
             }
+            selectionEntityIdToMesh = new Map<string, Mesh>()
             currentModel.traverse((object) => {
               object.layers.mask =
                 previewCamera?.layers.mask ?? object.layers.mask
@@ -836,6 +1501,29 @@ export const LocalWebGPUScene = ({
               if (metadata.kittycadPrimitiveExtras) {
                 object.userData.kittycadPrimitiveExtras =
                   metadata.kittycadPrimitiveExtras
+                if (
+                  isKittycadPrimitiveExtras(metadata.kittycadPrimitiveExtras)
+                ) {
+                  const resolvedSelectionEntity =
+                    resolveSelectionEntityFromPrimitiveExtras(
+                      metadata.kittycadPrimitiveExtras,
+                      kclManager.artifactGraph
+                    )
+                  object.userData.kittycadSelectionEntityId =
+                    resolvedSelectionEntity.entityId
+                  object.userData.kittycadParentEntityId =
+                    resolvedSelectionEntity.parentEntityId
+                  object.userData.kittycadPrimitiveIndex =
+                    resolvedSelectionEntity.primitiveIndex
+                  selectionEntityIdToMesh.set(
+                    resolvedSelectionEntity.entityId,
+                    object
+                  )
+                  selectionEntityIdToMesh.set(
+                    metadata.kittycadPrimitiveExtras.face_id,
+                    object
+                  )
+                }
               }
             })
             scene.add(currentModel)
@@ -884,21 +1572,11 @@ export const LocalWebGPUScene = ({
           KclManagerEvents.ExecutionDone,
           onExecutionDone
         )
-        if (interactionElement) {
-          interactionElement.removeEventListener(
-            'pointermove',
-            updateHoverFromPointer
-          )
-          interactionElement.removeEventListener('pointerleave', clearHover)
-          interactionElement.removeEventListener(
-            'click',
-            updateSelectionFromPointer
-          )
-        }
+        unregisterLocalSelectionProvider()
         clearHover()
-        const previousSelectedMesh = selectedMesh
-        selectedMesh = null
-        applyMeshState(previousSelectedMesh)
+        const previousSelectedMeshes = [...selectedMeshes]
+        selectedMeshes.clear()
+        previousSelectedMeshes.forEach(applyMeshState)
         clearModel()
         resizeObserver?.disconnect()
         if (animationFrameId !== -1) {

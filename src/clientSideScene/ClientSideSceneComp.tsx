@@ -225,7 +225,7 @@ export const ClientSideScene = ({
         ref={containerRef}
         style={sceneStyle}
         data-testid="client-side-scene"
-        className={`absolute inset-0 h-full w-full transition-all duration-300 ${
+        className={`absolute inset-0 z-30 h-full w-full transition-all duration-300 ${
           effectiveHideClient ? 'pointer-events-none opacity-0' : 'opacity-100'
         } ${
           hideServer || shouldApplyStreamDimming
