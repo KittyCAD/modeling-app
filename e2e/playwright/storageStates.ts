@@ -13,7 +13,7 @@ export const TEST_SETTINGS: DeepPartial<Settings> = {
     onboarding_status: 'dismissed',
   },
   debug: {
-    showPanel: true,
+    show_panel: true,
   },
   modeling: {
     enable_ssao: false,
@@ -52,7 +52,7 @@ export const TEST_SETTINGS_CORRUPTED = {
     projectDirectory: 123 as any,
   },
   debug: {
-    showPanel: true,
+    show_panel: true,
   },
   modeling: {
     defaultUnit: 'invalid' as any,

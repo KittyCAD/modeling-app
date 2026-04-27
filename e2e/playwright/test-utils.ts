@@ -992,7 +992,6 @@ export async function setup(
               ...TEST_SETTINGS.app?.appearance,
               theme: 'dark',
             },
-            ...testProjectSettings,
             onboarding_status: 'dismissed',
           },
           project: {

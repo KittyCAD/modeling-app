@@ -313,7 +313,7 @@ mod tests {
                             },
                         ),
                     ]),
-                    other: IndexMap::from([("show_debug_panel".to_owned(), json!(true))]),
+                    other: IndexMap::new(),
                 },
                 modeling: ProjectModelingSettings {
                     base_unit: Some(UnitLength::Yards),
@@ -341,8 +341,6 @@ mod tests {
             cloud: ProjectCloudSettings::default(),
         };
         let serialized = toml::to_string(&conf).unwrap();
-        assert!(serialized.contains("[settings.app]"));
-        assert!(serialized.contains("show_debug_panel = true"));
         assert!(serialized.contains("[settings.app.named_views.323611ea-66e3-43c9-9d0d-1091ba92948c]"));
         assert!(serialized.contains("[settings.app.named_views.423611ea-66e3-43c9-9d0d-1091ba92948c]"));
         assert!(serialized.contains("[settings.modeling]"));

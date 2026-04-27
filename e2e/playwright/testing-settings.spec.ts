@@ -363,7 +363,7 @@ test.describe(
             settingsToToml({
               settings: {
                 debug: {
-                  showPanel,
+                  show_panel: showPanel,
                 },
                 // TODO: make sure this isn't just working around a bug
                 // where the existing data wouldn't be preserved?
