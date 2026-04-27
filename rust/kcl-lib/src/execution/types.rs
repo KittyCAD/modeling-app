@@ -2670,6 +2670,24 @@ d = cos(1rad)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn prelude_exposes_unit_converters_unqualified() {
+        let program = r#"
+cornerAngle = 360deg / 6
+rad = 5mm
+sideLen = rad * sin(toRadians(cornerAngle / 2)) * 2
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        assert!(
+            result.exec_state.issues().is_empty(),
+            "{:?}",
+            result.exec_state.issues()
+        );
+
+        assert_value_and_type("sideLen", &result, 5.0, NumericType::mm());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn coerce_nested_array() {
         let (ctx, mut exec_state) = new_exec_state().await;
 

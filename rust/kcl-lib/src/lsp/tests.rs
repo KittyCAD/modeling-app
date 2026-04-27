@@ -2503,6 +2503,48 @@ async fn test_kcl_lsp_diagnostic_has_lints() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_unqualified_to_radians_has_no_diagnostics() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///to-radians.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"cornerAngle = 360deg / 6
+rad = 5mm
+sideLen = rad * sin(toRadians(cornerAngle / 2)) * 2"#
+                    .to_string(),
+            },
+        })
+        .await;
+
+    let diagnostics = server
+        .diagnostic(tower_lsp::lsp_types::DocumentDiagnosticParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///to-radians.kcl".try_into().unwrap(),
+            },
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+            identifier: None,
+            previous_result_id: None,
+        })
+        .await
+        .unwrap();
+
+    if let tower_lsp::lsp_types::DocumentDiagnosticReportResult::Report(diagnostics) = diagnostics {
+        if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics) = diagnostics {
+            assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 0);
+        } else {
+            panic!("Expected full diagnostics");
+        }
+    } else {
+        panic!("Expected diagnostics");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn test_copilot_lsp_set_editor_info() {
     let server = copilot_lsp_server().await.unwrap();
 
