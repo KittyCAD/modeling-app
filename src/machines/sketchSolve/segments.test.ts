@@ -4,6 +4,8 @@ import {
   DARK_CONSTRAINED_COLOR,
   deriveSegmentFreedom,
   getSegmentColor,
+  getPointSegmentScale,
+  getSegmentLineWidth,
   LIGHT_CONSTRAINED_COLOR,
 } from '@src/machines/sketchSolve/segmentsUtils'
 import type { ApiObject, Freedom } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -475,6 +477,34 @@ describe('getSegmentColor', () => {
     })
 
     expect(color).toBe(0xff8c2a)
+  })
+
+  it('should increase point scale for secondary hover highlighting', () => {
+    expect(
+      getPointSegmentScale({
+        isHovered: true,
+        isSecondaryHovered: false,
+      })
+    ).toBe(1.5)
+    expect(
+      getPointSegmentScale({
+        isHovered: true,
+        isSecondaryHovered: true,
+      })
+    ).toBe(2)
+  })
+
+  it('should increase line width for secondary hover highlighting', () => {
+    const defaultWidth = getSegmentLineWidth({
+      isHovered: true,
+      isSecondaryHovered: false,
+    })
+    const secondaryWidth = getSegmentLineWidth({
+      isHovered: true,
+      isSecondaryHovered: true,
+    })
+
+    expect(secondaryWidth).toBeGreaterThan(defaultWidth)
   })
 
   it('should return selection color when isSelected is true (priority 3)', () => {

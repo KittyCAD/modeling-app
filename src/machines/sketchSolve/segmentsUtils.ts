@@ -1,3 +1,4 @@
+import { SEGMENT_WIDTH_PX } from '@src/clientSideScene/sceneConstants'
 import type { Freedom, ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
@@ -8,6 +9,9 @@ import { getResolvedTheme, Themes } from '@src/lib/theme'
 
 export const DARK_CONSTRAINED_COLOR = 0x000000
 export const LIGHT_CONSTRAINED_COLOR = 0xffffff
+const HOVERED_POINT_SEGMENT_SCALE = 1.5
+const SECONDARY_HOVERED_POINT_SEGMENT_SCALE = 2
+const SECONDARY_HOVER_LINE_WIDTH_MULTIPLIER = 2.25
 
 const CONSTRAINED_COLOR = {
   [Themes.Dark]: DARK_CONSTRAINED_COLOR,
@@ -176,4 +180,34 @@ export function getSegmentColor({
 
   // Default: unconstrained color (blue) for null/unknown
   return UNCONSTRAINED_COLOR
+}
+
+export function getPointSegmentScale({
+  isHovered,
+  isSecondaryHovered,
+}: {
+  isHovered?: boolean
+  isSecondaryHovered?: boolean
+}): number {
+  if (!isHovered) {
+    return 1
+  }
+
+  return isSecondaryHovered
+    ? SECONDARY_HOVERED_POINT_SEGMENT_SCALE
+    : HOVERED_POINT_SEGMENT_SCALE
+}
+
+export function getSegmentLineWidth({
+  isHovered,
+  isSecondaryHovered,
+}: {
+  isHovered?: boolean
+  isSecondaryHovered?: boolean
+}): number {
+  const baseLineWidth = SEGMENT_WIDTH_PX * window.devicePixelRatio
+
+  return isHovered && isSecondaryHovered
+    ? baseLineWidth * SECONDARY_HOVER_LINE_WIDTH_MULTIPLIER
+    : baseLineWidth
 }

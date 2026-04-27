@@ -54,6 +54,7 @@ import {
   type ConstraintHoverPopup,
   findSegmentsForInvisibleConstraint,
   getInvisibleConstraintSegmentHoverColor,
+  isInvisibleConstraintSegmentSecondaryHovered,
   isInvisibleConstraintObject,
 } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
 import { updateOriginSprite } from '@src/machines/sketchSolve/originSprite'
@@ -1166,6 +1167,10 @@ function getSegmentRenderState(
       selectedIds.includes(segmentId) ||
       duringAreaSelectIds.includes(segmentId),
     hovered: hoveredId === segmentId || hoveredSegmentIds.includes(segmentId),
+    secondaryHovered: isInvisibleConstraintSegmentSecondaryHovered(
+      segmentId,
+      hoveredInvisibleConstraint
+    ),
     hoverColor: getInvisibleConstraintSegmentHoverColor(
       segmentId,
       hoveredInvisibleConstraint

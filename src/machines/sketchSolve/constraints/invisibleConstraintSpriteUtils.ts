@@ -250,6 +250,16 @@ export function getInvisibleConstraintSegmentHoverColor(
   return undefined
 }
 
+export function isInvisibleConstraintSegmentSecondaryHovered(
+  segmentId: number,
+  constraint: InvisibleConstraintObject | null
+): boolean {
+  return (
+    constraint?.kind.constraint.type === 'Symmetric' &&
+    constraint.kind.constraint.axis === segmentId
+  )
+}
+
 function getCoincidentHighlightedSegmentIds(
   constraint: Extract<InvisibleConstraint, { type: 'Coincident' }>,
   objects: ApiObject[]

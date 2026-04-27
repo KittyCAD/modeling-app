@@ -10,6 +10,7 @@ import {
   findSegmentsForInvisibleConstraint,
   getInvisibleConstraintSegmentHoverColor,
   getInvisibleConstraintAnchor,
+  isInvisibleConstraintSegmentSecondaryHovered,
   isInvisibleConstraintObject,
   type InvisibleConstraintObject,
 } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
@@ -493,6 +494,12 @@ describe('invisibleConstraintSpriteUtils', () => {
       getInvisibleConstraintSegmentHoverColor(12, symmetric)
     ).toBeUndefined()
     expect(getInvisibleConstraintSegmentHoverColor(10, null)).toBeUndefined()
+    expect(isInvisibleConstraintSegmentSecondaryHovered(10, symmetric)).toBe(
+      true
+    )
+    expect(isInvisibleConstraintSegmentSecondaryHovered(11, symmetric)).toBe(
+      false
+    )
   })
 
   it('finds symmetric constraints related to hovered symmetric points', () => {
