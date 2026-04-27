@@ -1,6 +1,6 @@
 import { AppStreamProvider } from '@src/AppState'
 import ReactDOM from 'react-dom/client'
-import { Toaster } from 'react-hot-toast'
+import toast, { Toaster } from 'react-hot-toast'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
 import { Router } from '@src/Router'
@@ -72,7 +72,9 @@ function initElectronBehavior(electron: NonNullable<typeof window.electron>) {
 
   electron.onUpdateNotAvailable(() => {
     clearAutoUpdateDownloadProgress()
-    console.log("You're already using the latest version of the app.")
+    const message = "You're already using the latest version of the app."
+    console.log(message)
+    toast.success(message)
   })
 
   electron.onUpdateDownloadStart((progress) => {
