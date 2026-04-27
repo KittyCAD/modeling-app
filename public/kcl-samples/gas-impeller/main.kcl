@@ -2,49 +2,252 @@
 // The rotating component in a turbomachine (compressor, blower, or turbocharger) that adds energy to a gas by spinning it at speed
 // Categories: Aerospace, Manufacturing
 
-// Set units
+// Project settings
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
-// Define parameters
-fanHeight = 60
-fanSize = 160
-bladeCount = 9
-bladeThickness = 2
-twistAngle = 65deg
-mountingBore = 8.8
+// Key parameters
+impellerHeight = 60
+impellerDiameter = 160
+bladeInstanceCount = 9
+bladeSectionThickness = 2
+bladeTwistAngle = 65deg
+shaftBoreDiameter = 8.8
 
-// Model the center of the fan
-fanCenter = startSketchOn(YZ)
-  |> startProfile(at = [mountingBore / 2, 0])
-  |> yLine(length = fanHeight)
-  |> xLine(length = mountingBore / 3)
-  |> tangentialArc(angle = -90deg, radius = mountingBore / 10)
-  |> arc(interiorAbsolute = [fanSize / 3, fanHeight / 5], endAbsolute = [fanSize / 2, fanHeight / 15], tag = $seg01)
-  |> yLine(endAbsolute = 0, tag = $seg02)
-  |> xLine(endAbsolute = profileStartX())
-  |> close()
-  |> revolve(axis = Y)
+// Sketch: hub profile and blade envelope profile
+// This sketch contains two closed regions:
+// 1. The inner region for the revolved hub body.
+// 2. The outer region for the revolved blade envelope used in the blade intersection step.
+hubAndBladeEnvelopeSketch = sketch(on = YZ) {
+  // Hub root, shaft bore boundary, and lower outer lip.
+  shaftWall = line(start = [var 4.4mm, var 0mm], end = [var 4.4mm, var 60mm])
+  hubTopLand = line(start = [var 4.4mm, var 60mm], end = [var 7.33mm, var 60mm])
+  coincident([shaftWall.end, hubTopLand.start])
 
-// Profile the sweep path of the blade design
-bladeProfile = startSketchOn(YZ)
-  |> startProfile(at = segStart(seg01))
-  |> arc(interiorAbsolute = [fanSize / 3, fanHeight / 5], endAbsolute = [fanSize / 2, fanHeight / 15])
-  |> angledLine(angle = 95deg, endAbsoluteY = fanHeight - (fanSize / 16))
-  |> tangentialArc(angle = 85deg, radius = fanSize / 15)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-  |> revolve(axis = Y)
+  hubShoulderBlendArc = arc(start = [var 8.31mm, var 59.22mm], end = [var 7.33mm, var 60mm], center = [var 7.33mm, var 59mm])
+  coincident([
+    hubTopLand.end,
+    hubShoulderBlendArc.end
+  ])
 
-// Create a dart to form the blade
-dart = startSketchOn(XY)
-  |> startProfile(at = [mountingBore / 2, 0])
-  |> angledLine(angle = 0deg, length = fanSize / 2, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = bladeThickness)
-  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $seg03)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-  |> extrude(twistAngle, length = 65)
+  outerLipDrop = line(start = [var 80mm, var 2mm], end = [var 80mm, var 0mm])
+  baseFloor = line(start = [var 80mm, var 0mm], end = [var 4.4mm, var 0mm])
+  coincident([outerLipDrop.end, baseFloor.start])
+  coincident([baseFloor.end, shaftWall.start])
+  vertical(shaftWall)
+  horizontal(baseFloor)
+  vertical(outerLipDrop)
+  horizontal(hubTopLand)
+  tangent([hubTopLand, hubShoulderBlendArc])
 
-// Intersect the dart and the blade profile to create a blade, then pattern around the Z axis
-blades = intersect([bladeProfile, dart])
-  |> patternCircular3d(instances = bladeCount, axis = [0, 0, 1], center = [0, 0, 0])
+  // Hub-driving construction guides and dimensional constraints.
+  shaftRadiusGuide = line(start = [var 0mm, var 0mm], end = [var 4.4mm, var 0mm], construction = true)
+  coincident([shaftRadiusGuide.start, ORIGIN])
+  coincident([shaftRadiusGuide.end, baseFloor.end])
+  horizontal(shaftRadiusGuide)
+  horizontalDistance([
+  shaftRadiusGuide.start,
+  shaftRadiusGuide.end
+]) == shaftBoreDiameter / 2
+  verticalDistance([shaftWall.start, shaftWall.end]) == impellerHeight
+  horizontalDistance([hubTopLand.start, hubTopLand.end]) == shaftBoreDiameter / 3
+
+  // Outer impeller envelope and supporting construction geometry.
+  outerEnvelopeArc = arc(start = [var 8.31mm, var 59.22mm], end = [var 80mm, var 2mm], center = [var 80mm, var 75.52mm])
+  coincident([
+    outerEnvelopeArc.start,
+    hubShoulderBlendArc.start
+  ])
+  coincident([
+    outerEnvelopeArc.end,
+    outerLipDrop.start
+  ])
+
+  outerEnvelopeChordGuide = line(start = [var 8.31mm, var 59.22mm], end = [var 80mm, var 2mm], construction = true)
+  coincident([
+    outerEnvelopeChordGuide.start,
+    hubShoulderBlendArc.start
+  ])
+  coincident([
+    outerEnvelopeChordGuide.end,
+    outerLipDrop.start
+  ])
+
+  outerEnvelopeRadiusGuide = line(start = [var 8.31mm, var 59.22mm], end = [var 80mm, var 75.52mm], construction = true)
+  coincident([
+    outerEnvelopeRadiusGuide.start,
+    hubShoulderBlendArc.start
+  ])
+
+  outerEnvelopeCenterDropGuide = line(start = [var 80mm, var 75.52mm], end = [var 80mm, var 2mm], construction = true)
+  coincident([
+    outerEnvelopeRadiusGuide.end,
+    outerEnvelopeCenterDropGuide.start
+  ])
+  coincident([
+    outerEnvelopeCenterDropGuide.end,
+    outerEnvelopeArc.end
+  ])
+
+  outerEnvelopePerpendicularGuide = line(start = [var 80mm, var 75.52mm], end = [var 44.15mm, var 30.61mm], construction = true)
+  coincident([
+    outerEnvelopePerpendicularGuide.start,
+    outerEnvelopeCenterDropGuide.start
+  ])
+  coincident([
+    outerEnvelopePerpendicularGuide.end,
+    outerEnvelopeChordGuide
+  ])
+  perpendicular([
+    outerEnvelopePerpendicularGuide,
+    outerEnvelopeChordGuide
+  ])
+  tangent([outerEnvelopeArc, hubShoulderBlendArc])
+  verticalDistance([outerLipDrop.end, outerLipDrop.start]) == impellerHeight / 30
+  coincident([
+    outerEnvelopeArc.center,
+    outerEnvelopePerpendicularGuide.start
+  ])
+  vertical(outerEnvelopeCenterDropGuide)
+
+  // Secondary closed region for the revolved blade envelope body.
+  bladeEnvelopeTopEdge = line(start = [var 7.33mm, var 60mm], end = [var 68mm, var 60mm])
+  coincident([
+    bladeEnvelopeTopEdge.start,
+    hubTopLand.end
+  ])
+
+  bladeEnvelopeOuterWall = line(start = [var 80mm, var 2mm], end = [var 80mm, var 48mm])
+  coincident([
+    bladeEnvelopeOuterWall.start,
+    outerEnvelopeCenterDropGuide.end
+  ])
+
+  bladeEnvelopeTipArc = arc(start = [var 80mm, var 48mm], end = [var 68mm, var 60mm], center = [var 68mm, var 48mm])
+  coincident([
+    bladeEnvelopeTipArc.start,
+    bladeEnvelopeOuterWall.end
+  ])
+  coincident([
+    bladeEnvelopeTipArc.end,
+    bladeEnvelopeTopEdge.end
+  ])
+  horizontal(bladeEnvelopeTopEdge)
+  vertical(bladeEnvelopeOuterWall)
+  radius(bladeEnvelopeTipArc) == impellerHeight / 5
+
+  bladeEnvelopeTipRadiusGuide = line(start = [var 80mm, var 48mm], end = [var 68mm, var 48mm], construction = true)
+  coincident([
+    bladeEnvelopeTipRadiusGuide.start,
+    bladeEnvelopeTipArc.start
+  ])
+  coincident([
+    bladeEnvelopeTipRadiusGuide.end,
+    bladeEnvelopeTipArc.center
+  ])
+
+  bladeEnvelopeTipCenterlineGuide = line(start = [var 68mm, var 60mm], end = [var 68mm, var 48mm], construction = true)
+  coincident([
+    bladeEnvelopeTipCenterlineGuide.start,
+    bladeEnvelopeTipArc.end
+  ])
+  coincident([
+    bladeEnvelopeTipCenterlineGuide.end,
+    bladeEnvelopeTipRadiusGuide.end
+  ])
+  vertical(bladeEnvelopeTipCenterlineGuide)
+  horizontal(bladeEnvelopeTipRadiusGuide)
+  horizontalDistance([
+  shaftRadiusGuide.start,
+  baseFloor.start
+]) == impellerDiameter / 2
+
+  hubShoulderRadiusGuide = line(start = [var 7.33mm, var 59mm], end = [var 7.33mm, var 60mm])
+  coincident([
+    hubShoulderRadiusGuide.start,
+    hubShoulderBlendArc.center
+  ])
+  coincident([
+    hubShoulderRadiusGuide.end,
+    hubShoulderBlendArc.end
+  ])
+  verticalDistance([
+  hubShoulderRadiusGuide.end,
+  hubShoulderRadiusGuide.start
+]) == -1
+}
+
+// Revolved bodies from the shared sketch
+hubRegion = region(point = [5mm, 30mm], sketch = hubAndBladeEnvelopeSketch)
+impellerHub = revolve(hubRegion, axis = Y)
+
+bladeEnvelopeRegion = region(point = [30mm, 55mm], sketch = hubAndBladeEnvelopeSketch)
+bladeEnvelope = revolve(bladeEnvelopeRegion, axis = Y)
+
+// Sketch: blade cutter profile
+// This twisted rectangular profile intersects the blade envelope to isolate one blade.
+bladeCutterSketch = sketch(on = XY) {
+  bladeCutterBottomEdge = line(start = [var 4.4mm, var 0mm], end = [var 84.4mm, var 0mm])
+  bladeCutterOuterEdge = line(start = [var 84.4mm, var 0mm], end = [var 84.4mm, var 2mm])
+  coincident([
+    bladeCutterBottomEdge.end,
+    bladeCutterOuterEdge.start
+  ])
+
+  bladeCutterTopEdge = line(start = [var 84.4mm, var 2mm], end = [var 4.4mm, var 2mm])
+  coincident([
+    bladeCutterOuterEdge.end,
+    bladeCutterTopEdge.start
+  ])
+
+  bladeCutterInnerEdge = line(start = [var 4.4mm, var 2mm], end = [var 4.4mm, var 0mm])
+  coincident([
+    bladeCutterTopEdge.end,
+    bladeCutterInnerEdge.start
+  ])
+  coincident([
+    bladeCutterInnerEdge.end,
+    bladeCutterBottomEdge.start
+  ])
+
+  // Cutter-driving construction guide and dimensional constraints.
+  bladeCutterInnerRadiusGuide = line(start = [var 0mm, var 0mm], end = [var 4.4mm, var 0mm], construction = true)
+  coincident([
+    bladeCutterInnerRadiusGuide.start,
+    ORIGIN
+  ])
+  coincident([
+    bladeCutterInnerRadiusGuide.end,
+    bladeCutterInnerEdge.end
+  ])
+  horizontal(bladeCutterInnerRadiusGuide)
+  horizontal(bladeCutterBottomEdge)
+  horizontal(bladeCutterTopEdge)
+  vertical(bladeCutterOuterEdge)
+  vertical(bladeCutterInnerEdge)
+  horizontalDistance([
+  bladeCutterInnerRadiusGuide.start,
+  bladeCutterInnerRadiusGuide.end
+]) == shaftBoreDiameter / 2
+  horizontalDistance([
+  bladeCutterBottomEdge.start,
+  bladeCutterBottomEdge.end
+]) == impellerDiameter / 2
+  verticalDistance([
+  bladeCutterOuterEdge.start,
+  bladeCutterOuterEdge.end
+]) == bladeSectionThickness
+}
+
+// Blade cutter solid
+bladeCutterRegion = region(segments = [
+  bladeCutterSketch.bladeCutterBottomEdge
+])
+bladeCutter = extrude(bladeCutterRegion, twistAngle = bladeTwistAngle, length = 65)
+
+// Final blade geometry
+// Intersect the blade envelope with the twisted cutter, then circularly pattern the result.
+blades = intersect([bladeEnvelope, bladeCutter])
+  |> patternCircular3d(instances = bladeInstanceCount, axis = [0, 0, 1], center = [0, 0, 0])
+
+hide(hubAndBladeEnvelopeSketch)
+hide(bladeCutterSketch)

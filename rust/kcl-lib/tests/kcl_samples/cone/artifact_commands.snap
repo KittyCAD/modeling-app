@@ -21,12 +21,21 @@ description: Artifact commands cone.kcl
         },
         "y_axis": {
           "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
+          "y": 0.0,
+          "z": 1.0
         },
         "size": 60.0,
         "clobber": false,
         "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -40,8 +49,8 @@ description: Artifact commands cone.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
+          "y": -1.0,
+          "z": 0.0
         }
       }
     },
@@ -82,10 +91,10 @@ description: Artifact commands cone.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": -10.0,
+            "y": 0.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -102,7 +111,7 @@ description: Artifact commands cone.kcl
             "y": 0.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -110,8 +119,29 @@ description: Artifact commands cone.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 0.0,
+            "y": 10.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -164,6 +194,15 @@ description: Artifact commands cone.kcl
         "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     }
   ]

@@ -673,7 +673,7 @@ fn cleanup_type_string(input: &str, fmt_for_text: bool, kcl_std: &ModData, flavo
 
 #[test]
 fn test_generate_stdlib_markdown_docs() {
-    let kcl_std = crate::docs::kcl_doc::walk_prelude();
+    let kcl_std = crate::docs::kcl_doc::walk_stdlib();
 
     for flavor in StdlibDocFlavor::ALL {
         generate_index(&kcl_std, flavor).unwrap();
@@ -768,7 +768,7 @@ async fn run_example(program: &crate::Program) -> Result<(), ExecErrorWithState>
     let result = ctx
         .run(program, &mut exec_state)
         .await
-        .map_err(|err| ExecErrorWithState::new(err.into(), exec_state));
+        .map_err(|err| ExecErrorWithState::new(err.into(), exec_state, None));
     // Always close, even when there's an error.
     ctx.close().await;
     result.map(|_| ())
@@ -780,7 +780,7 @@ mod tests {
 
     #[test]
     fn test_cleanup_type_string() {
-        let kcl_std = crate::docs::kcl_doc::walk_prelude();
+        let kcl_std = crate::docs::kcl_doc::walk_stdlib();
 
         struct Test {
             input: &'static str,

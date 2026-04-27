@@ -3,25 +3,21 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing car-wheel-assembly.kcl
 ---
 {
-  "__mod_brakeCaliper": {
+  "__mod_brakeRotor": {
     "type": "Module",
     "value": 2
   },
-  "__mod_brakeRotor": {
+  "__mod_carTire": {
     "type": "Module",
     "value": 3
   },
-  "__mod_carTire": {
+  "__mod_carWheel": {
     "type": "Module",
     "value": 4
   },
-  "__mod_carWheel": {
-    "type": "Module",
-    "value": 5
-  },
   "__mod_lugNut": {
     "type": "Module",
-    "value": 6
+    "value": 5
   },
   "aBase": {
     "type": "Number",
@@ -49,11 +45,6 @@ description: Variables in memory after executing car-wheel-assembly.kcl
       "len": "in",
       "angle": "degrees"
     }
-  },
-  "c1": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "c1"
   },
   "caliperThickness": {
     "type": "Number",
@@ -269,15 +260,6 @@ description: Variables in memory after executing car-wheel-assembly.kcl
       "mm": null,
       "type": "Known",
       "type": "Length"
-    }
-  },
-  "tolerance": {
-    "type": "Number",
-    "value": 0.000000005,
-    "ty": {
-      "type": "Default",
-      "len": "in",
-      "angle": "degrees"
     }
   },
   "treadDepth": {

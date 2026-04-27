@@ -492,9 +492,9 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "4.6.0"
+version = "4.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b193af5b67834b676abd72466a96c1024e6a6ad978a1f484bd90b85c94041351"
+checksum = "1ddb117e43bbf7dacf0a4190fef4d345b9bad68dfc649cb349e7d17d28428e51"
 dependencies = [
  "clap_builder",
  "clap_derive",
@@ -516,9 +516,9 @@ dependencies = [
 
 [[package]]
 name = "clap_derive"
-version = "4.6.0"
+version = "4.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1110bd8a634a1ab8cb04345d8d878267d57c3cf1b38d91b71af6686408bbca6a"
+checksum = "f2ce8604710f6733aa641a2b3731eaa1e8b3d9973d5e3565da11800813f997a9"
 dependencies = [
  "heck",
  "proc-macro2",
@@ -1110,9 +1110,9 @@ dependencies = [
 
 [[package]]
 name = "ezpz"
-version = "0.2.22"
+version = "0.2.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "07878f63542370fd5fcf06f776cc2bf7b58cb557a41f9a72d4183e84e7707e54"
+checksum = "bf3e22d1dd17c54fe70f81b13886fa63da3b9687bb950bb40fc43838b90db07d"
 dependencies = [
  "faer",
  "indexmap 2.14.0",
@@ -2303,7 +2303,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.143"
+version = "0.1.147"
 dependencies = [
  "anyhow",
  "clap",
@@ -2314,7 +2314,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.2.143"
+version = "0.2.147"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2323,7 +2323,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.143"
+version = "0.1.147"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -2333,7 +2333,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-error"
-version = "0.2.143"
+version = "0.2.147"
 dependencies = [
  "miette",
  "serde",
@@ -2343,7 +2343,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.143"
+version = "0.2.147"
 dependencies = [
  "anyhow",
  "clap",
@@ -2364,7 +2364,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.143"
+version = "0.1.147"
 dependencies = [
  "anyhow",
  "clap",
@@ -2384,7 +2384,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.143"
+version = "0.2.147"
 dependencies = [
  "ahash",
  "anyhow",
@@ -2469,7 +2469,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.143"
+version = "0.3.147"
 dependencies = [
  "anyhow",
  "kcl-lib",
@@ -2485,7 +2485,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.2.143"
+version = "0.2.147"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -2498,7 +2498,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-to-core"
-version = "0.1.143"
+version = "0.1.147"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2512,7 +2512,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.143"
+version = "0.1.147"
 dependencies = [
  "anyhow",
  "console_error_panic_hook",
@@ -2543,9 +2543,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.4.9"
+version = "0.4.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f25f584622bc2ae682b0f64115fa9bfa26044ee71a8a7cf3ec8a207d35569202"
+checksum = "9feed56f25b6934ad902a6bcb83d98e59f985f9cbf80d159eb3742b3d31f2ebb"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2564,7 +2564,7 @@ dependencies = [
  "mime_guess",
  "parse-display",
  "phonenumber",
- "rand 0.9.2",
+ "rand 0.9.4",
  "reqwest",
  "schemars",
  "serde",
@@ -2580,9 +2580,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.187"
+version = "0.2.188"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8a8ea8b8d25ee014d3ef724d515e1f3ec3019360c173afa54027b369b09f59ac"
+checksum = "48546fb3c3ac68d7d586d1e446ffe015778412c7a60640a2f50ead8f63234ffe"
 dependencies = [
  "anyhow",
  "bon",
@@ -3799,7 +3799,7 @@ dependencies = [
  "bytes",
  "getrandom 0.3.4",
  "lru-slab",
- "rand 0.9.2",
+ "rand 0.9.4",
  "ring",
  "rustc-hash 2.1.1",
  "rustls",
@@ -3855,9 +3855,9 @@ dependencies = [
 
 [[package]]
 name = "rand"
-version = "0.9.2"
+version = "0.9.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6db2770f06117d490610c7488547d543617b21bfa07796d7a12f6f1bd53850d1"
+checksum = "44c5af06bb1b7d3216d91932aed5265164bf384dc89cd6ba05cf59a35f5f76ea"
 dependencies = [
  "rand_chacha",
  "rand_core 0.9.5",
@@ -3914,9 +3914,9 @@ checksum = "60a357793950651c4ed0f3f52338f53b2f809f32d83a07f72909fa13e4c6c1e3"
 
 [[package]]
 name = "rayon"
-version = "1.11.0"
+version = "1.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "368f01d005bf8fd9b1206fb6fa653e6c4a81ceb1466406b81792d87c5677a58f"
+checksum = "fb39b166781f92d482534ef4b4b1b2568f42613b53e5b6c160e24cfbfa30926d"
 dependencies = [
  "either",
  "rayon-core",
@@ -4185,9 +4185,9 @@ dependencies = [
 
 [[package]]
 name = "rustls-webpki"
-version = "0.103.10"
+version = "0.103.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "df33b2b81ac578cabaf06b89b0631153a3f416b0a886e8a7a1707fb51abbd1ef"
+checksum = "61c429a8649f110dddef65e2a5ad240f747e85f7758a6bccc7e5777bd33f756e"
 dependencies = [
  "ring",
  "rustls-pki-types",
@@ -4983,9 +4983,9 @@ checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
 name = "tokio"
-version = "1.51.0"
+version = "1.52.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2bd1c4c0fc4a7ab90fc15ef6daaa3ec3b893f004f915f2392557ed23237820cd"
+checksum = "b67dee974fe86fd92cc45b7a95fdd2f99a36a6d7b0d431a231178d3d670bbcc6"
 dependencies = [
  "bytes",
  "libc",
@@ -5350,7 +5350,7 @@ dependencies = [
  "http 1.4.0",
  "httparse",
  "log",
- "rand 0.9.2",
+ "rand 0.9.4",
  "rustls",
  "rustls-pki-types",
  "sha1",
@@ -5486,9 +5486,9 @@ checksum = "06abde3611657adf66d383f00b093d7faecc7fa57071cce2578660c9f1010821"
 
 [[package]]
 name = "uuid"
-version = "1.23.0"
+version = "1.23.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5ac8b6f42ead25368cf5b098aeb3dc8a1a2c05a3eee8a9a1a68c640edbfc79d9"
+checksum = "ddd74a9687298c6858e9b88ec8935ec45d22e8fd5e6394fa1bd4e99a87789c76"
 dependencies = [
  "getrandom 0.4.1",
  "js-sys",

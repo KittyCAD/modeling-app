@@ -33,6 +33,15 @@ description: Artifact commands utility-sink.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -85,7 +94,24 @@ description: Artifact commands utility-sink.kcl
             "y": 13.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 13.0,
+            "y": 13.0,
+            "z": 0.0
+          },
+          "relative": false
         }
       }
     },
@@ -102,24 +128,7 @@ description: Artifact commands utility-sink.kcl
             "y": 0.0,
             "z": 0.0
           },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
-            "y": -13.0,
-            "z": 0.0
-          },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -138,14 +147,6 @@ description: Artifact commands utility-sink.kcl
           },
           "relative": false
         }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
       }
     },
     {
@@ -616,11 +617,11 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
+            "x": 13.0,
             "y": 13.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -633,28 +634,28 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1174.0,
+            "x": 1187.0,
+            "y": 13.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 1187.0,
             "y": 0.0,
             "z": 0.0
           },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
-            "y": -13.0,
-            "z": 0.0
-          },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -673,14 +674,6 @@ description: Artifact commands utility-sink.kcl
           },
           "relative": false
         }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
       }
     },
     {
@@ -919,10 +912,10 @@ description: Artifact commands utility-sink.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 574.0,
+            "y": 587.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -936,10 +929,10 @@ description: Artifact commands utility-sink.kcl
           "type": "line",
           "end": {
             "x": 13.0,
-            "y": 0.0,
+            "y": 587.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -952,11 +945,11 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": -574.0,
+            "x": 13.0,
+            "y": 13.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -975,14 +968,6 @@ description: Artifact commands utility-sink.kcl
           },
           "relative": false
         }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
       }
     },
     {
@@ -1227,7 +1212,7 @@ description: Artifact commands utility-sink.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 593.5,
+          "x": 593.500000013,
           "y": 0.0,
           "z": 0.0
         }
@@ -1249,11 +1234,11 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
+            "x": 593.5000000160001,
             "y": 13.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -1266,11 +1251,11 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 13.0,
-            "y": 0.0,
+            "x": 606.5000000205,
+            "y": 13.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -1283,24 +1268,7 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": -13.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 593.5,
+            "x": 606.500000023,
             "y": 0.0,
             "z": 0.0
           },
@@ -1312,18 +1280,29 @@ description: Artifact commands utility-sink.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 593.5000000135,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
-        "transform": [],
-        "transforms": []
+        "type": "create_region_from_query_point",
+        "object_id": "[uuid]",
+        "query_point": {
+          "x": 600.0,
+          "y": 6.5
+        }
       }
     },
     {
@@ -1494,6 +1473,26 @@ description: Artifact commands utility-sink.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "entity_linear_pattern_transform",
+        "entity_id": "[uuid]",
+        "transform": [],
+        "transforms": []
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_linear_pattern_transform",
+        "entity_id": "[uuid]",
+        "transform": [],
+        "transforms": []
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "make_plane",
         "origin": {
           "x": 0.0,
@@ -1594,7 +1593,24 @@ description: Artifact commands utility-sink.kcl
             "y": 13.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 1200.0,
+            "y": 13.0,
+            "z": 0.0
+          },
+          "relative": false
         }
       }
     },
@@ -1611,24 +1627,7 @@ description: Artifact commands utility-sink.kcl
             "y": 0.0,
             "z": 0.0
           },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
-            "y": -13.0,
-            "z": 0.0
-          },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -1647,14 +1646,6 @@ description: Artifact commands utility-sink.kcl
           },
           "relative": false
         }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
       }
     },
     {
@@ -1883,10 +1874,10 @@ description: Artifact commands utility-sink.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 574.0,
+            "y": 587.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -1900,10 +1891,10 @@ description: Artifact commands utility-sink.kcl
           "type": "line",
           "end": {
             "x": 13.0,
-            "y": 0.0,
+            "y": 587.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -1916,11 +1907,11 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": -574.0,
+            "x": 13.0,
+            "y": 13.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -1939,14 +1930,6 @@ description: Artifact commands utility-sink.kcl
           },
           "relative": false
         }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
       }
     },
     {
@@ -2217,7 +2200,24 @@ description: Artifact commands utility-sink.kcl
             "y": 600.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 1200.0,
+            "y": 600.0,
+            "z": 0.0
+          },
+          "relative": false
         }
       }
     },
@@ -2234,24 +2234,7 @@ description: Artifact commands utility-sink.kcl
             "y": 0.0,
             "z": 0.0
           },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
-            "y": -600.0,
-            "z": 0.0
-          },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -2276,8 +2259,12 @@ description: Artifact commands utility-sink.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region_from_query_point",
+        "object_id": "[uuid]",
+        "query_point": {
+          "x": 600.0,
+          "y": 300.0
+        }
       }
     },
     {
@@ -2346,6 +2333,15 @@ description: Artifact commands utility-sink.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -2368,7 +2364,7 @@ description: Artifact commands utility-sink.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -296.75,
+          "x": -296.750000001,
           "y": 40.0,
           "z": 0.0
         }
@@ -2390,11 +2386,11 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 450.0,
+            "x": -296.7500000005,
+            "y": 490.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -2407,11 +2403,11 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -593.5,
-            "y": 0.0,
+            "x": -890.24999999875,
+            "y": 490.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -2424,24 +2420,7 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": -450.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -296.75,
+            "x": -890.2499999975,
             "y": 40.0,
             "z": 0.0
           },
@@ -2453,18 +2432,29 @@ description: Artifact commands utility-sink.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -296.75000000125,
+            "y": 40.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
-        "transform": [],
-        "transforms": []
+        "type": "create_region_from_query_point",
+        "object_id": "[uuid]",
+        "query_point": {
+          "x": -593.5,
+          "y": 265.0
+        }
       }
     },
     {
@@ -2529,6 +2519,15 @@ description: Artifact commands utility-sink.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -2551,7 +2550,7 @@ description: Artifact commands utility-sink.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 298.75,
+          "x": 298.750000001,
           "y": 42.0,
           "z": 0.0
         }
@@ -2573,11 +2572,11 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 446.0,
+            "x": 298.7500000005,
+            "y": 488.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -2590,11 +2589,11 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 589.5,
-            "y": 0.0,
+            "x": 888.24999999875,
+            "y": 488.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -2607,24 +2606,7 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": -446.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 298.75,
+            "x": 888.2499999975,
             "y": 42.0,
             "z": 0.0
           },
@@ -2636,18 +2618,29 @@ description: Artifact commands utility-sink.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 298.75000000125,
+            "y": 42.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
-        "transform": [],
-        "transforms": []
+        "type": "create_region_from_query_point",
+        "object_id": "[uuid]",
+        "query_point": {
+          "x": 593.5,
+          "y": 265.0
+        }
       }
     },
     {
@@ -2706,6 +2699,15 @@ description: Artifact commands utility-sink.kcl
         "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -2786,7 +2788,7 @@ description: Artifact commands utility-sink.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 633.5,
+          "x": 633.500000013,
           "y": 545.0,
           "z": 0.0
         }
@@ -2808,17 +2810,17 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 593.5,
+            "x": 593.500000012,
             "y": 545.0
           },
-          "radius": 40.0,
+          "radius": 40.00000000099999,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -2828,18 +2830,12 @@ description: Artifact commands utility-sink.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
-        "transform": [],
-        "transforms": []
+        "type": "create_region_from_query_point",
+        "object_id": "[uuid]",
+        "query_point": {
+          "x": 593.5,
+          "y": 545.0
+        }
       }
     },
     {
@@ -2908,6 +2904,25 @@ description: Artifact commands utility-sink.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "entity_linear_pattern_transform",
+        "entity_id": "[uuid]",
+        "transform": [],
+        "transforms": []
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "make_plane",
         "origin": {
           "x": 0.0,
@@ -2982,7 +2997,7 @@ description: Artifact commands utility-sink.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 608.5,
+          "x": 608.500000013,
           "y": 545.0,
           "z": 0.0
         }
@@ -3004,17 +3019,17 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 593.5,
+            "x": 593.500000012,
             "y": 545.0
           },
-          "radius": 15.0,
+          "radius": 15.00000000099999,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -3024,18 +3039,12 @@ description: Artifact commands utility-sink.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
-        "transform": [],
-        "transforms": []
+        "type": "create_region_from_query_point",
+        "object_id": "[uuid]",
+        "query_point": {
+          "x": 593.5,
+          "y": 545.0
+        }
       }
     },
     {
@@ -3104,6 +3113,25 @@ description: Artifact commands utility-sink.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "entity_linear_pattern_transform",
+        "entity_id": "[uuid]",
+        "transform": [],
+        "transforms": []
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "make_plane",
         "origin": {
           "x": 0.0,
@@ -3178,7 +3206,7 @@ description: Artifact commands utility-sink.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 603.5,
+          "x": 603.500000013,
           "y": 950.0,
           "z": 0.0
         }
@@ -3200,17 +3228,17 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 593.5,
+            "x": 593.500000012,
             "y": 950.0
           },
-          "radius": 10.0,
+          "radius": 10.00000000099999,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -3220,18 +3248,12 @@ description: Artifact commands utility-sink.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
-        "transform": [],
-        "transforms": []
+        "type": "create_region_from_query_point",
+        "object_id": "[uuid]",
+        "query_point": {
+          "x": 593.5,
+          "y": 950.0
+        }
       }
     },
     {
@@ -3300,6 +3322,25 @@ description: Artifact commands utility-sink.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "entity_linear_pattern_transform",
+        "entity_id": "[uuid]",
+        "transform": [],
+        "transforms": []
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "make_plane",
         "origin": {
           "x": 0.0,
@@ -3374,7 +3415,7 @@ description: Artifact commands utility-sink.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 597.5,
+          "x": 597.500000013,
           "y": 1000.0,
           "z": 0.0
         }
@@ -3396,17 +3437,17 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 593.5,
+            "x": 593.500000012,
             "y": 1000.0
           },
-          "radius": 4.0,
+          "radius": 4.000000000999989,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -3416,18 +3457,12 @@ description: Artifact commands utility-sink.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
-        "transform": [],
-        "transforms": []
+        "type": "create_region_from_query_point",
+        "object_id": "[uuid]",
+        "query_point": {
+          "x": 593.5,
+          "y": 1000.0
+        }
       }
     },
     {
@@ -3490,6 +3525,25 @@ description: Artifact commands utility-sink.kcl
         "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_linear_pattern_transform",
+        "entity_id": "[uuid]",
+        "transform": [],
+        "transforms": []
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -3570,7 +3624,7 @@ description: Artifact commands utility-sink.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 15.0,
+          "x": 14.999999994,
           "y": 0.0,
           "z": 0.0
         }
@@ -3592,11 +3646,11 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
+            "x": 14.999999992,
             "y": 13.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -3609,11 +3663,11 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 576.5,
-            "y": 0.0,
+            "x": 591.499999988,
+            "y": 13.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -3626,24 +3680,7 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": -13.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 15.0,
+            "x": 591.4999999855,
             "y": 0.0,
             "z": 0.0
           },
@@ -3655,8 +3692,91 @@ description: Artifact commands utility-sink.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 14.999999994,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region_from_query_point",
+        "object_id": "[uuid]",
+        "query_point": {
+          "x": 303.25,
+          "y": 6.5
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extrude",
+        "target": "[uuid]",
+        "distance": 667.5,
+        "faces": null,
+        "opposite": "None",
+        "extrude_method": "merge",
+        "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_bring_to_front",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_extrusion_face_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_adjacency_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
@@ -3697,130 +3817,6 @@ description: Artifact commands utility-sink.kcl
             }
           ]
         ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extrude",
-        "target": "[uuid]",
-        "distance": 667.5,
-        "faces": null,
-        "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extrude",
-        "target": "[uuid]",
-        "distance": 667.5,
-        "faces": null,
-        "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
       }
     },
     {
@@ -3916,6 +3912,15 @@ description: Artifact commands utility-sink.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -3943,7 +3948,7 @@ description: Artifact commands utility-sink.kcl
         "path": "[uuid]",
         "to": {
           "x": 0.0,
-          "y": 15.0,
+          "y": 14.999999999999995,
           "z": 0.0
         }
       }
@@ -3965,10 +3970,10 @@ description: Artifact commands utility-sink.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 570.0,
+            "y": 585.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -3982,41 +3987,7 @@ description: Artifact commands utility-sink.kcl
           "type": "line",
           "end": {
             "x": 13.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
-            "y": -570.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
-            "y": 15.0,
+            "y": 585.0,
             "z": 0.0
           },
           "relative": false
@@ -4027,8 +3998,108 @@ description: Artifact commands utility-sink.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 13.0,
+            "y": 14.999999999999995,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 0.0,
+            "y": 14.999999999999995,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region_from_query_point",
+        "object_id": "[uuid]",
+        "query_point": {
+          "x": 6.5,
+          "y": 300.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extrude",
+        "target": "[uuid]",
+        "distance": 667.5,
+        "faces": null,
+        "opposite": "None",
+        "extrude_method": "merge",
+        "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_bring_to_front",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_extrusion_face_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_adjacency_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
@@ -4075,124 +4146,9 @@ description: Artifact commands utility-sink.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extrude",
-        "target": "[uuid]",
-        "distance": 667.5,
-        "faces": null,
-        "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
+        "type": "object_visible",
         "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extrude",
-        "target": "[uuid]",
-        "distance": 667.5,
-        "faces": null,
-        "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "hidden": true
       }
     },
     {
@@ -4295,11 +4251,11 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
+            "x": 243.25,
             "y": -20.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -4310,13 +4266,21 @@ description: Artifact commands utility-sink.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 20.0,
-            "y": -20.0,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": 263.25,
+            "y": -20.000000000000004
           },
-          "angle_snap_increment": null
+          "radius": 20.0,
+          "start": {
+            "unit": "degrees",
+            "value": 180.0
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 270.0
+          },
+          "relative": false
         }
       }
     },
@@ -4329,45 +4293,53 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 80.0,
+            "x": 343.25,
+            "y": -40.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 343.25,
+            "y": -20.0
+          },
+          "radius": 20.0,
+          "start": {
+            "unit": "degrees",
+            "value": -90.0
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 363.25,
             "y": 0.0,
             "z": 0.0
           },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 20.0,
-            "y": 20.0,
-            "z": 0.0
-          },
-          "angle_snap_increment": null
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
-            "y": 20.0,
-            "z": 0.0
-          },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -4394,6 +4366,15 @@ description: Artifact commands utility-sink.kcl
         "size": 60.0,
         "clobber": false,
         "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -4453,12 +4434,12 @@ description: Artifact commands utility-sink.kcl
           },
           "radius": 2.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -4468,8 +4449,12 @@ description: Artifact commands utility-sink.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -4558,6 +4543,24 @@ description: Artifact commands utility-sink.kcl
             }
           ]
         ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     }
   ]

@@ -1126,6 +1126,87 @@ chamfer001 = chamfer(
       )
     })
 
+    it('should add a blend call with a sweepEdge coming from a region extrude', async () => {
+      const code = `sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 6.16mm, var 0mm])
+  line2 = line(start = [var 6.16mm, var 0mm], end = [var 6.16mm, var 5.46mm])
+  line3 = line(start = [var 6.16mm, var 5.46mm], end = [var 0mm, var 5.46mm])
+  line4 = line(start = [var 0mm, var 5.46mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  coincident([line1.start, ORIGIN])
+}
+hidden001 = hide(sketch001)
+region001 = region(point = [3.08mm, 0.0025mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 5, bodyType = SURFACE)
+sketch002 = sketch(on = -YZ) {
+  line1 = line(start = [var -5.51mm, var 8.29mm], end = [var 0mm, var 8.04mm])
+  vertical([line1.end, ORIGIN])
+  horizontal(line1)
+}
+extrude002 = extrude(sketch002.line1, length = 5, bodyType = SURFACE)
+hidden002 = hide(sketch002)
+surface001 = flipSurface(extrude002)
+`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const sweeps = [...artifactGraph.values()].filter(
+        (a) => a.type === 'sweep'
+      )
+      expect(sweeps.length).toBe(2)
+
+      const sweepEdgeBody1 = [...artifactGraph.values()]
+        .filter((a) => a.type === 'sweepEdge' && a.sweepId === sweeps[0].id)
+        .at(-6)
+      const segmentBody2 = [...artifactGraph.values()].find(
+        (a) => a.type === 'segment' && a.pathId === sweeps[1].pathId
+      )
+
+      if (!sweepEdgeBody1 || !segmentBody2) {
+        throw new Error(
+          'Could not find the requested sweep edges for blend insertion'
+        )
+      }
+
+      const edges = createSelectionFromArtifacts(
+        [segmentBody2, sweepEdgeBody1],
+        artifactGraph
+      )
+
+      const result = addBlend({
+        ast,
+        artifactGraph,
+        edges,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+      expect(newCode).toContain(
+        `blend001 = blend([
+  getBoundedEdge(extrude002, edge = extrude002.sketch.tags.line1),
+  getBoundedEdge(extrude001, edge = getOppositeEdge(region001.tags.line2))
+])`
+      )
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add a blend call with opposite wrappers from sweep edges', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         sketchSolveSurfacesForBlend,

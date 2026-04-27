@@ -2,7 +2,7 @@
 // A parametric impeller with straight, flat blades used in centrifugal fans or pumps. Moves air or fluid radially outward from the center. Useful for mechanical design and prototyping.
 // Categories: Automotive, Aerospace
 
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm)
 
 // parameters
 bladeCount = 4 // number of blades
@@ -16,19 +16,40 @@ bladeHeight = 40 // vertical height of each blade
 bladeThickness = 3 // width (thickness) of each blade
 
 
-// derived
+// derived parameters
 outerRadius = outerDiameter / 2
 bladeRootRadius = hubOutsideDiameter / 2 + (outerDiameter - hubOutsideDiameter) / 4
-bladeTipRadius = bladeRootRadius + bladeLength
 
 // blade profile (positioned mid-height)
-bladeSketch = startSketchOn(offsetPlane(XY, offset = -bladeHeight / 2))
-bladeProfile = startProfile(bladeSketch, at = [bladeRootRadius, 0])
-  |> xLine(length = bladeLength)
-  |> yLine(length = bladeThickness)
-  |> xLine(length = -bladeLength)
-  |> close()
-blade = extrude(bladeProfile, length = bladeHeight)
+bladePlane = offsetPlane(XY, offset = -bladeHeight / 2)
+bladeProfile = sketch(on = bladePlane) {
+  rootGuide = line(start = [var 0mm, var 0mm], end = [var 40mm, var 0mm], construction = true)
+  line1 = line(start = [var 40mm, var 0mm], end = [var 120mm, var 0mm])
+  line2 = line(start = [var 120mm, var 0mm], end = [var 120mm, var 3mm])
+  line3 = line(start = [var 120mm, var 3mm], end = [var 40mm, var 3mm])
+  line4 = line(start = [var 40mm, var 3mm], end = [var 40mm, var 0mm])
+
+  coincident([rootGuide.start, ORIGIN])
+  coincident([rootGuide.end, line1.start])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+
+  horizontal(rootGuide)
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+
+  distance([rootGuide.start, rootGuide.end]) == bladeRootRadius
+  distance([line1.start, line1.end]) == bladeLength
+  distance([line2.start, line2.end]) == bladeThickness
+}
+
+bladeRegion = region(segments = [bladeProfile.line1, bladeProfile.line2])
+hide(bladeProfile)
+blade = extrude(bladeRegion, length = bladeHeight)
 
 // pattern blades around center
 blades = patternCircular3d(
@@ -40,16 +61,63 @@ blades = patternCircular3d(
 )
 
 // back plate (base disk)
-diskSketch = startSketchOn(offsetPlane(XY, offset = -baseThickness / 2))
-disk = circle(diskSketch, center = [0, 0], radius = outerRadius)
-backPlate = extrude(disk, length = baseThickness)
+diskPlane = offsetPlane(XY, offset = -baseThickness / 2)
+disk = sketch(on = diskPlane) {
+  diskRadiusGuide = line(start = [var 0mm, var 0mm], end = [var 60mm, var 0mm], construction = true)
+  circle1 = circle(start = [var 60mm, var 0mm], center = [var 0mm, var 0mm])
+
+  coincident([diskRadiusGuide.start, ORIGIN])
+  coincident([circle1.center, diskRadiusGuide.start])
+  coincident([circle1.start, diskRadiusGuide.end])
+
+  horizontal(diskRadiusGuide)
+  distance([
+  diskRadiusGuide.start,
+  diskRadiusGuide.end
+]) == outerRadius
+}
+
+region002 = region(segments = [disk.circle1])
+hide(disk)
+backPlate = extrude(region002, length = baseThickness)
 
 // hub cylinder
-hubSketch = startSketchOn(backPlate, face = END)
-hubCircle = circle(hubSketch, center = [0, 0], radius = hubOutsideDiameter / 2)
-hub = extrude(hubCircle, length = hubHeight)
+hubCircle = sketch(on = faceOf(backPlate, face = END)) {
+  hubRadiusGuide = line(start = [var 0mm, var 0mm], end = [var 18mm, var 0mm], construction = true)
+  circle1 = circle(start = [var 18mm, var 0mm], center = [var 0mm, var 0mm])
+
+  coincident([hubRadiusGuide.start, ORIGIN])
+  coincident([circle1.center, hubRadiusGuide.start])
+  coincident([circle1.start, hubRadiusGuide.end])
+
+  horizontal(hubRadiusGuide)
+  distance([
+  hubRadiusGuide.start,
+  hubRadiusGuide.end
+]) == hubOutsideDiameter / 2
+}
+
+region003 = region(segments = [hubCircle.circle1])
+hide(hubCircle)
+hub = extrude(region003, length = hubHeight)
 
 // bore cutout
-boreSketch = startSketchOn(backPlate, face = START)
-boreCircle = circle(boreSketch, center = [0, 0], radius = boreDiameter / 2)
-boreCut = extrude(boreCircle, length = -(baseThickness + hubHeight))
+boreCircle = sketch(on = faceOf(backPlate, face = START)) {
+  boreRadiusGuide = line(start = [var 0mm, var 0mm], end = [var 13mm, var 0mm], construction = true)
+  circle1 = circle(start = [var 13mm, var 0mm], center = [var 0mm, var 0mm])
+
+  coincident([boreRadiusGuide.start, ORIGIN])
+  coincident([circle1.center, boreRadiusGuide.start])
+  coincident([circle1.start, boreRadiusGuide.end])
+
+  horizontal(boreRadiusGuide)
+  distance([
+  boreRadiusGuide.start,
+  boreRadiusGuide.end
+]) == boreDiameter / 2
+}
+
+region004 = region(segments = [boreCircle.circle1])
+hide(boreCircle)
+boreTool = extrude(region004, method = NEW, length = -(baseThickness + hubHeight))
+boreCut = subtract(hub, tools = [boreTool])

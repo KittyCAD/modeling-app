@@ -90,7 +90,24 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
   test(
     'Engine disconnect & reconnect in sketch mode',
     { tag: '@skipLocalEngine' },
-    async ({ page, homePage, toolbar, scene, cmdBar, editor }) => {
+    async ({
+      page,
+      context,
+      homePage,
+      toolbar,
+      scene,
+      cmdBar,
+      editor,
+      tronApp,
+    }) => {
+      if (tronApp) {
+        await tronApp.cleanProjectDir({
+          modeling: {
+            use_sketch_solve_mode: false,
+          },
+        })
+      }
+
       const networkToggle = page.getByTestId(/network-toggle/)
       const networkToggleConnectedText = page.getByText(
         'Network health (Strong)'
@@ -98,6 +115,9 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
       const networkToggleWeakText = page.getByText('Network health (Ok)')
 
       const u = await getUtils(page)
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, 'sketch001 = startSketchOn(XZ)')
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
@@ -105,11 +125,13 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
       await u.waitForPageLoad()
 
       await u.openDebugPanel()
-      // click on "Start Sketch" button
-      await toolbar.startSketchOnDefaultPlane('Front plane')
+      const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
+      await op.dblclick()
+      await toolbar.waitUntilSketchingReady()
+      await toolbar.closeFeatureTreePane()
 
-      await expect(page.locator('.cm-content')).toHaveText(
-        `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)`
+      await expect(page.locator('.cm-content')).toContainText(
+        'sketch001 = startSketchOn(XZ)'
       )
       await u.closeDebugPanel()
 
@@ -195,7 +217,7 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
       ).not.toHaveAttribute('aria-pressed', 'true')
 
       // Exit sketch
-      await page.keyboard.press('Escape')
+      await page.keyboard.press('Meta+Escape')
       await expect(
         page.getByRole('button', { name: 'Exit Sketch' })
       ).not.toBeVisible()

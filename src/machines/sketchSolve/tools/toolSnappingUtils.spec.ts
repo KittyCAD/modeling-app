@@ -54,7 +54,7 @@ describe('toolSnappingUtils', () => {
     })
   })
 
-  it('skips the excluded point owner segment and falls through to another segment target', () => {
+  it('skips the excluded point owner segment and falls through to another segment midpoint target', () => {
     const draftStart = createPointApiObject({ id: 1, x: 20, y: 50, owner: 3 })
     const draftEnd = createPointApiObject({ id: 2, x: 30, y: 50, owner: 3 })
     const draftLine = createLineApiObject({ id: 3, start: 1, end: 2 })
@@ -90,7 +90,7 @@ describe('toolSnappingUtils', () => {
       excludedPointIds: [2],
     })
 
-    expect(candidate?.target).toEqual({ type: 'line', id: 6 })
-    expect(candidate?.position).toEqual([32, 55])
+    expect(candidate?.target).toEqual({ type: 'midpoint', id: 6 })
+    expect(candidate?.position).toEqual([32, 50])
   })
 })

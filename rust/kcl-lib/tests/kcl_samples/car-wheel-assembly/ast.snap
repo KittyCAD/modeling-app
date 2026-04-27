@@ -33,34 +33,11 @@ description: Result of parsing car-wheel-assembly.kcl
         "moduleId": 0,
         "path": {
           "type": "Kcl",
-          "filename": "brake-caliper.kcl"
-        },
-        "preComments": [
-          "// Import parts"
-        ],
-        "selector": {
-          "type": "None",
-          "alias": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": "brakeCaliper",
-            "start": 0,
-            "type": "Identifier"
-          }
-        },
-        "start": 0,
-        "type": "ImportStatement",
-        "type": "ImportStatement"
-      },
-      {
-        "commentStart": 0,
-        "end": 0,
-        "moduleId": 0,
-        "path": {
-          "type": "Kcl",
           "filename": "brake-rotor.kcl"
         },
+        "preComments": [
+          "// Import all parts into the assembly file"
+        ],
         "selector": {
           "type": "None",
           "alias": {
@@ -349,7 +326,7 @@ description: Result of parsing car-wheel-assembly.kcl
           "// Categories: Automotive",
           "",
           "",
-          "// Define units"
+          "// Set units and version"
         ],
         "properties": [
           {
@@ -384,6 +361,34 @@ description: Result of parsing car-wheel-assembly.kcl
               "type": "Name",
               "type": "Name"
             }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "kclVersion",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "2.0",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
+            }
           }
         ],
         "start": 0,
@@ -394,6 +399,18 @@ description: Result of parsing car-wheel-assembly.kcl
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "4": [
           {
             "commentStart": 0,
             "end": 0,

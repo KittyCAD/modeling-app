@@ -6,58 +6,105 @@
 @settings(defaultLengthUnit = in)
 
 // Define parameters
-cutoutEdgeLength = 2
+gaugeWidth = 1.25
+gaugeThickness = 0.05
+gaugeDepth = 1.5
 cutoutWidth = 0.52
-cutoutAngle = 10 // degrees
+cutoutAngle = 180deg - 10deg
 cutoutDepth = 1
-cutoutBaseDepth = 0.5
-totalWidth = 1.25
-blockEdgeLength = 0.5
-flip = 0
+lowerCutoutStartY = 0.3
 
-fn gauge(cutoutAngle, N, startX, startY, deltaX, deltaY) {
-  gaugeSketch = startSketchOn(XY)
-    |> startProfile(at = [
-         blockEdgeLength + startX + deltaX * N,
-         startY + deltaY * N
-       ])
-    |> xLine(length = cutoutDepth + cutoutBaseDepth)
-    |> yLine(length = (totalWidth - cutoutWidth) / 2 - ((1 - flip) * cutoutDepth * sin(units::toRadians(cutoutAngle))))
-    |> angledLine(angle = 180 - ((1 - flip) * cutoutAngle), lengthX = cutoutDepth)
-    |> yLine(length = cutoutWidth)
-    |> angledLine(angle = flip * cutoutAngle, lengthX = cutoutDepth)
-    |> yLine(endAbsolute = totalWidth)
-    |> xLine(length = -1 * (cutoutDepth + cutoutBaseDepth))
-    |> close()
-    |> extrude(length = 0.05)
-  return gaugeSketch
+gaugeProfileSketch = sketch(on = XY) {
+  // Outer boundary.
+  leftOuterEdge = line(start = [var 0in, var 0in], end = [var 0in, var 1.25in])
+  topOuterEdge = line(start = [var 0in, var 1.25in], end = [var 1.5in, var 1.25in])
+  upperRightOuterEdge = line(start = [var 1.5in, var 1.25in], end = [var 1.5in, var 0.71in])
+  rightCutoutConstructionEdge = line(start = [var 1.5in, var 0.71in], end = [var 1.5in, var 0.19in], construction = true)
+  lowerRightOuterEdge = line(start = [var 1.5in, var 0.19in], end = [var 1.5in, var 0in])
+  bottomOuterEdge = line(start = [var 1.5in, var 0in], end = [var 0in, var 0in])
+
+  coincident([leftOuterEdge.start, ORIGIN])
+  coincident([leftOuterEdge.end, topOuterEdge.start])
+  coincident([
+    topOuterEdge.end,
+    upperRightOuterEdge.start
+  ])
+  coincident([
+    lowerRightOuterEdge.end,
+    bottomOuterEdge.start
+  ])
+  coincident([
+    bottomOuterEdge.end,
+    leftOuterEdge.start
+  ])
+
+  horizontal(topOuterEdge)
+  horizontal(bottomOuterEdge)
+  vertical(leftOuterEdge)
+  vertical(upperRightOuterEdge)
+  vertical(rightCutoutConstructionEdge)
+  vertical(lowerRightOuterEdge)
+
+  horizontalDistance([
+  bottomOuterEdge.end,
+  bottomOuterEdge.start
+]) == gaugeDepth
+  verticalDistance([
+  lowerRightOuterEdge.end,
+  lowerRightOuterEdge.start
+]) == lowerCutoutStartY
+
+  // Angled cutout profile.
+  cutoutAngledEdge = line(start = [var 1.5in, var 0.19in], end = [var 0.5in, var 0.37in])
+  cutoutLeftVerticalEdge = line(start = [var 0.5in, var 0.37in], end = [var 0.32in, var 0.83in])
+  cutoutTopEdge = line(start = [var -1.14in, var 1.32in], end = [var 1.5in, var 0.71in])
+  cutoutAngleReferenceEdge = line(start = [var 1.5in, var 0.19in], end = [var 2.24in, var 0.19in], construction = true)
+
+  coincident([
+    cutoutAngledEdge.start,
+    lowerRightOuterEdge.start
+  ])
+  coincident([
+    cutoutAngledEdge.end,
+    cutoutLeftVerticalEdge.start
+  ])
+  coincident([
+    cutoutLeftVerticalEdge.end,
+    cutoutTopEdge.start
+  ])
+  coincident([
+    cutoutTopEdge.end,
+    rightCutoutConstructionEdge.start
+  ])
+  coincident([
+    cutoutTopEdge.end,
+    upperRightOuterEdge.end
+  ])
+  coincident([
+    cutoutAngleReferenceEdge.start,
+    lowerRightOuterEdge.start
+  ])
+
+  horizontal(cutoutTopEdge)
+  horizontal(cutoutAngleReferenceEdge)
+  vertical(cutoutLeftVerticalEdge)
+  angle([
+  cutoutAngleReferenceEdge,
+  cutoutAngledEdge
+]) == cutoutAngle
+
+  horizontalDistance([cutoutTopEdge.start, cutoutTopEdge.end]) == cutoutDepth
+  verticalDistance([
+  rightCutoutConstructionEdge.end,
+  rightCutoutConstructionEdge.start
+]) == cutoutWidth
+  verticalDistance([leftOuterEdge.start, leftOuterEdge.end]) == gaugeWidth
+  coincident([
+    rightCutoutConstructionEdge.end,
+    cutoutAngleReferenceEdge.start
+  ])
 }
 
-startX = 0
-startY = 0
-xSpacing = 2
-angleSpacing = 5
-gauge(
-  cutoutAngle = 8,
-  N = 0,
-  startX = startX,
-  startY = startY,
-  deltaX = xSpacing,
-  deltaY = 0,
-)
-gauge(
-  cutoutAngle = 14,
-  N = 1,
-  startX = startX,
-  startY = startY,
-  deltaX = xSpacing,
-  deltaY = 0,
-)
-gauge(
-  cutoutAngle = 15,
-  N = 2,
-  startX = startX,
-  startY = startY,
-  deltaX = xSpacing,
-  deltaY = 0,
-)
+gaugeRegion = region(segments = [gaugeProfileSketch.leftOuterEdge])
+hide(gaugeProfileSketch)
+gaugeBody = extrude(gaugeRegion, length = gaugeThickness)

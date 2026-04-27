@@ -191,6 +191,8 @@ function getBadgeTypeForSnappingTarget(
       return 'Horizontal'
     case Y_AXIS_TARGET:
       return 'Vertical'
+    case 'midpoint':
+      return 'Midpoint'
     default:
       return 'Coincident'
   }
