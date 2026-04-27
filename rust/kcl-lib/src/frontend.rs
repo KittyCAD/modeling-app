@@ -4634,12 +4634,27 @@ fn mutate_ast_node_by_source_ref(
     };
     let mut context = AstMutateContext {
         source_range,
-        node_path,
-        command,
+        node_path: node_path.clone(),
+        command: command.clone(),
         defined_names_stack: Default::default(),
     };
     let control = dfs_mut(ast, &mut context);
     match control {
+        ControlFlow::Continue(_) if node_path.is_some() => {
+            let mut context = AstMutateContext {
+                source_range,
+                node_path: None,
+                command,
+                defined_names_stack: Default::default(),
+            };
+            match dfs_mut(ast, &mut context) {
+                ControlFlow::Continue(_) => Err(KclError::refactor(
+                    "Could not find the KCL source for this edit. Try reloading the app, or update from code."
+                        .to_owned(),
+                )),
+                ControlFlow::Break(break_value) => break_value,
+            }
+        }
         ControlFlow::Continue(_) => Err(KclError::refactor(
             "Could not find the KCL source for this edit. Try reloading the app, or update from code.".to_owned(),
         )),
@@ -4655,7 +4670,7 @@ struct AstMutateContext {
     defined_names_stack: Vec<HashSet<String>>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 #[allow(clippy::large_enum_variant)]
 enum AstMutateCommand {
     /// Add an expression statement to the sketch block.
