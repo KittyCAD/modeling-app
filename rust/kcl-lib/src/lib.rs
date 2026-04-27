@@ -61,6 +61,8 @@ mod coredump;
 mod docs;
 mod engine;
 mod errors;
+#[cfg(test)]
+mod export_bindings;
 mod execution;
 mod fmt;
 mod frontend;

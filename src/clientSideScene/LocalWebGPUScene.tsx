@@ -9,18 +9,17 @@ import {
   SKETCH_SELECTION_COLOR,
 } from '@src/lib/constants'
 import type { ArtifactGraph } from '@src/lang/wasm'
-import type ModelingAppFile from '@src/lib/modelingAppFile'
+import type { RenderPacket, RenderPacketPrimitive } from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import { useEffect, useRef } from 'react'
 import {
+  BufferGeometry,
   BufferAttribute,
   Color,
-  EdgesGeometry,
   FrontSide,
-  LineBasicMaterial,
-  LineSegments,
+  Group,
   Mesh,
   MeshBasicMaterial,
   OrthographicCamera,
@@ -39,7 +38,6 @@ const WEBGPU_PORT_LOG_PREFIX = '[WEBGPU_POC]'
 const GLTF_METERS_TO_ENGINE_MILLIMETERS = 1000
 const ENGINE_MILLIMETERS_TO_GLTF_METERS = 1 / GLTF_METERS_TO_ENGINE_MILLIMETERS
 const ENGINE_DEFAULT_SURFACE_COLOR = new Color('#9a9ca1')
-const ENGINE_EDGE_COLOR = new Color('#f3f4f6')
 const ENGINE_SURFACE_OPACITY = 0.56
 const HOVER_COLOR = new Color(SKETCH_HIGHLIGHT_COLOR)
 const SELECTED_COLOR = new Color(SKETCH_SELECTION_COLOR)
@@ -62,10 +60,11 @@ function logLocalWebGpuPreview(message: string, metadata?: unknown) {
   const shouldPrintToConsole =
     shouldDebugLocalWebGpuPreview() ||
     message === 'preview initialization failed' ||
+    message === 'device request failed' ||
+    message === 'render packet unavailable; keeping stream active' ||
     message === 'local sketch mode plane missing for request' ||
     message === 'local sketch mode plane derivation failed' ||
-    message === 'local sketch mode plane mesh missing' ||
-    message === 'gltf parse failed'
+    message === 'local sketch mode plane mesh missing'
 
   if (shouldPrintToConsole) {
     console.info(
@@ -76,10 +75,49 @@ function logLocalWebGpuPreview(message: string, metadata?: unknown) {
   }
 }
 
-function pickBinaryGltf(files: ModelingAppFile[]) {
-  return (
-    files.find((file) => file.name.toLowerCase().endsWith('.glb')) ?? files[0]
-  )
+function buildRenderPacketModel(packet: RenderPacket) {
+  const root = new Group()
+  const primitiveByObject = new WeakMap<Object3D, RenderPacketPrimitive>()
+
+  packet.primitives.forEach((primitive, primitiveOffset) => {
+    const geometry = new BufferGeometry()
+    geometry.setAttribute(
+      'position',
+      new BufferAttribute(new Float32Array(primitive.positions), 3)
+    )
+    if (primitive.normals.length === primitive.positions.length) {
+      geometry.setAttribute(
+        'normal',
+        new BufferAttribute(new Float32Array(primitive.normals), 3)
+      )
+    }
+    geometry.setIndex(
+      new BufferAttribute(new Uint32Array(primitive.indices), 1)
+    )
+
+    const mesh = new Mesh(geometry)
+    mesh.name = `mesh_0_${primitive.primitiveIndex ?? primitiveOffset}`
+    mesh.userData.gltfPrimitiveExtras = {
+      KITTYCAD: {
+        object_id: primitive.objectId,
+        body_id: primitive.bodyId,
+        face_id: primitive.faceId,
+        face_index: primitive.faceIndex,
+        primitive_index: primitive.primitiveIndex,
+      } satisfies PacketPrimitiveUserData['KITTYCAD'],
+    } satisfies PacketPrimitiveUserData
+    mesh.userData.kittycadPrimitiveExtras =
+      mesh.userData.gltfPrimitiveExtras.KITTYCAD
+    primitiveByObject.set(mesh, primitive)
+    root.add(mesh)
+  })
+
+  return {
+    model: root,
+    parserState: {
+      primitiveByObject,
+    } satisfies RenderPacketParserState,
+  }
 }
 
 function disposeMaterial(material: Material) {
@@ -146,19 +184,6 @@ function prepareLoadedModelForPreview(root: Object3D) {
     object.material = isArray(object.material)
       ? previewMaterials
       : previewMaterials[0]
-
-    const edgeGeometry = new EdgesGeometry(object.geometry, 1)
-    const edgeMaterial = new LineBasicMaterial({
-      color: ENGINE_EDGE_COLOR,
-      transparent: true,
-      opacity: 0.98,
-    })
-    edgeMaterial.depthWrite = false
-    const edgeLines = new LineSegments(edgeGeometry, edgeMaterial)
-    edgeLines.name = 'webgpu-preview-edges'
-    edgeLines.renderOrder = 2
-    object.add(edgeLines)
-    object.userData.previewEdgeLines = edgeLines
   })
 
   return {
@@ -172,11 +197,6 @@ function getPreviewMaterials(mesh: Mesh): MeshBasicMaterial[] {
   return (
     isArray(mesh.material) ? mesh.material : [mesh.material]
   ) as MeshBasicMaterial[]
-}
-
-function getPreviewEdgeLines(mesh: Mesh): LineSegments | null {
-  const edgeLines = mesh.userData.previewEdgeLines
-  return edgeLines instanceof LineSegments ? edgeLines : null
 }
 
 function getMeshWorldNormal(mesh: Mesh) {
@@ -393,6 +413,10 @@ type GltfParserState = {
   json: GltfParserJson | null
 }
 
+type RenderPacketParserState = {
+  primitiveByObject: WeakMap<Object3D, RenderPacketPrimitive>
+}
+
 type KittycadPrimitiveExtras = {
   object_id: string
   body_id: string
@@ -405,6 +429,10 @@ type ResolvedSelectionEntity = {
   entityId: string
   parentEntityId: string
   primitiveIndex: number
+}
+
+type PacketPrimitiveUserData = {
+  KITTYCAD: KittycadPrimitiveExtras
 }
 
 function toPoint3d(vector: Vector3) {
@@ -635,8 +663,37 @@ function summarizeExtras(extras: unknown) {
 
 function getPickedObjectMetadata(
   object: Object3D,
-  parserState: GltfParserState | null
+  parserState: GltfParserState | RenderPacketParserState | null
 ) {
+  const primitiveExtrasFromUserData =
+    object.userData?.gltfPrimitiveExtras &&
+    typeof object.userData.gltfPrimitiveExtras === 'object' &&
+    'KITTYCAD' in object.userData.gltfPrimitiveExtras
+      ? object.userData.gltfPrimitiveExtras
+      : null
+  const kittycadPrimitiveExtrasFromUserData = isKittycadPrimitiveExtras(
+    object.userData?.kittycadPrimitiveExtras
+  )
+    ? object.userData.kittycadPrimitiveExtras
+    : null
+
+  if (parserState && 'primitiveByObject' in parserState) {
+    const primitive = parserState.primitiveByObject.get(object) ?? null
+    return {
+      association: primitive
+        ? {
+            meshes: 0,
+            primitives: primitive.primitiveIndex,
+          }
+        : null,
+      primitiveExtras: primitiveExtrasFromUserData,
+      meshExtras: null,
+      nodeExtras: null,
+      nodeIndex: null,
+      kittycadPrimitiveExtras: kittycadPrimitiveExtrasFromUserData,
+    }
+  }
+
   const association = summarizeAssociation(
     parserState?.associations?.get(object) ?? null
   )
@@ -671,15 +728,16 @@ function getPickedObjectMetadata(
   }
 
   const kittycadPrimitiveExtras =
-    primitiveExtras &&
+    kittycadPrimitiveExtrasFromUserData ??
+    (primitiveExtras &&
     typeof primitiveExtras === 'object' &&
     'KITTYCAD' in primitiveExtras
       ? (primitiveExtras as Record<string, unknown>).KITTYCAD
-      : null
+      : null)
 
   return {
     association,
-    primitiveExtras,
+    primitiveExtras: primitiveExtras ?? primitiveExtrasFromUserData,
     meshExtras,
     nodeExtras,
     nodeIndex,
@@ -785,34 +843,24 @@ function setMeshHighlight(
     material.opacity = mode === 'base' ? ENGINE_SURFACE_OPACITY : 0.82
     material.needsUpdate = true
   }
-
-  const edgeLines = getPreviewEdgeLines(mesh)
-  const edgeMaterial = edgeLines?.material
-  if (edgeMaterial instanceof LineBasicMaterial) {
-    edgeMaterial.color.set(
-      mode === 'selected'
-        ? SELECTED_COLOR
-        : mode === 'hover'
-          ? HOVER_COLOR
-          : ENGINE_EDGE_COLOR
-    )
-    edgeMaterial.opacity = mode === 'base' ? 0.98 : 1
-    edgeMaterial.needsUpdate = true
-  }
 }
 
 function summarizePickedObject(
   object: Object3D,
-  parserState: GltfParserState | null,
+  parserState: GltfParserState | RenderPacketParserState | null,
   resolvedSelectionEntity: ResolvedSelectionEntity | null = null
 ) {
   const parentChain: string[] = []
   const associationChain: Array<PreviewAssociation | null> = []
+  const associations =
+    parserState && 'associations' in parserState
+      ? parserState.associations
+      : null
   let current: Object3D | null = object
   while (current && parentChain.length < 4) {
     parentChain.push(current.name || current.type)
     associationChain.push(
-      summarizeAssociation(parserState?.associations?.get(current) ?? null)
+      summarizeAssociation(associations?.get(current) ?? null)
     )
     current = current.parent
   }
@@ -903,7 +951,7 @@ export const LocalWebGPUScene = ({
     let hoveredMesh: Mesh | null = null
     let selectedMeshes = new Set<Mesh>()
     let selectionEntityIdToMesh = new Map<string, Mesh>()
-    let parserState: GltfParserState | null = null
+    let parserState: GltfParserState | RenderPacketParserState | null = null
     let activeSketchModePlane: GetSketchModePlane | null = null
     const raycaster = new Raycaster()
     const pointer = new Vector2()
@@ -1173,9 +1221,8 @@ export const LocalWebGPUScene = ({
 
     const initialize = async () => {
       logLocalWebGpuPreview('initializing preview renderer')
-      const [{ default: WebGPURenderer }, { GLTFLoader }] = await Promise.all([
+      const [{ default: WebGPURenderer }] = await Promise.all([
         import('three/src/renderers/webgpu/WebGPURenderer.js'),
-        import('three/examples/jsm/loaders/GLTFLoader.js'),
       ])
 
       if (disposed) {
@@ -1292,7 +1339,6 @@ export const LocalWebGPUScene = ({
         target: previewTarget.toArray(),
         layerMask: previewCamera.layers.mask,
       })
-      const loader = new GLTFLoader()
       const unregisterSharedCameraListener =
         kclManager.sceneInfra.camControls.cameraChange.add(() => {
           syncPreviewCameraFromShared()
@@ -1680,6 +1726,52 @@ export const LocalWebGPUScene = ({
         selectionEntityIdToMesh.clear()
         requestRender?.()
       }
+
+      const hydrateCurrentModelMetadata = () => {
+        if (!currentModel) {
+          selectionEntityIdToMesh.clear()
+          return
+        }
+
+        selectionEntityIdToMesh = new Map<string, Mesh>()
+        currentModel.traverse((object) => {
+          object.layers.mask = previewCamera?.layers.mask ?? object.layers.mask
+
+          if (!(object instanceof Mesh)) {
+            return
+          }
+
+          const metadata = getPickedObjectMetadata(object, parserState)
+          if (metadata.primitiveExtras) {
+            object.userData.gltfPrimitiveExtras = metadata.primitiveExtras
+          }
+          if (metadata.kittycadPrimitiveExtras) {
+            object.userData.kittycadPrimitiveExtras =
+              metadata.kittycadPrimitiveExtras
+            if (isKittycadPrimitiveExtras(metadata.kittycadPrimitiveExtras)) {
+              const resolvedSelectionEntity =
+                resolveSelectionEntityFromPrimitiveExtras(
+                  metadata.kittycadPrimitiveExtras,
+                  kclManager.artifactGraph
+                )
+              object.userData.kittycadSelectionEntityId =
+                resolvedSelectionEntity.entityId
+              object.userData.kittycadParentEntityId =
+                resolvedSelectionEntity.parentEntityId
+              object.userData.kittycadPrimitiveIndex =
+                resolvedSelectionEntity.primitiveIndex
+              selectionEntityIdToMesh.set(
+                resolvedSelectionEntity.entityId,
+                object
+              )
+              selectionEntityIdToMesh.set(
+                metadata.kittycadPrimitiveExtras.face_id,
+                object
+              )
+            }
+          }
+        })
+      }
       requestRender()
       logLocalWebGpuPreview('render mode set to on-demand')
 
@@ -1689,14 +1781,48 @@ export const LocalWebGPUScene = ({
           refreshId,
           hasLastSuccessfulCode: Boolean(kclManager.lastSuccessfulCode),
         })
-        const files = await kclManager.rustContext.export(
-          {
-            type: 'gltf',
-            storage: 'binary',
-            presentation: 'compact',
-          },
-          jsAppSettings(kclManager.rustContext.settingsActor)
+        await kclManager.rustContext.waitForAllEngineModelingCommands()
+
+        if (disposed || refreshId !== currentRefreshId) {
+          logLocalWebGpuPreview('dropping stale refresh after engine wait', {
+            disposed,
+            refreshId,
+            currentRefreshId,
+          })
+          return
+        }
+
+        const exportSettings = jsAppSettings(
+          kclManager.rustContext.settingsActor
         )
+        let renderPacket: RenderPacket | undefined
+        const maxRenderPacketAttempts = 3
+        for (let attempt = 1; attempt <= maxRenderPacketAttempts; attempt++) {
+          renderPacket =
+            await kclManager.rustContext.exportRenderPacket(exportSettings)
+
+          if (disposed || refreshId !== currentRefreshId) {
+            logLocalWebGpuPreview('dropping stale refresh result', {
+              disposed,
+              refreshId,
+              currentRefreshId,
+            })
+            return
+          }
+
+          if (renderPacket && renderPacket.primitives.length > 0) {
+            break
+          }
+
+          if (attempt < maxRenderPacketAttempts) {
+            logLocalWebGpuPreview('render packet unavailable, retrying', {
+              refreshId,
+              attempt,
+              maxRenderPacketAttempts,
+            })
+            await new Promise((resolve) => window.setTimeout(resolve, 150))
+          }
+        }
 
         if (disposed || refreshId !== currentRefreshId) {
           logLocalWebGpuPreview('dropping stale refresh result', {
@@ -1707,122 +1833,40 @@ export const LocalWebGPUScene = ({
           return
         }
 
-        const file = files?.length ? pickBinaryGltf(files) : null
-        logLocalWebGpuPreview('export completed', {
-          refreshId,
-          fileCount: files?.length ?? 0,
-          selectedFile: file?.name ?? null,
-        })
-        if (!file) {
+        if (renderPacket && renderPacket.primitives.length > 0) {
           clearModel()
-          setVisible(false)
+          const packetModel = buildRenderPacketModel(renderPacket)
+          currentModel = packetModel.model
+          parserState = packetModel.parserState
+          hydrateCurrentModelMetadata()
+          scene.add(currentModel)
+          const loadedModelStats = prepareLoadedModelForPreview(currentModel)
+          updatePreviewBaseColors(currentModel, previewCamera)
+          if (loadedModelStats.meshCount === 0) {
+            clearModel()
+            setVisible(false)
+            return
+          }
+          logLocalWebGpuPreview('render packet applied to scene', {
+            refreshId,
+            primitiveCount: renderPacket.primitives.length,
+            meshCount: loadedModelStats.meshCount,
+          })
+          syncPreviewCameraFromShared()
+          setVisible(true)
+          requestRender?.()
           return
         }
 
-        const bytes = Uint8Array.from(file.contents)
-        const glb = bytes.buffer.slice(
-          bytes.byteOffset,
-          bytes.byteOffset + bytes.byteLength
-        )
-
-        loader.parse(
-          glb,
-          '',
-          (gltf) => {
-            if (disposed || refreshId !== currentRefreshId) {
-              logLocalWebGpuPreview('dropping stale parsed gltf', {
-                disposed,
-                refreshId,
-                currentRefreshId,
-              })
-              return
-            }
-
-            clearModel()
-            currentModel = gltf.scene
-            const gltfWithParser = gltf as {
-              parser?: {
-                associations?: Map<unknown, unknown>
-                json?: GltfParserJson
-              }
-            }
-            parserState = {
-              associations: gltfWithParser.parser?.associations ?? null,
-              json: gltfWithParser.parser?.json ?? null,
-            }
-            selectionEntityIdToMesh = new Map<string, Mesh>()
-            currentModel.traverse((object) => {
-              object.layers.mask =
-                previewCamera?.layers.mask ?? object.layers.mask
-
-              if (!(object instanceof Mesh)) {
-                return
-              }
-
-              const metadata = getPickedObjectMetadata(object, parserState)
-              if (metadata.primitiveExtras) {
-                object.userData.gltfPrimitiveExtras = metadata.primitiveExtras
-              }
-              if (metadata.kittycadPrimitiveExtras) {
-                object.userData.kittycadPrimitiveExtras =
-                  metadata.kittycadPrimitiveExtras
-                if (
-                  isKittycadPrimitiveExtras(metadata.kittycadPrimitiveExtras)
-                ) {
-                  const resolvedSelectionEntity =
-                    resolveSelectionEntityFromPrimitiveExtras(
-                      metadata.kittycadPrimitiveExtras,
-                      kclManager.artifactGraph
-                    )
-                  object.userData.kittycadSelectionEntityId =
-                    resolvedSelectionEntity.entityId
-                  object.userData.kittycadParentEntityId =
-                    resolvedSelectionEntity.parentEntityId
-                  object.userData.kittycadPrimitiveIndex =
-                    resolvedSelectionEntity.primitiveIndex
-                  selectionEntityIdToMesh.set(
-                    resolvedSelectionEntity.entityId,
-                    object
-                  )
-                  selectionEntityIdToMesh.set(
-                    metadata.kittycadPrimitiveExtras.face_id,
-                    object
-                  )
-                }
-              }
-            })
-            scene.add(currentModel)
-            const loadedModelStats = prepareLoadedModelForPreview(currentModel)
-            updatePreviewBaseColors(currentModel, previewCamera)
-            if (loadedModelStats.meshCount === 0) {
-              clearModel()
-              setVisible(false)
-              return
-            }
-            logLocalWebGpuPreview('gltf parsed and added to scene', {
-              refreshId,
-              childCount: currentModel.children.length,
-              meshCount: loadedModelStats.meshCount,
-              hasParserJson: Boolean(parserState?.json),
-            })
-            syncPreviewCameraFromShared()
-            setVisible(true)
-            requestRender?.()
-          },
-          (error) => {
-            console.warn('Failed to load local WebGPU preview model', error)
-            logLocalWebGpuPreview('gltf parse failed', {
-              refreshId,
-              error,
-            })
-            if (disposed || refreshId !== currentRefreshId) {
-              return
-            }
-
-            clearModel()
-            setVisible(false)
+        logLocalWebGpuPreview(
+          'render packet unavailable; keeping stream active',
+          {
+            refreshId,
           }
         )
+        clearModel()
+        setVisible(false)
+        requestRender?.()
       }
 
       if (kclManager.lastSuccessfulCode) {

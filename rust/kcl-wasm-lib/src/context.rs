@@ -219,4 +219,27 @@ impl Context {
             Err(err) => Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?),
         }
     }
+
+    /// Export a scene to a browser render packet.
+    #[wasm_bindgen(js_name = exportRenderPacket)]
+    pub async fn export_render_packet(&self, settings: &str) -> Result<JsValue, String> {
+        console_error_panic_hook::set_once();
+
+        let ctx = self.create_executor_ctx(settings, None, false)?;
+        let files = ctx
+            .export(kittycad_modeling_cmds::format::OutputFormat3d::RenderPacket(Default::default()))
+            .await
+            .map_err(|err| serde_json::to_string(&err).unwrap_or_else(|serde_err| serde_err.to_string()))?;
+
+        let packet_file = files
+            .iter()
+            .find(|file| file.name.ends_with(".render_packet.json"))
+            .or_else(|| files.first())
+            .ok_or_else(|| "render packet export returned no files".to_owned())?;
+
+        let packet: kittycad_modeling_cmds::format::render_packet::RenderPacket =
+            serde_json::from_slice(&packet_file.contents).map_err(|error| error.to_string())?;
+
+        JsValue::from_serde(&packet).map_err(|error| error.to_string())
+    }
 }

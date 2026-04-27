@@ -3,7 +3,11 @@ import toast from 'react-hot-toast'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
-import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
+import type {
+  OutputFormat3d,
+  RenderPacket,
+  RenderPacketPrimitive,
+} from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import type {
@@ -42,6 +46,8 @@ import {
   getSettingsFromActorContext,
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
+
+export type { RenderPacket, RenderPacketPrimitive }
 
 export default class RustContext {
   private rustInstance: ModuleType | null = null
@@ -196,6 +202,27 @@ export default class RustContext {
         JSON.stringify(format),
         JSON.stringify(settings)
       )
+    } catch (e: any) {
+      const parsed: RustKclError = JSON.parse(e.toString())
+      if (toastId) {
+        toast.error(parsed.details.msg, { id: toastId })
+      }
+      return
+    }
+  }
+
+  /** Export a scene to a browser render packet. */
+  async exportRenderPacket(
+    settings: DeepPartial<Configuration>,
+    toastId?: string
+  ): Promise<RenderPacket | undefined> {
+    const instance = await this._checkContextInstance()
+
+    try {
+      const wasmContext = instance as unknown as {
+        exportRenderPacket: (settings: string) => Promise<RenderPacket>
+      }
+      return await wasmContext.exportRenderPacket(JSON.stringify(settings))
     } catch (e: any) {
       const parsed: RustKclError = JSON.parse(e.toString())
       if (toastId) {
