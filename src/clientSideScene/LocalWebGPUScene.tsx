@@ -4,6 +4,10 @@ import { KclManagerEvents } from '@src/lang/KclManager'
 import { useSingletons } from '@src/lib/boot'
 import { registerLocalSelectionCommandProvider } from '@src/clientSideScene/localSelectionCommandProxy'
 import { EngineDebugger } from '@src/lib/debugger'
+import {
+  SKETCH_HIGHLIGHT_COLOR,
+  SKETCH_SELECTION_COLOR,
+} from '@src/lib/constants'
 import type { ArtifactGraph } from '@src/lang/wasm'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
@@ -11,8 +15,12 @@ import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import { useEffect, useRef } from 'react'
 import {
+  BufferAttribute,
   Color,
-  DoubleSide,
+  EdgesGeometry,
+  FrontSide,
+  LineBasicMaterial,
+  LineSegments,
   Mesh,
   MeshBasicMaterial,
   OrthographicCamera,
@@ -30,8 +38,11 @@ const WEBGPU_PORT_DEBUG_STORAGE_KEY = 'webgpu-port-debug'
 const WEBGPU_PORT_LOG_PREFIX = '[WEBGPU_POC]'
 const GLTF_METERS_TO_ENGINE_MILLIMETERS = 1000
 const ENGINE_MILLIMETERS_TO_GLTF_METERS = 1 / GLTF_METERS_TO_ENGINE_MILLIMETERS
-const HOVER_COLOR = new Color('#5dd6ff')
-const SELECTED_COLOR = new Color('#ff9d3f')
+const ENGINE_DEFAULT_SURFACE_COLOR = new Color('#9a9ca1')
+const ENGINE_EDGE_COLOR = new Color('#f3f4f6')
+const ENGINE_SURFACE_OPACITY = 0.56
+const HOVER_COLOR = new Color(SKETCH_HIGHLIGHT_COLOR)
+const SELECTED_COLOR = new Color(SKETCH_SELECTION_COLOR)
 
 function shouldEnableLocalWebGpuPreview() {
   return localStorage.getItem(WEBGPU_PORT_POC_STORAGE_KEY) !== 'false'
@@ -115,19 +126,18 @@ function prepareLoadedModelForPreview(root: Object3D) {
     }
 
     meshCount += 1
+    object.geometry = object.geometry.clone()
     const materials = (
       isArray(object.material) ? object.material : [object.material]
     ) as Material[]
     const previewMaterials = materials.map((material) => {
-      const color =
-        'color' in material && material.color instanceof Color
-          ? material.color.clone()
-          : new Color('#d7dde8')
       const previewMaterial = new MeshBasicMaterial({
-        color,
-        side: DoubleSide,
+        color: 0xffffff,
+        vertexColors: true,
+        side: FrontSide,
+        transparent: true,
+        opacity: ENGINE_SURFACE_OPACITY,
       })
-      previewMaterial.userData.previewBaseColor = color.getHex()
       materialCount += 1
       materialTypes.add(material.type)
       disposeMaterial(material)
@@ -136,6 +146,19 @@ function prepareLoadedModelForPreview(root: Object3D) {
     object.material = isArray(object.material)
       ? previewMaterials
       : previewMaterials[0]
+
+    const edgeGeometry = new EdgesGeometry(object.geometry, 1)
+    const edgeMaterial = new LineBasicMaterial({
+      color: ENGINE_EDGE_COLOR,
+      transparent: true,
+      opacity: 0.98,
+    })
+    edgeMaterial.depthWrite = false
+    const edgeLines = new LineSegments(edgeGeometry, edgeMaterial)
+    edgeLines.name = 'webgpu-preview-edges'
+    edgeLines.renderOrder = 2
+    object.add(edgeLines)
+    object.userData.previewEdgeLines = edgeLines
   })
 
   return {
@@ -149,6 +172,200 @@ function getPreviewMaterials(mesh: Mesh): MeshBasicMaterial[] {
   return (
     isArray(mesh.material) ? mesh.material : [mesh.material]
   ) as MeshBasicMaterial[]
+}
+
+function getPreviewEdgeLines(mesh: Mesh): LineSegments | null {
+  const edgeLines = mesh.userData.previewEdgeLines
+  return edgeLines instanceof LineSegments ? edgeLines : null
+}
+
+function getMeshWorldNormal(mesh: Mesh) {
+  mesh.updateWorldMatrix(true, false)
+
+  const positionAttribute = mesh.geometry.getAttribute('position')
+  if (!positionAttribute || positionAttribute.count < 3) {
+    return null
+  }
+
+  const indexAttribute = mesh.geometry.index
+  const a = new Vector3()
+  const b = new Vector3()
+  const c = new Vector3()
+  const edgeA = new Vector3()
+  const edgeB = new Vector3()
+  const normal = new Vector3()
+  const referencedVertexIndices = indexAttribute
+    ? Array.from({ length: indexAttribute.count }, (_, arrayIndex) =>
+        indexAttribute.getX(arrayIndex)
+      )
+    : Array.from(
+        { length: positionAttribute.count },
+        (_, arrayIndex) => arrayIndex
+      )
+
+  for (
+    let referencedIndex = 0;
+    referencedIndex <= referencedVertexIndices.length - 3;
+    referencedIndex += 3
+  ) {
+    a.fromBufferAttribute(
+      positionAttribute,
+      referencedVertexIndices[referencedIndex]
+    ).applyMatrix4(mesh.matrixWorld)
+    b.fromBufferAttribute(
+      positionAttribute,
+      referencedVertexIndices[referencedIndex + 1]
+    ).applyMatrix4(mesh.matrixWorld)
+    c.fromBufferAttribute(
+      positionAttribute,
+      referencedVertexIndices[referencedIndex + 2]
+    ).applyMatrix4(mesh.matrixWorld)
+
+    edgeA.subVectors(b, a)
+    edgeB.subVectors(c, a)
+    normal.crossVectors(edgeA, edgeB)
+    if (normal.lengthSq() > 1e-10) {
+      return normal.normalize()
+    }
+  }
+
+  return null
+}
+
+function updatePreviewBaseColors(
+  root: Object3D,
+  camera: PerspectiveCamera | OrthographicCamera | null
+) {
+  const keyDirection = new Vector3()
+  const fillDirection = new Vector3()
+  const rimDirection = new Vector3()
+  const white = new Color('#f2f3f5')
+  const viewDirection = new Vector3()
+  const meshPosition = new Vector3()
+  const lightAnchor = new Vector3()
+  const cameraRight = new Vector3()
+  const cameraUp = new Vector3()
+  const pointLightPosition = new Vector3()
+  const vertex = new Vector3()
+  const lightVector = new Vector3()
+  const reflectionVector = new Vector3()
+  const halfVector = new Vector3()
+
+  if (camera) {
+    const worldDirection = new Vector3()
+    camera.getWorldDirection(worldDirection)
+    viewDirection.copy(worldDirection).negate().normalize()
+    cameraRight.crossVectors(viewDirection, camera.up).normalize()
+    cameraUp.copy(camera.up).normalize()
+    keyDirection.copy(new Vector3(1.6, 1.5, 1.15)).normalize()
+    fillDirection.copy(new Vector3(-1.2, 0.2, 0.35)).normalize()
+    rimDirection.copy(new Vector3(0.4, -0.9, 1.4)).normalize()
+    lightAnchor.copy(root.position)
+    if (
+      'getWorldPosition' in root &&
+      typeof root.getWorldPosition === 'function'
+    ) {
+      root.getWorldPosition(lightAnchor)
+    }
+    const cameraDistance = Math.max(
+      camera.position.distanceTo(lightAnchor),
+      0.001
+    )
+    const forwardOffset = Math.min(Math.max(cameraDistance * 0.16, 0.025), 0.12)
+    const rightOffset = Math.min(Math.max(cameraDistance * 0.07, 0.012), 0.045)
+    const upOffset = Math.min(Math.max(cameraDistance * 0.05, 0.01), 0.035)
+    pointLightPosition
+      .copy(lightAnchor)
+      .addScaledVector(viewDirection, forwardOffset)
+      .addScaledVector(cameraRight, -rightOffset)
+      .addScaledVector(cameraUp, -upOffset)
+  } else {
+    keyDirection.set(1.6, 1.5, 1.15).normalize()
+    fillDirection.set(-1.2, 0.2, 0.35).normalize()
+    rimDirection.set(0.4, -0.9, 1.4).normalize()
+    pointLightPosition.set(-0.03, -0.02, 0.055)
+  }
+
+  root.traverse((object) => {
+    if (!(object instanceof Mesh)) {
+      return
+    }
+
+    const normal = getMeshWorldNormal(object)
+    if (!normal) {
+      return
+    }
+
+    if (camera) {
+      meshPosition.setFromMatrixPosition(object.matrixWorld)
+      viewDirection.subVectors(camera.position, meshPosition).normalize()
+      if (normal.dot(viewDirection) < 0) {
+        normal.negate()
+      }
+    }
+
+    const key = Math.max(normal.dot(keyDirection), 0) * 0.18
+    const fill = Math.max(normal.dot(fillDirection), 0) * 0.1
+    const rim = Math.max(normal.dot(rimDirection), 0) * 0.06
+    const faceFacing = camera
+      ? Math.max(normal.dot(viewDirection), 0) * 0.08
+      : 0
+    const baseIntensity = 0.27 + key + fill + rim + faceFacing
+
+    const positionAttribute = object.geometry.getAttribute('position')
+    if (!(positionAttribute instanceof BufferAttribute)) {
+      return
+    }
+
+    const colors = new Float32Array(positionAttribute.count * 3)
+
+    for (let index = 0; index < positionAttribute.count; index += 1) {
+      vertex
+        .fromBufferAttribute(positionAttribute, index)
+        .applyMatrix4(object.matrixWorld)
+
+      lightVector.subVectors(pointLightPosition, vertex)
+      const lightDistanceSquared = Math.max(lightVector.lengthSq(), 1e-6)
+      lightVector.normalize()
+
+      const diffuse = Math.max(normal.dot(lightVector), 0)
+      const attenuation = 1 / (1 + lightDistanceSquared * 55)
+
+      halfVector.addVectors(lightVector, viewDirection).normalize()
+      const specular =
+        Math.pow(Math.max(normal.dot(halfVector), 0), 28) * attenuation * 1.9
+      reflectionVector
+        .copy(normal)
+        .multiplyScalar(2 * normal.dot(lightVector))
+        .sub(lightVector)
+        .normalize()
+      const sheen =
+        Math.pow(Math.max(reflectionVector.dot(viewDirection), 0), 9) *
+        attenuation *
+        0.55
+
+      const intensity = Math.min(
+        1.22,
+        baseIntensity + diffuse * attenuation * 6.5 + specular + sheen
+      )
+
+      const shadedColor = ENGINE_DEFAULT_SURFACE_COLOR.clone()
+        .multiplyScalar(0.42 + intensity * 0.72)
+        .lerp(
+          white,
+          Math.min(
+            0.62,
+            specular * 1.05 + diffuse * attenuation * 0.55 + sheen * 0.35
+          )
+        )
+
+      colors[index * 3] = shadedColor.r
+      colors[index * 3 + 1] = shadedColor.g
+      colors[index * 3 + 2] = shadedColor.b
+    }
+
+    object.geometry.setAttribute('color', new BufferAttribute(colors, 3))
+  })
 }
 
 type PreviewAssociation = {
@@ -558,15 +775,29 @@ function setMeshHighlight(
   }
 
   for (const material of getPreviewMaterials(mesh)) {
-    const baseColor = material.userData.previewBaseColor
-    const nextColor =
+    const nextColor = new Color(0xffffff)
+    if (mode === 'selected') {
+      nextColor.lerp(SELECTED_COLOR, 0.72)
+    } else if (mode === 'hover') {
+      nextColor.lerp(HOVER_COLOR, 0.5)
+    }
+    material.color.copy(nextColor)
+    material.opacity = mode === 'base' ? ENGINE_SURFACE_OPACITY : 0.82
+    material.needsUpdate = true
+  }
+
+  const edgeLines = getPreviewEdgeLines(mesh)
+  const edgeMaterial = edgeLines?.material
+  if (edgeMaterial instanceof LineBasicMaterial) {
+    edgeMaterial.color.set(
       mode === 'selected'
         ? SELECTED_COLOR
         : mode === 'hover'
           ? HOVER_COLOR
-          : (baseColor ?? '#d7dde8')
-    material.color.set(nextColor)
-    material.needsUpdate = true
+          : ENGINE_EDGE_COLOR
+    )
+    edgeMaterial.opacity = mode === 'base' ? 0.98 : 1
+    edgeMaterial.needsUpdate = true
   }
 }
 
@@ -788,6 +1019,14 @@ export const LocalWebGPUScene = ({
       previewCamera.lookAt(previewTarget)
       previewCamera.updateProjectionMatrix()
       previewCamera.updateMatrixWorld(true)
+      if (currentModel) {
+        updatePreviewBaseColors(currentModel, previewCamera)
+        currentModel.traverse((object) => {
+          if (object instanceof Mesh) {
+            applyMeshState(object)
+          }
+        })
+      }
       requestRender?.()
     }
 
@@ -1554,6 +1793,7 @@ export const LocalWebGPUScene = ({
             })
             scene.add(currentModel)
             const loadedModelStats = prepareLoadedModelForPreview(currentModel)
+            updatePreviewBaseColors(currentModel, previewCamera)
             if (loadedModelStats.meshCount === 0) {
               clearModel()
               setVisible(false)
