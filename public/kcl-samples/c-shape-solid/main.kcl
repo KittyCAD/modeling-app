@@ -4,68 +4,54 @@
 
 @settings(defaultLengthUnit = mm)
 
-// ──────────
-// PARAMETERS
-// ──────────
+// Primary dimensions
+cRingOuterDiameter = 20
+cRingInnerDiameter = 10
+cRingThickness = 2
+splitGapWidth = 2
 
-// Outer diameter of the ring
-ringOuterDiameter = 20
+cRingSketch = sketch(on = XY) {
+  // Profile entities
+  innerArc = arc(start = [var 8.43mm, var 1.51mm], end = [var 6.02mm, var -3.5mm], center = [var 0mm, var 0mm])
+  topBridge = line(start = [var 3.85mm, var 2.04mm], end = [var 13.07mm, var 2.21mm])
+  outerArc = arc(start = [var 10.93mm, var 2.04mm], end = [var 11.09mm, var -0.8mm], center = [var 0mm, var 0mm])
+  bottomBridge = line(start = [var 6.12mm, var -1.85mm], end = [var 12.97mm, var -1.28mm])
 
-// Inner diameter — defines the hole in the middle of the ring
-ringInnerDiameter = 10
+  // Construction entities
+  centerline = line(start = [var 0.03mm, var 0mm], end = [var 5.92mm, var 0mm], construction = true)
+  lowerRadialRef = line(start = [var 6.13mm, var -1.86mm], end = [var 5.92mm, var 0mm], construction = true)
+  upperRadialRef = line(start = [var 6.1mm, var 1.94mm], end = [var 5.92mm, var 0mm], construction = true)
 
-// Thickness of the ring (height in Z direction)
-ringThickness = 2
+  // Anchor and connectivity
+  coincident([innerArc.center, ORIGIN])
+  coincident([outerArc.center, innerArc.center])
+  coincident([topBridge.start, innerArc.start])
+  coincident([topBridge.end, outerArc.start])
+  coincident([bottomBridge.start, innerArc.end])
+  coincident([bottomBridge.end, outerArc.end])
+  coincident([centerline.start, innerArc.center])
+  coincident([
+    lowerRadialRef.start,
+    bottomBridge.start
+  ])
+  coincident([lowerRadialRef.end, centerline.end])
+  coincident([upperRadialRef.start, innerArc.start])
+  coincident([upperRadialRef.end, lowerRadialRef.end])
+  // Symmetry
+  equalLength([upperRadialRef, lowerRadialRef])
+  // Orientation
+  horizontal(topBridge)
+  horizontal(bottomBridge)
+  horizontal(centerline)
+  vertical(lowerRadialRef)
+  vertical(upperRadialRef)
 
-// Width of the wedge we will use to cut the split
-cutGapWidth = 2
+  // Driving dimensions
+  verticalDistance([outerArc.end, outerArc.start]) == splitGapWidth
+  distance([centerline.start, upperRadialRef.start]) == cRingInnerDiameter / 2
+  distance([centerline.start, outerArc.end]) == cRingOuterDiameter / 2
+}
 
-// ───────────────────────
-// STEP 1: CREATE THE RING
-// ───────────────────────
-
-// We begin by sketching two concentric circles: the outer boundary and the hole. Then we subtract the inner one to get a donut-like profile.
-ringSketch = startSketchOn(XY)
-ringProfile = circle(ringSketch, center = [0, 0], diameter = ringOuterDiameter)
-  |> subtract2d(tool = [
-       circle(center = [0, 0], diameter = ringInnerDiameter)
-     ])
-
-// We extrude this sketch into a 3D solid. This is the full ring, with no gap yet.
-solidRing = extrude(ringProfile, length = ringThickness)
-
-// ───────────────────────────────
-// STEP 2: CREATE THE WEDGE CUTTER
-// ───────────────────────────────
-
-// We now create a thin rectangular wedge that will be used to cut the split. This wedge starts from the center and extends past the outer radius.
-
-// First, define a little clearance so that the wedge cuts fully through the body
-cutClearance = ringThickness * 0.5
-
-// Compute wedge dimensions
-ringOuterRadius = ringOuterDiameter / 2
-wedgeLength = ringOuterRadius + cutClearance
-wedgeHeight = ringThickness + cutClearance * 2
-
-// Draw the wedge on a plane slightly below the ring
-wedgePlane = offsetPlane(XY, offset = -cutClearance)
-wedgeSketch = startSketchOn(wedgePlane)
-wedgeProfile = startProfile(wedgeSketch, at = [0, -cutGapWidth / 2])
-  |> yLine(length = cutGapWidth)
-  |> xLine(length = wedgeLength)
-  |> yLine(length = -cutGapWidth)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-
-wedgeBody = extrude(wedgeProfile, length = wedgeHeight)
-
-// ──────────────────────
-// STEP 3: SUBTRACT WEDGE
-// ──────────────────────
-
-
-// Finally, we subtract the wedge body from the solid ring. The result is a simple C-shape: a ring with a single clean gap.
-
-
-cShape = subtract([solidRing], tools = [wedgeBody])
+cRingRegion = region(segments = [cRingSketch.topBridge])
+hide(cRingSketch)
+cRingSolid = extrude(cRingRegion, length = cRingThickness)

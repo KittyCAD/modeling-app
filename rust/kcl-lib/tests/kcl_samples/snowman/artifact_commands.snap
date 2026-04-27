@@ -1737,6 +1737,15 @@ description: Artifact commands snowman.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -1786,10 +1795,10 @@ description: Artifact commands snowman.kcl
           "type": "line",
           "end": {
             "x": 18.0,
-            "y": 0.0,
+            "y": -0.005000029668266223,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -1802,11 +1811,11 @@ description: Artifact commands snowman.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": -0.01,
+            "x": 18.000275398936473,
+            "y": -0.005000029668266312,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -1817,12 +1826,21 @@ description: Artifact commands snowman.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc",
-          "radius": 0.5,
-          "offset": {
+          "type": "arc",
+          "center": {
+            "x": 17.499493256719706,
+            "y": -0.010550714230660821
+          },
+          "radius": 0.5008129032506309,
+          "start": {
             "unit": "degrees",
-            "value": -85.0
-          }
+            "value": 0.6350421650757201
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -85.36326409967279
+          },
+          "relative": false
         }
       }
     },
@@ -1835,11 +1853,11 @@ description: Artifact commands snowman.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -16.2,
-            "y": -1.4173163491199,
+            "x": 1.339850797996827,
+            "y": -1.9283045232221967,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -1850,13 +1868,21 @@ description: Artifact commands snowman.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": -1.343577871373828,
-            "y": 1.4254136981657726,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": 1.2336350998369878,
+            "y": -0.6838792488192935
           },
-          "angle_snap_increment": null
+          "radius": 1.248949974221675,
+          "start": {
+            "unit": "degrees",
+            "value": -85.1214451132558
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -188.4775892999571
+          },
+          "relative": false
         }
       }
     },
@@ -1881,8 +1907,12 @@ description: Artifact commands snowman.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -2085,12 +2115,12 @@ description: Artifact commands snowman.kcl
           },
           "radius": 26.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -2100,8 +2130,12 @@ description: Artifact commands snowman.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -2219,12 +2253,12 @@ description: Artifact commands snowman.kcl
           },
           "radius": 18.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -2234,8 +2268,12 @@ description: Artifact commands snowman.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -2395,12 +2433,12 @@ description: Artifact commands snowman.kcl
           },
           "radius": 2.5,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -2410,8 +2448,12 @@ description: Artifact commands snowman.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -2601,12 +2643,12 @@ description: Artifact commands snowman.kcl
           },
           "radius": 2.5,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -2616,8 +2658,12 @@ description: Artifact commands snowman.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -2754,6 +2800,15 @@ description: Artifact commands snowman.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -2780,7 +2835,7 @@ description: Artifact commands snowman.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 71.80000000000001,
+          "x": 71.8,
           "y": 0.0,
           "z": 0.0
         }
@@ -2805,14 +2860,14 @@ description: Artifact commands snowman.kcl
             "x": 0.0,
             "y": 0.0
           },
-          "radius": 71.80000000000001,
+          "radius": 71.8,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -2822,8 +2877,12 @@ description: Artifact commands snowman.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {

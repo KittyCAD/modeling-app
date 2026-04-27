@@ -99,10 +99,8 @@ describe('pointTool', () => {
         target: { type: 'x-axis' as const },
       },
       expectedConstraint: {
-        type: 'VerticalDistance' as const,
+        type: 'Horizontal' as const,
         points: [1, 'ORIGIN'],
-        distance: { value: 0, units: 'Mm' },
-        source: { expr: '0mm', is_literal: true },
       },
     },
     {
@@ -112,10 +110,8 @@ describe('pointTool', () => {
         target: { type: 'y-axis' as const },
       },
       expectedConstraint: {
-        type: 'HorizontalDistance' as const,
+        type: 'Vertical' as const,
         points: [1, 'ORIGIN'],
-        distance: { value: 0, units: 'Mm' },
-        source: { expr: '0mm', is_literal: true },
       },
     },
   ])(

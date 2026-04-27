@@ -100,6 +100,7 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
         "transform" => Some(include_str!("../std/transform.kcl")),
         "vector" => Some(include_str!("../std/vector.kcl")),
         "hole" => Some(include_str!("../std/hole.kcl")),
+        "gear" => Some(include_str!("../std/gear.kcl")),
         _ => None,
     }
 }
@@ -165,6 +166,12 @@ pub enum ModulePath {
 }
 
 impl ModulePath {
+    /// Returns true if this is a path to the solver module that should only be
+    /// accessible from sketch blocks. This is how we create a kind of DSL.
+    pub(crate) fn is_solver_module(&self) -> bool {
+        matches!(self, ModulePath::Std { value } if value == "solver")
+    }
+
     pub(crate) fn expect_path(&self) -> &TypedPath {
         match self {
             ModulePath::Local { value: p, .. } => p,
@@ -247,6 +254,16 @@ impl ModulePath {
             })
         } else {
             Ok(ModulePath::Std { value: path[1].clone() })
+        }
+    }
+
+    /// If we have std path, return the fully qualified name of the given item
+    /// in the module.
+    pub(crate) fn build_std_fully_qualified_name(&self, local_item_name: &str) -> Option<String> {
+        match self {
+            ModulePath::Main => None,
+            ModulePath::Local { .. } => None,
+            ModulePath::Std { .. } => Some(format!("{self}::{local_item_name}")),
         }
     }
 }

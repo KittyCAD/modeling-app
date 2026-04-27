@@ -4,7 +4,7 @@ import type {
   ApiObject,
   Coincident,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import { roundOff } from '@src/lib/utils'
+import { isArray, roundOff } from '@src/lib/utils'
 import { getSignedAngleBetweenVec, length2d, subVec } from '@src/lib/utils2d'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { SnapshotFrom, StateFrom } from 'xstate'
@@ -300,9 +300,14 @@ type DistanceConstraintTypes =
   | 'Distance'
   | 'HorizontalDistance'
   | 'VerticalDistance'
+type AxisConstraintTypes = 'Horizontal' | 'Vertical'
 
 export type ConstraintObject = ApiObject & {
   kind: { type: 'Constraint' }
+}
+
+export type AxisConstraintObject = ApiObject & {
+  kind: { type: 'Constraint'; constraint: { type: AxisConstraintTypes } }
 }
 
 /**
@@ -355,16 +360,18 @@ export type CoincidentConstraint = ApiObject & {
   kind: { type: 'Constraint'; constraint: { type: 'Coincident' } }
 }
 
-export function isCoincidentSegmentId(
+export function isConstraintSegmentId(
   segment: ConstraintSegment
 ): segment is number {
   return typeof segment === 'number'
 }
 
+export const isCoincidentSegmentId = isConstraintSegmentId
+
 export function getCoincidentSegmentIds(
   coincident: Pick<Coincident, 'segments'>
 ): number[] {
-  return coincident.segments.filter(isCoincidentSegmentId)
+  return coincident.segments.filter(isConstraintSegmentId)
 }
 
 export function coincidentContainsSegment(
@@ -372,6 +379,46 @@ export function coincidentContainsSegment(
   segmentId: number
 ) {
   return getCoincidentSegmentIds(coincident).includes(segmentId)
+}
+
+type AxisConstraint = Extract<ApiConstraint, { type: AxisConstraintTypes }>
+
+export function getAxisConstraintPoints(
+  constraint: AxisConstraint
+): ConstraintSegment[] | null {
+  const direct = constraint as Partial<{ points: ConstraintSegment[] }>
+  if (isArray(direct.points)) {
+    return direct.points
+  }
+
+  const nested = constraint as Partial<{
+    Points: { points: ConstraintSegment[] }
+  }>
+  return isArray(nested.Points?.points) ? nested.Points.points : null
+}
+
+export function getAxisConstraintPointIds(
+  constraint: AxisConstraint
+): number[] {
+  return (getAxisConstraintPoints(constraint) ?? []).filter(
+    isConstraintSegmentId
+  )
+}
+
+export function getAxisConstraintLineId(constraint: AxisConstraint) {
+  const direct = constraint as Partial<{ line: number }>
+  if (typeof direct.line === 'number') {
+    return direct.line
+  }
+
+  const nested = constraint as Partial<{
+    Line: { line_id: number }
+  }>
+  return typeof nested.Line?.line_id === 'number' ? nested.Line.line_id : null
+}
+
+export function axisConstraintIncludesOrigin(constraint: AxisConstraint) {
+  return (getAxisConstraintPoints(constraint) ?? []).includes('ORIGIN')
 }
 
 export function isRadiusConstraint(obj: ApiObject): obj is RadiusConstraint {

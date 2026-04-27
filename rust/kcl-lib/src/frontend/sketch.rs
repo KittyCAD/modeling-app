@@ -412,6 +412,7 @@ pub enum Constraint {
     VerticalDistance(Distance),
     Horizontal(Horizontal),
     LinesEqualLength(LinesEqualLength),
+    Midpoint(Midpoint),
     Parallel(Parallel),
     Perpendicular(Perpendicular),
     Radius(Radius),
@@ -551,8 +552,10 @@ pub struct FixedPoint {
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
-pub struct Horizontal {
-    pub line: ObjectId,
+#[serde(untagged)]
+pub enum Horizontal {
+    Line { line: ObjectId },
+    Points { points: Vec<ConstraintSegment> },
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -563,8 +566,18 @@ pub struct LinesEqualLength {
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
-pub struct Vertical {
-    pub line: ObjectId,
+pub struct Midpoint {
+    pub point: ObjectId,
+    #[serde(alias = "line")]
+    pub segment: ObjectId,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(untagged)]
+pub enum Vertical {
+    Line { line: ObjectId },
+    Points { points: Vec<ConstraintSegment> },
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

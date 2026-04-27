@@ -33,6 +33,15 @@ description: Artifact commands zoo-logo.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -59,8 +68,8 @@ description: Artifact commands zoo-logo.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.0,
-          "y": 0.0,
+          "x": 0.6350000000354321,
+          "y": 0.6349999999857875,
           "z": 0.0
         }
       }
@@ -81,11 +90,11 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 3.860558281435868,
-            "y": 0.12441396683227206,
+            "x": 0.6350000000494767,
+            "y": 4.191000081321146,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -98,11 +107,11 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 3.6563256455111603,
-            "y": 3.950029697012105,
+            "x": 14.535228349241837,
+            "y": 19.303999999983247,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -115,11 +124,11 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": -4.074521866909243,
+            "x": 0.6350000001011795,
+            "y": 19.303999999987678,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -132,11 +141,11 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 16.166773857672663,
-            "y": 0.0,
+            "x": 0.6350000001184138,
+            "y": 24.764999999993535,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -149,11 +158,11 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 5.746099937023301,
+            "x": 15.875000000145844,
+            "y": 24.764999999998636,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -166,11 +175,11 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -14.616750010496116,
-            "y": 0.0,
+            "x": 15.875000000180313,
+            "y": 20.760664377378166,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -183,11 +192,11 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 14.616750010496116,
-            "y": 15.788710027289902,
+            "x": 19.55799999985375,
+            "y": 24.76500000006094,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -200,11 +209,11 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 3.8655543908753764,
+            "x": 23.113999999885095,
+            "y": 24.76500000004688,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -217,11 +226,11 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -3.8632171856413127,
-            "y": -0.1297104471345602,
+            "x": 23.113999999916437,
+            "y": 21.209000000047578,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -234,11 +243,11 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -3.6536276397732834,
-            "y": -3.9448203064865996,
+            "x": 9.213771607806196,
+            "y": 6.095999999960672,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -251,11 +260,11 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 4.074502316143027,
+            "x": 23.113999999980265,
+            "y": 6.095999999959661,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -268,11 +277,11 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -16.166812959205092,
-            "y": 0.0,
+            "x": 23.113999999996317,
+            "y": 0.6349999999554393,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -285,11 +294,11 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": -5.746092827653768,
+            "x": 7.874000000009209,
+            "y": 0.6349999999527153,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -302,11 +311,11 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 14.619382254565812,
-            "y": 0.0,
+            "x": 7.8740000000232815,
+            "y": 4.639335622564266,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -319,11 +328,11 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -14.619382254565812,
-            "y": -15.793917640473024,
+            "x": 4.191000003981789,
+            "y": 0.634999999985507,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -336,11 +345,11 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": -3.8603538870617875,
+            "x": 0.6350000000213875,
+            "y": 0.6349999999857875,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -348,8 +357,613 @@ description: Artifact commands zoo-logo.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 44.46834441715509,
+          "y": 22.807772169166427,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 36.779200000109064,
+            "y": 12.699999999906591
+          },
+          "radius": 12.70000000361629,
+          "start": {
+            "unit": "degrees",
+            "value": 52.73916962151668
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 221.26083055016414
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 40.44662815247449,
+          "y": 18.49500948539818,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 36.77920000206833,
+            "y": 12.700000002007757
+          },
+          "radius": 6.858000011007326,
+          "start": {
+            "unit": "degrees",
+            "value": 57.67192766159749
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 216.32807261894507
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 29.090055915966776,
+          "y": 2.5922275429710444,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 36.779200000780826,
+            "y": 12.700000000626266
+          },
+          "radius": 12.700000031998599,
+          "start": {
+            "unit": "degrees",
+            "value": -127.26082839782381
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 41.260828430859696
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 33.11177218911826,
+          "y": 6.9049902671388885,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 36.77919999814787,
+            "y": 12.69999999780358
+          },
+          "radius": 6.858000037397355,
+          "start": {
+            "unit": "degrees",
+            "value": -122.3280688236503
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 36.32806915973179
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 27.23241748756816,
+          "y": 4.324503384918471,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 31.254133767782637,
+            "y": 8.637266084416654,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 40.446628153256455,
+          "y": 18.49500948663209,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 44.46834441685701,
+            "y": 22.807772168773674,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 29.090055915965344,
+          "y": 2.592227542972357,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 33.111772188335785,
+            "y": 6.904990265903376,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 42.304266584692165,
+          "y": 16.762733660487143,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 46.32598285787484,
+            "y": 21.075496292967998,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 71.18914430041069,
+          "y": 22.807772288510442,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 63.50000000170948,
+            "y": 12.70000000181106
+          },
+          "radius": 12.700000025433754,
+          "start": {
+            "unit": "degrees",
+            "value": 52.73917036722932
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 221.2608293088481
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 55.810855686922665,
+          "y": 2.5922277270601035,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 63.50000000185824,
+            "y": 12.700000001970036
+          },
+          "radius": 12.700000025879683,
+          "start": {
+            "unit": "degrees",
+            "value": -127.26082972326456
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 41.2608293989906
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 67.16742803659287,
+          "y": 18.495009602343114,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 63.50000000339558,
+            "y": 12.700000003621428
+          },
+          "radius": 6.858000045782867,
+          "start": {
+            "unit": "degrees",
+            "value": 57.67192900432028
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 216.3280705229788
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 59.832571940226536,
+          "y": 6.904990398060244,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 63.50000000002184,
+            "y": 12.700000000000143
+          },
+          "radius": 6.858000062725987,
+          "start": {
+            "unit": "degrees",
+            "value": -122.32807116907371
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 36.32807063329834
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 53.953217298267354,
+          "y": 4.324503585367348,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 57.974933609155336,
+            "y": 8.637266279810309,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 67.1674280372681,
+          "y": 18.49500960340906,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 71.18914430034548,
+            "y": 22.807772288423347,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 55.81085568698723,
+          "y": 2.592227727146336,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 59.832571939553645,
+            "y": 6.904990396998012,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 69.02506636764373,
+          "y": 16.762733720629306,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 73.04678269131756,
+            "y": 21.075496432728006,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region_from_query_point",
+        "object_id": "[uuid]",
+        "query_point": {
+          "x": 19.557999999869423,
+          "y": 21.209000000047578
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region_from_query_point",
+        "object_id": "[uuid]",
+        "query_point": {
+          "x": 40.4466281524741,
+          "y": 22.807772168375674
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region_from_query_point",
+        "object_id": "[uuid]",
+        "query_point": {
+          "x": 46.32598285823988,
+          "y": 16.76273366134223
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region_from_query_point",
+        "object_id": "[uuid]",
+        "query_point": {
+          "x": 67.1674280386111,
+          "y": 22.80777228833509
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region_from_query_point",
+        "object_id": "[uuid]",
+        "query_point": {
+          "x": 73.04678269123809,
+          "y": 16.762733721372385
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -374,7 +988,7 @@ description: Artifact commands zoo-logo.kcl
       "command": {
         "type": "extrude",
         "target": "[uuid]",
-        "distance": 6.35,
+        "distance": 2.54,
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
@@ -434,144 +1048,9 @@ description: Artifact commands zoo-logo.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 42.0618077062096,
-          "y": 18.94013372359984,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 4.1224358117754845,
-            "y": 4.44404018008162,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 38.212861241340704,
-            "y": 12.700177734238329
-          },
-          "radius": 13.330067874886293,
-          "start": {
-            "unit": "degrees",
-            "value": 53.273198866269404
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 221.02680113373057
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 4.1224358117754845,
-            "y": 4.44404018008162,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 38.212861241340704,
-            "y": 12.700177734238332
-          },
-          "radius": 7.33153733118746,
-          "start": {
-            "unit": "degrees",
-            "value": 215.9672273976281
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 58.33277260237188
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "extrude",
         "target": "[uuid]",
-        "distance": 6.35,
+        "distance": 2.54,
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
@@ -631,144 +1110,9 @@ description: Artifact commands zoo-logo.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 34.36391477647181,
-          "y": 6.460221744876819,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -4.122435811775482,
-            "y": -4.444040180081623,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 38.212861241340704,
-            "y": 12.700177734238324
-          },
-          "radius": 13.330067874886293,
-          "start": {
-            "unit": "degrees",
-            "value": 233.2731988662694
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 401.0268011337306
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -4.122435811775482,
-            "y": -4.444040180081623,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 38.212861241340704,
-            "y": 12.700177734238322
-          },
-          "radius": 7.33153733118746,
-          "start": {
-            "unit": "degrees",
-            "value": 395.9672273976281
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 238.33277260237193
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "extrude",
         "target": "[uuid]",
-        "distance": 6.35,
+        "distance": 2.54,
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
@@ -828,144 +1172,9 @@ description: Artifact commands zoo-logo.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 70.49928583930036,
-          "y": 18.94013372359984,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 4.1224358117754845,
-            "y": 4.44404018008162,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 66.65033937443145,
-            "y": 12.700177734238329
-          },
-          "radius": 13.330067874886293,
-          "start": {
-            "unit": "degrees",
-            "value": 53.273198866269404
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 221.02680113373057
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 4.1224358117754845,
-            "y": 4.44404018008162,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 66.65033937443145,
-            "y": 12.700177734238332
-          },
-          "radius": 7.33153733118746,
-          "start": {
-            "unit": "degrees",
-            "value": 215.9672273976281
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 58.33277260237188
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "extrude",
         "target": "[uuid]",
-        "distance": 6.35,
+        "distance": 2.54,
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
@@ -1025,144 +1234,9 @@ description: Artifact commands zoo-logo.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 62.80139290956257,
-          "y": 6.460221744876819,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -4.122435811775482,
-            "y": -4.444040180081623,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 66.65033937443147,
-            "y": 12.700177734238324
-          },
-          "radius": 13.330067874886293,
-          "start": {
-            "unit": "degrees",
-            "value": 233.2731988662694
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 401.0268011337306
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -4.122435811775482,
-            "y": -4.444040180081623,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 66.65033937443147,
-            "y": 12.700177734238322
-          },
-          "radius": 7.33153733118746,
-          "start": {
-            "unit": "degrees",
-            "value": 395.9672273976281
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 238.33277260237193
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "extrude",
         "target": "[uuid]",
-        "distance": 6.35,
+        "distance": 2.54,
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",

@@ -3,85 +3,151 @@
 // Categories: Maker
 
 // Set units
-@settings(defaultLengthUnit = in, kclVersion = 1.0)
+@settings(defaultLengthUnit = in)
 
 // Define the dihedral angle for a regular dodecahedron
 dihedral = 116.565
+seedHalfSpan = 1000
+seedSpan = seedHalfSpan * 2
+seedLength = 2000
+seedOffset = -260
+topPlaneZ = seedOffset + seedLength
 
 // Create a face template function that makes a large thin cube
-fn createFaceTemplate(@dither) {
-  baseSketch = startSketchOn(XY)
-    |> startProfile(at = [-1000 - dither, -1000 - dither])
-    |> line(endAbsolute = [1000 + dither, -1000 - dither])
-    |> line(endAbsolute = [1000 + dither, 1000 + dither])
-    |> line(endAbsolute = [-1000 - dither, 1000 + dither])
-    |> close()
-  extruded = extrude(baseSketch, length = 1000 + dither + 1000)
-  return extruded
-    |> translate(x = 0, y = 0, z = -260 - dither)
+baseProfile = sketch(on = XY) {
+  line1 = line(start = [var -1000in, var -1000in], end = [var -1000in, var 1000in])
+  line2 = line(start = [var -1000in, var 1000in], end = [var 1000in, var 1000in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 1000in, var 1000in], end = [var 1000in, var -1000in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 1000in, var -1000in], end = [var -1000in, var -1000in])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+  horizontal(line4)
+  horizontalDistance([line1.start, ORIGIN]) == seedHalfSpan
+  verticalDistance([line1.start, ORIGIN]) == seedHalfSpan
+  distance([line1.start, line1.end]) == seedSpan
+  distance([line2.start, line2.end]) == seedSpan
 }
+baseRegion = region(segments = [baseProfile.line1, baseProfile.line2])
+hiddenBaseProfile = hide(baseProfile)
 
-// Define the rotations array with [pitch, roll, yaw, dither] for each face
-faceRotations = [
-  [0, 0, 0, 0],
-  // face1 - reference face
-  [dihedral, 0, 0, 0.1],
-  // face2
-  [dihedral, 0, 72, 0.2],
-  // face3
-  [dihedral, 0, 144, 0.3],
-  // face4
-  [dihedral, 0, 216, 0.4],
-  // face5
-  [dihedral, 0, 288, 0.5],
-  // face6
-  [180, 0, 0, 0.6],
-  // face7
-  [180 - dihedral, 0, 36, 0.7],
-  // face8
-  [180 - dihedral, 0, 108, 0.8],
-  // face9
-  [180 - dihedral, 0, 180, 0.9],
-  // face10
-  [180 - dihedral, 0, 252, 0.11],
-  // face11
-  [180 - dihedral, 0, 324, 0.12],
-  // face12
-]
-
-// Create faces by mapping over the rotations array
-dodecFaces = map(
-  faceRotations,
-  f = fn(@rotation) {
-    return createFaceTemplate(rotation[3])
-      |> rotate(
-           pitch = rotation[0],
-           roll = rotation[1],
-           yaw = rotation[2],
-           global = true,
-         )
-  },
-)
-
-fn calculateArrayLength(@arr) {
-  return reduce(
-    arr,
-    initial = 0,
-    f = fn(@item, accum) {
-      return accum + 1
-    },
-  )
-}
-
-fn createIntersection(@solids) {
-  fn reduceIntersect(@previous, accum) {
-    return intersect([previous, accum])
-  }
-  lastIndex = calculateArrayLength(solids) - 1
-  lastSolid = solids[lastIndex]
-  remainingSolids = pop(solids)
-  return reduce(remainingSolids, initial = lastSolid, f = reduceIntersect)
-}
+// face1 - reference face
+cube01 = extrude(baseRegion, length = seedLength)
+  |> translate(x = 0, y = 0, z = seedOffset)
+// face2
+cube02 = clone(cube01)
+  |> scale(x = 1, y = 1, z = 1)
+  |> translate(z = topPlaneZ * (1 - 1))
+  |> rotate(
+       pitch = dihedral,
+       roll = 0,
+       yaw = 0,
+       global = true,
+     )
+// face3
+cube03 = clone(cube01)
+  |> scale(x = 1, y = 1, z = 1.001) // slight 0.001 offset to make the 3D Intersect work
+  |> rotate(
+       pitch = dihedral,
+       roll = 0,
+       yaw = 72,
+       global = true,
+     )
+// face4
+cube04 = clone(cube01)
+  |> scale(x = 1, y = 1.001, z = 1) // slight 0.001 offset to make the 3D Intersect work
+  |> rotate(
+       pitch = dihedral,
+       roll = 0,
+       yaw = 144,
+       global = true,
+     )
+// face5
+cube05 = clone(cube01)
+  |> scale(x = 1, y = 1, z = 1)
+  |> rotate(
+       pitch = dihedral,
+       roll = 0,
+       yaw = 216,
+       global = true,
+     )
+// face6
+cube06 = clone(cube01)
+  |> scale(x = 1, y = 1, z = 1.001) // slight 0.001 offset to make the 3D Intersect work
+  |> rotate(
+       pitch = dihedral,
+       roll = 0,
+       yaw = 288,
+       global = true,
+     )
+// face7
+cube07 = clone(cube01)
+  |> scale(x = 1, y = 1, z = 1)
+  |> rotate(
+       pitch = 180,
+       roll = 0,
+       yaw = 0,
+       global = true,
+     )
+// face8
+cube08 = clone(cube01)
+  |> scale(x = 1, y = 1, z = 1)
+  |> rotate(
+       pitch = 180 - dihedral,
+       roll = 0,
+       yaw = 36,
+       global = true,
+     )
+// face9
+cube09 = clone(cube01)
+  |> scale(x = 1, y = 1, z = 1.001)
+  |> rotate(
+       pitch = 180 - dihedral,
+       roll = 0,
+       yaw = 108,
+       global = true,
+     )
+// face10
+cube10 = clone(cube01)
+  |> scale(x = 1, y = 1, z = 0.999) // slight 0.001 offset to make the 3D Intersect work
+  |> rotate(
+       pitch = 180 - dihedral,
+       roll = 0,
+       yaw = 180,
+       global = true,
+     )
+// face11
+cube11 = clone(cube01)
+  |> scale(x = 1, y = 1, z = 1)
+  |> rotate(
+       pitch = 180 - dihedral,
+       roll = 0,
+       yaw = 252,
+       global = true,
+     )
+// face12
+cube12 = clone(cube01)
+  |> scale(x = 1, y = 1, z = 1)
+  |> rotate(
+       pitch = 180 - dihedral,
+       roll = 0,
+       yaw = 324,
+       global = true,
+     )
 
 // Apply intersection to all faces
-createIntersection(dodecFaces)
+intersection01 = intersect([cube01, cube12])
+intersection02 = intersect([cube02, intersection01])
+intersection03 = intersect([cube03, intersection02])
+intersection04 = intersect([cube04, intersection03])
+intersection05 = intersect([cube05, intersection04])
+intersection06 = intersect([cube06, intersection05])
+intersection07 = intersect([cube07, intersection06])
+intersection08 = intersect([cube08, intersection07])
+intersection09 = intersect([cube09, intersection08])
+intersection10 = intersect([cube10, intersection09])
+dodecahedron = intersect([cube11, intersection10])

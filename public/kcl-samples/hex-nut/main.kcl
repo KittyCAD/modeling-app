@@ -8,22 +8,58 @@
 // Define parameters (5/16" - 24 thread size)
 wallToWallLength = 0.5
 thickness = 0.266
-diameter = 0.3125
+holeDiameter = 0.3125
 
-// Define a function for the hex nut
-fn hexNut(start, thk, innerDia) {
-  hexNutSketch = startSketchOn(-XZ)
-    |> startProfile(at = [start[0] + innerDia, start[1]])
-    |> angledLine(angle = 240, length = innerDia)
-    |> angledLine(angle = 180, length = innerDia)
-    |> angledLine(angle = 120, length = innerDia)
-    |> angledLine(angle = 60, length = innerDia)
-    |> angledLine(angle = 0, length = innerDia * .90)
-    |> close()
-    |> subtract2d(tool = circle(center = [start[0], start[1]], radius = innerDia / 2))
-    |> extrude(length = thk)
-  return hexNutSketch
+nutSketch = sketch(on = XZ) {
+  circle1 = circle(start = [var 0.29in, var 0in], center = [var 0in, var 0in], construction = true)
+  coincident([circle1.center, ORIGIN])
+
+  line1 = line(start = [var -0.29in, var 0in], end = [var -0.15in, var 0.25in])
+  line2 = line(start = [var -0.15in, var 0.25in], end = [var 0.14in, var 0.25in])
+  coincident([line1.end, line2.start])
+
+  line3 = line(start = [var 0.14in, var 0.25in], end = [var 0.29in, var -0.03in])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, circle1.start])
+
+  line4 = line(start = [var 0.29in, var -0.04in], end = [var 0.14in, var -0.25in])
+  coincident([line4.start, line3.end])
+
+  line5 = line(start = [var 0.14in, var -0.25in], end = [var -0.15in, var -0.25in])
+  coincident([line4.end, line5.start])
+
+  line6 = line(start = [var -0.15in, var -0.25in], end = [var -0.29in, var 0in])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line1.start])
+
+  coincident([line6.end, circle1])
+  coincident([line2.start, circle1])
+  coincident([line3.start, circle1])
+  coincident([line5.start, circle1])
+  coincident([line6.start, circle1])
+
+  equalLength([
+    line5,
+    line6,
+    line1,
+    line2,
+    line3,
+    line4
+  ])
+
+  line7 = line(start = [var -0in, var -0in], end = [var 0.29in, var -0.03in], construction = true)
+  coincident([line7.start, circle1.center])
+  coincident([line7.end, line4.start])
+  horizontal(line7)
+
+  circle2 = circle(start = [var 0.14in, var 0.07in], center = [var 0in, var 0in])
+  coincident([circle2.center, circle1.center])
+  radius(circle2) == holeDiameter / 2
+  horizontalDistance([line7.start, line7.end]) == holeDiameter
 }
 
+sketchRegion = region(point = [holeDiameter * 0.75, 0], sketch = nutSketch)
+
 // Create a hex nut
-hexNut(start = [0, 0], thk = thickness, innerDia = diameter)
+hexNut = extrude(sketchRegion, length = thickness)
+hide(nutSketch)

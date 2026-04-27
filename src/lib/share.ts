@@ -1,8 +1,4 @@
-import {
-  type KclProjectPublicationStatus,
-  type KclProjectShareLinkAccessMode,
-  projects,
-} from '@kittycad/lib'
+import { type KclProjectPublicationStatus, projects } from '@kittycad/lib'
 import { serializeProjectConfiguration } from '@src/lang/wasm'
 import toast from 'react-hot-toast'
 
@@ -18,24 +14,29 @@ import type { FileEntry, Project } from '@src/lib/project'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
-export type CopyCurrentFileShareLinkArgs = {
+export type PublishCurrentProjectArgs = {
   token: string
   project: Project | undefined
   currentFilePath: string
   currentFileContents: string
   wasmInstance: ModuleType
-  isRestrictedToOrg: boolean
+  submission: ProjectPublishSubmission
 }
 
-export type PublishCurrentProjectArgs = Omit<
-  CopyCurrentFileShareLinkArgs,
-  'isRestrictedToOrg'
->
+export type ProjectPublishSubmission = {
+  title: string
+  description: string
+  categoryIds: string[]
+}
 
 export type CurrentProjectPublicationDetails = {
   projectId: string
   publicationStatus: KclProjectPublicationStatus
+  title: string
+  description: string
+  categoryIds: string[]
   publishedAt?: string
+  submittedAt?: string
   updatedAt: string
 }
 
@@ -58,57 +59,7 @@ type UploadFile = {
 type ProjectUpsertBody = {
   title: string
   description: string
-}
-
-export async function copyCurrentFileShareLink(
-  args: CopyCurrentFileShareLinkArgs
-): Promise<boolean> {
-  if (!args.token) {
-    toast.error('You need to be signed in to share a file.', {
-      duration: 5000,
-    })
-    return false
-  }
-
-  if (!args.project) {
-    toast.error('You need an open project to share this file.', {
-      duration: 5000,
-    })
-    return false
-  }
-
-  const uploadedProject = await ensureCurrentProjectUploaded({
-    ...args,
-    project: args.project,
-  })
-  if (err(uploadedProject)) {
-    toast.error(uploadedProject.message, {
-      duration: 5000,
-    })
-    return false
-  }
-
-  const accessMode: KclProjectShareLinkAccessMode = args.isRestrictedToOrg
-    ? 'organization_only'
-    : 'anyone_with_link'
-
-  const shareLink = await getOrCreateProjectShareLink({
-    client: uploadedProject.client,
-    projectId: uploadedProject.projectId,
-    accessMode,
-  })
-  if (err(shareLink)) {
-    toast.error(shareLink.message, {
-      duration: 5000,
-    })
-    return false
-  }
-
-  await globalThis.navigator.clipboard.writeText(shareLink.url)
-  toast.success('Link copied to clipboard.', {
-    duration: 5000,
-  })
-  return true
+  category_ids: string[]
 }
 
 export async function publishCurrentProject(
@@ -207,7 +158,11 @@ export async function getCurrentProjectPublicationDetails({
   return {
     projectId,
     publicationStatus: remoteProject.publication_status,
+    title: remoteProject.title || getDefaultProjectTitle(project),
+    description: remoteProject.description || '',
+    categoryIds: remoteProject.category_ids || [],
     publishedAt: remoteProject.publication.last_published_at,
+    submittedAt: remoteProject.publication.submitted_at,
     updatedAt: remoteProject.updated_at,
   }
 }
@@ -248,14 +203,7 @@ async function ensureCurrentProjectUploaded(
   }
 
   if (existingProjectId) {
-    const projectBody = await getProjectUpsertBody({
-      client,
-      project,
-      projectId: existingProjectId,
-    })
-    if (err(projectBody)) {
-      return projectBody
-    }
+    const projectBody = getProjectUpsertBody(project, args.submission)
 
     const projectResp = await kcCall(() =>
       projects.update_project({
@@ -274,7 +222,7 @@ async function ensureCurrentProjectUploaded(
     }
   }
 
-  const projectBody = getDefaultProjectUpsertBody(project)
+  const projectBody = getProjectUpsertBody(project, args.submission)
   const projectResp = await kcCall(() =>
     projects.create_project({
       client,
@@ -302,33 +250,14 @@ async function ensureCurrentProjectUploaded(
   }
 }
 
-async function getProjectUpsertBody({
-  client,
-  project,
-  projectId,
-}: {
-  client: ReturnType<typeof createKCClient>
-  project: Project
-  projectId: string
-}): Promise<ProjectUpsertBody | Error> {
-  const remoteProject = await getRemoteProject({
-    client,
-    projectId,
-  })
-  if (err(remoteProject)) {
-    return remoteProject
-  }
-
+function getProjectUpsertBody(
+  project: Project,
+  submission: ProjectPublishSubmission
+): ProjectUpsertBody {
   return {
-    title: remoteProject.title || getDefaultProjectTitle(project),
-    description: remoteProject.description || '',
-  }
-}
-
-function getDefaultProjectUpsertBody(project: Project): ProjectUpsertBody {
-  return {
-    title: getDefaultProjectTitle(project),
-    description: '',
+    title: submission.title.trim() || getDefaultProjectTitle(project),
+    description: submission.description.trim(),
+    category_ids: submission.categoryIds,
   }
 }
 
@@ -351,49 +280,12 @@ function getRemoteProject({
   )
 }
 
-async function getOrCreateProjectShareLink({
-  client,
-  projectId,
-  accessMode,
-}: {
-  client: ReturnType<typeof createKCClient>
-  projectId: string
-  accessMode: KclProjectShareLinkAccessMode
-}) {
-  const existingResp = await kcCall(() =>
-    projects.list_project_share_links({
-      client,
-      id: projectId,
-    })
-  )
-
-  if (!err(existingResp)) {
-    const existing = existingResp.find(
-      (link) => link.access_mode === accessMode
-    )
-    if (existing) {
-      return existing
-    }
-  }
-
-  return kcCall(() =>
-    projects.create_project_share_link({
-      client,
-      id: projectId,
-      body: { access_mode: accessMode },
-    })
-  )
-}
-
 async function buildProjectUploadFiles({
   project,
   currentFilePath,
   currentFileContents,
   wasmInstance,
-}: Omit<
-  CopyCurrentFileShareLinkArgs,
-  'token' | 'isRestrictedToOrg' | 'project'
-> & {
+}: Omit<PublishCurrentProjectArgs, 'token' | 'project' | 'submission'> & {
   project: Project
 }): Promise<UploadFile[] | Error> {
   if (!project.children) {

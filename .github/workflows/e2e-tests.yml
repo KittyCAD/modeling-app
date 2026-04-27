@@ -66,7 +66,7 @@ jobs:
   snapshots:
     needs: [build-wasm]
     name: e2e:snapshots
-    runs-on: namespace-profile-ubuntu-8-cores
+    runs-on: namespace-profile-macos-8-cores
     if: github.repository == 'kittycad/modeling-app'
 
     steps:
@@ -94,7 +94,7 @@ jobs:
           mkdir rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v6.3.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -111,18 +111,12 @@ jobs:
       - name: Install browsers
         run: npm run playwright install --with-deps
 
-      - name: npm run test:snapshots
-        uses: nick-fields/retry@v4.0.0
-        with:
-          shell: bash
-          command: npm run test:snapshots
-          timeout_minutes: 15
-          max_attempts: 5
+      - run: npm run test:snapshots
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
-          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
           CI_SUITE: e2e:snapshots
           TARGET: web
@@ -134,7 +128,7 @@ jobs:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
-          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
           CI_SUITE: e2e:snapshots
           TARGET: web
@@ -230,7 +224,7 @@ jobs:
           mkdir rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v6.3.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -254,18 +248,12 @@ jobs:
           GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
           OS_NAME: ${{ env.OS_NAME }}
 
-      - name: npm run test:e2e:web
-        uses: nick-fields/retry@v4.0.0
-        with:
-          shell: bash
-          command: npm run test:e2e:web
-          timeout_minutes: 15
-          max_attempts: 5
+      - run: npm run test:e2e:web
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
-          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
           CI_SUITE: e2e:web
           TARGET: web
@@ -286,7 +274,7 @@ jobs:
         env:
           TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
-          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
           CI_SUITE: e2e:web
           CI_STEP: teardown
@@ -355,7 +343,7 @@ jobs:
           mkdir rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v6.3.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -448,7 +436,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v6.3.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -493,7 +481,7 @@ jobs:
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
       - name: npm run test:e2e:web
-        run: npm run test:e2e:web -- --grep=demo --retries=3
+        run: npm run test:e2e:web -- --grep=demo
         env:
           VERCEL_BASE_URL: ${{ steps.wait-for-vercel-preview.outputs.url || steps.wait-for-vercel-staging.outputs.url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
@@ -501,7 +489,7 @@ jobs:
           TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          CI_PR_NUMBER: ${{ github.event.pull_request.number || '' }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
           CI_SUITE: e2e:web
           TARGET: web
 

@@ -87,6 +87,7 @@ export async function updateModelingState(
   // Step 2: Update the code editor and save file
   await kclManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst, {
     isDeleting: options?.isDeleting,
+    allowProgrammaticDocumentChanges: true,
   })
 
   // Step 3: Set focus on the newly added code if needed

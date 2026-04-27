@@ -28,9 +28,9 @@ import {
 } from '@src/lib/constants'
 import { getPathFilenameInVariableCase } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
+import { copyFileShareLink } from '@src/lib/links'
 import type { Project } from '@src/lib/project'
 import { baseUnitsUnion, warningLevels } from '@src/lib/settings/settingsTypes'
-import { copyCurrentFileShareLink } from '@src/lib/share'
 import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -298,19 +298,18 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
     },
     {
       name: 'share-file-link',
-      displayName: 'Share file link',
-      description: 'Upload the current project and copy a shareable link.',
+      displayName: 'Share part via Zoo link',
+      description: 'Create a link that contains a copy of the current file.',
       groupId: 'code',
       needsReview: false,
       icon: 'link',
       onSubmit: (input) => {
-        copyCurrentFileShareLink({
+        copyFileShareLink({
           token: commandProps.authToken,
-          project: commandProps.projectData.project,
-          currentFilePath: commandProps.kclManager.path,
-          currentFileContents: commandProps.kclManager.code,
-          wasmInstance: commandProps.wasmInstance,
+          code: commandProps.kclManager.code,
+          name: commandProps.projectData.project?.name || '',
           isRestrictedToOrg: input?.event.data.isRestrictedToOrg ?? false,
+          password: input?.event.data.password,
         }).catch(reportRejection)
       },
     },

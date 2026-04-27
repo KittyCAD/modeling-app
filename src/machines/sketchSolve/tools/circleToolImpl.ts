@@ -19,7 +19,7 @@ import {
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
-  getCoincidentSegmentsForSnapTarget,
+  applyConstraintsForSnapTarget,
   type SnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import {
@@ -357,28 +357,22 @@ export async function createCircleActor({
     const snapConstraintNewObjects: number[] = []
 
     for (const { segmentId, snapTarget } of snapTargets) {
-      const coincidentSegments = getCoincidentSegmentsForSnapTarget(
+      const snapResult = await applyConstraintsForSnapTarget({
         segmentId,
-        snapTarget
-      )
-      if (coincidentSegments === null) {
+        target: snapTarget,
+        rustContext,
+        sketchId,
+        settings,
+        createCheckpoint: true,
+      })
+      if (snapResult.result === null) {
         continue
       }
 
-      const snapResult = await rustContext.addConstraint(
-        0,
-        sketchId,
-        {
-          type: 'Coincident',
-          segments: coincidentSegments,
-        },
-        settings,
-        true
-      )
-      latestKclSource = snapResult.kclSource
-      latestSceneGraphDelta = snapResult.sceneGraphDelta
-      latestCheckpointId = snapResult.checkpointId ?? latestCheckpointId
-      snapConstraintNewObjects.push(...snapResult.sceneGraphDelta.new_objects)
+      latestKclSource = snapResult.result.kclSource
+      latestSceneGraphDelta = snapResult.result.sceneGraphDelta
+      latestCheckpointId = snapResult.result.checkpointId ?? latestCheckpointId
+      snapConstraintNewObjects.push(...snapResult.newObjectIds)
     }
 
     if (snapConstraintNewObjects.length === 0) {
