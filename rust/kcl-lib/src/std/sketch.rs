@@ -1270,9 +1270,9 @@ pub(crate) async fn create_sketch(
             // Flush the batch for our fillets/chamfers if there are any.
             // If we do not do these for sketch on face, things will fail with face does not exist.
             exec_state
-                .flush_batch_for_solids(
+                .flush_batch_for_face_parent_solids(
                     ModelingCmdMeta::new(exec_state, ctx, source_range),
-                    &[(*face.solid).clone()],
+                    std::slice::from_ref(&face.parent_solid),
                 )
                 .await?;
         }
