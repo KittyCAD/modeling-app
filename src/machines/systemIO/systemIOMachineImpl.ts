@@ -181,7 +181,7 @@ const sharedBulkWriteProjectFilesWorkflow = async ({
       )
     }
 
-    console.info('[public-project] writing imported project files', {
+    console.info('[project-id] writing imported project files', {
       projectName,
       projectRoot,
       fileCount: input.files.length,
@@ -213,7 +213,7 @@ const sharedBulkWriteProjectFilesWorkflow = async ({
       }
     }
 
-    console.info('[public-project] finished writing imported project files', {
+    console.info('[project-id] finished writing imported project files', {
       projectName,
       projectRoot,
       entrypointFilePath: requestedFileNameWithExtension || null,
@@ -226,16 +226,13 @@ const sharedBulkWriteProjectFilesWorkflow = async ({
       subRoute: '',
     }
   } catch (error) {
-    console.error(
-      '[public-project] failed while writing imported project files',
-      {
-        requestedProjectName: input.requestedProjectName,
-        requestedFileNameWithExtension:
-          input.requestedFileNameWithExtension || null,
-        fileCount: input.files.length,
-        error,
-      }
-    )
+    console.error('[project-id] failed while writing imported project files', {
+      requestedProjectName: input.requestedProjectName,
+      requestedFileNameWithExtension:
+        input.requestedFileNameWithExtension || null,
+      fileCount: input.files.length,
+      error,
+    })
 
     return Promise.reject(
       error instanceof Error

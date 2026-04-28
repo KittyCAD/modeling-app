@@ -293,8 +293,8 @@ export const CMD_NAME_QUERY_PARAM = 'cmd'
 export const CMD_GROUP_QUERY_PARAM = 'groupId'
 /** A query parameter that manually sets the engine pool the frontend should use. */
 export const POOL_QUERY_PARAM = 'pool'
-/** A query parameter to open a publicly shared project inside the app. */
-export const PUBLIC_PROJECT_QUERY_PARAM = 'public-project'
+/** A query parameter containing the project ID to open inside the app. */
+export const PROJECT_ID_QUERY_PARAM = 'project-id'
 /** A query parameter to create a file
  * @deprecated: supporting old share links with this. For new command URLs, use "cmd"
  */

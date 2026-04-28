@@ -14,11 +14,11 @@ import {
   FILE_NAME_QUERY_PARAM,
   POOL_QUERY_PARAM,
   PROJECT_ENTRYPOINT,
-  PUBLIC_PROJECT_QUERY_PARAM,
+  PROJECT_ID_QUERY_PARAM,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { FileLinkParams } from '@src/lib/links'
-import { downloadPublicProject } from '@src/lib/publicProject'
+import { downloadProjectById } from '@src/lib/downloadProject'
 import fsZds from '@src/lib/fs-zds'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
 import { useApp } from '@src/lib/boot'
@@ -53,8 +53,8 @@ export function useQueryParamEffects(kclManager: KclManager) {
   // to different timings.
   const shouldInvokeCreateFile =
     !hasAskToOpen && searchParams.has(CREATE_FILE_URL_PARAM)
-  const shouldOpenPublicProject =
-    !hasAskToOpen && searchParams.has(PUBLIC_PROJECT_QUERY_PARAM)
+  const shouldOpenProjectId =
+    !hasAskToOpen && searchParams.has(PROJECT_ID_QUERY_PARAM)
   const shouldInvokeGenericCmd =
     !hasAskToOpen &&
     searchParams.has(CMD_NAME_QUERY_PARAM) &&
@@ -92,39 +92,39 @@ export function useQueryParamEffects(kclManager: KclManager) {
   }, [shouldInvokeCreateFile, setSearchParams, authState])
 
   useEffect(() => {
-    if (!shouldOpenPublicProject || !authState.matches('loggedIn')) return
+    if (!shouldOpenProjectId || !authState.matches('loggedIn')) return
 
-    const projectId = searchParams.get(PUBLIC_PROJECT_QUERY_PARAM)
+    const projectId = searchParams.get(PROJECT_ID_QUERY_PARAM)
     if (!projectId) {
       return
     }
 
     let cancelled = false
-    const clearPublicProjectSearchParam = () => {
+    const clearProjectIdSearchParam = () => {
       const nextSearchParams = new URLSearchParams(searchParams)
-      nextSearchParams.delete(PUBLIC_PROJECT_QUERY_PARAM)
+      nextSearchParams.delete(PROJECT_ID_QUERY_PARAM)
       setSearchParams(nextSearchParams)
     }
 
     void (async () => {
-      console.info('[public-project] opening shared project from query param', {
+      console.info('[project-id] opening shared project from query param', {
         projectId,
       })
-      const downloadedProject = await downloadPublicProject(projectId)
+      const downloadedProject = await downloadProjectById(projectId)
       const downloadFailed = err(downloadedProject)
       if (cancelled || downloadFailed) {
         if (!cancelled && downloadFailed) {
-          console.error('[public-project] failed before import handoff', {
+          console.error('[project-id] failed before import handoff', {
             projectId,
             message: downloadedProject.message,
           })
-          clearPublicProjectSearchParam()
+          clearProjectIdSearchParam()
           toast.error(downloadedProject.message)
         }
         return
       }
 
-      console.info('[public-project] handing parsed project to system IO', {
+      console.info('[project-id] handing parsed project to system IO', {
         projectId,
         projectName: downloadedProject.projectName,
         fileCount: downloadedProject.files.length,
@@ -139,17 +139,17 @@ export function useQueryParamEffects(kclManager: KclManager) {
           requestedFileNameWithExtension: downloadedProject.entrypointFilePath,
         },
       })
-      clearPublicProjectSearchParam()
+      clearProjectIdSearchParam()
     })().catch((error) => {
       if (cancelled) {
         return
       }
 
-      console.error('[public-project] unexpected failure while opening', {
+      console.error('[project-id] unexpected failure while opening', {
         projectId,
         error,
       })
-      clearPublicProjectSearchParam()
+      clearProjectIdSearchParam()
 
       toast.error(
         error instanceof Error
@@ -162,7 +162,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
       cancelled = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [shouldOpenPublicProject, setSearchParams, authState])
+  }, [shouldOpenProjectId, setSearchParams, authState])
 
   /**
    * Generic commands are triggered by query parameters

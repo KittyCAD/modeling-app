@@ -3,24 +3,24 @@ import { afterEach, describe, expect, test, vi } from 'vitest'
 
 import env from '@src/env'
 import {
-  createOpenPublicProjectUrl,
-  downloadPublicProject,
-} from '@src/lib/publicProject'
+  createOpenProjectIdUrl,
+  downloadProjectById,
+} from '@src/lib/downloadProject'
 
 afterEach(() => {
   vi.restoreAllMocks()
 })
 
-describe('public project helpers', () => {
-  test('createOpenPublicProjectUrl builds an app URL that can prompt for desktop', () => {
-    const result = createOpenPublicProjectUrl('project-123')
+describe('downloadProject helpers', () => {
+  test('createOpenProjectIdUrl builds an app URL that can prompt for desktop', () => {
+    const result = createOpenProjectIdUrl('project-123')
 
     expect(result.toString()).toBe(
-      `${env().VITE_ZOO_SITE_APP_URL}/?public-project=project-123&ask-open-desktop=true`
+      `${env().VITE_ZOO_SITE_APP_URL}/?project-id=project-123&ask-open-desktop=true`
     )
   })
 
-  test('downloadPublicProject parses a zip archive into project files', async () => {
+  test('downloadProjectById parses a zip archive into project files', async () => {
     const zip = new JSZip()
     zip.file('sample-project/main.kcl', 'part001 = startSketchOn("XY")')
     zip.file('sample-project/project.toml', 'default_file = "main.kcl"')
@@ -37,7 +37,7 @@ describe('public project helpers', () => {
       })
     )
 
-    const result = await downloadPublicProject('project-123')
+    const result = await downloadProjectById('project-123')
 
     expect(result).not.toBeInstanceOf(Error)
     if (result instanceof Error) {
@@ -62,7 +62,7 @@ describe('public project helpers', () => {
     expect(Array.from(result.files[2].requestedData)).toEqual([1, 2, 3])
   })
 
-  test('downloadPublicProject returns an error when the archive has no KCL entry file', async () => {
+  test('downloadProjectById returns an error when the archive has no KCL entry file', async () => {
     const zip = new JSZip()
     zip.file('sample-project/project.toml', 'default_file = "main.kcl"')
     zip.file('sample-project/assets/shape.stl', new Uint8Array([1, 2, 3]))
@@ -78,7 +78,7 @@ describe('public project helpers', () => {
       })
     )
 
-    const result = await downloadPublicProject('project-456')
+    const result = await downloadProjectById('project-456')
 
     expect(result).toBeInstanceOf(Error)
     expect((result as Error).message).toContain('openable KCL entry file')

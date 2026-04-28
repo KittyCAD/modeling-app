@@ -5,33 +5,33 @@ import env from '@src/env'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
   PROJECT_ENTRYPOINT,
+  PROJECT_ID_QUERY_PARAM,
   PROJECT_SETTINGS_FILE_NAME,
-  PUBLIC_PROJECT_QUERY_PARAM,
 } from '@src/lib/constants'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { webSafePathSplit } from '@src/lib/paths'
 import { isArray } from '@src/lib/utils'
 import type { RequestedProjectFile } from '@src/machines/systemIO/utils'
 
-const DEFAULT_PUBLIC_PROJECT_NAME = 'shared-project'
-const PUBLIC_PROJECT_DOWNLOAD_FORMAT = 'zip'
+const DEFAULT_PROJECT_ID_NAME = 'shared-project'
+const PROJECT_ID_DOWNLOAD_FORMAT = 'zip'
 
 type DownloadedProjectArchive = {
   archive: ArrayBuffer
   contentDisposition: string | null
 }
 
-export function createOpenPublicProjectUrl(projectId: string) {
+export function createOpenProjectIdUrl(projectId: string) {
   const origin = env().VITE_ZOO_SITE_APP_URL
   const searchParams = new URLSearchParams({
-    [PUBLIC_PROJECT_QUERY_PARAM]: projectId,
+    [PROJECT_ID_QUERY_PARAM]: projectId,
     [ASK_TO_OPEN_QUERY_PARAM]: String(true),
   })
 
   return new URL(`?${searchParams.toString()}`, origin)
 }
 
-export async function downloadPublicProject(projectId: string): Promise<
+export async function downloadProjectById(projectId: string): Promise<
   | {
       projectName: string
       files: RequestedProjectFile[]
@@ -39,10 +39,10 @@ export async function downloadPublicProject(projectId: string): Promise<
     }
   | Error
 > {
-  console.info('[public-project] starting download', { projectId })
-  const archive = await downloadPublicProjectArchive(projectId)
+  console.info('[project-id] starting download', { projectId })
+  const archive = await downloadProjectArchiveById(projectId)
   if (archive instanceof Error) {
-    console.error('[public-project] download failed', {
+    console.error('[project-id] download failed', {
       projectId,
       message: archive.message,
     })
@@ -51,14 +51,14 @@ export async function downloadPublicProject(projectId: string): Promise<
 
   const parsedProject = await parseDownloadedProject(archive)
   if (parsedProject instanceof Error) {
-    console.error('[public-project] failed to parse downloaded archive', {
+    console.error('[project-id] failed to parse downloaded archive', {
       projectId,
       message: parsedProject.message,
     })
     return parsedProject
   }
 
-  console.info('[public-project] parsed download', {
+  console.info('[project-id] parsed download', {
     projectId,
     projectName: parsedProject.projectName,
     fileCount: parsedProject.files.length,
@@ -68,7 +68,7 @@ export async function downloadPublicProject(projectId: string): Promise<
   return parsedProject
 }
 
-async function downloadPublicProjectArchive(
+async function downloadProjectArchiveById(
   projectId: string
 ): Promise<DownloadedProjectArchive | Error> {
   const client = createKCClient()
@@ -76,7 +76,7 @@ async function downloadPublicProjectArchive(
 
   client.fetch = async (input, init) => {
     const response = await originalFetch(
-      ensurePublicProjectDownloadFormat(input),
+      ensureProjectIdDownloadFormat(input),
       init
     )
     if (!response.ok || isJsonResponse(response)) {
@@ -91,7 +91,7 @@ async function downloadPublicProjectArchive(
     projects.download_public_project({
       client,
       id: projectId,
-      format: PUBLIC_PROJECT_DOWNLOAD_FORMAT,
+      format: PROJECT_ID_DOWNLOAD_FORMAT,
     })
   )
 
@@ -102,7 +102,7 @@ async function downloadPublicProjectArchive(
   return result as DownloadedProjectArchive
 }
 
-function ensurePublicProjectDownloadFormat(input: RequestInfo | URL) {
+function ensureProjectIdDownloadFormat(input: RequestInfo | URL) {
   const url = getRequestUrl(input)
   if (
     !url ||
@@ -112,7 +112,7 @@ function ensurePublicProjectDownloadFormat(input: RequestInfo | URL) {
     return input
   }
 
-  url.searchParams.set('format', PUBLIC_PROJECT_DOWNLOAD_FORMAT)
+  url.searchParams.set('format', PROJECT_ID_DOWNLOAD_FORMAT)
 
   if (typeof input === 'string' || input instanceof URL) {
     return url.toString()
@@ -212,7 +212,7 @@ async function parseZipArchive({
   const projectName = sanitizeProjectName(
     rootDirectory ||
       getFilenameStemFromContentDisposition(contentDisposition) ||
-      DEFAULT_PUBLIC_PROJECT_NAME
+      DEFAULT_PROJECT_ID_NAME
   )
 
   const files = await Promise.all(
@@ -269,7 +269,7 @@ function parseJsonArchive(archive: ArrayBuffer):
   }
 
   const projectName = sanitizeProjectName(
-    parsed?.projectName || parsed?.name || DEFAULT_PUBLIC_PROJECT_NAME
+    parsed?.projectName || parsed?.name || DEFAULT_PROJECT_ID_NAME
   )
   const files = coerceJsonFiles(parsed?.files, projectName)
 
@@ -455,7 +455,7 @@ function normalizeArchivePath(path: string) {
 
 function sanitizeProjectName(name: string) {
   const trimmed = name.trim().replace(/[\\/]/g, '-')
-  return trimmed || DEFAULT_PUBLIC_PROJECT_NAME
+  return trimmed || DEFAULT_PROJECT_ID_NAME
 }
 
 function stripFileExtension(filename: string) {
