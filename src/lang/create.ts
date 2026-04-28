@@ -403,7 +403,8 @@ export const createLabeledArg = (label: string, arg: Expr): LabeledArg => {
 
 export function createMemberExpression(
   parent: string | Expr,
-  propertyName: string
+  property: string | Expr,
+  computed = false
 ): Node<MemberExpression> {
   return {
     type: 'MemberExpression',
@@ -414,7 +415,8 @@ export function createMemberExpression(
     preComments: [],
     commentStart: 0,
     object: typeof parent === 'string' ? createLocalName(parent) : parent,
-    property: createLocalName(propertyName),
-    computed: false,
+    property:
+      typeof property === 'string' ? createLocalName(property) : property,
+    computed,
   }
 }

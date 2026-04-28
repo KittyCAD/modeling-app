@@ -134,7 +134,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
 
     // Check the toast appeared
     await expect(
-      page.getByText(`Set show debug panel to "false" for this project`)
+      page.getByText(`Set show panel to "false" for this project`)
     ).toBeVisible()
     // Check that the visibility changed
     await expect(paneSelector).not.toBeVisible()

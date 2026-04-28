@@ -1,3 +1,4 @@
+use ahash::AHashSet;
 use kcmc::ModelingCmd;
 use kittycad_modeling_cmds::websocket::ModelingCmdReq;
 use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
@@ -206,7 +207,7 @@ impl ExecState {
             return Err(no_modeling_in_sketch_block_error(meta.source_range));
         }
         // Make sure we don't traverse sketches more than once.
-        let mut traversed_sketches = Vec::new();
+        let mut traversed_sketches = AHashSet::new();
 
         // Collect all the fillet/chamfer ids for the solids.
         let mut ids = Vec::new();
@@ -230,7 +231,7 @@ impl ExecState {
                             _ => unreachable!(),
                         }),
                 );
-                traversed_sketches.push(sketch_id);
+                traversed_sketches.insert(sketch_id);
             }
 
             ids.extend(solid.get_all_edge_cut_ids());
@@ -249,7 +250,7 @@ impl ExecState {
             return Err(no_modeling_in_sketch_block_error(meta.source_range));
         }
         // Make sure we don't traverse sketches more than once.
-        let mut traversed_sketches = Vec::new();
+        let mut traversed_sketches = AHashSet::new();
 
         // Collect all the fillet/chamfer ids for the solids.
         let mut ids = Vec::new();
@@ -273,7 +274,7 @@ impl ExecState {
                             _ => unreachable!(),
                         }),
                 );
-                traversed_sketches.push(sketch_id);
+                traversed_sketches.insert(sketch_id);
             }
 
             ids.extend(solid.edge_cut_ids.iter().copied());
