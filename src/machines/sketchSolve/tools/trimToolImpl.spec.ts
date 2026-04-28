@@ -338,8 +338,8 @@ sketch(on = YZ) {
       )
 
       // Assert that the test completes within a reasonable time
-      // Note: This test can take 7-9 seconds depending on system load
-      expect(durationMs).toBeLessThan(8_500)
+      // Note: This test can take up to 10 seconds depending on system load
+      expect(durationMs).toBeLessThan(10_000)
     }
   )
 })

@@ -29,11 +29,8 @@ import type {
 } from '@src/lib/settings/settingsTypes'
 import {
   clearSettingsAtLevel,
-  configurationToSettingsPayload,
   loadAndValidateSettings,
-  projectConfigurationToSettingsPayload,
   saveSettings,
-  setSettingsAtLevel,
 } from '@src/lib/settings/settingsUtils'
 import {
   Themes,
@@ -236,7 +233,7 @@ export const settingsMachine = setup({
                 : ' as a user default'
             }`
           : '')
-      toast.success(message, {
+      toast.success(`${message}.`, {
         duration: message.split(' ').length * 100 + 1500,
         id: `${event.type}.success`,
       })
@@ -257,14 +254,12 @@ export const settingsMachine = setup({
 
       console.log('Resetting settings at level', event.level)
 
-      // Create a new, blank payload
-      const newPayload =
-        event.level === 'user'
-          ? configurationToSettingsPayload({})
-          : projectConfigurationToSettingsPayload({})
-
-      // Reset the settings at that level
-      const newSettings = setSettingsAtLevel(context, event.level, newPayload)
+      // Clear the selected level entirely so settings fall back to the
+      // parent level/default rather than retaining stale values in memory.
+      const newSettings = clearSettingsAtLevel(
+        getOnlySettingsFromContext(context),
+        event.level
+      )
 
       return newSettings
     }),

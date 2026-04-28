@@ -328,7 +328,7 @@ pub async fn leg_length(exec_state: &mut ExecState, args: Args) -> Result<KclVal
     let hypotenuse: TyF64 = args.get_kw_arg("hypotenuse", &RuntimeType::length(), exec_state)?;
     let leg: TyF64 = args.get_kw_arg("leg", &RuntimeType::length(), exec_state)?;
     let (hypotenuse, leg, ty) = NumericType::combine_eq_coerce(hypotenuse, leg, Some((exec_state, args.source_range)));
-    let result = (hypotenuse.powi(2) - f64::min(hypotenuse.abs(), leg.abs()).powi(2)).sqrt();
+    let result = (hypotenuse.powi(2) - libm::fmin(hypotenuse.abs(), leg.abs()).powi(2)).sqrt();
     Ok(KclValue::from_number_with_type(result, ty, vec![args.into()]))
 }
 
@@ -347,7 +347,7 @@ pub async fn leg_angle_x(exec_state: &mut ExecState, args: Args) -> Result<KclVa
             annotations::WARN_INVALID_MATH,
         );
     }
-    let ratio = leg.min(hypotenuse) / hypotenuse;
+    let ratio = libm::fmin(leg, hypotenuse) / hypotenuse;
     let in_range = (-1.0..=1.0).contains(&ratio);
     if !in_range {
         exec_state.warn(
@@ -381,7 +381,7 @@ pub async fn leg_angle_y(exec_state: &mut ExecState, args: Args) -> Result<KclVa
             annotations::WARN_INVALID_MATH,
         );
     }
-    let ratio = leg.min(hypotenuse) / hypotenuse;
+    let ratio = libm::fmin(leg, hypotenuse) / hypotenuse;
     let in_range = (-1.0..=1.0).contains(&ratio);
     if !in_range {
         exec_state.warn(

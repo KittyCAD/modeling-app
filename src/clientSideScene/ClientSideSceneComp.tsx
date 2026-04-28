@@ -720,7 +720,7 @@ const ConstraintSymbol = ({
             } catch (e) {
               console.log('error', e)
             }
-            toast.success('Constraint removed')
+            toast.success('Constraint removed.')
           }
         }, reportRejection)}
       >

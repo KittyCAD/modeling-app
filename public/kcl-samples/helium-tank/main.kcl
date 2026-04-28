@@ -5,115 +5,232 @@
 // Set units
 @settings(defaultLengthUnit = in)
 
-// Define parameters
 tankHeight = 2.5ft
 tankDiameter = 9
-wallThickness = 0.125
 portDiameter = 1.25
-bracketThickness = 0.090
 boltSize = 1 / 4
 
-// Sketch the perimeter of the gas tank- inside and out, then revolve around the vertical axis.
-tankSketch = startSketchOn(YZ)
-  |> startProfile(at = [portDiameter / 2, tankHeight])
-  |> yLine(length = -0.6)
-  |> xLine(length = 0.1)
-  |> tangentialArc(angle = -110deg, radius = 0.1)
-  |> tangentialArc(angle = 40deg, radius = 0.6)
-  |> tangentialArc(angle = -110deg, radius = 0.1)
-  |> tangentialArc(angle = 180deg, radius = 0.1)
-  |> tangentialArc(angle = -90deg, radius = tankDiameter / 2 - lastSegX(%), tag = $seg01)
-  |> angledLine(angle = tangentToEnd(seg01), endAbsoluteY = 1.5, tag = $seg09)
-  |> tangentialArc(angle = -90deg, radius = 2, tag = $seg02)
-  |> angledLine(angle = tangentToEnd(seg02), endAbsoluteX = 0.001, tag = $seg08)
-  |> yLine(length = wallThickness)
-  |> xLine(length = segLen(seg08))
-  |> tangentialArc(angle = 90deg, radius = 2 - wallThickness)
-  |> yLine(length = segLen(seg09))
-  |> tangentialArc(angle = 90deg, radius = tankDiameter / 2 - wallThickness - 1.3)
-  |> xLine(endAbsolute = profileStartX(%) - .1)
-  |> yLine(endAbsolute = profileStartY(%))
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
+tankSketch = sketch(on = YZ) {
+  line1 = line(start = [var 0.63in, var 30in], end = [var 0.63in, var 29.4in])
+  line2 = line(start = [var 0.63in, var 29.4in], end = [var 0.73in, var 29.4in])
+  coincident([line1.end, line2.start])
+  arc3 = arc(start = [var 0.82in, var 29.27in], end = [var 0.73in, var 29.4in], center = [var 0.73in, var 29.3in])
+  coincident([line2.end, arc3.end])
+  arc4 = arc(start = [var 0.82in, var 29.27in], end = [var 0.82in, var 28.86in], center = [var 1.38in, var 29.06in])
+  coincident([arc3.start, arc4.start])
+  arc5 = arc(start = [var 0.72in, var 28.72in], end = [var 0.82in, var 28.86in], center = [var 0.72in, var 28.82in])
+  coincident([arc4.end, arc5.end])
+  arc6 = arc(start = [var 0.72in, var 28.72in], end = [var 0.72in, var 28.52in], center = [var 0.72in, var 28.62in])
+  coincident([arc5.start, arc6.start])
+  arc7 = arc(start = [var 4.5in, var 24.75in], end = [var 0.72in, var 28.52in], center = [var 0.72in, var 24.75in])
+  coincident([arc6.end, arc7.end])
+  line8 = line(start = [var 4.5in, var 24.75in], end = [var 4.5in, var 1.5in])
+  coincident([arc7.start, line8.start])
+  arc9 = arc(start = [var 2.5in, var -0.5in], end = [var 4.5in, var 1.5in], center = [var 2.5in, var 1.5in])
+  coincident([line8.end, arc9.end])
+  line10 = line(start = [var 2.5in, var -0.5in], end = [var 0in, var -0.5in])
+  coincident([arc9.start, line10.start])
+  line11 = line(start = [var 0in, var -0.5in], end = [var 0in, var -0.37in])
+  coincident([line10.end, line11.start])
+  line12 = line(start = [var 0in, var -0.37in], end = [var 2.5in, var -0.37in])
+  coincident([line11.end, line12.start])
+  arc13 = arc(start = [var 2.5in, var -0.37in], end = [var 4.37in, var 1.5in], center = [var 2.5in, var 1.5in])
+  coincident([line12.end, arc13.start])
+  line14 = line(start = [var 4.37in, var 1.5in], end = [var 4.37in, var 24.75in])
+  coincident([arc13.end, line14.start])
+  arc15 = arc(start = [var 4.37in, var 24.75in], end = [var 1.3in, var 27.82in], center = [var 1.3in, var 24.75in])
+  coincident([line14.end, arc15.start])
+  line16 = line(start = [var 1.3in, var 27.82in], end = [var 0.53in, var 27.82in])
+  coincident([arc15.end, line16.start])
+  line17 = line(start = [var 0.53in, var 27.82in], end = [var 0.53in, var 30in])
+  coincident([line16.end, line17.start])
+  line18 = line(start = [var 0.53in, var 30in], end = [var 0.63in, var 30in])
+  coincident([line17.end, line18.start])
+  vertical(line8)
+  horizontal(line10)
+  vertical(line11)
+  horizontal(line12)
+  vertical(line14)
+  horizontal(line16)
+  vertical(line17)
+  horizontal(line18)
+  distance([line8.start, line8.end]) == 23.25in
+  distance([line10.start, line10.end]) == 2.5in
+  distance([line11.start, line11.end]) == 0.13in
+  distance([line12.start, line12.end]) == 2.5in
+  distance([line16.start, line16.end]) == 0.77in
+  distance([line17.start, line17.end]) == 2.18in
+  distance([line18.start, line18.end]) == 0.1in
+}
+tankRegion = region(segments = [tankSketch.line1])
+tankRevolve = revolve(tankRegion, angle = 220deg, axis = Y)
+hide(tankSketch)
 
-// Only revolving to 220deg so that the interior of the tank is visible. It should ultimately be closed at 360deg
-tankRevolve = revolve(tankSketch, angle = 220deg, axis = Y)
-
-// Model the brass valve on top of the tank port
-valveBody = startSketchOn(offsetPlane(XY, offset = tankHeight - 0.5))
-  |> circle(center = [0, 0], radius = portDiameter / 1.9, tag = $seg03)
-  |> extrude(length = 1.5, tagEnd = $capEnd001)
+valveBodyPlane = offsetPlane(XY, offset = tankHeight - 0.5)
+valveBodySketch = sketch(on = valveBodyPlane) {
+  circle1 = circle(start = [var 0.66in, var 0in], center = [var 0in, var 0in])
+  coincident([circle1.center, ORIGIN])
+  radius(circle1) == 0.66in
+}
+valveBodyRegion = region(segments = [valveBodySketch.circle1])
+valveBody = extrude(valveBodyRegion, length = 1.5, tagEnd = $capEnd001)
   |> fillet(
        radius = 0.1,
        tags = [
-         getCommonEdge(faces = [seg03, capEnd001])
+         getCommonEdge(faces = [
+           valveBodyRegion.tags.circle1,
+           capEnd001
+         ])
        ],
      )
-
-// Model the outlet port of the valve, then union it all together
-valvePort = startSketchOn(YZ)
-  |> circle(center = [0, tankHeight + 0.3], radius = portDiameter / 3)
-  |> subtract2d(tool = circle(center = [0, tankHeight + 0.3], radius = portDiameter / 3.25))
-  |> extrude(length = 1.3)
-valve = union([valveBody, valvePort])
   |> appearance(color = "#9a4618")
+hide(valveBodySketch)
 
-// Sketch the offset profile of the mounting bracket
-bracketOffsetProfile = startSketchOn(offsetPlane(XY, offset = tankHeight * 0.67))
-  |> startProfile(at = [0, tankDiameter / 2 + wallThickness])
-  |> xLine(length = -0.1)
-  |> tangentialArc(angle = 35deg, radius = tankDiameter / 2 + wallThickness)
-  |> tangentialArc(angle = -135deg, radius = 0.25 - wallThickness, tag = $seg06)
-  |> angledLine(angle = tangentToEnd(seg06), length = tankDiameter / 7)
-  |> tangentialArc(angle = -80deg, radius = 0.25 - wallThickness, tag = $seg07)
-  |> angledLine(angle = tangentToEnd(seg07), endAbsoluteX = 0)
-  |> mirror2d(axis = Y)
-  |> close()
+valvePortPlane = offsetPlane(YZ, offset = 0.001in)
+valvePortSketch = sketch(on = valvePortPlane) {
+  outerCircle = circle(start = [var 0.5in, var 30.3in], center = [var 0in, var 30.3in])
+  radius(outerCircle) == portDiameter / 3
+  innerCircle = circle(start = [var 0.46in, var 30.3in], center = [var 0in, var 30.3in])
+  radius(innerCircle) == portDiameter / 3.25
+  coincident([outerCircle.center, innerCircle.center])
+}
+valvePortRegion = region(point = [0.4in, 30.3in], sketch = valvePortSketch)
+valvePort = extrude(valvePortRegion, length = 1.3)
+  |> appearance(color = "#9a4618")
+hide(valvePortSketch)
 
-// Sketch the outer perimeter of the offset bracket, then subtract the inner offset to create a constant thickness sheet metal hoop
-bracketProfile = startSketchOn(offsetPlane(XY, offset = tankHeight * 0.67))
-  |> startProfile(at = [0, tankDiameter / 2])
-  |> xLine(length = -0.1)
-  |> tangentialArc(angle = 35deg, radius = tankDiameter / 2)
-  |> tangentialArc(angle = -135deg, radius = 0.25, tag = $seg04)
-  |> angledLine(angle = tangentToEnd(seg04), length = tankDiameter / 7)
-  |> tangentialArc(angle = -80deg, radius = 0.25, tag = $seg05)
-  |> angledLine(angle = tangentToEnd(seg05), endAbsoluteX = 0)
-  |> mirror2d(axis = Y)
-  |> close()
-  |> subtract2d(tool = bracketOffsetProfile)
-  |> extrude(length = 1, symmetric = true)
+bracketPlane = offsetPlane(XY, offset = tankHeight * 0.67)
 
-// Cut holes in the bracket for a mounting strap
-strapSleeve = startSketchOn(offsetPlane(XY, offset = tankHeight * 0.67))
-  |> circle(center = [0, .125 / 2], radius = 4.75)
-  |> subtract2d(tool = circle(center = [0, .125 / 2], radius = 4.65))
-  |> extrude(length = .8, symmetric = true)
-bracketSleeve = subtract([bracketProfile], tools = [strapSleeve])
+bracketSketch = sketch(on = bracketPlane) {
+  outerLine1 = line(start = [var 0in, var 4.5in], end = [var -0.1in, var 4.5in])
+  outerArc2 = arc(start = [var -0.1in, var 4.5in], end = [var -2.68in, var 3.69in], center = [var -0.1in, var 0in])
+  coincident([outerLine1.end, outerArc2.start])
+  outerArc3 = arc(start = [var -3.07in, var 3.93in], end = [var -2.68in, var 3.69in], center = [var -2.82in, var 3.89in])
+  coincident([outerArc2.end, outerArc3.end])
+  outerLine4 = line(start = [var -3.07in, var 3.93in], end = [var -2.85in, var 5.2in])
+  coincident([outerArc3.start, outerLine4.start])
+  outerArc5 = arc(start = [var -2.6in, var 5.41in], end = [var -2.85in, var 5.2in], center = [var -2.6in, var 5.16in])
+  coincident([outerLine4.end, outerArc5.end])
+  outerLine6 = line(start = [var -2.6in, var 5.41in], end = [var 2.6in, var 5.41in])
+  coincident([outerArc5.start, outerLine6.start])
+  outerLine8 = line(start = [var 2.85in, var 5.2in], end = [var 3.07in, var 3.93in])
+  outerArc10 = arc(start = [var 2.68in, var 3.69in], end = [var 0.1in, var 4.5in], center = [var 0.1in, var 0in])
+  outerLine11 = line(start = [var 0.1in, var 4.5in], end = [var 0in, var 4.5in])
+  coincident([outerArc10.end, outerLine11.start])
+  coincident([outerLine11.end, outerLine1.start])
+  horizontal(outerLine1)
+  horizontal(outerLine6)
+  horizontal(outerLine11)
+  distance([outerLine1.start, outerLine1.end]) == 0.1in
+  distance([outerLine6.start, outerLine6.end]) == 5.2in
+  distance([outerLine11.start, outerLine11.end]) == 0.1in
 
-// Create holes in the bracket for anchor mounts to secure the bracket to a wall
-mountingHoles = startSketchOn(offsetPlane(XZ, offset = -tankDiameter / 1.9))
-  |> circle(center = [tankDiameter / 4.5, tankHeight * 0.67], radius = boltSize / 2)
-  |> extrude(length = -5)
+  innerLine1 = line(start = [var 0in, var 4.63in], end = [var -0.1in, var 4.63in])
+  innerArc2 = arc(start = [var -0.1in, var 4.63in], end = [var -2.75in, var 3.79in], center = [var -0.1in, var 0in])
+  coincident([innerLine1.end, innerArc2.start])
+  innerArc3 = arc(start = [var -2.95in, var 3.91in], end = [var -2.75in, var 3.79in], center = [var -2.82in, var 3.89in])
+  coincident([innerArc2.end, innerArc3.end])
+  innerLine4 = line(start = [var -2.95in, var 3.91in], end = [var -2.72in, var 5.18in])
+  coincident([innerArc3.start, innerLine4.start])
+  innerArc5 = arc(start = [var -2.6in, var 5.28in], end = [var -2.72in, var 5.18in], center = [var -2.6in, var 5.16in])
+  coincident([innerLine4.end, innerArc5.end])
+  innerLine6 = line(start = [var -2.6in, var 5.28in], end = [var 2.6in, var 5.28in])
+  coincident([innerArc5.start, innerLine6.start])
+  innerLine8 = line(start = [var 2.72in, var 5.18in], end = [var 2.95in, var 3.91in])
+  innerArc10 = arc(start = [var 2.75in, var 3.79in], end = [var 0.1in, var 4.63in], center = [var 0.1in, var 0in])
+  innerLine11 = line(start = [var 0.1in, var 4.63in], end = [var 0in, var 4.63in])
+  coincident([innerArc10.end, innerLine11.start])
+  coincident([innerLine11.end, innerLine1.start])
+  horizontal(innerLine1)
+  horizontal(innerLine6)
+  horizontal(innerLine11)
+  distance([innerLine1.start, innerLine1.end]) == 0.1in
+  distance([innerLine6.start, innerLine6.end]) == 5.2in
+  distance([innerLine11.start, innerLine11.end]) == 0.1in
 
-bracket = subtract(
-       [bracketSleeve],
-       tools = union(patternLinear3d(
-         mountingHoles,
-         instances = 2,
-         distance = tankDiameter / 2.25,
-         axis = [-1, 0, 0],
-       )),
-     )
+  arc1 = arc(start = [var 2.85in, var 5.2in], end = [var 2.6in, var 5.41in], center = [var 2.6in, var 5.16in])
+  arc2 = arc(start = [var 2.72in, var 5.18in], end = [var 2.6in, var 5.28in], center = [var 2.6in, var 5.16in])
+  coincident([arc2.center, arc1.center])
+  coincident([arc2.start, innerLine8.start])
+  arc3 = arc(start = [var 2.68in, var 3.69in], end = [var 3.07in, var 3.93in], center = [var 2.82in, var 3.89in])
+  coincident([arc3.end, outerLine8.end])
+  arc4 = arc(start = [var 2.75in, var 3.79in], end = [var 2.95in, var 3.91in], center = [var 2.82in, var 3.89in])
+  coincident([arc4.start, innerArc10.start])
+
+  // Close outer and inner boundaries robustly for region detection.
+  coincident([outerLine6.end, arc1.end])
+  coincident([arc1.start, outerLine8.start])
+  coincident([arc3.start, outerArc10.start])
+  coincident([innerLine6.end, arc2.end])
+  coincident([innerLine8.end, arc4.end])
+}
+bracketRegion = region(point = [0in, 5.35in], sketch = bracketSketch)
+bracketBody = extrude(bracketRegion, length = 1, symmetric = true)
+hide(bracketSketch)
+
+strapSleeveOuterSketch = sketch(on = bracketPlane) {
+  circle1 = circle(start = [var 4.85in, var 0.0625in], center = [var 0in, var 0.0625in])
+  radius(circle1) == 4.75
+}
+strapSleeveOuterRegion = region(segments = [strapSleeveOuterSketch.circle1])
+strapSleeveOuter = extrude(strapSleeveOuterRegion, length = 0.8, symmetric = true)
+hide(strapSleeveOuterSketch)
+
+strapSleeveInnerSketch = sketch(on = bracketPlane) {
+  circle1 = circle(start = [var 4.75in, var 0.0625in], center = [var 0in, var 0.0625in])
+  radius(circle1) == 4.65
+}
+strapSleeveInnerRegion = region(segments = [strapSleeveInnerSketch.circle1])
+strapSleeveInner = extrude(strapSleeveInnerRegion, length = 0.82, symmetric = true)
+hide(strapSleeveInnerSketch)
+strapSleeve = subtract([strapSleeveOuter], tools = [strapSleeveInner], legacyMethod = true)
+bracketSleeve = subtract([bracketBody], tools = [strapSleeve], legacyMethod = true)
+
+mountingHolePlane = offsetPlane(XZ, offset = -tankDiameter / 1.9)
+mountingHoleSketch = sketch(on = mountingHolePlane) {
+  circle1 = circle(start = [var 2.13in, var 20.1in], center = [var 2in, var 20.1in])
+  diameter(circle1) == boltSize
+}
+mountingHoleRegion = region(segments = [mountingHoleSketch.circle1])
+mountingHole = extrude(mountingHoleRegion, length = -5)
+hide(mountingHoleSketch)
+mountingHolePair = patternLinear3d(
+  mountingHole,
+  instances = 2,
+  distance = tankDiameter / 2.25,
+  axis = [-1, 0, 0],
+)
+bracket = subtract([bracketSleeve], tools = [mountingHolePair], legacyMethod = true)
   |> appearance(color = "#cd0404")
 
-// Model a circular strap to secure the tank to the bracket
-mountingStrap = startSketchOn(offsetPlane(XY, offset = tankHeight * 0.67))
-  |> circle(center = [0, .155 / 2], radius = tankDiameter / 1.9)
-  |> subtract2d(tool = circle(center = [0, .155 / 2], radius = tankDiameter / 1.9 - 0.1))
-  |> extrude(length = .75, symmetric = true)
+mountingStrapOuterSketch = sketch(on = bracketPlane) {
+  circle1 = circle(start = [var 4.84in, var 0.0775in], center = [var 0in, var 0.0775in])
+  radius(circle1) == tankDiameter / 1.9
+}
+mountingStrapOuterRegion = region(segments = [mountingStrapOuterSketch.circle1])
+mountingStrapOuter = extrude(mountingStrapOuterRegion, length = 0.75, symmetric = true)
+hide(mountingStrapOuterSketch)
+
+mountingStrapInnerSketch = sketch(on = bracketPlane) {
+  circle1 = circle(start = [var 4.74in, var 0.0775in], center = [var 0in, var 0.0775in])
+  radius(circle1) == tankDiameter / 1.9 - 0.1
+}
+mountingStrapInnerRegion = region(segments = [mountingStrapInnerSketch.circle1])
+mountingStrapInner = extrude(mountingStrapInnerRegion, length = 0.77, symmetric = true)
+hide(mountingStrapInnerSketch)
+mountingStrap = subtract([mountingStrapOuter], tools = [mountingStrapInner], legacyMethod = true)
   |> appearance(color = "#210d03")
 
-// Create a second instance of the bracket and strap at a lower point on the tank
-[bracket, mountingStrap]
-  |> patternLinear3d(instances = 2, distance = tankHeight * 0.33, axis = [0, 0, -1])
+brackets = patternLinear3d(
+  bracket,
+  instances = 2,
+  distance = tankHeight * 0.33,
+  axis = [0, 0, -1],
+)
+
+straps = patternLinear3d(
+  mountingStrap,
+  instances = 2,
+  distance = tankHeight * 0.33,
+  axis = [0, 0, -1],
+)

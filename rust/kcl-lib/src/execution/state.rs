@@ -16,6 +16,8 @@ use crate::EngineManager;
 use crate::ExecutorContext;
 use crate::KclErrorWithOutputs;
 use crate::MockConfig;
+#[cfg(feature = "artifact-graph")]
+use crate::NodePath;
 use crate::SourceRange;
 use crate::collections::AhashIndexSet;
 use crate::errors::KclError;
@@ -91,6 +93,23 @@ pub(super) struct GlobalState {
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub(crate) enum ConstraintKey {
+    LineCircle([usize; 10]),
+    CircleCircle([usize; 12]),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum TangencyMode {
+    LineCircle(ezpz::LineSide),
+    CircleCircle(ezpz::CircleSide),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ConstraintState {
+    Tangency(TangencyMode),
+}
+
 #[cfg(feature = "artifact-graph")]
 #[derive(Debug, Clone, Default)]
 pub(super) struct ArtifactState {
@@ -117,6 +136,9 @@ pub struct ModuleArtifactState {
     pub unprocessed_commands: Vec<ArtifactCommand>,
     /// Outgoing engine commands.
     pub commands: Vec<ArtifactCommand>,
+    /// Incoming engine commands.
+    #[cfg(feature = "snapshot-engine-responses")]
+    pub responses: IndexMap<Uuid, kittycad_modeling_cmds::websocket::WebSocketResponse>,
     /// Operations that have been performed in execution order, for display in
     /// the Feature Tree.
     pub operations: Vec<Operation>,
@@ -178,6 +200,10 @@ pub(super) struct ModuleState {
     pub(super) path: ModulePath,
     /// Artifacts for only this module.
     pub artifacts: ModuleArtifactState,
+    /// Sticky per-constraint state persisted across sketch-mode mock solves.
+    /// Maps from sketch block ID to a map for that sketch.
+    /// Then the inner map is per constraint (in that sketch block) to its state.
+    pub constraint_state: IndexMap<ObjectId, IndexMap<ConstraintKey, ConstraintState>>,
 
     pub(super) allowed_warnings: Vec<&'static str>,
     pub(super) denied_warnings: Vec<&'static str>,
@@ -186,7 +212,6 @@ pub(super) struct ModuleState {
 #[derive(Debug, Clone, Default)]
 pub(crate) struct SketchBlockState {
     pub sketch_vars: Vec<KclValue>,
-    #[cfg(feature = "artifact-graph")]
     pub sketch_id: Option<ObjectId>,
     #[cfg(feature = "artifact-graph")]
     pub sketch_constraints: Vec<ObjectId>,
@@ -312,6 +337,13 @@ impl ExecState {
         }
     }
 
+    #[cfg(all(feature = "artifact-graph", feature = "snapshot-engine-responses"))]
+    pub(crate) fn take_root_module_responses(
+        &mut self,
+    ) -> IndexMap<Uuid, kittycad_modeling_cmds::websocket::WebSocketResponse> {
+        std::mem::take(&mut self.global.root_module_artifacts.responses)
+    }
+
     pub(crate) fn stack(&self) -> &Stack {
         &self.mod_local.stack
     }
@@ -368,6 +400,21 @@ impl ExecState {
         ObjectId(self.mod_local.artifacts.object_id_generator.peek_id())
     }
 
+    pub(crate) fn constraint_state(&self, sketch_block_id: ObjectId, key: &ConstraintKey) -> Option<ConstraintState> {
+        let map = self.mod_local.constraint_state.get(&sketch_block_id)?;
+        map.get(key).copied()
+    }
+
+    pub(crate) fn set_constraint_state(
+        &mut self,
+        sketch_block_id: ObjectId,
+        key: ConstraintKey,
+        state: ConstraintState,
+    ) {
+        let map = self.mod_local.constraint_state.entry(sketch_block_id).or_default();
+        map.insert(key, state);
+    }
+
     #[cfg(feature = "artifact-graph")]
     pub fn add_scene_object(&mut self, obj: Object, source_range: SourceRange) -> ObjectId {
         let id = obj.id;
@@ -390,12 +437,17 @@ impl ExecState {
     /// Add a placeholder scene object. This is useful when we need to reserve
     /// an ID before we have all the information to create the full object.
     #[cfg(feature = "artifact-graph")]
-    pub fn add_placeholder_scene_object(&mut self, id: ObjectId, source_range: SourceRange) -> ObjectId {
+    pub fn add_placeholder_scene_object(
+        &mut self,
+        id: ObjectId,
+        source_range: SourceRange,
+        node_path: Option<NodePath>,
+    ) -> ObjectId {
         debug_assert!(id.0 == self.mod_local.artifacts.scene_objects.len());
         self.mod_local
             .artifacts
             .scene_objects
-            .push(Object::placeholder(id, source_range));
+            .push(Object::placeholder(id, source_range, node_path));
         self.mod_local.artifacts.source_range_to_object.insert(source_range, id);
         id
     }
@@ -434,6 +486,10 @@ impl ExecState {
         self.mod_local.sketch_block.as_mut()
     }
 
+    pub(crate) fn sketch_block(&mut self) -> Option<&SketchBlockState> {
+        self.mod_local.sketch_block.as_ref()
+    }
+
     pub fn next_uuid(&mut self) -> Uuid {
         self.mod_local.id_generator.next_uuid()
     }
@@ -451,6 +507,11 @@ impl ExecState {
     pub(crate) fn add_artifact(&mut self, artifact: Artifact) {
         let id = artifact.id();
         self.mod_local.artifacts.artifacts.insert(id, artifact);
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) fn artifact_mut(&mut self, id: ArtifactId) -> Option<&mut Artifact> {
+        self.mod_local.artifacts.artifacts.get_mut(&id)
     }
 
     pub(crate) fn push_op(&mut self, op: Operation) {
@@ -657,6 +718,12 @@ impl ExecState {
             &self.global.module_infos,
         );
 
+        #[cfg(feature = "snapshot-engine-responses")]
+        {
+            // Store engine responses for debugging.
+            self.global.root_module_artifacts.responses.extend(new_responses);
+        }
+
         let artifact_graph = graph_result?;
         self.global.artifacts.graph = artifact_graph;
 
@@ -762,13 +829,13 @@ impl ModuleArtifactState {
             );
 
             match &object.source {
-                crate::front::SourceRef::Simple { range } => {
+                crate::front::SourceRef::Simple { range, node_path: _ } => {
                     self.source_range_to_object.insert(*range, object.id);
                 }
                 crate::front::SourceRef::BackTrace { ranges } => {
                     // Don't map the entire backtrace, only the most specific
                     // range.
-                    if let Some(range) = ranges.first() {
+                    if let Some((range, _)) = ranges.first() {
                         self.source_range_to_object.insert(*range, object.id);
                     }
                 }
@@ -874,6 +941,7 @@ impl ModuleState {
             sketch_mode,
             freedom_analysis,
             artifacts: Default::default(),
+            constraint_state: Default::default(),
             allowed_warnings: Vec::new(),
             denied_warnings: Vec::new(),
             inside_stdlib: false,
@@ -1023,6 +1091,7 @@ mod tests {
     use uuid::Uuid;
 
     use super::ModuleArtifactState;
+    use crate::NodePath;
     use crate::SourceRange;
     use crate::execution::ArtifactId;
     use crate::front::Object;
@@ -1036,7 +1105,11 @@ mod tests {
         let plane_artifact_id = ArtifactId::new(Uuid::from_u128(1));
         let sketch_artifact_id = ArtifactId::new(Uuid::from_u128(2));
         let plane_range = SourceRange::from([1, 4, 0]);
-        let sketch_ranges = vec![SourceRange::from([5, 9, 0]), SourceRange::from([10, 12, 0])];
+        let plane_node_path = Some(NodePath::placeholder());
+        let sketch_ranges = vec![
+            (SourceRange::from([5, 9, 0]), None),
+            (SourceRange::from([10, 12, 0]), None),
+        ];
         let cached_objects = vec![
             Object {
                 id: ObjectId(0),
@@ -1044,7 +1117,7 @@ mod tests {
                 label: Default::default(),
                 comments: Default::default(),
                 artifact_id: plane_artifact_id,
-                source: SourceRef::Simple { range: plane_range },
+                source: SourceRef::new(plane_range, plane_node_path),
             },
             Object {
                 id: ObjectId(1),
@@ -1056,7 +1129,7 @@ mod tests {
                     ranges: sketch_ranges.clone(),
                 },
             },
-            Object::placeholder(ObjectId(2), SourceRange::from([13, 14, 0])),
+            Object::placeholder(ObjectId(2), SourceRange::from([13, 14, 0]), None),
         ];
 
         let mut artifacts = ModuleArtifactState::default();
@@ -1077,10 +1150,10 @@ mod tests {
         );
         assert_eq!(artifacts.source_range_to_object.get(&plane_range), Some(&ObjectId(0)));
         assert_eq!(
-            artifacts.source_range_to_object.get(&sketch_ranges[0]),
+            artifacts.source_range_to_object.get(&sketch_ranges[0].0),
             Some(&ObjectId(1))
         );
         // We don't map all the ranges in a backtrace.
-        assert_eq!(artifacts.source_range_to_object.get(&sketch_ranges[1]), None);
+        assert_eq!(artifacts.source_range_to_object.get(&sketch_ranges[1].0), None);
     }
 }

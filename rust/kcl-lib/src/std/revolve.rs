@@ -263,7 +263,7 @@ async fn inner_revolve(
     Ok(solids)
 }
 
-async fn coerce_revolve_targets(
+pub async fn coerce_revolve_targets(
     sketch_values: Vec<KclValue>,
     body_type: BodyType,
     tag_start: Option<&TagNode>,
@@ -365,6 +365,7 @@ mod tests {
             sketch_id: exec_state.next_uuid(),
             sketch: None,
             tag: None,
+            node_path: None,
             meta: vec![],
         };
         KclValue::Segment {

@@ -201,7 +201,7 @@ export const AllSettingsFields = forwardRef(
                     level: searchParamTab,
                   })
                   toast.success(
-                    `Your ${searchParamTab}-level settings were reset`
+                    `Your ${searchParamTab}-level settings were reset.`
                   )
                 }}
                 iconStart={{

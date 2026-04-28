@@ -141,8 +141,9 @@ export class SceneInfra {
     this.onDragCallback = callbacks.onDrag || this.onDragCallback
     this.onMoveCallback = callbacks.onMove || this.onMoveCallback
     this.onClickCallback = callbacks.onClick || this.onClickCallback
-    this.onMouseDownSelection =
-      callbacks.onMouseDownSelection || this.onMouseDownSelection
+    if ('onMouseDownSelection' in callbacks) {
+      this.onMouseDownSelection = callbacks.onMouseDownSelection
+    }
     this.onMouseEnter = callbacks.onMouseEnter || this.onMouseEnter
     this.onMouseLeave = callbacks.onMouseLeave || this.onMouseLeave
     this.onAreaSelectStartCallback =

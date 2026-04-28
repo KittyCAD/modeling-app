@@ -183,10 +183,10 @@ description: Variables in memory after executing sketch_block_circle_simple.kcl
                   ],
                   "radius": 2.23606797749979,
                   "tag": {
-                    "commentStart": 65,
-                    "end": 72,
+                    "commentStart": 24,
+                    "end": 31,
                     "moduleId": 0,
-                    "start": 65,
+                    "start": 24,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },

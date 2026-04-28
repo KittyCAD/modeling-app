@@ -838,6 +838,7 @@ const prepareToEditHole: PrepareToEditCallback = async ({
     counterboreDiameter,
     countersinkAngle,
     countersinkDiameter,
+    countersinkHeadClearance,
   } = rType
 
   // 3. Assemble the default argument values for the command,
@@ -851,11 +852,192 @@ const prepareToEditHole: PrepareToEditCallback = async ({
     counterboreDiameter,
     countersinkAngle,
     countersinkDiameter,
+    countersinkHeadClearance,
     holeBody,
     blindDiameter,
     blindDepth,
     holeBottom,
     drillPointAngle,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+/**
+ * Gather up the argument values for the Helical Gear command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditHelicalGear: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'Helical Gear',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const [nTeeth, module, pressureAngle, helixAngle, gearHeight] =
+    await Promise.all([
+      extractKclArgument(code, operation, 'nTeeth', rustContext),
+      extractKclArgument(code, operation, 'module', rustContext),
+      extractKclArgument(code, operation, 'pressureAngle', rustContext),
+      extractKclArgument(code, operation, 'helixAngle', rustContext),
+      extractKclArgument(code, operation, 'gearHeight', rustContext),
+    ])
+
+  if ('error' in nTeeth) return { reason: nTeeth.error }
+  if ('error' in module) return { reason: module.error }
+  if ('error' in pressureAngle) return { reason: pressureAngle.error }
+  if ('error' in helixAngle) return { reason: helixAngle.error }
+  if ('error' in gearHeight) return { reason: gearHeight.error }
+
+  const argDefaultValues: ModelingCommandSchema['Helical Gear'] = {
+    nTeeth,
+    module,
+    pressureAngle,
+    helixAngle,
+    gearHeight,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+/**
+ * Gather up the argument values for the Herringbone Gear command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditHerringboneGear: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'Herringbone Gear',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const [nTeeth, module, pressureAngle, gearHeight, helixAngle] =
+    await Promise.all([
+      extractKclArgument(code, operation, 'nTeeth', rustContext),
+      extractKclArgument(code, operation, 'module', rustContext),
+      extractKclArgument(code, operation, 'pressureAngle', rustContext),
+      extractKclArgument(code, operation, 'gearHeight', rustContext),
+      extractKclArgument(code, operation, 'helixAngle', rustContext),
+    ])
+
+  if ('error' in nTeeth) return { reason: nTeeth.error }
+  if ('error' in module) return { reason: module.error }
+  if ('error' in pressureAngle) return { reason: pressureAngle.error }
+  if ('error' in gearHeight) return { reason: gearHeight.error }
+  if ('error' in helixAngle) return { reason: helixAngle.error }
+
+  const argDefaultValues: ModelingCommandSchema['Herringbone Gear'] = {
+    nTeeth,
+    module,
+    pressureAngle,
+    gearHeight,
+    helixAngle,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+/**
+ * Gather up the argument values for the Spur Gear command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditSpurGear: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'Spur Gear',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const [nTeeth, module, pressureAngle, gearHeight] = await Promise.all([
+    extractKclArgument(code, operation, 'nTeeth', rustContext),
+    extractKclArgument(code, operation, 'module', rustContext),
+    extractKclArgument(code, operation, 'pressureAngle', rustContext),
+    extractKclArgument(code, operation, 'gearHeight', rustContext),
+  ])
+
+  if ('error' in nTeeth) return { reason: nTeeth.error }
+  if ('error' in module) return { reason: module.error }
+  if ('error' in pressureAngle) return { reason: pressureAngle.error }
+  if ('error' in gearHeight) return { reason: gearHeight.error }
+
+  const argDefaultValues: ModelingCommandSchema['Spur Gear'] = {
+    nTeeth,
+    module,
+    pressureAngle,
+    gearHeight,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+/**
+ * Gather up the argument values for the Ring Gear command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditRingGear: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'Ring Gear',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const [nTeeth, module, pressureAngle, helixAngle, gearHeight] =
+    await Promise.all([
+      extractKclArgument(code, operation, 'nTeeth', rustContext),
+      extractKclArgument(code, operation, 'module', rustContext),
+      extractKclArgument(code, operation, 'pressureAngle', rustContext),
+      extractKclArgument(code, operation, 'helixAngle', rustContext),
+      extractKclArgument(code, operation, 'gearHeight', rustContext),
+    ])
+
+  if ('error' in nTeeth) return { reason: nTeeth.error }
+  if ('error' in module) return { reason: module.error }
+  if ('error' in pressureAngle) return { reason: pressureAngle.error }
+  if ('error' in helixAngle) return { reason: helixAngle.error }
+  if ('error' in gearHeight) return { reason: gearHeight.error }
+
+  const argDefaultValues: ModelingCommandSchema['Ring Gear'] = {
+    nTeeth,
+    module,
+    pressureAngle,
+    helixAngle,
+    gearHeight,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -1015,57 +1197,16 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
   }
 
   // 2. Prepare labeled arguments
-  // Same roundabout but twice for 'path' aka trajectory: sketch -> path -> segment
-  if (
-    operation.labeledArgs.path?.value.type !== 'Sketch' &&
-    operation.labeledArgs.path?.value.type !== 'Helix'
-  ) {
+  if (!operation.labeledArgs.path) {
     return { reason: "Couldn't retrieve path argument" }
   }
 
-  const trajectoryPathArtifact = getArtifactOfTypes(
-    {
-      key: operation.labeledArgs.path.value.value.artifactId,
-      types: ['path', 'helix'],
-    },
+  const path = retrieveSelectionsFromOpArg(
+    operation.labeledArgs.path,
     artifactGraph
   )
-
-  if (
-    err(trajectoryPathArtifact) ||
-    (trajectoryPathArtifact.type !== 'path' &&
-      trajectoryPathArtifact.type !== 'helix')
-  ) {
-    return { reason: "Couldn't retrieve trajectory path artifact" }
-  }
-
-  const trajectoryArtifact =
-    trajectoryPathArtifact.type === 'path'
-      ? getArtifactOfTypes(
-          {
-            key: trajectoryPathArtifact.segIds[0],
-            types: ['segment'],
-          },
-          artifactGraph
-        )
-      : trajectoryPathArtifact
-
-  if (
-    err(trajectoryArtifact) ||
-    (trajectoryArtifact.type !== 'segment' &&
-      trajectoryArtifact.type !== 'helix')
-  ) {
-    return { reason: "Couldn't retrieve trajectory artifact" }
-  }
-
-  const path = {
-    graphSelections: [
-      {
-        artifact: trajectoryArtifact,
-        codeRef: trajectoryArtifact.codeRef,
-      },
-    ],
-    otherSelections: [],
+  if (err(path)) {
+    return { reason: "Couldn't retrieve path argument" }
   }
 
   // optional arguments
@@ -1910,6 +2051,34 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'gdtFlatness',
     prepareToEdit: prepareToEditGdtFlatness,
   },
+  'gear::helical': {
+    label: 'Helical Gear',
+    icon: 'gear',
+    prepareToEdit: prepareToEditHelicalGear,
+    supportsAppearance: true,
+    supportsTransform: true,
+  },
+  'gear::herringbone': {
+    label: 'Herringbone Gear',
+    icon: 'gear',
+    prepareToEdit: prepareToEditHerringboneGear,
+    supportsAppearance: true,
+    supportsTransform: true,
+  },
+  'gear::spur': {
+    label: 'Spur Gear',
+    icon: 'gear',
+    prepareToEdit: prepareToEditSpurGear,
+    supportsAppearance: true,
+    supportsTransform: true,
+  },
+  'gear::ring': {
+    label: 'Ring Gear',
+    icon: 'gear',
+    prepareToEdit: prepareToEditRingGear,
+    supportsAppearance: true,
+    supportsTransform: true,
+  },
   helix: {
     label: 'Helix',
     icon: 'helix',
@@ -1982,6 +2151,13 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   mirror2d: {
     label: 'Mirror 2D',
     icon: 'mirror',
+  },
+  region: {
+    label: 'Region',
+    // TODO: add a region icon
+    icon: 'oneDot',
+    // TODO: add a prepareToEdit function
+    // prepareToEdit: prepareToEditRegion,
   },
   revolve: {
     label: 'Revolve',
@@ -2209,17 +2385,23 @@ export function getOperationLabel(op: Operation): string {
 
 export type NestedOpList = (Operation | Operation[])[]
 
-function getSketchBlockOperationKey(op: Operation): string | null {
+export function getSketchBlockOperationKey(op: Operation): string | null {
   if (!('nodePath' in op)) {
     return null
   }
+  // TODO: This probably misses the sketch block if it's empty.
   const sketchBlockIndex = op.nodePath.steps.findIndex(
-    (step) => step.type === 'SketchBlock'
+    (step) => step.type === 'SketchBlockBody'
   )
-  if (sketchBlockIndex < 0) {
-    return null
+  if (sketchBlockIndex >= 0) {
+    return JSON.stringify(op.nodePath.steps.slice(0, sketchBlockIndex))
   }
-  return JSON.stringify(op.nodePath.steps.slice(0, sketchBlockIndex + 1))
+
+  if (op.type === 'SketchSolve') {
+    return JSON.stringify(op.nodePath.steps)
+  }
+
+  return null
 }
 
 export function isSketchBlockOperationGroup(items: Operation[]): boolean {
@@ -2413,14 +2595,6 @@ export function getOperationVariableName(
 
   // Handle GDT operations - they don't have variable names as they're standalone statements
   if (op.type === 'StdLibCall' && op.name.startsWith('gdt::')) {
-    return undefined
-  }
-
-  // Handle inner sketch block variables
-  if (
-    op.type === 'StdLibCall' &&
-    op.nodePath.steps.some((s) => s.type === 'SketchBlock')
-  ) {
     return undefined
   }
 

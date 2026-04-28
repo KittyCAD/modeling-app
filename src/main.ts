@@ -33,6 +33,7 @@ import {
   OAUTH2_DEVICE_CLIENT_ID,
   ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
+import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { discoverMachineApi } from '@src/lib/discoverMachineApi'
 import { registerFileProtocolCsp } from '@src/lib/csp'
@@ -607,19 +608,17 @@ app.on('ready', () => {
     console.log('update-available', info)
   })
 
-  appUpdater.prependOnceListener('download-progress', (progress) => {
-    // For now, we'll send nothing and just start a loading spinner.
-    // See below for a TODO to send progress data to the renderer.
-    console.log('update-download-start', {
-      version: '',
-    })
-    mainWindow?.webContents.send('update-download-start', progress)
-  })
+  appUpdater.prependOnceListener(
+    'download-progress',
+    (progress: AutoUpdateDownloadProgress) => {
+      console.log('update-download-start', progress)
+      mainWindow?.webContents.send('update-download-start', progress)
+    }
+  )
 
-  appUpdater.on('download-progress', (progress) => {
-    // TODO: in a future PR (https://github.com/KittyCAD/modeling-app/issues/3994)
-    // send this data to mainWindow to show a progress bar for the download.
+  appUpdater.on('download-progress', (progress: AutoUpdateDownloadProgress) => {
     console.log('download-progress', progress)
+    mainWindow?.webContents.send('update-download-progress', progress)
   })
 
   appUpdater.on('update-downloaded', (info) => {

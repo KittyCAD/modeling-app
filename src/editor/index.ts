@@ -5,7 +5,6 @@ import {
 } from '@codemirror/autocomplete'
 import {
   defaultKeymap,
-  history,
   historyKeymap,
   indentWithTab,
 } from '@codemirror/commands'
@@ -46,6 +45,7 @@ import { executionEffectsExtension } from '@src/editor/plugins/execution'
 import { sketchSceneGraphCompartment } from '@src/editor/plugins/sketch'
 import { writeEffectsExtension } from '@src/editor/plugins/write'
 import { blurOnEscape } from '@src/editor/plugins/blurOnEsc'
+import { createHistoryExtension } from '@src/editor/historyConfig'
 
 export const lineWrappingCompartment = new Compartment()
 export const cursorBlinkingCompartment = new Compartment()
@@ -70,7 +70,7 @@ export function baseEditorExtensions() {
       })
     ),
     lineHighlightField,
-    historyCompartment.of(history()),
+    historyCompartment.of(createHistoryExtension()),
     localHistoryTarget.of([]),
     kclAstExtension(),
     operationsExtension(),

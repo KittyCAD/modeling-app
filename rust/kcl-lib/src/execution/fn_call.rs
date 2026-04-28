@@ -43,6 +43,7 @@ pub struct Args<Status: ArgsStatus = Desugared> {
     /// Labeled args.
     pub labeled: IndexMap<String, Arg>,
     pub source_range: SourceRange,
+    pub node_path: Option<NodePath>,
     pub ctx: ExecutorContext,
     /// If this call happens inside a pipe (|>) expression, this holds the LHS of that |>.
     /// Otherwise it's None.
@@ -71,6 +72,7 @@ impl Args<Sugary> {
         labeled: IndexMap<String, Arg>,
         unlabeled: Vec<(Option<String>, Arg)>,
         source_range: SourceRange,
+        node_path: Option<NodePath>,
         exec_state: &mut ExecState,
         ctx: ExecutorContext,
         fn_name: Option<String>,
@@ -80,6 +82,7 @@ impl Args<Sugary> {
             labeled,
             unlabeled,
             source_range,
+            node_path,
             ctx,
             pipe_value: exec_state.pipe_value().map(|v| Arg::new(v.clone(), source_range)),
             _status: std::marker::PhantomData,
@@ -100,12 +103,18 @@ impl<Status: ArgsStatus> Args<Status> {
 }
 
 impl Args<Desugared> {
-    pub fn new_no_args(source_range: SourceRange, ctx: ExecutorContext, fn_name: Option<String>) -> Args {
+    pub fn new_no_args(
+        source_range: SourceRange,
+        node_path: Option<NodePath>,
+        ctx: ExecutorContext,
+        fn_name: Option<String>,
+    ) -> Args {
         Args {
             fn_name,
             unlabeled: Default::default(),
             labeled: Default::default(),
             source_range,
+            node_path,
             ctx,
             pipe_value: None,
             _status: std::marker::PhantomData,
@@ -204,6 +213,7 @@ impl Node<CallExpressionKw> {
             fn_args,
             unlabeled,
             callsite,
+            self.node_path.clone(),
             exec_state,
             ctx.clone(),
             Some(fn_name.name.name.clone()),
@@ -320,7 +330,7 @@ impl FunctionSource {
         // Do add operations if the KCL being executed is
         // user-defined, or the calling code is user-defined,
         // because that's relevant to the user.
-        let would_trace_stdlib_internals = exec_state.mod_local.inside_stdlib && self.is_std;
+        let would_trace_stdlib_internals = exec_state.mod_local.inside_stdlib && self.is_std();
         // self.include_in_feature_tree is set by the KCL annotation `@(feature_tree = true)`.
         let should_track_operation = !would_trace_stdlib_internals && self.include_in_feature_tree;
         let op = if should_track_operation {
@@ -331,7 +341,7 @@ impl FunctionSource {
                 .collect();
 
             // If you're calling a stdlib function, track that call as an operation.
-            if self.is_std {
+            if self.is_std() {
                 Some(Operation::StdLibCall {
                     name: fn_name.clone().unwrap_or_else(|| "unknown function".to_owned()),
                     unlabeled_arg: args
@@ -366,7 +376,7 @@ impl FunctionSource {
 
         let is_calling_into_stdlib = match &self.body {
             FunctionBody::Rust(_) => true,
-            FunctionBody::Kcl(_) => self.is_std,
+            FunctionBody::Kcl(_) => self.is_std(),
         };
         let is_crossing_into_stdlib = is_calling_into_stdlib && !exec_state.mod_local.inside_stdlib;
         let is_crossing_out_of_stdlib = !is_calling_into_stdlib && exec_state.mod_local.inside_stdlib;
@@ -452,7 +462,7 @@ impl FunctionSource {
             Err(e) => Err(e),
         };
 
-        if self.is_std
+        if self.is_std()
             && let Ok(Some(result)) = &mut result
         {
             update_memory_for_tags_of_geometry(result, exec_state)?;
@@ -471,13 +481,47 @@ impl FunctionBody {
     }
 }
 
+fn originates_from_sketch_block(value: &KclValue) -> bool {
+    match value {
+        KclValue::Uuid { .. } => false,
+        KclValue::Bool { .. } => false,
+        KclValue::Number { .. } => false,
+        KclValue::String { .. } => false,
+        KclValue::SketchVar { .. } => true,
+        KclValue::SketchConstraint { .. } => true,
+        KclValue::Tuple { value, .. } => value.iter().all(originates_from_sketch_block),
+        KclValue::HomArray { value, .. } => value.iter().all(originates_from_sketch_block),
+        // TODO: sketch block result should return true.
+        KclValue::Object { value, .. } => value.values().all(originates_from_sketch_block),
+        KclValue::TagIdentifier(_) => false,
+        KclValue::TagDeclarator(_) => false,
+        KclValue::GdtAnnotation { .. } => false,
+        KclValue::Plane { .. } => false,
+        KclValue::Face { .. } => false,
+        KclValue::BoundedEdge { .. } => false,
+        KclValue::Segment { .. } => true,
+        KclValue::Sketch { value: sketch } => sketch.origin_sketch_id.is_some(),
+        KclValue::Solid { value: solid } => solid
+            .sketch()
+            .map(|sketch| sketch.origin_sketch_id.is_some())
+            .unwrap_or(false),
+        KclValue::Helix { .. } => false,
+        KclValue::ImportedGeometry(_) => false,
+        KclValue::Function { .. } => false,
+        KclValue::Module { .. } => false,
+        KclValue::Type { .. } => false,
+        KclValue::KclNone { .. } => false,
+    }
+}
+
 fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut ExecState) -> Result<(), KclError> {
+    let is_sketch_block = originates_from_sketch_block(&*result);
     // If the return result is a sketch or solid, we want to update the
     // memory for the tags of the group.
     // TODO: This could probably be done in a better way, but as of now this was my only idea
     // and it works.
     match result {
-        KclValue::Sketch { value } => {
+        KclValue::Sketch { value } if !is_sketch_block => {
             for (name, tag) in value.tags.iter() {
                 if exec_state.stack().cur_frame_contains(name) {
                     exec_state.mut_stack().update(name, |v, _| {
@@ -516,7 +560,9 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                 }
                 if let Some(tag) = v.get_tag() {
                     // Get the past tag and update it.
+                    let mut is_part_of_sketch = false;
                     let tag_id = if let Some(t) = sketch.tags.get(&tag.name) {
+                        is_part_of_sketch = true;
                         let mut t = t.clone();
                         let Some(info) = t.get_cur_info() else {
                             return Err(KclError::new_internal(KclErrorDetails::new(
@@ -558,7 +604,16 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                         exec_state.mut_stack().update(&tag.name, |v, _| {
                             v.as_mut_tag().unwrap().merge_info(&tag_id);
                         });
-                    } else {
+                    } else if !is_sketch_block || !is_part_of_sketch {
+                        // The above condition is saying that we add a tag to
+                        // the stack in either of these cases:
+                        //
+                        // 1. It originates from a legacy sketch v1.
+                        //
+                        // 2. It originates from a sketch block and it's not
+                        // part of the sketch. Instead, it's part of the solid,
+                        // as in tagging a cap face `extrude(tagEnd, tagStart)`
+                        // or chamfer face `chamfer(tag)`.
                         exec_state
                             .mut_stack()
                             .add(
@@ -651,6 +706,7 @@ fn type_check_params_kw(
     let fn_name = fn_name.or(args.fn_name.as_deref());
     let mut result = Args::new_no_args(
         args.source_range,
+        args.node_path.clone(),
         args.ctx,
         fn_name.map(|f| f.to_string()).or_else(|| args.fn_name.clone()),
     );
@@ -1076,7 +1132,7 @@ mod test {
                 Box::new(func_expr),
                 EnvironmentRef::dummy(),
                 crate::execution::kcl_value::KclFunctionSourceParams {
-                    is_std: false,
+                    std_props: None,
                     experimental: false,
                     include_in_feature_tree: false,
                 },
@@ -1102,6 +1158,7 @@ mod test {
                 labeled,
                 unlabeled: Vec::new(),
                 source_range: SourceRange::default(),
+                node_path: None,
                 ctx: exec_ctxt,
                 pipe_value: None,
                 _status: std::marker::PhantomData,

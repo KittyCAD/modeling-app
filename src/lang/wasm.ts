@@ -862,8 +862,15 @@ export function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
       case 'AscribedExpressionExpr':
         pathToNode.push(['expr', 'AscribedExpression'])
         break
-      case 'SketchBlock':
-        // TODO: sketch-api: implement arguments and body.
+      case 'SketchBlockArgs':
+        pathToNode.push(['arguments', 'SketchBlockArgs'])
+        break
+      case 'SketchBlockBody':
+        pathToNode.push(['body', 'SketchBlockBody'])
+        break
+      case 'SketchBlockBodyItem':
+        pathToNode.push(['items', 'SketchBlockBodyItem'])
+        pathToNode.push([step.index, 'index'])
         break
       case 'SketchVar':
         // TODO: sketch-api: implement initial.
@@ -1002,6 +1009,10 @@ export function isKclEmptyOrOnlySettings(
  */
 export function getKclVersion(wasmInstance: ModuleType): string {
   return wasmInstance.get_kcl_version()
+}
+
+export function getSketchCheckpointLimit(wasmInstance: ModuleType): number {
+  return wasmInstance.sketch_checkpoint_limit()
 }
 
 /**

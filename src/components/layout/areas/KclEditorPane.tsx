@@ -11,6 +11,8 @@ import { reportRejection, trap } from '@src/lib/trap'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
+import usePlatform from '@src/hooks/usePlatform'
 
 type Singletons = ReturnType<typeof useSingletons>
 
@@ -19,7 +21,6 @@ export const editorShortcutMeta = {
     display: 'Alt + Shift + F',
   },
   convertToVariable: {
-    codeMirror: 'Ctrl-Shift-c',
     display: 'Ctrl + Shift + C',
   },
 }
@@ -63,18 +64,18 @@ export const KclEditorPaneContents = () => {
 
 function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
   if (!kclManager.codeSignal.value) {
-    toast.error('No code available to copy')
+    toast.error('No code available to copy.')
     return
   }
 
   if (!globalThis?.navigator?.clipboard?.writeText) {
-    toast.error('Clipboard functionality not available in your browser')
+    toast.error('Clipboard functionality not available in your browser.')
     return
   }
 
   navigator.clipboard
     .writeText(kclManager.codeSignal.value)
-    .then(() => toast.success(`Copied current file's code to clipboard`))
+    .then(() => toast.success(`Copied current file's code to clipboard.`))
     .catch((e) =>
       trap(new Error(`Failed to copy code to clipboard: ${e.message}`))
     )
@@ -83,6 +84,7 @@ function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
 export const KclEditorMenu = () => {
   const { commands, settings } = useApp()
   const { kclManager } = useSingletons()
+  const platform = usePlatform()
   const settingsActor = settings.actor
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
     useConvertToVariable(kclManager)
@@ -118,7 +120,9 @@ export const KclEditorMenu = () => {
               className={styles.button}
             >
               <span>Format code</span>
-              <small>{editorShortcutMeta.formatCode.display}</small>
+              <small>
+                {hotkeyDisplay(editorShortcutMeta.formatCode.display, platform)}
+              </small>
             </button>
           </Menu.Item>
           <Menu.Item>

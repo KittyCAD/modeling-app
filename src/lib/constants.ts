@@ -47,6 +47,7 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   REVOLVE: 'revolve',
   PLANE: 'plane',
   HELIX: 'helix',
+  GEAR: 'gear',
   CLONE: 'clone',
   HIDDEN: 'hidden',
   SOLID: 'solid',
@@ -168,24 +169,21 @@ export const EXECUTE_AST_INTERRUPT_ERROR_MESSAGE = JSON.stringify(
 /** The messages that appear for exporting toasts */
 export const EXPORT_TOAST_MESSAGES = {
   START: 'Exporting...',
-  SUCCESS: 'Exported successfully',
-  FAILED: 'Export failed',
+  SUCCESS: 'Exported successfully.',
+  FAILED: 'Export failed.',
 }
 
 /** The messages that appear for "make" command toasts */
 export const MAKE_TOAST_MESSAGES = {
   START: 'Starting print...',
-  NO_MACHINES: 'No machines available',
-  NO_MACHINE_API_IP: 'No machine api ip available',
-  NO_CURRENT_MACHINE: 'No current machine available',
-  NO_MACHINE_ID: 'No machine id available',
-  NO_NAME: 'No name provided',
-  ERROR_STARTING_PRINT: 'Error while starting print',
-  SUCCESS: 'Started print successfully',
+  NO_MACHINES: 'No machines available.',
+  NO_MACHINE_API_IP: 'No machine api ip available.',
+  NO_CURRENT_MACHINE: 'No current machine available.',
+  NO_MACHINE_ID: 'No machine id available.',
+  NO_NAME: 'No name provided.',
+  ERROR_STARTING_PRINT: 'Error while starting print.',
+  SUCCESS: 'Started print successfully.',
 }
-
-/** Toast id for the app auto-updater toast */
-export const AUTO_UPDATER_TOAST_ID = 'auto-updater-toast'
 
 /** Toast id for the insert foreign part toast */
 export const INSERT_FOREIGN_TOAST_ID = 'insert-foreign-toast'
@@ -359,7 +357,7 @@ export const PENDING_COMMAND_TIMEOUT = 60_000
 export const LAYOUT_SAVE_THROTTLE = 500
 
 // Zookeeper input
-export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'fast'
+export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'thoughtful'
 
 // Default backface color
 export const DEFAULT_BACKFACE_COLOR = '#00D5FF'
