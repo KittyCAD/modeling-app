@@ -362,6 +362,8 @@ impl DocData {
 
 #[derive(Debug, Clone)]
 pub struct ConstData {
+    // TODO (#11345) Only read via DocData::name() in test code; removing requires updating ~30 test call sites.
+    // Also uses of name (like PI) will need special treatment
     #[allow(dead_code)]
     pub name: String,
     /// How the const is indexed, etc.

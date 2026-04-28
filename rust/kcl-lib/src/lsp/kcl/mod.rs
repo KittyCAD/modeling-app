@@ -1790,13 +1790,9 @@ fn should_skip_stdlib_doc(
     has_existing: bool,
     context: StdlibCompletionContext,
 ) -> bool {
-    if !has_existing {
-        return false;
-    }
-
     match context {
-        StdlibCompletionContext::Default => doc.is_experimental() || is_sketch2_doc(doc),
-        StdlibCompletionContext::SketchBlock => doc.is_experimental() && !is_sketch2_doc(doc),
+        StdlibCompletionContext::Default => is_sketch2_doc(doc) || (has_existing && doc.is_experimental()),
+        StdlibCompletionContext::SketchBlock => has_existing && doc.is_experimental() && !is_sketch2_doc(doc),
     }
 }
 
@@ -2041,7 +2037,7 @@ return 42"#;
 
     #[test]
     fn stdlib_completions_keyed_by_preferred_name() {
-        let stdlib = crate::docs::kcl_doc::walk_prelude();
+        let stdlib = crate::docs::kcl_doc::walk_stdlib();
         let completions = get_completions_from_stdlib(&stdlib).unwrap();
 
         assert!(
@@ -2060,7 +2056,7 @@ return 42"#;
 
     #[test]
     fn stdlib_signatures_keyed_by_preferred_name() {
-        let stdlib = crate::docs::kcl_doc::walk_prelude();
+        let stdlib = crate::docs::kcl_doc::walk_stdlib();
         let signatures = get_signatures_from_stdlib(&stdlib);
 
         assert!(
@@ -2079,7 +2075,7 @@ return 42"#;
 
     #[test]
     fn stdlib_args_keyed_by_preferred_name() {
-        let stdlib = crate::docs::kcl_doc::walk_prelude();
+        let stdlib = crate::docs::kcl_doc::walk_stdlib();
         let args = get_arg_maps_from_stdlib(&stdlib);
 
         assert!(args.contains_key("clone"), "prelude fn should be keyed by short name");
@@ -2090,6 +2086,75 @@ return 42"#;
         assert!(
             !args.contains_key("toRadians"),
             "module fn should NOT be keyed by bare short name"
+        );
+    }
+
+    #[test]
+    fn default_completions_exclude_solver() {
+        let stdlib = crate::docs::kcl_doc::walk_stdlib();
+        let completions = get_completions_from_stdlib(&stdlib).unwrap();
+
+        assert!(
+            completions.contains_key("line"),
+            "prelude line should be present in default context"
+        );
+        assert!(
+            !completions.contains_key("solver::line"),
+            "solver::line should NOT appear in default context"
+        );
+        assert!(
+            !completions.contains_key("solver::coincident"),
+            "solver-only functions should NOT appear in default context"
+        );
+    }
+
+    #[test]
+    fn old_sketch_block_completions_exclude_solver() {
+        // Old sketch blocks use the Default completions map (is_in_sketch_block
+        // returns false for old syntax), so solver functions must be absent.
+        let stdlib = crate::docs::kcl_doc::walk_stdlib();
+        let completions = get_completions_from_stdlib(&stdlib).unwrap();
+
+        assert!(
+            completions.contains_key("line"),
+            "prelude line should be present for old sketch blocks"
+        );
+        assert!(
+            !completions.contains_key("solver::line"),
+            "solver::line should NOT appear for old sketch blocks"
+        );
+        assert!(
+            !completions.contains_key("solver::coincident"),
+            "solver-only functions should NOT appear for old sketch blocks"
+        );
+    }
+
+    #[test]
+    fn sketch2_completions_include_solver() {
+        let stdlib = crate::docs::kcl_doc::walk_stdlib();
+        let completions = get_completions_from_stdlib_for_sketch_block(&stdlib).unwrap();
+
+        // Solver functions should shadow prelude functions under their bare name
+        assert!(
+            completions.contains_key("line"),
+            "solver line should be present under bare name in sketch2 context"
+        );
+        let line = &completions["line"];
+        assert!(
+            line.insert_text
+                .as_ref()
+                .is_some_and(|t| t.starts_with("line(start = ")),
+            "sketch2 line should use solver signature (start =), not prelude signature"
+        );
+
+        // Solver-only functions should also be present under bare name
+        assert!(
+            completions.contains_key("coincident"),
+            "solver-only functions should be present under bare name in sketch2 context"
+        );
+        assert!(
+            !completions.contains_key("solver::coincident"),
+            "solver functions should NOT keep solver:: prefix in sketch2 context"
         );
     }
 }
