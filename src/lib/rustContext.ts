@@ -6,7 +6,9 @@ import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 import type {
   OutputFormat3d,
   RenderPacket,
+  RenderPacketEdge,
   RenderPacketPrimitive,
+  RenderPacketTrimLoop,
 } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
@@ -47,7 +49,12 @@ import {
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
 
-export type { RenderPacket, RenderPacketPrimitive }
+export type {
+  RenderPacket,
+  RenderPacketEdge,
+  RenderPacketPrimitive,
+  RenderPacketTrimLoop,
+}
 
 export default class RustContext {
   private rustInstance: ModuleType | null = null

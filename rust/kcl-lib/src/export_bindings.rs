@@ -1,6 +1,8 @@
 #[cfg(test)]
 mod tests {
-    use kittycad_modeling_cmds::format::render_packet::{RenderPacket, RenderPacketPrimitive};
+    use kittycad_modeling_cmds::format::render_packet::{
+        RenderPacket, RenderPacketPrimitive, RenderPacketTrimLoop,
+    };
     use ts_rs::{Config, TS};
 
     #[test]
@@ -8,5 +10,6 @@ mod tests {
         let cfg = Config::from_env();
         RenderPacket::export_all(&cfg).unwrap();
         RenderPacketPrimitive::export_all(&cfg).unwrap();
+        RenderPacketTrimLoop::export_all(&cfg).unwrap();
     }
 }

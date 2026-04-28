@@ -9,7 +9,12 @@ import {
   SKETCH_SELECTION_COLOR,
 } from '@src/lib/constants'
 import type { ArtifactGraph } from '@src/lang/wasm'
-import type { RenderPacket, RenderPacketPrimitive } from '@src/lib/rustContext'
+import type {
+  RenderPacket,
+  RenderPacketEdge,
+  RenderPacketPrimitive,
+  RenderPacketTrimLoop,
+} from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
@@ -17,9 +22,12 @@ import { useEffect, useRef } from 'react'
 import {
   BufferGeometry,
   BufferAttribute,
+  CanvasTexture,
   Color,
   FrontSide,
   Group,
+  Line,
+  LineBasicMaterial,
   Mesh,
   MeshBasicMaterial,
   OrthographicCamera,
@@ -41,6 +49,7 @@ const ENGINE_DEFAULT_SURFACE_COLOR = new Color('#9a9ca1')
 const ENGINE_SURFACE_OPACITY = 0.56
 const HOVER_COLOR = new Color(SKETCH_HIGHLIGHT_COLOR)
 const SELECTED_COLOR = new Color(SKETCH_SELECTION_COLOR)
+const EDGE_RAYCAST_THRESHOLD_GLTF_METERS = 0.001
 
 function shouldEnableLocalWebGpuPreview() {
   return localStorage.getItem(WEBGPU_PORT_POC_STORAGE_KEY) !== 'false'
@@ -78,6 +87,7 @@ function logLocalWebGpuPreview(message: string, metadata?: unknown) {
 function buildRenderPacketModel(packet: RenderPacket) {
   const root = new Group()
   const primitiveByObject = new WeakMap<Object3D, RenderPacketPrimitive>()
+  const edgeByObject = new WeakMap<Object3D, RenderPacketEdge>()
 
   packet.primitives.forEach((primitive, primitiveOffset) => {
     const geometry = new BufferGeometry()
@@ -89,6 +99,12 @@ function buildRenderPacketModel(packet: RenderPacket) {
       geometry.setAttribute(
         'normal',
         new BufferAttribute(new Float32Array(primitive.normals), 3)
+      )
+    }
+    if (primitive.uvs.length / 2 === primitive.positions.length / 3) {
+      geometry.setAttribute(
+        'uv',
+        new BufferAttribute(new Float32Array(primitive.uvs), 2)
       )
     }
     geometry.setIndex(
@@ -108,14 +124,50 @@ function buildRenderPacketModel(packet: RenderPacket) {
     } satisfies PacketPrimitiveUserData
     mesh.userData.kittycadPrimitiveExtras =
       mesh.userData.gltfPrimitiveExtras.KITTYCAD
+    mesh.userData.kittycadTrimLoops = primitive.trimLoops
+    mesh.userData.kittycadTrimMaskTexture = createTrimMaskTexture(
+      primitive.trimLoops
+    )
     primitiveByObject.set(mesh, primitive)
     root.add(mesh)
+  })
+
+  packet.edges.forEach((edge: RenderPacketEdge) => {
+    if (edge.positions.length < 6) {
+      return
+    }
+
+    const geometry = new BufferGeometry()
+    geometry.setAttribute(
+      'position',
+      new BufferAttribute(new Float32Array(edge.positions), 3)
+    )
+
+    const line = new Line(
+      geometry,
+      new LineBasicMaterial({
+        color: 0xf2f3f5,
+        transparent: true,
+        opacity: 0.95,
+      })
+    )
+    line.name = `edge_${edge.edgeIndex}`
+    line.userData.kittycadEdgeExtras = {
+      object_id: edge.objectId,
+      body_id: edge.bodyId,
+      edge_id: edge.edgeId,
+      edge_index: edge.edgeIndex,
+    } satisfies KittycadEdgeExtras
+    line.renderOrder = 2
+    edgeByObject.set(line, edge)
+    root.add(line)
   })
 
   return {
     model: root,
     parserState: {
       primitiveByObject,
+      edgeByObject,
     } satisfies RenderPacketParserState,
   }
 }
@@ -168,6 +220,10 @@ function prepareLoadedModelForPreview(root: Object3D) {
     const materials = (
       isArray(object.material) ? object.material : [object.material]
     ) as Material[]
+    const trimMaskTexture =
+      object.userData?.kittycadTrimMaskTexture instanceof CanvasTexture
+        ? object.userData.kittycadTrimMaskTexture
+        : null
     const previewMaterials = materials.map((material) => {
       const previewMaterial = new MeshBasicMaterial({
         color: 0xffffff,
@@ -175,6 +231,8 @@ function prepareLoadedModelForPreview(root: Object3D) {
         side: FrontSide,
         transparent: true,
         opacity: ENGINE_SURFACE_OPACITY,
+        alphaMap: trimMaskTexture,
+        alphaTest: trimMaskTexture ? 0.05 : 0,
       })
       materialCount += 1
       materialTypes.add(material.type)
@@ -415,6 +473,7 @@ type GltfParserState = {
 
 type RenderPacketParserState = {
   primitiveByObject: WeakMap<Object3D, RenderPacketPrimitive>
+  edgeByObject: WeakMap<Object3D, RenderPacketEdge>
 }
 
 type KittycadPrimitiveExtras = {
@@ -425,10 +484,120 @@ type KittycadPrimitiveExtras = {
   primitive_index: number
 }
 
+type KittycadEdgeExtras = {
+  object_id: string
+  body_id: string
+  edge_id: string
+  edge_index: number
+}
+
+type RenderPacketTrimLoopSummary = {
+  positions: number[]
+}
+
+function pointInTrimLoop(
+  point: { x: number; y: number },
+  loop: RenderPacketTrimLoopSummary
+) {
+  const { positions } = loop
+  if (positions.length < 6) {
+    return false
+  }
+
+  let inside = false
+  let previousIndex = positions.length - 2
+  for (
+    let currentIndex = 0;
+    currentIndex < positions.length;
+    currentIndex += 2
+  ) {
+    const xi = positions[currentIndex]
+    const yi = positions[currentIndex + 1]
+    const xj = positions[previousIndex]
+    const yj = positions[previousIndex + 1]
+
+    const intersects =
+      yi > point.y !== yj > point.y &&
+      point.x < ((xj - xi) * (point.y - yi)) / (yj - yi || 1e-12) + xi
+
+    if (intersects) {
+      inside = !inside
+    }
+
+    previousIndex = currentIndex
+  }
+
+  return inside
+}
+
+function isUvInsideTrimLoops(
+  uv: { x: number; y: number } | null | undefined,
+  trimLoops: RenderPacketTrimLoopSummary[] | null | undefined
+) {
+  if (!uv || !trimLoops || trimLoops.length === 0) {
+    return true
+  }
+
+  let inside = false
+  for (const loop of trimLoops) {
+    if (pointInTrimLoop(uv, loop)) {
+      inside = !inside
+    }
+  }
+
+  return inside
+}
+
+function createTrimMaskTexture(trimLoops: RenderPacketTrimLoop[]) {
+  if (trimLoops.length === 0) {
+    return null
+  }
+
+  const canvas = document.createElement('canvas')
+  canvas.width = 256
+  canvas.height = 256
+  const context = canvas.getContext('2d')
+  if (!context) {
+    return null
+  }
+
+  context.clearRect(0, 0, canvas.width, canvas.height)
+  context.fillStyle = 'black'
+  context.fillRect(0, 0, canvas.width, canvas.height)
+  context.fillStyle = 'white'
+  context.beginPath()
+
+  for (const loop of trimLoops) {
+    const { positions } = loop
+    if (positions.length < 6) {
+      continue
+    }
+
+    context.moveTo(
+      positions[0] * (canvas.width - 1),
+      (1 - positions[1]) * (canvas.height - 1)
+    )
+    for (let index = 2; index < positions.length; index += 2) {
+      context.lineTo(
+        positions[index] * (canvas.width - 1),
+        (1 - positions[index + 1]) * (canvas.height - 1)
+      )
+    }
+    context.closePath()
+  }
+
+  context.fill('evenodd')
+
+  const texture = new CanvasTexture(canvas)
+  texture.needsUpdate = true
+  return texture
+}
+
 type ResolvedSelectionEntity = {
   entityId: string
   parentEntityId: string
   primitiveIndex: number
+  entityType: 'face' | 'edge'
 }
 
 type PacketPrimitiveUserData = {
@@ -679,18 +848,35 @@ function getPickedObjectMetadata(
 
   if (parserState && 'primitiveByObject' in parserState) {
     const primitive = parserState.primitiveByObject.get(object) ?? null
+    const edge = parserState.edgeByObject.get(object) ?? null
     return {
       association: primitive
         ? {
             meshes: 0,
             primitives: primitive.primitiveIndex,
           }
-        : null,
+        : edge
+          ? {
+              edges: edge.edgeIndex,
+            }
+          : null,
       primitiveExtras: primitiveExtrasFromUserData,
       meshExtras: null,
       nodeExtras: null,
       nodeIndex: null,
       kittycadPrimitiveExtras: kittycadPrimitiveExtrasFromUserData,
+      kittycadEdgeExtras: isKittycadEdgeExtras(
+        object.userData?.kittycadEdgeExtras
+      )
+        ? object.userData.kittycadEdgeExtras
+        : edge
+          ? {
+              object_id: edge.objectId,
+              body_id: edge.bodyId,
+              edge_id: edge.edgeId,
+              edge_index: edge.edgeIndex,
+            }
+          : null,
     }
   }
 
@@ -742,6 +928,11 @@ function getPickedObjectMetadata(
     nodeExtras,
     nodeIndex,
     kittycadPrimitiveExtras,
+    kittycadEdgeExtras: isKittycadEdgeExtras(
+      object.userData?.kittycadEdgeExtras
+    )
+      ? object.userData.kittycadEdgeExtras
+      : null,
   }
 }
 
@@ -759,6 +950,17 @@ function isKittycadPrimitiveExtras(
   )
 }
 
+function isKittycadEdgeExtras(value: unknown): value is KittycadEdgeExtras {
+  return (
+    !!value &&
+    typeof value === 'object' &&
+    typeof (value as KittycadEdgeExtras).object_id === 'string' &&
+    typeof (value as KittycadEdgeExtras).body_id === 'string' &&
+    typeof (value as KittycadEdgeExtras).edge_id === 'string' &&
+    typeof (value as KittycadEdgeExtras).edge_index === 'number'
+  )
+}
+
 function resolveSelectionEntityFromPrimitiveExtras(
   extras: KittycadPrimitiveExtras,
   artifactGraph: ArtifactGraph
@@ -770,6 +972,7 @@ function resolveSelectionEntityFromPrimitiveExtras(
         entityId: directArtifact.id,
         parentEntityId: directArtifact.solidId,
         primitiveIndex: extras.primitive_index,
+        entityType: 'face',
       }
     }
 
@@ -786,6 +989,7 @@ function resolveSelectionEntityFromPrimitiveExtras(
             ? directArtifact.sweepId
             : extras.object_id,
         primitiveIndex: extras.primitive_index,
+        entityType: 'face',
       }
     }
 
@@ -793,6 +997,7 @@ function resolveSelectionEntityFromPrimitiveExtras(
       entityId: directArtifact.id,
       parentEntityId: extras.object_id,
       primitiveIndex: extras.primitive_index,
+      entityType: 'face',
     }
   }
 
@@ -813,6 +1018,7 @@ function resolveSelectionEntityFromPrimitiveExtras(
         entityId: surfaceEntityId,
         parentEntityId: sweepArtifact.id,
         primitiveIndex: extras.primitive_index,
+        entityType: 'face',
       }
     }
   }
@@ -821,6 +1027,35 @@ function resolveSelectionEntityFromPrimitiveExtras(
     entityId: extras.face_id,
     parentEntityId: extras.object_id,
     primitiveIndex: extras.primitive_index,
+    entityType: 'face',
+  }
+}
+
+function resolveSelectionEntityFromEdgeExtras(
+  extras: KittycadEdgeExtras,
+  artifactGraph: ArtifactGraph
+): ResolvedSelectionEntity {
+  const directArtifact = artifactGraph.get(extras.edge_id)
+  if (
+    directArtifact?.type === 'primitiveEdge' ||
+    directArtifact?.type === 'sweepEdge'
+  ) {
+    return {
+      entityId: directArtifact.id,
+      parentEntityId:
+        directArtifact.type === 'primitiveEdge'
+          ? directArtifact.solidId
+          : directArtifact.sweepId,
+      primitiveIndex: extras.edge_index,
+      entityType: 'edge',
+    }
+  }
+
+  return {
+    entityId: extras.edge_id,
+    parentEntityId: extras.object_id,
+    primitiveIndex: extras.edge_index,
+    entityType: 'edge',
   }
 }
 
@@ -843,6 +1078,26 @@ function setMeshHighlight(
     material.opacity = mode === 'base' ? ENGINE_SURFACE_OPACITY : 0.82
     material.needsUpdate = true
   }
+}
+
+function setLineHighlight(
+  line: Line | null,
+  mode: 'base' | 'hover' | 'selected'
+) {
+  if (!line || !(line.material instanceof LineBasicMaterial)) {
+    return
+  }
+
+  const nextColor = new Color('#f2f3f5')
+  if (mode === 'selected') {
+    nextColor.copy(SELECTED_COLOR)
+  } else if (mode === 'hover') {
+    nextColor.copy(HOVER_COLOR)
+  }
+
+  line.material.color.copy(nextColor)
+  line.material.opacity = mode === 'base' ? 0.95 : 1
+  line.material.needsUpdate = true
 }
 
 function summarizePickedObject(
@@ -884,6 +1139,7 @@ function summarizePickedObject(
     nodeExtras: metadata.nodeExtras,
     nodeIndex: metadata.nodeIndex,
     kittycadPrimitiveExtras: metadata.kittycadPrimitiveExtras,
+    kittycadEdgeExtras: metadata.kittycadEdgeExtras,
     resolvedSelectionEntity,
     userData: Object.fromEntries(userDataEntries),
     userDataKeys: Object.keys(object.userData ?? {}),
@@ -948,30 +1204,40 @@ export const LocalWebGPUScene = ({
     let refreshModel: (() => Promise<void>) | null = null
     let previewCamera: PerspectiveCamera | OrthographicCamera | null = null
     let previewTarget = new Vector3()
-    let hoveredMesh: Mesh | null = null
-    let selectedMeshes = new Set<Mesh>()
-    let selectionEntityIdToMesh = new Map<string, Mesh>()
+    let hoveredObject: Object3D | null = null
+    let selectedObjects = new Set<Object3D>()
+    let selectionEntityIdToObject = new Map<string, Object3D>()
     let parserState: GltfParserState | RenderPacketParserState | null = null
     let activeSketchModePlane: GetSketchModePlane | null = null
     const raycaster = new Raycaster()
     const pointer = new Vector2()
     let requestRender: (() => void) | null = null
 
-    const getResolvedSelectionEntity = (mesh: Mesh | null) => {
-      if (!mesh) {
+    const getResolvedSelectionEntity = (object: Object3D | null) => {
+      if (!object) {
         return null
       }
 
-      const metadata = getPickedObjectMetadata(mesh, parserState)
+      const metadata = getPickedObjectMetadata(object, parserState)
       const extras = isKittycadPrimitiveExtras(metadata.kittycadPrimitiveExtras)
         ? metadata.kittycadPrimitiveExtras
         : null
-      if (!extras) {
+      if (extras) {
+        return resolveSelectionEntityFromPrimitiveExtras(
+          extras,
+          kclManager.artifactGraph
+        )
+      }
+
+      const edgeExtras = isKittycadEdgeExtras(metadata.kittycadEdgeExtras)
+        ? metadata.kittycadEdgeExtras
+        : null
+      if (!edgeExtras) {
         return null
       }
 
-      return resolveSelectionEntityFromPrimitiveExtras(
-        extras,
+      return resolveSelectionEntityFromEdgeExtras(
+        edgeExtras,
         kclManager.artifactGraph
       )
     }
@@ -1070,8 +1336,8 @@ export const LocalWebGPUScene = ({
       if (currentModel) {
         updatePreviewBaseColors(currentModel, previewCamera)
         currentModel.traverse((object) => {
-          if (object instanceof Mesh) {
-            applyMeshState(object)
+          if (object instanceof Mesh || object instanceof Line) {
+            applyObjectState(object)
           }
         })
       }
@@ -1098,31 +1364,35 @@ export const LocalWebGPUScene = ({
       requestRefresh()
     }
 
-    const applyMeshState = (mesh: Mesh | null) => {
-      if (!mesh) {
+    const applyObjectState = (object: Object3D | null) => {
+      if (!object) {
         return
       }
 
-      const mode = selectedMeshes.has(mesh)
+      const mode = selectedObjects.has(object)
         ? 'selected'
-        : mesh === hoveredMesh
+        : object === hoveredObject
           ? 'hover'
           : 'base'
-      setMeshHighlight(mesh, mode)
+      if (object instanceof Mesh) {
+        setMeshHighlight(object, mode)
+      } else if (object instanceof Line) {
+        setLineHighlight(object, mode)
+      }
       requestRender?.()
     }
 
     const clearHover = () => {
-      if (!hoveredMesh) {
+      if (!hoveredObject) {
         return
       }
 
-      const previousHoveredMesh = hoveredMesh
-      hoveredMesh = null
-      applyMeshState(previousHoveredMesh)
+      const previousHoveredObject = hoveredObject
+      hoveredObject = null
+      applyObjectState(previousHoveredObject)
     }
 
-    const pickMeshFromWindowCoordinates = ({
+    const pickRenderableFromWindowCoordinates = ({
       x,
       y,
       streamWidth,
@@ -1147,9 +1417,35 @@ export const LocalWebGPUScene = ({
       pointer.y = -(y / streamHeight) * 2 + 1
       raycaster.setFromCamera(pointer, previewCamera)
 
+      raycaster.params.Line = {
+        ...(raycaster.params.Line ?? {}),
+        // Keep edge picking tight so faces remain easy to select.
+        threshold: EDGE_RAYCAST_THRESHOLD_GLTF_METERS,
+      }
+
       return raycaster
         .intersectObject(currentModel, true)
-        .find((intersection) => intersection.object instanceof Mesh)
+        .find((intersection) => {
+          if (intersection.object instanceof Line) {
+            return true
+          }
+
+          if (!(intersection.object instanceof Mesh)) {
+            return false
+          }
+
+          const primitive =
+            parserState && 'primitiveByObject' in parserState
+              ? (parserState.primitiveByObject.get(intersection.object) ?? null)
+              : null
+
+          return isUvInsideTrimLoops(
+            intersection.uv
+              ? { x: intersection.uv.x, y: intersection.uv.y }
+              : null,
+            primitive?.trimLoops ?? null
+          )
+        })
     }
 
     const updateHoverFromIntersection = (
@@ -1162,27 +1458,27 @@ export const LocalWebGPUScene = ({
         | null
         | undefined
     ) => {
-      const nextHoveredMesh = (intersection?.object as Mesh | undefined) ?? null
-      if (nextHoveredMesh === hoveredMesh) {
+      const nextHoveredObject = intersection?.object ?? null
+      if (nextHoveredObject === hoveredObject) {
         return
       }
 
-      const previousHoveredMesh = hoveredMesh
-      hoveredMesh = null
-      applyMeshState(previousHoveredMesh)
-      if (!nextHoveredMesh) {
+      const previousHoveredObject = hoveredObject
+      hoveredObject = null
+      applyObjectState(previousHoveredObject)
+      if (!nextHoveredObject) {
         return
       }
 
-      hoveredMesh = nextHoveredMesh
-      applyMeshState(hoveredMesh)
+      hoveredObject = nextHoveredObject
+      applyObjectState(hoveredObject)
       const resolvedSelectionEntity =
-        getResolvedSelectionEntity(nextHoveredMesh)
+        getResolvedSelectionEntity(nextHoveredObject)
       logLocalWebGpuPreview('local hover changed', {
         distance: intersection?.distance,
         point: intersection?.point?.toArray(),
         ...summarizePickedObject(
-          nextHoveredMesh,
+          nextHoveredObject,
           parserState,
           resolvedSelectionEntity
         ),
@@ -1193,21 +1489,21 @@ export const LocalWebGPUScene = ({
       nextSelectedMeshes,
       selectionSummary,
     }: {
-      nextSelectedMeshes: Set<Mesh>
+      nextSelectedMeshes: Set<Object3D>
       selectionSummary: unknown
     }) => {
       if (
-        nextSelectedMeshes.size === selectedMeshes.size &&
-        [...nextSelectedMeshes].every((mesh) => selectedMeshes.has(mesh))
+        nextSelectedMeshes.size === selectedObjects.size &&
+        [...nextSelectedMeshes].every((mesh) => selectedObjects.has(mesh))
       ) {
         return
       }
 
-      const previousSelectedMeshes = [...selectedMeshes]
-      selectedMeshes = nextSelectedMeshes
-      previousSelectedMeshes.forEach(applyMeshState)
-      applyMeshState(hoveredMesh)
-      selectedMeshes.forEach(applyMeshState)
+      const previousSelectedMeshes = [...selectedObjects]
+      selectedObjects = nextSelectedMeshes
+      previousSelectedMeshes.forEach(applyObjectState)
+      applyObjectState(hoveredObject)
+      selectedObjects.forEach(applyObjectState)
       ;(
         window as typeof window & { __WEBGPU_POC_SELECTION__?: unknown }
       ).__WEBGPU_POC_SELECTION__ = selectionSummary
@@ -1389,28 +1685,16 @@ export const LocalWebGPUScene = ({
                 if (!commandProxyEnabledRef.current) {
                   return null
                 }
-                const intersection = pickMeshFromWindowCoordinates({
+                const intersection = pickRenderableFromWindowCoordinates({
                   x: cmd.selected_at_window.x,
                   y: cmd.selected_at_window.y,
                   streamWidth: streamDimensions.width,
                   streamHeight: streamDimensions.height,
                 })
                 updateHoverFromIntersection(intersection)
-                const mesh = (intersection?.object as Mesh | undefined) ?? null
-                const metadata = mesh
-                  ? getPickedObjectMetadata(mesh, parserState)
-                  : null
-                const extras = isKittycadPrimitiveExtras(
-                  metadata?.kittycadPrimitiveExtras
-                )
-                  ? metadata.kittycadPrimitiveExtras
-                  : null
-                const resolvedSelectionEntity = extras
-                  ? resolveSelectionEntityFromPrimitiveExtras(
-                      extras,
-                      kclManager.artifactGraph
-                    )
-                  : null
+                const object = intersection?.object ?? null
+                const resolvedSelectionEntity =
+                  getResolvedSelectionEntity(object)
                 return {
                   unreliableModelingResponse: {
                     type: 'highlight_set_entity',
@@ -1425,27 +1709,15 @@ export const LocalWebGPUScene = ({
                 if (!commandProxyEnabledRef.current) {
                   return null
                 }
-                const intersection = pickMeshFromWindowCoordinates({
+                const intersection = pickRenderableFromWindowCoordinates({
                   x: cmd.selected_at_window.x,
                   y: cmd.selected_at_window.y,
                   streamWidth: streamDimensions.width,
                   streamHeight: streamDimensions.height,
                 })
-                const mesh = (intersection?.object as Mesh | undefined) ?? null
-                const metadata = mesh
-                  ? getPickedObjectMetadata(mesh, parserState)
-                  : null
-                const extras = isKittycadPrimitiveExtras(
-                  metadata?.kittycadPrimitiveExtras
-                )
-                  ? metadata.kittycadPrimitiveExtras
-                  : null
-                const resolvedSelectionEntity = extras
-                  ? resolveSelectionEntityFromPrimitiveExtras(
-                      extras,
-                      kclManager.artifactGraph
-                    )
-                  : null
+                const object = intersection?.object ?? null
+                const resolvedSelectionEntity =
+                  getResolvedSelectionEntity(object)
                 const modelingResponse = {
                   type: 'select_with_point',
                   data: {
@@ -1470,27 +1742,30 @@ export const LocalWebGPUScene = ({
                 if (!commandProxyEnabledRef.current) {
                   return null
                 }
-                const mesh = selectionEntityIdToMesh.get(cmd.entity_id) ?? null
-                const metadata = mesh
-                  ? getPickedObjectMetadata(mesh, parserState)
+                const object =
+                  selectionEntityIdToObject.get(cmd.entity_id) ?? null
+                const metadata = object
+                  ? getPickedObjectMetadata(object, parserState)
                   : null
-                const extras = isKittycadPrimitiveExtras(
+                const primitiveExtras = isKittycadPrimitiveExtras(
                   metadata?.kittycadPrimitiveExtras
                 )
                   ? metadata.kittycadPrimitiveExtras
                   : null
-                const resolvedSelectionEntity = extras
-                  ? resolveSelectionEntityFromPrimitiveExtras(
-                      extras,
-                      kclManager.artifactGraph
-                    )
+                const edgeExtras = isKittycadEdgeExtras(
+                  metadata?.kittycadEdgeExtras
+                )
+                  ? metadata.kittycadEdgeExtras
                   : null
+                const resolvedSelectionEntity =
+                  getResolvedSelectionEntity(object)
                 const modelingResponse = {
                   type: 'entity_get_parent_id',
                   data: {
                     entity_id:
                       resolvedSelectionEntity?.parentEntityId ??
-                      extras?.object_id ??
+                      primitiveExtras?.object_id ??
+                      edgeExtras?.object_id ??
                       '',
                   },
                 }
@@ -1511,28 +1786,31 @@ export const LocalWebGPUScene = ({
                 if (!commandProxyEnabledRef.current) {
                   return null
                 }
-                const mesh = selectionEntityIdToMesh.get(cmd.entity_id) ?? null
-                const metadata = mesh
-                  ? getPickedObjectMetadata(mesh, parserState)
+                const object =
+                  selectionEntityIdToObject.get(cmd.entity_id) ?? null
+                const metadata = object
+                  ? getPickedObjectMetadata(object, parserState)
                   : null
-                const extras = isKittycadPrimitiveExtras(
+                const primitiveExtras = isKittycadPrimitiveExtras(
                   metadata?.kittycadPrimitiveExtras
                 )
                   ? metadata.kittycadPrimitiveExtras
                   : null
-                const resolvedSelectionEntity = extras
-                  ? resolveSelectionEntityFromPrimitiveExtras(
-                      extras,
-                      kclManager.artifactGraph
-                    )
+                const edgeExtras = isKittycadEdgeExtras(
+                  metadata?.kittycadEdgeExtras
+                )
+                  ? metadata.kittycadEdgeExtras
                   : null
+                const resolvedSelectionEntity =
+                  getResolvedSelectionEntity(object)
                 const modelingResponse = {
                   type: 'entity_get_primitive_index',
                   data: {
-                    entity_type: 'face',
+                    entity_type: resolvedSelectionEntity?.entityType ?? 'face',
                     primitive_index:
                       resolvedSelectionEntity?.primitiveIndex ??
-                      extras?.primitive_index ??
+                      primitiveExtras?.primitive_index ??
+                      edgeExtras?.edge_index ??
                       -1,
                   },
                 }
@@ -1554,7 +1832,7 @@ export const LocalWebGPUScene = ({
                   return null
                 }
                 updateSelectedMeshes({
-                  nextSelectedMeshes: new Set<Mesh>(),
+                  nextSelectedMeshes: new Set<Object3D>(),
                   selectionSummary: null,
                 })
                 return { websocketResponse: null }
@@ -1563,11 +1841,11 @@ export const LocalWebGPUScene = ({
                 if (!commandProxyEnabledRef.current) {
                   return null
                 }
-                const nextSelectedMeshes = new Set<Mesh>()
+                const nextSelectedMeshes = new Set<Object3D>()
                 for (const entityId of cmd.entities) {
-                  const mesh = selectionEntityIdToMesh.get(entityId)
-                  if (mesh) {
-                    nextSelectedMeshes.add(mesh)
+                  const object = selectionEntityIdToObject.get(entityId)
+                  if (object) {
+                    nextSelectedMeshes.add(object)
                   }
                 }
                 const firstSelectedMesh =
@@ -1588,15 +1866,28 @@ export const LocalWebGPUScene = ({
                 return { websocketResponse: null }
               }
               case 'enable_sketch_mode': {
-                const mesh = selectionEntityIdToMesh.get(cmd.entity_id) ?? null
+                const mesh =
+                  selectionEntityIdToObject.get(cmd.entity_id) ?? null
                 if (!mesh) {
                   logLocalWebGpuPreview(
                     'local sketch mode plane mesh missing',
                     {
                       entityId: cmd.entity_id,
                       knownSelectionEntityIds: Array.from(
-                        selectionEntityIdToMesh.keys()
+                        selectionEntityIdToObject.keys()
                       ).slice(0, 20),
+                    }
+                  )
+                  return null
+                }
+                if (!(mesh instanceof Mesh)) {
+                  logLocalWebGpuPreview(
+                    'local sketch mode plane derivation failed',
+                    {
+                      entityId: cmd.entity_id,
+                      meshName: mesh.name || null,
+                      meshType: mesh.type,
+                      reason: 'selected entity is not a face mesh',
                     }
                   )
                   return null
@@ -1716,36 +2007,36 @@ export const LocalWebGPUScene = ({
 
       const clearModel = () => {
         if (!currentModel) {
-          selectionEntityIdToMesh.clear()
+          selectionEntityIdToObject.clear()
           return
         }
 
         scene.remove(currentModel)
         disposeObject3D(currentModel)
         currentModel = null
-        selectionEntityIdToMesh.clear()
+        selectionEntityIdToObject.clear()
         requestRender?.()
       }
 
       const hydrateCurrentModelMetadata = () => {
         if (!currentModel) {
-          selectionEntityIdToMesh.clear()
+          selectionEntityIdToObject.clear()
           return
         }
 
-        selectionEntityIdToMesh = new Map<string, Mesh>()
+        selectionEntityIdToObject = new Map<string, Object3D>()
         currentModel.traverse((object) => {
           object.layers.mask = previewCamera?.layers.mask ?? object.layers.mask
 
-          if (!(object instanceof Mesh)) {
+          if (!(object instanceof Mesh) && !(object instanceof Line)) {
             return
           }
 
           const metadata = getPickedObjectMetadata(object, parserState)
-          if (metadata.primitiveExtras) {
+          if (object instanceof Mesh && metadata.primitiveExtras) {
             object.userData.gltfPrimitiveExtras = metadata.primitiveExtras
           }
-          if (metadata.kittycadPrimitiveExtras) {
+          if (object instanceof Mesh && metadata.kittycadPrimitiveExtras) {
             object.userData.kittycadPrimitiveExtras =
               metadata.kittycadPrimitiveExtras
             if (isKittycadPrimitiveExtras(metadata.kittycadPrimitiveExtras)) {
@@ -1760,12 +2051,36 @@ export const LocalWebGPUScene = ({
                 resolvedSelectionEntity.parentEntityId
               object.userData.kittycadPrimitiveIndex =
                 resolvedSelectionEntity.primitiveIndex
-              selectionEntityIdToMesh.set(
+              selectionEntityIdToObject.set(
                 resolvedSelectionEntity.entityId,
                 object
               )
-              selectionEntityIdToMesh.set(
+              selectionEntityIdToObject.set(
                 metadata.kittycadPrimitiveExtras.face_id,
+                object
+              )
+            }
+          }
+          if (object instanceof Line && metadata.kittycadEdgeExtras) {
+            object.userData.kittycadEdgeExtras = metadata.kittycadEdgeExtras
+            if (isKittycadEdgeExtras(metadata.kittycadEdgeExtras)) {
+              const resolvedSelectionEntity =
+                resolveSelectionEntityFromEdgeExtras(
+                  metadata.kittycadEdgeExtras,
+                  kclManager.artifactGraph
+                )
+              object.userData.kittycadSelectionEntityId =
+                resolvedSelectionEntity.entityId
+              object.userData.kittycadParentEntityId =
+                resolvedSelectionEntity.parentEntityId
+              object.userData.kittycadPrimitiveIndex =
+                resolvedSelectionEntity.primitiveIndex
+              selectionEntityIdToObject.set(
+                resolvedSelectionEntity.entityId,
+                object
+              )
+              selectionEntityIdToObject.set(
+                metadata.kittycadEdgeExtras.edge_id,
                 object
               )
             }
@@ -1810,7 +2125,11 @@ export const LocalWebGPUScene = ({
             return
           }
 
-          if (renderPacket && renderPacket.primitives.length > 0) {
+          if (
+            renderPacket &&
+            (renderPacket.primitives.length > 0 ||
+              renderPacket.edges.length > 0)
+          ) {
             break
           }
 
@@ -1833,7 +2152,10 @@ export const LocalWebGPUScene = ({
           return
         }
 
-        if (renderPacket && renderPacket.primitives.length > 0) {
+        if (
+          renderPacket &&
+          (renderPacket.primitives.length > 0 || renderPacket.edges.length > 0)
+        ) {
           clearModel()
           const packetModel = buildRenderPacketModel(renderPacket)
           currentModel = packetModel.model
@@ -1850,6 +2172,7 @@ export const LocalWebGPUScene = ({
           logLocalWebGpuPreview('render packet applied to scene', {
             refreshId,
             primitiveCount: renderPacket.primitives.length,
+            edgeCount: renderPacket.edges.length,
             meshCount: loadedModelStats.meshCount,
           })
           syncPreviewCameraFromShared()
@@ -1884,9 +2207,9 @@ export const LocalWebGPUScene = ({
         )
         unregisterLocalSelectionProvider()
         clearHover()
-        const previousSelectedMeshes = [...selectedMeshes]
-        selectedMeshes.clear()
-        previousSelectedMeshes.forEach(applyMeshState)
+        const previousSelectedObjects = [...selectedObjects]
+        selectedObjects.clear()
+        previousSelectedObjects.forEach(applyObjectState)
         clearModel()
         resizeObserver?.disconnect()
         unregisterSharedCameraListener()
