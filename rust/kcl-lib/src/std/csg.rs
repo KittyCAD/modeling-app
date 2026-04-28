@@ -67,6 +67,7 @@ pub(crate) async fn inner_union(
 
     let mut solid = solids[0].clone();
     solid.set_id(solid_out_id);
+    solid.artifact_id = solid_out_id.into();
     let mut new_solids = vec![solid.clone()];
 
     if args.ctx.no_engine_commands().await {
@@ -108,6 +109,7 @@ pub(crate) async fn inner_union(
         }
         let mut new_solid = solid.clone();
         new_solid.set_id(extra_solid_id);
+        new_solid.artifact_id = extra_solid_id.into();
         new_solids.push(new_solid);
     }
 
@@ -144,6 +146,7 @@ pub(crate) async fn inner_intersect(
 
     let mut solid = solids[0].clone();
     solid.set_id(solid_out_id);
+    solid.artifact_id = solid_out_id.into();
     let mut new_solids = vec![solid.clone()];
 
     if args.ctx.no_engine_commands().await {
@@ -185,6 +188,7 @@ pub(crate) async fn inner_intersect(
         }
         let mut new_solid = solid.clone();
         new_solid.set_id(extra_solid_id);
+        new_solid.artifact_id = extra_solid_id.into();
         new_solids.push(new_solid);
     }
 
@@ -216,6 +220,7 @@ pub(crate) async fn inner_subtract(
 
     let mut solid = solids[0].clone();
     solid.set_id(solid_out_id);
+    solid.artifact_id = solid_out_id.into();
     let mut new_solids = vec![solid.clone()];
 
     if args.ctx.no_engine_commands().await {
@@ -259,6 +264,7 @@ pub(crate) async fn inner_subtract(
         }
         let mut new_solid = solid.clone();
         new_solid.set_id(extra_solid_id);
+        new_solid.artifact_id = extra_solid_id.into();
         new_solids.push(new_solid);
     }
 
@@ -315,13 +321,20 @@ pub(crate) async fn inner_imprint(
 
     let mut body = targets[0].clone();
     body.set_id(body_out_id);
+    body.artifact_id = body_out_id.into();
     let mut new_solids = vec![body.clone()];
+    let separate_bodies = !merge;
 
     if args.ctx.no_engine_commands().await {
+        if separate_bodies {
+            let extra_solid_id = exec_state.next_uuid();
+            let mut new_solid = body.clone();
+            new_solid.set_id(extra_solid_id);
+            new_solid.artifact_id = extra_solid_id.into();
+            new_solids.push(new_solid);
+        }
         return Ok(new_solids);
     }
-
-    let separate_bodies = !merge;
 
     // Flush pending edge-cut operations for any solids consumed by imprint.
     let mut imprint_solids = targets.clone();
@@ -367,6 +380,7 @@ pub(crate) async fn inner_imprint(
         }
         let mut new_solid = body.clone();
         new_solid.set_id(extra_solid_id);
+        new_solid.artifact_id = extra_solid_id.into();
         new_solids.push(new_solid);
     }
 

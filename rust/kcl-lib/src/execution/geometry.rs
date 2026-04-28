@@ -743,10 +743,30 @@ pub struct Face {
     /// What should the face's Y axis be?
     pub y_axis: Point3d,
     /// The solid the face is on.
-    pub solid: Box<Solid>,
+    pub parent_solid: FaceParentSolid,
     pub units: UnitLength,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
+}
+
+/// The limited subset of a face's parent solid needed by face-backed sketches.
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct FaceParentSolid {
+    /// Which solid does this face belong to?
+    pub solid_id: Uuid,
+    /// ID of the sketch which created this solid, if any.
+    pub creator_sketch_id: Option<Uuid>,
+    /// Pending edge cut IDs that may need to be flushed before referencing the face.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub edge_cut_ids: Vec<Uuid>,
+}
+
+impl FaceParentSolid {
+    pub(crate) fn sketch_or_solid_id(&self) -> Uuid {
+        self.creator_sketch_id.unwrap_or(self.solid_id)
+    }
 }
 
 /// A bounded edge.
@@ -1187,6 +1207,16 @@ impl Solid {
 
     pub(crate) fn get_all_edge_cut_ids(&self) -> impl Iterator<Item = uuid::Uuid> + '_ {
         self.edge_cuts.iter().map(|foc| foc.id())
+    }
+}
+
+impl From<&Solid> for FaceParentSolid {
+    fn from(solid: &Solid) -> Self {
+        Self {
+            solid_id: solid.id,
+            creator_sketch_id: solid.sketch_id(),
+            edge_cut_ids: solid.get_all_edge_cut_ids().collect(),
+        }
     }
 }
 

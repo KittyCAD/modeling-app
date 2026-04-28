@@ -8,6 +8,7 @@ import type { IpcRendererEvent } from 'electron'
 import { contextBridge, ipcRenderer } from 'electron'
 
 import type { Channel } from '@src/channels'
+import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
 import type { WebContentSendPayload } from '@src/menu/channels'
 
 const typeSafeIpcRendererOn = (
@@ -39,9 +40,15 @@ const onUpdateDownloaded = (
 ) =>
   ipcRenderer.on('update-downloaded', (_event: any, value) => callback(value))
 const onUpdateDownloadStart = (
-  callback: (value: { version: string }) => void
+  callback: (value: AutoUpdateDownloadProgress) => void
 ) =>
   ipcRenderer.on('update-download-start', (_event: any, value) =>
+    callback(value)
+  )
+const onUpdateDownloadProgress = (
+  callback: (value: AutoUpdateDownloadProgress) => void
+) =>
+  ipcRenderer.on('update-download-progress', (_event: any, value) =>
     callback(value)
   )
 const onUpdateChecking = (callback: () => void) =>
@@ -339,6 +346,7 @@ contextBridge.exposeInMainWorld('electron', {
   onUpdateChecking,
   onUpdateNotAvailable,
   onUpdateDownloadStart,
+  onUpdateDownloadProgress,
   onUpdateDownloaded,
   onUpdateError,
   appRestart,

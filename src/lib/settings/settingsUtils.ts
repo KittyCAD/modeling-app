@@ -24,7 +24,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import {
   createSettings,
-  type Setting,
+  Setting,
   type SettingsType,
 } from '@src/lib/settings/initialSettings'
 import { getToken } from '@src/machines/authMachine'
@@ -343,12 +343,18 @@ const USER_APP_ONLY_SETTINGS_SECTIONS = [
       'allow_orbit_in_sketch_mode'
     ),
     defineBooleanAppOnlyField(
-      { category: 'app', field: 'showDebugPanel' },
-      'show_debug_panel'
-    ),
-    defineBooleanAppOnlyField(
       { category: 'app', field: 'machineApi' },
       'machine_api'
+    ),
+  ]),
+  defineAppOnlySection('debug', [
+    defineBooleanAppOnlyField(
+      { category: 'debug', field: 'showPanel' },
+      'show_panel'
+    ),
+    defineBooleanAppOnlyField(
+      { category: 'debug', field: 'showModelingMachineState' },
+      'show_modeling_machine_state'
     ),
   ]),
   defineAppOnlySection('modeling', [
@@ -433,9 +439,15 @@ const PROJECT_APP_ONLY_SETTINGS_SECTIONS = [
       { category: 'app', field: 'allowOrbitInSketchMode' },
       'allow_orbit_in_sketch_mode'
     ),
+  ]),
+  defineAppOnlySection('debug', [
     defineBooleanAppOnlyField(
-      { category: 'app', field: 'showDebugPanel' },
-      'show_debug_panel'
+      { category: 'debug', field: 'showPanel' },
+      'show_panel'
+    ),
+    defineBooleanAppOnlyField(
+      { category: 'debug', field: 'showModelingMachineState' },
+      'show_modeling_machine_state'
     ),
   ]),
   defineAppOnlySection('modeling', [
@@ -786,11 +798,6 @@ export async function loadAndValidateSettings(
     configurationToSettingsPayload(appSettingsPayload)
   )
 
-  settingsNext.modeling.useSketchSolveMode.default = !(await userHasFeature(
-    'classic_sketch_mode',
-    false
-  ))
-
   // Load the project settings if they exist
   if (projectPath) {
     let projectSettings = await readProjectSettingsFile(
@@ -849,7 +856,10 @@ async function resolveAsyncHideOnPlatform(
   // Collect all settings with async hideOnPlatform functions
   Object.entries(settings).forEach(([_, categorySettings]) => {
     Object.entries(categorySettings).forEach(([_, setting]) => {
-      if (typeof setting.hideOnPlatform === 'function') {
+      if (
+        setting instanceof Setting &&
+        typeof setting.hideOnPlatform === 'function'
+      ) {
         settingsToResolve.push({ setting })
       }
     })
@@ -942,7 +952,10 @@ export function getChangedSettingsAtLevel(
   Object.entries(allSettings).forEach(([category, settingsCategory]) => {
     const categoryKey = category as keyof SettingsType
     Object.entries(settingsCategory).forEach(
-      ([setting, settingValue]: [string, Setting]) => {
+      ([setting, settingValue]: [string, unknown]) => {
+        if (!(settingValue instanceof Setting)) {
+          return
+        }
         // If setting is different its ancestors' non-undefined values,
         // then it has been changed from the default
         if (
@@ -972,7 +985,10 @@ export function getAllCurrentSettings(
   Object.entries(allSettings).forEach(([category, settingsCategory]) => {
     const categoryKey = category as keyof SettingsType
     Object.entries(settingsCategory).forEach(
-      ([setting, settingValue]: [string, Setting]) => {
+      ([setting, settingValue]: [string, unknown]) => {
+        if (!(settingValue instanceof Setting)) {
+          return
+        }
         const settingKey = setting as keyof SettingsType[typeof categoryKey]
         currentSettings[categoryKey] = {
           ...currentSettings[categoryKey],
@@ -991,7 +1007,10 @@ export function clearSettingsAtLevel(
 ) {
   Object.entries(allSettings).forEach(([_category, settingsCategory]) => {
     Object.entries(settingsCategory).forEach(
-      ([_, settingValue]: [string, Setting]) => {
+      ([_, settingValue]: [string, unknown]) => {
+        if (!(settingValue instanceof Setting)) {
+          return
+        }
         settingValue[level] = undefined
       }
     )
