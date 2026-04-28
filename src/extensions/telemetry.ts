@@ -1,5 +1,6 @@
 import { routesFacet, statusBarGlobalItemsFacet } from '@src/facets'
-import { createPlugin, defineExtension, provide } from '@kittycad/extensions'
+import { defineExtension, provide } from '@kittycad/extensions'
+import { createZdsPlugin } from '@src/extensions/createZdsPlugin'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
 import { telemetryFileRoute, telemetryHomeRoute } from '@src/routes/Telemetry'
 
@@ -27,10 +28,11 @@ const telemetryStatusBarExt = defineExtension({
 })
 
 /** Runtime-toggleable telemetry plugin definition. */
-export const telemetry = createPlugin({
+export const telemetry = createZdsPlugin({
   id: 'telemetry',
   title: 'Telemetry',
   description:
     'Telemetry tracks app performance and exposes `/home/telemetry` and `/file/:id/telemetry`, plus a route-aware status bar entry point.',
   extensions: [telemetryRouteExt, telemetryStatusBarExt],
+  defaultSetting: 'core',
 })

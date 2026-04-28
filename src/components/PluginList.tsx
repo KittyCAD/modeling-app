@@ -5,6 +5,7 @@ import type {
   ExtensionHost,
   PluginRecord,
 } from '@kittycad/extensions'
+import { useApp } from '@src/lib/boot'
 import { Toggle } from '@src/components/Toggle/Toggle'
 
 type PluginsListProps = {
@@ -38,6 +39,8 @@ function PluginItem({
   plugin,
   resolvedService,
 }: { plugin: PluginRecord; resolvedService: CompartmentToggleController }) {
+  const app = useApp()
+
   return (
     <div className="my-2">
       <div className="flex gap-2 mb-2">
@@ -45,7 +48,16 @@ function PluginItem({
         <Toggle
           name={`plugin-toggle-${plugin.id}`}
           checked={resolvedService.active.value || false}
-          onChange={() => resolvedService.toggle()}
+          onChange={() => {
+            const nextActive = !resolvedService.active.value
+            app.settings.actor.send({
+              type: `set.plugins.${plugin.id}`,
+              data: {
+                level: 'user',
+                value: nextActive,
+              },
+            } as never)
+          }}
           className="flex-none"
         />
       </div>

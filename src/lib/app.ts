@@ -51,7 +51,8 @@ import {
 import { MachineManager } from '@src/lib/MachineManager'
 import { reportRejection } from '@src/lib/trap'
 import type { Project } from '@src/lib/project'
-import { ExtensionHost } from '@kittycad/extensions'
+import { settingsFacet } from '@src/facets'
+import { ExtensionHost, pluginsFacet } from '@kittycad/extensions'
 import type { UserResponse } from '@kittycad/lib/dist/types/src'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
@@ -164,6 +165,7 @@ export class App implements AppSubsystems {
 
   // TODO: refactor this to not require keeping around the last settings to compare to
   private lastSettings: SaveSettingsPayload
+  private pluginSettingsSubscription: Subscription
 
   constructor(subsystems: AppSubsystems) {
     this.wasmPromise = subsystems.wasmPromise
@@ -198,6 +200,10 @@ export class App implements AppSubsystems {
     this.lastSettings = getAllCurrentSettings(
       getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
     )
+    this.pluginSettingsSubscription = this.settings.actor.subscribe(
+      this.syncPluginSettings
+    )
+    this.syncPluginSettings(this.settings.actor.getSnapshot())
   }
 
   /**
@@ -236,10 +242,15 @@ export class App implements AppSubsystems {
       useState: () => useSelector(commandBarActor, (state) => state),
     }
 
+    const extensionsHost = new ExtensionHost()
+    extensionsHost.configure(coreExtensions)
+    const extensionSettings = extensionsHost.get(settingsFacet)
+
     const settingsActor = createActor(settingsMachine, {
       input: {
-        ...createSettings(),
+        ...createSettings(extensionSettings),
         commandBarActor: commandBarActor,
+        extensionSettings,
         wasmInstancePromise: wasmPromise,
       },
     }).start()
@@ -289,8 +300,6 @@ export class App implements AppSubsystems {
         saveLayout({ layout: layoutSignal.value })
       ),
     }
-    const extensionsHost = new ExtensionHost()
-    extensionsHost.configure(coreExtensions)
     const extensions = {
       host: extensionsHost,
     }
@@ -367,6 +376,42 @@ export class App implements AppSubsystems {
     this.unsubscribeFromSettings?.unsubscribe()
     this.project?.close()
     this.project = undefined
+  }
+
+  /**
+   * Keep plugin runtime state aligned with the persisted settings model.
+   *
+   * For now the settings actor is the source of truth and plugin toggle
+   * services are an imperative projection of that state. A narrower follow-up
+   * can invert this by deriving both the UI and persistence model directly from
+   * extension-owned settings state.
+   */
+  syncPluginSettings = (snapshot: SnapshotFrom<typeof this.settings.actor>) => {
+    const pluginSettings = snapshot.context.plugins as
+      | Record<string, { current: boolean }>
+      | undefined
+    if (!pluginSettings) {
+      return
+    }
+
+    this.extensions.host.get(pluginsFacet).forEach((plugin) => {
+      const desiredActive = pluginSettings[plugin.id]?.current
+      if (typeof desiredActive !== 'boolean') {
+        return
+      }
+
+      const toggle = this.extensions.host.get(plugin.service)
+      if (toggle.active.value === desiredActive) {
+        return
+      }
+
+      if (desiredActive) {
+        toggle.enable()
+        return
+      }
+
+      toggle.disable()
+    })
   }
 
   /**

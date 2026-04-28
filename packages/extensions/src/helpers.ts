@@ -207,6 +207,7 @@ interface PluginInfo {
 /** Input shape for constructing a plugin with a toggleable compartment. */
 interface PluginSpec extends PluginInfo {
   extensions: readonly ExtensionNode[]
+  enabledByDefault?: boolean
 }
 
 /**
@@ -236,6 +237,7 @@ export const pluginsFacet = appendFacet<PluginRecord>('plugins')
  */
 export function createPlugin({
   extensions,
+  enabledByDefault = true,
   ...info
 }: PluginSpec): ExtensionDefinition {
   const compartment = new Compartment()
@@ -243,6 +245,7 @@ export function createPlugin({
     name: info.id,
     extensions,
     compartment,
+    initialActive: enabledByDefault,
   })
   return defineExtension({
     id: info.id,
@@ -252,7 +255,10 @@ export function createPlugin({
         service: toggle.service,
       }),
     ],
-    uses: [compartment.of(...extensions), toggle.extension],
+    uses: [
+      compartment.of(...(enabledByDefault ? extensions : [])),
+      toggle.extension,
+    ],
   })
 }
 
@@ -266,10 +272,12 @@ function createToggleableExtension({
   name,
   extensions,
   compartment,
+  initialActive,
 }: {
   name: string
   extensions: readonly ExtensionNode[]
   compartment: Compartment
+  initialActive: boolean
 }) {
   const service = defineService<CompartmentToggleController>(`${name}-toggle`)
   return {
@@ -278,7 +286,7 @@ function createToggleableExtension({
       const impl = createCompartmentToggleController({
         host: ctx.host,
         activeExtensions: extensions,
-        initialActive: true,
+        initialActive,
         compartment,
       })
       return {

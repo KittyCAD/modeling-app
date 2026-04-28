@@ -1,5 +1,6 @@
 import { statusBarGlobalItemsFacet } from '@src/facets'
-import { createPlugin, defineExtension, provide } from '@kittycad/extensions'
+import { defineExtension, provide } from '@kittycad/extensions'
+import { createZdsPlugin } from '@src/extensions/createZdsPlugin'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
 
 const settingsStatusBar = defineExtension({
@@ -22,9 +23,10 @@ const settingsStatusBar = defineExtension({
  * WIP Settings plugin. Only contributes status bar item at the moment,
  * but eventually it should contribute the whole settings subsystem.
  */
-export const settings = createPlugin({
+export const settings = createZdsPlugin({
   id: 'settings',
   title: 'Settings status bar item',
   description: 'Whether there is a settings item in the status bar',
   extensions: [settingsStatusBar],
+  defaultSetting: 'core',
 })
