@@ -43,6 +43,16 @@ let rustContextInThisFile: RustContext = null!
 let commandBarActorInThisFile: CommandBarActorType = null!
 let machineManagerInThisFile: MachineManager = null!
 
+function markEngineReadyForSketchEntry(
+  engineCommandManager: ConnectionManager
+) {
+  engineCommandManager.started = true
+  engineCommandManager.connection = {
+    websocket: { readyState: WebSocket.OPEN },
+    isUsingUnitTestingConnection: true,
+  } as any
+}
+
 /**
  * Every it test could build the world and connect to the engine but this is too resource intensive and will
  * spam engine connections.
@@ -1470,6 +1480,8 @@ sketch001 = sketch(on = YZ) {
           machineManager,
         } = await buildTheWorldAndNoEngineConnection()
 
+        markEngineReadyForSketchEntry(engineCommandManager)
+
         kclManager.updateCodeEditor(invalidCode)
         const parseResult = await kclManager.safeParse(invalidCode)
 
@@ -1558,6 +1570,8 @@ sketch001 = sketch(on = YZ) {
         machineManager,
       } = await buildTheWorldAndNoEngineConnection()
 
+      markEngineReadyForSketchEntry(engineCommandManager)
+
       const sendSceneCommandSpy = vi
         .spyOn(engineCommandManager, 'sendSceneCommand')
         .mockRejectedValue(new Error('sketch exit failed'))
@@ -1637,6 +1651,8 @@ sketch001 = sketch(on = YZ) {
         commandBarActor,
         machineManager,
       } = await buildTheWorldAndNoEngineConnection()
+
+      markEngineReadyForSketchEntry(engineCommandManager)
 
       const context = generateModelingMachineDefaultContext({
         kclManager,

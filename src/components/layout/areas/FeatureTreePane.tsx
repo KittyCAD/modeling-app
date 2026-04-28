@@ -76,10 +76,13 @@ const WAITING_FOR_ENGINE_RECONNECT_MESSAGE =
   'Waiting for engine reconnection before entering sketch.'
 
 function canEnterSketchWithEngine(engineCommandManager: ConnectionManager) {
+  const connection = engineCommandManager.connection
+  if (!engineCommandManager.started || !connection) return false
+  if (connection.websocket?.readyState !== WebSocket.OPEN) return false
+
   return (
-    engineCommandManager.started &&
-    engineCommandManager.connection?.websocket?.readyState === WebSocket.OPEN &&
-    engineCommandManager.connection.mediaStream !== undefined
+    connection.isUsingUnitTestingConnection ||
+    connection.mediaStream !== undefined
   )
 }
 
