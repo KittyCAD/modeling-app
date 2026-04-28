@@ -1,4 +1,6 @@
 import type { Diagnostic } from '@codemirror/lint'
+import { EditorSelection } from '@codemirror/state'
+import { EditorView, runScopeHandlers } from '@codemirror/view'
 import type { ComponentProps, ReactNode } from 'react'
 import { use, useCallback, useMemo, memo } from 'react'
 import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
@@ -7,7 +9,13 @@ import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
+import {
+  findImportNodeAndAlias,
+  findOperationPlaneArtifact,
+  isOffsetPlane,
+  locateVariableWithCallOrPipe,
+} from '@src/lang/queryAst'
+import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
@@ -32,7 +40,11 @@ import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { err, isErr, reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
-import { base64Decode, type SourceRange } from '@src/lang/wasm'
+import {
+  base64Decode,
+  pathToNodeFromRustNodePath,
+  type SourceRange,
+} from '@src/lang/wasm'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
 import {
@@ -609,6 +621,47 @@ const OperationItem = ({
   const variableName = useMemo(() => {
     return getOperationVariableName(item, ast, wasmInstance)
   }, [item, ast, wasmInstance])
+  const variableNameSourceRange = useMemo(() => {
+    if (!variableName || !('nodePath' in item)) {
+      return undefined
+    }
+
+    const pathToNode = pathToNodeFromRustNodePath(item.nodePath)
+    if (item.type === 'GroupBegin' && item.group.type === 'ModuleInstance') {
+      const importNodeAndAlias = findImportNodeAndAlias(
+        ast,
+        pathToNode,
+        wasmInstance
+      )
+      const alias =
+        importNodeAndAlias?.node.selector.type === 'None'
+          ? importNodeAndAlias.node.selector.alias
+          : undefined
+      if (alias?.name !== variableName) {
+        return undefined
+      }
+
+      return topLevelRange(alias.start, alias.end)
+    }
+
+    if (item.type === 'VariableDeclaration' || item.type === 'SketchSolve') {
+      const variableDeclaration = getVariableDeclaration(ast, variableName)
+      if (!variableDeclaration) {
+        return undefined
+      }
+
+      const { start, end } = variableDeclaration.declaration.id
+      return topLevelRange(start, end)
+    }
+
+    const variable = locateVariableWithCallOrPipe(ast, pathToNode, wasmInstance)
+    if (err(variable) || variable.variableDeclarator.id.name !== variableName) {
+      return undefined
+    }
+
+    const { start, end } = variable.variableDeclarator.id
+    return topLevelRange(start, end)
+  }, [item, ast, wasmInstance, variableName])
 
   const errors = useMemo(() => {
     if (isStaleReference) {
@@ -680,6 +733,68 @@ const OperationItem = ({
     systemDeps.kclManager.code,
     systemDeps.rustContext,
   ])
+
+  const enterRenameFlow = useCallback(() => {
+    if (!variableNameSourceRange) {
+      toast.error('No variable name found for this operation.')
+      return
+    }
+
+    const l = layout.signal.value
+    if (!isCodePaneOpen(l)) {
+      openCodePane(l, layout.set)
+    }
+
+    const triggerRename = () => {
+      const view = kclManager.editorView
+      const nameRange = sourceRangeToUtf16(
+        variableNameSourceRange,
+        kclManager.code
+      )
+      const docLength = view.state.doc.length
+      const from = Math.min(nameRange[0], docLength)
+      const to = Math.min(nameRange[1], docLength)
+
+      if (from >= to) {
+        toast.error('No variable name found for this operation.')
+        return
+      }
+
+      const selection = EditorSelection.range(from, to)
+      view.focus()
+      view.dispatch({
+        selection: EditorSelection.create([selection]),
+        effects: EditorView.scrollIntoView(selection, { y: 'center' }),
+      })
+
+      schedule(() => {
+        const handled = runScopeHandlers(
+          view,
+          new KeyboardEvent('keydown', {
+            key: 'F2',
+            code: 'F2',
+            bubbles: true,
+            cancelable: true,
+          }),
+          'editor'
+        )
+
+        if (!handled) {
+          toast.error('Rename is not available.')
+        }
+      })
+    }
+
+    const schedule = (callback: () => void) => {
+      if (globalThis.requestAnimationFrame) {
+        globalThis.requestAnimationFrame(() => callback())
+        return
+      }
+      globalThis.setTimeout(callback, 0)
+    }
+
+    schedule(() => schedule(triggerRename))
+  }, [kclManager, layout, variableNameSourceRange])
 
   function enterAppearanceFlow() {
     selectOperation()
@@ -898,6 +1013,18 @@ const OperationItem = ({
                     hotkey="Double click"
                   >
                     Edit
+                  </ContextMenuItem>,
+                ]
+              : []),
+            ...(variableName
+              ? [
+                  <ContextMenuItem
+                    disabled={!variableNameSourceRange}
+                    onClick={enterRenameFlow}
+                    hotkey="F2"
+                    data-testid="context-menu-rename"
+                  >
+                    Rename
                   </ContextMenuItem>,
                 ]
               : []),
