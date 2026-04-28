@@ -879,15 +879,6 @@ export const sketchSolveMachine = setup({
             ],
           },
         ],
-        escape: {
-          target: '#Sketch Solve Mode.exiting',
-          actions: [
-            'send tool unequipped to parent',
-            'cleanup sketch solve group',
-          ],
-          description:
-            'ESC in move and select (no tool equipped) exits sketch mode',
-        },
       },
       invoke: {
         id: 'moveTool',
