@@ -47,7 +47,14 @@ export class DistanceConstraintBuilder {
     const points = getDistanceEndPoints(obj, objects)
     if (points) {
       const { p1, p2, distance } = points
-      const { start, end, perp } = getDirections(obj, p1, p2, scale)
+      const labelPosition = getDistanceLabelPosition(obj)
+      const { start, end, perp } = getDirections(
+        obj,
+        p1,
+        p2,
+        scale,
+        labelPosition
+      )
       const isCollapsedZeroAxisDistance =
         obj.kind.constraint.distance.value === 0 &&
         (obj.kind.constraint.type === 'HorizontalDistance' ||
@@ -60,7 +67,17 @@ export class DistanceConstraintBuilder {
         hoveredId,
         isCollapsedZeroAxisDistance ? 'dashed' : 'solid'
       )
-      updateDimensionLine(start, end, group, obj, scale, sceneInfra, distance)
+      updateDimensionLine(
+        start,
+        end,
+        group,
+        obj,
+        scale,
+        sceneInfra,
+        distance,
+        false,
+        labelPosition
+      )
       if (isCollapsedZeroAxisDistance) {
         this.updateCollapsedZeroDistanceLine(start, perp, p1, p2, group, scale)
       }
@@ -184,6 +201,15 @@ export class DistanceConstraintBuilder {
   }
 }
 
+function getDistanceLabelPosition(obj: DistanceConstraint) {
+  const constraint = obj.kind.constraint
+  if (constraint.type !== 'Distance' || !constraint.label) {
+    return undefined
+  }
+
+  return new Vector3(constraint.label.x.value, constraint.label.y.value, 0)
+}
+
 function getCollapsedZeroDistanceLineStart(
   p1: readonly [number, number],
   p2: readonly [number, number],
@@ -230,7 +256,8 @@ function getDirections(
   obj: DistanceConstraint,
   p1: Vector3,
   p2: Vector3,
-  scale: number
+  scale: number,
+  labelPosition?: Vector3
 ) {
   const constraintType = obj.kind.constraint.type
 
@@ -280,7 +307,10 @@ function getDirections(
         axis.set(1, 0, 0)
       }
       perp = new Vector3(-axis.y, axis.x, 0)
-      const offset = perp.clone().multiplyScalar(SEGMENT_OFFSET_PX * scale)
+      const offsetDistance = labelPosition
+        ? labelPosition.clone().sub(p1).dot(perp)
+        : SEGMENT_OFFSET_PX * scale
+      const offset = perp.clone().multiplyScalar(offsetDistance)
       start = p1.clone().add(offset)
       end = p2.clone().add(offset)
     }
