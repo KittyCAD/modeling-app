@@ -1171,6 +1171,22 @@ export function getVariableExprsFromSelection(
   let exprs: Expr[] = []
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
+    const splitOutputExpr = getSplitOutputExprFromSelection(
+      s,
+      ast,
+      wasmInstance,
+      artifactTypeFilter
+    )
+    if (splitOutputExpr) {
+      const key = splitOutputExprKey(splitOutputExpr)
+      if (pushedNames[key]) {
+        continue
+      }
+      exprs.push(splitOutputExpr)
+      pushedNames[key] = true
+      continue
+    }
+
     if (s.artifact?.type === 'segment') {
       const sketchSegmentId = s.artifact.originalSegId ?? s.artifact.id
       const sketchName = getSketchVariableNameForSegment(
@@ -1202,23 +1218,47 @@ export function getVariableExprsFromSelection(
           deepPath: PathToNode
         }
       | undefined
+
     if (lastChildLookup && s.artifact) {
       const children = findAllChildrenAndOrderByPlaceInCode(
         s.artifact,
         artifactGraph
       )
-      const lastChildVariable = getLastVariable(
-        children,
-        ast,
-        wasmInstance,
-        artifactTypeFilter,
-        nodeToEdit
-      )
-      if (!lastChildVariable) {
-        continue
+
+      if (
+        artifactTypeFilter?.includes(s.artifact.type) &&
+        'consumed' in s.artifact &&
+        !s.artifact.consumed &&
+        !hasLaterMatchingArtifact(children, s.artifact, artifactTypeFilter)
+      ) {
+        // Use a selected, unconsumed body directly only when the ordered
+        // traversal does not reveal a later matching body derived from it.
+        // This keeps selected blends as blend variables, while face commands
+        // like shell can still resolve a parent sweep to a downstream sweep.
+        const directLookup = getNodeFromPath<VariableDeclaration>(
+          ast,
+          s.codeRef.pathToNode,
+          wasmInstance,
+          'VariableDeclaration'
+        )
+        if (!err(directLookup)) {
+          variable = directLookup
+        }
       }
 
-      variable = lastChildVariable.variableDeclaration
+      if (!variable) {
+        const lastChildVariable = getLastVariable(
+          children,
+          ast,
+          wasmInstance,
+          artifactTypeFilter,
+          nodeToEdit
+        )
+        if (!lastChildVariable) {
+          continue
+        }
+        variable = lastChildVariable.variableDeclaration
+      }
     } else {
       const directLookup = getNodeFromPath<VariableDeclaration>(
         ast,
@@ -1290,6 +1330,76 @@ export function getVariableExprsFromSelection(
   }
 
   return { exprs, pathIfPipe }
+}
+
+function getSplitOutputExprFromSelection(
+  selection: Selection,
+  ast: Node<Program>,
+  wasmInstance: ModuleType,
+  artifactTypeFilter?: Array<Artifact['type']>
+): Expr | null {
+  if (artifactTypeFilter && !artifactTypeFilter.includes('compositeSolid')) {
+    return null
+  }
+  const artifact = selection.artifact
+  if (
+    artifact?.type !== 'compositeSolid' ||
+    artifact.subType !== 'split' ||
+    artifact.outputIndex === null ||
+    artifact.outputIndex === undefined
+  ) {
+    return null
+  }
+
+  const directLookup = getNodeFromPath<VariableDeclaration>(
+    ast,
+    selection.codeRef.pathToNode,
+    wasmInstance,
+    'VariableDeclaration'
+  )
+  if (err(directLookup) || directLookup.node.type !== 'VariableDeclaration') {
+    return null
+  }
+
+  return createMemberExpression(
+    directLookup.node.declaration.id.name,
+    createLiteral(artifact.outputIndex, wasmInstance),
+    true
+  )
+}
+
+function splitOutputExprKey(expr: Expr): string {
+  if (
+    expr.type === 'MemberExpression' &&
+    expr.object.type === 'Name' &&
+    expr.property.type === 'Literal' &&
+    typeof expr.property.value === 'object' &&
+    'value' in expr.property.value
+  ) {
+    return `${expr.object.name.name}[${expr.property.value.value}]`
+  }
+
+  return JSON.stringify(expr)
+}
+
+function hasLaterMatchingArtifact(
+  children: Artifact[],
+  artifact: Artifact,
+  filter: Array<Artifact['type']>
+): boolean {
+  let foundLaterMatchingArtifact = false
+
+  for (const child of children) {
+    if (child.id === artifact.id) {
+      return foundLaterMatchingArtifact
+    }
+
+    if (filter.includes(child.type)) {
+      foundLaterMatchingArtifact = true
+    }
+  }
+
+  return false
 }
 
 function getSketchVariableNameForSegment(

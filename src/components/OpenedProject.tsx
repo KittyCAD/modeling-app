@@ -26,6 +26,10 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import { useApp, useSingletons } from '@src/lib/boot'
 import {
+  autoUpdateDownloadProgressSignal,
+  autoUpdateReadySignal,
+} from '@src/lib/autoUpdate'
+import {
   DEFAULT_EXPERIMENTAL_FEATURES,
   ONBOARDING_TOAST_ID,
   WASM_INIT_FAILED_TOAST_ID,
@@ -79,7 +83,6 @@ export function OpenedProject() {
   const { auth, billing, settings, layout, project, systemIOActor } = useApp()
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
-  const getSettings = settings.get
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
   const { state: modelingState, send: modelingSend } = useModelingContext()
@@ -90,6 +93,8 @@ export function OpenedProject() {
   const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
+  const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
+  const autoUpdateReady = autoUpdateReadySignal.value
   const lastOperation = useLastOperation()
   const projects = useFolders()
   const { onProjectOpen } = useLspContext()
@@ -424,7 +429,7 @@ export function OpenedProject() {
             setLayout={layout.set}
             areaLibrary={defaultAreaLibrary}
             actionLibrary={defaultActionLibrary}
-            showDebugPanel={settingsValues.app.showDebugPanel.current}
+            showDebugPanel={settingsValues.debug.showPanel.current}
             notifications={notifications}
             artifactGraph={kclManager.artifactGraph}
           />
@@ -433,10 +438,18 @@ export function OpenedProject() {
           globalItems={[
             networkHealthStatus,
             ...(isDesktop() && machineApiEnabled ? [networkMachineStatus] : []),
-            ...defaultGlobalStatusBarItems({ location, filePath }),
+            ...defaultGlobalStatusBarItems({
+              location,
+              filePath,
+              autoUpdateDownloadProgress,
+              autoUpdateReady,
+              onRestartToUpdate: () => {
+                window.electron?.appRestart()
+              },
+            }),
           ]}
           localItems={[
-            ...(getSettings().app.showDebugPanel.current
+            ...(settingsValues.debug.showModelingMachineState.current
               ? ([
                   {
                     id: 'modeling-state',

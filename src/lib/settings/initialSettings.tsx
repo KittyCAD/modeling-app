@@ -163,18 +163,6 @@ export function createSettings() {
             })),
         },
       }),
-      /**
-       * Whether to show the debug panel, which lets you see
-       * various states of the app to aid in development
-       */
-      showDebugPanel: new Setting<boolean>({
-        defaultValue: false,
-        description: 'Whether to show the debug panel, a development tool.',
-        validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
-        },
-      }),
       machineApi: new Setting<boolean>({
         defaultValue: false,
         hideOnLevel: 'project',
@@ -324,6 +312,38 @@ export function createSettings() {
       }),
     },
     /**
+     * App-owned debug settings.
+     *
+     * These stay in TypeScript and round-trip through an opaque `debug`
+     * section so we can keep app-only debugging tools out of the Rust schema.
+     */
+    debug: {
+      /**
+       * Whether to show the debug panel, which lets you see
+       * various states of the app to aid in development
+       */
+      showPanel: new Setting<boolean>({
+        defaultValue: false,
+        description: 'Whether to show the debug panel, a development tool.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
+      /**
+       * Whether to show the current modeling machine state in the status bar.
+       */
+      showModelingMachineState: new Setting<boolean>({
+        defaultValue: false,
+        description:
+          'Whether to show the current modeling machine state in the status bar.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
+    },
+    /**
      * Settings that affect the behavior while modeling.
      */
     modeling: {
@@ -470,8 +490,8 @@ export function createSettings() {
       }),
       /**
        * Determines if new sketches should use the solver-based sketch mode.
-       * This setting is hidden and defaults to true except for Playwright or
-       * when the user has the 'classic_sketch_mode' feature flag enabled.
+       * This setting is hidden and defaults to true. It now exists only so
+       * Playwright can set it to false for regression testing.
        */
       useSketchSolveMode: new Setting<boolean>({
         hideOnLevel: 'project',

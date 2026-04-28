@@ -352,7 +352,7 @@ test.describe(
 
         await createProject({ name: 'project-000', page })
 
-        const changeShowDebugPanelFs = async (show_debug_panel: boolean) => {
+        const changeShowDebugPanelFs = async (showPanel: boolean) => {
           const tempSettingsFilePath = join(
             projectDirName,
             'project-000',
@@ -362,8 +362,8 @@ test.describe(
             tempSettingsFilePath,
             settingsToToml({
               settings: {
-                app: {
-                  show_debug_panel,
+                debug: {
+                  show_panel: showPanel,
                 },
                 // TODO: make sure this isn't just working around a bug
                 // where the existing data wouldn't be preserved?
