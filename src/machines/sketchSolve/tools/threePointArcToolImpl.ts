@@ -20,7 +20,7 @@ import {
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
-  getCoincidentSegmentsForSnapTarget,
+  applyConstraintsForSnapTarget,
   type SnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import {
@@ -43,12 +43,14 @@ type AddDraftPointOutput = {
   sceneGraphDelta: SceneGraphDelta
   pointId: number
   point: Coords2d
+  checkpointId?: number | null
 }
 
 type CreateArcOutput = {
   kclSource: SourceDelta
   sceneGraphDelta: SceneGraphDelta
   arcId: number
+  checkpointId?: number | null
 }
 
 type ErrorOutput = {
@@ -61,6 +63,7 @@ type ToolDoneOutput = {
   pointId?: number
   point?: Coords2d
   arcId?: number
+  checkpointId?: number | null
 }
 
 export type ToolEvents =
@@ -215,6 +218,7 @@ async function editArcWithThreePoints({
   | {
       kclSource: SourceDelta
       sceneGraphDelta: SceneGraphDelta
+      checkpointId?: number | null
     }
   | ErrorOutput
 > {
@@ -487,6 +491,8 @@ export function sendResultToParent({ event, self }: ToolActionArgs) {
     data: {
       sourceDelta: output.kclSource,
       sceneGraphDelta: output.sceneGraphDelta,
+      checkpointId: output.checkpointId ?? null,
+      ...(event.type !== FINALIZING_ARC ? { writeToDisk: false } : {}),
     },
   }
   self._parent?.send(sendData)
@@ -614,11 +620,14 @@ export async function addDraftPointActor({
     return { error: 'Failed to create draft point' }
   }
 
-  const coincidentSegments = getCoincidentSegmentsForSnapTarget(
-    pointId,
-    snapTarget
-  )
-  if (coincidentSegments === null) {
+  const snapResult = await applyConstraintsForSnapTarget({
+    segmentId: pointId,
+    target: snapTarget,
+    rustContext,
+    sketchId,
+    settings,
+  })
+  if (snapResult.result === null) {
     return {
       ...result,
       pointId,
@@ -626,23 +635,13 @@ export async function addDraftPointActor({
     }
   }
 
-  const snapResult = await rustContext.addConstraint(
-    0,
-    sketchId,
-    {
-      type: 'Coincident',
-      segments: coincidentSegments,
-    },
-    settings
-  )
-
   return {
-    kclSource: snapResult.kclSource,
+    kclSource: snapResult.result.kclSource,
     sceneGraphDelta: {
-      ...snapResult.sceneGraphDelta,
+      ...snapResult.result.sceneGraphDelta,
       new_objects: [
         ...result.sceneGraphDelta.new_objects,
-        ...snapResult.sceneGraphDelta.new_objects,
+        ...snapResult.newObjectIds,
       ],
     },
     pointId,
@@ -737,6 +736,7 @@ export async function finalizeArcActor({
   | {
       kclSource: SourceDelta
       sceneGraphDelta: SceneGraphDelta
+      checkpointId?: number | null
     }
   | ErrorOutput
 > {
@@ -800,23 +800,17 @@ export async function finalizeArcActor({
   let latestKclSource = editResult.kclSource
   let latestSceneGraphDelta = editResult.sceneGraphDelta
 
-  const endCoincidentSegments = getCoincidentSegmentsForSnapTarget(
-    clickedArcPointId,
-    endSnapTarget
-  )
-  if (endCoincidentSegments !== null) {
-    const snapResult = await rustContext.addConstraint(
-      0,
-      sketchId,
-      {
-        type: 'Coincident',
-        segments: endCoincidentSegments,
-      },
-      settings
-    )
-    latestKclSource = snapResult.kclSource
-    latestSceneGraphDelta = snapResult.sceneGraphDelta
-    newObjects.push(...snapResult.sceneGraphDelta.new_objects)
+  const endSnapResult = await applyConstraintsForSnapTarget({
+    segmentId: clickedArcPointId,
+    target: endSnapTarget,
+    rustContext,
+    sketchId,
+    settings,
+  })
+  if (endSnapResult.result !== null) {
+    latestKclSource = endSnapResult.result.kclSource
+    latestSceneGraphDelta = endSnapResult.result.sceneGraphDelta
+    newObjects.push(...endSnapResult.newObjectIds)
   }
 
   const constraintResult = await rustContext.addConstraint(
@@ -826,7 +820,8 @@ export async function finalizeArcActor({
       type: 'Coincident',
       segments: [throughPointId, arcId],
     },
-    settings
+    settings,
+    startPointId === undefined
   )
   latestKclSource = constraintResult.kclSource
   latestSceneGraphDelta = constraintResult.sceneGraphDelta
@@ -839,6 +834,7 @@ export async function finalizeArcActor({
         ...latestSceneGraphDelta,
         new_objects: newObjects,
       },
+      checkpointId: constraintResult.checkpointId ?? null,
     }
   }
 
@@ -847,7 +843,8 @@ export async function finalizeArcActor({
     sketchId,
     [],
     [startPointId],
-    settings
+    settings,
+    true
   )
 
   return {
@@ -856,5 +853,6 @@ export async function finalizeArcActor({
       ...deleteResult.sceneGraphDelta,
       new_objects: [...newObjects, ...deleteResult.sceneGraphDelta.new_objects],
     },
+    checkpointId: deleteResult.checkpointId ?? null,
   }
 }

@@ -270,6 +270,7 @@ export const machine = setup({
                 data: outcome as {
                   sourceDelta: SourceDelta
                   sceneGraphDelta: SceneGraphDelta
+                  checkpointId?: number | null
                 },
               }
               self._parent?.send(sendData)

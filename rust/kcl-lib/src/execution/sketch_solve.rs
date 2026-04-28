@@ -259,6 +259,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                 sketch_id,
                 sketch,
                 tag: segment.tag,
+                node_path: segment.node_path,
                 meta: segment.meta,
             })
         }
@@ -297,6 +298,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                 sketch_id,
                 sketch,
                 tag: segment.tag,
+                node_path: segment.node_path,
                 meta: segment.meta,
             })
         }
@@ -345,6 +347,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                 sketch_id,
                 sketch,
                 tag: segment.tag,
+                node_path: segment.node_path,
                 meta: segment.meta,
             })
         }
@@ -383,6 +386,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                 sketch_id,
                 sketch,
                 tag: segment.tag,
+                node_path: segment.node_path,
                 meta: segment.meta,
             })
         }
@@ -511,7 +515,7 @@ pub(super) fn create_segment_scene_objects(
 ) -> Result<Vec<Object>, KclError> {
     let mut scene_objects = Vec::with_capacity(segments.len());
     for segment in segments {
-        let source = Metadata::to_source_ref(&segment.meta);
+        let source = Metadata::to_source_ref(&segment.meta, segment.node_path.clone());
 
         match &segment.kind {
             SegmentKind::Point {

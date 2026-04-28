@@ -123,6 +123,12 @@ export const machine = setup({
             if (event.type !== 'add point') return false
             return 'clickNumber' in event ? event.clickNumber === 2 : false
           },
+          actions: assign(({ event }) => {
+            assertEvent(event, 'add point')
+            return {
+              startSnapTarget: event.snapTarget,
+            }
+          }),
         },
         escape: {
           target: 'unequipping',
@@ -145,7 +151,6 @@ export const machine = setup({
             centerPoint: context.centerPoint,
             startPoint: event.data,
             centerSnapTarget: context.centerSnapTarget,
-            startSnapTarget: event.snapTarget,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
             sketchId: context.sketchId,
@@ -228,6 +233,7 @@ export const machine = setup({
             centerPoint: context.centerPoint,
             endPoint: event.data,
             sceneGraphDelta: context.sceneGraphDelta,
+            startSnapTarget: context.startSnapTarget,
             endSnapTarget: event.snapTarget,
             rustContext: context.rustContext,
             kclManager: context.kclManager,

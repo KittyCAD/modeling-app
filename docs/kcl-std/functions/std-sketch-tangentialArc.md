@@ -19,6 +19,9 @@ tangentialArc(
 ): Sketch
 ```
 
+This is part of sketch v1 and is soft deprecated in favor of
+[sketch-solve](/docs/kcl-std/modules/std-solver).
+
 When using radius and angle, draw a curved line segment along part of an
 imaginary circle. The arc is constructed such that the last line segment is
 placed tangent to the imaginary circle of the specified radius. The

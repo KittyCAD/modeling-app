@@ -20,6 +20,9 @@ arc(
 ): Sketch
 ```
 
+This is part of sketch v1 and is soft deprecated in favor of
+[sketch-solve](/docs/kcl-std/modules/std-solver).
+
 The arc is constructed such that the current position of the sketch is
 placed along an imaginary circle of the specified radius, at angleStart
 degrees. The resulting arc is the segment of the imaginary circle from

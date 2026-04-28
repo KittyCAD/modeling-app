@@ -108,7 +108,7 @@ describe('threePointArcToolImpl', () => {
           throughPoint: [1, 1],
           throughPointId: 2,
           endPoint: [2, 0],
-          endSnapTarget: { type: 'point', pointId: 99 },
+          endSnapTarget: { type: 'point', id: 99 },
           rustContext,
           kclManager,
           sketchId: 7,
@@ -133,7 +133,8 @@ describe('threePointArcToolImpl', () => {
           type: 'Coincident',
           segments: [2, 7],
         },
-        expect.anything()
+        expect.anything(),
+        false
       )
       expect(result).toEqual({
         kclSource: { text: 'delete' },
@@ -141,6 +142,7 @@ describe('threePointArcToolImpl', () => {
           ...createSceneGraphDelta([], [12]),
           new_objects: [7, 10, 11, 12],
         },
+        checkpointId: null,
       })
       expect(deleteObjectsSpy).toHaveBeenCalled()
     })

@@ -18,6 +18,7 @@ use crate::execution::BoundedEdge;
 use crate::execution::ExecState;
 use crate::execution::Extrudable;
 use crate::execution::ExtrudeSurface;
+use crate::execution::Geometry;
 use crate::execution::Helix;
 use crate::execution::KclObjectFields;
 use crate::execution::KclValue;
@@ -347,21 +348,20 @@ impl Args {
         exec_state: &'e mut ExecState,
         tag: &'a TagIdentifier,
     ) -> Result<&'e crate::execution::TagEngineInfo, KclError> {
-        if let (epoch, KclValue::TagIdentifier(t)) =
-            exec_state.stack().get_from_call_stack(&tag.value, self.source_range)?
-        {
-            let info = t.get_info(epoch).ok_or_else(|| {
-                KclError::new_type(KclErrorDetails::new(
-                    format!("Tag `{}` does not have engine info", tag.value),
-                    vec![self.source_range],
-                ))
-            })?;
-            Ok(info)
-        } else {
-            Err(KclError::new_type(KclErrorDetails::new(
-                format!("Tag `{}` does not exist", tag.value),
+        match exec_state.stack().get_from_call_stack(&tag.value, self.source_range)? {
+            (epoch, KclValue::TagIdentifier(t)) => {
+                let info = t.get_info(epoch).ok_or_else(|| {
+                    KclError::new_type(KclErrorDetails::new(
+                        format!("Tag `{}` does not have engine info", tag.value),
+                        vec![self.source_range],
+                    ))
+                })?;
+                Ok(info)
+            }
+            _ => Err(KclError::new_internal(KclErrorDetails::new(
+                format!("Tag `{}` is bound to an unexpected type", tag.value),
                 vec![self.source_range],
-            )))
+            ))),
         }
     }
 
@@ -390,13 +390,48 @@ impl Args {
     where
         'e: 'a,
     {
-        if let Some(info) = tag.get_cur_info()
+        let info = tag.get_cur_info();
+        if let Some(info) = info
             && info.surface.is_some()
         {
             return Ok(info);
         }
 
-        self.get_tag_info_from_memory(exec_state, tag)
+        self.get_tag_info_from_memory(exec_state, tag).map_err(|err| {
+            if err.is_undefined_value() {
+                // Looking the tag up in memory didn't find it. Provide a more
+                // helpful message.
+                self.tag_requires_face_error(tag, info)
+            } else {
+                err
+            }
+        })
+    }
+
+    fn tag_requires_face_error(&self, tag: &TagIdentifier, info: Option<&crate::execution::TagEngineInfo>) -> KclError {
+        let what = if let Some(info) = info {
+            if info.path.is_some() {
+                match &info.geometry {
+                    Geometry::Sketch(_) => "a sketch edge",
+                    Geometry::Solid(_) => "a solid edge",
+                }
+            } else {
+                match &info.geometry {
+                    Geometry::Sketch(_) => "sketch geometry",
+                    Geometry::Solid(_) => "solid geometry",
+                }
+            }
+        } else {
+            "non-face geometry"
+        };
+
+        KclError::new_type(KclErrorDetails::new(
+            format!(
+                "Tag `{}` refers to {what}, but this operation requires a face tag",
+                tag.value
+            ),
+            vec![self.source_range],
+        ))
     }
 
     pub(crate) fn make_kcl_val_from_point(&self, p: [f64; 2], ty: NumericType) -> Result<KclValue, KclError> {
@@ -447,12 +482,10 @@ impl Args {
 
         let engine_info = self.get_tag_engine_info_check_surface(exec_state, tag)?;
 
-        let surface = engine_info.surface.as_ref().ok_or_else(|| {
-            KclError::new_type(KclErrorDetails::new(
-                format!("Tag `{}` does not have a surface", tag.value),
-                vec![self.source_range],
-            ))
-        })?;
+        let surface = engine_info
+            .surface
+            .as_ref()
+            .ok_or_else(|| self.tag_requires_face_error(tag, Some(engine_info)))?;
 
         if let Some(face_from_surface) = match surface {
             ExtrudeSurface::ExtrudePlane(extrude_plane) => {
@@ -944,6 +977,7 @@ impl_from_kcl_for_vec!(crate::execution::EdgeCut);
 impl_from_kcl_for_vec!(crate::execution::Metadata);
 impl_from_kcl_for_vec!(super::fillet::EdgeReference);
 impl_from_kcl_for_vec!(ExtrudeSurface);
+impl_from_kcl_for_vec!(Segment);
 impl_from_kcl_for_vec!(TyF64);
 impl_from_kcl_for_vec!(Solid);
 impl_from_kcl_for_vec!(Sketch);
@@ -1321,10 +1355,12 @@ impl<'a> FromKclValue<'a> for SweepPath {
         let case1 = Sketch::from_kcl_val;
         let case2 = <Vec<Sketch>>::from_kcl_val;
         let case3 = Helix::from_kcl_val;
+        let case4 = <Vec<Segment>>::from_kcl_val;
         case1(arg)
             .map(Self::Sketch)
             .or_else(|| case2(arg).map(|arg0: Vec<Sketch>| Self::Sketch(arg0[0].clone())))
             .or_else(|| case3(arg).map(|arg0: Helix| Self::Helix(Box::new(arg0))))
+            .or_else(|| case4(arg).map(Self::Segments))
     }
 }
 impl<'a> FromKclValue<'a> for String {

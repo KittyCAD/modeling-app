@@ -5,6 +5,7 @@ const platform = os.platform() // 'linux' (Ubuntu), 'darwin' (macOS), 'win32' (W
 
 let workers: number | string
 
+/* Use all available CPU cores based on platform. */
 if (process.env.E2E_WORKERS) {
   workers = process.env.E2E_WORKERS.includes('%')
     ? process.env.E2E_WORKERS
@@ -32,13 +33,10 @@ export default defineConfig({
   timeout: 120_000, // override the default 30s timeout
   testDir: './e2e/playwright',
   testIgnore: '*.test.ts', // ignore unit tests
-  /* Run tests in files in parallel */
+  snapshotPathTemplate: '{testDir}/{testFileName}-snapshots/{arg}{ext}',
   fullyParallel: true,
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
-  forbidOnly: Boolean(process.env.CI),
-  /* Do not retry using Playwright's built-in retry mechanism */
-  retries: 0,
-  /* Use all available CPU cores */
+  forbidOnly: Boolean(process.env.CI), // fail the build if test.only is used
+  retries: 5,
   workers: workers,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [

@@ -334,7 +334,7 @@ export const collectProjectFiles = async (args: {
     const MB64 = 2 ** 20 * 64
     if (uploadSize > MB64) {
       toast.error(
-        'Your project exceeds 64Mb, this will slow down Zookeeper\nPlease remove any unnecessary files'
+        'Your project exceeds 64Mb, this will slow down Zookeeper.\nPlease remove any unnecessary files.'
       )
     }
   }

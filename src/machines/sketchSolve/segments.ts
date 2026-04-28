@@ -215,6 +215,10 @@ export interface SketchEntityUtils {
 class PointSegmentDOM implements SketchEntityUtils {
   private static createdHandleCount = 0
 
+  static resetCreatedHandleCount() {
+    PointSegmentDOM.createdHandleCount = 0
+  }
+
   private createPointHtml(segmentId: number) {
     // Keep only the minimal DOM structure required by tests.
     // The element stays in the DOM for query-based tests but is hidden/inert in production.
@@ -285,6 +289,10 @@ class PointSegmentDOM implements SketchEntityUtils {
       handle.position.set(x.value / scale, y.value / scale, 0)
     }
   }
+}
+
+export function resetSketchSolvePointHandleCount() {
+  PointSegmentDOM.resetCreatedHandleCount()
 }
 
 class PointSegment implements SketchEntityUtils {

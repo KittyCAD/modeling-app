@@ -99,10 +99,11 @@ export function trap<T>(
   }
 
   console.error(value)
-  opts?.suppress ||
+  if (!opts?.suppress) {
     toast.error((opts?.altErr ?? value ?? new Error('Unknown')).toString(), {
       id: 'error',
     })
+  }
   return true
 }
 

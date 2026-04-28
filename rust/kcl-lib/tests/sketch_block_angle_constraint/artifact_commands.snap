@@ -102,26 +102,13 @@ description: Artifact commands sketch_block_angle_constraint.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 1.317796711585515,
-          "y": 1.0412426910069752,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.31779667024565,
-            "y": 1.041242494895562,
+            "x": 1.317796711585515,
+            "y": 1.0412426910069752,
             "z": 0.0
           },
           "relative": false

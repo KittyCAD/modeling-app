@@ -122,8 +122,6 @@ mountingPlate = extrude(mountingPlateSketch, length = thickness)
 </model-viewer>
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 blockProfile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
   edge2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])

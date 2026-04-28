@@ -8,13 +8,3 @@
 import "coilover-bottom.kcl" as coiloverBottom
 import "spring.kcl" as coiloverSpring
 import "coilover-top.kcl" as coiloverTop
-
-// Place the Bottom Coilover Part
-coiloverBottom
-
-// Place the Coilover Spring
-coiloverSpring
-
-// Place the Top Coilover Part
-coiloverTop
-  |> translate(x = 0, y = 0.0, z = 200)

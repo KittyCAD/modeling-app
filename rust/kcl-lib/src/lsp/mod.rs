@@ -76,11 +76,12 @@ impl ToLspRange for crate::SourceRange {
     fn start_to_lsp_position(&self, code: &str) -> Position {
         // Calculate the line and column of the error from the source range.
         // Lines are zero indexed in vscode so we need to subtract 1.
-        let mut line = code.get(..self.start()).unwrap_or_default().lines().count();
+        let code_slice = code.get(..self.start()).unwrap_or_default();
+        let mut line = code_slice.lines().count();
         if line > 0 {
             line = line.saturating_sub(1);
         }
-        let column = code[..self.start()].lines().last().map(|l| l.len()).unwrap_or_default();
+        let column = code_slice.lines().last().map(|l| l.len()).unwrap_or_default();
 
         Position {
             line: line as u32,

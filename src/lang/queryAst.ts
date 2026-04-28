@@ -1202,23 +1202,47 @@ export function getVariableExprsFromSelection(
           deepPath: PathToNode
         }
       | undefined
+
     if (lastChildLookup && s.artifact) {
       const children = findAllChildrenAndOrderByPlaceInCode(
         s.artifact,
         artifactGraph
       )
-      const lastChildVariable = getLastVariable(
-        children,
-        ast,
-        wasmInstance,
-        artifactTypeFilter,
-        nodeToEdit
-      )
-      if (!lastChildVariable) {
-        continue
+
+      if (
+        artifactTypeFilter?.includes(s.artifact.type) &&
+        'consumed' in s.artifact &&
+        !s.artifact.consumed &&
+        !hasLaterMatchingArtifact(children, s.artifact, artifactTypeFilter)
+      ) {
+        // Use a selected, unconsumed body directly only when the ordered
+        // traversal does not reveal a later matching body derived from it.
+        // This keeps selected blends as blend variables, while face commands
+        // like shell can still resolve a parent sweep to a downstream sweep.
+        const directLookup = getNodeFromPath<VariableDeclaration>(
+          ast,
+          s.codeRef.pathToNode,
+          wasmInstance,
+          'VariableDeclaration'
+        )
+        if (!err(directLookup)) {
+          variable = directLookup
+        }
       }
 
-      variable = lastChildVariable.variableDeclaration
+      if (!variable) {
+        const lastChildVariable = getLastVariable(
+          children,
+          ast,
+          wasmInstance,
+          artifactTypeFilter,
+          nodeToEdit
+        )
+        if (!lastChildVariable) {
+          continue
+        }
+        variable = lastChildVariable.variableDeclaration
+      }
     } else {
       const directLookup = getNodeFromPath<VariableDeclaration>(
         ast,
@@ -1292,6 +1316,26 @@ export function getVariableExprsFromSelection(
   return { exprs, pathIfPipe }
 }
 
+function hasLaterMatchingArtifact(
+  children: Artifact[],
+  artifact: Artifact,
+  filter: Array<Artifact['type']>
+): boolean {
+  let foundLaterMatchingArtifact = false
+
+  for (const child of children) {
+    if (child.id === artifact.id) {
+      return foundLaterMatchingArtifact
+    }
+
+    if (filter.includes(child.type)) {
+      foundLaterMatchingArtifact = true
+    }
+  }
+
+  return false
+}
+
 function getSketchVariableNameForSegment(
   ast: Node<Program>,
   segmentId: string,
@@ -1340,14 +1384,29 @@ export function retrieveSelectionsFromOpArg(
 ): Error | Selections {
   const error = new Error("Couldn't retrieve sketches from operation")
   let artifactIds: string[] = []
-  if (opArg.value.type === 'Solid' || opArg.value.type === 'Sketch') {
+  if (
+    opArg.value.type === 'Solid' ||
+    opArg.value.type === 'Sketch' ||
+    opArg.value.type === 'Helix'
+  ) {
     artifactIds = [opArg.value.value.artifactId]
+  } else if (opArg.value.type === 'Segment') {
+    artifactIds = [opArg.value.artifact_id]
   } else if (opArg.value.type === 'ImportedGeometry') {
     artifactIds = [opArg.value.artifact_id]
   } else if (opArg.value.type === 'Array') {
-    artifactIds = opArg.value.value
-      .filter((v) => v.type === 'Solid' || v.type === 'Sketch')
-      .map((v) => v.value.artifactId)
+    artifactIds = opArg.value.value.flatMap((v) => {
+      if (v.type === 'Solid' || v.type === 'Sketch' || v.type === 'Helix') {
+        return [v.value.artifactId]
+      }
+      if (v.type === 'Segment') {
+        return [v.artifact_id]
+      }
+      if (v.type === 'TagIdentifier' && v.artifact_id) {
+        return [v.artifact_id]
+      }
+      return []
+    })
   } else if (opArg.value.type === 'TagIdentifier' && opArg.value.artifact_id) {
     artifactIds = [opArg.value.artifact_id]
   } else {
@@ -1365,11 +1424,9 @@ export function retrieveSelectionsFromOpArg(
       const correspondingWall = artifactGraph
         .values()
         .find((a) => a.type === 'wall' && a.segId === artifact?.id)
-      if (!correspondingWall) {
-        continue
+      if (correspondingWall) {
+        artifact = correspondingWall
       }
-
-      artifact = correspondingWall
     }
 
     const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
@@ -1688,17 +1745,19 @@ export function findAllChildrenAndOrderByPlaceInCode(
   artifact: Artifact,
   artifactGraph: ArtifactGraph
 ): Artifact[] {
-  const result: string[] = []
+  const result = new Set<string>()
   const stack: string[] = [artifact.id]
+  const codeRefStartByArtifactId = new Map<string, number>()
 
   const getArtifacts = (stringIds: string[]): Artifact[] => {
     const artifactsWithCodeRefs: Artifact[] = []
     for (const id of stringIds) {
       const artifact = artifactGraph.get(id)
       if (artifact) {
-        const codeRef = getFaceCodeRef(artifact)
-        if (codeRef && codeRef.range[1] > 0) {
+        const codeRefs = getCodeRefsByArtifactId(id, artifactGraph)
+        if (codeRefs && codeRefs[0] && codeRefs[0].range[1] > 0) {
           artifactsWithCodeRefs.push(artifact)
+          codeRefStartByArtifactId.set(id, codeRefs[0].range[0])
         }
       }
     }
@@ -1713,30 +1772,24 @@ export function findAllChildrenAndOrderByPlaceInCode(
       if (childrenIdOrIds.length) {
         stack.push(...childrenIdOrIds)
       }
-      result.push(resultId)
     } else {
       if (childrenIdOrIds) {
         stack.push(childrenIdOrIds)
       }
-      result.push(resultId)
     }
   }
 
   while (stack.length > 0) {
     const currentId = stack.pop()!
+    if (result.has(currentId)) continue
     const current = artifactGraph.get(currentId)
     if (current?.type === 'path') {
       pushToSomething(currentId, current.sweepId)
       pushToSomething(currentId, current.segIds)
+      pushToSomething(currentId, current.compositeSolidId)
     } else if (current?.type === 'sweep') {
       pushToSomething(currentId, current.surfaceIds)
-      const path = artifactGraph.get(current.pathId)
-      if (path && path.type === 'path') {
-        const compositeSolidId = path.compositeSolidId
-        if (compositeSolidId) {
-          result.push(compositeSolidId)
-        }
-      }
+      pushToSomething(currentId, current.pathId)
     } else if (current?.type === 'wall' || current?.type === 'cap') {
       pushToSomething(currentId, current?.pathIds)
     } else if (current?.type === 'segment') {
@@ -1749,23 +1802,20 @@ export function findAllChildrenAndOrderByPlaceInCode(
     } else if (current?.type === 'plane') {
       pushToSomething(currentId, current.pathIds)
     } else if (current?.type === 'compositeSolid') {
-      pushToSomething(currentId, current.solidIds)
-      pushToSomething(currentId, current.toolIds)
+      pushToSomething(currentId, current.compositeSolidId)
     }
+    result.add(currentId)
   }
 
-  const resultSet = new Set(result)
-  const codeRefArtifacts = getArtifacts(Array.from(resultSet))
+  const codeRefArtifacts = getArtifacts(Array.from(result))
   let orderedByCodeRefDest = codeRefArtifacts.sort((a, b) => {
-    const aCodeRef = getFaceCodeRef(a)
-    const bCodeRef = getFaceCodeRef(b)
-    if (!aCodeRef || !bCodeRef) {
-      return 0
-    }
-    return aCodeRef.range[0] - bCodeRef.range[0]
+    const aStart = codeRefStartByArtifactId.get(a.id) ?? Number.MAX_SAFE_INTEGER
+    const bStart = codeRefStartByArtifactId.get(b.id) ?? Number.MAX_SAFE_INTEGER
+    return aStart - bStart
   })
 
   // Cut off traversal results at the first NEW sweep (so long as it's not the first sweep)
+  // Update this logic to work with the `consumed` property instead
   let firstSweep = true
   const cutoffIndex = orderedByCodeRefDest.findIndex((artifact) => {
     if (artifact.type === 'sweep' && firstSweep) {
@@ -1918,46 +1968,73 @@ export function getSketchSegmentName(
     return directSegmentVarDec.node.declaration.id.name
   }
 
-  const sketchPath = getArtifactOfTypes(
-    { key: segment.pathId, types: ['path'] },
+  return null
+}
+
+/**
+ * Builds a region-tag member expression for a sketch-solve segment, e.g.
+ * region001.tags.line2.
+ *
+ * If regionNameOverride is provided, the region name comes from that value.
+ * Otherwise, this attempts to infer the region variable from the segment's
+ * VariableDeclaration path.
+ */
+export function getRegionTagExprFromSegmentId(
+  ast: Node<Program>,
+  segmentId: string,
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType,
+  regionNameOverride?: string
+): Expr | null {
+  const segment = getArtifactOfTypes(
+    { key: segmentId, types: ['segment'] },
     artifactGraph
   )
-  if (err(sketchPath)) {
+  if (err(segment)) {
+    return null
+  }
+  if (!segment.originalSegId || segment.originalSegId === segment.id) {
     return null
   }
 
-  const segmentIndex = sketchPath.segIds.indexOf(segment.id)
-  if (segmentIndex < 0) {
+  const regionName = (() => {
+    if (regionNameOverride) {
+      return regionNameOverride
+    }
+
+    const regionVarDec = getNodeFromPath<VariableDeclaration>(
+      ast,
+      segment.codeRef.pathToNode,
+      wasmInstance,
+      'VariableDeclaration'
+    )
+    if (
+      err(regionVarDec) ||
+      regionVarDec.node.type !== 'VariableDeclaration' ||
+      regionVarDec.node.declaration.init.type !== 'CallExpressionKw' ||
+      regionVarDec.node.declaration.init.callee.name.name !== 'region'
+    ) {
+      return null
+    }
+
+    return regionVarDec.node.declaration.id.name
+  })()
+  if (!regionName) {
     return null
   }
 
-  const sketchPathVarDec = getNodeFromPath<VariableDeclaration>(
+  const originalSegName = getSketchSegmentName(
     ast,
-    sketchPath.codeRef.pathToNode,
-    wasmInstance,
-    'VariableDeclaration'
+    segment.originalSegId,
+    artifactGraph,
+    wasmInstance
   )
-  if (
-    err(sketchPathVarDec) ||
-    sketchPathVarDec.node.type !== 'VariableDeclaration' ||
-    sketchPathVarDec.node.declaration.init.type !== 'SketchBlock'
-  ) {
+  if (!originalSegName) {
     return null
   }
 
-  const segmentNames =
-    sketchPathVarDec.node.declaration.init.body.items.flatMap((item) => {
-      if (
-        item.type !== 'VariableDeclaration' ||
-        item.declaration.init.type !== 'CallExpressionKw'
-      ) {
-        return []
-      }
-      if (!isSketchSegmentCallName(item.declaration.init.callee.name.name)) {
-        return []
-      }
-      return [item.declaration.id.name]
-    })
-
-  return segmentNames[segmentIndex] ?? null
+  return createMemberExpression(
+    createMemberExpression(regionName, 'tags'),
+    originalSegName
+  )
 }

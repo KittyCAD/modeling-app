@@ -19,7 +19,7 @@ import {
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
-  getCoincidentSegmentsForSnapTarget,
+  applyConstraintsForSnapTarget,
   type SnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import {
@@ -46,6 +46,7 @@ export type ToolEvents =
       output: {
         kclSource: SourceDelta
         sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
       }
     }
 
@@ -210,6 +211,7 @@ export function sendResultToParent({
   const output = event.output as {
     kclSource?: SourceDelta
     sceneGraphDelta?: SceneGraphDelta
+    checkpointId?: number | null
     error?: string
   }
 
@@ -246,6 +248,7 @@ export function sendResultToParent({
       data: {
         sourceDelta: output.kclSource,
         sceneGraphDelta: output.sceneGraphDelta,
+        checkpointId: output.checkpointId ?? null,
       },
     }
     self._parent?.send(sendData)
@@ -278,6 +281,7 @@ export async function createCircleActor({
   | {
       kclSource: SourceDelta
       sceneGraphDelta: SceneGraphDelta
+      checkpointId?: number | null
     }
   | {
       error: string
@@ -319,7 +323,8 @@ export async function createCircleActor({
       sketchId,
       segmentCtor,
       'circle',
-      settings
+      settings,
+      true
     )
 
     const circleObjId = result.sceneGraphDelta.new_objects.find((objId) => {
@@ -348,29 +353,26 @@ export async function createCircleActor({
 
     let latestKclSource = result.kclSource
     let latestSceneGraphDelta = result.sceneGraphDelta
+    let latestCheckpointId = result.checkpointId ?? null
     const snapConstraintNewObjects: number[] = []
 
     for (const { segmentId, snapTarget } of snapTargets) {
-      const coincidentSegments = getCoincidentSegmentsForSnapTarget(
+      const snapResult = await applyConstraintsForSnapTarget({
         segmentId,
-        snapTarget
-      )
-      if (coincidentSegments === null) {
+        target: snapTarget,
+        rustContext,
+        sketchId,
+        settings,
+        createCheckpoint: true,
+      })
+      if (snapResult.result === null) {
         continue
       }
 
-      const snapResult = await rustContext.addConstraint(
-        0,
-        sketchId,
-        {
-          type: 'Coincident',
-          segments: coincidentSegments,
-        },
-        settings
-      )
-      latestKclSource = snapResult.kclSource
-      latestSceneGraphDelta = snapResult.sceneGraphDelta
-      snapConstraintNewObjects.push(...snapResult.sceneGraphDelta.new_objects)
+      latestKclSource = snapResult.result.kclSource
+      latestSceneGraphDelta = snapResult.result.sceneGraphDelta
+      latestCheckpointId = snapResult.result.checkpointId ?? latestCheckpointId
+      snapConstraintNewObjects.push(...snapResult.newObjectIds)
     }
 
     if (snapConstraintNewObjects.length === 0) {
@@ -386,6 +388,7 @@ export async function createCircleActor({
           ...snapConstraintNewObjects,
         ],
       },
+      checkpointId: latestCheckpointId,
     }
   } catch (error) {
     console.error('Failed to create circle:', error)

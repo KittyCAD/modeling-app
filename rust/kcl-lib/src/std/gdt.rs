@@ -94,7 +94,14 @@ async fn inner_datum(
         // No plane given. Use one of the standard planes.
         xy_plane(exec_state, args).await?
     };
-    ensure_sketch_plane_in_engine(&mut frame_plane, exec_state, &args.ctx, args.source_range).await?;
+    ensure_sketch_plane_in_engine(
+        &mut frame_plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
     let face_id = args.get_adjacent_face_to_tag(exec_state, &face, false).await?;
     let meta = vec![Metadata::from(args.source_range)];
     let annotation_id = exec_state.next_uuid();
@@ -200,7 +207,14 @@ async fn inner_flatness(
         // No plane given. Use one of the standard planes.
         xy_plane(exec_state, args).await?
     };
-    ensure_sketch_plane_in_engine(&mut frame_plane, exec_state, &args.ctx, args.source_range).await?;
+    ensure_sketch_plane_in_engine(
+        &mut frame_plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
     let mut annotations = Vec::with_capacity(faces.len());
     for face in &faces {
         let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;

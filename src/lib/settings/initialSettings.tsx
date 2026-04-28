@@ -2,8 +2,8 @@ import { useRef } from 'react'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
-import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
-import { type MlCopilotMode, type UserFeatureEntry, users } from '@kittycad/lib'
+import type { OnboardingStatus } from '@src/lib/onboardingPaths'
+import { type MlCopilotMode } from '@kittycad/lib'
 
 import { NIL as uuidNIL } from 'uuid'
 
@@ -19,10 +19,8 @@ import {
   REGEXP_UUIDV4,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import { isPlaywright } from '@src/lib/isPlaywright'
 import type {
   BaseUnit,
-  HideOnPlatformValue,
   SettingProps,
   SettingsLevel,
 } from '@src/lib/settings/settingsTypes'
@@ -31,9 +29,6 @@ import { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
-import { createKCClient, kcCall } from '@src/lib/kcClient'
-import { getToken } from '@src/machines/authMachine'
-import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { hexToRgba } from '@src/lib/utils'
 
 /**
@@ -138,94 +133,12 @@ export class Setting<T = unknown> {
 
 const MS_IN_MINUTE = 1000 * 60
 const COLOR_INPUT_DEBOUNCE_MS = 500
-const FEATURES_CACHE_TTL_MS = 30 * 1_000
-
-type CachedFeaturesData = Extract<
-  Awaited<ReturnType<typeof users.user_features_get>>,
-  { features: unknown }
->
-function isCachedFeaturesData(
-  r: CachedFeaturesData | Error
-): r is CachedFeaturesData {
-  return !(r instanceof Error)
-}
-let featuresCache: { data: CachedFeaturesData; fetchedAt: number } | null = null
-let featuresFetchPromise: Promise<CachedFeaturesData | Error> | null = null
-
-/**
- * Helper function to fetch user features and determine if the corresponding setting should be visible
- * Returns 'both' (hidden) if feature flag doesn't exist, or null (visible) if it does
- */
-/**
- * Higher-order function that returns an async hideOnPlatform function.
- * The returned function checks if the specified feature flag exists,
- * and returns null (visible) if it does, or the defaultHide value if it doesn't.
- *
- * @param featureFlagId - The feature flag ID to check for
- * @param defaultHide - The value to return if the feature flag is not found (defaults to 'both')
- * @returns An async function that resolves to the hideOnPlatform value
- */
-function _hideWithoutFeatureFlag(
-  featureFlagId: UserFeatureEntry['id'],
-  defaultHide: HideOnPlatformValue = 'both'
-): () => Promise<HideOnPlatformValue | null> {
-  return async (): Promise<HideOnPlatformValue | null> => {
-    try {
-      const token = await getToken()
-      if (!token) {
-        return defaultHide
-      }
-
-      const now = Date.now()
-      const cacheValid =
-        featuresCache && now - featuresCache.fetchedAt < FEATURES_CACHE_TTL_MS
-
-      type FeaturesResult = CachedFeaturesData | Error
-      let featuresData: FeaturesResult
-
-      if (cacheValid && featuresCache) {
-        featuresData = featuresCache.data
-      } else if (featuresFetchPromise) {
-        featuresData = await featuresFetchPromise
-      } else {
-        const client = createKCClient(token)
-        featuresFetchPromise = kcCall(() =>
-          users.user_features_get({ client })
-        ).then((result) => {
-          featuresFetchPromise = null
-          if (isCachedFeaturesData(result)) {
-            featuresCache = { data: result, fetchedAt: Date.now() }
-          }
-          return result
-        })
-        featuresData = await featuresFetchPromise
-      }
-
-      if (featuresData instanceof Error) {
-        console.error('Error fetching user features:', featuresData.message)
-        return defaultHide
-      }
-
-      // Check if the specified feature flag exists
-      const hasFeatureFlag = featuresData.features.find(
-        (feat: { id: string }) => feat.id === featureFlagId
-      )
-
-      if (hasFeatureFlag) {
-        return null // null means visible (no hiding)
-      } else {
-        return defaultHide
-      }
-    } catch (error) {
-      console.error(`Error checking feature flag ${featureFlagId}:`, error)
-      return defaultHide
-    }
-  }
-}
 
 export function createSettings() {
   const settings = {
-    // Gotcha: If you add a new setting here, you will likely need to update rust/kcl-lib/src/settings/types/mod.rs as well.
+    // Gotcha: Only settings that must be understood by Rust/KCL/CLI need a
+    // matching schema in rust/kcl-lib. App-owned settings can stay TS-only if
+    // settingsUtils serializes them through the opaque TOML passthrough.
     app: {
       /**
        * The overall appearance of the app: light, dark, or system
@@ -250,18 +163,6 @@ export function createSettings() {
             })),
         },
       }),
-      /**
-       * Whether to show the debug panel, which lets you see
-       * various states of the app to aid in development
-       */
-      showDebugPanel: new Setting<boolean>({
-        defaultValue: false,
-        description: 'Whether to show the debug panel, a development tool.',
-        validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
-        },
-      }),
       machineApi: new Setting<boolean>({
         defaultValue: false,
         hideOnLevel: 'project',
@@ -279,7 +180,22 @@ export function createSettings() {
       zookeeperMode: new Setting<MlCopilotMode>({
         defaultValue: DEFAULT_ML_COPILOT_MODE,
         validate: (v) => v === 'fast' || v === 'thoughtful',
-        hideOnPlatform: 'both', // this setting is managed by the Zookeeper pane
+        description: 'The default reasoning mode for Zookeeper.',
+        commandConfig: {
+          inputType: 'options',
+          defaultValueFromContext: (context) =>
+            context.app.zookeeperMode.current,
+          options: (cmdContext, settingsContext) =>
+            (['fast', 'thoughtful'] as const).map((v) => ({
+              name: capitaliseFC(v),
+              value: v,
+              isCurrent:
+                settingsContext.app.zookeeperMode.shouldShowCurrentLabel(
+                  cmdContext.argumentsToSubmit.level as SettingsLevel,
+                  v
+                ),
+            })),
+        },
       }),
       /**
        * Stream resource saving behavior toggle
@@ -393,6 +309,38 @@ export function createSettings() {
         defaultValue: {},
         validate: (_v) => true,
         hideOnLevel: 'user',
+      }),
+    },
+    /**
+     * App-owned debug settings.
+     *
+     * These stay in TypeScript and round-trip through an opaque `debug`
+     * section so we can keep app-only debugging tools out of the Rust schema.
+     */
+    debug: {
+      /**
+       * Whether to show the debug panel, which lets you see
+       * various states of the app to aid in development
+       */
+      showPanel: new Setting<boolean>({
+        defaultValue: false,
+        description: 'Whether to show the debug panel, a development tool.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
+      /**
+       * Whether to show the current modeling machine state in the status bar.
+       */
+      showModelingMachineState: new Setting<boolean>({
+        defaultValue: false,
+        description:
+          'Whether to show the current modeling machine state in the status bar.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
       }),
     },
     /**
@@ -541,16 +489,16 @@ export function createSettings() {
         },
       }),
       /**
-       * Determines if new sketches should use the experimental solver-based sketch mode.
-       * On staging, this setting cannot be disabled except by Playwright tests.
-       * On production, users can opt in but classic sketch mode remains the default.
+       * Determines if new sketches should use the solver-based sketch mode.
+       * This setting is hidden and defaults to true. It now exists only so
+       * Playwright can set it to false for regression testing.
        */
       useSketchSolveMode: new Setting<boolean>({
         hideOnLevel: 'project',
-        hideOnPlatform: IS_STAGING_OR_DEBUG ? 'both' : undefined,
-        defaultValue: IS_STAGING_OR_DEBUG && !isPlaywright(),
+        hideOnPlatform: 'both',
+        defaultValue: true, // checking the feature flag happens in `settingsUtils.ts`
         description:
-          'Default to the experimental solver-based sketch mode for all new sketches.',
+          'Default to the solver-based sketch mode for all new projects.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
@@ -736,13 +684,19 @@ export function createSettings() {
       // }),
     },
     /**
-     * Settings that affect the behavior of the KCL text editor.
+     * App-owned editor settings.
+     *
+     * These are intentionally defined only in TypeScript and round-trip through
+     * the settings TOML as an opaque `text_editor` section. That keeps the Rust
+     * schema focused on CLI/KCL concerns and makes this group easier to move
+     * behind a bundled editor/plugin later.
      */
     textEditor: {
       /**
        * Whether to wrap text in the editor or overflow with scroll
        */
       textWrapping: new Setting<boolean>({
+        hideOnLevel: 'project',
         defaultValue: true,
         description:
           'Whether to wrap text in the editor or overflow with scroll.',
@@ -755,6 +709,7 @@ export function createSettings() {
        * Whether to make the cursor blink in the editor
        */
       blinkingCursor: new Setting<boolean>({
+        hideOnLevel: 'project',
         defaultValue: true,
         description: 'Whether to make the cursor blink in the editor.',
         validate: (v) => typeof v === 'boolean',
@@ -764,7 +719,11 @@ export function createSettings() {
       }),
     },
     /**
-     * Settings that affect the behavior of project management.
+     * App-owned project-management settings.
+     *
+     * These stay in TypeScript and round-trip through opaque TOML sections so
+     * they can move into a future project-management extension without
+     * expanding the Rust/CLI schema.
      */
     projects: {
       /**
@@ -802,7 +761,10 @@ export function createSettings() {
       // }),
     },
     /**
-     * Settings that affect the behavior of the command bar.
+     * App-owned command bar settings.
+     *
+     * Keep these TS-only so the command palette can be bundled or extended
+     * independently of the Rust settings schema.
      */
     commandBar: {
       /**

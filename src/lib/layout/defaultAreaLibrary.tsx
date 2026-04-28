@@ -203,7 +203,7 @@ export const useDefaultAreaLibrary = () => {
           Component: LogsPane,
         },
         debug: {
-          hide: () => getSettings().app.showDebugPanel.current === false,
+          hide: () => getSettings().debug.showPanel.current === false,
           shortcut: 'Shift + D',
           Component: DebugPane,
         },

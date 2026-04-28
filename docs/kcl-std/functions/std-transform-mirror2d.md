@@ -120,8 +120,6 @@ sketch001 = startSketchOn(XZ)
 
 ```kcl
 // Mirror an un-closed sketch across a line from a sketch block.
-@settings(experimentalFeatures = allow)
-
 helper001 = sketch(on = XZ) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 10mm])
 }

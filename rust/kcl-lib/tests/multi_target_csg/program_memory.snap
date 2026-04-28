@@ -1188,7 +1188,7 @@ description: Variables in memory after executing multi_target_csg.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "startCapId": null,
+      "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
