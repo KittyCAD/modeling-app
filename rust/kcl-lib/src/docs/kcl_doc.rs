@@ -202,6 +202,7 @@ pub enum DocData {
 }
 
 impl DocData {
+    #[cfg(test)]
     pub fn name(&self) -> &str {
         match self {
             DocData::Fn(f) => &f.name,
@@ -211,7 +212,6 @@ impl DocData {
         }
     }
 
-    #[cfg(test)]
     pub fn preferred_name(&self) -> &str {
         match self {
             DocData::Fn(f) => &f.preferred_name,
@@ -362,6 +362,7 @@ impl DocData {
 
 #[derive(Debug, Clone)]
 pub struct ConstData {
+    #[allow(dead_code)]
     pub name: String,
     /// How the const is indexed, etc.
     pub preferred_name: String,

@@ -1817,14 +1817,17 @@ fn get_completions_from_stdlib_in_context(
 
     for d in kcl_std.all_docs() {
         if let Some(mut ci) = d.to_completion_item() {
-            let name = d.name();
-            if should_skip_stdlib_doc(d, completions.contains_key(name), context) {
+            let preferred = d.preferred_name();
+            if should_skip_stdlib_doc(d, completions.contains_key(preferred), context) {
                 continue;
             }
-            if context == StdlibCompletionContext::SketchBlock && is_sketch2_doc(d) {
+            let key = if context == StdlibCompletionContext::SketchBlock && is_sketch2_doc(d) {
                 ci = rewrite_completion_for_sketch_block(ci);
-            }
-            completions.insert(name.to_owned(), ci);
+                strip_sketch2_prefix(preferred)
+            } else {
+                preferred.to_owned()
+            };
+            completions.insert(key, ci);
         }
     }
 
@@ -1853,14 +1856,17 @@ fn get_signatures_from_stdlib_in_context(
 
     for d in kcl_std.all_docs() {
         if let Some(mut sig) = d.to_signature_help() {
-            let name = d.name();
-            if should_skip_stdlib_doc(d, signatures.contains_key(name), context) {
+            let preferred = d.preferred_name();
+            if should_skip_stdlib_doc(d, signatures.contains_key(preferred), context) {
                 continue;
             }
-            if context == StdlibCompletionContext::SketchBlock && is_sketch2_doc(d) {
+            let key = if context == StdlibCompletionContext::SketchBlock && is_sketch2_doc(d) {
                 sig = rewrite_signature_for_sketch_block(sig);
-            }
-            signatures.insert(name.to_owned(), sig);
+                strip_sketch2_prefix(preferred)
+            } else {
+                preferred.to_owned()
+            };
+            signatures.insert(key, sig);
         }
     }
 
@@ -1942,10 +1948,15 @@ fn get_arg_maps_from_stdlib_in_context(
             })
             .collect();
         if !arg_map.is_empty() {
-            if should_skip_stdlib_doc(d, result.contains_key(&f.name), context) {
+            let key = if context == StdlibCompletionContext::SketchBlock && is_sketch2_doc(d) {
+                strip_sketch2_prefix(&f.preferred_name)
+            } else {
+                f.preferred_name.clone()
+            };
+            if should_skip_stdlib_doc(d, result.contains_key(&key), context) {
                 continue;
             }
-            result.insert(f.name.clone(), arg_map);
+            result.insert(key, arg_map);
         }
     }
 
@@ -2026,5 +2037,59 @@ return 42"#;
         let position = Position::new(0, 0);
         let index = position_to_char_index(position, code);
         assert_eq!(index, 0);
+    }
+
+    #[test]
+    fn stdlib_completions_keyed_by_preferred_name() {
+        let stdlib = crate::docs::kcl_doc::walk_prelude();
+        let completions = get_completions_from_stdlib(&stdlib).unwrap();
+
+        assert!(
+            completions.contains_key("clone"),
+            "prelude fn should be keyed by short name"
+        );
+        assert!(
+            completions.contains_key("units::toRadians"),
+            "module fn should be keyed by preferred name with module prefix"
+        );
+        assert!(
+            !completions.contains_key("toRadians"),
+            "module fn should NOT be keyed by bare short name"
+        );
+    }
+
+    #[test]
+    fn stdlib_signatures_keyed_by_preferred_name() {
+        let stdlib = crate::docs::kcl_doc::walk_prelude();
+        let signatures = get_signatures_from_stdlib(&stdlib);
+
+        assert!(
+            signatures.contains_key("clone"),
+            "prelude fn should be keyed by short name"
+        );
+        assert!(
+            signatures.contains_key("units::toRadians"),
+            "module fn should be keyed by preferred name with module prefix"
+        );
+        assert!(
+            !signatures.contains_key("toRadians"),
+            "module fn should NOT be keyed by bare short name"
+        );
+    }
+
+    #[test]
+    fn stdlib_args_keyed_by_preferred_name() {
+        let stdlib = crate::docs::kcl_doc::walk_prelude();
+        let args = get_arg_maps_from_stdlib(&stdlib);
+
+        assert!(args.contains_key("clone"), "prelude fn should be keyed by short name");
+        assert!(
+            args.contains_key("units::toRadians"),
+            "module fn should be keyed by preferred name with module prefix"
+        );
+        assert!(
+            !args.contains_key("toRadians"),
+            "module fn should NOT be keyed by bare short name"
+        );
     }
 }
