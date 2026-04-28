@@ -42,22 +42,6 @@ export function mergeExtensionSettings(
   }, {})
 }
 
-export function instantiateExtensionSettings(
-  resolved: ResolvedExtensionSettings
-): DynamicSettingsCategories {
-  return Object.fromEntries(
-    Object.entries(resolved).map(([category, settings]) => [
-      category,
-      Object.fromEntries(
-        Object.entries(settings).map(([settingName, definition]) => [
-          settingName,
-          definition.createSetting(),
-        ])
-      ),
-    ])
-  )
-}
-
 function createBooleanTomlBinding({
   sectionKey,
   tomlKey,

@@ -19,9 +19,9 @@ import {
   REGEXP_UUIDV4,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import {
-  instantiateExtensionSettings,
-  type ResolvedExtensionSettings,
+import type {
+  DynamicSettingsCategories,
+  ResolvedExtensionSettings,
 } from '@src/lib/settings/extensionSettings'
 import type {
   BaseUnit,
@@ -812,6 +812,22 @@ function createCoreSettings() {
   }
 
   return settings
+}
+
+function instantiateExtensionSettings(
+  resolved: ResolvedExtensionSettings
+): DynamicSettingsCategories {
+  return Object.fromEntries(
+    Object.entries(resolved).map(([category, settings]) => [
+      category,
+      Object.fromEntries(
+        Object.entries(settings).map(([settingName, definition]) => [
+          settingName,
+          definition.createSetting(),
+        ])
+      ),
+    ])
+  )
 }
 
 type CoreSettingsType = ReturnType<typeof createCoreSettings>
