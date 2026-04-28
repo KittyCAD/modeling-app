@@ -421,7 +421,7 @@ export class SceneFixture {
     await expect(this.engineConnectionsSpinner).not.toBeVisible()
 
     await cmdBar.openCmdBar()
-    await cmdBar.chooseCommand('Settings · app · show debug panel')
+    await cmdBar.chooseCommand('Settings · debug · show panel')
     await cmdBar.selectOption({ name: 'on' }).click()
 
     await u.openDebugPanel()

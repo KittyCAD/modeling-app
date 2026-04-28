@@ -151,7 +151,7 @@ function PublishPopoverContent({
         <PublishDialog
           onClose={close}
           onSubmit={handlePublish}
-          initialTitle={project?.name || ''}
+          initialTitle={''}
           publishDisabled={isCheckingUser || publishRequiresUsername}
           publishRequiresUsername={publishRequiresUsername}
           accountUrl={accountUrl}
