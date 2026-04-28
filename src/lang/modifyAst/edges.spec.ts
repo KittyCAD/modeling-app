@@ -975,6 +975,11 @@ blend001 = blend([
         ['declaration', 'VariableDeclaration'],
         ['init', 'VariableDeclarator'],
       ]
+      const segments = [...artifactGraph.values()].filter(
+        (a) => a.type === 'segment'
+      )
+      expect(segments.length).toBe(2)
+      const edges = createSelectionFromArtifacts(segments, artifactGraph)
 
       const firstEdgeLowerBound = (await stringToKclExpression(
         '0.25',
@@ -996,6 +1001,7 @@ blend001 = blend([
       const result = addBlend({
         ast,
         artifactGraph,
+        edges,
         firstEdgeLowerBound,
         firstEdgeUpperBound,
         secondEdgeLowerBound,

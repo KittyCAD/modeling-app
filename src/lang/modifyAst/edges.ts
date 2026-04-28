@@ -275,7 +275,7 @@ export function addBlend({
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
-  edges?: Selections
+  edges: Selections
   firstEdgeLowerBound?: KclCommandValue
   firstEdgeUpperBound?: KclCommandValue
   secondEdgeLowerBound?: KclCommandValue
@@ -286,100 +286,41 @@ export function addBlend({
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
-  const bounds = [
-    [firstEdgeLowerBound, firstEdgeUpperBound],
-    [secondEdgeLowerBound, secondEdgeUpperBound],
-  ] as const
-  bounds.flat().forEach((bound) => {
-    if (bound && 'variableName' in bound && bound.variableName) {
-      insertVariableAndOffsetPathToNode(bound, modifiedAst, mNodeToEdit)
-    }
-  })
 
   // 2. Validate the edge selection
   const edgeExprs: Expr[] = []
-  if (mNodeToEdit) {
-    const blendCall = getNodeFromPath<CallExpressionKw>(
-      modifiedAst,
-      mNodeToEdit,
-      wasmInstance,
-      'CallExpressionKw'
-    )
-    if (err(blendCall)) {
-      return blendCall
-    }
-    if (
-      blendCall.node.unlabeled?.type !== 'ArrayExpression' ||
-      blendCall.node.unlabeled.elements.length !== 2
-    ) {
-      return new Error('Blend requires exactly two selected edges.')
-    }
-    edgeExprs.push(
-      ...blendCall.node.unlabeled.elements.map((edgeExpr) =>
-        structuredClone(edgeExpr)
-      )
-    )
-  } else {
-    if (!edges) {
-      return new Error('Blend requires exactly two selected edges.')
-    }
-
-    const selectedEdges = getEdgeSelections(edges)
-    if (selectedEdges.length !== 2) {
-      return new Error('Blend requires exactly two selected edges.')
-    }
-
-    for (const edgeSelection of selectedEdges) {
-      const edgeResult = buildEdgeExpr(
-        edgeSelection,
-        modifiedAst,
-        artifactGraph,
-        wasmInstance
-      )
-      if (err(edgeResult)) {
-        return edgeResult
-      }
-      modifiedAst = edgeResult.modifiedAst
-      edgeExprs.push(edgeResult.edgeExpr)
-    }
+  const selectedEdges = getEdgeSelections(edges)
+  if (selectedEdges.length !== 2) {
+    return new Error('Blend requires exactly two selected edges.')
   }
 
-  const edgeExprsWithBounds: Expr[] = []
-  for (const [index, edgeExpr] of edgeExprs.entries()) {
-    const [lowerBound, upperBound] = bounds[index]
-    if (!lowerBound && !upperBound) {
-      edgeExprsWithBounds.push(edgeExpr)
-      continue
-    }
-    if (
-      edgeExpr.type !== 'CallExpressionKw' ||
-      edgeExpr.callee.name.name !== 'getBoundedEdge'
-    ) {
-      return new Error(
-        'Blend bounds can only be applied to getBoundedEdge expressions.'
-      )
-    }
-    const boundedEdgeExpr = structuredClone(edgeExpr)
-    boundedEdgeExpr.arguments = boundedEdgeExpr.arguments.filter(
-      (arg) =>
-        arg.label?.name !== 'lowerBound' && arg.label?.name !== 'upperBound'
+  for (const [index, edgeSelection] of selectedEdges.entries()) {
+    const edgeResult = buildEdgeExpr(
+      edgeSelection,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+      index === 0
+        ? {
+            lowerBound: firstEdgeLowerBound,
+            upperBound: firstEdgeUpperBound,
+          }
+        : {
+            lowerBound: secondEdgeLowerBound,
+            upperBound: secondEdgeUpperBound,
+          },
+      mNodeToEdit
     )
-    if (lowerBound) {
-      boundedEdgeExpr.arguments.push(
-        createLabeledArg('lowerBound', valueOrVariable(lowerBound))
-      )
+    if (err(edgeResult)) {
+      return edgeResult
     }
-    if (upperBound) {
-      boundedEdgeExpr.arguments.push(
-        createLabeledArg('upperBound', valueOrVariable(upperBound))
-      )
-    }
-    edgeExprsWithBounds.push(boundedEdgeExpr)
+    modifiedAst = edgeResult.modifiedAst
+    edgeExprs.push(edgeResult.edgeExpr)
   }
 
   const call = createCallExpressionStdLibKw(
     'blend',
-    createArrayExpression(edgeExprsWithBounds),
+    createArrayExpression(edgeExprs),
     []
   )
 
@@ -554,8 +495,41 @@ function buildEdgeExpr(
   edgeSelection: EdgeSelectionForExpr,
   ast: Node<Program>,
   artifactGraph: ArtifactGraph,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  bounds: {
+    lowerBound?: KclCommandValue
+    upperBound?: KclCommandValue
+  } = {},
+  nodeToEdit?: PathToNode
 ): Error | { modifiedAst: Node<Program>; edgeExpr: Expr } {
+  const boundValues = [bounds.lowerBound, bounds.upperBound]
+  boundValues.forEach((bound) => {
+    if (bound && 'variableName' in bound && bound.variableName) {
+      insertVariableAndOffsetPathToNode(bound, ast, nodeToEdit)
+    }
+  })
+
+  const createBoundedEdgeExpr = (sourceSurfaceExpr: Expr, edgeExpr: Expr) => {
+    const args: ReturnType<typeof createLabeledArg>[] = [
+      createLabeledArg('edge', edgeExpr),
+    ]
+    if (bounds.lowerBound) {
+      args.push(
+        createLabeledArg('lowerBound', valueOrVariable(bounds.lowerBound))
+      )
+    }
+    if (bounds.upperBound) {
+      args.push(
+        createLabeledArg('upperBound', valueOrVariable(bounds.upperBound))
+      )
+    }
+    return createCallExpressionStdLibKw(
+      'getBoundedEdge',
+      sourceSurfaceExpr,
+      args
+    )
+  }
+
   if (
     typeof edgeSelection === 'object' &&
     'type' in edgeSelection &&
@@ -596,11 +570,7 @@ function buildEdgeExpr(
 
     return {
       modifiedAst: ast,
-      edgeExpr: createCallExpressionStdLibKw(
-        'getBoundedEdge',
-        sourceSurfaceExpr,
-        [createLabeledArg('edge', primitiveEdgeIdExpr)]
-      ),
+      edgeExpr: createBoundedEdgeExpr(sourceSurfaceExpr, primitiveEdgeIdExpr),
     }
   }
 
@@ -656,10 +626,9 @@ function buildEdgeExpr(
 
     return {
       modifiedAst: ast,
-      edgeExpr: createCallExpressionStdLibKw(
-        'getBoundedEdge',
+      edgeExpr: createBoundedEdgeExpr(
         structuredClone(sourceSurfaceExpr),
-        [createLabeledArg('edge', edgeExpr)]
+        edgeExpr
       ),
     }
   }
@@ -684,10 +653,9 @@ function buildEdgeExpr(
 
     return {
       modifiedAst: ast,
-      edgeExpr: createCallExpressionStdLibKw(
-        'getBoundedEdge',
+      edgeExpr: createBoundedEdgeExpr(
         structuredClone(sourceSurfaceExpr),
-        [createLabeledArg('edge', edgeExpr)]
+        edgeExpr
       ),
     }
   }
@@ -708,10 +676,9 @@ function buildEdgeExpr(
 
   return {
     modifiedAst: tagResult.modifiedAst,
-    edgeExpr: createCallExpressionStdLibKw(
-      'getBoundedEdge',
+    edgeExpr: createBoundedEdgeExpr(
       structuredClone(sourceSurfaceExpr),
-      [createLabeledArg('edge', edgeExpr)]
+      edgeExpr
     ),
   }
 }
