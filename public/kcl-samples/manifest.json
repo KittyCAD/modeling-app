@@ -259,6 +259,34 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Aerospace"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "contra-rotor/main.kcl",
+    "multipleFiles": true,
+    "title": "Contra-Rotor Assembly",
+    "description": "A contra-rotor is a geared mechanism that drives two coaxial propellers in opposite directions, magnifying thrust while cancelling angular momentum.",
+    "files": [
+      "contra-assembly.kcl",
+      "contra-propeller-assembly.kcl",
+      "contra-propeller-blades.kcl",
+      "contra-propeller-hub.kcl",
+      "contra-shaft.kcl",
+      "helical.kcl",
+      "main.kcl",
+      "primary-assembly.kcl",
+      "primary-propeller-assembly.kcl",
+      "primary-propeller-blades.kcl",
+      "primary-propeller-hub.kcl",
+      "primary-propeller-nose-cone.kcl",
+      "primary-shaft.kcl",
+      "secondary-assembly.kcl",
+      "secondary-shaft.kcl",
+      "tertiary.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Manufacturing",
       "Construction"
     ],
