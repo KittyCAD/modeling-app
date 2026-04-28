@@ -1,3 +1,4 @@
+use ahash::AHashSet;
 use kcmc::ModelingCmd;
 use kittycad_modeling_cmds::websocket::ModelingCmdReq;
 use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
@@ -13,6 +14,7 @@ use crate::errors::KclErrorDetails;
 use crate::exec::ArtifactCommand;
 use crate::exec::IdGenerator;
 use crate::exec::KclValue;
+use crate::execution::FaceParentSolid;
 use crate::execution::Solid;
 use crate::std::Args;
 
@@ -205,7 +207,7 @@ impl ExecState {
             return Err(no_modeling_in_sketch_block_error(meta.source_range));
         }
         // Make sure we don't traverse sketches more than once.
-        let mut traversed_sketches = Vec::new();
+        let mut traversed_sketches = AHashSet::new();
 
         // Collect all the fillet/chamfer ids for the solids.
         let mut ids = Vec::new();
@@ -229,12 +231,63 @@ impl ExecState {
                             _ => unreachable!(),
                         }),
                 );
-                traversed_sketches.push(sketch_id);
+                traversed_sketches.insert(sketch_id);
             }
 
             ids.extend(solid.get_all_edge_cut_ids());
         }
 
+        self.flush_batch_for_edge_cut_ids(meta, ids).await
+    }
+
+    /// Flush just the fillets and chamfers for the parent solids of face-backed sketches.
+    pub(crate) async fn flush_batch_for_face_parent_solids(
+        &mut self,
+        meta: ModelingCmdMeta<'_>,
+        solids: &[FaceParentSolid],
+    ) -> Result<(), KclError> {
+        if self.is_in_sketch_block() {
+            return Err(no_modeling_in_sketch_block_error(meta.source_range));
+        }
+        // Make sure we don't traverse sketches more than once.
+        let mut traversed_sketches = AHashSet::new();
+
+        // Collect all the fillet/chamfer ids for the solids.
+        let mut ids = Vec::new();
+        for solid in solids {
+            // We need to traverse the solids that share the same sketch.
+            let sketch_id = solid.sketch_or_solid_id();
+            if !traversed_sketches.contains(&sketch_id) {
+                // Find all the solids on the same shared sketch.
+                ids.extend(
+                    self.stack()
+                        .walk_call_stack()
+                        .filter(|v| {
+                            matches!(
+                                v,
+                                KclValue::Solid { value }
+                                    if value.sketch_id().unwrap_or(value.id) == sketch_id
+                            )
+                        })
+                        .flat_map(|v| match v {
+                            KclValue::Solid { value } => value.get_all_edge_cut_ids(),
+                            _ => unreachable!(),
+                        }),
+                );
+                traversed_sketches.insert(sketch_id);
+            }
+
+            ids.extend(solid.edge_cut_ids.iter().copied());
+        }
+
+        self.flush_batch_for_edge_cut_ids(meta, ids).await
+    }
+
+    async fn flush_batch_for_edge_cut_ids(
+        &mut self,
+        meta: ModelingCmdMeta<'_>,
+        ids: Vec<Uuid>,
+    ) -> Result<(), KclError> {
         // We can return early if there are no fillets or chamfers.
         if ids.is_empty() {
             return Ok(());

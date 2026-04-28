@@ -7,58 +7,110 @@
 width = 19
 height = 1.75
 thickness = .0598 // Gauge 16
-holeOffset = 1 / 3
+bendRadius = 0.030
 wingLength = 1 / 3
-wingOffset = 2 / 3
-wingCutInset = thickness / 2 + 0.00001
+holeOffset = 1 / 3
 holeDiameter = 3 / 16
 
-baseSketch = startSketchOn(XZ)
-baseProfile = startProfile(baseSketch, at = [0, wingCutInset])
-  |> xLine(length = wingOffset)
-  |> yLine(length = -wingCutInset)
-  |> xLine(length = width - (2 * wingOffset), tag = $seg01)
-  |> yLine(length = wingCutInset)
-  |> xLine(length = wingOffset)
-  |> yLine(length = height - (2 * wingCutInset))
-  |> xLine(length = -wingOffset)
-  |> yLine(length = wingCutInset)
-  |> xLine(length = -(width - (2 * wingOffset)), tag = $seg02)
-  |> yLine(length = -wingCutInset)
-  |> xLine(length = -wingOffset)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-  |> subtract2d(tool = circle(center = [holeOffset, holeOffset], radius = holeDiameter / 2))
-  |> subtract2d(tool = circle(center = [holeOffset, height - holeOffset], radius = holeDiameter / 2))
-  |> subtract2d(tool = circle(center = [width - holeOffset, holeOffset], radius = holeDiameter / 2))
-  |> subtract2d(tool = circle(
-       center = [
-         width - holeOffset,
-         height - holeOffset
-       ],
-       radius = holeDiameter / 2,
-     ))
-base = extrude(baseProfile, length = thickness, tagStart = $capStart001)
-  |> fillet(
-       radius = thickness / 2,
-       tags = [
-         getCommonEdge(faces = [seg01, capStart001]),
-         getCommonEdge(faces = [seg02, capStart001])
-       ],
-     )
+// Sketch the base extrusion
+baseSketch = sketch(on = YZ) {
+  line1 = line(start = [var -0.43in, var 0.01in], end = [var -0.12in, var 0.01in])
+  arc1 = arc(start = [var -0.12in, var 0.01in], end = [var 0in, var 0.14in], center = [var -0.12in, var 0.13in])
+  coincident([line1.end, arc1.start])
+  tangent([line1, arc1])
+  line2 = line(start = [var 0in, var 0.14in], end = [var 0in, var 1.65in])
+  coincident([line2.start, arc1.end])
+  arc2 = arc(start = [var 0in, var 1.65in], end = [var -0.08in, var 1.75in], center = [var -0.11in, var 1.65in])
+  coincident([line2.end, arc2.start])
+  tangent([line2, arc2])
+  line3 = line(start = [var -0.08in, var 1.75in], end = [var -0.4in, var 1.75in])
+  coincident([line3.start, arc2.end])
+  line4 = line(start = [var -0.4in, var 1.75in], end = [var -0.4in, var 1.69in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -0.4in, var 1.69in], end = [var -0.09in, var 1.69in])
+  coincident([line4.end, line5.start])
+  arc3 = arc(start = [var -0.06in, var 1.65in], end = [var -0.09in, var 1.69in], center = [var -0.09in, var 1.66in])
+  coincident([line5.end, arc3.end])
+  tangent([line5, arc3])
+  line6 = line(start = [var -0.06in, var 1.65in], end = [var -0.06in, var 0.14in])
+  coincident([line6.start, arc3.start])
+  arc4 = arc(start = [var -0.12in, var 0.08in], end = [var -0.06in, var 0.14in], center = [var -0.12in, var 0.14in])
+  coincident([line6.end, arc4.end])
+  tangent([line6, arc4])
+  line7 = line(start = [var -0.12in, var 0.08in], end = [var -0.43in, var 0.08in])
+  coincident([line7.start, arc4.start])
+  line8 = line(start = [var -0.43in, var 0.08in], end = [var -0.43in, var 0.01in])
+  coincident([line7.end, line8.start])
+  coincident([line8.end, line1.start])
+  equalLength([line8, line4])
+  distance([line4.start, line4.end]) == thickness
+  equalLength([line5, line3])
+  horizontal(line5)
+  horizontal(line3)
+  vertical(line6)
+  vertical(line2)
+  equalLength([line2, line6])
+  equalLength([line1, line7])
+  horizontal(line1)
+  horizontal(line7)
+  vertical(line8)
+  vertical(line4)
+  line10 = line(start = [var -0.41in, var 0in], end = [var -0in, var 0in], construction = true)
+  coincident([line10.start, line1.start])
+  coincident([line10.end, ORIGIN])
+  line11 = line(start = [var -0in, var 0in], end = [var -0in, var 0.14in], construction = true)
+  coincident([line11.start, line10.end])
+  coincident([line11.end, arc1.end])
+  horizontal(line10)
+  vertical(line11)
+  distance([line10.start, line10.end]) == wingLength
+  line9 = line(start = [var -0.33in, var 0in], end = [var -0.4in, var 1.75in], construction = true)
+  coincident([line9.start, line8.end])
+  coincident([line9.end, line4.start])
+  vertical(line9)
+  distance([line9.start, line9.end]) == height
+  tangent([line7, arc4])
+  tangent([line6, arc4])
+  tangent([line1, arc1])
+  tangent([line6, arc3])
+  tangent([line5, arc3])
+  tangent([line2, arc2])
+  tangent([line3, arc2])
+  radius(arc4) == bendRadius
+  radius(arc3) == bendRadius
+}
+region004 = region(point = [-5.5725mm, 0.0025mm], sketch = baseSketch)
+baseExtrusion = extrude(region004, length = width, symmetric = true)
 
-wingSketch = startSketchOn(base, face = END)
-bottomWingProfile = startProfile(wingSketch, at = [wingOffset, 0])
-  |> xLine(length = width - (2 * wingOffset))
-  |> yLine(length = thickness)
-  |> xLine(length = -(width - (2 * wingOffset)))
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-topWingProfile = startProfile(wingSketch, at = [wingOffset, height - thickness])
-  |> xLine(length = width - (2 * wingOffset))
-  |> yLine(length = thickness)
-  |> xLine(length = -(width - (2 * wingOffset)))
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-bottomWing = extrude(bottomWingProfile, length = wingLength)
-topWing = extrude(topWingProfile, length = wingLength)
+// Sketch the hole positions
+holeSketch = sketch(on = XZ) {
+  line1 = line(start = [var 0in, var 0in], end = [var 0in, var 1.75in], construction = true)
+  coincident([line1.start, ORIGIN])
+  line2 = line(start = [var 0in, var 1.75in], end = [var 9.17in, var 1.42in], construction = true)
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 9.17in, var 1.42in], end = [var 9.17in, var 0.33in], construction = true)
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 9.17in, var 0.33in], end = [var 0in, var 0in], construction = true)
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  distance([line1.start, line1.end]) == height
+  horizontalDistance([line4.end, line4.start]) == width / 2 - holeOffset
+  vertical(line3)
+  verticalDistance([line4.end, line4.start]) == holeOffset
+  verticalDistance([line2.end, line2.start]) == holeOffset
+  vertical(line1)
+  circle1 = circle(start = [var 8.23in, var 3.52in], center = [var 9.17in, var 1.42in])
+  coincident([circle1.center, line2.end])
+  circle2 = circle(start = [var 8.48in, var -1.71in], center = [var 9.17in, var 0.33in])
+  coincident([circle2.center, line3.end])
+  diameter(circle2) == holeDiameter
+  diameter(circle1) == holeDiameter
+}
+region001 = region(point = [233.4933mm, 10.752mm], sketch = holeSketch)
+region002 = region(point = [233.7022mm, 33.769mm], sketch = holeSketch)
+extrudeHoles = extrude([region001, region002], length = 5, symmetric = true)
+  // Position two identical holes on the other side of the plate
+  |> patternCircular3d(instances = 2, axis = Z, center = [0, 0, 0])
+
+// Cut the holes from the blanking plate
+holesCut = subtract(baseExtrusion, tools = extrudeHoles, legacyMethod = true)

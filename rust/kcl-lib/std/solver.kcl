@@ -172,8 +172,9 @@ export fn circle(
 /// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn coincident(
-  /// Two points, or one point and one line/arc segment, that should occupy the same location.
-  @points: [Segment | Point2d; 2],
+  /// Two or more sketch entities that should be coincident.
+  /// When more than two inputs are provided, each item must be a point or `ORIGIN`.
+  @points: [Segment | Point2d; 2+],
 ) {}
 
 /// Constrain the distance between two points.
@@ -430,11 +431,38 @@ export fn tangent(
   @input: [Segment; 2],
 ) {}
 
+/// Constrain a point to lie at the midpoint of a line segment or circular arc.
+///
+/// ```kcl,sketchSolve
+/// profile = sketch(on = XY) {
+///   line1 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 3mm])
+///   coincident([line1.start, ORIGIN])
+///   
+///   arc1 = arc(start = [var 2mm, var 1mm], end = [var -3mm, var -2mm], center = [var 0mm, var 0mm])
+///   coincident([arc1.center, line1.start])
+///   coincident([arc1.start, line1])
+///   midpoint(line1, point = arc1.start)
+///   
+///   line2 = line(start = [var -1mm, var 3mm], end = [var 0mm, var 0mm])
+///   coincident([line2.start, arc1])
+///   coincident([line2.end, arc1.center])
+///   midpoint(arc1, point = line2.start)
+/// }
+/// solid = extrude(region(point = [1, 2], sketch = profile), length = 5)
+/// ```
+@(impl = std_rust_constraint, feature_tree = true)
+export fn midpoint(
+  /// The line or circular arc whose midpoint is constrained.
+  @input: Segment,
+  /// The point to place at the midpoint.
+  point: Segment,
+) {}
+
 /// Constrain a point to be fixed to a position.
 ///
 /// `fixed()` is an alias for `coincident()`. By convention, `fixed()` is used when one of the points is a known location, not solved with constraints and not another point in the sketch.
 ///
-/// See [coincident()](/docs/kcl-std/functions/std-sketch2-coincident) for more info.
+/// See [coincident()](/docs/kcl-std/functions/std-solver-coincident) for more info.
 @(doc_category = "functions")
 export fixed = coincident
 

@@ -28,6 +28,10 @@ import {
 import Tooltip from '@src/components/Tooltip'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
+import {
+  autoUpdateDownloadProgressSignal,
+  autoUpdateReadySignal,
+} from '@src/lib/autoUpdate'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
@@ -108,6 +112,8 @@ const Home = () => {
   }, [])
 
   const location = useLocation()
+  const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
+  const autoUpdateReady = autoUpdateReadySignal.value
   const settingsValues = settings.useSettings()
   const machineApiEnabled = settingsValues.app.machineApi.current
   const onboardingStatus = settingsValues.app.onboardingStatus.current
@@ -410,7 +416,13 @@ const Home = () => {
       <StatusBar
         globalItems={[
           ...(isDesktop() && machineApiEnabled ? [networkMachineStatus] : []),
-          ...defaultGlobalStatusBarItems({ location, filePath: undefined }),
+          ...defaultGlobalStatusBarItems({
+            autoUpdateDownloadProgress,
+            autoUpdateReady,
+            onRestartToUpdate: () => {
+              window.electron?.appRestart()
+            },
+          }),
           ...extensions.host.signal(statusBarGlobalItemsFacet).value,
         ]}
         localItems={defaultLocalStatusBarItems}

@@ -4,6 +4,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { useAppState } from '@src/AppState'
 import { ActionButton } from '@src/components/ActionButton'
 import { ActionButtonDropdown } from '@src/components/ActionButtonDropdown'
+import { ActionButtonRecentDropdown } from '@src/components/ActionButtonRecentDropdown'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { LegacySketchModeBanner } from '@src/components/SketchSolveAnnouncements'
 import Tooltip from '@src/components/Tooltip'
@@ -23,6 +24,11 @@ import type {
   ToolbarItemResolvedDropdown,
 } from '@src/lib/toolbar'
 import {
+  getDefaultRecentToolbarItemIds,
+  recordRecentToolbarItemId,
+  getToolbarDropdownDisplay,
+  promoteRecentToolbarItemId,
+  resolveRecentToolbarItems,
   isSketchToolbarTransitioning,
   isToolbarItemResolvedDropdown,
   modelingMachineStateToToolbarModeName,
@@ -36,7 +42,9 @@ import { useApp, useSingletons } from '@src/lib/boot'
 import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import { useSelector } from '@xstate/react'
 import type { SnapshotFrom } from 'xstate'
-import { isArray } from '@src/lib/utils'
+import { isArray, type Platform } from '@src/lib/utils'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
+import usePlatform from '@src/hooks/usePlatform'
 
 type ToolbarProps = { isExecuting: boolean } & Omit<
   ReturnType<typeof useModelingContext>,
@@ -55,6 +63,7 @@ const Toolbar_ = memo(
   (props: ToolbarProps) => {
     const { commands } = useApp()
     const { kclManager } = useSingletons()
+    const platform = usePlatform()
     const toolbarConfig = useToolbarConfig()
     const wasmInstance = use(kclManager.wasmInstancePromise)
     const iconClassName =
@@ -188,6 +197,9 @@ const Toolbar_ = memo(
           } else if (isToolbarDropdown(maybeIconConfig)) {
             return {
               id: maybeIconConfig.id,
+              display: maybeIconConfig.display,
+              visibleItemCount: maybeIconConfig.visibleItemCount,
+              defaultVisibleItemIds: maybeIconConfig.defaultVisibleItemIds,
               array: maybeIconConfig.array.map((item) =>
                 resolveItemConfig(item, wasmInstance)
               ),
@@ -255,12 +267,60 @@ const Toolbar_ = memo(
       sketchSolveSelectedIdsKey,
     ])
 
-    // To remember the last selected item in an ActionButtonDropdown
-    const [lastSelectedMultiActionItem, _] = useState(
-      new Map<
-        number /* index in currentModeItems */,
-        number /* index in maybeIconConfig */
-      >()
+    // To remember the last selected item in a standard ActionButtonDropdown
+    const [lastSelectedMultiActionItem, setLastSelectedMultiActionItem] =
+      useState(
+        new Map<
+          number /* index in currentModeItems */,
+          number /* index in maybeIconConfig */
+        >()
+      )
+    const [, setRecentDropdownItemIds] = useState(new Map<string, string[]>())
+    const [visibleRecentDropdownItemIds, setVisibleRecentDropdownItemIds] =
+      useState(new Map<string, string[]>())
+
+    const getKeepSelectionFromMouseEvent = useCallback(
+      (event: Pick<MouseEvent, 'metaKey' | 'ctrlKey'>) =>
+        event.metaKey || event.ctrlKey,
+      []
+    )
+
+    const rememberRecentDropdownItem = useCallback(
+      (
+        dropdown: ToolbarItemResolvedDropdown,
+        itemId: string,
+        shouldPromoteIntoVisibleItems: boolean
+      ) => {
+        setRecentDropdownItemIds((previous) => {
+          const next = new Map(previous)
+          const nextRecentItemIds = recordRecentToolbarItemId(
+            itemId,
+            next.get(dropdown.id) ?? [],
+            dropdown
+          )
+          next.set(dropdown.id, nextRecentItemIds)
+
+          if (shouldPromoteIntoVisibleItems) {
+            setVisibleRecentDropdownItemIds((previousVisible) => {
+              const nextVisible = new Map(previousVisible)
+              nextVisible.set(
+                dropdown.id,
+                promoteRecentToolbarItemId(
+                  itemId,
+                  nextVisible.get(dropdown.id) ??
+                    getDefaultRecentToolbarItemIds(dropdown),
+                  nextRecentItemIds,
+                  dropdown
+                )
+              )
+              return nextVisible
+            })
+          }
+
+          return next
+        })
+      },
+      []
     )
 
     const hotkeyActions = useMemo(
@@ -308,16 +368,143 @@ const Toolbar_ = memo(
                 />
               )
             } else if (isToolbarItemResolvedDropdown(maybeIconConfig)) {
-              // A button with a dropdown
+              if (getToolbarDropdownDisplay(maybeIconConfig) === 'recent') {
+                const visibleItemIds =
+                  visibleRecentDropdownItemIds.get(maybeIconConfig.id) ??
+                  getDefaultRecentToolbarItemIds(maybeIconConfig)
+                const { visibleItems } = resolveRecentToolbarItems(
+                  maybeIconConfig,
+                  visibleItemIds
+                )
+
+                return (
+                  <ActionButtonRecentDropdown
+                    key={maybeIconConfig.id}
+                    name={maybeIconConfig.id}
+                    dropdownTooltipText="More constraints"
+                    className={
+                      (maybeIconConfig.array[0]?.alwaysDark
+                        ? 'dark bg-chalkboard-90 '
+                        : '!bg-transparent ') +
+                      'group/wrapper ' +
+                      buttonBorderClassName +
+                      ' relative group'
+                    }
+                    menuItems={maybeIconConfig.array.map((itemConfig) => ({
+                      id: itemConfig.id,
+                      label: itemConfig.title,
+                      icon: itemConfig.icon,
+                      iconColor: itemConfig.iconColor,
+                      hotkey: itemConfig.hotkey,
+                      onClick: (event) => {
+                        rememberRecentDropdownItem(
+                          maybeIconConfig,
+                          itemConfig.id,
+                          !visibleItems.some(
+                            (visibleItem) => visibleItem.id === itemConfig.id
+                          )
+                        )
+                        itemConfig.onClick({
+                          ...itemConfig.callbackProps,
+                          keepSelection: getKeepSelectionFromMouseEvent(event),
+                        })
+                      },
+                      disabled:
+                        disableAllButtons ||
+                        !['available', 'experimental'].includes(
+                          itemConfig.status
+                        ) ||
+                        itemConfig.disabled === true ||
+                        itemConfig.disableHotkey === true,
+                      status: itemConfig.status,
+                    }))}
+                  >
+                    {visibleItems.map((itemConfig, visibleIndex) => (
+                      <div
+                        className="relative"
+                        key={itemConfig.id}
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
+                      >
+                        <ActionButton
+                          Element="button"
+                          id={itemConfig.id}
+                          data-testid={itemConfig.id}
+                          data-onboarding-id={itemConfig.id}
+                          iconStart={{
+                            icon: itemConfig.icon,
+                            iconColor: itemConfig.iconColor,
+                            className: iconClassName,
+                            bgClassName: bgClassName,
+                          }}
+                          className={
+                            '!border-transparent !px-0 pressed:!text-chalkboard-10 pressed:enabled:hovered:!text-chalkboard-10 rounded-none ' +
+                            (visibleIndex === 0 ? '!rounded-l-sm ' : '') +
+                            (visibleIndex === visibleItems.length - 1
+                              ? '!rounded-r-sm '
+                              : '') +
+                            buttonBgClassName
+                          }
+                          aria-pressed={itemConfig.isActive}
+                          disabled={
+                            disableAllButtons ||
+                            !['available', 'experimental'].includes(
+                              itemConfig.status
+                            ) ||
+                            itemConfig.disabled
+                          }
+                          name={itemConfig.title}
+                          aria-description={itemConfig.description}
+                          onClick={(event) => {
+                            rememberRecentDropdownItem(
+                              maybeIconConfig,
+                              itemConfig.id,
+                              false
+                            )
+                            itemConfig.onClick({
+                              ...itemConfig.callbackProps,
+                              keepSelection:
+                                getKeepSelectionFromMouseEvent(event),
+                            })
+                          }}
+                        >
+                          <span
+                            className={!itemConfig.showTitle ? 'sr-only' : ''}
+                          >
+                            {itemConfig.title}
+                          </span>
+                        </ActionButton>
+                        <ToolbarItemTooltip
+                          itemConfig={itemConfig}
+                          configCallbackProps={configCallbackProps}
+                          wrapperClassName="ui-open:!hidden"
+                          contentClassName={tooltipContentClassName}
+                        >
+                          {showRichContent ? (
+                            <ToolbarItemTooltipRichContent
+                              itemConfig={itemConfig}
+                              state={props.state}
+                              platform={platform}
+                            />
+                          ) : (
+                            <ToolbarItemTooltipShortContent
+                              status={itemConfig.status}
+                              title={itemConfig.title}
+                              hotkey={itemConfig.hotkey}
+                              platform={platform}
+                            />
+                          )}
+                        </ToolbarItemTooltip>
+                      </div>
+                    ))}
+                  </ActionButtonRecentDropdown>
+                )
+              }
+
               const selectedIcon =
                 maybeIconConfig.array.find((c) => c.isActive) ||
                 maybeIconConfig.array[lastSelectedMultiActionItem.get(i) ?? 0]
 
-              // Save the last selected item in the dropdown
-              lastSelectedMultiActionItem.set(
-                i,
-                maybeIconConfig.array.indexOf(selectedIcon)
-              )
               return (
                 <ActionButtonDropdown
                   Element="button"
@@ -326,6 +513,7 @@ const Toolbar_ = memo(
                   data-onboarding-id={selectedIcon.id + '-dropdown'}
                   id={selectedIcon.id + '-dropdown'}
                   name={maybeIconConfig.id}
+                  platform={platform}
                   className={
                     (maybeIconConfig.array[0].alwaysDark
                       ? 'dark bg-chalkboard-90 '
@@ -337,12 +525,20 @@ const Toolbar_ = memo(
                   splitMenuItems={maybeIconConfig.array.map((itemConfig) => ({
                     id: itemConfig.id,
                     label: itemConfig.title,
+                    icon: itemConfig.icon,
+                    iconColor: itemConfig.iconColor,
                     hotkey: itemConfig.hotkey,
-                    onClick: (event) =>
+                    onClick: (event) => {
+                      setLastSelectedMultiActionItem((previous) => {
+                        const next = new Map(previous)
+                        next.set(i, maybeIconConfig.array.indexOf(itemConfig))
+                        return next
+                      })
                       itemConfig.onClick({
                         ...itemConfig.callbackProps,
-                        keepSelection: event.metaKey || event.ctrlKey,
-                      }),
+                        keepSelection: getKeepSelectionFromMouseEvent(event),
+                      })
+                    },
                     disabled:
                       disableAllButtons ||
                       !['available', 'experimental'].includes(
@@ -383,13 +579,11 @@ const Toolbar_ = memo(
                         selectedIcon.disabled
                       }
                       name={selectedIcon.title}
-                      // aria-description is still in ARIA 1.3 draft.
-
                       aria-description={selectedIcon.description}
                       onClick={(event) =>
                         selectedIcon.onClick({
                           ...selectedIcon.callbackProps,
-                          keepSelection: event.metaKey || event.ctrlKey,
+                          keepSelection: getKeepSelectionFromMouseEvent(event),
                         })
                       }
                     >
@@ -408,12 +602,14 @@ const Toolbar_ = memo(
                           <ToolbarItemTooltipRichContent
                             itemConfig={selectedIcon}
                             state={props.state}
+                            platform={platform}
                           />
                         ) : (
                           <ToolbarItemTooltipShortContent
                             status={selectedIcon.status}
                             title={selectedIcon.title}
                             hotkey={selectedIcon.hotkey}
+                            platform={platform}
                           />
                         )}
                       </ToolbarItemTooltip>
@@ -467,7 +663,7 @@ const Toolbar_ = memo(
                   onClick={(event) =>
                     itemConfig.onClick({
                       ...itemConfig.callbackProps,
-                      keepSelection: event.metaKey || event.ctrlKey,
+                      keepSelection: getKeepSelectionFromMouseEvent(event),
                     })
                   }
                 >
@@ -484,12 +680,14 @@ const Toolbar_ = memo(
                     <ToolbarItemTooltipRichContent
                       itemConfig={itemConfig}
                       state={props.state}
+                      platform={platform}
                     />
                   ) : (
                     <ToolbarItemTooltipShortContent
                       status={itemConfig.status}
                       title={itemConfig.title}
                       hotkey={itemConfig.hotkey}
+                      platform={platform}
                     />
                   )}
                 </ToolbarItemTooltip>
@@ -567,10 +765,12 @@ const ToolbarItemTooltipShortContent = ({
   status,
   title,
   hotkey,
+  platform,
 }: {
   status: string
   title: string
   hotkey?: string | string[]
+  platform: Platform
 }) => (
   <div
     className={`text-sm flex flex-col ${
@@ -589,7 +789,7 @@ const ToolbarItemTooltipShortContent = ({
       {title}
       {hotkey && (
         <kbd className="inline-block ml-2 flex-none hotkey">
-          {filterEscHotkey(hotkey)}
+          {hotkeyDisplay(filterEscHotkey(hotkey)[0], platform)}
         </kbd>
       )}
     </div>
@@ -600,9 +800,11 @@ const ToolbarItemTooltipRichContent = memo(
   ({
     itemConfig,
     state,
+    platform,
   }: {
     itemConfig: ToolbarItemResolved
     state: ReturnType<typeof useModelingContext>['state']
+    platform: Platform
   }) => {
     const shouldBeEnabled = ['available', 'experimental'].includes(
       itemConfig.status
@@ -633,7 +835,9 @@ const ToolbarItemTooltipRichContent = memo(
             {itemConfig.title}
           </div>
           {shouldBeEnabled && itemConfig.hotkey ? (
-            <kbd className="flex-none hotkey">{itemConfig.hotkey}</kbd>
+            <kbd className="flex-none hotkey">
+              {hotkeyDisplay(filterEscHotkey(itemConfig.hotkey)[0], platform)}
+            </kbd>
           ) : itemConfig.status === 'kcl-only' ? (
             <>
               <span className="text-wrap font-sans flex-0 text-chalkboard-70 dark:text-chalkboard-40">

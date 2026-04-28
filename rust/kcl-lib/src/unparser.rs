@@ -328,6 +328,9 @@ impl ImportStatement {
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub(crate) enum ExprContext {
     Pipe,
+    /// The first expression in a pipe. It should not get pipe-specific child indentation,
+    /// but it also should not emit a leading indent before the expression itself.
+    PipeHead,
     FnDecl,
     /// Being used as an argument to a call expression, which is in a pipe expression.
     PipeCallArg,
@@ -342,7 +345,10 @@ impl ExprContext {
     }
 
     fn needs_leading_indent(self) -> bool {
-        !matches!(self, ExprContext::CallArg | ExprContext::PipeCallArg)
+        !matches!(
+            self,
+            ExprContext::PipeHead | ExprContext::CallArg | ExprContext::PipeCallArg
+        )
     }
 
     fn call_arg_context(self) -> ExprContext {
@@ -1056,7 +1062,12 @@ impl Node<PipeExpression> {
             options.write_indentation(buf, indentation_level);
         }
         for (index, statement) in self.body.iter().enumerate() {
-            statement.recast(buf, options, indentation_level + 1, ExprContext::Pipe);
+            let (statement_indentation, statement_ctxt) = if index == 0 {
+                (indentation_level, ExprContext::PipeHead)
+            } else {
+                (indentation_level + 1, ExprContext::Pipe)
+            };
+            statement.recast(buf, options, statement_indentation, statement_ctxt);
             let non_code_meta = &self.non_code_meta;
             if let Some(non_code_meta_value) = non_code_meta.non_code_nodes.get(&index) {
                 for val in non_code_meta_value {
@@ -1461,6 +1472,18 @@ export import a, b as bbb from "a.kcl"
     #[test]
     fn test_recast_sketch_block_with_labeled_args() {
         let input = r#"sketch(on = XY) {
+  return 0
+}
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast_top(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_recast_sketch_block_with_arg_shorthand() {
+        let input = r#"on = XY
+sketch(on) {
   return 0
 }
 "#;
@@ -2148,13 +2171,13 @@ scarlett_body = rectShape(pos = [0, 0], w = width, l = length)
 // build the bracket sketch around the body
 fn bracketSketch(w, d, t) {
   s = startSketchOn({
-         plane = {
-           origin = { x = 0, y = length / 2 + thk, z = 0 },
-           x_axis = { x = 1, y = 0, z = 0 },
-           y_axis = { x = 0, y = 0, z = 1 },
-           z_axis = { x = 0, y = 1, z = 0 }
-         }
-       })
+    plane = {
+      origin = { x = 0, y = length / 2 + thk, z = 0 },
+      x_axis = { x = 1, y = 0, z = 0 },
+      y_axis = { x = 0, y = 0, z = 1 },
+      z_axis = { x = 0, y = 1, z = 0 }
+    }
+  })
     |> startProfile(at = [-w / 2 - t, d + t])
     |> line(endAbsolute = [-w / 2 - t, -t], tag = $edge1)
     |> line(endAbsolute = [w / 2 + t, -t], tag = $edge2)
@@ -2180,13 +2203,13 @@ bracket_body = bracketSketch(w = width, d = depth, t = thk)
      )
 // build the tabs of the mounting bracket (right side)
 tabs_r = startSketchOn({
-       plane = {
-         origin = { x = 0, y = 0, z = depth + thk },
-         x_axis = { x = 1, y = 0, z = 0 },
-         y_axis = { x = 0, y = 1, z = 0 },
-         z_axis = { x = 0, y = 0, z = 1 }
-       }
-     })
+  plane = {
+    origin = { x = 0, y = 0, z = depth + thk },
+    x_axis = { x = 1, y = 0, z = 0 },
+    y_axis = { x = 0, y = 1, z = 0 },
+    z_axis = { x = 0, y = 0, z = 1 }
+  }
+})
   |> startProfile(at = [width / 2 + thk, length / 2 + thk])
   |> line(end = [10, -5])
   |> line(end = [0, -10])
@@ -2203,13 +2226,13 @@ tabs_r = startSketchOn({
   |> patternLinear3d(axis = [0, -1, 0], repetitions = 1, distance = length - 10)
 // build the tabs of the mounting bracket (left side)
 tabs_l = startSketchOn({
-       plane = {
-         origin = { x = 0, y = 0, z = depth + thk },
-         x_axis = { x = 1, y = 0, z = 0 },
-         y_axis = { x = 0, y = 1, z = 0 },
-         z_axis = { x = 0, y = 0, z = 1 }
-       }
-     })
+  plane = {
+    origin = { x = 0, y = 0, z = depth + thk },
+    x_axis = { x = 1, y = 0, z = 0 },
+    y_axis = { x = 0, y = 1, z = 0 },
+    z_axis = { x = 0, y = 0, z = 1 }
+  }
+})
   |> startProfile(at = [-width / 2 - thk, length / 2 + thk])
   |> line(end = [-10, -5])
   |> line(end = [0, -10])
@@ -3527,5 +3550,38 @@ return union([right, left])
      )
 ";
         assert_eq!(actual_recasted, expected_recasted);
+    }
+
+    #[test]
+    fn first_in_pipeline_indent() {
+        // These code snippets are identical, except that one passes the gear into a clone,
+        // and the other doesn't.
+        let not_clone = "gear::helical(
+  nTeeth = 12,
+  module = 1.5,
+  pressureAngle = 14deg,
+  helixAngle = 25deg,
+  gearHeight = 5,
+)
+";
+        let yes_clone = "gear::helical(
+  nTeeth = 12,
+  module = 1.5,
+  pressureAngle = 14deg,
+  helixAngle = 25deg,
+  gearHeight = 5,
+)
+|> clone()
+";
+        // Both these should format their gear::helical parameters the same.
+        let not_clone_recasted = crate::parsing::top_level_parse(not_clone)
+            .unwrap()
+            .recast_top(&FormatOptions::new(), 0);
+        let yes_clone_recasted = crate::parsing::top_level_parse(yes_clone)
+            .unwrap()
+            .recast_top(&FormatOptions::new(), 0);
+        assert!(not_clone_recasted.contains("\n  nTeeth"));
+        assert!(!yes_clone_recasted.contains("\n       nTeeth"));
+        assert!(yes_clone_recasted.contains("\n  nTeeth"));
     }
 }

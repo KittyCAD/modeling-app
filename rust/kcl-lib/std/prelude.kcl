@@ -19,7 +19,6 @@ export import "std::units"
 export import * from "std::array"
 export import * from "std::math"
 export import * from "std::sketch"
-export import "std::solver"
 export import * from "std::solid"
 export import * from "std::transform"
 export import "std::turns"
@@ -27,6 +26,8 @@ export import "std::sweep"
 export import "std::appearance"
 export import "std::vector"
 export import "std::hole"
+@(experimental = true)
+export import "std::gear"
 @(experimental = true)
 export import * from "std::runtime"
 
