@@ -13,8 +13,8 @@ import { webSafePathSplit } from '@src/lib/paths'
 import { isArray } from '@src/lib/utils'
 import type { RequestedProjectFile } from '@src/machines/systemIO/utils'
 
-const DEFAULT_PROJECT_ID_NAME = 'shared-project'
-const PROJECT_ID_DOWNLOAD_FORMAT = 'zip'
+const DEFAULT_IMPORTED_PROJECT_NAME = 'shared-project'
+const PROJECT_DOWNLOAD_FORMAT = 'zip'
 
 type DownloadedProjectArchive = {
   archive: ArrayBuffer
@@ -91,7 +91,7 @@ async function downloadProjectArchiveById(
     projects.download_public_project({
       client,
       id: projectId,
-      format: PROJECT_ID_DOWNLOAD_FORMAT,
+      format: PROJECT_DOWNLOAD_FORMAT,
     })
   )
 
@@ -112,7 +112,7 @@ function ensureProjectIdDownloadFormat(input: RequestInfo | URL) {
     return input
   }
 
-  url.searchParams.set('format', PROJECT_ID_DOWNLOAD_FORMAT)
+  url.searchParams.set('format', PROJECT_DOWNLOAD_FORMAT)
 
   if (typeof input === 'string' || input instanceof URL) {
     return url.toString()
@@ -212,7 +212,7 @@ async function parseZipArchive({
   const projectName = sanitizeProjectName(
     rootDirectory ||
       getFilenameStemFromContentDisposition(contentDisposition) ||
-      DEFAULT_PROJECT_ID_NAME
+      DEFAULT_IMPORTED_PROJECT_NAME
   )
 
   const files = await Promise.all(
@@ -269,7 +269,7 @@ function parseJsonArchive(archive: ArrayBuffer):
   }
 
   const projectName = sanitizeProjectName(
-    parsed?.projectName || parsed?.name || DEFAULT_PROJECT_ID_NAME
+    parsed?.projectName || parsed?.name || DEFAULT_IMPORTED_PROJECT_NAME
   )
   const files = coerceJsonFiles(parsed?.files, projectName)
 
@@ -455,7 +455,7 @@ function normalizeArchivePath(path: string) {
 
 function sanitizeProjectName(name: string) {
   const trimmed = name.trim().replace(/[\\/]/g, '-')
-  return trimmed || DEFAULT_PROJECT_ID_NAME
+  return trimmed || DEFAULT_IMPORTED_PROJECT_NAME
 }
 
 function stripFileExtension(filename: string) {

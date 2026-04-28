@@ -19,12 +19,17 @@ import {
 import { isDesktop } from '@src/lib/isDesktop'
 import type { FileLinkParams } from '@src/lib/links'
 import { downloadProjectById } from '@src/lib/downloadProject'
+import { getUniqueProjectName } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
 import { useApp } from '@src/lib/boot'
 import type { KclManager } from '@src/lang/KclManager'
 import { err } from '@src/lib/trap'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import {
+  SystemIOMachineEvents,
+  waitForIdleState,
+} from '@src/machines/systemIO/utils'
+import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 
 // For initializing the command arguments, we actually want `method` to be undefined
 // so that we don't skip it in the command palette.
@@ -131,15 +136,50 @@ export function useQueryParamEffects(kclManager: KclManager) {
         entrypointFilePath: downloadedProject.entrypointFilePath,
       })
 
+      const requestedProjectName = !isDesktop()
+        ? (app.settings.actor.getSnapshot().context.currentProject?.name ??
+          DEFAULT_WEB_PROJECT_NAME)
+        : downloadedProject.projectName
+      const requestedSubDirectoryName = !isDesktop()
+        ? getUniqueProjectName(
+            downloadedProject.projectName,
+            getAllSubDirectoriesAtProjectRoot(
+              app.systemIOActor.getSnapshot().context,
+              { projectFolderName: requestedProjectName }
+            )
+          )
+        : downloadedProject.projectName
+      const files = !isDesktop()
+        ? downloadedProject.files.map((file) => ({
+            ...file,
+            requestedProjectName,
+            requestedFileName: fsZds.join(
+              requestedSubDirectoryName,
+              file.requestedFileName
+            ),
+          }))
+        : downloadedProject.files
+      const requestedFileNameWithExtension =
+        !isDesktop() && downloadedProject.entrypointFilePath
+          ? fsZds.join(
+              requestedSubDirectoryName,
+              downloadedProject.entrypointFilePath
+            )
+          : downloadedProject.entrypointFilePath
+
       app.systemIOActor.send({
         type: SystemIOMachineEvents.bulkImportProjectFilesAndNavigateToFile,
         data: {
-          files: downloadedProject.files,
-          requestedProjectName: downloadedProject.projectName,
-          requestedFileNameWithExtension: downloadedProject.entrypointFilePath,
+          files,
+          requestedProjectName,
+          requestedFileNameWithExtension,
         },
       })
-      clearProjectIdSearchParam()
+
+      await waitForIdleState({ systemIOActor: app.systemIOActor })
+      if (!cancelled) {
+        clearProjectIdSearchParam()
+      }
     })().catch((error) => {
       if (cancelled) {
         return
