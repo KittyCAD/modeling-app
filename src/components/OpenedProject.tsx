@@ -83,7 +83,6 @@ export function OpenedProject() {
   const { auth, billing, settings, layout, project, systemIOActor } = useApp()
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
-  const getSettings = settings.get
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
   const { state: modelingState, send: modelingSend } = useModelingContext()
@@ -430,7 +429,7 @@ export function OpenedProject() {
             setLayout={layout.set}
             areaLibrary={defaultAreaLibrary}
             actionLibrary={defaultActionLibrary}
-            showDebugPanel={settingsValues.app.showDebugPanel.current}
+            showDebugPanel={settingsValues.debug.showPanel.current}
             notifications={notifications}
             artifactGraph={kclManager.artifactGraph}
           />
@@ -450,7 +449,7 @@ export function OpenedProject() {
             }),
           ]}
           localItems={[
-            ...(getSettings().app.showDebugPanel.current
+            ...(settingsValues.debug.showModelingMachineState.current
               ? ([
                   {
                     id: 'modeling-state',
