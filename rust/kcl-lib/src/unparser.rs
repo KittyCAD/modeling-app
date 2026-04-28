@@ -3371,6 +3371,28 @@ x = 1
     }
 
     #[test]
+    fn settings_then_code_is_stable() {
+        let code = "\
+@settings(defaultLengthUnit = in)
+
+import \"cube-inches.kcl\" as cubeIn
+import \"cube-mm.kcl\" as cubeMm
+
+cubeIn
+cubeMm
+";
+        let formatted_once = crate::parsing::top_level_parse(code)
+            .unwrap()
+            .recast_top(&FormatOptions::new(), 0);
+        assert_eq!(formatted_once, code);
+
+        let formatted_twice = crate::parsing::top_level_parse(&formatted_once)
+            .unwrap()
+            .recast_top(&FormatOptions::new(), 0);
+        assert_eq!(formatted_twice, formatted_once);
+    }
+
+    #[test]
     fn settings_then_standalone_comment_is_stable() {
         let code = "\
 @settings(defaultLengthUnit = mm)
