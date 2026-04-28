@@ -127,7 +127,8 @@ const CIRCLE_FN: &str = "circle";
 const CIRCLE_VARIABLE: &str = "circle";
 const CIRCLE_START_PARAM: &str = "start";
 const CIRCLE_CENTER_PARAM: &str = "center";
-const LABEL_PARAM: &str = "label";
+const LABEL_POSITION_PARAM: &str = "labelPosition";
+const LEGACY_LABEL_PARAM: &str = "label";
 
 const COINCIDENT_FN: &str = "coincident";
 const DIAMETER_FN: &str = "diameter";
@@ -3083,7 +3084,7 @@ impl FrontendState {
 
         let arguments = match &distance.label {
             Some(label) => vec![ast::LabeledArg {
-                label: Some(ast::Identifier::new(LABEL_PARAM)),
+                label: Some(ast::Identifier::new(LABEL_POSITION_PARAM)),
                 arg: to_ast_point2d_number(label).map_err(|err| KclError::refactor(err.to_string()))?,
             }],
             None => Default::default(),
@@ -5285,15 +5286,15 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                     return TraversalReturn::new_continue(());
                 }
 
-                if let Some(label_arg) = call
-                    .arguments
-                    .iter_mut()
-                    .find(|arg| arg.label.as_ref().map(|id| id.name.as_str()) == Some(LABEL_PARAM))
-                {
+                if let Some(label_arg) = call.arguments.iter_mut().find(|arg| {
+                    let label = arg.label.as_ref().map(|id| id.name.as_str());
+                    label == Some(LABEL_POSITION_PARAM) || label == Some(LEGACY_LABEL_PARAM)
+                }) {
+                    label_arg.label = Some(ast::Identifier::new(LABEL_POSITION_PARAM));
                     label_arg.arg = label.clone();
                 } else {
                     call.arguments.push(ast::LabeledArg {
-                        label: Some(ast::Identifier::new(LABEL_PARAM)),
+                        label: Some(ast::Identifier::new(LABEL_POSITION_PARAM)),
                         arg: label.clone(),
                     });
                 }
@@ -8779,7 +8780,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   point1 = point(at = [var 1, var 2])
   point2 = point(at = [var 3, var 4])
-  distance([point1, point2], label = [10mm, 11mm]) == 2mm
+  distance([point1, point2], labelPosition = [10mm, 11mm]) == 2mm
 }
 "
         );
@@ -8860,7 +8861,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   point1 = point(at = [var 1mm, var 2mm])
   point2 = point(at = [var 3mm, var 2mm])
-  distance([point1, point2], label = [10mm, 11mm]) == 2mm
+  distance([point1, point2], labelPosition = [10mm, 11mm]) == 2mm
 }
 "
         );
