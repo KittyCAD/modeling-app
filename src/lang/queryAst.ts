@@ -1202,23 +1202,47 @@ export function getVariableExprsFromSelection(
           deepPath: PathToNode
         }
       | undefined
+
     if (lastChildLookup && s.artifact) {
       const children = findAllChildrenAndOrderByPlaceInCode(
         s.artifact,
         artifactGraph
       )
-      const lastChildVariable = getLastVariable(
-        children,
-        ast,
-        wasmInstance,
-        artifactTypeFilter,
-        nodeToEdit
-      )
-      if (!lastChildVariable) {
-        continue
+
+      if (
+        artifactTypeFilter?.includes(s.artifact.type) &&
+        'consumed' in s.artifact &&
+        !s.artifact.consumed &&
+        !hasLaterMatchingArtifact(children, s.artifact, artifactTypeFilter)
+      ) {
+        // Use a selected, unconsumed body directly only when the ordered
+        // traversal does not reveal a later matching body derived from it.
+        // This keeps selected blends as blend variables, while face commands
+        // like shell can still resolve a parent sweep to a downstream sweep.
+        const directLookup = getNodeFromPath<VariableDeclaration>(
+          ast,
+          s.codeRef.pathToNode,
+          wasmInstance,
+          'VariableDeclaration'
+        )
+        if (!err(directLookup)) {
+          variable = directLookup
+        }
       }
 
-      variable = lastChildVariable.variableDeclaration
+      if (!variable) {
+        const lastChildVariable = getLastVariable(
+          children,
+          ast,
+          wasmInstance,
+          artifactTypeFilter,
+          nodeToEdit
+        )
+        if (!lastChildVariable) {
+          continue
+        }
+        variable = lastChildVariable.variableDeclaration
+      }
     } else {
       const directLookup = getNodeFromPath<VariableDeclaration>(
         ast,
@@ -1290,6 +1314,26 @@ export function getVariableExprsFromSelection(
   }
 
   return { exprs, pathIfPipe }
+}
+
+function hasLaterMatchingArtifact(
+  children: Artifact[],
+  artifact: Artifact,
+  filter: Array<Artifact['type']>
+): boolean {
+  let foundLaterMatchingArtifact = false
+
+  for (const child of children) {
+    if (child.id === artifact.id) {
+      return foundLaterMatchingArtifact
+    }
+
+    if (filter.includes(child.type)) {
+      foundLaterMatchingArtifact = true
+    }
+  }
+
+  return false
 }
 
 function getSketchVariableNameForSegment(

@@ -490,8 +490,8 @@ export function createSettings() {
       }),
       /**
        * Determines if new sketches should use the solver-based sketch mode.
-       * This setting is hidden and defaults to true except for Playwright or
-       * when the user has the 'classic_sketch_mode' feature flag enabled.
+       * This setting is hidden and defaults to true. It now exists only so
+       * Playwright can set it to false for regression testing.
        */
       useSketchSolveMode: new Setting<boolean>({
         hideOnLevel: 'project',
