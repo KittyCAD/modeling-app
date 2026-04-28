@@ -13,7 +13,7 @@ import { PATHS } from '@src/lib/paths'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import { PluginsList } from '@src/components/PluginList'
 import { useApp } from '@src/lib/boot'
-import { pluginsFacet } from '@src/lib/extensions'
+import { pluginsFacet } from '@kittycad/extensions'
 
 export const Settings = () => {
   const app = useApp()

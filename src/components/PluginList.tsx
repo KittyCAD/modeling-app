@@ -4,7 +4,7 @@ import type {
   CompartmentToggleController,
   ExtensionHost,
   PluginRecord,
-} from '@src/lib/extensions'
+} from '@kittycad/extensions'
 import { Toggle } from '@src/components/Toggle/Toggle'
 
 type PluginsListProps = {

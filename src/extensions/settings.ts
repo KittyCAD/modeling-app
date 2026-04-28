@@ -1,5 +1,5 @@
 import { statusBarGlobalItemsFacet } from '@src/facets'
-import { createPlugin, defineExtension, provide } from '@src/lib/extensions'
+import { createPlugin, defineExtension, provide } from '@kittycad/extensions'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
 
 const settingsStatusBar = defineExtension({

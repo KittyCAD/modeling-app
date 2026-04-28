@@ -1,6 +1,6 @@
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import type { RouteObject } from 'react-router-dom'
-import { appendFacet } from '@src/lib/extensions'
+import { appendFacet } from '@kittycad/extensions'
 
 export const routesFacet = appendFacet<RouteObject>('routes')
 export const statusBarGlobalItemsFacet =

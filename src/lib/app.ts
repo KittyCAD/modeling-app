@@ -51,10 +51,10 @@ import {
 import { MachineManager } from '@src/lib/MachineManager'
 import { reportRejection } from '@src/lib/trap'
 import type { Project } from '@src/lib/project'
+import { ExtensionHost } from '@kittycad/extensions'
 import type { UserResponse } from '@kittycad/lib/dist/types/src'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
-import { ExtensionHost } from '@src/lib/extensions'
 import { coreExtensions } from '@src/extensions'
 
 // We set some of our singletons on the window for debugging and E2E tests

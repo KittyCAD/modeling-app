@@ -1,5 +1,5 @@
 import { routesFacet, statusBarGlobalItemsFacet } from '@src/facets'
-import { defineExtension, provide, createPlugin } from '@src/lib/extensions'
+import { createPlugin, defineExtension, provide } from '@kittycad/extensions'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
 import { telemetryFileRoute, telemetryHomeRoute } from '@src/routes/Telemetry'
 
