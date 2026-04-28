@@ -1,0 +1,57 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing endless_impeller.kcl
+---
+// Minimal reproducer for runaway KCL memory growth.
+//
+// Each layer sketches on a face of the previous solid. Runtime values embed
+// that face, the face embeds the previous solid, and the next clone copies the
+// whole nested history again.
+
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+width = 1mm
+
+fn squareRegion(onSurface) {
+  square = sketch(on = onSurface) {
+    line1 = line(start = [width / 2, -width / 2], end = [width / 2, width / 2])
+    line2 = line(start = [width / 2, width / 2], end = [-width / 2, width / 2])
+    line3 = line(start = [-width / 2, width / 2], end = [-width / 2, -width / 2])
+    line4 = line(start = [-width / 2, -width / 2], end = [width / 2, -width / 2])
+  }
+
+  return region(point = [0.49mm, 0mm], sketch = square)
+}
+
+r0 = squareRegion(onSurface = XY)
+solid0 = extrude(r0, length = width)
+
+face1 = faceOf(solid0, face = r0.tags.line1)
+r1 = squareRegion(onSurface = face1)
+solid1 = extrude(r1, length = width)
+
+face2 = faceOf(solid1, face = r1.tags.line1)
+r2 = squareRegion(onSurface = face2)
+solid2 = extrude(r2, length = width)
+
+face3 = faceOf(solid2, face = r2.tags.line1)
+r3 = squareRegion(onSurface = face3)
+solid3 = extrude(r3, length = width)
+
+face4 = faceOf(solid3, face = r3.tags.line1)
+r4 = squareRegion(onSurface = face4)
+solid4 = extrude(r4, length = width)
+
+face5 = faceOf(solid4, face = r4.tags.line1)
+r5 = squareRegion(onSurface = face5)
+solid5 = extrude(r5, length = width)
+
+face6 = faceOf(solid5, face = r5.tags.line1)
+r6 = squareRegion(onSurface = face6)
+solid6 = extrude(r6, length = width)
+
+// With this block commented out, it takes 42 seconds.
+// If you uncomment this, it takes over 3 minutes.
+// face7 = faceOf(solid6, face = r6.tags.line1)
+// r7 = squareRegion(onSurface = face7)
+// solid7 = extrude(r7, length = width)

@@ -739,7 +739,7 @@ type makeTemplateReturn = {
   ) => makeTemplateReturn
 }
 
-const escapeRegExp = (string: string) => {
+export const escapeRegExp = (string: string) => {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // $& means the whole matched string
 }
 
@@ -992,7 +992,6 @@ export async function setup(
               ...TEST_SETTINGS.app?.appearance,
               theme: 'dark',
             },
-            ...testProjectSettings,
             onboarding_status: 'dismissed',
           },
           project: {
