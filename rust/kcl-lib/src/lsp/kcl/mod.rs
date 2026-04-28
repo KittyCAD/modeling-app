@@ -2109,9 +2109,9 @@ return 42"#;
     }
 
     #[test]
-    fn old_sketch_block_completions_exclude_solver() {
-        // Old sketch blocks use the Default completions map (is_in_sketch_block
-        // returns false for old syntax), so solver functions must be absent.
+    fn sketch1_block_completions_exclude_solver() {
+        // Sketch v1 (startSketchOn()) blocks use the Default completions map (is_in_sketch_block
+        // returns false for sketch v1 syntax);  solver functions must be absent.
         let stdlib = crate::docs::kcl_doc::walk_stdlib();
         let completions = get_completions_from_stdlib(&stdlib).unwrap();
 
