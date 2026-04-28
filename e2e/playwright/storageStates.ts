@@ -14,6 +14,7 @@ export const TEST_SETTINGS: DeepPartial<Settings> = {
   },
   debug: {
     show_panel: true,
+    show_modeling_machine_state: true,
   },
   modeling: {
     enable_ssao: false,
@@ -53,6 +54,7 @@ export const TEST_SETTINGS_CORRUPTED = {
   },
   debug: {
     showPanel: true,
+    showModelingMachineState: true,
   },
   modeling: {
     defaultUnit: 'invalid' as any,
