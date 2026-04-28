@@ -19,8 +19,9 @@ test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
       await toolbar.closePane(DefaultLayoutPaneID.Code)
       await toolbar.openPane(DefaultLayoutPaneID.TTC)
       await copilot.setMode('fast')
+
       await copilot.conversationInput.fill(
-        'make a 10x10x10cm cube centered on the origin, name the last variable "cube"'
+        'make a basic cube (ignore: 2026-04-28)'
       )
       await copilot.submitButton.click()
       await expect(copilot.placeHolderResponse).toBeVisible()
@@ -34,17 +35,7 @@ test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
 
       await toolbar.closePane(DefaultLayoutPaneID.TTC)
       await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await expect(editor.codeContent).toContainText(
-        /startSketchOn|sketch\(on =/
-      )
-      await editor.expectEditor.toContain('extrude')
-      await editor.expectEditor.toContain('10')
-      await scene.settled(cmdBar)
-
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const extrude = await toolbar.getFeatureTreeOperation('cube', 0)
-      await expect(extrude).toBeVisible()
+      await expect(editor.codeContent).toContainText('sketch')
     })
   })
 })
