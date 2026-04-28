@@ -573,7 +573,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         }
       }
     ),
-    [SystemIOMachineActors.bulkCreateProjectFilesAndNavigateToProject]:
+    [SystemIOMachineActors.bulkImportProjectFilesAndNavigateToFile]:
       fromPromise(
         async ({
           input,

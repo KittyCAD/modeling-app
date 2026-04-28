@@ -120,7 +120,7 @@ export const systemIOMachine = setup({
           }
         }
       | {
-          type: SystemIOMachineEvents.bulkCreateProjectFilesAndNavigateToProject
+          type: SystemIOMachineEvents.bulkImportProjectFilesAndNavigateToFile
           data: {
             files: RequestedProjectFile[]
             requestedProjectName: string
@@ -558,7 +558,7 @@ export const systemIOMachine = setup({
         return { message: '', fileName: '', projectName: '', subRoute: '' }
       }
     ),
-    [SystemIOMachineActors.bulkCreateProjectFilesAndNavigateToProject]:
+    [SystemIOMachineActors.bulkImportProjectFilesAndNavigateToFile]:
       fromPromise(
         async ({
           input,
@@ -853,9 +853,9 @@ export const systemIOMachine = setup({
           target:
             SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToProject,
         },
-        [SystemIOMachineEvents.bulkCreateProjectFilesAndNavigateToProject]: {
+        [SystemIOMachineEvents.bulkImportProjectFilesAndNavigateToFile]: {
           target:
-            SystemIOMachineStates.bulkCreatingProjectFilesAndNavigateToProject,
+            SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile,
         },
         [SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile]: {
           target:
@@ -1278,14 +1278,14 @@ export const systemIOMachine = setup({
         },
       },
     },
-    [SystemIOMachineStates.bulkCreatingProjectFilesAndNavigateToProject]: {
+    [SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile]: {
       invoke: {
-        id: SystemIOMachineActors.bulkCreateProjectFilesAndNavigateToProject,
-        src: SystemIOMachineActors.bulkCreateProjectFilesAndNavigateToProject,
+        id: SystemIOMachineActors.bulkImportProjectFilesAndNavigateToFile,
+        src: SystemIOMachineActors.bulkImportProjectFilesAndNavigateToFile,
         input: ({ context, event }) => {
           assertEvent(
             event,
-            SystemIOMachineEvents.bulkCreateProjectFilesAndNavigateToProject
+            SystemIOMachineEvents.bulkImportProjectFilesAndNavigateToFile
           )
           return {
             context,
@@ -1301,7 +1301,7 @@ export const systemIOMachine = setup({
           actions: [
             assign({
               lastOperation:
-                SystemIOMachineStates.bulkCreatingProjectFilesAndNavigateToProject,
+                SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile,
               requestedFileName: ({ event }) => {
                 const output = (
                   event as {

@@ -125,7 +125,7 @@ export function SystemIOMachineLogicListener() {
       const isCreating = [
         SystemIOMachineStates.creatingProject,
         SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToProject,
-        SystemIOMachineStates.bulkCreatingProjectFilesAndNavigateToProject,
+        SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile,
         SystemIOMachineStates.importFileFromURL,
       ].includes(lastOperation)
       const isHomeAndNotCreating = pathname === PATHS.HOME && !isCreating

@@ -132,7 +132,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
       })
 
       app.systemIOActor.send({
-        type: SystemIOMachineEvents.bulkCreateProjectFilesAndNavigateToProject,
+        type: SystemIOMachineEvents.bulkImportProjectFilesAndNavigateToFile,
         data: {
           files: downloadedProject.files,
           requestedProjectName: downloadedProject.projectName,
