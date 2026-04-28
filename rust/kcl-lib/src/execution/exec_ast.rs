@@ -3433,7 +3433,7 @@ impl Node<BinaryExpression> {
                                         sketch_var_initial_value(&sketch_vars, center.vars.y, exec_state, range)?;
 
                                     // Get the hypotenuse between the two points, the radius
-                                    let radius_initial_value = (start_x - center_x).hypot(start_y - center_y);
+                                    let radius_initial_value = libm::hypot(start_x - center_x, start_y - center_y);
 
                                     let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
                                         let message =

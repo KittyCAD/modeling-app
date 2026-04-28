@@ -811,6 +811,7 @@ export function buildToolbarConfig(
                   data: { name: 'Join Surfaces', groupId: 'modeling' },
                 }),
               status: 'available',
+              icon: 'joinSurfaces',
               title: 'Join Surfaces',
               description: 'Join surfaces together.',
               links: [

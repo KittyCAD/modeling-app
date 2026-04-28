@@ -118,7 +118,7 @@ interface LayoutRootNodeProps {
   getLayout: () => Layout | undefined
   setLayout: (layout: Layout) => void
   // Values that affect the layout (pane buttons, menus, etc).
-  showDebugPanel: SettingsType['app']['showDebugPanel']['current']
+  showDebugPanel: SettingsType['debug']['showPanel']['current']
   notifications: boolean[]
   artifactGraph: ArtifactGraph
   layoutName?: string
