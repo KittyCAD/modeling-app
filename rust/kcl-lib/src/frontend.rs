@@ -8799,6 +8799,85 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_distance_constraint_label() {
+        let initial_source = "\
+sketch(on = XY) {
+  point(at = [var 1, var 2])
+  point(at = [var 3, var 2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point0_id = *sketch.segments.first().unwrap();
+        let point1_id = *sketch.segments.get(1).unwrap();
+
+        let constraint = Constraint::Distance(Distance {
+            points: vec![point0_id.into(), point1_id.into()],
+            distance: Number {
+                value: 2.0,
+                units: NumericSuffix::Mm,
+            },
+            label: None,
+            source: Default::default(),
+        });
+        let (_, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = sketch.constraints[0];
+        let label = Point2d {
+            x: Number {
+                value: 10.0,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: 11.0,
+                units: NumericSuffix::Mm,
+            },
+        };
+
+        let (src_delta, scene_delta) = frontend
+            .edit_distance_constraint_label(&mock_ctx, version, sketch_id, constraint_id, label.clone())
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  point1 = point(at = [var 1mm, var 2mm])
+  point2 = point(at = [var 3mm, var 2mm])
+  distance([point1, point2], label = [10mm, 11mm]) == 2mm
+}
+"
+        );
+
+        let constraint_object = scene_delta.new_graph.objects.get(constraint_id.0).unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("Expected constraint object");
+        };
+        let Constraint::Distance(distance) = constraint else {
+            panic!("Expected distance constraint");
+        };
+        assert_eq!(distance.label, Some(label));
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_horizontal_distance_two_points() {
         let initial_source = "\
 sketch(on = XY) {
