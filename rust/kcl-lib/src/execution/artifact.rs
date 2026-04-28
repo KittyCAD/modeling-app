@@ -2144,36 +2144,8 @@ fn artifacts_to_update(
                     composite_solid_id: None,
                 }));
 
-                for input_id in &solid_ids {
+                for input_id in solid_ids.iter().chain(tool_ids.iter()) {
                     if let Some(artifact) = artifacts.get(input_id) {
-                        match artifact {
-                            Artifact::CompositeSolid(comp) => {
-                                let mut new_comp = comp.clone();
-                                new_comp.composite_solid_id = Some(*solid_id);
-                                new_comp.consumed = true;
-                                return_arr.push(Artifact::CompositeSolid(new_comp));
-                            }
-                            Artifact::Path(path) => {
-                                let mut new_path = path.clone();
-                                new_path.composite_solid_id = Some(*solid_id);
-
-                                if let Some(sweep_id) = new_path.sweep_id
-                                    && let Some(Artifact::Sweep(sweep)) = artifacts.get(&sweep_id)
-                                {
-                                    let mut new_sweep = sweep.clone();
-                                    new_sweep.consumed = true;
-                                    return_arr.push(Artifact::Sweep(new_sweep));
-                                }
-
-                                return_arr.push(Artifact::Path(new_path));
-                            }
-                            _ => {}
-                        }
-                    }
-                }
-
-                for tool_id in &tool_ids {
-                    if let Some(artifact) = artifacts.get(tool_id) {
                         match artifact {
                             Artifact::CompositeSolid(comp) => {
                                 let mut new_comp = comp.clone();
