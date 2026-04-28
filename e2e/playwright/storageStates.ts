@@ -52,7 +52,7 @@ export const TEST_SETTINGS_CORRUPTED = {
     projectDirectory: 123 as any,
   },
   debug: {
-    show_panel: true,
+    showPanel: true,
   },
   modeling: {
     defaultUnit: 'invalid' as any,
