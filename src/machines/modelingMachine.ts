@@ -122,6 +122,12 @@ import {
 } from '@src/lang/modifyAst/faces'
 import { addHelix } from '@src/lang/modifyAst/geometry'
 import {
+  addHelicalGear,
+  addHerringboneGear,
+  addRingGear,
+  addSpurGear,
+} from '@src/lang/modifyAst/gears'
+import {
   addExtrude,
   addLoft,
   addRevolve,
@@ -518,6 +524,13 @@ export type ModelingMachineEvent =
   | { type: 'Blend'; data?: ModelingCommandSchema['Blend'] }
   | { type: 'Offset plane'; data: ModelingCommandSchema['Offset plane'] }
   | { type: 'Helix'; data: ModelingCommandSchema['Helix'] }
+  | { type: 'Helical Gear'; data?: ModelingCommandSchema['Helical Gear'] }
+  | {
+      type: 'Herringbone Gear'
+      data?: ModelingCommandSchema['Herringbone Gear']
+    }
+  | { type: 'Spur Gear'; data?: ModelingCommandSchema['Spur Gear'] }
+  | { type: 'Ring Gear'; data?: ModelingCommandSchema['Ring Gear'] }
   | { type: 'Text-to-CAD' }
   | { type: 'Prompt-to-edit'; data: ModelingCommandSchema['Prompt-to-edit'] }
   | {
@@ -4396,6 +4409,222 @@ export const modelingMachine = setup({
         )
       }
     ),
+    helicalGearAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Helical Gear'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        let astWithNewSetting: Node<Program> | undefined
+        if (
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const ast = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            await input.kclManager.wasmInstancePromise
+          )
+          if (err(ast)) {
+            return Promise.reject(ast)
+          }
+
+          astWithNewSetting = ast
+        }
+
+        const astResult = addHelicalGear({
+          ...input.data,
+          ast: astWithNewSetting ?? input.kclManager.ast,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
+        }
+
+        const { modifiedAst, pathToNode } = astResult
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [pathToNode],
+          }
+        )
+      }
+    ),
+    herringboneGearAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Herringbone Gear'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        let astWithNewSetting: Node<Program> | undefined
+        if (
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const ast = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            await input.kclManager.wasmInstancePromise
+          )
+          if (err(ast)) {
+            return Promise.reject(ast)
+          }
+
+          astWithNewSetting = ast
+        }
+
+        const astResult = addHerringboneGear({
+          ...input.data,
+          ast: astWithNewSetting ?? input.kclManager.ast,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
+        }
+
+        const { modifiedAst, pathToNode } = astResult
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [pathToNode],
+          }
+        )
+      }
+    ),
+    spurGearAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Spur Gear'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        let astWithNewSetting: Node<Program> | undefined
+        if (
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const ast = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            await input.kclManager.wasmInstancePromise
+          )
+          if (err(ast)) {
+            return Promise.reject(ast)
+          }
+
+          astWithNewSetting = ast
+        }
+
+        const astResult = addSpurGear({
+          ...input.data,
+          ast: astWithNewSetting ?? input.kclManager.ast,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
+        }
+
+        const { modifiedAst, pathToNode } = astResult
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [pathToNode],
+          }
+        )
+      }
+    ),
+    ringGearAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Ring Gear'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        let astWithNewSetting: Node<Program> | undefined
+        if (
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const ast = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            await input.kclManager.wasmInstancePromise
+          )
+          if (err(ast)) {
+            return Promise.reject(ast)
+          }
+
+          astWithNewSetting = ast
+        }
+
+        const astResult = addRingGear({
+          ...input.data,
+          ast: astWithNewSetting ?? input.kclManager.ast,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
+        }
+
+        const { modifiedAst, pathToNode } = astResult
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [pathToNode],
+          }
+        )
+      }
+    ),
     shellAstMod: fromPromise(
       async ({
         input,
@@ -5658,6 +5887,22 @@ export const modelingMachine = setup({
 
         Helix: {
           target: 'Applying helix',
+        },
+
+        'Helical Gear': {
+          target: 'Applying helical gear',
+        },
+
+        'Herringbone Gear': {
+          target: 'Applying herringbone gear',
+        },
+
+        'Spur Gear': {
+          target: 'Applying spur gear',
+        },
+
+        'Ring Gear': {
+          target: 'Applying ring gear',
         },
 
         Shell: {
@@ -7350,6 +7595,86 @@ export const modelingMachine = setup({
         id: 'helixAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'Helix') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying helical gear': {
+      invoke: {
+        src: 'helicalGearAstMod',
+        id: 'helicalGearAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Helical Gear') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying herringbone gear': {
+      invoke: {
+        src: 'herringboneGearAstMod',
+        id: 'herringboneGearAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Herringbone Gear') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying spur gear': {
+      invoke: {
+        src: 'spurGearAstMod',
+        id: 'spurGearAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Spur Gear') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying ring gear': {
+      invoke: {
+        src: 'ringGearAstMod',
+        id: 'ringGearAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Ring Gear') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,

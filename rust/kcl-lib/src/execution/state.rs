@@ -93,6 +93,23 @@ pub(super) struct GlobalState {
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub(crate) enum ConstraintKey {
+    LineCircle([usize; 10]),
+    CircleCircle([usize; 12]),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum TangencyMode {
+    LineCircle(ezpz::LineSide),
+    CircleCircle(ezpz::CircleSide),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ConstraintState {
+    Tangency(TangencyMode),
+}
+
 #[cfg(feature = "artifact-graph")]
 #[derive(Debug, Clone, Default)]
 pub(super) struct ArtifactState {
@@ -109,8 +126,7 @@ pub(super) struct ArtifactState {}
 
 /// Artifact state for a single module.
 #[cfg(feature = "artifact-graph")]
-#[derive(Debug, Clone, Default, Serialize)]
-#[cfg_attr(not(feature = "snapshot-engine-responses"), derive(PartialEq))]
+#[derive(Debug, Clone, Default, PartialEq, Serialize)]
 pub struct ModuleArtifactState {
     /// Internal map of UUIDs to exec artifacts.
     pub artifacts: IndexMap<ArtifactId, Artifact>,
@@ -137,25 +153,6 @@ pub struct ModuleArtifactState {
     pub artifact_id_to_scene_object: IndexMap<ArtifactId, ObjectId>,
     /// Solutions for sketch variables.
     pub var_solutions: Vec<(SourceRange, Number)>,
-}
-
-// It's error-prone to implement this manually. New fields are likely to be
-// forgotten. So we only use this implementation when the feature is enabled.
-#[cfg(feature = "snapshot-engine-responses")]
-impl PartialEq for ModuleArtifactState {
-    fn eq(&self, other: &Self) -> bool {
-        self.artifacts == other.artifacts
-            && self.unprocessed_commands == other.unprocessed_commands
-            && self.commands == other.commands
-            // WebSocketResponse type doesn't implement `PartialEq`.
-            // && self.responses == other.responses
-            && self.operations == other.operations
-            && self.object_id_generator == other.object_id_generator
-            && self.scene_objects == other.scene_objects
-            && self.source_range_to_object == other.source_range_to_object
-            && self.artifact_id_to_scene_object == other.artifact_id_to_scene_object
-            && self.var_solutions == other.var_solutions
-    }
 }
 
 #[cfg(not(feature = "artifact-graph"))]
@@ -203,6 +200,10 @@ pub(super) struct ModuleState {
     pub(super) path: ModulePath,
     /// Artifacts for only this module.
     pub artifacts: ModuleArtifactState,
+    /// Sticky per-constraint state persisted across sketch-mode mock solves.
+    /// Maps from sketch block ID to a map for that sketch.
+    /// Then the inner map is per constraint (in that sketch block) to its state.
+    pub constraint_state: IndexMap<ObjectId, IndexMap<ConstraintKey, ConstraintState>>,
 
     pub(super) allowed_warnings: Vec<&'static str>,
     pub(super) denied_warnings: Vec<&'static str>,
@@ -211,7 +212,6 @@ pub(super) struct ModuleState {
 #[derive(Debug, Clone, Default)]
 pub(crate) struct SketchBlockState {
     pub sketch_vars: Vec<KclValue>,
-    #[cfg(feature = "artifact-graph")]
     pub sketch_id: Option<ObjectId>,
     #[cfg(feature = "artifact-graph")]
     pub sketch_constraints: Vec<ObjectId>,
@@ -400,6 +400,21 @@ impl ExecState {
         ObjectId(self.mod_local.artifacts.object_id_generator.peek_id())
     }
 
+    pub(crate) fn constraint_state(&self, sketch_block_id: ObjectId, key: &ConstraintKey) -> Option<ConstraintState> {
+        let map = self.mod_local.constraint_state.get(&sketch_block_id)?;
+        map.get(key).copied()
+    }
+
+    pub(crate) fn set_constraint_state(
+        &mut self,
+        sketch_block_id: ObjectId,
+        key: ConstraintKey,
+        state: ConstraintState,
+    ) {
+        let map = self.mod_local.constraint_state.entry(sketch_block_id).or_default();
+        map.insert(key, state);
+    }
+
     #[cfg(feature = "artifact-graph")]
     pub fn add_scene_object(&mut self, obj: Object, source_range: SourceRange) -> ObjectId {
         let id = obj.id;
@@ -469,6 +484,10 @@ impl ExecState {
 
     pub(crate) fn sketch_block_mut(&mut self) -> Option<&mut SketchBlockState> {
         self.mod_local.sketch_block.as_mut()
+    }
+
+    pub(crate) fn sketch_block(&mut self) -> Option<&SketchBlockState> {
+        self.mod_local.sketch_block.as_ref()
     }
 
     pub fn next_uuid(&mut self) -> Uuid {
@@ -922,6 +941,7 @@ impl ModuleState {
             sketch_mode,
             freedom_analysis,
             artifacts: Default::default(),
+            constraint_state: Default::default(),
             allowed_warnings: Vec::new(),
             denied_warnings: Vec::new(),
             inside_stdlib: false,

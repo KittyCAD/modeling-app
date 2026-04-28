@@ -1481,6 +1481,18 @@ export import a, b as bbb from "a.kcl"
     }
 
     #[test]
+    fn test_recast_sketch_block_with_arg_shorthand() {
+        let input = r#"on = XY
+sketch(on) {
+  return 0
+}
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast_top(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
     fn test_recast_sketch_block_with_statements_in_block() {
         let input = r#"sketch() {
   // Comments inside block.

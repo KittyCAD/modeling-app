@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
-import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
+import type { OnboardingStatus } from '@src/lib/onboardingPaths'
 import { type MlCopilotMode } from '@kittycad/lib'
 
 import { NIL as uuidNIL } from 'uuid'
@@ -136,7 +136,9 @@ const COLOR_INPUT_DEBOUNCE_MS = 500
 
 export function createSettings() {
   const settings = {
-    // Gotcha: If you add a new setting here, you will likely need to update rust/kcl-lib/src/settings/types/mod.rs as well.
+    // Gotcha: Only settings that must be understood by Rust/KCL/CLI need a
+    // matching schema in rust/kcl-lib. App-owned settings can stay TS-only if
+    // settingsUtils serializes them through the opaque TOML passthrough.
     app: {
       /**
        * The overall appearance of the app: light, dark, or system
@@ -190,7 +192,22 @@ export function createSettings() {
       zookeeperMode: new Setting<MlCopilotMode>({
         defaultValue: DEFAULT_ML_COPILOT_MODE,
         validate: (v) => v === 'fast' || v === 'thoughtful',
-        hideOnPlatform: 'both', // this setting is managed by the Zookeeper pane
+        description: 'The default reasoning mode for Zookeeper.',
+        commandConfig: {
+          inputType: 'options',
+          defaultValueFromContext: (context) =>
+            context.app.zookeeperMode.current,
+          options: (cmdContext, settingsContext) =>
+            (['fast', 'thoughtful'] as const).map((v) => ({
+              name: capitaliseFC(v),
+              value: v,
+              isCurrent:
+                settingsContext.app.zookeeperMode.shouldShowCurrentLabel(
+                  cmdContext.argumentsToSubmit.level as SettingsLevel,
+                  v
+                ),
+            })),
+        },
       }),
       /**
        * Stream resource saving behavior toggle
@@ -453,8 +470,8 @@ export function createSettings() {
       }),
       /**
        * Determines if new sketches should use the solver-based sketch mode.
-       * This setting is hidden and defaults to true except for Playwright or
-       * when the user has the 'classic_sketch_mode' feature flag enabled.
+       * This setting is hidden and defaults to true. It now exists only so
+       * Playwright can set it to false for regression testing.
        */
       useSketchSolveMode: new Setting<boolean>({
         hideOnLevel: 'project',
@@ -647,13 +664,19 @@ export function createSettings() {
       // }),
     },
     /**
-     * Settings that affect the behavior of the KCL text editor.
+     * App-owned editor settings.
+     *
+     * These are intentionally defined only in TypeScript and round-trip through
+     * the settings TOML as an opaque `text_editor` section. That keeps the Rust
+     * schema focused on CLI/KCL concerns and makes this group easier to move
+     * behind a bundled editor/plugin later.
      */
     textEditor: {
       /**
        * Whether to wrap text in the editor or overflow with scroll
        */
       textWrapping: new Setting<boolean>({
+        hideOnLevel: 'project',
         defaultValue: true,
         description:
           'Whether to wrap text in the editor or overflow with scroll.',
@@ -666,6 +689,7 @@ export function createSettings() {
        * Whether to make the cursor blink in the editor
        */
       blinkingCursor: new Setting<boolean>({
+        hideOnLevel: 'project',
         defaultValue: true,
         description: 'Whether to make the cursor blink in the editor.',
         validate: (v) => typeof v === 'boolean',
@@ -675,7 +699,11 @@ export function createSettings() {
       }),
     },
     /**
-     * Settings that affect the behavior of project management.
+     * App-owned project-management settings.
+     *
+     * These stay in TypeScript and round-trip through opaque TOML sections so
+     * they can move into a future project-management extension without
+     * expanding the Rust/CLI schema.
      */
     projects: {
       /**
@@ -713,7 +741,10 @@ export function createSettings() {
       // }),
     },
     /**
-     * Settings that affect the behavior of the command bar.
+     * App-owned command bar settings.
+     *
+     * Keep these TS-only so the command palette can be bundled or extended
+     * independently of the Rust settings schema.
      */
     commandBar: {
       /**
