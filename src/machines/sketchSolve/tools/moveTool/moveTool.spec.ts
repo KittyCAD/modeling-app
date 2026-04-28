@@ -229,6 +229,7 @@ function setUpMoveToolCallbacks({
     sceneInfra,
     rustContext: {
       editSegments: vi.fn(),
+      editDistanceConstraintLabel: vi.fn(),
       addConstraint: vi.fn(),
       deleteObjects: vi.fn(),
       restoreSketchCheckpoint: vi.fn(),
@@ -629,6 +630,76 @@ function createSceneGraphDelta(objects: Array<ApiObject>): SceneGraphDelta {
 }
 
 describe('createOnDragCallback', () => {
+  it('should edit a dragged distance constraint label instead of editing segments', async () => {
+    const setIsSolveInProgress = vi.fn()
+    const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
+    const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(8)
+    const distanceConstraint = createConstraintApiObject({
+      id: 8,
+      type: 'Distance',
+    })
+    const sceneGraphDelta = createSceneGraphDelta([distanceConstraint])
+    const getContextData = vi.fn(() => ({
+      selectedIds: [],
+      sketchId: 2,
+      sketchExecOutcome: { sceneGraphDelta },
+    }))
+    const editSegments = vi.fn()
+    const editDistanceConstraintLabel = vi.fn(async () => ({
+      kclSource: { text: 'updated' },
+      sceneGraphDelta,
+    }))
+    const onNewSketchOutcome = vi.fn()
+    const getDefaultLengthUnit = vi.fn((): UnitLength => 'mm')
+    const getJsAppSettings = vi.fn(() => Promise.resolve({}))
+
+    const callback = createOnDragCallback({
+      getIsSolveInProgress: vi.fn(() => false),
+      setIsSolveInProgress,
+      getLastSuccessfulDragFromPoint,
+      setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
+      getContextData,
+      editSegments,
+      editDistanceConstraintLabel,
+      onNewSketchOutcome,
+      getDefaultLengthUnit,
+      getJsAppSettings,
+      ...createDragSnappingDeps(),
+    })
+
+    await callback({
+      intersectionPoint: {
+        twoD: new Vector2(12.3456, 20.1234),
+        threeD: new Vector3(12.3456, 20.1234, 0),
+      },
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    expect(editSegments).not.toHaveBeenCalled()
+    expect(editDistanceConstraintLabel).toHaveBeenCalledWith(
+      0,
+      2,
+      8,
+      {
+        x: { value: 12.35, units: 'Mm' },
+        y: { value: 20.12, units: 'Mm' },
+      },
+      {}
+    )
+    expect(onNewSketchOutcome).toHaveBeenCalledWith({
+      kclSource: { text: 'updated' },
+      sceneGraphDelta,
+      writeToDisk: false,
+      suppressExecOutcomeIssues: true,
+    })
+    expect(setIsSolveInProgress).toHaveBeenCalledWith(true)
+    expect(setIsSolveInProgress).toHaveBeenCalledWith(false)
+  })
+
   it('should prevent concurrent drag operations to avoid race conditions', async () => {
     const getIsSolveInProgress = vi.fn(() => true) // Already in progress
     const setIsSolveInProgress = vi.fn()

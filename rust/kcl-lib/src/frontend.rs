@@ -1202,6 +1202,54 @@ impl SketchApi for FrontendState {
         .await
     }
 
+    async fn edit_distance_constraint_label(
+        &mut self,
+        ctx: &ExecutorContext,
+        _version: Version,
+        sketch: ObjectId,
+        constraint_id: ObjectId,
+        label: Point2d<Number>,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        // TODO: Check version.
+        let sketch_block_ref =
+            sketch_block_ref_from_id(&self.scene_graph, sketch).map_err(KclErrorWithOutputs::no_outputs)?;
+
+        let object = self.scene_graph.objects.get(constraint_id.0).ok_or_else(|| {
+            KclErrorWithOutputs::no_outputs(KclError::refactor(format!("Object not found: {constraint_id:?}")))
+        })?;
+        if !matches!(
+            &object.kind,
+            ObjectKind::Constraint {
+                constraint: Constraint::Distance(_),
+            }
+        ) {
+            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
+                "Object is not a distance constraint: {constraint_id:?}"
+            ))));
+        }
+
+        let label = to_ast_point2d_number(&label).map_err(|err| {
+            KclErrorWithOutputs::no_outputs(KclError::refactor(format!("Could not convert label to AST: {err}")))
+        })?;
+        let mut new_ast = self.program.ast.clone();
+        self.mutate_ast(
+            &mut new_ast,
+            constraint_id,
+            AstMutateCommand::EditDistanceConstraintLabel { label },
+        )
+        .map_err(KclErrorWithOutputs::no_outputs)?;
+
+        self.execute_after_edit(
+            ctx,
+            sketch,
+            sketch_block_ref,
+            Default::default(),
+            EditDeleteKind::Edit,
+            &mut new_ast,
+        )
+        .await
+    }
+
     /// Splitting a segment means creating a new segment, editing the old one, and then
     /// migrating a bunch of the constraints from the original segment to the new one
     /// (i.e. deleting them and re-adding them on the other segment).
@@ -4750,6 +4798,9 @@ enum AstMutateCommand {
     EditConstraintValue {
         value: ast::BinaryPart,
     },
+    EditDistanceConstraintLabel {
+        label: ast::Expr,
+    },
     EditCallUnlabeled {
         arg: ast::Expr,
     },
@@ -5220,6 +5271,31 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                     binary_expr.right = value.clone();
                 } else {
                     binary_expr.left = value.clone();
+                }
+
+                return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
+            }
+        }
+        AstMutateCommand::EditDistanceConstraintLabel { label } => {
+            if let NodeMut::BinaryExpression(binary_expr) = node {
+                let ast::BinaryPart::CallExpressionKw(call) = &mut binary_expr.left else {
+                    return TraversalReturn::new_continue(());
+                };
+                if call.callee.name.name != DISTANCE_FN {
+                    return TraversalReturn::new_continue(());
+                }
+
+                if let Some(label_arg) = call
+                    .arguments
+                    .iter_mut()
+                    .find(|arg| arg.label.as_ref().map(|id| id.name.as_str()) == Some(LABEL_PARAM))
+                {
+                    label_arg.arg = label.clone();
+                } else {
+                    call.arguments.push(ast::LabeledArg {
+                        label: Some(ast::Identifier::new(LABEL_PARAM)),
+                        arg: label.clone(),
+                    });
                 }
 
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
