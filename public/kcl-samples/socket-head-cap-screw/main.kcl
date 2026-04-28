@@ -14,26 +14,32 @@ boltHexDrive = 5 / 32
 boltHexFlatLength = boltHexDrive / (2 * cos(30deg))
 
 // Create the head of the cap screw
-boltHead = startSketchOn(XZ)
-  |> circle(center = [0, 0], radius = boltHeadDiameter / 2, tag = $topEdge)
-  |> extrude(length = -boltHeadLength)
-  |> fillet(radius = 0.020, tags = [topEdge, getOppositeEdge(topEdge)])
+headSketch = sketch(on = XZ) {
+  circle1 = circle(start = [var 0.16in, var 0in], center = [var 0in, var 0in])
+}
+boltProfile = region(segments = [headSketch.circle1])
+boltHead = extrude(boltProfile, length = -boltHeadLength, tagStart = $capStart001)
+  |> fillet(tags = getCommonEdge(faces = [boltProfile.tags.circle1, capStart001]), radius = 0.020)
 
 // Define the sketch of the hex pattern on the screw head
-hexPatternSketch = startSketchOn(boltHead, face = START)
-  |> startProfile(at = [
-       boltHexDrive / 2,
-       boltHexFlatLength / 2
-     ])
-  |> angledLine(angle = 270, length = boltHexFlatLength)
-  |> angledLine(angle = 210, length = boltHexFlatLength)
-  |> angledLine(angle = 150, length = boltHexFlatLength)
-  |> angledLine(angle = 90, length = boltHexFlatLength)
-  |> angledLine(angle = 30, length = boltHexFlatLength)
-  |> close()
-  |> extrude(length = -boltHeadLength * 0.75)
-boltBody = startSketchOn(boltHead, face = END)
-  |> circle(center = [0, 0], radius = boltDiameter / 2, tag = $filletEdge)
-  |> extrude(length = boltLength)
-  |> fillet(radius = .020, tags = [getOppositeEdge(filletEdge)])
+hexSketch = sketch(on = startSketchOn(boltHead, face = START)) {
+  line1 = line(start = [var 0.08in, var 0.05in], end = [var 0.08in, var -0.05in])
+  line2 = line(start = [var 0.08in, var -0.05in], end = [var 0in, var -0.09in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0in, var -0.09in], end = [var -0.08in, var -0.05in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -0.08in, var -0.05in], end = [var -0.08in, var 0.05in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -0.08in, var 0.05in], end = [var 0in, var 0.09in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 0in, var 0.09in], end = [var 0.08in, var 0.05in])
+  coincident([line5.end, line6.start])
+}
+hexProfile = region(segments = [hexSketch.line1, hexSketch.line2])
+hexPatternSketch = extrude(hexProfile, length = -boltHeadLength * 0.75)
+stemSketch = sketch(on = startSketchOn(boltHead, face = END)) {
+  circle1 = circle(start = [var 0.1in, var 0in], center = [var 0in, var 0in])
+}
+stemProfile = region(segments = [stemSketch.circle1])
+boltBody = extrude(stemProfile, length = boltLength)
   |> appearance(color = "#4dd043", metalness = 90, roughness = 90)

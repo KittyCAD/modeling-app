@@ -81,11 +81,11 @@ description: Artifact commands sphere.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 10.0,
+            "x": 5.0,
             "y": 0.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -118,8 +118,12 @@ description: Artifact commands sphere.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {

@@ -93,6 +93,23 @@ pub(super) struct GlobalState {
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub(crate) enum ConstraintKey {
+    LineCircle([usize; 10]),
+    CircleCircle([usize; 12]),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum TangencyMode {
+    LineCircle(ezpz::LineSide),
+    CircleCircle(ezpz::CircleSide),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ConstraintState {
+    Tangency(TangencyMode),
+}
+
 #[cfg(feature = "artifact-graph")]
 #[derive(Debug, Clone, Default)]
 pub(super) struct ArtifactState {
@@ -119,6 +136,9 @@ pub struct ModuleArtifactState {
     pub unprocessed_commands: Vec<ArtifactCommand>,
     /// Outgoing engine commands.
     pub commands: Vec<ArtifactCommand>,
+    /// Incoming engine commands.
+    #[cfg(feature = "snapshot-engine-responses")]
+    pub responses: IndexMap<Uuid, kittycad_modeling_cmds::websocket::WebSocketResponse>,
     /// Operations that have been performed in execution order, for display in
     /// the Feature Tree.
     pub operations: Vec<Operation>,
@@ -180,6 +200,10 @@ pub(super) struct ModuleState {
     pub(super) path: ModulePath,
     /// Artifacts for only this module.
     pub artifacts: ModuleArtifactState,
+    /// Sticky per-constraint state persisted across sketch-mode mock solves.
+    /// Maps from sketch block ID to a map for that sketch.
+    /// Then the inner map is per constraint (in that sketch block) to its state.
+    pub constraint_state: IndexMap<ObjectId, IndexMap<ConstraintKey, ConstraintState>>,
 
     pub(super) allowed_warnings: Vec<&'static str>,
     pub(super) denied_warnings: Vec<&'static str>,
@@ -188,7 +212,6 @@ pub(super) struct ModuleState {
 #[derive(Debug, Clone, Default)]
 pub(crate) struct SketchBlockState {
     pub sketch_vars: Vec<KclValue>,
-    #[cfg(feature = "artifact-graph")]
     pub sketch_id: Option<ObjectId>,
     #[cfg(feature = "artifact-graph")]
     pub sketch_constraints: Vec<ObjectId>,
@@ -314,6 +337,13 @@ impl ExecState {
         }
     }
 
+    #[cfg(all(feature = "artifact-graph", feature = "snapshot-engine-responses"))]
+    pub(crate) fn take_root_module_responses(
+        &mut self,
+    ) -> IndexMap<Uuid, kittycad_modeling_cmds::websocket::WebSocketResponse> {
+        std::mem::take(&mut self.global.root_module_artifacts.responses)
+    }
+
     pub(crate) fn stack(&self) -> &Stack {
         &self.mod_local.stack
     }
@@ -368,6 +398,21 @@ impl ExecState {
 
     pub fn peek_object_id(&self) -> ObjectId {
         ObjectId(self.mod_local.artifacts.object_id_generator.peek_id())
+    }
+
+    pub(crate) fn constraint_state(&self, sketch_block_id: ObjectId, key: &ConstraintKey) -> Option<ConstraintState> {
+        let map = self.mod_local.constraint_state.get(&sketch_block_id)?;
+        map.get(key).copied()
+    }
+
+    pub(crate) fn set_constraint_state(
+        &mut self,
+        sketch_block_id: ObjectId,
+        key: ConstraintKey,
+        state: ConstraintState,
+    ) {
+        let map = self.mod_local.constraint_state.entry(sketch_block_id).or_default();
+        map.insert(key, state);
     }
 
     #[cfg(feature = "artifact-graph")]
@@ -439,6 +484,10 @@ impl ExecState {
 
     pub(crate) fn sketch_block_mut(&mut self) -> Option<&mut SketchBlockState> {
         self.mod_local.sketch_block.as_mut()
+    }
+
+    pub(crate) fn sketch_block(&mut self) -> Option<&SketchBlockState> {
+        self.mod_local.sketch_block.as_ref()
     }
 
     pub fn next_uuid(&mut self) -> Uuid {
@@ -669,6 +718,12 @@ impl ExecState {
             &self.global.module_infos,
         );
 
+        #[cfg(feature = "snapshot-engine-responses")]
+        {
+            // Store engine responses for debugging.
+            self.global.root_module_artifacts.responses.extend(new_responses);
+        }
+
         let artifact_graph = graph_result?;
         self.global.artifacts.graph = artifact_graph;
 
@@ -886,6 +941,7 @@ impl ModuleState {
             sketch_mode,
             freedom_analysis,
             artifacts: Default::default(),
+            constraint_state: Default::default(),
             allowed_warnings: Vec::new(),
             denied_warnings: Vec::new(),
             inside_stdlib: false,

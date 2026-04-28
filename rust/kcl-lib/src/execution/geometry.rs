@@ -743,10 +743,30 @@ pub struct Face {
     /// What should the face's Y axis be?
     pub y_axis: Point3d,
     /// The solid the face is on.
-    pub solid: Box<Solid>,
+    pub parent_solid: FaceParentSolid,
     pub units: UnitLength,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
+}
+
+/// The limited subset of a face's parent solid needed by face-backed sketches.
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct FaceParentSolid {
+    /// Which solid does this face belong to?
+    pub solid_id: Uuid,
+    /// ID of the sketch which created this solid, if any.
+    pub creator_sketch_id: Option<Uuid>,
+    /// Pending edge cut IDs that may need to be flushed before referencing the face.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub edge_cut_ids: Vec<Uuid>,
+}
+
+impl FaceParentSolid {
+    pub(crate) fn sketch_or_solid_id(&self) -> Uuid {
+        self.creator_sketch_id.unwrap_or(self.solid_id)
+    }
 }
 
 /// A bounded edge.
@@ -810,6 +830,13 @@ pub struct Sketch {
     pub artifact_id: ArtifactId,
     #[ts(skip)]
     pub original_id: uuid::Uuid,
+    /// If this sketch represents a region created from `region()`, the origin
+    /// sketch ID is the ID of the sketch block it was created from. None,
+    /// otherwise. This field corresponds to the `origin_path_id` of the `Path`
+    /// artifact.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(skip)]
+    pub origin_sketch_id: Option<uuid::Uuid>,
     /// If the sketch includes a mirror.
     #[serde(skip)]
     pub mirror: Option<uuid::Uuid>,
@@ -1180,6 +1207,16 @@ impl Solid {
 
     pub(crate) fn get_all_edge_cut_ids(&self) -> impl Iterator<Item = uuid::Uuid> + '_ {
         self.edge_cuts.iter().map(|foc| foc.id())
+    }
+}
+
+impl From<&Solid> for FaceParentSolid {
+    fn from(solid: &Solid) -> Self {
+        Self {
+            solid_id: solid.id,
+            creator_sketch_id: solid.sketch_id(),
+            edge_cut_ids: solid.get_all_edge_cut_ids().collect(),
+        }
     }
 }
 
@@ -1997,6 +2034,8 @@ impl ExtrudeSurface {
 pub struct SketchVarId(pub usize);
 
 impl SketchVarId {
+    pub const INVALID: Self = Self(usize::MAX);
+
     pub fn to_constraint_id(self, range: SourceRange) -> Result<ezpz::Id, KclError> {
         self.0.try_into().map_err(|_| {
             KclError::new_type(KclErrorDetails::new(

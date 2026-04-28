@@ -126,10 +126,10 @@ beamForkCutterBottomBlend = blend([
 ])
 
 bumperBeamForkCutter = [
-       beamForkCutterTopBlend,
-       beamForkCutterBackBlend,
-       beamForkCutterBottomBlend
-     ]
+  beamForkCutterTopBlend,
+  beamForkCutterBackBlend,
+  beamForkCutterBottomBlend
+]
   |> joinSurfaces()
 
 ```

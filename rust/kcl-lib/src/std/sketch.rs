@@ -1270,9 +1270,9 @@ pub(crate) async fn create_sketch(
             // Flush the batch for our fillets/chamfers if there are any.
             // If we do not do these for sketch on face, things will fail with face does not exist.
             exec_state
-                .flush_batch_for_solids(
+                .flush_batch_for_face_parent_solids(
                     ModelingCmdMeta::new(exec_state, ctx, source_range),
-                    &[(*face.solid).clone()],
+                    std::slice::from_ref(&face.parent_solid),
                 )
                 .await?;
         }
@@ -1361,6 +1361,7 @@ pub(crate) async fn create_sketch(
         id: path_id,
         original_id: path_id,
         artifact_id: path_id.into(),
+        origin_sketch_id: None,
         on: sketch_surface,
         paths: vec![],
         inner_paths: vec![],
@@ -3123,6 +3124,7 @@ async fn inner_region(
                     id: region_id,
                     original_id: region_id,
                     artifact_id: region_id.into(),
+                    origin_sketch_id: None,
                     on: segment.surface.clone(),
                     paths: vec![first_path],
                     inner_paths: vec![],
@@ -3138,6 +3140,7 @@ async fn inner_region(
             }
         }
     };
+    sketch.origin_sketch_id = Some(sketch.id);
     sketch.id = region_id;
     sketch.original_id = region_id;
     sketch.artifact_id = region_id.into();
