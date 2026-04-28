@@ -37,6 +37,7 @@ trace.zip
 test-results/
 playwright-report/
 playwright/.cache/
+temp*.png
 
 # samples
 /public/kcl-samples.zip
