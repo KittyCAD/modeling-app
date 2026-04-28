@@ -2120,10 +2120,12 @@ fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Block>> {
     macro_rules! handle_pending_non_code {
         ($node: ident) => {
             if !pending_non_code.is_empty() {
-                let force_disoc = matches!(
-                    &pending_non_code.last().unwrap().inner.value,
-                    NonCodeValue::NewLine
-                );
+                let attach_after_inner_attrs = body.is_empty() && !inner_attrs.is_empty();
+                let force_disoc = !attach_after_inner_attrs
+                    && matches!(
+                        &pending_non_code.last().unwrap().inner.value,
+                        NonCodeValue::NewLine
+                    );
                 let mut comments = Vec::new();
                 let mut comment_start = None;
                 for nc in pending_non_code {
@@ -2132,6 +2134,7 @@ fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Block>> {
                             comment_start.get_or_insert(nc.start);
                             comments.push(style.render_comment(&value));
                         }
+                        NonCodeValue::NewLine if attach_after_inner_attrs && comments.is_empty() => {}
                         NonCodeValue::NewLine if !force_disoc && !comments.is_empty() => {
                             comments.push(String::new());
                             comments.push(String::new());
