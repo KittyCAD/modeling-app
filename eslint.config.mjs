@@ -207,7 +207,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['packages/**/*.ts', 'rust/**/*.ts'],
+    files: ['packages/**/*.ts', 'packages/**/*.tsx', 'rust/**/*.ts'],
     extends: compat.extends(),
 
     rules: {

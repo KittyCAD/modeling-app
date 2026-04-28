@@ -21,7 +21,6 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { Draggable } from '@kittycad/ui-components'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { DEFAULT_SKETCH_SOLVE_STREAM_DIMMING } from '@src/clientSideScene/ClientSideSceneComp'
-import { CustomIcon } from '@src/components/CustomIcon'
 
 const Handle = () => (
   <div className="flex justify-center hover:bg-2">
