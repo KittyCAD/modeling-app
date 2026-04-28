@@ -554,10 +554,10 @@ export const systemIOMachine = setup({
         fileName: string
         projectName: string
         subRoute: string
-        }> => {
-          return { message: '', fileName: '', projectName: '', subRoute: '' }
-        }
-      ),
+      }> => {
+        return { message: '', fileName: '', projectName: '', subRoute: '' }
+      }
+    ),
     [SystemIOMachineActors.bulkCreateProjectFilesAndNavigateToProject]:
       fromPromise(
         async ({
@@ -1326,10 +1326,14 @@ export const systemIOMachine = setup({
               requestedProjectName: ({ event }) => {
                 return {
                   name: (
-                    event as { output: { projectName: string; subRoute?: string } }
+                    event as {
+                      output: { projectName: string; subRoute?: string }
+                    }
                   ).output.projectName,
                   subRoute: (
-                    event as { output: { projectName: string; subRoute?: string } }
+                    event as {
+                      output: { projectName: string; subRoute?: string }
+                    }
                   ).output.subRoute,
                 }
               },

@@ -126,21 +126,15 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
                 Download desktop app
               </ActionButton>
             </div>
-            <div className="flex flex-col gap-2 -order-1">
-              <ActionButton
-                Element="button"
-                className={buttonClasses + ' !text-base'}
-                onClick={continueToWebApp}
-                iconStart={{ icon: 'arrowShortLeft' }}
-                data-testid="continue-to-web-app-button"
-              >
-                Continue to web app
-              </ActionButton>
-              <p className="max-w-56 text-xs leading-snug text-destroy-80 dark:text-destroy-40">
-                Warning: continuing in the web app will replace the active
-                project.
-              </p>
-            </div>
+            <ActionButton
+              Element="button"
+              className={buttonClasses + ' -order-1 !text-base'}
+              onClick={continueToWebApp}
+              iconStart={{ icon: 'arrowShortLeft' }}
+              data-testid="continue-to-web-app-button"
+            >
+              Continue to web app
+            </ActionButton>
           </div>
         </div>
       </Transition.Child>

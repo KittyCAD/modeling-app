@@ -139,7 +139,9 @@ const sharedBulkWriteProjectFilesWorkflow = async ({
   try {
     if (input.files.length === 0) {
       return Promise.reject(
-        new Error('The shared project import did not include any files to write.')
+        new Error(
+          'The shared project import did not include any files to write.'
+        )
       )
     }
 
@@ -195,7 +197,10 @@ const sharedBulkWriteProjectFilesWorkflow = async ({
     }
 
     if (requestedFileNameWithExtension) {
-      const entrypointPath = fsZds.join(projectRoot, requestedFileNameWithExtension)
+      const entrypointPath = fsZds.join(
+        projectRoot,
+        requestedFileNameWithExtension
+      )
       try {
         await fsZds.stat(entrypointPath)
       } catch (error) {
@@ -221,12 +226,16 @@ const sharedBulkWriteProjectFilesWorkflow = async ({
       subRoute: '',
     }
   } catch (error) {
-    console.error('[public-project] failed while writing imported project files', {
-      requestedProjectName: input.requestedProjectName,
-      requestedFileNameWithExtension: input.requestedFileNameWithExtension || null,
-      fileCount: input.files.length,
-      error,
-    })
+    console.error(
+      '[public-project] failed while writing imported project files',
+      {
+        requestedProjectName: input.requestedProjectName,
+        requestedFileNameWithExtension:
+          input.requestedFileNameWithExtension || null,
+        fileCount: input.files.length,
+        error,
+      }
+    )
 
     return Promise.reject(
       error instanceof Error

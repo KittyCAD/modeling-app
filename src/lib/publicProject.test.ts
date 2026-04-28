@@ -45,7 +45,9 @@ describe('public project helpers', () => {
     }
 
     expect(fetchSpy).toHaveBeenCalledWith(
-      expect.stringContaining('/projects/public/project-123/download?format=zip'),
+      expect.stringContaining(
+        '/projects/public/project-123/download?format=zip'
+      ),
       expect.objectContaining({
         method: 'GET',
       })

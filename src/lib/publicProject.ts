@@ -31,11 +31,14 @@ export function createOpenPublicProjectUrl(projectId: string) {
   return new URL(`?${searchParams.toString()}`, origin)
 }
 
-export async function downloadPublicProject(projectId: string): Promise<{
-  projectName: string
-  files: RequestedProjectFile[]
-  entrypointFilePath?: string
-} | Error> {
+export async function downloadPublicProject(projectId: string): Promise<
+  | {
+      projectName: string
+      files: RequestedProjectFile[]
+      entrypointFilePath?: string
+    }
+  | Error
+> {
   console.info('[public-project] starting download', { projectId })
   const archive = await downloadPublicProjectArchive(projectId)
   if (archive instanceof Error) {
@@ -158,11 +161,14 @@ async function parseDownloadedProject({
 }: {
   archive: ArrayBuffer
   contentDisposition: string | null
-}): Promise<{
-  projectName: string
-  files: RequestedProjectFile[]
-  entrypointFilePath?: string
-} | Error> {
+}): Promise<
+  | {
+      projectName: string
+      files: RequestedProjectFile[]
+      entrypointFilePath?: string
+    }
+  | Error
+> {
   const zipResult = await parseZipArchive({
     archive,
     contentDisposition,
@@ -185,11 +191,14 @@ async function parseZipArchive({
 }: {
   archive: ArrayBuffer
   contentDisposition: string | null
-}): Promise<{
-  projectName: string
-  files: RequestedProjectFile[]
-  entrypointFilePath?: string
-} | Error> {
+}): Promise<
+  | {
+      projectName: string
+      files: RequestedProjectFile[]
+      entrypointFilePath?: string
+    }
+  | Error
+> {
   const zip = await JSZip.loadAsync(archive)
   const entries = Object.values(zip.files).filter((entry) => {
     return !entry.dir && !entry.name.startsWith('__MACOSX/')
@@ -229,11 +238,13 @@ async function parseZipArchive({
   }
 }
 
-function parseJsonArchive(archive: ArrayBuffer): {
-  projectName: string
-  files: RequestedProjectFile[]
-  entrypointFilePath?: string
-} | Error {
+function parseJsonArchive(archive: ArrayBuffer):
+  | {
+      projectName: string
+      files: RequestedProjectFile[]
+      entrypointFilePath?: string
+    }
+  | Error {
   let parsed:
     | {
         projectName?: string
@@ -301,7 +312,9 @@ function getRequiredProjectEntrypoint(files: RequestedProjectFile[]) {
     return mainFile.requestedFileName
   }
 
-  const firstKclFile = files.find((file) => file.requestedFileName.endsWith('.kcl'))
+  const firstKclFile = files.find((file) =>
+    file.requestedFileName.endsWith('.kcl')
+  )
   if (firstKclFile) {
     return firstKclFile.requestedFileName
   }
@@ -343,7 +356,9 @@ function coerceJsonFiles(
 
   if (isArray(files)) {
     return files.flatMap((file) => {
-      const requestedFileName = normalizeArchivePath(file.path || file.name || '')
+      const requestedFileName = normalizeArchivePath(
+        file.path || file.name || ''
+      )
       const contents = file.data ?? file.content ?? ''
 
       if (!requestedFileName) {
@@ -414,7 +429,9 @@ function stripArchiveRoot(path: string, rootDirectory?: string) {
   return normalized.replace(new RegExp(`^${escapeRegExp(rootDirectory)}/`), '')
 }
 
-function getFilenameStemFromContentDisposition(contentDisposition: string | null) {
+function getFilenameStemFromContentDisposition(
+  contentDisposition: string | null
+) {
   if (!contentDisposition) {
     return undefined
   }
