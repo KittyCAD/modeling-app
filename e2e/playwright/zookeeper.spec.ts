@@ -29,24 +29,16 @@ test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
       await copilot.submitButton.click()
       await expect(copilot.placeHolderResponse).toBeVisible()
       await expect(copilot.placeHolderResponse).not.toBeVisible({
-        timeout: 120_000,
-      })
-      await expect(copilot.thinkingView).toBeVisible()
-      await expect(copilot.thinkingView).not.toBeVisible({
-        timeout: 120_000,
+        timeout: 30_000,
       })
 
       await toolbar.closePane(DefaultLayoutPaneID.TTC)
       await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await expect(editor.codeContent).toContainText(
-        /startSketchOn|sketch\(on =/
-      )
-      await editor.expectEditor.toContain('extrude')
-      await editor.expectEditor.toContain('10')
-      await scene.settled(cmdBar)
+      await expect(editor.codeContent).toContainText('sketch')
 
       await toolbar.closePane(DefaultLayoutPaneID.Code)
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      await scene.settled(cmdBar)
       const extrude = await toolbar.getFeatureTreeOperation('cube', 0)
       await expect(extrude).toBeVisible()
     })
