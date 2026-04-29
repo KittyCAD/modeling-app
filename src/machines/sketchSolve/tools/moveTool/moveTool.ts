@@ -355,7 +355,7 @@ function buildDistanceLabelEditsForMovedSegments({
       pointPairs.push({ before, after })
     }
 
-    const transformedLabel = transformDistanceLabelWithSegmentFrame(
+    const transformedLabel = transformDistanceLabelFromPointPairs(
       obj.kind.constraint.type,
       new Vector2(labelPosition.x.value, labelPosition.y.value),
       pointPairs
@@ -393,7 +393,7 @@ function getDistanceConstraintPointPosition(
 }
 
 // Preserve the label's local position relative to the given points across the drag.
-function transformDistanceLabelWithSegmentFrame(
+function transformDistanceLabelFromPointPairs(
   constraintType: 'Distance' | 'HorizontalDistance' | 'VerticalDistance',
   labelPosition: Vector2,
   pointPairs: Array<{ before: Vector2; after: Vector2 }>
