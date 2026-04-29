@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
+import { waitFor } from 'xstate'
 
 import { base64ToString } from '@src/lib/base64'
 import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
@@ -18,7 +19,10 @@ import {
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { FileLinkParams } from '@src/lib/links'
-import { downloadProjectById } from '@src/lib/downloadProject'
+import {
+  downloadProjectById,
+  getPublicProjectNameById,
+} from '@src/lib/downloadProject'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
@@ -115,6 +119,27 @@ export function useQueryParamEffects(kclManager: KclManager) {
       console.info('[imported-project] opening project from query param', {
         projectId,
       })
+
+      await waitForIdleState({ systemIOActor: app.systemIOActor })
+      if (cancelled) {
+        return
+      }
+
+      const reservedProjectDestination =
+        await getReservedProjectDestination(projectId)
+      if (reservedProjectDestination instanceof Error) {
+        console.error('[imported-project] failed to reserve project location', {
+          projectId,
+          message: reservedProjectDestination.message,
+        })
+        clearProjectIdSearchParam()
+        toast.error(reservedProjectDestination.message)
+        return
+      }
+      if (cancelled) {
+        return
+      }
+
       const downloadedProject = await downloadProjectById(projectId)
       const downloadFailed = err(downloadedProject)
       if (cancelled || downloadFailed) {
@@ -136,28 +161,13 @@ export function useQueryParamEffects(kclManager: KclManager) {
         entrypointFilePath: downloadedProject.entrypointFilePath,
       })
 
-      const requestedProjectName = !isDesktop()
-        ? (app.settings.actor.getSnapshot().context.currentProject?.name ??
-          DEFAULT_WEB_PROJECT_NAME)
-        : getUniqueProjectName(
-            downloadedProject.projectName,
-            app.systemIOActor.getSnapshot().context.folders || []
-          )
-      const requestedSubDirectoryName = !isDesktop()
-        ? getUniqueProjectName(
-            downloadedProject.projectName,
-            getAllSubDirectoriesAtProjectRoot(
-              app.systemIOActor.getSnapshot().context,
-              { projectFolderName: requestedProjectName }
-            )
-          )
-        : downloadedProject.projectName
       const files = !isDesktop()
         ? downloadedProject.files.map((file) => ({
             ...file,
-            requestedProjectName,
+            requestedProjectName:
+              reservedProjectDestination.requestedProjectName,
             requestedFileName: fsZds.join(
-              requestedSubDirectoryName,
+              reservedProjectDestination.requestedSubDirectoryName,
               file.requestedFileName
             ),
           }))
@@ -165,7 +175,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
       const requestedFileNameWithExtension =
         !isDesktop() && downloadedProject.entrypointFilePath
           ? fsZds.join(
-              requestedSubDirectoryName,
+              reservedProjectDestination.requestedSubDirectoryName,
               downloadedProject.entrypointFilePath
             )
           : downloadedProject.entrypointFilePath
@@ -174,7 +184,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
         type: SystemIOMachineEvents.bulkImportProjectFilesAndNavigateToFile,
         data: {
           files,
-          requestedProjectName,
+          requestedProjectName: reservedProjectDestination.requestedProjectName,
           requestedFileNameWithExtension,
         },
       })
@@ -206,6 +216,99 @@ export function useQueryParamEffects(kclManager: KclManager) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [shouldOpenProjectId, setSearchParams, authState])
+
+  async function getReservedProjectDestination(projectId: string): Promise<
+    | {
+        requestedProjectName: string
+        requestedSubDirectoryName: string
+      }
+    | Error
+  > {
+    const projectName = await getPublicProjectNameById(projectId)
+    if (projectName instanceof Error) {
+      return projectName
+    }
+
+    const reservationContext = await getReservationContext()
+    if (reservationContext instanceof Error) {
+      return reservationContext
+    }
+    const { projectDirectoryPath, systemIOContext } = reservationContext
+
+    await fsZds.mkdir(projectDirectoryPath, { recursive: true })
+
+    if (isDesktop()) {
+      const requestedProjectName = getUniqueProjectName(
+        projectName,
+        systemIOContext.folders || []
+      )
+      await fsZds.mkdir(
+        fsZds.join(projectDirectoryPath, requestedProjectName),
+        {
+          recursive: true,
+        }
+      )
+      return {
+        requestedProjectName,
+        requestedSubDirectoryName: projectName,
+      }
+    }
+
+    const requestedProjectName =
+      app.settings.actor.getSnapshot().context.currentProject?.name ??
+      DEFAULT_WEB_PROJECT_NAME
+    const requestedSubDirectoryName = getUniqueProjectName(
+      projectName,
+      getAllSubDirectoriesAtProjectRoot(systemIOContext, {
+        projectFolderName: requestedProjectName,
+      })
+    )
+    await fsZds.mkdir(
+      fsZds.join(
+        projectDirectoryPath,
+        requestedProjectName,
+        requestedSubDirectoryName
+      ),
+      { recursive: true }
+    )
+
+    return {
+      requestedProjectName,
+      requestedSubDirectoryName,
+    }
+  }
+
+  async function getReservationContext() {
+    await waitFor(app.settings.actor, (state) => state.matches('idle'))
+
+    let systemIOContext = app.systemIOActor.getSnapshot().context
+    const projectDirectoryPath =
+      systemIOContext.projectDirectoryPath ||
+      app.settings.get().app.projectDirectory.current
+
+    if (!projectDirectoryPath) {
+      return new Error('Unable to determine the project directory.')
+    }
+
+    if (
+      systemIOContext.projectDirectoryPath !== projectDirectoryPath ||
+      !systemIOContext.folders
+    ) {
+      app.systemIOActor.send({
+        type: SystemIOMachineEvents.setProjectDirectoryPath,
+        data: {
+          requestedProjectDirectoryPath: projectDirectoryPath,
+        },
+      })
+      await waitForIdleState({ systemIOActor: app.systemIOActor })
+      systemIOContext = app.systemIOActor.getSnapshot().context
+    }
+
+    return {
+      projectDirectoryPath,
+      systemIOContext,
+    }
+  }
 
   /**
    * Generic commands are triggered by query parameters

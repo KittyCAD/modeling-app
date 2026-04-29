@@ -5,6 +5,7 @@ import env from '@src/env'
 import {
   createOpenProjectIdUrl,
   downloadProjectById,
+  getPublicProjectNameById,
 } from '@src/lib/downloadProject'
 
 afterEach(() => {
@@ -18,6 +19,30 @@ describe('downloadProject helpers', () => {
     expect(result.toString()).toBe(
       `${env().VITE_ZOO_SITE_APP_URL}/?project-id=project-123&ask-open-desktop=true`
     )
+  })
+
+  test('getPublicProjectNameById reads and sanitizes the public project title', async () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      Response.json({
+        categories: [],
+        description: '',
+        id: 'project-123',
+        like_count: 0,
+        owner: { username: 'user' },
+        published_at: '2026-04-29T00:00:00Z',
+        title: 'sample/project',
+      })
+    )
+
+    const result = await getPublicProjectNameById('project-123')
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      expect.stringContaining('/projects/public/project-123'),
+      expect.objectContaining({
+        method: 'GET',
+      })
+    )
+    expect(result).toBe('sample-project')
   })
 
   test('downloadProjectById parses a zip archive into project files', async () => {
