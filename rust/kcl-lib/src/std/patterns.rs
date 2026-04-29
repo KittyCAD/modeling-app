@@ -22,6 +22,7 @@ use crate::NodePath;
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
+use crate::execution::ArtifactId;
 use crate::execution::ControlFlowKind;
 use crate::execution::ExecState;
 use crate::execution::Geometries;
@@ -220,6 +221,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
     for id in entity_ids.iter().copied() {
         let mut new_solid = solid.clone();
         new_solid.set_id(id);
+        new_solid.set_artifact_id(id);
         geometries.push(new_solid);
     }
     Ok(geometries)
@@ -438,6 +440,7 @@ pub trait GeometryTrait: Clone {
     fn id(&self) -> Uuid;
     fn original_id(&self) -> Uuid;
     fn set_id(&mut self, id: Uuid);
+    fn set_artifact_id(&mut self, id: Uuid);
     fn array_to_point3d(
         val: &KclValue,
         source_ranges: Vec<SourceRange>,
@@ -451,6 +454,9 @@ impl GeometryTrait for Sketch {
     type Set = Vec<Sketch>;
     fn set_id(&mut self, id: Uuid) {
         self.id = id;
+    }
+    fn set_artifact_id(&mut self, id: Uuid) {
+        self.artifact_id = ArtifactId::new(id);
     }
     fn id(&self) -> Uuid {
         self.id
@@ -481,6 +487,10 @@ impl GeometryTrait for Solid {
         if let Some(sketch) = self.sketch_mut() {
             sketch.id = id;
         }
+    }
+
+    fn set_artifact_id(&mut self, id: Uuid) {
+        self.artifact_id = ArtifactId::new(id);
     }
 
     fn id(&self) -> Uuid {
@@ -1046,6 +1056,7 @@ async fn pattern_circular(
             for id in entity_ids.iter().copied() {
                 let mut new_sketch = sketch.clone();
                 new_sketch.id = id;
+                new_sketch.artifact_id = ArtifactId::new(id);
                 geometries.push(new_sketch);
             }
             Geometries::Sketches(geometries)
@@ -1055,6 +1066,7 @@ async fn pattern_circular(
             for id in entity_ids.iter().copied() {
                 let mut new_solid = solid.clone();
                 new_solid.id = id;
+                new_solid.artifact_id = ArtifactId::new(id);
                 geometries.push(new_solid);
             }
             Geometries::Solids(geometries)

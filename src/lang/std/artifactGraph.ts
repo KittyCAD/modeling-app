@@ -28,8 +28,8 @@ import type {
   SweepEdge,
   WallArtifact,
 } from '@src/lang/wasm'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
 export type { Artifact, ArtifactId, SegmentArtifact } from '@src/lang/wasm'
 
@@ -135,6 +135,19 @@ export function getArtifactOfTypes<T extends Artifact['type'][]>(
   if (!types.includes(artifact?.type))
     return new Error(`Expected ${types} but got ${artifact?.type}`)
   return artifact as Extract<Artifact, { type: T[number] }>
+}
+
+export function getPatternArtifactForCopyId(
+  id: ArtifactId,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'pattern' }> | undefined {
+  return [...artifactGraph.values()].find(
+    (artifact): artifact is Extract<Artifact, { type: 'pattern' }> =>
+      artifact.type === 'pattern' &&
+      (artifact.copyIds.includes(id) ||
+        artifact.copyFaceIds.includes(id) ||
+        artifact.copyEdgeIds.includes(id))
+  )
 }
 
 export function expandPlane(
@@ -925,6 +938,7 @@ export function coerceSelectionsToBody(
     if (
       selection.artifact.type === 'sweep' ||
       selection.artifact.type === 'compositeSolid' ||
+      selection.artifact.type === 'pattern' ||
       selection.artifact.type === 'path'
     ) {
       if (!seenBodyIds.has(selection.artifact.id)) {
