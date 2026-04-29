@@ -30,7 +30,11 @@ import {
 import { KCL_DEFAULT_COLOR } from '@src/lib/constants'
 import { hasProperty, isArray } from '@src/lib/utils'
 // Import and re-export pure utility functions
-import { getSegmentColor } from '@src/machines/sketchSolve/segmentsUtils'
+import {
+  getPointSegmentScale,
+  getSegmentColor,
+  getSegmentLineWidth,
+} from '@src/machines/sketchSolve/segmentsUtils'
 import {
   setupConstructionLineDashShader,
   setupConstructionArcDashShader,
@@ -141,7 +145,6 @@ export const ARC_SEGMENT_BODY = 'ARC_SEGMENT_BODY'
 export const ARC_PREVIEW_CIRCLE = 'arc-preview-circle'
 export const POINT_SEGMENT_BODY = 'POINT_SEGMENT_BODY'
 export const POINT_SEGMENT_RADIUS = 3
-const HOVERED_POINT_SEGMENT_SCALE = 1.5
 const MAX_POINT_SEGMENT_DOM_HANDLES = 100
 
 interface CreateSegmentArgs {
@@ -153,6 +156,8 @@ interface CreateSegmentArgs {
 export type SegmentRenderState = {
   selected: boolean
   hovered: boolean
+  secondaryHovered: boolean
+  hoverColor?: number
   draft: boolean
   construction: boolean
 }
@@ -351,7 +356,12 @@ class PointSegment implements SketchEntityUtils {
       return
     }
     pointBody.position.set(x.value / scale, y.value / scale, 0)
-    pointBody.scale.setScalar(state.hovered ? HOVERED_POINT_SEGMENT_SCALE : 1)
+    pointBody.scale.setScalar(
+      getPointSegmentScale({
+        isHovered: state.hovered,
+        isSecondaryHovered: state.secondaryHovered,
+      })
+    )
 
     const freedom = args.freedom
     group.userData.type = SEGMENT_TYPE_POINT
@@ -362,6 +372,7 @@ class PointSegment implements SketchEntityUtils {
     this.updatePointColors(pointBody, {
       isSelected: state.selected,
       isHovered: state.hovered,
+      hoverColor: state.hoverColor,
       isDraft: state.draft,
       hasSolveErrors: args.hasSolveErrors,
       freedom,
@@ -374,6 +385,7 @@ class PointSegment implements SketchEntityUtils {
     {
       isSelected,
       isHovered,
+      hoverColor,
       isDraft,
       hasSolveErrors,
       freedom,
@@ -381,6 +393,7 @@ class PointSegment implements SketchEntityUtils {
     }: {
       isSelected: boolean
       isHovered: boolean
+      hoverColor?: number
       isDraft: boolean
       hasSolveErrors?: boolean
       freedom?: Freedom | null
@@ -394,6 +407,7 @@ class PointSegment implements SketchEntityUtils {
     const color = getSegmentColor({
       isDraft,
       isHovered,
+      hoverColor,
       isSelected,
       hasSolveErrors,
       freedom,
@@ -411,6 +425,8 @@ class LineSegment implements SketchEntityUtils {
     mesh: Line2,
     isSelected: boolean,
     isHovered: boolean,
+    secondaryHovered: boolean,
+    hoverColor: number | undefined,
     isDraft: boolean,
     theme: Themes,
     hasSolveErrors?: boolean,
@@ -419,6 +435,8 @@ class LineSegment implements SketchEntityUtils {
     updateLineMaterial(mesh.material, {
       isSelected,
       isHovered,
+      secondaryHovered,
+      hoverColor,
       isDraft,
       theme,
       hasSolveErrors,
@@ -588,6 +606,8 @@ class LineSegment implements SketchEntityUtils {
       straightSegmentBody,
       state.selected,
       state.hovered,
+      state.secondaryHovered,
+      state.hoverColor,
       state.draft,
       theme,
       args.hasSolveErrors,
@@ -675,6 +695,8 @@ class ArcSegment implements SketchEntityUtils {
     mesh: Line2,
     isSelected: boolean,
     isHovered: boolean,
+    secondaryHovered: boolean,
+    hoverColor: number | undefined,
     isDraft: boolean,
     theme: Themes,
     hasSolveErrors?: boolean,
@@ -683,6 +705,8 @@ class ArcSegment implements SketchEntityUtils {
     updateLineMaterial(mesh.material, {
       isSelected,
       isHovered,
+      secondaryHovered,
+      hoverColor,
       isDraft,
       theme,
       hasSolveErrors,
@@ -913,6 +937,8 @@ class ArcSegment implements SketchEntityUtils {
       arcSegmentBody,
       state.selected,
       state.hovered,
+      state.secondaryHovered,
+      state.hoverColor,
       state.draft,
       theme,
       args.hasSolveErrors,
@@ -1106,6 +1132,8 @@ class CircleSegment implements SketchEntityUtils {
     updateLineMaterial(circleSegmentBody.material, {
       isSelected: state.selected,
       isHovered: state.hovered,
+      secondaryHovered: state.secondaryHovered,
+      hoverColor: state.hoverColor,
       isDraft: state.draft,
       theme,
       hasSolveErrors: args.hasSolveErrors,
@@ -1119,6 +1147,8 @@ function updateLineMaterial(
   {
     isSelected,
     isHovered,
+    secondaryHovered,
+    hoverColor,
     isDraft,
     theme,
     hasSolveErrors,
@@ -1126,6 +1156,8 @@ function updateLineMaterial(
   }: {
     isSelected: boolean
     isHovered: boolean
+    secondaryHovered: boolean
+    hoverColor?: number
     isDraft: boolean
     theme: Themes
     hasSolveErrors?: boolean
@@ -1137,12 +1169,17 @@ function updateLineMaterial(
   const color = getSegmentColor({
     isDraft,
     isHovered,
+    hoverColor,
     isSelected,
     theme,
     hasSolveErrors,
     freedom,
   })
   material.color.set(color)
+  material.linewidth = getSegmentLineWidth({
+    isHovered,
+    isSecondaryHovered: secondaryHovered,
+  })
 }
 
 /**
