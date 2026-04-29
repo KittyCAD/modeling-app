@@ -13,6 +13,7 @@ import type {
   RenderPacket,
   RenderPacketEdge,
   RenderPacketPrimitive,
+  RenderPacketSketchSegment,
   RenderPacketTrimLoop,
 } from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
@@ -22,6 +23,7 @@ import { useEffect, useRef } from 'react'
 import {
   BufferGeometry,
   BufferAttribute,
+  BoxGeometry,
   CanvasTexture,
   Color,
   FrontSide,
@@ -88,6 +90,7 @@ function buildRenderPacketModel(packet: RenderPacket) {
   const root = new Group()
   const primitiveByObject = new WeakMap<Object3D, RenderPacketPrimitive>()
   const edgeByObject = new WeakMap<Object3D, RenderPacketEdge>()
+  const sketchByObject = new WeakMap<Object3D, RenderPacketSketchSegment>()
 
   packet.primitives.forEach((primitive, primitiveOffset) => {
     const geometry = new BufferGeometry()
@@ -163,11 +166,71 @@ function buildRenderPacketModel(packet: RenderPacket) {
     root.add(line)
   })
 
+  const sketchEndpointGeometry = new BoxGeometry(0.00075, 0.00075, 0.00075)
+  packet.sketches.forEach((segment) => {
+    if (segment.positions.length < 6) {
+      return
+    }
+
+    const geometry = new BufferGeometry()
+    geometry.setAttribute(
+      'position',
+      new BufferAttribute(new Float32Array(segment.positions), 3)
+    )
+
+    const line = new Line(
+      geometry,
+      new LineBasicMaterial({
+        color: 0xf2f3f5,
+        transparent: true,
+        opacity: 0.95,
+      })
+    )
+    line.name = `sketch_${segment.sketchId}_${segment.holeIndex ?? 'path'}_${segment.segmentIndex}`
+    line.userData.kittycadSketchExtras = {
+      sketch_id: segment.sketchId,
+      segment_id: segment.segmentId ?? null,
+      segment_index: segment.segmentIndex,
+      hole_index: segment.holeIndex ?? null,
+      closed: segment.closed,
+    } satisfies KittycadSketchExtras
+    line.renderOrder = 3
+    sketchByObject.set(line, segment)
+    root.add(line)
+
+    if (!segment.closed) {
+      const positions = segment.positions
+      const startMarkerMaterial = new MeshBasicMaterial({
+        color: 0xf2f3f5,
+        transparent: true,
+        opacity: 0.95,
+      })
+      const startMarker = new Mesh(sketchEndpointGeometry, startMarkerMaterial)
+      startMarker.position.set(positions[0], positions[1], positions[2])
+      startMarker.renderOrder = 4
+      root.add(startMarker)
+
+      const endMarker = new Mesh(
+        sketchEndpointGeometry,
+        startMarkerMaterial.clone()
+      )
+      const endIndex = positions.length - 3
+      endMarker.position.set(
+        positions[endIndex],
+        positions[endIndex + 1],
+        positions[endIndex + 2]
+      )
+      endMarker.renderOrder = 4
+      root.add(endMarker)
+    }
+  })
+
   return {
     model: root,
     parserState: {
       primitiveByObject,
       edgeByObject,
+      sketchByObject,
     } satisfies RenderPacketParserState,
   }
 }
@@ -474,6 +537,7 @@ type GltfParserState = {
 type RenderPacketParserState = {
   primitiveByObject: WeakMap<Object3D, RenderPacketPrimitive>
   edgeByObject: WeakMap<Object3D, RenderPacketEdge>
+  sketchByObject: WeakMap<Object3D, RenderPacketSketchSegment>
 }
 
 type KittycadPrimitiveExtras = {
@@ -489,6 +553,14 @@ type KittycadEdgeExtras = {
   body_id: string
   edge_id: string
   edge_index: number
+}
+
+type KittycadSketchExtras = {
+  sketch_id: string
+  segment_id: string | null
+  segment_index: number
+  hole_index: number | null
+  closed: boolean
 }
 
 type RenderPacketTrimLoopSummary = {
@@ -849,6 +921,7 @@ function getPickedObjectMetadata(
   if (parserState && 'primitiveByObject' in parserState) {
     const primitive = parserState.primitiveByObject.get(object) ?? null
     const edge = parserState.edgeByObject.get(object) ?? null
+    const sketch = parserState.sketchByObject.get(object) ?? null
     return {
       association: primitive
         ? {
@@ -859,7 +932,11 @@ function getPickedObjectMetadata(
           ? {
               edges: edge.edgeIndex,
             }
-          : null,
+          : sketch
+            ? {
+                sketches: sketch.segmentIndex,
+              }
+            : null,
       primitiveExtras: primitiveExtrasFromUserData,
       meshExtras: null,
       nodeExtras: null,
@@ -877,6 +954,7 @@ function getPickedObjectMetadata(
               edge_index: edge.edgeIndex,
             }
           : null,
+      kittycadSketchExtras: object.userData?.kittycadSketchExtras ?? null,
     }
   }
 
@@ -933,6 +1011,7 @@ function getPickedObjectMetadata(
     )
       ? object.userData.kittycadEdgeExtras
       : null,
+    kittycadSketchExtras: object.userData?.kittycadSketchExtras ?? null,
   }
 }
 
@@ -1057,6 +1136,39 @@ function resolveSelectionEntityFromEdgeExtras(
     primitiveIndex: extras.edge_index,
     entityType: 'edge',
   }
+}
+
+function isKittycadSketchExtras(value: unknown): value is KittycadSketchExtras {
+  return (
+    !!value &&
+    typeof value === 'object' &&
+    typeof (value as KittycadSketchExtras).sketch_id === 'string' &&
+    ((value as KittycadSketchExtras).segment_id === null ||
+      typeof (value as KittycadSketchExtras).segment_id === 'string') &&
+    typeof (value as KittycadSketchExtras).segment_index === 'number' &&
+    ((value as KittycadSketchExtras).hole_index === null ||
+      typeof (value as KittycadSketchExtras).hole_index === 'number') &&
+    typeof (value as KittycadSketchExtras).closed === 'boolean'
+  )
+}
+
+function resolveSelectionEntityFromSketchExtras(
+  extras: KittycadSketchExtras,
+  artifactGraph: ArtifactGraph
+): ResolvedSelectionEntity | null {
+  if (extras.segment_id) {
+    const artifact = artifactGraph.get(extras.segment_id)
+    if (artifact?.type === 'segment') {
+      return {
+        entityId: artifact.id,
+        parentEntityId: artifact.pathId,
+        primitiveIndex: extras.segment_index,
+        entityType: 'edge',
+      }
+    }
+  }
+
+  return null
 }
 
 function setMeshHighlight(
@@ -1232,14 +1344,24 @@ export const LocalWebGPUScene = ({
       const edgeExtras = isKittycadEdgeExtras(metadata.kittycadEdgeExtras)
         ? metadata.kittycadEdgeExtras
         : null
-      if (!edgeExtras) {
-        return null
+      if (edgeExtras) {
+        return resolveSelectionEntityFromEdgeExtras(
+          edgeExtras,
+          kclManager.artifactGraph
+        )
       }
 
-      return resolveSelectionEntityFromEdgeExtras(
-        edgeExtras,
-        kclManager.artifactGraph
-      )
+      const sketchExtras = isKittycadSketchExtras(metadata.kittycadSketchExtras)
+        ? metadata.kittycadSketchExtras
+        : null
+      if (sketchExtras) {
+        return resolveSelectionEntityFromSketchExtras(
+          sketchExtras,
+          kclManager.artifactGraph
+        )
+      }
+
+      return null
     }
 
     const setVisible = (nextVisible: boolean) => {
@@ -2083,6 +2205,28 @@ export const LocalWebGPUScene = ({
                 metadata.kittycadEdgeExtras.edge_id,
                 object
               )
+            }
+          }
+          if (object instanceof Line && metadata.kittycadSketchExtras) {
+            object.userData.kittycadSketchExtras = metadata.kittycadSketchExtras
+            if (isKittycadSketchExtras(metadata.kittycadSketchExtras)) {
+              const resolvedSelectionEntity =
+                resolveSelectionEntityFromSketchExtras(
+                  metadata.kittycadSketchExtras,
+                  kclManager.artifactGraph
+                )
+              if (resolvedSelectionEntity) {
+                object.userData.kittycadSelectionEntityId =
+                  resolvedSelectionEntity.entityId
+                object.userData.kittycadParentEntityId =
+                  resolvedSelectionEntity.parentEntityId
+                object.userData.kittycadPrimitiveIndex =
+                  resolvedSelectionEntity.primitiveIndex
+                selectionEntityIdToObject.set(
+                  resolvedSelectionEntity.entityId,
+                  object
+                )
+              }
             }
           }
         })

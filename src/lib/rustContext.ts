@@ -8,6 +8,7 @@ import type {
   RenderPacket,
   RenderPacketEdge,
   RenderPacketPrimitive,
+  RenderPacketSketchSegment,
   RenderPacketTrimLoop,
 } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -53,6 +54,7 @@ export type {
   RenderPacket,
   RenderPacketEdge,
   RenderPacketPrimitive,
+  RenderPacketSketchSegment,
   RenderPacketTrimLoop,
 }
 
