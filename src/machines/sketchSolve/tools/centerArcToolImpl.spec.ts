@@ -596,8 +596,7 @@ describe('centerArcToolImpl', () => {
           type: 'Coincident',
           segments: [3, 77],
         },
-        expect.anything(),
-        false
+        expect.anything()
       )
       expect(addConstraintSpy).toHaveBeenNthCalledWith(
         2,

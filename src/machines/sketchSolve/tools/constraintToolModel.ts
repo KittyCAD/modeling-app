@@ -9,6 +9,7 @@ import {
 
 export const constraintToolNames = [
   'coincidentConstraintTool',
+  'midpointConstraintTool',
   'tangentConstraintTool',
   'parallelConstraintTool',
   'equalLengthConstraintTool',
@@ -20,6 +21,7 @@ export const constraintToolNames = [
 
 export type ConstraintToolName =
   | 'coincidentConstraintTool'
+  | 'midpointConstraintTool'
   | 'tangentConstraintTool'
   | 'parallelConstraintTool'
   | 'equalLengthConstraintTool'
@@ -152,6 +154,36 @@ export const constraintToolConfigs = {
         resultingConstraintType: 'Coincident',
         slots: [['origin'], ['point']],
         repeatableLastSlot: true,
+        areaSelectionPolicy: 'consume-minimal',
+      },
+    ],
+  },
+  midpointConstraintTool: {
+    toolName: 'midpointConstraintTool',
+    keepEquippedAfterApply: true,
+    modes: [
+      {
+        id: 'point-line',
+        resultingConstraintType: 'Midpoint',
+        slots: [['point'], ['line']],
+        areaSelectionPolicy: 'consume-minimal',
+      },
+      {
+        id: 'line-point',
+        resultingConstraintType: 'Midpoint',
+        slots: [['line'], ['point']],
+        areaSelectionPolicy: 'consume-minimal',
+      },
+      {
+        id: 'point-arc',
+        resultingConstraintType: 'Midpoint',
+        slots: [['point'], ['arc']],
+        areaSelectionPolicy: 'consume-minimal',
+      },
+      {
+        id: 'arc-point',
+        resultingConstraintType: 'Midpoint',
+        slots: [['arc'], ['point']],
         areaSelectionPolicy: 'consume-minimal',
       },
     ],
