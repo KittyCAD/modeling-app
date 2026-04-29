@@ -393,6 +393,14 @@ fn rewrite_constraint_with_map(
                 .map(|id| rewrite_object_id(*id, rewrite_map))
                 .collect(),
         })),
+        Constraint::Symmetric(symmetric) => Some(Constraint::Symmetric(crate::frontend::sketch::Symmetric {
+            input: symmetric
+                .input
+                .iter()
+                .map(|id| rewrite_object_id(*id, rewrite_map))
+                .collect(),
+            axis: rewrite_object_id(symmetric.axis, rewrite_map),
+        })),
         Constraint::Parallel(parallel) => Some(Constraint::Parallel(crate::frontend::sketch::Parallel {
             lines: parallel
                 .lines

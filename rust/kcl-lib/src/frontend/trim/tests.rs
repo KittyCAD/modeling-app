@@ -1024,6 +1024,10 @@ mod sync {
         let tangent = Constraint::Tangent(crate::frontend::sketch::Tangent {
             input: vec![ObjectId(1), ObjectId(2), ObjectId(77)],
         });
+        let symmetric = Constraint::Symmetric(crate::frontend::sketch::Symmetric {
+            input: vec![ObjectId(1), ObjectId(2)],
+            axis: ObjectId(77),
+        });
         let midpoint = Constraint::Midpoint(crate::frontend::sketch::Midpoint {
             point: ObjectId(1),
             segment: ObjectId(2),
@@ -1051,6 +1055,13 @@ mod sync {
             rewritten_tangent.input,
             vec![ObjectId(101), ObjectId(202), ObjectId(77)]
         );
+
+        let Some(Constraint::Symmetric(rewritten_symmetric)) = rewrite_constraint_with_map(&symmetric, &rewrite_map)
+        else {
+            panic!("expected symmetric rewrite");
+        };
+        assert_eq!(rewritten_symmetric.input, vec![ObjectId(101), ObjectId(202)]);
+        assert_eq!(rewritten_symmetric.axis, ObjectId(77));
 
         let Some(Constraint::Midpoint(rewritten_midpoint)) = rewrite_constraint_with_map(&midpoint, &rewrite_map)
         else {

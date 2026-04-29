@@ -165,6 +165,7 @@ layout: manual
   * [`solver::perpendicular`](/docs/kcl-std/functions/std-solver-perpendicular)
   * [`solver::point`](/docs/kcl-std/functions/std-solver-point)
   * [`solver::radius`](/docs/kcl-std/functions/std-solver-radius)
+  * [`solver::symmetric`](/docs/kcl-std/functions/std-solver-symmetric)
   * [`solver::tangent`](/docs/kcl-std/functions/std-solver-tangent)
   * [`solver::vertical`](/docs/kcl-std/functions/std-solver-vertical)
   * [`solver::verticalDistance`](/docs/kcl-std/functions/std-solver-verticalDistance)

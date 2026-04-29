@@ -44,6 +44,7 @@ use crate::front::Object;
 use crate::front::Parallel;
 use crate::front::Perpendicular;
 use crate::front::PointCtor;
+use crate::front::Symmetric;
 use crate::front::Tangent;
 use crate::frontend::api::Expr;
 use crate::frontend::api::FileId;
@@ -117,9 +118,11 @@ struct ArcSizeConstraintParams {
 const POINT_FN: &str = "point";
 const POINT_AT_PARAM: &str = "at";
 const LINE_FN: &str = "line";
+const LINE_VARIABLE: &str = "line";
 const LINE_START_PARAM: &str = "start";
 const LINE_END_PARAM: &str = "end";
 const ARC_FN: &str = "arc";
+const ARC_VARIABLE: &str = "arc";
 const ARC_START_PARAM: &str = "start";
 const ARC_END_PARAM: &str = "end";
 const ARC_CENTER_PARAM: &str = "center";
@@ -143,6 +146,8 @@ const HORIZONTAL_FN: &str = "horizontal";
 const MIDPOINT_FN: &str = "midpoint";
 const MIDPOINT_POINT_PARAM: &str = "point";
 const RADIUS_FN: &str = "radius";
+const SYMMETRIC_FN: &str = "symmetric";
+const SYMMETRIC_AXIS_PARAM: &str = "axis";
 const TANGENT_FN: &str = "tangent";
 const VERTICAL_FN: &str = "vertical";
 
@@ -1013,6 +1018,10 @@ impl SketchApi for FrontendState {
                 .add_diameter(sketch, diameter, &mut new_ast)
                 .await
                 .map_err(KclErrorWithOutputs::no_outputs)?,
+            Constraint::Symmetric(symmetric) => self
+                .add_symmetric(sketch, symmetric, &mut new_ast)
+                .await
+                .map_err(KclErrorWithOutputs::no_outputs)?,
             Constraint::Vertical(vertical) => self
                 .add_vertical(sketch, vertical, &mut new_ast)
                 .await
@@ -1369,6 +1378,11 @@ impl SketchApi for FrontendState {
                 }
                 Constraint::Radius(radius) => {
                     self.add_radius(sketch, radius, &mut new_ast)
+                        .await
+                        .map_err(KclErrorWithOutputs::no_outputs)?;
+                }
+                Constraint::Symmetric(symmetric) => {
+                    self.add_symmetric(sketch, symmetric, &mut new_ast)
                         .await
                         .map_err(KclErrorWithOutputs::no_outputs)?;
                 }
@@ -2670,7 +2684,7 @@ impl FrontendState {
                     )));
                 };
 
-                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)
+                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), LINE_VARIABLE, None)
             })
             .collect::<Result<Vec<_>, _>>()?;
 
@@ -2723,7 +2737,7 @@ impl FrontendState {
                     )));
                 };
 
-                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)
+                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), LINE_VARIABLE, None)
             })
             .collect::<Result<Vec<_>, _>>()?;
 
@@ -2955,7 +2969,7 @@ impl FrontendState {
                             "Internal: Point is not part of owner's line segment: point={point_id:?}, line={owner_id:?}"
                         )));
                     };
-                    get_or_insert_ast_reference(new_ast, &owner_object.source, "line", Some(property))
+                    get_or_insert_ast_reference(new_ast, &owner_object.source, LINE_VARIABLE, Some(property))
                 }
                 Segment::Arc(arc) => {
                     let property = if arc.start == point_id {
@@ -2969,7 +2983,7 @@ impl FrontendState {
                             "Internal: Point is not part of owner's arc segment: point={point_id:?}, arc={owner_id:?}"
                         )));
                     };
-                    get_or_insert_ast_reference(new_ast, &owner_object.source, "arc", Some(property))
+                    get_or_insert_ast_reference(new_ast, &owner_object.source, ARC_VARIABLE, Some(property))
                 }
                 Segment::Circle(circle) => {
                     let property = if circle.start == point_id {
@@ -3015,8 +3029,10 @@ impl FrontendState {
 
                 match segment {
                     Segment::Point(_) => self.point_id_to_ast_reference(*segment_id, new_ast),
-                    Segment::Line(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, "line", None),
-                    Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, "arc", None),
+                    Segment::Line(_) => {
+                        get_or_insert_ast_reference(new_ast, &segment_object.source, LINE_VARIABLE, None)
+                    }
+                    Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, ARC_VARIABLE, None),
                     Segment::Circle(_) => {
                         get_or_insert_ast_reference(new_ast, &segment_object.source, CIRCLE_VARIABLE, None)
                     }
@@ -3165,7 +3181,7 @@ impl FrontendState {
                 "Only lines can be constrained to meet at an angle: {line0_object:?}",
             )));
         };
-        let l0_ast = get_or_insert_ast_reference(new_ast, &line0_object.source.clone(), "line", None)?;
+        let l0_ast = get_or_insert_ast_reference(new_ast, &line0_object.source.clone(), LINE_VARIABLE, None)?;
 
         let line1_object = self
             .scene_graph
@@ -3180,7 +3196,7 @@ impl FrontendState {
                 "Only lines can be constrained to meet at an angle: {line1_object:?}",
             )));
         };
-        let l1_ast = get_or_insert_ast_reference(new_ast, &line1_object.source.clone(), "line", None)?;
+        let l1_ast = get_or_insert_ast_reference(new_ast, &line1_object.source.clone(), LINE_VARIABLE, None)?;
 
         // Create the angle() call.
         let angle_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
@@ -3244,8 +3260,8 @@ impl FrontendState {
             return Err(KclError::refactor(format!("Object is not a segment: {seg0_object:?}")));
         };
         let seg0_ast = match seg0_segment {
-            Segment::Line(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, "line", None)?,
-            Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, "arc", None)?,
+            Segment::Line(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, LINE_VARIABLE, None)?,
+            Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, ARC_VARIABLE, None)?,
             Segment::Circle(_) => get_or_insert_ast_reference(new_ast, &seg0_object.source, CIRCLE_VARIABLE, None)?,
             _ => {
                 return Err(KclError::refactor(format!(
@@ -3263,8 +3279,8 @@ impl FrontendState {
             return Err(KclError::refactor(format!("Object is not a segment: {seg1_object:?}")));
         };
         let seg1_ast = match seg1_segment {
-            Segment::Line(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, "line", None)?,
-            Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, "arc", None)?,
+            Segment::Line(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, LINE_VARIABLE, None)?,
+            Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, ARC_VARIABLE, None)?,
             Segment::Circle(_) => get_or_insert_ast_reference(new_ast, &seg1_object.source, CIRCLE_VARIABLE, None)?,
             _ => {
                 return Err(KclError::refactor(format!(
@@ -3278,6 +3294,33 @@ impl FrontendState {
             new_ast,
             sketch_id,
             AstMutateCommand::AddSketchBlockExprStmt { expr: tangent_ast },
+        )?;
+        Ok(sketch_block_ref)
+    }
+
+    async fn add_symmetric(
+        &mut self,
+        sketch: ObjectId,
+        symmetric: Symmetric,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> Result<AstNodeRef, KclError> {
+        let &[input0_id, input1_id] = symmetric.input.as_slice() else {
+            return Err(KclError::refactor(format!(
+                "Symmetric constraint must have exactly 2 inputs, got {}",
+                symmetric.input.len()
+            )));
+        };
+        let sketch_id = sketch;
+
+        let input0_ast = self.symmetric_input_id_to_ast_reference(input0_id, new_ast)?;
+        let input1_ast = self.symmetric_input_id_to_ast_reference(input1_id, new_ast)?;
+        let axis_ast = self.symmetric_axis_id_to_ast_reference(symmetric.axis, new_ast)?;
+
+        let symmetric_ast = create_symmetric_ast(vec![input0_ast, input1_ast], axis_ast);
+        let (sketch_block_ref, _) = self.mutate_ast(
+            new_ast,
+            sketch_id,
+            AstMutateCommand::AddSketchBlockExprStmt { expr: symmetric_ast },
         )?;
         Ok(sketch_block_ref)
     }
@@ -3437,7 +3480,7 @@ impl FrontendState {
             return Err(KclError::refactor(format!("Object is not a segment: {arc_object:?}")));
         };
         let ref_type = match arc_segment {
-            Segment::Arc(_) => "arc",
+            Segment::Arc(_) => ARC_VARIABLE,
             Segment::Circle(_) => CIRCLE_VARIABLE,
             _ => {
                 return Err(KclError::refactor(format!(
@@ -3649,7 +3692,7 @@ impl FrontendState {
                         line_segment.human_friendly_kind_with_article(),
                     )));
                 };
-                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)?
+                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), LINE_VARIABLE, None)?
             }
             Horizontal::Points { points } => {
                 let point_asts = points
@@ -3710,7 +3753,7 @@ impl FrontendState {
                     )));
                 };
 
-                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)
+                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), LINE_VARIABLE, None)
             })
             .collect::<Result<Vec<_>, _>>()?;
 
@@ -3744,7 +3787,7 @@ impl FrontendState {
         };
 
         let ref_type = match segment {
-            Segment::Arc(_) => "arc",
+            Segment::Arc(_) => ARC_VARIABLE,
             Segment::Circle(_) => CIRCLE_VARIABLE,
             _ => {
                 return Err(KclError::refactor(format!(
@@ -3755,6 +3798,56 @@ impl FrontendState {
         };
 
         get_or_insert_ast_reference(new_ast, &segment_object.source, ref_type, None)
+    }
+
+    fn symmetric_input_id_to_ast_reference(
+        &mut self,
+        segment_id: ObjectId,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> Result<ast::Expr, KclError> {
+        let segment_object = self
+            .scene_graph
+            .objects
+            .get(segment_id.0)
+            .ok_or_else(|| KclError::refactor(format!("Segment not found: {segment_id:?}")))?;
+        let ObjectKind::Segment { segment } = &segment_object.kind else {
+            return Err(KclError::refactor(format!(
+                "Object is not a segment, it was {}",
+                segment_object.kind.human_friendly_kind_with_article()
+            )));
+        };
+
+        match segment {
+            Segment::Point(_) => self.point_id_to_ast_reference(segment_id, new_ast),
+            Segment::Line(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, LINE_VARIABLE, None),
+            Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, ARC_VARIABLE, None),
+            Segment::Circle(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, CIRCLE_VARIABLE, None),
+        }
+    }
+
+    fn symmetric_axis_id_to_ast_reference(
+        &mut self,
+        segment_id: ObjectId,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> Result<ast::Expr, KclError> {
+        let segment_object = self
+            .scene_graph
+            .objects
+            .get(segment_id.0)
+            .ok_or_else(|| KclError::refactor(format!("Axis segment not found: {segment_id:?}")))?;
+        let ObjectKind::Segment { segment } = &segment_object.kind else {
+            return Err(KclError::refactor(format!(
+                "Object is not a segment, it was {}",
+                segment_object.kind.human_friendly_kind_with_article()
+            )));
+        };
+        match segment {
+            Segment::Line(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, LINE_VARIABLE, None),
+            _ => Err(KclError::refactor(format!(
+                "Symmetric axis must be a line, got {}",
+                segment.human_friendly_kind_with_article()
+            ))),
+        }
     }
 
     async fn add_parallel(
@@ -3794,7 +3887,7 @@ impl FrontendState {
                     )));
                 };
 
-                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)
+                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), LINE_VARIABLE, None)
             })
             .collect::<Result<Vec<_>, _>>()?;
 
@@ -3866,7 +3959,7 @@ impl FrontendState {
                 line0_segment.human_friendly_kind_with_article(),
             )));
         };
-        let line0_ast = get_or_insert_ast_reference(new_ast, &line0_object.source.clone(), "line", None)?;
+        let line0_ast = get_or_insert_ast_reference(new_ast, &line0_object.source.clone(), LINE_VARIABLE, None)?;
 
         let line1_object = self
             .scene_graph
@@ -3886,7 +3979,7 @@ impl FrontendState {
                 line1_segment.human_friendly_kind_with_article(),
             )));
         };
-        let line1_ast = get_or_insert_ast_reference(new_ast, &line1_object.source.clone(), "line", None)?;
+        let line1_ast = get_or_insert_ast_reference(new_ast, &line1_object.source.clone(), LINE_VARIABLE, None)?;
 
         // Create the parallel() or perpendicular() call.
         let call_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
@@ -3940,7 +4033,7 @@ impl FrontendState {
                         line_segment.human_friendly_kind_with_article()
                     )));
                 };
-                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)?
+                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), LINE_VARIABLE, None)?
             }
             Vertical::Points { points } => {
                 let point_asts = points
@@ -4156,6 +4249,13 @@ impl FrontendState {
                     .lines
                     .iter()
                     .any(|line_id| self.segment_will_be_deleted(*line_id, segment_ids_set)),
+                Constraint::Symmetric(symmetric) => {
+                    self.segment_will_be_deleted(symmetric.axis, segment_ids_set)
+                        || symmetric
+                            .input
+                            .iter()
+                            .any(|seg_id| self.segment_will_be_deleted(*seg_id, segment_ids_set))
+                }
                 Constraint::Tangent(tangent) => tangent
                     .input
                     .iter()
@@ -4506,7 +4606,7 @@ fn sketch_face_of_scene_object_ast_expr(
                     range: segment_range.0,
                     node_path: segment_range.1.clone(),
                 },
-                "line",
+                LINE_VARIABLE,
                 None,
             )?;
 
@@ -5835,6 +5935,27 @@ pub(crate) fn create_tangent_ast(seg1_expr: ast::Expr, seg2_expr: ast::Expr) -> 
         callee: ast::Node::no_src(ast_sketch2_name(TANGENT_FN)),
         unlabeled: Some(array_expr),
         arguments: Default::default(),
+        digest: None,
+        non_code_meta: Default::default(),
+    })))
+}
+
+/// Create an AST node for symmetric([input1, input2], axis = line)
+pub(crate) fn create_symmetric_ast(input_exprs: Vec<ast::Expr>, axis_expr: ast::Expr) -> ast::Expr {
+    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        elements: input_exprs,
+        digest: None,
+        non_code_meta: Default::default(),
+    })));
+    let arguments = vec![ast::LabeledArg {
+        label: Some(ast::Identifier::new(SYMMETRIC_AXIS_PARAM)),
+        arg: axis_expr,
+    }];
+
+    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        callee: ast::Node::no_src(ast_sketch2_name(SYMMETRIC_FN)),
+        unlabeled: Some(array_expr),
+        arguments,
         digest: None,
         non_code_meta: Default::default(),
     })))
@@ -10340,6 +10461,62 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_segments_symmetric() {
+        let initial_source = "\
+sketch(on = XY) {
+  line(start = [var 0, var 0], end = [var 0, var 4])
+  line(start = [var 4, var 0], end = [var 4, var 4])
+  line(start = [var 2, var -1], end = [var 2, var 5])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line1_id = *sketch.segments.get(2).unwrap();
+        let line2_id = *sketch.segments.get(5).unwrap();
+        let axis_id = *sketch.segments.get(8).unwrap();
+
+        let constraint = Constraint::Symmetric(Symmetric {
+            input: vec![line1_id, line2_id],
+            axis: axis_id,
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 0, var 4])
+  line2 = line(start = [var 4, var 0], end = [var 4, var 4])
+  line3 = line(start = [var 2, var -1], end = [var 2, var 5])
+  symmetric([line1, line2], axis = line3)
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            12,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_point_arc_midpoint() {
         let initial_source = "\
 sketch(on = XY) {
@@ -10385,6 +10562,62 @@ sketch(on = XY) {
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             8,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_segments_symmetric_arcs() {
+        let initial_source = "\
+sketch(on = XY) {
+  arc(start = [var -15, var 0], end = [var -10, var 5], center = [var -10, var 0])
+  arc(start = [var 6, var 2], end = [var 12, var -4], center = [var 8, var 1])
+  line(start = [var 0, var -10], end = [var 0, var 10])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let arc1_id = *sketch.segments.get(3).unwrap();
+        let arc2_id = *sketch.segments.get(7).unwrap();
+        let axis_id = *sketch.segments.get(10).unwrap();
+
+        let constraint = Constraint::Symmetric(Symmetric {
+            input: vec![arc1_id, arc2_id],
+            axis: axis_id,
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  arc1 = arc(start = [var -15, var 0], end = [var -10, var 5], center = [var -10, var 0])
+  arc2 = arc(start = [var 6, var 2], end = [var 12, var -4], center = [var 8, var 1])
+  line1 = line(start = [var 0, var -10], end = [var 0, var 10])
+  symmetric([arc1, arc2], axis = line1)
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            14,
             "{:#?}",
             scene_delta.new_graph.objects
         );
