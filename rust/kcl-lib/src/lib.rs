@@ -205,9 +205,9 @@ pub mod front {
         },
         sketch::{
             Angle, Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, Distance, EqualRadius,
-            ExistingSegmentCtor, Fixed, FixedPoint, Freedom, Horizontal, Line, LineCtor, LinesEqualLength,
+            ExistingSegmentCtor, Fixed, FixedPoint, Freedom, Horizontal, Line, LineCtor, LinesEqualLength, Midpoint,
             NewSegmentInfo, Parallel, Perpendicular, Point, Point2d, PointCtor, Segment, SegmentCtor, Sketch,
-            SketchApi, SketchCtor, StartOrEnd, Tangent, Vertical,
+            SketchApi, SketchCtor, StartOrEnd, Symmetric, Tangent, Vertical,
         },
         // Re-export trim module items
         trim::{
@@ -251,6 +251,7 @@ lazy_static::lazy_static! {
     pub static ref RELEVANT_FILE_EXTENSIONS: Vec<String> = {
         let mut relevant_extensions = IMPORT_FILE_EXTENSIONS.clone();
         relevant_extensions.push("kcl".to_string());
+        relevant_extensions.push("md".to_string());
         relevant_extensions
     };
 }

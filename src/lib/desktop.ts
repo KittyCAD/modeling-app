@@ -7,6 +7,7 @@ import { createKCClient, kcCall } from '@src/lib/kcClient'
 
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+import type { JsonValue } from '@rust/kcl-lib/bindings/serde_json/JsonValue'
 
 import { newKclFile } from '@src/lang/project'
 import {
@@ -31,12 +32,30 @@ import {
 import type { FileEntry, FileMetadata, Project } from '@src/lib/project'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
-import { getInVariableCase } from '@src/lib/utils'
+import { getInVariableCase, isArray } from '@src/lib/utils'
 import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import env from '@src/env'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getEXTNoPeriod, isExtensionARelevantExtension } from '@src/lib/paths'
 import { getAppFolderName as getAppFolderNameFromMetadata } from '@src/lib/appFolderName'
+
+function getProjectSettingsSection(
+  config: DeepPartial<Configuration> | Configuration
+): { [key: string]: JsonValue } | undefined {
+  const projectSettings = config.settings?.project
+  return projectSettings &&
+    typeof projectSettings === 'object' &&
+    !isArray(projectSettings)
+    ? (projectSettings as { [key: string]: JsonValue })
+    : undefined
+}
+
+function getProjectDirectorySetting(
+  config: DeepPartial<Configuration> | Configuration
+): string | undefined {
+  const directory = getProjectSettingsSection(config)?.directory
+  return typeof directory === 'string' ? directory : undefined
+}
 
 const convertIStatToFileMetadata = (
   stats: IStat | null
@@ -96,7 +115,7 @@ export async function renameProjectDirectory(
 export async function ensureProjectDirectoryExists(
   config: DeepPartial<Configuration>
 ): Promise<string | undefined> {
-  const projectDir = config.settings?.project?.directory
+  const projectDir = getProjectDirectorySetting(config)
   if (!projectDir) {
     console.error('projectDir is falsey', config)
     return Promise.reject(new Error('projectDir is falsey'))
@@ -724,9 +743,9 @@ export const readAppSettingsFile = async (
   wasmInstance: ModuleType
 ): Promise<DeepPartial<Configuration>> => {
   let settingsPath = await getAppSettingsFilePath()
-  const initialProjectDirConfig: DeepPartial<
-    NonNullable<Required<Configuration>['settings']['project']>
-  > = { directory: await getInitialDefaultDir() }
+  const initialProjectDirConfig: { [key: string]: JsonValue } = {
+    directory: await getInitialDefaultDir(),
+  }
 
   // The file exists, read it and parse it.
   try {
@@ -740,7 +759,7 @@ export const readAppSettingsFile = async (
     }
 
     const hasProjectDirectorySetting =
-      parsedAppConfig.settings?.project?.directory
+      getProjectDirectorySetting(parsedAppConfig)
 
     if (hasProjectDirectorySetting) {
       return parsedAppConfig
@@ -752,9 +771,11 @@ export const readAppSettingsFile = async (
           ...parsedAppConfig.settings,
           project: Object.assign(
             {},
-            parsedAppConfig.settings?.project,
+            getProjectSettingsSection(parsedAppConfig),
             initialProjectDirConfig
-          ),
+          ) as {
+            [key: string]: JsonValue
+          },
         },
       }
       return mergedConfig
@@ -776,9 +797,9 @@ export const readAppSettingsFile = async (
         ...defaultAppConfig.settings,
         project: Object.assign(
           {},
-          defaultAppConfig.settings?.project,
+          getProjectSettingsSection(defaultAppConfig),
           initialProjectDirConfig
-        ),
+        ) as { [key: string]: JsonValue },
       },
     }
     return mergedDefaultConfig

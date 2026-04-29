@@ -1,4 +1,5 @@
 import type {
+  ApiObject,
   SceneGraphDelta,
   SegmentCtor,
 } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -18,9 +19,6 @@ import type {
 } from '@src/machines/modelingSharedTypes'
 import {
   buildAngleConstraintInput,
-  buildEqualLengthConstraintInput,
-  buildFixedConstraintInput,
-  buildTangentConstraintInput,
   isArcSegment,
   isCircleSegment,
   isLineSegment,
@@ -37,6 +35,7 @@ import {
   cleanupSketchSolveGroup,
   clearDraftEntities,
   clearHoverCallbacks,
+  clearHoveredCodeHighlight,
   deleteDraftEntities,
   equipTools,
   getObjectSelectionIds,
@@ -49,25 +48,45 @@ import {
   setDraftEntities,
   spawnTool,
   tearDownSketchSolve,
+  updateHoveredId,
+  updateSelectedCodeHighlight,
+  updateSelectedIdsFromCodeSelection,
   updateSelectedIds,
   updateSketchOutcome,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
+import { getConstraintToolPreparedApply } from '@src/machines/sketchSolve/tools/constraintToolHelpers'
+import {
+  constraintToolNames,
+  type ConstraintToolName,
+} from '@src/machines/sketchSolve/tools/constraintToolModel'
+import { applyOrEquipConstraintToolFromToolbar } from '@src/machines/sketchSolve/tools/constraintToolbarAction'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import { assertEvent, assign, createMachine, sendParent, setup } from 'xstate'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
+const constraintToolNameSet = new Set<string>(constraintToolNames)
+
+type SketchSolveInput = {
+  kclManager: KclManager
+  initialSketchSolvePlane?: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null
+  sketchId: number
+  initialSceneGraphDelta: SceneGraphDelta
+}
 
 function sendToolbarConstraintOutcome(
   self: SolveActionArgs['self'],
   result:
     | Awaited<ReturnType<SketchSolveContext['rustContext']['addConstraint']>>
-    | undefined
+    | undefined,
+  keepSelection = false
 ) {
   if (result) {
     sendToActorIfActive(self, {
       type: 'update selected ids',
-      data: { selectedIds: [], duringAreaSelectIds: [] },
+      data: keepSelection
+        ? { duringAreaSelectIds: [] }
+        : { selectedIds: [], duringAreaSelectIds: [] },
     })
     sendToActorIfActive(self, {
       type: 'update sketch outcome',
@@ -92,26 +111,20 @@ async function runSketchSolveToolbarAction(
   }
 }
 
-function isPointSelectionOrOrigin(selection: unknown): boolean {
-  return (
-    selection === ORIGIN_TARGET ||
-    isPointSegment(selection as Parameters<typeof isPointSegment>[0])
-  )
-}
-
-function getSelectionPointCoords(selection: unknown) {
+function getSelectionPointCoords(
+  selection: ApiObject | typeof ORIGIN_TARGET | undefined
+) {
   if (selection === ORIGIN_TARGET) {
     return { x: 0, y: 0 }
   }
 
-  const pointSelection = selection as Parameters<typeof isPointSegment>[0]
-  if (!isPointSegment(pointSelection)) {
+  if (!isPointSegment(selection)) {
     return null
   }
 
   return {
-    x: pointSelection.kind.segment.position.x.value,
-    y: pointSelection.kind.segment.position.y.value,
+    x: selection.kind.segment.position.x.value,
+    y: selection.kind.segment.position.y.value,
   }
 }
 
@@ -119,7 +132,8 @@ async function addAxisDistanceConstraint(
   context: SketchSolveContext,
   self: SolveActionArgs['self'],
   axis: 'horizontal' | 'vertical',
-  providedDistance?: number
+  providedDistance?: number,
+  keepSelection = false
 ) {
   let segmentsToConstrain = [...context.selectedIds]
   if (
@@ -176,7 +190,7 @@ async function addAxisDistanceConstraint(
       distance: { value: distance, units },
       points: segmentsToConstrain.map(
         (id): ConstraintSegment => (id === ORIGIN_TARGET ? 'ORIGIN' : id)
-      ) as unknown as number[],
+      ),
       source: {
         expr: distance.toString(),
         is_literal: true,
@@ -185,88 +199,39 @@ async function addAxisDistanceConstraint(
     jsAppSettings(context.kclManager.systemDeps.settings),
     true
   )
-  sendToolbarConstraintOutcome(self, result)
+  sendToolbarConstraintOutcome(self, result, keepSelection)
 }
 
-async function addLineOrientationConstraint(
+function getPreparedApplyForConstraintTool(
   context: SketchSolveContext,
-  self: SolveActionArgs['self'],
-  type: 'Horizontal' | 'Vertical'
-) {
-  let result
-  for (const id of getObjectSelectionIds(context.selectedIds)) {
-    // TODO this is not how these constraints should operate long term, as they should be equipable tools
-    result = await context.rustContext.addConstraint(
-      0,
-      context.sketchId,
-      {
-        type,
-        line: id,
-      },
-      jsAppSettings(context.kclManager.systemDeps.settings),
-      true
-    )
-  }
-  sendToolbarConstraintOutcome(self, result)
-}
-
-async function addHorizontalConstraint(
-  context: SketchSolveContext,
-  self: SolveActionArgs['self']
-) {
-  await addLineOrientationConstraint(context, self, 'Horizontal')
-}
-
-async function addVerticalConstraint(
-  context: SketchSolveContext,
-  self: SolveActionArgs['self']
-) {
-  await addLineOrientationConstraint(context, self, 'Vertical')
-}
-
-async function addFixedConstraint(
-  context: SketchSolveContext,
-  self: SolveActionArgs['self']
+  toolName: ConstraintToolName
 ) {
   const objects =
     context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
-  const fixedInput = buildFixedConstraintInput(
-    getObjectSelectionIds(context.selectedIds),
-    objects
-  )
-  if (!fixedInput) {
-    return
-  }
 
-  const result = await context.rustContext.addConstraint(
-    0,
-    context.sketchId,
+  return getConstraintToolPreparedApply(
+    toolName,
+    context.selectedIds,
+    objects,
     {
-      type: 'Fixed',
-      points: fixedInput,
-    },
-    jsAppSettings(context.kclManager.systemDeps.settings),
-    true
+      defaultLengthUnit: baseUnitToNumericSuffix(
+        context.kclManager.fileSettings.defaultLengthUnit ?? 'mm'
+      ),
+    }
   )
-  sendToolbarConstraintOutcome(self, result)
+}
+
+function isConstraintToolName(
+  toolName: string
+): toolName is ConstraintToolName {
+  return constraintToolNameSet.has(toolName)
 }
 
 export const sketchSolveMachine = setup({
   types: {
     context: {} as SketchSolveContext,
     events: {} as SketchSolveMachineEvent,
-    input: {} as {
-      // dependencies
-      kclManager: KclManager
-      // end dependencies
-      initialSketchSolvePlane?:
-        | DefaultPlane
-        | OffsetPlane
-        | ExtrudeFacePlane
-        | null
-      sketchId: number
-      initialSceneGraphDelta: SceneGraphDelta
-    },
+    input: {} as SketchSolveInput,
   },
   actions: {
     'initialize intersection plane': initializeIntersectionPlane,
@@ -298,6 +263,43 @@ export const sketchSolveMachine = setup({
       assertEvent(event, 'equip tool')
       return { pendingToolName: event.data.tool }
     }),
+    'apply current selection with equipped constraint tool': ({
+      context,
+      event,
+      self,
+    }) => {
+      assertEvent(event, 'equip tool')
+      const toolName = event.data.tool
+      const keepSelection = event.keepSelection ?? false
+      if (!isConstraintToolName(toolName)) {
+        return
+      }
+
+      void runSketchSolveToolbarAction(`apply ${toolName}`, async () => {
+        const result = await applyOrEquipConstraintToolFromToolbar({
+          toolName,
+          selectedIds: context.selectedIds,
+          objects:
+            context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || [],
+          defaultLengthUnit: baseUnitToNumericSuffix(
+            context.kclManager.fileSettings.defaultLengthUnit ?? 'mm'
+          ),
+          rustContext: context.rustContext,
+          sketchId: context.sketchId,
+          settings: jsAppSettings(context.kclManager.systemDeps.settings),
+          equipConstraintTool: (nextToolName) => {
+            sendToActorIfActive(self, {
+              type: 'equip tool',
+              data: { tool: nextToolName },
+            })
+          },
+        })
+
+        if (result.type === 'applied') {
+          sendToolbarConstraintOutcome(self, result.result, keepSelection)
+        }
+      })
+    },
     'send tool equipped to parent': sendParent(({ context }) => ({
       type: 'sketch solve tool changed',
       data: { tool: context.sketchSolveToolName },
@@ -305,6 +307,10 @@ export const sketchSolveMachine = setup({
     'send tool unequipped to parent': sendParent({
       type: 'sketch solve tool changed',
       data: { tool: null },
+    }),
+    'clear selection': assign({
+      selectedIds: [],
+      duringAreaSelectIds: [],
     }),
     'toggle non-visual constraints': assign(({ context }) => ({
       showNonVisualConstraints: !context.showNonVisualConstraints,
@@ -320,14 +326,13 @@ export const sketchSolveMachine = setup({
       childTool: undefined,
     }),
     'update selected ids': assign(updateSelectedIds),
-    'update hovered id': assign(({ event }) => {
-      assertEvent(event, 'update hovered id')
-      return {
-        hoveredId: event.data.hoveredId,
-        constraintHoverPopups: event.data.constraintHoverPopups ?? [],
-      }
-    }),
+    'update selected ids from code selection': assign(
+      updateSelectedIdsFromCodeSelection
+    ),
+    'update selected code highlight': updateSelectedCodeHighlight,
+    'update hovered id': assign(updateHoveredId),
     'refresh selection styling': refreshSelectionStyling,
+    'clear hovered code highlight': clearHoveredCodeHighlight,
     'update sketch outcome': assign(updateSketchOutcome),
     'set draft entities': assign(setDraftEntities),
     'clear draft entities': assign(clearDraftEntities),
@@ -421,72 +426,12 @@ export const sketchSolveMachine = setup({
       description:
         'ESC key - forwarded to child tool when a tool is equipped. Handled at state level when no tool is equipped.',
     },
-    coincident: {
-      actions: async ({ self, context }) => {
-        await runSketchSolveToolbarAction(
-          'add a coincident constraint',
-          async () => {
-            // TODO this is not how coincident should operate long term, as it should be an equipable tool
-            const selectedIds = context.selectedIds.map(
-              (id): ConstraintSegment => (id === ORIGIN_TARGET ? 'ORIGIN' : id)
-            )
-            const result = await context.rustContext.addConstraint(
-              0,
-              context.sketchId,
-              {
-                type: 'Coincident',
-                segments: selectedIds,
-              },
-              jsAppSettings(context.kclManager.systemDeps.settings),
-              true
-            )
-            sendToolbarConstraintOutcome(self, result)
-          }
-        )
-      },
-    },
-    Fixed: {
-      actions: async ({ self, context }) => {
-        await runSketchSolveToolbarAction(
-          'add a fixed constraint',
-          async () => {
-            await addFixedConstraint(context, self)
-          }
-        )
-      },
-    },
-    Tangent: {
-      actions: async ({ self, context }) => {
-        await runSketchSolveToolbarAction(
-          'add a tangent constraint',
-          async () => {
-            const objects =
-              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
-            const tangentConstraint = buildTangentConstraintInput(
-              getObjectSelectionIds(context.selectedIds),
-              objects
-            )
-            if (!tangentConstraint) {
-              return
-            }
-
-            const result = await context.rustContext.addConstraint(
-              0,
-              context.sketchId,
-              tangentConstraint,
-              jsAppSettings(context.kclManager.systemDeps.settings),
-              true
-            )
-            sendToolbarConstraintOutcome(self, result)
-          }
-        )
-      },
-    },
     Dimension: {
-      actions: async ({ self, context }) => {
-        await runSketchSolveToolbarAction(
+      actions: ({ self, context, event }) => {
+        void runSketchSolveToolbarAction(
           'add a dimension constraint',
           async () => {
+            const keepSelection = event.keepSelection ?? false
             // TODO this is not how coincident should operate long term, as it should be an equipable tool
             const segmentsToConstrain = [...context.selectedIds]
             const objects =
@@ -518,7 +463,7 @@ export const sketchSolveMachine = setup({
                     jsAppSettings(context.kclManager.systemDeps.settings),
                     true
                   )
-                  sendToolbarConstraintOutcome(self, result)
+                  sendToolbarConstraintOutcome(self, result, keepSelection)
                   return
                 }
               }
@@ -599,7 +544,7 @@ export const sketchSolveMachine = setup({
                   jsAppSettings(context.kclManager.systemDeps.settings),
                   true
                 )
-                sendToolbarConstraintOutcome(self, result)
+                sendToolbarConstraintOutcome(self, result, keepSelection)
                 return
               } else if (isLineSegment(firstObject)) {
                 // Calculate distance for line segment from its endpoints
@@ -653,7 +598,7 @@ export const sketchSolveMachine = setup({
               {
                 type: 'Distance',
                 distance: { value: distance, units },
-                points: pointsForDistance as unknown as number[],
+                points: pointsForDistance,
                 source: {
                   expr: distance.toString(),
                   is_literal: true,
@@ -662,321 +607,222 @@ export const sketchSolveMachine = setup({
               jsAppSettings(context.kclManager.systemDeps.settings),
               true
             )
-            sendToolbarConstraintOutcome(self, result)
+            sendToolbarConstraintOutcome(self, result, keepSelection)
           }
         )
       },
     },
     HorizontalDistance: {
-      actions: async ({ self, context }) => {
-        await runSketchSolveToolbarAction(
+      actions: ({ self, context, event }) => {
+        void runSketchSolveToolbarAction(
           'add a horizontal distance constraint',
           async () => {
-            await addAxisDistanceConstraint(context, self, 'horizontal')
+            await addAxisDistanceConstraint(
+              context,
+              self,
+              'horizontal',
+              undefined,
+              event.keepSelection ?? false
+            )
           }
         )
       },
     },
     VerticalDistance: {
-      actions: async ({ self, context }) => {
-        await runSketchSolveToolbarAction(
+      actions: ({ self, context, event }) => {
+        void runSketchSolveToolbarAction(
           'add a vertical distance constraint',
           async () => {
-            await addAxisDistanceConstraint(context, self, 'vertical')
-          }
-        )
-      },
-    },
-    Parallel: {
-      actions: async ({ self, context }) => {
-        await runSketchSolveToolbarAction(
-          'add a parallel constraint',
-          async () => {
-            // TODO this is not how coincident should operate long term, as it should be an equipable tool
-            const selectedIds = getObjectSelectionIds(context.selectedIds)
-            const result = await context.rustContext.addConstraint(
-              0,
-              context.sketchId,
-              {
-                type: 'Parallel',
-                lines: selectedIds,
-              },
-              jsAppSettings(context.kclManager.systemDeps.settings),
-              true
+            await addAxisDistanceConstraint(
+              context,
+              self,
+              'vertical',
+              undefined,
+              event.keepSelection ?? false
             )
-            sendToolbarConstraintOutcome(self, result)
-          }
-        )
-      },
-    },
-    Perpendicular: {
-      actions: async ({ self, context }) => {
-        await runSketchSolveToolbarAction(
-          'add a perpendicular constraint',
-          async () => {
-            // TODO this is not how coincident should operate long term, as it should be an equipable tool
-            const selectedIds = getObjectSelectionIds(context.selectedIds)
-            const result = await context.rustContext.addConstraint(
-              0,
-              context.sketchId,
-              {
-                type: 'Perpendicular',
-                lines: selectedIds,
-              },
-              jsAppSettings(context.kclManager.systemDeps.settings),
-              true
-            )
-            sendToolbarConstraintOutcome(self, result)
-          }
-        )
-      },
-    },
-    EqualLength: {
-      actions: async ({ self, context }) => {
-        await runSketchSolveToolbarAction(
-          'add an equal length constraint',
-          async () => {
-            // TODO this is not how EqualLength should operate long term, as it should be an equipable tool
-            const selectedIds = getObjectSelectionIds(context.selectedIds)
-            const objects =
-              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
-            const equalLengthConstraint = buildEqualLengthConstraintInput(
-              selectedIds,
-              objects
-            )
-            if (!equalLengthConstraint) {
-              return
-            }
-
-            const result = await context.rustContext.addConstraint(
-              0,
-              context.sketchId,
-              equalLengthConstraint,
-              jsAppSettings(context.kclManager.systemDeps.settings),
-              true
-            )
-            sendToolbarConstraintOutcome(self, result)
-          }
-        )
-      },
-    },
-    Vertical: {
-      actions: async ({ self, context }) => {
-        await runSketchSolveToolbarAction(
-          'add a vertical constraint',
-          async () => {
-            const itemsToConstrain = context.selectedIds
-            const selectionIsAllPoints = itemsToConstrain
-              .map((id) =>
-                id === ORIGIN_TARGET
-                  ? ORIGIN_TARGET
-                  : context.sketchExecOutcome?.sceneGraphDelta.new_graph
-                      .objects[id]
-              )
-              .every((selection) => isPointSelectionOrOrigin(selection))
-
-            // If every selected item is a Point, "Vertical" really means "horizontal distance of zero"
-            if (itemsToConstrain.length > 1 && selectionIsAllPoints) {
-              await addAxisDistanceConstraint(context, self, 'horizontal', 0)
-              return
-            } else {
-              // Otherwise, just apply the horizontal constraint to each item, as if they're Lines
-              await addVerticalConstraint(context, self)
-            }
-          }
-        )
-      },
-    },
-    Horizontal: {
-      actions: async ({ self, context }) => {
-        await runSketchSolveToolbarAction(
-          'add a horizontal constraint',
-          async () => {
-            const itemsToConstrain = context.selectedIds
-            const selectionIsAllPoints = itemsToConstrain
-              .map((id) =>
-                id === ORIGIN_TARGET
-                  ? ORIGIN_TARGET
-                  : context.sketchExecOutcome?.sceneGraphDelta.new_graph
-                      .objects[id]
-              )
-              .every((selection) => isPointSelectionOrOrigin(selection))
-
-            // If every selected item is a Point, "Horizontal" really means "vertical distance of zero"
-            if (itemsToConstrain.length > 1 && selectionIsAllPoints) {
-              await addAxisDistanceConstraint(context, self, 'vertical', 0)
-              return
-            } else {
-              // Otherwise, just apply the horizontal constraint to each item, as if they're Lines
-              await addHorizontalConstraint(context, self)
-            }
           }
         )
       },
     },
     construction: {
-      actions: async ({ self, context }) => {
-        const selectedIds = getObjectSelectionIds(context.selectedIds)
-        const objects =
-          context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+      actions: ({ self, context, event }) => {
+        void runSketchSolveToolbarAction(
+          'toggle construction geometry',
+          async () => {
+            const keepSelection = event.keepSelection ?? false
+            const selectedIds = getObjectSelectionIds(context.selectedIds)
+            const objects =
+              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
 
-        if (selectedIds.length === 0) {
-          return
-        }
+            if (selectedIds.length === 0) {
+              return
+            }
 
-        const segmentsToEdit: Array<{
-          id: number
-          ctor: SegmentCtor
-        }> = []
+            const segmentsToEdit: Array<{
+              id: number
+              ctor: SegmentCtor
+            }> = []
 
-        for (const id of selectedIds) {
-          const obj = objects[id]
-          if (!obj || obj.kind.type !== 'Segment') {
-            continue
+            for (const id of selectedIds) {
+              const obj = objects[id]
+              if (!obj || obj.kind.type !== 'Segment') {
+                continue
+              }
+
+              if (
+                obj.kind.segment.type !== 'Line' &&
+                obj.kind.segment.type !== 'Arc' &&
+                obj.kind.segment.type !== 'Circle'
+              ) {
+                continue
+              }
+
+              const baseCtor = buildSegmentCtorFromObject(obj, objects)
+              if (!baseCtor) {
+                continue
+              }
+
+              const currentConstruction =
+                isLineSegment(obj) || isArcSegment(obj) || isCircleSegment(obj)
+                  ? obj.kind.segment.construction
+                  : false
+
+              const newConstruction = !currentConstruction
+
+              if (baseCtor.type === 'Line') {
+                segmentsToEdit.push({
+                  id,
+                  ctor: {
+                    ...baseCtor,
+                    construction: newConstruction,
+                  },
+                })
+              } else if (baseCtor.type === 'Arc') {
+                segmentsToEdit.push({
+                  id,
+                  ctor: {
+                    ...baseCtor,
+                    construction: newConstruction,
+                  },
+                })
+              } else if (baseCtor.type === 'Circle') {
+                segmentsToEdit.push({
+                  id,
+                  ctor: {
+                    ...baseCtor,
+                    construction: newConstruction,
+                  },
+                })
+              }
+            }
+
+            if (segmentsToEdit.length === 0) {
+              return
+            }
+
+            const result = await context.rustContext
+              .editSegments(
+                0,
+                context.sketchId,
+                segmentsToEdit,
+                jsAppSettings(context.kclManager.systemDeps.settings),
+                true
+              )
+              .catch((err) => {
+                console.error('failed to toggle construction geometry', err)
+                toastSketchSolveError(err)
+                return null
+              })
+
+            if (result) {
+              sendToActorIfActive(self, {
+                type: 'update selected ids',
+                data: keepSelection
+                  ? { duringAreaSelectIds: [] }
+                  : { selectedIds: [], duringAreaSelectIds: [] },
+              })
+              sendToActorIfActive(self, {
+                type: 'update sketch outcome',
+                data: {
+                  sourceDelta: result.kclSource,
+                  sceneGraphDelta: result.sceneGraphDelta,
+                  checkpointId: result.checkpointId ?? null,
+                },
+              })
+            }
           }
-
-          // Only Line, Arc, and Circle segments support construction geometry
-          if (
-            obj.kind.segment.type !== 'Line' &&
-            obj.kind.segment.type !== 'Arc' &&
-            obj.kind.segment.type !== 'Circle'
-          ) {
-            continue
-          }
-
-          // Build the base segment ctor
-          const baseCtor = buildSegmentCtorFromObject(obj, objects)
-          if (!baseCtor) {
-            continue
-          }
-
-          // Get current construction state
-          const currentConstruction =
-            isLineSegment(obj) || isArcSegment(obj) || isCircleSegment(obj)
-              ? obj.kind.segment.construction
-              : false
-
-          // Toggle construction state
-          const newConstruction = !currentConstruction
-
-          // Add construction property to Line or Arc ctors
-          if (baseCtor.type === 'Line') {
-            segmentsToEdit.push({
-              id,
-              ctor: {
-                ...baseCtor,
-                construction: newConstruction,
-              },
-            })
-          } else if (baseCtor.type === 'Arc') {
-            segmentsToEdit.push({
-              id,
-              ctor: {
-                ...baseCtor,
-                construction: newConstruction,
-              },
-            })
-          } else if (baseCtor.type === 'Circle') {
-            segmentsToEdit.push({
-              id,
-              ctor: {
-                ...baseCtor,
-                construction: newConstruction,
-              },
-            })
-          }
-        }
-
-        if (segmentsToEdit.length === 0) {
-          return
-        }
-
-        // Edit segments via Rust context
-        const result = await context.rustContext
-          .editSegments(
-            0,
-            context.sketchId,
-            segmentsToEdit,
-            jsAppSettings(context.kclManager.systemDeps.settings),
-            true
-          )
-          .catch((err) => {
-            console.error('failed to toggle construction geometry', err)
-            toastSketchSolveError(err)
-            return null
-          })
-
-        if (result) {
-          sendToActorIfActive(self, {
-            type: 'update sketch outcome',
-            data: {
-              sourceDelta: result.kclSource,
-              sceneGraphDelta: result.sceneGraphDelta,
-              checkpointId: result.checkpointId ?? null,
-            },
-          })
-        }
+        )
       },
     },
     'update selected ids': {
-      actions: ['update selected ids', 'refresh selection styling'],
+      actions: [
+        'update selected ids',
+        'update selected code highlight',
+        'refresh selection styling',
+      ],
+    },
+    'update selected ids from code selection': {
+      actions: [
+        'update selected ids from code selection',
+        'refresh selection styling',
+      ],
     },
     'update hovered id': {
       actions: ['update hovered id', 'refresh selection styling'],
     },
     'delete selected': {
-      actions: async ({ self, context }) => {
-        const selectedIds = getObjectSelectionIds(context.selectedIds)
+      actions: ({ self, context }) => {
+        void (async () => {
+          const selectedIds = getObjectSelectionIds(context.selectedIds)
 
-        // Only proceed if there are selected IDs
-        if (selectedIds.length === 0) {
-          return
-        }
-
-        // Partition selectedIds into constraints and segments
-        const objects =
-          context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
-        const constraintIds: number[] = []
-        const segmentIds: number[] = []
-        for (const id of selectedIds) {
-          const obj = objects[id]
-          if (obj?.kind.type === 'Constraint') {
-            constraintIds.push(id)
-          } else {
-            segmentIds.push(id)
+          if (selectedIds.length === 0) {
+            return
           }
-        }
 
-        const result = await context.rustContext
-          .deleteObjects(
-            SKETCH_FILE_VERSION,
-            context.sketchId,
-            constraintIds,
-            segmentIds,
-            jsAppSettings(context.kclManager.systemDeps.settings)
-          )
-          .catch((err) => {
-            console.error('failed to delete objects', err)
-            toastSketchSolveError(err)
-            return null
-          })
+          const objects =
+            context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+          const constraintIds: number[] = []
+          const segmentIds: number[] = []
+          for (const id of selectedIds) {
+            const obj = objects[id]
+            if (obj?.kind.type === 'Constraint') {
+              constraintIds.push(id)
+            } else {
+              segmentIds.push(id)
+            }
+          }
 
-        if (result) {
-          // Clear selection after deletion
-          sendToActorIfActive(self, {
-            type: 'update selected ids',
-            data: { selectedIds: [], duringAreaSelectIds: [] },
-          })
+          const result = await context.rustContext
+            .deleteObjects(
+              SKETCH_FILE_VERSION,
+              context.sketchId,
+              constraintIds,
+              segmentIds,
+              jsAppSettings(context.kclManager.systemDeps.settings),
+              true
+            )
+            .catch((err) => {
+              console.error('failed to delete objects', err)
+              toastSketchSolveError(err)
+              return null
+            })
 
-          // Send the update sketch outcome event
-          sendToActorIfActive(self, {
-            type: 'update sketch outcome',
-            data: {
-              sourceDelta: result.kclSource,
-              sceneGraphDelta: result.sceneGraphDelta,
-            },
-          })
-        }
+          if (result) {
+            sendToActorIfActive(self, {
+              type: 'update selected ids',
+              data: { selectedIds: [], duringAreaSelectIds: [] },
+            })
+
+            sendToActorIfActive(self, {
+              type: 'update sketch outcome',
+              data: {
+                sourceDelta: result.kclSource,
+                sceneGraphDelta: result.sceneGraphDelta,
+                checkpointId: result.checkpointId ?? null,
+              },
+            })
+          }
+        })()
       },
     },
     'start editing constraint': {
@@ -1001,19 +847,42 @@ export const sketchSolveMachine = setup({
     'move and select': {
       entry: ['setUpOnDragAndSelectionClickCallbacks'],
       on: {
-        'equip tool': {
-          target: 'using tool',
-          actions: 'store pending tool',
-        },
-        escape: {
-          target: '#Sketch Solve Mode.exiting',
-          actions: [
-            'send tool unequipped to parent',
-            'cleanup sketch solve group',
-          ],
-          description:
-            'ESC in move and select (no tool equipped) exits sketch mode',
-        },
+        'equip tool': [
+          {
+            guard: ({ context, event }) => {
+              assertEvent(event, 'equip tool')
+              if (!isConstraintToolName(event.data.tool)) {
+                return false
+              }
+
+              if (event.data.tool === 'symmetricConstraintTool') {
+                return false
+              }
+
+              return (
+                getPreparedApplyForConstraintTool(context, event.data.tool) !==
+                null
+              )
+            },
+            actions: 'apply current selection with equipped constraint tool',
+          },
+          {
+            guard: ({ event }) => {
+              assertEvent(event, 'equip tool')
+              return isConstraintToolName(event.data.tool)
+            },
+            target: 'using tool',
+            actions: 'store pending tool',
+          },
+          {
+            target: 'using tool',
+            actions: [
+              'clear selection',
+              'refresh selection styling',
+              'store pending tool',
+            ],
+          },
+        ],
       },
       invoke: {
         id: 'moveTool',
@@ -1123,7 +992,7 @@ export const sketchSolveMachine = setup({
     },
     exiting: {
       type: 'final',
-      entry: ['cleanup sketch solve group'],
+      entry: ['clear hovered code highlight', 'cleanup sketch solve group'],
       description: 'Place any teardown code here.',
     },
 
@@ -1144,7 +1013,13 @@ export const sketchSolveMachine = setup({
     'initialize intersection plane',
     'initialize initial scene graph',
     'setUpOnDragAndSelectionClickCallbacks',
-    ({ context }) => toggleSketchExtension(context.kclManager.editorView, true),
+    ({ context, self }) =>
+      toggleSketchExtension(context.kclManager.editorView, true, (ranges) => {
+        sendToActorIfActive(self, {
+          type: 'update selected ids from code selection',
+          data: { ranges },
+        })
+      }),
   ],
 
   exit: [

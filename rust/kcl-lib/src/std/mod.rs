@@ -55,7 +55,7 @@ pub struct StdFnProps {
 }
 
 impl StdFnProps {
-    fn default(name: &str) -> Self {
+    pub(crate) fn default(name: &str) -> Self {
         Self { name: name.to_owned() }
     }
 }
@@ -555,6 +555,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::constraints::equal_length(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solver::equalLength"),
         ),
+        ("solver", "midpoint") => (
+            |e, a| Box::pin(crate::std::constraints::midpoint(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solver::midpoint"),
+        ),
         ("solver", "equalRadius") => (
             |e, a| Box::pin(crate::std::constraints::equal_radius(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solver::equalRadius"),
@@ -566,6 +570,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("solver", "tangent") => (
             |e, a| Box::pin(crate::std::constraints::tangent(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solver::tangent"),
+        ),
+        ("solver", "symmetric") => (
+            |e, a| Box::pin(crate::std::constraints::symmetric(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solver::symmetric"),
         ),
         ("solver", "horizontal") => (
             |e, a| Box::pin(crate::std::constraints::horizontal(e, a).map(|r| r.map(KclValue::continue_))),

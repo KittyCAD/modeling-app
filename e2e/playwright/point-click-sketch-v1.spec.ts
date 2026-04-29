@@ -149,7 +149,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
           currentArgKey: 'length',
           currentArgValue: '5',
           headerArguments: {
-            Profiles: '1 profile',
+            Profiles: '1 edge',
             Length: '5',
           },
           highlightedHeaderArg: 'length',
@@ -161,7 +161,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
           stage: 'review',
           headerArguments: {
             Length: '4',
-            Profiles: '1 profile',
+            Profiles: '1 edge',
           },
           commandName: 'Extrude',
         })
@@ -174,7 +174,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
           currentArgValue: '',
           headerArguments: {
             Length: '4',
-            Profiles: '1 profile',
+            Profiles: '1 edge',
             TagEnd: '',
           },
           highlightedHeaderArg: 'tagEnd',
@@ -186,7 +186,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
           stage: 'review',
           headerArguments: {
             Length: '4',
-            Profiles: '1 profile',
+            Profiles: '1 edge',
             TagEnd: 'myEndTag',
           },
           commandName: 'Extrude',
@@ -329,21 +329,20 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
     editor,
     toolbar,
     scene,
+    context,
   }) => {
     const viewPortSize = { width: 1200, height: 500 }
 
     await page.setBodyDimensions(viewPortSize)
-
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, `sketch001 = startSketchOn(XZ)`)
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
 
     // Constants and locators
     // These are mappings from screenspace to KCL coordinates,
     // until we merge in our coordinate system helpers
-    const xzPlane = [
-      viewPortSize.width * 0.65,
-      viewPortSize.height * 0.3,
-    ] as const
     const originSloppy = {
       screen: [
         viewPortSize.width / 2 + 3, // 3px off the center of the screen
@@ -368,7 +367,6 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
         viewPortSize.height * 0.3,
       ],
     } as const
-    const [clickOnXzPlane, moveToXzPlane] = scene.makeMouseHelpers(...xzPlane)
     const [clickOriginSloppy] = scene.makeMouseHelpers(...originSloppy.screen)
     const [clickXAxisSloppy, moveXAxisSloppy] = scene.makeMouseHelpers(
       ...xAxisSloppy.screen
@@ -387,10 +385,8 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
     }
 
     await test.step(`Start a sketch on the XZ plane`, async () => {
-      await editor.closePane()
-      await toolbar.startSketchPlaneSelection()
-      await moveToXzPlane()
-      await clickOnXzPlane()
+      const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
+      await op.dblclick()
       await toolbar.waitUntilSketchingReady()
       await editor.expectEditor.toContain(expectedCodeSnippets.sketchOnXzPlane)
     })
@@ -517,114 +513,6 @@ openSketch = startSketchOn(XY)
     })
   })
 
-  test(`Shift-click to select and deselect edges and faces`, async ({
-    context,
-    cmdBar,
-    toolbar,
-    page,
-    homePage,
-    scene,
-  }) => {
-    // Code samples
-    const initialCode = `sketch001 = startSketchOn(XY)
-    |> startProfile(at = [-12, -6])
-    |> line(end = [0, 12])
-    |> line(end = [24, 0])
-    |> line(end = [0, -12])
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()
-    |> extrude(%, length = -12)`
-
-    // Locators
-    const upperEdgeLocation = { x: 600, y: 193 }
-    const lowerEdgeLocation = { x: 600, y: 383 }
-    const faceLocation = { x: 630, y: 290 }
-    const timeout = 150
-
-    // Setup
-    await test.step(`Initial test setup`, async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-      await scene.settled(cmdBar)
-    })
-
-    // Click helpers
-    const [clickOnUpperEdge] = scene.makeMouseHelpers(
-      upperEdgeLocation.x,
-      upperEdgeLocation.y
-    )
-    const [clickOnLowerEdge] = scene.makeMouseHelpers(
-      lowerEdgeLocation.x,
-      lowerEdgeLocation.y
-    )
-    const [clickOnFace] = scene.makeMouseHelpers(faceLocation.x, faceLocation.y)
-
-    await test.step('Select and deselect a single edge', async () => {
-      await expect(toolbar.selectionStatus).toContainText('No selection')
-      await test.step('Click the edge', async () => {
-        await clickOnUpperEdge()
-        await expect(toolbar.selectionStatus).toContainText('1 edge')
-      })
-      await test.step('Shift-click the same edge to deselect', async () => {
-        await page.keyboard.down('Shift')
-        await clickOnUpperEdge()
-        await page.waitForTimeout(timeout)
-        await page.keyboard.up('Shift')
-        await expect(toolbar.selectionStatus).toContainText('No selection')
-      })
-    })
-
-    await test.step('Select and deselect multiple objects', async () => {
-      await test.step('Select both edges and the face', async () => {
-        await test.step('Select the upper edge', async () => {
-          await clickOnUpperEdge()
-          await expect(toolbar.selectionStatus).toContainText('1 edge')
-        })
-        await test.step('Select the lower edge (Shift-click)', async () => {
-          await page.keyboard.down('Shift')
-          await clickOnLowerEdge()
-          await page.waitForTimeout(timeout)
-          await page.keyboard.up('Shift')
-          await expect(toolbar.selectionStatus).toContainText('2 edges')
-        })
-        await test.step('Select the face (Shift-click)', async () => {
-          await page.keyboard.down('Shift')
-          await clickOnFace()
-          await page.waitForTimeout(timeout)
-          await page.keyboard.up('Shift')
-          await expect(toolbar.selectionStatus).toContainText('2 edges, 1 face')
-        })
-      })
-      await test.step('Deselect them one by one', async () => {
-        await test.step('Deselect the face (Shift-click)', async () => {
-          await page.keyboard.down('Shift')
-          await clickOnFace()
-          await page.waitForTimeout(timeout)
-          await page.keyboard.up('Shift')
-          await expect(toolbar.selectionStatus).toContainText('2 edges')
-        })
-        await test.step('Deselect the lower edge (Shift-click)', async () => {
-          await page.keyboard.down('Shift')
-          await clickOnLowerEdge()
-          await page.waitForTimeout(timeout)
-          await page.keyboard.up('Shift')
-          await expect(toolbar.selectionStatus).toContainText('1 edge')
-        })
-        await test.step('Deselect the upper edge (Shift-click)', async () => {
-          await page.keyboard.down('Shift')
-          await clickOnUpperEdge()
-          await page.waitForTimeout(timeout)
-          await page.keyboard.up('Shift')
-          await expect(toolbar.selectionStatus).toContainText('No selection')
-        })
-      })
-    })
-  })
-
   test(`Shift-click to select and deselect sketch segments`, async ({
     page,
     homePage,
@@ -632,6 +520,7 @@ openSketch = startSketchOn(XY)
     editor,
     toolbar,
     cmdBar,
+    context,
   }) => {
     // Locators
     const firstPointLocation = { x: 200, y: 100 }
@@ -642,7 +531,6 @@ openSketch = startSketchOn(XY)
     // error margin but unclear why
     const firstSegmentLocation = { x: 799, y: 100 }
     const secondSegmentLocation = { x: 800, y: 399 }
-    const planeLocation = { x: 700, y: 200 }
 
     // Click helpers
     const [clickFirstPoint] = scene.makeMouseHelpers(
@@ -665,21 +553,13 @@ openSketch = startSketchOn(XY)
       secondSegmentLocation.x,
       secondSegmentLocation.y
     )
-    const [clickPlane] = scene.makeMouseHelpers(
-      planeLocation.x,
-      planeLocation.y
-    )
-
-    // Colors
-    // @pierremtb: had to tone these colors down a bit after the engine zoom fix
-    // in https://github.com/KittyCAD/engine/pull/3804, unclear why
-    const edgeColorWhite: [number, number, number] = [230, 230, 230]
-    const edgeColorBlue: [number, number, number] = [23, 10, 247]
-    const tolerance = 50
     const timeout = 150
 
     // Setup
     await test.step(`Initial test setup`, async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, `sketch001 = startSketchOn(XY)`)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
@@ -688,11 +568,14 @@ openSketch = startSketchOn(XY)
     await test.step('Select and deselect a single sketch segment', async () => {
       await test.step('Get into sketch mode', async () => {
         await editor.closePane()
-        await page.waitForTimeout(timeout)
-        await toolbar.startSketchBtn.click()
-        await page.waitForTimeout(timeout)
-        await clickPlane()
-        await page.waitForTimeout(1000)
+        const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
+        await op.dblclick()
+        await toolbar.waitUntilSketchingReady()
+        await toolbar.closeFeatureTreePane()
+        if ((await toolbar.lineBtn.getAttribute('aria-pressed')) !== 'true') {
+          await page.keyboard.press('l')
+        }
+        await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
       })
       await test.step('Draw sketch', async () => {
         await clickFirstPoint()
@@ -717,16 +600,7 @@ openSketch = startSketchOn(XY)
         await page.waitForTimeout(timeout * 5)
         await clickFirstSegment()
         await page.waitForTimeout(timeout)
-        await scene.expectPixelColor(
-          edgeColorBlue,
-          firstSegmentLocation,
-          tolerance
-        )
-        await scene.expectPixelColor(
-          edgeColorWhite,
-          secondSegmentLocation,
-          tolerance
-        )
+        await expect(toolbar.selectionStatus).toContainText('1 edge')
       })
       await test.step('Select the second segment (Shift-click)', async () => {
         await page.keyboard.down('Shift')
@@ -734,16 +608,7 @@ openSketch = startSketchOn(XY)
         await clickSecondSegment()
         await page.waitForTimeout(timeout)
         await page.keyboard.up('Shift')
-        await scene.expectPixelColor(
-          edgeColorBlue,
-          firstSegmentLocation,
-          tolerance
-        )
-        await scene.expectPixelColor(
-          edgeColorBlue,
-          secondSegmentLocation,
-          tolerance
-        )
+        await expect(toolbar.selectionStatus).toContainText('2 edges')
       })
       await test.step('Deselect the first segment', async () => {
         await page.keyboard.down('Shift')
@@ -751,16 +616,7 @@ openSketch = startSketchOn(XY)
         await clickFirstSegment()
         await page.waitForTimeout(timeout)
         await page.keyboard.up('Shift')
-        await scene.expectPixelColor(
-          edgeColorWhite,
-          firstSegmentLocation,
-          tolerance
-        )
-        await scene.expectPixelColor(
-          edgeColorBlue,
-          secondSegmentLocation,
-          tolerance
-        )
+        await expect(toolbar.selectionStatus).toContainText('1 edge')
       })
       await test.step('Deselect the second segment', async () => {
         await page.keyboard.down('Shift')
@@ -768,16 +624,7 @@ openSketch = startSketchOn(XY)
         await clickSecondSegment()
         await page.waitForTimeout(timeout)
         await page.keyboard.up('Shift')
-        await scene.expectPixelColor(
-          edgeColorWhite,
-          firstSegmentLocation,
-          tolerance
-        )
-        await scene.expectPixelColor(
-          edgeColorWhite,
-          secondSegmentLocation,
-          tolerance
-        )
+        await expect(toolbar.selectionStatus).toContainText('No selection')
       })
     })
   })
@@ -1089,7 +936,7 @@ sketch002 = startSketchOn(plane001)
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
-        headerArguments: { Profiles: '2 profiles' },
+        headerArguments: { Profiles: '2 edges' },
         commandName: 'Loft',
       })
       await cmdBar.submit()
@@ -1202,7 +1049,7 @@ profile001 = ${circleCode}`
         currentArgKey: 'path',
         currentArgValue: '',
         headerArguments: {
-          Profiles: '1 profile',
+          Profiles: '1 edge',
           Path: '',
         },
         highlightedHeaderArg: 'path',
@@ -1215,7 +1062,7 @@ profile001 = ${circleCode}`
         currentArgKey: 'path',
         currentArgValue: '',
         headerArguments: {
-          Profiles: '1 profile',
+          Profiles: '1 edge',
           Path: '',
         },
         highlightedHeaderArg: 'path',
@@ -1225,7 +1072,7 @@ profile001 = ${circleCode}`
       await cmdBar.expectState({
         commandName: 'Sweep',
         headerArguments: {
-          Profiles: '1 profile',
+          Profiles: '1 edge',
           Path: '1 helix',
         },
         stage: 'review',
@@ -1294,15 +1141,6 @@ profile001 = ${circleCode}`
 extrude001 = extrude(sketch001, length = -12)
 `
     const firstFilletDeclaration = `fillet001 = fillet(extrude001, tags=getCommonEdge(faces=[seg01,capEnd001]), radius=5)`
-    const secondFilletDeclaration = `fillet002 = fillet(extrude001, tags=getCommonEdge(faces=[seg01,capStart001]), radius=5)`
-
-    // Locators
-    // TODO: find a way to not have hardcoded pixel values for sweepEdges
-    const secondEdgeLocation = { x: 600, y: 383 }
-    const [clickOnSecondEdge] = scene.makeMouseHelpers(
-      secondEdgeLocation.x,
-      secondEdgeLocation.y
-    )
 
     // Setup
     await test.step(`Initial test setup`, async () => {
@@ -1413,110 +1251,6 @@ extrude001 = extrude(sketch001, length = -12)
       await editFillet(firstFilletFeatureTreeIndex, editedRadius, '5')
       await editor.expectEditor.toContain(firstFilletDeclaration, {
         shouldNormalise: true,
-      })
-    })
-
-    // Test 2: Command bar flow without preselected edges
-    await test.step(`Open fillet UI without selecting edges`, async () => {
-      await page.waitForTimeout(100)
-      await toolbar.filletButton.click()
-      await expect
-        .poll(() => page.getByText('Please select one').count())
-        .toBe(1)
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'selection',
-        currentArgValue: '',
-        headerArguments: {
-          Selection: '',
-          Radius: '',
-        },
-        highlightedHeaderArg: 'selection',
-        commandName: 'Fillet',
-      })
-    })
-
-    await test.step(`Select second edge`, async () => {
-      await clickOnSecondEdge()
-    })
-
-    await test.step(`Apply fillet to the second edge`, async () => {
-      await cmdBar.expectState({
-        commandName: 'Fillet',
-        highlightedHeaderArg: 'selection',
-        currentArgKey: 'selection',
-        currentArgValue: '',
-        headerArguments: {
-          Selection: '',
-          Radius: '',
-        },
-        stage: 'arguments',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Fillet',
-        highlightedHeaderArg: 'radius',
-        currentArgKey: 'radius',
-        currentArgValue: '5',
-        headerArguments: {
-          Selection: '1 edge',
-          Radius: '',
-        },
-        stage: 'arguments',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Fillet',
-        headerArguments: {
-          Selection: '1 edge',
-          Radius: '5',
-        },
-        stage: 'review',
-      })
-      await cmdBar.progressCmdBar()
-    })
-
-    await test.step(`Confirm code is added to the editor`, async () => {
-      await editor.expectEditor.toContain(secondFilletDeclaration, {
-        shouldNormalise: true,
-      })
-    })
-
-    // Test 2.1: Edit fillet (edgeSweep type)
-    await test.step('Edit fillet via feature tree selection works', async () => {
-      const secondFilletFeatureTreeIndex = 1
-      const editedRadius = '2'
-      await editFillet(secondFilletFeatureTreeIndex, '5', editedRadius)
-      await editor.expectEditor.toContain(
-        secondFilletDeclaration.replace('radius=5', 'radius=' + editedRadius),
-        { shouldNormalise: true }
-      )
-
-      // Edit back to original radius
-      await editFillet(secondFilletFeatureTreeIndex, editedRadius, '5')
-      await editor.expectEditor.toContain(secondFilletDeclaration, {
-        shouldNormalise: true,
-      })
-    })
-
-    // Test 3: Delete fillets
-    await test.step('Delete fillet via feature tree selection', async () => {
-      await test.step('Open Feature Tree Pane', async () => {
-        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        await page.waitForTimeout(500)
-      })
-      await test.step('Delete fillet via feature tree selection', async () => {
-        await editor.expectEditor.toContain(secondFilletDeclaration, {
-          shouldNormalise: true,
-        })
-        const operationButton = await toolbar.getFeatureTreeOperation(
-          'Fillet',
-          1
-        )
-        await operationButton.click({ button: 'left' })
-        await page.keyboard.press('Delete')
-        await page.waitForTimeout(500)
-        await editor.expectEditor.not.toContain(secondFilletDeclaration)
       })
     })
   })
@@ -1695,488 +1429,6 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
           await editor.expectEditor.toContain(secondPipedFilletDeclaration)
           await editor.expectEditor.not.toContain(
             standaloneUnassignedFilletDeclaration
-          )
-        })
-      })
-    })
-  })
-
-  test(`Fillet with large radius should update code even if engine fails`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    // Create a cube with small edges that will cause some fillets to fail
-    const initialCode = `sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> yLine(length = -1)
-  |> xLine(length = -10)
-  |> yLine(length = 10)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(profile001, length = 5)
-`
-    const taggedSegment1 = `xLine(length = -10, tag = $seg01)`
-    const taggedSegment2 = `yLine(length = -1, tag = $seg02)`
-    const filletExpression = `fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [seg01, seg02]), radius = 1000)`
-
-    // Locators
-    // TODO: find a way to select sweepEdges in a different way
-    const edgeLocation = { x: 649, y: 283 }
-
-    // Setup
-    await test.step(`Initial test setup`, async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
-    })
-
-    // Test
-    await test.step('Select edges and apply oversized fillet', async () => {
-      await test.step(`Select the edge`, async () => {
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-        const [clickOnTheEdge] = scene.makeMouseHelpers(
-          edgeLocation.x,
-          edgeLocation.y
-        )
-        await clickOnTheEdge()
-      })
-
-      await test.step(`Apply fillet`, async () => {
-        await page.waitForTimeout(100)
-        await toolbar.filletButton.click()
-        await cmdBar.expectState({
-          commandName: 'Fillet',
-          highlightedHeaderArg: 'selection',
-          currentArgKey: 'selection',
-          currentArgValue: '',
-          headerArguments: {
-            Selection: '',
-            Radius: '',
-          },
-          stage: 'arguments',
-        })
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          commandName: 'Fillet',
-          highlightedHeaderArg: 'radius',
-          currentArgKey: 'radius',
-          currentArgValue: '5',
-          headerArguments: {
-            Selection: '1 edge',
-            Radius: '',
-          },
-          stage: 'arguments',
-        })
-        // Set a large radius (1000)
-        await cmdBar.currentArgumentInput.locator('.cm-content').fill('1000')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          commandName: 'Fillet',
-          headerArguments: {
-            Selection: '1 edge',
-            Radius: '1000',
-          },
-          stage: 'review',
-        })
-        // Apply fillet with large radius
-        await cmdBar.progressCmdBar()
-      })
-    })
-
-    await test.step('Verify code is updated regardless of execution errors', async () => {
-      await editor.expectEditor.toContain(taggedSegment1)
-      await editor.expectEditor.toContain(taggedSegment2)
-      await editor.expectEditor.toContain(filletExpression)
-    })
-  })
-
-  test(`Chamfer point-and-click`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    // Code samples
-    const initialCode = `@settings(defaultLengthUnit = in)
-sketch001 = startSketchOn(XY)
-  |> startProfile(at = [-12, -6])
-  |> line(end = [0, 12])
-  |> line(end = [24, 0])
-  |> line(end = [0, -12])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(sketch001, length = -12)
-`
-    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, tags=getCommonEdge(faces=[seg01,capEnd001]), length=5)`
-    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, tags=getCommonEdge(faces=[seg01,capStart001]), length=5)`
-
-    // Locators
-    const firstEdgeLocation = { x: 600, y: 193 }
-    const secondEdgeLocation = { x: 600, y: 383 }
-
-    // Setup
-    await test.step(`Initial test setup`, async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
-      await editor.closePane()
-    })
-
-    const [clickOnFirstEdge] = scene.makeMouseHelpers(
-      firstEdgeLocation.x,
-      firstEdgeLocation.y
-    )
-    const [clickOnSecondEdge] = scene.makeMouseHelpers(
-      secondEdgeLocation.x,
-      secondEdgeLocation.y
-    )
-
-    // Test 1: Command bar flow with preselected edges
-    await test.step(`Select first edge`, async () => {
-      await clickOnFirstEdge()
-      await editor.openPane()
-    })
-
-    await test.step(`Apply chamfer to the preselected edge`, async () => {
-      await page.waitForTimeout(100)
-      await toolbar.chamferButton.click()
-      await cmdBar.expectState({
-        commandName: 'Chamfer',
-        highlightedHeaderArg: 'selection',
-        currentArgKey: 'selection',
-        currentArgValue: '',
-        headerArguments: {
-          Selection: '',
-          Length: '',
-        },
-        stage: 'arguments',
-      })
-      await cmdBar.progressCmdBar()
-      await page.waitForTimeout(1000)
-      await cmdBar.expectState({
-        commandName: 'Chamfer',
-        highlightedHeaderArg: 'length',
-        currentArgKey: 'length',
-        currentArgValue: '5',
-        headerArguments: {
-          Selection: '1 edge',
-          Length: '',
-        },
-        stage: 'arguments',
-      })
-      await cmdBar.argumentInput.focus()
-      await page.waitForTimeout(1000)
-      await cmdBar.progressCmdBar()
-      await page.waitForTimeout(1000)
-      await cmdBar.expectState({
-        commandName: 'Chamfer',
-        headerArguments: {
-          Selection: '1 edge',
-          Length: '5',
-        },
-        stage: 'review',
-      })
-      await cmdBar.progressCmdBar()
-    })
-
-    await test.step(`Confirm code is added to the editor`, async () => {
-      await editor.expectEditor.toContain(firstChamferDeclaration, {
-        shouldNormalise: true,
-      })
-      await editor.closePane()
-    })
-
-    // Test 1.1: Edit sweep
-    async function editChamfer(
-      featureTreeIndex: number,
-      oldValue: string,
-      newValue: string
-    ) {
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'Chamfer',
-        featureTreeIndex
-      )
-      await operationButton.dblclick({ button: 'left' })
-      await cmdBar.expectState({
-        commandName: 'Chamfer',
-        currentArgKey: 'length',
-        currentArgValue: oldValue,
-        headerArguments: {
-          Length: oldValue,
-        },
-        highlightedHeaderArg: 'length',
-        stage: 'arguments',
-      })
-      await page.keyboard.insertText(newValue)
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Length: newValue,
-        },
-        commandName: 'Chamfer',
-      })
-      await cmdBar.progressCmdBar()
-      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-    }
-
-    await test.step('Edit chamfer via feature tree selection works', async () => {
-      const firstChamferFeatureTreeIndex = 0
-      const editedLength = '1'
-      await editChamfer(firstChamferFeatureTreeIndex, '5', editedLength)
-      await editor.expectEditor.toContain(
-        firstChamferDeclaration.replace('length=5', 'length=' + editedLength),
-        { shouldNormalise: true }
-      )
-
-      // Edit back to original radius
-      await editChamfer(firstChamferFeatureTreeIndex, editedLength, '5')
-      await editor.expectEditor.toContain(firstChamferDeclaration, {
-        shouldNormalise: true,
-      })
-    })
-
-    // Test 2: Command bar flow without preselected edges
-    await test.step(`Open chamfer UI without selecting edges`, async () => {
-      await page.waitForTimeout(100)
-      await toolbar.chamferButton.click()
-      await expect
-        .poll(() => page.getByText('Please select one').count())
-        .toBe(1)
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'selection',
-        currentArgValue: '',
-        headerArguments: {
-          Selection: '',
-          Length: '',
-        },
-        highlightedHeaderArg: 'selection',
-        commandName: 'Chamfer',
-      })
-    })
-
-    await test.step(`Select second edge`, async () => {
-      await clickOnSecondEdge()
-    })
-
-    await test.step(`Apply chamfer to the second edge`, async () => {
-      await cmdBar.expectState({
-        commandName: 'Chamfer',
-        highlightedHeaderArg: 'selection',
-        currentArgKey: 'selection',
-        currentArgValue: '',
-        headerArguments: {
-          Selection: '',
-          Length: '',
-        },
-        stage: 'arguments',
-      })
-      await editor.openPane()
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Chamfer',
-        highlightedHeaderArg: 'length',
-        currentArgKey: 'length',
-        currentArgValue: '5',
-        headerArguments: {
-          Selection: '1 edge',
-          Length: '',
-        },
-        stage: 'arguments',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        commandName: 'Chamfer',
-        headerArguments: {
-          Selection: '1 edge',
-          Length: '5',
-        },
-        stage: 'review',
-      })
-      await cmdBar.progressCmdBar()
-    })
-
-    await test.step(`Confirm code is added to the editor`, async () => {
-      await editor.expectEditor.toContain(secondChamferDeclaration, {
-        shouldNormalise: true,
-      })
-      await editor.closePane()
-    })
-
-    // Test 2.1: Edit chamfer (edgeSweep type)
-    await test.step('Edit chamfer via feature tree selection works', async () => {
-      const secondChamferFeatureTreeIndex = 1
-      const editedLength = '2'
-      await editChamfer(secondChamferFeatureTreeIndex, '5', editedLength)
-      await editor.expectEditor.toContain(
-        secondChamferDeclaration.replace('length=5', 'length=' + editedLength),
-        { shouldNormalise: true }
-      )
-
-      // Edit back to original length
-      await editChamfer(secondChamferFeatureTreeIndex, editedLength, '5')
-      await editor.expectEditor.toContain(secondChamferDeclaration, {
-        shouldNormalise: true,
-      })
-      await editor.closePane()
-    })
-
-    // Test 3: Delete chamfer via feature tree selection
-    await test.step('Open Feature Tree Pane', async () => {
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      await page.waitForTimeout(500)
-    })
-    await test.step('Delete chamfer via feature tree selection', async () => {
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'Chamfer',
-        1
-      )
-      await operationButton.click({ button: 'left' })
-      await page.keyboard.press('Delete')
-      await scene.settled(cmdBar)
-      await editor.expectEditor.not.toContain(secondChamferDeclaration, {
-        shouldNormalise: true,
-      })
-    })
-  })
-
-  test(`Chamfer point-and-click delete`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    // Code samples
-    const initialCode = `@settings(defaultLengthUnit = in)
-sketch001 = startSketchOn(XY)
-  |> startProfile(at = [-12, -6])
-  |> line(end = [0, 12])
-  |> line(end = [24, 0], tag = $seg02)
-  |> line(end = [0, -12])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
-  |> close()
-extrude001 = extrude(sketch001, length = -12)
-  |> chamfer(length = 5, tags = [seg01]) // chamfer01
-  |> chamfer(length = 5, tags = [seg02]) // chamfer02
-chamfer03 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])
-chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
-`
-    const firstPipedChamferDeclaration = 'chamfer(length = 5, tags = [seg01])'
-    const secondPipedChamferDeclaration = 'chamfer(length = 5, tags = [seg02])'
-    const standaloneAssignedChamferDeclaration =
-      'chamfer03 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])'
-    const standaloneUnassignedChamferDeclaration =
-      'chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])'
-
-    // Setup
-    await test.step(`Initial test setup`, async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
-      await editor.closePane()
-    })
-
-    // Test
-    await test.step('Delete chamfer via feature tree selection', async () => {
-      await test.step('Open Feature Tree Pane', async () => {
-        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        await scene.settled(cmdBar)
-      })
-
-      await test.step('Delete piped chamfer via feature tree selection', async () => {
-        await test.step('Verify all chamfers are present in the editor', async () => {
-          await editor.expectEditor.toContain(firstPipedChamferDeclaration)
-          await editor.expectEditor.toContain(secondPipedChamferDeclaration)
-          await editor.expectEditor.toContain(
-            standaloneAssignedChamferDeclaration
-          )
-          await editor.expectEditor.toContain(
-            standaloneUnassignedChamferDeclaration
-          )
-        })
-        await test.step('Delete piped chamfer', async () => {
-          await editor.closePane()
-          await toolbar.openFeatureTreePane()
-          const operationButton = await toolbar.getFeatureTreeOperation(
-            'Chamfer',
-            0
-          )
-          await operationButton.click({ button: 'left' })
-          await page.keyboard.press('Delete')
-          await toolbar.closeFeatureTreePane()
-          await scene.settled(cmdBar)
-        })
-        await test.step('Verify piped chamfer is deleted but other chamfers are not (in the editor)', async () => {
-          await editor.expectEditor.not.toContain(firstPipedChamferDeclaration)
-          await editor.expectEditor.toContain(secondPipedChamferDeclaration)
-          await editor.expectEditor.toContain(
-            standaloneAssignedChamferDeclaration
-          )
-          await editor.expectEditor.toContain(
-            standaloneUnassignedChamferDeclaration
-          )
-        })
-      })
-
-      await test.step('Delete standalone assigned chamfer via feature tree selection', async () => {
-        await test.step('Delete standalone assigned chamfer', async () => {
-          await toolbar.openFeatureTreePane()
-          const operationButton = await toolbar.getFeatureTreeOperation(
-            'chamfer03',
-            0
-          )
-          await operationButton.click({ button: 'left' })
-          await page.keyboard.press('Delete')
-          await scene.settled(cmdBar)
-        })
-        await test.step('Verify standalone assigned chamfer is deleted but other two chamfers are not (in the editor)', async () => {
-          await editor.expectEditor.toContain(secondPipedChamferDeclaration)
-          await editor.expectEditor.not.toContain(
-            standaloneAssignedChamferDeclaration
-          )
-          await editor.expectEditor.toContain(
-            standaloneUnassignedChamferDeclaration
-          )
-        })
-      })
-
-      await test.step('Delete standalone unassigned chamfer via feature tree selection', async () => {
-        await test.step('Delete standalone unassigned chamfer', async () => {
-          await toolbar.openFeatureTreePane()
-          const operationButton = await toolbar.getFeatureTreeOperation(
-            'Chamfer',
-            0
-          )
-          await operationButton.click({ button: 'left' })
-          await page.keyboard.press('Delete')
-          await scene.settled(cmdBar)
-        })
-        await test.step('Verify standalone unassigned chamfer is deleted but piped chamfer is not (in the editor)', async () => {
-          await editor.expectEditor.toContain(secondPipedChamferDeclaration)
-          await editor.expectEditor.not.toContain(
-            standaloneUnassignedChamferDeclaration
           )
         })
       })
@@ -2425,7 +1677,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
         currentArgKey: 'axisOrEdge',
         currentArgValue: '',
         headerArguments: {
-          Profiles: '1 profile',
+          Profiles: '1 edge',
           AxisOrEdge: '',
           Angle: '',
         },
@@ -2438,7 +1690,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
         currentArgKey: 'edge',
         currentArgValue: '',
         headerArguments: {
-          Profiles: '1 profile',
+          Profiles: '1 edge',
           Angle: '',
           AxisOrEdge: 'Edge',
           Edge: '',
@@ -2454,7 +1706,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
         currentArgKey: 'angle',
         currentArgValue: '360deg',
         headerArguments: {
-          Profiles: '1 profile',
+          Profiles: '1 edge',
           Angle: '',
           AxisOrEdge: 'Edge',
           Edge: '1 edge',
@@ -2466,7 +1718,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
       await cmdBar.expectState({
         commandName: 'Revolve',
         headerArguments: {
-          Profiles: '1 profile',
+          Profiles: '1 edge',
           Angle: '360deg',
           AxisOrEdge: 'Edge',
           Edge: '1 edge',

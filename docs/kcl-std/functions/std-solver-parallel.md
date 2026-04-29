@@ -11,13 +11,13 @@ Constrain lines to be parallel.
 solver::parallel(@input: [Segment; 2+])
 ```
 
-Currently limited to two lines.
+
 
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `input` | [[`Segment`](/docs/kcl-std/types/std-types-Segment); 2+] | The line segments that should remain parallel. Currently limited to two lines. | Yes |
+| `input` | [[`Segment`](/docs/kcl-std/types/std-types-Segment); 2+] | The line segments that should remain parallel. | Yes |
 
 
 ### Examples

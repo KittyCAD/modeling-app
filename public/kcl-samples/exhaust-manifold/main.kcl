@@ -3,145 +3,304 @@
 // Categories: Automotive
 
 // Set units
-@settings(defaultLengthUnit = in, kclVersion = 1.0)
+@settings(defaultLengthUnit = in)
 
 // Define parameters
 primaryTubeDiameter = 1.625
 wallThickness = 0.080
 plateHeight = 0.125
 bendRadius = 3
-
-// Create a function to draw each primary tube with specified lengths and angles
-fn primaryTube(n, angle001, length001, length002, length003) {
-  // Create an index for the function
-  pos001 = n * 2
-
-  // Define a plane for each sweep path defined by an angle
-  sweepPlane = {
-    origin = [pos001, 0.0, 0],
-    xAxis = [sin(-angle001), cos(-angle001), 0.0],
-    yAxis = [0.0, 0.0, 1.0],
-    zAxis = [1.0, 0.0, 0.0]
-  }
-
-  // Draw a path for each sweep
-  sweepPath = startSketchOn(sweepPlane)
-    |> startProfile(at = [0, plateHeight])
-    |> line(end = [0, length001])
-    |> tangentialArc(angle = -80deg, radius = bendRadius, tag = $arc01)
-    |> angledLine(angle = tangentToEnd(arc01), length = length002)
-    |> tangentialArc(angle = 85deg, radius = bendRadius, tag = $arc02)
-    |> angledLine(angle = tangentToEnd(arc02), length = length003)
-
-  // Create the cross section of each tube and sweep them
-  sweepProfile = startSketchOn(XY)
-    |> circle(center = [pos001, 0], radius = primaryTubeDiameter / 2)
-    |> subtract2d(tool = circle(center = [pos001, 0], radius = primaryTubeDiameter / 2 - wallThickness))
-    |> sweep(path = sweepPath)
-
-  return {  }
-}
+tubeWallMidRadius = primaryTubeDiameter / 2 - (wallThickness / 2)
 
 // Draw a primary tube for each cylinder with specified lengths and angles
-primaryTube(
-  n = 0,
-  angle001 = 0,
-  length001 = 3,
-  length002 = 6,
-  length003 = 5,
-)
-primaryTube(
-  n = 1,
-  angle001 = 1deg,
-  length001 = 3,
-  length002 = 6,
-  length003 = 5,
-)
-primaryTube(
-  n = 2,
-  angle001 = 24.3deg,
-  length001 = 5,
-  length002 = 5,
-  length003 = 3,
-)
-primaryTube(
-  n = 3,
-  angle001 = 25.2deg,
-  length001 = 5,
-  length002 = 5,
-  length003 = 3,
-)
+sweepPlane001 = {
+  origin = [0.0, 0.0, 0.0],
+  xAxis = [0.0, 1.0, 0.0],
+  yAxis = [0.0, 0.0, 1.0]
+}
+pathSketch001 = sketch(on = sweepPlane001) {
+  line1 = line(start = [var 0in, var 0.13in], end = [var -0.14in, var 3.08in])
+  arc2 = arc(start = [var 2.45in, var 5.91in], end = [var -0.38in, var 3.04in], center = [var 3in, var 3.13in])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var 3.19in, var 5.43in], end = [var 8.45in, var 7.02in])
+  coincident([arc2.start, line3.start])
+  arc4 = arc(start = [var 8.55in, var 7.14in], end = [var 10.95in, var 10.33in], center = [var 7.87in, var 10.08in])
+  coincident([line3.end, arc4.start])
+  line5 = line(start = [var 10.98in, var 10.53in], end = [var 10.42in, var 15.32in])
+  coincident([arc4.end, line5.start])
+  vertical(line1)
+  verticalDistance([line1.start, line1.end]) == 3in
+  vertical(line1)
+  coincident([ORIGIN, line1.start])
+  tangent([line3, arc2])
+  tangent([line3, arc4])
+  tangent([line5, arc4])
+  verticalDistance([line1.start, line5.end]) == 15.3
+  radius(arc2) == bendRadius
+  radius(arc4) == bendRadius
+  horizontalDistance([line1.start, line5.end]) == 10.4
+  verticalDistance([line1.start, line3.start]) == 6
+  horizontalDistance([line1.start, line3.start]) == 2.5
+  horizontalDistance([line1.start, arc4.start]) == 8.65in
+}
+
+sectionPlane001 = {
+  origin = [0.0, 0.0, 0.0],
+  xAxis = [1.0, 0.0, 0.0],
+  yAxis = [0.0, 1.0, 0.0]
+}
+sectionSketch001 = sketch(on = sectionPlane001) {
+  circle1 = circle(start = [var 0.81in, var 0in], center = [var 0in, var -0.11in])
+  circle2 = circle(start = [var 0.73in, var 0in], center = [var -0.07in, var 0.03in])
+
+  horizontalDistance([circle2.center, circle2.start]) == tubeWallMidRadius
+  coincident([circle2.center, ORIGIN])
+  coincident([circle1.center, circle2.center])
+  horizontalDistance([circle2.center, circle1.start]) == primaryTubeDiameter / 2
+  line1 = line(start = [var -0in, var -0in], end = [var 0.77in, var 0in], construction = true)
+  coincident([line1.start, circle2.center])
+  coincident([line1.end, circle2.start])
+  horizontal(line1)
+  line2 = line(start = [var 0.77in, var -0in], end = [var 0.81in, var 0in], construction = true)
+  coincident([line2.start, circle2.start])
+  coincident([line2.end, circle1.start])
+  horizontal(line2)
+}
+sectionRegion001 = region(point = [tubeWallMidRadius, 0in], sketch = sectionSketch001)
+primaryTube001 = sweep(sectionRegion001, path = pathSketch001)
+hide(sectionSketch001)
+hide(pathSketch001)
+
+// Clone the first tube and apply the slight angle offset for the second cylinder
+primaryTube002 = clone(primaryTube001)
+  |> rotate(axis = [0, 0, 1], angle = -1deg)
+  |> translate(x = 2, global = true)
+
+// Draw the third primary tube
+sweepPlane002 = {
+  origin = [4.0, 0.0, 0.0],
+  xAxis = [sin(-24.3deg), cos(-24.3deg), 0.0],
+  yAxis = [0.0, 0.0, 1.0]
+}
+pathSketch003 = sketch(on = sweepPlane002) {
+  line1 = line(start = [var 0in, var 0.125in], end = [var 0in, var 5.125in])
+  arc2 = arc(start = [var 2.47905547in, var 8.07942326in], end = [var 0in, var 5.125in], center = [var 3in, var 5.125in])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var 2.47905547in, var 8.07942326in], end = [var 7.40309401in, var 8.94766401in])
+  coincident([arc2.start, line3.start])
+  arc4 = arc(start = [var 7.40309401in, var 8.94766401in], end = [var 9.87072787in, var 12.16355325in], center = [var 6.88214948in, var 11.90208728in])
+  coincident([line3.end, arc4.start])
+  line5 = line(start = [var 9.87072787in, var 12.16355325in], end = [var 9.60926191in, var 15.15213727in])
+  coincident([arc4.end, line5.start])
+
+  horizontalDistance([line1.start, ORIGIN]) == 0in
+  verticalDistance([ORIGIN, line1.start]) == plateHeight - 0.005
+  vertical(line1)
+  verticalDistance([line1.start, line1.end]) == 5in
+  tangent([line1, arc2])
+  tangent([line3, arc2])
+  tangent([line3, arc4])
+  tangent([line5, arc4])
+  radius(arc2) == bendRadius
+  radius(arc4) == bendRadius
+  horizontalDistance([line1.start, line3.start]) == 2.47905547in
+  verticalDistance([line1.start, line3.start]) == 7.95442326in
+  horizontalDistance([line1.start, line3.end]) == 7.40309401in
+  verticalDistance([line1.start, line3.end]) == 8.82266401in
+  distance([line5.start, line5.end]) == 3in
+  horizontalDistance([line1.start, line5.end]) == 9.61in
+  verticalDistance([line1.start, line5.end]) == 15.03in
+}
+
+sectionPlane003 = {
+  origin = [4.0, 0.0, 0.0],
+  xAxis = [1.0, 0.0, 0.0],
+  yAxis = [0.0, 1.0, 0.0]
+}
+sectionSketch003 = sketch(on = sectionPlane003) {
+  circle1 = circle(start = [var 0.8125in, var 0in], center = [var 0in, var 0in])
+  circle2 = circle(start = [var 0.7325in, var 0in], center = [var 0in, var 0in])
+
+  horizontalDistance([circle2.center, circle2.start]) == tubeWallMidRadius
+  verticalDistance([circle2.center, circle2.start]) == 0in
+  coincident([circle2.center, ORIGIN])
+  coincident([circle1.center, circle2.center])
+  horizontalDistance([circle1.center, circle1.start]) == primaryTubeDiameter / 2
+  verticalDistance([circle1.center, circle1.start]) == 0in
+}
+sectionRegion003 = region(point = [tubeWallMidRadius, 0in], sketch = sectionSketch003)
+primaryTube003 = sweep(sectionRegion003, path = pathSketch003)
+hide(sectionSketch003)
+hide(pathSketch003)
+
+// Clone the third tube and apply the final angle offset for the fourth cylinder
+primaryTube004 = clone(primaryTube003)
+  |> rotate(axis = [0, 0, 1], angle = -0.9deg)
+  |> translate(x = 2, global = true)
 
 // Create the mounting flange for the header
-flangeSketch = startSketchOn(XY)
-  |> startProfile(at = [3 + 1.3, -1.25])
-  |> xLine(length = -2.6, tag = $seg01)
-  |> tangentialArc(radius = .3, angle = -40deg)
-  |> tangentialArc(radius = .9, angle = 80deg)
-  |> tangentialArc(radius = .3, angle = -40deg)
-  |> xLine(length = -1.4, tag = $seg03)
-  |> yLine(length = segLen(seg01), tag = $seg04)
-  |> xLine(length = 3.1, tag = $seg05)
-  |> tangentialArc(radius = .3, angle = -40deg)
-  |> tangentialArc(radius = 1.5, angle = 80deg)
-  |> tangentialArc(radius = .3, angle = -40deg)
-  |> xLine(length = segLen(seg05), tag = $seg07)
-  |> yLine(endAbsolute = profileStartY(%), tag = $seg08)
-  |> xLine(length = -segLen(seg03), tag = $seg09)
-  |> tangentialArc(radius = .3, angle = -40deg)
-  |> tangentialArc(radius = .9, angle = 80deg)
-  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
+flangeSketch = sketch(on = XY) {
+  line1 = line(start = [var 4.3in, var -1.25in], end = [var 1.7in, var -1.25in])
+  arc2 = arc(start = [var 1.50716372in, var -1.17981333in], end = [var 1.7in, var -1.25in], center = [var 1.7in, var -0.95in])
+  coincident([line1.end, arc2.end])
+  arc3 = arc(start = [var 1.50716372in, var -1.17981333in], end = [var 0.35014602in, var -1.17981333in], center = [var 0.92865487in, var -1.86925333in])
+  coincident([arc2.start, arc3.start])
+  arc4 = arc(start = [var 0.15730974in, var -1.25in], end = [var 0.35014602in, var -1.17981333in], center = [var 0.15730974in, var -0.95in])
+  coincident([arc3.end, arc4.end])
+  line5 = line(start = [var 0.15730974in, var -1.25in], end = [var -1.24269026in, var -1.25in])
+  coincident([arc4.start, line5.start])
+  line6 = line(start = [var -1.24269026in, var -1.25in], end = [var -1.24269026in, var 1.35in])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var -1.24269026in, var 1.35in], end = [var 1.85730974in, var 1.35in])
+  coincident([line6.end, line7.start])
+  arc8 = arc(start = [var 2.05014602in, var 1.27981333in], end = [var 1.85730974in, var 1.35in], center = [var 1.85730974in, var 1.05in])
+  coincident([line7.end, arc8.end])
+  arc9 = arc(start = [var 2.05014602in, var 1.27981333in], end = [var 3.97850885in, var 1.27981333in], center = [var 3.01432743in, var 2.42888in])
+  coincident([arc8.start, arc9.start])
+  arc10 = arc(start = [var 4.17134513in, var 1.35in], end = [var 3.97850885in, var 1.27981333in], center = [var 4.17134513in, var 1.05in])
+  coincident([arc9.end, arc10.end])
+  line11 = line(start = [var 4.17134513in, var 1.35in], end = [var 7.27134513in, var 1.35in])
+  coincident([arc10.start, line11.start])
+  line12 = line(start = [var 7.27134513in, var 1.35in], end = [var 7.27134513in, var -1.25in])
+  coincident([line11.end, line12.start])
+  line13 = line(start = [var 7.27134513in, var -1.25in], end = [var 5.87134513in, var -1.25in])
+  coincident([line12.end, line13.start])
+  arc14 = arc(start = [var 5.67850885in, var -1.17981333in], end = [var 5.87134513in, var -1.25in], center = [var 5.87134513in, var -0.95in])
+  coincident([line13.end, arc14.end])
+  arc15 = arc(start = [var 5.67850885in, var -1.17981333in], end = [var 4.52149115in, var -1.17981333in], center = [var 5.1in, var -1.86925333in])
+  coincident([arc14.start, arc15.start])
+  arc16 = arc(start = [var 4.3in, var -1.25in], end = [var 4.52149115in, var -1.17981333in], center = [var 4.32567654in, var -0.94645056in])
+  coincident([arc15.end, arc16.end])
+  coincident([arc16.start, line1.start])
 
-  // Create openings in the flange to accommodate each tube
-  |> subtract2d(tool = circle(center = [0, 0], radius = primaryTubeDiameter / 2 - wallThickness))
-  |> subtract2d(tool = circle(center = [2, 0], radius = primaryTubeDiameter / 2 - wallThickness))
-  |> subtract2d(tool = circle(center = [4, 0], radius = primaryTubeDiameter / 2 - wallThickness))
-  |> subtract2d(tool = circle(center = [6, 0], radius = primaryTubeDiameter / 2 - wallThickness))
+  circle17 = circle(start = [var 0.7325in, var 0in], center = [var 0in, var 0in])
+  circle18 = circle(start = [var 2.7325in, var 0in], center = [var 2in, var 0in])
+  circle19 = circle(start = [var 4.7325in, var 0in], center = [var 4in, var 0in])
+  circle20 = circle(start = [var 6.7325in, var 0in], center = [var 6in, var 0in])
+  circle21 = circle(start = [var -0.85in, var -0.975in], center = [var -0.975in, var -0.975in])
+  circle22 = circle(start = [var 1.1in, var 0.975in], center = [var 0.975in, var 0.975in])
+  circle23 = circle(start = [var 5.15in, var 0.975in], center = [var 5.025in, var 0.975in])
+  circle24 = circle(start = [var 7.1in, var -0.975in], center = [var 6.975in, var -0.975in])
 
-  // Add mounting holes to the flange
-  |> subtract2d(tool = circle(
-       center = [
-         -primaryTubeDiameter * .6,
-         -primaryTubeDiameter * .6
-       ],
-       radius = 0.25 / 2,
-     ))
-  |> subtract2d(tool = circle(
-       center = [
-         primaryTubeDiameter * .6,
-         primaryTubeDiameter * .6
-       ],
-       radius = 0.25 / 2,
-     ))
-  |> subtract2d(tool = circle(
-       center = [
-         3 * 2 - (primaryTubeDiameter * .6),
-         primaryTubeDiameter * .6
-       ],
-       radius = 0.25 / 2,
-     ))
-  |> subtract2d(tool = circle(
-       center = [
-         3 * 2 + primaryTubeDiameter * .6,
-         -primaryTubeDiameter * .6
-       ],
-       radius = 0.25 / 2,
-     ))
+  horizontalDistance([ORIGIN, line1.start]) == 4.3in
+  verticalDistance([line1.start, ORIGIN]) == 1.25in
+  horizontalDistance([ORIGIN, line1.end]) == 1.7in
+  verticalDistance([line1.end, ORIGIN]) == 1.25in
+  horizontalDistance([ORIGIN, arc2.start]) == 1.50716372in
+  verticalDistance([arc2.start, ORIGIN]) == 1.17981333in
+  horizontalDistance([ORIGIN, arc2.center]) == 1.7in
+  verticalDistance([arc2.center, ORIGIN]) == 0.95in
+  horizontalDistance([ORIGIN, arc3.end]) == 0.35014602in
+  verticalDistance([arc3.end, ORIGIN]) == 1.17981333in
+  horizontalDistance([ORIGIN, arc3.center]) == 0.92865487in
+  verticalDistance([arc3.center, ORIGIN]) == 1.86925333in
+  horizontalDistance([ORIGIN, arc4.start]) == 0.15730974in
+  verticalDistance([arc4.start, ORIGIN]) == 1.25in
+  horizontalDistance([ORIGIN, arc4.center]) == 0.15730974in
+  verticalDistance([arc4.center, ORIGIN]) == 0.95in
+  horizontalDistance([line5.end, ORIGIN]) == 1.24269026in
+  verticalDistance([line5.end, ORIGIN]) == 1.25in
+  horizontalDistance([line6.end, ORIGIN]) == 1.24269026in
+  verticalDistance([ORIGIN, line6.end]) == 1.35in
+  horizontalDistance([ORIGIN, line7.end]) == 1.85730974in
+  verticalDistance([ORIGIN, line7.end]) == 1.35in
+  horizontalDistance([ORIGIN, arc8.start]) == 2.05014602in
+  verticalDistance([ORIGIN, arc8.start]) == 1.27981333in
+  horizontalDistance([ORIGIN, arc8.center]) == 1.85730974in
+  verticalDistance([ORIGIN, arc8.center]) == 1.05in
+  horizontalDistance([ORIGIN, arc9.end]) == 3.97850885in
+  verticalDistance([ORIGIN, arc9.end]) == 1.27981333in
+  horizontalDistance([ORIGIN, arc9.center]) == 3.01432743in
+  verticalDistance([ORIGIN, arc9.center]) == 2.42888in
+  horizontalDistance([ORIGIN, arc10.start]) == 4.17134513in
+  verticalDistance([ORIGIN, arc10.start]) == 1.35in
+  horizontalDistance([ORIGIN, arc10.center]) == 4.17134513in
+  verticalDistance([ORIGIN, arc10.center]) == 1.05in
+  horizontalDistance([ORIGIN, line11.end]) == 7.27134513in
+  verticalDistance([ORIGIN, line11.end]) == 1.35in
+  horizontalDistance([ORIGIN, line12.end]) == 7.27134513in
+  verticalDistance([line12.end, ORIGIN]) == 1.25in
+  horizontalDistance([ORIGIN, line13.end]) == 5.87134513in
+  verticalDistance([line13.end, ORIGIN]) == 1.25in
+  horizontalDistance([ORIGIN, arc14.start]) == 5.67850885in
+  verticalDistance([arc14.start, ORIGIN]) == 1.17981333in
+  horizontalDistance([ORIGIN, arc14.center]) == 5.87134513in
+  verticalDistance([arc14.center, ORIGIN]) == 0.95in
+  horizontalDistance([ORIGIN, arc15.end]) == 4.52149115in
+  verticalDistance([arc15.end, ORIGIN]) == 1.17981333in
+  horizontalDistance([ORIGIN, arc15.center]) == 5.1in
+  verticalDistance([arc15.center, ORIGIN]) == 1.86925333in
+  horizontalDistance([ORIGIN, arc16.center]) == 4.32567654in
+  verticalDistance([arc16.center, ORIGIN]) == 0.94645056in
 
-  // Extrude the flange and fillet the edges
-  |> extrude(length = plateHeight)
-  |> fillet(
-       radius = 1.5,
-       tags = [
-         getNextAdjacentEdge(seg04),
-         getNextAdjacentEdge(seg07)
-       ],
-     )
-  |> fillet(
-       radius = .25,
-       tags = [
-         getNextAdjacentEdge(seg03),
-         getNextAdjacentEdge(seg08)
-       ],
-     )
+  coincident([circle17.center, ORIGIN])
+  horizontalDistance([circle17.center, circle17.start]) == 0.7325in
+  verticalDistance([circle17.center, circle17.start]) == 0in
+
+  horizontalDistance([ORIGIN, circle18.center]) == 2in
+  verticalDistance([ORIGIN, circle18.center]) == 0in
+  horizontalDistance([circle18.center, circle18.start]) == 0.7325in
+  verticalDistance([circle18.center, circle18.start]) == 0in
+
+  horizontalDistance([ORIGIN, circle19.center]) == 4in
+  verticalDistance([ORIGIN, circle19.center]) == 0in
+  horizontalDistance([circle19.center, circle19.start]) == 0.7325in
+  verticalDistance([circle19.center, circle19.start]) == 0in
+
+  horizontalDistance([ORIGIN, circle20.center]) == 6in
+  verticalDistance([ORIGIN, circle20.center]) == 0in
+  horizontalDistance([circle20.center, circle20.start]) == 0.7325in
+  verticalDistance([circle20.center, circle20.start]) == 0in
+
+  horizontalDistance([circle21.center, ORIGIN]) == 0.975in
+  verticalDistance([circle21.center, ORIGIN]) == 0.975in
+  horizontalDistance([circle21.center, circle21.start]) == 0.125in
+  verticalDistance([circle21.center, circle21.start]) == 0in
+
+  horizontalDistance([ORIGIN, circle22.center]) == 0.975in
+  verticalDistance([ORIGIN, circle22.center]) == 0.975in
+  horizontalDistance([circle22.center, circle22.start]) == 0.125in
+  verticalDistance([circle22.center, circle22.start]) == 0in
+
+  horizontalDistance([ORIGIN, circle23.center]) == 5.025in
+  verticalDistance([ORIGIN, circle23.center]) == 0.975in
+  horizontalDistance([circle23.center, circle23.start]) == 0.125in
+  verticalDistance([circle23.center, circle23.start]) == 0in
+
+  horizontalDistance([ORIGIN, circle24.center]) == 6.975in
+  verticalDistance([circle24.center, ORIGIN]) == 0.975in
+  horizontalDistance([circle24.center, circle24.start]) == 0.125in
+  verticalDistance([circle24.center, circle24.start]) == 0in
+}
+flangeRegion = region(point = [-0.9in, 0in], sketch = flangeSketch)
+flangeExtrude = extrude(flangeRegion, length = plateHeight)
+hide(flangeSketch)
+
+flangeTopLeftFillet = fillet(
+  flangeExtrude,
+  radius = 1.5,
+  tags = [
+    getNextAdjacentEdge(flangeExtrude.sketch.tags.line7)
+  ],
+)
+flangeTopFillets = fillet(
+  flangeTopLeftFillet,
+  radius = 1.5,
+  tags = [
+    getNextAdjacentEdge(flangeExtrude.sketch.tags.line12)
+  ],
+)
+flangeBottomLeftFillet = fillet(
+  flangeTopFillets,
+  radius = 0.25,
+  tags = [
+    getNextAdjacentEdge(flangeExtrude.sketch.tags.line6)
+  ],
+)
+flangeBody = fillet(
+  flangeBottomLeftFillet,
+  radius = 0.25,
+  tags = [
+    getNextAdjacentEdge(flangeExtrude.sketch.tags.line13)
+  ],
+)

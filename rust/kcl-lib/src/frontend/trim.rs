@@ -4,11 +4,14 @@ use indexmap::IndexSet;
 use kittycad_modeling_cmds::units::UnitLength;
 
 use crate::execution::types::adjust_length;
+use crate::front::Horizontal;
+use crate::front::Vertical;
 use crate::frontend::api::Number;
 use crate::frontend::api::Object;
 use crate::frontend::api::ObjectId;
 use crate::frontend::api::ObjectKind;
 use crate::frontend::sketch::Constraint;
+use crate::frontend::sketch::ConstraintSegment;
 use crate::frontend::sketch::Segment;
 use crate::frontend::sketch::SegmentCtor;
 use crate::pretty::NumericSuffix;
@@ -376,12 +379,24 @@ fn rewrite_constraint_with_map(
                 .map(|id| rewrite_object_id(*id, rewrite_map))
                 .collect(),
         })),
+        Constraint::Midpoint(midpoint) => Some(Constraint::Midpoint(crate::frontend::sketch::Midpoint {
+            point: rewrite_object_id(midpoint.point, rewrite_map),
+            segment: rewrite_object_id(midpoint.segment, rewrite_map),
+        })),
         Constraint::Tangent(tangent) => Some(Constraint::Tangent(crate::frontend::sketch::Tangent {
             input: tangent
                 .input
                 .iter()
                 .map(|id| rewrite_object_id(*id, rewrite_map))
                 .collect(),
+        })),
+        Constraint::Symmetric(symmetric) => Some(Constraint::Symmetric(crate::frontend::sketch::Symmetric {
+            input: symmetric
+                .input
+                .iter()
+                .map(|id| rewrite_object_id(*id, rewrite_map))
+                .collect(),
+            axis: rewrite_object_id(symmetric.axis, rewrite_map),
         })),
         Constraint::Parallel(parallel) => Some(Constraint::Parallel(crate::frontend::sketch::Parallel {
             lines: parallel
@@ -399,13 +414,55 @@ fn rewrite_constraint_with_map(
                     .collect(),
             }))
         }
-        Constraint::Horizontal(horizontal) => Some(Constraint::Horizontal(crate::frontend::sketch::Horizontal {
-            line: rewrite_object_id(horizontal.line, rewrite_map),
-        })),
-        Constraint::Vertical(vertical) => Some(Constraint::Vertical(crate::frontend::sketch::Vertical {
-            line: rewrite_object_id(vertical.line, rewrite_map),
-        })),
+        Constraint::Horizontal(horizontal) => match horizontal {
+            crate::front::Horizontal::Line { line } => {
+                Some(Constraint::Horizontal(crate::frontend::sketch::Horizontal::Line {
+                    line: rewrite_object_id(*line, rewrite_map),
+                }))
+            }
+            crate::front::Horizontal::Points { points } => Some(Constraint::Horizontal(Horizontal::Points {
+                points: points
+                    .iter()
+                    .map(|point| match point {
+                        crate::frontend::sketch::ConstraintSegment::Segment(point) => {
+                            crate::frontend::sketch::ConstraintSegment::from(rewrite_object_id(*point, rewrite_map))
+                        }
+                        crate::frontend::sketch::ConstraintSegment::Origin(origin) => {
+                            crate::frontend::sketch::ConstraintSegment::Origin(*origin)
+                        }
+                    })
+                    .collect(),
+            })),
+        },
+        Constraint::Vertical(vertical) => match vertical {
+            crate::front::Vertical::Line { line } => {
+                Some(Constraint::Vertical(crate::frontend::sketch::Vertical::Line {
+                    line: rewrite_object_id(*line, rewrite_map),
+                }))
+            }
+            crate::front::Vertical::Points { points } => Some(Constraint::Vertical(Vertical::Points {
+                points: points
+                    .iter()
+                    .map(|point| match point {
+                        crate::frontend::sketch::ConstraintSegment::Segment(point) => {
+                            crate::frontend::sketch::ConstraintSegment::from(rewrite_object_id(*point, rewrite_map))
+                        }
+                        crate::frontend::sketch::ConstraintSegment::Origin(origin) => {
+                            crate::frontend::sketch::ConstraintSegment::Origin(*origin)
+                        }
+                    })
+                    .collect(),
+            })),
+        },
         _ => None,
+    }
+}
+
+fn point_axis_constraint_references_point(constraint: &Constraint, point_id: ObjectId) -> bool {
+    match constraint {
+        Constraint::Horizontal(Horizontal::Points { points }) => points.contains(&ConstraintSegment::from(point_id)),
+        Constraint::Vertical(Vertical::Points { points }) => points.contains(&ConstraintSegment::from(point_id)),
+        _ => false,
     }
 }
 
@@ -898,12 +955,14 @@ pub fn project_point_onto_arc(point: Coords2d, arc_center: Coords2d, arc_start: 
             normalized_point - normalized_start
         } else {
             // Point is not on the arc, return closest endpoint
-            let dist_to_start = (normalized_point - normalized_start)
-                .abs()
-                .min(TAU - (normalized_point - normalized_start).abs());
-            let dist_to_end = (normalized_point - normalized_end)
-                .abs()
-                .min(TAU - (normalized_point - normalized_end).abs());
+            let dist_to_start = libm::fmin(
+                (normalized_point - normalized_start).abs(),
+                TAU - (normalized_point - normalized_start).abs(),
+            );
+            let dist_to_end = libm::fmin(
+                (normalized_point - normalized_end).abs(),
+                TAU - (normalized_point - normalized_end).abs(),
+            );
             return if dist_to_start < dist_to_end { 0.0 } else { 1.0 };
         }
     } else {
@@ -916,12 +975,14 @@ pub fn project_point_onto_arc(point: Coords2d, arc_center: Coords2d, arc_start: 
             }
         } else {
             // Point is not on the arc
-            let dist_to_start = (normalized_point - normalized_start)
-                .abs()
-                .min(TAU - (normalized_point - normalized_start).abs());
-            let dist_to_end = (normalized_point - normalized_end)
-                .abs()
-                .min(TAU - (normalized_point - normalized_end).abs());
+            let dist_to_start = libm::fmin(
+                (normalized_point - normalized_start).abs(),
+                TAU - (normalized_point - normalized_start).abs(),
+            );
+            let dist_to_end = libm::fmin(
+                (normalized_point - normalized_end).abs(),
+                TAU - (normalized_point - normalized_end).abs(),
+            );
             return if dist_to_start < dist_to_end { 0.0 } else { 1.0 };
         }
     };
@@ -2024,7 +2085,7 @@ fn find_termination_in_direction(
             let dist_from_intersection = if is_circle_segment {
                 let ccw = (candidate.t - intersection_t).rem_euclid(1.0);
                 let cw = (intersection_t - candidate.t).rem_euclid(1.0);
-                ccw.min(cw)
+                libm::fmin(ccw, cw)
             } else {
                 (candidate.t - intersection_t).abs()
             };
@@ -3250,6 +3311,21 @@ pub(crate) fn build_trim_plan(
             Vec::new()
         };
 
+        let point_axis_constraint_ids_to_delete = if let Some(point_id) = endpoint_point_id {
+            objects
+                .iter()
+                .filter_map(|obj| {
+                    let ObjectKind::Constraint { constraint } = &obj.kind else {
+                        return None;
+                    };
+
+                    point_axis_constraint_references_point(constraint, point_id).then_some(obj.id)
+                })
+                .collect::<Vec<_>>()
+        } else {
+            Vec::new()
+        };
+
         // Edit the segment - create new ctor with updated endpoint
         let new_ctor = match ctor {
             SegmentCtor::Line(line_ctor) => {
@@ -3305,6 +3381,7 @@ pub(crate) fn build_trim_plan(
             all_constraint_ids_to_delete.push(constraint_id);
         }
         all_constraint_ids_to_delete.extend(coincident_end_constraint_to_delete_ids);
+        all_constraint_ids_to_delete.extend(point_axis_constraint_ids_to_delete);
 
         // Delete distance constraints that reference this segment
         // When trimming an endpoint, the distance constraint no longer makes sense
@@ -3554,6 +3631,18 @@ pub(crate) fn build_trim_plan(
         }
         if let Some(constraint_id) = right_coincident_data.existing_point_segment_constraint_id {
             constraints_to_delete_set.insert(constraint_id);
+        }
+
+        if let Some(end_id) = original_end_point_id {
+            for obj in objects {
+                let ObjectKind::Constraint { constraint } = &obj.kind else {
+                    continue;
+                };
+
+                if point_axis_constraint_references_point(constraint, end_id) {
+                    constraints_to_delete_set.insert(obj.id);
+                }
+            }
         }
 
         // Find point-point constraints on end endpoint to migrate
@@ -5094,7 +5183,10 @@ pub(crate) async fn execute_trim_operations_simple(
                 }
 
                 // Re-add angle constraints (Parallel, Perpendicular, Horizontal, Vertical)
-                let angle_rewrite_map = std::collections::HashMap::from([(*segment_id, new_segment_id)]);
+                let mut angle_rewrite_map = std::collections::HashMap::from([(*segment_id, new_segment_id)]);
+                if let Some(original_end_id) = original_segment_end_point_id {
+                    angle_rewrite_map.insert(original_end_id, new_segment_end_point_id);
+                }
                 for obj in &edit_scene_graph_delta.new_graph.objects {
                     let crate::frontend::api::ObjectKind::Constraint { constraint } = &obj.kind else {
                         continue;
@@ -5103,8 +5195,16 @@ pub(crate) async fn execute_trim_operations_simple(
                     let should_migrate = match constraint {
                         Constraint::Parallel(parallel) => parallel.lines.contains(segment_id),
                         Constraint::Perpendicular(perpendicular) => perpendicular.lines.contains(segment_id),
-                        Constraint::Horizontal(horizontal) => horizontal.line == *segment_id,
-                        Constraint::Vertical(vertical) => vertical.line == *segment_id,
+                        Constraint::Midpoint(midpoint) => {
+                            midpoint.segment == *segment_id
+                                || original_segment_end_point_id.is_some_and(|end_id| midpoint.point == end_id)
+                        }
+                        Constraint::Horizontal(Horizontal::Line { line }) => line == segment_id,
+                        Constraint::Horizontal(Horizontal::Points { points }) => original_segment_end_point_id
+                            .is_some_and(|end_id| points.contains(&ConstraintSegment::from(end_id))),
+                        Constraint::Vertical(Vertical::Line { line }) => line == segment_id,
+                        Constraint::Vertical(Vertical::Points { points }) => original_segment_end_point_id
+                            .is_some_and(|end_id| points.contains(&ConstraintSegment::from(end_id))),
                         _ => false,
                     };
 
@@ -5112,7 +5212,8 @@ pub(crate) async fn execute_trim_operations_simple(
                         && let Some(migrated_constraint) = rewrite_constraint_with_map(constraint, &angle_rewrite_map)
                         && matches!(
                             migrated_constraint,
-                            Constraint::Parallel(_)
+                            Constraint::Midpoint(_)
+                                | Constraint::Parallel(_)
                                 | Constraint::Perpendicular(_)
                                 | Constraint::Horizontal(_)
                                 | Constraint::Vertical(_)

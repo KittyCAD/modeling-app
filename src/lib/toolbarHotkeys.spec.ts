@@ -25,6 +25,7 @@ function makeResolvedItem(
         sketchPathId: false,
         editorHasFocus: false,
         isActive: false,
+        keepSelection: false,
       } satisfies ToolbarItemCallbackProps),
     ...overrides,
   }

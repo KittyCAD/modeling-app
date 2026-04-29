@@ -16,17 +16,29 @@ legRadius = 40
 // Tabletop
 tableTopPlane = offsetPlane(XY, offset = tableTopHeight)
 tableTopSketch = startSketchOn(tableTopPlane)
-tableTopProfile = circle(tableTopSketch, center = [0, 0], radius = tableTopRadius)
-tableTopExtrude = extrude(tableTopProfile, length = -tableTopThickness)
+tableTopProfile = sketch(on = tableTopSketch) {
+  circle1 = circle(start = [var 350mm, var 0mm], center = [var 0mm, var 0mm])
+  radius(circle1) == tableTopRadius
+}
+region001 = region(segments = [tableTopProfile.circle1])
+tableTopExtrude = extrude(region001, length = -tableTopThickness)
 
 // Base
 baseSketch = startSketchOn(XY)
-baseProfile = circle(baseSketch, center = [0, 0], radius = baseRadius)
-baseExtrude = extrude(baseProfile, length = baseThickness)
+baseProfile = sketch(on = baseSketch) {
+  circle1 = circle(start = [var 150mm, var 0mm], center = [var 0mm, var 0mm])
+  radius(circle1) == baseRadius
+}
+region002 = region(segments = [baseProfile.circle1])
+baseExtrude = extrude(region002, length = baseThickness)
 
 // Leg
 legHeight = tableTopHeight - baseThickness - tableTopThickness
 legPlane = offsetPlane(XY, offset = baseThickness)
 legSketch = startSketchOn(legPlane)
-legProfile = circle(legSketch, center = [0, 0], radius = legRadius)
-legExtrude = extrude(legProfile, length = legHeight)
+legProfile = sketch(on = legSketch) {
+  circle1 = circle(start = [var 40mm, var 0mm], center = [var 0mm, var 0mm])
+  radius(circle1) == legRadius
+}
+region003 = region(segments = [legProfile.circle1])
+legExtrude = extrude(region003, length = legHeight)
