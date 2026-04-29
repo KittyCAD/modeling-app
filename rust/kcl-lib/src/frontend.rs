@@ -8791,7 +8791,7 @@ sketch(on = XY) {
         let point0_id = *sketch.segments.first().unwrap();
         let point1_id = *sketch.segments.get(1).unwrap();
 
-        let label = Point2d {
+        let label_position = Point2d {
             x: Number {
                 value: 10.0,
                 units: NumericSuffix::Mm,
@@ -8807,7 +8807,7 @@ sketch(on = XY) {
                 value: 2.0,
                 units: NumericSuffix::Mm,
             },
-            label_position: Some(label.clone()),
+            label_position: Some(label_position.clone()),
             source: Default::default(),
         });
         let (src_delta, scene_delta) = frontend
@@ -8834,7 +8834,7 @@ sketch(on = XY) {
         let Constraint::Distance(distance) = constraint else {
             panic!("Expected distance constraint");
         };
-        assert_eq!(distance.label_position, Some(label));
+        assert_eq!(distance.label_position, Some(label_position));
 
         mock_ctx.close().await;
     }
@@ -8880,7 +8880,7 @@ sketch(on = XY) {
         let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
         let sketch = expect_sketch(sketch_object);
         let constraint_id = sketch.constraints[0];
-        let label = Point2d {
+        let label_position = Point2d {
             x: Number {
                 value: 10.0,
                 units: NumericSuffix::Mm,
@@ -8897,7 +8897,7 @@ sketch(on = XY) {
                 version,
                 sketch_id,
                 constraint_id,
-                label.clone(),
+                label_position.clone(),
                 vec![],
             )
             .await
@@ -8920,7 +8920,7 @@ sketch(on = XY) {
         let Constraint::Distance(distance) = constraint else {
             panic!("Expected distance constraint");
         };
-        assert_eq!(distance.label_position, Some(label));
+        assert_eq!(distance.label_position, Some(label_position));
 
         mock_ctx.close().await;
     }
@@ -8972,7 +8972,7 @@ sketch(on = XY) {
         let point0_after_segment_edit = point_position(&scene_delta.new_graph, point0_id);
         let point1_after_segment_edit = point_position(&scene_delta.new_graph, point1_id);
 
-        let label = Point2d {
+        let label_position = Point2d {
             x: Number {
                 value: 3.0,
                 units: NumericSuffix::Mm,
@@ -8988,7 +8988,7 @@ sketch(on = XY) {
                 version,
                 sketch_id,
                 constraint_id,
-                label,
+                label_position,
                 vec![point0_id],
             )
             .await
@@ -9030,7 +9030,7 @@ sketch(on = XY) {
         let sketch = expect_sketch(sketch_object);
         let point0_id = *sketch.segments.first().unwrap();
         let point1_id = *sketch.segments.get(1).unwrap();
-        let label = Point2d {
+        let label_position = Point2d {
             x: Number {
                 value: 10.0,
                 units: NumericSuffix::Mm,
@@ -9047,7 +9047,7 @@ sketch(on = XY) {
                 value: 2.0,
                 units: NumericSuffix::Mm,
             },
-            label_position: Some(label.clone()),
+            label_position: Some(label_position.clone()),
             source: Default::default(),
         });
         let (src_delta, scene_delta) = frontend
@@ -9080,7 +9080,7 @@ sketch(on = XY) {
         let Constraint::HorizontalDistance(distance) = constraint else {
             panic!("Expected horizontal distance constraint");
         };
-        assert_eq!(distance.label_position, Some(label));
+        assert_eq!(distance.label_position, Some(label_position));
 
         mock_ctx.close().await;
     }
@@ -9177,7 +9177,7 @@ sketch(on = XY) {
         let sketch = expect_sketch(sketch_object);
         let point0_id = *sketch.segments.first().unwrap();
         let point1_id = *sketch.segments.get(1).unwrap();
-        let label = Point2d {
+        let label_position = Point2d {
             x: Number {
                 value: 10.0,
                 units: NumericSuffix::Mm,
@@ -9194,7 +9194,7 @@ sketch(on = XY) {
                 value: 2.0,
                 units: NumericSuffix::Mm,
             },
-            label_position: Some(label.clone()),
+            label_position: Some(label_position.clone()),
             source: Default::default(),
         });
         let (src_delta, scene_delta) = frontend
@@ -9227,7 +9227,7 @@ sketch(on = XY) {
         let Constraint::VerticalDistance(distance) = constraint else {
             panic!("Expected vertical distance constraint");
         };
-        assert_eq!(distance.label_position, Some(label));
+        assert_eq!(distance.label_position, Some(label_position));
 
         mock_ctx.close().await;
     }
