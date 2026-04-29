@@ -10,7 +10,7 @@ Constrain two points, lines, arcs, or circles to be symmetric across an axis lin
 ```kcl
 solver::symmetric(
   @input: [Segment; 2],
-  axis: Segment,
+  axis: Segment | Axis2d,
 )
 ```
 
@@ -31,7 +31,7 @@ and endpoints.
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `input` | `[Segment; 2]` | Exactly two points, lines, arcs, or circles of the same kind. | Yes |
-| `axis` | `Segment` | The line to mirror across. | Yes |
+| `axis` | `Segment | Axis2d` | The line or abstract 2D axis to mirror across. | Yes |
 
 
 
