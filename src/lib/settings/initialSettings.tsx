@@ -187,7 +187,7 @@ export function createSettings() {
             context.app.zookeeperMode.current,
           options: (cmdContext, settingsContext) =>
             (['fast', 'thoughtful'] as const).map((v) => ({
-              name: capitaliseFC(v),
+              name: v === 'fast' ? 'Standard' : capitaliseFC(v),
               value: v,
               isCurrent:
                 settingsContext.app.zookeeperMode.shouldShowCurrentLabel(

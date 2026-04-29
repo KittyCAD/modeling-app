@@ -437,12 +437,12 @@ export fn tangent(
 /// profile = sketch(on = XY) {
 ///   line1 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 3mm])
 ///   coincident([line1.start, ORIGIN])
-///   
+///
 ///   arc1 = arc(start = [var 2mm, var 1mm], end = [var -3mm, var -2mm], center = [var 0mm, var 0mm])
 ///   coincident([arc1.center, line1.start])
 ///   coincident([arc1.start, line1])
 ///   midpoint(line1, point = arc1.start)
-///   
+///
 ///   line2 = line(start = [var -1mm, var 3mm], end = [var 0mm, var 0mm])
 ///   coincident([line2.start, arc1])
 ///   coincident([line2.end, arc1.center])
@@ -456,6 +456,44 @@ export fn midpoint(
   @input: Segment,
   /// The point to place at the midpoint.
   point: Segment,
+) {}
+
+/// Constrain two points, lines, arcs, or circles to be symmetric across an axis line.
+///
+/// Supported homogeneous input pairs:
+/// - `Point` / `Point`
+/// - `Line` / `Line`
+/// - `CircularArc` / `CircularArc`
+/// - `Circle` / `Circle`
+///
+/// Symmetric `Line`s are at opposite angles (reflected across the axis). Symmetric
+/// `CircularArc`s have equal diameters and centers. Note that the `Symmetric` constraint
+/// does _not_ affect the position (i.e. the start and end points) of Lines or Arcs. To
+/// make their positions symmetric too, add another Symmetric constraint on their start
+/// and endpoints.
+///
+/// ```kcl,sketchSolve
+/// profile = sketch(on = XY) {
+///   left = line(start = [var 0mm, var 0mm], end = [var 0mm, var 4mm])
+///   right = line(start = [var 4mm, var 0mm], end = [var 4mm, var 4mm])
+///   axis = line(start = [var 2.26mm, var -1mm], end = [var 2.26mm, var 4.25mm], construction = true)
+///   symmetric([left, right], axis = axis)
+///   coincident([left.end, axis.end])
+///   coincident([right.end, axis.end])
+///   line1 = line(start = [var 4.35mm, var 0mm], end = [var 0.43mm, var 0mm])
+///   coincident([line1.start, right.start])
+///   coincident([line1.end, left.start])
+///   coincident([axis.start, ORIGIN])
+/// }
+///
+/// solid = extrude(region(point = [0mm, 0.1mm], sketch = profile), length = 2)
+/// ```
+@(impl = std_rust_constraint, feature_tree = true)
+export fn symmetric(
+  /// Exactly two points, lines, arcs, or circles of the same kind.
+  @input: [Segment; 2],
+  /// The line to mirror across.
+  axis: Segment,
 ) {}
 
 /// Constrain a point to be fixed to a position.
