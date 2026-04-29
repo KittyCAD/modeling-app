@@ -706,7 +706,7 @@ describe('createOnDragCallback', () => {
     expect(setIsSolveInProgress).toHaveBeenCalledWith(false)
   })
 
-  it('should move explicit distance constraint labels with dragged segments', async () => {
+  it('should move explicit distance constraint labels with dragged segments using anchored label edits', async () => {
     const setIsSolveInProgress = vi.fn()
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
     const setLastSuccessfulDragFromPoint = vi.fn()
@@ -729,6 +729,24 @@ describe('createOnDragCallback', () => {
       line,
       distanceConstraint,
     ])
+    const updatedPoint1 = createPointApiObject({
+      id: 1,
+      x: 2,
+      y: 3,
+      owner: 3,
+    })
+    const updatedPoint2 = createPointApiObject({
+      id: 2,
+      x: 12,
+      y: 3,
+      owner: 3,
+    })
+    const updatedSceneGraphDelta = createSceneGraphDelta([
+      updatedPoint1,
+      updatedPoint2,
+      line,
+      distanceConstraint,
+    ])
     const getContextData = vi.fn(() => ({
       selectedIds: [3],
       sketchId: 2,
@@ -736,11 +754,11 @@ describe('createOnDragCallback', () => {
     }))
     const editSegments = vi.fn(async () => ({
       kclSource: { text: 'segments updated' },
-      sceneGraphDelta,
+      sceneGraphDelta: updatedSceneGraphDelta,
     }))
     const editDistanceConstraintLabel = vi.fn(async () => ({
       kclSource: { text: 'label updated' },
-      sceneGraphDelta,
+      sceneGraphDelta: updatedSceneGraphDelta,
     }))
     const onNewSketchOutcome = vi.fn()
 
@@ -798,11 +816,12 @@ describe('createOnDragCallback', () => {
         x: { value: 7, units: 'Mm' },
         y: { value: 7, units: 'Mm' },
       },
-      {}
+      {},
+      [3]
     )
     expect(onNewSketchOutcome).toHaveBeenCalledWith({
       kclSource: { text: 'label updated' },
-      sceneGraphDelta,
+      sceneGraphDelta: updatedSceneGraphDelta,
       writeToDisk: false,
       suppressExecOutcomeIssues: true,
     })

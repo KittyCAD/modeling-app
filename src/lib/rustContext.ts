@@ -680,7 +680,8 @@ export default class RustContext {
     constraintId: ApiObjectId,
     label: ApiPoint2d<Number>,
     settings: DeepPartial<Configuration>,
-    createCheckpoint = false
+    createCheckpoint = false,
+    anchorSegmentIds: ApiObjectId[] = []
   ): Promise<SketchMutationResult> {
     const instance = await this._checkContextInstance()
 
@@ -695,7 +696,8 @@ export default class RustContext {
         JSON.stringify(constraintId),
         JSON.stringify(label),
         JSON.stringify(settings),
-        createCheckpoint
+        createCheckpoint,
+        JSON.stringify(anchorSegmentIds)
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
       if (checkpointId instanceof Error) {

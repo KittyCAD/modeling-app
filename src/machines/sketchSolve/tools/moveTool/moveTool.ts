@@ -306,13 +306,15 @@ function getDistanceLabelConstraintId(
 
 function buildDistanceLabelEditsForMovedSegments({
   objects,
+  objectsBeforeDrag,
+  objectsAfterDrag,
   segmentsToEdit,
-  dragVec,
   units,
 }: {
   objects: ApiObject[]
+  objectsBeforeDrag: ApiObject[]
+  objectsAfterDrag: ApiObject[]
   segmentsToEdit: ExistingSegmentCtor[]
-  dragVec: Vector2
   units: NumericSuffix
 }): DistanceConstraintLabelEdit[] {
   const movedPointIds = getMovedPointIdsForSegmentEdits(objects, segmentsToEdit)
@@ -320,7 +322,7 @@ function buildDistanceLabelEditsForMovedSegments({
     return []
   }
 
-  return objects.flatMap((obj) => {
+  return objectsBeforeDrag.flatMap((obj) => {
     if (!isConstraint(obj, 'Distance')) {
       return []
     }
@@ -333,23 +335,94 @@ function buildDistanceLabelEditsForMovedSegments({
     const pointIds = points.filter((point): point is number => {
       return typeof point === 'number'
     })
-    if (
-      pointIds.length !== points.length ||
-      !pointIds.every((pointId) => movedPointIds.has(pointId))
-    ) {
+    // Only move labels for distance constraints attached to the geometry being dragged.
+    if (!pointIds.some((pointId) => movedPointIds.has(pointId))) {
+      return []
+    }
+
+    const pointPairs: Array<{ before: Vector2; after: Vector2 }> = []
+    for (const point of points) {
+      const before = getDistanceConstraintPointPosition(
+        point,
+        objectsBeforeDrag
+      )
+      const after = getDistanceConstraintPointPosition(point, objectsAfterDrag)
+      if (!before || !after) {
+        return []
+      }
+      pointPairs.push({ before, after })
+    }
+
+    const transformedLabel = transformDistanceLabelWithSegmentFrame(
+      new Vector2(label.x.value, label.y.value),
+      pointPairs
+    )
+    if (!transformedLabel) {
       return []
     }
 
     return [
       {
         constraintId: obj.id,
-        label: buildDistanceConstraintLabel(
-          new Vector2(label.x.value + dragVec.x, label.y.value + dragVec.y),
-          units
-        ),
+        label: buildDistanceConstraintLabel(transformedLabel, units),
       },
     ]
   })
+}
+
+function getDistanceConstraintPointPosition(
+  point: number | 'ORIGIN',
+  objects: ApiObject[]
+): Vector2 | null {
+  if (point === 'ORIGIN') {
+    return new Vector2(0, 0)
+  }
+
+  const obj = objects[point]
+  if (!isPointSegment(obj)) {
+    return null
+  }
+
+  return new Vector2(
+    obj.kind.segment.position.x.value,
+    obj.kind.segment.position.y.value
+  )
+}
+
+// Preserve the label's local position relative to the given points across the drag.
+function transformDistanceLabelWithSegmentFrame(
+  labelPosition: Vector2,
+  pointPairs: Array<{ before: Vector2; after: Vector2 }>
+): Vector2 | null {
+  if (pointPairs.length !== 2) {
+    return null
+  }
+
+  const beforeStart = pointPairs[0].before
+  const beforeEnd = pointPairs[1].before
+  const afterStart = pointPairs[0].after
+  const afterEnd = pointPairs[1].after
+  const beforeDir = beforeEnd.clone().sub(beforeStart)
+  const afterDir = afterEnd.clone().sub(afterStart)
+  const beforeLength = beforeDir.length()
+  const afterLength = afterDir.length()
+
+  if (beforeLength === 0 || afterLength === 0) {
+    return labelPosition.clone().add(afterStart.clone().sub(beforeStart))
+  }
+
+  const afterAxis = afterDir.clone().normalize()
+  const afterPerp = new Vector2(-afterAxis.y, afterAxis.x)
+  const beforeAxis = beforeDir.clone().normalize()
+  const beforePerp = new Vector2(-beforeAxis.y, beforeAxis.x)
+  const labelDelta = labelPosition.clone().sub(beforeStart)
+  const offset = labelDelta.dot(beforeAxis)
+  const perpOffset = labelDelta.dot(beforePerp)
+
+  return afterStart
+    .clone()
+    .add(afterAxis.multiplyScalar(offset))
+    .add(afterPerp.multiplyScalar(perpOffset))
 }
 
 function getMovedPointIdsForSegmentEdits(
@@ -390,6 +463,7 @@ async function applyDistanceLabelPreviewEdits({
   version,
   sketchId,
   settings,
+  anchorSegmentIds,
 }: {
   result: DragSketchOutcome
   labelEdits: DistanceConstraintLabelEdit[]
@@ -398,11 +472,13 @@ async function applyDistanceLabelPreviewEdits({
     sketchId: number,
     constraintId: number,
     label: ApiPoint2d<ApiNumber>,
-    settings: DeepPartial<Configuration>
+    settings: DeepPartial<Configuration>,
+    anchorSegmentIds?: number[]
   ) => Promise<DragSketchOutcome | null>
   version: number
   sketchId: number
   settings: DeepPartial<Configuration>
+  anchorSegmentIds: number[]
 }): Promise<DragSketchOutcome | null> {
   let latestResult = result
 
@@ -412,7 +488,8 @@ async function applyDistanceLabelPreviewEdits({
       sketchId,
       constraintId,
       label,
-      settings
+      settings,
+      anchorSegmentIds
     )
     if (!nextResult) {
       return null
@@ -985,7 +1062,8 @@ export function createOnDragCallback({
     sketchId: number,
     constraintId: number,
     label: ApiPoint2d<ApiNumber>,
-    settings: DeepPartial<Configuration>
+    settings: DeepPartial<Configuration>,
+    anchorSegmentIds?: number[]
   ) => Promise<{
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
@@ -1188,8 +1266,11 @@ export function createOnDragCallback({
         if (!hasSketchSolveIssues(result.sceneGraphDelta)) {
           const distanceLabelEdits = buildDistanceLabelEditsForMovedSegments({
             objects,
+            objectsBeforeDrag:
+              getDragStartOutcome()?.sceneGraphDelta.new_graph.objects ??
+              objects,
+            objectsAfterDrag: result.sceneGraphDelta.new_graph.objects,
             segmentsToEdit,
-            dragVec,
             units,
           })
           let appliedDistanceLabelEdits: DistanceConstraintLabelEdit[] = []
@@ -1201,6 +1282,7 @@ export function createOnDragCallback({
               version: 0,
               sketchId,
               settings,
+              anchorSegmentIds: segmentsToEdit.map(({ id }) => id),
             }).catch((err) => {
               if (!isActiveDragSession()) {
                 return null
@@ -1679,6 +1761,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
             segmentsToEdit: ExistingSegmentCtor[],
             distanceLabelEdits: DistanceConstraintLabelEdit[] = []
           ) => {
+            const anchorSegmentIds = segmentsToEdit.map(({ id }) => id)
             let latestResult = await context.rustContext.editSegments(
               0,
               context.sketchId,
@@ -1698,7 +1781,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
                   constraintId,
                   label,
                   settings,
-                  index === distanceLabelEdits.length - 1
+                  index === distanceLabelEdits.length - 1,
+                  anchorSegmentIds
                 )
             }
 
@@ -2013,14 +2097,17 @@ export function setUpOnDragAndSelectionClickCallbacks({
         sketchId: number,
         constraintId: number,
         label: ApiPoint2d<ApiNumber>,
-        settings: DeepPartial<Configuration>
+        settings: DeepPartial<Configuration>,
+        anchorSegmentIds?: number[]
       ) => {
         return context.rustContext.editDistanceConstraintLabel(
           version,
           sketchId,
           constraintId,
           label,
-          settings
+          settings,
+          false,
+          anchorSegmentIds
         )
       },
       onNewSketchOutcome: (outcome) => {

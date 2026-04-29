@@ -130,6 +130,7 @@ pub trait SketchApi {
         sketch: ObjectId,
         constraint_id: ObjectId,
         label: Point2d<Number>,
+        anchor_segment_ids: Vec<ObjectId>,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
     /// Batch operations for split segment: edit segments, add constraints, delete objects.

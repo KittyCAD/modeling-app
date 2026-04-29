@@ -1210,6 +1210,7 @@ impl SketchApi for FrontendState {
         sketch: ObjectId,
         constraint_id: ObjectId,
         label: Point2d<Number>,
+        anchor_segment_ids: Vec<ObjectId>,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
         let sketch_block_ref =
@@ -1244,7 +1245,7 @@ impl SketchApi for FrontendState {
             ctx,
             sketch,
             sketch_block_ref,
-            Default::default(),
+            anchor_segment_ids.into_iter().collect(),
             EditDeleteKind::Edit,
             &mut new_ast,
         )
@@ -5919,6 +5920,22 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
         }
     }
 
+    fn point_position(scene_graph: &SceneGraph, point_id: ObjectId) -> Point2d<Number> {
+        let point_object = scene_graph.objects.get(point_id.0).unwrap();
+        let ObjectKind::Segment {
+            segment: Segment::Point(point),
+        } = &point_object.kind
+        else {
+            panic!("Object is not a point segment: {point_object:?}");
+        };
+        point.position.clone()
+    }
+
+    fn assert_point_position_close(actual: Point2d<Number>, expected: Point2d<Number>) {
+        assert!((actual.x.value - expected.x.value).abs() < 1e-6);
+        assert!((actual.y.value - expected.y.value).abs() < 1e-6);
+    }
+
     fn make_line_ctor(start_x: f64, start_y: f64, end_x: f64, end_y: f64, units: NumericSuffix) -> LineCtor {
         LineCtor {
             start: Point2d {
@@ -8852,7 +8869,7 @@ sketch(on = XY) {
         };
 
         let (src_delta, scene_delta) = frontend
-            .edit_distance_constraint_label(&mock_ctx, version, sketch_id, constraint_id, label.clone())
+            .edit_distance_constraint_label(&mock_ctx, version, sketch_id, constraint_id, label.clone(), vec![])
             .await
             .unwrap();
         assert_eq!(
@@ -8874,6 +8891,80 @@ sketch(on = XY) {
             panic!("Expected distance constraint");
         };
         assert_eq!(distance.label, Some(label));
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_distance_constraint_label_preserves_anchor_segment_solution() {
+        let initial_source = "\
+sketch(on = XY) {
+  point1 = point(at = [var 0mm, var 0mm])
+  point2 = point(at = [var 10mm, var 0mm])
+  distance([point1, point2]) == 5mm
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point0_id = sketch.segments[0];
+        let point1_id = sketch.segments[1];
+        let constraint_id = sketch.constraints[0];
+
+        let edited_segments = vec![ExistingSegmentCtor {
+            id: point0_id,
+            ctor: SegmentCtor::Point(PointCtor {
+                position: Point2d {
+                    x: Expr::Var(Number {
+                        value: 2.0,
+                        units: NumericSuffix::Mm,
+                    }),
+                    y: Expr::Var(Number {
+                        value: 1.0,
+                        units: NumericSuffix::Mm,
+                    }),
+                },
+            }),
+        }];
+        let (_, scene_delta) = frontend
+            .edit_segments(&mock_ctx, version, sketch_id, edited_segments)
+            .await
+            .unwrap();
+        let point0_after_segment_edit = point_position(&scene_delta.new_graph, point0_id);
+        let point1_after_segment_edit = point_position(&scene_delta.new_graph, point1_id);
+
+        let label = Point2d {
+            x: Number {
+                value: 3.0,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: 4.0,
+                units: NumericSuffix::Mm,
+            },
+        };
+        let (_, scene_delta) = frontend
+            .edit_distance_constraint_label(&mock_ctx, version, sketch_id, constraint_id, label, vec![point0_id])
+            .await
+            .unwrap();
+
+        assert_point_position_close(
+            point_position(&scene_delta.new_graph, point0_id),
+            point0_after_segment_edit,
+        );
+        assert_point_position_close(
+            point_position(&scene_delta.new_graph, point1_id),
+            point1_after_segment_edit,
+        );
 
         mock_ctx.close().await;
     }

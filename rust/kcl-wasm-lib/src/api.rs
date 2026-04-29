@@ -607,6 +607,7 @@ impl Context {
         label_json: &str,
         settings: &str,
         create_checkpoint: bool,
+        anchor_segment_ids_json: &str,
     ) -> Result<JsValue, JsValue> {
         console_error_panic_hook::set_once();
 
@@ -618,6 +619,8 @@ impl Context {
             serde_json::from_str(constraint_id_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
         let label: kcl_lib::front::Point2d<kcl_lib::front::Number> =
             serde_json::from_str(label_json).map_err(|e| format!("Could not deserialize label: {e}"))?;
+        let anchor_segment_ids: Vec<kcl_lib::front::ObjectId> = serde_json::from_str(anchor_segment_ids_json)
+            .map_err(|e| format!("Could not deserialize anchor segment ids: {e}"))?;
 
         let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
             format!("Could not create KCL executor context for edit distance constraint label. {TRUE_BUG} Details: {e}")
@@ -626,7 +629,7 @@ impl Context {
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
         let (source_delta, scene_graph_delta) = guard
-            .edit_distance_constraint_label(&ctx, version, sketch, constraint_id, label)
+            .edit_distance_constraint_label(&ctx, version, sketch, constraint_id, label, anchor_segment_ids)
             .await
             .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
         let checkpoint_id = if create_checkpoint {
