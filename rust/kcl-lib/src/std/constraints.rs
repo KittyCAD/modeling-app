@@ -2086,7 +2086,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                                             object_id: unsolved1.object_id,
                                         }),
                                     ],
-                                    label_position: label_position.clone(),
+                                    label_position,
                                 },
                                 meta: vec![args.source_range.into()],
                             };
@@ -2145,7 +2145,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                         value: Box::new(SketchConstraint {
                             kind: SketchConstraintKind::Distance {
                                 points,
-                                label_position: label_position.clone(),
+                                label_position,
                             },
                             meta: vec![args.source_range.into()],
                         }),
@@ -2368,7 +2368,7 @@ pub async fn horizontal_distance(exec_state: &mut ExecState, args: Args) -> Resu
                                             object_id: unsolved1.object_id,
                                         }),
                                     ],
-                                    label_position: label_position.clone(),
+                                    label_position,
                                 },
                                 meta: vec![args.source_range.into()],
                             };
@@ -2499,7 +2499,7 @@ pub async fn vertical_distance(exec_state: &mut ExecState, args: Args) -> Result
                                             object_id: unsolved1.object_id,
                                         }),
                                     ],
-                                    label_position: label_position.clone(),
+                                    label_position,
                                 },
                                 meta: vec![args.source_range.into()],
                             };
