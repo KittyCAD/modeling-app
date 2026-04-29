@@ -112,14 +112,14 @@ export function useQueryParamEffects(kclManager: KclManager) {
     }
 
     void (async () => {
-      console.info('[project-id] opening shared project from query param', {
+      console.info('[imported-project] opening project from query param', {
         projectId,
       })
       const downloadedProject = await downloadProjectById(projectId)
       const downloadFailed = err(downloadedProject)
       if (cancelled || downloadFailed) {
         if (!cancelled && downloadFailed) {
-          console.error('[project-id] failed before import handoff', {
+          console.error('[imported-project] failed before import handoff', {
             projectId,
             message: downloadedProject.message,
           })
@@ -129,7 +129,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
         return
       }
 
-      console.info('[project-id] handing parsed project to system IO', {
+      console.info('[imported-project] handing parsed project to system IO', {
         projectId,
         projectName: downloadedProject.projectName,
         fileCount: downloadedProject.files.length,
@@ -170,11 +170,6 @@ export function useQueryParamEffects(kclManager: KclManager) {
             )
           : downloadedProject.entrypointFilePath
 
-      await waitForIdleState({ systemIOActor: app.systemIOActor })
-      if (cancelled) {
-        return
-      }
-
       app.systemIOActor.send({
         type: SystemIOMachineEvents.bulkImportProjectFilesAndNavigateToFile,
         data: {
@@ -193,7 +188,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
         return
       }
 
-      console.error('[project-id] unexpected failure while opening', {
+      console.error('[imported-project] unexpected failure while opening', {
         projectId,
         error,
       })

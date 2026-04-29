@@ -39,10 +39,10 @@ export async function downloadProjectById(projectId: string): Promise<
     }
   | Error
 > {
-  console.info('[project-id] starting download', { projectId })
+  console.info('[imported-project] starting download', { projectId })
   const archive = await downloadProjectArchiveById(projectId)
   if (archive instanceof Error) {
-    console.error('[project-id] download failed', {
+    console.error('[imported-project] download failed', {
       projectId,
       message: archive.message,
     })
@@ -51,14 +51,14 @@ export async function downloadProjectById(projectId: string): Promise<
 
   const parsedProject = await parseDownloadedProject(archive)
   if (parsedProject instanceof Error) {
-    console.error('[project-id] failed to parse downloaded archive', {
+    console.error('[imported-project] failed to parse downloaded archive', {
       projectId,
       message: parsedProject.message,
     })
     return parsedProject
   }
 
-  console.info('[project-id] parsed download', {
+  console.info('[imported-project] parsed download', {
     projectId,
     projectName: parsedProject.projectName,
     fileCount: parsedProject.files.length,

@@ -906,6 +906,12 @@ export const systemIOMachine = setup({
       },
     },
     [SystemIOMachineStates.readingFolders]: {
+      on: {
+        [SystemIOMachineEvents.bulkImportProjectFilesAndNavigateToFile]: {
+          target:
+            SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile,
+        },
+      },
       invoke: {
         id: SystemIOMachineActors.readFoldersFromProjectDirectory,
         src: SystemIOMachineActors.readFoldersFromProjectDirectory,
@@ -1129,6 +1135,12 @@ export const systemIOMachine = setup({
       },
     },
     [SystemIOMachineStates.checkingReadWrite]: {
+      on: {
+        [SystemIOMachineEvents.bulkImportProjectFilesAndNavigateToFile]: {
+          target:
+            SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile,
+        },
+      },
       invoke: {
         id: SystemIOMachineActors.checkReadWrite,
         src: SystemIOMachineActors.checkReadWrite,

@@ -181,7 +181,7 @@ const sharedBulkWriteProjectFilesWorkflow = async ({
       )
     }
 
-    console.info('[project-id] writing imported project files', {
+    console.info('[imported-project] writing project files', {
       projectName,
       projectRoot,
       fileCount: input.files.length,
@@ -213,7 +213,7 @@ const sharedBulkWriteProjectFilesWorkflow = async ({
       }
     }
 
-    console.info('[project-id] finished writing imported project files', {
+    console.info('[imported-project] finished writing project files', {
       projectName,
       projectRoot,
       entrypointFilePath: requestedFileNameWithExtension || null,
@@ -226,7 +226,7 @@ const sharedBulkWriteProjectFilesWorkflow = async ({
       subRoute: '',
     }
   } catch (error) {
-    console.error('[project-id] failed while writing imported project files', {
+    console.error('[imported-project] failed while writing project files', {
       requestedProjectName: input.requestedProjectName,
       requestedFileNameWithExtension:
         input.requestedFileNameWithExtension || null,
