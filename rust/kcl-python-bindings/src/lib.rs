@@ -122,9 +122,74 @@ async fn get_code_and_file_path(path: &str) -> Result<(String, std::path::PathBu
     Ok((code, path))
 }
 
+#[derive(Clone, Debug)]
 enum KclInput {
     Path(String),
     Code(String),
+}
+
+#[pyo3_stub_gen::derive::gen_stub_pyclass]
+#[pyclass]
+#[derive(Clone, Debug, Default)]
+struct RequestContext {
+    input: Option<KclInput>,
+    mock: bool,
+    api_token: Option<String>,
+}
+
+impl RequestContext {
+    fn new(input: Option<KclInput>, mock: bool, api_token: Option<String>) -> Self {
+        Self { input, mock, api_token }
+    }
+
+    fn from_option(request: Option<Self>) -> Self {
+        request.unwrap_or_default()
+    }
+
+    fn engine(api_token: Option<String>) -> Self {
+        Self::new(None, false, api_token)
+    }
+
+    fn with_input(mut self, input: KclInput) -> Self {
+        self.input = Some(input);
+        self
+    }
+
+    fn with_mock(mut self, mock: bool) -> Self {
+        self.mock = mock;
+        self
+    }
+
+    fn path(self, path: String) -> Self {
+        self.with_input(KclInput::Path(path))
+    }
+
+    fn code(self, code: String) -> Self {
+        self.with_input(KclInput::Code(code))
+    }
+
+    fn mock_path(self, path: String) -> Self {
+        self.with_mock(true).with_input(KclInput::Path(path))
+    }
+
+    fn mock_code(self, code: String) -> Self {
+        self.with_mock(true).with_input(KclInput::Code(code))
+    }
+}
+
+#[pyo3_stub_gen::derive::gen_stub_pymethods]
+#[pymethods]
+impl RequestContext {
+    #[new]
+    #[pyo3(signature = (api_token=None))]
+    fn py_new(api_token: Option<String>) -> Self {
+        Self::engine(api_token)
+    }
+
+    #[getter]
+    fn api_token(&self) -> PyResult<Option<String>> {
+        Ok(self.api_token.clone())
+    }
 }
 
 struct KclProgram {
@@ -177,8 +242,8 @@ async fn load_and_parse(input: KclInput) -> PyResult<KclProgram> {
 }
 
 async fn new_context_state(
+    request: &RequestContext,
     current_file: Option<std::path::PathBuf>,
-    mock: bool,
 ) -> Result<(ExecutorContext, kcl_lib::ExecState)> {
     let mut settings: kcl_lib::ExecutorSettings = Default::default();
     if let Some(current_file) = current_file {
@@ -186,10 +251,10 @@ async fn new_context_state(
     }
     // Must turn on SSAO, without it, transparent images will look opaque.
     settings.enable_ssao = true;
-    let ctx = if mock {
+    let ctx = if request.mock {
         ExecutorContext::new_mock(Some(settings)).await
     } else {
-        ExecutorContext::new_with_client(settings, None, None).await?
+        ExecutorContext::new_with_client(settings, request.api_token.clone(), None).await?
     };
     let state = kcl_lib::ExecState::new(&ctx);
     Ok((ctx, state))
@@ -202,15 +267,23 @@ struct ExecutedKcl {
     filename: String,
 }
 
-async fn run_kcl(input: KclInput, mock: bool) -> PyResult<ExecutedKcl> {
+async fn run_kcl(request: RequestContext) -> PyResult<ExecutedKcl> {
+    let input = request
+        .input
+        .as_ref()
+        .ok_or_else(|| PyException::new_err("RequestContext is missing KCL input"))?;
     let KclProgram {
         code,
         program,
         path,
         filename,
-    } = load_and_parse(input).await?;
+    } = load_and_parse(match input {
+        KclInput::Path(path) => KclInput::Path(path.clone()),
+        KclInput::Code(code) => KclInput::Code(code.clone()),
+    })
+    .await?;
 
-    let (ctx, mut state) = new_context_state(path, mock).await.map_err(to_py_exception)?;
+    let (ctx, mut state) = new_context_state(&request, path).await.map_err(to_py_exception)?;
     ctx.run(&program, &mut state)
         .await
         .map_err(|err| into_miette(err, &code))?;
@@ -223,20 +296,24 @@ async fn run_kcl(input: KclInput, mock: bool) -> PyResult<ExecutedKcl> {
     })
 }
 
-async fn execute_impl(input: KclInput, mock: bool) -> PyResult<()> {
-    let ExecutedKcl { ctx, .. } = run_kcl(input, mock).await?;
+async fn execute_impl(request: RequestContext) -> PyResult<()> {
+    let ExecutedKcl { ctx, .. } = run_kcl(request).await?;
     ctx.close().await;
     Ok(())
 }
 
-async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstraintReport> {
+async fn sketch_constraint_report_impl(request: RequestContext) -> PyResult<SketchConstraintReport> {
+    let input = request
+        .input
+        .as_ref()
+        .ok_or_else(|| PyException::new_err("RequestContext is missing KCL input"))?;
     let (code, path, filename) = match input {
         KclInput::Path(input_path) => {
-            let (code, path) = get_code_and_file_path(&input_path).await.map_err(to_py_exception)?;
+            let (code, path) = get_code_and_file_path(input_path).await.map_err(to_py_exception)?;
             let filename = path.display().to_string();
             (code, Some(path), filename)
         }
-        KclInput::Code(code) => (code, None, String::new()),
+        KclInput::Code(code) => (code.clone(), None, String::new()),
     };
 
     let program = match kcl_lib::Program::parse_no_errs(&code) {
@@ -247,7 +324,7 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
         }
     };
 
-    let (ctx, mut state) = new_context_state(path, false).await.map_err(to_py_exception)?;
+    let (ctx, mut state) = new_context_state(&request, path).await.map_err(to_py_exception)?;
     let result = match ctx.run(&program, &mut state).await {
         Ok((env_ref, _)) => {
             let outcome = state.into_exec_outcome(env_ref, &ctx).await;
@@ -269,22 +346,22 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
 }
 
 async fn execute_and_snapshot_views_impl(
-    input: KclInput,
+    request: RequestContext,
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
     zoom: bool,
 ) -> PyResult<Vec<Vec<u8>>> {
-    let ExecutedKcl { ctx, .. } = run_kcl(input, false).await?;
+    let ExecutedKcl { ctx, .. } = run_kcl(request).await?;
     let result = take_snaps(&ctx, image_format, snapshot_options, zoom).await;
     ctx.close().await;
     result
 }
 
 async fn execute_and_measure_impl(
-    input: KclInput,
+    request_context: RequestContext,
     request: PhysicalPropertiesRequest,
 ) -> PyResult<PhysicalPropertiesResponse> {
-    let ExecutedKcl { ctx, .. } = run_kcl(input, false).await?;
+    let ExecutedKcl { ctx, .. } = run_kcl(request_context).await?;
     let result = measure_model_properties(&ctx, request).await;
     ctx.close().await;
     result
@@ -299,24 +376,24 @@ fn parse_entity_ids(entity_ids: Vec<String>) -> PyResult<Vec<Uuid>> {
 }
 
 async fn execute_and_bounding_box_impl(
-    input: KclInput,
+    request_context: RequestContext,
     entity_ids: Vec<String>,
     output_unit: Option<UnitLength>,
 ) -> PyResult<BoundingBoxResponse> {
     let entity_ids = parse_entity_ids(entity_ids)?;
-    let ExecutedKcl { ctx, .. } = run_kcl(input, false).await?;
+    let ExecutedKcl { ctx, .. } = run_kcl(request_context).await?;
     let result = get_bounding_box(&ctx, entity_ids, output_unit).await;
     ctx.close().await;
     result
 }
 
-async fn execute_and_export_impl(input: KclInput, export_format: FileExportFormat) -> PyResult<Vec<RawFile>> {
+async fn execute_and_export_impl(request: RequestContext, export_format: FileExportFormat) -> PyResult<Vec<RawFile>> {
     let ExecutedKcl {
         ctx,
         program,
         code,
         filename,
-    } = run_kcl(input, false).await?;
+    } = run_kcl(request).await?;
 
     let settings = program
         .meta_settings()
@@ -401,24 +478,24 @@ fn parse_code(code: String) -> PyResult<bool> {
 
 /// Execute the kcl code from a file path.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn execute(path: String) -> PyResult<()> {
-    spawn_py(async move { execute_impl(KclInput::Path(path), false).await }).await
+#[pyfunction(signature = (path, request_context=None))]
+async fn execute(path: String, request_context: Option<RequestContext>) -> PyResult<()> {
+    spawn_py(async move { execute_impl(RequestContext::from_option(request_context).path(path)).await }).await
 }
 
 /// Execute the kcl code.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn execute_code(code: String) -> PyResult<()> {
-    spawn_py(async move { execute_impl(KclInput::Code(code), false).await }).await
+#[pyfunction(signature = (code, request_context=None))]
+async fn execute_code(code: String, request_context: Option<RequestContext>) -> PyResult<()> {
+    spawn_py(async move { execute_impl(RequestContext::from_option(request_context).code(code)).await }).await
 }
 
 /// Mock execute the kcl code.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn mock_execute_code(code: String) -> PyResult<bool> {
+#[pyfunction(signature = (code, request_context=None))]
+async fn mock_execute_code(code: String, request_context: Option<RequestContext>) -> PyResult<bool> {
     spawn_py(async move {
-        execute_impl(KclInput::Code(code), true).await?;
+        execute_impl(RequestContext::from_option(request_context).mock_code(code)).await?;
         Ok(true)
     })
     .await
@@ -426,10 +503,10 @@ async fn mock_execute_code(code: String) -> PyResult<bool> {
 
 /// Mock execute the kcl code from a file path.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn mock_execute(path: String) -> PyResult<bool> {
+#[pyfunction(signature = (path, request_context=None))]
+async fn mock_execute(path: String, request_context: Option<RequestContext>) -> PyResult<bool> {
     spawn_py(async move {
-        execute_impl(KclInput::Path(path), true).await?;
+        execute_impl(RequestContext::from_option(request_context).mock_path(path)).await?;
         Ok(true)
     })
     .await
@@ -437,28 +514,41 @@ async fn mock_execute(path: String) -> PyResult<bool> {
 
 /// Execute a kcl file and return a report of sketch constraint status.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn get_sketch_constraint_status(path: String) -> PyResult<SketchConstraintReport> {
-    spawn_py(async move { sketch_constraint_report_impl(KclInput::Path(path)).await }).await
+#[pyfunction(signature = (path, request_context=None))]
+async fn get_sketch_constraint_status(
+    path: String,
+    request_context: Option<RequestContext>,
+) -> PyResult<SketchConstraintReport> {
+    spawn_py(
+        async move { sketch_constraint_report_impl(RequestContext::from_option(request_context).path(path)).await },
+    )
+    .await
 }
 
 /// Execute kcl code and return a report of sketch constraint status.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn get_sketch_constraint_status_code(code: String) -> PyResult<SketchConstraintReport> {
-    spawn_py(async move { sketch_constraint_report_impl(KclInput::Code(code)).await }).await
+#[pyfunction(signature = (code, request_context=None))]
+async fn get_sketch_constraint_status_code(
+    code: String,
+    request_context: Option<RequestContext>,
+) -> PyResult<SketchConstraintReport> {
+    spawn_py(
+        async move { sketch_constraint_report_impl(RequestContext::from_option(request_context).code(code)).await },
+    )
+    .await
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (filepaths, format, image_format, *, zoom=None))]
+#[pyfunction(signature = (filepaths, format, image_format, *, zoom=None, request_context=None))]
 async fn import_and_snapshot(
     filepaths: Vec<String>,
     format: InputFormat3d,
     image_format: ImageFormat,
     zoom: Option<bool>,
+    request_context: Option<RequestContext>,
 ) -> PyResult<Vec<u8>> {
     let zoom = zoom.unwrap_or(true);
-    let img = import_and_snapshot_views(filepaths, format, image_format, Vec::new(), Some(zoom))
+    let img = import_and_snapshot_views(filepaths, format, image_format, Vec::new(), Some(zoom), request_context)
         .await?
         .pop();
     Ok(img.unwrap())
@@ -479,17 +569,19 @@ fn relevant_file_extensions() -> PyResult<Vec<String>> {
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (filepaths, format, image_format, snapshot_options, *, zoom=None))]
+#[pyfunction(signature = (filepaths, format, image_format, snapshot_options, *, zoom=None, request_context=None))]
 async fn import_and_snapshot_views(
     filepaths: Vec<String>,
     format: InputFormat3d,
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
     zoom: Option<bool>,
+    request_context: Option<RequestContext>,
 ) -> PyResult<Vec<Vec<u8>>> {
     let zoom = zoom.unwrap_or(true);
     spawn_py(async move {
-        let (ctx, _state) = new_context_state(None, false).await.map_err(to_py_exception)?;
+        let request = RequestContext::from_option(request_context);
+        let (ctx, _state) = new_context_state(&request, None).await.map_err(to_py_exception)?;
         import(&ctx, filepaths, format).await?;
         let result = take_snaps(&ctx, image_format, snapshot_options, zoom).await;
         ctx.close().await;
@@ -542,78 +634,125 @@ async fn import(ctx: &ExecutorContext, filepaths: Vec<String>, format: InputForm
 
 /// Execute a kcl file and snapshot it in a specific format.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (path, image_format, *, zoom=None))]
-async fn execute_and_snapshot(path: String, image_format: ImageFormat, zoom: Option<bool>) -> PyResult<Vec<u8>> {
+#[pyfunction(signature = (path, image_format, *, zoom=None, request_context=None))]
+async fn execute_and_snapshot(
+    path: String,
+    image_format: ImageFormat,
+    zoom: Option<bool>,
+    request_context: Option<RequestContext>,
+) -> PyResult<Vec<u8>> {
     let zoom = zoom.unwrap_or(true);
-    let img = execute_and_snapshot_views(path, image_format, Vec::new(), Some(zoom))
+    let img = execute_and_snapshot_views(path, image_format, Vec::new(), Some(zoom), request_context)
         .await?
         .pop();
     Ok(img.unwrap())
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (path, image_format, snapshot_options, *, zoom=None))]
+#[pyfunction(signature = (path, image_format, snapshot_options, *, zoom=None, request_context=None))]
 async fn execute_and_snapshot_views(
     path: String,
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
     zoom: Option<bool>,
+    request_context: Option<RequestContext>,
 ) -> PyResult<Vec<Vec<u8>>> {
     let zoom = zoom.unwrap_or(true);
     spawn_py(async move {
-        execute_and_snapshot_views_impl(KclInput::Path(path), image_format, snapshot_options, zoom).await
+        execute_and_snapshot_views_impl(
+            RequestContext::from_option(request_context).path(path),
+            image_format,
+            snapshot_options,
+            zoom,
+        )
+        .await
     })
     .await
 }
 
 /// Execute the kcl code and snapshot it in a specific format.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (code, image_format, *, zoom=None))]
-async fn execute_code_and_snapshot(code: String, image_format: ImageFormat, zoom: Option<bool>) -> PyResult<Vec<u8>> {
+#[pyfunction(signature = (code, image_format, *, zoom=None, request_context=None))]
+async fn execute_code_and_snapshot(
+    code: String,
+    image_format: ImageFormat,
+    zoom: Option<bool>,
+    request_context: Option<RequestContext>,
+) -> PyResult<Vec<u8>> {
     let zoom = zoom.unwrap_or(true);
-    let mut snaps = execute_code_and_snapshot_views(code, image_format, Vec::new(), Some(zoom)).await?;
+    let mut snaps =
+        execute_code_and_snapshot_views(code, image_format, Vec::new(), Some(zoom), request_context).await?;
     Ok(snaps.pop().unwrap())
 }
 
 /// Execute a kcl file and measure physical properties of the resulting model.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn execute_and_measure(path: String, request: PhysicalPropertiesRequest) -> PyResult<PhysicalPropertiesResponse> {
-    spawn_py(async move { execute_and_measure_impl(KclInput::Path(path), request).await }).await
+#[pyfunction(signature = (path, request, request_context=None))]
+async fn execute_and_measure(
+    path: String,
+    request: PhysicalPropertiesRequest,
+    request_context: Option<RequestContext>,
+) -> PyResult<PhysicalPropertiesResponse> {
+    spawn_py(
+        async move { execute_and_measure_impl(RequestContext::from_option(request_context).path(path), request).await },
+    )
+    .await
 }
 
 /// Execute the kcl code and measure physical properties of the resulting model.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
+#[pyfunction(signature = (code, request, request_context=None))]
 async fn execute_code_and_measure(
     code: String,
     request: PhysicalPropertiesRequest,
+    request_context: Option<RequestContext>,
 ) -> PyResult<PhysicalPropertiesResponse> {
-    spawn_py(async move { execute_and_measure_impl(KclInput::Code(code), request).await }).await
+    spawn_py(
+        async move { execute_and_measure_impl(RequestContext::from_option(request_context).code(code), request).await },
+    )
+    .await
 }
 
 /// Execute a kcl file and return the model's bounding box.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (path, entity_ids=None, output_unit=None))]
+#[pyfunction(signature = (path, entity_ids=None, output_unit=None, request_context=None))]
 async fn execute_and_bounding_box(
     path: String,
     entity_ids: Option<Vec<String>>,
     output_unit: Option<UnitLength>,
+    request_context: Option<RequestContext>,
 ) -> PyResult<BoundingBoxResponse> {
     let entity_ids = entity_ids.unwrap_or_default();
-    spawn_py(async move { execute_and_bounding_box_impl(KclInput::Path(path), entity_ids, output_unit).await }).await
+    spawn_py(async move {
+        execute_and_bounding_box_impl(
+            RequestContext::from_option(request_context).path(path),
+            entity_ids,
+            output_unit,
+        )
+        .await
+    })
+    .await
 }
 
 /// Execute the kcl code and return the model's bounding box.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (code, entity_ids=None, output_unit=None))]
+#[pyfunction(signature = (code, entity_ids=None, output_unit=None, request_context=None))]
 async fn execute_code_and_bounding_box(
     code: String,
     entity_ids: Option<Vec<String>>,
     output_unit: Option<UnitLength>,
+    request_context: Option<RequestContext>,
 ) -> PyResult<BoundingBoxResponse> {
     let entity_ids = entity_ids.unwrap_or_default();
-    spawn_py(async move { execute_and_bounding_box_impl(KclInput::Code(code), entity_ids, output_unit).await }).await
+    spawn_py(async move {
+        execute_and_bounding_box_impl(
+            RequestContext::from_option(request_context).code(code),
+            entity_ids,
+            output_unit,
+        )
+        .await
+    })
+    .await
 }
 
 /// Customize a snapshot.
@@ -650,16 +789,23 @@ impl SnapshotOptions {
 /// Returns one image for each camera angle you provide.
 /// If you don't provide any camera angles, a default head-on camera angle will be used.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (code, image_format, snapshot_options, *, zoom=None))]
+#[pyfunction(signature = (code, image_format, snapshot_options, *, zoom=None, request_context=None))]
 async fn execute_code_and_snapshot_views(
     code: String,
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
     zoom: Option<bool>,
+    request_context: Option<RequestContext>,
 ) -> PyResult<Vec<Vec<u8>>> {
     let zoom = zoom.unwrap_or(true);
     spawn_py(async move {
-        execute_and_snapshot_views_impl(KclInput::Code(code), image_format, snapshot_options, zoom).await
+        execute_and_snapshot_views_impl(
+            RequestContext::from_option(request_context).code(code),
+            image_format,
+            snapshot_options,
+            zoom,
+        )
+        .await
     })
     .await
 }
@@ -919,16 +1065,30 @@ async fn get_bounding_box(
 
 /// Execute a kcl file and export it to a specific file format.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn execute_and_export(path: String, export_format: FileExportFormat) -> PyResult<Vec<RawFile>> {
-    spawn_py(async move { execute_and_export_impl(KclInput::Path(path), export_format).await }).await
+#[pyfunction(signature = (path, export_format, request_context=None))]
+async fn execute_and_export(
+    path: String,
+    export_format: FileExportFormat,
+    request_context: Option<RequestContext>,
+) -> PyResult<Vec<RawFile>> {
+    spawn_py(async move {
+        execute_and_export_impl(RequestContext::from_option(request_context).path(path), export_format).await
+    })
+    .await
 }
 
 /// Execute the kcl code and export it to a specific file format.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn execute_code_and_export(code: String, export_format: FileExportFormat) -> PyResult<Vec<RawFile>> {
-    spawn_py(async move { execute_and_export_impl(KclInput::Code(code), export_format).await }).await
+#[pyfunction(signature = (code, export_format, request_context=None))]
+async fn execute_code_and_export(
+    code: String,
+    export_format: FileExportFormat,
+    request_context: Option<RequestContext>,
+) -> PyResult<Vec<RawFile>> {
+    spawn_py(async move {
+        execute_and_export_impl(RequestContext::from_option(request_context).code(code), export_format).await
+    })
+    .await
 }
 
 /// Format the kcl code. This will return the formatted code.
@@ -1023,6 +1183,7 @@ fn lint_and_fix_families(code: String, families_to_fix: Vec<FindingFamily>) -> P
 fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     // Add our types to the module.
     m.add_class::<DefaultUnits>()?;
+    m.add_class::<RequestContext>()?;
     m.add_class::<ImageFormat>()?;
     m.add_class::<RawFile>()?;
     m.add_class::<FileExportFormat>()?;
