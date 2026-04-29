@@ -372,7 +372,6 @@ mod tests {
         let settings_file = r#"[settings.app]
 onboarding_status = "dismissed"
 allow_orbit_in_sketch_mode = true
-show_debug_panel = true
 machine_api = true
 foo = "bar"
 
@@ -415,7 +414,6 @@ text_wrapping = true
                         ("foo".to_owned(), "bar".into()),
                         ("machine_api".to_owned(), true.into()),
                         ("onboarding_status".to_owned(), "dismissed".into()),
-                        ("show_debug_panel".to_owned(), true.into()),
                     ]),
                     ..Default::default()
                 }),
@@ -466,7 +464,6 @@ text_wrapping = true
         assert!(serialized.contains("[settings.app]"));
         assert!(serialized.contains("onboarding_status = \"dismissed\""));
         assert!(serialized.contains("allow_orbit_in_sketch_mode = true"));
-        assert!(serialized.contains("show_debug_panel = true"));
         assert!(serialized.contains("machine_api = true"));
         assert!(serialized.contains("foo = \"bar\""));
         assert!(serialized.contains("[settings.modeling]"));

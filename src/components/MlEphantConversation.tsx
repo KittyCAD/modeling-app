@@ -58,8 +58,8 @@ export interface MlEphantConversationProps {
 
 const ML_COPILOT_MODE_META = Object.freeze({
   fast: {
-    pretty: 'Fast',
-    description: 'Lighter reasoning. Best for quick edits and simple tasks.',
+    pretty: 'Standard',
+    description: 'Faster reasoning. Best for quick edits and simple tasks.',
     icon: (props: { className: string }) => (
       <CustomIcon name="stopwatch" className={props.className} />
     ),

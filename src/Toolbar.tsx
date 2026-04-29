@@ -433,6 +433,8 @@ const Toolbar_ = memo(
                     menuItems={maybeIconConfig.array.map((itemConfig) => ({
                       id: itemConfig.id,
                       label: itemConfig.title,
+                      icon: itemConfig.icon,
+                      iconColor: itemConfig.iconColor,
                       hotkey: itemConfig.hotkey,
                       onClick: (event) => {
                         rememberRecentDropdownItem(
@@ -563,6 +565,8 @@ const Toolbar_ = memo(
                   splitMenuItems={maybeIconConfig.array.map((itemConfig) => ({
                     id: itemConfig.id,
                     label: itemConfig.title,
+                    icon: itemConfig.icon,
+                    iconColor: itemConfig.iconColor,
                     hotkey: itemConfig.hotkey,
                     onClick: (event) => {
                       setLastSelectedMultiActionItem((previous) => {

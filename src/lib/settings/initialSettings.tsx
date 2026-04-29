@@ -163,18 +163,6 @@ export function createSettings() {
             })),
         },
       }),
-      /**
-       * Whether to show the debug panel, which lets you see
-       * various states of the app to aid in development
-       */
-      showDebugPanel: new Setting<boolean>({
-        defaultValue: false,
-        description: 'Whether to show the debug panel, a development tool.',
-        validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
-        },
-      }),
       machineApi: new Setting<boolean>({
         defaultValue: false,
         hideOnLevel: 'project',
@@ -199,7 +187,7 @@ export function createSettings() {
             context.app.zookeeperMode.current,
           options: (cmdContext, settingsContext) =>
             (['fast', 'thoughtful'] as const).map((v) => ({
-              name: capitaliseFC(v),
+              name: v === 'fast' ? 'Standard' : capitaliseFC(v),
               value: v,
               isCurrent:
                 settingsContext.app.zookeeperMode.shouldShowCurrentLabel(
@@ -321,6 +309,38 @@ export function createSettings() {
         defaultValue: {},
         validate: (_v) => true,
         hideOnLevel: 'user',
+      }),
+    },
+    /**
+     * App-owned debug settings.
+     *
+     * These stay in TypeScript and round-trip through an opaque `debug`
+     * section so we can keep app-only debugging tools out of the Rust schema.
+     */
+    debug: {
+      /**
+       * Whether to show the debug panel, which lets you see
+       * various states of the app to aid in development
+       */
+      showPanel: new Setting<boolean>({
+        defaultValue: false,
+        description: 'Whether to show the debug panel, a development tool.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
+      /**
+       * Whether to show the current modeling machine state in the status bar.
+       */
+      showModelingMachineState: new Setting<boolean>({
+        defaultValue: false,
+        description:
+          'Whether to show the current modeling machine state in the status bar.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
       }),
     },
     /**
