@@ -140,7 +140,7 @@ export const systemIOMachine = setup({
         }
       | {
           type: SystemIOMachineEvents.done_bulkCreateKCLFilesAndNavigateToFile
-          output: { projectName: string; fileName: string }
+          output: { projectName: string; fileName: string; subRoute?: string }
         }
       | {
           type: SystemIOMachineEvents.done_bulkCreateAndDeleteKCLFilesAndNavigateToFile
@@ -1225,13 +1225,23 @@ export const systemIOMachine = setup({
                   SystemIOMachineEvents.done_bulkCreateKCLFilesAndNavigateToFile
                 )
                 const output = (
-                  event as { output: { projectName: string; fileName: string } }
+                  event as {
+                    output: {
+                      projectName: string
+                      fileName: string
+                      subRoute?: string
+                    }
+                  }
                 ).output
                 // Gotcha: file could have an ending of .kcl...
                 const file = output.fileName.endsWith('.kcl')
                   ? output.fileName
                   : output.fileName + '.kcl'
-                return { project: output.projectName, file }
+                return {
+                  project: output.projectName,
+                  file,
+                  subRoute: output.subRoute,
+                }
               },
             }),
             SystemIOMachineActions.toastSuccess,
