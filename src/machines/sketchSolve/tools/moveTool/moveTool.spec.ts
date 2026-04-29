@@ -235,7 +235,7 @@ function setUpMoveToolCallbacks({
     sceneInfra,
     rustContext: {
       editSegments: vi.fn(),
-      editDistanceConstraintLabel: vi.fn(),
+      editDistanceConstraintLabelPosition: vi.fn(),
       addConstraint: vi.fn(),
       deleteObjects: vi.fn(),
       restoreSketchCheckpoint: vi.fn(),
@@ -652,7 +652,7 @@ describe('createOnDragCallback', () => {
       sketchExecOutcome: { sceneGraphDelta },
     }))
     const editSegments = vi.fn()
-    const editDistanceConstraintLabel = vi.fn(async () => ({
+    const editDistanceConstraintLabelPosition = vi.fn(async () => ({
       kclSource: { text: 'updated' },
       sceneGraphDelta,
     }))
@@ -668,7 +668,7 @@ describe('createOnDragCallback', () => {
       getDraggedEntityId,
       getContextData,
       editSegments,
-      editDistanceConstraintLabel,
+      editDistanceConstraintLabelPosition,
       onNewSketchOutcome,
       getDefaultLengthUnit,
       getJsAppSettings,
@@ -686,7 +686,7 @@ describe('createOnDragCallback', () => {
     })
 
     expect(editSegments).not.toHaveBeenCalled()
-    expect(editDistanceConstraintLabel).toHaveBeenCalledWith(
+    expect(editDistanceConstraintLabelPosition).toHaveBeenCalledWith(
       0,
       2,
       8,
@@ -756,7 +756,7 @@ describe('createOnDragCallback', () => {
       kclSource: { text: 'segments updated' },
       sceneGraphDelta: updatedSceneGraphDelta,
     }))
-    const editDistanceConstraintLabel = vi.fn(async () => ({
+    const editDistanceConstraintLabelPosition = vi.fn(async () => ({
       kclSource: { text: 'label updated' },
       sceneGraphDelta: updatedSceneGraphDelta,
     }))
@@ -770,7 +770,7 @@ describe('createOnDragCallback', () => {
       getDraggedEntityId,
       getContextData,
       editSegments,
-      editDistanceConstraintLabel,
+      editDistanceConstraintLabelPosition,
       onNewSketchOutcome,
       getDefaultLengthUnit: vi.fn((): UnitLength => 'mm'),
       getJsAppSettings: vi.fn(() => Promise.resolve({})),
@@ -808,7 +808,7 @@ describe('createOnDragCallback', () => {
       ],
       {}
     )
-    expect(editDistanceConstraintLabel).toHaveBeenCalledWith(
+    expect(editDistanceConstraintLabelPosition).toHaveBeenCalledWith(
       0,
       2,
       8,

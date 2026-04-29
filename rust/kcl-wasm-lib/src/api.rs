@@ -599,7 +599,7 @@ impl Context {
 
     /// Edit a distance constraint label position in a sketch.
     #[wasm_bindgen]
-    pub async fn edit_distance_constraint_label(
+    pub async fn edit_distance_constraint_label_position(
         &self,
         version_json: &str,
         sketch_json: &str,
@@ -629,7 +629,7 @@ impl Context {
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
         let (source_delta, scene_graph_delta) = guard
-            .edit_distance_constraint_label(&ctx, version, sketch, constraint_id, label, anchor_segment_ids)
+            .edit_distance_constraint_label_position(&ctx, version, sketch, constraint_id, label, anchor_segment_ids)
             .await
             .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
         let checkpoint_id = if create_checkpoint {

@@ -1203,7 +1203,7 @@ impl SketchApi for FrontendState {
         .await
     }
 
-    async fn edit_distance_constraint_label(
+    async fn edit_distance_constraint_label_position(
         &mut self,
         ctx: &ExecutorContext,
         _version: Version,
@@ -1237,7 +1237,7 @@ impl SketchApi for FrontendState {
         self.mutate_ast(
             &mut new_ast,
             constraint_id,
-            AstMutateCommand::EditDistanceConstraintLabel { label },
+            AstMutateCommand::EditDistanceConstraintLabelPosition { label },
         )
         .map_err(KclErrorWithOutputs::no_outputs)?;
 
@@ -4800,7 +4800,7 @@ enum AstMutateCommand {
     EditConstraintValue {
         value: ast::BinaryPart,
     },
-    EditDistanceConstraintLabel {
+    EditDistanceConstraintLabelPosition {
         label: ast::Expr,
     },
     EditCallUnlabeled {
@@ -5278,7 +5278,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
-        AstMutateCommand::EditDistanceConstraintLabel { label } => {
+        AstMutateCommand::EditDistanceConstraintLabelPosition { label } => {
             if let NodeMut::BinaryExpression(binary_expr) = node {
                 let ast::BinaryPart::CallExpressionKw(call) = &mut binary_expr.left else {
                     return TraversalReturn::new_continue(());
@@ -8817,7 +8817,7 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_edit_distance_constraint_label() {
+    async fn test_edit_distance_constraint_label_position() {
         let initial_source = "\
 sketch(on = XY) {
   point(at = [var 1, var 2])
@@ -8869,7 +8869,7 @@ sketch(on = XY) {
         };
 
         let (src_delta, scene_delta) = frontend
-            .edit_distance_constraint_label(&mock_ctx, version, sketch_id, constraint_id, label.clone(), vec![])
+            .edit_distance_constraint_label_position(&mock_ctx, version, sketch_id, constraint_id, label.clone(), vec![])
             .await
             .unwrap();
         assert_eq!(
@@ -8896,7 +8896,7 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_edit_distance_constraint_label_preserves_anchor_segment_solution() {
+    async fn test_edit_distance_constraint_label_position_preserves_anchor_segment_solution() {
         let initial_source = "\
 sketch(on = XY) {
   point1 = point(at = [var 0mm, var 0mm])
@@ -8953,7 +8953,7 @@ sketch(on = XY) {
             },
         };
         let (_, scene_delta) = frontend
-            .edit_distance_constraint_label(&mock_ctx, version, sketch_id, constraint_id, label, vec![point0_id])
+            .edit_distance_constraint_label_position(&mock_ctx, version, sketch_id, constraint_id, label, vec![point0_id])
             .await
             .unwrap();
 

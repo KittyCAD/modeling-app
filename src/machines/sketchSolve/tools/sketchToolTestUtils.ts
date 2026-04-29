@@ -244,7 +244,7 @@ export function createMockRustContext(): RustContext {
     addConstraint: vi.fn(),
     chainSegment: vi.fn(),
     editSegments: vi.fn(),
-    editDistanceConstraintLabel: vi.fn(),
+    editDistanceConstraintLabelPosition: vi.fn(),
     deleteObjects: vi.fn(),
     settingsActor: {
       send: vi.fn(),

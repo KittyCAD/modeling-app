@@ -123,7 +123,7 @@ pub trait SketchApi {
         value_expression: String,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
-    async fn edit_distance_constraint_label(
+    async fn edit_distance_constraint_label_position(
         &mut self,
         ctx: &ExecutorContext,
         version: Version,

@@ -459,7 +459,7 @@ function getMovedPointIdsForSegmentEdits(
 async function applyDistanceLabelPreviewEdits({
   result,
   labelEdits,
-  editDistanceConstraintLabel,
+  editDistanceConstraintLabelPosition,
   version,
   sketchId,
   settings,
@@ -467,7 +467,7 @@ async function applyDistanceLabelPreviewEdits({
 }: {
   result: DragSketchOutcome
   labelEdits: DistanceConstraintLabelEdit[]
-  editDistanceConstraintLabel: (
+  editDistanceConstraintLabelPosition: (
     version: number,
     sketchId: number,
     constraintId: number,
@@ -483,7 +483,7 @@ async function applyDistanceLabelPreviewEdits({
   let latestResult = result
 
   for (const { constraintId, label } of labelEdits) {
-    const nextResult = await editDistanceConstraintLabel(
+    const nextResult = await editDistanceConstraintLabelPosition(
       version,
       sketchId,
       constraintId,
@@ -1021,7 +1021,7 @@ export function createOnDragCallback({
   getDragStartOutcome,
   getContextData,
   editSegments,
-  editDistanceConstraintLabel = async () => null,
+  editDistanceConstraintLabelPosition = async () => null,
   onNewSketchOutcome,
   getDefaultLengthUnit,
   getJsAppSettings,
@@ -1057,7 +1057,7 @@ export function createOnDragCallback({
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
   } | null>
-  editDistanceConstraintLabel?: (
+  editDistanceConstraintLabelPosition?: (
     version: number,
     sketchId: number,
     constraintId: number,
@@ -1126,7 +1126,7 @@ export function createOnDragCallback({
           intersectionPoint.twoD,
           baseUnitToNumericSuffix(getDefaultLengthUnit())
         )
-        const result = await editDistanceConstraintLabel(
+        const result = await editDistanceConstraintLabelPosition(
           0,
           contextData.sketchId,
           draggedDistanceConstraintLabelId,
@@ -1278,7 +1278,7 @@ export function createOnDragCallback({
             const labelResult = await applyDistanceLabelPreviewEdits({
               result,
               labelEdits: distanceLabelEdits,
-              editDistanceConstraintLabel,
+              editDistanceConstraintLabelPosition,
               version: 0,
               sketchId,
               settings,
@@ -1697,7 +1697,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
               )
             )
             const result =
-              await context.rustContext.editDistanceConstraintLabel(
+              await context.rustContext.editDistanceConstraintLabelPosition(
                 SKETCH_FILE_VERSION,
                 context.sketchId,
                 draggedDistanceConstraintLabelId,
@@ -1775,7 +1775,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
               { constraintId, label },
             ] of distanceLabelEdits.entries()) {
               latestResult =
-                await context.rustContext.editDistanceConstraintLabel(
+                await context.rustContext.editDistanceConstraintLabelPosition(
                   SKETCH_FILE_VERSION,
                   context.sketchId,
                   constraintId,
@@ -2092,7 +2092,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
           settings
         )
       },
-      editDistanceConstraintLabel: async (
+      editDistanceConstraintLabelPosition: async (
         version: number,
         sketchId: number,
         constraintId: number,
@@ -2100,7 +2100,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
         settings: DeepPartial<Configuration>,
         anchorSegmentIds?: number[]
       ) => {
-        return context.rustContext.editDistanceConstraintLabel(
+        return context.rustContext.editDistanceConstraintLabelPosition(
           version,
           sketchId,
           constraintId,

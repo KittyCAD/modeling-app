@@ -674,7 +674,7 @@ export default class RustContext {
     }
   }
 
-  async editDistanceConstraintLabel(
+  async editDistanceConstraintLabelPosition(
     version: ApiVersion,
     sketch: ApiObjectId,
     constraintId: ApiObjectId,
@@ -690,7 +690,7 @@ export default class RustContext {
         sourceDelta: SourceDelta
         sceneGraphDelta: SceneGraphDelta
         checkpointId?: number | null
-      } = await instance.edit_distance_constraint_label(
+      } = await instance.edit_distance_constraint_label_position(
         JSON.stringify(version),
         JSON.stringify(sketch),
         JSON.stringify(constraintId),
