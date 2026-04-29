@@ -1,6 +1,5 @@
 // Compact Camera Mounting Plate
 // 70 x 40 x 8 mm plate with central hole, slots, and underside pocket
-@settings(defaultLengthUnit = mm)
 
 plateLength = 70
 plateWidth = 40
@@ -213,20 +212,20 @@ pocketSketch = sketch(on = pocketPlane) {
   top = line(start = [var -22mm, var 10mm], end = [var 22mm, var 10mm])
   topRight = arc(start = [var 22mm, var 10mm], end = [var 25mm, var 7mm], center = [var 22mm, var 7mm])
   right = line(start = [var 25mm, var 7mm], end = [var 25mm, var -7mm])
-  bottomRight = arc(start = [var 25mm, var -7mm], end = [var 22mm, var -10mm], center = [var 22mm, var -7mm])
+  bottomRight = arc(end = [var 25mm, var -7mm], start = [var 22mm, var -10mm], center = [var 22mm, var -7mm])
   bottom = line(start = [var 22mm, var -10mm], end = [var -22mm, var -10mm])
-  bottomLeft = arc(start = [var -22mm, var -10mm], end = [var -25mm, var -7mm], center = [var -22mm, var -7mm])
+  bottomLeft = arc(end = [var -22mm, var -10mm], start = [var -25mm, var -7mm], center = [var -22mm, var -7mm])
   left = line(start = [var -25mm, var -7mm], end = [var -25mm, var 7mm])
-  topLeft = arc(start = [var -25mm, var 7mm], end = [var -22mm, var 10mm], center = [var -22mm, var 7mm])
+  topLeft = arc(end = [var -25mm, var 7mm], start = [var -22mm, var 10mm], center = [var -22mm, var 7mm])
 
-  coincident([top.end, topRight.start])
-  coincident([topRight.end, right.start])
-  coincident([right.end, bottomRight.start])
-  coincident([bottomRight.end, bottom.start])
-  coincident([bottom.end, bottomLeft.start])
-  coincident([bottomLeft.end, left.start])
-  coincident([left.end, topLeft.start])
-  coincident([topLeft.end, top.start])
+  coincident([top.end, topRight.end])
+  coincident([topRight.start, right.start])
+  coincident([right.end, bottomRight.end])
+  coincident([bottomRight.start, bottom.start])
+  coincident([bottom.end, bottomLeft.end])
+  coincident([bottomLeft.start, left.start])
+  coincident([left.end, topLeft.end])
+  coincident([topLeft.start, top.start])
 
   horizontal(top)
   vertical(right)
@@ -246,44 +245,6 @@ pocketSketch = sketch(on = pocketPlane) {
   radius(bottomRight) == pocketCornerRadius
   radius(bottomLeft) == pocketCornerRadius
   radius(topLeft) == pocketCornerRadius
-
-  trTopGuide = line(start = [var 22mm, var 7mm], end = [var 22mm, var 10mm], construction = true)
-  trSideGuide = line(start = [var 22mm, var 7mm], end = [var 25mm, var 7mm], construction = true)
-  brSideGuide = line(start = [var 22mm, var -7mm], end = [var 25mm, var -7mm], construction = true)
-  brBottomGuide = line(start = [var 22mm, var -7mm], end = [var 22mm, var -10mm], construction = true)
-  blBottomGuide = line(start = [var -22mm, var -7mm], end = [var -22mm, var -10mm], construction = true)
-  blSideGuide = line(start = [var -22mm, var -7mm], end = [var -25mm, var -7mm], construction = true)
-  tlSideGuide = line(start = [var -22mm, var 7mm], end = [var -25mm, var 7mm], construction = true)
-  tlTopGuide = line(start = [var -22mm, var 7mm], end = [var -22mm, var 10mm], construction = true)
-
-  coincident([trTopGuide.start, topRight.center])
-  coincident([trTopGuide.end, topRight.start])
-  coincident([trSideGuide.start, topRight.center])
-  coincident([trSideGuide.end, topRight.end])
-  coincident([brSideGuide.start, bottomRight.center])
-  coincident([brSideGuide.end, bottomRight.start])
-  coincident([
-    brBottomGuide.start,
-    bottomRight.center
-  ])
-  coincident([brBottomGuide.end, bottomRight.end])
-  coincident([blBottomGuide.start, bottomLeft.center])
-  coincident([blBottomGuide.end, bottomLeft.start])
-  coincident([blSideGuide.start, bottomLeft.center])
-  coincident([blSideGuide.end, bottomLeft.end])
-  coincident([tlSideGuide.start, topLeft.center])
-  coincident([tlSideGuide.end, topLeft.start])
-  coincident([tlTopGuide.start, topLeft.center])
-  coincident([tlTopGuide.end, topLeft.end])
-
-  vertical(trTopGuide)
-  horizontal(trSideGuide)
-  horizontal(brSideGuide)
-  vertical(brBottomGuide)
-  vertical(blBottomGuide)
-  horizontal(blSideGuide)
-  horizontal(tlSideGuide)
-  vertical(tlTopGuide)
 
   centerTop = line(start = [var -22mm, var 7mm], end = [var 22mm, var 7mm], construction = true)
   centerRight = line(start = [var 22mm, var 7mm], end = [var 22mm, var -7mm], construction = true)
@@ -308,6 +269,44 @@ pocketSketch = sketch(on = pocketPlane) {
   verticalDistance([centerRight.end, centerRight.start]) == pocketWidth - (2 * pocketCornerRadius)
   horizontalDistance([ORIGIN, topRight.center]) == pocketLength / 2 - pocketCornerRadius
   verticalDistance([ORIGIN, topRight.center]) == pocketWidth / 2 - pocketCornerRadius
+
+  trTopGuide = line(start = [var 22mm, var 7mm], end = [var 22mm, var 10mm], construction = true)
+  trSideGuide = line(start = [var 22mm, var 7mm], end = [var 25mm, var 7mm], construction = true)
+  brSideGuide = line(start = [var 22mm, var -7mm], end = [var 25mm, var -7mm], construction = true)
+  brBottomGuide = line(start = [var 22mm, var -7mm], end = [var 22mm, var -10mm], construction = true)
+  blBottomGuide = line(start = [var -22mm, var -7mm], end = [var -22mm, var -10mm], construction = true)
+  blSideGuide = line(start = [var -22mm, var -7mm], end = [var -25mm, var -7mm], construction = true)
+  tlSideGuide = line(start = [var -22mm, var 7mm], end = [var -25mm, var 7mm], construction = true)
+  tlTopGuide = line(start = [var -22mm, var 7mm], end = [var -22mm, var 10mm], construction = true)
+
+  coincident([trTopGuide.start, topRight.center])
+  coincident([trTopGuide.end, topRight.end])
+  coincident([trSideGuide.start, topRight.center])
+  coincident([trSideGuide.end, topRight.start])
+  coincident([brSideGuide.start, bottomRight.center])
+  coincident([brSideGuide.end, bottomRight.end])
+  coincident([
+    brBottomGuide.start,
+    bottomRight.center
+  ])
+  coincident([brBottomGuide.end, bottomRight.start])
+  coincident([blBottomGuide.start, bottomLeft.center])
+  coincident([blBottomGuide.end, bottomLeft.end])
+  coincident([blSideGuide.start, bottomLeft.center])
+  coincident([blSideGuide.end, bottomLeft.start])
+  coincident([tlSideGuide.start, topLeft.center])
+  coincident([tlSideGuide.end, topLeft.end])
+  coincident([tlTopGuide.start, topLeft.center])
+  coincident([tlTopGuide.end, topLeft.start])
+
+  vertical(trTopGuide)
+  horizontal(trSideGuide)
+  horizontal(brSideGuide)
+  vertical(brBottomGuide)
+  vertical(blBottomGuide)
+  horizontal(blSideGuide)
+  horizontal(tlSideGuide)
+  vertical(tlTopGuide)
 }
 
 pocketRegion = region(point = [0mm, 0mm], sketch = pocketSketch)
@@ -328,3 +327,4 @@ hiddenCenterHole = hide(centerHoleSketch)
 hiddenRightSlot = hide(rightSlotSketch)
 hiddenLeftSlot = hide(leftSlotSketch)
 hiddenPocket = hide(pocketSketch)
+
