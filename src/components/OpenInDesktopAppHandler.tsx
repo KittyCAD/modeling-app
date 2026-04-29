@@ -46,10 +46,11 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
    */
   function onOpenInDesktopApp() {
     const newSearchParams = new URLSearchParams(globalThis.location.search)
+    newSearchParams.delete(ASK_TO_OPEN_QUERY_PARAM)
     const newURL = `${ZOO_STUDIO_PROTOCOL}://${globalThis.location.pathname.replace(
       '/',
       ''
-    )}${searchParams.size > 0 ? `?${newSearchParams.toString()}` : ''}`
+    )}${newSearchParams.size > 0 ? `?${newSearchParams.toString()}` : ''}`
 
     // TODO: find a way to workaround this limitation, modeling-app#6200
     // Electron issue: https://github.com/electron/electron/issues/40776
@@ -63,7 +64,6 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
       return
     }
 
-    newSearchParams.delete(ASK_TO_OPEN_QUERY_PARAM)
     globalThis.location.href = newURL
   }
 

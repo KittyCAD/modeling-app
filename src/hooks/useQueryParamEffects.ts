@@ -139,7 +139,10 @@ export function useQueryParamEffects(kclManager: KclManager) {
       const requestedProjectName = !isDesktop()
         ? (app.settings.actor.getSnapshot().context.currentProject?.name ??
           DEFAULT_WEB_PROJECT_NAME)
-        : downloadedProject.projectName
+        : getUniqueProjectName(
+            downloadedProject.projectName,
+            app.systemIOActor.getSnapshot().context.folders || []
+          )
       const requestedSubDirectoryName = !isDesktop()
         ? getUniqueProjectName(
             downloadedProject.projectName,
@@ -166,6 +169,11 @@ export function useQueryParamEffects(kclManager: KclManager) {
               downloadedProject.entrypointFilePath
             )
           : downloadedProject.entrypointFilePath
+
+      await waitForIdleState({ systemIOActor: app.systemIOActor })
+      if (cancelled) {
+        return
+      }
 
       app.systemIOActor.send({
         type: SystemIOMachineEvents.bulkImportProjectFilesAndNavigateToFile,
