@@ -203,7 +203,7 @@ export class DistanceConstraintBuilder {
 
 function getDistanceLabelPosition(obj: DistanceConstraint) {
   const constraint = obj.kind.constraint
-  if (constraint.type !== 'Distance' || !constraint.label) {
+  if (!constraint.label) {
     return undefined
   }
 
@@ -269,23 +269,29 @@ function getDirections(
   let end: Vector3
 
   if (constraintType === 'HorizontalDistance') {
-    // Place distance on the bottom if the points are under the X axis
-    const isBottom = (p1.y + p2.y) / 2 < 0
     axis = new Vector3(1, 0, 0)
+    // Place distance on the bottom if the points are under the X axis
+    const isBottom = labelPosition
+      ? labelPosition.y < (p1.y + p2.y) / 2
+      : (p1.y + p2.y) / 2 < 0
     perp = new Vector3(0, isBottom ? -1 : 1, 0)
-    const offsetY =
-      (isBottom ? Math.min(p1.y, p2.y) : Math.max(p1.y, p2.y)) +
-      SEGMENT_OFFSET_PX * scale * (isBottom ? -1 : 1)
+    const offsetY = labelPosition
+      ? labelPosition.y
+      : (isBottom ? Math.min(p1.y, p2.y) : Math.max(p1.y, p2.y)) +
+        SEGMENT_OFFSET_PX * scale * (isBottom ? -1 : 1)
     start = new Vector3(p1.x, offsetY, 0)
     end = new Vector3(p2.x, offsetY, 0)
   } else if (constraintType === 'VerticalDistance') {
-    // Place distance on the left side if the points are more on the left side..
-    const isLeft = (p1.x + p2.x) / 2 < 0
     axis = new Vector3(0, 1, 0)
+    // Place distance on the left side if the points are more on the left side.
+    const isLeft = labelPosition
+      ? labelPosition.x < (p1.x + p2.x) / 2
+      : (p1.x + p2.x) / 2 < 0
     perp = new Vector3(isLeft ? -1 : 1, 0, 0)
-    const offsetX =
-      (isLeft ? Math.min(p1.x, p2.x) : Math.max(p1.x, p2.x)) +
-      SEGMENT_OFFSET_PX * scale * (isLeft ? -1 : 1)
+    const offsetX = labelPosition
+      ? labelPosition.x
+      : (isLeft ? Math.min(p1.x, p2.x) : Math.max(p1.x, p2.x)) +
+        SEGMENT_OFFSET_PX * scale * (isLeft ? -1 : 1)
     start = new Vector3(offsetX, p1.y, 0)
     end = new Vector3(offsetX, p2.y, 0)
   } else if (constraintType === 'Distance') {

@@ -1222,7 +1222,9 @@ impl SketchApi for FrontendState {
         if !matches!(
             &object.kind,
             ObjectKind::Constraint {
-                constraint: Constraint::Distance(_),
+                constraint: Constraint::Distance(_)
+                    | Constraint::HorizontalDistance(_)
+                    | Constraint::VerticalDistance(_),
             }
         ) {
             return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
@@ -3497,6 +3499,14 @@ impl FrontendState {
             }
         };
 
+        let arguments = match &distance.label {
+            Some(label) => vec![ast::LabeledArg {
+                label: Some(ast::Identifier::new(LABEL_POSITION_PARAM)),
+                arg: to_ast_point2d_number(label).map_err(|err| KclError::refactor(err.to_string()))?,
+            }],
+            None => Default::default(),
+        };
+
         // Create the horizontalDistance() call.
         let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(HORIZONTAL_DISTANCE_FN)),
@@ -3507,7 +3517,7 @@ impl FrontendState {
                     non_code_meta: Default::default(),
                 },
             )))),
-            arguments: Default::default(),
+            arguments,
             digest: None,
             non_code_meta: Default::default(),
         })));
@@ -3559,6 +3569,14 @@ impl FrontendState {
             }
         };
 
+        let arguments = match &distance.label {
+            Some(label) => vec![ast::LabeledArg {
+                label: Some(ast::Identifier::new(LABEL_POSITION_PARAM)),
+                arg: to_ast_point2d_number(label).map_err(|err| KclError::refactor(err.to_string()))?,
+            }],
+            None => Default::default(),
+        };
+
         // Create the verticalDistance() call.
         let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(VERTICAL_DISTANCE_FN)),
@@ -3569,7 +3587,7 @@ impl FrontendState {
                     non_code_meta: Default::default(),
                 },
             )))),
-            arguments: Default::default(),
+            arguments,
             digest: None,
             non_code_meta: Default::default(),
         })));
@@ -5283,7 +5301,10 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 let ast::BinaryPart::CallExpressionKw(call) = &mut binary_expr.left else {
                     return TraversalReturn::new_continue(());
                 };
-                if call.callee.name.name != DISTANCE_FN {
+                if !matches!(
+                    call.callee.name.name.as_str(),
+                    DISTANCE_FN | HORIZONTAL_DISTANCE_FN | VERTICAL_DISTANCE_FN
+                ) {
                     return TraversalReturn::new_continue(());
                 }
 
@@ -8869,7 +8890,14 @@ sketch(on = XY) {
         };
 
         let (src_delta, scene_delta) = frontend
-            .edit_distance_constraint_label_position(&mock_ctx, version, sketch_id, constraint_id, label.clone(), vec![])
+            .edit_distance_constraint_label_position(
+                &mock_ctx,
+                version,
+                sketch_id,
+                constraint_id,
+                label.clone(),
+                vec![],
+            )
             .await
             .unwrap();
         assert_eq!(
@@ -8953,7 +8981,14 @@ sketch(on = XY) {
             },
         };
         let (_, scene_delta) = frontend
-            .edit_distance_constraint_label_position(&mock_ctx, version, sketch_id, constraint_id, label, vec![point0_id])
+            .edit_distance_constraint_label_position(
+                &mock_ctx,
+                version,
+                sketch_id,
+                constraint_id,
+                label,
+                vec![point0_id],
+            )
             .await
             .unwrap();
 
@@ -8982,16 +9017,27 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
         let point0_id = *sketch.segments.first().unwrap();
         let point1_id = *sketch.segments.get(1).unwrap();
+        let label = Point2d {
+            x: Number {
+                value: 10.0,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: 11.0,
+                units: NumericSuffix::Mm,
+            },
+        };
 
         let constraint = Constraint::HorizontalDistance(Distance {
             points: vec![point0_id.into(), point1_id.into()],
@@ -8999,7 +9045,7 @@ sketch(on = XY) {
                 value: 2.0,
                 units: NumericSuffix::Mm,
             },
-            label: None,
+            label: Some(label.clone()),
             source: Default::default(),
         });
         let (src_delta, scene_delta) = frontend
@@ -9013,7 +9059,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   point1 = point(at = [var 1, var 2])
   point2 = point(at = [var 3, var 4])
-  horizontalDistance([point1, point2]) == 2mm
+  horizontalDistance([point1, point2], labelPosition = [10mm, 11mm]) == 2mm
 }
 "
         );
@@ -9023,8 +9069,17 @@ sketch(on = XY) {
             "{:#?}",
             scene_delta.new_graph.objects
         );
+        let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
+        let sketch = expect_sketch(sketch_object);
+        let constraint_object = scene_delta.new_graph.objects.get(sketch.constraints[0].0).unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("Expected constraint object");
+        };
+        let Constraint::HorizontalDistance(distance) = constraint else {
+            panic!("Expected horizontal distance constraint");
+        };
+        assert_eq!(distance.label, Some(label));
 
-        ctx.close().await;
         mock_ctx.close().await;
     }
 
@@ -9109,16 +9164,27 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
         let point0_id = *sketch.segments.first().unwrap();
         let point1_id = *sketch.segments.get(1).unwrap();
+        let label = Point2d {
+            x: Number {
+                value: 10.0,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: 11.0,
+                units: NumericSuffix::Mm,
+            },
+        };
 
         let constraint = Constraint::VerticalDistance(Distance {
             points: vec![point0_id.into(), point1_id.into()],
@@ -9126,7 +9192,7 @@ sketch(on = XY) {
                 value: 2.0,
                 units: NumericSuffix::Mm,
             },
-            label: None,
+            label: Some(label.clone()),
             source: Default::default(),
         });
         let (src_delta, scene_delta) = frontend
@@ -9140,7 +9206,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   point1 = point(at = [var 1, var 2])
   point2 = point(at = [var 3, var 4])
-  verticalDistance([point1, point2]) == 2mm
+  verticalDistance([point1, point2], labelPosition = [10mm, 11mm]) == 2mm
 }
 "
         );
@@ -9150,8 +9216,17 @@ sketch(on = XY) {
             "{:#?}",
             scene_delta.new_graph.objects
         );
+        let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
+        let sketch = expect_sketch(sketch_object);
+        let constraint_object = scene_delta.new_graph.objects.get(sketch.constraints[0].0).unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("Expected constraint object");
+        };
+        let Constraint::VerticalDistance(distance) = constraint else {
+            panic!("Expected vertical distance constraint");
+        };
+        assert_eq!(distance.label, Some(label));
 
-        ctx.close().await;
         mock_ctx.close().await;
     }
 

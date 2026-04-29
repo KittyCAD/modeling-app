@@ -301,7 +301,9 @@ function getDistanceLabelConstraintId(
   }
 
   const draggedObject = sceneGraphDelta.new_graph.objects[draggedEntityId]
-  return isConstraint(draggedObject, 'Distance') ? draggedEntityId : null
+  return draggedObject && isDistanceConstraint(draggedObject)
+    ? draggedEntityId
+    : null
 }
 
 function buildDistanceLabelEditsForMovedSegments({
@@ -323,7 +325,7 @@ function buildDistanceLabelEditsForMovedSegments({
   }
 
   return objectsBeforeDrag.flatMap((obj) => {
-    if (!isConstraint(obj, 'Distance')) {
+    if (!isDistanceConstraint(obj)) {
       return []
     }
 
@@ -354,6 +356,7 @@ function buildDistanceLabelEditsForMovedSegments({
     }
 
     const transformedLabel = transformDistanceLabelWithSegmentFrame(
+      obj.kind.constraint.type,
       new Vector2(label.x.value, label.y.value),
       pointPairs
     )
@@ -391,6 +394,7 @@ function getDistanceConstraintPointPosition(
 
 // Preserve the label's local position relative to the given points across the drag.
 function transformDistanceLabelWithSegmentFrame(
+  constraintType: 'Distance' | 'HorizontalDistance' | 'VerticalDistance',
   labelPosition: Vector2,
   pointPairs: Array<{ before: Vector2; after: Vector2 }>
 ): Vector2 | null {
@@ -407,14 +411,55 @@ function transformDistanceLabelWithSegmentFrame(
   const beforeLength = beforeDir.length()
   const afterLength = afterDir.length()
 
+  if (constraintType === 'HorizontalDistance') {
+    const beforeCenter = beforeStart.clone().lerp(beforeEnd, 0.5)
+    const afterCenter = afterStart.clone().lerp(afterEnd, 0.5)
+    return transformDistanceLabelWithAxes(
+      labelPosition,
+      beforeCenter,
+      afterCenter,
+      new Vector2(1, 0),
+      new Vector2(1, 0)
+    )
+  }
+
+  if (constraintType === 'VerticalDistance') {
+    const beforeCenter = beforeStart.clone().lerp(beforeEnd, 0.5)
+    const afterCenter = afterStart.clone().lerp(afterEnd, 0.5)
+    return transformDistanceLabelWithAxes(
+      labelPosition,
+      beforeCenter,
+      afterCenter,
+      new Vector2(0, 1),
+      new Vector2(0, 1)
+    )
+  }
+
   if (beforeLength === 0 || afterLength === 0) {
     return labelPosition.clone().add(afterStart.clone().sub(beforeStart))
   }
 
-  const afterAxis = afterDir.clone().normalize()
-  const afterPerp = new Vector2(-afterAxis.y, afterAxis.x)
   const beforeAxis = beforeDir.clone().normalize()
+  const afterAxis = afterDir.clone().normalize()
+
+  return transformDistanceLabelWithAxes(
+    labelPosition,
+    beforeStart,
+    afterStart,
+    beforeAxis,
+    afterAxis
+  )
+}
+
+function transformDistanceLabelWithAxes(
+  labelPosition: Vector2,
+  beforeStart: Vector2,
+  afterStart: Vector2,
+  beforeAxis: Vector2,
+  afterAxis: Vector2
+): Vector2 {
   const beforePerp = new Vector2(-beforeAxis.y, beforeAxis.x)
+  const afterPerp = new Vector2(-afterAxis.y, afterAxis.x)
   const labelDelta = labelPosition.clone().sub(beforeStart)
   const offset = labelDelta.dot(beforeAxis)
   const perpOffset = labelDelta.dot(beforePerp)
@@ -1493,7 +1538,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects ??
       []
     const hoveredObject = objects[hoveredId]
-    if (!isConstraint(hoveredObject, 'Distance')) {
+    if (!hoveredObject || !isDistanceConstraint(hoveredObject)) {
       return null
     }
 
