@@ -571,6 +571,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::constraints::tangent(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solver::tangent"),
         ),
+        ("solver", "symmetric") => (
+            |e, a| Box::pin(crate::std::constraints::symmetric(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solver::symmetric"),
+        ),
         ("solver", "horizontal") => (
             |e, a| Box::pin(crate::std::constraints::horizontal(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solver::horizontal"),
