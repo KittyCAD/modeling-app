@@ -6,7 +6,6 @@ import {
 } from 'react-router-dom'
 import { type SnapshotFrom, waitFor, type ActorRefFrom } from 'xstate'
 
-import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 import { ActionButton } from '@src/components/ActionButton'
 import onboardingWorkflowAiHeadset from '@src/assets/onboarding-workflow-ai-headset.png'
 import onboardingWorkflowKitt from '@src/assets/onboarding-workflow-kitt.png'
@@ -22,6 +21,7 @@ import {
 } from '@src/lib/constants'
 import { fanParts } from '@src/lib/exampleKcl'
 import {
+  type OnboardingStatus,
   type OnboardingPath,
   isOnboardingPath,
   onboardingPaths,

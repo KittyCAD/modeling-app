@@ -404,7 +404,8 @@ export const createLabeledArg = (label: string, arg: Expr): LabeledArg => {
 /** Creates a member expression object.propertyName (e.g. base.tags or bs.tags.edge7 when chained). */
 export function createMemberExpression(
   parent: string | Expr,
-  propertyName: string
+  property: string | Expr,
+  computed = false
 ): Node<MemberExpression> {
   return {
     type: 'MemberExpression',
@@ -416,7 +417,8 @@ export function createMemberExpression(
     commentStart: 0,
 
     object: typeof parent === 'string' ? createLocalName(parent) : parent,
-    property: createLocalName(propertyName),
-    computed: false,
+    property:
+      typeof property === 'string' ? createLocalName(property) : property,
+    computed,
   }
 }

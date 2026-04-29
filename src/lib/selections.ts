@@ -1525,49 +1525,56 @@ function findOverlappingArtifactsFromIndex(
   return results
 }
 
-function getBestCandidate(
+function getBestCandidates(
   entries: ArtifactEntry[],
   artifactGraph: ArtifactGraph
-): ArtifactEntry | undefined {
+): ArtifactEntry[] {
   if (!entries.length) {
-    return undefined
+    return []
   }
+
+  const overlappingRegions = entries.filter(
+    (entry) =>
+      entry.artifact.type === 'path' && entry.artifact.subType === 'region'
+  )
+  if (overlappingRegions.length) {
+    return overlappingRegions
+  }
+
+  const overlappingSegments = entries.filter(
+    (entry) => entry.artifact.type === 'segment'
+  )
+  if (overlappingSegments.length) {
+    return overlappingSegments
+  }
+
   const sketchBlock = entries.find(
     (entry) => entry.artifact.type === 'sketchBlock'
   )
   if (sketchBlock) {
-    return sketchBlock
+    return [sketchBlock]
   }
 
   for (const entry of entries) {
-    // Segments take precedence
-    if (entry.artifact.type === 'segment') {
-      return entry
-    }
-
     // Handle paths and their solid2d references
     if (entry.artifact.type === 'path') {
       const solid2dId = entry.artifact.solid2dId
       if (!solid2dId) {
-        return entry
+        return [entry]
       }
       const solid2d = artifactGraph.get(solid2dId)
       if (solid2d?.type === 'solid2d') {
-        return { id: solid2dId, artifact: solid2d }
+        return [{ id: solid2dId, artifact: solid2d }]
       }
       continue
     }
 
     // Other valid artifact types
-    if (
-      ['plane', 'cap', 'wall', 'sweep', 'sketchBlock'].includes(
-        entry.artifact.type
-      )
-    ) {
-      return entry
+    if (['plane', 'cap', 'wall', 'sweep'].includes(entry.artifact.type)) {
+      return [entry]
     }
   }
-  return undefined
+  return []
 }
 
 function createSelectionToEngine(
@@ -1615,9 +1622,17 @@ export function codeToIdSelections(
         selection,
         artifactIndex
       )
-      const bestCandidate = getBestCandidate(overlappingEntries, artifactGraph)
+      const bestCandidates = getBestCandidates(
+        overlappingEntries,
+        artifactGraph
+      )
+      if (bestCandidates.length) {
+        return bestCandidates.map((entry) =>
+          createSelectionToEngine(selection, entry.id)
+        )
+      }
 
-      return [createSelectionToEngine(selection, bestCandidate?.id)]
+      return [createSelectionToEngine(selection)]
     })
     .filter(isNonNullable)
 }

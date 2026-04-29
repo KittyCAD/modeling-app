@@ -90,7 +90,7 @@ export function ShareDialog({
                 bgClassName: '!bg-transparent',
                 size: 'sm',
               }}
-              className="shrink-0 whitespace-nowrap py-0.5 px-2"
+              className="shrink-0 whitespace-nowrap  py-1 pl-0.5 pr-1.5 !rounded-md"
               onClick={() => {
                 void handleCopyLink()
               }}

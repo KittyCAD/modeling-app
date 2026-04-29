@@ -606,7 +606,7 @@ description: Artifact commands planetary-gearset.kcl
         },
         "total_rotation_angle": {
           "unit": "degrees",
-          "value": 14.850562361624158
+          "value": 14.843033759394757
         },
         "angle_step_size": {
           "unit": "degrees",
@@ -895,7 +895,7 @@ description: Artifact commands planetary-gearset.kcl
         },
         "total_rotation_angle": {
           "unit": "degrees",
-          "value": -14.850562361624158
+          "value": -14.843033759394757
         },
         "angle_step_size": {
           "unit": "degrees",

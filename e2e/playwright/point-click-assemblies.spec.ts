@@ -580,6 +580,7 @@ test.describe(
       folderSetupFn,
     }) => {
       if (!tronApp) throw new Error('tronApp is missing.')
+      test.slow()
       await testBracketInsertionThenTransformsThenDeletion(
         context,
         page,
@@ -605,6 +606,7 @@ test.describe(
       folderSetupFn,
     }) => {
       if (!tronApp) throw new Error('tronApp is missing.')
+      test.slow()
       await testBracketInsertionThenTransformsThenDeletion(
         context,
         page,

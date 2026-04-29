@@ -17,8 +17,12 @@ import Tooltip from '@src/components/Tooltip'
 import { isExternalFileDrag } from '@src/components/Explorer/utils'
 import { takeViewportScreenshot } from '@src/lib/screenshot'
 import { isNonNullable } from '@src/lib/utils'
+import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
+import { isPlaywright } from '@src/lib/isPlaywright'
 
 const noop = () => {}
+
+export const SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN = true
 
 export interface QueuedMessage {
   id: string
@@ -146,12 +150,14 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
         {props.context && (
           <MlCopilotSelectionsContext selections={props.context} />
         )}
-        <MlCopilotModes onClick={props.onSetMode} current={props.mode}>
-          {ML_COPILOT_MODE_META[props.mode].icon({
-            className: 'w-5 h-5',
-          })}
-          {ML_COPILOT_MODE_META[props.mode].pretty}
-        </MlCopilotModes>
+        {SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN && (
+          <MlCopilotModes onClick={props.onSetMode} current={props.mode}>
+            {ML_COPILOT_MODE_META[props.mode].icon({
+              className: 'w-5 h-5',
+            })}
+            {ML_COPILOT_MODE_META[props.mode].pretty}
+          </MlCopilotModes>
+        )}
         <button
           type="button"
           data-testid="ml-ephant-attachments-button"
@@ -465,7 +471,6 @@ export const MlEphantConversationInput = (
             ))}
           </div>
         )}
-        {}
         <div className="flex items-end">
           <MlEphantExtraInputs
             context={selectionsContext}
@@ -693,6 +698,12 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
             />
           </div>
         </div>
+        {!isPlaywright() ? (
+          <MakeathonAnnouncement
+            presentation="dialog"
+            className="w-[min(28rem,100%)]"
+          />
+        ) : null}
       </div>
     </div>
   )

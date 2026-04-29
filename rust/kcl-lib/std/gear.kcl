@@ -9,8 +9,10 @@ fn gearProfile(nTeeth: number(Count), module: number(Length), pressureAngle: num
   baseRadius = baseDiameter / 2
   tipDiameter = pitchDiameter + 2 * module
 
+  // `acos` requires an explicitly unitless ratio when the lengths carry concrete units.
+  helixRatio = (offsetHeight * tan(helixAngle) / (tipDiameter / 2)): number(_)
   // Calculate the amount to rotate each planar sketch of the gear given the gear helix angle and total gear height
-  helixCalc = acos(offsetHeight * tan(helixAngle) / (tipDiameter / 2))
+  helixCalc = acos(helixRatio)
 
   // Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter
   return startSketchOn(offsetPlane(XY, offset = offsetHeight))
@@ -42,7 +44,10 @@ fn gearProfile(nTeeth: number(Count), module: number(Length), pressureAngle: num
     |> close()
 }
 
-/// A helical gear.
+/// A helical gear (like a spur gear, but the teeth are cut at an angle to the axis).
+///
+/// The gear will be placed at (0, 0, 0) in the global scene, and extruded up the Z axis.
+/// Use `translate()` and `rotate()` to move it around once it's created.
 ///```kcl
 /// // Basic helical gear example.
 ///
@@ -106,8 +111,9 @@ export fn helical(nTeeth: number(Count),
   baseRadius = baseDiameter / 2
   tipDiameter = pitchDiameter + 2 * module
 
-  // Compute twist angle so the tooth helix matches helixAngle over the gear height
-  twistAngle = 360 * gearHeight * tan(helixAngle) / (3.14 * pitchDiameter)
+  // Compute twist angle so the tooth helix matches helixAngle over the gear height.
+  heightToPitchRatio = (gearHeight / pitchDiameter): number(_)
+  twistAngle = (360deg * heightToPitchRatio * tan(helixAngle) / PI): number(deg)
 
   helicalGear = gearProfile(nTeeth, module, pressureAngle, helixAngle, offsetHeight = 0)
     |> extrude(length = gearHeight, twistAngle, twistAngleStep = 0)
@@ -115,7 +121,10 @@ export fn helical(nTeeth: number(Count),
   return helicalGear
 }
 
-/// A spur gear.
+/// A spur gear (like a helical gear, with a helix angle of 0).
+///
+/// The gear will be placed at (0, 0, 0) in the global scene, and extruded up the Z axis.
+/// Use `translate()` and `rotate()` to move it around once it's created.
 ///```kcl
 /// // Basic example of a spur gear.
 ///
@@ -149,7 +158,10 @@ export fn spur(
   return helicalGear
 }
 
-/// A herringbone gear.
+/// A herringbone gear (like a helical gear that reverses direction halfway up the axis)
+///
+/// The gear will be placed at (0, 0, 0) in the global scene, and extruded up the Z axis.
+/// Use `translate()` and `rotate()` to move it around once it's created.
 ///```kcl
 /// // Basic herringbone gear example.
 ///
@@ -211,7 +223,10 @@ export fn herringbone(
   )
 }
 
-/// A ring gear.
+/// A ring gear (i.e. a gear with internal teeth).
+///
+/// The gear will be placed at (0, 0, 0) in the global scene, and extruded up the Z axis.
+/// Use `translate()` and `rotate()` to move it around once it's created.
 ///```kcl
 /// // Basic example of a ring gear.
 ///

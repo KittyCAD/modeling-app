@@ -3,7 +3,7 @@
 // Categories: Maker
 
 // Declare units and version
-@settings(defaultLengthUnit = m, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = m, kclVersion = 1.0)
 
 // Define global parameters for floor geometry and building layout
 floorCount = 17_

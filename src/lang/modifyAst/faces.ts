@@ -89,8 +89,6 @@ export function addShell({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  // Because of START and END untagged caps, we can't rely on last child here
-  // Haven't found a case where it would be needed anyway
   const result = buildSolidsAndFacesExprs(
     faces,
     artifactGraph,
@@ -98,7 +96,8 @@ export function addShell({
     wasmInstance,
     mNodeToEdit,
     {
-      lastChildLookup: false,
+      lastChildLookup: true,
+      artifactTypeFilter: ['sweep', 'compositeSolid'],
     }
   )
   if (err(result)) {
@@ -171,8 +170,7 @@ export function addDeleteFace({
     wasmInstance,
     mNodeToEdit,
     {
-      // Just like shell we need to keep this to false at least for now
-      lastChildLookup: false,
+      lastChildLookup: true,
       artifactTypeFilter: ['sweep', 'compositeSolid'],
     }
   )
@@ -249,6 +247,7 @@ export function addHole({
   counterboreDiameter,
   countersinkAngle,
   countersinkDiameter,
+  countersinkHeadClearance,
   holeBottom,
   drillPointAngle,
   nodeToEdit,
@@ -266,6 +265,7 @@ export function addHole({
   counterboreDiameter?: KclCommandValue
   countersinkAngle?: KclCommandValue
   countersinkDiameter?: KclCommandValue
+  countersinkHeadClearance?: KclCommandValue
   holeBottom: HoleBottom
   drillPointAngle?: KclCommandValue
   nodeToEdit?: PathToNode
@@ -373,13 +373,22 @@ export function addHole({
     countersinkAngle &&
     countersinkDiameter
   ) {
+    const countersinkArgs = [
+      createLabeledArg('angle', valueOrVariable(countersinkAngle)),
+      createLabeledArg('diameter', valueOrVariable(countersinkDiameter)),
+    ]
+    if (countersinkHeadClearance) {
+      countersinkArgs.push(
+        createLabeledArg(
+          'headClearance',
+          valueOrVariable(countersinkHeadClearance)
+        )
+      )
+    }
     holeTypeNode = createCallExpressionStdLibKw(
       'countersink',
       null,
-      [
-        createLabeledArg('angle', valueOrVariable(countersinkAngle)),
-        createLabeledArg('diameter', valueOrVariable(countersinkDiameter)),
-      ],
+      countersinkArgs,
       nonCodeMeta,
       modulePath
     )
@@ -463,6 +472,17 @@ export function addHole({
   ) {
     insertVariableAndOffsetPathToNode(
       countersinkDiameter,
+      modifiedAst,
+      mNodeToEdit
+    )
+  }
+  if (
+    countersinkHeadClearance &&
+    'variableName' in countersinkHeadClearance &&
+    countersinkHeadClearance.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(
+      countersinkHeadClearance,
       modifiedAst,
       mNodeToEdit
     )
@@ -608,6 +628,7 @@ export async function retrieveHoleTypeArgs(
   let counterboreDiameter: KclExpression | undefined
   let countersinkAngle: KclExpression | undefined
   let countersinkDiameter: KclExpression | undefined
+  let countersinkHeadClearance: KclExpression | undefined
   if (opArg?.value.type !== 'Object') {
     return new Error("Couldn't retrieve hole bottom arguments as an object")
   }
@@ -705,6 +726,29 @@ export async function retrieveHoleTypeArgs(
       return new Error("Couldn't retrieve countersinkDiameter argument")
     }
     countersinkDiameter = diameterResult
+
+    if ('headClearance' in holeTypeValue) {
+      if (holeTypeValue.headClearance?.type !== 'Number') {
+        return new Error("Couldn't retrieve countersinkHeadClearance argument")
+      }
+
+      const headClearanceStr = formatNumberValue(
+        holeTypeValue.headClearance.value,
+        holeTypeValue.headClearance.ty,
+        instance
+      )
+      if (err(headClearanceStr)) {
+        return new Error("Couldn't format countersinkHeadClearance argument")
+      }
+      const headClearanceResult = await stringToKclExpression(
+        headClearanceStr,
+        providedRustContext!
+      )
+      if (err(headClearanceResult) || 'errors' in headClearanceResult) {
+        return new Error("Couldn't retrieve countersinkHeadClearance argument")
+      }
+      countersinkHeadClearance = headClearanceResult
+    }
   } else {
     return new Error(
       "Couldn't retrieve holeType argument: couldn't determine type"
@@ -717,6 +761,7 @@ export async function retrieveHoleTypeArgs(
     counterboreDiameter,
     countersinkAngle,
     countersinkDiameter,
+    countersinkHeadClearance,
   }
 }
 

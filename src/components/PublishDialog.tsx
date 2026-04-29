@@ -192,7 +192,7 @@ export function PublishDialog({
                   setHasEditedTitle(true)
                   setTitle(event.target.value)
                 }}
-                placeholder="My awesome CAD project"
+                placeholder="Industrial Robot Arm"
                 aria-invalid={hasTriedSubmit && !titleIsValid}
                 className={`mt-2 w-full rounded border bg-chalkboard-10/90 px-2.5 py-2 text-sm text-chalkboard-100 placeholder:text-chalkboard-60 focus:outline-none focus-visible:outline-appForeground dark:bg-chalkboard-90/80 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-40 ${
                   hasTriedSubmit && !titleIsValid
@@ -324,7 +324,7 @@ export function PublishDialog({
           </section>
 
           <section className="border-t border-chalkboard-20/70 pt-4 dark:border-chalkboard-80/70">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4 md:gap-6">
               <div className="min-w-0 flex-1">
                 <p className="text-xs leading-5 text-chalkboard-60 dark:text-chalkboard-40">
                   {lastSubmittedText ? (
@@ -369,7 +369,11 @@ export function PublishDialog({
                 Element="button"
                 type="submit"
                 disabled={isSubmitting || publishDisabled}
-                className="shrink-0 self-end whitespace-nowrap py-0.5 sm:self-auto"
+                iconStart={{
+                  icon: 'share',
+                  bgClassName: '!bg-transparent',
+                }}
+                className="shrink-0 self-end whitespace-nowrap py-1 pl-0.5 pr-1.5 sm:self-auto !rounded-md"
               >
                 {isSubmitting
                   ? 'Submitting...'

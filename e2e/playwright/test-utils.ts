@@ -739,7 +739,7 @@ type makeTemplateReturn = {
   ) => makeTemplateReturn
 }
 
-const escapeRegExp = (string: string) => {
+export const escapeRegExp = (string: string) => {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // $& means the whole matched string
 }
 
@@ -841,8 +841,16 @@ export const doExport = async (
   rootDir: string,
   page: Page,
   cmdBar: CmdBarFixture,
+  testInfo: TestInfo,
   exportFrom: 'dropdown' | 'sidebarButton' | 'commandBar' = 'dropdown'
 ): Promise<Paths> => {
+  const relPathToSpec = path.relative(testInfo.project.testDir, testInfo.file)
+  const specSubdir = path.dirname(relPathToSpec)
+  const snapshotsDirName = `${path.basename(testInfo.file)}-snapshots`
+  const exportFolder =
+    specSubdir === '.' || specSubdir === ''
+      ? path.join(testInfo.project.testDir, snapshotsDirName)
+      : path.join(testInfo.project.testDir, specSubdir, snapshotsDirName)
   if (exportFrom === 'dropdown') {
     await page.getByTestId('project-sidebar-toggle').click()
 
@@ -897,9 +905,12 @@ export const doExport = async (
 
   // Handle download
   const downloadLocationer = (extra = '', isImage = false) =>
-    `./e2e/playwright/export-snapshots/${output.type}-${
-      'storage' in output ? output.storage : ''
-    }${extra}.${isImage ? 'png' : output.type}`
+    path.join(
+      exportFolder,
+      `${output.type}-${'storage' in output ? output.storage : ''}${extra}.${
+        isImage ? 'png' : output.type
+      }`
+    )
   const downloadLocation = downloadLocationer()
 
   if (output.type === 'step') {
@@ -947,6 +958,13 @@ export async function setup(
   page: Page,
   testInfo?: TestInfo
 ) {
+  const testProjectSettings =
+    TEST_SETTINGS.project &&
+    typeof TEST_SETTINGS.project === 'object' &&
+    !isArray(TEST_SETTINGS.project)
+      ? TEST_SETTINGS.project
+      : undefined
+
   await page.addInitScript(
     async ({
       token,
@@ -985,12 +1003,13 @@ export async function setup(
               ...TEST_SETTINGS.app?.appearance,
               theme: 'dark',
             },
-            ...TEST_SETTINGS.project,
             onboarding_status: 'dismissed',
           },
           project: {
-            ...TEST_SETTINGS.project,
-            directory: TEST_SETTINGS.project?.directory,
+            ...testProjectSettings,
+            ...(typeof testProjectSettings?.directory === 'string'
+              ? { directory: testProjectSettings.directory }
+              : {}),
           },
         },
       }),
@@ -1211,10 +1230,11 @@ export async function pollEditorLinesSelectedLength(page: Page, lines: number) {
     .toBe(lines)
 }
 
-// TODO: fix type to allow for meta.id in configuration
-export function settingsToToml(
-  settings: DeepPartial<Configuration | { settings: { meta: { id: string } } }>
-) {
+type SettingsTomlConfiguration = {
+  settings?: Record<string, unknown>
+}
+
+export function settingsToToml(settings: SettingsTomlConfiguration) {
   // eslint-disable-next-line no-restricted-syntax
   return TOML.stringify(settings as any)
 }

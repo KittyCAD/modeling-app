@@ -20,7 +20,7 @@ import {
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
-  getCoincidentSegmentsForSnapTarget,
+  applyConstraintsForSnapTarget,
   type SnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import {
@@ -620,11 +620,14 @@ export async function addDraftPointActor({
     return { error: 'Failed to create draft point' }
   }
 
-  const coincidentSegments = getCoincidentSegmentsForSnapTarget(
-    pointId,
-    snapTarget
-  )
-  if (coincidentSegments === null) {
+  const snapResult = await applyConstraintsForSnapTarget({
+    segmentId: pointId,
+    target: snapTarget,
+    rustContext,
+    sketchId,
+    settings,
+  })
+  if (snapResult.result === null) {
     return {
       ...result,
       pointId,
@@ -632,23 +635,13 @@ export async function addDraftPointActor({
     }
   }
 
-  const snapResult = await rustContext.addConstraint(
-    0,
-    sketchId,
-    {
-      type: 'Coincident',
-      segments: coincidentSegments,
-    },
-    settings
-  )
-
   return {
-    kclSource: snapResult.kclSource,
+    kclSource: snapResult.result.kclSource,
     sceneGraphDelta: {
-      ...snapResult.sceneGraphDelta,
+      ...snapResult.result.sceneGraphDelta,
       new_objects: [
         ...result.sceneGraphDelta.new_objects,
-        ...snapResult.sceneGraphDelta.new_objects,
+        ...snapResult.newObjectIds,
       ],
     },
     pointId,
@@ -807,23 +800,17 @@ export async function finalizeArcActor({
   let latestKclSource = editResult.kclSource
   let latestSceneGraphDelta = editResult.sceneGraphDelta
 
-  const endCoincidentSegments = getCoincidentSegmentsForSnapTarget(
-    clickedArcPointId,
-    endSnapTarget
-  )
-  if (endCoincidentSegments !== null) {
-    const snapResult = await rustContext.addConstraint(
-      0,
-      sketchId,
-      {
-        type: 'Coincident',
-        segments: endCoincidentSegments,
-      },
-      settings
-    )
-    latestKclSource = snapResult.kclSource
-    latestSceneGraphDelta = snapResult.sceneGraphDelta
-    newObjects.push(...snapResult.sceneGraphDelta.new_objects)
+  const endSnapResult = await applyConstraintsForSnapTarget({
+    segmentId: clickedArcPointId,
+    target: endSnapTarget,
+    rustContext,
+    sketchId,
+    settings,
+  })
+  if (endSnapResult.result !== null) {
+    latestKclSource = endSnapResult.result.kclSource
+    latestSceneGraphDelta = endSnapResult.result.sceneGraphDelta
+    newObjects.push(...endSnapResult.newObjectIds)
   }
 
   const constraintResult = await rustContext.addConstraint(

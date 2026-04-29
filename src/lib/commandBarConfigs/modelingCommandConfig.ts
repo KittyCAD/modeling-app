@@ -77,6 +77,12 @@ import {
 } from '@src/lang/modifyAst/boolean'
 import { addHelix } from '@src/lang/modifyAst/geometry'
 import {
+  addHelicalGear,
+  addHerringboneGear,
+  addRingGear,
+  addSpurGear,
+} from '@src/lang/modifyAst/gears'
+import {
   addAppearance,
   addClone,
   addRotate,
@@ -262,6 +268,7 @@ export type ModelingCommandSchema = {
     counterboreDiameter?: KclCommandValue
     countersinkAngle?: KclCommandValue
     countersinkDiameter?: KclCommandValue
+    countersinkHeadClearance?: KclCommandValue
     holeBottom: HoleBottom
     drillPointAngle?: KclCommandValue
   }
@@ -304,6 +311,45 @@ export type ModelingCommandSchema = {
     radius?: KclCommandValue // axis or edge modes only
     length?: KclCommandValue // axis or edge modes only
     ccw?: boolean // optional boolean argument, default value to false
+  }
+  'Helical Gear': {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // KCL gear::helical arguments
+    nTeeth: KclCommandValue
+    module: KclCommandValue
+    pressureAngle: KclCommandValue
+    helixAngle: KclCommandValue
+    gearHeight: KclCommandValue
+  }
+  'Herringbone Gear': {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // KCL gear::herringbone arguments
+    nTeeth: KclCommandValue
+    module: KclCommandValue
+    pressureAngle: KclCommandValue
+    gearHeight: KclCommandValue
+    helixAngle: KclCommandValue
+  }
+  'Spur Gear': {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // KCL gear::spur arguments
+    nTeeth: KclCommandValue
+    module: KclCommandValue
+    pressureAngle: KclCommandValue
+    gearHeight: KclCommandValue
+  }
+  'Ring Gear': {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // KCL gear::ring arguments
+    nTeeth: KclCommandValue
+    module: KclCommandValue
+    pressureAngle: KclCommandValue
+    helixAngle: KclCommandValue
+    gearHeight: KclCommandValue
   }
   'change tool': {
     tool: SketchTool
@@ -1202,6 +1248,15 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           ),
         defaultValue: '2',
       },
+      countersinkHeadClearance: {
+        inputType: 'kcl',
+        required: false,
+        hidden: (context) =>
+          !['countersink'].includes(
+            context.argumentsToSubmit.holeType as string
+          ),
+        defaultValue: '0',
+      },
       holeBottom: {
         inputType: 'options',
         required: true,
@@ -1549,6 +1604,233 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         displayName: 'CounterClockWise',
         inputType: 'boolean',
         required: false,
+      },
+    },
+  },
+  'Helical Gear': {
+    description: 'Create a helical gear.',
+    icon: 'gear',
+    needsReview: true,
+    status: 'experimental',
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addHelicalGear({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Helical Gear']),
+        ast: kclManager.ast,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      nTeeth: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '10',
+      },
+      module: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '2',
+      },
+      pressureAngle: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '20deg',
+      },
+      helixAngle: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '35deg',
+      },
+      gearHeight: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '7',
+      },
+    },
+  },
+  'Herringbone Gear': {
+    description: 'Create a herringbone gear.',
+    icon: 'gear',
+    needsReview: true,
+    status: 'experimental',
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addHerringboneGear({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Herringbone Gear']),
+        ast: kclManager.ast,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      nTeeth: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '10',
+      },
+      module: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '2',
+      },
+      pressureAngle: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '20deg',
+      },
+      gearHeight: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '5',
+      },
+      helixAngle: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '40deg',
+      },
+    },
+  },
+  'Spur Gear': {
+    description: 'Create a spur gear.',
+    icon: 'gear',
+    needsReview: true,
+    status: 'experimental',
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addSpurGear({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Spur Gear']),
+        ast: kclManager.ast,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      nTeeth: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '21',
+      },
+      module: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '1.5',
+      },
+      pressureAngle: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '14deg',
+      },
+      gearHeight: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '6',
+      },
+    },
+  },
+  'Ring Gear': {
+    description: 'Create a ring gear.',
+    icon: 'gear',
+    needsReview: true,
+    status: 'experimental',
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addRingGear({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Ring Gear']),
+        ast: kclManager.ast,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      nTeeth: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '40',
+      },
+      module: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '1.5',
+      },
+      pressureAngle: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '14deg',
+      },
+      helixAngle: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '-25deg',
+      },
+      gearHeight: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '5',
       },
     },
   },
