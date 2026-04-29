@@ -27,6 +27,7 @@ pub(crate) const SETTINGS_UNIT_LENGTH: &str = "defaultLengthUnit";
 pub(crate) const SETTINGS_UNIT_ANGLE: &str = "defaultAngleUnit";
 pub(crate) const SETTINGS_VERSION: &str = "kclVersion";
 pub(crate) const SETTINGS_EXPERIMENTAL_FEATURES: &str = "experimentalFeatures";
+pub(crate) const SETTINGS_SKETCH_V1: &str = "sketchv1";
 
 pub(super) const NO_PRELUDE: &str = "no_std";
 pub(crate) const DEPRECATED: &str = "deprecated";

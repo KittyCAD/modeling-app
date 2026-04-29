@@ -2053,6 +2053,20 @@ sketch000 = startSketchOn(XY)
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_opt_out_of_sketch_v1() {
+    let code = r#"@settings(sketchv1 = deny)
+sketch000 = startSketchOn(XY)
+"#;
+
+    let ctx = kcl_lib::ExecutorContext::new_mock(None).await;
+    let mut exec_state = kcl_lib::ExecState::new(&ctx);
+    let program = kcl_lib::Program::parse_no_errs(code).unwrap();
+    let err = ctx.run(&program, &mut exec_state).await.unwrap_err();
+    assert!(err.error.message().contains("sketch v1 function"), "{err}");
+    assert!(err.error.message().contains("@settings(sketchv1 = deny)"), "{err}");
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_ensure_nothing_left_in_batch_multi_file() {
     // Get the current working directory.
     let current_dir = std::env::current_dir().unwrap();

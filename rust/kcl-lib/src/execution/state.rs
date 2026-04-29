@@ -1014,6 +1014,7 @@ pub struct MetaSettings {
     pub default_length_units: UnitLength,
     pub default_angle_units: UnitAngle,
     pub experimental_features: annotations::WarningLevel,
+    pub sketch_v1: annotations::WarningLevel,
     pub kcl_version: String,
 }
 
@@ -1023,12 +1024,24 @@ impl Default for MetaSettings {
             default_length_units: UnitLength::Millimeters,
             default_angle_units: UnitAngle::Degrees,
             experimental_features: annotations::WarningLevel::Deny,
+            sketch_v1: annotations::WarningLevel::Allow,
             kcl_version: "1.0".to_owned(),
         }
     }
 }
 
 impl MetaSettings {
+    pub(crate) fn expected_settings_keys() -> String {
+        [
+            annotations::SETTINGS_UNIT_LENGTH,
+            annotations::SETTINGS_UNIT_ANGLE,
+            annotations::SETTINGS_VERSION,
+            annotations::SETTINGS_EXPERIMENTAL_FEATURES,
+            annotations::SETTINGS_SKETCH_V1,
+        ]
+        .join(", ")
+    }
+
     pub(crate) fn update_from_annotation(
         &mut self,
         annotation: &crate::parsing::ast::types::Node<Annotation>,
@@ -1069,12 +1082,25 @@ impl MetaSettings {
                     })?;
                     self.experimental_features = value;
                 }
+                annotations::SETTINGS_SKETCH_V1 => {
+                    let value = annotations::expect_ident(&p.inner.value)?;
+                    let value = annotations::WarningLevel::from_str(value).map_err(|_| {
+                        KclError::new_semantic(KclErrorDetails::new(
+                            format!(
+                                "Invalid value for {} settings property, expected one of: {}",
+                                annotations::SETTINGS_SKETCH_V1,
+                                annotations::WARN_LEVELS.join(", ")
+                            ),
+                            annotation.as_source_ranges(),
+                        ))
+                    })?;
+                    self.sketch_v1 = value;
+                }
                 name => {
                     return Err(KclError::new_semantic(KclErrorDetails::new(
                         format!(
-                            "Unexpected settings key: `{name}`; expected one of `{}`, `{}`",
-                            annotations::SETTINGS_UNIT_LENGTH,
-                            annotations::SETTINGS_UNIT_ANGLE
+                            "Unexpected settings key: `{name}`; expected one of: {}",
+                            Self::expected_settings_keys(),
                         ),
                         vec![annotation.as_source_range()],
                     )));

@@ -3526,6 +3526,48 @@ startSketchOn(XY)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn sketch_v1_opt_out() {
+        let code = r#"
+startSketchOn(XY)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let issues = result.exec_state.issues();
+        assert!(issues.is_empty(), "issues={issues:#?}");
+
+        let code = r#"@settings(sketchv1 = allow)
+startSketchOn(XY)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let issues = result.exec_state.issues();
+        assert!(issues.is_empty(), "issues={issues:#?}");
+
+        let code = r#"@settings(sketchv1 = warn)
+startSketchOn(XY)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let issues = result.exec_state.issues();
+        assert_eq!(issues.len(), 1);
+        assert_eq!(issues[0].severity, Severity::Warning);
+        let msg = &issues[0].message;
+        assert!(msg.contains("sketch v1 function"), "found {msg}");
+
+        let code = r#"@settings(sketchv1 = deny)
+startSketchOn(XY)
+"#;
+        let err = parse_execute(code).await.unwrap_err();
+        let msg = err.message();
+        assert!(msg.contains("sketch v1 function"), "found {msg}");
+        assert!(msg.contains("@settings(sketchv1 = deny)"), "found {msg}");
+
+        let code = r#"@settings(sketchv1 = deny)
+line(end = [1, 0])
+"#;
+        let err = parse_execute(code).await.unwrap_err();
+        let msg = err.message();
+        assert!(msg.contains("`line` is a sketch v1 function"), "found {msg}");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn experimental_parameter() {
         let code = r#"
 fn inc(@x, @(experimental = true) amount? = 1) {

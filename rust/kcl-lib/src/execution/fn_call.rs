@@ -6,6 +6,7 @@ use crate::NodePath;
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
+use crate::errors::Severity;
 use crate::execution::BodyType;
 use crate::execution::ExecState;
 use crate::execution::ExecutorContext;
@@ -18,6 +19,7 @@ use crate::execution::StatementKind;
 use crate::execution::TagEngineInfo;
 use crate::execution::TagIdentifier;
 use crate::execution::annotations;
+use crate::execution::annotations::WarningLevel;
 use crate::execution::cad_op::Group;
 use crate::execution::cad_op::OpArg;
 use crate::execution::cad_op::OpKclValue;
@@ -298,6 +300,7 @@ impl FunctionSource {
                 callsite,
             );
         }
+        check_sketch_v1_opt_out(self, fn_name.as_deref(), exec_state, callsite)?;
 
         let args = type_check_params_kw(fn_name.as_deref(), self, args, exec_state)?;
 
@@ -657,6 +660,79 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
         _ => {}
     }
     Ok(())
+}
+
+const SKETCH_V1_STD_FNS: &[&str] = &[
+    "startSketchOn",
+    "startProfile",
+    "rectangle",
+    "circle",
+    "ellipse",
+    "circleThreePoint",
+    "polygon",
+    "involuteCircular",
+    "line",
+    "xLine",
+    "yLine",
+    "angledLine",
+    "angledLineThatIntersects",
+    "close",
+    "arc",
+    "tangentialArc",
+    "bezierCurve",
+    "subtract2d",
+    "conic",
+    "parabolic",
+    "hyperbolic",
+    "elliptic",
+];
+
+fn sketch_v1_std_fn_name(fn_def: &FunctionSource) -> Option<&str> {
+    let props = fn_def.std_props.as_ref()?;
+    let name = props.name.strip_prefix("std::sketch::")?;
+    SKETCH_V1_STD_FNS.contains(&name).then_some(name)
+}
+
+/// Returns error if the user has opted out of sketch v1,
+/// but is trying to use sketch v1 functions.
+fn check_sketch_v1_opt_out(
+    fn_def: &FunctionSource,
+    called_name: Option<&str>,
+    exec_state: &mut ExecState,
+    callsite: SourceRange,
+) -> Result<(), KclError> {
+    if exec_state.mod_local.inside_stdlib {
+        return Ok(());
+    }
+
+    let Some(sketch_v1_name) = sketch_v1_std_fn_name(fn_def) else {
+        return Ok(());
+    };
+
+    let is_err = match exec_state.mod_local.settings.sketch_v1 {
+        WarningLevel::Allow => return Ok(()),
+        WarningLevel::Warn => false,
+        WarningLevel::Deny => true,
+    };
+
+    let display_name = called_name.unwrap_or(sketch_v1_name);
+    let message = format!(
+        "`{display_name}` is a sketch v1 function, but this file has `@settings(sketchv1 = {})`. Use sketch blocks instead.",
+        exec_state.mod_local.settings.sketch_v1.as_str()
+    );
+
+    if is_err {
+        Err(KclError::new_semantic(KclErrorDetails::new(message, vec![callsite])))
+    } else {
+        exec_state.global.issues.push(CompilationIssue {
+            source_range: callsite,
+            message,
+            suggestion: None,
+            severity: Severity::Warning,
+            tag: crate::errors::Tag::None,
+        });
+        Ok(())
+    }
 }
 
 fn type_err_str(expected: &Type, found: &KclValue, source_range: &SourceRange, exec_state: &mut ExecState) -> String {

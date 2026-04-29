@@ -5063,6 +5063,19 @@ startSketchOn(XY)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_get_meta_settings_sketch_v1() {
+        let some_program_string = r#"@settings(sketchv1 = deny)
+
+startSketchOn(XY)"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+        let result = program.meta_settings().unwrap();
+        assert!(result.is_some());
+        let meta_settings = result.unwrap();
+
+        assert_eq!(meta_settings.sketch_v1, WarningLevel::Deny);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_change_meta_settings_preserves_comments() {
         let code = r#"// Title
 
