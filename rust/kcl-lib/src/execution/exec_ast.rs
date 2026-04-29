@@ -863,6 +863,13 @@ impl ExecutorContext {
                 Ok(id)
             }
             ImportPath::Std { .. } => {
+                if resolved_path.is_solver_module() && exec_state.mod_local.sketch_block.is_none() {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!("The `{resolved_path}` module is only available inside sketch blocks."),
+                        vec![source_range],
+                    )));
+                }
+
                 if let Some(id) = exec_state.id_for_module(resolved_path) {
                     return Ok(id);
                 }
@@ -3426,7 +3433,7 @@ impl Node<BinaryExpression> {
                                         sketch_var_initial_value(&sketch_vars, center.vars.y, exec_state, range)?;
 
                                     // Get the hypotenuse between the two points, the radius
-                                    let radius_initial_value = (start_x - center_x).hypot(start_y - center_y);
+                                    let radius_initial_value = libm::hypot(start_x - center_x, start_y - center_y);
 
                                     let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
                                         let message =
@@ -5011,6 +5018,25 @@ s = sketch(on = XY) {
         // sketch block fields.
         assert!(!value.contains_key("line"));
         assert!(!value.contains_key("coincident"));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn solver_module_is_not_available_outside_sketch_blocks() {
+        let err = parse_execute("a = solver::ORIGIN").await.unwrap_err();
+        assert!(err.message().contains("solver"), "Error message: '{}'", err.message());
+
+        let err = parse_execute(
+            r#"@settings(experimentalFeatures = allow)
+
+import "std::solver""#,
+        )
+        .await
+        .unwrap_err();
+        assert!(
+            err.message().contains("only available inside sketch blocks"),
+            "Error message: '{}'",
+            err.message()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]

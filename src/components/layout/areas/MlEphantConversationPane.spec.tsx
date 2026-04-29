@@ -25,6 +25,7 @@ vi.mock('@src/lib/boot', () => ({
 
 import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
 import type { Conversation } from '@src/machines/mlEphantManagerMachine'
+import { MlEphantManagerTransitions } from '@src/machines/mlEphantManagerMachine'
 
 const completedConversation: Conversation = {
   exchanges: [
@@ -45,16 +46,22 @@ const completedConversation: Conversation = {
   ],
 }
 
-const createFakeActor = (conversation = completedConversation) => {
+const createFakeActor = ({
+  conversation = completedConversation,
+  value = 'ready',
+}: {
+  conversation?: Conversation
+  value?: string
+} = {}) => {
   const snapshot = {
-    value: 'ready',
+    value,
     context: {
       abruptlyClosed: false,
       awaitingResponse: true,
       conversation,
       conversationId: 'conversation-id',
     },
-    matches: () => false,
+    matches: (state: string) => state === value,
   }
 
   return {
@@ -66,11 +73,15 @@ const createFakeActor = (conversation = completedConversation) => {
   }
 }
 
-const createFakeSystemIOActor = () => ({
+const createFakeSystemIOActor = ({
+  mlEphantConversations = undefined,
+}: {
+  mlEphantConversations?: Map<string, string>
+} = {}) => ({
   getSnapshot: () => ({
     value: 'idle',
     context: {
-      mlEphantConversations: undefined,
+      mlEphantConversations,
     },
   }),
   subscribe: () => ({
@@ -79,12 +90,22 @@ const createFakeSystemIOActor = () => ({
   send: vi.fn(),
 })
 
-const renderPane = () => {
+const renderPane = ({
+  mlEphantManagerActor = createFakeActor(),
+  systemIOActor = createFakeSystemIOActor(),
+  theProject = undefined,
+  settingsMetaId = uuidNIL,
+}: {
+  mlEphantManagerActor?: ReturnType<typeof createFakeActor>
+  systemIOActor?: ReturnType<typeof createFakeSystemIOActor>
+  theProject?: any
+  settingsMetaId?: string
+} = {}) => {
   return render(
     <MemoryRouter>
       <MlEphantConversationPane
-        mlEphantManagerActor={createFakeActor() as any}
-        systemIOActor={createFakeSystemIOActor() as any}
+        mlEphantManagerActor={mlEphantManagerActor as any}
+        systemIOActor={systemIOActor as any}
         kclManager={
           {
             code: '',
@@ -94,7 +115,7 @@ const renderPane = () => {
             artifactGraph: {},
           } as any
         }
-        theProject={undefined}
+        theProject={theProject}
         contextModeling={
           {
             selectionRanges: {
@@ -110,7 +131,7 @@ const renderPane = () => {
           {
             meta: {
               id: {
-                current: uuidNIL,
+                current: settingsMetaId,
               },
             },
             app: {
@@ -158,5 +179,92 @@ describe('MlEphantConversationPane', () => {
     } finally {
       warnSpy.mockRestore()
     }
+  })
+
+  test('retries cache setup when the project becomes available after settings load', () => {
+    const mlEphantManagerActor = createFakeActor({
+      conversation: undefined,
+      value: 'await',
+    })
+    const systemIOActor = createFakeSystemIOActor({
+      mlEphantConversations: new Map([['project-id', 'conversation-id']]),
+    })
+
+    const { rerender } = renderPane({
+      mlEphantManagerActor,
+      systemIOActor,
+      settingsMetaId: 'project-id',
+      theProject: undefined,
+    })
+
+    expect(mlEphantManagerActor.send).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+      })
+    )
+
+    rerender(
+      <MemoryRouter>
+        <MlEphantConversationPane
+          mlEphantManagerActor={mlEphantManagerActor as any}
+          systemIOActor={systemIOActor as any}
+          kclManager={
+            {
+              code: '',
+              execState: {
+                filenames: [],
+              },
+              artifactGraph: {},
+            } as any
+          }
+          theProject={
+            {
+              name: 'sample-project',
+              path: '/tmp/sample-project',
+            } as any
+          }
+          contextModeling={
+            {
+              selectionRanges: {
+                graphSelections: [],
+                otherSelections: [],
+              },
+            } as any
+          }
+          sendModeling={vi.fn() as any}
+          sendBillingUpdate={vi.fn()}
+          loaderFile={undefined}
+          settings={
+            {
+              meta: {
+                id: {
+                  current: 'project-id',
+                },
+              },
+              app: {
+                projectDirectory: {
+                  current: '',
+                },
+                zookeeperMode: {
+                  current: 'fast',
+                },
+              },
+              modeling: {
+                useSketchSolveMode: {
+                  current: false,
+                },
+              },
+            } as any
+          }
+        />
+      </MemoryRouter>
+    )
+
+    expect(mlEphantManagerActor.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        conversationId: 'conversation-id',
+      })
+    )
   })
 })

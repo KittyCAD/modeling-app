@@ -294,7 +294,12 @@ export const machine = setup({
                     kclManager: context.kclManager,
                     sketchId: context.sketchId,
                     draft: context.draft,
-                    rect: { min, max },
+                    mode: context.rectOriginMode,
+                    startPoint: start,
+                    currentPoint:
+                      context.rectOriginMode === 'center'
+                        ? [max[0], max[1]]
+                        : end,
                   })
                 }
               }

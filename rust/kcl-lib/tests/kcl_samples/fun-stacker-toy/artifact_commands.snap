@@ -68,8 +68,8 @@ description: Artifact commands fun-stacker-toy.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.0000000000035947015091229496,
-          "y": -0.0000000000007821447461775816,
+          "x": -0.0000000000035960356381261147,
+          "y": -0.0000000000007824061354967641,
           "z": 0.0
         }
       }
@@ -90,7 +90,7 @@ description: Artifact commands fun-stacker-toy.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.000000000013283645349234815,
+            "x": -0.000000000013283564750900006,
             "y": 304.79999999999706,
             "z": 0.0
           },
@@ -105,8 +105,8 @@ description: Artifact commands fun-stacker-toy.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.000000000002499540824397522,
-          "y": 0.0000000000005907904138505019,
+          "x": 0.0000000000024954578390463026,
+          "y": 0.0000000000005902702747435781,
           "z": 0.0
         }
       }
@@ -121,7 +121,7 @@ description: Artifact commands fun-stacker-toy.kcl
           "type": "line",
           "end": {
             "x": 82.5500000000086,
-            "y": 0.000000000001958828538550557,
+            "y": 0.0000000000019580495248285065,
             "z": 0.0
           },
           "relative": false
@@ -135,7 +135,7 @@ description: Artifact commands fun-stacker-toy.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.00000000002297258918008082,
+          "x": -0.000000000022971093854415573,
           "y": 304.7999999999949,
           "z": 0.0
         }
@@ -150,7 +150,7 @@ description: Artifact commands fun-stacker-toy.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 38.09999999996734,
+            "x": 38.099999999967345,
             "y": 304.79999999998944,
             "z": 0.0
           },
@@ -165,8 +165,8 @@ description: Artifact commands fun-stacker-toy.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 51.052055040826126,
-          "y": 291.8448773390141,
+          "x": 51.052055141311335,
+          "y": 291.8448773322443,
           "z": 0.0
         }
       }
@@ -180,8 +180,8 @@ description: Artifact commands fun-stacker-toy.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 51.05205504081701,
-            "y": 279.1448773390131,
+            "x": 51.05205514130223,
+            "y": 279.14487733224325,
             "z": 0.0
           },
           "relative": false
@@ -197,17 +197,17 @@ description: Artifact commands fun-stacker-toy.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 1303.780055032995,
-            "y": 279.14977102447983
+            "x": 1303.7800551334824,
+            "y": 279.14977058487074
           },
-          "radius": 1252.7280000017365,
+          "radius": 1252.7280000017367,
           "start": {
             "unit": "degrees",
-            "value": -179.99977617844934
+            "value": -179.99977619824602
           },
           "end": {
             "unit": "degrees",
-            "value": -167.12448690671653
+            "value": -167.12448692734142
           },
           "relative": false
         }
@@ -220,8 +220,8 @@ description: Artifact commands fun-stacker-toy.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 121.65655395005528,
-          "y": 8.196271736871008,
+          "x": 121.65655373036554,
+          "y": 8.196271489999868,
           "z": 0.0
         }
       }
@@ -235,17 +235,17 @@ description: Artifact commands fun-stacker-toy.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 102.9698813235907,
+            "x": 102.96988133118079,
             "y": 25.400000000002027
           },
-          "radius": 25.400000000006173,
+          "radius": 25.40000000000619,
           "start": {
             "unit": "radians",
-            "value": -0.7441029624830875
+            "value": -0.7441029756941677
           },
           "end": {
             "unit": "radians",
-            "value": 5.5390823446964985
+            "value": 5.539082331485418
           },
           "relative": false
         }
@@ -258,8 +258,8 @@ description: Artifact commands fun-stacker-toy.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 116.93414720030711,
-          "y": 65.51626536757237,
+          "x": 116.93414721460236,
+          "y": 65.51626534335946,
           "z": 0.0
         }
       }
@@ -273,17 +273,17 @@ description: Artifact commands fun-stacker-toy.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 93.49785230843787,
-            "y": 75.30912407907451
+            "x": 93.49785233429947,
+            "y": 75.30912408254217
           },
-          "radius": 25.400000000041327,
+          "radius": 25.400000000041317,
           "start": {
             "unit": "radians",
-            "value": -0.3957990849784951
+            "value": -0.3957990861595939
           },
           "end": {
             "unit": "radians",
-            "value": 5.8873862222010915
+            "value": 5.887386221019993
           },
           "relative": false
         }
@@ -296,8 +296,8 @@ description: Artifact commands fun-stacker-toy.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 111.39198711110404,
-          "y": 127.89951258075479,
+          "x": 111.39198715513992,
+          "y": 127.89951258936892,
           "z": 0.0
         }
       }
@@ -311,17 +311,17 @@ description: Artifact commands fun-stacker-toy.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 86.09926956950319,
-            "y": 125.56746640608688
+            "x": 86.09926961376384,
+            "y": 125.5674664122631
           },
-          "radius": 25.39999999999974,
+          "radius": 25.399999999999746,
           "start": {
             "unit": "radians",
-            "value": 0.09194232418413022
+            "value": 0.09194232428051832
           },
           "end": {
             "unit": "radians",
-            "value": 6.375127631363717
+            "value": 6.375127631460105
           },
           "relative": false
         }
@@ -334,8 +334,8 @@ description: Artifact commands fun-stacker-toy.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 105.92587526396652,
-          "y": 172.45749085117947,
+          "x": 105.92587532548406,
+          "y": 172.45749085072512,
           "z": 0.0
         }
       }
@@ -349,17 +349,17 @@ description: Artifact commands fun-stacker-toy.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 80.78680830253424,
-            "y": 176.08892477073505
+            "x": 80.78680836529053,
+            "y": 176.08892477885615
           },
-          "radius": 25.40000000006839,
+          "radius": 25.40000000006841,
           "start": {
             "unit": "radians",
-            "value": -0.1434614342068753
+            "value": -0.14346143454799565
           },
           "end": {
             "unit": "radians",
-            "value": 6.139723872972711
+            "value": 6.13972387263159
           },
           "relative": false
         }
@@ -372,8 +372,8 @@ description: Artifact commands fun-stacker-toy.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 100.45310194324722,
-          "y": 237.8098294628237,
+          "x": 100.45310201690138,
+          "y": 237.80982948803006,
           "z": 0.0
         }
       }
@@ -387,17 +387,17 @@ description: Artifact commands fun-stacker-toy.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 77.56956977581903,
-            "y": 226.78694619431798
+            "x": 77.5695698571357,
+            "y": 226.78694620361688
           },
-          "radius": 25.4000000001737,
+          "radius": 25.400000000173726,
           "start": {
             "unit": "radians",
-            "value": 0.4488966732856384
+            "value": 0.4488966739807865
           },
           "end": {
             "unit": "radians",
-            "value": 6.7320819804652245
+            "value": 6.7320819811603725
           },
           "relative": false
         }
@@ -410,8 +410,8 @@ description: Artifact commands fun-stacker-toy.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 51.05205502406785,
-          "y": 291.84487733901574,
+          "x": 51.05205512455311,
+          "y": 291.8448773322459,
           "z": 0.0
         }
       }
@@ -425,17 +425,17 @@ description: Artifact commands fun-stacker-toy.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 38.0980550706251,
-            "y": 291.8460000865763
+            "x": 38.098055171109536,
+            "y": 291.8460000865668
           },
-          "radius": 12.954000002098063,
+          "radius": 12.954000002099479,
           "start": {
             "unit": "degrees",
-            "value": -0.004965933051504537
+            "value": -0.004965962952410047
           },
           "end": {
             "unit": "degrees",
-            "value": 89.99139754187252
+            "value": 89.99139798631698
           },
           "relative": false
         }

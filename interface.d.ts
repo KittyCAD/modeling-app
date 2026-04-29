@@ -6,6 +6,7 @@ import type path from 'path'
 import type { dialog, shell } from 'electron'
 import type { WebContentSendPayload } from 'menu/channels'
 import type { ZooLabel } from 'menu/roles'
+import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
 
 // Extend the interface with additional custom properties
 declare module 'electron' {
@@ -90,7 +91,10 @@ export interface IElectronAPI {
   onUpdateChecking: (callback: () => void) => Electron.IpcRenderer
   onUpdateNotAvailable: (callback: () => void) => Electron.IpcRenderer
   onUpdateDownloadStart: (
-    callback: (value: { version: string }) => void
+    callback: (value: AutoUpdateDownloadProgress) => void
+  ) => Electron.IpcRenderer
+  onUpdateDownloadProgress: (
+    callback: (value: AutoUpdateDownloadProgress) => void
   ) => Electron.IpcRenderer
   onUpdateDownloaded: (
     callback: (value: { version: string; releaseNotes: string }) => void

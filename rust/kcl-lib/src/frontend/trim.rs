@@ -379,6 +379,10 @@ fn rewrite_constraint_with_map(
                 .map(|id| rewrite_object_id(*id, rewrite_map))
                 .collect(),
         })),
+        Constraint::Midpoint(midpoint) => Some(Constraint::Midpoint(crate::frontend::sketch::Midpoint {
+            point: rewrite_object_id(midpoint.point, rewrite_map),
+            segment: rewrite_object_id(midpoint.segment, rewrite_map),
+        })),
         Constraint::Tangent(tangent) => Some(Constraint::Tangent(crate::frontend::sketch::Tangent {
             input: tangent
                 .input
@@ -943,12 +947,14 @@ pub fn project_point_onto_arc(point: Coords2d, arc_center: Coords2d, arc_start: 
             normalized_point - normalized_start
         } else {
             // Point is not on the arc, return closest endpoint
-            let dist_to_start = (normalized_point - normalized_start)
-                .abs()
-                .min(TAU - (normalized_point - normalized_start).abs());
-            let dist_to_end = (normalized_point - normalized_end)
-                .abs()
-                .min(TAU - (normalized_point - normalized_end).abs());
+            let dist_to_start = libm::fmin(
+                (normalized_point - normalized_start).abs(),
+                TAU - (normalized_point - normalized_start).abs(),
+            );
+            let dist_to_end = libm::fmin(
+                (normalized_point - normalized_end).abs(),
+                TAU - (normalized_point - normalized_end).abs(),
+            );
             return if dist_to_start < dist_to_end { 0.0 } else { 1.0 };
         }
     } else {
@@ -961,12 +967,14 @@ pub fn project_point_onto_arc(point: Coords2d, arc_center: Coords2d, arc_start: 
             }
         } else {
             // Point is not on the arc
-            let dist_to_start = (normalized_point - normalized_start)
-                .abs()
-                .min(TAU - (normalized_point - normalized_start).abs());
-            let dist_to_end = (normalized_point - normalized_end)
-                .abs()
-                .min(TAU - (normalized_point - normalized_end).abs());
+            let dist_to_start = libm::fmin(
+                (normalized_point - normalized_start).abs(),
+                TAU - (normalized_point - normalized_start).abs(),
+            );
+            let dist_to_end = libm::fmin(
+                (normalized_point - normalized_end).abs(),
+                TAU - (normalized_point - normalized_end).abs(),
+            );
             return if dist_to_start < dist_to_end { 0.0 } else { 1.0 };
         }
     };
@@ -2069,7 +2077,7 @@ fn find_termination_in_direction(
             let dist_from_intersection = if is_circle_segment {
                 let ccw = (candidate.t - intersection_t).rem_euclid(1.0);
                 let cw = (intersection_t - candidate.t).rem_euclid(1.0);
-                ccw.min(cw)
+                libm::fmin(ccw, cw)
             } else {
                 (candidate.t - intersection_t).abs()
             };
@@ -5179,6 +5187,10 @@ pub(crate) async fn execute_trim_operations_simple(
                     let should_migrate = match constraint {
                         Constraint::Parallel(parallel) => parallel.lines.contains(segment_id),
                         Constraint::Perpendicular(perpendicular) => perpendicular.lines.contains(segment_id),
+                        Constraint::Midpoint(midpoint) => {
+                            midpoint.segment == *segment_id
+                                || original_segment_end_point_id.is_some_and(|end_id| midpoint.point == end_id)
+                        }
                         Constraint::Horizontal(Horizontal::Line { line }) => line == segment_id,
                         Constraint::Horizontal(Horizontal::Points { points }) => original_segment_end_point_id
                             .is_some_and(|end_id| points.contains(&ConstraintSegment::from(end_id))),
@@ -5192,7 +5204,8 @@ pub(crate) async fn execute_trim_operations_simple(
                         && let Some(migrated_constraint) = rewrite_constraint_with_map(constraint, &angle_rewrite_map)
                         && matches!(
                             migrated_constraint,
-                            Constraint::Parallel(_)
+                            Constraint::Midpoint(_)
+                                | Constraint::Parallel(_)
                                 | Constraint::Perpendicular(_)
                                 | Constraint::Horizontal(_)
                                 | Constraint::Vertical(_)

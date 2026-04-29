@@ -27,7 +27,6 @@ export default defineConfig([
     '!rust/kcl-language-server/client/src/**/*.ts',
     '**/*.typegen.ts',
     'packages/codemirror-lsp-client/dist/*',
-    'e2e/playwright/snapshots/prompt-to-edit/*',
     '**/.vscode-test',
   ]),
   {

@@ -1,8 +1,6 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
-import { settingsToToml } from '@e2e/playwright/test-utils'
-import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 
 /**
  * Extract a specific line from code string (1-based line number).
@@ -130,16 +128,6 @@ sketch(on = XZ) {
 }
 `
 
-const userSettingsToml = settingsToToml({
-  settings: {
-    ...TEST_SETTINGS,
-    modeling: {
-      ...TEST_SETTINGS.modeling,
-      use_sketch_solve_mode: true,
-    },
-  },
-})
-
 function withDefaultLengthUnitInches(code: string): string {
   return `@settings(defaultLengthUnit = in)
     
@@ -245,35 +233,17 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     cmdBar,
     editor,
     toolbar,
-    tronApp,
   }) => {
     const INITIAL_CODE = ''
     const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
 
     await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
-      // Set useSketchSolveMode in user settings (it's stored at user level even though hideOnLevel is 'project')
-      // This ensures it's available immediately when the app loads, regardless of IS_STAGING_OR_DEBUG
-      if (tronApp) {
-        // Electron: settings via file system using cleanProjectDir
-        await tronApp.cleanProjectDir({
-          modeling: {
-            use_sketch_solve_mode: true,
-          },
-        })
-      }
-
       await context.addInitScript(
-        async ({ code, settingsKey, settingsToml }) => {
+        async ({ code }) => {
           localStorage.setItem('persistCode', code)
-          // Set useSketchSolveMode in user settings
-          if (settingsToml) {
-            localStorage.setItem(settingsKey, settingsToml)
-          }
         },
         {
           code: INITIAL_CODE,
-          settingsKey: TEST_SETTINGS_KEY,
-          settingsToml: userSettingsToml,
         }
       )
 
@@ -388,7 +358,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       )
       await page.waitForTimeout(100)
     })
-    const [clearSelection] = scene.makeMouseHelpers(0.5, 0.5, {
+    const [clearSelection] = scene.makeMouseHelpers(0.9, 0.5, {
       format: 'ratio',
     })
     await test.step('Select lines between segments 2-3 and 5-6, then apply parallel constraint', async () => {
@@ -453,33 +423,18 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     cmdBar,
     editor,
     toolbar,
-    tronApp,
   }) => {
     const INITIAL_CODE = ''
     const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
     const getLineCount = (code: string) => (code.match(/line\(/g) ?? []).length
 
     await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
-      if (tronApp) {
-        await tronApp.cleanProjectDir({
-          modeling: {
-            use_sketch_solve_mode: true,
-          },
-        })
-      }
-
       await context.addInitScript(
-        async ({ code, settingsKey, settingsToml }) => {
+        async ({ code }) => {
           localStorage.setItem('persistCode', code)
-          localStorage.setItem('debug:mixed-history', '1')
-          if (settingsToml) {
-            localStorage.setItem(settingsKey, settingsToml)
-          }
         },
         {
           code: INITIAL_CODE,
-          settingsKey: TEST_SETTINGS_KEY,
-          settingsToml: userSettingsToml,
         }
       )
 
@@ -603,25 +558,12 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     }
 
     await test.step('Set up the app with initial sketch code and enable sketch solve mode', async () => {
-      if (tronApp) {
-        await tronApp.cleanProjectDir({
-          modeling: {
-            use_sketch_solve_mode: true,
-          },
-        })
-      }
-
       await context.addInitScript(
-        async ({ code, settingsKey, settingsToml }) => {
+        async ({ code }) => {
           localStorage.setItem('persistCode', code)
-          if (settingsToml) {
-            localStorage.setItem(settingsKey, settingsToml)
-          }
         },
         {
           code: INITIAL_CODE,
-          settingsKey: TEST_SETTINGS_KEY,
-          settingsToml: userSettingsToml,
         }
       )
 
@@ -795,25 +737,12 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     const INITIAL_CODE = ''
 
     await test.step('Set up app with sketch solve mode enabled', async () => {
-      if (tronApp) {
-        await tronApp.cleanProjectDir({
-          modeling: {
-            use_sketch_solve_mode: true,
-          },
-        })
-      }
-
       await context.addInitScript(
-        async ({ code, settingsKey, settingsToml }) => {
+        async ({ code }) => {
           localStorage.setItem('persistCode', code)
-          if (settingsToml) {
-            localStorage.setItem(settingsKey, settingsToml)
-          }
         },
         {
           code: INITIAL_CODE,
-          settingsKey: TEST_SETTINGS_KEY,
-          settingsToml: userSettingsToml,
         }
       )
 
@@ -1228,7 +1157,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     cmdBar,
     editor,
     toolbar,
-    tronApp,
   }) => {
     const CONSTRAINT_TEST_CODE = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var -11.38mm, var 3.66mm], end = [var -11.5mm, var 0.43mm])
@@ -1253,25 +1181,12 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 `
 
     await test.step('Set up app with existing sketch code in sketch solve mode', async () => {
-      if (tronApp) {
-        await tronApp.cleanProjectDir({
-          modeling: {
-            use_sketch_solve_mode: true,
-          },
-        })
-      }
-
       await context.addInitScript(
-        async ({ code, settingsKey, settingsToml }) => {
+        async ({ code }) => {
           localStorage.setItem('persistCode', code)
-          if (settingsToml) {
-            localStorage.setItem(settingsKey, settingsToml)
-          }
         },
         {
           code: CONSTRAINT_TEST_CODE,
-          settingsKey: TEST_SETTINGS_KEY,
-          settingsToml: userSettingsToml,
         }
       )
 
@@ -1583,7 +1498,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     cmdBar,
     editor,
     toolbar,
-    tronApp,
   }) => {
     const TRIM_TEST_CODE = `sketch001 = sketch(on = YZ) {
   line1 = line(start = [var -8.66mm, var 2.52mm], end = [var -8.77mm, var -2.76mm])
@@ -1598,25 +1512,12 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
 
     await test.step('Set up app with trim fixture in sketch solve mode', async () => {
-      if (tronApp) {
-        await tronApp.cleanProjectDir({
-          modeling: {
-            use_sketch_solve_mode: true,
-          },
-        })
-      }
-
       await context.addInitScript(
-        async ({ code, settingsKey, settingsToml }) => {
+        async ({ code }) => {
           localStorage.setItem('persistCode', code)
-          if (settingsToml) {
-            localStorage.setItem(settingsKey, settingsToml)
-          }
         },
         {
           code: TRIM_TEST_CODE,
-          settingsKey: TEST_SETTINGS_KEY,
-          settingsToml: userSettingsToml,
         }
       )
 
@@ -1981,7 +1882,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     cmdBar,
     editor,
     toolbar,
-    tronApp,
   }) => {
     const code = `${square}
 hidden001 = hide(sketch001)
@@ -1992,24 +1892,12 @@ extrude001 = extrude(region001, length = 5)`
     })
 
     await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
-      if (tronApp) {
-        await tronApp.cleanProjectDir({
-          modeling: {
-            use_sketch_solve_mode: true,
-          },
-        })
-      }
       await context.addInitScript(
-        async ({ code, settingsKey, settingsToml }) => {
+        async ({ code }) => {
           localStorage.setItem('persistCode', code)
-          if (settingsToml) {
-            localStorage.setItem(settingsKey, settingsToml)
-          }
         },
         {
           code,
-          settingsKey: TEST_SETTINGS_KEY,
-          settingsToml: userSettingsToml,
         }
       )
 
@@ -2044,7 +1932,6 @@ extrude001 = extrude(region001, length = 5)`
     cmdBar,
     editor,
     toolbar,
-    tronApp,
   }) => {
     const code = `${square}
 hidden001 = hide(sketch001)
@@ -2055,24 +1942,12 @@ extrude001 = extrude(region001, length = 5)`
     })
 
     await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
-      if (tronApp) {
-        await tronApp.cleanProjectDir({
-          modeling: {
-            use_sketch_solve_mode: true,
-          },
-        })
-      }
       await context.addInitScript(
-        async ({ code, settingsKey, settingsToml }) => {
+        async ({ code }) => {
           localStorage.setItem('persistCode', code)
-          if (settingsToml) {
-            localStorage.setItem(settingsKey, settingsToml)
-          }
         },
         {
           code,
-          settingsKey: TEST_SETTINGS_KEY,
-          settingsToml: userSettingsToml,
         }
       )
 
