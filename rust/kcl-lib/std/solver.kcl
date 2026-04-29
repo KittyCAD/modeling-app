@@ -38,7 +38,7 @@
 @no_std
 @settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
-import Point2d, Segment from "std::types"
+import Axis2d, Point2d, Segment from "std::types"
 
 /// The origin point in a sketch.
 export ORIGIN = [0mm, 0mm]: Point2d
@@ -492,8 +492,8 @@ export fn midpoint(
 export fn symmetric(
   /// Exactly two points, lines, arcs, or circles of the same kind.
   @input: [Segment; 2],
-  /// The line to mirror across.
-  axis: Segment,
+  /// The line or abstract 2D axis to mirror across.
+  axis: Segment | Axis2d,
 ) {}
 
 /// Constrain a point to be fixed to a position.

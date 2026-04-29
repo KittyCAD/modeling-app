@@ -1025,7 +1025,7 @@ mod sync {
         });
         let symmetric = Constraint::Symmetric(crate::frontend::sketch::Symmetric {
             input: vec![ObjectId(1), ObjectId(2)],
-            axis: ObjectId(77),
+            axis: crate::frontend::sketch::SymmetricAxis::Segment(ObjectId(77)),
         });
         let midpoint = Constraint::Midpoint(crate::frontend::sketch::Midpoint {
             point: ObjectId(1),
@@ -1060,7 +1060,10 @@ mod sync {
             panic!("expected symmetric rewrite");
         };
         assert_eq!(rewritten_symmetric.input, vec![ObjectId(101), ObjectId(202)]);
-        assert_eq!(rewritten_symmetric.axis, ObjectId(77));
+        assert_eq!(
+            rewritten_symmetric.axis,
+            crate::frontend::sketch::SymmetricAxis::Segment(ObjectId(77))
+        );
 
         let Some(Constraint::Midpoint(rewritten_midpoint)) = rewrite_constraint_with_map(&midpoint, &rewrite_map)
         else {

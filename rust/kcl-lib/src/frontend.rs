@@ -31,6 +31,7 @@ use crate::execution::cache::write_old_memory;
 use crate::fmt::format_number_literal;
 use crate::front::Angle;
 use crate::front::ArcCtor;
+use crate::front::Axis2dLiteral;
 use crate::front::CircleCtor;
 use crate::front::Distance;
 use crate::front::EqualRadius;
@@ -45,6 +46,7 @@ use crate::front::Parallel;
 use crate::front::Perpendicular;
 use crate::front::PointCtor;
 use crate::front::Symmetric;
+use crate::front::SymmetricAxis;
 use crate::front::Tangent;
 use crate::frontend::api::Expr;
 use crate::frontend::api::FileId;
@@ -3251,7 +3253,7 @@ impl FrontendState {
 
         let input0_ast = self.symmetric_input_id_to_ast_reference(input0_id, new_ast)?;
         let input1_ast = self.symmetric_input_id_to_ast_reference(input1_id, new_ast)?;
-        let axis_ast = self.symmetric_axis_id_to_ast_reference(symmetric.axis, new_ast)?;
+        let axis_ast = self.symmetric_axis_to_ast_reference(&symmetric.axis, new_ast)?;
 
         let symmetric_ast = create_symmetric_ast(vec![input0_ast, input1_ast], axis_ast);
         let (sketch_block_ref, _) = self.mutate_ast(
@@ -3746,28 +3748,35 @@ impl FrontendState {
         }
     }
 
-    fn symmetric_axis_id_to_ast_reference(
+    fn symmetric_axis_to_ast_reference(
         &mut self,
-        segment_id: ObjectId,
+        axis: &SymmetricAxis,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> Result<ast::Expr, KclError> {
-        let segment_object = self
-            .scene_graph
-            .objects
-            .get(segment_id.0)
-            .ok_or_else(|| KclError::refactor(format!("Axis segment not found: {segment_id:?}")))?;
-        let ObjectKind::Segment { segment } = &segment_object.kind else {
-            return Err(KclError::refactor(format!(
-                "Object is not a segment, it was {}",
-                segment_object.kind.human_friendly_kind_with_article()
-            )));
-        };
-        match segment {
-            Segment::Line(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, LINE_VARIABLE, None),
-            _ => Err(KclError::refactor(format!(
-                "Symmetric axis must be a line, got {}",
-                segment.human_friendly_kind_with_article()
-            ))),
+        match axis {
+            SymmetricAxis::Segment(segment_id) => {
+                let segment_object = self
+                    .scene_graph
+                    .objects
+                    .get(segment_id.0)
+                    .ok_or_else(|| KclError::refactor(format!("Axis segment not found: {segment_id:?}")))?;
+                let ObjectKind::Segment { segment } = &segment_object.kind else {
+                    return Err(KclError::refactor(format!(
+                        "Object is not a segment, it was {}",
+                        segment_object.kind.human_friendly_kind_with_article()
+                    )));
+                };
+                match segment {
+                    Segment::Line(_) => {
+                        get_or_insert_ast_reference(new_ast, &segment_object.source, LINE_VARIABLE, None)
+                    }
+                    _ => Err(KclError::refactor(format!(
+                        "Symmetric axis must be a line, got {}",
+                        segment.human_friendly_kind_with_article()
+                    ))),
+                }
+            }
+            SymmetricAxis::Axis2d(axis) => create_axis2d_ast(axis).map_err(|err| KclError::refactor(err.to_string())),
         }
     }
 
@@ -4170,13 +4179,19 @@ impl FrontendState {
                     .lines
                     .iter()
                     .any(|line_id| self.segment_will_be_deleted(*line_id, segment_ids_set)),
-                Constraint::Symmetric(symmetric) => {
-                    self.segment_will_be_deleted(symmetric.axis, segment_ids_set)
-                        || symmetric
-                            .input
-                            .iter()
-                            .any(|seg_id| self.segment_will_be_deleted(*seg_id, segment_ids_set))
-                }
+                Constraint::Symmetric(symmetric) => match &symmetric.axis {
+                    SymmetricAxis::Segment(axis) => {
+                        self.segment_will_be_deleted(*axis, segment_ids_set)
+                            || symmetric
+                                .input
+                                .iter()
+                                .any(|seg_id| self.segment_will_be_deleted(*seg_id, segment_ids_set))
+                    }
+                    SymmetricAxis::Axis2d(_) => symmetric
+                        .input
+                        .iter()
+                        .any(|seg_id| self.segment_will_be_deleted(*seg_id, segment_ids_set)),
+                },
                 Constraint::Tangent(tangent) => tangent
                     .input
                     .iter()
@@ -5547,6 +5562,26 @@ fn to_source_number(number: Number) -> anyhow::Result<ast::NumericLiteral> {
     })
 }
 
+fn create_number_array_expr(point: &Point2d<Number>) -> anyhow::Result<ast::Expr> {
+    let x_literal = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
+        point.x,
+    )?))));
+    let y_literal = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
+        point.y,
+    )?))));
+    Ok(ast::ArrayExpression::new(vec![x_literal, y_literal]).into())
+}
+
+fn create_axis2d_ast(axis: &Axis2dLiteral) -> anyhow::Result<ast::Expr> {
+    Ok(ast::Expr::ObjectExpression(Box::new(ast::ObjectExpression::new(vec![
+        ast::ObjectProperty::new(ast::Identifier::new("origin"), create_number_array_expr(&axis.origin)?),
+        ast::ObjectProperty::new(
+            ast::Identifier::new("direction"),
+            create_number_array_expr(&axis.direction)?,
+        ),
+    ]))))
+}
+
 pub(crate) fn ast_name_expr(name: String) -> ast::Expr {
     ast::Expr::Name(Box::new(ast_name(name)))
 }
@@ -5813,7 +5848,7 @@ pub(crate) fn create_tangent_ast(seg1_expr: ast::Expr, seg2_expr: ast::Expr) -> 
     })))
 }
 
-/// Create an AST node for symmetric([input1, input2], axis = line)
+/// Create an AST node for symmetric([input1, input2], axis = <line-or-axis>)
 pub(crate) fn create_symmetric_ast(input_exprs: Vec<ast::Expr>, axis_expr: ast::Expr) -> ast::Expr {
     let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
         elements: input_exprs,
@@ -10079,7 +10114,7 @@ sketch(on = XY) {
 
         let constraint = Constraint::Symmetric(Symmetric {
             input: vec![line1_id, line2_id],
-            axis: axis_id,
+            axis: SymmetricAxis::Segment(axis_id),
         });
         let (src_delta, scene_delta) = frontend
             .add_constraint(&ctx, version, sketch_id, constraint)
@@ -10102,6 +10137,56 @@ sketch(on = XY) {
             "{:#?}",
             scene_delta.new_graph.objects
         );
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_segments_symmetric_axis2d_is_tracked() {
+        let source = "\
+sketch(on = XY) {
+  line1 = line(start = [var -4, var 0], end = [var -4, var 4])
+  line2 = line(start = [var 4, var 0], end = [var 4, var 4])
+  symmetric([line1, line2], axis = X)
+}
+";
+
+        let program = Program::parse(source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_mock(None).await;
+
+        frontend.program = program.clone();
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch = expect_sketch(sketch_object);
+        assert_eq!(sketch.constraints.len(), 1);
+
+        let constraint_object = frontend
+            .scene_graph
+            .objects
+            .get(sketch.constraints[0].0)
+            .expect("constraint should exist in scene graph");
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("expected a constraint object, got {:?}", constraint_object.kind);
+        };
+        let Constraint::Symmetric(symmetric) = constraint else {
+            panic!("expected symmetric constraint, got {constraint:?}");
+        };
+
+        match &symmetric.axis {
+            SymmetricAxis::Axis2d(axis) => {
+                assert_eq!(axis.origin.x.value, 0.0);
+                assert_eq!(axis.origin.y.value, 0.0);
+                assert_eq!(axis.direction.x.value, 1.0);
+                assert_eq!(axis.direction.y.value, 0.0);
+                assert_eq!(axis.origin.x.units, NumericSuffix::Mm);
+                assert_eq!(axis.direction.x.units, NumericSuffix::Mm);
+            }
+            SymmetricAxis::Segment(axis) => panic!("expected Axis2d-backed symmetry axis, got segment {axis:?}"),
+        }
 
         ctx.close().await;
     }
@@ -10188,7 +10273,7 @@ sketch(on = XY) {
 
         let constraint = Constraint::Symmetric(Symmetric {
             input: vec![arc1_id, arc2_id],
-            axis: axis_id,
+            axis: SymmetricAxis::Segment(axis_id),
         });
         let (src_delta, scene_delta) = frontend
             .add_constraint(&ctx, version, sketch_id, constraint)

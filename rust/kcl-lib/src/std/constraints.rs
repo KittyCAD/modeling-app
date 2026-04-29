@@ -41,6 +41,8 @@ use crate::execution::types::ArrayLen;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::front::ArcCtor;
+#[cfg(feature = "artifact-graph")]
+use crate::front::Axis2dLiteral;
 use crate::front::CircleCtor;
 #[cfg(feature = "artifact-graph")]
 use crate::front::Coincident;
@@ -71,14 +73,20 @@ use crate::front::SourceRef;
 #[cfg(feature = "artifact-graph")]
 use crate::front::Symmetric;
 #[cfg(feature = "artifact-graph")]
+use crate::front::SymmetricAxis;
+#[cfg(feature = "artifact-graph")]
 use crate::front::Tangent;
 #[cfg(feature = "artifact-graph")]
 use crate::front::Vertical;
 #[cfg(feature = "artifact-graph")]
 use crate::frontend::sketch::ConstraintSegment;
+#[cfg(feature = "artifact-graph")]
+use crate::pretty::NumericSuffix;
 use crate::std::Args;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
+use crate::std::axis_or_reference::Axis2dOrEdgeReference;
+use crate::std::utils::point_to_mm;
 
 fn point2d_is_origin(point2d: &KclValue) -> bool {
     let Some([x, y]) = <[TyF64; 2]>::from_kcl_val(point2d) else {
@@ -2899,7 +2907,7 @@ fn reflect_point_across_line(point: [f64; 2], axis_start: [f64; 2], axis_end: [f
 fn symmetric_hidden_point_guess(
     sketch_vars: &[KclValue],
     point: [SketchVarId; 2],
-    axis: SymmetricLineVars,
+    axis: SymmetricAxisLineVars,
     exec_state: &mut ExecState,
     range: crate::SourceRange,
 ) -> Result<[f64; 2], KclError> {
@@ -3456,6 +3464,12 @@ struct SymmetricPointVars {
 
 /// The line that geometry should be symmetric across.
 #[derive(Debug, Clone, Copy)]
+struct SymmetricAxisLineVars {
+    start: [SketchVarId; 2],
+    end: [SketchVarId; 2],
+}
+
+#[derive(Debug, Clone, Copy)]
 struct SymmetricLineVars {
     start: [SketchVarId; 2],
     end: [SketchVarId; 2],
@@ -3600,48 +3614,115 @@ fn extract_symmetric_input(segment_value: &KclValue, range: crate::SourceRange) 
 }
 
 fn extract_symmetric_axis_line(
-    segment_value: &KclValue,
+    axis_value: &KclValue,
+    exec_state: &mut ExecState,
     range: crate::SourceRange,
-) -> Result<SymmetricLineVars, KclError> {
-    let KclValue::Segment { value: segment } = segment_value else {
+) -> Result<SymmetricAxisLineVars, KclError> {
+    if let KclValue::Segment { value: segment } = axis_value {
+        let SegmentRepr::Unsolved { segment: unsolved } = &segment.repr else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "symmetric() axis must be an unsolved line Segment or an Axis2d".to_owned(),
+                vec![range],
+            )));
+        };
+        let UnsolvedSegmentKind::Line { start, end, .. } = &unsolved.kind else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "symmetric() axis must be a line Segment or an Axis2d".to_owned(),
+                vec![range],
+            )));
+        };
+        let (
+            UnsolvedExpr::Unknown(start_x),
+            UnsolvedExpr::Unknown(start_y),
+            UnsolvedExpr::Unknown(end_x),
+            UnsolvedExpr::Unknown(end_y),
+        ) = (&start[0], &start[1], &end[0], &end[1])
+        else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "symmetric() axis line coordinates must be sketch vars".to_owned(),
+                vec![range],
+            )));
+        };
+
+        return Ok(SymmetricAxisLineVars {
+            start: [*start_x, *start_y],
+            end: [*end_x, *end_y],
+        });
+    }
+
+    let Some(Axis2dOrEdgeReference::Axis { direction, origin }) = Axis2dOrEdgeReference::from_kcl_val(axis_value)
+    else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             format!(
-                "symmetric() axis must be a line Segment, but found {}",
-                segment_value.human_friendly_type()
+                "symmetric() axis must be a line Segment or an Axis2d, but found {}",
+                axis_value.human_friendly_type()
             ),
             vec![range],
         )));
     };
-    let SegmentRepr::Unsolved { segment: unsolved } = &segment.repr else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "symmetric() axis must be an unsolved line Segment".to_owned(),
-            vec![range],
-        )));
-    };
-    let UnsolvedSegmentKind::Line { start, end, .. } = &unsolved.kind else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "symmetric() axis must be a line Segment".to_owned(),
-            vec![range],
-        )));
-    };
-    let (
-        UnsolvedExpr::Unknown(start_x),
-        UnsolvedExpr::Unknown(start_y),
-        UnsolvedExpr::Unknown(end_x),
-        UnsolvedExpr::Unknown(end_y),
-    ) = (&start[0], &start[1], &end[0], &end[1])
+
+    let origin_mm = point_to_mm(origin);
+    let direction_mm = point_to_mm(direction);
+    let start = create_hidden_point(exec_state, origin_mm, range)?;
+    let end = create_hidden_point(
+        exec_state,
+        [origin_mm[0] + direction_mm[0], origin_mm[1] + direction_mm[1]],
+        range,
+    )?;
+
+    Ok(SymmetricAxisLineVars { start, end })
+}
+
+#[cfg(feature = "artifact-graph")]
+fn axis2d_literal_point(coords_mm: [f64; 2]) -> Point2d<crate::front::Number> {
+    Point2d {
+        x: crate::front::Number {
+            value: coords_mm[0],
+            units: NumericSuffix::Mm,
+        },
+        y: crate::front::Number {
+            value: coords_mm[1],
+            units: NumericSuffix::Mm,
+        },
+    }
+}
+
+#[cfg(feature = "artifact-graph")]
+fn extract_symmetric_axis_frontend(
+    axis_value: &KclValue,
+    range: crate::SourceRange,
+) -> Result<SymmetricAxis, KclError> {
+    if let KclValue::Segment { value: segment } = axis_value {
+        let SegmentRepr::Unsolved { segment: unsolved } = &segment.repr else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "symmetric() axis must be an unsolved line Segment or an Axis2d".to_owned(),
+                vec![range],
+            )));
+        };
+        let UnsolvedSegmentKind::Line { .. } = &unsolved.kind else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "symmetric() axis must be a line Segment or an Axis2d".to_owned(),
+                vec![range],
+            )));
+        };
+        return Ok(SymmetricAxis::Segment(unsolved.object_id));
+    }
+
+    let Some(Axis2dOrEdgeReference::Axis { direction, origin }) = Axis2dOrEdgeReference::from_kcl_val(axis_value)
     else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "symmetric() axis line coordinates must be sketch vars".to_owned(),
+            format!(
+                "symmetric() axis must be a line Segment or an Axis2d, but found {}",
+                axis_value.human_friendly_type()
+            ),
             vec![range],
         )));
     };
 
-    Ok(SymmetricLineVars {
-        start: [*start_x, *start_y],
-        end: [*end_x, *end_y],
-        object_id: unsolved.object_id,
-    })
+    Ok(SymmetricAxis::Axis2d(Axis2dLiteral {
+        direction: axis2d_literal_point(point_to_mm(direction)),
+        origin: axis2d_literal_point(point_to_mm(origin)),
+    }))
 }
 
 pub async fn symmetric(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -3666,12 +3747,21 @@ pub async fn symmetric(exec_state: &mut ExecState, args: Args) -> Result<KclValu
             vec![args.source_range],
         ))
     })?;
-    let axis: KclValue = args.get_kw_arg("axis", &RuntimeType::Primitive(PrimitiveType::Segment), exec_state)?;
+    let axis: KclValue = args.get_kw_arg(
+        "axis",
+        &RuntimeType::Union(vec![
+            RuntimeType::Primitive(PrimitiveType::Axis2d),
+            RuntimeType::segment(),
+        ]),
+        exec_state,
+    )?;
     let range = args.source_range;
 
     let input0 = extract_symmetric_input(&item0, range)?;
     let input1 = extract_symmetric_input(&item1, range)?;
-    let axis_line = extract_symmetric_axis_line(&axis, range)?;
+    let axis_line = extract_symmetric_axis_line(&axis, exec_state, range)?;
+    #[cfg(feature = "artifact-graph")]
+    let axis_frontend = extract_symmetric_axis_frontend(&axis, range)?;
 
     let solver_axis = DatumLineSegment::new(datum_point(axis_line.start, range)?, datum_point(axis_line.end, range)?);
 
@@ -3827,7 +3917,7 @@ pub async fn symmetric(exec_state: &mut ExecState, args: Args) -> Result<KclValu
     {
         let constraint = crate::front::Constraint::Symmetric(Symmetric {
             input: vec![input0.object_id(), input1.object_id()],
-            axis: axis_line.object_id,
+            axis: axis_frontend,
         });
         sketch_state.sketch_constraints.push(constraint_id);
         track_constraint(constraint_id, constraint, exec_state, &args);

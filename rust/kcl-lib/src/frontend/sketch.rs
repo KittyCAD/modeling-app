@@ -594,10 +594,25 @@ pub struct Perpendicular {
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+pub struct Axis2dLiteral {
+    pub direction: Point2d<Number>,
+    pub origin: Point2d<Number>,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(untagged)]
+pub enum SymmetricAxis {
+    Segment(ObjectId),
+    Axis2d(Axis2dLiteral),
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", optional_fields)]
 pub struct Symmetric {
     pub input: Vec<ObjectId>,
-    pub axis: ObjectId,
+    pub axis: SymmetricAxis,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

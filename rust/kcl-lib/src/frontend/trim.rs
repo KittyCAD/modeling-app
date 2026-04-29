@@ -14,6 +14,7 @@ use crate::frontend::sketch::Constraint;
 use crate::frontend::sketch::ConstraintSegment;
 use crate::frontend::sketch::Segment;
 use crate::frontend::sketch::SegmentCtor;
+use crate::frontend::sketch::SymmetricAxis;
 use crate::pretty::NumericSuffix;
 
 #[cfg(all(feature = "artifact-graph", test))]
@@ -396,7 +397,10 @@ fn rewrite_constraint_with_map(
                 .iter()
                 .map(|id| rewrite_object_id(*id, rewrite_map))
                 .collect(),
-            axis: rewrite_object_id(symmetric.axis, rewrite_map),
+            axis: match &symmetric.axis {
+                SymmetricAxis::Segment(axis) => SymmetricAxis::Segment(rewrite_object_id(*axis, rewrite_map)),
+                SymmetricAxis::Axis2d(axis) => SymmetricAxis::Axis2d(axis.clone()),
+            },
         })),
         Constraint::Parallel(parallel) => Some(Constraint::Parallel(crate::frontend::sketch::Parallel {
             lines: parallel
