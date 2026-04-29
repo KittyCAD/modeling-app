@@ -1532,7 +1532,10 @@ function getSplitOutputExprFromSelection(
           outputIndex?: number | null
         })
       : null
-  if (artifact?.subType?.toLowerCase() !== 'split' || artifact.outputIndex == null) {
+  if (
+    artifact?.subType?.toLowerCase() !== 'split' ||
+    artifact.outputIndex == null
+  ) {
     return null
   }
 
