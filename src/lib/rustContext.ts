@@ -678,7 +678,7 @@ export default class RustContext {
     version: ApiVersion,
     sketch: ApiObjectId,
     constraintId: ApiObjectId,
-    label: ApiPoint2d<Number>,
+    labelPosition: ApiPoint2d<Number>,
     settings: DeepPartial<Configuration>,
     createCheckpoint = false,
     anchorSegmentIds: ApiObjectId[] = []
@@ -694,7 +694,7 @@ export default class RustContext {
         JSON.stringify(version),
         JSON.stringify(sketch),
         JSON.stringify(constraintId),
-        JSON.stringify(label),
+        JSON.stringify(labelPosition),
         JSON.stringify(settings),
         createCheckpoint,
         JSON.stringify(anchorSegmentIds)

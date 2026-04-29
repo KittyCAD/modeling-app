@@ -604,7 +604,7 @@ impl Context {
         version_json: &str,
         sketch_json: &str,
         constraint_id_json: &str,
-        label_json: &str,
+        label_position_json: &str,
         settings: &str,
         create_checkpoint: bool,
         anchor_segment_ids_json: &str,
@@ -617,8 +617,8 @@ impl Context {
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
         let constraint_id: kcl_lib::front::ObjectId =
             serde_json::from_str(constraint_id_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
-        let label: kcl_lib::front::Point2d<kcl_lib::front::Number> =
-            serde_json::from_str(label_json).map_err(|e| format!("Could not deserialize label: {e}"))?;
+        let label_position: kcl_lib::front::Point2d<kcl_lib::front::Number> = serde_json::from_str(label_position_json)
+            .map_err(|e| format!("Could not deserialize label position: {e}"))?;
         let anchor_segment_ids: Vec<kcl_lib::front::ObjectId> = serde_json::from_str(anchor_segment_ids_json)
             .map_err(|e| format!("Could not deserialize anchor segment ids: {e}"))?;
 
@@ -629,7 +629,14 @@ impl Context {
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
         let (source_delta, scene_graph_delta) = guard
-            .edit_distance_constraint_label_position(&ctx, version, sketch, constraint_id, label, anchor_segment_ids)
+            .edit_distance_constraint_label_position(
+                &ctx,
+                version,
+                sketch,
+                constraint_id,
+                label_position,
+                anchor_segment_ids,
+            )
             .await
             .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
         let checkpoint_id = if create_checkpoint {

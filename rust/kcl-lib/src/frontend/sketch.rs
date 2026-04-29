@@ -129,7 +129,7 @@ pub trait SketchApi {
         version: Version,
         sketch: ObjectId,
         constraint_id: ObjectId,
-        label: Point2d<Number>,
+        label_position: Point2d<Number>,
         anchor_segment_ids: Vec<ObjectId>,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
@@ -489,9 +489,11 @@ impl From<ObjectId> for ConstraintSegment {
 pub struct Distance {
     pub points: Vec<ConstraintSegment>,
     pub distance: Number,
+    #[serde(rename = "labelPosition")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(rename = "labelPosition")]
     #[ts(optional)]
-    pub label: Option<Point2d<Number>>,
+    pub label_position: Option<Point2d<Number>>,
     pub source: ConstraintSource,
 }
 

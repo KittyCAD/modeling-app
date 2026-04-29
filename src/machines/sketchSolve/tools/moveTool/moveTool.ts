@@ -81,7 +81,7 @@ type DragSketchOutcome = {
 
 type DistanceConstraintLabelEdit = {
   constraintId: number
-  label: ApiPoint2d<ApiNumber>
+  labelPosition: ApiPoint2d<ApiNumber>
 }
 
 type DragCommitCandidate = DragSketchOutcome & {
@@ -329,8 +329,8 @@ function buildDistanceLabelEditsForMovedSegments({
       return []
     }
 
-    const { points, label } = obj.kind.constraint
-    if (!label) {
+    const { points, labelPosition } = obj.kind.constraint
+    if (!labelPosition) {
       return []
     }
 
@@ -357,7 +357,7 @@ function buildDistanceLabelEditsForMovedSegments({
 
     const transformedLabel = transformDistanceLabelWithSegmentFrame(
       obj.kind.constraint.type,
-      new Vector2(label.x.value, label.y.value),
+      new Vector2(labelPosition.x.value, labelPosition.y.value),
       pointPairs
     )
     if (!transformedLabel) {
@@ -367,7 +367,7 @@ function buildDistanceLabelEditsForMovedSegments({
     return [
       {
         constraintId: obj.id,
-        label: buildDistanceConstraintLabel(transformedLabel, units),
+        labelPosition: buildDistanceConstraintLabel(transformedLabel, units),
       },
     ]
   })
@@ -516,7 +516,7 @@ async function applyDistanceLabelPreviewEdits({
     version: number,
     sketchId: number,
     constraintId: number,
-    label: ApiPoint2d<ApiNumber>,
+    labelPosition: ApiPoint2d<ApiNumber>,
     settings: DeepPartial<Configuration>,
     anchorSegmentIds?: number[]
   ) => Promise<DragSketchOutcome | null>
@@ -527,12 +527,12 @@ async function applyDistanceLabelPreviewEdits({
 }): Promise<DragSketchOutcome | null> {
   let latestResult = result
 
-  for (const { constraintId, label } of labelEdits) {
+  for (const { constraintId, labelPosition } of labelEdits) {
     const nextResult = await editDistanceConstraintLabelPosition(
       version,
       sketchId,
       constraintId,
-      label,
+      labelPosition,
       settings,
       anchorSegmentIds
     )
@@ -1106,7 +1106,7 @@ export function createOnDragCallback({
     version: number,
     sketchId: number,
     constraintId: number,
-    label: ApiPoint2d<ApiNumber>,
+    labelPosition: ApiPoint2d<ApiNumber>,
     settings: DeepPartial<Configuration>,
     anchorSegmentIds?: number[]
   ) => Promise<{
@@ -1167,7 +1167,7 @@ export function createOnDragCallback({
           return
         }
 
-        const label = buildDistanceConstraintLabel(
+        const labelPosition = buildDistanceConstraintLabel(
           intersectionPoint.twoD,
           baseUnitToNumericSuffix(getDefaultLengthUnit())
         )
@@ -1175,7 +1175,7 @@ export function createOnDragCallback({
           0,
           contextData.sketchId,
           draggedDistanceConstraintLabelId,
-          label,
+          labelPosition,
           settings
         ).catch((err) => {
           if (!isActiveDragSession()) {
@@ -1735,7 +1735,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
               return
             }
 
-            const label = buildDistanceConstraintLabel(
+            const labelPosition = buildDistanceConstraintLabel(
               intersectionPoint.twoD,
               baseUnitToNumericSuffix(
                 context.kclManager.fileSettings.defaultLengthUnit
@@ -1746,7 +1746,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                 SKETCH_FILE_VERSION,
                 context.sketchId,
                 draggedDistanceConstraintLabelId,
-                label,
+                labelPosition,
                 jsAppSettings(context.rustContext.settingsActor),
                 true
               )
@@ -1817,14 +1817,14 @@ export function setUpOnDragAndSelectionClickCallbacks({
 
             for (const [
               index,
-              { constraintId, label },
+              { constraintId, labelPosition },
             ] of distanceLabelEdits.entries()) {
               latestResult =
                 await context.rustContext.editDistanceConstraintLabelPosition(
                   SKETCH_FILE_VERSION,
                   context.sketchId,
                   constraintId,
-                  label,
+                  labelPosition,
                   settings,
                   index === distanceLabelEdits.length - 1,
                   anchorSegmentIds
@@ -2141,7 +2141,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
         version: number,
         sketchId: number,
         constraintId: number,
-        label: ApiPoint2d<ApiNumber>,
+        labelPosition: ApiPoint2d<ApiNumber>,
         settings: DeepPartial<Configuration>,
         anchorSegmentIds?: number[]
       ) => {
@@ -2149,7 +2149,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
           version,
           sketchId,
           constraintId,
-          label,
+          labelPosition,
           settings,
           false,
           anchorSegmentIds

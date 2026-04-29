@@ -203,11 +203,15 @@ export class DistanceConstraintBuilder {
 
 function getDistanceLabelPosition(obj: DistanceConstraint) {
   const constraint = obj.kind.constraint
-  if (!constraint.label) {
+  if (!constraint.labelPosition) {
     return undefined
   }
 
-  return new Vector3(constraint.label.x.value, constraint.label.y.value, 0)
+  return new Vector3(
+    constraint.labelPosition.x.value,
+    constraint.labelPosition.y.value,
+    0
+  )
 }
 
 function getCollapsedZeroDistanceLineStart(

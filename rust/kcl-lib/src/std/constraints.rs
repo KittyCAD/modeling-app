@@ -2035,7 +2035,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
         exec_state,
     )?;
-    let label = get_constraint_label_position(exec_state, &args, "distance")?;
+    let label_position = get_constraint_label_position(exec_state, &args, "distance")?;
     let [point0, point1]: [KclValue; 2] = points.try_into().map_err(|_| {
         KclError::new_semantic(KclErrorDetails::new(
             "must have two input points".to_owned(),
@@ -2084,7 +2084,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                                             object_id: unsolved1.object_id,
                                         }),
                                     ],
-                                    label: label.clone(),
+                                    label_position: label_position.clone(),
                                 },
                                 meta: vec![args.source_range.into()],
                             };
@@ -2143,7 +2143,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                         value: Box::new(SketchConstraint {
                             kind: SketchConstraintKind::Distance {
                                 points,
-                                label: label.clone(),
+                                label_position: label_position.clone(),
                             },
                             meta: vec![args.source_range.into()],
                         }),

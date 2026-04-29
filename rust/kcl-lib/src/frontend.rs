@@ -1209,7 +1209,7 @@ impl SketchApi for FrontendState {
         _version: Version,
         sketch: ObjectId,
         constraint_id: ObjectId,
-        label: Point2d<Number>,
+        label_position: Point2d<Number>,
         anchor_segment_ids: Vec<ObjectId>,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
@@ -1232,14 +1232,16 @@ impl SketchApi for FrontendState {
             ))));
         }
 
-        let label = to_ast_point2d_number(&label).map_err(|err| {
-            KclErrorWithOutputs::no_outputs(KclError::refactor(format!("Could not convert label to AST: {err}")))
+        let label_position = to_ast_point2d_number(&label_position).map_err(|err| {
+            KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
+                "Could not convert label position to AST: {err}"
+            )))
         })?;
         let mut new_ast = self.program.ast.clone();
         self.mutate_ast(
             &mut new_ast,
             constraint_id,
-            AstMutateCommand::EditDistanceConstraintLabelPosition { label },
+            AstMutateCommand::EditDistanceConstraintLabelPosition { label_position },
         )
         .map_err(KclErrorWithOutputs::no_outputs)?;
 
@@ -3085,10 +3087,10 @@ impl FrontendState {
             }
         };
 
-        let arguments = match &distance.label {
-            Some(label) => vec![ast::LabeledArg {
+        let arguments = match &distance.label_position {
+            Some(label_position) => vec![ast::LabeledArg {
                 label: Some(ast::Identifier::new(LABEL_POSITION_PARAM)),
-                arg: to_ast_point2d_number(label).map_err(|err| KclError::refactor(err.to_string()))?,
+                arg: to_ast_point2d_number(label_position).map_err(|err| KclError::refactor(err.to_string()))?,
             }],
             None => Default::default(),
         };
@@ -3499,10 +3501,10 @@ impl FrontendState {
             }
         };
 
-        let arguments = match &distance.label {
-            Some(label) => vec![ast::LabeledArg {
+        let arguments = match &distance.label_position {
+            Some(label_position) => vec![ast::LabeledArg {
                 label: Some(ast::Identifier::new(LABEL_POSITION_PARAM)),
-                arg: to_ast_point2d_number(label).map_err(|err| KclError::refactor(err.to_string()))?,
+                arg: to_ast_point2d_number(label_position).map_err(|err| KclError::refactor(err.to_string()))?,
             }],
             None => Default::default(),
         };
@@ -3569,10 +3571,10 @@ impl FrontendState {
             }
         };
 
-        let arguments = match &distance.label {
-            Some(label) => vec![ast::LabeledArg {
+        let arguments = match &distance.label_position {
+            Some(label_position) => vec![ast::LabeledArg {
                 label: Some(ast::Identifier::new(LABEL_POSITION_PARAM)),
-                arg: to_ast_point2d_number(label).map_err(|err| KclError::refactor(err.to_string()))?,
+                arg: to_ast_point2d_number(label_position).map_err(|err| KclError::refactor(err.to_string()))?,
             }],
             None => Default::default(),
         };
@@ -4819,7 +4821,7 @@ enum AstMutateCommand {
         value: ast::BinaryPart,
     },
     EditDistanceConstraintLabelPosition {
-        label: ast::Expr,
+        label_position: ast::Expr,
     },
     EditCallUnlabeled {
         arg: ast::Expr,
@@ -5296,7 +5298,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
-        AstMutateCommand::EditDistanceConstraintLabelPosition { label } => {
+        AstMutateCommand::EditDistanceConstraintLabelPosition { label_position } => {
             if let NodeMut::BinaryExpression(binary_expr) = node {
                 let ast::BinaryPart::CallExpressionKw(call) = &mut binary_expr.left else {
                     return TraversalReturn::new_continue(());
@@ -5313,11 +5315,11 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                     label == Some(LABEL_POSITION_PARAM) || label == Some(LEGACY_LABEL_PARAM)
                 }) {
                     label_arg.label = Some(ast::Identifier::new(LABEL_POSITION_PARAM));
-                    label_arg.arg = label.clone();
+                    label_arg.arg = label_position.clone();
                 } else {
                     call.arguments.push(ast::LabeledArg {
                         label: Some(ast::Identifier::new(LABEL_POSITION_PARAM)),
-                        arg: label.clone(),
+                        arg: label_position.clone(),
                     });
                 }
 
@@ -8735,7 +8737,7 @@ sketch(on = XY) {
                 value: 2.0,
                 units: NumericSuffix::Mm,
             },
-            label: None,
+            label_position: None,
             source: Default::default(),
         });
         let (src_delta, scene_delta) = frontend
@@ -8805,7 +8807,7 @@ sketch(on = XY) {
                 value: 2.0,
                 units: NumericSuffix::Mm,
             },
-            label: Some(label.clone()),
+            label_position: Some(label.clone()),
             source: Default::default(),
         });
         let (src_delta, scene_delta) = frontend
@@ -8832,7 +8834,7 @@ sketch(on = XY) {
         let Constraint::Distance(distance) = constraint else {
             panic!("Expected distance constraint");
         };
-        assert_eq!(distance.label, Some(label));
+        assert_eq!(distance.label_position, Some(label));
 
         mock_ctx.close().await;
     }
@@ -8868,7 +8870,7 @@ sketch(on = XY) {
                 value: 2.0,
                 units: NumericSuffix::Mm,
             },
-            label: None,
+            label_position: None,
             source: Default::default(),
         });
         let (_, scene_delta) = frontend
@@ -8918,7 +8920,7 @@ sketch(on = XY) {
         let Constraint::Distance(distance) = constraint else {
             panic!("Expected distance constraint");
         };
-        assert_eq!(distance.label, Some(label));
+        assert_eq!(distance.label_position, Some(label));
 
         mock_ctx.close().await;
     }
@@ -9045,7 +9047,7 @@ sketch(on = XY) {
                 value: 2.0,
                 units: NumericSuffix::Mm,
             },
-            label: Some(label.clone()),
+            label_position: Some(label.clone()),
             source: Default::default(),
         });
         let (src_delta, scene_delta) = frontend
@@ -9078,7 +9080,7 @@ sketch(on = XY) {
         let Constraint::HorizontalDistance(distance) = constraint else {
             panic!("Expected horizontal distance constraint");
         };
-        assert_eq!(distance.label, Some(label));
+        assert_eq!(distance.label_position, Some(label));
 
         mock_ctx.close().await;
     }
@@ -9192,7 +9194,7 @@ sketch(on = XY) {
                 value: 2.0,
                 units: NumericSuffix::Mm,
             },
-            label: Some(label.clone()),
+            label_position: Some(label.clone()),
             source: Default::default(),
         });
         let (src_delta, scene_delta) = frontend
@@ -9225,7 +9227,7 @@ sketch(on = XY) {
         let Constraint::VerticalDistance(distance) = constraint else {
             panic!("Expected vertical distance constraint");
         };
-        assert_eq!(distance.label, Some(label));
+        assert_eq!(distance.label_position, Some(label));
 
         mock_ctx.close().await;
     }

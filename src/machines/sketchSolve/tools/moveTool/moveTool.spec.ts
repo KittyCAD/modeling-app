@@ -61,7 +61,7 @@ function createConstraintApiObject({
   type,
   line = 3,
   points,
-  label,
+  labelPosition,
 }: {
   id: number
   type:
@@ -72,7 +72,7 @@ function createConstraintApiObject({
     | 'Vertical'
   line?: number
   points?: Array<number | 'ORIGIN'>
-  label?: {
+  labelPosition?: {
     x: { value: number; units: 'Mm' }
     y: { value: number; units: 'Mm' }
   }
@@ -87,7 +87,7 @@ function createConstraintApiObject({
       type,
       points: points ?? [1, 2],
       distance: { value: 10, units: 'Mm' },
-      ...(label ? { label } : {}),
+      ...(labelPosition ? { labelPosition } : {}),
       source: {
         expr: '10',
         is_literal: true,
@@ -732,7 +732,7 @@ describe('createOnDragCallback', () => {
         id: 8,
         type: constraintType,
         points: [1, 2],
-        label: {
+        labelPosition: {
           x: { value: 5, units: 'Mm' },
           y: { value: 4, units: 'Mm' },
         },
