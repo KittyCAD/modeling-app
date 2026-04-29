@@ -2143,10 +2143,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                     };
                     Ok(KclValue::SketchConstraint {
                         value: Box::new(SketchConstraint {
-                            kind: SketchConstraintKind::Distance {
-                                points,
-                                label_position,
-                            },
+                            kind: SketchConstraintKind::Distance { points, label_position },
                             meta: vec![args.source_range.into()],
                         }),
                     })
