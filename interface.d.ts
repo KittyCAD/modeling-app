@@ -17,6 +17,11 @@ declare module 'electron' {
 
 type EnvFn = (value?: string) => string
 
+export type DeviceFlowAuthorization = {
+  userCode: string
+  verificationUriComplete: string
+}
+
 export interface IElectronAPI {
   resizeWindow: (width: number, height: number) => Promise<void>
   open: typeof dialog.showOpenDialog
@@ -32,7 +37,7 @@ export interface IElectronAPI {
   }) => Promise<string>
   showInFolder: typeof shell.showItemInFolder
   /** Require to be called first before {@link loginWithDeviceFlow} */
-  startDeviceFlow: (host: string) => Promise<string>
+  startDeviceFlow: (host: string) => Promise<DeviceFlowAuthorization>
   /** Registered by first calling {@link startDeviceFlow}, which sets up the device flow handle */
   loginWithDeviceFlow: () => Promise<string>
   platform: typeof process.env.platform

@@ -39,6 +39,7 @@ const SignIn = () => {
     window.electron.disableMenu('Help.Show all commands').catch(reportRejection)
   }
   const [userCode, setUserCode] = useState('')
+  const [deviceFlowSignInUrl, setDeviceFlowSignInUrl] = useState('')
 
   // Last saved environment
   // TODO: Reduce this logic
@@ -111,17 +112,22 @@ const SignIn = () => {
   const signInDesktop = async (electron: IElectronAPI) => {
     const requestedEnvironment = selectedEnvironment.trim()
     updateEnvironment(requestedEnvironment)
+    setUserCode('')
+    setDeviceFlowSignInUrl('')
 
     // We want to invoke our command to login via device auth.
-    const userCodeToDisplay = await electron
+    const deviceFlowAuthorization = await electron
       .startDeviceFlow(withAPIBaseURL(location.search))
       .catch(reportError)
-    if (!userCodeToDisplay) {
-      console.error('No user code received while trying to log in')
+    if (!deviceFlowAuthorization) {
+      console.error(
+        'No device flow authorization received while trying to log in'
+      )
       toast.error('Error while trying to log in.')
       return
     }
-    setUserCode(userCodeToDisplay)
+    setUserCode(deviceFlowAuthorization.userCode)
+    setDeviceFlowSignInUrl(deviceFlowAuthorization.verificationUriComplete)
 
     // Now that we have the user code, we can kick off the final login step.
     const token = await electron.loginWithDeviceFlow().catch(reportError)
@@ -137,6 +143,18 @@ const SignIn = () => {
   const cancelSignIn = async () => {
     auth.send({ type: 'Log out' })
     setUserCode('')
+    setDeviceFlowSignInUrl('')
+  }
+
+  const copyDeviceFlowSignInUrl = async () => {
+    if (!deviceFlowSignInUrl) return
+
+    try {
+      await navigator.clipboard.writeText(deviceFlowSignInUrl)
+      toast.success('Sign-in URL copied to clipboard.')
+    } catch {
+      toast.error('Failed to copy sign-in URL.')
+    }
   }
 
   return (
@@ -227,6 +245,41 @@ const SignIn = () => {
                         </span>
                       ))}
                     </p>
+                    {deviceFlowSignInUrl && (
+                      <div className="mt-4 flex max-w-2xl flex-col gap-2">
+                        <p className="text-xs">
+                          If your browser did not open, copy and paste this
+                          sign-in URL.
+                        </p>
+                        <div className="flex flex-col gap-2 sm:flex-row">
+                          <input
+                            readOnly
+                            aria-label="Sign-in URL"
+                            value={deviceFlowSignInUrl}
+                            onFocus={(event) => event.currentTarget.select()}
+                            className={
+                              'min-w-0 flex-1 rounded-sm border border-solid ' +
+                              'border-chalkboard-30 bg-chalkboard-10 px-2 py-1 ' +
+                              'text-sm text-chalkboard-90 dark:border-chalkboard-70 ' +
+                              'dark:bg-chalkboard-90 dark:text-chalkboard-10'
+                            }
+                            data-testid="sign-in-url"
+                          />
+                          <ActionButton
+                            Element="button"
+                            type="button"
+                            onClick={toSync(
+                              copyDeviceFlowSignInUrl,
+                              reportRejection
+                            )}
+                            iconStart={{ icon: 'clipboard' }}
+                            data-testid="copy-sign-in-url-button"
+                          >
+                            Copy URL
+                          </ActionButton>
+                        </div>
+                      </div>
+                    )}
                     <button
                       onClick={toSync(cancelSignIn, reportRejection)}
                       className={
