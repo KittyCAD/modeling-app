@@ -46,7 +46,6 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
    */
   function onOpenInDesktopApp() {
     const newSearchParams = new URLSearchParams(globalThis.location.search)
-    newSearchParams.delete(ASK_TO_OPEN_QUERY_PARAM)
     const newURL = `${ZOO_STUDIO_PROTOCOL}://${globalThis.location.pathname.replace(
       '/',
       ''
@@ -64,6 +63,7 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
       return
     }
 
+    newSearchParams.delete(ASK_TO_OPEN_QUERY_PARAM)
     globalThis.location.href = newURL
   }
 
