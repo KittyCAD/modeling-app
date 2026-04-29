@@ -30,6 +30,7 @@ import {
   retrieveAxisOrEdgeSelectionsFromOpArg,
   retrieveBodyTypeFromOpArg,
 } from '@src/lang/modifyAst/sweeps'
+import { resolveToCodeRef } from '@src/lang/queryAst'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'

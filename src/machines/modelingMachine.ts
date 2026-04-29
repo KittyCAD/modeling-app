@@ -3215,7 +3215,6 @@ export const modelingMachine = setup({
           const legacySketchBlock = sketchBlockOnExtrudedFace(
             kclManager.ast,
             {
-              artifact: legacyFaceArtifact,
               codeRef: legacyFaceCodeRef,
             },
             legacyExtrudeFaceTemporaryCompat.sketchPathToNode,

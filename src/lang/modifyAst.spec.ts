@@ -1299,7 +1299,6 @@ extrude001 = extrude(profile001, length = 5)
       const result = sketchBlockOnExtrudedFace(
         ast,
         {
-          artifact: legacyWall,
           codeRef: legacyWallCodeRef!,
         },
         segmentPathToNode,

@@ -13,6 +13,7 @@ describe('coerceSelectionsToBody', () => {
 
     const path: Artifact = {
       type: 'path',
+      subType: 'sketch',
       id: 'path-1',
       codeRef: { range: [0, 100, 0], pathToNode: [], nodePath: { steps: [] } },
       planeId: 'plane-1',
@@ -47,6 +48,7 @@ describe('coerceSelectionsToBody', () => {
 
     const path: Artifact = {
       type: 'path',
+      subType: 'sketch',
       id: 'path-1',
       codeRef: { range: [0, 100, 0], pathToNode: [], nodePath: { steps: [] } },
       planeId: 'plane-1',
@@ -126,6 +128,7 @@ describe('coerceSelectionsToBody', () => {
 
     const path: Artifact = {
       type: 'path',
+      subType: 'sketch',
       id: 'path-1',
       codeRef: { range: [0, 100, 0], pathToNode: [], nodePath: { steps: [] } },
       planeId: 'plane-1',
@@ -208,6 +211,7 @@ describe('coerceSelectionsToBody', () => {
 
     const path: Artifact = {
       type: 'path',
+      subType: 'sketch',
       id: 'path-1',
       codeRef: { range: [0, 45, 0], pathToNode: [], nodePath: { steps: [] } },
       planeId: 'plane-1',

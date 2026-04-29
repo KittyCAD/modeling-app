@@ -1346,7 +1346,10 @@ extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)
     if (err(selections)) throw selections
 
     expect(selections.graphSelections).toHaveLength(1)
-    expect(selections.graphSelections[0].artifact?.type).toBe('segment')
+    expect(
+      resolveToCodeRef(selections.graphSelections[0], artifactGraph)?.artifact
+        ?.type
+    ).toBe('segment')
   })
 
   it('maps sketch block a circle argument to an edge selection', async () => {
@@ -1382,7 +1385,10 @@ bodyType = SURFACE,
     if (err(selections)) throw selections
 
     expect(selections.graphSelections).toHaveLength(1)
-    expect(selections.graphSelections[0].artifact?.type).toBe('segment')
+    expect(
+      resolveToCodeRef(selections.graphSelections[0], artifactGraph)?.artifact
+        ?.type
+    ).toBe('segment')
   })
 
   it('maps sketch block segment array arguments to edge selections', async () => {
@@ -1413,8 +1419,14 @@ extrude001 = extrude([sketch001.line1, sketch001.line2], length = 5, bodyType = 
     if (err(selections)) throw selections
 
     expect(selections.graphSelections).toHaveLength(2)
-    expect(selections.graphSelections[0].artifact?.type).toBe('segment')
-    expect(selections.graphSelections[1].artifact?.type).toBe('segment')
+    expect(
+      resolveToCodeRef(selections.graphSelections[0], artifactGraph)?.artifact
+        ?.type
+    ).toBe('segment')
+    expect(
+      resolveToCodeRef(selections.graphSelections[1], artifactGraph)?.artifact
+        ?.type
+    ).toBe('segment')
   })
 
   it('retrieves sweep path argument consisting of two surface sweepEdge segments', async () => {
@@ -1454,8 +1466,14 @@ sweep001 = sweep([sketch001.line2, sketch001.line1], path = [sketch002.line1, sk
     if (err(pathSelections)) throw pathSelections
 
     expect(pathSelections.graphSelections).toHaveLength(2)
-    expect(pathSelections.graphSelections[0].artifact?.type).toBe('segment')
-    expect(pathSelections.graphSelections[1].artifact?.type).toBe('segment')
+    expect(
+      resolveToCodeRef(pathSelections.graphSelections[0], artifactGraph)
+        ?.artifact?.type
+    ).toBe('segment')
+    expect(
+      resolveToCodeRef(pathSelections.graphSelections[1], artifactGraph)
+        ?.artifact?.type
+    ).toBe('segment')
   })
 
   it('should find the cap selection from simple extrude on face', async () => {

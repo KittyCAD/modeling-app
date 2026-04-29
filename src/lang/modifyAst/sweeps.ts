@@ -874,7 +874,6 @@ function addHideCallsForRegionSketches({
       objects: {
         graphSelections: [
           {
-            artifact: sketchArtifact,
             codeRef: sketchArtifact.codeRef,
           },
         ],
@@ -1138,8 +1137,12 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
     return {
       graphSelections: [
         {
-          artifact,
           codeRef: artifact.codeRef,
+          entityRef: artifactToEntityRef(
+            artifact.type,
+            artifact.id,
+            artifact.type === 'segment' ? artifact.pathId : undefined
+          ),
         },
       ],
       otherSelections: [],

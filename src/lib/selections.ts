@@ -967,6 +967,7 @@ export function handleSelectionBatch({
     engineEvents = setEngineEntitySelectionV2(entityReferences, systemDeps)
   } else {
     for (const s of selections.graphSelections) {
+      const resolved = resolveToCodeRef(s, artifactGraph)
       const entityId =
         s.entityRef && 'solid3d_id' in s.entityRef
           ? s.entityRef.solid3d_id
@@ -976,7 +977,7 @@ export function handleSelectionBatch({
               ? s.entityRef.face_id
               : s.entityRef && 'plane_id' in s.entityRef
                 ? s.entityRef.plane_id
-                : s.artifact?.id
+                : resolved?.artifact?.id
       if (!entityId) continue
 
       selectionToEngine.push({

@@ -110,7 +110,7 @@ export async function executeAstMock({
       usePrevMemory
     )
 
-    await rustContext.waitForAllEngineCommands()
+    await rustContext.waitForAllEngineModelingCommands()
     return {
       logs: [],
       errors: [],
