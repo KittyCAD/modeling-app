@@ -28,7 +28,7 @@ import fsZds from '@src/lib/fs-zds'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
 import { useApp } from '@src/lib/boot'
 import type { KclManager } from '@src/lang/KclManager'
-import { err } from '@src/lib/trap'
+import { isErr } from '@src/lib/trap'
 import {
   SystemIOMachineEvents,
   waitForIdleState,
@@ -127,7 +127,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
 
       const reservedProjectDestination =
         await getReservedProjectDestination(projectId)
-      if (reservedProjectDestination instanceof Error) {
+      if (isErr(reservedProjectDestination)) {
         console.error('[imported-project] failed to reserve project location', {
           projectId,
           message: reservedProjectDestination.message,
@@ -141,16 +141,16 @@ export function useQueryParamEffects(kclManager: KclManager) {
       }
 
       const downloadedProject = await downloadProjectById(projectId)
-      const downloadFailed = err(downloadedProject)
-      if (cancelled || downloadFailed) {
-        if (!cancelled && downloadFailed) {
-          console.error('[imported-project] failed before import handoff', {
-            projectId,
-            message: downloadedProject.message,
-          })
-          clearProjectIdSearchParam()
-          toast.error(downloadedProject.message)
-        }
+      if (isErr(downloadedProject)) {
+        console.error('[imported-project] failed before import handoff', {
+          projectId,
+          message: downloadedProject.message,
+        })
+        clearProjectIdSearchParam()
+        toast.error(downloadedProject.message)
+        return
+      }
+      if (cancelled) {
         return
       }
 
