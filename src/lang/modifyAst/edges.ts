@@ -38,7 +38,6 @@ import type {
   EdgeRefactorMeta,
   Expr,
   ExpressionStatement,
-  MemberExpression,
   Name,
   PathToNode,
   Program,
@@ -59,6 +58,7 @@ import type {
 import type { ResolvedGraphSelection } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
+  getArtifactFromRange,
   getCodeRefsByArtifactId,
   getFaceCodeRef,
   getSweepArtifactFromSelection,
@@ -894,7 +894,7 @@ export function createEdgeRefObjectExpression(
   tagsBaseExpr?: Expr | null
 ): { expr: Expr; modifiedAst: Node<Program> } | Error {
   // Resolve face UUIDs to tags
-  const faceTags: string[] = []
+  const faceExprs: Expr[] = []
   let currentAst = ast
 
   for (const faceId of payload.side_faces) {
@@ -915,6 +915,29 @@ export function createEdgeRefObjectExpression(
     // Handle Solid2D case: for Solid2D profiles, the "face" is actually the Solid2D itself
     // We need to tag the segment directly instead of trying to tag the face
     if (faceArtifact.type === 'solid2d') {
+      const segmentArtifact =
+        originalEdgeSelection?.artifact?.type === 'segment'
+          ? originalEdgeSelection.artifact
+          : fallbackCodeRef?.range
+            ? getArtifactFromRange(
+                fallbackCodeRef.range,
+                artifactGraph,
+                'segment'
+              )
+            : null
+      if (segmentArtifact?.type === 'segment') {
+        const regionTagExpr = getRegionTagExprFromSegmentId(
+          currentAst,
+          segmentArtifact.id,
+          artifactGraph,
+          wasmInstance
+        )
+        if (regionTagExpr) {
+          faceExprs.push(regionTagExpr)
+          continue
+        }
+      }
+
       // For Solid2D edges, we need to use the original edge selection or fallback codeRef to tag the segment
       let segmentPathToNode: PathToNode | undefined
 
@@ -950,7 +973,7 @@ export function createEdgeRefObjectExpression(
         )
       }
 
-      faceTags.push(tagResult.tag)
+      faceExprs.push(createLocalName(tagResult.tag))
       currentAst = tagResult.modifiedAst
     } else {
       // Normal case: tag the face artifact
@@ -970,24 +993,33 @@ export function createEdgeRefObjectExpression(
       }
 
       const faceTagExpr = tagResult.exprs[0]
-      if (!faceTagExpr || faceTagExpr.type !== 'Name') {
-        return new Error(`Failed to extract tag name for face ${faceId}`)
+      if (!faceTagExpr) {
+        return new Error(`Failed to extract tag expression for face ${faceId}`)
       }
 
-      faceTags.push(faceTagExpr.name?.name ?? '')
+      if (tagsBaseExpr != null && faceTagExpr.type === 'Name') {
+        faceExprs.push(
+          createMemberExpression(
+            createMemberExpression(tagsBaseExpr, 'tags'),
+            faceTagExpr.name?.name ?? ''
+          )
+        )
+      } else {
+        faceExprs.push(faceTagExpr)
+      }
       currentAst = tagResult.modifiedAst
     }
   }
 
-  const disambiguatorTags: string[] = []
+  const endFaceExprs: Expr[] = []
   if (payload.end_faces && payload.end_faces.length > 0) {
-    for (const disambId of payload.end_faces) {
-      const disambArtifact = artifactGraph.get(disambId)
-      if (!disambArtifact) {
+    for (const endFacebId of payload.end_faces) {
+      const endFaceArtifact = artifactGraph.get(endFacebId)
+      if (!endFaceArtifact) {
         continue
       }
 
-      const codeRefs = getCodeRefsByArtifactId(disambId, artifactGraph)
+      const codeRefs = getCodeRefsByArtifactId(endFacebId, artifactGraph)
       if (!codeRefs || codeRefs.length === 0) {
         continue
       }
@@ -995,7 +1027,7 @@ export function createEdgeRefObjectExpression(
       const tagResult = modifyAstWithTagsForSelection(
         currentAst,
         {
-          artifact: disambArtifact,
+          artifact: endFaceArtifact,
           codeRef: codeRefs[0],
         } as ResolvedGraphSelection,
         artifactGraph,
@@ -1006,39 +1038,29 @@ export function createEdgeRefObjectExpression(
       }
 
       const endFaceTagExpr = tagResult.exprs[0]
-      if (!endFaceTagExpr || endFaceTagExpr.type !== 'Name') continue
+      if (!endFaceTagExpr) continue
 
-      disambiguatorTags.push(endFaceTagExpr.name?.name ?? '')
+      if (tagsBaseExpr != null && endFaceTagExpr.type === 'Name') {
+        endFaceExprs.push(
+          createMemberExpression(
+            createMemberExpression(tagsBaseExpr, 'tags'),
+            endFaceTagExpr.name?.name ?? ''
+          )
+        )
+      } else {
+        endFaceExprs.push(endFaceTagExpr)
+      }
       currentAst = tagResult.modifiedAst
     }
   }
 
   // KCL uses camelCase for object keys (sideFaces, endFaces)
-  const sideFacesExprs =
-    tagsBaseExpr != null
-      ? faceTags.map((tag) =>
-          createMemberExpression(
-            createMemberExpression(tagsBaseExpr, 'tags'),
-            tag
-          )
-        )
-      : faceTags.map((tag) => createLocalName(tag))
-
   const properties: { [key: string]: Expr } = {
-    sideFaces: createArrayExpression(sideFacesExprs),
+    sideFaces: createArrayExpression(faceExprs),
   }
 
-  if (disambiguatorTags.length > 0) {
-    const endFacesExprs =
-      tagsBaseExpr != null
-        ? disambiguatorTags.map((tag) =>
-            createMemberExpression(
-              createMemberExpression(tagsBaseExpr, 'tags'),
-              tag
-            )
-          )
-        : disambiguatorTags.map((tag) => createLocalName(tag))
-    properties.endFaces = createArrayExpression(endFacesExprs)
+  if (endFaceExprs.length > 0) {
+    properties.endFaces = createArrayExpression(endFaceExprs)
   }
 
   // Only add index if explicitly provided
@@ -2593,24 +2615,6 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
   }
 
   return { modifiedAst, bodies }
-}
-
-function createMemberExpr(
-  object: Expr,
-  propertyName: string
-): Node<MemberExpression> {
-  return {
-    type: 'MemberExpression',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    outerAttrs: [],
-    preComments: [],
-    commentStart: 0,
-    object,
-    property: createLocalName(propertyName),
-    computed: false,
-  }
 }
 
 type EdgeSelectionForExpr = Selection | EnginePrimitiveSelection
