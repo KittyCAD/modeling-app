@@ -71,9 +71,16 @@ const prepareBulkProjectWrite = async ({
 
   const targetProjectName =
     requestedProjectName || context.defaultProjectFolderName
-  const projectName = useReservedProjectName
-    ? targetProjectName
-    : getUniqueProjectName(targetProjectName, context.folders ?? [])
+  let projectName =
+    useReservedProjectName || requestedProjectName
+      ? targetProjectName
+      : getUniqueProjectName(targetProjectName, context.folders ?? [])
+
+  if (!useReservedProjectName && doesProjectNameNeedInterpolated(projectName)) {
+    const nextIndex = getNextProjectIndex(projectName, context.folders ?? [])
+    projectName = interpolateProjectNameWithIndex(projectName, nextIndex)
+  }
+
   const projectRoot = fsZds.join(projectDirectoryPath, projectName)
 
   return {
