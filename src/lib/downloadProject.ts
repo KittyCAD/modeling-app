@@ -12,6 +12,7 @@ import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { webSafePathSplit } from '@src/lib/paths'
 import { isArray } from '@src/lib/utils'
 import type { RequestedProjectFile } from '@src/machines/systemIO/utils'
+import { err, isErr } from '@src/lib/trap'
 
 const DEFAULT_IMPORTED_PROJECT_NAME = 'shared-project'
 const PROJECT_DOWNLOAD_FORMAT = 'zip'
@@ -42,7 +43,7 @@ export async function getPublicProjectNameById(
     })
   )
 
-  if (result instanceof Error) {
+  if (err(result)) {
     return result
   }
 
@@ -57,31 +58,15 @@ export async function downloadProjectById(projectId: string): Promise<
     }
   | Error
 > {
-  console.info('[imported-project] starting download', { projectId })
   const archive = await downloadProjectArchiveById(projectId)
-  if (archive instanceof Error) {
-    console.error('[imported-project] download failed', {
-      projectId,
-      message: archive.message,
-    })
+  if (err(archive)) {
     return archive
   }
 
   const parsedProject = await parseDownloadedProject(archive)
-  if (parsedProject instanceof Error) {
-    console.error('[imported-project] failed to parse downloaded archive', {
-      projectId,
-      message: parsedProject.message,
-    })
+  if (err(parsedProject)) {
     return parsedProject
   }
-
-  console.info('[imported-project] parsed download', {
-    projectId,
-    projectName: parsedProject.projectName,
-    fileCount: parsedProject.files.length,
-    entrypointFilePath: parsedProject.entrypointFilePath || null,
-  })
 
   return parsedProject
 }
@@ -113,7 +98,7 @@ async function downloadProjectArchiveById(
     })
   )
 
-  if (result instanceof Error) {
+  if (err(result)) {
     return result
   }
 
@@ -191,12 +176,12 @@ async function parseDownloadedProject({
     archive,
     contentDisposition,
   })
-  if (!(zipResult instanceof Error)) {
+  if (!isErr(zipResult)) {
     return zipResult
   }
 
   const jsonResult = parseJsonArchive(archive)
-  if (!(jsonResult instanceof Error)) {
+  if (!isErr(jsonResult)) {
     return jsonResult
   }
 
@@ -245,7 +230,7 @@ async function parseZipArchive({
   )
 
   const entrypointFilePath = getRequiredProjectEntrypoint(files)
-  if (entrypointFilePath instanceof Error) {
+  if (err(entrypointFilePath)) {
     return entrypointFilePath
   }
 
@@ -296,7 +281,7 @@ function parseJsonArchive(archive: ArrayBuffer):
   }
 
   const entrypointFilePath = getRequiredProjectEntrypoint(files)
-  if (entrypointFilePath instanceof Error) {
+  if (err(entrypointFilePath)) {
     return entrypointFilePath
   }
 

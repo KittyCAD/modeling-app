@@ -39,30 +39,49 @@ import {
   collectProjectFiles,
 } from '@src/machines/systemIO/utils'
 import { fromPromise } from 'xstate'
+import { isErr } from '@src/lib/trap'
 
 const ML_CONVERSATIONS_FILE_NAME = 'ml-conversations.json'
 
-const resolveRequestedProjectName = ({
+const prepareBulkProjectWrite = async ({
+  context,
   requestedProjectName,
-  defaultProjectFolderName,
-  folders,
+  wasmInstance,
+  useReservedProjectName = false,
+  useSettingsProjectDirectoryFallback = false,
 }: {
-  requestedProjectName: string
-  defaultProjectFolderName: string
-  folders: Project[]
+  context: SystemIOContext
+  requestedProjectName?: string
+  wasmInstance: ModuleType
+  useReservedProjectName?: boolean
+  useSettingsProjectDirectoryFallback?: boolean
 }) => {
-  let newProjectName = requestedProjectName
+  const configuration = await readAppSettingsFile(wasmInstance)
+  const projectDirectoryPath =
+    context.projectDirectoryPath ||
+    (useSettingsProjectDirectoryFallback
+      ? await ensureProjectDirectoryExists(configuration)
+      : '')
 
-  if (!newProjectName) {
-    newProjectName = getUniqueProjectName(defaultProjectFolderName, folders)
+  if (!projectDirectoryPath) {
+    return Promise.reject(
+      new Error('Unable to determine the project directory.')
+    )
   }
 
-  if (doesProjectNameNeedInterpolated(newProjectName)) {
-    const nextIndex = getNextProjectIndex(newProjectName, folders)
-    newProjectName = interpolateProjectNameWithIndex(newProjectName, nextIndex)
-  }
+  const targetProjectName =
+    requestedProjectName || context.defaultProjectFolderName
+  const projectName = useReservedProjectName
+    ? targetProjectName
+    : getUniqueProjectName(targetProjectName, context.folders ?? [])
+  const projectRoot = fsZds.join(projectDirectoryPath, projectName)
 
-  return newProjectName
+  return {
+    configuration,
+    projectDirectoryPath,
+    projectName,
+    projectRoot,
+  }
 }
 
 const sharedBulkCreateWorkflow = async ({
@@ -75,12 +94,15 @@ const sharedBulkCreateWorkflow = async ({
     override?: boolean
   }
 }) => {
-  const configuration = await readAppSettingsFile(input.wasmInstance)
-  const folders = input.context.folders ?? []
-  const newProjectName = resolveRequestedProjectName({
-    requestedProjectName: input.files[0]?.requestedProjectName || '',
-    defaultProjectFolderName: input.context.defaultProjectFolderName,
-    folders,
+  const {
+    configuration,
+    projectDirectoryPath,
+    projectName: newProjectName,
+    projectRoot,
+  } = await prepareBulkProjectWrite({
+    context: input.context,
+    requestedProjectName: input.files[0]?.requestedProjectName,
+    wasmInstance: input.wasmInstance,
   })
 
   for (let fileIndex = 0; fileIndex < input.files.length; fileIndex++) {
@@ -88,17 +110,13 @@ const sharedBulkCreateWorkflow = async ({
     const requestedFileName = file.requestedFileName
     const requestedCode = file.requestedCode
 
-    const baseDir = fsZds.join(
-      input.context.projectDirectoryPath,
-      newProjectName
-    )
     // If override is true, use the requested filename directly
     const fileName = input.override
       ? requestedFileName
       : (
           await getNextFileName({
             entryName: requestedFileName,
-            baseDir,
+            baseDir: projectRoot,
             wasmInstance: input.wasmInstance,
           })
         ).name
@@ -110,7 +128,7 @@ const sharedBulkCreateWorkflow = async ({
       requestedCode,
       configuration,
       fileName,
-      input.context.projectDirectoryPath
+      projectDirectoryPath
     )
   }
   const numberOfFiles = input.files.length
@@ -126,7 +144,7 @@ const sharedBulkCreateWorkflow = async ({
   }
 }
 
-const sharedBulkWriteProjectFilesWorkflow = async ({
+const sharedBulkWriteImportedProjectFilesWorkflow = async ({
   input,
 }: {
   input: {
@@ -145,26 +163,14 @@ const sharedBulkWriteProjectFilesWorkflow = async ({
       )
     }
 
-    const configuration = await readAppSettingsFile(
-      await input.context.wasmInstancePromise
-    )
-    const projectDirectoryPath =
-      input.context.projectDirectoryPath ||
-      (await ensureProjectDirectoryExists(configuration))
-
-    if (!projectDirectoryPath) {
-      return Promise.reject(
-        new Error('Unable to determine the project directory.')
-      )
-    }
-
-    const projectName = resolveRequestedProjectName({
+    const wasmInstance = await input.context.wasmInstancePromise
+    const { projectName, projectRoot } = await prepareBulkProjectWrite({
+      context: input.context,
       requestedProjectName: input.requestedProjectName,
-      defaultProjectFolderName: input.context.defaultProjectFolderName,
-      folders: input.context.folders ?? [],
+      wasmInstance,
+      useReservedProjectName: true,
+      useSettingsProjectDirectoryFallback: true,
     })
-
-    const projectRoot = fsZds.join(projectDirectoryPath, projectName)
     const requestedFileNameWithExtension =
       input.requestedFileNameWithExtension || ''
 
@@ -181,15 +187,7 @@ const sharedBulkWriteProjectFilesWorkflow = async ({
       )
     }
 
-    console.info('[imported-project] writing project files', {
-      projectName,
-      projectRoot,
-      fileCount: input.files.length,
-      entrypointFilePath: requestedFileNameWithExtension || null,
-    })
-
     await fsZds.mkdir(projectRoot, { recursive: true })
-
     for (const file of input.files) {
       const targetPath = fsZds.join(projectRoot, file.requestedFileName)
       await fsZds.mkdir(fsZds.dirname(targetPath), { recursive: true })
@@ -213,29 +211,15 @@ const sharedBulkWriteProjectFilesWorkflow = async ({
       }
     }
 
-    console.info('[imported-project] finished writing project files', {
-      projectName,
-      projectRoot,
-      entrypointFilePath: requestedFileNameWithExtension || null,
-    })
-
     return {
-      message: `Successfully imported "${projectName}"`,
+      message: `Successfully imported project within "${projectName}"`,
       fileName: requestedFileNameWithExtension,
       projectName,
       subRoute: '',
     }
   } catch (error) {
-    console.error('[imported-project] failed while writing project files', {
-      requestedProjectName: input.requestedProjectName,
-      requestedFileNameWithExtension:
-        input.requestedFileNameWithExtension || null,
-      fileCount: input.files.length,
-      error,
-    })
-
     return Promise.reject(
-      error instanceof Error
+      isErr(error)
         ? error
         : new Error('Failed while writing the imported shared project.')
     )
@@ -586,7 +570,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             requestedSubRoute?: string
           }
         }) => {
-          const message = await sharedBulkWriteProjectFilesWorkflow({
+          const message = await sharedBulkWriteImportedProjectFilesWorkflow({
             input,
           })
           return {

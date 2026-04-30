@@ -28,7 +28,7 @@ import fsZds from '@src/lib/fs-zds'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
 import { useApp } from '@src/lib/boot'
 import type { KclManager } from '@src/lang/KclManager'
-import { isErr } from '@src/lib/trap'
+import { err } from '@src/lib/trap'
 import {
   SystemIOMachineEvents,
   waitForIdleState,
@@ -116,10 +116,6 @@ export function useQueryParamEffects(kclManager: KclManager) {
     }
 
     void (async () => {
-      console.info('[imported-project] opening project from query param', {
-        projectId,
-      })
-
       await waitForIdleState({ systemIOActor: app.systemIOActor })
       if (cancelled) {
         return
@@ -127,11 +123,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
 
       const reservedProjectDestination =
         await getReservedProjectDestination(projectId)
-      if (isErr(reservedProjectDestination)) {
-        console.error('[imported-project] failed to reserve project location', {
-          projectId,
-          message: reservedProjectDestination.message,
-        })
+      if (err(reservedProjectDestination)) {
         clearProjectIdSearchParam()
         toast.error(reservedProjectDestination.message)
         return
@@ -141,11 +133,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
       }
 
       const downloadedProject = await downloadProjectById(projectId)
-      if (isErr(downloadedProject)) {
-        console.error('[imported-project] failed before import handoff', {
-          projectId,
-          message: downloadedProject.message,
-        })
+      if (err(downloadedProject)) {
         clearProjectIdSearchParam()
         toast.error(downloadedProject.message)
         return
@@ -153,13 +141,6 @@ export function useQueryParamEffects(kclManager: KclManager) {
       if (cancelled) {
         return
       }
-
-      console.info('[imported-project] handing parsed project to system IO', {
-        projectId,
-        projectName: downloadedProject.projectName,
-        fileCount: downloadedProject.files.length,
-        entrypointFilePath: downloadedProject.entrypointFilePath,
-      })
 
       const files = !isDesktop()
         ? downloadedProject.files.map((file) => ({
@@ -198,16 +179,9 @@ export function useQueryParamEffects(kclManager: KclManager) {
         return
       }
 
-      console.error('[imported-project] unexpected failure while opening', {
-        projectId,
-        error,
-      })
       clearProjectIdSearchParam()
-
       toast.error(
-        error instanceof Error
-          ? error.message
-          : 'Failed to open the shared project.'
+        err(error) ? error.message : 'Failed to open the shared project.'
       )
     })
 
@@ -231,22 +205,21 @@ export function useQueryParamEffects(kclManager: KclManager) {
 
     await waitFor(app.settings.actor, (state) => state.matches('idle'))
 
-    let systemIOContext = app.systemIOActor.getSnapshot().context
+    const systemIOContext = app.systemIOActor.getSnapshot().context
     const projectDirectoryPath = app.settings.get().app.projectDirectory.current
     if (!projectDirectoryPath) {
       return new Error('Unable to determine the project directory.')
     }
 
     if (isDesktop()) {
-      app.systemIOActor.send({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-      })
-      await waitForIdleState({ systemIOActor: app.systemIOActor })
-      systemIOContext = app.systemIOActor.getSnapshot().context
-
+      const projectDirectoryEntries = await fsZds.readdir(projectDirectoryPath)
       const requestedProjectName = getUniqueProjectName(
         projectName,
-        systemIOContext.folders || []
+        projectDirectoryEntries.map((name) => ({
+          name,
+          path: fsZds.join(projectDirectoryPath, name),
+          children: [],
+        }))
       )
       await fsZds.mkdir(
         fsZds.join(projectDirectoryPath, requestedProjectName),
