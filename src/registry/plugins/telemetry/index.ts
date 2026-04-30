@@ -1,11 +1,11 @@
 import { routesSignal, statusBarGlobalItemsSignal } from '@src/signals'
-import { defineExtension, provide } from '@kittycad/extensions'
-import { createZdsPlugin } from '@src/extensions/createZdsPlugin'
+import { defineRegistryItem, provide } from '@kittycad/registry'
+import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
 import { telemetryFileRoute, telemetryHomeRoute } from '@src/routes/Telemetry'
 
 /** Contributes the telemetry modal routes for both home and file contexts. */
-const telemetryRouteExt = defineExtension({
+const telemetryRouteItem = defineRegistryItem({
   provides: [
     provide(routesSignal, telemetryHomeRoute),
     provide(routesSignal, telemetryFileRoute),
@@ -13,7 +13,7 @@ const telemetryRouteExt = defineExtension({
 })
 
 /** Contributes a status-bar entry point for the telemetry plugin. */
-const telemetryStatusBarExt = defineExtension({
+const telemetryStatusBarItem = defineRegistryItem({
   provides: [
     provide(statusBarGlobalItemsSignal, {
       id: 'telemetry',
@@ -33,7 +33,7 @@ const telemetry = createZdsPlugin({
   title: 'Telemetry',
   description:
     'Telemetry tracks app performance and exposes `/home/telemetry` and `/file/:id/telemetry`, plus a route-aware status bar entry point.',
-  extensions: [telemetryRouteExt, telemetryStatusBarExt],
+  items: [telemetryRouteItem, telemetryStatusBarItem],
   defaultSetting: 'core',
 })
 

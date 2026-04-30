@@ -1,7 +1,7 @@
-import type { ExtensionNode } from '@kittycad/extensions'
+import type { RegistryItem } from '@kittycad/registry'
 
 type PluginModule = {
-  default?: ExtensionNode
+  default?: RegistryItem
   order?: number
 }
 
@@ -12,9 +12,9 @@ const pluginModules: Record<string, PluginModule> = import.meta.glob(
   }
 )
 
-// Core app plugins discovered from src/extensions/plugins/*/index.ts.
+// Core app plugins discovered from src/registry/plugins/*/index.ts.
 // Keep ordering deterministic so adding folders does not create unstable load order.
-export const coreExtensions: ExtensionNode[] = Object.entries(pluginModules)
+export const coreRegistryItems: RegistryItem[] = Object.entries(pluginModules)
   .map(([path, mod]) => ({
     path,
     order: mod.order ?? 0,
@@ -22,4 +22,4 @@ export const coreExtensions: ExtensionNode[] = Object.entries(pluginModules)
   }))
   .filter((entry) => entry.plugin !== undefined)
   .sort((a, b) => a.order - b.order || a.path.localeCompare(b.path))
-  .map((entry) => entry.plugin as ExtensionNode)
+  .map((entry) => entry.plugin as RegistryItem)

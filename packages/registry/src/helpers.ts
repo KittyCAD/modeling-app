@@ -4,16 +4,16 @@ import {
   signal,
 } from '@preact/signals-core'
 import { CombineMutationError, ServiceResolutionError } from './errors'
-import type { ExtensionContainer } from './container'
+import type { Registry } from './registry'
 import { Slot } from './types'
 import type {
-  ExtensionDefinition,
-  ExtensionFactory,
-  ExtensionKey,
-  ExtensionNode,
+  RegistryItemDefinition,
+  RegistryItemFactory,
+  RegistryItemKey,
+  RegistryItem,
   MaybeSignal,
   Precedence,
-  RuntimeExtensionDefinition,
+  RuntimeRegistryItemDefinition,
   Service,
   ServiceContribution,
   Signal,
@@ -67,11 +67,11 @@ export function sortContributions<
  * This is meant for stable identities like commands, toolbar items, or shared
  * infrastructure pieces. It intentionally does not attempt structural equality.
  */
-export function dedupeContributions<T extends { key?: ExtensionKey }>(
+export function dedupeContributions<T extends { key?: RegistryItemKey }>(
   items: readonly T[]
 ): T[] {
   const out: T[] = []
-  const seen = new Set<ExtensionKey>()
+  const seen = new Set<RegistryItemKey>()
 
   for (const item of items) {
     if (item.key != null) {
@@ -118,7 +118,7 @@ export interface SlotToggleController {
  * service contract and the common reactive entry points.
  */
 export function sanitizeServiceImplementation<T extends object>(
-  container: ExtensionContainer,
+  container: Registry,
   service: Service<T>,
   implementation: T
 ): T {
@@ -177,13 +177,13 @@ export function sanitizeServiceImplementation<T extends object>(
   return Object.freeze(out) as T
 }
 
-/** Helpers for authoring extensions. */
-export function defineExtensionFactory<TModel = unknown>(
-  factory: ExtensionFactory<TModel>,
-  extensionKey?: ExtensionKey
-): ExtensionFactory<TModel> {
-  Object.defineProperty(factory, 'extensionKey', {
-    value: extensionKey ?? factory,
+/** Helpers for authoring registry items. */
+export function defineRegistryItemFactory<TModel = unknown>(
+  factory: RegistryItemFactory<TModel>,
+  itemKey?: RegistryItemKey
+): RegistryItemFactory<TModel> {
+  Object.defineProperty(factory, 'itemKey', {
+    value: itemKey ?? factory,
     enumerable: false,
     configurable: false,
     writable: false,
@@ -191,13 +191,15 @@ export function defineExtensionFactory<TModel = unknown>(
   return factory
 }
 
-export function defineExtension<T extends ExtensionDefinition>(spec: T): T {
+export function defineRegistryItem<T extends RegistryItemDefinition>(
+  spec: T
+): T {
   return spec
 }
 
-export function defineRuntimeExtension<T extends RuntimeExtensionDefinition>(
-  spec: T
-): T {
+export function defineRuntimeRegistryItem<
+  T extends RuntimeRegistryItemDefinition,
+>(spec: T): T {
   return spec
 }
 
@@ -210,7 +212,7 @@ interface PluginInfo {
 
 /** Input shape for constructing a plugin with a toggleable slot. */
 interface PluginSpec extends PluginInfo {
-  extensions: readonly ExtensionNode[]
+  items: readonly RegistryItem[]
   enabledByDefault?: boolean
 }
 
@@ -229,29 +231,29 @@ export interface PluginRecord extends PluginInfo {
 export const pluginsSignal = appendSignal<PluginRecord>('plugins')
 
 /**
- * Build a plugin from declarative extension content.
+ * Build a plugin from declarative registry item content.
  *
- * A plugin is modeled as one installable extension node with:
+ * A plugin is modeled as one installable registry node with:
  * - one slot that owns the plugin's runtime-toggled subtree
  * - one controller service that can reconfigure that slot
  * - one metadata contribution for discovery and UI presentation
  *
  * UI contributed by a plugin should read app or router context from React
- * hooks at render time rather than from the runtime extension factory context.
+ * hooks at render time rather than from the runtime registry item factory context.
  */
 export function createPlugin({
-  extensions,
+  items,
   enabledByDefault = true,
   ...info
-}: PluginSpec): ExtensionDefinition {
+}: PluginSpec): RegistryItemDefinition {
   const slot = new Slot()
-  const toggle = createToggleableExtension({
+  const toggle = createToggleableRegistryItem({
     name: info.id,
-    extensions,
+    items,
     slot,
     initialActive: enabledByDefault,
   })
-  return defineExtension({
+  return defineRegistryItem({
     id: info.id,
     provides: [
       provide(pluginsSignal, {
@@ -259,51 +261,51 @@ export function createPlugin({
         service: toggle.service,
       }),
     ],
-    uses: [slot.of(...(enabledByDefault ? extensions : [])), toggle.extension],
+    uses: [slot.of(...(enabledByDefault ? items : [])), toggle.item],
   })
 }
 
 /**
  * Create a stable toggle-controller service for a slot-backed feature.
  *
- * The controller extension must live outside the slot it mutates so the
+ * The controller registry item must live outside the slot it mutates so the
  * service remains available after the feature is turned off.
  */
-function createToggleableExtension({
+function createToggleableRegistryItem({
   name,
-  extensions,
+  items,
   slot,
   initialActive,
 }: {
   name: string
-  extensions: readonly ExtensionNode[]
+  items: readonly RegistryItem[]
   slot: Slot
   initialActive: boolean
 }) {
   const service = defineService<SlotToggleController>(`${name}-toggle`)
   return {
     service,
-    extension: defineExtensionFactory((ctx) => {
+    item: defineRegistryItemFactory((ctx) => {
       const impl = createSlotToggleController({
         container: ctx.container,
-        activeExtensions: extensions,
+        activeItems: items,
         initialActive,
         slot,
       })
       return {
-        extension: defineRuntimeExtension({
+        item: defineRuntimeRegistryItem({
           providesServices: [provideService(service, impl)],
         }),
       }
-    }, `${name}-toggle-ext`),
+    }, `${name}-toggle-item`),
   }
 }
 
 type SlotToggleControllerProps = {
-  container: Pick<ExtensionContainer, 'reconfigure'>
+  container: Pick<Registry, 'reconfigure'>
   slot: Slot
-  activeExtensions: readonly ExtensionNode[]
-  inactiveExtensions?: readonly ExtensionNode[]
+  activeItems: readonly RegistryItem[]
+  inactiveItems?: readonly RegistryItem[]
   initialActive?: boolean
 }
 
@@ -316,8 +318,8 @@ type SlotToggleControllerProps = {
 export function createSlotToggleController({
   container,
   slot,
-  activeExtensions,
-  inactiveExtensions = [],
+  activeItems,
+  inactiveItems = [],
   initialActive = false,
 }: SlotToggleControllerProps): SlotToggleController {
   const active = signal(initialActive)
@@ -326,11 +328,11 @@ export function createSlotToggleController({
     active,
     enable() {
       active.value = true
-      container.reconfigure(slot, activeExtensions)
+      container.reconfigure(slot, activeItems)
     },
     disable() {
       active.value = false
-      container.reconfigure(slot, inactiveExtensions)
+      container.reconfigure(slot, inactiveItems)
     },
     toggle() {
       if (active.value) {

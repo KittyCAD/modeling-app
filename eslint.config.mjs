@@ -211,7 +211,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['packages/extensions/src/**/*.{ts,tsx}'],
+    files: ['packages/registry/src/**/*.{ts,tsx}'],
     rules: {
       'suggest-no-throw/suggest-no-throw': 'off',
     },

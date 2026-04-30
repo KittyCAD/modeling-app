@@ -3,30 +3,30 @@ import { appendSignal, defineSignal, mergeObjectsSignal } from '../signal'
 import {
   createSlotToggleController,
   createPlugin,
-  defineExtension,
-  defineExtensionFactory,
-  defineRuntimeExtension,
+  defineRegistryItem,
+  defineRegistryItemFactory,
+  defineRuntimeRegistryItem,
   provide,
   provideService,
 } from '../helpers'
-import { ExtensionContainer } from '../container'
+import { Registry } from '../registry'
 import { defineService } from '../service'
-import { Slot, type ExtensionNode } from '../types'
+import { Slot, type RegistryItem } from '../types'
 
 /**
  * This file is intentionally more tutorial-like than the rest of the package.
  *
- * The example container demonstrates four layers of the system:
+ * The example registry demonstrates four layers of the system:
  * 1. signals model composable outputs like toolbars or panels
  * 2. services model imperative capabilities with signal-backed state
- * 3. runtime extensions own long-lived models and expose them through services
+ * 3. runtime registry items own long-lived models and expose them through services
  * 4. plugins are the installable developer-facing unit built on top of all that
  *
  * Read this file top-to-bottom:
  * - start with the shapes that UI wants to render
  * - then the signal and service definitions
  * - then the static/runtime/plugin examples
- * - finally the `createExampleContainer()` assembly at the bottom
+ * - finally the `createExampleRegistry()` assembly at the bottom
  */
 
 export interface Command {
@@ -98,9 +98,9 @@ export interface NotesPluginApi {
 }
 
 /**
- * Signals are typed extension points.
+ * Signals are typed registry points.
  *
- * Any number of extensions can contribute to a signal. The container gathers those
+ * Any number of registry items can contribute to a signal. The registry gathers those
  * inputs and runs the signal's pure `combine()` function to produce one resolved
  * output.
  */
@@ -127,7 +127,7 @@ export const settingsSignal = mergeObjectsSignal<AppSettings>('settings', {
  * Services are the dependency-injection layer.
  *
  * Unlike signals, services are usually singleton capabilities that other
- * extensions read lazily from the container.
+ * registry items read lazily from the registry.
  */
 export const searchService = defineService<SearchService>('search')
 export const workspaceToggleService =
@@ -139,25 +139,25 @@ export const notesPluginApiService =
   defineService<NotesPluginApi>('notes-plugin-api')
 
 /**
- * Slots are replaceable subtrees of the extension graph.
+ * Slots are replaceable subtrees of the registry graph.
  *
  * Toggling one slot should preserve unrelated runtime state owned by the
- * rest of the container.
+ * rest of the registry.
  */
 export const workspaceSlot = new Slot()
 export const analyticsSlot = new Slot()
 
 /**
- * Static extensions are plain declarative contributions. They are the easiest
+ * Static registry items are plain declarative contributions. They are the easiest
  * thing to author and should be preferred when no local model or cleanup is
  * needed.
  */
-export const baseExtension = defineExtension({
-  id: 'base-extension',
+export const baseRegistryItem = defineRegistryItem({
+  id: 'base-registry-item',
   provides: [provide(settingsSignal, { theme: 'dark' })],
 })
 
-export const personalWorkspaceExtension = defineExtension({
+export const personalWorkspaceRegistryItem = defineRegistryItem({
   id: 'workspace.personal',
   provides: [
     provide(
@@ -173,7 +173,7 @@ export const personalWorkspaceExtension = defineExtension({
   ],
 })
 
-export const teamWorkspaceExtension = defineExtension({
+export const teamWorkspaceRegistryItem = defineRegistryItem({
   id: 'workspace.team',
   provides: [
     provide(
@@ -190,12 +190,12 @@ export const teamWorkspaceExtension = defineExtension({
 })
 
 /**
- * Runtime extensions are where long-lived models usually live.
+ * Runtime registry items are where long-lived models usually live.
  *
  * This one owns search state and exposes it through a service plus a reactive
  * toolbar contribution.
  */
-export const searchExtension = defineExtensionFactory(() => {
+export const searchRegistryItem = defineRegistryItemFactory(() => {
   const isOpen = signal(false)
   const query = signal('')
 
@@ -217,8 +217,8 @@ export const searchExtension = defineExtensionFactory(() => {
   }
 
   return {
-    extension: defineRuntimeExtension({
-      id: 'search-extension',
+    item: defineRuntimeRegistryItem({
+      id: 'search-registry-item',
       providesServices: [provideService(searchService, serviceImpl)],
       provides: [
         provide(
@@ -235,73 +235,76 @@ export const searchExtension = defineExtensionFactory(() => {
       ],
     }),
   }
-}, 'search-extension-factory')
+}, 'search-registry-item-factory')
 
 /**
- * Runtime extensions can also depend on other runtime services.
+ * Runtime registry items can also depend on other runtime services.
  *
  * Notice the important pattern here:
- * - the extension factory itself does not eagerly read a service
+ * - the registry item factory itself does not eagerly read a service
  * - instead, the service read is deferred into `computed(...)`
  * - that keeps graph construction pure and lets the contribution react when the
  *   upstream service changes
  */
-export const searchStatusExtension = defineExtensionFactory(({ services }) => {
-  return {
-    extension: defineExtension({
-      id: 'search-status-extension',
-      provides: [
-        provide(
-          toolbarSignal,
-          computed(() => {
-            const search = services.get(searchService)
-            return {
-              id: 'search.status',
-              label: search.query.value
-                ? `Searching: ${search.query.value}`
-                : 'Search Idle',
-              run: () => search.open(),
-            }
-          }),
-          { key: 'search.status', precedence: 'low' }
-        ),
-      ],
-    }),
-  }
-}, 'search-status-extension')
+export const searchStatusRegistryItem = defineRegistryItemFactory(
+  ({ services }) => {
+    return {
+      item: defineRegistryItem({
+        id: 'search-status-registry-item',
+        provides: [
+          provide(
+            toolbarSignal,
+            computed(() => {
+              const search = services.get(searchService)
+              return {
+                id: 'search.status',
+                label: search.query.value
+                  ? `Searching: ${search.query.value}`
+                  : 'Search Idle',
+                run: () => search.open(),
+              }
+            }),
+            { key: 'search.status', precedence: 'low' }
+          ),
+        ],
+      }),
+    }
+  },
+  'search-status-registry-item'
+)
 
 /**
- * `uses` is the structural composition primitive for declarative extensions.
+ * `uses` is the structural composition primitive for declarative registry items.
  *
  * This bundle does not contribute signals or services directly. Instead, it says
- * "when you install `searchFeatureExtension`, also install these child
- * extensions." Reach for `uses` when a few extensions always ship together and
+ * "when you install `searchFeatureRegistryItem`, also install these child
+ * registry items." Reach for `uses` when a few registry items always ship together and
  * you want one higher-level unit without introducing plugin metadata or toggle
  * behavior.
  */
-export const searchFeatureExtension = defineExtension({
-  id: 'search-feature-extension',
-  uses: [searchExtension, searchStatusExtension],
+export const searchFeatureRegistryItem = defineRegistryItem({
+  id: 'search-feature-registry-item',
+  uses: [searchRegistryItem, searchStatusRegistryItem],
 })
 
 /**
- * This runtime extension is the canonical "feature toggle" pattern.
+ * This runtime registry item is the canonical "feature toggle" pattern.
  *
  * The controller service lives outside `workspaceSlot`, so the toggle
  * remains reachable even after the slot content is turned off.
  */
-export const workspaceToggleExtension = defineExtensionFactory(
+export const workspaceToggleRegistryItem = defineRegistryItemFactory(
   ({ container }) => {
     const controller = createSlotToggleController({
       container,
       slot: workspaceSlot,
-      activeExtensions: [teamWorkspaceExtension],
+      activeItems: [teamWorkspaceRegistryItem],
       initialActive: false,
     })
 
     return {
-      extension: defineRuntimeExtension({
-        id: 'workspace-toggle-extension',
+      item: defineRuntimeRegistryItem({
+        id: 'workspace-toggle-registry-item',
         providesServices: [provideService(workspaceToggleService, controller)],
         provides: [
           provide(
@@ -319,16 +322,16 @@ export const workspaceToggleExtension = defineExtensionFactory(
       }),
     }
   },
-  'workspace-toggle-extension'
+  'workspace-toggle-registry-item'
 )
 
 /**
  * Upstream runtime service example.
  *
  * This service provider is intentionally simple. The interesting part is the
- * downstream extension below that treats this service as optional.
+ * downstream registry item below that treats this service as optional.
  */
-export const analyticsProviderExtension = defineExtensionFactory(() => {
+export const analyticsProviderRegistryItem = defineRegistryItemFactory(() => {
   const eventCount = signal(0)
 
   const serviceImpl: AnalyticsService = {
@@ -339,8 +342,8 @@ export const analyticsProviderExtension = defineExtensionFactory(() => {
   }
 
   return {
-    extension: defineRuntimeExtension({
-      id: 'analytics-provider-extension',
+    item: defineRuntimeRegistryItem({
+      id: 'analytics-provider-registry-item',
       providesServices: [provideService(analyticsService, serviceImpl)],
       provides: [
         provide(
@@ -355,20 +358,20 @@ export const analyticsProviderExtension = defineExtensionFactory(() => {
       ],
     }),
   }
-}, 'analytics-provider-extension')
+}, 'analytics-provider-registry-item')
 
 /**
  * Optional dependency example.
  *
- * This runtime extension depends on `analyticsService`, but it does so through
+ * This runtime registry item depends on `analyticsService`, but it does so through
  * `services.optional(...)` inside a computed contribution. That means it can
  * gracefully degrade when the upstream runtime provider is missing.
  */
-export const analyticsStatusExtension = defineExtensionFactory(
+export const analyticsStatusRegistryItem = defineRegistryItemFactory(
   ({ services }) => {
     return {
-      extension: defineExtension({
-        id: 'analytics-status-extension',
+      item: defineRegistryItem({
+        id: 'analytics-status-registry-item',
         provides: [
           provide(
             toolbarSignal,
@@ -395,26 +398,26 @@ export const analyticsStatusExtension = defineExtensionFactory(
       }),
     }
   },
-  'analytics-status-extension'
+  'analytics-status-registry-item'
 )
 
 /**
  * The analytics provider itself is also slot-backed so the example can
  * demonstrate `optional(service)` reacting when the upstream runtime disappears.
  */
-function createAnalyticsToggleExtension(initialActive: boolean) {
-  return defineExtensionFactory(
+function createAnalyticsToggleRegistryItem(initialActive: boolean) {
+  return defineRegistryItemFactory(
     ({ container }) => {
       const controller = createSlotToggleController({
         container,
         slot: analyticsSlot,
-        activeExtensions: [analyticsProviderExtension],
+        activeItems: [analyticsProviderRegistryItem],
         initialActive,
       })
 
       return {
-        extension: defineRuntimeExtension({
-          id: 'analytics-toggle-extension',
+        item: defineRuntimeRegistryItem({
+          id: 'analytics-toggle-registry-item',
           providesServices: [
             provideService(analyticsToggleService, controller),
           ],
@@ -434,7 +437,7 @@ function createAnalyticsToggleExtension(initialActive: boolean) {
         }),
       }
     },
-    `analytics-toggle-extension:${initialActive ? 'active' : 'inactive'}`
+    `analytics-toggle-registry-item:${initialActive ? 'active' : 'inactive'}`
   )
 }
 
@@ -445,7 +448,7 @@ function createAnalyticsToggleExtension(initialActive: boolean) {
  * (`notesPanelSignal`) and a small API service that downstream plugins can use
  * as a presence marker or compatibility surface.
  */
-const notesPluginBaseExtension = defineExtension({
+const notesPluginBaseRegistryItem = defineRegistryItem({
   id: 'notes-plugin.base',
   providesServices: [
     provideService(notesPluginApiService, {
@@ -466,7 +469,7 @@ export const notesPlugin = createPlugin({
   title: 'Notes',
   description:
     'Provides a plugin-owned notes panel signal and a small API service for cooperating plugins.',
-  extensions: [notesPluginBaseExtension],
+  items: [notesPluginBaseRegistryItem],
 })
 
 /**
@@ -478,39 +481,42 @@ export const notesPlugin = createPlugin({
  * - consume plugin-owned metadata (`pluginTitle`)
  * - hide the contribution when the upstream plugin is absent
  */
-const notesHelperPluginExtension = defineExtensionFactory(({ services }) => {
-  return {
-    extension: defineExtension({
-      id: 'notes-helper-plugin.extension',
-      provides: [
-        provide(
-          notesPanelSignal,
-          computed(() => {
-            const notesApi = services.optional(notesPluginApiService)
-            return {
-              id: 'notes.helper',
-              label: notesApi
-                ? `${notesApi.pluginTitle} Helper: Suggested summary`
-                : 'Notes Helper unavailable',
-              visible: notesApi !== undefined,
-            }
-          }),
-          { key: 'notes.helper' }
-        ),
-      ],
-    }),
-  }
-}, 'notes-helper-plugin.extension')
+const notesHelperPluginRegistryItem = defineRegistryItemFactory(
+  ({ services }) => {
+    return {
+      item: defineRegistryItem({
+        id: 'notes-helper-plugin.registry-item',
+        provides: [
+          provide(
+            notesPanelSignal,
+            computed(() => {
+              const notesApi = services.optional(notesPluginApiService)
+              return {
+                id: 'notes.helper',
+                label: notesApi
+                  ? `${notesApi.pluginTitle} Helper: Suggested summary`
+                  : 'Notes Helper unavailable',
+                visible: notesApi !== undefined,
+              }
+            }),
+            { key: 'notes.helper' }
+          ),
+        ],
+      }),
+    }
+  },
+  'notes-helper-plugin.registry-item'
+)
 
 export const notesHelperPlugin = createPlugin({
   id: 'notes-helper',
   title: 'Notes Helper',
   description:
     'Extends the notes panel when the Notes plugin is installed, and hides itself otherwise.',
-  extensions: [notesHelperPluginExtension],
+  items: [notesHelperPluginRegistryItem],
 })
 
-export interface ExampleContainerOptions {
+export interface ExampleRegistryOptions {
   readonly includeAnalyticsProvider?: boolean
   readonly includeNotesPlugin?: boolean
   readonly includeNotesHelperPlugin?: boolean
@@ -518,11 +524,11 @@ export interface ExampleContainerOptions {
 
 /**
  * Build the example graph from a few switches so tests can demonstrate how the
- * same extension tree behaves as dependencies appear and disappear.
+ * same registry tree behaves as dependencies appear and disappear.
  */
 export function createExampleExtensions(
-  options: ExampleContainerOptions = {}
-): readonly ExtensionNode[] {
+  options: ExampleRegistryOptions = {}
+): readonly RegistryItem[] {
   const {
     includeAnalyticsProvider = true,
     includeNotesPlugin = true,
@@ -530,15 +536,15 @@ export function createExampleExtensions(
   } = options
 
   return [
-    baseExtension,
-    personalWorkspaceExtension,
-    searchFeatureExtension,
-    workspaceToggleExtension,
+    baseRegistryItem,
+    personalWorkspaceRegistryItem,
+    searchFeatureRegistryItem,
+    workspaceToggleRegistryItem,
     workspaceSlot.of(),
-    createAnalyticsToggleExtension(includeAnalyticsProvider),
-    analyticsStatusExtension,
+    createAnalyticsToggleRegistryItem(includeAnalyticsProvider),
+    analyticsStatusRegistryItem,
     analyticsSlot.of(
-      ...(includeAnalyticsProvider ? [analyticsProviderExtension] : [])
+      ...(includeAnalyticsProvider ? [analyticsProviderRegistryItem] : [])
     ),
     ...(includeNotesPlugin ? [notesPlugin] : []),
     ...(includeNotesHelperPlugin ? [notesHelperPlugin] : []),
@@ -554,13 +560,13 @@ export function createExampleExtensions(
  * - slot-backed feature toggles
  * - a pair of cooperating plugins
  */
-export const defaultExampleExtensions = createExampleExtensions()
+export const defaultExampleRegistryItems = createExampleExtensions()
 
 /**
- * Construct a container preloaded with the example graph.
+ * Construct a registry preloaded with the example graph.
  */
-export function createExampleContainer(options: ExampleContainerOptions = {}) {
-  const container = new ExtensionContainer()
-  container.configure(createExampleExtensions(options))
-  return container
+export function createExampleRegistry(options: ExampleRegistryOptions = {}) {
+  const registry = new Registry()
+  registry.configure(createExampleExtensions(options))
+  return registry
 }

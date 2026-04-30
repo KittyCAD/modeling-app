@@ -21,12 +21,12 @@ import {
 import type {
   DebugSignalItem,
   DebugServiceItem,
-  ExtensionContext,
-  ExtensionFactory,
-  ExtensionKey,
-  ExtensionNode,
+  RegistryItemContext,
+  RegistryItemFactory,
+  RegistryItemKey,
+  RegistryItem,
   Precedence,
-  RuntimeExtensionHandle,
+  RuntimeRegistryItemHandle,
   Service,
   ServiceReader,
   Signal,
@@ -39,7 +39,7 @@ interface FlattenedContribution {
   readonly signal: Signal<any, any>
   readonly value: any
   readonly precedence: Precedence
-  readonly key?: ExtensionKey
+  readonly key?: RegistryItemKey
   readonly order: number
   readonly sourcePath: string
 }
@@ -51,15 +51,15 @@ interface FlattenedServiceContribution {
 }
 
 interface RuntimeInstance {
-  readonly key: ExtensionKey
-  readonly handle: RuntimeExtensionHandle<any>
+  readonly key: RegistryItemKey
+  readonly handle: RuntimeRegistryItemHandle<any>
   readonly dispose?: () => void
 }
 
 interface FlattenResult {
   readonly contributions: readonly FlattenedContribution[]
   readonly serviceContributions: readonly FlattenedServiceContribution[]
-  readonly slots: ReadonlyMap<symbol, readonly ExtensionNode[]>
+  readonly slots: ReadonlyMap<symbol, readonly RegistryItem[]>
 }
 
 function isServiceDefinition(
@@ -69,7 +69,7 @@ function isServiceDefinition(
 }
 
 /**
- * ExtensionContainer resolves extension graphs into live signals and services.
+ * Registry resolves registry item graphs into live signals and services.
  *
  * Conceptually:
  * - signals are the composition layer
@@ -77,13 +77,13 @@ function isServiceDefinition(
  * - Preact signals are the reactivity layer
  * - runtime factories / models are the lifecycle layer
  */
-export class ExtensionContainer implements SignalReader, ServiceReader {
-  private readonly roots = signal<readonly ExtensionNode[]>([])
+export class Registry implements SignalReader, ServiceReader {
+  private readonly roots = signal<readonly RegistryItem[]>([])
   private readonly slotContent = new Map<
     symbol,
-    PreactSignal<readonly ExtensionNode[]>
+    PreactSignal<readonly RegistryItem[]>
   >()
-  private readonly extensionSignals = new Map<symbol, ReadonlySignal<any>>()
+  private readonly registrySignals = new Map<symbol, ReadonlySignal<any>>()
   private readonly debugSignalItems = new Map<
     symbol,
     ReadonlySignal<readonly DebugSignalItem[]>
@@ -93,7 +93,10 @@ export class ExtensionContainer implements SignalReader, ServiceReader {
     symbol,
     ReadonlySignal<readonly DebugServiceItem[]>
   >()
-  private readonly runtimeInstances = new Map<ExtensionKey, RuntimeInstance>()
+  private readonly runtimeInstances = new Map<
+    RegistryItemKey,
+    RuntimeInstance
+  >()
   private readonly resolvingServices = new Set<symbol>()
 
   private combineDepth = 0
@@ -105,18 +108,18 @@ export class ExtensionContainer implements SignalReader, ServiceReader {
     try {
       const contributions: FlattenedContribution[] = []
       const serviceContributions: FlattenedServiceContribution[] = []
-      const slots = new Map<symbol, readonly ExtensionNode[]>()
-      const runtimeKeys = new Set<ExtensionKey>()
-      const seenExtensions = new Set<ExtensionKey>()
+      const slots = new Map<symbol, readonly RegistryItem[]>()
+      const runtimeKeys = new Set<RegistryItemKey>()
+      const seenItems = new Set<RegistryItemKey>()
       let order = 0
 
-      const ctx: ExtensionContext = {
+      const ctx: RegistryItemContext = {
         container: this,
         signals: this,
         services: this,
       }
 
-      const visit = (node: ExtensionNode, path: string): void => {
+      const visit = (node: RegistryItem, path: string): void => {
         if (node instanceof SlotInstance) {
           slots.set(node.slot.id, node.content)
 
@@ -133,16 +136,16 @@ export class ExtensionContainer implements SignalReader, ServiceReader {
         }
 
         if (typeof node === 'function') {
-          const key = node.extensionKey ?? node
+          const key = node.itemKey ?? node
           const runtime = this.ensureRuntimeInstance(key, node, ctx)
           runtimeKeys.add(key)
-          visit(runtime.handle.extension, `${path}/factory`)
+          visit(runtime.handle.item, `${path}/factory`)
           return
         }
 
         if (node.id != null) {
-          if (seenExtensions.has(node.id)) return
-          seenExtensions.add(node.id)
+          if (seenItems.has(node.id)) return
+          seenItems.add(node.id)
         }
 
         for (const contribution of node.provides ?? []) {
@@ -180,16 +183,16 @@ export class ExtensionContainer implements SignalReader, ServiceReader {
     }
   })
 
-  /** Replace the entire active extension tree. */
-  configure(extensions: readonly ExtensionNode[]): void {
-    this.roots.value = extensions
+  /** Replace the entire active registry item tree. */
+  configure(items: readonly RegistryItem[]): void {
+    this.roots.value = items
   }
 
   /** Replace the content of one slot while preserving unrelated runtime state. */
-  reconfigure(slot: Slot, extensions: readonly ExtensionNode[]): void {
+  reconfigure(slot: Slot, items: readonly RegistryItem[]): void {
     if (this.flattenDepth > 0) {
       throw new ReconfigurationError(
-        'Cannot reconfigure a slot while building the extension graph.'
+        'Cannot reconfigure a slot while building the registry graph.'
       )
     }
 
@@ -201,27 +204,27 @@ export class ExtensionContainer implements SignalReader, ServiceReader {
 
     let holder = this.slotContent.get(slot.id)
     if (!holder) {
-      holder = signal(extensions)
+      holder = signal(items)
       this.slotContent.set(slot.id, holder)
     }
-    holder.value = extensions
+    holder.value = items
   }
 
-  /** Resolve an extension signal or service as a live Preact signal. */
+  /** Resolve a registry signal or service as a live Preact signal. */
   signal<T>(service: Service<T>): ReadonlySignal<T | undefined>
   signal<I, O>(signalDef: Signal<I, O>): ReadonlySignal<O>
   signal(arg: Service<any> | Signal<any, any>): ReadonlySignal<any> {
     if (isServiceDefinition(arg)) {
-      const existing = this.serviceSignals.get(arg.id)
-      if (existing) return existing
+      const existingServiceSignal = this.serviceSignals.get(arg.id)
+      if (existingServiceSignal) return existingServiceSignal
 
       const created = computed(() => this.resolveService(arg))
       this.serviceSignals.set(arg.id, created)
       return created
     }
 
-    const existing = this.extensionSignals.get(arg.id)
-    if (existing) return existing
+    const existingRegistrySignal = this.registrySignals.get(arg.id)
+    if (existingRegistrySignal) return existingRegistrySignal
 
     const created = computed(() => {
       const matching = dedupeContributions(
@@ -244,11 +247,11 @@ export class ExtensionContainer implements SignalReader, ServiceReader {
       }
     })
 
-    this.extensionSignals.set(arg.id, created)
+    this.registrySignals.set(arg.id, created)
     return created
   }
 
-  /** Resolve a required extension signal or service snapshot. */
+  /** Resolve a required registry signal or service snapshot. */
   get<T>(service: Service<T>): T
   get<I, O>(signalDef: Signal<I, O>): O
   get(arg: Service<any> | Signal<any, any>): any {
@@ -268,7 +271,7 @@ export class ExtensionContainer implements SignalReader, ServiceReader {
     return this.signal(service).value
   }
 
-  /** Inspect which active contributions currently feed an extension signal. */
+  /** Inspect which active contributions currently feed a registry signal. */
   debugSignal<I, O>(
     signalDef: Signal<I, O>
   ): ReadonlySignal<readonly DebugSignalItem[]> {
@@ -297,7 +300,7 @@ export class ExtensionContainer implements SignalReader, ServiceReader {
     return created
   }
 
-  /** Inspect which active extensions currently provide a service. */
+  /** Inspect which active registry items currently provide a service. */
   debugService<T>(
     service: Service<T>
   ): ReadonlySignal<readonly DebugServiceItem[]> {
@@ -344,7 +347,7 @@ export class ExtensionContainer implements SignalReader, ServiceReader {
    * Resolve the current implementation of a service.
    *
    * Guards enforced here:
-   * - no eager service reads while flattening the extension graph
+   * - no eager service reads while flattening the registry graph
    * - no recursive resolution cycles
    * - singleton services must have exactly one provider
    * - exposed services are sanitized before being returned
@@ -352,7 +355,7 @@ export class ExtensionContainer implements SignalReader, ServiceReader {
   private resolveService<T>(service: Service<T>): T | undefined {
     if (this.flattenDepth > 0) {
       throw new ServiceResolutionError(
-        `Service ${service.name} was requested while building the extension graph. ` +
+        `Service ${service.name} was requested while building the registry graph. ` +
           'Defer service reads to computed signal inputs, effects, or event handlers.'
       )
     }
@@ -414,11 +417,11 @@ export class ExtensionContainer implements SignalReader, ServiceReader {
     }
   }
 
-  /** Create or reuse a runtime instance for one extension factory. */
+  /** Create or reuse a runtime instance for one registry item factory. */
   private ensureRuntimeInstance(
-    key: ExtensionKey,
-    factory: ExtensionFactory<any>,
-    ctx: ExtensionContext
+    key: RegistryItemKey,
+    factory: RegistryItemFactory<any>,
+    ctx: RegistryItemContext
   ): RuntimeInstance {
     const existing = this.runtimeInstances.get(key)
     if (existing) return existing
@@ -427,16 +430,16 @@ export class ExtensionContainer implements SignalReader, ServiceReader {
     const instance: RuntimeInstance = {
       key,
       handle,
-      dispose: normalizeDisposer(handle.extension.dispose),
+      dispose: normalizeDisposer(handle.item.dispose),
     }
 
     this.runtimeInstances.set(key, instance)
     return instance
   }
 
-  /** Dispose runtime instances that are no longer reachable from the extension graph. */
+  /** Dispose runtime instances that are no longer reachable from the registry graph. */
   private reconcileRuntimeInstances(
-    activeKeys: ReadonlySet<ExtensionKey>
+    activeKeys: ReadonlySet<RegistryItemKey>
   ): void {
     for (const [key, instance] of this.runtimeInstances) {
       if (activeKeys.has(key)) continue
@@ -464,7 +467,7 @@ export class ExtensionContainer implements SignalReader, ServiceReader {
     this.runtimeInstances.clear()
     this.roots.value = []
     this.slotContent.clear()
-    this.extensionSignals.clear()
+    this.registrySignals.clear()
     this.debugSignalItems.clear()
     this.serviceSignals.clear()
     this.debugServiceItems.clear()

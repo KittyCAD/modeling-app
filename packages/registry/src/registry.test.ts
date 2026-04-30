@@ -1,18 +1,22 @@
 import { computed, signal } from '@preact/signals-core'
 import { describe, expect, it, vi } from 'vitest'
 import { appendSignal, mergeObjectsSignal } from './signal'
-import { defineExtension, defineExtensionFactory, provide } from './helpers'
-import { ExtensionContainer } from './container'
+import {
+  defineRegistryItem,
+  defineRegistryItemFactory,
+  provide,
+} from './helpers'
+import { Registry } from './registry'
 import { Slot } from './types'
 
-describe('ExtensionContainer', () => {
+describe('Registry', () => {
   it('resolves static and reactive signal contributions', () => {
     const itemsSignal = appendSignal<string>('items')
     const enabled = signal(true)
 
-    const container = new ExtensionContainer()
+    const container = new Registry()
     container.configure([
-      defineExtension({
+      defineRegistryItem({
         provides: [
           provide(itemsSignal, 'a'),
           provide(itemsSignal, signal('b')),
@@ -31,32 +35,32 @@ describe('ExtensionContainer', () => {
 
   it('preserves runtime instances across unrelated slot reconfiguration', () => {
     const calls = vi.fn()
-    const extensionSignal = appendSignal<string>('values')
+    const registrySignal = appendSignal<string>('values')
     const slot = new Slot()
 
-    const runtime = defineExtensionFactory(() => {
+    const runtime = defineRegistryItemFactory(() => {
       calls()
       return {
-        extension: defineExtension({
-          provides: [provide(extensionSignal, 'stable')],
+        item: defineRegistryItem({
+          provides: [provide(registrySignal, 'stable')],
         }),
       }
     }, 'stable-runtime')
 
-    const container = new ExtensionContainer()
+    const container = new Registry()
     container.configure([
       runtime,
-      slot.of(defineExtension({ provides: [provide(extensionSignal, 'a')] })),
+      slot.of(defineRegistryItem({ provides: [provide(registrySignal, 'a')] })),
     ])
 
-    expect(container.get(extensionSignal)).toEqual(['stable', 'a'])
+    expect(container.get(registrySignal)).toEqual(['stable', 'a'])
     expect(calls).toHaveBeenCalledTimes(1)
 
     container.reconfigure(slot, [
-      defineExtension({ provides: [provide(extensionSignal, 'b')] }),
+      defineRegistryItem({ provides: [provide(registrySignal, 'b')] }),
     ])
 
-    expect(container.get(extensionSignal)).toEqual(['stable', 'b'])
+    expect(container.get(registrySignal)).toEqual(['stable', 'b'])
     expect(calls).toHaveBeenCalledTimes(1)
   })
 
@@ -65,10 +69,10 @@ describe('ExtensionContainer', () => {
       theme: 'light',
       showSidebar: true,
     })
-    const container = new ExtensionContainer()
+    const container = new Registry()
 
     container.configure([
-      defineExtension({
+      defineRegistryItem({
         provides: [provide(settingsSignal, { theme: 'dark' })],
       }),
     ])

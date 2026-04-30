@@ -52,11 +52,11 @@ import { MachineManager } from '@src/lib/MachineManager'
 import { reportRejection } from '@src/lib/trap'
 import type { Project } from '@src/lib/project'
 import { settingsSignal } from '@src/signals'
-import { ExtensionContainer, pluginsSignal } from '@kittycad/extensions'
+import { Registry, pluginsSignal } from '@kittycad/registry'
 import type { UserResponse } from '@kittycad/lib/dist/types/src'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
-import { coreExtensions } from '@src/extensions/registry'
+import { coreRegistryItems } from '@src/registry/registry'
 
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
@@ -104,9 +104,7 @@ export type AppLayoutSystem = {
   saveEffectUnsubscribeFn: ReturnType<typeof effect>
 }
 
-export type AppExtensionSystem = {
-  container: ExtensionContainer
-}
+export type AppRegistrySystem = Registry
 
 /** All of the subsystems needed to run the ZDS app */
 export interface AppSubsystems {
@@ -119,7 +117,7 @@ export interface AppSubsystems {
   settings: AppSettingsSystem
   billing: AppBillingSystem
   layout: AppLayoutSystem
-  extensions: AppExtensionSystem
+  registry: AppRegistrySystem
 }
 
 export class App implements AppSubsystems {
@@ -155,8 +153,8 @@ export class App implements AppSubsystems {
   billing: AppBillingSystem
   /** The layout system for the application */
   layout: AppLayoutSystem
-  /** The extension system for the application */
-  extensions: AppExtensionSystem
+  /** The registry system for the application */
+  registry: AppRegistrySystem
   /**
    * The interface to reading/writing to IO.
    * TODO: We have agreed to move away from this XState approach, towards a class + signals approach.
@@ -177,7 +175,7 @@ export class App implements AppSubsystems {
     this.commands = subsystems.commands
     this.settings = subsystems.settings
     this.layout = subsystems.layout
-    this.extensions = subsystems.extensions
+    this.registry = subsystems.registry
     this.systemIOActor = createActor(systemIOMachineImpl, {
       input: {
         wasmInstancePromise: this.wasmPromise,
@@ -242,9 +240,9 @@ export class App implements AppSubsystems {
       useState: () => useSelector(commandBarActor, (state) => state),
     }
 
-    const extensionsContainer = new ExtensionContainer()
-    extensionsContainer.configure(coreExtensions)
-    const extensionSettings = extensionsContainer.get(settingsSignal)
+    const appRegistry = new Registry()
+    appRegistry.configure(coreRegistryItems)
+    const extensionSettings = appRegistry.get(settingsSignal)
 
     const settingsActor = createActor(settingsMachine, {
       input: {
@@ -300,10 +298,6 @@ export class App implements AppSubsystems {
         saveLayout({ layout: layoutSignal.value })
       ),
     }
-    const extensions = {
-      container: extensionsContainer,
-    }
-
     return {
       wasmPromise,
       auth,
@@ -314,7 +308,7 @@ export class App implements AppSubsystems {
       settings,
       billing,
       layout,
-      extensions,
+      registry: appRegistry,
     }
   }
 
@@ -394,13 +388,13 @@ export class App implements AppSubsystems {
       return
     }
 
-    this.extensions.container.get(pluginsSignal).forEach((plugin) => {
+    this.registry.get(pluginsSignal).forEach((plugin) => {
       const desiredActive = pluginSettings[plugin.id]?.current
       if (typeof desiredActive !== 'boolean') {
         return
       }
 
-      const toggle = this.extensions.container.get(plugin.service)
+      const toggle = this.registry.get(plugin.service)
       if (toggle.active.value === desiredActive) {
         return
       }

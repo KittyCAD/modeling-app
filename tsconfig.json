@@ -2,7 +2,7 @@
   "compilerOptions": {
     "noErrorTruncation": true,
     "paths": {
-      "@kittycad/extensions": ["./packages/extensions/src/index.ts"],
+      "@kittycad/registry": ["./packages/registry/src/index.ts"],
       "@kittycad/codemirror-lsp-client": [
         "./packages/codemirror-lsp-client/src/index.ts"
       ],

@@ -1,9 +1,9 @@
 import { statusBarGlobalItemsSignal } from '@src/signals'
-import { defineExtension, provide } from '@kittycad/extensions'
-import { createZdsPlugin } from '@src/extensions/createZdsPlugin'
+import { defineRegistryItem, provide } from '@kittycad/registry'
+import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
 
-const settingsStatusBar = defineExtension({
+const settingsStatusBarItem = defineRegistryItem({
   provides: [
     provide(statusBarGlobalItemsSignal, {
       id: 'settings',
@@ -27,7 +27,7 @@ const settings = createZdsPlugin({
   id: 'settings',
   title: 'Settings status bar item',
   description: 'Whether there is a settings item in the status bar',
-  extensions: [settingsStatusBar],
+  items: [settingsStatusBarItem],
   defaultSetting: 'core',
 })
 

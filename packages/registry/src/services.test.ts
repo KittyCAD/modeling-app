@@ -11,13 +11,13 @@ import { appendSignal, firstWinsSignal } from './signal'
 import {
   createSlotToggleController,
   createPlugin,
-  defineExtension,
-  defineExtensionFactory,
+  defineRegistryItem,
+  defineRegistryItemFactory,
   pluginsSignal,
   provide,
   provideService,
 } from './helpers'
-import { ExtensionContainer } from './container'
+import { Registry } from './registry'
 import { defineService } from './service'
 import { Slot } from './types'
 
@@ -29,9 +29,9 @@ describe('services', () => {
     }>('search')
     const query = signal('hello')
 
-    const container = new ExtensionContainer()
+    const container = new Registry()
     container.configure([
-      defineExtension({
+      defineRegistryItem({
         providesServices: [
           provideService(searchService, {
             query,
@@ -51,7 +51,7 @@ describe('services', () => {
 
   it('throws for missing required services', () => {
     const service = defineService<{ ok: true }>('missing')
-    const container = new ExtensionContainer()
+    const container = new Registry()
     container.configure([])
 
     expect(() => container.get(service)).toThrow(MissingServiceError)
@@ -59,12 +59,12 @@ describe('services', () => {
 
   it('throws for conflicting singleton services', () => {
     const service = defineService<{ id: string }>('workspace')
-    const container = new ExtensionContainer()
+    const container = new Registry()
     container.configure([
-      defineExtension({
+      defineRegistryItem({
         providesServices: [provideService(service, { id: 'a' })],
       }),
-      defineExtension({
+      defineRegistryItem({
         providesServices: [provideService(service, { id: 'b' })],
       }),
     ])
@@ -75,14 +75,14 @@ describe('services', () => {
   it('throws when a factory eagerly reads a service during graph construction', () => {
     const service = defineService<{ id: string }>('workspace')
 
-    const badFactory = defineExtensionFactory(({ services }) => {
+    const badFactory = defineRegistryItemFactory(({ services }) => {
       services.get(service)
-      return { extension: defineExtension({}) }
+      return { item: defineRegistryItem({}) }
     }, 'bad-factory')
 
-    const container = new ExtensionContainer()
+    const container = new Registry()
     container.configure([
-      defineExtension({
+      defineRegistryItem({
         providesServices: [provideService(service, { id: 'a' })],
       }),
       badFactory,
@@ -94,28 +94,28 @@ describe('services', () => {
   it('throws when a factory reconfigures a slot during graph construction', () => {
     const slot = new Slot()
 
-    const badFactory = defineExtensionFactory(({ container }) => {
+    const badFactory = defineRegistryItemFactory(({ container }) => {
       container.reconfigure(slot, [])
-      return { extension: defineExtension({}) }
+      return { item: defineRegistryItem({}) }
     }, 'bad-reconfigure-factory')
 
-    const container = new ExtensionContainer()
-    container.configure([slot.of(defineExtension({})), badFactory])
+    const container = new Registry()
+    container.configure([slot.of(defineRegistryItem({})), badFactory])
 
     expect(() => container.inspect()).toThrow(ReconfigurationError)
   })
 
   it('throws when a same-container service method is called while combining', () => {
-    const extensionSignal = appendSignal<number>('numbers')
+    const registrySignal = appendSignal<number>('numbers')
     const service = defineService<{
       count: { readonly value: number }
       mutate(): void
     }>('mutator')
     const count = signal(0)
-    const container = new ExtensionContainer()
+    const container = new Registry()
 
     container.configure([
-      defineExtension({
+      defineRegistryItem({
         providesServices: [
           provideService(service, {
             count,
@@ -126,7 +126,7 @@ describe('services', () => {
         ],
         provides: [
           provide(
-            extensionSignal,
+            registrySignal,
             computed(() => {
               container.get(service).mutate()
               return count.value
@@ -136,20 +136,20 @@ describe('services', () => {
       }),
     ])
 
-    expect(() => container.get(extensionSignal)).toThrow(CombineMutationError)
+    expect(() => container.get(registrySignal)).toThrow(CombineMutationError)
   })
 
   it('throws when reconfigure is called during signal combine', () => {
-    const extensionSignal = appendSignal<number>('numbers')
+    const registrySignal = appendSignal<number>('numbers')
     const slot = new Slot()
-    const container = new ExtensionContainer()
+    const container = new Registry()
 
     container.configure([
-      slot.of(defineExtension({})),
-      defineExtension({
+      slot.of(defineRegistryItem({})),
+      defineRegistryItem({
         provides: [
           provide(
-            extensionSignal,
+            registrySignal,
             computed(() => {
               container.reconfigure(slot, [])
               return 1
@@ -159,7 +159,7 @@ describe('services', () => {
       }),
     ])
 
-    expect(() => container.get(extensionSignal)).toThrow(ReconfigurationError)
+    expect(() => container.get(registrySignal)).toThrow(ReconfigurationError)
   })
 
   it('toggle controller reconfigures a slot and preserves unrelated runtime instances', () => {
@@ -177,12 +177,12 @@ describe('services', () => {
     const slot = new Slot()
     const runtimeCalls = vi.fn()
 
-    const stableRuntime = defineExtensionFactory(() => {
+    const stableRuntime = defineRegistryItemFactory(() => {
       runtimeCalls()
       const isOpen = signal(false)
 
       return {
-        extension: defineExtension({
+        item: defineRegistryItem({
           providesServices: [
             provideService(stableService, {
               isOpen,
@@ -195,26 +195,26 @@ describe('services', () => {
       }
     }, 'stable-runtime')
 
-    const toggleExtension = defineExtensionFactory(({ container }) => {
+    const toggleRegistryItem = defineRegistryItemFactory(({ container }) => {
       const controller = createSlotToggleController({
         container,
         slot,
-        activeExtensions: [
-          defineExtension({
+        activeItems: [
+          defineRegistryItem({
             provides: [provide(featureSignal, 'enabled')],
           }),
         ],
       })
 
       return {
-        extension: defineExtension({
+        item: defineRegistryItem({
           providesServices: [provideService(toggleService, controller)],
         }),
       }
-    }, 'toggle-extension')
+    }, 'toggle-registry-item')
 
-    const container = new ExtensionContainer()
-    container.configure([stableRuntime, toggleExtension, slot.of()])
+    const container = new Registry()
+    container.configure([stableRuntime, toggleRegistryItem, slot.of()])
 
     container.get(stableService).open()
     container.get(toggleService).enable()
@@ -229,19 +229,19 @@ describe('services', () => {
     expect(runtimeCalls).toHaveBeenCalledTimes(1)
   })
 
-  it('installs a plugin as one extension node and preserves its toggle metadata', () => {
+  it('installs a plugin as one registry node and preserves its toggle metadata', () => {
     const featureSignal = firstWinsSignal<string>('feature', 'uninitialized')
     const plugin = createPlugin({
       id: 'feature-plugin',
       title: 'Feature Plugin',
       description: 'A toggleable feature plugin.',
-      extensions: [
-        defineExtension({
+      items: [
+        defineRegistryItem({
           provides: [provide(featureSignal, 'enabled')],
         }),
       ],
     })
-    const container = new ExtensionContainer()
+    const container = new Registry()
 
     container.configure([plugin])
 
@@ -266,9 +266,9 @@ describe('services', () => {
 
   it('can inspect active service providers', () => {
     const service = defineService<{ id: string }>('workspace')
-    const container = new ExtensionContainer()
+    const container = new Registry()
     container.configure([
-      defineExtension({
+      defineRegistryItem({
         providesServices: [provideService(service, { id: 'a' })],
       }),
     ])

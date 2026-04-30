@@ -81,15 +81,8 @@ if (window.electron) {
 
 export function OpenedProject() {
   useSignals()
-  const {
-    auth,
-    billing,
-    settings,
-    layout,
-    project,
-    systemIOActor,
-    extensions,
-  } = useApp()
+  const { auth, billing, settings, layout, project, systemIOActor, registry } =
+    useApp()
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
   const defaultAreaLibrary = useDefaultAreaLibrary()
@@ -454,7 +447,7 @@ export function OpenedProject() {
                 window.electron?.appRestart()
               },
             }),
-            ...extensions.container.signal(statusBarGlobalItemsSignal).value,
+            ...registry.signal(statusBarGlobalItemsSignal).value,
           ]}
           localItems={[
             ...(settingsValues.debug.showModelingMachineState.current

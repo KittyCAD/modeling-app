@@ -3,17 +3,17 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import {
   analyticsToggleService,
-  createExampleContainer,
+  createExampleRegistry,
   notesPanelSignal,
   searchService,
   toolbarSignal,
   workspaceToggleService,
 } from './examples/app'
-import type { ExtensionContainer } from './container'
+import type { Registry } from './registry'
 
-function Toolbar({ container }: { container: ExtensionContainer }) {
+function Toolbar({ registry }: { registry: Registry }) {
   useSignals()
-  const items = container.signal(toolbarSignal).value
+  const items = registry.signal(toolbarSignal).value
 
   return (
     <div>
@@ -26,9 +26,9 @@ function Toolbar({ container }: { container: ExtensionContainer }) {
   )
 }
 
-function SearchQuery({ container }: { container: ExtensionContainer }) {
+function SearchQuery({ registry }: { registry: Registry }) {
   useSignals()
-  const search = container.get(searchService)
+  const search = registry.get(searchService)
 
   return (
     <div>
@@ -38,9 +38,9 @@ function SearchQuery({ container }: { container: ExtensionContainer }) {
   )
 }
 
-function WorkspaceToggle({ container }: { container: ExtensionContainer }) {
+function WorkspaceToggle({ registry }: { registry: Registry }) {
   useSignals()
-  const workspaceToggle = container.get(workspaceToggleService)
+  const workspaceToggle = registry.get(workspaceToggleService)
 
   return (
     <div>
@@ -53,12 +53,12 @@ function WorkspaceToggle({ container }: { container: ExtensionContainer }) {
 }
 
 function AnalyticsToggle({
-  container,
+  registry,
 }: {
-  container: ExtensionContainer
+  registry: Registry
 }) {
   useSignals()
-  const analyticsToggle = container.get(analyticsToggleService)
+  const analyticsToggle = registry.get(analyticsToggleService)
 
   return (
     <div>
@@ -70,9 +70,9 @@ function AnalyticsToggle({
   )
 }
 
-function NotesPanel({ container }: { container: ExtensionContainer }) {
+function NotesPanel({ registry }: { registry: Registry }) {
   useSignals()
-  const items = container.signal(notesPanelSignal).value
+  const items = registry.signal(notesPanelSignal).value
 
   return (
     <div>
@@ -86,10 +86,10 @@ function NotesPanel({ container }: { container: ExtensionContainer }) {
 }
 
 describe('React integration', () => {
-  it('renders toolbar items from extension signals', () => {
-    const container = createExampleContainer()
+  it('renders toolbar items from registry signals', () => {
+    const registry = createExampleRegistry()
 
-    render(<Toolbar container={container} />)
+    render(<Toolbar registry={registry} />)
 
     expect(screen.getByText('Workspace: Personal')).toBeInTheDocument()
     expect(screen.getByText('Enable Team Workspace')).toBeInTheDocument()
@@ -98,12 +98,12 @@ describe('React integration', () => {
   })
 
   it('updates React UI when service-backed signals change', async () => {
-    const container = createExampleContainer()
+    const registry = createExampleRegistry()
 
     render(
       <>
-        <Toolbar container={container} />
-        <SearchQuery container={container} />
+        <Toolbar registry={registry} />
+        <SearchQuery registry={registry} />
       </>
     )
 
@@ -114,9 +114,9 @@ describe('React integration', () => {
   })
 
   it('updates when a signal contribution triggers service state changes', async () => {
-    const container = createExampleContainer()
+    const registry = createExampleRegistry()
 
-    render(<Toolbar container={container} />)
+    render(<Toolbar registry={registry} />)
 
     fireEvent.click(screen.getByText('Open Search'))
 
@@ -124,13 +124,13 @@ describe('React integration', () => {
   })
 
   it('reconfigures a workspace slot without resetting unrelated state', async () => {
-    const container = createExampleContainer()
+    const registry = createExampleRegistry()
 
     render(
       <>
-        <Toolbar container={container} />
-        <SearchQuery container={container} />
-        <WorkspaceToggle container={container} />
+        <Toolbar registry={registry} />
+        <SearchQuery registry={registry} />
+        <WorkspaceToggle registry={registry} />
       </>
     )
 
@@ -145,15 +145,15 @@ describe('React integration', () => {
     expect(screen.getByText('Close Search')).toBeInTheDocument()
   })
 
-  it('gracefully limits a runtime extension when an optional upstream service is unavailable', async () => {
-    const container = createExampleContainer({
+  it('gracefully limits a runtime registry item when an optional upstream service is unavailable', async () => {
+    const registry = createExampleRegistry({
       includeAnalyticsProvider: false,
     })
 
     render(
       <>
-        <Toolbar container={container} />
-        <AnalyticsToggle container={container} />
+        <Toolbar registry={registry} />
+        <AnalyticsToggle registry={registry} />
       </>
     )
 
@@ -172,9 +172,9 @@ describe('React integration', () => {
   })
 
   it('lets one plugin extend another plugin signal when the upstream plugin is present', () => {
-    const container = createExampleContainer()
+    const registry = createExampleRegistry()
 
-    render(<NotesPanel container={container} />)
+    render(<NotesPanel registry={registry} />)
 
     expect(
       screen.getByText('Welcome note from the Notes plugin')
@@ -185,12 +185,12 @@ describe('React integration', () => {
   })
 
   it('hides the downstream plugin signal contribution when the upstream plugin is absent', () => {
-    const container = createExampleContainer({
+    const registry = createExampleRegistry({
       includeNotesPlugin: false,
       includeNotesHelperPlugin: true,
     })
 
-    render(<NotesPanel container={container} />)
+    render(<NotesPanel registry={registry} />)
 
     expect(screen.getByTestId('notes-empty')).toBeInTheDocument()
   })

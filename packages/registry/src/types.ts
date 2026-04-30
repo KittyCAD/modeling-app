@@ -7,8 +7,8 @@ import type { ReadonlySignal } from '@preact/signals-core'
 export type Precedence = 'highest' | 'high' | 'default' | 'low' | 'lowest'
 
 /**
- * A small protocol for runtime-owned resources that need cleanup when an
- * extension instance is removed or the container is disposed.
+ * A small protocol for runtime-owned resources that need cleanup when a
+ * registry item instance is removed or the registry is disposed.
  */
 export interface DisposableLike {
   [Symbol.dispose](): void
@@ -17,7 +17,7 @@ export interface DisposableLike {
 /**
  * Signal contributions may be static values or live reactive values.
  *
- * Extension signals define composition. Preact signals define liveness.
+ * Registry signals define composition. Preact signals define liveness.
  */
 export type MaybeSignal<T> = T | ReadonlySignal<T>
 
@@ -25,12 +25,12 @@ export type MaybeSignal<T> = T | ReadonlySignal<T>
  * Stable identities are used for deduplication and runtime instance
  * preservation across reconfiguration.
  */
-export type ExtensionKey = object | string
+export type RegistryItemKey = object | string
 
 /**
- * A Signal is a typed extension point.
+ * A Signal is a typed registry point.
  *
- * Extensions contribute values into signals. The container gathers all active
+ * Registry items contribute values into signals. The registry gathers all active
  * contributions for a given signal, orders them, and passes them through the
  * signal's pure combine function to produce one resolved output.
  *
@@ -44,8 +44,8 @@ export interface Signal<Input, Output> {
 }
 
 /**
- * A Service is a named capability exposed by one extension for other
- * extensions to consume.
+ * A Service is a named capability exposed by one registry item for other
+ * registry items to consume.
  *
  * Services are the capability / dependency-injection layer. They usually wrap
  * stable objects whose fields may include readonly signals and methods.
@@ -57,17 +57,17 @@ export interface Service<_T> {
 }
 
 /**
- * A single signal contribution from an extension.
+ * A single signal contribution from a registry item.
  */
 export interface SignalContribution<Input> {
   readonly signal: Signal<Input, any>
   readonly value: MaybeSignal<Input>
   readonly precedence?: Precedence
-  readonly key?: ExtensionKey
+  readonly key?: RegistryItemKey
 }
 
 /**
- * A single service contribution from an extension.
+ * A single service contribution from a registry item.
  */
 export interface ServiceContribution<T> {
   readonly service: Service<T>
@@ -75,56 +75,56 @@ export interface ServiceContribution<T> {
 }
 
 /**
- * A declarative extension definition.
+ * A declarative registry item definition.
  *
- * Extensions can contribute signals, provide services, and nest other
- * extensions. They should remain declarative whenever possible.
+ * Registry items can contribute signals, provide services, and nest other
+ * registry items. They should remain declarative whenever possible.
  */
-export interface ExtensionDefinition {
-  readonly id?: ExtensionKey
+export interface RegistryItemDefinition {
+  readonly id?: RegistryItemKey
   readonly provides?: readonly SignalContribution<any>[]
   readonly providesServices?: readonly ServiceContribution<any>[]
-  readonly uses?: readonly ExtensionNode[]
+  readonly uses?: readonly RegistryItem[]
 }
 
 /**
- * A runtime extension may own cleanup logic in addition to declarative
+ * A runtime registry item may own cleanup logic in addition to declarative
  * contributions.
  */
-export interface RuntimeExtensionDefinition extends ExtensionDefinition {
+export interface RuntimeRegistryItemDefinition extends RegistryItemDefinition {
   readonly dispose?: DisposableLike | (() => void)
 }
 
 /**
- * A runtime extension factory constructs long-lived extension instances.
+ * A runtime registry item factory constructs long-lived registry item instances.
  *
  * Factories are where models usually live. A factory should create a stable
- * service surface and return an extension definition that exposes it.
+ * service surface and return a registry item definition that exposes it.
  */
-export interface RuntimeExtensionHandle<TModel = unknown> {
+export interface RuntimeRegistryItemHandle<TModel = unknown> {
   readonly model?: TModel
-  readonly extension: RuntimeExtensionDefinition
+  readonly item: RuntimeRegistryItemDefinition
 }
 
 /**
- * A runtime extension factory. The container preserves instances by extension key.
+ * A runtime registry item factory. The registry preserves instances by item key.
  */
-export interface ExtensionFactory<TModel = unknown> {
-  (ctx: ExtensionContext): RuntimeExtensionHandle<TModel>
-  readonly extensionKey?: ExtensionKey
+export interface RegistryItemFactory<TModel = unknown> {
+  (ctx: RegistryItemContext): RuntimeRegistryItemHandle<TModel>
+  readonly itemKey?: RegistryItemKey
 }
 
 /**
- * The union of all supported extension nodes accepted by the container.
+ * The union of all supported registry nodes accepted by the registry.
  */
-export type ExtensionNode =
-  | ExtensionDefinition
-  | RuntimeExtensionDefinition
-  | ExtensionFactory<any>
+export type RegistryItem =
+  | RegistryItemDefinition
+  | RuntimeRegistryItemDefinition
+  | RegistryItemFactory<any>
   | SlotInstance
 
 /**
- * SignalReader exposes resolved extension-signal values either as snapshots or
+ * SignalReader exposes resolved registry-signal values either as snapshots or
  * live Preact signals.
  */
 export interface SignalReader {
@@ -146,11 +146,11 @@ export interface ServiceReader {
 }
 
 /**
- * Extension factories receive a context that lets them read resolved signals
+ * Registry item factories receive a context that lets them read resolved signals
  * and services lazily.
  */
-export interface ExtensionContext {
-  readonly container: ExtensionContainerLike
+export interface RegistryItemContext {
+  readonly container: RegistryLike
   readonly signals: SignalReader
   readonly services: ServiceReader
 }
@@ -162,7 +162,7 @@ export interface DebugSignalItem {
   readonly signalName: string
   readonly sourcePath: string
   readonly precedence: Precedence
-  readonly key?: ExtensionKey
+  readonly key?: RegistryItemKey
   readonly reactive: boolean
 }
 
@@ -176,13 +176,13 @@ export interface DebugServiceItem {
 }
 
 /**
- * Slots let callers swap a subtree of extensions without rebuilding the
- * rest of the container.
+ * Slots let callers swap a subtree of registry items without rebuilding the
+ * rest of the registry.
  */
 export class Slot {
   readonly id = Symbol('Slot')
 
-  of(...content: readonly ExtensionNode[]): SlotInstance {
+  of(...content: readonly RegistryItem[]): SlotInstance {
     return new SlotInstance(this, content)
   }
 }
@@ -193,21 +193,21 @@ export class Slot {
 export class SlotInstance {
   constructor(
     readonly slot: Slot,
-    readonly content: readonly ExtensionNode[]
+    readonly content: readonly RegistryItem[]
   ) {}
 }
 
 /**
- * Container shape exposed to extension factories through their context.
+ * Registry shape exposed to registry item factories through their context.
  *
- * The concrete implementation lives in container.ts.
+ * The concrete implementation lives in registry.ts.
  */
-export interface ExtensionContainerLike extends DisposableLike {
+export interface RegistryLike extends DisposableLike {
   get<T>(service: Service<T>): T
   get<I, O>(signal: Signal<I, O>): O
   signal<T>(service: Service<T>): ReadonlySignal<T | undefined>
   signal<I, O>(signal: Signal<I, O>): ReadonlySignal<O>
-  reconfigure(slot: Slot, extensions: readonly ExtensionNode[]): void
+  reconfigure(slot: Slot, items: readonly RegistryItem[]): void
   optional<T>(service: Service<T>): T | undefined
   debugService<T>(
     service: Service<T>

@@ -13,7 +13,7 @@ import { PATHS } from '@src/lib/paths'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import { PluginsList } from '@src/components/PluginList'
 import { useApp } from '@src/lib/boot'
-import { pluginsSignal } from '@kittycad/extensions'
+import { pluginsSignal } from '@kittycad/registry'
 
 export const Settings = () => {
   const app = useApp()
@@ -129,8 +129,8 @@ export const Settings = () => {
               ) : (
                 <PluginsList
                   ref={scrollRef}
-                  container={app.extensions.container}
-                  plugins={app.extensions.container.signal(pluginsSignal).value}
+                  registry={app.registry}
+                  plugins={app.registry.signal(pluginsSignal).value}
                 />
               )}
             </div>

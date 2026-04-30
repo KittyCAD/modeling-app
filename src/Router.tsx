@@ -46,8 +46,7 @@ export const Router = () => {
   const app = useApp()
   const { kclManager } = useSingletons()
   const networkStatus = useNetworkStatus(kclManager.engineCommandManager)
-  const routesProvidedByExtensions =
-    app.extensions.container.signal(routesSignal).value
+  const routesProvidedByRegistry = app.registry.signal(routesSignal).value
   const router = useMemo(
     () =>
       createRouter([
@@ -151,11 +150,11 @@ export const Router = () => {
                   },
                 ]
               : []),
-            ...routesProvidedByExtensions,
+            ...routesProvidedByRegistry,
           ],
         },
       ]),
-    [app, routesProvidedByExtensions]
+    [app, routesProvidedByRegistry]
   )
 
   return (

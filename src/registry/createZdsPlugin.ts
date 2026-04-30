@@ -1,10 +1,10 @@
 import {
   createPlugin,
-  defineExtension,
+  defineRegistryItem,
   provide,
-  type ExtensionDefinition,
-  type ExtensionNode,
-} from '@kittycad/extensions'
+  type RegistryItemDefinition,
+  type RegistryItem,
+} from '@kittycad/registry'
 import { settingsSignal } from '@src/signals'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 
@@ -14,7 +14,7 @@ type ZdsPluginSpec = {
   id: string
   title: string
   description: string
-  extensions: readonly ExtensionNode[]
+  items: readonly RegistryItem[]
   defaultSetting?: ZdsPluginDefault
 }
 
@@ -29,10 +29,10 @@ type ZdsPluginSpec = {
 export function createZdsPlugin({
   defaultSetting = 'core',
   ...spec
-}: ZdsPluginSpec): ExtensionDefinition {
+}: ZdsPluginSpec): RegistryItemDefinition {
   const enabledByDefault = defaultSetting === 'core'
 
-  return defineExtension({
+  return defineRegistryItem({
     id: `${spec.id}.zds-plugin`,
     uses: [
       createPlugin({

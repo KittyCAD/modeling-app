@@ -1,6 +1,6 @@
-# Extensions Package Guide
+# Registry Package Guide
 
-This package is the shared extension runtime used by the app.
+This package is the shared registry runtime used by the app.
 
 ## Scope
 
@@ -14,9 +14,9 @@ This package is the shared extension runtime used by the app.
 - Prefer relative imports within this package.
 - Do not import app internals from `src/` into the core runtime unless the file is explicitly an example or test.
 - Preserve the separation between:
-  - extension signals as composition
+  - registry signals as composition
   - services as capabilities
-  - runtime extensions as stateful models
+  - runtime registry items as stateful models
   - plugins as installable/toggleable bundles
 
 ## Verification
@@ -24,7 +24,7 @@ This package is the shared extension runtime used by the app.
 When changing this package, prefer these checks:
 
 ```sh
-npx eslint packages/extensions/src --max-warnings 0
-npx vitest run --mode=development packages/extensions/src
+npx eslint packages/registry/src --max-warnings 0
+npx vitest run --mode=development packages/registry/src
 npm run tsc -- --pretty false
 ```

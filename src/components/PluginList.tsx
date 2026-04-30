@@ -1,16 +1,16 @@
 import type { ForwardedRef } from 'react'
 import { forwardRef } from 'react'
 import type {
-  ExtensionContainer,
+  Registry,
   PluginRecord,
   SlotToggleController,
-} from '@kittycad/extensions'
+} from '@kittycad/registry'
 import { useApp } from '@src/lib/boot'
 import { Toggle } from '@src/components/Toggle/Toggle'
 
 type PluginsListProps = {
   plugins: readonly PluginRecord[]
-  container: ExtensionContainer
+  registry: Registry
 }
 
 export const PluginsList = forwardRef(
@@ -26,7 +26,7 @@ export const PluginsList = forwardRef(
             <PluginItem
               key={plugin.id}
               plugin={plugin}
-              resolvedService={props.container.get(plugin.service)}
+              resolvedService={props.registry.get(plugin.service)}
             />
           ))}
         </div>

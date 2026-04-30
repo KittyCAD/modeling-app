@@ -1,6 +1,6 @@
 import type { Signal } from './types'
 
-/** Define a new typed extension signal. */
+/** Define a new typed registry signal. */
 export function defineSignal<Input, Output>(spec: {
   name: string
   defaultValue: Output

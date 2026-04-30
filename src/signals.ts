@@ -5,7 +5,7 @@ import {
   type ResolvedExtensionSettings,
 } from '@src/lib/settings/extensionSettings'
 import type { RouteObject } from 'react-router-dom'
-import { appendSignal, defineSignal } from '@kittycad/extensions'
+import { appendSignal, defineSignal } from '@kittycad/registry'
 
 export const routesSignal = appendSignal<RouteObject>('routes')
 export const statusBarGlobalItemsSignal =

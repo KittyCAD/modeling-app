@@ -1,38 +1,38 @@
-# `@kittycad/extensions`
+# `@kittycad/registry`
 
-Reactive extension framework for Zoo Design Studio.
+Reactive registry framework for Zoo Design Studio.
 
 This package provides:
 
-- extension signals for declarative composition
+- registry signals for declarative composition
 - services for imperative capabilities
-- runtime extensions for long-lived state
+- runtime registry items for long-lived state
 - slots for runtime reconfiguration
 - plugins as the installable developer-facing unit
 
 ## Mental Model
 
-- `ExtensionContainer` owns the active graph and resolves signals and services.
-- `Signal` is a typed extension point that combines many contributions into one value.
-- `Service` is a typed capability object that extensions can read from the container.
-- `ExtensionDefinition` is the declarative unit that contributes signals, services, and child extensions through `uses`.
-- `ExtensionFactory` creates runtime-backed extensions with stable state.
+- `Registry` owns the active graph and resolves signals and services.
+- `Signal` is a typed registry point that combines many contributions into one value.
+- `Service` is a typed capability object that registry items can read from the registry.
+- `RegistryItemDefinition` is the declarative unit that contributes signals, services, and child registry items through `uses`.
+- `RegistryItemFactory` creates runtime-backed registry items with stable state.
 - `Slot` is a replaceable subtree that can be reconfigured at runtime.
-- `createPlugin(...)` packages metadata, a slot, and a toggle controller into one installable extension node.
+- `createPlugin(...)` packages metadata, a slot, and a toggle controller into one installable registry node.
 
 ## Concept Map
 
 The most important distinction is:
 
-- an `extension` is any node in the runtime graph
-- a `plugin` is one particular kind of extension node meant to be installed, listed in UI, and toggled at runtime
+- a `registry item` is any node in the runtime graph
+- a `plugin` is one particular kind of registry node meant to be installed, listed in UI, and toggled at runtime
 
 ```mermaid
 graph TD
-  C["ExtensionContainer"]
-  N["ExtensionNode"]
-  D["ExtensionDefinition"]
-  F["ExtensionFactory"]
+  C["Registry"]
+  N["RegistryItem"]
+  D["RegistryItemDefinition"]
+  F["RegistryItemFactory"]
   P["Plugin<br/>created by createPlugin(...)"]
   S["Signal"]
   V["Service"]
@@ -68,11 +68,11 @@ graph TD
 
 Read the diagram from top to bottom:
 
-- `ExtensionContainer` owns a graph of `ExtensionNode`s.
-- `ExtensionDefinition`, `ExtensionFactory`, `Slot`, and `Plugin` are all ways to participate in that graph.
-- Plain extensions usually contribute `Signal`s and `Service`s directly.
-- A plugin wraps normal extension content in extra structure: metadata for discovery, a slot for runtime enable/disable, and a toggle controller service.
-- So a plugin is not separate from the extension system. It is a higher-level, developer-facing packaging pattern built out of normal extension primitives.
+- `Registry` owns a graph of `RegistryItem`s.
+- `RegistryItemDefinition`, `RegistryItemFactory`, `Slot`, and `Plugin` are all ways to participate in that graph.
+- Plain registry items usually contribute `Signal`s and `Service`s directly.
+- A plugin wraps normal registry item content in extra structure: metadata for discovery, a slot for runtime enable/disable, and a toggle controller service.
+- So a plugin is not separate from the registry system. It is a higher-level, developer-facing packaging pattern built out of normal registry primitives.
 
 ## Package Layout
 
@@ -87,7 +87,7 @@ This package lives under `packages/`, so relative imports are allowed within the
 App code outside the package should import it by package name:
 
 ```ts
-import { ExtensionContainer, appendSignal } from '@kittycad/extensions'
+import { Registry, appendSignal } from '@kittycad/registry'
 ```
 
 ## Notes

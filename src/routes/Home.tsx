@@ -76,7 +76,7 @@ type ReadWriteProjectState = {
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
-  const { auth, billing, commands, settings, systemIOActor, extensions } =
+  const { auth, billing, commands, settings, systemIOActor, registry } =
     useApp()
   const { kclManager } = useSingletons()
   const executingPath = useAbsoluteFilePath()
@@ -423,7 +423,7 @@ const Home = () => {
               window.electron?.appRestart()
             },
           }),
-          ...extensions.container.signal(statusBarGlobalItemsSignal).value,
+          ...registry.signal(statusBarGlobalItemsSignal).value,
         ]}
         localItems={defaultLocalStatusBarItems}
       />
