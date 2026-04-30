@@ -178,7 +178,7 @@ impl RequestContext {
 impl RequestContext {
     #[new]
     #[pyo3(signature = (api_token=None))]
-    fn py_new(api_token: Option<String>) -> Self {
+    fn new(api_token: Option<String>) -> Self {
         Self::engine(api_token)
     }
 
