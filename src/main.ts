@@ -78,6 +78,9 @@ const scheduleMenuGC = () => {
 }
 
 type MachineApiSignal = 'on' | 'off'
+type CreateWindowOptions = {
+  useStartupPath?: boolean
+}
 
 // Check the command line arguments for a project path
 const args = parseCLIArgs(process.argv)
@@ -121,7 +124,10 @@ if (!singleInstanceLock && process.env.NODE_ENV !== 'test') {
   registerStartupListeners()
 }
 
-const createWindow = (pathToOpen?: string): BrowserWindow => {
+const createWindow = (
+  pathToOpen?: string,
+  { useStartupPath = false }: CreateWindowOptions = {}
+): BrowserWindow => {
   let newWindow: BrowserWindow | null = null
 
   if (!newWindow) {
@@ -184,7 +190,7 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
   })
 
   // Deep Link: Case of a cold start from Windows or Linux
-  const pathOrUrl = getPathOrUrlFromArgs(args)
+  const pathOrUrl = useStartupPath ? getPathOrUrlFromArgs(args) : undefined
   if (
     !pathToOpen &&
     pathOrUrl &&
@@ -195,10 +201,11 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
   }
 
   // Deep Link: Case of a second window opened for macOS
-  // @ts-ignore
-  if (!pathToOpen && global['openUrls'] && global['openUrls'][0]) {
-    // @ts-ignore
-    pathToOpen = global['openUrls'][0]
+  const openUrls: string[] | undefined = useStartupPath
+    ? (global as any).openUrls
+    : undefined
+  if (!pathToOpen && openUrls?.[0]) {
+    pathToOpen = openUrls[0]
     console.log('Retrieved deep link from open-url', pathToOpen)
   }
 
@@ -231,8 +238,11 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
         })
         .catch(reportRejection)
     } else {
-      // otherwise we're trying to open a local file from the command line
-      getProjectPathAtStartup(initPromise, pathToOpen)
+      // otherwise we're trying to resolve a local file/project path
+      resolveProjectPathForWindow(initPromise, {
+        pathToOpen,
+        useStartupPath,
+      })
         .then(async (projectPath) => {
           const startIndex = path.join(
             __dirname,
@@ -270,6 +280,12 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
   })
 
   return newWindow
+}
+
+const menuActions = {
+  openNewWindow: () => {
+    createWindow()
+  },
 }
 
 interface LocalDeviceState {
@@ -344,7 +360,7 @@ app.on('ready', (event, data) => {
   registerFileProtocolCsp()
 
   // Create the mainWindow
-  mainWindow = createWindow()
+  mainWindow = createWindow(undefined, { useStartupPath: true })
   // Set menu application to null to avoid default electron menu
   Menu.setApplicationMenu(null)
 })
@@ -536,11 +552,11 @@ ipcMain.handle('create-menu', (event, data) => {
   }
 
   if (page === 'project' && mainWindow) {
-    buildAndSetMenuForProjectPage(mainWindow)
+    buildAndSetMenuForProjectPage(mainWindow, menuActions)
   } else if (page === 'modeling' && mainWindow) {
-    buildAndSetMenuForModelingPage(mainWindow)
+    buildAndSetMenuForModelingPage(mainWindow, menuActions)
   } else if (page === 'fallback' && mainWindow) {
-    buildAndSetMenuForFallback(mainWindow)
+    buildAndSetMenuForFallback(mainWindow, menuActions)
   }
 
   scheduleMenuGC()
@@ -682,9 +698,15 @@ app.on('ready', () => {
   })
 })
 
-const getProjectPathAtStartup = async (
+const resolveProjectPathForWindow = async (
   initPromise: Promise<ModuleType>,
-  filePath?: string
+  {
+    pathToOpen,
+    useStartupPath,
+  }: {
+    pathToOpen?: string
+    useStartupPath: boolean
+  }
 ): Promise<string | null> => {
   // Make sure we have WASM, because we're about to use it indirectly.
   const wasmInstance = await initPromise
@@ -696,8 +718,8 @@ const getProjectPathAtStartup = async (
     return null
   }
 
-  let projectPath: string | null = filePath || null
-  if (projectPath === null) {
+  let projectPath: string | null = pathToOpen || null
+  if (useStartupPath && projectPath === null) {
     // macOS: open-file events that were received before the app is ready
     const macOpenFiles: string[] = (global as any).macOpenFiles
     if (macOpenFiles && macOpenFiles && macOpenFiles.length > 0) {

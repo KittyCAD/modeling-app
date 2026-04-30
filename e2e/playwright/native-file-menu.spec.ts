@@ -6,6 +6,24 @@ import {
   openSettingsExpectText,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
+
+async function expectNewWindowMenuItem(tronApp: ElectronZoo) {
+  const menuItem = await tronApp.electron.evaluate(({ app }) => {
+    const menu = app.applicationMenu?.getMenuItemById('File.New window')
+    if (!menu) return null
+
+    return {
+      accelerator: menu.accelerator,
+      label: menu.label,
+    }
+  })
+
+  expect(menuItem).toEqual({
+    accelerator: 'CommandOrControl+Shift+N',
+    label: 'New Window',
+  })
+}
 
 /**
  * Not all menu actions are tested. Some are default electron menu actions.
@@ -18,6 +36,26 @@ test.describe(
     test('Home page', async ({ tronApp, cmdBar, page, homePage }) => {
       if (!tronApp) throw new Error('tronApp is missing.')
 
+      await test.step('Home.File.New window', async () => {
+        await page.reload()
+        await homePage.projectsLoaded()
+        await homePage.isNativeFileMenuCreated()
+        await expectNewWindowMenuItem(tronApp)
+
+        const windowCountBefore = tronApp.electron.windows().length
+        const newWindowPromise = tronApp.electron.waitForEvent('window')
+        await clickElectronNativeMenuById(tronApp, 'File.New window')
+        const newWindow = await newWindowPromise
+
+        await expect
+          .poll(() => tronApp.electron.windows().length)
+          .toBe(windowCountBefore + 1)
+
+        await newWindow.close()
+        await expect
+          .poll(() => tronApp.electron.windows().length)
+          .toBe(windowCountBefore)
+      })
       await test.step('Home.File.Create project', async () => {
         await page.reload()
         await homePage.projectsLoaded()
@@ -167,6 +205,10 @@ test.describe(
       await scene.connectionEstablished()
       await scene.isNativeFileMenuCreated()
 
+      await test.step('Modeling.File.New window', async () => {
+        await expectNewWindowMenuItem(tronApp)
+        await findElectronNativeMenuById(tronApp, 'File.New window')
+      })
       await test.step('Modeling.File.Create project', async () => {
         await page.waitForTimeout(250)
         await clickElectronNativeMenuById(tronApp, 'File.Create project')
