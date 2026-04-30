@@ -334,14 +334,6 @@ function buildDistanceLabelEditsForMovedSegments({
       return []
     }
 
-    const pointIds = points.filter((point): point is number => {
-      return typeof point === 'number'
-    })
-    // Only move labels for distance constraints attached to the geometry being dragged.
-    if (!pointIds.some((pointId) => movedPointIds.has(pointId))) {
-      return []
-    }
-
     const pointPairs: Array<{ before: Vector2; after: Vector2 }> = []
     for (const point of points) {
       const before = getDistanceConstraintPointPosition(
