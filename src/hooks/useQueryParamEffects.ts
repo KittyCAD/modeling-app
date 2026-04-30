@@ -229,15 +229,21 @@ export function useQueryParamEffects(kclManager: KclManager) {
       return projectName
     }
 
-    const reservationContext = await getReservationContext()
-    if (reservationContext instanceof Error) {
-      return reservationContext
-    }
-    const { projectDirectoryPath, systemIOContext } = reservationContext
+    await waitFor(app.settings.actor, (state) => state.matches('idle'))
 
-    await fsZds.mkdir(projectDirectoryPath, { recursive: true })
+    let systemIOContext = app.systemIOActor.getSnapshot().context
+    const projectDirectoryPath = app.settings.get().app.projectDirectory.current
+    if (!projectDirectoryPath) {
+      return new Error('Unable to determine the project directory.')
+    }
 
     if (isDesktop()) {
+      app.systemIOActor.send({
+        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+      })
+      await waitForIdleState({ systemIOActor: app.systemIOActor })
+      systemIOContext = app.systemIOActor.getSnapshot().context
+
       const requestedProjectName = getUniqueProjectName(
         projectName,
         systemIOContext.folders || []
@@ -275,38 +281,6 @@ export function useQueryParamEffects(kclManager: KclManager) {
     return {
       requestedProjectName,
       requestedSubDirectoryName,
-    }
-  }
-
-  async function getReservationContext() {
-    await waitFor(app.settings.actor, (state) => state.matches('idle'))
-
-    let systemIOContext = app.systemIOActor.getSnapshot().context
-    const projectDirectoryPath =
-      systemIOContext.projectDirectoryPath ||
-      app.settings.get().app.projectDirectory.current
-
-    if (!projectDirectoryPath) {
-      return new Error('Unable to determine the project directory.')
-    }
-
-    if (
-      systemIOContext.projectDirectoryPath !== projectDirectoryPath ||
-      !systemIOContext.folders
-    ) {
-      app.systemIOActor.send({
-        type: SystemIOMachineEvents.setProjectDirectoryPath,
-        data: {
-          requestedProjectDirectoryPath: projectDirectoryPath,
-        },
-      })
-      await waitForIdleState({ systemIOActor: app.systemIOActor })
-      systemIOContext = app.systemIOActor.getSnapshot().context
-    }
-
-    return {
-      projectDirectoryPath,
-      systemIOContext,
     }
   }
 
