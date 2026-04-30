@@ -1,6 +1,6 @@
 export * from './types'
 export * from './errors'
-export * from './signal'
+export * from './valueSpec'
 export * from './service'
 export * from './helpers'
 export * from './registry'

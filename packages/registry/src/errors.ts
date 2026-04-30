@@ -15,7 +15,7 @@ export class MissingServiceError extends RegistryError {}
 /** Thrown when service resolution happens at an invalid time or recursively. */
 export class ServiceResolutionError extends RegistryError {}
 
-/** Thrown when signal combine logic attempts to call service methods. */
+/** Thrown when value-spec combine logic attempts to call service methods. */
 export class CombineMutationError extends RegistryError {}
 
 /** Thrown when registry graph reconfiguration happens at an invalid time. */

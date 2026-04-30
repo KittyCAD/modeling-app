@@ -1,6 +1,6 @@
 import { computed, signal } from '@preact/signals-core'
 import { describe, expect, it, vi } from 'vitest'
-import { appendSignal, mergeObjectsSignal } from './signal'
+import { appendValueSpec, mergeObjectsValueSpec } from './valueSpec'
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
@@ -10,8 +10,8 @@ import { Registry } from './registry'
 import { Slot } from './types'
 
 describe('Registry', () => {
-  it('resolves static and reactive signal contributions', () => {
-    const itemsSignal = appendSignal<string>('items')
+  it('resolves static and reactive value-spec contributions', () => {
+    const itemsSignal = appendValueSpec<string>('items')
     const enabled = signal(true)
 
     const container = new Registry()
@@ -35,7 +35,7 @@ describe('Registry', () => {
 
   it('preserves runtime instances across unrelated slot reconfiguration', () => {
     const calls = vi.fn()
-    const registrySignal = appendSignal<string>('values')
+    const registrySignal = appendValueSpec<string>('values')
     const slot = new Slot()
 
     const runtime = defineRegistryItemFactory(() => {
@@ -64,8 +64,8 @@ describe('Registry', () => {
     expect(calls).toHaveBeenCalledTimes(1)
   })
 
-  it('merges object signals', () => {
-    const settingsSignal = mergeObjectsSignal('settings', {
+  it('merges object value specs', () => {
+    const settingsValueSpec = mergeObjectsValueSpec('settings', {
       theme: 'light',
       showSidebar: true,
     })
@@ -73,11 +73,11 @@ describe('Registry', () => {
 
     container.configure([
       defineRegistryItem({
-        provides: [provide(settingsSignal, { theme: 'dark' })],
+        provides: [provide(settingsValueSpec, { theme: 'dark' })],
       }),
     ])
 
-    expect(container.get(settingsSignal)).toEqual({
+    expect(container.get(settingsValueSpec)).toEqual({
       theme: 'dark',
       showSidebar: true,
     })

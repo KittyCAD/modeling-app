@@ -32,7 +32,7 @@ import { TestLayout } from '@src/lib/layout/TestLayout'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import Loading from '@src/components/Loading'
 import { MachineApiController } from '@src/components/MachineApiController'
-import { routesSignal } from '@src/signals'
+import { routesValueSpec } from '@src/valueSpecs'
 import { useSignals } from '@preact/signals-react/runtime'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
@@ -46,7 +46,7 @@ export const Router = () => {
   const app = useApp()
   const { kclManager } = useSingletons()
   const networkStatus = useNetworkStatus(kclManager.engineCommandManager)
-  const routesProvidedByRegistry = app.registry.signal(routesSignal).value
+  const routesProvidedByRegistry = app.registry.signal(routesValueSpec).value
   const router = useMemo(
     () =>
       createRouter([

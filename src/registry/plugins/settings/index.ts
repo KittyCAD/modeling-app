@@ -1,11 +1,11 @@
-import { statusBarGlobalItemsSignal } from '@src/signals'
+import { statusBarGlobalItemsValueSpec } from '@src/valueSpecs'
 import { defineRegistryItem, provide } from '@kittycad/registry'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
 
 const settingsStatusBarItem = defineRegistryItem({
   provides: [
-    provide(statusBarGlobalItemsSignal, {
+    provide(statusBarGlobalItemsValueSpec, {
       id: 'settings',
       element: 'link',
       icon: 'settings',

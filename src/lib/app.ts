@@ -51,8 +51,8 @@ import {
 import { MachineManager } from '@src/lib/MachineManager'
 import { reportRejection } from '@src/lib/trap'
 import type { Project } from '@src/lib/project'
-import { settingsSignal } from '@src/signals'
-import { Registry, pluginsSignal } from '@kittycad/registry'
+import { settingsValueSpec } from '@src/valueSpecs'
+import { Registry, pluginsValueSpec } from '@kittycad/registry'
 import type { UserResponse } from '@kittycad/lib/dist/types/src'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
@@ -242,7 +242,7 @@ export class App implements AppSubsystems {
 
     const appRegistry = new Registry()
     appRegistry.configure(coreRegistryItems)
-    const extensionSettings = appRegistry.get(settingsSignal)
+    const extensionSettings = appRegistry.get(settingsValueSpec)
 
     const settingsActor = createActor(settingsMachine, {
       input: {
@@ -388,7 +388,7 @@ export class App implements AppSubsystems {
       return
     }
 
-    this.registry.get(pluginsSignal).forEach((plugin) => {
+    this.registry.get(pluginsValueSpec).forEach((plugin) => {
       const desiredActive = pluginSettings[plugin.id]?.current
       if (typeof desiredActive !== 'boolean') {
         return

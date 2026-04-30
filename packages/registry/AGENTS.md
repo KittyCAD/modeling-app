@@ -14,7 +14,7 @@ This package is the shared registry runtime used by the app.
 - Prefer relative imports within this package.
 - Do not import app internals from `src/` into the core runtime unless the file is explicitly an example or test.
 - Preserve the separation between:
-  - registry signals as composition
+  - registry value specs as composition
   - services as capabilities
   - runtime registry items as stateful models
   - plugins as installable/toggleable bundles

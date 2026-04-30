@@ -4,7 +4,7 @@ Reactive registry framework for Zoo Design Studio.
 
 This package provides:
 
-- registry signals for declarative composition
+- registry value specs for declarative composition
 - services for imperative capabilities
 - runtime registry items for long-lived state
 - slots for runtime reconfiguration
@@ -12,10 +12,10 @@ This package provides:
 
 ## Mental Model
 
-- `Registry` owns the active graph and resolves signals and services.
-- `Signal` is a typed registry point that combines many contributions into one value.
+- `Registry` owns the active graph and resolves value specs and services.
+- `ValueSpec` is a typed registry point that combines many contributions into one value.
 - `Service` is a typed capability object that registry items can read from the registry.
-- `RegistryItemDefinition` is the declarative unit that contributes signals, services, and child registry items through `uses`.
+- `RegistryItemDefinition` is the declarative unit that contributes value specs, services, and child registry items through `uses`.
 - `RegistryItemFactory` creates runtime-backed registry items with stable state.
 - `Slot` is a replaceable subtree that can be reconfigured at runtime.
 - `createPlugin(...)` packages metadata, a slot, and a toggle controller into one installable registry node.
@@ -34,12 +34,12 @@ graph TD
   D["RegistryItemDefinition"]
   F["RegistryItemFactory"]
   P["Plugin<br/>created by createPlugin(...)"]
-  S["Signal"]
+  S["ValueSpec"]
   V["Service"]
   U["uses"]
   L["Slot"]
   T["Toggle Controller Service"]
-  M["Plugin Metadata<br/>pluginsSignal"]
+  M["Plugin Metadata<br/>pluginsValueSpec"]
 
   C -->|"owns and resolves"| N
 
@@ -70,7 +70,7 @@ Read the diagram from top to bottom:
 
 - `Registry` owns a graph of `RegistryItem`s.
 - `RegistryItemDefinition`, `RegistryItemFactory`, `Slot`, and `Plugin` are all ways to participate in that graph.
-- Plain registry items usually contribute `Signal`s and `Service`s directly.
+- Plain registry items usually contribute `ValueSpec`s and `Service`s directly.
 - A plugin wraps normal registry item content in extra structure: metadata for discovery, a slot for runtime enable/disable, and a toggle controller service.
 - So a plugin is not separate from the registry system. It is a higher-level, developer-facing packaging pattern built out of normal registry primitives.
 
@@ -87,7 +87,7 @@ This package lives under `packages/`, so relative imports are allowed within the
 App code outside the package should import it by package name:
 
 ```ts
-import { Registry, appendSignal } from '@kittycad/registry'
+import { Registry, appendValueSpec } from '@kittycad/registry'
 ```
 
 ## Notes

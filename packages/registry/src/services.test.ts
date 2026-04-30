@@ -7,13 +7,13 @@ import {
   ServiceConflictError,
   ServiceResolutionError,
 } from './errors'
-import { appendSignal, firstWinsSignal } from './signal'
+import { appendValueSpec, firstWinsValueSpec } from './valueSpec'
 import {
   createSlotToggleController,
   createPlugin,
   defineRegistryItem,
   defineRegistryItemFactory,
-  pluginsSignal,
+  pluginsValueSpec,
   provide,
   provideService,
 } from './helpers'
@@ -22,7 +22,7 @@ import { defineService } from './service'
 import { Slot } from './types'
 
 describe('services', () => {
-  it('resolves singleton services and exposes readonly signal fields', () => {
+  it('resolves singleton services and exposes readonly Preact signal fields', () => {
     const searchService = defineService<{
       query: { readonly value: string }
       setQuery(v: string): void
@@ -106,7 +106,7 @@ describe('services', () => {
   })
 
   it('throws when a same-container service method is called while combining', () => {
-    const registrySignal = appendSignal<number>('numbers')
+    const registrySignal = appendValueSpec<number>('numbers')
     const service = defineService<{
       count: { readonly value: number }
       mutate(): void
@@ -139,8 +139,8 @@ describe('services', () => {
     expect(() => container.get(registrySignal)).toThrow(CombineMutationError)
   })
 
-  it('throws when reconfigure is called during signal combine', () => {
-    const registrySignal = appendSignal<number>('numbers')
+  it('throws when reconfigure is called during value-spec combine', () => {
+    const registrySignal = appendValueSpec<number>('numbers')
     const slot = new Slot()
     const container = new Registry()
 
@@ -173,7 +173,7 @@ describe('services', () => {
       isOpen: { readonly value: boolean }
       open(): void
     }>('stable')
-    const featureSignal = appendSignal<string>('feature')
+    const featureSignal = appendValueSpec<string>('feature')
     const slot = new Slot()
     const runtimeCalls = vi.fn()
 
@@ -230,7 +230,7 @@ describe('services', () => {
   })
 
   it('installs a plugin as one registry node and preserves its toggle metadata', () => {
-    const featureSignal = firstWinsSignal<string>('feature', 'uninitialized')
+    const featureSignal = firstWinsValueSpec<string>('feature', 'uninitialized')
     const plugin = createPlugin({
       id: 'feature-plugin',
       title: 'Feature Plugin',
@@ -245,7 +245,7 @@ describe('services', () => {
 
     container.configure([plugin])
 
-    const [pluginRecord] = container.get(pluginsSignal)
+    const [pluginRecord] = container.get(pluginsValueSpec)
 
     expect(plugin.id).toBe('feature-plugin')
     expect(container.get(featureSignal)).toEqual('enabled')

@@ -16,11 +16,11 @@ import type {
   RuntimeRegistryItemDefinition,
   Service,
   ServiceContribution,
-  Signal,
-  SignalContribution,
+  ValueSpec,
+  ValueSpecContribution,
 } from './types'
 import { defineService } from './service'
-import { appendSignal } from './signal'
+import { appendValueSpec } from './valueSpec'
 
 export const precedenceRank: Record<Precedence, number> = {
   highest: 0,
@@ -37,7 +37,7 @@ export function isReadonlySignal<T>(
   return !!value && typeof value === 'object' && 'value' in value
 }
 
-/** Resolve either a static value or a signal-backed value to a snapshot. */
+/** Resolve either a static value or a Preact-signal-backed value to a snapshot. */
 export function unwrapMaybeSignal<T>(value: MaybeSignal<T>): T {
   return isReadonlySignal<T>(value) ? value.value : value
 }
@@ -110,8 +110,8 @@ export interface SlotToggleController {
  * Protect service implementations before exposing them to consumers.
  *
  * Goals:
- * - methods become guarded wrappers so signal combine functions cannot call them
- * - signal-valued fields are re-exposed as readonly signals
+ * - methods become guarded wrappers so value-spec combine functions cannot call them
+ * - signal-valued fields are re-exposed as readonly Preact signals
  * - the final service object is frozen to discourage mutation of the surface
  *
  * This does not deeply freeze arbitrary nested data, but it protects the main
@@ -135,8 +135,8 @@ export function sanitizeServiceImplementation<T extends object>(
         out[key] = (...args: unknown[]) => {
           if (container.isCombining()) {
             throw new CombineMutationError(
-              `Service method ${service.name}.${String(key)}() was called while combining a signal. ` +
-                'Signal combine functions must be pure.'
+              `Service method ${service.name}.${String(key)}() was called while combining a value spec. ` +
+                'ValueSpec combine functions must be pure.'
             )
           }
 
@@ -217,7 +217,7 @@ interface PluginSpec extends PluginInfo {
 }
 
 /**
- * Resolved plugin metadata exposed through `pluginsSignal`.
+ * Resolved plugin metadata exposed through `pluginsValueSpec`.
  *
  * The `service` is plugin-management metadata. It points at a stable
  * controller that lives outside the plugin's slot and can toggle the
@@ -228,7 +228,7 @@ export interface PluginRecord extends PluginInfo {
 }
 
 /** Registry of installed plugins for settings screens and similar UIs. */
-export const pluginsSignal = appendSignal<PluginRecord>('plugins')
+export const pluginsValueSpec = appendValueSpec<PluginRecord>('plugins')
 
 /**
  * Build a plugin from declarative registry item content.
@@ -256,7 +256,7 @@ export function createPlugin({
   return defineRegistryItem({
     id: info.id,
     provides: [
-      provide(pluginsSignal, {
+      provide(pluginsValueSpec, {
         ...info,
         service: toggle.service,
       }),
@@ -346,12 +346,12 @@ export function createSlotToggleController({
 }
 
 export function provide<I>(
-  signal: Signal<I, any>,
+  valueSpec: ValueSpec<I, any>,
   value: MaybeSignal<I>,
-  options?: Pick<SignalContribution<I>, 'precedence' | 'key'>
-): SignalContribution<I> {
+  options?: Pick<ValueSpecContribution<I>, 'precedence' | 'key'>
+): ValueSpecContribution<I> {
   return {
-    signal,
+    valueSpec,
     value,
     precedence: options?.precedence,
     key: options?.key,

@@ -66,7 +66,7 @@ import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { ActorRefFrom } from 'xstate'
 import { waitFor } from 'xstate'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import { statusBarGlobalItemsSignal } from '@src/signals'
+import { statusBarGlobalItemsValueSpec } from '@src/valueSpecs'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -423,7 +423,7 @@ const Home = () => {
               window.electron?.appRestart()
             },
           }),
-          ...registry.signal(statusBarGlobalItemsSignal).value,
+          ...registry.signal(statusBarGlobalItemsValueSpec).value,
         ]}
         localItems={defaultLocalStatusBarItems}
       />

@@ -1,4 +1,4 @@
-import { routesSignal, statusBarGlobalItemsSignal } from '@src/signals'
+import { routesValueSpec, statusBarGlobalItemsValueSpec } from '@src/valueSpecs'
 import { defineRegistryItem, provide } from '@kittycad/registry'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
@@ -7,15 +7,15 @@ import { telemetryFileRoute, telemetryHomeRoute } from '@src/routes/Telemetry'
 /** Contributes the telemetry modal routes for both home and file contexts. */
 const telemetryRouteItem = defineRegistryItem({
   provides: [
-    provide(routesSignal, telemetryHomeRoute),
-    provide(routesSignal, telemetryFileRoute),
+    provide(routesValueSpec, telemetryHomeRoute),
+    provide(routesValueSpec, telemetryFileRoute),
   ],
 })
 
 /** Contributes a status-bar entry point for the telemetry plugin. */
 const telemetryStatusBarItem = defineRegistryItem({
   provides: [
-    provide(statusBarGlobalItemsSignal, {
+    provide(statusBarGlobalItemsValueSpec, {
       id: 'telemetry',
       element: 'link',
       icon: 'stopwatch',

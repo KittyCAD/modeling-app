@@ -1,5 +1,9 @@
 import { type ReadonlySignal, computed, signal } from '@preact/signals-core'
-import { appendSignal, defineSignal, mergeObjectsSignal } from '../signal'
+import {
+  appendValueSpec,
+  defineValueSpec,
+  mergeObjectsValueSpec,
+} from '../valueSpec'
 import {
   createSlotToggleController,
   createPlugin,
@@ -17,8 +21,8 @@ import { Slot, type RegistryItem } from '../types'
  * This file is intentionally more tutorial-like than the rest of the package.
  *
  * The example registry demonstrates four layers of the system:
- * 1. signals model composable outputs like toolbars or panels
- * 2. services model imperative capabilities with signal-backed state
+ * 1. value specs model composable outputs like toolbars or panels
+ * 2. services model imperative capabilities with Preact-signal-backed state
  * 3. runtime registry items own long-lived models and expose them through services
  * 4. plugins are the installable developer-facing unit built on top of all that
  *
@@ -86,47 +90,56 @@ export interface AnalyticsService {
 /**
  * This service is the "plugin API" for the notes plugin.
  *
- * The downstream helper plugin still imports `notesPanelSignal` statically, but
+ * The downstream helper plugin still imports `notesPanelValueSpec` statically, but
  * it uses this service as:
  * - a presence marker so it can hide its contribution when the base plugin is
  *   not installed
  * - a place to expose plugin-owned API surface for cooperating plugins
  */
 export interface NotesPluginApi {
-  readonly panelSignal: typeof notesPanelSignal
+  readonly panelSignal: typeof notesPanelValueSpec
   readonly pluginTitle: string
 }
 
 /**
- * Signals are typed registry points.
+ * Value specs are typed registry points.
  *
  * Any number of registry items can contribute to a signal. The registry gathers those
  * inputs and runs the signal's pure `combine()` function to produce one resolved
  * output.
  */
-export const commandsSignal = appendSignal<Command>('commands')
+export const commandsValueSpec = appendValueSpec<Command>('commands')
 
-export const toolbarSignal = defineSignal<ToolbarItem, readonly ToolbarItem[]>({
+export const toolbarValueSpec = defineValueSpec<
+  ToolbarItem,
+  readonly ToolbarItem[]
+>({
   name: 'toolbar',
   defaultValue: [],
   combine: (inputs) => inputs.filter((item) => item.visible !== false),
 })
 
-export const notesPanelSignal = defineSignal<PanelItem, readonly PanelItem[]>({
+export const notesPanelValueSpec = defineValueSpec<
+  PanelItem,
+  readonly PanelItem[]
+>({
   name: 'notes-panel',
   defaultValue: [],
   combine: (inputs) => inputs.filter((item) => item.visible !== false),
 })
 
-export const settingsSignal = mergeObjectsSignal<AppSettings>('settings', {
-  theme: 'light',
-  showSidebar: true,
-})
+export const settingsValueSpec = mergeObjectsValueSpec<AppSettings>(
+  'settings',
+  {
+    theme: 'light',
+    showSidebar: true,
+  }
+)
 
 /**
  * Services are the dependency-injection layer.
  *
- * Unlike signals, services are usually singleton capabilities that other
+ * Unlike value specs, services are usually singleton capabilities that other
  * registry items read lazily from the registry.
  */
 export const searchService = defineService<SearchService>('search')
@@ -154,14 +167,14 @@ export const analyticsSlot = new Slot()
  */
 export const baseRegistryItem = defineRegistryItem({
   id: 'base-registry-item',
-  provides: [provide(settingsSignal, { theme: 'dark' })],
+  provides: [provide(settingsValueSpec, { theme: 'dark' })],
 })
 
 export const personalWorkspaceRegistryItem = defineRegistryItem({
   id: 'workspace.personal',
   provides: [
     provide(
-      toolbarSignal,
+      toolbarValueSpec,
       {
         id: 'workspace.current',
         label: 'Workspace: Personal',
@@ -169,7 +182,7 @@ export const personalWorkspaceRegistryItem = defineRegistryItem({
       },
       { key: 'workspace.current', precedence: 'high' }
     ),
-    provide(settingsSignal, { showSidebar: true }),
+    provide(settingsValueSpec, { showSidebar: true }),
   ],
 })
 
@@ -177,7 +190,7 @@ export const teamWorkspaceRegistryItem = defineRegistryItem({
   id: 'workspace.team',
   provides: [
     provide(
-      toolbarSignal,
+      toolbarValueSpec,
       {
         id: 'workspace.current',
         label: 'Workspace: Team',
@@ -185,7 +198,7 @@ export const teamWorkspaceRegistryItem = defineRegistryItem({
       },
       { key: 'workspace.current', precedence: 'highest' }
     ),
-    provide(settingsSignal, { showSidebar: false }),
+    provide(settingsValueSpec, { showSidebar: false }),
   ],
 })
 
@@ -222,7 +235,7 @@ export const searchRegistryItem = defineRegistryItemFactory(() => {
       providesServices: [provideService(searchService, serviceImpl)],
       provides: [
         provide(
-          toolbarSignal,
+          toolbarValueSpec,
           computed(() => ({
             id: 'search.toggle',
             label: isOpen.value ? 'Close Search' : 'Open Search',
@@ -253,7 +266,7 @@ export const searchStatusRegistryItem = defineRegistryItemFactory(
         id: 'search-status-registry-item',
         provides: [
           provide(
-            toolbarSignal,
+            toolbarValueSpec,
             computed(() => {
               const search = services.get(searchService)
               return {
@@ -276,7 +289,7 @@ export const searchStatusRegistryItem = defineRegistryItemFactory(
 /**
  * `uses` is the structural composition primitive for declarative registry items.
  *
- * This bundle does not contribute signals or services directly. Instead, it says
+ * This bundle does not contribute value specs or services directly. Instead, it says
  * "when you install `searchFeatureRegistryItem`, also install these child
  * registry items." Reach for `uses` when a few registry items always ship together and
  * you want one higher-level unit without introducing plugin metadata or toggle
@@ -308,7 +321,7 @@ export const workspaceToggleRegistryItem = defineRegistryItemFactory(
         providesServices: [provideService(workspaceToggleService, controller)],
         provides: [
           provide(
-            toolbarSignal,
+            toolbarValueSpec,
             computed(() => ({
               id: 'workspace.toggle',
               label: controller.active.value
@@ -347,7 +360,7 @@ export const analyticsProviderRegistryItem = defineRegistryItemFactory(() => {
       providesServices: [provideService(analyticsService, serviceImpl)],
       provides: [
         provide(
-          toolbarSignal,
+          toolbarValueSpec,
           computed(() => ({
             id: 'analytics.track',
             label: `Track Analytics Event (${eventCount.value})`,
@@ -374,7 +387,7 @@ export const analyticsStatusRegistryItem = defineRegistryItemFactory(
         id: 'analytics-status-registry-item',
         provides: [
           provide(
-            toolbarSignal,
+            toolbarValueSpec,
             computed(() => {
               const analytics = services.optional(analyticsService)
 
@@ -423,7 +436,7 @@ function createAnalyticsToggleRegistryItem(initialActive: boolean) {
           ],
           provides: [
             provide(
-              toolbarSignal,
+              toolbarValueSpec,
               computed(() => ({
                 id: 'analytics.toggle',
                 label: controller.active.value
@@ -445,19 +458,19 @@ function createAnalyticsToggleRegistryItem(initialActive: boolean) {
  * Base plugin example.
  *
  * Plugins are the installable developer-facing unit. This one owns a new signal
- * (`notesPanelSignal`) and a small API service that downstream plugins can use
+ * (`notesPanelValueSpec`) and a small API service that downstream plugins can use
  * as a presence marker or compatibility surface.
  */
 const notesPluginBaseRegistryItem = defineRegistryItem({
   id: 'notes-plugin.base',
   providesServices: [
     provideService(notesPluginApiService, {
-      panelSignal: notesPanelSignal,
+      panelSignal: notesPanelValueSpec,
       pluginTitle: 'Notes',
     }),
   ],
   provides: [
-    provide(notesPanelSignal, {
+    provide(notesPanelValueSpec, {
       id: 'notes.welcome',
       label: 'Welcome note from the Notes plugin',
     }),
@@ -488,7 +501,7 @@ const notesHelperPluginRegistryItem = defineRegistryItemFactory(
         id: 'notes-helper-plugin.registry-item',
         provides: [
           provide(
-            notesPanelSignal,
+            notesPanelValueSpec,
             computed(() => {
               const notesApi = services.optional(notesPluginApiService)
               return {

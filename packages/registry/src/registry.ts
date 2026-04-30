@@ -19,7 +19,7 @@ import {
   unwrapMaybeSignal,
 } from './helpers'
 import type {
-  DebugSignalItem,
+  DebugValueSpecItem,
   DebugServiceItem,
   RegistryItemContext,
   RegistryItemFactory,
@@ -29,14 +29,14 @@ import type {
   RuntimeRegistryItemHandle,
   Service,
   ServiceReader,
-  Signal,
-  SignalReader,
+  ValueSpec,
+  ValueSpecReader,
   Slot,
 } from './types'
 import { SlotInstance } from './types'
 
 interface FlattenedContribution {
-  readonly signal: Signal<any, any>
+  readonly valueSpec: ValueSpec<any, any>
   readonly value: any
   readonly precedence: Precedence
   readonly key?: RegistryItemKey
@@ -63,30 +63,33 @@ interface FlattenResult {
 }
 
 function isServiceDefinition(
-  arg: Service<any> | Signal<any, any>
+  arg: Service<any> | ValueSpec<any, any>
 ): arg is Service<any> {
   return 'multiple' in arg
 }
 
 /**
- * Registry resolves registry item graphs into live signals and services.
+ * Registry resolves registry item graphs into live value specs and services.
  *
  * Conceptually:
- * - signals are the composition layer
+ * - value specs are the composition layer
  * - services are the capability layer
  * - Preact signals are the reactivity layer
  * - runtime factories / models are the lifecycle layer
  */
-export class Registry implements SignalReader, ServiceReader {
+export class Registry implements ValueSpecReader, ServiceReader {
   private readonly roots = signal<readonly RegistryItem[]>([])
   private readonly slotContent = new Map<
     symbol,
     PreactSignal<readonly RegistryItem[]>
   >()
-  private readonly registrySignals = new Map<symbol, ReadonlySignal<any>>()
-  private readonly debugSignalItems = new Map<
+  private readonly registryValueSpecSignals = new Map<
     symbol,
-    ReadonlySignal<readonly DebugSignalItem[]>
+    ReadonlySignal<any>
+  >()
+  private readonly debugValueSpecItems = new Map<
+    symbol,
+    ReadonlySignal<readonly DebugValueSpecItem[]>
   >()
   private readonly serviceSignals = new Map<symbol, ReadonlySignal<any>>()
   private readonly debugServiceItems = new Map<
@@ -115,7 +118,7 @@ export class Registry implements SignalReader, ServiceReader {
 
       const ctx: RegistryItemContext = {
         container: this,
-        signals: this,
+        valueSpecs: this,
         services: this,
       }
 
@@ -150,7 +153,7 @@ export class Registry implements SignalReader, ServiceReader {
 
         for (const contribution of node.provides ?? []) {
           contributions.push({
-            signal: contribution.signal,
+            valueSpec: contribution.valueSpec,
             value: contribution.value,
             precedence: contribution.precedence ?? 'default',
             key: contribution.key,
@@ -198,7 +201,7 @@ export class Registry implements SignalReader, ServiceReader {
 
     if (this.combineDepth > 0) {
       throw new ReconfigurationError(
-        'Cannot reconfigure a slot while combining a signal.'
+        'Cannot reconfigure a slot while combining a value spec.'
       )
     }
 
@@ -210,10 +213,10 @@ export class Registry implements SignalReader, ServiceReader {
     holder.value = items
   }
 
-  /** Resolve a registry signal or service as a live Preact signal. */
+  /** Resolve a registry value spec or service as a live Preact signal. */
   signal<T>(service: Service<T>): ReadonlySignal<T | undefined>
-  signal<I, O>(signalDef: Signal<I, O>): ReadonlySignal<O>
-  signal(arg: Service<any> | Signal<any, any>): ReadonlySignal<any> {
+  signal<I, O>(valueSpec: ValueSpec<I, O>): ReadonlySignal<O>
+  signal(arg: Service<any> | ValueSpec<any, any>): ReadonlySignal<any> {
     if (isServiceDefinition(arg)) {
       const existingServiceSignal = this.serviceSignals.get(arg.id)
       if (existingServiceSignal) return existingServiceSignal
@@ -223,14 +226,16 @@ export class Registry implements SignalReader, ServiceReader {
       return created
     }
 
-    const existingRegistrySignal = this.registrySignals.get(arg.id)
-    if (existingRegistrySignal) return existingRegistrySignal
+    const existingRegistryValueSpecSignal = this.registryValueSpecSignals.get(
+      arg.id
+    )
+    if (existingRegistryValueSpecSignal) return existingRegistryValueSpecSignal
 
     const created = computed(() => {
       const matching = dedupeContributions(
         sortContributions(
           this.flat.value.contributions.filter(
-            (item) => item.signal.id === arg.id
+            (item) => item.valueSpec.id === arg.id
           )
         )
       )
@@ -247,14 +252,14 @@ export class Registry implements SignalReader, ServiceReader {
       }
     })
 
-    this.registrySignals.set(arg.id, created)
+    this.registryValueSpecSignals.set(arg.id, created)
     return created
   }
 
-  /** Resolve a required registry signal or service snapshot. */
+  /** Resolve a required registry value spec or service snapshot. */
   get<T>(service: Service<T>): T
-  get<I, O>(signalDef: Signal<I, O>): O
-  get(arg: Service<any> | Signal<any, any>): any {
+  get<I, O>(valueSpec: ValueSpec<I, O>): O
+  get(arg: Service<any> | ValueSpec<any, any>): any {
     if (isServiceDefinition(arg)) {
       const value = this.signal(arg).value
       if (value === undefined) {
@@ -271,24 +276,24 @@ export class Registry implements SignalReader, ServiceReader {
     return this.signal(service).value
   }
 
-  /** Inspect which active contributions currently feed a registry signal. */
-  debugSignal<I, O>(
-    signalDef: Signal<I, O>
-  ): ReadonlySignal<readonly DebugSignalItem[]> {
-    const existing = this.debugSignalItems.get(signalDef.id)
+  /** Inspect which active contributions currently feed a registry value spec. */
+  debugValueSpec<I, O>(
+    valueSpec: ValueSpec<I, O>
+  ): ReadonlySignal<readonly DebugValueSpecItem[]> {
+    const existing = this.debugValueSpecItems.get(valueSpec.id)
     if (existing) return existing
 
     const created = computed(() => {
       const matching = dedupeContributions(
         sortContributions(
           this.flat.value.contributions.filter(
-            (item) => item.signal.id === signalDef.id
+            (item) => item.valueSpec.id === valueSpec.id
           )
         )
       )
 
       return matching.map((item) => ({
-        signalName: signalDef.name,
+        valueSpecName: valueSpec.name,
         sourcePath: item.sourcePath,
         precedence: item.precedence,
         key: item.key,
@@ -296,7 +301,7 @@ export class Registry implements SignalReader, ServiceReader {
       }))
     })
 
-    this.debugSignalItems.set(signalDef.id, created)
+    this.debugValueSpecItems.set(valueSpec.id, created)
     return created
   }
 
@@ -329,8 +334,9 @@ export class Registry implements SignalReader, ServiceReader {
 
     return {
       runtimeInstanceCount: this.runtimeInstances.size,
-      signalCount: new Set(flat.contributions.map((item) => item.signal.id))
-        .size,
+      valueSpecCount: new Set(
+        flat.contributions.map((item) => item.valueSpec.id)
+      ).size,
       serviceCount: new Set(
         flat.serviceContributions.map((item) => item.service.id)
       ).size,
@@ -391,7 +397,7 @@ export class Registry implements SignalReader, ServiceReader {
               typeof item.implementation !== 'object'
             ) {
               throw new ServiceResolutionError(
-                `Service ${service.name} must be provided by an object so signals and methods can be protected.`
+                `Service ${service.name} must be provided by an object so Preact signals and methods can be protected.`
               )
             }
 
@@ -407,7 +413,7 @@ export class Registry implements SignalReader, ServiceReader {
       const provider = matches[0]?.implementation
       if (!provider || typeof provider !== 'object') {
         throw new ServiceResolutionError(
-          `Service ${service.name} must be provided by an object so signals and methods can be protected.`
+          `Service ${service.name} must be provided by an object so Preact signals and methods can be protected.`
         )
       }
 
@@ -467,8 +473,8 @@ export class Registry implements SignalReader, ServiceReader {
     this.runtimeInstances.clear()
     this.roots.value = []
     this.slotContent.clear()
-    this.registrySignals.clear()
-    this.debugSignalItems.clear()
+    this.registryValueSpecSignals.clear()
+    this.debugValueSpecItems.clear()
     this.serviceSignals.clear()
     this.debugServiceItems.clear()
   }

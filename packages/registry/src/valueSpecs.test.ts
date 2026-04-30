@@ -1,12 +1,12 @@
 import { computed, signal } from '@preact/signals-core'
 import { describe, expect, it } from 'vitest'
-import { appendSignal } from './signal'
+import { appendValueSpec } from './valueSpec'
 import { defineRegistryItem, provide } from './helpers'
 import { Registry } from './registry'
 
-describe('signals', () => {
+describe('value specs', () => {
   it('orders by precedence', () => {
-    const registrySignal = appendSignal<string>('commands')
+    const registrySignal = appendValueSpec<string>('commands')
     const container = new Registry()
 
     container.configure([
@@ -27,7 +27,7 @@ describe('signals', () => {
   })
 
   it('dedupes by explicit key', () => {
-    const registrySignal = appendSignal<string>('toolbar')
+    const registrySignal = appendValueSpec<string>('toolbar')
     const container = new Registry()
 
     container.configure([
@@ -43,8 +43,8 @@ describe('signals', () => {
     expect(container.get(registrySignal)).toEqual(['a', 'c'])
   })
 
-  it('debugSignal shows source metadata', () => {
-    const registrySignal = appendSignal<string>('toolbar')
+  it('debugValueSpec shows source metadata', () => {
+    const registrySignal = appendValueSpec<string>('toolbar')
     const live = signal('x')
     const container = new Registry()
 
@@ -60,8 +60,8 @@ describe('signals', () => {
       }),
     ])
 
-    expect(container.debugSignal(registrySignal).value[0]).toMatchObject({
-      signalName: 'toolbar',
+    expect(container.debugValueSpec(registrySignal).value[0]).toMatchObject({
+      valueSpecName: 'toolbar',
       sourcePath: 'root[0]',
       key: 'x',
       reactive: true,

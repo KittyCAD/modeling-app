@@ -5,7 +5,7 @@ import {
   type RegistryItemDefinition,
   type RegistryItem,
 } from '@kittycad/registry'
-import { settingsSignal } from '@src/signals'
+import { settingsValueSpec } from '@src/valueSpecs'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 
 type ZdsPluginDefault = 'core' | 'off'
@@ -41,7 +41,7 @@ export function createZdsPlugin({
       }),
     ],
     provides: [
-      provide(settingsSignal, {
+      provide(settingsValueSpec, {
         plugins: {
           [spec.id]: defineBooleanExtensionSetting({
             defaultValue: enabledByDefault,

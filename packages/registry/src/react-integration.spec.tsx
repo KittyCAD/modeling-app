@@ -4,16 +4,16 @@ import { describe, expect, it } from 'vitest'
 import {
   analyticsToggleService,
   createExampleRegistry,
-  notesPanelSignal,
+  notesPanelValueSpec,
   searchService,
-  toolbarSignal,
+  toolbarValueSpec,
   workspaceToggleService,
 } from './examples/app'
 import type { Registry } from './registry'
 
 function Toolbar({ registry }: { registry: Registry }) {
   useSignals()
-  const items = registry.signal(toolbarSignal).value
+  const items = registry.signal(toolbarValueSpec).value
 
   return (
     <div>
@@ -72,7 +72,7 @@ function AnalyticsToggle({
 
 function NotesPanel({ registry }: { registry: Registry }) {
   useSignals()
-  const items = registry.signal(notesPanelSignal).value
+  const items = registry.signal(notesPanelValueSpec).value
 
   return (
     <div>
@@ -86,7 +86,7 @@ function NotesPanel({ registry }: { registry: Registry }) {
 }
 
 describe('React integration', () => {
-  it('renders toolbar items from registry signals', () => {
+  it('renders toolbar items from registry value specs', () => {
     const registry = createExampleRegistry()
 
     render(<Toolbar registry={registry} />)
@@ -97,7 +97,7 @@ describe('React integration', () => {
     expect(screen.getByText('Search Idle')).toBeInTheDocument()
   })
 
-  it('updates React UI when service-backed signals change', async () => {
+  it('updates React UI when service-backed Preact signals change', async () => {
     const registry = createExampleRegistry()
 
     render(

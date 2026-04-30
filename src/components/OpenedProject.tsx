@@ -59,7 +59,7 @@ import {
   MlEphantManagerTransitions,
 } from '@src/machines/mlEphantManagerMachine'
 import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
-import { statusBarGlobalItemsSignal } from '@src/signals'
+import { statusBarGlobalItemsValueSpec } from '@src/valueSpecs'
 import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import {
   TutorialRequestToast,
@@ -447,7 +447,7 @@ export function OpenedProject() {
                 window.electron?.appRestart()
               },
             }),
-            ...registry.signal(statusBarGlobalItemsSignal).value,
+            ...registry.signal(statusBarGlobalItemsValueSpec).value,
           ]}
           localItems={[
             ...(settingsValues.debug.showModelingMachineState.current
