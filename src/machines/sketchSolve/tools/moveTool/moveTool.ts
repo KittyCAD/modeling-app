@@ -21,7 +21,7 @@ import { applyVectorToPoint2D } from '@src/lib/kclHelpers'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray, roundOff } from '@src/lib/utils'
-import { distance2d } from '@src/lib/utils2d'
+import { distance2d, pointsAreEqual } from '@src/lib/utils2d'
 import { isConstraintHoverPopup } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
 import {
   axisConstraintIncludesOrigin,
@@ -352,7 +352,21 @@ function buildDistanceLabelEditsForMovedSegments({
       new Vector2(labelPosition.x.value, labelPosition.y.value),
       pointPairs
     )
+
     if (!transformedLabel) {
+      return []
+    }
+
+    if (
+      pointsAreEqual(
+        [labelPosition.x.value, labelPosition.y.value],
+        [transformedLabel.x, transformedLabel.y],
+        1e-4
+      )
+    ) {
+      // We're transforming labels regardless of what is the dragged point.
+      // In many cases unrelated segments don't change a label position, so
+      // only dispatch an edit if the label position is actually updated,
       return []
     }
 
