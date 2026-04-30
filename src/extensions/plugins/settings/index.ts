@@ -23,10 +23,12 @@ const settingsStatusBar = defineExtension({
  * WIP Settings plugin. Only contributes status bar item at the moment,
  * but eventually it should contribute the whole settings subsystem.
  */
-export const settings = createZdsPlugin({
+const settings = createZdsPlugin({
   id: 'settings',
   title: 'Settings status bar item',
   description: 'Whether there is a settings item in the status bar',
   extensions: [settingsStatusBar],
   defaultSetting: 'core',
 })
+
+export default settings

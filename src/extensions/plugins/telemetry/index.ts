@@ -28,7 +28,7 @@ const telemetryStatusBarExt = defineExtension({
 })
 
 /** Runtime-toggleable telemetry plugin definition. */
-export const telemetry = createZdsPlugin({
+const telemetry = createZdsPlugin({
   id: 'telemetry',
   title: 'Telemetry',
   description:
@@ -36,3 +36,5 @@ export const telemetry = createZdsPlugin({
   extensions: [telemetryRouteExt, telemetryStatusBarExt],
   defaultSetting: 'core',
 })
+
+export default telemetry
