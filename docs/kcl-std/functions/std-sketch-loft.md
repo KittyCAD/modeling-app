@@ -349,8 +349,8 @@ sketch001 = sketch(on = XZ) {
 loft(
   [
     sketch003.arc1,
-    sketch002.arc1,
-    sketch001.arc1
+    sketch001.arc1,
+    sketch002.arc1
   ],
   bodyType = SURFACE,
 )
