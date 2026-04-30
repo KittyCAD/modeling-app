@@ -51,12 +51,13 @@ function PluginItem({
           onChange={() => {
             const nextActive = !resolvedService.active.value
             app.settings.actor.send({
-              type: `set.plugins.${plugin.id}`,
+              type: '*',
               data: {
+                path: `plugins.${plugin.id}`,
                 level: 'user',
                 value: nextActive,
               },
-            } as never)
+            })
           }}
           className="flex-none"
         />

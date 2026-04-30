@@ -235,10 +235,9 @@ export const settingsMachine = setup({
       if (!('data' in event)) {
         return
       }
-      const eventParts = event.type.replace(/^set./, '').split('.') as [
-        keyof SettingsType,
-        string,
-      ]
+      const settingPath =
+        event.type === '*' ? event.data.path : event.type.replace(/^set\./, '')
+      const eventParts = settingPath.split('.') as [keyof SettingsType, string]
       const truncatedNewValue = event.data.value?.toString().slice(0, 28)
       const message =
         `Set ${decamelize(eventParts[1], { separator: ' ' })}` +
@@ -289,9 +288,12 @@ export const settingsMachine = setup({
     setSettingAtLevel: assign(({ context, event }) => {
       if (!('data' in event)) return {}
       const { level, value } = event.data
-      const [category, setting] = event.type
-        .replace(/^set./, '')
-        .split('.') as [keyof SettingsType, string]
+      const settingPath =
+        event.type === '*' ? event.data.path : event.type.replace(/^set\./, '')
+      const [category, setting] = settingPath.split('.') as [
+        keyof SettingsType,
+        string,
+      ]
 
       // @ts-ignore
       context[category][setting][level] = value
