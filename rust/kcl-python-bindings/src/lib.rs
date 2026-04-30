@@ -142,10 +142,6 @@ impl RequestContext {
         Self { input, mock, api_token }
     }
 
-    fn from_option(request: Option<Self>) -> Self {
-        request.unwrap_or_default()
-    }
-
     fn engine(api_token: Option<String>) -> Self {
         Self::new(None, false, api_token)
     }
@@ -480,14 +476,14 @@ fn parse_code(code: String) -> PyResult<bool> {
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction(signature = (path, request_context=None))]
 async fn execute(path: String, request_context: Option<RequestContext>) -> PyResult<()> {
-    spawn_py(async move { execute_impl(RequestContext::from_option(request_context).path(path)).await }).await
+    spawn_py(async move { execute_impl(request_context.unwrap_or_default().path(path)).await }).await
 }
 
 /// Execute the kcl code.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction(signature = (code, request_context=None))]
 async fn execute_code(code: String, request_context: Option<RequestContext>) -> PyResult<()> {
-    spawn_py(async move { execute_impl(RequestContext::from_option(request_context).code(code)).await }).await
+    spawn_py(async move { execute_impl(request_context.unwrap_or_default().code(code)).await }).await
 }
 
 /// Mock execute the kcl code.
@@ -495,7 +491,7 @@ async fn execute_code(code: String, request_context: Option<RequestContext>) -> 
 #[pyfunction(signature = (code, request_context=None))]
 async fn mock_execute_code(code: String, request_context: Option<RequestContext>) -> PyResult<bool> {
     spawn_py(async move {
-        execute_impl(RequestContext::from_option(request_context).mock_code(code)).await?;
+        execute_impl(request_context.unwrap_or_default().mock_code(code)).await?;
         Ok(true)
     })
     .await
@@ -506,7 +502,7 @@ async fn mock_execute_code(code: String, request_context: Option<RequestContext>
 #[pyfunction(signature = (path, request_context=None))]
 async fn mock_execute(path: String, request_context: Option<RequestContext>) -> PyResult<bool> {
     spawn_py(async move {
-        execute_impl(RequestContext::from_option(request_context).mock_path(path)).await?;
+        execute_impl(request_context.unwrap_or_default().mock_path(path)).await?;
         Ok(true)
     })
     .await
@@ -519,10 +515,7 @@ async fn get_sketch_constraint_status(
     path: String,
     request_context: Option<RequestContext>,
 ) -> PyResult<SketchConstraintReport> {
-    spawn_py(
-        async move { sketch_constraint_report_impl(RequestContext::from_option(request_context).path(path)).await },
-    )
-    .await
+    spawn_py(async move { sketch_constraint_report_impl(request_context.unwrap_or_default().path(path)).await }).await
 }
 
 /// Execute kcl code and return a report of sketch constraint status.
@@ -532,10 +525,7 @@ async fn get_sketch_constraint_status_code(
     code: String,
     request_context: Option<RequestContext>,
 ) -> PyResult<SketchConstraintReport> {
-    spawn_py(
-        async move { sketch_constraint_report_impl(RequestContext::from_option(request_context).code(code)).await },
-    )
-    .await
+    spawn_py(async move { sketch_constraint_report_impl(request_context.unwrap_or_default().code(code)).await }).await
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
@@ -580,7 +570,7 @@ async fn import_and_snapshot_views(
 ) -> PyResult<Vec<Vec<u8>>> {
     let zoom = zoom.unwrap_or(true);
     spawn_py(async move {
-        let request = RequestContext::from_option(request_context);
+        let request = request_context.unwrap_or_default();
         let (ctx, _state) = new_context_state(&request, None).await.map_err(to_py_exception)?;
         import(&ctx, filepaths, format).await?;
         let result = take_snaps(&ctx, image_format, snapshot_options, zoom).await;
@@ -660,7 +650,7 @@ async fn execute_and_snapshot_views(
     let zoom = zoom.unwrap_or(true);
     spawn_py(async move {
         execute_and_snapshot_views_impl(
-            RequestContext::from_option(request_context).path(path),
+            request_context.unwrap_or_default().path(path),
             image_format,
             snapshot_options,
             zoom,
@@ -693,10 +683,8 @@ async fn execute_and_measure(
     request: PhysicalPropertiesRequest,
     request_context: Option<RequestContext>,
 ) -> PyResult<PhysicalPropertiesResponse> {
-    spawn_py(
-        async move { execute_and_measure_impl(RequestContext::from_option(request_context).path(path), request).await },
-    )
-    .await
+    spawn_py(async move { execute_and_measure_impl(request_context.unwrap_or_default().path(path), request).await })
+        .await
 }
 
 /// Execute the kcl code and measure physical properties of the resulting model.
@@ -707,10 +695,8 @@ async fn execute_code_and_measure(
     request: PhysicalPropertiesRequest,
     request_context: Option<RequestContext>,
 ) -> PyResult<PhysicalPropertiesResponse> {
-    spawn_py(
-        async move { execute_and_measure_impl(RequestContext::from_option(request_context).code(code), request).await },
-    )
-    .await
+    spawn_py(async move { execute_and_measure_impl(request_context.unwrap_or_default().code(code), request).await })
+        .await
 }
 
 /// Execute a kcl file and return the model's bounding box.
@@ -724,12 +710,7 @@ async fn execute_and_bounding_box(
 ) -> PyResult<BoundingBoxResponse> {
     let entity_ids = entity_ids.unwrap_or_default();
     spawn_py(async move {
-        execute_and_bounding_box_impl(
-            RequestContext::from_option(request_context).path(path),
-            entity_ids,
-            output_unit,
-        )
-        .await
+        execute_and_bounding_box_impl(request_context.unwrap_or_default().path(path), entity_ids, output_unit).await
     })
     .await
 }
@@ -745,12 +726,7 @@ async fn execute_code_and_bounding_box(
 ) -> PyResult<BoundingBoxResponse> {
     let entity_ids = entity_ids.unwrap_or_default();
     spawn_py(async move {
-        execute_and_bounding_box_impl(
-            RequestContext::from_option(request_context).code(code),
-            entity_ids,
-            output_unit,
-        )
-        .await
+        execute_and_bounding_box_impl(request_context.unwrap_or_default().code(code), entity_ids, output_unit).await
     })
     .await
 }
@@ -800,7 +776,7 @@ async fn execute_code_and_snapshot_views(
     let zoom = zoom.unwrap_or(true);
     spawn_py(async move {
         execute_and_snapshot_views_impl(
-            RequestContext::from_option(request_context).code(code),
+            request_context.unwrap_or_default().code(code),
             image_format,
             snapshot_options,
             zoom,
@@ -1071,9 +1047,9 @@ async fn execute_and_export(
     export_format: FileExportFormat,
     request_context: Option<RequestContext>,
 ) -> PyResult<Vec<RawFile>> {
-    spawn_py(async move {
-        execute_and_export_impl(RequestContext::from_option(request_context).path(path), export_format).await
-    })
+    spawn_py(
+        async move { execute_and_export_impl(request_context.unwrap_or_default().path(path), export_format).await },
+    )
     .await
 }
 
@@ -1085,9 +1061,9 @@ async fn execute_code_and_export(
     export_format: FileExportFormat,
     request_context: Option<RequestContext>,
 ) -> PyResult<Vec<RawFile>> {
-    spawn_py(async move {
-        execute_and_export_impl(RequestContext::from_option(request_context).code(code), export_format).await
-    })
+    spawn_py(
+        async move { execute_and_export_impl(request_context.unwrap_or_default().code(code), export_format).await },
+    )
     .await
 }
 
