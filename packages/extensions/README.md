@@ -17,8 +17,8 @@ This package provides:
 - `Service` is a typed capability object that extensions can read from the host.
 - `ExtensionDefinition` is the declarative unit that contributes signals, services, and child extensions through `uses`.
 - `ExtensionFactory` creates runtime-backed extensions with stable state.
-- `Compartment` is a replaceable subtree that can be reconfigured at runtime.
-- `createPlugin(...)` packages metadata, a compartment, and a toggle controller into one installable extension node.
+- `Slot` is a replaceable subtree that can be reconfigured at runtime.
+- `createPlugin(...)` packages metadata, a slot, and a toggle controller into one installable extension node.
 
 ## Package Layout
 

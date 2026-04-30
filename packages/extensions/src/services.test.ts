@@ -9,7 +9,7 @@ import {
 } from './errors'
 import { appendSignal, firstWinsSignal } from './signal'
 import {
-  createCompartmentToggleController,
+  createSlotToggleController,
   createPlugin,
   defineExtension,
   defineExtensionFactory,
@@ -19,7 +19,7 @@ import {
 } from './helpers'
 import { ExtensionHost } from './host'
 import { defineService } from './service'
-import { Compartment } from './types'
+import { Slot } from './types'
 
 describe('services', () => {
   it('resolves singleton services and exposes readonly signal fields', () => {
@@ -91,16 +91,16 @@ describe('services', () => {
     expect(() => host.inspect()).toThrow(ServiceResolutionError)
   })
 
-  it('throws when a factory reconfigures a compartment during graph construction', () => {
-    const compartment = new Compartment()
+  it('throws when a factory reconfigures a slot during graph construction', () => {
+    const slot = new Slot()
 
     const badFactory = defineExtensionFactory(({ host }) => {
-      host.reconfigure(compartment, [])
+      host.reconfigure(slot, [])
       return { extension: defineExtension({}) }
     }, 'bad-reconfigure-factory')
 
     const host = new ExtensionHost()
-    host.configure([compartment.of(defineExtension({})), badFactory])
+    host.configure([slot.of(defineExtension({})), badFactory])
 
     expect(() => host.inspect()).toThrow(ReconfigurationError)
   })
@@ -141,17 +141,17 @@ describe('services', () => {
 
   it('throws when reconfigure is called during signal combine', () => {
     const extensionSignal = appendSignal<number>('numbers')
-    const compartment = new Compartment()
+    const slot = new Slot()
     const host = new ExtensionHost()
 
     host.configure([
-      compartment.of(defineExtension({})),
+      slot.of(defineExtension({})),
       defineExtension({
         provides: [
           provide(
             extensionSignal,
             computed(() => {
-              host.reconfigure(compartment, [])
+              host.reconfigure(slot, [])
               return 1
             })
           ),
@@ -162,7 +162,7 @@ describe('services', () => {
     expect(() => host.get(extensionSignal)).toThrow(ReconfigurationError)
   })
 
-  it('toggle controller reconfigures a compartment and preserves unrelated runtime instances', () => {
+  it('toggle controller reconfigures a slot and preserves unrelated runtime instances', () => {
     const toggleService = defineService<{
       active: { readonly value: boolean }
       enable(): void
@@ -174,7 +174,7 @@ describe('services', () => {
       open(): void
     }>('stable')
     const featureSignal = appendSignal<string>('feature')
-    const compartment = new Compartment()
+    const slot = new Slot()
     const runtimeCalls = vi.fn()
 
     const stableRuntime = defineExtensionFactory(() => {
@@ -196,9 +196,9 @@ describe('services', () => {
     }, 'stable-runtime')
 
     const toggleExtension = defineExtensionFactory(({ host }) => {
-      const controller = createCompartmentToggleController({
+      const controller = createSlotToggleController({
         host,
-        compartment,
+        slot,
         activeExtensions: [
           defineExtension({
             provides: [provide(featureSignal, 'enabled')],
@@ -214,7 +214,7 @@ describe('services', () => {
     }, 'toggle-extension')
 
     const host = new ExtensionHost()
-    host.configure([stableRuntime, toggleExtension, compartment.of()])
+    host.configure([stableRuntime, toggleExtension, slot.of()])
 
     host.get(stableService).open()
     host.get(toggleService).enable()

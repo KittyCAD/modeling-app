@@ -5,7 +5,7 @@ import {
 } from '@preact/signals-core'
 import { CombineMutationError, ServiceResolutionError } from './errors'
 import type { ExtensionHost } from './host'
-import { Compartment } from './types'
+import { Slot } from './types'
 import type {
   ExtensionDefinition,
   ExtensionFactory,
@@ -94,12 +94,12 @@ export function readonlyFromSignal<T>(
 }
 
 /**
- * Stable controller shape for toggling a compartment-backed feature subtree.
+ * Stable controller shape for toggling a slot-backed feature subtree.
  *
- * If callers bypass this controller and reconfigure the compartment directly,
+ * If callers bypass this controller and reconfigure the slot directly,
  * the `active` signal may no longer reflect the host's true state.
  */
-export interface CompartmentToggleController {
+export interface SlotToggleController {
   readonly active: ReadonlyPreactSignal<boolean>
   enable(): void
   disable(): void
@@ -208,7 +208,7 @@ interface PluginInfo {
   description: string
 }
 
-/** Input shape for constructing a plugin with a toggleable compartment. */
+/** Input shape for constructing a plugin with a toggleable slot. */
 interface PluginSpec extends PluginInfo {
   extensions: readonly ExtensionNode[]
   enabledByDefault?: boolean
@@ -218,11 +218,11 @@ interface PluginSpec extends PluginInfo {
  * Resolved plugin metadata exposed through `pluginsSignal`.
  *
  * The `service` is plugin-management metadata. It points at a stable
- * controller that lives outside the plugin's compartment and can toggle the
+ * controller that lives outside the plugin's slot and can toggle the
  * plugin subtree at runtime.
  */
 export interface PluginRecord extends PluginInfo {
-  service: Service<CompartmentToggleController>
+  service: Service<SlotToggleController>
 }
 
 /** Registry of installed plugins for settings screens and similar UIs. */
@@ -232,8 +232,8 @@ export const pluginsSignal = appendSignal<PluginRecord>('plugins')
  * Build a plugin from declarative extension content.
  *
  * A plugin is modeled as one installable extension node with:
- * - one compartment that owns the plugin's runtime-toggled subtree
- * - one controller service that can reconfigure that compartment
+ * - one slot that owns the plugin's runtime-toggled subtree
+ * - one controller service that can reconfigure that slot
  * - one metadata contribution for discovery and UI presentation
  *
  * UI contributed by a plugin should read app or router context from React
@@ -244,11 +244,11 @@ export function createPlugin({
   enabledByDefault = true,
   ...info
 }: PluginSpec): ExtensionDefinition {
-  const compartment = new Compartment()
+  const slot = new Slot()
   const toggle = createToggleableExtension({
     name: info.id,
     extensions,
-    compartment,
+    slot,
     initialActive: enabledByDefault,
   })
   return defineExtension({
@@ -259,39 +259,36 @@ export function createPlugin({
         service: toggle.service,
       }),
     ],
-    uses: [
-      compartment.of(...(enabledByDefault ? extensions : [])),
-      toggle.extension,
-    ],
+    uses: [slot.of(...(enabledByDefault ? extensions : [])), toggle.extension],
   })
 }
 
 /**
- * Create a stable toggle-controller service for a compartment-backed feature.
+ * Create a stable toggle-controller service for a slot-backed feature.
  *
- * The controller extension must live outside the compartment it mutates so the
+ * The controller extension must live outside the slot it mutates so the
  * service remains available after the feature is turned off.
  */
 function createToggleableExtension({
   name,
   extensions,
-  compartment,
+  slot,
   initialActive,
 }: {
   name: string
   extensions: readonly ExtensionNode[]
-  compartment: Compartment
+  slot: Slot
   initialActive: boolean
 }) {
-  const service = defineService<CompartmentToggleController>(`${name}-toggle`)
+  const service = defineService<SlotToggleController>(`${name}-toggle`)
   return {
     service,
     extension: defineExtensionFactory((ctx) => {
-      const impl = createCompartmentToggleController({
+      const impl = createSlotToggleController({
         host: ctx.host,
         activeExtensions: extensions,
         initialActive,
-        compartment,
+        slot,
       })
       return {
         extension: defineRuntimeExtension({
@@ -302,38 +299,38 @@ function createToggleableExtension({
   }
 }
 
-type CompartmentToggleControllerProps = {
+type SlotToggleControllerProps = {
   host: Pick<ExtensionHost, 'reconfigure'>
-  compartment: Compartment
+  slot: Slot
   activeExtensions: readonly ExtensionNode[]
   inactiveExtensions?: readonly ExtensionNode[]
   initialActive?: boolean
 }
 
 /**
- * Build a controller service for a compartment-backed feature toggle.
+ * Build a controller service for a slot-backed feature toggle.
  *
- * The controller should live outside the compartment it mutates.
- * `initialActive` should match the host's initial compartment contents.
+ * The controller should live outside the slot it mutates.
+ * `initialActive` should match the host's initial slot contents.
  */
-export function createCompartmentToggleController({
+export function createSlotToggleController({
   host,
-  compartment,
+  slot,
   activeExtensions,
   inactiveExtensions = [],
   initialActive = false,
-}: CompartmentToggleControllerProps): CompartmentToggleController {
+}: SlotToggleControllerProps): SlotToggleController {
   const active = signal(initialActive)
 
   return {
     active,
     enable() {
       active.value = true
-      host.reconfigure(compartment, activeExtensions)
+      host.reconfigure(slot, activeExtensions)
     },
     disable() {
       active.value = false
-      host.reconfigure(compartment, inactiveExtensions)
+      host.reconfigure(slot, inactiveExtensions)
     },
     toggle() {
       if (active.value) {

@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { appendSignal, mergeObjectsSignal } from './signal'
 import { defineExtension, defineExtensionFactory, provide } from './helpers'
 import { ExtensionHost } from './host'
-import { Compartment } from './types'
+import { Slot } from './types'
 
 describe('ExtensionHost', () => {
   it('resolves static and reactive signal contributions', () => {
@@ -29,10 +29,10 @@ describe('ExtensionHost', () => {
     expect(host.get(itemsSignal)).toEqual(['a', 'b', 'hidden'])
   })
 
-  it('preserves runtime instances across unrelated compartment reconfiguration', () => {
+  it('preserves runtime instances across unrelated slot reconfiguration', () => {
     const calls = vi.fn()
     const extensionSignal = appendSignal<string>('values')
-    const compartment = new Compartment()
+    const slot = new Slot()
 
     const runtime = defineExtensionFactory(() => {
       calls()
@@ -46,15 +46,13 @@ describe('ExtensionHost', () => {
     const host = new ExtensionHost()
     host.configure([
       runtime,
-      compartment.of(
-        defineExtension({ provides: [provide(extensionSignal, 'a')] })
-      ),
+      slot.of(defineExtension({ provides: [provide(extensionSignal, 'a')] })),
     ])
 
     expect(host.get(extensionSignal)).toEqual(['stable', 'a'])
     expect(calls).toHaveBeenCalledTimes(1)
 
-    host.reconfigure(compartment, [
+    host.reconfigure(slot, [
       defineExtension({ provides: [provide(extensionSignal, 'b')] }),
     ])
 

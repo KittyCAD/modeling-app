@@ -1,9 +1,9 @@
 import type { ForwardedRef } from 'react'
 import { forwardRef } from 'react'
 import type {
-  CompartmentToggleController,
   ExtensionHost,
   PluginRecord,
+  SlotToggleController,
 } from '@kittycad/extensions'
 import { useApp } from '@src/lib/boot'
 import { Toggle } from '@src/components/Toggle/Toggle'
@@ -38,7 +38,7 @@ export const PluginsList = forwardRef(
 function PluginItem({
   plugin,
   resolvedService,
-}: { plugin: PluginRecord; resolvedService: CompartmentToggleController }) {
+}: { plugin: PluginRecord; resolvedService: SlotToggleController }) {
   const app = useApp()
 
   return (

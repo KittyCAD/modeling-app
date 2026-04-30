@@ -119,7 +119,7 @@ describe('React integration', () => {
     expect(screen.getByText('Close Search')).toBeInTheDocument()
   })
 
-  it('reconfigures a workspace compartment without resetting unrelated state', async () => {
+  it('reconfigures a workspace slot without resetting unrelated state', async () => {
     const host = createExampleHost()
 
     render(

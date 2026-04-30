@@ -19,7 +19,6 @@ import {
   unwrapMaybeSignal,
 } from './helpers'
 import type {
-  Compartment,
   DebugSignalItem,
   DebugServiceItem,
   ExtensionContext,
@@ -32,8 +31,9 @@ import type {
   ServiceReader,
   Signal,
   SignalReader,
+  Slot,
 } from './types'
-import { CompartmentInstance } from './types'
+import { SlotInstance } from './types'
 
 interface FlattenedContribution {
   readonly signal: Signal<any, any>
@@ -59,7 +59,7 @@ interface RuntimeInstance {
 interface FlattenResult {
   readonly contributions: readonly FlattenedContribution[]
   readonly serviceContributions: readonly FlattenedServiceContribution[]
-  readonly compartments: ReadonlyMap<symbol, readonly ExtensionNode[]>
+  readonly slots: ReadonlyMap<symbol, readonly ExtensionNode[]>
 }
 
 function isServiceDefinition(
@@ -79,7 +79,7 @@ function isServiceDefinition(
  */
 export class ExtensionHost implements SignalReader, ServiceReader {
   private readonly roots = signal<readonly ExtensionNode[]>([])
-  private readonly compartmentContent = new Map<
+  private readonly slotContent = new Map<
     symbol,
     PreactSignal<readonly ExtensionNode[]>
   >()
@@ -105,7 +105,7 @@ export class ExtensionHost implements SignalReader, ServiceReader {
     try {
       const contributions: FlattenedContribution[] = []
       const serviceContributions: FlattenedServiceContribution[] = []
-      const compartments = new Map<symbol, readonly ExtensionNode[]>()
+      const slots = new Map<symbol, readonly ExtensionNode[]>()
       const runtimeKeys = new Set<ExtensionKey>()
       const seenExtensions = new Set<ExtensionKey>()
       let order = 0
@@ -117,17 +117,17 @@ export class ExtensionHost implements SignalReader, ServiceReader {
       }
 
       const visit = (node: ExtensionNode, path: string): void => {
-        if (node instanceof CompartmentInstance) {
-          compartments.set(node.compartment.id, node.content)
+        if (node instanceof SlotInstance) {
+          slots.set(node.slot.id, node.content)
 
-          let holder = this.compartmentContent.get(node.compartment.id)
+          let holder = this.slotContent.get(node.slot.id)
           if (!holder) {
             holder = signal(node.content)
-            this.compartmentContent.set(node.compartment.id, holder)
+            this.slotContent.set(node.slot.id, holder)
           }
 
           for (const child of holder.value) {
-            visit(child, `${path}/compartment`)
+            visit(child, `${path}/slot`)
           }
           return
         }
@@ -174,7 +174,7 @@ export class ExtensionHost implements SignalReader, ServiceReader {
       }
 
       this.reconcileRuntimeInstances(runtimeKeys)
-      return { contributions, serviceContributions, compartments }
+      return { contributions, serviceContributions, slots }
     } finally {
       this.flattenDepth--
     }
@@ -185,27 +185,24 @@ export class ExtensionHost implements SignalReader, ServiceReader {
     this.roots.value = extensions
   }
 
-  /** Replace the content of one compartment while preserving unrelated runtime state. */
-  reconfigure(
-    compartment: Compartment,
-    extensions: readonly ExtensionNode[]
-  ): void {
+  /** Replace the content of one slot while preserving unrelated runtime state. */
+  reconfigure(slot: Slot, extensions: readonly ExtensionNode[]): void {
     if (this.flattenDepth > 0) {
       throw new ReconfigurationError(
-        'Cannot reconfigure a compartment while building the extension graph.'
+        'Cannot reconfigure a slot while building the extension graph.'
       )
     }
 
     if (this.combineDepth > 0) {
       throw new ReconfigurationError(
-        'Cannot reconfigure a compartment while combining a signal.'
+        'Cannot reconfigure a slot while combining a signal.'
       )
     }
 
-    let holder = this.compartmentContent.get(compartment.id)
+    let holder = this.slotContent.get(slot.id)
     if (!holder) {
       holder = signal(extensions)
-      this.compartmentContent.set(compartment.id, holder)
+      this.slotContent.set(slot.id, holder)
     }
     holder.value = extensions
   }
@@ -334,7 +331,7 @@ export class ExtensionHost implements SignalReader, ServiceReader {
       serviceCount: new Set(
         flat.serviceContributions.map((item) => item.service.id)
       ).size,
-      compartments: flat.compartments.size,
+      slots: flat.slots.size,
     }
   }
 
@@ -466,7 +463,7 @@ export class ExtensionHost implements SignalReader, ServiceReader {
 
     this.runtimeInstances.clear()
     this.roots.value = []
-    this.compartmentContent.clear()
+    this.slotContent.clear()
     this.extensionSignals.clear()
     this.debugSignalItems.clear()
     this.serviceSignals.clear()

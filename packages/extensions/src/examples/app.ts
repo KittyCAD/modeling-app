@@ -1,7 +1,7 @@
 import { type ReadonlySignal, computed, signal } from '@preact/signals-core'
 import { appendSignal, defineSignal, mergeObjectsSignal } from '../signal'
 import {
-  createCompartmentToggleController,
+  createSlotToggleController,
   createPlugin,
   defineExtension,
   defineExtensionFactory,
@@ -11,7 +11,7 @@ import {
 } from '../helpers'
 import { ExtensionHost } from '../host'
 import { defineService } from '../service'
-import { Compartment, type ExtensionNode } from '../types'
+import { Slot, type ExtensionNode } from '../types'
 
 /**
  * This file is intentionally more tutorial-like than the rest of the package.
@@ -139,13 +139,13 @@ export const notesPluginApiService =
   defineService<NotesPluginApi>('notes-plugin-api')
 
 /**
- * Compartments are replaceable subtrees of the extension graph.
+ * Slots are replaceable subtrees of the extension graph.
  *
- * Toggling one compartment should preserve unrelated runtime state owned by the
+ * Toggling one slot should preserve unrelated runtime state owned by the
  * rest of the host.
  */
-export const workspaceCompartment = new Compartment()
-export const analyticsCompartment = new Compartment()
+export const workspaceSlot = new Slot()
+export const analyticsSlot = new Slot()
 
 /**
  * Static extensions are plain declarative contributions. They are the easiest
@@ -287,13 +287,13 @@ export const searchFeatureExtension = defineExtension({
 /**
  * This runtime extension is the canonical "feature toggle" pattern.
  *
- * The controller service lives outside `workspaceCompartment`, so the toggle
- * remains reachable even after the compartment content is turned off.
+ * The controller service lives outside `workspaceSlot`, so the toggle
+ * remains reachable even after the slot content is turned off.
  */
 export const workspaceToggleExtension = defineExtensionFactory(({ host }) => {
-  const controller = createCompartmentToggleController({
+  const controller = createSlotToggleController({
     host,
-    compartment: workspaceCompartment,
+    slot: workspaceSlot,
     activeExtensions: [teamWorkspaceExtension],
     initialActive: false,
   })
@@ -396,15 +396,15 @@ export const analyticsStatusExtension = defineExtensionFactory(
 )
 
 /**
- * The analytics provider itself is also compartment-backed so the example can
+ * The analytics provider itself is also slot-backed so the example can
  * demonstrate `optional(service)` reacting when the upstream runtime disappears.
  */
 function createAnalyticsToggleExtension(initialActive: boolean) {
   return defineExtensionFactory(
     ({ host }) => {
-      const controller = createCompartmentToggleController({
+      const controller = createSlotToggleController({
         host,
-        compartment: analyticsCompartment,
+        slot: analyticsSlot,
         activeExtensions: [analyticsProviderExtension],
         initialActive,
       })
@@ -531,10 +531,10 @@ export function createExampleExtensions(
     personalWorkspaceExtension,
     searchFeatureExtension,
     workspaceToggleExtension,
-    workspaceCompartment.of(),
+    workspaceSlot.of(),
     createAnalyticsToggleExtension(includeAnalyticsProvider),
     analyticsStatusExtension,
-    analyticsCompartment.of(
+    analyticsSlot.of(
       ...(includeAnalyticsProvider ? [analyticsProviderExtension] : [])
     ),
     ...(includeNotesPlugin ? [notesPlugin] : []),
@@ -548,7 +548,7 @@ export function createExampleExtensions(
  * It includes:
  * - static configuration
  * - runtime services and runtime-to-runtime dependencies
- * - compartment-backed feature toggles
+ * - slot-backed feature toggles
  * - a pair of cooperating plugins
  */
 export const defaultExampleExtensions = createExampleExtensions()

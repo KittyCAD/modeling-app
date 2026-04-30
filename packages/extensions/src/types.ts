@@ -121,7 +121,7 @@ export type ExtensionNode =
   | ExtensionDefinition
   | RuntimeExtensionDefinition
   | ExtensionFactory<any>
-  | CompartmentInstance
+  | SlotInstance
 
 /**
  * SignalReader exposes resolved extension-signal values either as snapshots or
@@ -176,23 +176,23 @@ export interface DebugServiceItem {
 }
 
 /**
- * Compartments let callers swap a subtree of extensions without rebuilding the
+ * Slots let callers swap a subtree of extensions without rebuilding the
  * rest of the host.
  */
-export class Compartment {
-  readonly id = Symbol('Compartment')
+export class Slot {
+  readonly id = Symbol('Slot')
 
-  of(...content: readonly ExtensionNode[]): CompartmentInstance {
-    return new CompartmentInstance(this, content)
+  of(...content: readonly ExtensionNode[]): SlotInstance {
+    return new SlotInstance(this, content)
   }
 }
 
 /**
- * Concrete content inserted into a compartment.
+ * Concrete content inserted into a slot.
  */
-export class CompartmentInstance {
+export class SlotInstance {
   constructor(
-    readonly compartment: Compartment,
+    readonly slot: Slot,
     readonly content: readonly ExtensionNode[]
   ) {}
 }
@@ -207,10 +207,7 @@ export interface ExtensionHostLike extends DisposableLike {
   get<I, O>(signal: Signal<I, O>): O
   signal<T>(service: Service<T>): ReadonlySignal<T | undefined>
   signal<I, O>(signal: Signal<I, O>): ReadonlySignal<O>
-  reconfigure(
-    compartment: Compartment,
-    extensions: readonly ExtensionNode[]
-  ): void
+  reconfigure(slot: Slot, extensions: readonly ExtensionNode[]): void
   optional<T>(service: Service<T>): T | undefined
   debugService<T>(
     service: Service<T>
