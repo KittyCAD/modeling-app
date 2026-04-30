@@ -78,12 +78,14 @@ describe('project system', () => {
     try {
       await waitForSettingsIdle(app)
 
-      const telemetryPlugin = app.extensions.host
+      const telemetryPlugin = app.extensions.container
         .get(pluginsSignal)
         .find((plugin) => plugin.id === 'telemetry')
       expect(telemetryPlugin).toBeDefined()
 
-      const telemetryToggle = app.extensions.host.get(telemetryPlugin!.service)
+      const telemetryToggle = app.extensions.container.get(
+        telemetryPlugin!.service
+      )
       expect(telemetryToggle.active.value).toBe(true)
 
       app.settings.actor.send({

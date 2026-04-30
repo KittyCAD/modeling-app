@@ -2,14 +2,14 @@ import { computed, signal } from '@preact/signals-core'
 import { describe, expect, it } from 'vitest'
 import { appendSignal } from './signal'
 import { defineExtension, provide } from './helpers'
-import { ExtensionHost } from './host'
+import { ExtensionContainer } from './container'
 
 describe('signals', () => {
   it('orders by precedence', () => {
     const extensionSignal = appendSignal<string>('commands')
-    const host = new ExtensionHost()
+    const container = new ExtensionContainer()
 
-    host.configure([
+    container.configure([
       defineExtension({
         provides: [
           provide(extensionSignal, 'default-a'),
@@ -19,14 +19,18 @@ describe('signals', () => {
       }),
     ])
 
-    expect(host.get(extensionSignal)).toEqual(['highest', 'default-a', 'low'])
+    expect(container.get(extensionSignal)).toEqual([
+      'highest',
+      'default-a',
+      'low',
+    ])
   })
 
   it('dedupes by explicit key', () => {
     const extensionSignal = appendSignal<string>('toolbar')
-    const host = new ExtensionHost()
+    const container = new ExtensionContainer()
 
-    host.configure([
+    container.configure([
       defineExtension({
         provides: [
           provide(extensionSignal, 'a', { key: 'same' }),
@@ -36,15 +40,15 @@ describe('signals', () => {
       }),
     ])
 
-    expect(host.get(extensionSignal)).toEqual(['a', 'c'])
+    expect(container.get(extensionSignal)).toEqual(['a', 'c'])
   })
 
   it('debugSignal shows source metadata', () => {
     const extensionSignal = appendSignal<string>('toolbar')
     const live = signal('x')
-    const host = new ExtensionHost()
+    const container = new ExtensionContainer()
 
-    host.configure([
+    container.configure([
       defineExtension({
         provides: [
           provide(
@@ -56,7 +60,7 @@ describe('signals', () => {
       }),
     ])
 
-    expect(host.debugSignal(extensionSignal).value[0]).toMatchObject({
+    expect(container.debugSignal(extensionSignal).value[0]).toMatchObject({
       signalName: 'toolbar',
       sourcePath: 'root[0]',
       key: 'x',

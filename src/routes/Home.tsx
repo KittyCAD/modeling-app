@@ -423,7 +423,7 @@ const Home = () => {
               window.electron?.appRestart()
             },
           }),
-          ...extensions.host.signal(statusBarGlobalItemsSignal).value,
+          ...extensions.container.signal(statusBarGlobalItemsSignal).value,
         ]}
         localItems={defaultLocalStatusBarItems}
       />

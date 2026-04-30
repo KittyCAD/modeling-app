@@ -9,14 +9,14 @@ import {
   provide,
   provideService,
 } from '../helpers'
-import { ExtensionHost } from '../host'
+import { ExtensionContainer } from '../container'
 import { defineService } from '../service'
 import { Slot, type ExtensionNode } from '../types'
 
 /**
  * This file is intentionally more tutorial-like than the rest of the package.
  *
- * The example host demonstrates four layers of the system:
+ * The example container demonstrates four layers of the system:
  * 1. signals model composable outputs like toolbars or panels
  * 2. services model imperative capabilities with signal-backed state
  * 3. runtime extensions own long-lived models and expose them through services
@@ -26,7 +26,7 @@ import { Slot, type ExtensionNode } from '../types'
  * - start with the shapes that UI wants to render
  * - then the signal and service definitions
  * - then the static/runtime/plugin examples
- * - finally the `createExampleHost()` assembly at the bottom
+ * - finally the `createExampleContainer()` assembly at the bottom
  */
 
 export interface Command {
@@ -100,7 +100,7 @@ export interface NotesPluginApi {
 /**
  * Signals are typed extension points.
  *
- * Any number of extensions can contribute to a signal. The host gathers those
+ * Any number of extensions can contribute to a signal. The container gathers those
  * inputs and runs the signal's pure `combine()` function to produce one resolved
  * output.
  */
@@ -127,7 +127,7 @@ export const settingsSignal = mergeObjectsSignal<AppSettings>('settings', {
  * Services are the dependency-injection layer.
  *
  * Unlike signals, services are usually singleton capabilities that other
- * extensions read lazily from the host.
+ * extensions read lazily from the container.
  */
 export const searchService = defineService<SearchService>('search')
 export const workspaceToggleService =
@@ -142,7 +142,7 @@ export const notesPluginApiService =
  * Slots are replaceable subtrees of the extension graph.
  *
  * Toggling one slot should preserve unrelated runtime state owned by the
- * rest of the host.
+ * rest of the container.
  */
 export const workspaceSlot = new Slot()
 export const analyticsSlot = new Slot()
@@ -290,34 +290,37 @@ export const searchFeatureExtension = defineExtension({
  * The controller service lives outside `workspaceSlot`, so the toggle
  * remains reachable even after the slot content is turned off.
  */
-export const workspaceToggleExtension = defineExtensionFactory(({ host }) => {
-  const controller = createSlotToggleController({
-    host,
-    slot: workspaceSlot,
-    activeExtensions: [teamWorkspaceExtension],
-    initialActive: false,
-  })
+export const workspaceToggleExtension = defineExtensionFactory(
+  ({ container }) => {
+    const controller = createSlotToggleController({
+      container,
+      slot: workspaceSlot,
+      activeExtensions: [teamWorkspaceExtension],
+      initialActive: false,
+    })
 
-  return {
-    extension: defineRuntimeExtension({
-      id: 'workspace-toggle-extension',
-      providesServices: [provideService(workspaceToggleService, controller)],
-      provides: [
-        provide(
-          toolbarSignal,
-          computed(() => ({
-            id: 'workspace.toggle',
-            label: controller.active.value
-              ? 'Disable Team Workspace'
-              : 'Enable Team Workspace',
-            run: () => controller.toggle(),
-          })),
-          { key: 'workspace.toggle', precedence: 'high' }
-        ),
-      ],
-    }),
-  }
-}, 'workspace-toggle-extension')
+    return {
+      extension: defineRuntimeExtension({
+        id: 'workspace-toggle-extension',
+        providesServices: [provideService(workspaceToggleService, controller)],
+        provides: [
+          provide(
+            toolbarSignal,
+            computed(() => ({
+              id: 'workspace.toggle',
+              label: controller.active.value
+                ? 'Disable Team Workspace'
+                : 'Enable Team Workspace',
+              run: () => controller.toggle(),
+            })),
+            { key: 'workspace.toggle', precedence: 'high' }
+          ),
+        ],
+      }),
+    }
+  },
+  'workspace-toggle-extension'
+)
 
 /**
  * Upstream runtime service example.
@@ -401,9 +404,9 @@ export const analyticsStatusExtension = defineExtensionFactory(
  */
 function createAnalyticsToggleExtension(initialActive: boolean) {
   return defineExtensionFactory(
-    ({ host }) => {
+    ({ container }) => {
       const controller = createSlotToggleController({
-        host,
+        container,
         slot: analyticsSlot,
         activeExtensions: [analyticsProviderExtension],
         initialActive,
@@ -507,7 +510,7 @@ export const notesHelperPlugin = createPlugin({
   extensions: [notesHelperPluginExtension],
 })
 
-export interface ExampleHostOptions {
+export interface ExampleContainerOptions {
   readonly includeAnalyticsProvider?: boolean
   readonly includeNotesPlugin?: boolean
   readonly includeNotesHelperPlugin?: boolean
@@ -518,7 +521,7 @@ export interface ExampleHostOptions {
  * same extension tree behaves as dependencies appear and disappear.
  */
 export function createExampleExtensions(
-  options: ExampleHostOptions = {}
+  options: ExampleContainerOptions = {}
 ): readonly ExtensionNode[] {
   const {
     includeAnalyticsProvider = true,
@@ -554,10 +557,10 @@ export function createExampleExtensions(
 export const defaultExampleExtensions = createExampleExtensions()
 
 /**
- * Construct a host preloaded with the example graph.
+ * Construct a container preloaded with the example graph.
  */
-export function createExampleHost(options: ExampleHostOptions = {}) {
-  const host = new ExtensionHost()
-  host.configure(createExampleExtensions(options))
-  return host
+export function createExampleContainer(options: ExampleContainerOptions = {}) {
+  const container = new ExtensionContainer()
+  container.configure(createExampleExtensions(options))
+  return container
 }

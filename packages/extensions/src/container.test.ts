@@ -2,16 +2,16 @@ import { computed, signal } from '@preact/signals-core'
 import { describe, expect, it, vi } from 'vitest'
 import { appendSignal, mergeObjectsSignal } from './signal'
 import { defineExtension, defineExtensionFactory, provide } from './helpers'
-import { ExtensionHost } from './host'
+import { ExtensionContainer } from './container'
 import { Slot } from './types'
 
-describe('ExtensionHost', () => {
+describe('ExtensionContainer', () => {
   it('resolves static and reactive signal contributions', () => {
     const itemsSignal = appendSignal<string>('items')
     const enabled = signal(true)
 
-    const host = new ExtensionHost()
-    host.configure([
+    const container = new ExtensionContainer()
+    container.configure([
       defineExtension({
         provides: [
           provide(itemsSignal, 'a'),
@@ -24,9 +24,9 @@ describe('ExtensionHost', () => {
       }),
     ])
 
-    expect(host.get(itemsSignal)).toEqual(['a', 'b', 'c'])
+    expect(container.get(itemsSignal)).toEqual(['a', 'b', 'c'])
     enabled.value = false
-    expect(host.get(itemsSignal)).toEqual(['a', 'b', 'hidden'])
+    expect(container.get(itemsSignal)).toEqual(['a', 'b', 'hidden'])
   })
 
   it('preserves runtime instances across unrelated slot reconfiguration', () => {
@@ -43,20 +43,20 @@ describe('ExtensionHost', () => {
       }
     }, 'stable-runtime')
 
-    const host = new ExtensionHost()
-    host.configure([
+    const container = new ExtensionContainer()
+    container.configure([
       runtime,
       slot.of(defineExtension({ provides: [provide(extensionSignal, 'a')] })),
     ])
 
-    expect(host.get(extensionSignal)).toEqual(['stable', 'a'])
+    expect(container.get(extensionSignal)).toEqual(['stable', 'a'])
     expect(calls).toHaveBeenCalledTimes(1)
 
-    host.reconfigure(slot, [
+    container.reconfigure(slot, [
       defineExtension({ provides: [provide(extensionSignal, 'b')] }),
     ])
 
-    expect(host.get(extensionSignal)).toEqual(['stable', 'b'])
+    expect(container.get(extensionSignal)).toEqual(['stable', 'b'])
     expect(calls).toHaveBeenCalledTimes(1)
   })
 
@@ -65,15 +65,15 @@ describe('ExtensionHost', () => {
       theme: 'light',
       showSidebar: true,
     })
-    const host = new ExtensionHost()
+    const container = new ExtensionContainer()
 
-    host.configure([
+    container.configure([
       defineExtension({
         provides: [provide(settingsSignal, { theme: 'dark' })],
       }),
     ])
 
-    expect(host.get(settingsSignal)).toEqual({
+    expect(container.get(settingsSignal)).toEqual({
       theme: 'dark',
       showSidebar: true,
     })

@@ -69,7 +69,7 @@ function isServiceDefinition(
 }
 
 /**
- * ExtensionHost resolves extension graphs into live signals and services.
+ * ExtensionContainer resolves extension graphs into live signals and services.
  *
  * Conceptually:
  * - signals are the composition layer
@@ -77,7 +77,7 @@ function isServiceDefinition(
  * - Preact signals are the reactivity layer
  * - runtime factories / models are the lifecycle layer
  */
-export class ExtensionHost implements SignalReader, ServiceReader {
+export class ExtensionContainer implements SignalReader, ServiceReader {
   private readonly roots = signal<readonly ExtensionNode[]>([])
   private readonly slotContent = new Map<
     symbol,
@@ -111,7 +111,7 @@ export class ExtensionHost implements SignalReader, ServiceReader {
       let order = 0
 
       const ctx: ExtensionContext = {
-        host: this,
+        container: this,
         signals: this,
         services: this,
       }
@@ -320,7 +320,7 @@ export class ExtensionHost implements SignalReader, ServiceReader {
     return created
   }
 
-  /** Lightweight host diagnostics useful in tests and devtools. */
+  /** Lightweight container diagnostics useful in tests and devtools. */
   inspect() {
     const flat = this.flat.value
 
@@ -451,7 +451,7 @@ export class ExtensionHost implements SignalReader, ServiceReader {
     }
   }
 
-  /** Dispose the host and all active runtime instances. */
+  /** Dispose the container and all active runtime instances. */
   [Symbol.dispose](): void {
     for (const [, instance] of this.runtimeInstances) {
       try {

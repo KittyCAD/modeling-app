@@ -17,7 +17,7 @@ import {
   provide,
   provideService,
 } from './helpers'
-import { ExtensionHost } from './host'
+import { ExtensionContainer } from './container'
 import { defineService } from './service'
 import { Slot } from './types'
 
@@ -29,8 +29,8 @@ describe('services', () => {
     }>('search')
     const query = signal('hello')
 
-    const host = new ExtensionHost()
-    host.configure([
+    const container = new ExtensionContainer()
+    container.configure([
       defineExtension({
         providesServices: [
           provideService(searchService, {
@@ -43,7 +43,7 @@ describe('services', () => {
       }),
     ])
 
-    const service = host.get(searchService)
+    const service = container.get(searchService)
     expect(service.query.value).toBe('hello')
     service.setQuery('world')
     expect(service.query.value).toBe('world')
@@ -51,16 +51,16 @@ describe('services', () => {
 
   it('throws for missing required services', () => {
     const service = defineService<{ ok: true }>('missing')
-    const host = new ExtensionHost()
-    host.configure([])
+    const container = new ExtensionContainer()
+    container.configure([])
 
-    expect(() => host.get(service)).toThrow(MissingServiceError)
+    expect(() => container.get(service)).toThrow(MissingServiceError)
   })
 
   it('throws for conflicting singleton services', () => {
     const service = defineService<{ id: string }>('workspace')
-    const host = new ExtensionHost()
-    host.configure([
+    const container = new ExtensionContainer()
+    container.configure([
       defineExtension({
         providesServices: [provideService(service, { id: 'a' })],
       }),
@@ -69,7 +69,7 @@ describe('services', () => {
       }),
     ])
 
-    expect(() => host.get(service)).toThrow(ServiceConflictError)
+    expect(() => container.get(service)).toThrow(ServiceConflictError)
   })
 
   it('throws when a factory eagerly reads a service during graph construction', () => {
@@ -80,41 +80,41 @@ describe('services', () => {
       return { extension: defineExtension({}) }
     }, 'bad-factory')
 
-    const host = new ExtensionHost()
-    host.configure([
+    const container = new ExtensionContainer()
+    container.configure([
       defineExtension({
         providesServices: [provideService(service, { id: 'a' })],
       }),
       badFactory,
     ])
 
-    expect(() => host.inspect()).toThrow(ServiceResolutionError)
+    expect(() => container.inspect()).toThrow(ServiceResolutionError)
   })
 
   it('throws when a factory reconfigures a slot during graph construction', () => {
     const slot = new Slot()
 
-    const badFactory = defineExtensionFactory(({ host }) => {
-      host.reconfigure(slot, [])
+    const badFactory = defineExtensionFactory(({ container }) => {
+      container.reconfigure(slot, [])
       return { extension: defineExtension({}) }
     }, 'bad-reconfigure-factory')
 
-    const host = new ExtensionHost()
-    host.configure([slot.of(defineExtension({})), badFactory])
+    const container = new ExtensionContainer()
+    container.configure([slot.of(defineExtension({})), badFactory])
 
-    expect(() => host.inspect()).toThrow(ReconfigurationError)
+    expect(() => container.inspect()).toThrow(ReconfigurationError)
   })
 
-  it('throws when a same-host service method is called while combining', () => {
+  it('throws when a same-container service method is called while combining', () => {
     const extensionSignal = appendSignal<number>('numbers')
     const service = defineService<{
       count: { readonly value: number }
       mutate(): void
     }>('mutator')
     const count = signal(0)
-    const host = new ExtensionHost()
+    const container = new ExtensionContainer()
 
-    host.configure([
+    container.configure([
       defineExtension({
         providesServices: [
           provideService(service, {
@@ -128,7 +128,7 @@ describe('services', () => {
           provide(
             extensionSignal,
             computed(() => {
-              host.get(service).mutate()
+              container.get(service).mutate()
               return count.value
             })
           ),
@@ -136,22 +136,22 @@ describe('services', () => {
       }),
     ])
 
-    expect(() => host.get(extensionSignal)).toThrow(CombineMutationError)
+    expect(() => container.get(extensionSignal)).toThrow(CombineMutationError)
   })
 
   it('throws when reconfigure is called during signal combine', () => {
     const extensionSignal = appendSignal<number>('numbers')
     const slot = new Slot()
-    const host = new ExtensionHost()
+    const container = new ExtensionContainer()
 
-    host.configure([
+    container.configure([
       slot.of(defineExtension({})),
       defineExtension({
         provides: [
           provide(
             extensionSignal,
             computed(() => {
-              host.reconfigure(slot, [])
+              container.reconfigure(slot, [])
               return 1
             })
           ),
@@ -159,7 +159,7 @@ describe('services', () => {
       }),
     ])
 
-    expect(() => host.get(extensionSignal)).toThrow(ReconfigurationError)
+    expect(() => container.get(extensionSignal)).toThrow(ReconfigurationError)
   })
 
   it('toggle controller reconfigures a slot and preserves unrelated runtime instances', () => {
@@ -195,9 +195,9 @@ describe('services', () => {
       }
     }, 'stable-runtime')
 
-    const toggleExtension = defineExtensionFactory(({ host }) => {
+    const toggleExtension = defineExtensionFactory(({ container }) => {
       const controller = createSlotToggleController({
-        host,
+        container,
         slot,
         activeExtensions: [
           defineExtension({
@@ -213,19 +213,19 @@ describe('services', () => {
       }
     }, 'toggle-extension')
 
-    const host = new ExtensionHost()
-    host.configure([stableRuntime, toggleExtension, slot.of()])
+    const container = new ExtensionContainer()
+    container.configure([stableRuntime, toggleExtension, slot.of()])
 
-    host.get(stableService).open()
-    host.get(toggleService).enable()
-    expect(host.get(featureSignal)).toEqual(['enabled'])
-    expect(host.get(toggleService).active.value).toBe(true)
-    expect(host.get(stableService).isOpen.value).toBe(true)
+    container.get(stableService).open()
+    container.get(toggleService).enable()
+    expect(container.get(featureSignal)).toEqual(['enabled'])
+    expect(container.get(toggleService).active.value).toBe(true)
+    expect(container.get(stableService).isOpen.value).toBe(true)
 
-    host.get(toggleService).disable()
-    expect(host.get(featureSignal)).toEqual([])
-    expect(host.get(toggleService).active.value).toBe(false)
-    expect(host.get(stableService).isOpen.value).toBe(true)
+    container.get(toggleService).disable()
+    expect(container.get(featureSignal)).toEqual([])
+    expect(container.get(toggleService).active.value).toBe(false)
+    expect(container.get(stableService).isOpen.value).toBe(true)
     expect(runtimeCalls).toHaveBeenCalledTimes(1)
   })
 
@@ -241,14 +241,14 @@ describe('services', () => {
         }),
       ],
     })
-    const host = new ExtensionHost()
+    const container = new ExtensionContainer()
 
-    host.configure([plugin])
+    container.configure([plugin])
 
-    const [pluginRecord] = host.get(pluginsSignal)
+    const [pluginRecord] = container.get(pluginsSignal)
 
     expect(plugin.id).toBe('feature-plugin')
-    expect(host.get(featureSignal)).toEqual('enabled')
+    expect(container.get(featureSignal)).toEqual('enabled')
     expect(pluginRecord).toEqual(
       expect.objectContaining({
         id: 'feature-plugin',
@@ -257,23 +257,23 @@ describe('services', () => {
       })
     )
 
-    const pluginService = host.get(pluginRecord.service)
+    const pluginService = container.get(pluginRecord.service)
     pluginService.disable()
-    expect(host.get(featureSignal)).toEqual('uninitialized')
+    expect(container.get(featureSignal)).toEqual('uninitialized')
     pluginService.enable()
-    expect(host.get(featureSignal)).toEqual('enabled')
+    expect(container.get(featureSignal)).toEqual('enabled')
   })
 
   it('can inspect active service providers', () => {
     const service = defineService<{ id: string }>('workspace')
-    const host = new ExtensionHost()
-    host.configure([
+    const container = new ExtensionContainer()
+    container.configure([
       defineExtension({
         providesServices: [provideService(service, { id: 'a' })],
       }),
     ])
 
-    expect(host.debugService(service).value).toEqual([
+    expect(container.debugService(service).value).toEqual([
       {
         serviceName: 'workspace',
         sourcePath: 'root[0]',

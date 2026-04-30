@@ -454,7 +454,7 @@ export function OpenedProject() {
                 window.electron?.appRestart()
               },
             }),
-            ...extensions.host.signal(statusBarGlobalItemsSignal).value,
+            ...extensions.container.signal(statusBarGlobalItemsSignal).value,
           ]}
           localItems={[
             ...(settingsValues.debug.showModelingMachineState.current

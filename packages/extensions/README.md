@@ -12,9 +12,9 @@ This package provides:
 
 ## Mental Model
 
-- `ExtensionHost` owns the active graph and resolves signals and services.
+- `ExtensionContainer` owns the active graph and resolves signals and services.
 - `Signal` is a typed extension point that combines many contributions into one value.
-- `Service` is a typed capability object that extensions can read from the host.
+- `Service` is a typed capability object that extensions can read from the container.
 - `ExtensionDefinition` is the declarative unit that contributes signals, services, and child extensions through `uses`.
 - `ExtensionFactory` creates runtime-backed extensions with stable state.
 - `Slot` is a replaceable subtree that can be reconfigured at runtime.
@@ -23,7 +23,7 @@ This package provides:
 ## Package Layout
 
 - [`src/index.ts`](./src/index.ts): public entrypoint
-- [`src/examples/app.ts`](./src/examples/app.ts): tutorial-style example host
+- [`src/examples/app.ts`](./src/examples/app.ts): tutorial-style example container
 - `src/*.test.ts`: unit tests
 - `src/*.spec.tsx`: integration/component tests
 
@@ -33,7 +33,7 @@ This package lives under `packages/`, so relative imports are allowed within the
 App code outside the package should import it by package name:
 
 ```ts
-import { ExtensionHost, appendSignal } from '@kittycad/extensions'
+import { ExtensionContainer, appendSignal } from '@kittycad/extensions'
 ```
 
 ## Notes

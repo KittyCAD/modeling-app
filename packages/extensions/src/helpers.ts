@@ -4,7 +4,7 @@ import {
   signal,
 } from '@preact/signals-core'
 import { CombineMutationError, ServiceResolutionError } from './errors'
-import type { ExtensionHost } from './host'
+import type { ExtensionContainer } from './container'
 import { Slot } from './types'
 import type {
   ExtensionDefinition,
@@ -97,7 +97,7 @@ export function readonlyFromSignal<T>(
  * Stable controller shape for toggling a slot-backed feature subtree.
  *
  * If callers bypass this controller and reconfigure the slot directly,
- * the `active` signal may no longer reflect the host's true state.
+ * the `active` signal may no longer reflect the container's true state.
  */
 export interface SlotToggleController {
   readonly active: ReadonlyPreactSignal<boolean>
@@ -118,7 +118,7 @@ export interface SlotToggleController {
  * service contract and the common reactive entry points.
  */
 export function sanitizeServiceImplementation<T extends object>(
-  host: ExtensionHost,
+  container: ExtensionContainer,
   service: Service<T>,
   implementation: T
 ): T {
@@ -133,7 +133,7 @@ export function sanitizeServiceImplementation<T extends object>(
 
       if (typeof value === 'function') {
         out[key] = (...args: unknown[]) => {
-          if (host.isCombining()) {
+          if (container.isCombining()) {
             throw new CombineMutationError(
               `Service method ${service.name}.${String(key)}() was called while combining a signal. ` +
                 'Signal combine functions must be pure.'
@@ -285,7 +285,7 @@ function createToggleableExtension({
     service,
     extension: defineExtensionFactory((ctx) => {
       const impl = createSlotToggleController({
-        host: ctx.host,
+        container: ctx.container,
         activeExtensions: extensions,
         initialActive,
         slot,
@@ -300,7 +300,7 @@ function createToggleableExtension({
 }
 
 type SlotToggleControllerProps = {
-  host: Pick<ExtensionHost, 'reconfigure'>
+  container: Pick<ExtensionContainer, 'reconfigure'>
   slot: Slot
   activeExtensions: readonly ExtensionNode[]
   inactiveExtensions?: readonly ExtensionNode[]
@@ -311,10 +311,10 @@ type SlotToggleControllerProps = {
  * Build a controller service for a slot-backed feature toggle.
  *
  * The controller should live outside the slot it mutates.
- * `initialActive` should match the host's initial slot contents.
+ * `initialActive` should match the container's initial slot contents.
  */
 export function createSlotToggleController({
-  host,
+  container,
   slot,
   activeExtensions,
   inactiveExtensions = [],
@@ -326,11 +326,11 @@ export function createSlotToggleController({
     active,
     enable() {
       active.value = true
-      host.reconfigure(slot, activeExtensions)
+      container.reconfigure(slot, activeExtensions)
     },
     disable() {
       active.value = false
-      host.reconfigure(slot, inactiveExtensions)
+      container.reconfigure(slot, inactiveExtensions)
     },
     toggle() {
       if (active.value) {

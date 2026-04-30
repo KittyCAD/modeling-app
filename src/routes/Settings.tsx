@@ -129,8 +129,8 @@ export const Settings = () => {
               ) : (
                 <PluginsList
                   ref={scrollRef}
-                  host={app.extensions.host}
-                  plugins={app.extensions.host.signal(pluginsSignal).value}
+                  container={app.extensions.container}
+                  plugins={app.extensions.container.signal(pluginsSignal).value}
                 />
               )}
             </div>

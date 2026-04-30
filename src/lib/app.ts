@@ -52,7 +52,7 @@ import { MachineManager } from '@src/lib/MachineManager'
 import { reportRejection } from '@src/lib/trap'
 import type { Project } from '@src/lib/project'
 import { settingsSignal } from '@src/signals'
-import { ExtensionHost, pluginsSignal } from '@kittycad/extensions'
+import { ExtensionContainer, pluginsSignal } from '@kittycad/extensions'
 import type { UserResponse } from '@kittycad/lib/dist/types/src'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
@@ -105,7 +105,7 @@ export type AppLayoutSystem = {
 }
 
 export type AppExtensionSystem = {
-  host: ExtensionHost
+  container: ExtensionContainer
 }
 
 /** All of the subsystems needed to run the ZDS app */
@@ -242,9 +242,9 @@ export class App implements AppSubsystems {
       useState: () => useSelector(commandBarActor, (state) => state),
     }
 
-    const extensionsHost = new ExtensionHost()
-    extensionsHost.configure(coreExtensions)
-    const extensionSettings = extensionsHost.get(settingsSignal)
+    const extensionsContainer = new ExtensionContainer()
+    extensionsContainer.configure(coreExtensions)
+    const extensionSettings = extensionsContainer.get(settingsSignal)
 
     const settingsActor = createActor(settingsMachine, {
       input: {
@@ -301,7 +301,7 @@ export class App implements AppSubsystems {
       ),
     }
     const extensions = {
-      host: extensionsHost,
+      container: extensionsContainer,
     }
 
     return {
@@ -394,13 +394,13 @@ export class App implements AppSubsystems {
       return
     }
 
-    this.extensions.host.get(pluginsSignal).forEach((plugin) => {
+    this.extensions.container.get(pluginsSignal).forEach((plugin) => {
       const desiredActive = pluginSettings[plugin.id]?.current
       if (typeof desiredActive !== 'boolean') {
         return
       }
 
-      const toggle = this.extensions.host.get(plugin.service)
+      const toggle = this.extensions.container.get(plugin.service)
       if (toggle.active.value === desiredActive) {
         return
       }

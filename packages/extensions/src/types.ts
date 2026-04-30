@@ -8,7 +8,7 @@ export type Precedence = 'highest' | 'high' | 'default' | 'low' | 'lowest'
 
 /**
  * A small protocol for runtime-owned resources that need cleanup when an
- * extension instance is removed or the host is disposed.
+ * extension instance is removed or the container is disposed.
  */
 export interface DisposableLike {
   [Symbol.dispose](): void
@@ -30,7 +30,7 @@ export type ExtensionKey = object | string
 /**
  * A Signal is a typed extension point.
  *
- * Extensions contribute values into signals. The host gathers all active
+ * Extensions contribute values into signals. The container gathers all active
  * contributions for a given signal, orders them, and passes them through the
  * signal's pure combine function to produce one resolved output.
  *
@@ -107,7 +107,7 @@ export interface RuntimeExtensionHandle<TModel = unknown> {
 }
 
 /**
- * A runtime extension factory. The host preserves instances by extension key.
+ * A runtime extension factory. The container preserves instances by extension key.
  */
 export interface ExtensionFactory<TModel = unknown> {
   (ctx: ExtensionContext): RuntimeExtensionHandle<TModel>
@@ -115,7 +115,7 @@ export interface ExtensionFactory<TModel = unknown> {
 }
 
 /**
- * The union of all supported extension nodes accepted by the host.
+ * The union of all supported extension nodes accepted by the container.
  */
 export type ExtensionNode =
   | ExtensionDefinition
@@ -150,7 +150,7 @@ export interface ServiceReader {
  * and services lazily.
  */
 export interface ExtensionContext {
-  readonly host: ExtensionHostLike
+  readonly container: ExtensionContainerLike
   readonly signals: SignalReader
   readonly services: ServiceReader
 }
@@ -177,7 +177,7 @@ export interface DebugServiceItem {
 
 /**
  * Slots let callers swap a subtree of extensions without rebuilding the
- * rest of the host.
+ * rest of the container.
  */
 export class Slot {
   readonly id = Symbol('Slot')
@@ -198,11 +198,11 @@ export class SlotInstance {
 }
 
 /**
- * Host shape exposed to extension factories through their context.
+ * Container shape exposed to extension factories through their context.
  *
- * The concrete implementation lives in host.ts.
+ * The concrete implementation lives in container.ts.
  */
-export interface ExtensionHostLike extends DisposableLike {
+export interface ExtensionContainerLike extends DisposableLike {
   get<T>(service: Service<T>): T
   get<I, O>(signal: Signal<I, O>): O
   signal<T>(service: Service<T>): ReadonlySignal<T | undefined>

@@ -3,17 +3,17 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import {
   analyticsToggleService,
-  createExampleHost,
+  createExampleContainer,
   notesPanelSignal,
   searchService,
   toolbarSignal,
   workspaceToggleService,
 } from './examples/app'
-import type { ExtensionHost } from './host'
+import type { ExtensionContainer } from './container'
 
-function Toolbar({ host }: { host: ExtensionHost }) {
+function Toolbar({ container }: { container: ExtensionContainer }) {
   useSignals()
-  const items = host.signal(toolbarSignal).value
+  const items = container.signal(toolbarSignal).value
 
   return (
     <div>
@@ -26,9 +26,9 @@ function Toolbar({ host }: { host: ExtensionHost }) {
   )
 }
 
-function SearchQuery({ host }: { host: ExtensionHost }) {
+function SearchQuery({ container }: { container: ExtensionContainer }) {
   useSignals()
-  const search = host.get(searchService)
+  const search = container.get(searchService)
 
   return (
     <div>
@@ -38,9 +38,9 @@ function SearchQuery({ host }: { host: ExtensionHost }) {
   )
 }
 
-function WorkspaceToggle({ host }: { host: ExtensionHost }) {
+function WorkspaceToggle({ container }: { container: ExtensionContainer }) {
   useSignals()
-  const workspaceToggle = host.get(workspaceToggleService)
+  const workspaceToggle = container.get(workspaceToggleService)
 
   return (
     <div>
@@ -52,9 +52,13 @@ function WorkspaceToggle({ host }: { host: ExtensionHost }) {
   )
 }
 
-function AnalyticsToggle({ host }: { host: ExtensionHost }) {
+function AnalyticsToggle({
+  container,
+}: {
+  container: ExtensionContainer
+}) {
   useSignals()
-  const analyticsToggle = host.get(analyticsToggleService)
+  const analyticsToggle = container.get(analyticsToggleService)
 
   return (
     <div>
@@ -66,9 +70,9 @@ function AnalyticsToggle({ host }: { host: ExtensionHost }) {
   )
 }
 
-function NotesPanel({ host }: { host: ExtensionHost }) {
+function NotesPanel({ container }: { container: ExtensionContainer }) {
   useSignals()
-  const items = host.signal(notesPanelSignal).value
+  const items = container.signal(notesPanelSignal).value
 
   return (
     <div>
@@ -83,9 +87,9 @@ function NotesPanel({ host }: { host: ExtensionHost }) {
 
 describe('React integration', () => {
   it('renders toolbar items from extension signals', () => {
-    const host = createExampleHost()
+    const container = createExampleContainer()
 
-    render(<Toolbar host={host} />)
+    render(<Toolbar container={container} />)
 
     expect(screen.getByText('Workspace: Personal')).toBeInTheDocument()
     expect(screen.getByText('Enable Team Workspace')).toBeInTheDocument()
@@ -94,12 +98,12 @@ describe('React integration', () => {
   })
 
   it('updates React UI when service-backed signals change', async () => {
-    const host = createExampleHost()
+    const container = createExampleContainer()
 
     render(
       <>
-        <Toolbar host={host} />
-        <SearchQuery host={host} />
+        <Toolbar container={container} />
+        <SearchQuery container={container} />
       </>
     )
 
@@ -110,9 +114,9 @@ describe('React integration', () => {
   })
 
   it('updates when a signal contribution triggers service state changes', async () => {
-    const host = createExampleHost()
+    const container = createExampleContainer()
 
-    render(<Toolbar host={host} />)
+    render(<Toolbar container={container} />)
 
     fireEvent.click(screen.getByText('Open Search'))
 
@@ -120,13 +124,13 @@ describe('React integration', () => {
   })
 
   it('reconfigures a workspace slot without resetting unrelated state', async () => {
-    const host = createExampleHost()
+    const container = createExampleContainer()
 
     render(
       <>
-        <Toolbar host={host} />
-        <SearchQuery host={host} />
-        <WorkspaceToggle host={host} />
+        <Toolbar container={container} />
+        <SearchQuery container={container} />
+        <WorkspaceToggle container={container} />
       </>
     )
 
@@ -142,12 +146,14 @@ describe('React integration', () => {
   })
 
   it('gracefully limits a runtime extension when an optional upstream service is unavailable', async () => {
-    const host = createExampleHost({ includeAnalyticsProvider: false })
+    const container = createExampleContainer({
+      includeAnalyticsProvider: false,
+    })
 
     render(
       <>
-        <Toolbar host={host} />
-        <AnalyticsToggle host={host} />
+        <Toolbar container={container} />
+        <AnalyticsToggle container={container} />
       </>
     )
 
@@ -166,9 +172,9 @@ describe('React integration', () => {
   })
 
   it('lets one plugin extend another plugin signal when the upstream plugin is present', () => {
-    const host = createExampleHost()
+    const container = createExampleContainer()
 
-    render(<NotesPanel host={host} />)
+    render(<NotesPanel container={container} />)
 
     expect(
       screen.getByText('Welcome note from the Notes plugin')
@@ -179,12 +185,12 @@ describe('React integration', () => {
   })
 
   it('hides the downstream plugin signal contribution when the upstream plugin is absent', () => {
-    const host = createExampleHost({
+    const container = createExampleContainer({
       includeNotesPlugin: false,
       includeNotesHelperPlugin: true,
     })
 
-    render(<NotesPanel host={host} />)
+    render(<NotesPanel container={container} />)
 
     expect(screen.getByTestId('notes-empty')).toBeInTheDocument()
   })
