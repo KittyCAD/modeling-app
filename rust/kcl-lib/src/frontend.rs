@@ -331,13 +331,40 @@ impl SketchApi for FrontendState {
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
         // Execute.
-        let outcome = ctx
+        let run_outcome = ctx
             .run_mock(&truncated_program, &MockConfig::new_sketch_mode(sketch))
             .await?;
+        // update_state_after_exec must run before var_solutions are read.
+        let outcome = self.update_state_after_exec(run_outcome, true);
+
+        #[cfg(feature = "artifact-graph")]
+        let new_source = {
+            let mut new_ast = self.program.ast.clone();
+            for (var_range, value) in &outcome.var_solutions {
+                let rounded = value.round(3);
+                let source_ref = SourceRef::Simple {
+                    range: *var_range,
+                    node_path: None,
+                };
+                mutate_ast_node_by_source_ref(
+                    &mut new_ast,
+                    &source_ref,
+                    AstMutateCommand::EditVarInitialValue { value: rounded },
+                )
+                .map_err(|err| KclErrorWithOutputs::from_error_outcome(err, outcome.clone()))?;
+            }
+            let settled_source = source_from_ast(&new_ast);
+            self.program = Program {
+                ast: new_ast,
+                original_file_contents: settled_source.clone(),
+            };
+            settled_source
+        };
+
+        #[cfg(not(feature = "artifact-graph"))]
         let new_source = source_from_ast(&self.program.ast);
+
         let src_delta = SourceDelta { text: new_source };
-        // MockConfig::default() has freedom_analysis: true
-        let outcome = self.update_state_after_exec(outcome, true);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             new_objects: Default::default(),
@@ -2810,7 +2837,15 @@ impl FrontendState {
                 )
                 .map_err(|err| KclErrorWithOutputs::from_error_outcome(err, outcome.clone()))?;
             }
-            source_from_ast(&new_ast)
+            let solved_source = source_from_ast(&new_ast);
+            // Warm-start: update self.program so the next drag frame's initial
+            // guesses come from the current solved positions rather than the
+            // original AST literals.
+            self.program = Program {
+                ast: new_ast,
+                original_file_contents: solved_source.clone(),
+            };
+            solved_source
         };
 
         let src_delta = SourceDelta { text: new_source };

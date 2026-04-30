@@ -1530,12 +1530,19 @@ export function setUpOnDragAndSelectionClickCallbacks({
             }
           } else {
             if (lastGoodPreview?.segmentsToEdit.length) {
-              result = await context.rustContext.editSegments(
+              // Commit dragged positions without checkpointing, then settle:
+              // a solve without drag constraints finds the nearest valid
+              // solution and creates the checkpoint.
+              await context.rustContext.editSegments(
                 0,
                 context.sketchId,
                 lastGoodPreview.segmentsToEdit,
                 settings,
-                true
+                false
+              )
+              result = await context.rustContext.sketchExecuteMock(
+                SKETCH_FILE_VERSION,
+                context.sketchId
               )
             } else if (!currentSceneGraphDelta) {
               result = await context.rustContext.sketchExecuteMock(
@@ -1573,12 +1580,18 @@ export function setUpOnDragAndSelectionClickCallbacks({
                   context.sketchId
                 )
               } else {
-                result = await context.rustContext.editSegments(
+                // Same settle pattern: commit positions, then re-solve without
+                // drag constraints to snap back to a geometrically valid state.
+                await context.rustContext.editSegments(
                   0,
                   context.sketchId,
                   segmentsToEdit,
                   settings,
-                  true
+                  false
+                )
+                result = await context.rustContext.sketchExecuteMock(
+                  SKETCH_FILE_VERSION,
+                  context.sketchId
                 )
               }
             }
