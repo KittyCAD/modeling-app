@@ -15,7 +15,7 @@ export class MissingServiceError extends ExtensionFrameworkError {}
 /** Thrown when service resolution happens at an invalid time or recursively. */
 export class ServiceResolutionError extends ExtensionFrameworkError {}
 
-/** Thrown when facet combine logic attempts to call service methods. */
+/** Thrown when signal combine logic attempts to call service methods. */
 export class CombineMutationError extends ExtensionFrameworkError {}
 
 /** Thrown when extension graph reconfiguration happens at an invalid time. */

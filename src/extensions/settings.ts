@@ -1,11 +1,11 @@
-import { statusBarGlobalItemsFacet } from '@src/facets'
+import { statusBarGlobalItemsSignal } from '@src/signals'
 import { defineExtension, provide } from '@kittycad/extensions'
 import { createZdsPlugin } from '@src/extensions/createZdsPlugin'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
 
 const settingsStatusBar = defineExtension({
   provides: [
-    provide(statusBarGlobalItemsFacet, {
+    provide(statusBarGlobalItemsSignal, {
       id: 'settings',
       element: 'link',
       icon: 'settings',

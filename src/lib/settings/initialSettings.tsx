@@ -844,7 +844,7 @@ export function createSettings(
 
   // For now, core settings remain defined here and extension-provided settings
   // are merged into the same mutable settings object during app bootstrap.
-  // A narrower follow-up can invert this so the facet output becomes the
+  // A narrower follow-up can invert this so the signal output becomes the
   // canonical registry and core settings are just another contribution.
   Object.entries(instantiateExtensionSettings(extensionSettings)).forEach(
     ([category, categorySettings]) => {

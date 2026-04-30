@@ -4,16 +4,16 @@ import { describe, expect, it } from 'vitest'
 import {
   analyticsToggleService,
   createExampleHost,
-  notesPanelFacet,
+  notesPanelSignal,
   searchService,
-  toolbarFacet,
+  toolbarSignal,
   workspaceToggleService,
 } from './examples/app'
 import type { ExtensionHost } from './host'
 
 function Toolbar({ host }: { host: ExtensionHost }) {
   useSignals()
-  const items = host.signal(toolbarFacet).value
+  const items = host.signal(toolbarSignal).value
 
   return (
     <div>
@@ -68,7 +68,7 @@ function AnalyticsToggle({ host }: { host: ExtensionHost }) {
 
 function NotesPanel({ host }: { host: ExtensionHost }) {
   useSignals()
-  const items = host.signal(notesPanelFacet).value
+  const items = host.signal(notesPanelSignal).value
 
   return (
     <div>
@@ -82,7 +82,7 @@ function NotesPanel({ host }: { host: ExtensionHost }) {
 }
 
 describe('React integration', () => {
-  it('renders toolbar items from facet signals', () => {
+  it('renders toolbar items from extension signals', () => {
     const host = createExampleHost()
 
     render(<Toolbar host={host} />)
@@ -109,7 +109,7 @@ describe('React integration', () => {
     expect(screen.getByText('Searching: react')).toBeInTheDocument()
   })
 
-  it('updates when a facet contribution triggers service state changes', async () => {
+  it('updates when a signal contribution triggers service state changes', async () => {
     const host = createExampleHost()
 
     render(<Toolbar host={host} />)
@@ -165,7 +165,7 @@ describe('React integration', () => {
     expect(await screen.findByText('Analytics Events: 1')).toBeInTheDocument()
   })
 
-  it('lets one plugin extend another plugin facet when the upstream plugin is present', () => {
+  it('lets one plugin extend another plugin signal when the upstream plugin is present', () => {
     const host = createExampleHost()
 
     render(<NotesPanel host={host} />)
@@ -178,7 +178,7 @@ describe('React integration', () => {
     ).toBeInTheDocument()
   })
 
-  it('hides the downstream plugin facet contribution when the upstream plugin is absent', () => {
+  it('hides the downstream plugin signal contribution when the upstream plugin is absent', () => {
     const host = createExampleHost({
       includeNotesPlugin: false,
       includeNotesHelperPlugin: true,

@@ -4,7 +4,7 @@ Reactive extension framework for Zoo Design Studio.
 
 This package provides:
 
-- facets for declarative composition
+- extension signals for declarative composition
 - services for imperative capabilities
 - runtime extensions for long-lived state
 - compartments for runtime reconfiguration
@@ -12,10 +12,10 @@ This package provides:
 
 ## Mental Model
 
-- `ExtensionHost` owns the active graph and resolves facets and services.
-- `Facet` is a typed extension point that combines many contributions into one value.
+- `ExtensionHost` owns the active graph and resolves signals and services.
+- `Signal` is a typed extension point that combines many contributions into one value.
 - `Service` is a typed capability object that extensions can read from the host.
-- `ExtensionDefinition` is the declarative unit that contributes facets, services, and child extensions through `uses`.
+- `ExtensionDefinition` is the declarative unit that contributes signals, services, and child extensions through `uses`.
 - `ExtensionFactory` creates runtime-backed extensions with stable state.
 - `Compartment` is a replaceable subtree that can be reconfigured at runtime.
 - `createPlugin(...)` packages metadata, a compartment, and a toggle controller into one installable extension node.
@@ -33,7 +33,7 @@ This package lives under `packages/`, so relative imports are allowed within the
 App code outside the package should import it by package name:
 
 ```ts
-import { ExtensionHost, appendFacet } from '@kittycad/extensions'
+import { ExtensionHost, appendSignal } from '@kittycad/extensions'
 ```
 
 ## Notes

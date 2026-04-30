@@ -14,7 +14,7 @@ This package is the shared extension runtime used by the app.
 - Prefer relative imports within this package.
 - Do not import app internals from `src/` into the core runtime unless the file is explicitly an example or test.
 - Preserve the separation between:
-  - facets as composition
+  - extension signals as composition
   - services as capabilities
   - runtime extensions as stateful models
   - plugins as installable/toggleable bundles

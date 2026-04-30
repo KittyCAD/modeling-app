@@ -1,4 +1,4 @@
-import { routesFacet, statusBarGlobalItemsFacet } from '@src/facets'
+import { routesSignal, statusBarGlobalItemsSignal } from '@src/signals'
 import { defineExtension, provide } from '@kittycad/extensions'
 import { createZdsPlugin } from '@src/extensions/createZdsPlugin'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
@@ -7,15 +7,15 @@ import { telemetryFileRoute, telemetryHomeRoute } from '@src/routes/Telemetry'
 /** Contributes the telemetry modal routes for both home and file contexts. */
 const telemetryRouteExt = defineExtension({
   provides: [
-    provide(routesFacet, telemetryHomeRoute),
-    provide(routesFacet, telemetryFileRoute),
+    provide(routesSignal, telemetryHomeRoute),
+    provide(routesSignal, telemetryFileRoute),
   ],
 })
 
 /** Contributes a status-bar entry point for the telemetry plugin. */
 const telemetryStatusBarExt = defineExtension({
   provides: [
-    provide(statusBarGlobalItemsFacet, {
+    provide(statusBarGlobalItemsSignal, {
       id: 'telemetry',
       element: 'link',
       icon: 'stopwatch',

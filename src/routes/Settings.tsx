@@ -13,7 +13,7 @@ import { PATHS } from '@src/lib/paths'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import { PluginsList } from '@src/components/PluginList'
 import { useApp } from '@src/lib/boot'
-import { pluginsFacet } from '@kittycad/extensions'
+import { pluginsSignal } from '@kittycad/extensions'
 
 export const Settings = () => {
   const app = useApp()
@@ -130,7 +130,7 @@ export const Settings = () => {
                 <PluginsList
                   ref={scrollRef}
                   host={app.extensions.host}
-                  plugins={app.extensions.host.signal(pluginsFacet).value}
+                  plugins={app.extensions.host.signal(pluginsSignal).value}
                 />
               )}
             </div>

@@ -51,8 +51,8 @@ import {
 import { MachineManager } from '@src/lib/MachineManager'
 import { reportRejection } from '@src/lib/trap'
 import type { Project } from '@src/lib/project'
-import { settingsFacet } from '@src/facets'
-import { ExtensionHost, pluginsFacet } from '@kittycad/extensions'
+import { settingsSignal } from '@src/signals'
+import { ExtensionHost, pluginsSignal } from '@kittycad/extensions'
 import type { UserResponse } from '@kittycad/lib/dist/types/src'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
@@ -244,7 +244,7 @@ export class App implements AppSubsystems {
 
     const extensionsHost = new ExtensionHost()
     extensionsHost.configure(coreExtensions)
-    const extensionSettings = extensionsHost.get(settingsFacet)
+    const extensionSettings = extensionsHost.get(settingsSignal)
 
     const settingsActor = createActor(settingsMachine, {
       input: {
@@ -394,7 +394,7 @@ export class App implements AppSubsystems {
       return
     }
 
-    this.extensions.host.get(pluginsFacet).forEach((plugin) => {
+    this.extensions.host.get(pluginsSignal).forEach((plugin) => {
       const desiredActive = pluginSettings[plugin.id]?.current
       if (typeof desiredActive !== 'boolean') {
         return

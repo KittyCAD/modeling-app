@@ -1,8 +1,8 @@
 import type { ReadonlySignal } from '@preact/signals-core'
 
 /**
- * Precedence controls how multiple facet contributions are ordered before a
- * facet's combine function runs.
+ * Precedence controls how multiple signal contributions are ordered before a
+ * signal's combine function runs.
  */
 export type Precedence = 'highest' | 'high' | 'default' | 'low' | 'lowest'
 
@@ -15,9 +15,9 @@ export interface DisposableLike {
 }
 
 /**
- * Facet contributions may be static values or live reactive values.
+ * Signal contributions may be static values or live reactive values.
  *
- * Facets define composition. Signals define liveness.
+ * Extension signals define composition. Preact signals define liveness.
  */
 export type MaybeSignal<T> = T | ReadonlySignal<T>
 
@@ -28,15 +28,15 @@ export type MaybeSignal<T> = T | ReadonlySignal<T>
 export type ExtensionKey = object | string
 
 /**
- * A Facet is a typed extension point.
+ * A Signal is a typed extension point.
  *
- * Extensions contribute values into facets. The host gathers all active
- * contributions for a given facet, orders them, and passes them through the
- * facet's pure combine function to produce one resolved output.
+ * Extensions contribute values into signals. The host gathers all active
+ * contributions for a given signal, orders them, and passes them through the
+ * signal's pure combine function to produce one resolved output.
  *
- * In this framework, facets are the many-to-one composition layer.
+ * In this framework, signals are the many-to-one composition layer.
  */
-export interface Facet<Input, Output> {
+export interface Signal<Input, Output> {
   readonly id: symbol
   readonly name: string
   readonly defaultValue: Output
@@ -57,10 +57,10 @@ export interface Service<_T> {
 }
 
 /**
- * A single facet contribution from an extension.
+ * A single signal contribution from an extension.
  */
-export interface FacetContribution<Input> {
-  readonly facet: Facet<Input, any>
+export interface SignalContribution<Input> {
+  readonly signal: Signal<Input, any>
   readonly value: MaybeSignal<Input>
   readonly precedence?: Precedence
   readonly key?: ExtensionKey
@@ -77,12 +77,12 @@ export interface ServiceContribution<T> {
 /**
  * A declarative extension definition.
  *
- * Extensions can contribute facets, provide services, and nest other
+ * Extensions can contribute signals, provide services, and nest other
  * extensions. They should remain declarative whenever possible.
  */
 export interface ExtensionDefinition {
   readonly id?: ExtensionKey
-  readonly provides?: readonly FacetContribution<any>[]
+  readonly provides?: readonly SignalContribution<any>[]
   readonly providesServices?: readonly ServiceContribution<any>[]
   readonly uses?: readonly ExtensionNode[]
 }
@@ -124,12 +124,12 @@ export type ExtensionNode =
   | CompartmentInstance
 
 /**
- * FacetReader exposes resolved facet values either as snapshots or live
- * signals.
+ * SignalReader exposes resolved extension-signal values either as snapshots or
+ * live Preact signals.
  */
-export interface FacetReader {
-  get<I, O>(facet: Facet<I, O>): O
-  signal<I, O>(facet: Facet<I, O>): ReadonlySignal<O>
+export interface SignalReader {
+  get<I, O>(signal: Signal<I, O>): O
+  signal<I, O>(signal: Signal<I, O>): ReadonlySignal<O>
 }
 
 /**
@@ -146,20 +146,20 @@ export interface ServiceReader {
 }
 
 /**
- * Extension factories receive a context that lets them read resolved facets and
- * services lazily.
+ * Extension factories receive a context that lets them read resolved signals
+ * and services lazily.
  */
 export interface ExtensionContext {
   readonly host: ExtensionHostLike
-  readonly facets: FacetReader
+  readonly signals: SignalReader
   readonly services: ServiceReader
 }
 
 /**
- * Debug information for one facet contribution.
+ * Debug information for one signal contribution.
  */
-export interface DebugFacetItem {
-  readonly facetName: string
+export interface DebugSignalItem {
+  readonly signalName: string
   readonly sourcePath: string
   readonly precedence: Precedence
   readonly key?: ExtensionKey
@@ -204,9 +204,9 @@ export class CompartmentInstance {
  */
 export interface ExtensionHostLike extends DisposableLike {
   get<T>(service: Service<T>): T
-  get<I, O>(facet: Facet<I, O>): O
+  get<I, O>(signal: Signal<I, O>): O
   signal<T>(service: Service<T>): ReadonlySignal<T | undefined>
-  signal<I, O>(facet: Facet<I, O>): ReadonlySignal<O>
+  signal<I, O>(signal: Signal<I, O>): ReadonlySignal<O>
   reconfigure(
     compartment: Compartment,
     extensions: readonly ExtensionNode[]

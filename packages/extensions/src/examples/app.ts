@@ -1,5 +1,5 @@
 import { type ReadonlySignal, computed, signal } from '@preact/signals-core'
-import { appendFacet, defineFacet, mergeObjectsFacet } from '../facet'
+import { appendSignal, defineSignal, mergeObjectsSignal } from '../signal'
 import {
   createCompartmentToggleController,
   createPlugin,
@@ -17,14 +17,14 @@ import { Compartment, type ExtensionNode } from '../types'
  * This file is intentionally more tutorial-like than the rest of the package.
  *
  * The example host demonstrates four layers of the system:
- * 1. facets model composable outputs like toolbars or panels
+ * 1. signals model composable outputs like toolbars or panels
  * 2. services model imperative capabilities with signal-backed state
  * 3. runtime extensions own long-lived models and expose them through services
  * 4. plugins are the installable developer-facing unit built on top of all that
  *
  * Read this file top-to-bottom:
  * - start with the shapes that UI wants to render
- * - then the facet and service definitions
+ * - then the signal and service definitions
  * - then the static/runtime/plugin examples
  * - finally the `createExampleHost()` assembly at the bottom
  */
@@ -86,39 +86,39 @@ export interface AnalyticsService {
 /**
  * This service is the "plugin API" for the notes plugin.
  *
- * The downstream helper plugin still imports `notesPanelFacet` statically, but
+ * The downstream helper plugin still imports `notesPanelSignal` statically, but
  * it uses this service as:
  * - a presence marker so it can hide its contribution when the base plugin is
  *   not installed
  * - a place to expose plugin-owned API surface for cooperating plugins
  */
 export interface NotesPluginApi {
-  readonly panelFacet: typeof notesPanelFacet
+  readonly panelSignal: typeof notesPanelSignal
   readonly pluginTitle: string
 }
 
 /**
- * Facets are typed extension points.
+ * Signals are typed extension points.
  *
- * Any number of extensions can contribute to a facet. The host gathers those
- * inputs and runs the facet's pure `combine()` function to produce one resolved
+ * Any number of extensions can contribute to a signal. The host gathers those
+ * inputs and runs the signal's pure `combine()` function to produce one resolved
  * output.
  */
-export const commandsFacet = appendFacet<Command>('commands')
+export const commandsSignal = appendSignal<Command>('commands')
 
-export const toolbarFacet = defineFacet<ToolbarItem, readonly ToolbarItem[]>({
+export const toolbarSignal = defineSignal<ToolbarItem, readonly ToolbarItem[]>({
   name: 'toolbar',
   defaultValue: [],
   combine: (inputs) => inputs.filter((item) => item.visible !== false),
 })
 
-export const notesPanelFacet = defineFacet<PanelItem, readonly PanelItem[]>({
+export const notesPanelSignal = defineSignal<PanelItem, readonly PanelItem[]>({
   name: 'notes-panel',
   defaultValue: [],
   combine: (inputs) => inputs.filter((item) => item.visible !== false),
 })
 
-export const settingsFacet = mergeObjectsFacet<AppSettings>('settings', {
+export const settingsSignal = mergeObjectsSignal<AppSettings>('settings', {
   theme: 'light',
   showSidebar: true,
 })
@@ -126,7 +126,7 @@ export const settingsFacet = mergeObjectsFacet<AppSettings>('settings', {
 /**
  * Services are the dependency-injection layer.
  *
- * Unlike facets, services are usually singleton capabilities that other
+ * Unlike signals, services are usually singleton capabilities that other
  * extensions read lazily from the host.
  */
 export const searchService = defineService<SearchService>('search')
@@ -154,14 +154,14 @@ export const analyticsCompartment = new Compartment()
  */
 export const baseExtension = defineExtension({
   id: 'base-extension',
-  provides: [provide(settingsFacet, { theme: 'dark' })],
+  provides: [provide(settingsSignal, { theme: 'dark' })],
 })
 
 export const personalWorkspaceExtension = defineExtension({
   id: 'workspace.personal',
   provides: [
     provide(
-      toolbarFacet,
+      toolbarSignal,
       {
         id: 'workspace.current',
         label: 'Workspace: Personal',
@@ -169,7 +169,7 @@ export const personalWorkspaceExtension = defineExtension({
       },
       { key: 'workspace.current', precedence: 'high' }
     ),
-    provide(settingsFacet, { showSidebar: true }),
+    provide(settingsSignal, { showSidebar: true }),
   ],
 })
 
@@ -177,7 +177,7 @@ export const teamWorkspaceExtension = defineExtension({
   id: 'workspace.team',
   provides: [
     provide(
-      toolbarFacet,
+      toolbarSignal,
       {
         id: 'workspace.current',
         label: 'Workspace: Team',
@@ -185,7 +185,7 @@ export const teamWorkspaceExtension = defineExtension({
       },
       { key: 'workspace.current', precedence: 'highest' }
     ),
-    provide(settingsFacet, { showSidebar: false }),
+    provide(settingsSignal, { showSidebar: false }),
   ],
 })
 
@@ -222,7 +222,7 @@ export const searchExtension = defineExtensionFactory(() => {
       providesServices: [provideService(searchService, serviceImpl)],
       provides: [
         provide(
-          toolbarFacet,
+          toolbarSignal,
           computed(() => ({
             id: 'search.toggle',
             label: isOpen.value ? 'Close Search' : 'Open Search',
@@ -252,7 +252,7 @@ export const searchStatusExtension = defineExtensionFactory(({ services }) => {
       id: 'search-status-extension',
       provides: [
         provide(
-          toolbarFacet,
+          toolbarSignal,
           computed(() => {
             const search = services.get(searchService)
             return {
@@ -273,7 +273,7 @@ export const searchStatusExtension = defineExtensionFactory(({ services }) => {
 /**
  * `uses` is the structural composition primitive for declarative extensions.
  *
- * This bundle does not contribute facets or services directly. Instead, it says
+ * This bundle does not contribute signals or services directly. Instead, it says
  * "when you install `searchFeatureExtension`, also install these child
  * extensions." Reach for `uses` when a few extensions always ship together and
  * you want one higher-level unit without introducing plugin metadata or toggle
@@ -304,7 +304,7 @@ export const workspaceToggleExtension = defineExtensionFactory(({ host }) => {
       providesServices: [provideService(workspaceToggleService, controller)],
       provides: [
         provide(
-          toolbarFacet,
+          toolbarSignal,
           computed(() => ({
             id: 'workspace.toggle',
             label: controller.active.value
@@ -341,7 +341,7 @@ export const analyticsProviderExtension = defineExtensionFactory(() => {
       providesServices: [provideService(analyticsService, serviceImpl)],
       provides: [
         provide(
-          toolbarFacet,
+          toolbarSignal,
           computed(() => ({
             id: 'analytics.track',
             label: `Track Analytics Event (${eventCount.value})`,
@@ -368,7 +368,7 @@ export const analyticsStatusExtension = defineExtensionFactory(
         id: 'analytics-status-extension',
         provides: [
           provide(
-            toolbarFacet,
+            toolbarSignal,
             computed(() => {
               const analytics = services.optional(analyticsService)
 
@@ -417,7 +417,7 @@ function createAnalyticsToggleExtension(initialActive: boolean) {
           ],
           provides: [
             provide(
-              toolbarFacet,
+              toolbarSignal,
               computed(() => ({
                 id: 'analytics.toggle',
                 label: controller.active.value
@@ -438,20 +438,20 @@ function createAnalyticsToggleExtension(initialActive: boolean) {
 /**
  * Base plugin example.
  *
- * Plugins are the installable developer-facing unit. This one owns a new facet
- * (`notesPanelFacet`) and a small API service that downstream plugins can use
+ * Plugins are the installable developer-facing unit. This one owns a new signal
+ * (`notesPanelSignal`) and a small API service that downstream plugins can use
  * as a presence marker or compatibility surface.
  */
 const notesPluginBaseExtension = defineExtension({
   id: 'notes-plugin.base',
   providesServices: [
     provideService(notesPluginApiService, {
-      panelFacet: notesPanelFacet,
+      panelSignal: notesPanelSignal,
       pluginTitle: 'Notes',
     }),
   ],
   provides: [
-    provide(notesPanelFacet, {
+    provide(notesPanelSignal, {
       id: 'notes.welcome',
       label: 'Welcome note from the Notes plugin',
     }),
@@ -462,14 +462,14 @@ export const notesPlugin = createPlugin({
   id: 'notes',
   title: 'Notes',
   description:
-    'Provides a plugin-owned notes panel facet and a small API service for cooperating plugins.',
+    'Provides a plugin-owned notes panel signal and a small API service for cooperating plugins.',
   extensions: [notesPluginBaseExtension],
 })
 
 /**
  * Downstream plugin example.
  *
- * This plugin extends a facet owned by another plugin. The facet target is
+ * This plugin extends a signal owned by another plugin. The signal target is
  * still imported statically, but the optional service is used to:
  * - detect whether the upstream plugin is installed
  * - consume plugin-owned metadata (`pluginTitle`)
@@ -481,7 +481,7 @@ const notesHelperPluginExtension = defineExtensionFactory(({ services }) => {
       id: 'notes-helper-plugin.extension',
       provides: [
         provide(
-          notesPanelFacet,
+          notesPanelSignal,
           computed(() => {
             const notesApi = services.optional(notesPluginApiService)
             return {

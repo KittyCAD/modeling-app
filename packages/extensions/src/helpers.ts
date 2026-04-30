@@ -1,4 +1,8 @@
-import { type ReadonlySignal, computed, signal } from '@preact/signals-core'
+import {
+  type ReadonlySignal as ReadonlyPreactSignal,
+  computed,
+  signal,
+} from '@preact/signals-core'
 import { CombineMutationError, ServiceResolutionError } from './errors'
 import type { ExtensionHost } from './host'
 import { Compartment } from './types'
@@ -7,16 +11,16 @@ import type {
   ExtensionFactory,
   ExtensionKey,
   ExtensionNode,
-  Facet,
-  FacetContribution,
   MaybeSignal,
   Precedence,
   RuntimeExtensionDefinition,
   Service,
   ServiceContribution,
+  Signal,
+  SignalContribution,
 } from './types'
 import { defineService } from './service'
-import { appendFacet } from './facet'
+import { appendSignal } from './signal'
 
 export const precedenceRank: Record<Precedence, number> = {
   highest: 0,
@@ -29,7 +33,7 @@ export const precedenceRank: Record<Precedence, number> = {
 /** Narrow unknown values to signal-like objects. */
 export function isReadonlySignal<T>(
   value: unknown
-): value is ReadonlySignal<T> {
+): value is ReadonlyPreactSignal<T> {
   return !!value && typeof value === 'object' && 'value' in value
 }
 
@@ -84,8 +88,8 @@ export function dedupeContributions<T extends { key?: ExtensionKey }>(
  * Rewrap a signal through a computed so callers only receive a readonly view.
  */
 export function readonlyFromSignal<T>(
-  value: ReadonlySignal<T>
-): ReadonlySignal<T> {
+  value: ReadonlyPreactSignal<T>
+): ReadonlyPreactSignal<T> {
   return computed(() => value.value)
 }
 
@@ -96,7 +100,7 @@ export function readonlyFromSignal<T>(
  * the `active` signal may no longer reflect the host's true state.
  */
 export interface CompartmentToggleController {
-  readonly active: ReadonlySignal<boolean>
+  readonly active: ReadonlyPreactSignal<boolean>
   enable(): void
   disable(): void
   toggle(): void
@@ -106,7 +110,7 @@ export interface CompartmentToggleController {
  * Protect service implementations before exposing them to consumers.
  *
  * Goals:
- * - methods become guarded wrappers so facet combine functions cannot call them
+ * - methods become guarded wrappers so signal combine functions cannot call them
  * - signal-valued fields are re-exposed as readonly signals
  * - the final service object is frozen to discourage mutation of the surface
  *
@@ -131,8 +135,8 @@ export function sanitizeServiceImplementation<T extends object>(
         out[key] = (...args: unknown[]) => {
           if (host.isCombining()) {
             throw new CombineMutationError(
-              `Service method ${service.name}.${String(key)}() was called while combining a facet. ` +
-                'Facet combine functions must be pure.'
+              `Service method ${service.name}.${String(key)}() was called while combining a signal. ` +
+                'Signal combine functions must be pure.'
             )
           }
 
@@ -211,7 +215,7 @@ interface PluginSpec extends PluginInfo {
 }
 
 /**
- * Resolved plugin metadata exposed through `pluginsFacet`.
+ * Resolved plugin metadata exposed through `pluginsSignal`.
  *
  * The `service` is plugin-management metadata. It points at a stable
  * controller that lives outside the plugin's compartment and can toggle the
@@ -222,7 +226,7 @@ export interface PluginRecord extends PluginInfo {
 }
 
 /** Registry of installed plugins for settings screens and similar UIs. */
-export const pluginsFacet = appendFacet<PluginRecord>('plugins')
+export const pluginsSignal = appendSignal<PluginRecord>('plugins')
 
 /**
  * Build a plugin from declarative extension content.
@@ -250,7 +254,7 @@ export function createPlugin({
   return defineExtension({
     id: info.id,
     provides: [
-      provide(pluginsFacet, {
+      provide(pluginsSignal, {
         ...info,
         service: toggle.service,
       }),
@@ -343,12 +347,12 @@ export function createCompartmentToggleController({
 }
 
 export function provide<I>(
-  facet: Facet<I, any>,
+  signal: Signal<I, any>,
   value: MaybeSignal<I>,
-  options?: Pick<FacetContribution<I>, 'precedence' | 'key'>
-): FacetContribution<I> {
+  options?: Pick<SignalContribution<I>, 'precedence' | 'key'>
+): SignalContribution<I> {
   return {
-    facet,
+    signal,
     value,
     precedence: options?.precedence,
     key: options?.key,

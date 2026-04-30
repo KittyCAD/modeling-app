@@ -1,6 +1,6 @@
 import {
   type ReadonlySignal,
-  type Signal,
+  type Signal as PreactSignal,
   computed,
   signal,
 } from '@preact/signals-core'
@@ -20,23 +20,23 @@ import {
 } from './helpers'
 import type {
   Compartment,
-  DebugFacetItem,
+  DebugSignalItem,
   DebugServiceItem,
   ExtensionContext,
   ExtensionFactory,
   ExtensionKey,
   ExtensionNode,
-  Facet,
-  FacetReader,
   Precedence,
   RuntimeExtensionHandle,
   Service,
   ServiceReader,
+  Signal,
+  SignalReader,
 } from './types'
 import { CompartmentInstance } from './types'
 
 interface FlattenedContribution {
-  readonly facet: Facet<any, any>
+  readonly signal: Signal<any, any>
   readonly value: any
   readonly precedence: Precedence
   readonly key?: ExtensionKey
@@ -63,30 +63,30 @@ interface FlattenResult {
 }
 
 function isServiceDefinition(
-  arg: Service<any> | Facet<any, any>
+  arg: Service<any> | Signal<any, any>
 ): arg is Service<any> {
   return 'multiple' in arg
 }
 
 /**
- * ExtensionHost resolves extension graphs into live facets and services.
+ * ExtensionHost resolves extension graphs into live signals and services.
  *
  * Conceptually:
- * - facets are the composition layer
+ * - signals are the composition layer
  * - services are the capability layer
- * - signals are the reactivity layer
+ * - Preact signals are the reactivity layer
  * - runtime factories / models are the lifecycle layer
  */
-export class ExtensionHost implements FacetReader, ServiceReader {
+export class ExtensionHost implements SignalReader, ServiceReader {
   private readonly roots = signal<readonly ExtensionNode[]>([])
   private readonly compartmentContent = new Map<
     symbol,
-    Signal<readonly ExtensionNode[]>
+    PreactSignal<readonly ExtensionNode[]>
   >()
-  private readonly facetSignals = new Map<symbol, ReadonlySignal<any>>()
-  private readonly debugFacetItems = new Map<
+  private readonly extensionSignals = new Map<symbol, ReadonlySignal<any>>()
+  private readonly debugSignalItems = new Map<
     symbol,
-    ReadonlySignal<readonly DebugFacetItem[]>
+    ReadonlySignal<readonly DebugSignalItem[]>
   >()
   private readonly serviceSignals = new Map<symbol, ReadonlySignal<any>>()
   private readonly debugServiceItems = new Map<
@@ -112,7 +112,7 @@ export class ExtensionHost implements FacetReader, ServiceReader {
 
       const ctx: ExtensionContext = {
         host: this,
-        facets: this,
+        signals: this,
         services: this,
       }
 
@@ -147,7 +147,7 @@ export class ExtensionHost implements FacetReader, ServiceReader {
 
         for (const contribution of node.provides ?? []) {
           contributions.push({
-            facet: contribution.facet,
+            signal: contribution.signal,
             value: contribution.value,
             precedence: contribution.precedence ?? 'default',
             key: contribution.key,
@@ -198,7 +198,7 @@ export class ExtensionHost implements FacetReader, ServiceReader {
 
     if (this.combineDepth > 0) {
       throw new ReconfigurationError(
-        'Cannot reconfigure a compartment while combining a facet.'
+        'Cannot reconfigure a compartment while combining a signal.'
       )
     }
 
@@ -210,10 +210,10 @@ export class ExtensionHost implements FacetReader, ServiceReader {
     holder.value = extensions
   }
 
-  /** Resolve a facet or service as a live signal. */
+  /** Resolve an extension signal or service as a live Preact signal. */
   signal<T>(service: Service<T>): ReadonlySignal<T | undefined>
-  signal<I, O>(facet: Facet<I, O>): ReadonlySignal<O>
-  signal(arg: Service<any> | Facet<any, any>): ReadonlySignal<any> {
+  signal<I, O>(signalDef: Signal<I, O>): ReadonlySignal<O>
+  signal(arg: Service<any> | Signal<any, any>): ReadonlySignal<any> {
     if (isServiceDefinition(arg)) {
       const existing = this.serviceSignals.get(arg.id)
       if (existing) return existing
@@ -223,14 +223,14 @@ export class ExtensionHost implements FacetReader, ServiceReader {
       return created
     }
 
-    const existing = this.facetSignals.get(arg.id)
+    const existing = this.extensionSignals.get(arg.id)
     if (existing) return existing
 
     const created = computed(() => {
       const matching = dedupeContributions(
         sortContributions(
           this.flat.value.contributions.filter(
-            (item) => item.facet.id === arg.id
+            (item) => item.signal.id === arg.id
           )
         )
       )
@@ -247,14 +247,14 @@ export class ExtensionHost implements FacetReader, ServiceReader {
       }
     })
 
-    this.facetSignals.set(arg.id, created)
+    this.extensionSignals.set(arg.id, created)
     return created
   }
 
-  /** Resolve a required facet or service snapshot. */
+  /** Resolve a required extension signal or service snapshot. */
   get<T>(service: Service<T>): T
-  get<I, O>(facet: Facet<I, O>): O
-  get(arg: Service<any> | Facet<any, any>): any {
+  get<I, O>(signalDef: Signal<I, O>): O
+  get(arg: Service<any> | Signal<any, any>): any {
     if (isServiceDefinition(arg)) {
       const value = this.signal(arg).value
       if (value === undefined) {
@@ -271,24 +271,24 @@ export class ExtensionHost implements FacetReader, ServiceReader {
     return this.signal(service).value
   }
 
-  /** Inspect which active contributions currently feed a facet. */
-  debugFacet<I, O>(
-    facet: Facet<I, O>
-  ): ReadonlySignal<readonly DebugFacetItem[]> {
-    const existing = this.debugFacetItems.get(facet.id)
+  /** Inspect which active contributions currently feed an extension signal. */
+  debugSignal<I, O>(
+    signalDef: Signal<I, O>
+  ): ReadonlySignal<readonly DebugSignalItem[]> {
+    const existing = this.debugSignalItems.get(signalDef.id)
     if (existing) return existing
 
     const created = computed(() => {
       const matching = dedupeContributions(
         sortContributions(
           this.flat.value.contributions.filter(
-            (item) => item.facet.id === facet.id
+            (item) => item.signal.id === signalDef.id
           )
         )
       )
 
       return matching.map((item) => ({
-        facetName: facet.name,
+        signalName: signalDef.name,
         sourcePath: item.sourcePath,
         precedence: item.precedence,
         key: item.key,
@@ -296,7 +296,7 @@ export class ExtensionHost implements FacetReader, ServiceReader {
       }))
     })
 
-    this.debugFacetItems.set(facet.id, created)
+    this.debugSignalItems.set(signalDef.id, created)
     return created
   }
 
@@ -329,7 +329,8 @@ export class ExtensionHost implements FacetReader, ServiceReader {
 
     return {
       runtimeInstanceCount: this.runtimeInstances.size,
-      facetCount: new Set(flat.contributions.map((item) => item.facet.id)).size,
+      signalCount: new Set(flat.contributions.map((item) => item.signal.id))
+        .size,
       serviceCount: new Set(
         flat.serviceContributions.map((item) => item.service.id)
       ).size,
@@ -337,7 +338,7 @@ export class ExtensionHost implements FacetReader, ServiceReader {
     }
   }
 
-  /** Internal guard used by service wrappers to preserve combine purity. */
+  /** Internal guard used by service wrappers to preserve signal-combine purity. */
   isCombining(): boolean {
     return this.combineDepth > 0
   }
@@ -355,7 +356,7 @@ export class ExtensionHost implements FacetReader, ServiceReader {
     if (this.flattenDepth > 0) {
       throw new ServiceResolutionError(
         `Service ${service.name} was requested while building the extension graph. ` +
-          'Defer service reads to computed facet inputs, effects, or event handlers.'
+          'Defer service reads to computed signal inputs, effects, or event handlers.'
       )
     }
 
@@ -466,8 +467,8 @@ export class ExtensionHost implements FacetReader, ServiceReader {
     this.runtimeInstances.clear()
     this.roots.value = []
     this.compartmentContent.clear()
-    this.facetSignals.clear()
-    this.debugFacetItems.clear()
+    this.extensionSignals.clear()
+    this.debugSignalItems.clear()
     this.serviceSignals.clear()
     this.debugServiceItems.clear()
   }

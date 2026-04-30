@@ -7,13 +7,13 @@ import {
   ServiceConflictError,
   ServiceResolutionError,
 } from './errors'
-import { appendFacet, firstWinsFacet } from './facet'
+import { appendSignal, firstWinsSignal } from './signal'
 import {
   createCompartmentToggleController,
   createPlugin,
   defineExtension,
   defineExtensionFactory,
-  pluginsFacet,
+  pluginsSignal,
   provide,
   provideService,
 } from './helpers'
@@ -106,7 +106,7 @@ describe('services', () => {
   })
 
   it('throws when a same-host service method is called while combining', () => {
-    const facet = appendFacet<number>('numbers')
+    const extensionSignal = appendSignal<number>('numbers')
     const service = defineService<{
       count: { readonly value: number }
       mutate(): void
@@ -126,7 +126,7 @@ describe('services', () => {
         ],
         provides: [
           provide(
-            facet,
+            extensionSignal,
             computed(() => {
               host.get(service).mutate()
               return count.value
@@ -136,11 +136,11 @@ describe('services', () => {
       }),
     ])
 
-    expect(() => host.get(facet)).toThrow(CombineMutationError)
+    expect(() => host.get(extensionSignal)).toThrow(CombineMutationError)
   })
 
-  it('throws when reconfigure is called during facet combine', () => {
-    const facet = appendFacet<number>('numbers')
+  it('throws when reconfigure is called during signal combine', () => {
+    const extensionSignal = appendSignal<number>('numbers')
     const compartment = new Compartment()
     const host = new ExtensionHost()
 
@@ -149,7 +149,7 @@ describe('services', () => {
       defineExtension({
         provides: [
           provide(
-            facet,
+            extensionSignal,
             computed(() => {
               host.reconfigure(compartment, [])
               return 1
@@ -159,7 +159,7 @@ describe('services', () => {
       }),
     ])
 
-    expect(() => host.get(facet)).toThrow(ReconfigurationError)
+    expect(() => host.get(extensionSignal)).toThrow(ReconfigurationError)
   })
 
   it('toggle controller reconfigures a compartment and preserves unrelated runtime instances', () => {
@@ -173,7 +173,7 @@ describe('services', () => {
       isOpen: { readonly value: boolean }
       open(): void
     }>('stable')
-    const featureFacet = appendFacet<string>('feature')
+    const featureSignal = appendSignal<string>('feature')
     const compartment = new Compartment()
     const runtimeCalls = vi.fn()
 
@@ -201,7 +201,7 @@ describe('services', () => {
         compartment,
         activeExtensions: [
           defineExtension({
-            provides: [provide(featureFacet, 'enabled')],
+            provides: [provide(featureSignal, 'enabled')],
           }),
         ],
       })
@@ -218,26 +218,26 @@ describe('services', () => {
 
     host.get(stableService).open()
     host.get(toggleService).enable()
-    expect(host.get(featureFacet)).toEqual(['enabled'])
+    expect(host.get(featureSignal)).toEqual(['enabled'])
     expect(host.get(toggleService).active.value).toBe(true)
     expect(host.get(stableService).isOpen.value).toBe(true)
 
     host.get(toggleService).disable()
-    expect(host.get(featureFacet)).toEqual([])
+    expect(host.get(featureSignal)).toEqual([])
     expect(host.get(toggleService).active.value).toBe(false)
     expect(host.get(stableService).isOpen.value).toBe(true)
     expect(runtimeCalls).toHaveBeenCalledTimes(1)
   })
 
   it('installs a plugin as one extension node and preserves its toggle metadata', () => {
-    const featureFacet = firstWinsFacet<string>('feature', 'uninitialized')
+    const featureSignal = firstWinsSignal<string>('feature', 'uninitialized')
     const plugin = createPlugin({
       id: 'feature-plugin',
       title: 'Feature Plugin',
       description: 'A toggleable feature plugin.',
       extensions: [
         defineExtension({
-          provides: [provide(featureFacet, 'enabled')],
+          provides: [provide(featureSignal, 'enabled')],
         }),
       ],
     })
@@ -245,10 +245,10 @@ describe('services', () => {
 
     host.configure([plugin])
 
-    const [pluginRecord] = host.get(pluginsFacet)
+    const [pluginRecord] = host.get(pluginsSignal)
 
     expect(plugin.id).toBe('feature-plugin')
-    expect(host.get(featureFacet)).toEqual('enabled')
+    expect(host.get(featureSignal)).toEqual('enabled')
     expect(pluginRecord).toEqual(
       expect.objectContaining({
         id: 'feature-plugin',
@@ -259,9 +259,9 @@ describe('services', () => {
 
     const pluginService = host.get(pluginRecord.service)
     pluginService.disable()
-    expect(host.get(featureFacet)).toEqual('uninitialized')
+    expect(host.get(featureSignal)).toEqual('uninitialized')
     pluginService.enable()
-    expect(host.get(featureFacet)).toEqual('enabled')
+    expect(host.get(featureSignal)).toEqual('enabled')
   })
 
   it('can inspect active service providers', () => {

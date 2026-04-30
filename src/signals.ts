@@ -5,24 +5,24 @@ import {
   type ResolvedExtensionSettings,
 } from '@src/lib/settings/extensionSettings'
 import type { RouteObject } from 'react-router-dom'
-import { appendFacet, defineFacet } from '@kittycad/extensions'
+import { appendSignal, defineSignal } from '@kittycad/extensions'
 
-export const routesFacet = appendFacet<RouteObject>('routes')
-export const statusBarGlobalItemsFacet =
-  appendFacet<StatusBarItemType>('status-bar-global')
-export const statusBarLocalItemsFacet =
-  appendFacet<StatusBarItemType>('status-bar-local')
+export const routesSignal = appendSignal<RouteObject>('routes')
+export const statusBarGlobalItemsSignal =
+  appendSignal<StatusBarItemType>('status-bar-global')
+export const statusBarLocalItemsSignal =
+  appendSignal<StatusBarItemType>('status-bar-local')
 
 /**
  * App-owned settings extension point.
  *
- * Today the settings actor remains the in-memory source of truth and this facet
+ * Today the settings actor remains the in-memory source of truth and this signal
  * only contributes extra setting definitions into that model during startup.
  * A follow-up PR can invert that relationship by having core settings
- * contribute through this facet too, then deriving the actor context from the
- * fully resolved facet output.
+ * contribute through this signal too, then deriving the actor context from the
+ * fully resolved signal output.
  */
-export const settingsFacet = defineFacet<
+export const settingsSignal = defineSignal<
   ExtensionSettingsContribution,
   ResolvedExtensionSettings
 >({

@@ -5,7 +5,7 @@ import {
   type ExtensionDefinition,
   type ExtensionNode,
 } from '@kittycad/extensions'
-import { settingsFacet } from '@src/facets'
+import { settingsSignal } from '@src/signals'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 
 type ZdsPluginDefault = 'core' | 'off'
@@ -41,7 +41,7 @@ export function createZdsPlugin({
       }),
     ],
     provides: [
-      provide(settingsFacet, {
+      provide(settingsSignal, {
         plugins: {
           [spec.id]: defineBooleanExtensionSetting({
             defaultValue: enabledByDefault,

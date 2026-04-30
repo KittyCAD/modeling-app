@@ -1,6 +1,6 @@
 export * from './types'
 export * from './errors'
-export * from './facet'
+export * from './signal'
 export * from './service'
 export * from './helpers'
 export * from './host'

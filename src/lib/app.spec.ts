@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
-import { pluginsFacet } from '@kittycad/extensions'
+import { pluginsSignal } from '@kittycad/extensions'
 import { App } from '@src/lib/app'
 import { File } from '@src/lang/KclManager'
 import type { Project } from '@src/lib/project'
@@ -79,7 +79,7 @@ describe('project system', () => {
       await waitForSettingsIdle(app)
 
       const telemetryPlugin = app.extensions.host
-        .get(pluginsFacet)
+        .get(pluginsSignal)
         .find((plugin) => plugin.id === 'telemetry')
       expect(telemetryPlugin).toBeDefined()
 
