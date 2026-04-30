@@ -138,12 +138,12 @@ struct RequestContext {
 }
 
 impl RequestContext {
-    fn new(input: Option<KclInput>, mock: bool, api_token: Option<String>) -> Self {
+    fn from_parts(input: Option<KclInput>, mock: bool, api_token: Option<String>) -> Self {
         Self { input, mock, api_token }
     }
 
     fn engine(api_token: Option<String>) -> Self {
-        Self::new(None, false, api_token)
+        Self::from_parts(None, false, api_token)
     }
 
     fn with_input(mut self, input: KclInput) -> Self {
