@@ -5,6 +5,7 @@ import type { Location } from 'react-router-dom'
 export type StatusBarItemType = {
   id: string
   'data-testid'?: string
+  order?: number
 } & (
   | ({
       label: string

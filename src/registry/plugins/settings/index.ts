@@ -14,6 +14,7 @@ const settingsStatusBarItem = defineRegistryItem({
           location.pathname.includes(PATHS.FILE) ? '?tab=project' : ''
         }`,
       'data-testid': 'settings-link',
+      order: 1,
       label: 'Settings',
     }),
   ],

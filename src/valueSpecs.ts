@@ -8,10 +8,24 @@ import type { RouteObject } from 'react-router-dom'
 import { appendValueSpec, defineValueSpec } from '@kittycad/registry'
 
 export const routesValueSpec = appendValueSpec<RouteObject>('routes')
-export const statusBarGlobalItemsValueSpec =
-  appendValueSpec<StatusBarItemType>('status-bar-global')
-export const statusBarLocalItemsValueSpec =
-  appendValueSpec<StatusBarItemType>('status-bar-local')
+const sortByOrderProperty = (inputs: readonly StatusBarItemType[]) =>
+  inputs.toSorted((a, b) => (a.order || 0) - (b.order || 0))
+export const statusBarGlobalItemsValueSpec = defineValueSpec<
+  StatusBarItemType,
+  StatusBarItemType[]
+>({
+  name: 'status-bar-global',
+  defaultValue: [],
+  combine: sortByOrderProperty,
+})
+export const statusBarLocalItemsValueSpec = defineValueSpec<
+  StatusBarItemType,
+  StatusBarItemType[]
+>({
+  name: 'status-bar-local',
+  defaultValue: [],
+  combine: sortByOrderProperty,
+})
 
 /**
  * App-owned settings extension point.
