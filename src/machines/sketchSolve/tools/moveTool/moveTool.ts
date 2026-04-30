@@ -21,7 +21,7 @@ import { applyVectorToPoint2D } from '@src/lib/kclHelpers'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray, roundOff } from '@src/lib/utils'
-import { distance2d, pointsAreEqual } from '@src/lib/utils2d'
+import { distance2d } from '@src/lib/utils2d'
 import { isConstraintHoverPopup } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
 import {
   axisConstraintIncludesOrigin,
@@ -307,23 +307,14 @@ function getDistanceLabelConstraintId(
 }
 
 function buildDistanceLabelEditsForMovedSegments({
-  objects,
   objectsBeforeDrag,
   objectsAfterDrag,
-  segmentsToEdit,
   units,
 }: {
-  objects: ApiObject[]
   objectsBeforeDrag: ApiObject[]
   objectsAfterDrag: ApiObject[]
-  segmentsToEdit: ExistingSegmentCtor[]
   units: NumericSuffix
 }): DistanceConstraintLabelEdit[] {
-  const movedPointIds = getMovedPointIdsForSegmentEdits(objects, segmentsToEdit)
-  if (movedPointIds.size === 0) {
-    return []
-  }
-
   return objectsBeforeDrag.flatMap((obj) => {
     if (!isDistanceConstraint(obj)) {
       return []
@@ -347,6 +338,13 @@ function buildDistanceLabelEditsForMovedSegments({
       pointPairs.push({ before, after })
     }
 
+    if (
+      !pointPairs.some(({ before, after }) => before.distanceTo(after) > 1e-4)
+    ) {
+      // The points in the distance constraint didn't change -> no need to update label
+      return []
+    }
+
     const transformedLabel = transformDistanceLabelFromPointPairs(
       obj.kind.constraint.type,
       new Vector2(labelPosition.x.value, labelPosition.y.value),
@@ -354,19 +352,6 @@ function buildDistanceLabelEditsForMovedSegments({
     )
 
     if (!transformedLabel) {
-      return []
-    }
-
-    if (
-      pointsAreEqual(
-        [labelPosition.x.value, labelPosition.y.value],
-        [transformedLabel.x, transformedLabel.y],
-        1e-4
-      )
-    ) {
-      // We're transforming labels regardless of what is the dragged point.
-      // In many cases unrelated segments don't change a label position, so
-      // only dispatch an edit if the label position is actually updated,
       return []
     }
 
@@ -474,37 +459,6 @@ function transformDistanceLabelWithAxes(
     .clone()
     .add(afterAxis.multiplyScalar(offset))
     .add(afterPerp.multiplyScalar(perpOffset))
-}
-
-function getMovedPointIdsForSegmentEdits(
-  objects: ApiObject[],
-  segmentsToEdit: ExistingSegmentCtor[]
-): Set<number> {
-  const movedPointIds = new Set<number>()
-
-  for (const { id } of segmentsToEdit) {
-    const obj = objects[id]
-    if (!obj || obj.kind.type !== 'Segment') {
-      continue
-    }
-
-    const segment = obj.kind.segment
-    if (segment.type === 'Point') {
-      movedPointIds.add(id)
-    } else if (segment.type === 'Line') {
-      movedPointIds.add(segment.start)
-      movedPointIds.add(segment.end)
-    } else if (segment.type === 'Arc') {
-      movedPointIds.add(segment.center)
-      movedPointIds.add(segment.start)
-      movedPointIds.add(segment.end)
-    } else if (segment.type === 'Circle') {
-      movedPointIds.add(segment.center)
-      movedPointIds.add(segment.start)
-    }
-  }
-
-  return movedPointIds
 }
 
 async function applyDistanceLabelPreviewEdits({
@@ -1316,12 +1270,8 @@ export function createOnDragCallback({
       if (result && isActiveDragSession()) {
         if (!hasSketchSolveIssues(result.sceneGraphDelta)) {
           const distanceLabelEdits = buildDistanceLabelEditsForMovedSegments({
-            objects,
-            objectsBeforeDrag:
-              getDragStartOutcome()?.sceneGraphDelta.new_graph.objects ??
-              objects,
+            objectsBeforeDrag: objects,
             objectsAfterDrag: result.sceneGraphDelta.new_graph.objects,
-            segmentsToEdit,
             units,
           })
           let appliedDistanceLabelEdits: DistanceConstraintLabelEdit[] = []
