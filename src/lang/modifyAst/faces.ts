@@ -935,7 +935,8 @@ export function getFacesExprsFromSelection(
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
 ) {
-  return faces.graphSelections.flatMap((v2Sel) => {
+  let modifiedAst = ast
+  const exprs = faces.graphSelections.flatMap((v2Sel) => {
     const resolved = resolveToCodeRef(v2Sel, artifactGraph)
     if (!resolved?.artifact) {
       console.warn('No artifact found for face', v2Sel)
@@ -950,7 +951,7 @@ export function getFacesExprsFromSelection(
     if (artifact.type === 'cap') {
       // Add tagEnd/tagStart to the extrude and use that tag instead of END/START
       const tagResult = modifyAstWithTagForCapFace(
-        ast,
+        modifiedAst,
         artifact,
         artifactGraph,
         wasmInstance
@@ -959,6 +960,7 @@ export function getFacesExprsFromSelection(
         console.warn('Failed to add cap tag to extrude', tagResult)
         return []
       }
+      modifiedAst = tagResult.modifiedAst
       return [createLocalName(tagResult.tag)]
     } else if (artifact.type === 'wall' || artifact.type === 'edgeCut') {
       let targetArtifact: Artifact | undefined
@@ -975,7 +977,7 @@ export function getFacesExprsFromSelection(
         }
 
         const regionTagExpr = getRegionTagExprFromSegmentId(
-          ast,
+          modifiedAst,
           segmentArtifact.id,
           artifactGraph,
           wasmInstance
@@ -1028,6 +1030,7 @@ export function getFacesExprsFromSelection(
       return []
     }
   })
+  return { modifiedAst, exprs }
 }
 
 // Check if an artifact is a face type (cap, wall, or edgeCut)
@@ -1256,13 +1259,14 @@ export function buildSolidsAndFacesExprs(
 
   const pathIfPipe = vars.pathIfPipe
 
-  // Build face expressions (getFacesExprsFromSelection mutates modifiedAst in place)
-  const taggedFacesExprs = getFacesExprsFromSelection(
+  const taggedFacesResult = getFacesExprsFromSelection(
     modifiedAst,
     faces,
     artifactGraph,
     wasmInstance
   )
+  modifiedAst = taggedFacesResult.modifiedAst
+  const taggedFacesExprs = taggedFacesResult.exprs
 
   const solidsExpr = createVariableExpressionsArray(vars.exprs)
   const facesExpr = createVariableExpressionsArray(taggedFacesExprs)

@@ -374,7 +374,7 @@ function modifyAstWithTagForFaceSelection(
     )
     if (err(result)) return result
     return {
-      modifiedAst: ast,
+      modifiedAst: result.modifiedAst,
       expr: createLocalName(result.tag),
     }
   }
@@ -470,24 +470,25 @@ function modifyAstWithTagForWallFace(
 }
 
 /**
- * Tags a cap face (end of extrude) by modifying the sweep call in place.
+ * Tags a cap face (end of extrude) by modifying the sweep call.
  * Handles both start and end caps with appropriate tag names (tagEnd/tagStart).
- * Mutates `ast`; use instead of END/START so edit flows can resolve the face.
  *
  * @param ast AST to modify
  * @param capFace Cap face artifact
  * @param artifactGraph Artifact graph
- * @returns Created or existing tag name
+ * @returns Modified AST and created or existing tag name
  */
 export function modifyAstWithTagForCapFace(
   ast: Node<Program>,
   capFace: Artifact,
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
-): { tag: string } | Error {
+): { modifiedAst: Node<Program>; tag: string } | Error {
   if (capFace.type !== 'cap') {
     return new Error('Selection artifact is not a valid cap type')
   }
+
+  const astClone = structuredClone(ast)
 
   const sweepArtifact = getArtifactOfTypes(
     { key: capFace.sweepId, types: ['sweep'] },
@@ -497,7 +498,7 @@ export function modifyAstWithTagForCapFace(
 
   const pathToSweepNode = sweepArtifact.codeRef.pathToNode
   const callExp = getNodeFromPath<CallExpressionKw>(
-    ast,
+    astClone,
     pathToSweepNode,
     wasmInstance,
     ['CallExpressionKw']
@@ -512,13 +513,13 @@ export function modifyAstWithTagForCapFace(
   )
 
   if (existingTag && existingTag.arg.type === 'TagDeclarator') {
-    return { tag: existingTag.arg.value }
+    return { modifiedAst: astClone, tag: existingTag.arg.value }
   }
 
-  const newTag = findUniqueName(ast, `cap${capType}`)
+  const newTag = findUniqueName(astClone, `cap${capType}`)
   const tagCall = createLabeledArg(tagParamName, createTagDeclarator(newTag))
   callExp.node.arguments.push(tagCall)
-  return { tag: newTag }
+  return { modifiedAst: astClone, tag: newTag }
 }
 
 /**

@@ -713,25 +713,12 @@ extrude002 = extrude(profile002, length = 5, tagEnd = $capEnd002)`
       )
       expect(sweeps.length).toBe(2)
 
-      const sweepEdgeBody1 = [...artifactGraph.values()].find(
-        (a) => a.type === 'sweepEdge' && a.sweepId === sweeps[0].id
+      const segmentBody1 = [...artifactGraph.values()].find(
+        (a) => a.type === 'segment' && a.pathId === sweeps[0].pathId
       )
-      const sweepEdgeBody2 = [...artifactGraph.values()].find(
-        (a) => a.type === 'sweepEdge' && a.sweepId === sweeps[1].id
+      const segmentBody2 = [...artifactGraph.values()].find(
+        (a) => a.type === 'segment' && a.pathId === sweeps[1].pathId
       )
-      if (
-        !sweepEdgeBody1 ||
-        sweepEdgeBody1.type !== 'sweepEdge' ||
-        !sweepEdgeBody2 ||
-        sweepEdgeBody2.type !== 'sweepEdge'
-      ) {
-        throw new Error(
-          'Could not find sweep edges for sketch solve blend test'
-        )
-      }
-
-      const segmentBody1 = artifactGraph.get(sweepEdgeBody1.segId)
-      const segmentBody2 = artifactGraph.get(sweepEdgeBody2.segId)
       if (
         !segmentBody1 ||
         segmentBody1.type !== 'segment' ||

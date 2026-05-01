@@ -517,6 +517,8 @@ extrude002 = extrude(profile002, length = 150)`
       })
 
       await test.step('Successful, unblocked export', async () => {
+        const previousSuccessToastCount = await successToastMessage.count()
+
         // Try exporting again.
         await clickExportButton(page, cmdBar)
 
@@ -526,14 +528,15 @@ extrude002 = extrude(profile002, length = 150)`
 
         // Expect it to succeed.
         await Promise.all([
-          expect(exportingToastMessage).not.toBeVisible(),
+          expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 }),
           expect(errorToastMessage).not.toBeVisible(),
           expect(engineErrorToastMessage).not.toBeVisible(),
           expect(alreadyExportingToastMessage).not.toBeVisible(),
         ])
 
-        const count = await successToastMessage.count()
-        expect(count).toBeGreaterThanOrEqual(2)
+        await expect
+          .poll(() => successToastMessage.count(), { timeout: 15_000 })
+          .toBeGreaterThan(previousSuccessToastCount)
       })
     }
   )

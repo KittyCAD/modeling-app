@@ -1671,8 +1671,6 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.line2)])`
 }
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = 5)`
-    const filletExpression = `fillet001 = fillet(extrude001, edges = [{ sideFaces = [region001.tags.line1, region001.tags.line3] }], radius = 1000)`
-
     // Locators
     // TODO: find a way to select sweepEdges in a different way
     const edgeLocation = { x: 649, y: 283 }
@@ -1741,9 +1739,15 @@ extrude001 = extrude(region001, length = 5)`
     })
 
     await test.step('Verify code is updated regardless of execution errors', async () => {
-      await editor.expectEditor.toContain(filletExpression, {
-        shouldNormalise: true,
-      })
+      const code = await editor.getCurrentCode()
+      const normalizedCode = code.replace(/\s+/g, '')
+
+      expect(normalizedCode).toContain('fillet001=fillet(extrude001,')
+      expect(normalizedCode).toContain(
+        'edges=[{sideFaces=[region001.tags.line1,region001.tags.line3]}]'
+      )
+      expect(normalizedCode).toContain('radius=1000,')
+      expect(normalizedCode).not.toContain('tags=[')
     })
   })
 

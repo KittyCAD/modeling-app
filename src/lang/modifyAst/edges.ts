@@ -549,6 +549,16 @@ function getSketchSegmentNameFromSourceSurface(
   return null
 }
 
+function getSegmentIdFromEdgeArtifact(edgeArtifact: Artifact): string | null {
+  if (edgeArtifact.type === 'segment') {
+    return edgeArtifact.id
+  }
+  if (edgeArtifact.type === 'sweepEdge') {
+    return edgeArtifact.segId
+  }
+  return null
+}
+
 function getRegionSketchTagExprFromSourceSurface(
   sourceSurfaceArtifact: Artifact,
   edgeArtifact: Artifact,
@@ -578,12 +588,7 @@ function getRegionSketchTagExprFromSourceSurface(
     return null
   }
 
-  const segmentId =
-    edgeArtifact.type === 'segment'
-      ? edgeArtifact.id
-      : edgeArtifact.type === 'sweepEdge'
-        ? edgeArtifact.segId
-        : null
+  const segmentId = getSegmentIdFromEdgeArtifact(edgeArtifact)
   if (!segmentId) {
     return null
   }
@@ -596,6 +601,7 @@ function getRegionSketchTagExprFromSourceSurface(
     sweepInput.name.name
   )
 }
+
 function buildEdgeExpr(
   edgeSelection: EdgeSelectionForExpr,
   ast: Node<Program>,
@@ -842,12 +848,7 @@ function getEndFaceIdsForEdgeIdMeta(
     return []
   }
 
-  const backingSegmentId =
-    edgeArtifact.type === 'sweepEdge'
-      ? edgeArtifact.segId
-      : edgeArtifact.type === 'segment'
-        ? edgeArtifact.id
-        : null
+  const backingSegmentId = getSegmentIdFromEdgeArtifact(edgeArtifact)
   if (!backingSegmentId) {
     return []
   }

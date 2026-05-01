@@ -22,7 +22,6 @@ import {
 } from '@src/lang/modifyAst/tagManagement'
 import {
   artifactToEntityRef,
-  getNodeFromPath,
   getVariableExprsFromSelection,
   resolveToCodeRef,
   getVariableNameFromNodePath,
@@ -57,10 +56,7 @@ import type {
   EngineRegionSelection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import {
-  getFacesExprsFromSelection,
-  isFaceArtifact,
-} from '@src/lang/modifyAst/faces'
+import { isFaceArtifact } from '@src/lang/modifyAst/faces'
 import {
   getEdgeTagCall,
   entityReferenceToEdgeRefPayload,
@@ -1201,9 +1197,8 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
     }
     edge = edgeSelection
   } else if (axisValue.type === 'Uuid') {
-    // sweepEdge was removed from artifact graph; use edgeRef/tag-based axis instead
     return new Error(
-      'Uuid axis (legacy sweepEdge) is no longer supported; use edgeRef or tag-based segment axis'
+      'This axis selection can no longer be edited automatically. Re-select the axis edge and try again.'
     )
   } else {
     return new Error('The type of the axis argument is unsupported')
