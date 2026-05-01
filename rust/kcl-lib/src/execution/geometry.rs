@@ -40,7 +40,9 @@ use crate::front::CircleCtor;
 use crate::front::ControlPointSplineCtor;
 use crate::front::Freedom;
 use crate::front::LineCtor;
+use crate::front::Number;
 use crate::front::ObjectId;
+use crate::front::Point2d as ApiPoint2d;
 use crate::front::PointCtor;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::NodeRef;
@@ -2328,6 +2330,11 @@ pub enum SketchConstraintKind {
     },
     Distance {
         points: [ConstrainablePoint2dOrOrigin; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
     },
     Radius {
         points: [ConstrainablePoint2d; 2],
@@ -2337,9 +2344,19 @@ pub enum SketchConstraintKind {
     },
     HorizontalDistance {
         points: [ConstrainablePoint2dOrOrigin; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
     },
     VerticalDistance {
         points: [ConstrainablePoint2dOrOrigin; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
     },
 }
 

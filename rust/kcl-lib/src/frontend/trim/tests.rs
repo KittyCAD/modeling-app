@@ -1019,6 +1019,7 @@ mod sync {
                 crate::frontend::sketch::ConstraintSegment::Origin(crate::frontend::sketch::OriginLiteral::Origin),
             ],
             distance: make_number_mm(4.0),
+            label_position: None,
             source: crate::frontend::sketch::ConstraintSource::default(),
         });
         let tangent = Constraint::Tangent(crate::frontend::sketch::Tangent {

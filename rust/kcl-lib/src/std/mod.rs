@@ -27,6 +27,7 @@ pub mod segment;
 pub mod shapes;
 pub mod shell;
 pub mod sketch;
+mod solid_consumption;
 pub(crate) mod solver;
 pub mod surfaces;
 pub mod sweep;
