@@ -29,7 +29,11 @@ import type {
 } from '@src/lang/wasm'
 /** Legacy shape for sweep-edge-like artifact (sweepEdge removed from artifact graph). */
 type SweepEdgeLike = { segId: string; sweepId?: string }
-/** Resolved graph selection (artifact + codeRef). SelectionV2 resolved via resolveToCodeRef. */
+/**
+ * Shared "resolved selection" shape used after resolving a SelectionV2 row back to code.
+ * codeRef is always present; artifact remains optional because some flows can only recover
+ * source-range context initially and defer artifact lookup to the next step.
+ */
 export type ResolvedGraphSelection = { codeRef: CodeRef; artifact?: Artifact }
 import { err } from '@src/lib/trap'
 

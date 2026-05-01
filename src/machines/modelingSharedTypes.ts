@@ -121,7 +121,7 @@ export type RawVertexRefFromAPI = {
   index?: unknown
 }
 
-/** When the engine includes topology_fallback on an edge pick, codegen can use edgeId(solid, index) if artifact-graph tags are missing (e.g. shell inner edges). */
+/** Engine-provided topology data for edge picks; codegen can use edgeId(solid, index) when tag-based graph resolution is unavailable (e.g. shell inner edges). */
 export type EngineTopologyFallback = {
   parentId: string
   primitiveIndex: number
@@ -130,7 +130,7 @@ export type EngineTopologyFallback = {
 export interface Selection {
   entityRef?: EntityReference
   codeRef?: CodeRef
-  /** From query_entity_type_with_point reference.topology_fallback; not duplicated in otherSelections */
+  /** From query_entity_type_with_point reference.topology_fallback; carried only on graphSelections rows. */
   engineTopologyFallback?: EngineTopologyFallback
 }
 

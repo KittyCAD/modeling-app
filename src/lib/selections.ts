@@ -396,7 +396,7 @@ export function normalizeEntityReference(
   return null
 }
 
-/** Parse engine reference.topology_fallback (snake or camelCase) for edge codegen fallback. */
+/** Parse engine reference.topology_fallback (snake or camelCase) into the frontend topology shape for edge picks. */
 export function engineTopologyFallbackFromReference(
   reference: unknown
 ): EngineTopologyFallback | undefined {
@@ -745,7 +745,7 @@ export async function getEventForQueryEntityTypeWithPoint(
     ? artifactGraph.get(clickEntityId)
     : undefined
   // Edge + topology_fallback: keep graph SelectionV2 (with engineTopologyFallback) for fillet/chamfer.
-  // Otherwise region selection wins and we never attach topology_fallback (e.g. shell inner edges).
+  // Otherwise region selection wins and we never attach engine topology data (e.g. shell inner edges).
   const engineTopologyFallbackEarly =
     engineTopologyFallbackFromReference(reference)
   let engineTopologyFallbackResolved = engineTopologyFallbackEarly
@@ -831,7 +831,7 @@ export async function getEventForQueryEntityTypeWithPoint(
     engineTopologyFallbackEarly
   ) {
     try {
-      console.info('[engine topology fallback resolution]', {
+      console.info('[engine topology resolution]', {
         rawParentId: engineTopologyFallbackEarly?.parentId ?? null,
         resolvedParentId: engineTopologyFallbackResolved?.parentId ?? null,
         primitiveIndex: engineTopologyFallbackResolved?.primitiveIndex ?? null,

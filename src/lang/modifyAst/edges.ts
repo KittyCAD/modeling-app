@@ -892,8 +892,8 @@ export function entityReferenceToEdgeRefPayload(
 /**
  * Creates KCL object expression for an edgeRef payload.
  * Resolves face UUIDs to tags by looking up artifacts and getting/creating tags.
- * @param originalEdgeSelection - Optional original edge selection (segment/sweepEdge) for Solid2D edge handling
- * @param fallbackCodeRef - Optional codeRef to use when originalEdgeSelection is not available (for V2-only selections)
+ * @param originalEdgeSelection - Optional original edge selection for Solid2D edge handling
+ * @param fallbackCodeRef - Optional codeRef to use when originalEdgeSelection is not available (for SelectionV2-only rows)
  * @param tagsBaseExpr - When original tags were referenced as base.tags.x (e.g. bs.tags.edge7), pass the base expr so we emit sideFaces = [base.tags.edge6, base.tags.edge7]
  */
 export function createEdgeRefObjectExpression(
@@ -959,7 +959,7 @@ export function createEdgeRefObjectExpression(
         }
       }
 
-      // For Solid2D edges, we need to use the original edge selection or fallback codeRef to tag the segment
+      // For Solid2D edges, use the original edge selection or SelectionV2 codeRef to tag the segment.
       let segmentPathToNode: PathToNode | undefined
 
       if (
@@ -969,7 +969,7 @@ export function createEdgeRefObjectExpression(
         // Use the segment artifact's codeRef
         segmentPathToNode = originalEdgeSelection.artifact.codeRef.pathToNode
       } else if (fallbackCodeRef?.pathToNode) {
-        // Fall back to the provided codeRef (from V2 selection)
+        // Use the provided codeRef from the SelectionV2 row.
         segmentPathToNode = fallbackCodeRef.pathToNode
       } else if (codeRefs[0]?.pathToNode) {
         // Last resort: use the codeRef from the Solid2D (points to the profile, but we can try to find the segment)
@@ -2798,7 +2798,8 @@ export function groupSelectionsByBodyAndAddTags(
       }
     }
 
-    // Same SelectionV2 row as graph edge; topology_fallback supplies primitive index when tags fail.
+    // Same SelectionV2 row as graph edge; topology_fallback supplies primitive index for the
+    // primitive-edge topology path when tag-based graph resolution is unavailable.
     // Shell inner edges often lack wall/cap in the artifact graph — resolveToCodeRef may fail; use
     // engineTopologyFallback.parentId to find the sweep body and edgeId(solid, primitiveIndex).
     for (const v2Sel of selections.graphSelections) {
@@ -2807,7 +2808,7 @@ export function groupSelectionsByBodyAndAddTags(
       const debugFillet = debugFilletTopologyLogs()
       if (debugFillet) {
         console.info(
-          '[groupSelectionsByBodyAndAddTags topology loop] fallback candidate',
+          '[groupSelectionsByBodyAndAddTags topology loop] primitive-edge topology candidate',
           {
             parentId: topo.parentId,
             primitiveIndex: topo.primitiveIndex,
@@ -2909,7 +2910,7 @@ export function groupSelectionsByBodyAndAddTags(
 
       if (usedParentIdFallback) {
         console.warn(
-          '[fillet topology fallback] entity_get_parent_id fallback executed — engine should now provide sweep/composite artifacts',
+          '[fillet primitive-edge topology path] entity_get_parent_id lookup executed — engine should now provide sweep/composite artifacts',
           {
             bodyKeySnippet: bodyKey.slice(0, 80),
             primitiveIndex,
@@ -2917,7 +2918,7 @@ export function groupSelectionsByBodyAndAddTags(
           }
         )
       } else if (debugFillet) {
-        console.info('[fillet topology fallback]', {
+        console.info('[fillet primitive-edge topology path]', {
           bodyKeySnippet: bodyKey.slice(0, 80),
           primitiveIndex,
           parentId,
@@ -2929,7 +2930,7 @@ export function groupSelectionsByBodyAndAddTags(
 
   if (selectionsByBody.size === 0) {
     return new Error(
-      'No edges found in the selection (codemod: groupSelectionsByBodyAndAddTags — no body keys; graph grouping + primitive/topology fallback produced nothing)'
+      'No edges found in the selection (codemod: groupSelectionsByBodyAndAddTags — no body keys; graph grouping + primitive-edge topology path produced nothing)'
     )
   }
 
@@ -3149,12 +3150,13 @@ function groupSelectionsByBody(
       })
     }
     if (err(sweepArtifact)) {
-      // Shell inner edges: graph may not resolve to a sweep; engineTopologyFallback + edgeId(index) below.
-      // Use normalized fallback so snake_case engine_topology_fallback is honored (same as topology loop).
+      // Shell inner edges: graph may not resolve to a sweep; use the primitive-edge topology path
+      // and edgeId(index) below. Use normalized topology data so snake_case engine_topology_fallback
+      // is honored the same way as the topology grouping loop.
       if (topologyNormalized) {
         if (debugFillet) {
           console.info(
-            '[groupSelectionsByBody] sweep lookup failed; deferring to topology fallback',
+            '[groupSelectionsByBody] sweep lookup failed; deferring to primitive-edge topology path',
             {
               topologyNormalized,
               codeRefPath: resolved.codeRef.pathToNode,
