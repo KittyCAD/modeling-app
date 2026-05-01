@@ -59,6 +59,8 @@ pub use sketch_transpiler::transpile_old_sketch_to_new_ast;
 pub use sketch_transpiler::transpile_old_sketch_to_new_with_execution;
 pub(crate) use state::ConstraintKey;
 pub(crate) use state::ConstraintState;
+pub(crate) use state::ConsumedSolidInfo;
+pub(crate) use state::ConsumedSolidOperation;
 pub use state::ExecState;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
