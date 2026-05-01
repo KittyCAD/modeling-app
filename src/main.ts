@@ -47,6 +47,7 @@ import {
 } from '@src/menu'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { configureSystemCertificates } from '@src/systemCertificates'
+import type { UpdateCheckResult, UpdateInfo } from 'electron-updater'
 
 // Linux hack for electron >= 38, here we're forcing XWayland due to issues we've experienced
 // https://github.com/electron/electron/issues/41551#issuecomment-3590685943
@@ -322,6 +323,103 @@ const saveLocalDeviceState = (state: LocalDeviceState) => {
   fs.writeFileSync(localDeviceStatePath, JSON.stringify(state), {
     encoding: 'utf8',
   })
+}
+
+const getElectronUpdaterCacheDir = () => {
+  const homeDir = os.homedir()
+
+  if (process.platform === 'win32') {
+    return process.env.LOCALAPPDATA || path.join(homeDir, 'AppData', 'Local')
+  }
+
+  if (process.platform === 'darwin') {
+    return path.join(homeDir, 'Library', 'Caches')
+  }
+
+  return process.env.XDG_CACHE_HOME || path.join(homeDir, '.cache')
+}
+
+const getUpdaterConfigPath = () => {
+  if (app.isPackaged) {
+    return path.join(process.resourcesPath, 'app-update.yml')
+  }
+
+  return path.join(app.getAppPath(), 'dev-app-update.yml')
+}
+
+const getUpdaterCacheDirName = () => {
+  try {
+    const config = fs.readFileSync(getUpdaterConfigPath(), 'utf8')
+    const match = config.match(/^updaterCacheDirName:\s*["']?([^"'\r\n#]+)/m)
+    return match?.[1]?.trim() || app.getName()
+  } catch {
+    return app.getName()
+  }
+}
+
+const getPendingUpdateCacheInfo = () => {
+  try {
+    const pendingUpdateCacheDir = path.join(
+      getElectronUpdaterCacheDir(),
+      getUpdaterCacheDirName(),
+      'pending'
+    )
+    const updateInfoPath = path.join(pendingUpdateCacheDir, 'update-info.json')
+    const updateInfo = JSON.parse(fs.readFileSync(updateInfoPath, 'utf8')) as {
+      fileName?: unknown
+      sha512?: unknown
+    }
+
+    if (
+      typeof updateInfo.fileName !== 'string' ||
+      typeof updateInfo.sha512 !== 'string'
+    ) {
+      return null
+    }
+
+    const updateFilePath = path.join(pendingUpdateCacheDir, updateInfo.fileName)
+    if (!fs.existsSync(updateFilePath)) {
+      return null
+    }
+
+    return {
+      sha512: updateInfo.sha512,
+      updateFilePath,
+    }
+  } catch {
+    return null
+  }
+}
+
+const updateInfoMatchesPendingCache = (updateInfo: UpdateInfo) => {
+  const pendingUpdate = getPendingUpdateCacheInfo()
+  if (!pendingUpdate) {
+    return false
+  }
+
+  return (
+    updateInfo.sha512 === pendingUpdate.sha512 ||
+    updateInfo.files.some((file) => file.sha512 === pendingUpdate.sha512)
+  )
+}
+
+const serializeUpdateInfo = (info: UpdateInfo) => {
+  let releaseNotes: string | undefined
+
+  if (typeof info.releaseNotes === 'string') {
+    releaseNotes = info.releaseNotes
+  } else if (Array.isArray(info.releaseNotes)) {
+    releaseNotes = info.releaseNotes
+      .map(({ version, note }) =>
+        [`## ${version}`, note].filter(Boolean).join('\n\n')
+      )
+      .join('\n\n')
+  }
+
+  return {
+    version: info.version,
+    releaseNotes,
+  }
 }
 
 const isBoundsVisible = (bounds: Electron.Rectangle): boolean => {
@@ -601,66 +699,29 @@ app.on('ready', () => {
   appUpdater.disableDifferentialDownload = true
   // Needed for the rollback process at .github/ISSUE_TEMPLATE/release.md
   appUpdater.allowDowngrade = true
+  appUpdater.autoDownload = false
 
-  // Check for updates in the background at startup and then every 15 minutes
-  let backgroundCheckingForUpdates = false
-  const checkForUpdatesBackground = () => {
-    backgroundCheckingForUpdates = true
-    appUpdater
-      .checkForUpdates()
-      .catch(reportRejection)
-      .finally(() => {
-        backgroundCheckingForUpdates = false
-      })
+  type UpdateCheckSource = 'startup' | 'background' | 'user'
+  type UpdateDownloadSource = 'startup-cache' | 'user'
+
+  let activeUpdateCheckSource: UpdateCheckSource | null = null
+  let activeUpdateDownloadSource: UpdateDownloadSource | null = null
+  let activeUpdateDownloadHadProgress = false
+  let updateDownloadStartSent = false
+
+  const sendUpdateAvailable = (info: UpdateInfo) => {
+    mainWindow?.webContents.send('update-available', serializeUpdateInfo(info))
   }
-  const oneSecond = 1000
-  const fifteenMinutes = 15 * 60 * 1000
-  setTimeout(checkForUpdatesBackground, oneSecond)
-  setInterval(checkForUpdatesBackground, fifteenMinutes)
 
-  appUpdater.on('checking-for-update', () => {
-    console.log('checking-for-update')
-    if (!backgroundCheckingForUpdates) {
-      mainWindow?.webContents.send('update-checking')
+  const markUpdateDownloadStart = (progress: AutoUpdateDownloadProgress) => {
+    if (updateDownloadStartSent) {
+      return
     }
-  })
 
-  appUpdater.on('update-not-available', (info) => {
-    console.log('update-not-available', info)
-    if (!backgroundCheckingForUpdates) {
-      mainWindow?.webContents.send('update-not-available')
-    }
-  })
-
-  appUpdater.on('error', (error) => {
-    console.error('update-error', error)
-    mainWindow?.webContents.send('update-error', error)
-  })
-
-  appUpdater.on('update-available', (info) => {
-    console.log('update-available', info)
-  })
-
-  appUpdater.prependOnceListener(
-    'download-progress',
-    (progress: AutoUpdateDownloadProgress) => {
-      console.log('update-download-start', progress)
-      mainWindow?.webContents.send('update-download-start', progress)
-    }
-  )
-
-  appUpdater.on('download-progress', (progress: AutoUpdateDownloadProgress) => {
-    console.log('download-progress', progress)
-    mainWindow?.webContents.send('update-download-progress', progress)
-  })
-
-  appUpdater.on('update-downloaded', (info) => {
-    console.log('update-downloaded', info)
-    mainWindow?.webContents.send('update-downloaded', {
-      version: info.version,
-      releaseNotes: info.releaseNotes,
-    })
-  })
+    updateDownloadStartSent = true
+    console.log('update-download-start', progress)
+    mainWindow?.webContents.send('update-download-start', progress)
+  }
 
   // Based on https://github.com/electron-userland/electron-builder/issues/8997#issuecomment-2846114257
   const prepareMacUpdateInstall = () => {
@@ -692,7 +753,7 @@ app.on('ready', () => {
     })
   }
 
-  ipcMain.handle('app.restart', () => {
+  const installDownloadedUpdate = () => {
     if (isInstallingUpdate) {
       return
     }
@@ -708,10 +769,132 @@ app.on('ready', () => {
       isInstallingUpdate = false
       return Promise.reject(error)
     }
+  }
+
+  const downloadPreviouslyCachedUpdate = async (result: UpdateCheckResult) => {
+    if (
+      !result.isUpdateAvailable ||
+      !updateInfoMatchesPendingCache(result.updateInfo)
+    ) {
+      return false
+    }
+
+    activeUpdateDownloadSource = 'startup-cache'
+    activeUpdateDownloadHadProgress = false
+    updateDownloadStartSent = false
+
+    try {
+      await appUpdater.downloadUpdate()
+      return true
+    } catch (error) {
+      activeUpdateDownloadSource = null
+      throw error
+    }
+  }
+
+  const checkForUpdates = async (source: UpdateCheckSource) => {
+    activeUpdateCheckSource = source
+
+    try {
+      const result = await appUpdater.checkForUpdates()
+
+      if (source === 'startup' && result) {
+        const cachedUpdateHandled = await downloadPreviouslyCachedUpdate(result)
+        if (!cachedUpdateHandled && result.isUpdateAvailable) {
+          sendUpdateAvailable(result.updateInfo)
+        }
+      }
+
+      return result
+    } finally {
+      activeUpdateCheckSource = null
+    }
+  }
+
+  // Check for updates at startup and then every 15 minutes. Downloads are user-initiated,
+  // except when the latest update is already present in electron-updater's pending cache.
+  const oneSecond = 1000
+  const fifteenMinutes = 15 * 60 * 1000
+  setTimeout(() => {
+    checkForUpdates('startup').catch(reportRejection)
+  }, oneSecond)
+  setInterval(() => {
+    checkForUpdates('background').catch(reportRejection)
+  }, fifteenMinutes)
+
+  appUpdater.on('checking-for-update', () => {
+    console.log('checking-for-update')
+    if (activeUpdateCheckSource === 'user') {
+      mainWindow?.webContents.send('update-checking')
+    }
+  })
+
+  appUpdater.on('update-not-available', (info) => {
+    console.log('update-not-available', info)
+    if (activeUpdateCheckSource === 'user') {
+      mainWindow?.webContents.send('update-not-available')
+    }
+  })
+
+  appUpdater.on('error', (error) => {
+    console.error('update-error', error)
+    mainWindow?.webContents.send('update-error', error)
+  })
+
+  appUpdater.on('update-available', (info) => {
+    console.log('update-available', info)
+    if (activeUpdateCheckSource !== 'startup') {
+      sendUpdateAvailable(info)
+    }
+  })
+
+  appUpdater.on('download-progress', (progress: AutoUpdateDownloadProgress) => {
+    activeUpdateDownloadHadProgress = true
+    markUpdateDownloadStart(progress)
+    console.log('download-progress', progress)
+    mainWindow?.webContents.send('update-download-progress', progress)
+  })
+
+  appUpdater.on('update-downloaded', (info) => {
+    console.log('update-downloaded', info)
+    const shouldInstallUpdate =
+      activeUpdateDownloadSource === 'user' ||
+      (activeUpdateDownloadSource === 'startup-cache' &&
+        !activeUpdateDownloadHadProgress)
+
+    activeUpdateDownloadSource = null
+    activeUpdateDownloadHadProgress = false
+    updateDownloadStartSent = false
+
+    if (shouldInstallUpdate) {
+      installDownloadedUpdate()?.catch(reportRejection)
+      return
+    }
+
+    mainWindow?.webContents.send('update-downloaded', serializeUpdateInfo(info))
   })
 
   ipcMain.handle('app.checkForUpdates', () => {
-    return appUpdater.checkForUpdates()
+    return checkForUpdates('user')
+  })
+
+  ipcMain.handle('app.downloadUpdate', async () => {
+    activeUpdateDownloadSource = 'user'
+    activeUpdateDownloadHadProgress = false
+    updateDownloadStartSent = false
+
+    try {
+      return await appUpdater.downloadUpdate()
+    } catch (error) {
+      activeUpdateDownloadSource = null
+      activeUpdateDownloadHadProgress = false
+      updateDownloadStartSent = false
+      return Promise.reject(error)
+    }
+  })
+
+  ipcMain.handle('app.restart', () => {
+    return installDownloadedUpdate()
   })
 })
 

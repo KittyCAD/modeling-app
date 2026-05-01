@@ -13,8 +13,13 @@ export type AutoUpdateReady = {
   releaseNotes?: string
 }
 
+export type AutoUpdateAvailable = AutoUpdateReady
+
 export const autoUpdateDownloadProgressSignal =
   signal<AutoUpdateDownloadProgress | null>(null)
+export const autoUpdateAvailableSignal = signal<AutoUpdateAvailable | null>(
+  null
+)
 export const autoUpdateReadySignal = signal<AutoUpdateReady | null>(null)
 
 export const setAutoUpdateDownloadProgress = (
@@ -25,6 +30,14 @@ export const setAutoUpdateDownloadProgress = (
 
 export const clearAutoUpdateDownloadProgress = () => {
   autoUpdateDownloadProgressSignal.value = null
+}
+
+export const setAutoUpdateAvailable = (update: AutoUpdateAvailable) => {
+  autoUpdateAvailableSignal.value = update
+}
+
+export const clearAutoUpdateAvailable = () => {
+  autoUpdateAvailableSignal.value = null
 }
 
 export const setAutoUpdateReady = (update: AutoUpdateReady) => {

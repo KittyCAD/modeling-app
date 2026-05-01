@@ -102,11 +102,15 @@ export interface IElectronAPI {
     callback: (value: AutoUpdateDownloadProgress) => void
   ) => Electron.IpcRenderer
   onUpdateDownloaded: (
-    callback: (value: { version: string; releaseNotes: string }) => void
+    callback: (value: { version: string; releaseNotes?: string }) => void
+  ) => Electron.IpcRenderer
+  onUpdateAvailable: (
+    callback: (value: { version: string; releaseNotes?: string }) => void
   ) => Electron.IpcRenderer
   onUpdateError: (callback: (value: { error: Error }) => void) => Electron
   appRestart: () => void
   appCheckForUpdates: () => Promise<unknown>
+  appDownloadUpdate: () => Promise<unknown>
   getArgvParsed: () => any
   getAppTestProperty: (propertyName: string) => any
 

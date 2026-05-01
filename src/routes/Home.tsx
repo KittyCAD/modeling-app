@@ -30,6 +30,7 @@ import { useMenuListener } from '@src/hooks/useMenu'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import { useSignals } from '@preact/signals-react/runtime'
 import {
+  autoUpdateAvailableSignal,
   autoUpdateDownloadProgressSignal,
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
@@ -112,6 +113,7 @@ const Home = () => {
   }, [])
 
   const location = useLocation()
+  const autoUpdateAvailable = autoUpdateAvailableSignal.value
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
   const autoUpdateReady = autoUpdateReadySignal.value
   const settingsValues = settings.useSettings()
@@ -419,8 +421,12 @@ const Home = () => {
           ...defaultGlobalStatusBarItems({
             location,
             filePath: undefined,
+            autoUpdateAvailable,
             autoUpdateDownloadProgress,
             autoUpdateReady,
+            onDownloadUpdate: () => {
+              window.electron?.appDownloadUpdate().catch(reportRejection)
+            },
             onRestartToUpdate: () => {
               window.electron?.appRestart()
             },

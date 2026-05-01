@@ -37,29 +37,43 @@ const startDeviceFlow = (host: string): Promise<DeviceFlowAuthorization> =>
 const loginWithDeviceFlow = (): Promise<string> =>
   ipcRenderer.invoke('loginWithDeviceFlow')
 const onUpdateDownloaded = (
-  callback: (value: { version: string; releaseNotes: string }) => void
+  callback: (value: { version: string; releaseNotes?: string }) => void
 ) =>
-  ipcRenderer.on('update-downloaded', (_event: any, value) => callback(value))
+  ipcRenderer.on('update-downloaded', (_event: IpcRendererEvent, value) =>
+    callback(value)
+  )
+const onUpdateAvailable = (
+  callback: (value: { version: string; releaseNotes?: string }) => void
+) =>
+  ipcRenderer.on('update-available', (_event: IpcRendererEvent, value) =>
+    callback(value)
+  )
 const onUpdateDownloadStart = (
   callback: (value: AutoUpdateDownloadProgress) => void
 ) =>
-  ipcRenderer.on('update-download-start', (_event: any, value) =>
+  ipcRenderer.on('update-download-start', (_event: IpcRendererEvent, value) =>
     callback(value)
   )
 const onUpdateDownloadProgress = (
   callback: (value: AutoUpdateDownloadProgress) => void
 ) =>
-  ipcRenderer.on('update-download-progress', (_event: any, value) =>
-    callback(value)
+  ipcRenderer.on(
+    'update-download-progress',
+    (_event: IpcRendererEvent, value) => callback(value)
   )
 const onUpdateChecking = (callback: () => void) =>
-  ipcRenderer.on('update-checking', (_event: any) => callback())
+  ipcRenderer.on('update-checking', (_event: IpcRendererEvent) => callback())
 const onUpdateNotAvailable = (callback: () => void) =>
-  ipcRenderer.on('update-not-available', (_event: any) => callback())
+  ipcRenderer.on('update-not-available', (_event: IpcRendererEvent) =>
+    callback()
+  )
 const onUpdateError = (callback: (value: Error) => void) =>
-  ipcRenderer.on('update-error', (_event: any, value) => callback(value))
+  ipcRenderer.on('update-error', (_event: IpcRendererEvent, value) =>
+    callback(value)
+  )
 const appRestart = () => ipcRenderer.invoke('app.restart')
 const appCheckForUpdates = () => ipcRenderer.invoke('app.checkForUpdates')
+const appDownloadUpdate = () => ipcRenderer.invoke('app.downloadUpdate')
 const getAppTestProperty = (propertyName: string) =>
   ipcRenderer.invoke('app.testProperty', propertyName)
 const getMachineApiRunning = (): Promise<boolean> =>
@@ -349,9 +363,11 @@ contextBridge.exposeInMainWorld('electron', {
   onUpdateDownloadStart,
   onUpdateDownloadProgress,
   onUpdateDownloaded,
+  onUpdateAvailable,
   onUpdateError,
   appRestart,
   appCheckForUpdates,
+  appDownloadUpdate,
   getArgvParsed,
   resizeWindow,
   getMachineApiRunning,

@@ -26,6 +26,7 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import { useApp, useSingletons } from '@src/lib/boot'
 import {
+  autoUpdateAvailableSignal,
   autoUpdateDownloadProgressSignal,
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
@@ -93,6 +94,7 @@ export function OpenedProject() {
   const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
+  const autoUpdateAvailable = autoUpdateAvailableSignal.value
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
   const autoUpdateReady = autoUpdateReadySignal.value
   const lastOperation = useLastOperation()
@@ -441,8 +443,12 @@ export function OpenedProject() {
             ...defaultGlobalStatusBarItems({
               location,
               filePath,
+              autoUpdateAvailable,
               autoUpdateDownloadProgress,
               autoUpdateReady,
+              onDownloadUpdate: () => {
+                window.electron?.appDownloadUpdate().catch(reportRejection)
+              },
               onRestartToUpdate: () => {
                 window.electron?.appRestart()
               },

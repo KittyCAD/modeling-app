@@ -1,5 +1,6 @@
 import { Popover } from '@headlessui/react'
 import { HelpMenu } from '@src/components/HelpMenu'
+import { AutoUpdateAvailableStatus } from '@src/components/StatusBar/AutoUpdateAvailableStatus'
 import { AutoUpdateDownloadStatus } from '@src/components/StatusBar/AutoUpdateDownloadStatus'
 import { AutoUpdateReadyStatus } from '@src/components/StatusBar/AutoUpdateReadyStatus'
 import { DownloadDesktopApp } from '@src/components/StatusBar/DownloadDesktopApp'
@@ -9,6 +10,7 @@ import {
   EnvironmentDescription,
 } from '@src/components/environment/Environment'
 import type {
+  AutoUpdateAvailable,
   AutoUpdateDownloadProgress,
   AutoUpdateReady,
 } from '@src/lib/autoUpdate'
@@ -20,14 +22,18 @@ import type { Location } from 'react-router-dom'
 export const defaultGlobalStatusBarItems = ({
   location,
   filePath,
+  autoUpdateAvailable,
   autoUpdateDownloadProgress,
   autoUpdateReady,
+  onDownloadUpdate,
   onRestartToUpdate,
 }: {
   location: Location
   filePath?: string
+  autoUpdateAvailable?: AutoUpdateAvailable | null
   autoUpdateDownloadProgress?: AutoUpdateDownloadProgress | null
   autoUpdateReady?: AutoUpdateReady | null
+  onDownloadUpdate?: () => void
   onRestartToUpdate?: () => void
 }): StatusBarItemType[] => [
   isDesktop()
@@ -45,6 +51,23 @@ export const defaultGlobalStatusBarItems = ({
         'data-testid': 'download-desktop-app',
         component: DownloadDesktopApp,
       },
+  ...(isDesktop() &&
+  autoUpdateAvailable &&
+  !autoUpdateDownloadProgress &&
+  !autoUpdateReady &&
+  onDownloadUpdate
+    ? [
+        {
+          id: 'auto-update-available-status',
+          component: () => (
+            <AutoUpdateAvailableStatus
+              update={autoUpdateAvailable}
+              onDownload={onDownloadUpdate}
+            />
+          ),
+        },
+      ]
+    : []),
   ...(isDesktop() && autoUpdateDownloadProgress && !autoUpdateReady
     ? [
         {

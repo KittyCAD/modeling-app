@@ -6,9 +6,12 @@ import ModalContainer from 'react-modal-promise'
 import { Router } from '@src/Router'
 import '@src/index.css'
 import {
+  clearAutoUpdateAvailable,
   clearAutoUpdateDownloadProgress,
+  clearAutoUpdateReady,
   setAutoUpdateReady,
   setAutoUpdateDownloadProgress,
+  setAutoUpdateAvailable,
 } from '@src/lib/autoUpdate'
 import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
@@ -71,13 +74,24 @@ function initElectronBehavior(electron: NonNullable<typeof window.electron>) {
   })
 
   electron.onUpdateNotAvailable(() => {
+    clearAutoUpdateAvailable()
     clearAutoUpdateDownloadProgress()
+    clearAutoUpdateReady()
     const message = "You're already using the latest version of the app."
     console.log(message)
     toast.success(message)
   })
 
+  electron.onUpdateAvailable(({ version, releaseNotes }) => {
+    clearAutoUpdateDownloadProgress()
+    clearAutoUpdateReady()
+    setAutoUpdateAvailable({ version, releaseNotes })
+    console.log(`A new update (${version}) is available to download.`)
+  })
+
   electron.onUpdateDownloadStart((progress) => {
+    clearAutoUpdateAvailable()
+    clearAutoUpdateReady()
     console.log('Downloading app update...', progress)
     setAutoUpdateDownloadProgress(progress)
   })
@@ -87,11 +101,13 @@ function initElectronBehavior(electron: NonNullable<typeof window.electron>) {
   })
 
   electron.onUpdateError(({ error }) => {
+    clearAutoUpdateAvailable()
     clearAutoUpdateDownloadProgress()
     console.error(error)
   })
 
   electron.onUpdateDownloaded(({ version, releaseNotes }) => {
+    clearAutoUpdateAvailable()
     clearAutoUpdateDownloadProgress()
     setAutoUpdateReady({ version, releaseNotes })
     console.log(
