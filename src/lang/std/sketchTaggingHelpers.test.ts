@@ -79,16 +79,16 @@ describe('testing addTagForSketchOnFace', () => {
     {
       desc: 'chamfer with its own variable',
       originalChamfer: `chamf = chamfer(
-       extrude001,
-       length = 30,
-       tags = [seg01, getOppositeEdge(seg01)],
-     )`,
+  extrude001,
+  length = 30,
+  tags = [seg01, getOppositeEdge(seg01)],
+)`,
       expectedChamfer: `chamf = chamfer(
-       extrude001,
-       length = 30,
-       tags = [getOppositeEdge(seg01)],
-       tag = $seg03,
-     )
+  extrude001,
+  length = 30,
+  tags = [getOppositeEdge(seg01)],
+  tag = $seg03,
+)
   |> chamfer(length = 30, tags = [seg01])`,
     },
   ] as const
