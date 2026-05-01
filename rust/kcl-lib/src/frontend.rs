@@ -7207,9 +7207,236 @@ sketch001 = sketch(on = XZ) {
             "sketch was not deleted: {}",
             src_delta.text
         );
+        // The leading line comment must survive deletion.
+        assert_eq!(src_delta.text.as_str(), "// test 1\n");
         assert_eq!(scene_delta.new_graph.objects.len(), 0);
 
         ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_sketch_preserves_pre_comment_when_followed_by_code() {
+        let initial_source = "sketch001 = sketch(on = XZ) {
+}
+foo = 1
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_engine(
+            std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            Default::default(),
+        );
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+
+        let commented_source = "// keep me
+sketch001 = sketch(on = XZ) {
+}
+foo = 1
+";
+        let commented_program = Program::parse(commented_source).unwrap().0.unwrap();
+        frontend.engine_execute(&ctx, commented_program).await.unwrap();
+
+        let (src_delta, _scene_delta) = frontend.delete_sketch(&ctx, version, sketch_id).await.unwrap();
+        // The leading comment should remain, now attached to the following body item.
+        assert_eq!(src_delta.text.as_str(), "// keep me\nfoo = 1\n");
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_segment_preserves_pre_comment() {
+        let initial_source = "\
+sketch(on = XY) {
+  point(at = [var 1, var 2])
+  // describe the middle point
+  point(at = [var 3, var 4])
+  point(at = [var 5, var 6])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+
+        let middle_point_id = *sketch.segments.get(1).unwrap();
+
+        let (src_delta, _scene_delta) = frontend
+            .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![middle_point_id])
+            .await
+            .unwrap();
+        // The line comment on the line above the deleted point must be preserved.
+        // It is reattached to the next surviving body item.
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  point(at = [var 1mm, var 2mm])
+  // describe the middle point
+  point(at = [var 5mm, var 6mm])
+}
+"
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_last_segment_preserves_pre_comment() {
+        let initial_source = "\
+sketch(on = XY) {
+  point(at = [var 1, var 2])
+  // describe the trailing point
+  point(at = [var 3, var 4])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+
+        let last_point_id = *sketch.segments.last().unwrap();
+
+        let (src_delta, _scene_delta) = frontend
+            .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![last_point_id])
+            .await
+            .unwrap();
+        // No following item to attach to; the comment is kept inside the sketch
+        // block as trailing non-code metadata so the user does not lose it.
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  point(at = [var 1mm, var 2mm])
+  // describe the trailing point
+}
+"
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_segment_drops_inline_trailing_comment() {
+        let initial_source = "\
+sketch(on = XY) {
+  point(at = [var 1, var 2])
+  point(at = [var 3, var 4]) // same-line note that gets dropped
+  point(at = [var 5, var 6])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+
+        let middle_point_id = *sketch.segments.get(1).unwrap();
+
+        let (src_delta, _scene_delta) = frontend
+            .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![middle_point_id])
+            .await
+            .unwrap();
+        // The same-line trailing comment is removed along with the deleted code.
+        assert!(
+            !src_delta.text.contains("same-line note"),
+            "inline comment should have been removed: {}",
+            src_delta.text
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_segments_preserves_block_comments_across_positions() {
+        // One test exercising several `delete_body_item_preserving_pre_comments`
+        // branches at once with `/* ... */` block comments:
+        //   - first point: leading block comment must migrate to the next item.
+        //   - first point: same-line trailing block comment must be dropped.
+        //   - middle point: leading block comment must stay attached after migration.
+        //   - last point: leading block comment, with no surviving next item,
+        //     must be converted into a trailing NonCodeNode.
+        let initial_source = "\
+sketch(on = XY) {
+  /* above first - moves to middle */
+  point(at = [var 1, var 2]) /* same-line on first - dropped */
+  /* above middle - stays */
+  point(at = [var 3, var 4])
+  /* above last - moves to trailing meta */
+  point(at = [var 5, var 6])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+
+        let first_point_id = *sketch.segments.first().unwrap();
+        let last_point_id = *sketch.segments.last().unwrap();
+
+        let (src_delta, _scene_delta) = frontend
+            .delete_objects(
+                &mock_ctx,
+                version,
+                sketch_id,
+                Vec::new(),
+                vec![first_point_id, last_point_id],
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  /* above first - moves to middle */
+  /* above middle - stays */
+  point(at = [var 3mm, var 4mm])
+  /* above last - moves to trailing meta */
+}
+"
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]

@@ -49,6 +49,7 @@ export const MlEphantConversationPane = (props: {
   loaderFile: FileEntry | undefined
   settings: SettingsType
   user?: MlEphantConversationPaneUser
+  showMakeathonAnnouncement?: boolean
   onMlCopilotModeChange?: (mode: MlCopilotMode) => void
 }) => {
   const [defaultPrompt, setDefaultPrompt] = useState('')
@@ -418,6 +419,7 @@ export const MlEphantConversationPane = (props: {
       onRemoveFromQueue={onRemoveFromQueue}
       onSteer={onSteer}
       userAvatarSrc={props.user?.image}
+      showMakeathonAnnouncement={props.showMakeathonAnnouncement}
       blockedReason={userBlockedOnPaymentReason}
       defaultPrompt={defaultPrompt}
       initialMlCopilotMode={props.settings.app.zookeeperMode.current}
