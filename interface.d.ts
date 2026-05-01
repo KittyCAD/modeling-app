@@ -19,7 +19,7 @@ type EnvFn = (value?: string) => string
 
 export type DeviceFlowAuthorization = {
   userCode: string
-  verificationUriComplete: string
+  verificationUri: string
 }
 
 export interface IElectronAPI {

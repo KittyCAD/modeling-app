@@ -39,7 +39,7 @@ const SignIn = () => {
     window.electron.disableMenu('Help.Show all commands').catch(reportRejection)
   }
   const [userCode, setUserCode] = useState('')
-  const [deviceFlowSignInUrl, setDeviceFlowSignInUrl] = useState('')
+  const [verificationUri, setVerificationUri] = useState('')
 
   // Last saved environment
   // TODO: Reduce this logic
@@ -113,7 +113,7 @@ const SignIn = () => {
     const requestedEnvironment = selectedEnvironment.trim()
     updateEnvironment(requestedEnvironment)
     setUserCode('')
-    setDeviceFlowSignInUrl('')
+    setVerificationUri('')
 
     // We want to invoke our command to login via device auth.
     const deviceFlowAuthorization = await electron
@@ -127,7 +127,7 @@ const SignIn = () => {
       return
     }
     setUserCode(deviceFlowAuthorization.userCode)
-    setDeviceFlowSignInUrl(deviceFlowAuthorization.verificationUriComplete)
+    setVerificationUri(deviceFlowAuthorization.verificationUri)
 
     // Now that we have the user code, we can kick off the final login step.
     const token = await electron.loginWithDeviceFlow().catch(reportError)
@@ -143,14 +143,14 @@ const SignIn = () => {
   const cancelSignIn = async () => {
     auth.send({ type: 'Log out' })
     setUserCode('')
-    setDeviceFlowSignInUrl('')
+    setVerificationUri('')
   }
 
   const copyDeviceFlowSignInUrl = async () => {
-    if (!deviceFlowSignInUrl) return
+    if (!verificationUri) return
 
     try {
-      await navigator.clipboard.writeText(deviceFlowSignInUrl)
+      await navigator.clipboard.writeText(verificationUri)
       toast.success('Sign-in URL copied to clipboard.')
     } catch {
       toast.error('Failed to copy sign-in URL.')
@@ -245,7 +245,7 @@ const SignIn = () => {
                         </span>
                       ))}
                     </p>
-                    {deviceFlowSignInUrl && (
+                    {verificationUri && (
                       <div className="mt-4 flex max-w-2xl flex-col gap-2">
                         <p className="text-xs">
                           If your browser did not open, copy and paste this
@@ -255,7 +255,7 @@ const SignIn = () => {
                           <input
                             readOnly
                             aria-label="Sign-in URL"
-                            value={deviceFlowSignInUrl}
+                            value={verificationUri}
                             onFocus={(event) => event.currentTarget.select()}
                             className={
                               'min-w-0 flex-1 rounded-sm border border-solid ' +

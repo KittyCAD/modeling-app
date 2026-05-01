@@ -474,10 +474,10 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
   })
 
   const handle = await client.deviceAuthorization()
-  const verificationUriComplete =
+  const verificationUri =
     handle.verification_uri_complete || handle.verification_uri
 
-  if (!verificationUriComplete) {
+  if (!verificationUri) {
     return Promise.reject(new Error('No verification URI received'))
   }
 
@@ -490,7 +490,7 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
         )
       )
     }
-    shell.openExternal(verificationUriComplete).catch(reportRejection)
+    shell.openExternal(verificationUri).catch(reportRejection)
 
     // Wait for the user to login.
     try {
@@ -508,7 +508,7 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
 
   return {
     userCode: handle.user_code,
-    verificationUriComplete,
+    verificationUri,
   }
 })
 
