@@ -81,6 +81,8 @@ type MachineApiSignal = 'on' | 'off'
 
 // Check the command line arguments for a project path
 const args = parseCLIArgs(process.argv)
+let startupMacOpenFiles: string[] = []
+let startupOpenUrls: string[] = []
 
 // @ts-ignore: TS1343
 const viteEnv = import.meta.env
@@ -122,10 +124,6 @@ if (!singleInstanceLock && process.env.NODE_ENV !== 'test') {
 }
 
 const consumeStartupPathOrUrl = (): string | undefined => {
-  const startupGlobals = global as typeof globalThis & {
-    macOpenFiles?: string[]
-    openUrls?: string[]
-  }
   const pathOrUrl = getPathOrUrlFromArgs(args)
   if (pathOrUrl?.startsWith(ZOO_STUDIO_PROTOCOL + '://')) {
     console.log('Retrieved deep link from CLI args', pathOrUrl)
@@ -133,11 +131,11 @@ const consumeStartupPathOrUrl = (): string | undefined => {
   }
 
   // macOS: open-url events that were received before the app is ready.
-  const openUrls = startupGlobals.openUrls
-  if (openUrls?.[0]) {
-    startupGlobals.openUrls = []
-    console.log('Retrieved deep link from open-url', openUrls[0])
-    return openUrls[0]
+  if (startupOpenUrls[0]) {
+    const openUrl = startupOpenUrls[0]
+    startupOpenUrls = []
+    console.log('Retrieved deep link from open-url', openUrl)
+    return openUrl
   }
 
   // The dev and test launchers pass "." as an arg. Do not turn that into a
@@ -147,10 +145,10 @@ const consumeStartupPathOrUrl = (): string | undefined => {
   }
 
   // macOS: open-file events that were received before the app is ready.
-  const macOpenFiles = startupGlobals.macOpenFiles
-  if (macOpenFiles?.[0]) {
-    startupGlobals.macOpenFiles = []
-    return macOpenFiles[0]
+  if (startupMacOpenFiles[0]) {
+    const filePath = startupMacOpenFiles[0]
+    startupMacOpenFiles = []
+    return filePath
   }
 
   if (pathOrUrl) {
@@ -760,9 +758,7 @@ function registerStartupListeners() {
    * macOS: when someone drops a file to the not-yet running VSCode, the open-file event fires even before
    * the app-ready event. We listen very early for open-file and remember this upon startup as path to open.
    */
-  const macOpenFiles: string[] = []
-  // @ts-ignore
-  global['macOpenFiles'] = macOpenFiles
+  startupMacOpenFiles = []
   app.on('open-file', function (event, path) {
     event.preventDefault()
 
@@ -770,16 +766,14 @@ function registerStartupListeners() {
     if (mainWindow) {
       createWindow(path)
     } else {
-      macOpenFiles.push(path)
+      startupMacOpenFiles.push(path)
     }
   })
 
   /**
    * macOS: react to open-url requests (including Deep Link on second instances)
    */
-  const openUrls: string[] = []
-  // @ts-ignore
-  global['openUrls'] = openUrls
+  startupOpenUrls = []
   const onOpenUrl = function (
     event: { preventDefault: () => void },
     url: string
@@ -790,7 +784,7 @@ function registerStartupListeners() {
     if (mainWindow) {
       createWindow(url)
     } else {
-      openUrls.push(url)
+      startupOpenUrls.push(url)
     }
   }
 
