@@ -14,7 +14,7 @@ import {
 } from './helpers'
 import { Registry } from './registry'
 import { defineService } from './service'
-import { Slot } from './types'
+import { type RegistryItem, Slot } from './types'
 
 describe('Registry', () => {
   it('resolves static and reactive value-spec contributions', () => {
@@ -181,7 +181,7 @@ describe('Registry', () => {
     // Close the cycle after both items exist.
     ;(itemA.uses as RegistryItem[]).push(itemB)
 
-    const unreachableRuntimeItem = defineRegistryItemFactory(() => {
+    const _unreachableRuntimeItem = defineRegistryItemFactory(() => {
       unreachableCalls()
       return {
         item: defineRegistryItem({
