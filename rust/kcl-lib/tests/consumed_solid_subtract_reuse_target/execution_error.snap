@@ -10,7 +10,7 @@ KCL Semantic error
  43 │ first = subtract(target, tools = [tool1])
  44 │ second = subtract(target, tools = [tool2])
     ·          ────────────────┬────────────────┬
-    ·                          ╰── tests/consumed_solid_subtract_reuse_target/input.kcl
+    ·                          │                ╰── tests/consumed_solid_subtract_reuse_target/input.kcl
     ·                          ╰── tests/consumed_solid_subtract_reuse_target/input.kcl
     ╰────
   ╰─▶ KCL Semantic error
@@ -18,10 +18,10 @@ KCL Semantic error
         × semantic: `target` was already consumed by a `subtract` operation.
         │ The operation result is now in `first`; use that for subsequent
         │ operations.
-          ╭─[44:10]
+          ╭─[44:19]
        43 │ first = subtract(target, tools = [tool1])
        44 │ second = subtract(target, tools = [tool2])
-          ·          ────────────────┬────────────────
-          ·                          ╰── tests/
+          ·                   ───┬──
+          ·                      ╰── tests/
       consumed_solid_subtract_reuse_target/input.kcl
           ╰────
