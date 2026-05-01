@@ -210,18 +210,18 @@ pub(super) struct ModuleState {
     pub(super) denied_warnings: Vec<&'static str>,
 
     /// Map from consumed solid UUIDs to information about the operation that
-    /// consumed them. Populated by CSG boolean operations (`subtract`, `union`,
-    /// `intersect`, `split`) so that subsequent attempts to use a consumed
-    /// solid produce a clear KCL-level error rather than a cryptic engine error.
+    /// consumed them. Populated by operations that destroy their inputs so that
+    /// subsequent attempts to use a consumed solid produce a clear KCL-level
+    /// error rather than a cryptic engine error.
     pub(super) consumed_solids: AHashMap<Uuid, ConsumedSolidInfo>,
 }
 
-/// Information about a solid that was consumed by a CSG boolean operation.
+/// Information about a solid that was consumed by an operation.
 /// Stored in `ModuleState.consumed_solids` so subsequent attempts to use the
 /// solid produce a clear error pointing at the operation that consumed it.
 #[derive(Debug, Clone)]
 pub(crate) struct ConsumedSolidInfo {
-    /// The CSG operation that consumed the solid.
+    /// The operation that consumed the solid.
     pub operation: ConsumedSolidOperation,
     /// The UUID of the result solid produced by that operation, when this
     /// consumed solid has a direct replacement. Used to suggest a replacement
@@ -235,13 +235,14 @@ pub(crate) enum ConsumedSolidOperation {
     Intersect,
     Subtract,
     Split,
+    JoinSurfaces,
 }
 
 impl ConsumedSolidOperation {
     pub(crate) fn indefinite_article(self) -> &'static str {
         match self {
             Self::Intersect => "an",
-            Self::Union | Self::Subtract | Self::Split => "a",
+            Self::Union | Self::Subtract | Self::Split | Self::JoinSurfaces => "a",
         }
     }
 }
@@ -253,6 +254,7 @@ impl std::fmt::Display for ConsumedSolidOperation {
             Self::Intersect => f.write_str("intersect"),
             Self::Subtract => f.write_str("subtract"),
             Self::Split => f.write_str("split"),
+            Self::JoinSurfaces => f.write_str("joinSurfaces"),
         }
     }
 }
