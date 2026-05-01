@@ -13,9 +13,9 @@ import type {
   Side,
   AreaTypeDefinition,
   ActionTypeDefinition,
-  ActionType,
 } from '@src/lib/layout/types'
 import { AreaType } from '@src/lib/layout/types'
+import { ActionType } from '@src/lib/layout/types'
 import type { ImperativePanelGroupHandle } from 'react-resizable-panels'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -70,7 +70,7 @@ import usePlatform from '@src/hooks/usePlatform'
 type WithoutRootLayout<T> = Omit<T, 'rootLayout'>
 interface LayoutState {
   areaLibrary: Record<AreaType, AreaTypeDefinition>
-  actionLibrary: Record<ActionType, ActionTypeDefinition>
+  actionLibrary: Record<string, ActionTypeDefinition>
   updateSplitSizes: (props: WithoutRootLayout<IUpdateNodeSizes>) => void
   replaceLayoutNode: (props: WithoutRootLayout<IReplaceLayoutChildNode>) => void
   togglePane: (props: WithoutRootLayout<ITogglePane>) => void
@@ -90,7 +90,7 @@ const nullAreaLibrary = Object.fromEntries(
 ) as unknown as Record<AreaType, AreaTypeDefinition>
 
 const nullActionLibrary = Object.fromEntries(
-  Object.values(AreaType).map((type) => [
+  Object.values(ActionType).map((type) => [
     type,
     {
       execute: () => {},
@@ -596,8 +596,30 @@ function NotificationBadge({ pane }: { pane: PaneChild }) {
 
 function ActionButton({ action, side }: { action: Action; side: Side }) {
   const { actionLibrary } = useLayoutState()
-  const platform = usePlatform()
   const resolvedAction = actionLibrary[action.actionType]
+  if (!resolvedAction) {
+    return null
+  }
+
+  return (
+    <ResolvedActionButton
+      action={action}
+      resolvedAction={resolvedAction}
+      side={side}
+    />
+  )
+}
+
+function ResolvedActionButton({
+  action,
+  resolvedAction,
+  side,
+}: {
+  action: Action
+  resolvedAction: ActionTypeDefinition
+  side: Side
+}) {
+  const platform = usePlatform()
   const disabledReason = resolvedAction.useDisabled?.()
   const hidden = resolvedAction.useHidden?.()
   useHotkeys(resolvedAction.shortcut || '', () => resolvedAction.execute(), {

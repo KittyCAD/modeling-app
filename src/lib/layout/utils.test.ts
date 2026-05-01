@@ -5,6 +5,7 @@ import type {
   LayoutWithMetadata,
 } from '@src/lib/layout/types'
 import {
+  addPaneActionContributions,
   applyLayoutMigrationMap,
   closeAllPanes,
   setOpenPanes,
@@ -184,6 +185,104 @@ describe('Layout utils', () => {
 
       expect(layout).toHaveProperty('children[0].activeIndices', [0])
       expect(layout).toHaveProperty('children[1].activeIndices', [])
+    })
+  })
+
+  describe('pane action contributions', () => {
+    it('adds extension actions to a matching pane without mutating the source layout', () => {
+      const layout: Layout = {
+        id: 'root',
+        label: 'Root',
+        type: LayoutType.Splits,
+        orientation: 'inline',
+        sizes: [50, 50],
+        children: [
+          {
+            id: DefaultLayoutToolbarID.Left,
+            label: 'Left',
+            type: LayoutType.Panes,
+            side: 'inline-start',
+            activeIndices: [0],
+            sizes: [100],
+            splitOrientation: 'block',
+            children: [
+              {
+                id: DefaultLayoutPaneID.FeatureTree,
+                label: 'Feature Tree',
+                type: LayoutType.Simple,
+                areaType: AreaType.FeatureTree,
+                icon: 'model',
+              },
+            ],
+            actions: [
+              {
+                id: 'export',
+                label: 'Export part',
+                icon: 'floppyDiskArrow',
+                actionType: 'export',
+              },
+            ],
+          },
+          {
+            id: DefaultLayoutToolbarID.Right,
+            label: 'Right',
+            type: LayoutType.Panes,
+            side: 'inline-end',
+            activeIndices: [0],
+            sizes: [100],
+            splitOrientation: 'block',
+            children: [
+              {
+                id: DefaultLayoutPaneID.TTC,
+                label: 'Zookeeper',
+                type: LayoutType.Simple,
+                areaType: AreaType.TTC,
+                icon: 'sparkles',
+              },
+            ],
+            actions: [],
+          },
+        ],
+      }
+
+      const result = addPaneActionContributions({
+        rootLayout: layout,
+        contributions: [
+          {
+            paneId: DefaultLayoutToolbarID.Left,
+            action: {
+              id: 'extension-action',
+              label: 'Extension action',
+              icon: 'printer3d',
+              actionType: 'extensionAction',
+            },
+          },
+        ],
+      })
+
+      expect(layout).toHaveProperty('children[0].actions', [
+        {
+          id: 'export',
+          label: 'Export part',
+          icon: 'floppyDiskArrow',
+          actionType: 'export',
+        },
+      ])
+      expect(result).toHaveProperty('children[0].actions', [
+        {
+          id: 'export',
+          label: 'Export part',
+          icon: 'floppyDiskArrow',
+          actionType: 'export',
+        },
+        {
+          id: 'extension-action',
+          label: 'Extension action',
+          icon: 'printer3d',
+          actionType: 'extensionAction',
+        },
+      ])
+      expect(result).toHaveProperty('children[1].actions', [])
     })
   })
 

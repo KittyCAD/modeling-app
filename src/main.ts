@@ -48,6 +48,21 @@ import {
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { configureSystemCertificates } from '@src/systemCertificates'
 
+type ElectronPluginModule = {
+  register?: (context: { ipcMain: typeof ipcMain }) => void
+}
+
+const electronPluginModules: Record<string, ElectronPluginModule> =
+  import.meta.glob('./registry/plugins/*/electron.ts', {
+    eager: true,
+  })
+
+function registerElectronPluginModules() {
+  for (const pluginModule of Object.values(electronPluginModules)) {
+    pluginModule.register?.({ ipcMain })
+  }
+}
+
 // Linux hack for electron >= 38, here we're forcing XWayland due to issues we've experienced
 // https://github.com/electron/electron/issues/41551#issuecomment-3590685943
 // Only applied to tests to avoid interfering with users who may be using Wayland
@@ -420,6 +435,8 @@ ipcMain.handle('app.resizeWindow', (event, data) => {
 ipcMain.handle('app.getPath', (event, data) => {
   return app.getPath(data)
 })
+
+registerElectronPluginModules()
 
 ipcMain.handle('dialog.showOpenDialog', (event, data) => {
   return dialog.showOpenDialog(data)

@@ -38,6 +38,7 @@ import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import { isMobile } from '@src/lib/isMobile'
 import {
+  addPaneActionContributions,
   DefaultLayoutPaneID,
   LayoutRootNode,
   defaultLayout,
@@ -59,7 +60,11 @@ import {
   MlEphantManagerTransitions,
 } from '@src/machines/mlEphantManagerMachine'
 import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
-import { statusBarGlobalItemsValueSpec } from '@src/valueSpecs'
+import {
+  layoutActionDefinitionsValueSpec,
+  layoutPaneActionsValueSpec,
+  statusBarGlobalItemsValueSpec,
+} from '@src/valueSpecs'
 import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import {
   TutorialRequestToast,
@@ -87,6 +92,25 @@ export function OpenedProject() {
   const settingsActor = settings.actor
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
+  const registryActionLibrary = registry.signal(
+    layoutActionDefinitionsValueSpec
+  ).value
+  const registryPaneActions = registry.signal(layoutPaneActionsValueSpec).value
+  const actionLibrary = useMemo(
+    () => ({
+      ...defaultActionLibrary,
+      ...registryActionLibrary,
+    }),
+    [defaultActionLibrary, registryActionLibrary]
+  )
+  const layoutWithRegistryActions = useMemo(
+    () =>
+      addPaneActionContributions({
+        rootLayout: layout.signal.value || defaultLayout,
+        contributions: registryPaneActions,
+      }),
+    [layout.signal.value, registryPaneActions]
+  )
   const { state: modelingState, send: modelingSend } = useModelingContext()
   useQueryParamEffects(kclManager)
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
@@ -426,11 +450,11 @@ export function OpenedProject() {
         <ModalContainer />
         <section className="pointer-events-auto flex-1">
           <LayoutRootNode
-            layout={layout.signal.value || defaultLayout}
+            layout={layoutWithRegistryActions}
             getLayout={layout.get}
             setLayout={layout.set}
             areaLibrary={defaultAreaLibrary}
-            actionLibrary={defaultActionLibrary}
+            actionLibrary={actionLibrary}
             showDebugPanel={settingsValues.debug.showPanel.current}
             notifications={notifications}
             artifactGraph={kclManager.artifactGraph}

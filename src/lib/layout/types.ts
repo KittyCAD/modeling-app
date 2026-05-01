@@ -48,6 +48,8 @@ export enum ActionType {
   Share = 'share',
 }
 
+export type ActionTypeId = ActionType | string
+
 export type ActionTypeDefinition = {
   execute: () => void
   /** A custom hook for the Action to detect if it should be enabled */
@@ -93,8 +95,13 @@ export type SplitLayout = BaseLayout &
   }
 export type Action = HasIdAndLabel &
   WithIcon & {
-    actionType: ActionType
+    actionType: ActionTypeId
   }
+export type LayoutPaneActionContribution = {
+  paneId: string
+  action: Action
+  order?: number
+}
 export type PaneChild = Layout & WithIcon
 export type PaneChildCssOverrides = Partial<{
   button: string

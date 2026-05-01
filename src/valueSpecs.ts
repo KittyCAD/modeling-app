@@ -1,11 +1,19 @@
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
+import type {
+  ActionTypeDefinition,
+  LayoutPaneActionContribution,
+} from '@src/lib/layout/types'
 import {
   type ExtensionSettingsContribution,
   mergeExtensionSettings,
   type ResolvedExtensionSettings,
 } from '@src/lib/settings/extensionSettings'
 import type { RouteObject } from 'react-router-dom'
-import { appendValueSpec, defineValueSpec } from '@kittycad/registry'
+import {
+  appendValueSpec,
+  defineValueSpec,
+  mergeObjectsValueSpec,
+} from '@kittycad/registry'
 
 export const routesValueSpec = appendValueSpec<RouteObject>('routes')
 const sortByOrderProperty = (inputs: readonly StatusBarItemType[]) =>
@@ -26,6 +34,11 @@ export const statusBarLocalItemsValueSpec = defineValueSpec<
   defaultValue: [],
   combine: sortByOrderProperty,
 })
+export const layoutPaneActionsValueSpec =
+  appendValueSpec<LayoutPaneActionContribution>('layout-pane-actions')
+export const layoutActionDefinitionsValueSpec = mergeObjectsValueSpec<
+  Record<string, ActionTypeDefinition>
+>('layout-action-definitions', {})
 
 /**
  * App-owned settings extension point.

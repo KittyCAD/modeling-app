@@ -36,6 +36,9 @@ export interface IElectronAPI {
     height: number
   }) => Promise<string>
   showInFolder: typeof shell.showItemInFolder
+  pluginIpc: {
+    invoke: <T>(channel: `plugin:${string}`, payload?: unknown) => Promise<T>
+  }
   /** Require to be called first before {@link loginWithDeviceFlow} */
   startDeviceFlow: (host: string) => Promise<DeviceFlowAuthorization>
   /** Registered by first calling {@link startDeviceFlow}, which sets up the device flow handle */

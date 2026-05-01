@@ -4,6 +4,7 @@ import type {
   LayoutMatcher,
   LayoutMigration,
   LayoutMigrationMap,
+  LayoutPaneActionContribution,
   LayoutTransformation,
   LayoutWithMetadata,
   Orientation,
@@ -34,6 +35,53 @@ const defaultLayoutLoadResult = loadLayout('default')
 export const defaultLayout = isErr(defaultLayoutLoadResult)
   ? defaultLayoutConfig
   : defaultLayoutLoadResult
+
+export function addPaneActionContributions({
+  rootLayout,
+  contributions,
+}: {
+  rootLayout: Layout
+  contributions: readonly LayoutPaneActionContribution[]
+}): Layout {
+  if (contributions.length === 0) {
+    return rootLayout
+  }
+
+  const contributionsByPane = new Map<string, LayoutPaneActionContribution[]>()
+  for (const contribution of contributions) {
+    const paneContributions = contributionsByPane.get(contribution.paneId) ?? []
+    paneContributions.push(contribution)
+    contributionsByPane.set(contribution.paneId, paneContributions)
+  }
+
+  const nextLayout = structuredClone(rootLayout)
+
+  const visit = (layout: Layout) => {
+    if (layout.type === LayoutType.Panes) {
+      const paneContributions = contributionsByPane.get(layout.id) ?? []
+      if (paneContributions.length > 0) {
+        const actions = new Map(
+          (layout.actions ?? []).map((action) => [action.id, action])
+        )
+        for (const contribution of paneContributions.toSorted(
+          (a, b) => (a.order ?? 0) - (b.order ?? 0)
+        )) {
+          actions.set(contribution.action.id, contribution.action)
+        }
+        layout.actions = [...actions.values()]
+      }
+    }
+
+    if ('children' in layout && layout.children) {
+      for (const child of layout.children) {
+        visit(child)
+      }
+    }
+  }
+
+  visit(nextLayout)
+  return nextLayout
+}
 
 export function getOppositeSide(side: Side): Side {
   switch (side) {

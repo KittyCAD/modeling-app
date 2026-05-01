@@ -32,6 +32,16 @@ const takeElectronWindowScreenshot = ({
 }) => ipcRenderer.invoke('take.screenshot', { width, height })
 const showInFolder = (path: string) =>
   ipcRenderer.invoke('shell.showItemInFolder', path)
+const pluginIpc = {
+  invoke: <T>(channel: `plugin:${string}`, payload?: unknown): Promise<T> => {
+    if (!channel.startsWith('plugin:')) {
+      return Promise.reject(
+        new Error('Plugin IPC channels must start with plugin:')
+      )
+    }
+    return ipcRenderer.invoke(channel, payload)
+  },
+}
 const startDeviceFlow = (host: string): Promise<DeviceFlowAuthorization> =>
   ipcRenderer.invoke('startDeviceFlow', host)
 const loginWithDeviceFlow = (): Promise<string> =>
@@ -313,6 +323,7 @@ contextBridge.exposeInMainWorld('electron', {
   openExternal,
   openInNewWindow,
   showInFolder,
+  pluginIpc,
   getPath,
   packageJson,
   arch: process.arch,
