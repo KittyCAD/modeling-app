@@ -10,6 +10,7 @@ import {
   PATHS,
   getParentAbsolutePath,
   getProjectMetaByRouteId,
+  getRouterSearchFromRequestUrl,
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
@@ -38,10 +39,14 @@ export const baseLoader =
   }): LoaderFunction =>
   async ({ request }) => {
     const url = new URL(request.url)
+    const routerSearch = getRouterSearchFromRequestUrl(
+      request.url,
+      Boolean(window.electron)
+    )
 
     // Desktop, redirect and return early
     if (window.electron) {
-      return redirect(PATHS.HOME + (url.search || ''))
+      return redirect(PATHS.HOME + routerSearch)
     }
 
     // Let another part of the system handle the "open with web/desktop"...
@@ -77,7 +82,7 @@ export const baseLoader =
 
       const fileURLPath =
         PATHS.FILE + '/' + encodeURIComponent(requestedProjectName)
-      return redirect(fileURLPath)
+      return redirect(fileURLPath + routerSearch)
     }
   }
 
@@ -157,8 +162,12 @@ export const fileLoader =
       }
 
       if (!fileExists || !currentFileName || !currentFilePath || !projectName) {
+        const routerSearch = getRouterSearchFromRequestUrl(
+          routerData.request.url,
+          Boolean(window.electron)
+        )
         return redirect(
-          `${PATHS.FILE}/${encodeURIComponent(fallbackFile)}${new URL(routerData.request.url).search || ''}`
+          `${PATHS.FILE}/${encodeURIComponent(fallbackFile)}${routerSearch}`
         )
       }
     }
