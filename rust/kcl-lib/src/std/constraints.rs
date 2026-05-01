@@ -3761,12 +3761,10 @@ fn extract_symmetric_input(segment_value: &KclValue, range: crate::SourceRange) 
                 object_id: unsolved.object_id,
             }))
         }
-        UnsolvedSegmentKind::ControlPointSpline { .. } => Err(KclError::new_semantic(
-            KclErrorDetails::new(
-                "symmetric() does not yet support control point spline segments".to_owned(),
-                vec![range],
-            ),
-        )),
+        UnsolvedSegmentKind::ControlPointSpline { .. } => Err(KclError::new_semantic(KclErrorDetails::new(
+            "symmetric() does not yet support control point spline segments".to_owned(),
+            vec![range],
+        ))),
     }
 }
 

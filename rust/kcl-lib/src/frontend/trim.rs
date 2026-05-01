@@ -1825,7 +1825,7 @@ fn curve_contains_point(curve: &CurveHandle, point: Coords2d, epsilon: f64) -> b
                                 };
                                 ((point.x - projected.x).powi(2) + (point.y - projected.y).powi(2)).sqrt()
                             })
-                            .fold(f64::INFINITY, f64::min);
+                            .fold(f64::INFINITY, libm::fmin);
                         nearest <= epsilon
                     })
                 })

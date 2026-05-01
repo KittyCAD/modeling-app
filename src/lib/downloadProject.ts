@@ -1,5 +1,4 @@
 import JSZip from 'jszip'
-import { projects } from '@kittycad/lib'
 
 import env from '@src/env'
 import {
@@ -22,11 +21,6 @@ type DownloadedProjectArchive = {
   contentDisposition: string | null
 }
 
-type PublicProjectMetadata = {
-  id: string
-  title: string
-}
-
 export function createOpenProjectIdUrl(projectId: string) {
   const origin = env().VITE_ZOO_SITE_APP_URL
   const searchParams = new URLSearchParams({
@@ -41,19 +35,26 @@ export async function getPublicProjectNameById(
   projectId: string
 ): Promise<string | Error> {
   const client = createKCClient()
-  const result = await kcCall(() =>
-    projects.list_public_projects({
-      client,
-    })
-  )
+  const result = await kcCall(async () => {
+    const fetchImpl = client.fetch || fetch
+    const response = await fetchImpl(
+      `${client.baseUrl}/projects/public/${projectId}`,
+      {
+        method: 'GET',
+      }
+    )
+    if (!response.ok) {
+      return new Error(`Failed to load project ${projectId}`)
+    }
+
+    return response.json() as Promise<{ title?: string }>
+  })
 
   if (err(result)) {
     return result
   }
 
-  const project = result.find((candidate) => candidate.id === projectId)
-
-  return sanitizeProjectName(project?.title || DEFAULT_IMPORTED_PROJECT_NAME)
+  return sanitizeProjectName(result.title || DEFAULT_IMPORTED_PROJECT_NAME)
 }
 
 export async function downloadProjectById(projectId: string): Promise<
@@ -84,10 +85,13 @@ async function downloadProjectArchiveById(
   const result = await kcCall(async () => {
     const fetchImpl = client.fetch || fetch
     const response = await fetchImpl(
-      `${client.baseUrl}/projects/public/${projectId}/download?format=${PROJECT_DOWNLOAD_FORMAT}`
+      `${client.baseUrl}/projects/public/${projectId}/download?format=${PROJECT_DOWNLOAD_FORMAT}`,
+      {
+        method: 'GET',
+      }
     )
     if (!response.ok || isJsonResponse(response)) {
-      throw new Error(`Failed to download project ${projectId}`)
+      return new Error(`Failed to download project ${projectId}`)
     }
 
     const archive = await response.arrayBuffer()
