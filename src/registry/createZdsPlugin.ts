@@ -5,7 +5,7 @@ import {
   type RegistryItemDefinition,
   type RegistryItem,
 } from '@kittycad/registry'
-import { settingsValueSpec } from '@src/valueSpecs'
+import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 
 type ZdsPluginDefault = 'core' | 'off'

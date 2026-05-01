@@ -66,7 +66,7 @@ import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { ActorRefFrom } from 'xstate'
 import { waitFor } from 'xstate'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import { statusBarGlobalItemsValueSpec } from '@src/valueSpecs'
+import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
 
 type ReadWriteProjectState = {
   value: boolean

@@ -112,6 +112,16 @@ That pattern decouples the import graph from the registry graph:
 - providers and consumers can be configured in either runtime order
 - module cycles are less likely as the app grows
 
+For app code, prefer organizing contracts by concern under a dedicated registry
+contracts area instead of collecting them into one global file. A good shape is:
+
+- `src/registry/contracts/routes.ts`
+- `src/registry/contracts/statusBar.ts`
+- `src/registry/contracts/settings.ts`
+
+That keeps contracts close to the registry layer while still avoiding a single
+"misc contracts" bucket.
+
 ## Package Layout
 
 - [`src/index.ts`](./src/index.ts): public entrypoint

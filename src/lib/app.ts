@@ -51,7 +51,7 @@ import {
 import { MachineManager } from '@src/lib/MachineManager'
 import { reportRejection } from '@src/lib/trap'
 import type { Project } from '@src/lib/project'
-import { settingsValueSpec } from '@src/valueSpecs'
+import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { Registry, pluginsValueSpec } from '@kittycad/registry'
 import type { UserResponse } from '@kittycad/lib/dist/types/src'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
