@@ -2262,6 +2262,18 @@ export function getEdgeCutMeta(
       artifactGraph
     )
     if (err(consumedArtifact)) {
+      const consumedSweepEdge = getArtifactOfTypes(
+        { key: consumedEdgeId, types: ['sweepEdge'] },
+        artifactGraph
+      )
+      if (!err(consumedSweepEdge)) {
+        consumedArtifact = getArtifactOfTypes(
+          { key: consumedSweepEdge.segId, types: ['segment'] },
+          artifactGraph
+        )
+      }
+    }
+    if (err(consumedArtifact)) {
       const segmentViaWallOrCap = getSegmentForEdgeCut(
         consumedEdgeId,
         artifactGraph

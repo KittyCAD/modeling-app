@@ -1,5 +1,6 @@
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { KclManager } from '@src/lang/KclManager'
+import { createLocalName } from '@src/lang/create'
 import { assertParse, recast, type ArtifactGraph } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
@@ -335,7 +336,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       // Verify results - should tag the chamfer operation (edgeCut expression)
       expect(tags.length).toBe(1)
       expect(newCode).toContain('tag = $seg02') // The NEW chamfer tag that was added
-      expect(tags[0]).toBe('seg02') // The returned tag should be seg02
+      expect(tags[0]).toEqual(createLocalName('seg02'))
     }, 5_000)
   })
 

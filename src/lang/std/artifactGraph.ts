@@ -480,13 +480,34 @@ export function getSweepArtifactFromSelection(
     )
     if (err(_pathArtifact)) return _pathArtifact
     const pathSweepId = (_pathArtifact as { sweepId?: string }).sweepId
-    if (!pathSweepId) return new Error('Path does not have a sweepId')
-    const _artifact = getArtifactOfTypes(
-      { key: pathSweepId, types: ['sweep'] },
-      artifactGraph
-    )
-    if (err(_artifact)) return _artifact
-    sweepArtifact = _artifact
+    if (pathSweepId) {
+      const _artifact = getArtifactOfTypes(
+        { key: pathSweepId, types: ['sweep'] },
+        artifactGraph
+      )
+      if (err(_artifact)) return _artifact
+      sweepArtifact = _artifact
+    } else {
+      const surfaceId = (selection.artifact as { surfaceId?: string }).surfaceId
+      if (surfaceId) {
+        const surface = getArtifactOfTypes(
+          { key: surfaceId, types: ['wall', 'cap'] },
+          artifactGraph
+        )
+        if (!err(surface)) {
+          const sweep = getArtifactOfTypes(
+            { key: surface.sweepId, types: ['sweep'] },
+            artifactGraph
+          )
+          if (!err(sweep)) {
+            sweepArtifact = sweep
+          }
+        }
+      }
+      if (!sweepArtifact) {
+        return new Error('Path does not have a sweepId')
+      }
+    }
   } else if (
     selection.artifact?.type === 'cap' ||
     selection.artifact?.type === 'wall'

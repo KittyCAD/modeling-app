@@ -234,18 +234,12 @@ function modifyAstWithTagsForEdgeSelection(
     )
   }
 
-  const segmentArtifact = artifact
-
   let astClone = structuredClone(ast)
   const exprs: Expr[] = []
 
   // Default: get common edge of 2 faces scenario
   if (!tagMethods || !tagMethods.includes('oppositeAndAdjacentEdges')) {
-    // Get the common faces that form this edge
-    const commonFaceArtifacts = getCommonFacesForEdge(
-      segmentArtifact,
-      artifactGraph
-    )
+    const commonFaceArtifacts = getCommonFacesForEdge(artifact, artifactGraph)
     if (err(commonFaceArtifacts)) return commonFaceArtifacts
 
     // Apply tagging to each face that forms this edge
@@ -436,12 +430,21 @@ function modifyAstWithTagForWallFace(
   )
   if (err(segment)) return segment
 
-  const pathToSegmentNode = segment.codeRef.pathToNode
+  const segmentIdForTagExpr = segment.id
+  const pathToSegmentNode =
+    segment.originalSegId != null
+      ? getArtifactOfTypes(
+          { key: segment.originalSegId, types: ['segment'] },
+          artifactGraph
+        )
+      : segment
+
+  if (err(pathToSegmentNode)) return pathToSegmentNode
 
   // No tag path: just retrieve the sketch block segment
   const regionTagExpr = getRegionTagExprFromSegmentId(
     astClone,
-    segment.id,
+    segmentIdForTagExpr,
     artifactGraph,
     wasmInstance
   )
@@ -454,7 +457,7 @@ function modifyAstWithTagForWallFace(
 
   const result = modifyAstWithTagForSketchSegment(
     astClone,
-    pathToSegmentNode,
+    pathToSegmentNode.codeRef.pathToNode,
     wasmInstance
   )
   if (err(result)) return result

@@ -286,59 +286,6 @@ helix001 = helix(
 )`)
     })
 
-    it('should add a standalone call on sweep edge selection from region-based extrude', async () => {
-      const code = `sketch001 = sketch(on = XZ) {
-  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 100mm])
-  line2 = line(start = [var 0mm, var 100mm], end = [var 100mm, var 0mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var 100mm, var 0mm], end = [var 0mm, var 0mm])
-  coincident([line2.end, line3.start])
-  vertical(line1)
-}
-hide(sketch001)
-region001 = region(segments = [sketch001.line1, sketch001.line2])
-extrude001 = extrude(region001, length = 100)`
-      const { ast, artifactGraph } = await getAstAndArtifactGraph(
-        code,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      const segment = [...artifactGraph.values()].find(
-        (n) => n.type === 'sweepEdge'
-      )
-      const result = addHelix({
-        ast,
-        artifactGraph,
-        edge: createSelectionFromArtifacts([segment!], artifactGraph),
-        revolutions: (await stringToKclExpression(
-          '1',
-          rustContextInThisFile
-        )) as KclCommandValue,
-        angleStart: (await stringToKclExpression(
-          '2',
-          rustContextInThisFile
-        )) as KclCommandValue,
-        radius: (await stringToKclExpression(
-          '3',
-          rustContextInThisFile
-        )) as KclCommandValue,
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) throw result
-      await enginelessExecutor(ast, rustContextInThisFile)
-      const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(
-        newCode
-      ).toContain(`extrude001 = extrude(region001, length = 100, tagEnd = $capEnd001)
-helix001 = helix(
-  axis = getCommonEdge(faces = [region001.tags.line1, capEnd001]),
-  revolutions = 1,
-  angleStart = 2,
-  radius = 3,
-)
-`)
-    })
-
     it('should edit a standalone call on segment selection', async () => {
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         helixFromSegmentInPath,

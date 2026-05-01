@@ -1,6 +1,10 @@
 // Import globals setup first to ensure 'expect' and 'fetch' are available
 import '@src/setupTests-globals'
 import '@testing-library/jest-dom'
+import dotenv from 'dotenv'
+
+const NODE_ENV = process.env.NODE_ENV || 'development'
+dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 
 // Local engine URL for integration tests that connect (override via env or change this line)
 // TODO REMOVE, this is just temp to get it to connect to the right endpoint in CI before the engine changes merge

@@ -97,7 +97,6 @@ import type {
 import { artifactToEntityRef, resolveToCodeRef } from '@src/lang/queryAst'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
-import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
 import type { KclManager } from '@src/lang/KclManager'
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -1326,6 +1325,12 @@ export function getSelectionCountByType(
   })
 
   graphSelections.forEach((v2Selection) => {
+    const inlineArtifact = (
+      v2Selection as Selection & {
+        artifact?: Artifact
+      }
+    ).artifact
+
     if (v2Selection.entityRef) {
       // solid2d_edge first: may be helix (count as path) or segment curve (count as segment)
       if (v2Selection.entityRef.type === 'solid2d_edge') {
@@ -1364,7 +1369,21 @@ export function getSelectionCountByType(
       } else if (v2Selection.entityRef.type === 'solid3d') {
         incrementOrInitializeSelectionType('path')
       }
-    } else if (v2Selection.codeRef && isSingleCursorInPipe(selection, ast)) {
+    } else if (inlineArtifact?.type === 'helix') {
+      incrementOrInitializeSelectionType('path')
+    } else if (
+      inlineArtifact?.type === 'path' &&
+      inlineArtifact.subType === 'region'
+    ) {
+      incrementOrInitializeSelectionType('pathRegion')
+    } else if (inlineArtifact?.type === 'path') {
+      incrementOrInitializeSelectionType('path')
+    } else if (
+      v2Selection.codeRef &&
+      ast &&
+      'body' in ast &&
+      isSingleCursorInPipe(selection, ast)
+    ) {
       incrementOrInitializeSelectionType('segment')
     } else if (v2Selection.codeRef && artifactGraph) {
       // Selection may have codeRef only (e.g. feature tree click when getArtifactFromRange failed); resolve and count helix as path

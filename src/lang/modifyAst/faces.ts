@@ -20,6 +20,7 @@ import {
 import {
   artifactToEntityRef,
   getEdgeCutMeta,
+  getRegionTagExprFromSegmentId,
   getSelectedPlaneAsNode,
   getVariableExprsFromSelection,
   resolveToCodeRef,
@@ -196,7 +197,7 @@ export function addDeleteFace({
     if (err(result)) return result
     solidsExprs = deduplicateFaceExprs(solidsExprs.concat(result.solidsExprs))
 
-    facesExprs.push(...(result.faceExprs as typeof facesExprs))
+    facesExprs.push(...result.faceExprs)
   }
 
   const solidsExpr = createVariableExpressionsArray(solidsExprs)
@@ -973,7 +974,27 @@ export function getFacesExprsFromSelection(
           return []
         }
 
-        targetArtifact = segmentArtifact
+        const regionTagExpr = getRegionTagExprFromSegmentId(
+          ast,
+          segmentArtifact.id,
+          artifactGraph,
+          wasmInstance
+        )
+        if (regionTagExpr) {
+          return [regionTagExpr]
+        }
+
+        if (segmentArtifact.originalSegId) {
+          const originalSegmentArtifact = getArtifactOfTypes(
+            { key: segmentArtifact.originalSegId, types: ['segment'] },
+            artifactGraph
+          )
+          targetArtifact = err(originalSegmentArtifact)
+            ? segmentArtifact
+            : originalSegmentArtifact
+        } else {
+          targetArtifact = segmentArtifact
+        }
       } else {
         targetArtifact = artifact
         edgeCutMeta = getEdgeCutMeta(artifact, ast, artifactGraph, wasmInstance)

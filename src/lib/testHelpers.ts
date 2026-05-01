@@ -82,7 +82,11 @@ export function createSelectionFromArtifacts(
     }
     return [
       {
-        entityRef: artifactToEntityRef(artifact.type, artifact.id),
+        entityRef: artifactToEntityRef(
+          artifact.type,
+          artifact.id,
+          artifact.type === 'segment' ? artifact.pathId : undefined
+        ),
         codeRef: codeRefs[0],
       },
     ]

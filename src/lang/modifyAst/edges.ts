@@ -662,26 +662,6 @@ function buildEdgeExpr(
       'Blend only supports segment, edgeCut, and enginePrimitiveEdge selections.'
     )
   }
-
-  const directTagResult = modifyAstWithTagsForSelection(
-    ast,
-    { codeRef: resolved.codeRef, artifact: resolved.artifact },
-    artifactGraph,
-    wasmInstance,
-    ['oppositeAndAdjacentEdges']
-  )
-  if (err(directTagResult)) return directTagResult
-  if (directTagResult.exprs.length !== 1) {
-    return new Error('Expected exactly one tag for each blend edge.')
-  }
-
-  const directEdgeExpr = getEdgeTagCall(directTagResult.exprs[0], edgeArtifact)
-  if (directEdgeExpr.type === 'Name') {
-    return {
-      modifiedAst: directTagResult.modifiedAst,
-      edgeExpr: directEdgeExpr,
-    }
-  }
   const sourceSurfaceArtifact = getSweepArtifactFromSelection(
     resolved as { artifact: Artifact; codeRef: CodeRef },
     artifactGraph
@@ -721,14 +701,12 @@ function buildEdgeExpr(
     wasmInstance
   )
   if (regionSketchTagExpr) {
-    const edgeExpr = getEdgeTagCall(regionSketchTagExpr, edgeArtifact)
-
     return {
       modifiedAst: ast,
       edgeExpr: createCallExpressionStdLibKw(
         'getBoundedEdge',
         structuredClone(sourceSurfaceExpr),
-        [createLabeledArg('edge', edgeExpr)]
+        [createLabeledArg('edge', regionSketchTagExpr)]
       ),
     }
   }
@@ -749,14 +727,12 @@ function buildEdgeExpr(
       ),
       sketchSegmentName
     )
-    const edgeExpr = getEdgeTagCall(sketchTagExpr, edgeArtifact)
-
     return {
       modifiedAst: ast,
       edgeExpr: createCallExpressionStdLibKw(
         'getBoundedEdge',
         structuredClone(sourceSurfaceExpr),
-        [createLabeledArg('edge', edgeExpr)]
+        [createLabeledArg('edge', sketchTagExpr)]
       ),
     }
   }
