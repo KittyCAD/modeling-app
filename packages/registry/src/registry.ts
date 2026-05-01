@@ -36,8 +36,8 @@ import type {
 import { SlotInstance } from './types'
 
 interface FlattenedContribution {
-  readonly valueSpec: ValueSpec<any, any>
-  readonly value: any
+  readonly valueSpec: ValueSpec<unknown, unknown>
+  readonly value: unknown
   readonly precedence: Precedence
   readonly key?: RegistryItemKey
   readonly order: number
@@ -45,14 +45,14 @@ interface FlattenedContribution {
 }
 
 interface FlattenedServiceContribution {
-  readonly service: Service<any>
+  readonly service: Service<unknown>
   readonly implementation: unknown
   readonly sourcePath: string
 }
 
 interface RuntimeInstance {
   readonly key: RegistryItemKey
-  readonly handle: RuntimeRegistryItemHandle<any>
+  readonly handle: RuntimeRegistryItemHandle<unknown>
   readonly dispose?: () => void
 }
 
@@ -63,8 +63,8 @@ interface FlattenResult {
 }
 
 function isServiceDefinition(
-  arg: Service<any> | ValueSpec<any, any>
-): arg is Service<any> {
+  arg: Service<unknown> | ValueSpec<unknown, unknown>
+): arg is Service<unknown> {
   return 'multiple' in arg
 }
 
@@ -85,13 +85,13 @@ export class Registry implements ValueSpecReader, ServiceReader {
   >()
   private readonly registryValueSpecSignals = new Map<
     symbol,
-    ReadonlySignal<any>
+    ReadonlySignal<unknown>
   >()
   private readonly debugValueSpecItems = new Map<
     symbol,
     ReadonlySignal<readonly DebugValueSpecItem[]>
   >()
-  private readonly serviceSignals = new Map<symbol, ReadonlySignal<any>>()
+  private readonly serviceSignals = new Map<symbol, ReadonlySignal<unknown>>()
   private readonly debugServiceItems = new Map<
     symbol,
     ReadonlySignal<readonly DebugServiceItem[]>
@@ -216,7 +216,9 @@ export class Registry implements ValueSpecReader, ServiceReader {
   /** Resolve a registry value spec or service as a live Preact signal. */
   signal<T>(service: Service<T>): ReadonlySignal<T | undefined>
   signal<I, O>(valueSpec: ValueSpec<I, O>): ReadonlySignal<O>
-  signal(arg: Service<any> | ValueSpec<any, any>): ReadonlySignal<any> {
+  signal(
+    arg: Service<unknown> | ValueSpec<unknown, unknown>
+  ): ReadonlySignal<unknown> {
     if (isServiceDefinition(arg)) {
       const existingServiceSignal = this.serviceSignals.get(arg.id)
       if (existingServiceSignal) return existingServiceSignal
@@ -259,7 +261,7 @@ export class Registry implements ValueSpecReader, ServiceReader {
   /** Resolve a required registry value spec or service snapshot. */
   get<T>(service: Service<T>): T
   get<I, O>(valueSpec: ValueSpec<I, O>): O
-  get(arg: Service<any> | ValueSpec<any, any>): any {
+  get(arg: Service<unknown> | ValueSpec<unknown, unknown>): unknown {
     if (isServiceDefinition(arg)) {
       const value = this.signal(arg).value
       if (value === undefined) {
@@ -426,7 +428,7 @@ export class Registry implements ValueSpecReader, ServiceReader {
   /** Create or reuse a runtime instance for one registry item factory. */
   private ensureRuntimeInstance(
     key: RegistryItemKey,
-    factory: RegistryItemFactory<any>,
+    factory: RegistryItemFactory<unknown>,
     ctx: RegistryItemContext
   ): RuntimeInstance {
     const existing = this.runtimeInstances.get(key)

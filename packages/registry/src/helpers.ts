@@ -346,7 +346,7 @@ export function createSlotToggleController({
 }
 
 export function provide<I>(
-  valueSpec: ValueSpec<I, any>,
+  valueSpec: ValueSpec<I, unknown>,
   value: MaybeSignal<I>,
   options?: Pick<ValueSpecContribution<I>, 'precedence' | 'key'>
 ): ValueSpecContribution<I> {
