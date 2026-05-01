@@ -1157,6 +1157,7 @@ fn remap_artifact_for_clone(
                 source.consumed
             },
             sub_type: source.sub_type,
+            output_index: source.output_index,
             solid_ids: remap_ids_for_clone(&source.solid_ids, entity_id_map),
             tool_ids: remap_ids_for_clone(&source.tool_ids, entity_id_map),
             code_ref: clone_code_ref.clone(),

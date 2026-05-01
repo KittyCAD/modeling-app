@@ -997,6 +997,7 @@ fn entity_clone_remaps_composite_solid_ids() {
             id: source_id,
             consumed: true,
             sub_type: CompositeSolidSubType::Subtract,
+            output_index: Some(1),
             solid_ids: vec![source_solid_id],
             tool_ids: vec![source_tool_id],
             code_ref: CodeRef::placeholder(SourceRange::synthetic()),
@@ -1042,6 +1043,7 @@ fn entity_clone_remaps_composite_solid_ids() {
     };
     assert_eq!(clone_solid.id, ArtifactId::new(cmd_id));
     assert_eq!(clone_solid.sub_type, CompositeSolidSubType::Subtract);
+    assert_eq!(clone_solid.output_index, Some(1));
     assert_eq!(clone_solid.solid_ids, vec![cloned_solid_id]);
     assert_eq!(clone_solid.tool_ids, vec![cloned_tool_id]);
     assert_eq!(clone_solid.composite_solid_id, Some(cloned_parent_composite_id));
