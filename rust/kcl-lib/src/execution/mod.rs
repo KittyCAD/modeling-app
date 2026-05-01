@@ -3610,6 +3610,45 @@ sketch(on = XY) {
         parse_execute(&code).await.unwrap();
     }
 
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_shadowed_get_opposite_edge_binding_does_not_panic() {
+        let code = r#"startX = 2
+
+baseSketch = sketch(on = XY) {
+  yoyo = line(start = [startX, 0], end = [7, 6])
+  line2 = line(start = [7, 6], end = [7, 12])
+  hi = line(start = [7, 12], end = [startX, 0])
+}
+
+baseRegion = region(point = [5.5, 6], sketch = baseSketch)
+myExtrude = extrude(
+  baseRegion,
+  length = 5,
+  tagEnd = $endCap,
+  tagStart = $startCap,
+)
+yodawg = getCommonEdge(faces = [
+  baseRegion.tags.hi,
+  baseRegion.tags.yoyo
+])
+
+cutSketch = sketch(on = YZ) {
+  myDisambigutator = line(start = [-3.29, 4.75], end = [2.03, 2.44])
+  myDisambigutator2 = line(start = [2.03, 2.44], end = [-3.49, 0.31])
+  line3 = line(start = [-3.49, 0.31], end = [-3.29, 4.75])
+}
+
+cutRegion = region(point = [-1.5833333333, 2.5], sketch = cutSketch)
+extrude001 = extrude(cutRegion, length = 5)
+solid001 = subtract(myExtrude, tools = extrude001)
+
+yoyo = getOppositeEdge(baseRegion.tags.hi)
+fillet(solid001, radius = 0.1, tags = yoyo)
+"#;
+
+        parse_execute(code).await.unwrap();
+    }
+
     // END Mock Execution tests
 
     // Sketch constraint report tests
