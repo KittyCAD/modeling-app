@@ -390,6 +390,15 @@ const sketchSolveConstraintItems: ToolbarItem[] = [
       'Constrain lines to have equal length, or arcs and circles to have equal radius.',
   }),
   createSketchSolveConstraintDropdownItem({
+    id: 'Symmetric',
+    toolName: 'symmetricConstraintTool',
+    icon: 'symmetric',
+    title: 'Symmetric',
+    hotkey: 'Shift+E',
+    description:
+      'Constrain two points, two arc-like segments, or two lines to be symmetric across a selected axis line.',
+  }),
+  createSketchSolveConstraintDropdownItem({
     id: 'vertical',
     toolName: 'verticalConstraintTool',
     icon: 'vertical',

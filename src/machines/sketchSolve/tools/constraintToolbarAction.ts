@@ -54,7 +54,7 @@ export async function applyOrEquipConstraintToolFromToolbar({
     { defaultLengthUnit }
   )
 
-  if (!preparedApply) {
+  if (!preparedApply || toolName === 'symmetricConstraintTool') {
     equipConstraintTool(toolName)
     return {
       type: 'equipped',
