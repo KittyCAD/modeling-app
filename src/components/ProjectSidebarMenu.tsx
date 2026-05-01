@@ -1,6 +1,6 @@
 import { Popover, Transition } from '@headlessui/react'
 import { useSelector } from '@xstate/react'
-import { Fragment, useMemo } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import type { SnapshotFrom } from 'xstate'
 
@@ -29,6 +29,24 @@ interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   file?: FileEntry
 }
 
+const normalizeBreadcrumbPath = (path: string) =>
+  fsZds.sep && fsZds.sep !== '/' ? path.replaceAll(fsZds.sep, '/') : path
+
+const getProjectRelativeFilePath = (project?: Project, file?: FileEntry) => {
+  if (!file) {
+    return APP_NAME
+  }
+
+  if (project?.path && file.path) {
+    const relativeFilePath = fsZds.relative(project.path, file.path)
+    if (relativeFilePath) {
+      return normalizeBreadcrumbPath(relativeFilePath)
+    }
+  }
+
+  return normalizeBreadcrumbPath(file.name || APP_NAME)
+}
+
 const ProjectSidebarMenu = ({
   project,
   file,
@@ -40,7 +58,7 @@ const ProjectSidebarMenu = ({
   const trafficLightsOffset =
     window.electron && window.electron.os.isMac ? 'ml-20' : ''
   return (
-    <div className={'!no-underline flex gap-2 ' + trafficLightsOffset}>
+    <div className={'!no-underline flex min-w-0 gap-2 ' + trafficLightsOffset}>
       <div className="relative group/home">
         <AppLogoLink project={project} file={file} />
         {isDesktop() && <Tooltip position="bottom-left">Go home</Tooltip>}
@@ -250,29 +268,62 @@ function ProjectMenuPopover({
     ]
   )
 
-  // Breadcrumb for project and file
+  // Breadcrumb for project and project-relative file path
   const breadCrumb = {
     projectName: project?.name || '',
     sep: '/',
-    filename: file?.name
-      ? file.name.slice(file.name.lastIndexOf(fsZds.sep) + 1)
-      : APP_NAME,
+    filePath: getProjectRelativeFilePath(project, file),
   }
-  const breadCrumbTooltip = `${breadCrumb.projectName}${breadCrumb.sep}${breadCrumb.filename}`
+  const breadCrumbTooltip = breadCrumb.projectName
+    ? `${breadCrumb.projectName}${breadCrumb.sep}${breadCrumb.filePath}`
+    : breadCrumb.filePath
+  const projectNameRef = useRef<HTMLSpanElement>(null)
+  const filePathRef = useRef<HTMLSpanElement>(null)
+  const [isBreadCrumbTruncated, setIsBreadCrumbTruncated] = useState(false)
+
+  useEffect(() => {
+    const isTruncated = (element: HTMLElement | null) =>
+      Boolean(element && element.scrollWidth > element.clientWidth)
+
+    const updateTruncatedState = () => {
+      setIsBreadCrumbTruncated(
+        isTruncated(projectNameRef.current) || isTruncated(filePathRef.current)
+      )
+    }
+
+    updateTruncatedState()
+
+    const resizeObserver =
+      typeof ResizeObserver !== 'undefined'
+        ? new ResizeObserver(updateTruncatedState)
+        : null
+
+    if (projectNameRef.current) {
+      resizeObserver?.observe(projectNameRef.current)
+    }
+    if (filePathRef.current) {
+      resizeObserver?.observe(filePathRef.current)
+    }
+
+    window.addEventListener('resize', updateTruncatedState)
+
+    return () => {
+      resizeObserver?.disconnect()
+      window.removeEventListener('resize', updateTruncatedState)
+    }
+  }, [breadCrumb.filePath, breadCrumb.projectName])
 
   return (
-    <Popover className="relative">
+    <Popover className="relative min-w-0">
       <Popover.Button
-        className="gap-1 rounded-sm mr-auto max-h-min min-w-max border-0 py-1 px-2 flex items-center  focus-visible:outline-appForeground dark:hover:bg-chalkboard-90"
+        className="gap-1 rounded-sm mr-auto max-h-min min-w-0 max-w-full border-0 py-1 px-2 flex items-center focus-visible:outline-appForeground dark:hover:bg-chalkboard-90"
         data-testid="project-sidebar-toggle"
       >
-        <div
-          className="flex items-baseline py-0.5 text-sm gap-1"
-          title={breadCrumbTooltip}
-        >
+        <div className="flex min-w-0 items-baseline py-0.5 text-sm">
           {project?.name && (
             <>
               <span
+                ref={projectNameRef}
                 className="hidden whitespace-nowrap md:block max-w-80 truncate"
                 data-testid="app-header-project-name"
               >
@@ -282,16 +333,26 @@ function ProjectMenuPopover({
             </>
           )}
           <span
-            className="text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap"
+            ref={filePathRef}
+            className="min-w-0 truncate text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap"
             data-testid="app-header-file-name"
           >
-            {breadCrumb.filename}
+            {breadCrumb.filePath}
           </span>
         </div>
         <CustomIcon
           name="caretDown"
-          className="w-4 h-4 text-chalkboard-70 dark:text-chalkboard-40 ui-open:rotate-180"
+          className="w-4 h-4 shrink-0 text-chalkboard-70 dark:text-chalkboard-40 ui-open:rotate-180"
         />
+        {isBreadCrumbTruncated && (
+          <Tooltip
+            position="bottom-left"
+            hoverOnly
+            contentClassName="max-w-[min(80vw,48rem)] break-all text-left"
+          >
+            {breadCrumbTooltip}
+          </Tooltip>
+        )}
       </Popover.Button>
 
       <Transition
