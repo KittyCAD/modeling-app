@@ -78,9 +78,6 @@ const scheduleMenuGC = () => {
 }
 
 type MachineApiSignal = 'on' | 'off'
-type CreateWindowOptions = {
-  useStartupPath?: boolean
-}
 
 // Check the command line arguments for a project path
 const args = parseCLIArgs(process.argv)
@@ -124,10 +121,47 @@ if (!singleInstanceLock && process.env.NODE_ENV !== 'test') {
   registerStartupListeners()
 }
 
-const createWindow = (
-  pathToOpen?: string,
-  { useStartupPath = false }: CreateWindowOptions = {}
-): BrowserWindow => {
+const consumeStartupPathOrUrl = (): string | undefined => {
+  const startupGlobals = global as typeof globalThis & {
+    macOpenFiles?: string[]
+    openUrls?: string[]
+  }
+  const pathOrUrl = getPathOrUrlFromArgs(args)
+  if (pathOrUrl?.startsWith(ZOO_STUDIO_PROTOCOL + '://')) {
+    console.log('Retrieved deep link from CLI args', pathOrUrl)
+    return pathOrUrl
+  }
+
+  // macOS: open-url events that were received before the app is ready.
+  const openUrls = startupGlobals.openUrls
+  if (openUrls?.[0]) {
+    startupGlobals.openUrls = []
+    console.log('Retrieved deep link from open-url', openUrls[0])
+    return openUrls[0]
+  }
+
+  // The dev and test launchers pass "." as an arg. Do not turn that into a
+  // startup project route.
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL || process.env.NODE_ENV === 'test') {
+    return undefined
+  }
+
+  // macOS: open-file events that were received before the app is ready.
+  const macOpenFiles = startupGlobals.macOpenFiles
+  if (macOpenFiles?.[0]) {
+    startupGlobals.macOpenFiles = []
+    return macOpenFiles[0]
+  }
+
+  if (pathOrUrl) {
+    args._[1] = ''
+    return pathOrUrl
+  }
+
+  return undefined
+}
+
+const createWindow = (pathToOpen?: string): BrowserWindow => {
   let newWindow: BrowserWindow | null = null
 
   if (!newWindow) {
@@ -189,26 +223,6 @@ const createWindow = (
     })
   })
 
-  // Deep Link: Case of a cold start from Windows or Linux
-  const pathOrUrl = useStartupPath ? getPathOrUrlFromArgs(args) : undefined
-  if (
-    !pathToOpen &&
-    pathOrUrl &&
-    pathOrUrl.startsWith(ZOO_STUDIO_PROTOCOL + '://')
-  ) {
-    pathToOpen = pathOrUrl
-    console.log('Retrieved deep link from CLI args', pathToOpen)
-  }
-
-  // Deep Link: Case of a second window opened for macOS
-  const openUrls: string[] | undefined = useStartupPath
-    ? (global as any).openUrls
-    : undefined
-  if (!pathToOpen && openUrls?.[0]) {
-    pathToOpen = openUrls[0]
-    console.log('Retrieved deep link from open-url', pathToOpen)
-  }
-
   const pathIsCustomProtocolLink =
     pathToOpen?.startsWith(ZOO_STUDIO_PROTOCOL) ?? false
 
@@ -239,10 +253,7 @@ const createWindow = (
         .catch(reportRejection)
     } else {
       // otherwise we're trying to resolve a local file/project path
-      resolveProjectPathForWindow(initPromise, {
-        pathToOpen,
-        useStartupPath,
-      })
+      resolveProjectPathForWindow(initPromise, pathToOpen)
         .then(async (projectPath) => {
           const startIndex = path.join(
             __dirname,
@@ -360,7 +371,7 @@ app.on('ready', (event, data) => {
   registerFileProtocolCsp()
 
   // Create the mainWindow
-  mainWindow = createWindow(undefined, { useStartupPath: true })
+  mainWindow = createWindow(consumeStartupPathOrUrl())
   // Set menu application to null to avoid default electron menu
   Menu.setApplicationMenu(null)
 })
@@ -700,13 +711,7 @@ app.on('ready', () => {
 
 const resolveProjectPathForWindow = async (
   initPromise: Promise<ModuleType>,
-  {
-    pathToOpen,
-    useStartupPath,
-  }: {
-    pathToOpen?: string
-    useStartupPath: boolean
-  }
+  pathToOpen?: string
 ): Promise<string | null> => {
   // Make sure we have WASM, because we're about to use it indirectly.
   const wasmInstance = await initPromise
@@ -718,37 +723,7 @@ const resolveProjectPathForWindow = async (
     return null
   }
 
-  let projectPath: string | null = pathToOpen || null
-  if (useStartupPath && projectPath === null) {
-    // macOS: open-file events that were received before the app is ready
-    const macOpenFiles: string[] = (global as any).macOpenFiles
-    if (macOpenFiles && macOpenFiles && macOpenFiles.length > 0) {
-      projectPath = macOpenFiles[0] // We only do one project at a time
-    }
-    // Reset this so we don't accidentally use it again.
-    const macOpenFilesEmpty: string[] = []
-    // @ts-ignore
-    global['macOpenFiles'] = macOpenFilesEmpty
-
-    // macOS: open-url events that were received before the app is ready
-    const getOpenUrls: string[] = (global as any).getOpenUrls
-    if (getOpenUrls && getOpenUrls.length > 0) {
-      projectPath = getOpenUrls[0] // We only do one project at a
-    }
-    // Reset this so we don't accidentally use it again.
-    // @ts-ignore
-    global['getOpenUrls'] = []
-
-    // Check if we have a project path in the command line arguments
-    // If we do, we will load the project at that path
-    if (args._.length > 1) {
-      if (args._[1].length > 0) {
-        projectPath = args._[1]
-        // Reset all this value so we don't accidentally use it again.
-        args._[1] = ''
-      }
-    }
-  }
+  const projectPath: string | null = pathToOpen || null
 
   if (projectPath) {
     // We have a project path, load the project information.
