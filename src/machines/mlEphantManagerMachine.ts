@@ -44,6 +44,81 @@ type MlCopilotClientMessageUser<T = MlCopilotClientMessage> = T extends {
   ? T
   : never
 
+type MlCopilotListModesRequest = { type: 'list_modes' }
+
+export interface MlCopilotModeOption {
+  id: MlCopilotMode
+  label: string
+  description: string
+  icon: string
+}
+
+type MlCopilotModesResult = {
+  defaultMode?: MlCopilotMode
+  modeOptions: MlCopilotModeOption[]
+}
+
+function isMlCopilotMode(value: unknown): value is MlCopilotMode {
+  return value === 'fast' || value === 'thoughtful'
+}
+
+function toMlCopilotModeOption(value: unknown): MlCopilotModeOption | null {
+  if (typeof value !== 'object' || value === null) return null
+
+  const candidate = value as {
+    id?: unknown
+    label?: unknown
+    description?: unknown
+    icon?: unknown
+  }
+
+  if (
+    !isMlCopilotMode(candidate.id) ||
+    typeof candidate.label !== 'string' ||
+    typeof candidate.description !== 'string' ||
+    typeof candidate.icon !== 'string'
+  )
+    return null
+
+  return {
+    id: candidate.id,
+    label: candidate.label,
+    description: candidate.description,
+    icon: candidate.icon,
+  }
+}
+
+function parseMlCopilotModesResult(
+  response: unknown
+): MlCopilotModesResult | null {
+  if (
+    typeof response !== 'object' ||
+    response === null ||
+    !('modes' in response)
+  )
+    return null
+
+  const modesResponse = (response as { modes?: unknown }).modes
+  if (typeof modesResponse !== 'object' || modesResponse === null) return null
+
+  const candidate = modesResponse as {
+    default_mode?: unknown
+    modes?: unknown
+  }
+  if (!Array.isArray(candidate.modes)) return null
+
+  const modeOptions = candidate.modes
+    .map(toMlCopilotModeOption)
+    .filter(isPresent)
+
+  return {
+    defaultMode: isMlCopilotMode(candidate.default_mode)
+      ? candidate.default_mode
+      : undefined,
+    modeOptions,
+  }
+}
+
 export function isMlCopilotUserRequest(
   x: unknown
 ): x is MlCopilotClientMessageUser {
@@ -62,6 +137,7 @@ export enum MlEphantManagerStates {
 export enum MlEphantManagerTransitions {
   MessageSend = 'message-send',
   ResponseReceive = 'response-receive',
+  ModesReceive = 'modes-receive',
   ConversationClose = 'conversation-close',
   Cancel = 'cancel',
   Interrupt = 'interrupt',
@@ -116,6 +192,11 @@ export type MlEphantManagerEvents =
       response: MlCopilotServerMessage
     }
   | {
+      type: MlEphantManagerTransitions.ModesReceive
+      defaultMode?: MlCopilotMode
+      modeOptions: MlCopilotModeOption[]
+    }
+  | {
       type: MlEphantManagerTransitions.ConversationClose
     }
   | {
@@ -166,6 +247,8 @@ export interface MlEphantManagerContext {
   projectNameCurrentlyOpened?: string
   awaitingResponse: boolean
   pendingBackendShutdown: boolean
+  defaultMode?: MlCopilotMode
+  modeOptions?: MlCopilotModeOption[]
   cachedSetup?: {
     refParentSend?: (event: MlEphantManagerEvents) => void
     conversationId?: string
@@ -190,6 +273,8 @@ export const mlEphantDefaultContext = (args: {
   projectNameCurrentlyOpened: undefined,
   awaitingResponse: false,
   pendingBackendShutdown: false,
+  defaultMode: undefined,
+  modeOptions: undefined,
 })
 
 function isString(x: unknown): x is string {
@@ -461,6 +546,9 @@ export const mlEphantManagerMachine = setup({
       ws.binaryType = 'arraybuffer'
 
       let maybeReplayedExchanges: Exchange[] = []
+      let maybeModeOptions: MlCopilotModeOption[] | undefined
+      let maybeDefaultMode: MlCopilotMode | undefined
+      let setupResolved = false
 
       return await new Promise<Partial<MlEphantManagerContext>>(
         (onFulfilled, onRejected) => {
@@ -490,6 +578,20 @@ export const mlEphantManagerMachine = setup({
               } catch (e: unknown) {
                 return console.error(e)
               }
+            }
+
+            const modesResult = parseMlCopilotModesResult(response)
+            if (modesResult !== null) {
+              maybeModeOptions = modesResult.modeOptions
+              maybeDefaultMode = modesResult.defaultMode
+              if (setupResolved && theRefParentSend) {
+                theRefParentSend({
+                  type: MlEphantManagerTransitions.ModesReceive,
+                  defaultMode: maybeDefaultMode,
+                  modeOptions: maybeModeOptions,
+                })
+              }
+              return
             }
 
             if (isBackendShutdownMessage(response)) {
@@ -592,6 +694,7 @@ export const mlEphantManagerMachine = setup({
             // We're only considered setup when a conversation_id is assigned
             // to us. That means data is being stored and the system is ready.
             if ('conversation_id' in response) {
+              setupResolved = true
               onFulfilled({
                 abruptlyClosed: false,
                 lastMessageId: undefined,
@@ -601,6 +704,8 @@ export const mlEphantManagerMachine = setup({
                   exchanges: maybeReplayedExchanges,
                 },
                 conversationId: response.conversation_id.conversation_id,
+                defaultMode: maybeDefaultMode,
+                modeOptions: maybeModeOptions,
                 ws,
               })
 
@@ -616,6 +721,11 @@ export const mlEphantManagerMachine = setup({
               onRejected(MlEphantSetupErrors.NoRefParentSend)
             }
           })
+
+          const listModesRequest: MlCopilotListModesRequest = {
+            type: 'list_modes',
+          }
+          ws.send(JSON.stringify(listModesRequest))
 
           ws.addEventListener('close', function (event: CloseEvent) {
             if (theRefParentSend !== undefined && devCalledClose === false) {
@@ -940,6 +1050,15 @@ export const mlEphantManagerMachine = setup({
     [MlEphantManagerStates.Ready]: {
       type: 'parallel',
       on: {
+        [MlEphantManagerTransitions.ModesReceive]: {
+          actions: assign(({ event }) => {
+            assertEvent(event, MlEphantManagerTransitions.ModesReceive)
+            return {
+              defaultMode: event.defaultMode,
+              modeOptions: event.modeOptions,
+            }
+          }),
+        },
         [MlEphantManagerTransitions.BackendShutdown]: {
           actions: ['handleBackendShutdown', 'disconnectIfIdle'],
         },

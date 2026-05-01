@@ -73,6 +73,9 @@ export const MlEphantConversationPane = (props: {
     props.mlEphantManagerActor,
     awaitingResponseSelector
   )
+  const modeOptions = useSelector(props.mlEphantManagerActor, (actor) => {
+    return actor.context.modeOptions
+  })
 
   if (
     props.mlEphantManagerActor.getSnapshot().matches(S.Await) &&
@@ -424,6 +427,7 @@ export const MlEphantConversationPane = (props: {
       defaultPrompt={defaultPrompt}
       initialMlCopilotMode={props.settings.app.zookeeperMode.current}
       onMlCopilotModeChange={props.onMlCopilotModeChange}
+      modeOptions={modeOptions}
     />
   )
 }
