@@ -31,6 +31,7 @@ use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::CallExpressionKw;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Type;
+use crate::std::solid_consumption::validate_value_not_consumed;
 
 #[derive(Debug, Clone)]
 pub struct Args<Status: ArgsStatus = Desugared> {
@@ -924,6 +925,13 @@ fn type_check_params_kw(
             }
         }
     }
+
+    result
+        .unlabeled
+        .iter()
+        .map(|(_, arg)| arg)
+        .chain(result.labeled.values())
+        .try_for_each(|arg| validate_value_not_consumed(&arg.value, exec_state, arg.source_range))?;
 
     Ok(result)
 }

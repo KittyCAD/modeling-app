@@ -1,0 +1,14 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing consumed_solid_binary_subtract.kcl
+---
+KCL Semantic error
+
+  × semantic: `s1` was already consumed by a `subtract` operation. The
+  │ operation result is now in `result`; use that for subsequent operations.
+    ╭─[41:8]
+ 40 │ result = subtract(s1, tools = [s2])
+ 41 │ diff = s1 - s3
+    ·        ───┬───
+    ·           ╰── tests/consumed_solid_binary_subtract/input.kcl
+    ╰────
