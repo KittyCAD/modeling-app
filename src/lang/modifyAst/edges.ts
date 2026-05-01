@@ -853,6 +853,43 @@ type FilletEdgeRefPayload = {
   index?: number
 }
 
+function getEndFaceIdsForEdgeIdMeta(
+  meta: EdgeRefactorMeta,
+  artifactGraph: ArtifactGraph
+): string[] {
+  if (meta.stdlibFn !== 'edgeId') {
+    return []
+  }
+
+  const edgeArtifact = artifactGraph.get(meta.edgeId)
+  if (!edgeArtifact) {
+    return []
+  }
+
+  const backingSegmentId =
+    edgeArtifact.type === 'sweepEdge'
+      ? edgeArtifact.segId
+      : edgeArtifact.type === 'segment'
+        ? edgeArtifact.id
+        : null
+  if (!backingSegmentId) {
+    return []
+  }
+
+  const backingSegment = getArtifactOfTypes(
+    { key: backingSegmentId, types: ['segment'] },
+    artifactGraph
+  )
+  if (err(backingSegment)) {
+    return []
+  }
+
+  const sideFaceIds = new Set(meta.faceIds)
+  return backingSegment.commonSurfaceIds.filter(
+    (faceId) => !sideFaceIds.has(faceId)
+  )
+}
+
 /**
  * Converts an EntityReference (edge type) to a KCL edgeRefs payload object.
  * Only includes optional fields when they are actually present.
@@ -864,12 +901,10 @@ export function entityReferenceToEdgeRefPayload(
     side_faces: entityRef.side_faces,
   }
 
-  // Only include end_faces if present and non-empty
   if (entityRef.end_faces && entityRef.end_faces.length > 0) {
     payload.end_faces = entityRef.end_faces
   }
 
-  // Only include index if explicitly provided (0 is valid, undefined means no filter)
   if (entityRef.index !== undefined) {
     payload.index = entityRef.index
   }
@@ -893,9 +928,18 @@ export function createEdgeRefObjectExpression(
   fallbackCodeRef?: CodeRef,
   tagsBaseExpr?: Expr | null
 ): { expr: Expr; modifiedAst: Node<Program> } | Error {
-  // Resolve face UUIDs to tags
-  const faceExprs: Expr[] = []
+  const sideFaceExprs: Expr[] = []
   let currentAst = ast
+
+  const applyTagsBaseExprIfNeeded = (expr: Expr): Expr => {
+    if (tagsBaseExpr != null && expr.type === 'Name') {
+      return createMemberExpression(
+        createMemberExpression(structuredClone(tagsBaseExpr), 'tags'),
+        expr.name?.name ?? ''
+      )
+    }
+    return structuredClone(expr)
+  }
 
   for (const faceId of payload.side_faces) {
     const faceArtifact = artifactGraph.get(faceId)
@@ -933,7 +977,7 @@ export function createEdgeRefObjectExpression(
           wasmInstance
         )
         if (regionTagExpr) {
-          faceExprs.push(regionTagExpr)
+          sideFaceExprs.push(regionTagExpr)
           continue
         }
       }
@@ -973,7 +1017,9 @@ export function createEdgeRefObjectExpression(
         )
       }
 
-      faceExprs.push(createLocalName(tagResult.tag))
+      sideFaceExprs.push(
+        applyTagsBaseExprIfNeeded(createLocalName(tagResult.tag))
+      )
       currentAst = tagResult.modifiedAst
     } else {
       // Normal case: tag the face artifact
@@ -994,35 +1040,21 @@ export function createEdgeRefObjectExpression(
 
       const faceTagExpr = tagResult.exprs[0]
       if (!faceTagExpr) {
-        return new Error(`Failed to extract tag expression for face ${faceId}`)
+        return new Error(`Failed to extract tag name for face ${faceId}`)
       }
 
-      if (tagsBaseExpr != null && faceTagExpr.type === 'Name') {
-        faceExprs.push(
-          createMemberExpression(
-            createMemberExpression(tagsBaseExpr, 'tags'),
-            faceTagExpr.name?.name ?? ''
-          )
-        )
-      } else {
-        faceExprs.push(faceTagExpr)
-      }
+      sideFaceExprs.push(applyTagsBaseExprIfNeeded(faceTagExpr))
       currentAst = tagResult.modifiedAst
     }
   }
 
   const endFaceExprs: Expr[] = []
-  if (payload.end_faces && payload.end_faces.length > 0) {
-    for (const endFacebId of payload.end_faces) {
-      const endFaceArtifact = artifactGraph.get(endFacebId)
-      if (!endFaceArtifact) {
-        continue
-      }
-
-      const codeRefs = getCodeRefsByArtifactId(endFacebId, artifactGraph)
-      if (!codeRefs || codeRefs.length === 0) {
-        continue
-      }
+  if (payload.end_faces?.length) {
+    for (const faceId of payload.end_faces) {
+      const endFaceArtifact = artifactGraph.get(faceId)
+      if (!endFaceArtifact) continue
+      const codeRefs = getCodeRefsByArtifactId(faceId, artifactGraph)
+      if (!codeRefs?.length) continue
 
       const tagResult = modifyAstWithTagsForSelection(
         currentAst,
@@ -1040,23 +1072,13 @@ export function createEdgeRefObjectExpression(
       const endFaceTagExpr = tagResult.exprs[0]
       if (!endFaceTagExpr) continue
 
-      if (tagsBaseExpr != null && endFaceTagExpr.type === 'Name') {
-        endFaceExprs.push(
-          createMemberExpression(
-            createMemberExpression(tagsBaseExpr, 'tags'),
-            endFaceTagExpr.name?.name ?? ''
-          )
-        )
-      } else {
-        endFaceExprs.push(endFaceTagExpr)
-      }
+      endFaceExprs.push(structuredClone(endFaceTagExpr))
       currentAst = tagResult.modifiedAst
     }
   }
 
-  // KCL uses camelCase for object keys (sideFaces, endFaces)
-  const properties: { [key: string]: Expr } = {
-    sideFaces: createArrayExpression(faceExprs),
+  const properties: Record<string, Expr> = {
+    sideFaces: createArrayExpression(sideFaceExprs),
   }
 
   if (endFaceExprs.length > 0) {
@@ -1122,8 +1144,8 @@ function getExistingEdgeRefsFromCall(call: Node<CallExpressionKw>): Expr[] {
  * Used so Z0006 refactor can emit edgeRefs with the same style: sideFaces = [bs.tags.edge6, bs.tags.edge7].
  */
 function getTagsBaseFromTagElement(el: Expr): Expr | null {
-  if (el.type !== 'CallExpressionKw') return null
-  const inner = el as Node<CallExpressionKw>
+  const inner = getCallFromExpr(el)
+  if (!inner) return null
   const calleeName = (inner.callee as { name?: { name?: string } })?.name?.name
   if (
     !calleeName ||
@@ -1139,6 +1161,34 @@ function getTagsBaseFromTagElement(el: Expr): Expr | null {
     ?.name
   if (propName !== 'tags') return null
   return innerMem.object
+}
+
+function findDeprecatedEdgeStdlibCallForVariable(
+  program: Program,
+  variableName: string
+): { call: Node<CallExpressionKw>; tagsBaseExpr: Expr | null } | null {
+  for (const item of program.body ?? []) {
+    if (item.type !== 'VariableDeclaration') continue
+    if (item.declaration.id?.name !== variableName) continue
+
+    const call = getCallFromExpr(item.declaration.init)
+    if (!call) continue
+
+    const calleeName = (call.callee as { name?: { name?: string } })?.name?.name
+    if (
+      !calleeName ||
+      !(DEPRECATED_EDGE_STDLIB as readonly string[]).includes(calleeName)
+    ) {
+      continue
+    }
+
+    return {
+      call,
+      tagsBaseExpr: getTagsBaseFromTagElement(call),
+    }
+  }
+
+  return null
 }
 
 function callSourceRangeMatches(
@@ -1276,11 +1326,17 @@ function walkExpr(
   }
 }
 
-/** Walk program and collect (range, orderedFaceIds, hasExistingEdgeRefs) for each fillet/chamfer call that has tags and/or edgeRefs. */
+interface UnifiedCallToFix {
+  range: [number, number, number]
+  orderedPayloads: FilletEdgeRefPayload[]
+  hasExistingEdgeRefs: boolean
+  tagsBaseExpr?: Expr | null
+}
 function findFilletChamferCallsToFixUnified(
   program: Program,
   edgeRefactorMetadata: EdgeRefactorMeta[],
-  directTagFilletMetadata: DirectTagFilletMeta[]
+  directTagFilletMetadata: DirectTagFilletMeta[],
+  artifactGraph: ArtifactGraph
 ): UnifiedCallToFix[] {
   const results: UnifiedCallToFix[] = []
 
@@ -1297,7 +1353,7 @@ function findFilletChamferCallsToFixUnified(
     }
     const elements = getTagsElementsFromCall(call)
     const existingEdgeRefExprs = getExistingEdgeRefsFromCall(call)
-    const orderedFaceIds: [string, string][] = []
+    const orderedPayloads: FilletEdgeRefPayload[] = []
     let tagsBaseExpr: Expr | null = null
 
     if (elements?.length) {
@@ -1306,8 +1362,9 @@ function findFilletChamferCallsToFixUnified(
           const base = getTagsBaseFromTagElement(el)
           if (base !== null) tagsBaseExpr = base
         }
-        if (el.type === 'CallExpressionKw') {
-          const inner = el as Node<CallExpressionKw>
+
+        const inner = getCallFromExpr(el)
+        if (inner) {
           const innerCallee = (inner.callee as { name?: { name?: string } })
             ?.name?.name
           if (
@@ -1323,7 +1380,10 @@ function findFilletChamferCallsToFixUnified(
               )
             )
             if (meta) {
-              orderedFaceIds.push(meta.faceIds)
+              orderedPayloads.push({
+                side_faces: meta.faceIds,
+                end_faces: getEndFaceIdsForEdgeIdMeta(meta, artifactGraph),
+              })
             }
           }
         } else if (el.type === 'Name') {
@@ -1336,17 +1396,45 @@ function findFilletChamferCallsToFixUnified(
             (t) => t.tagIdentifier === tagName
           )
           if (tagEntry) {
-            orderedFaceIds.push(tagEntry.faceIds)
+            orderedPayloads.push({ side_faces: tagEntry.faceIds })
+            continue
+          }
+
+          const deprecatedCall = findDeprecatedEdgeStdlibCallForVariable(
+            program,
+            tagName
+          )
+          if (deprecatedCall) {
+            if (tagsBaseExpr === null && deprecatedCall.tagsBaseExpr) {
+              tagsBaseExpr = deprecatedCall.tagsBaseExpr
+            }
+
+            const deprecatedCallModuleId =
+              (deprecatedCall.call as { module_id?: number }).module_id ?? 0
+            const meta = edgeRefactorMetadata.find((m) =>
+              sourceRangeMatch(
+                m,
+                deprecatedCall.call.start,
+                deprecatedCall.call.end,
+                deprecatedCallModuleId
+              )
+            )
+            if (meta) {
+              orderedPayloads.push({
+                side_faces: meta.faceIds,
+                end_faces: getEndFaceIdsForEdgeIdMeta(meta, artifactGraph),
+              })
+            }
           }
         }
       }
     }
 
-    if (orderedFaceIds.length > 0 || existingEdgeRefExprs.length > 0) {
+    if (orderedPayloads.length > 0 || existingEdgeRefExprs.length > 0) {
       const moduleId = (call as { module_id?: number }).module_id ?? 0
       results.push({
         range: [call.start, call.end, moduleId],
-        orderedFaceIds,
+        orderedPayloads,
         hasExistingEdgeRefs: existingEdgeRefExprs.length > 0,
         tagsBaseExpr: tagsBaseExpr ?? undefined,
       })
@@ -1488,9 +1576,11 @@ export function refactorFilletChamferTagsToEdgeRefs(
     const path = getNodePathFromSourceRange(modifiedAst, range)
     let edgeRefExprs: Expr[] = []
     for (const meta of orderedMetas) {
-      const payload = { side_faces: meta.faceIds }
       const result = createEdgeRefObjectExpression(
-        payload,
+        {
+          side_faces: meta.faceIds,
+          end_faces: getEndFaceIdsForEdgeIdMeta(meta, artifactGraph),
+        },
         wasmInstance,
         modifiedAst,
         artifactGraph
@@ -1532,20 +1622,29 @@ export function refactorFilletChamferTagsToEdgeRefsUnified(
   const toFix = findFilletChamferCallsToFixUnified(
     ast,
     edgeRefactorMetadata,
-    directTagFilletMetadata
+    directTagFilletMetadata,
+    artifactGraph
   )
   if (toFix.length === 0)
     return new Error('No fillet/chamfer calls with tags or edgeRefs to convert')
   let modifiedAst = structuredClone(ast)
-  for (const { range, orderedFaceIds, hasExistingEdgeRefs } of toFix) {
+  for (const {
+    range,
+    orderedPayloads,
+    hasExistingEdgeRefs,
+    tagsBaseExpr,
+  } of toFix) {
     const path = getNodePathFromSourceRange(modifiedAst, range)
     const edgeRefExprs: Expr[] = []
-    for (const faceIds of orderedFaceIds) {
+    for (const payload of orderedPayloads) {
       const result = createEdgeRefObjectExpression(
-        { side_faces: faceIds },
+        payload,
         wasmInstance,
         modifiedAst,
-        artifactGraph
+        artifactGraph,
+        undefined,
+        undefined,
+        tagsBaseExpr
       )
       if (err(result)) continue
       edgeRefExprs.push(result.expr)
@@ -2170,7 +2269,8 @@ export function refactorZ0006Unified(
   const toFixFC = findFilletChamferCallsToFixUnified(
     ast,
     edgeRefactorMetadata,
-    directTagFilletMetadata
+    directTagFilletMetadata,
+    artifactGraph
   )
   const toFixRH = findRevolveHelixCallsToFix(ast, edgeRefactorMetadata)
   const toFixET = findExtrudeToCallsToFix(ast, edgeRefactorMetadata)
@@ -2184,15 +2284,15 @@ export function refactorZ0006Unified(
 
   for (const {
     range,
-    orderedFaceIds,
+    orderedPayloads,
     hasExistingEdgeRefs,
     tagsBaseExpr,
   } of toFixFC) {
     const path = getNodePathFromSourceRange(modifiedAst, range)
     const edgeRefExprs: Expr[] = []
-    for (const faceIds of orderedFaceIds) {
+    for (const payload of orderedPayloads) {
       const result = createEdgeRefObjectExpression(
-        { side_faces: faceIds },
+        payload,
         wasmInstance,
         modifiedAst,
         artifactGraph,
