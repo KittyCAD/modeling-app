@@ -237,6 +237,15 @@ pub(crate) enum ConsumedSolidOperation {
     Split,
 }
 
+impl ConsumedSolidOperation {
+    pub(crate) fn indefinite_article(self) -> &'static str {
+        match self {
+            Self::Intersect => "an",
+            Self::Union | Self::Subtract | Self::Split => "a",
+        }
+    }
+}
+
 impl std::fmt::Display for ConsumedSolidOperation {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -551,6 +560,27 @@ impl ExecState {
     /// operation. Returns the consumption info if so, or `None` otherwise.
     pub(crate) fn check_solid_consumed(&self, id: &Uuid) -> Option<&ConsumedSolidInfo> {
         self.mod_local.consumed_solids.get(id)
+    }
+
+    /// Follow direct replacement links until we find the latest known output.
+    /// Used only on error paths so diagnostics can suggest the current solid.
+    pub(crate) fn latest_consumed_output(&self, output_solid_id: Option<Uuid>) -> Option<Uuid> {
+        let mut latest = output_solid_id?;
+        let mut seen = AhashIndexSet::default();
+
+        while seen.insert(latest) {
+            let Some(next) = self
+                .mod_local
+                .consumed_solids
+                .get(&latest)
+                .and_then(|info| info.output_solid_id)
+            else {
+                break;
+            };
+            latest = next;
+        }
+
+        Some(latest)
     }
 
     /// Search the live environment for the name of a variable holding a Solid

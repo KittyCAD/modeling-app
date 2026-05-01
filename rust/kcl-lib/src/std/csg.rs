@@ -454,7 +454,9 @@ fn validate_solids_not_consumed(
         let operation = info.operation;
         let output_solid_id = info.output_solid_id;
         let consumed_var = exec_state.find_var_name_for_solid_id(solid.id);
-        let output_var = output_solid_id.and_then(|id| exec_state.find_var_name_for_solid_id(id));
+        let output_var = exec_state
+            .latest_consumed_output(output_solid_id)
+            .and_then(|id| exec_state.find_var_name_for_solid_id(id));
         let message = build_consumed_error_message(consumed_var.as_deref(), operation, output_var.as_deref());
 
         return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -488,22 +490,24 @@ fn build_consumed_error_message(
     operation: ConsumedSolidOperation,
     output_var: Option<&str>,
 ) -> String {
+    let article = operation.indefinite_article();
+
     match (consumed_var, output_var) {
         (Some(consumed), Some(output)) => format!(
-            "`{consumed}` was already consumed by a `{operation}` operation. \
+            "`{consumed}` was already consumed by {article} `{operation}` operation. \
              The operation result is now in `{output}`; use that for subsequent operations."
         ),
         (Some(consumed), None) => format!(
-            "`{consumed}` was already consumed by a `{operation}` operation \
+            "`{consumed}` was already consumed by {article} `{operation}` operation \
              and can no longer be used. Boolean operations destroy their inputs; \
              assign the result to a variable and use it for subsequent operations."
         ),
         (None, Some(output)) => format!(
-            "A solid was already consumed by a `{operation}` operation. \
+            "A solid was already consumed by {article} `{operation}` operation. \
              The operation result is now in `{output}`; use that for subsequent operations."
         ),
         (None, None) => format!(
-            "A solid was already consumed by a `{operation}` operation \
+            "A solid was already consumed by {article} `{operation}` operation \
              and can no longer be used. Boolean operations destroy their inputs; \
              assign the result to a variable and use it for subsequent operations."
         ),
@@ -566,16 +570,7 @@ second = subtract(target, tools = [tool2])
 
         let ctx = crate::ExecutorContext::new_mock(None).await;
         let program = crate::Program::parse_no_errs(code).unwrap();
-        let err = ctx
-            .run_mock(
-                &program,
-                &MockConfig {
-                    use_prev_memory: false,
-                    ..Default::default()
-                },
-            )
-            .await
-            .unwrap_err();
+        let err = ctx.run_mock(&program, &MockConfig::default()).await.unwrap_err();
         ctx.close().await;
 
         assert!(matches!(&err.error, KclError::Semantic { .. }), "{:?}", err.error);
@@ -624,16 +619,7 @@ second = subtract(first, tools = [tool])
 
         let ctx = crate::ExecutorContext::new_mock(None).await;
         let program = crate::Program::parse_no_errs(code).unwrap();
-        let err = ctx
-            .run_mock(
-                &program,
-                &MockConfig {
-                    use_prev_memory: false,
-                    ..Default::default()
-                },
-            )
-            .await
-            .unwrap_err();
+        let err = ctx.run_mock(&program, &MockConfig::default()).await.unwrap_err();
         ctx.close().await;
 
         assert!(matches!(&err.error, KclError::Semantic { .. }), "{:?}", err.error);
@@ -691,21 +677,13 @@ toolSketch = sketch(on = XY) {
 tool = extrude(region(point = [0, 0], sketch = toolSketch), length = 2)
 
 first = union([left, right])
-second = subtract(left, tools = [tool])
+second = union([first, tool])
+third = subtract(left, tools = [tool])
 "#;
 
         let ctx = crate::ExecutorContext::new_mock(None).await;
         let program = crate::Program::parse_no_errs(code).unwrap();
-        let err = ctx
-            .run_mock(
-                &program,
-                &MockConfig {
-                    use_prev_memory: false,
-                    ..Default::default()
-                },
-            )
-            .await
-            .unwrap_err();
+        let err = ctx.run_mock(&program, &MockConfig::default()).await.unwrap_err();
         ctx.close().await;
 
         assert!(matches!(&err.error, KclError::Semantic { .. }), "{:?}", err.error);
@@ -714,7 +692,7 @@ second = subtract(left, tools = [tool])
             message.contains("`left` was already consumed by a `union` operation"),
             "{message}"
         );
-        assert!(message.contains("The operation result is now in `first`"), "{message}");
+        assert!(message.contains("The operation result is now in `second`"), "{message}");
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -768,22 +746,13 @@ second = subtract(left, tools = [tool])
 
         let ctx = crate::ExecutorContext::new_mock(None).await;
         let program = crate::Program::parse_no_errs(code).unwrap();
-        let err = ctx
-            .run_mock(
-                &program,
-                &MockConfig {
-                    use_prev_memory: false,
-                    ..Default::default()
-                },
-            )
-            .await
-            .unwrap_err();
+        let err = ctx.run_mock(&program, &MockConfig::default()).await.unwrap_err();
         ctx.close().await;
 
         assert!(matches!(&err.error, KclError::Semantic { .. }), "{:?}", err.error);
         let message = err.error.message();
         assert!(
-            message.contains("`left` was already consumed by a `intersect` operation"),
+            message.contains("`left` was already consumed by an `intersect` operation"),
             "{message}"
         );
         assert!(message.contains("The operation result is now in `first`"), "{message}");
@@ -825,16 +794,7 @@ second = subtract(first, tools = [tool])
 
         let ctx = crate::ExecutorContext::new_mock(None).await;
         let program = crate::Program::parse_no_errs(code).unwrap();
-        let outcome = ctx
-            .run_mock(
-                &program,
-                &MockConfig {
-                    use_prev_memory: false,
-                    ..Default::default()
-                },
-            )
-            .await
-            .unwrap();
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
         ctx.close().await;
 
         assert!(outcome.variables.contains_key("second"));
@@ -876,16 +836,7 @@ second = subtract(first, tools = [tool])
 
         let ctx = crate::ExecutorContext::new_mock(None).await;
         let program = crate::Program::parse_no_errs(code).unwrap();
-        let err = ctx
-            .run_mock(
-                &program,
-                &MockConfig {
-                    use_prev_memory: false,
-                    ..Default::default()
-                },
-            )
-            .await
-            .unwrap_err();
+        let err = ctx.run_mock(&program, &MockConfig::default()).await.unwrap_err();
         ctx.close().await;
 
         assert!(matches!(&err.error, KclError::Semantic { .. }), "{:?}", err.error);
