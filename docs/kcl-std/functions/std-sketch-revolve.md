@@ -458,13 +458,13 @@ halfShell = revolve(
   angle = 180deg,
 )
 closedShell = revolve(
-       [
-         shellProfile.outerWall,
-         shellProfile.innerWall
-       ],
-       axis = Y,
-       bodyType = SURFACE,
-     )
+  [
+    shellProfile.outerWall,
+    shellProfile.innerWall
+  ],
+  axis = Y,
+  bodyType = SURFACE,
+)
   |> translate(z = 30)
 
 ```

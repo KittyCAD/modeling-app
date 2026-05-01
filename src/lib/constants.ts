@@ -47,6 +47,7 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   REVOLVE: 'revolve',
   PLANE: 'plane',
   HELIX: 'helix',
+  GEAR: 'gear',
   CLONE: 'clone',
   HIDDEN: 'hidden',
   SOLID: 'solid',
@@ -109,6 +110,12 @@ export const SKETCH_HIGHLIGHT_RGB = SKETCH_SELECTION_RGB.map((val) =>
 )
 /** The sketch mode revamp highlight rgb values as HEX */
 export const SKETCH_HIGHLIGHT_COLOR = packRgbToColor(SKETCH_HIGHLIGHT_RGB)
+/** The sketch mode revamp highlight for secondary items (like a symmetry axis) as RGB */
+export const SKETCH_HIGHLIGHT_SECONDARY_RGB = [3, 231, 182]
+/** The sketch mode revamp highlight for secondary items (like a symmetry axis) as HEX */
+export const SKETCH_HIGHLIGHT_SECONDARY_COLOR = packRgbToColor(
+  SKETCH_HIGHLIGHT_SECONDARY_RGB
+)
 
 /** Corresponding engine selections and highlights */
 export const SYSTEM_SELECTION_COLOR = {
@@ -183,9 +190,6 @@ export const MAKE_TOAST_MESSAGES = {
   ERROR_STARTING_PRINT: 'Error while starting print.',
   SUCCESS: 'Started print successfully.',
 }
-
-/** Toast id for the app auto-updater toast */
-export const AUTO_UPDATER_TOAST_ID = 'auto-updater-toast'
 
 /** Toast id for the insert foreign part toast */
 export const INSERT_FOREIGN_TOAST_ID = 'insert-foreign-toast'
@@ -292,6 +296,8 @@ export const CMD_NAME_QUERY_PARAM = 'cmd'
 export const CMD_GROUP_QUERY_PARAM = 'groupId'
 /** A query parameter that manually sets the engine pool the frontend should use. */
 export const POOL_QUERY_PARAM = 'pool'
+/** A query parameter containing the project ID to open inside the app. */
+export const PROJECT_ID_QUERY_PARAM = 'project-id'
 /** A query parameter to create a file
  * @deprecated: supporting old share links with this. For new command URLs, use "cmd"
  */
@@ -359,7 +365,7 @@ export const PENDING_COMMAND_TIMEOUT = 60_000
 export const LAYOUT_SAVE_THROTTLE = 500
 
 // Zookeeper input
-export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'fast'
+export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'thoughtful'
 
 // Default backface color
 export const DEFAULT_BACKFACE_COLOR = '#00D5FF'

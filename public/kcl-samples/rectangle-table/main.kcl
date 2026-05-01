@@ -17,27 +17,43 @@ legHeight = tableHeight - tableTopThickness
 // Tabletop
 tableTopPlane = offsetPlane(XY, offset = tableHeight)
 tableTopSketch = startSketchOn(tableTopPlane)
-tableTopProfile = startProfile(tableTopSketch, at = [0, 0])
-  |> yLine(length = tableLength)
-  |> xLine(length = tableWidth)
-  |> yLine(length = -tableLength)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-tableTopExtrude = extrude(tableTopProfile, length = -tableTopThickness)
+tableTopProfile = sketch(on = tableTopSketch) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 1500mm])
+  line2 = line(start = [var 0mm, var 1500mm], end = [var 600mm, var 1500mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 600mm, var 1500mm], end = [var 600mm, var 0mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 600mm, var 0mm], end = [var 0mm, var 0mm])
+  coincident([line3.end, line4.start])
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+  distance([line1.start, line1.end]) == tableLength
+  distance([line2.start, line2.end]) == tableWidth
+}
+region001 = region(segments = [
+  tableTopProfile.line1,
+  tableTopProfile.line2
+])
+tableTopExtrude = extrude(region001, length = -tableTopThickness)
 
 // Leg
 legSketch = startSketchOn(XY)
-legProfile = startProfile(legSketch, at = [0, 0])
-  |> yLine(length = legThickness)
-  |> xLine(length = legThickness)
-  |> yLine(length = -legThickness)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-legExtrude = extrude(legProfile, length = legHeight)
-
-leg2 = clone(legExtrude)
-  |> translate(x = tableWidth - legThickness, y = 0, z = 0)
-leg3 = clone(legExtrude)
-  |> translate(x = 0, y = tableLength - legThickness, z = 0)
-leg4 = clone(legExtrude)
-  |> translate(x = tableWidth - legThickness, y = tableLength - legThickness, z = 0)
+legProfile = sketch(on = legSketch) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 40mm])
+  line2 = line(start = [var 0mm, var 40mm], end = [var 40mm, var 40mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 40mm, var 40mm], end = [var 40mm, var 0mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 40mm, var 0mm], end = [var 0mm, var 0mm])
+  coincident([line3.end, line4.start])
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+  equalLength([line4, line3, line2, line1])
+  distance([line4.start, line4.end]) == legThickness
+}
+region002 = region(segments = [legProfile.line1, legProfile.line2])
+legExtrude = extrude(region002, length = legHeight)
+  |> patternLinear3d(instances = 2, distance = tableWidth - legThickness, axis = X)
+  |> patternLinear3d(instances = 2, distance = tableLength - legThickness, axis = Y)

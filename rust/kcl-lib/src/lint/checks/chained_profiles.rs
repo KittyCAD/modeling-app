@@ -562,11 +562,11 @@ extrude(profile1, length = 5)
             "\
 sketch1 = startSketchOn(XY)
 profile1 = circle(
-       sketch1,
-       center = [0, 0],
-       radius = 5,
-       tag = $profile2,
-     )
+  sketch1,
+  center = [0, 0],
+  radius = 5,
+  tag = $profile2,
+)
 profile3 = circle(sketch1, center = [10, 0], radius = 5)
 extrude([profile1, profile3], length = 5)
 "

@@ -2,12 +2,15 @@ import { describe, expect, it } from 'vitest'
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
   createArcApiObject,
+  createCircleApiObject,
   createLineApiObject,
   createPointApiObject,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
 import {
   buildAngleConstraintInput,
   buildFixedConstraintInput,
+  buildSymmetricConstraintInput,
+  buildSymmetricConstraintInputWithExplicitAxis,
   buildTangentConstraintInput,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
@@ -153,6 +156,96 @@ describe('buildTangentConstraintInput', () => {
     expect(buildTangentConstraintInput([], objects)).toBeNull()
     expect(buildTangentConstraintInput([10], objects)).toBeNull()
     expect(buildTangentConstraintInput([10, 11], objects)).toBeNull()
+  })
+})
+
+describe('buildSymmetricConstraintInput', () => {
+  it('builds a symmetric constraint for two points and an axis line', () => {
+    const pointA = createPointApiObject({ id: 1, x: -5, y: 0 })
+    const pointB = createPointApiObject({ id: 2, x: 5, y: 0 })
+    const axisStart = createPointApiObject({ id: 3, x: 0, y: -10 })
+    const axisEnd = createPointApiObject({ id: 4, x: 0, y: 10 })
+    const axis = createLineApiObject({ id: 10, start: 3, end: 4 })
+    const objects = createObjectsArray([
+      pointA,
+      pointB,
+      axisStart,
+      axisEnd,
+      axis,
+    ])
+
+    expect(buildSymmetricConstraintInput([1, 2, 10], objects)).toEqual({
+      type: 'Symmetric',
+      input: [1, 2],
+      axis: 10,
+    })
+  })
+
+  it('builds a symmetric constraint for two arc-like segments and an axis line', () => {
+    const centerA = createPointApiObject({ id: 1, x: -10, y: 0 })
+    const startA = createPointApiObject({ id: 2, x: -15, y: 0 })
+    const endA = createPointApiObject({ id: 3, x: -10, y: 5 })
+    const centerB = createPointApiObject({ id: 4, x: 10, y: 0 })
+    const startB = createPointApiObject({ id: 5, x: 15, y: 0 })
+    const axisStart = createPointApiObject({ id: 6, x: 0, y: -10 })
+    const axisEnd = createPointApiObject({ id: 7, x: 0, y: 10 })
+    const arc = createArcApiObject({ id: 10, center: 1, start: 2, end: 3 })
+    const circle = createCircleApiObject({ id: 11, center: 4, start: 5 })
+    const axis = createLineApiObject({ id: 12, start: 6, end: 7 })
+    const objects = createObjectsArray([
+      centerA,
+      startA,
+      endA,
+      centerB,
+      startB,
+      axisStart,
+      axisEnd,
+      arc,
+      circle,
+      axis,
+    ])
+
+    expect(buildSymmetricConstraintInput([10, 12, 11], objects)).toEqual({
+      type: 'Symmetric',
+      input: [10, 11],
+      axis: 12,
+    })
+  })
+
+  it('requires an explicit axis when three lines are selected', () => {
+    const p1 = createPointApiObject({ id: 1, x: 0, y: -10 })
+    const p2 = createPointApiObject({ id: 2, x: 0, y: 10 })
+    const p3 = createPointApiObject({ id: 3, x: -10, y: 0 })
+    const p4 = createPointApiObject({ id: 4, x: -10, y: 5 })
+    const p5 = createPointApiObject({ id: 5, x: 10, y: 0 })
+    const p6 = createPointApiObject({ id: 6, x: 10, y: 5 })
+    const axis = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const left = createLineApiObject({ id: 11, start: 3, end: 4 })
+    const right = createLineApiObject({ id: 12, start: 5, end: 6 })
+    const objects = createObjectsArray([
+      p1,
+      p2,
+      p3,
+      p4,
+      p5,
+      p6,
+      axis,
+      left,
+      right,
+    ])
+
+    expect(buildSymmetricConstraintInput([10, 11, 12], objects)).toBeNull()
+    expect(
+      buildSymmetricConstraintInputWithExplicitAxis({
+        selectedIds: [10, 11, 12],
+        axisId: 10,
+        objects,
+      })
+    ).toEqual({
+      type: 'Symmetric',
+      input: [11, 12],
+      axis: 10,
+    })
   })
 })
 

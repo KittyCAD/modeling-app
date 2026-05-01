@@ -33,6 +33,15 @@ description: Artifact commands gear-rack.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -60,7 +69,7 @@ description: Artifact commands gear-rack.kcl
         "path": "[uuid]",
         "to": {
           "x": -50.0,
-          "y": 0.0,
+          "y": 0.00000000004000000228961467,
           "z": 0.0
         }
       }
@@ -81,11 +90,11 @@ description: Artifact commands gear-rack.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 100.0,
-            "y": 0.0,
+            "x": 50.0,
+            "y": 0.00000000006000000348442202,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -98,11 +107,11 @@ description: Artifact commands gear-rack.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 10.875,
+            "x": 50.0,
+            "y": 10.8750000001,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -115,11 +124,11 @@ description: Artifact commands gear-rack.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -100.0,
-            "y": 0.0,
+            "x": -50.0,
+            "y": 10.875000000125,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -127,8 +136,29 @@ description: Artifact commands gear-rack.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -50.0,
+            "y": 0.000000000020000001134807336,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -197,11 +227,20 @@ description: Artifact commands gear-rack.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "make_plane",
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 5.0
         },
         "x_axis": {
           "x": 1.0,
@@ -213,9 +252,32 @@ description: Artifact commands gear-rack.kcl
           "y": 1.0,
           "z": 0.0
         },
-        "size": 60.0,
+        "size": 100.0,
         "clobber": false,
-        "hide": true
+        "hide": false
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "plane_set_color",
+        "plane_id": "[uuid]",
+        "color": {
+          "r": 0.6,
+          "g": 0.6,
+          "b": 0.6,
+          "a": 0.3
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -248,8 +310,8 @@ description: Artifact commands gear-rack.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -49.432328,
-          "y": 10.875,
+          "x": -50.00000000000024,
+          "y": 10.874999999999234,
           "z": 0.0
         }
       }
@@ -268,13 +330,21 @@ description: Artifact commands gear-rack.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 0.157636,
-            "y": 0.110378,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": -50.000000000000455,
+            "y": 11.044999999884068
           },
-          "angle_snap_increment": null
+          "radius": 0.16999999988483339,
+          "start": {
+            "unit": "degrees",
+            "value": -89.99999999992815
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -20.958870643898084
+          },
+          "relative": false
         }
       }
     },
@@ -287,11 +357,11 @@ description: Artifact commands gear-rack.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.329118,
-            "y": 0.904244,
+            "x": -49.50377591081058,
+            "y": 11.865799947665554,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -302,13 +372,21 @@ description: Artifact commands gear-rack.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 0.157636,
-            "y": 0.110378,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": -49.34502022871194,
+            "y": 11.805000000647354
           },
-          "angle_snap_increment": null
+          "radius": 0.1700000004588868,
+          "start": {
+            "unit": "degrees",
+            "value": 159.0442551983512
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 90.01591122272224
+          },
+          "relative": false
         }
       }
     },
@@ -321,11 +399,11 @@ description: Artifact commands gear-rack.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.186505,
-            "y": 0.0,
+            "x": -49.15506743755188,
+            "y": 11.974999999969759,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -336,13 +414,21 @@ description: Artifact commands gear-rack.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 0.157636,
-            "y": -0.110378,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": -49.155065457698804,
+            "y": 11.804999999894576
           },
-          "angle_snap_increment": null
+          "radius": 0.17000000008671134,
+          "start": {
+            "unit": "degrees",
+            "value": 90.00066727779509
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 20.94273718838696
+          },
+          "relative": false
         }
       }
     },
@@ -355,11 +441,24 @@ description: Artifact commands gear-rack.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.329118,
-            "y": -0.904244,
+            "x": -48.65874952079669,
+            "y": 10.984183957714983,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -50.00000000000024,
+          "y": 10.8749999999994,
+          "z": 0.0
         }
       }
     },
@@ -370,13 +469,13 @@ description: Artifact commands gear-rack.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 0.157636,
-            "y": -0.110378,
+          "type": "line",
+          "end": {
+            "x": -48.5000000000003,
+            "y": 10.874999999999565,
             "z": 0.0
           },
-          "angle_snap_increment": null
+          "relative": false
         }
       }
     },
@@ -384,8 +483,37 @@ description: Artifact commands gear-rack.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -48.50000000000041,
+            "y": 11.045000000037792
+          },
+          "radius": 0.17000000003822713,
+          "start": {
+            "unit": "degrees",
+            "value": -89.9999999999617
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -159.0384466594501
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -410,7 +538,7 @@ description: Artifact commands gear-rack.kcl
       "command": {
         "type": "extrude",
         "target": "[uuid]",
-        "distance": 5.0,
+        "distance": -5.0,
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
@@ -448,6 +576,15 @@ description: Artifact commands gear-rack.kcl
         "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -461,7 +598,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 1.570796,
+                "x": 1.59,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -490,7 +627,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 3.141592,
+                "x": 3.18,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -519,7 +656,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 4.712388000000001,
+                "x": 4.7700000000000005,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -548,7 +685,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 6.283184,
+                "x": 6.36,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -577,7 +714,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 7.85398,
+                "x": 7.95,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -606,7 +743,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 9.424776000000001,
+                "x": 9.540000000000001,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -635,7 +772,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 10.995572000000001,
+                "x": 11.13,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -664,7 +801,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 12.566368,
+                "x": 12.72,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -693,7 +830,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 14.137164,
+                "x": 14.31,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -722,7 +859,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 15.70796,
+                "x": 15.9,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -751,7 +888,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 17.278756,
+                "x": 17.490000000000002,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -780,7 +917,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 18.849552000000003,
+                "x": 19.080000000000002,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -809,7 +946,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 20.420348,
+                "x": 20.67,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -838,7 +975,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 21.991144000000002,
+                "x": 22.26,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -867,7 +1004,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 23.56194,
+                "x": 23.85,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -896,7 +1033,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 25.132736,
+                "x": 25.44,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -925,7 +1062,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 26.703532000000003,
+                "x": 27.03,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -954,7 +1091,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 28.274328,
+                "x": 28.62,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -983,7 +1120,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 29.845124000000002,
+                "x": 30.21,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1012,7 +1149,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 31.41592,
+                "x": 31.8,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1041,7 +1178,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 32.986716,
+                "x": 33.39,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1070,7 +1207,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 34.557512,
+                "x": 34.980000000000004,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1099,7 +1236,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 36.128308000000004,
+                "x": 36.57,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1128,7 +1265,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 37.699104000000005,
+                "x": 38.160000000000004,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1157,7 +1294,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 39.2699,
+                "x": 39.75,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1186,7 +1323,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 40.840696,
+                "x": 41.34,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1215,7 +1352,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 42.411492,
+                "x": 42.93,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1244,7 +1381,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 43.982288000000004,
+                "x": 44.52,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1273,7 +1410,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 45.553084000000005,
+                "x": 46.11,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1302,7 +1439,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 47.12388,
+                "x": 47.7,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1331,7 +1468,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 48.694676,
+                "x": 49.29,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1360,7 +1497,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 50.265472,
+                "x": 50.88,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1389,7 +1526,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 51.836268000000004,
+                "x": 52.470000000000006,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1418,7 +1555,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 53.407064000000005,
+                "x": 54.06,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1447,7 +1584,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 54.97786,
+                "x": 55.650000000000006,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1476,7 +1613,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 56.548656,
+                "x": 57.24,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1505,7 +1642,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 58.119452,
+                "x": 58.830000000000005,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1534,7 +1671,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 59.690248000000004,
+                "x": 60.42,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1563,7 +1700,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 61.261044000000005,
+                "x": 62.010000000000005,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1592,7 +1729,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 62.83184,
+                "x": 63.6,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1621,7 +1758,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 64.402636,
+                "x": 65.19,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1650,7 +1787,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 65.973432,
+                "x": 66.78,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1679,7 +1816,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 67.544228,
+                "x": 68.37,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1708,7 +1845,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 69.115024,
+                "x": 69.96000000000001,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1737,7 +1874,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 70.68582,
+                "x": 71.55,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1766,7 +1903,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 72.25661600000001,
+                "x": 73.14,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1795,7 +1932,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 73.82741200000001,
+                "x": 74.73,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1824,7 +1961,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 75.39820800000001,
+                "x": 76.32000000000001,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1853,7 +1990,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 76.969004,
+                "x": 77.91000000000001,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1882,7 +2019,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 78.5398,
+                "x": 79.5,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1911,7 +2048,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 80.110596,
+                "x": 81.09,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1940,7 +2077,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 81.681392,
+                "x": 82.68,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1969,7 +2106,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 83.252188,
+                "x": 84.27000000000001,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -1998,7 +2135,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 84.822984,
+                "x": 85.86,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -2027,7 +2164,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 86.39378,
+                "x": 87.45,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -2056,7 +2193,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 87.96457600000001,
+                "x": 89.04,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -2085,7 +2222,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 89.53537200000001,
+                "x": 90.63000000000001,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -2114,7 +2251,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 91.10616800000001,
+                "x": 92.22,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -2143,7 +2280,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 92.676964,
+                "x": 93.81,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -2172,7 +2309,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 94.24776,
+                "x": 95.4,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -2201,7 +2338,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 95.818556,
+                "x": 96.99000000000001,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -2230,7 +2367,7 @@ description: Artifact commands gear-rack.kcl
           [
             {
               "translate": {
-                "x": 97.389352,
+                "x": 98.58,
                 "y": 0.0,
                 "z": 0.0
               },
@@ -2257,384 +2394,6 @@ description: Artifact commands gear-rack.kcl
             }
           ]
         ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "make_plane",
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "y_axis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "size": 60.0,
-        "clobber": false,
-        "hide": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -50.0,
-          "y": 11.849525,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.314524,
-            "y": -0.864147,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": 0.157636,
-            "y": -0.110378,
-            "z": 0.0
-          },
-          "angle_snap_increment": null
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -50.0,
-            "y": 10.875,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extrude",
-        "target": "[uuid]",
-        "distance": 5.0,
-        "faces": null,
-        "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "make_plane",
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "y_axis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "size": 60.0,
-        "clobber": false,
-        "hide": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 50.0,
-          "y": 11.849525,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -0.314524,
-            "y": -0.864147,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "tangential_arc_to",
-          "to": {
-            "x": -0.157636,
-            "y": -0.110378,
-            "z": 0.0
-          },
-          "angle_snap_increment": null
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 50.0,
-            "y": 10.875,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extrude",
-        "target": "[uuid]",
-        "distance": 5.0,
-        "faces": null,
-        "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
       }
     }
   ]

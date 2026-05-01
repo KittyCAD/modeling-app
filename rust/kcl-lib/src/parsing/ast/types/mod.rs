@@ -4156,6 +4156,10 @@ impl Node<FunctionExpression> {
             source_ranges: vec![self.into()],
         }
     }
+
+    pub fn name_str(&self) -> Option<&str> {
+        self.name.as_ref().map(|id| id.name.as_str())
+    }
 }
 
 impl FunctionExpression {

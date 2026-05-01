@@ -106,11 +106,11 @@ description: Artifact commands split-washer-spring-version.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
+            "x": 2.0,
             "y": 1.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -123,28 +123,28 @@ description: Artifact commands split-washer-spring-version.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2.0,
+            "x": 4.0,
+            "y": 1.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 4.0,
             "y": 0.0,
             "z": 0.0
           },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0
-          },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -169,8 +169,12 @@ description: Artifact commands split-washer-spring-version.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region_from_query_point",
+        "object_id": "[uuid]",
+        "query_point": {
+          "x": 2.0025,
+          "y": 0.5
+        }
       }
     },
     {

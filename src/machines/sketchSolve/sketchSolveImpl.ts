@@ -37,10 +37,11 @@ import {
   SKETCH_LAYER,
   SKETCH_SOLVE_GROUP,
 } from '@src/clientSideScene/sceneUtils'
+import { selectionDispatchedBySketchSolveEvent } from '@src/editor/plugins/sketchSelection'
 import { compilationIssuesToDiagnostics } from '@src/lang/errors'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { deferredCallback } from '@src/lib/utils'
+import { deferredCallback, isNonNullable, isOverlap } from '@src/lib/utils'
 import type { InvisibleConstraintDisplayState } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
 import {
   CONSTRAINT_TYPE,
@@ -52,6 +53,8 @@ import {
 import {
   type ConstraintHoverPopup,
   findSegmentsForInvisibleConstraint,
+  getInvisibleConstraintSegmentHoverColor,
+  isInvisibleConstraintSegmentSecondaryHovered,
   isInvisibleConstraintObject,
 } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
 import { updateOriginSprite } from '@src/machines/sketchSolve/originSprite'
@@ -71,6 +74,7 @@ import { machine as rectTool } from '@src/machines/sketchSolve/tools/rectTool'
 import { machine as tangentialArcTool } from '@src/machines/sketchSolve/tools/tangentialArcToolDiagram'
 import { machine as threePointArcTool } from '@src/machines/sketchSolve/tools/threePointArcToolDiagram'
 import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
+import { constraintToolMachines } from '@src/machines/sketchSolve/tools/constraintToolMachine'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import {
   type ActionArgs,
@@ -107,17 +111,13 @@ export type SketchSolveMachineEvent =
   | { type: 'exit' }
   | { type: 'escape' }
   | { type: 'unequip tool' }
-  | { type: 'equip tool'; data: { tool: EquipTool } }
+  | {
+      type: 'equip tool'
+      data: { tool: EquipTool }
+      keepSelection?: boolean
+    }
   | {
       type:
-        | 'coincident'
-        | 'Fixed'
-        | 'Tangent'
-        | 'EqualLength'
-        | 'Vertical'
-        | 'Horizontal'
-        | 'Parallel'
-        | 'Perpendicular'
         | 'Dimension'
         | 'HorizontalDistance'
         | 'VerticalDistance'
@@ -138,6 +138,12 @@ export type SketchSolveMachineEvent =
       data: {
         hoveredId: SketchSolveSelectionId | null
         constraintHoverPopups?: ConstraintHoverPopup[]
+      }
+    }
+  | {
+      type: 'update selected ids from code selection'
+      data: {
+        ranges: SourceRange[]
       }
     }
   | { type: typeof CHILD_TOOL_DONE_EVENT }
@@ -186,17 +192,6 @@ export type UpdateSketchOutcomeEvent = {
   }
 }
 
-type ToolActorRef =
-  | ActorRefFrom<typeof dimensionTool>
-  | ActorRefFrom<typeof rectTool>
-  | ActorRefFrom<typeof pointTool>
-  | ActorRefFrom<typeof lineTool>
-  | ActorRefFrom<typeof trimTool>
-  | ActorRefFrom<typeof centerArcTool>
-  | ActorRefFrom<typeof circleTool>
-  | ActorRefFrom<typeof tangentialArcTool>
-  | ActorRefFrom<typeof threePointArcTool>
-
 export const equipTools = Object.freeze({
   trimTool,
   // both use the same tool, opened with a different flag
@@ -210,7 +205,10 @@ export const equipTools = Object.freeze({
   circleTool,
   tangentialArcTool,
   threePointArcTool,
+  ...constraintToolMachines,
 })
+
+type ToolActorRef = ActorRefFrom<(typeof equipTools)[EquipTool]>
 
 export type SketchSolveContext = {
   sketchSolveToolName: EquipTool | null
@@ -764,6 +762,29 @@ export function updateSelectedIds({ event, context }: SolveAssignArgs) {
   return updates
 }
 
+export function updateSelectedIdsFromCodeSelection({
+  context,
+  event,
+}: SolveAssignArgs): Partial<SketchSolveContext> {
+  assertEvent(event, 'update selected ids from code selection')
+
+  const objects = context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects
+  if (!objects) {
+    return {
+      selectedIds: [],
+      duringAreaSelectIds: [],
+    }
+  }
+
+  return {
+    selectedIds: getObjectIdsForCodeSelectionRanges(
+      getCurrentSketchObjectsById(objects, context.sketchId),
+      event.data.ranges
+    ),
+    duringAreaSelectIds: [],
+  }
+}
+
 // Updates codemirror selection highlights based on currently selected objects.
 export function updateSelectedCodeHighlight({ context }: SolveActionArgs) {
   const objects = context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects
@@ -800,6 +821,7 @@ export function updateSelectedCodeHighlight({ context }: SolveActionArgs) {
         : [EditorSelection.cursor(context.kclManager.code.length)],
       Math.max(codeMirrorSelections.length - 1, 0)
     ),
+    annotations: selectionDispatchedBySketchSolveEvent,
   })
 }
 
@@ -936,6 +958,35 @@ function getSourceRangesForObjectId(
     return object.source.ranges.map(([range]) => range)
   }
   return []
+}
+
+function getObjectIdsForCodeSelectionRanges(
+  objects: ApiObject[],
+  codeSelectionRanges: SourceRange[]
+): number[] {
+  return objects
+    .filter(isNonNullable)
+    .filter(isSelectableFromCodeSelection)
+    .filter((object) =>
+      getSourceRangesForObjectId(objects, object.id).some((sourceRange) =>
+        codeSelectionRanges.some((selectionRange) =>
+          isOverlap(sourceRange, selectionRange)
+        )
+      )
+    )
+    .map((object) => object.id)
+}
+
+function isSelectableFromCodeSelection(object: ApiObject): boolean {
+  if (isConstraint(object)) {
+    return true
+  }
+
+  if (object.kind.type !== 'Segment') {
+    return false
+  }
+
+  return !isPointSegment(object) || object.kind.segment.owner === null
 }
 
 function dedupeSourceRanges(sourceRanges: SourceRange[]): SourceRange[] {
@@ -1104,11 +1155,26 @@ function getSegmentRenderState(
   draftEntityIds: Array<number> | undefined,
   objects: ApiObject[]
 ): SegmentRenderState {
+  const hoveredObject = isObjectSelectionId(hoveredId)
+    ? objects[hoveredId]
+    : null
+  const hoveredInvisibleConstraint = isInvisibleConstraintObject(hoveredObject)
+    ? hoveredObject
+    : null
+
   return {
     selected:
       selectedIds.includes(segmentId) ||
       duringAreaSelectIds.includes(segmentId),
     hovered: hoveredId === segmentId || hoveredSegmentIds.includes(segmentId),
+    secondaryHovered: isInvisibleConstraintSegmentSecondaryHovered(
+      segmentId,
+      hoveredInvisibleConstraint
+    ),
+    hoverColor: getInvisibleConstraintSegmentHoverColor(
+      segmentId,
+      hoveredInvisibleConstraint
+    ),
     draft: draftEntityIds?.includes(segmentId) ?? false,
     construction: isConstructionSegment(objects[segmentId]),
   }
@@ -1407,6 +1473,9 @@ export function spawnTool(
       rustContext: context.rustContext,
       kclManager: context.kclManager,
       sketchId: context.sketchId,
+      initialSelectionIds: context.selectedIds,
+      initialObjects:
+        context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || [],
       toolVariant: toolVariants[nameOfToolToSpawn],
     },
   })
@@ -1444,6 +1513,8 @@ export type ToolInput = {
   rustContext: RustContext
   kclManager: KclManager
   sketchId: number
+  initialSelectionIds?: SketchSolveSelectionId[]
+  initialObjects?: ApiObject[]
   toolVariant?: string // eg. 'corner' | 'center' | 'angled' for rectTool
 }
 

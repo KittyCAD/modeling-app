@@ -44,13 +44,13 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v6.3.0
         with:
           node-version-file: .nvmrc
           cache: npm
 
       - run: npm install
-      - uses: taiki-e/install-action@7a4939c09608b2a1986b484eca1d16fd0db8ebef
+      - uses: taiki-e/install-action@58e862542551f667fa44c8a2a4a1d64ad477c96a
         with:
           tool: wasm-pack
 
@@ -75,13 +75,13 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v6.3.0
         with:
           node-version-file: .nvmrc
           cache: npm
 
       - run: npm install
-      - uses: taiki-e/install-action@7a4939c09608b2a1986b484eca1d16fd0db8ebef
+      - uses: taiki-e/install-action@58e862542551f667fa44c8a2a4a1d64ad477c96a
         with:
           tool: wasm-pack
 

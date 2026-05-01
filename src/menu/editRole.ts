@@ -102,6 +102,7 @@ export const modelingEditRole = (
       {
         label: 'Format Code',
         id: 'Edit.Format code',
+        accelerator: 'Alt+Shift+F',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'Edit.Format code',

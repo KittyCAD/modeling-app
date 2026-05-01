@@ -2,9 +2,11 @@ import {
   sendToActorIfActive,
   updateHoveredId,
   updateSelectedCodeHighlight,
+  updateSelectedIdsFromCodeSelection,
   updateSelectedIds,
   updateSketchOutcome,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { topLevelRange } from '@src/lang/util'
 import {
   createLineApiObject,
   createPointApiObject,
@@ -12,6 +14,23 @@ import {
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
 import toast from 'react-hot-toast'
 import { describe, expect, test, vi } from 'vitest'
+
+function createSketchApiObject(id: number) {
+  return {
+    id,
+    kind: {
+      type: 'Sketch',
+      args: { on: { default: 'xy' } },
+      constraints: [],
+      plane: 8,
+      segments: [],
+    },
+    label: '',
+    comments: '',
+    artifact_id: '0',
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
+  } as const
+}
 
 // This has to be an integration test because sketchSolveImpl has a dependency tracing back to WASM,
 // even though this function doesn't directly use it.
@@ -32,6 +51,51 @@ describe('updateSelectedIds', () => {
     } as any)
 
     expect(result.selectedIds).toEqual([10])
+  })
+})
+
+describe('updateSelectedIdsFromCodeSelection', () => {
+  test('selects current-sketch objects whose source overlaps the editor selection', () => {
+    const sketch = createSketchApiObject(0)
+    const childPoint = createPointApiObject({ id: 1, owner: 2 })
+    childPoint.source = {
+      type: 'Simple',
+      range: [10, 20, 0],
+      node_path: null,
+    }
+    const line = createLineApiObject({ id: 2, start: 1, end: 4 })
+    line.source = { type: 'Simple', range: [10, 20, 0], node_path: null }
+    const standalonePoint = createPointApiObject({ id: 3 })
+    standalonePoint.source = {
+      type: 'Simple',
+      range: [30, 40, 0],
+      node_path: null,
+    }
+
+    const result = updateSelectedIdsFromCodeSelection({
+      context: {
+        sketchId: 0,
+        selectedIds: [99],
+        duringAreaSelectIds: [100],
+        sketchExecOutcome: {
+          sceneGraphDelta: createSceneGraphDelta([
+            sketch as any,
+            childPoint,
+            line,
+            standalonePoint,
+          ]),
+        },
+      },
+      event: {
+        type: 'update selected ids from code selection',
+        data: {
+          ranges: [topLevelRange(15, 15), topLevelRange(35, 36)],
+        },
+      },
+    } as any)
+
+    expect(result.selectedIds).toEqual([2, 3])
+    expect(result.duringAreaSelectIds).toEqual([])
   })
 })
 
