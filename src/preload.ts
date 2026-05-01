@@ -1,6 +1,7 @@
 import path from 'path'
 import fs from 'node:fs/promises'
 import os from 'node:os'
+import type { DeviceFlowAuthorization } from '@root/interface'
 import packageJson from '@root/package.json'
 import type { MachinesListing } from '@src/lib/MachineManager'
 import chokidar from 'chokidar'
@@ -31,7 +32,7 @@ const takeElectronWindowScreenshot = ({
 }) => ipcRenderer.invoke('take.screenshot', { width, height })
 const showInFolder = (path: string) =>
   ipcRenderer.invoke('shell.showItemInFolder', path)
-const startDeviceFlow = (host: string): Promise<string> =>
+const startDeviceFlow = (host: string): Promise<DeviceFlowAuthorization> =>
   ipcRenderer.invoke('startDeviceFlow', host)
 const loginWithDeviceFlow = (): Promise<string> =>
   ipcRenderer.invoke('loginWithDeviceFlow')

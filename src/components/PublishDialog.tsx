@@ -192,7 +192,7 @@ export function PublishDialog({
                   setHasEditedTitle(true)
                   setTitle(event.target.value)
                 }}
-                placeholder="My awesome CAD project"
+                placeholder="Industrial Robot Arm"
                 aria-invalid={hasTriedSubmit && !titleIsValid}
                 className={`mt-2 w-full rounded border bg-chalkboard-10/90 px-2.5 py-2 text-sm text-chalkboard-100 placeholder:text-chalkboard-60 focus:outline-none focus-visible:outline-appForeground dark:bg-chalkboard-90/80 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-40 ${
                   hasTriedSubmit && !titleIsValid

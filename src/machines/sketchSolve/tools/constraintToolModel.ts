@@ -10,6 +10,7 @@ import {
 export const constraintToolNames = [
   'coincidentConstraintTool',
   'midpointConstraintTool',
+  'symmetricConstraintTool',
   'tangentConstraintTool',
   'parallelConstraintTool',
   'equalLengthConstraintTool',
@@ -22,6 +23,7 @@ export const constraintToolNames = [
 export type ConstraintToolName =
   | 'coincidentConstraintTool'
   | 'midpointConstraintTool'
+  | 'symmetricConstraintTool'
   | 'tangentConstraintTool'
   | 'parallelConstraintTool'
   | 'equalLengthConstraintTool'
@@ -208,6 +210,54 @@ export const constraintToolConfigs = {
         id: 'arcLike-arcLike',
         resultingConstraintType: 'Tangent',
         slots: [['arcLike'], ['arcLike']],
+        areaSelectionPolicy: 'consume-minimal',
+      },
+    ],
+  },
+  symmetricConstraintTool: {
+    toolName: 'symmetricConstraintTool',
+    keepEquippedAfterApply: true,
+    modes: [
+      {
+        id: 'point-point-line',
+        resultingConstraintType: 'Symmetric',
+        slots: [['point'], ['point'], ['line']],
+        areaSelectionPolicy: 'consume-minimal',
+      },
+      {
+        id: 'point-line-point',
+        resultingConstraintType: 'Symmetric',
+        slots: [['point'], ['line'], ['point']],
+        areaSelectionPolicy: 'consume-minimal',
+      },
+      {
+        id: 'line-point-point',
+        resultingConstraintType: 'Symmetric',
+        slots: [['line'], ['point'], ['point']],
+        areaSelectionPolicy: 'consume-minimal',
+      },
+      {
+        id: 'arcLike-arcLike-line',
+        resultingConstraintType: 'Symmetric',
+        slots: [['arcLike'], ['arcLike'], ['line']],
+        areaSelectionPolicy: 'consume-minimal',
+      },
+      {
+        id: 'arcLike-line-arcLike',
+        resultingConstraintType: 'Symmetric',
+        slots: [['arcLike'], ['line'], ['arcLike']],
+        areaSelectionPolicy: 'consume-minimal',
+      },
+      {
+        id: 'line-arcLike-arcLike',
+        resultingConstraintType: 'Symmetric',
+        slots: [['line'], ['arcLike'], ['arcLike']],
+        areaSelectionPolicy: 'consume-minimal',
+      },
+      {
+        id: 'line-line-line',
+        resultingConstraintType: 'Symmetric',
+        slots: [['line'], ['line'], ['line']],
         areaSelectionPolicy: 'consume-minimal',
       },
     ],
