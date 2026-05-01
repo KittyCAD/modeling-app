@@ -4380,15 +4380,13 @@ function computeSelectionFromSourceRangeAndAST(
   const artifactGraph = kclManager.artifactGraph
   const artifact = getArtifactFromRange(sourceRange, artifactGraph) || undefined
   const codeRef = codeRefFromRange(sourceRange, ast)
-  let entityRef: EntityReference | undefined
-  if (artifact) {
-    for (const [id, a] of artifactGraph) {
-      if (a === artifact) {
-        entityRef = artifactToEntityRef(artifact.type, id)
-        break
-      }
-    }
-  }
+  const entityRef: EntityReference | undefined = artifact
+    ? artifactToEntityRef(
+        artifact.type,
+        artifact.id,
+        artifact.type === 'segment' ? artifact.pathId : undefined
+      )
+    : undefined
   const selection: Selections = {
     graphSelections: [{ entityRef, codeRef }],
     otherSelections: [],

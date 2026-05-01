@@ -1488,8 +1488,8 @@ export function getVariableExprsFromSelection(
 
 /** Build EntityReference from artifact type and id when the type maps to an entity ref.
  * For segment, pass pathId as third argument so the ref includes path_id and segment_id.
- * Cannot be done for things like edges
- * TODO verify where this is used and if it's needed, might want ot pull of the bandaid
+ * Not every artifact maps 1:1 to an engine/entity selection shape, so unsupported
+ * artifact types intentionally return undefined and are handled by higher-level callers.
  */
 export function artifactToEntityRef(
   artifactType: Artifact['type'],
@@ -2257,23 +2257,11 @@ export function getEdgeCutMeta(
   ) {
     const consumedEdgeId = getEdgeCutConsumedEdgeId(artifact)
     if (consumedEdgeId == null || consumedEdgeId === '') return null
-    let consumedArtifact = getArtifactOfTypes(
-      { key: consumedEdgeId, types: ['segment'] },
-      artifactGraph
-    )
-    if (err(consumedArtifact)) {
-      const consumedSweepEdge = getArtifactOfTypes(
-        { key: consumedEdgeId, types: ['sweepEdge'] },
-        artifactGraph
-      )
-      if (!err(consumedSweepEdge)) {
-        consumedArtifact = getArtifactOfTypes(
-          { key: consumedSweepEdge.segId, types: ['segment'] },
-          artifactGraph
-        )
-      }
-    }
-    if (err(consumedArtifact)) {
+    const rawConsumedArtifact = artifactGraph.get(consumedEdgeId)
+    let consumedArtifact: SegmentArtifact | null =
+      rawConsumedArtifact?.type === 'segment' ? rawConsumedArtifact : null
+
+    if (!consumedArtifact) {
       const segmentViaWallOrCap = getSegmentForEdgeCut(
         consumedEdgeId,
         artifactGraph
@@ -2310,15 +2298,11 @@ export function getEdgeCutMeta(
           tagName,
         }
       }
-      consumedArtifact = segmentViaWallOrCap as Extract<
-        Artifact,
-        { type: 'segment' }
-      >
+      consumedArtifact = segmentViaWallOrCap
     }
-    const segment = consumedArtifact as SegmentArtifact
     edgeCutInfo = {
       type: 'base',
-      segment,
+      segment: consumedArtifact,
     }
   }
   if (!edgeCutInfo) return null

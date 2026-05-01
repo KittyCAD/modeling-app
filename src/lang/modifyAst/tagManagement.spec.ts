@@ -72,13 +72,18 @@ const createSelectionWithFirstMatchingArtifact = async (
     return new Error(`No artifacts of type ${artifactType} found`)
   }
 
-  // get codeRef (segment and edgeCut have codeRef; sweepEdge removed from artifact graph)
+  // get codeRef. Segment and edgeCut carry codeRef directly; wall/cap use faceCodeRef.
   let codeRef: CodeRef | null = null
 
   if (firstArtifactsOfType.type === 'segment') {
     codeRef = firstArtifactsOfType.codeRef
   } else if (firstArtifactsOfType.type === 'edgeCut') {
     codeRef = (firstArtifactsOfType as { codeRef: CodeRef }).codeRef
+  } else if (
+    firstArtifactsOfType.type === 'wall' ||
+    firstArtifactsOfType.type === 'cap'
+  ) {
+    codeRef = firstArtifactsOfType.faceCodeRef
   }
 
   if (!codeRef) {
@@ -105,7 +110,7 @@ describe('tagManagement.test.ts', () => {
   //
   // Key functionality tested:
   // - Face tagging: wall faces, cap faces, edgeCut faces (chamfers/fillets)
-  // - Edge tagging: segments, sweep edges
+  // - Edge tagging: segments (sweepEdge was removed from the artifact graph)
   // - Complex scenarios: multi-tag breakup, tag deduplication
   const basicExampleCode = `
 sketch001 = startSketchOn(XY)
@@ -177,10 +182,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       // Find an edge artifact
       const selectionResult = await createSelectionWithFirstMatchingArtifact(
         artifactGraph,
-        'segment' // segment // sweepEdge // edgeCutEdge
-        // adjacent // opposite
+        'segment'
       )
-      if (err(selectionResult)) return selectionResult
+      if (err(selectionResult)) throw selectionResult
       const { selection } = selectionResult
 
       // Apply tagging
@@ -190,7 +194,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         artifactGraph,
         instanceInThisFile
       )
-      if (err(result)) return result
+      if (err(result)) throw result
       const { modifiedAst, exprs: tags } = result
       const newCode = recast(modifiedAst, instanceInThisFile)
 
@@ -210,10 +214,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       // Find an edge artifact
       const selectionResult = await createSelectionWithFirstMatchingArtifact(
         artifactGraph,
-        'segment' // segment // sweepEdge // edgeCutEdge
-        // adjacent // opposite
+        'segment'
       )
-      if (err(selectionResult)) return selectionResult
+      if (err(selectionResult)) throw selectionResult
       const { selection } = selectionResult
 
       // Apply tagging
@@ -224,7 +227,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         ['oppositeAndAdjacentEdges']
       )
-      if (err(result)) return result
+      if (err(result)) throw result
       const { modifiedAst, exprs: tags } = result
       const newCode = recast(modifiedAst, instanceInThisFile)
 
@@ -251,7 +254,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         artifactGraph,
         'wall'
       )
-      if (err(selectionResult)) return selectionResult
+      if (err(selectionResult)) throw selectionResult
       const wallFaceSelection = selectionResult.selection
 
       // Apply tagging
@@ -283,7 +286,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         artifactGraph,
         'cap'
       )
-      if (err(selectionResult)) return selectionResult
+      if (err(selectionResult)) throw selectionResult
       const capFaceSelection = selectionResult.selection
 
       // Apply tagging
@@ -318,7 +321,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         artifactGraph,
         'edgeCut'
       )
-      if (err(selectionResult)) return selectionResult
+      if (err(selectionResult)) throw selectionResult
       const edgeCutFaceSelection = selectionResult.selection
 
       // Apply tagging
@@ -354,7 +357,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         'edgeCut',
         'chamfer'
       )
-      if (err(selectionResult)) return selectionResult
+      if (err(selectionResult)) throw selectionResult
       const chamferFaceSelection = selectionResult.selection
 
       const result = modifyAstWithTagsForSelection(
@@ -387,7 +390,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         'edgeCut',
         'fillet'
       )
-      if (err(selectionResult)) return selectionResult
+      if (err(selectionResult)) throw selectionResult
       const filletFaceSelection = selectionResult.selection
 
       const result = modifyAstWithTagsForSelection(
