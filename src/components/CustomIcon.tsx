@@ -1362,21 +1362,7 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
-  midpoint: (
-    <svg
-      viewBox="0 0 20 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-label="midpoint"
-    >
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M10.25 8.5C11.0784 8.5 11.75 9.17157 11.75 10C11.75 10.8284 11.0784 11.5 10.25 11.5C9.42157 11.5 8.75 10.8284 8.75 10C8.75 9.17157 9.42157 8.5 10.25 8.5ZM7.54785 9.5C7.51802 9.66228 7.5 9.8291 7.5 10C7.5 10.1709 7.51802 10.3377 7.54785 10.5H3V9.5H7.54785ZM17 10.5H12.9521C12.982 10.3377 13 10.1709 13 10C13 9.8291 12.982 9.66228 12.9521 9.5H17V10.5Z"
-        fill="currentColor"
-      />
-    </svg>
-  ),
+  midpoint: createConstraintIcon('Midpoint'),
   mirror: (
     <svg
       viewBox="0 0 20 20"
@@ -1923,21 +1909,7 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
-  symmetry: (
-    <svg
-      viewBox="0 0 20 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-label="symmetry"
-    >
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M10.5 5H12.1611V6H10.5V7.66699H9.5V6H4.5V14H9.5V12.333H10.5V14H12.1611V15H10.5V17H9.5V15H3.5V5H9.5V3H10.5V5ZM16.5 15H14.0889V14H15.5V11.4287H16.5V15ZM10.5 11H9.5V9H10.5V11ZM16.5 8.57129H15.5V6H14.0889V5H16.5V8.57129Z"
-        fill="currentColor"
-      />
-    </svg>
-  ),
+  symmetric: createConstraintIcon('Symmetric'),
   tangent: createConstraintIcon('Tangent'),
   text: (
     <svg

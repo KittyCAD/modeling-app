@@ -166,6 +166,12 @@ pub enum ModulePath {
 }
 
 impl ModulePath {
+    /// Returns true if this is a path to the solver module that should only be
+    /// accessible from sketch blocks. This is how we create a kind of DSL.
+    pub(crate) fn is_solver_module(&self) -> bool {
+        matches!(self, ModulePath::Std { value } if value == "solver")
+    }
+
     pub(crate) fn expect_path(&self) -> &TypedPath {
         match self {
             ModulePath::Local { value: p, .. } => p,

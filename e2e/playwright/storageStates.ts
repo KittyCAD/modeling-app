@@ -5,13 +5,23 @@ import type { DeepPartial } from '@src/lib/types'
 import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 
 export const TEST_SETTINGS_KEY = '/settings.toml'
-export const TEST_SETTINGS: DeepPartial<Settings> = {
+type TestSettings = DeepPartial<Settings> & {
+  debug?: {
+    show_panel?: boolean
+    show_modeling_machine_state?: boolean
+  }
+}
+
+export const TEST_SETTINGS: TestSettings = {
   app: {
     appearance: {
       theme: Themes.Dark,
     },
     onboarding_status: 'dismissed',
-    show_debug_panel: true,
+  },
+  debug: {
+    show_panel: true,
+    show_modeling_machine_state: true,
   },
   modeling: {
     enable_ssao: false,
@@ -33,12 +43,12 @@ export const TEST_SETTINGS: DeepPartial<Settings> = {
   },
 }
 
-export const TEST_SETTINGS_ONBOARDING_START: DeepPartial<Settings> = {
+export const TEST_SETTINGS_ONBOARDING_START: TestSettings = {
   ...TEST_SETTINGS,
   app: { ...TEST_SETTINGS.app, onboarding_status: '' },
 }
 
-export const TEST_SETTINGS_DEFAULT_THEME: DeepPartial<Settings> = {
+export const TEST_SETTINGS_DEFAULT_THEME: TestSettings = {
   ...TEST_SETTINGS,
   app: { ...TEST_SETTINGS.app, appearance: { theme: Themes.System } },
 }
@@ -48,7 +58,10 @@ export const TEST_SETTINGS_CORRUPTED = {
     theme: Themes.Dark,
     onboardingStatus: 'dismissed',
     projectDirectory: 123 as any,
-    showDebugPanel: true,
+  },
+  debug: {
+    showPanel: true,
+    showModelingMachineState: true,
   },
   modeling: {
     defaultUnit: 'invalid' as any,

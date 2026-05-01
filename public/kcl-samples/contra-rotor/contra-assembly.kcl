@@ -1,0 +1,33 @@
+// Contra-Rotor Module
+// Shaft, spine teeth, and sample instances
+// Categories: Aerospace
+
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+
+// Import gear and propeller
+import "contra-shaft.kcl" as contraShaft
+import "contra-propeller-assembly.kcl" as contraPropellerAssembly
+
+translate(contraShaft, y = -770, global = true)
+translate(contraPropellerAssembly, y = -630, global = true)
+
+// Build helical gear
+helicaGear = gear::helical(
+  nTeeth = 28,
+  module = 16,
+  pressureAngle = 20deg,
+  helixAngle = -25,
+  gearHeight = 100,
+)
+  |> rotate(axis = X, angle = 90deg)
+  |> translate(y = -200, global = true)
+
+gearHoleSketch = sketch(on = XZ) {
+  circle1 = circle(start = [var 126.01mm, var 81.56mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  radius(circle1) == 150.1 // 0.1 tolerance
+}
+gearHoleRegion = region(point = [-126.0063808mm, -81.5576575mm], sketch = gearHoleSketch)
+gearHoleTool = extrude(gearHoleRegion, length = 500)
+hide(gearHoleSketch)
+gearWitHole = subtract(helicaGear, tools = gearHoleTool)

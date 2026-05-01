@@ -37,10 +37,11 @@ import {
   SKETCH_LAYER,
   SKETCH_SOLVE_GROUP,
 } from '@src/clientSideScene/sceneUtils'
+import { selectionDispatchedBySketchSolveEvent } from '@src/editor/plugins/sketchSelection'
 import { compilationIssuesToDiagnostics } from '@src/lang/errors'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { deferredCallback } from '@src/lib/utils'
+import { deferredCallback, isNonNullable, isOverlap } from '@src/lib/utils'
 import type { InvisibleConstraintDisplayState } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
 import {
   CONSTRAINT_TYPE,
@@ -53,6 +54,8 @@ import {
 import {
   type ConstraintHoverPopup,
   findSegmentsForInvisibleConstraint,
+  getInvisibleConstraintSegmentHoverColor,
+  isInvisibleConstraintSegmentSecondaryHovered,
   isInvisibleConstraintObject,
 } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
 import { updateOriginSprite } from '@src/machines/sketchSolve/originSprite'
@@ -139,6 +142,12 @@ export type SketchSolveMachineEvent =
       data: {
         hoveredId: SketchSolveSelectionId | null
         constraintHoverPopups?: ConstraintHoverPopup[]
+      }
+    }
+  | {
+      type: 'update selected ids from code selection'
+      data: {
+        ranges: SourceRange[]
       }
     }
   | { type: typeof CHILD_TOOL_DONE_EVENT }
@@ -806,6 +815,29 @@ export function updateSelectedIds({ event, context }: SolveAssignArgs) {
   return updates
 }
 
+export function updateSelectedIdsFromCodeSelection({
+  context,
+  event,
+}: SolveAssignArgs): Partial<SketchSolveContext> {
+  assertEvent(event, 'update selected ids from code selection')
+
+  const objects = context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects
+  if (!objects) {
+    return {
+      selectedIds: [],
+      duringAreaSelectIds: [],
+    }
+  }
+
+  return {
+    selectedIds: getObjectIdsForCodeSelectionRanges(
+      getCurrentSketchObjectsById(objects, context.sketchId),
+      event.data.ranges
+    ),
+    duringAreaSelectIds: [],
+  }
+}
+
 // Updates codemirror selection highlights based on currently selected objects.
 export function updateSelectedCodeHighlight({ context }: SolveActionArgs) {
   const objects = context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects
@@ -842,6 +874,7 @@ export function updateSelectedCodeHighlight({ context }: SolveActionArgs) {
         : [EditorSelection.cursor(context.kclManager.code.length)],
       Math.max(codeMirrorSelections.length - 1, 0)
     ),
+    annotations: selectionDispatchedBySketchSolveEvent,
   })
 }
 
@@ -979,6 +1012,35 @@ function getSourceRangesForObjectId(
     return object.source.ranges.map(([range]) => range)
   }
   return []
+}
+
+function getObjectIdsForCodeSelectionRanges(
+  objects: ApiObject[],
+  codeSelectionRanges: SourceRange[]
+): number[] {
+  return objects
+    .filter(isNonNullable)
+    .filter(isSelectableFromCodeSelection)
+    .filter((object) =>
+      getSourceRangesForObjectId(objects, object.id).some((sourceRange) =>
+        codeSelectionRanges.some((selectionRange) =>
+          isOverlap(sourceRange, selectionRange)
+        )
+      )
+    )
+    .map((object) => object.id)
+}
+
+function isSelectableFromCodeSelection(object: ApiObject): boolean {
+  if (isConstraint(object)) {
+    return true
+  }
+
+  if (object.kind.type !== 'Segment') {
+    return false
+  }
+
+  return !isPointSegment(object) || object.kind.segment.owner === null
 }
 
 function dedupeSourceRanges(sourceRanges: SourceRange[]): SourceRange[] {
@@ -1148,11 +1210,26 @@ function getSegmentRenderState(
   draftEntityIds: Array<number> | undefined,
   objects: ApiObject[]
 ): SegmentRenderState {
+  const hoveredObject = isObjectSelectionId(hoveredId)
+    ? objects[hoveredId]
+    : null
+  const hoveredInvisibleConstraint = isInvisibleConstraintObject(hoveredObject)
+    ? hoveredObject
+    : null
+
   return {
     selected:
       selectedIds.includes(segmentId) ||
       duringAreaSelectIds.includes(segmentId),
     hovered: hoveredId === segmentId || hoveredSegmentIds.includes(segmentId),
+    secondaryHovered: isInvisibleConstraintSegmentSecondaryHovered(
+      segmentId,
+      hoveredInvisibleConstraint
+    ),
+    hoverColor: getInvisibleConstraintSegmentHoverColor(
+      segmentId,
+      hoveredInvisibleConstraint
+    ),
     draft: draftEntityIds?.includes(segmentId) ?? false,
     construction: isConstructionSegment(objects[segmentId]),
   }

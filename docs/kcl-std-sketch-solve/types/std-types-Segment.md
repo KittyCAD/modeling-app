@@ -9,7 +9,7 @@ layout: manual
 
 A segment in a sketch created in a sketch block. It may be a line, arc, point, or other segment type.
 
-See the sketch2 module for functions that create segments and the region function for examples using segments to create a region that can be extruded.
+See the solver module for functions that create segments and the region function for examples using segments to create a region that can be extruded.
 
 
 

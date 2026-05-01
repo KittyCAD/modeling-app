@@ -151,6 +151,60 @@ describe('constraintToolHelpers', () => {
     })
   })
 
+  it('prepares midpoint payloads from point-line selections', () => {
+    const point = createPointApiObject({ id: 1 })
+    const lineStart = createPointApiObject({ id: 2 })
+    const lineEnd = createPointApiObject({ id: 3 })
+    const line = createLineApiObject({ id: 10, start: 2, end: 3 })
+    const objects = createObjectsArray([point, lineStart, lineEnd, line])
+
+    const apply = getConstraintToolPreparedApply(
+      'midpointConstraintTool',
+      [1, 10],
+      objects,
+      applyOptions
+    )
+
+    expect(apply?.payload).toEqual({
+      type: 'Midpoint',
+      point: 1,
+      segment: 10,
+    })
+  })
+
+  it('prepares midpoint payloads from point-arc selections', () => {
+    const point = createPointApiObject({ id: 1 })
+    const center = createPointApiObject({ id: 2 })
+    const arcStart = createPointApiObject({ id: 3 })
+    const arcEnd = createPointApiObject({ id: 4 })
+    const arc = createArcApiObject({ id: 10, center: 2, start: 3, end: 4 })
+    const objects = createObjectsArray([point, center, arcStart, arcEnd, arc])
+
+    const pointArcApply = getConstraintToolPreparedApply(
+      'midpointConstraintTool',
+      [1, 10],
+      objects,
+      applyOptions
+    )
+    expect(pointArcApply?.payload).toEqual({
+      type: 'Midpoint',
+      point: 1,
+      segment: 10,
+    })
+
+    const arcPointApply = getConstraintToolPreparedApply(
+      'midpointConstraintTool',
+      [10, 1],
+      objects,
+      applyOptions
+    )
+    expect(arcPointApply?.payload).toEqual({
+      type: 'Midpoint',
+      point: 1,
+      segment: 10,
+    })
+  })
+
   it('prepares equal-length payloads from the full valid current selection', () => {
     const pointA = createPointApiObject({ id: 1 })
     const pointB = createPointApiObject({ id: 2 })
@@ -310,6 +364,41 @@ describe('constraintToolHelpers', () => {
         lines: [10, 11],
       })
     }
+  })
+
+  it('keeps symmetric line triples selected until the user explicitly clicks the axis', () => {
+    const pointA = createPointApiObject({ id: 1 })
+    const pointB = createPointApiObject({ id: 2 })
+    const pointC = createPointApiObject({ id: 3 })
+    const pointD = createPointApiObject({ id: 4 })
+    const pointE = createPointApiObject({ id: 5 })
+    const pointF = createPointApiObject({ id: 6 })
+    const lineA = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const lineB = createLineApiObject({ id: 11, start: 3, end: 4 })
+    const lineC = createLineApiObject({ id: 12, start: 5, end: 6 })
+    const objects = createObjectsArray([
+      pointA,
+      pointB,
+      pointC,
+      pointD,
+      pointE,
+      pointF,
+      lineA,
+      lineB,
+      lineC,
+    ])
+
+    const areaSelection = resolveConstraintToolSelectionAction(
+      'symmetricConstraintTool',
+      [],
+      [10, 11, 12],
+      objects,
+      applyOptions
+    )
+    expect(areaSelection).toMatchObject({
+      type: 'select',
+      nextSelectionIds: [10, 11, 12],
+    })
   })
 
   it('prepares one payload per additional line for parallel area selection', () => {
@@ -563,5 +652,64 @@ describe('constraintToolHelpers', () => {
       type: 'Tangent',
       input: [10, 12],
     })
+  })
+
+  it('builds symmetric payloads for explicit point/axis input and requires an explicit axis click for line triples', () => {
+    const pointA = createPointApiObject({ id: 1 })
+    const pointB = createPointApiObject({ id: 2 })
+    const pointC = createPointApiObject({ id: 3 })
+    const pointD = createPointApiObject({ id: 4 })
+    const pointE = createPointApiObject({ id: 5 })
+    const pointF = createPointApiObject({ id: 6 })
+    const lineA = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const lineB = createLineApiObject({ id: 11, start: 3, end: 4 })
+    const lineC = createLineApiObject({ id: 12, start: 5, end: 6 })
+    const objects = createObjectsArray([
+      pointA,
+      pointB,
+      pointC,
+      pointD,
+      pointE,
+      pointF,
+      lineA,
+      lineB,
+      lineC,
+    ])
+
+    const pointApply = getConstraintToolPreparedApply(
+      'symmetricConstraintTool',
+      [1, 2, 10],
+      objects,
+      applyOptions
+    )
+    expect(pointApply?.payload).toEqual({
+      type: 'Symmetric',
+      input: [1, 2],
+      axis: 10,
+    })
+
+    const lineApply = getConstraintToolPreparedApply(
+      'symmetricConstraintTool',
+      [10, 11, 12],
+      objects,
+      applyOptions
+    )
+    expect(lineApply).toBeNull()
+
+    const explicitAxisClick = resolveConstraintToolClickAction(
+      'symmetricConstraintTool',
+      [10, 11, 12],
+      10,
+      objects,
+      applyOptions
+    )
+    expect(explicitAxisClick.type).toBe('apply')
+    if (explicitAxisClick.type === 'apply') {
+      expect(explicitAxisClick.apply.payload).toEqual({
+        type: 'Symmetric',
+        input: [11, 12],
+        axis: 10,
+      })
+    }
   })
 })

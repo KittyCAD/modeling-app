@@ -337,6 +337,8 @@ function createSketchSolveConstraintDropdownItem({
   }
 }
 
+const constraintsExtraNote = 'Hold Cmd/Ctrl to keep selection'
+
 const sketchSolveConstraintItems: ToolbarItem[] = [
   createSketchSolveConstraintDropdownItem({
     id: 'coincident',
@@ -345,6 +347,14 @@ const sketchSolveConstraintItems: ToolbarItem[] = [
     title: 'Coincident',
     hotkey: 'X',
     description: 'Constrain points or curves to be coincident.',
+  }),
+  createSketchSolveConstraintDropdownItem({
+    id: 'midpoint',
+    toolName: 'midpointConstraintTool',
+    icon: 'midpoint',
+    title: 'Midpoint',
+    hotkey: 'Shift+X',
+    description: 'Constrain a point to lie at the midpoint of a selected line.',
   }),
   createSketchSolveConstraintDropdownItem({
     id: 'Tangent',
@@ -379,6 +389,15 @@ const sketchSolveConstraintItems: ToolbarItem[] = [
     hotkey: 'E',
     description:
       'Constrain lines to have equal length, or arcs and circles to have equal radius.',
+  }),
+  createSketchSolveConstraintDropdownItem({
+    id: 'Symmetric',
+    toolName: 'symmetricConstraintTool',
+    icon: 'symmetric',
+    title: 'Symmetric',
+    hotkey: 'Shift+E',
+    description:
+      'Constrain two points, two arc-like segments, or two lines to be symmetric across a selected axis line.',
   }),
   createSketchSolveConstraintDropdownItem({
     id: 'vertical',
@@ -826,6 +845,7 @@ export function buildToolbarConfig(
                   data: { name: 'Join Surfaces', groupId: 'modeling' },
                 }),
               status: 'available',
+              icon: 'joinSurfaces',
               title: 'Join Surfaces',
               description: 'Join surfaces together.',
               links: [
@@ -914,6 +934,83 @@ export function buildToolbarConfig(
             {
               label: 'KCL docs',
               url: withSiteBaseURL('/docs/kcl-std/functions/std-helix'),
+            },
+          ],
+        },
+        {
+          id: 'gears',
+          array: [
+            {
+              id: 'gear-helical',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'Helical Gear', groupId: 'modeling' },
+                }),
+              icon: 'gear',
+              status: 'experimental',
+              title: 'Helical Gear',
+              description: 'Create a helical gear.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL('/docs/kcl-std/modules/std-gear'),
+                },
+              ],
+            },
+            {
+              id: 'gear-spur',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'Spur Gear', groupId: 'modeling' },
+                }),
+              icon: 'gear',
+              status: 'experimental',
+              title: 'Spur Gear',
+              description: 'Create a spur gear.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL('/docs/kcl-std/modules/std-gear'),
+                },
+              ],
+            },
+            {
+              id: 'gear-herringbone',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'Herringbone Gear', groupId: 'modeling' },
+                }),
+              icon: 'gear',
+              status: 'experimental',
+              title: 'Herringbone Gear',
+              description: 'Create a herringbone gear.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL('/docs/kcl-std/modules/std-gear'),
+                },
+              ],
+            },
+            {
+              id: 'gear-ring',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'Ring Gear', groupId: 'modeling' },
+                }),
+              icon: 'gear',
+              status: 'experimental',
+              title: 'Ring Gear',
+              description: 'Create a ring gear.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL('/docs/kcl-std/modules/std-gear'),
+                },
+              ],
             },
           ],
         },
@@ -1211,7 +1308,7 @@ export function buildToolbarConfig(
           status: 'available',
           title: 'Exit Sketch',
           showTitle: true,
-          hotkey: 'Esc',
+          hotkey: 'Meta+Esc',
           description: 'Exit the current sketch.',
           links: [],
         },
@@ -1501,6 +1598,7 @@ export function buildToolbarConfig(
               title: 'Length',
               showTitle: false,
               description: 'Constrain the length of a straight segment.',
+              extraNote: constraintsExtraNote,
               links: [],
             },
             {
@@ -1516,6 +1614,7 @@ export function buildToolbarConfig(
               title: 'Angle',
               showTitle: false,
               description: 'Constrain the angle between two segments.',
+              extraNote: constraintsExtraNote,
               links: [],
             },
             {
@@ -1532,6 +1631,7 @@ export function buildToolbarConfig(
               showTitle: false,
               description:
                 'Constrain a straight segment to be vertical relative to the sketch.',
+              extraNote: constraintsExtraNote,
               links: [],
             },
             {
@@ -1548,6 +1648,7 @@ export function buildToolbarConfig(
               showTitle: false,
               description:
                 'Constrain a straight segment to be horizontal relative to the sketch.',
+              extraNote: constraintsExtraNote,
               links: [],
             },
             {
@@ -1563,6 +1664,7 @@ export function buildToolbarConfig(
               title: 'Parallel',
               showTitle: false,
               description: 'Constrain two segments to be parallel.',
+              extraNote: constraintsExtraNote,
               links: [],
             },
             {
@@ -1579,6 +1681,7 @@ export function buildToolbarConfig(
               showTitle: false,
               description:
                 'Constrain two or more segments to have equal length.',
+              extraNote: constraintsExtraNote,
               links: [],
             },
             {
@@ -1595,6 +1698,7 @@ export function buildToolbarConfig(
               showTitle: false,
               description:
                 'Constrain the horizontal distance between two points.',
+              extraNote: constraintsExtraNote,
               links: [],
             },
             {
@@ -1611,6 +1715,7 @@ export function buildToolbarConfig(
               showTitle: false,
               description:
                 'Constrain the vertical distance between two points.',
+              extraNote: constraintsExtraNote,
               links: [],
             },
             {
@@ -1626,6 +1731,7 @@ export function buildToolbarConfig(
               title: 'Absolute X',
               showTitle: false,
               description: 'Constrain the x-coordinate of a point.',
+              extraNote: constraintsExtraNote,
               links: [],
             },
             {
@@ -1641,6 +1747,7 @@ export function buildToolbarConfig(
               title: 'Absolute Y',
               showTitle: false,
               description: 'Constrain the y-coordinate of a point.',
+              extraNote: constraintsExtraNote,
               links: [],
             },
             {
@@ -1657,6 +1764,7 @@ export function buildToolbarConfig(
               showTitle: false,
               description:
                 'Constrain the perpendicular distance between two segments.',
+              extraNote: constraintsExtraNote,
               links: [],
             },
             {
@@ -1673,6 +1781,7 @@ export function buildToolbarConfig(
               showTitle: false,
               description:
                 'Align the ends of two or more segments horizontally.',
+              extraNote: constraintsExtraNote,
               links: [],
             },
             {
@@ -1688,6 +1797,7 @@ export function buildToolbarConfig(
               title: 'Vertically Align',
               showTitle: false,
               description: 'Align the ends of two or more segments vertically.',
+              extraNote: constraintsExtraNote,
               links: [],
             },
             {
@@ -1703,6 +1813,7 @@ export function buildToolbarConfig(
               title: 'Snap to X',
               showTitle: false,
               description: 'Snap a point to an x-coordinate.',
+              extraNote: constraintsExtraNote,
               links: [],
             },
             {
@@ -1718,6 +1829,7 @@ export function buildToolbarConfig(
               title: 'Snap to Y',
               showTitle: false,
               description: 'Snap a point to a y-coordinate.',
+              extraNote: constraintsExtraNote,
               links: [],
             },
             {
@@ -1752,6 +1864,7 @@ export function buildToolbarConfig(
           status: 'available',
           title: 'Exit Sketch',
           showTitle: true,
+          hotkey: 'Meta+Esc',
           description: 'Exit the current sketch.',
           links: [],
         },
@@ -2045,7 +2158,6 @@ export function buildToolbarConfig(
           title: 'Construction',
           hotkey: 'Q',
           description: 'Toggle construction geometry on selected segments.',
-          extraNote: constraintsExtraNote,
           links: [],
           isActive: (state) => false,
         },
@@ -2053,8 +2165,6 @@ export function buildToolbarConfig(
     },
   }
 }
-
-const constraintsExtraNote = 'Hold Cmd/Ctrl to keep selection'
 
 export const useToolbarConfig = () => {
   const { commands } = useApp()

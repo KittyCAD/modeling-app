@@ -2347,7 +2347,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.145"
+version = "0.1.148"
 dependencies = [
  "anyhow",
  "clap",
@@ -2358,7 +2358,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.2.145"
+version = "0.2.148"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2367,7 +2367,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.145"
+version = "0.1.148"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -2377,7 +2377,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-error"
-version = "0.2.145"
+version = "0.2.148"
 dependencies = [
  "miette",
  "serde",
@@ -2387,7 +2387,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.145"
+version = "0.2.148"
 dependencies = [
  "anyhow",
  "clap",
@@ -2408,7 +2408,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.145"
+version = "0.1.148"
 dependencies = [
  "anyhow",
  "clap",
@@ -2428,7 +2428,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.145"
+version = "0.2.148"
 dependencies = [
  "ahash",
  "anyhow",
@@ -2513,7 +2513,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.145"
+version = "0.3.148"
 dependencies = [
  "anyhow",
  "kcl-lib",
@@ -2529,7 +2529,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.2.145"
+version = "0.2.148"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -2542,7 +2542,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-to-core"
-version = "0.1.145"
+version = "0.1.148"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2556,7 +2556,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.145"
+version = "0.1.148"
 dependencies = [
  "anyhow",
  "console_error_panic_hook",
@@ -2587,9 +2587,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.4.10"
+version = "0.4.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f77f81460de053657b6d56aa75fd0a8ff25454e1330762bdaa04a3b89a25f38c"
+checksum = "9feed56f25b6934ad902a6bcb83d98e59f985f9cbf80d159eb3742b3d31f2ebb"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2624,9 +2624,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.188"
+version = "0.2.189"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "48546fb3c3ac68d7d586d1e446ffe015778412c7a60640a2f50ead8f63234ffe"
+checksum = "03349615e4d1455f337228f4eff9982090c7cd8aa01b23d9964bdc2a2db15ad3"
 dependencies = [
  "anyhow",
  "bon",
@@ -2653,9 +2653,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds-macros"
-version = "0.1.12"
+version = "0.1.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fb9bb1a594541b878adc1c8dcb821328774bf7aa09b65b104a206b1291a5235c"
+checksum = "eb4ba190f74f6d32f4607ecac4bdebd4a935d4943b8ca8369305e6e7a59b5976"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -2665,9 +2665,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
-version = "0.1.13"
+version = "0.1.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fdb4ee23cc996aa2dca7584d410e8826e08161e1ac4335bb646d5ede33f37cb3"
+checksum = "743b6533d1848de67e3455a28614a2b7896807ab0d3358ccd3ea1863de3c4e6b"
 dependencies = [
  "proc-macro2",
  "quote",

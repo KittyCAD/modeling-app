@@ -525,7 +525,9 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
             for (name, tag) in value.tags.iter() {
                 if exec_state.stack().cur_frame_contains(name) {
                     exec_state.mut_stack().update(name, |v, _| {
-                        v.as_mut_tag().unwrap().merge_info(tag);
+                        if let Some(existing_tag) = v.as_mut_tag() {
+                            existing_tag.merge_info(tag);
+                        }
                     });
                 } else {
                     exec_state
@@ -602,7 +604,9 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
 
                     if exec_state.stack().cur_frame_contains(&tag.name) {
                         exec_state.mut_stack().update(&tag.name, |v, _| {
-                            v.as_mut_tag().unwrap().merge_info(&tag_id);
+                            if let Some(existing_tag) = v.as_mut_tag() {
+                                existing_tag.merge_info(&tag_id);
+                            }
                         });
                     } else if !is_sketch_block || !is_part_of_sketch {
                         // The above condition is saying that we add a tag to

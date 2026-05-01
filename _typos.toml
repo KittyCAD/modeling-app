@@ -39,4 +39,5 @@ extend-ignore-identifiers-re = [
 ]
 extend-ignore-re = [
   "@xstate-layout .*",
+  "ZOO_MAGIC_STRING_TRIGGER_MOCK_REPLY_[A-F0-9]+",
 ]

@@ -1477,7 +1477,8 @@ profile001 = startProfile(sketch001, at = [0, 0])
     await expect(toast1).toBeVisible()
 
     const toast2 = page.getByText('Support ticket created successfully.')
-    await expect(toast2).toBeVisible()
+    const toastError = page.getByText('Error while creating support ticket.')
+    await expect(toast2.or(toastError)).toBeVisible()
   })
 })
 

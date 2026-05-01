@@ -53,6 +53,7 @@ import {
   tearDownSketchSolve,
   updateHoveredId,
   updateSelectedCodeHighlight,
+  updateSelectedIdsFromCodeSelection,
   updateSelectedIds,
   updateSketchOutcome,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
@@ -388,6 +389,9 @@ export const sketchSolveMachine = setup({
       childTool: undefined,
     }),
     'update selected ids': assign(updateSelectedIds),
+    'update selected ids from code selection': assign(
+      updateSelectedIdsFromCodeSelection
+    ),
     'update selected code highlight': updateSelectedCodeHighlight,
     'update hovered id': assign(updateHoveredId),
     'refresh selection styling': refreshSelectionStyling,
@@ -866,6 +870,12 @@ export const sketchSolveMachine = setup({
         'refresh selection styling',
       ],
     },
+    'update selected ids from code selection': {
+      actions: [
+        'update selected ids from code selection',
+        'refresh selection styling',
+      ],
+    },
     'update hovered id': {
       actions: ['update hovered id', 'refresh selection styling'],
     },
@@ -897,7 +907,8 @@ export const sketchSolveMachine = setup({
               context.sketchId,
               constraintIds,
               segmentIds,
-              jsAppSettings(context.kclManager.systemDeps.settings)
+              jsAppSettings(context.kclManager.systemDeps.settings),
+              true
             )
             .catch((err) => {
               console.error('failed to delete objects', err)
@@ -916,6 +927,7 @@ export const sketchSolveMachine = setup({
               data: {
                 sourceDelta: result.kclSource,
                 sceneGraphDelta: result.sceneGraphDelta,
+                checkpointId: result.checkpointId ?? null,
               },
             })
           }
@@ -952,6 +964,10 @@ export const sketchSolveMachine = setup({
                 return false
               }
 
+              if (event.data.tool === 'symmetricConstraintTool') {
+                return false
+              }
+
               return (
                 getPreparedApplyForConstraintTool(context, event.data.tool) !==
                 null
@@ -976,15 +992,6 @@ export const sketchSolveMachine = setup({
             ],
           },
         ],
-        escape: {
-          target: '#Sketch Solve Mode.exiting',
-          actions: [
-            'send tool unequipped to parent',
-            'cleanup sketch solve group',
-          ],
-          description:
-            'ESC in move and select (no tool equipped) exits sketch mode',
-        },
       },
       invoke: {
         id: 'moveTool',
@@ -1115,7 +1122,13 @@ export const sketchSolveMachine = setup({
     'initialize intersection plane',
     'initialize initial scene graph',
     'setUpOnDragAndSelectionClickCallbacks',
-    ({ context }) => toggleSketchExtension(context.kclManager.editorView, true),
+    ({ context, self }) =>
+      toggleSketchExtension(context.kclManager.editorView, true, (ranges) => {
+        sendToActorIfActive(self, {
+          type: 'update selected ids from code selection',
+          data: { ranges },
+        })
+      }),
   ],
 
   exit: [

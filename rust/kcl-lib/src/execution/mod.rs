@@ -57,9 +57,12 @@ pub use sketch_transpiler::transpile_all_old_sketches_to_new;
 pub use sketch_transpiler::transpile_old_sketch_to_new;
 pub use sketch_transpiler::transpile_old_sketch_to_new_ast;
 pub use sketch_transpiler::transpile_old_sketch_to_new_with_execution;
+pub(crate) use state::ConstraintKey;
+pub(crate) use state::ConstraintState;
 pub use state::ExecState;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
+pub(crate) use state::TangencyMode;
 use uuid::Uuid;
 
 use crate::CompilationIssue;
@@ -288,6 +291,7 @@ pub struct ExecOutcome {
 /// Per-segment freedom used by the constraint report. Mirrors
 /// [`crate::front::Freedom`] but adds an `Error` variant for when
 /// a point lookup fails.
+#[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
 #[derive(Debug, Clone, Copy, PartialEq)]
 enum SegmentFreedom {
     Free,
@@ -798,14 +802,15 @@ impl From<crate::settings::types::Configuration> for ExecutorSettings {
 
 impl From<crate::settings::types::Settings> for ExecutorSettings {
     fn from(settings: crate::settings::types::Settings) -> Self {
+        let modeling_settings = settings.modeling.unwrap_or_default();
         Self {
-            highlight_edges: settings.modeling.highlight_edges.into(),
-            enable_ssao: settings.modeling.enable_ssao.into(),
-            show_grid: settings.modeling.show_scale_grid,
+            highlight_edges: modeling_settings.highlight_edges.unwrap_or_default().into(),
+            enable_ssao: modeling_settings.enable_ssao.unwrap_or_default().into(),
+            show_grid: modeling_settings.show_scale_grid.unwrap_or_default(),
             replay: None,
             project_directory: None,
             current_file: None,
-            fixed_size_grid: settings.modeling.fixed_size_grid,
+            fixed_size_grid: modeling_settings.fixed_size_grid.unwrap_or_default().0,
         }
     }
 }
@@ -819,9 +824,9 @@ impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSet
 impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
     fn from(modeling: crate::settings::types::ModelingSettings) -> Self {
         Self {
-            highlight_edges: modeling.highlight_edges.into(),
-            enable_ssao: modeling.enable_ssao.into(),
-            show_grid: modeling.show_scale_grid,
+            highlight_edges: modeling.highlight_edges.unwrap_or_default().into(),
+            enable_ssao: modeling.enable_ssao.unwrap_or_default().into(),
+            show_grid: modeling.show_scale_grid.unwrap_or_default(),
             replay: None,
             project_directory: None,
             current_file: None,
@@ -1088,6 +1093,7 @@ impl ExecutorContext {
         exec_state.global.module_infos = mem.module_infos;
         exec_state.global.path_to_source_id = mem.path_to_source_id;
         exec_state.global.id_to_source = mem.id_to_source;
+        exec_state.mod_local.constraint_state = mem.constraint_state;
         #[cfg(feature = "artifact-graph")]
         {
             let len = _mock_config
@@ -1150,6 +1156,7 @@ impl ExecutorContext {
         let module_infos = exec_state.global.module_infos.clone();
         let path_to_source_id = exec_state.global.path_to_source_id.clone();
         let id_to_source = exec_state.global.id_to_source.clone();
+        let constraint_state = exec_state.mod_local.constraint_state.clone();
         #[cfg(feature = "artifact-graph")]
         let scene_objects = exec_state.global.root_module_artifacts.scene_objects.clone();
         #[cfg(not(feature = "artifact-graph"))]
@@ -1162,6 +1169,7 @@ impl ExecutorContext {
             module_infos,
             path_to_source_id,
             id_to_source,
+            constraint_state,
             scene_objects,
         };
         cache::write_old_memory(state).await;
@@ -1745,6 +1753,7 @@ impl ExecutorContext {
                 module_infos: exec_state.global.module_infos.clone(),
                 path_to_source_id: exec_state.global.path_to_source_id.clone(),
                 id_to_source: exec_state.global.id_to_source.clone(),
+                constraint_state: exec_state.mod_local.constraint_state.clone(),
                 #[cfg(feature = "artifact-graph")]
                 scene_objects: exec_state.global.root_module_artifacts.scene_objects.clone(),
                 #[cfg(not(feature = "artifact-graph"))]
@@ -3268,6 +3277,29 @@ extrude001 = extrude(region001, length = 1)
         ctx.close().await;
     }
 
+    #[tokio::test(flavor = "multi_thread")]
+    async fn face_parent_solid_stays_compact_for_repeated_sketch_on_face() {
+        let code = format!(
+            r#"{}
+
+face7 = faceOf(solid6, face = r6.tags.line1)
+r7 = squareRegion(onSurface = face7)
+solid7 = extrude(r7, length = width)
+"#,
+            include_str!("../../tests/endless_impeller/input.kcl")
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        let solid7 = mem_get_json(result.exec_state.stack(), result.mem_env, "solid7");
+        assert!(matches!(solid7, KclValue::Solid { .. }), "actual: {solid7:?}");
+
+        let face7 = match mem_get_json(result.exec_state.stack(), result.mem_env, "face7") {
+            KclValue::Face { value } => value,
+            value => panic!("expected face7 to be a Face, got {value:?}"),
+        };
+        assert!(face7.parent_solid.creator_sketch_id.is_some());
+    }
+
     #[cfg(feature = "artifact-graph")]
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_has_stable_ids() {
@@ -3304,11 +3336,18 @@ extrude001 = extrude(region001, length = 1)
         };
         ctx.run_mock(&crate::Program::empty(), &cold_start).await.unwrap();
 
-        let mem = cache::read_old_memory().await.unwrap();
+        let mut mem = cache::read_old_memory().await.unwrap();
         assert!(
             mem.path_to_source_id.len() > 3,
             "expected prelude imports to populate multiple modules, got {:?}",
             mem.path_to_source_id
+        );
+        mem.constraint_state.insert(
+            crate::front::ObjectId(1),
+            indexmap::indexmap! {
+                crate::execution::ConstraintKey::LineCircle([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) =>
+                    crate::execution::ConstraintState::Tangency(crate::execution::TangencyMode::LineCircle(ezpz::LineSide::Left))
+            },
         );
 
         let mut exec_state = ExecState::new_mock(&ctx, &MockConfig::default());
@@ -3317,6 +3356,7 @@ extrude001 = extrude(region001, length = 1)
         assert_eq!(exec_state.global.path_to_source_id, mem.path_to_source_id);
         assert_eq!(exec_state.global.id_to_source, mem.id_to_source);
         assert_eq!(exec_state.global.module_infos, mem.module_infos);
+        assert_eq!(exec_state.mod_local.constraint_state, mem.constraint_state);
 
         clear_mem_cache().await;
         ctx.close().await;
@@ -3568,6 +3608,45 @@ sketch(on = XY) {
     async fn test_tangent_circle_circle_native_executes_with_mock_engine() {
         let code = std::fs::read_to_string("tests/tangent_circle_circle_native/input.kcl").unwrap();
         parse_execute(&code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_shadowed_get_opposite_edge_binding_does_not_panic() {
+        let code = r#"startX = 2
+
+baseSketch = sketch(on = XY) {
+  yoyo = line(start = [startX, 0], end = [7, 6])
+  line2 = line(start = [7, 6], end = [7, 12])
+  hi = line(start = [7, 12], end = [startX, 0])
+}
+
+baseRegion = region(point = [5.5, 6], sketch = baseSketch)
+myExtrude = extrude(
+  baseRegion,
+  length = 5,
+  tagEnd = $endCap,
+  tagStart = $startCap,
+)
+yodawg = getCommonEdge(faces = [
+  baseRegion.tags.hi,
+  baseRegion.tags.yoyo
+])
+
+cutSketch = sketch(on = YZ) {
+  myDisambigutator = line(start = [-3.29, 4.75], end = [2.03, 2.44])
+  myDisambigutator2 = line(start = [2.03, 2.44], end = [-3.49, 0.31])
+  line3 = line(start = [-3.49, 0.31], end = [-3.29, 4.75])
+}
+
+cutRegion = region(point = [-1.5833333333, 2.5], sketch = cutSketch)
+extrude001 = extrude(cutRegion, length = 5)
+solid001 = subtract(myExtrude, tools = extrude001)
+
+yoyo = getOppositeEdge(baseRegion.tags.hi)
+fillet(solid001, radius = 0.1, tags = yoyo)
+"#;
+
+        parse_execute(code).await.unwrap();
     }
 
     // END Mock Execution tests

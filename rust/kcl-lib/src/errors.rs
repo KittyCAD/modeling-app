@@ -176,7 +176,10 @@ pub enum KclError {
     #[error("engine: {details:?}")]
     Engine { details: KclErrorDetails },
     #[error("engine hangup: {details:?}")]
-    EngineHangup { details: KclErrorDetails },
+    EngineHangup {
+        details: KclErrorDetails,
+        api_call_id: Option<String>,
+    },
     #[error("engine internal: {details:?}")]
     EngineInternal { details: KclErrorDetails },
     #[error("internal error, please report to KittyCAD team: {details:?}")]
@@ -627,8 +630,8 @@ impl KclError {
         }
     }
 
-    pub fn new_engine_hangup(details: KclErrorDetails) -> KclError {
-        KclError::EngineHangup { details }
+    pub fn new_engine_hangup(details: KclErrorDetails, api_call_id: Option<String>) -> KclError {
+        KclError::EngineHangup { details, api_call_id }
     }
 
     pub fn new_lexical(details: KclErrorDetails) -> KclError {
@@ -641,6 +644,10 @@ impl KclError {
 
     pub fn new_type(details: KclErrorDetails) -> KclError {
         KclError::Type { details }
+    }
+
+    pub fn is_undefined_value(&self) -> bool {
+        matches!(self, KclError::UndefinedValue { .. })
     }
 
     /// Get the error message.
@@ -686,7 +693,7 @@ impl KclError {
             KclError::MaxCallStack { details: e } => e.source_ranges.clone(),
             KclError::Refactor { details: e } => e.source_ranges.clone(),
             KclError::Engine { details: e } => e.source_ranges.clone(),
-            KclError::EngineHangup { details: e } => e.source_ranges.clone(),
+            KclError::EngineHangup { details: e, .. } => e.source_ranges.clone(),
             KclError::EngineInternal { details: e } => e.source_ranges.clone(),
             KclError::Internal { details: e } => e.source_ranges.clone(),
         }
@@ -709,7 +716,7 @@ impl KclError {
             KclError::MaxCallStack { details: e } => &e.message,
             KclError::Refactor { details: e } => &e.message,
             KclError::Engine { details: e } => &e.message,
-            KclError::EngineHangup { details: e } => &e.message,
+            KclError::EngineHangup { details: e, .. } => &e.message,
             KclError::EngineInternal { details: e } => &e.message,
             KclError::Internal { details: e } => &e.message,
         }
@@ -731,7 +738,7 @@ impl KclError {
             | KclError::MaxCallStack { details: e }
             | KclError::Refactor { details: e }
             | KclError::Engine { details: e }
-            | KclError::EngineHangup { details: e }
+            | KclError::EngineHangup { details: e, .. }
             | KclError::EngineInternal { details: e }
             | KclError::Internal { details: e } => e.backtrace.clone(),
         }
@@ -754,7 +761,7 @@ impl KclError {
             | KclError::MaxCallStack { details: e }
             | KclError::Refactor { details: e }
             | KclError::Engine { details: e }
-            | KclError::EngineHangup { details: e }
+            | KclError::EngineHangup { details: e, .. }
             | KclError::EngineInternal { details: e }
             | KclError::Internal { details: e } => {
                 e.backtrace = source_ranges
@@ -788,7 +795,7 @@ impl KclError {
             | KclError::MaxCallStack { details: e }
             | KclError::Refactor { details: e }
             | KclError::Engine { details: e }
-            | KclError::EngineHangup { details: e }
+            | KclError::EngineHangup { details: e, .. }
             | KclError::EngineInternal { details: e }
             | KclError::Internal { details: e } => {
                 if let Some(item) = e.backtrace.last_mut() {
