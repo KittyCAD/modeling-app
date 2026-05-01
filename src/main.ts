@@ -499,6 +499,12 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
   })
 
   const handle = await client.deviceAuthorization()
+  const verificationUri =
+    handle.verification_uri_complete || handle.verification_uri
+
+  if (!verificationUri) {
+    return Promise.reject(new Error('No verification URI received'))
+  }
 
   // Register this handle to be used later.
   ipcMain.handleOnce('loginWithDeviceFlow', async () => {
@@ -509,7 +515,7 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
         )
       )
     }
-    shell.openExternal(handle.verification_uri_complete).catch(reportRejection)
+    shell.openExternal(verificationUri).catch(reportRejection)
 
     // Wait for the user to login.
     try {
@@ -525,8 +531,10 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
     return Promise.reject(new Error('No access token received'))
   })
 
-  // Return the user code so the app can display it.
-  return handle.user_code
+  return {
+    userCode: handle.user_code,
+    verificationUri,
+  }
 })
 
 // Used to find other devices on the local network, e.g. 3D printers, CNC machines, etc.

@@ -47,6 +47,29 @@ export const PATHS = {
   TELEMETRY: '/telemetry',
 } as const
 
+export function getRouterSearchFromRequestUrl(
+  requestUrl: string,
+  usesHashRouter: boolean
+): string {
+  const url = new URL(requestUrl)
+  if (!usesHashRouter || !url.hash) {
+    return url.search
+  }
+
+  const hashPath = url.hash.slice(1)
+  const searchIndex = hashPath.indexOf('?')
+  if (searchIndex === -1) {
+    return url.search
+  }
+
+  const hashSearch = hashPath.slice(searchIndex)
+  const nestedHashIndex = hashSearch.indexOf('#')
+  const routerSearch =
+    nestedHashIndex === -1 ? hashSearch : hashSearch.slice(0, nestedHashIndex)
+
+  return routerSearch === '?' ? '' : routerSearch
+}
+
 export async function getProjectMetaByRouteId(
   readAppSettingsFile: (
     wasmInstance: ModuleType
