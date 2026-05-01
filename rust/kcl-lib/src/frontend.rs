@@ -131,7 +131,6 @@ const CIRCLE_VARIABLE: &str = "circle";
 const CIRCLE_START_PARAM: &str = "start";
 const CIRCLE_CENTER_PARAM: &str = "center";
 const LABEL_POSITION_PARAM: &str = "labelPosition";
-const LEGACY_LABEL_PARAM: &str = "label";
 
 const COINCIDENT_FN: &str = "coincident";
 const DIAMETER_FN: &str = "diameter";
@@ -5410,11 +5409,11 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                     return TraversalReturn::new_continue(());
                 }
 
-                if let Some(label_arg) = call.arguments.iter_mut().find(|arg| {
-                    let label = arg.label.as_ref().map(|id| id.name.as_str());
-                    label == Some(LABEL_POSITION_PARAM) || label == Some(LEGACY_LABEL_PARAM)
-                }) {
-                    label_arg.label = Some(ast::Identifier::new(LABEL_POSITION_PARAM));
+                if let Some(label_arg) = call
+                    .arguments
+                    .iter_mut()
+                    .find(|arg| arg.label.as_ref().map(|id| id.name.as_str()) == Some(LABEL_POSITION_PARAM))
+                {
                     label_arg.arg = label_position.clone();
                 } else {
                     call.arguments.push(ast::LabeledArg {

@@ -2166,11 +2166,7 @@ fn get_constraint_label_position(
     args: &Args,
     constraint_name: &str,
 ) -> Result<Option<Point2d<Number>>, KclError> {
-    let label_position =
-        match args.get_kw_arg_opt::<[TyF64; 2]>("labelPosition", &RuntimeType::point2d(), exec_state)? {
-            Some(label_position) => Some(label_position),
-            None => args.get_kw_arg_opt::<[TyF64; 2]>("label", &RuntimeType::point2d(), exec_state)?,
-        };
+    let label_position = args.get_kw_arg_opt::<[TyF64; 2]>("labelPosition", &RuntimeType::point2d(), exec_state)?;
 
     label_position
         .map(|label| {
