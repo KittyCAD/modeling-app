@@ -19,6 +19,7 @@ This package provides:
 - `RegistryItemFactory` creates runtime-backed registry items with stable state.
 - `Slot` is a replaceable subtree that can be reconfigured at runtime.
 - `createPlugin(...)` packages metadata, a slot, and a toggle controller into one installable registry node.
+- `defineContract(...)` marks a shared bundle of `ValueSpec`s and `Service`s that provider and consumer registry items can both depend on without importing each other.
 
 ## Concept Map
 
@@ -73,6 +74,43 @@ Read the diagram from top to bottom:
 - Plain registry items usually contribute `ValueSpec`s and `Service`s directly.
 - A plugin wraps normal registry item content in extra structure: metadata for discovery, a slot for runtime enable/disable, and a toggle controller service.
 - So a plugin is not separate from the registry system. It is a higher-level, developer-facing packaging pattern built out of normal registry primitives.
+
+## Decoupling Pattern
+
+When one registry item defines `ValueSpec`s or `Service`s that another registry
+item depends on, avoid exporting the tokens from the provider module itself.
+
+Prefer a small contract module:
+
+- `weather.contract.ts`: exports only shared `ValueSpec`s and `Service`s
+- `weather.provider.ts`: imports the contract and provides implementations
+- `weather.consumer.ts`: imports the same contract and consumes those tokens
+
+The helper below makes that intent explicit:
+
+```ts
+import {
+  defineContract,
+  defineService,
+  firstWinsValueSpec,
+} from '@kittycad/registry'
+
+export const weatherContract = defineContract({
+  currentTemperatureValueSpec: firstWinsValueSpec<number>(
+    'weather.current-temperature',
+    0
+  ),
+  weatherSummaryService: defineService<{ readonly summary: string }>(
+    'weather.summary'
+  ),
+})
+```
+
+That pattern decouples the import graph from the registry graph:
+
+- consumers import the contract, not the provider registry item module
+- providers and consumers can be configured in either runtime order
+- module cycles are less likely as the app grows
 
 ## Package Layout
 
