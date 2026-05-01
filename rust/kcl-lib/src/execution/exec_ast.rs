@@ -1319,12 +1319,12 @@ impl Node<SketchBlock> {
                 sketch_id,
             }));
 
-        #[cfg(feature = "artifact-graph")]
-        exec_state.push_op(Operation::GroupBegin {
-            group: Group::SketchBlock { sketch_id },
-            node_path: NodePath::placeholder(),
-            source_range: range,
-        });
+            #[cfg(feature = "artifact-graph")]
+            exec_state.push_op(Operation::GroupBegin {
+                group: Group::SketchBlock { sketch_id },
+                node_path: NodePath::placeholder(),
+                source_range: range,
+            });
             artifact_id
         };
 
