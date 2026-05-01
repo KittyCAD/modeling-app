@@ -65,7 +65,7 @@ fn build_consumed_error_message(
         ),
         (Some(consumed), None) => format!(
             "`{consumed}` was already consumed by {article} `{operation}` operation \
-             and can no longer be used. Boolean operations destroy their inputs; \
+             and can no longer be used. Some operations destroy their inputs; \
              assign the result to a variable and use it for subsequent operations."
         ),
         (None, Some(output)) => format!(
@@ -74,7 +74,7 @@ fn build_consumed_error_message(
         ),
         (None, None) => format!(
             "A solid was already consumed by {article} `{operation}` operation \
-             and can no longer be used. Boolean operations destroy their inputs; \
+             and can no longer be used. Some operations destroy their inputs; \
              assign the result to a variable and use it for subsequent operations."
         ),
     }
