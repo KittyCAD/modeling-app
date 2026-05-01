@@ -8520,7 +8520,7 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         frontend.program = program.clone();
         let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
         frontend.update_state_after_exec(outcome, true);
@@ -8965,6 +8965,183 @@ sketch(on = XY) {
             "{:#?}",
             scene_delta.new_graph.objects
         );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_distance_point_line() {
+        let initial_source = "\
+sketch(on = XY) {
+  point(at = [var 0, var 5])
+  line(start = [var 0, var 0], end = [var 10, var 0])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point_id = *sketch.segments.first().unwrap();
+        let line_id = *sketch
+            .segments
+            .iter()
+            .find(|segment_id| {
+                matches!(
+                    frontend.scene_graph.objects.get(segment_id.0).map(|obj| &obj.kind),
+                    Some(ObjectKind::Segment {
+                        segment: Segment::Line(_)
+                    })
+                )
+            })
+            .unwrap();
+
+        let constraint = Constraint::Distance(Distance {
+            points: vec![point_id.into(), line_id.into()],
+            distance: Number {
+                value: 5.0,
+                units: NumericSuffix::Mm,
+            },
+            source: Default::default(),
+        });
+        let (src_delta, _scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  point1 = point(at = [var 0, var 5])
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  distance([point1, line1]) == 5mm
+}
+"
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_distance_parallel_lines() {
+        let initial_source = "\
+sketch(on = XY) {
+  line(start = [var 0, var 0], end = [var 10, var 0])
+  line(start = [var 0, var 5], end = [var 10, var 5])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line_ids = sketch
+            .segments
+            .iter()
+            .copied()
+            .filter(|segment_id| {
+                matches!(
+                    frontend.scene_graph.objects.get(segment_id.0).map(|obj| &obj.kind),
+                    Some(ObjectKind::Segment {
+                        segment: Segment::Line(_)
+                    })
+                )
+            })
+            .collect::<Vec<_>>();
+
+        let constraint = Constraint::Distance(Distance {
+            points: vec![line_ids[0].into(), line_ids[1].into()],
+            distance: Number {
+                value: 5.0,
+                units: NumericSuffix::Mm,
+            },
+            source: Default::default(),
+        });
+        let (src_delta, _scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  line2 = line(start = [var 0, var 5], end = [var 10, var 5])
+  distance([line1, line2]) == 5mm
+}
+"
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_distance_non_parallel_lines_errors() {
+        let initial_source = "\
+sketch(on = XY) {
+  line(start = [var 0, var 0], end = [var 10, var 0])
+  line(start = [var 0, var 0], end = [var 0, var 10])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line_ids = sketch
+            .segments
+            .iter()
+            .copied()
+            .filter(|segment_id| {
+                matches!(
+                    frontend.scene_graph.objects.get(segment_id.0).map(|obj| &obj.kind),
+                    Some(ObjectKind::Segment {
+                        segment: Segment::Line(_)
+                    })
+                )
+            })
+            .collect::<Vec<_>>();
+
+        let constraint = Constraint::Distance(Distance {
+            points: vec![line_ids[0].into(), line_ids[1].into()],
+            distance: Number {
+                value: 5.0,
+                units: NumericSuffix::Mm,
+            },
+            source: Default::default(),
+        });
+        let error = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap_err();
+        assert!(format!("{error:?}").contains("non-parallel lines"));
 
         ctx.close().await;
         mock_ctx.close().await;

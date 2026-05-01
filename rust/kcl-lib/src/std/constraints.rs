@@ -17,6 +17,7 @@ use crate::execution::AbstractSegment;
 use crate::execution::Artifact;
 #[cfg(feature = "artifact-graph")]
 use crate::execution::CodeRef;
+use crate::execution::ConstrainableLine2d;
 use crate::execution::ConstrainablePoint2d;
 use crate::execution::ConstrainablePoint2dOrOrigin;
 use crate::execution::ConstraintKey;
@@ -218,6 +219,100 @@ fn arc_initial_radius(
     range: crate::SourceRange,
 ) -> Result<f64, KclError> {
     points_initial_distance(sketch_vars, arc.center, arc.start, exec_state, range)
+}
+
+fn constrainable_point_from_unsolved_segment(
+    segment: &UnsolvedSegment,
+    function_name: &str,
+    range: crate::SourceRange,
+) -> Result<ConstrainablePoint2d, KclError> {
+    let UnsolvedSegmentKind::Point { position, .. } = &segment.kind else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("{function_name}() expected a point segment"),
+            vec![range],
+        )));
+    };
+
+    match (&position[0], &position[1]) {
+        (UnsolvedExpr::Unknown(x), UnsolvedExpr::Unknown(y)) => Ok(ConstrainablePoint2d {
+            vars: crate::front::Point2d { x: *x, y: *y },
+            object_id: segment.object_id,
+        }),
+        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("unimplemented: {function_name}() point arguments must be sketch vars in all coordinates"),
+            vec![range],
+        ))),
+    }
+}
+
+fn constrainable_line_from_unsolved_segment(
+    segment: &UnsolvedSegment,
+    function_name: &str,
+    range: crate::SourceRange,
+) -> Result<ConstrainableLine2d, KclError> {
+    let UnsolvedSegmentKind::Line { start, end, .. } = &segment.kind else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("{function_name}() expected a line segment"),
+            vec![range],
+        )));
+    };
+
+    match (&start[0], &start[1], &end[0], &end[1]) {
+        (
+            UnsolvedExpr::Unknown(start_x),
+            UnsolvedExpr::Unknown(start_y),
+            UnsolvedExpr::Unknown(end_x),
+            UnsolvedExpr::Unknown(end_y),
+        ) => Ok(ConstrainableLine2d {
+            vars: [
+                crate::front::Point2d {
+                    x: *start_x,
+                    y: *start_y,
+                },
+                crate::front::Point2d { x: *end_x, y: *end_y },
+            ],
+            object_id: segment.object_id,
+        }),
+        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("unimplemented: {function_name}() line arguments must be sketch vars in all coordinates"),
+            vec![range],
+        ))),
+    }
+}
+
+fn line_initial_direction(
+    sketch_vars: &[KclValue],
+    line: &ConstrainableLine2d,
+    exec_state: &mut ExecState,
+    range: crate::SourceRange,
+) -> Result<[f64; 2], KclError> {
+    let start = [line.vars[0].x, line.vars[0].y];
+    let end = [line.vars[1].x, line.vars[1].y];
+    let [start_x, start_y] = point_initial_position(sketch_vars, start, exec_state, range)?;
+    let [end_x, end_y] = point_initial_position(sketch_vars, end, exec_state, range)?;
+    Ok([end_x - start_x, end_y - start_y])
+}
+
+fn lines_initially_parallel(
+    sketch_vars: &[KclValue],
+    line0: &ConstrainableLine2d,
+    line1: &ConstrainableLine2d,
+    exec_state: &mut ExecState,
+    range: crate::SourceRange,
+) -> Result<bool, KclError> {
+    let [dx0, dy0] = line_initial_direction(sketch_vars, line0, exec_state, range)?;
+    let [dx1, dy1] = line_initial_direction(sketch_vars, line1, exec_state, range)?;
+    let len0 = libm::hypot(dx0, dy0);
+    let len1 = libm::hypot(dx1, dy1);
+
+    if len0 == 0.0 || len1 == 0.0 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "distance() line inputs must have non-zero length".to_owned(),
+            vec![range],
+        )));
+    }
+
+    Ok((dx0 * dy1 - dy0 * dx1).abs() <= 1e-9 * len0 * len1)
 }
 
 /// Arcs have 6 scalar values (start, end and center; x and y).
@@ -2097,6 +2192,60 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                         ))),
                     }
                 }
+                (UnsolvedSegmentKind::Point { .. }, UnsolvedSegmentKind::Line { .. })
+                | (UnsolvedSegmentKind::Line { .. }, UnsolvedSegmentKind::Point { .. }) => {
+                    let (point_segment, line_segment) = match (&unsolved0.kind, &unsolved1.kind) {
+                        (UnsolvedSegmentKind::Point { .. }, UnsolvedSegmentKind::Line { .. }) => (unsolved0, unsolved1),
+                        (UnsolvedSegmentKind::Line { .. }, UnsolvedSegmentKind::Point { .. }) => (unsolved1, unsolved0),
+                        _ => unreachable!(),
+                    };
+                    let point =
+                        constrainable_point_from_unsolved_segment(point_segment, "distance", args.source_range)?;
+                    let line = constrainable_line_from_unsolved_segment(line_segment, "distance", args.source_range)?;
+
+                    Ok(KclValue::SketchConstraint {
+                        value: Box::new(SketchConstraint {
+                            kind: SketchConstraintKind::PointLineDistance {
+                                point,
+                                line,
+                                input_object_ids: [unsolved0.object_id, unsolved1.object_id],
+                            },
+                            meta: vec![args.source_range.into()],
+                        }),
+                    })
+                }
+                (UnsolvedSegmentKind::Line { .. }, UnsolvedSegmentKind::Line { .. }) => {
+                    let line0 = constrainable_line_from_unsolved_segment(unsolved0, "distance", args.source_range)?;
+                    let line1 = constrainable_line_from_unsolved_segment(unsolved1, "distance", args.source_range)?;
+                    let sketch_vars = exec_state
+                        .sketch_block()
+                        .ok_or_else(|| {
+                            KclError::new_semantic(KclErrorDetails::new(
+                                "distance() can only be used inside a sketch block".to_owned(),
+                                vec![args.source_range],
+                            ))
+                        })?
+                        .sketch_vars
+                        .clone();
+
+                    if !lines_initially_parallel(&sketch_vars, &line0, &line1, exec_state, args.source_range)? {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            "distance() between two non-parallel lines is invalid because the constraint is under-specified".to_owned(),
+                            vec![args.source_range],
+                        )));
+                    }
+
+                    Ok(KclValue::SketchConstraint {
+                        value: Box::new(SketchConstraint {
+                            kind: SketchConstraintKind::LineLineDistance {
+                                line0,
+                                line1,
+                                input_object_ids: [unsolved0.object_id, unsolved1.object_id],
+                            },
+                            meta: vec![args.source_range.into()],
+                        }),
+                    })
+                }
                 _ => Err(KclError::new_semantic(KclErrorDetails::new(
                     "distance() arguments must be unsolved points".to_owned(),
                     vec![args.source_range],
@@ -2352,6 +2501,17 @@ pub async fn horizontal_distance(exec_state: &mut ExecState, args: Args) -> Resu
                         ))),
                     }
                 }
+                (
+                    UnsolvedSegmentKind::Point { .. },
+                    UnsolvedSegmentKind::Line { .. },
+                )
+                | (
+                    UnsolvedSegmentKind::Line { .. },
+                    UnsolvedSegmentKind::Point { .. },
+                ) => Err(KclError::new_semantic(KclErrorDetails::new(
+                    "horizontalDistance() between a point and a line is invalid because the constraint is under-specified".to_owned(),
+                    vec![args.source_range],
+                ))),
                 _ => Err(KclError::new_semantic(KclErrorDetails::new(
                     "horizontalDistance() arguments must be unsolved points".to_owned(),
                     vec![args.source_range],
@@ -2481,6 +2641,17 @@ pub async fn vertical_distance(exec_state: &mut ExecState, args: Args) -> Result
                         ))),
                     }
                 }
+                (
+                    UnsolvedSegmentKind::Point { .. },
+                    UnsolvedSegmentKind::Line { .. },
+                )
+                | (
+                    UnsolvedSegmentKind::Line { .. },
+                    UnsolvedSegmentKind::Point { .. },
+                ) => Err(KclError::new_semantic(KclErrorDetails::new(
+                    "verticalDistance() between a point and a line is invalid because the constraint is under-specified".to_owned(),
+                    vec![args.source_range],
+                ))),
                 _ => Err(KclError::new_semantic(KclErrorDetails::new(
                     "verticalDistance() arguments must be unsolved points".to_owned(),
                     vec![args.source_range],

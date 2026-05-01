@@ -111,6 +111,115 @@ fn internal_err(message: impl Into<String>, range: impl Into<SourceRange>) -> Kc
     KclError::new_internal(KclErrorDetails::new(message.into(), vec![range.into()]))
 }
 
+fn datum_point_from_constrainable(
+    point: &crate::execution::ConstrainablePoint2d,
+    range: SourceRange,
+) -> Result<ezpz::datatypes::inputs::DatumPoint, KclError> {
+    Ok(ezpz::datatypes::inputs::DatumPoint::new_xy(
+        point.vars.x.to_constraint_id(range)?,
+        point.vars.y.to_constraint_id(range)?,
+    ))
+}
+
+fn datum_line_from_constrainable(
+    line: &crate::execution::ConstrainableLine2d,
+    range: SourceRange,
+) -> Result<ezpz::datatypes::inputs::DatumLineSegment, KclError> {
+    Ok(ezpz::datatypes::inputs::DatumLineSegment::new(
+        ezpz::datatypes::inputs::DatumPoint::new_xy(
+            line.vars[0].x.to_constraint_id(range)?,
+            line.vars[0].y.to_constraint_id(range)?,
+        ),
+        ezpz::datatypes::inputs::DatumPoint::new_xy(
+            line.vars[1].x.to_constraint_id(range)?,
+            line.vars[1].y.to_constraint_id(range)?,
+        ),
+    ))
+}
+
+fn sketch_var_initial_value(
+    sketch_vars: &[KclValue],
+    id: crate::execution::SketchVarId,
+    exec_state: &mut ExecState,
+    range: SourceRange,
+    description: &str,
+) -> Result<f64, KclError> {
+    sketch_vars
+        .get(id.0)
+        .and_then(KclValue::as_sketch_var)
+        .map(|sketch_var| {
+            sketch_var
+                .initial_value_to_solver_units(exec_state, range, description)
+                .map(|value| value.n)
+        })
+        .transpose()?
+        .ok_or_else(|| internal_err(format!("Missing sketch variable initial value for id {}", id.0), range))
+}
+
+fn constrainable_point_initial_position(
+    sketch_vars: &[KclValue],
+    point: &crate::execution::ConstrainablePoint2d,
+    exec_state: &mut ExecState,
+    range: SourceRange,
+    description: &str,
+) -> Result<[f64; 2], KclError> {
+    Ok([
+        sketch_var_initial_value(sketch_vars, point.vars.x, exec_state, range, description)?,
+        sketch_var_initial_value(sketch_vars, point.vars.y, exec_state, range, description)?,
+    ])
+}
+
+fn constrainable_line_initial_positions(
+    sketch_vars: &[KclValue],
+    line: &crate::execution::ConstrainableLine2d,
+    exec_state: &mut ExecState,
+    range: SourceRange,
+    description: &str,
+) -> Result<([f64; 2], [f64; 2]), KclError> {
+    let start = crate::execution::ConstrainablePoint2d {
+        vars: line.vars[0].clone(),
+        object_id: line.object_id,
+    };
+    let end = crate::execution::ConstrainablePoint2d {
+        vars: line.vars[1].clone(),
+        object_id: line.object_id,
+    };
+    Ok((
+        constrainable_point_initial_position(sketch_vars, &start, exec_state, range, description)?,
+        constrainable_point_initial_position(sketch_vars, &end, exec_state, range, description)?,
+    ))
+}
+
+fn projected_point_on_line_initial_position(
+    sketch_vars: &[KclValue],
+    point: &crate::execution::ConstrainablePoint2d,
+    line: &crate::execution::ConstrainableLine2d,
+    exec_state: &mut ExecState,
+    range: SourceRange,
+) -> Result<[f64; 2], KclError> {
+    let point = constrainable_point_initial_position(
+        sketch_vars,
+        point,
+        exec_state,
+        range,
+        "point-line distance initial point",
+    )?;
+    let (line_start, line_end) =
+        constrainable_line_initial_positions(sketch_vars, line, exec_state, range, "point-line distance initial line")?;
+    let dx = line_end[0] - line_start[0];
+    let dy = line_end[1] - line_start[1];
+    let len_sq = dx * dx + dy * dy;
+    if len_sq == 0.0 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "distance() line input must have non-zero length".to_owned(),
+            vec![range],
+        )));
+    }
+
+    let t = ((point[0] - line_start[0]) * dx + (point[1] - line_start[1]) * dy) / len_sq;
+    Ok([line_start[0] + t * dx, line_start[1] + t * dy])
+}
+
 fn sketch_on_cache_name(sketch_id: ObjectId) -> String {
     format!("{SKETCH_PREFIX}{}_on", sketch_id.0)
 }
@@ -3016,6 +3125,8 @@ impl Node<BinaryExpression> {
                         )?,
                         // These constraint kinds expect the RHS to be a distance.
                         SketchConstraintKind::Distance { .. }
+                        | SketchConstraintKind::PointLineDistance { .. }
+                        | SketchConstraintKind::LineLineDistance { .. }
                         | SketchConstraintKind::Radius { .. }
                         | SketchConstraintKind::Diameter { .. }
                         | SketchConstraintKind::HorizontalDistance { .. }
@@ -3273,6 +3384,257 @@ impl Node<BinaryExpression> {
                                             }
                                         },
                                     ],
+                                    distance: n.try_into().map_err(|_| {
+                                        internal_err("Failed to convert distance units numeric suffix:", range)
+                                    })?,
+                                    source,
+                                });
+                                sketch_block_state.sketch_constraints.push(constraint_id);
+                                let artifact_id = exec_state.next_artifact_id();
+                                exec_state.add_artifact(Artifact::SketchBlockConstraint(SketchBlockConstraint {
+                                    id: artifact_id,
+                                    sketch_id,
+                                    constraint_id,
+                                    constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                    code_ref: CodeRef::placeholder(range),
+                                }));
+                                exec_state.add_scene_object(
+                                    Object {
+                                        id: constraint_id,
+                                        kind: ObjectKind::Constraint {
+                                            constraint: sketch_constraint,
+                                        },
+                                        label: Default::default(),
+                                        comments: Default::default(),
+                                        artifact_id,
+                                        source: SourceRef::new(range, self.node_path.clone()),
+                                    },
+                                    range,
+                                );
+                            }
+                        }
+                        SketchConstraintKind::PointLineDistance {
+                            point,
+                            line,
+                            input_object_ids,
+                        } => {
+                            let range = self.as_source_range();
+                            let sketch_var_ty = solver_numeric_type(exec_state);
+                            let sketch_vars = exec_state
+                                .mod_local
+                                .sketch_block
+                                .as_ref()
+                                .ok_or_else(|| {
+                                    internal_err(
+                                        "Being inside a sketch block should have already been checked above",
+                                        self,
+                                    )
+                                })?
+                                .sketch_vars
+                                .clone();
+                            let support_initial =
+                                projected_point_on_line_initial_position(&sketch_vars, point, line, exec_state, range)?;
+                            let solver_point = datum_point_from_constrainable(point, range)?;
+                            let solver_line = datum_line_from_constrainable(line, range)?;
+
+                            #[cfg(feature = "artifact-graph")]
+                            let constraint_id = exec_state.next_object_id();
+                            let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
+                                let message =
+                                    "Being inside a sketch block should have already been checked above".to_owned();
+                                debug_assert!(false, "{}", &message);
+                                return Err(internal_err(message, self));
+                            };
+
+                            let support_x_id = sketch_block_state.next_sketch_var_id();
+                            sketch_block_state.sketch_vars.push(KclValue::SketchVar {
+                                value: Box::new(crate::execution::SketchVar {
+                                    id: support_x_id,
+                                    initial_value: support_initial[0],
+                                    ty: sketch_var_ty,
+                                    meta: vec![],
+                                }),
+                            });
+                            let support_y_id = sketch_block_state.next_sketch_var_id();
+                            sketch_block_state.sketch_vars.push(KclValue::SketchVar {
+                                value: Box::new(crate::execution::SketchVar {
+                                    id: support_y_id,
+                                    initial_value: support_initial[1],
+                                    ty: sketch_var_ty,
+                                    meta: vec![],
+                                }),
+                            });
+                            let support_point = ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                support_x_id.to_constraint_id(range)?,
+                                support_y_id.to_constraint_id(range)?,
+                            );
+                            let support_line =
+                                ezpz::datatypes::inputs::DatumLineSegment::new(solver_point, support_point);
+
+                            sketch_block_state
+                                .solver_constraints
+                                .push(Constraint::PointLineDistance(support_point, solver_line, 0.0));
+                            sketch_block_state.solver_constraints.push(Constraint::LinesAtAngle(
+                                support_line,
+                                solver_line,
+                                ezpz::datatypes::AngleKind::Perpendicular,
+                            ));
+                            sketch_block_state.solver_constraints.push(Constraint::Distance(
+                                solver_point,
+                                support_point,
+                                n.n,
+                            ));
+
+                            #[cfg(feature = "artifact-graph")]
+                            {
+                                use crate::execution::Artifact;
+                                use crate::execution::CodeRef;
+                                use crate::execution::SketchBlockConstraint;
+                                use crate::execution::SketchBlockConstraintType;
+                                use crate::front::Distance;
+                                use crate::front::SourceRef;
+                                use crate::frontend::sketch::ConstraintSegment;
+
+                                let Some(sketch_id) = sketch_block_state.sketch_id else {
+                                    let message = "Sketch id missing for constraint artifact".to_owned();
+                                    debug_assert!(false, "{}", &message);
+                                    return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
+                                };
+                                let sketch_constraint = crate::front::Constraint::Distance(Distance {
+                                    points: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
+                                    distance: n.try_into().map_err(|_| {
+                                        internal_err("Failed to convert distance units numeric suffix:", range)
+                                    })?,
+                                    source,
+                                });
+                                sketch_block_state.sketch_constraints.push(constraint_id);
+                                let artifact_id = exec_state.next_artifact_id();
+                                exec_state.add_artifact(Artifact::SketchBlockConstraint(SketchBlockConstraint {
+                                    id: artifact_id,
+                                    sketch_id,
+                                    constraint_id,
+                                    constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                    code_ref: CodeRef::placeholder(range),
+                                }));
+                                exec_state.add_scene_object(
+                                    Object {
+                                        id: constraint_id,
+                                        kind: ObjectKind::Constraint {
+                                            constraint: sketch_constraint,
+                                        },
+                                        label: Default::default(),
+                                        comments: Default::default(),
+                                        artifact_id,
+                                        source: SourceRef::new(range, self.node_path.clone()),
+                                    },
+                                    range,
+                                );
+                            }
+                        }
+                        SketchConstraintKind::LineLineDistance {
+                            line0,
+                            line1,
+                            input_object_ids,
+                        } => {
+                            let range = self.as_source_range();
+                            let reference_point = crate::execution::ConstrainablePoint2d {
+                                vars: line0.vars[0].clone(),
+                                object_id: line0.object_id,
+                            };
+                            let sketch_var_ty = solver_numeric_type(exec_state);
+                            let sketch_vars = exec_state
+                                .mod_local
+                                .sketch_block
+                                .as_ref()
+                                .ok_or_else(|| {
+                                    internal_err(
+                                        "Being inside a sketch block should have already been checked above",
+                                        self,
+                                    )
+                                })?
+                                .sketch_vars
+                                .clone();
+                            let support_initial = projected_point_on_line_initial_position(
+                                &sketch_vars,
+                                &reference_point,
+                                line1,
+                                exec_state,
+                                range,
+                            )?;
+                            let solver_point = datum_point_from_constrainable(&reference_point, range)?;
+                            let solver_line0 = datum_line_from_constrainable(line0, range)?;
+                            let solver_line1 = datum_line_from_constrainable(line1, range)?;
+
+                            #[cfg(feature = "artifact-graph")]
+                            let constraint_id = exec_state.next_object_id();
+                            let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
+                                let message =
+                                    "Being inside a sketch block should have already been checked above".to_owned();
+                                debug_assert!(false, "{}", &message);
+                                return Err(internal_err(message, self));
+                            };
+
+                            let support_x_id = sketch_block_state.next_sketch_var_id();
+                            sketch_block_state.sketch_vars.push(KclValue::SketchVar {
+                                value: Box::new(crate::execution::SketchVar {
+                                    id: support_x_id,
+                                    initial_value: support_initial[0],
+                                    ty: sketch_var_ty,
+                                    meta: vec![],
+                                }),
+                            });
+                            let support_y_id = sketch_block_state.next_sketch_var_id();
+                            sketch_block_state.sketch_vars.push(KclValue::SketchVar {
+                                value: Box::new(crate::execution::SketchVar {
+                                    id: support_y_id,
+                                    initial_value: support_initial[1],
+                                    ty: sketch_var_ty,
+                                    meta: vec![],
+                                }),
+                            });
+                            let support_point = ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                support_x_id.to_constraint_id(range)?,
+                                support_y_id.to_constraint_id(range)?,
+                            );
+                            let support_line =
+                                ezpz::datatypes::inputs::DatumLineSegment::new(solver_point, support_point);
+
+                            sketch_block_state.solver_constraints.push(Constraint::LinesAtAngle(
+                                solver_line0,
+                                solver_line1,
+                                ezpz::datatypes::AngleKind::Parallel,
+                            ));
+                            sketch_block_state
+                                .solver_constraints
+                                .push(Constraint::PointLineDistance(support_point, solver_line1, 0.0));
+                            sketch_block_state.solver_constraints.push(Constraint::LinesAtAngle(
+                                support_line,
+                                solver_line1,
+                                ezpz::datatypes::AngleKind::Perpendicular,
+                            ));
+                            sketch_block_state.solver_constraints.push(Constraint::Distance(
+                                solver_point,
+                                support_point,
+                                n.n,
+                            ));
+
+                            #[cfg(feature = "artifact-graph")]
+                            {
+                                use crate::execution::Artifact;
+                                use crate::execution::CodeRef;
+                                use crate::execution::SketchBlockConstraint;
+                                use crate::execution::SketchBlockConstraintType;
+                                use crate::front::Distance;
+                                use crate::front::SourceRef;
+                                use crate::frontend::sketch::ConstraintSegment;
+
+                                let Some(sketch_id) = sketch_block_state.sketch_id else {
+                                    let message = "Sketch id missing for constraint artifact".to_owned();
+                                    debug_assert!(false, "{}", &message);
+                                    return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
+                                };
+                                let sketch_constraint = crate::front::Constraint::Distance(Distance {
+                                    points: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
                                     distance: n.try_into().map_err(|_| {
                                         internal_err("Failed to convert distance units numeric suffix:", range)
                                     })?,

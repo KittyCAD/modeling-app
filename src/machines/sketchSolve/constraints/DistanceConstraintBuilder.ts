@@ -12,6 +12,8 @@ import {
 } from '@src/machines/sketchSolve/constraints/DimensionLine'
 import {
   type DistanceConstraint,
+  getLinePointSegments,
+  isLineSegment,
   isPointSegment,
   pointToVec3,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
@@ -201,16 +203,54 @@ export function getDistanceEndPoints(
 ) {
   const constraint = obj.kind.constraint
   const [p1Id, p2Id] = constraint.points
-  const p1 = getDistanceConstraintPointPosition(p1Id, objects)
-  const p2 = getDistanceConstraintPointPosition(p2Id, objects)
+  const endpoints = getDistanceConstraintEndpointPositions(p1Id, p2Id, objects)
 
-  if (p1 && p2) {
+  if (endpoints) {
+    const { p1, p2 } = endpoints
     return {
       p1,
       p2,
       distance: constraint.distance,
     }
   }
+  return null
+}
+
+function getDistanceConstraintEndpointPositions(
+  firstId: number | 'ORIGIN',
+  secondId: number | 'ORIGIN',
+  objects: ApiObject[]
+) {
+  const firstPoint = getDistanceConstraintPointPosition(firstId, objects)
+  const secondPoint = getDistanceConstraintPointPosition(secondId, objects)
+  if (firstPoint && secondPoint) {
+    return { p1: firstPoint, p2: secondPoint }
+  }
+
+  const firstLine = getDistanceConstraintLinePoints(firstId, objects)
+  const secondLine = getDistanceConstraintLinePoints(secondId, objects)
+
+  if (firstPoint && secondLine) {
+    return {
+      p1: firstPoint,
+      p2: projectPointToLine(firstPoint, secondLine),
+    }
+  }
+
+  if (firstLine && secondPoint) {
+    return {
+      p1: projectPointToLine(secondPoint, firstLine),
+      p2: secondPoint,
+    }
+  }
+
+  if (firstLine && secondLine) {
+    return {
+      p1: firstLine.start,
+      p2: projectPointToLine(firstLine.start, secondLine),
+    }
+  }
+
   return null
 }
 
@@ -224,6 +264,44 @@ function getDistanceConstraintPointPosition(
 
   const pointObject = objects[pointId]
   return isPointSegment(pointObject) ? pointToVec3(pointObject) : null
+}
+
+function getDistanceConstraintLinePoints(
+  lineId: number | 'ORIGIN',
+  objects: ApiObject[]
+) {
+  if (lineId === 'ORIGIN') {
+    return null
+  }
+
+  const lineObject = objects[lineId]
+  if (!isLineSegment(lineObject)) {
+    return null
+  }
+
+  const linePoints = getLinePointSegments(lineObject, objects)
+  if (!linePoints) {
+    return null
+  }
+
+  return {
+    start: pointToVec3(linePoints[0]),
+    end: pointToVec3(linePoints[1]),
+  }
+}
+
+function projectPointToLine(
+  point: Vector3,
+  line: { start: Vector3; end: Vector3 }
+) {
+  const lineVector = line.end.clone().sub(line.start)
+  const lengthSq = lineVector.lengthSq()
+  if (lengthSq === 0) {
+    return line.start.clone()
+  }
+
+  const t = point.clone().sub(line.start).dot(lineVector) / lengthSq
+  return line.start.clone().add(lineVector.multiplyScalar(t))
 }
 
 function getDirections(

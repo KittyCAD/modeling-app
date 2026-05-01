@@ -2308,6 +2308,16 @@ pub enum SketchConstraintKind {
     Distance {
         points: [ConstrainablePoint2dOrOrigin; 2],
     },
+    PointLineDistance {
+        point: ConstrainablePoint2d,
+        line: ConstrainableLine2d,
+        input_object_ids: [ObjectId; 2],
+    },
+    LineLineDistance {
+        line0: ConstrainableLine2d,
+        line1: ConstrainableLine2d,
+        input_object_ids: [ObjectId; 2],
+    },
     Radius {
         points: [ConstrainablePoint2d; 2],
     },
@@ -2327,6 +2337,8 @@ impl SketchConstraintKind {
         match self {
             SketchConstraintKind::Angle { .. } => "angle",
             SketchConstraintKind::Distance { .. } => "distance",
+            SketchConstraintKind::PointLineDistance { .. } => "distance",
+            SketchConstraintKind::LineLineDistance { .. } => "distance",
             SketchConstraintKind::Radius { .. } => "radius",
             SketchConstraintKind::Diameter { .. } => "diameter",
             SketchConstraintKind::HorizontalDistance { .. } => "horizontalDistance",
