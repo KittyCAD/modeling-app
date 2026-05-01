@@ -160,7 +160,7 @@ describe('toolSnappingUtils', () => {
       excludedPointIds: [1, 2, 3],
     })
 
-    expect(candidate?.target).toEqual({ type: 'line', id: 7 })
+    expect(candidate?.target).toEqual({ type: 'midpoint', id: 7 })
     expect(candidate?.position).toEqual([32, 50])
   })
 })

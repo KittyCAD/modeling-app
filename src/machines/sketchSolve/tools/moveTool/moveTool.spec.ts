@@ -2603,7 +2603,7 @@ describe('createOnDragCallback', () => {
 
     expect(dragSnappingDeps.onUpdateDragSnapping).toHaveBeenCalledWith(
       expect.objectContaining({
-        target: { type: 'line', id: 7 },
+        target: { type: 'midpoint', id: 7 },
         position: [32, 50],
       })
     )
