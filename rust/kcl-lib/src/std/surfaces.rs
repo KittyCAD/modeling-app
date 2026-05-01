@@ -17,6 +17,7 @@ use kittycad_modeling_cmds::{self as kcmc};
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::BoundedEdge;
+use crate::execution::ConsumedSolidOperation;
 use crate::execution::ExecState;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
@@ -29,6 +30,8 @@ use crate::std::Args;
 use crate::std::DEFAULT_TOLERANCE_MM;
 use crate::std::args::TyF64;
 use crate::std::sketch::FaceTag;
+use crate::std::solid_consumption::record_consumed_solids;
+use crate::std::solid_consumption::validate_solids_not_consumed;
 
 /// Flips the orientation of a surface, swapping which side is the front and which is the reverse.
 pub async fn flip_surface(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -331,6 +334,8 @@ async fn inner_join(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Solid, KclError> {
+    validate_solids_not_consumed(&selection, exec_state, args.source_range)?;
+
     if selection.len() == 1 {
         let cmd = mcmd::Solid3dJoin::builder().object_id(selection[0].id).build();
 
@@ -359,6 +364,13 @@ async fn inner_join(
                 ModelingCmd::from(cmd),
             )
             .await?;
+
+        record_consumed_solids(
+            exec_state,
+            &selection,
+            ConsumedSolidOperation::JoinSurfaces,
+            Some(body_out_id),
+        );
 
         let solid = Solid {
             id: body_out_id,
