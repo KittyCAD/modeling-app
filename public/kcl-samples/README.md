@@ -66,6 +66,8 @@ ex. `just overwrite-sim-test-sample angle-gauge`
 [![color-cube](screenshots/color-cube.png)](color-cube/main.kcl)
 #### [cone](cone/main.kcl) ([screenshot](screenshots/cone.png))
 [![cone](screenshots/cone.png)](cone/main.kcl)
+#### [contra-rotor](contra-rotor/main.kcl) ([screenshot](screenshots/contra-rotor.png))
+[![contra-rotor](screenshots/contra-rotor.png)](contra-rotor/main.kcl)
 #### [counterdrilled-weldment](counterdrilled-weldment/main.kcl) ([screenshot](screenshots/counterdrilled-weldment.png))
 [![counterdrilled-weldment](screenshots/counterdrilled-weldment.png)](counterdrilled-weldment/main.kcl)
 #### [countersunk-plate](countersunk-plate/main.kcl) ([screenshot](screenshots/countersunk-plate.png))

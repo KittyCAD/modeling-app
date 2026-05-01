@@ -544,18 +544,6 @@ description: Artifact commands bracket-with-slot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
-        "intersection_index": -1,
-        "curve_clockwise": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "make_plane",
         "origin": {
           "x": 4.2,
