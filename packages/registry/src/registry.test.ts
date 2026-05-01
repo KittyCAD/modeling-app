@@ -162,4 +162,39 @@ describe('Registry', () => {
 
     expect(container.get(dashboardValueSpec)).toBe('Sunny 72F')
   })
+
+  it('dedupes cyclic declarative dependencies by stable ids and stays lazy for unreachable runtime items', () => {
+    const visitedValueSpec = appendValueSpec<string>('visited')
+    const unreachableCalls = vi.fn()
+
+    const itemA = defineRegistryItem({
+      id: 'cycle.a',
+      provides: [provide(visitedValueSpec, 'a')],
+      uses: [],
+    })
+    const itemB = defineRegistryItem({
+      id: 'cycle.b',
+      provides: [provide(visitedValueSpec, 'b')],
+      uses: [itemA],
+    })
+
+    // Close the cycle after both items exist.
+    ;(itemA.uses as RegistryItem[]).push(itemB)
+
+    const unreachableRuntimeItem = defineRegistryItemFactory(() => {
+      unreachableCalls()
+      return {
+        item: defineRegistryItem({
+          id: 'unreachable.runtime',
+          provides: [provide(visitedValueSpec, 'unreachable')],
+        }),
+      }
+    }, 'unreachable.runtime')
+
+    const container = new Registry()
+    container.configure([itemA])
+
+    expect(container.get(visitedValueSpec)).toEqual(['a', 'b'])
+    expect(unreachableCalls).not.toHaveBeenCalled()
+  })
 })
