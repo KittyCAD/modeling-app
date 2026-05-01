@@ -7,11 +7,15 @@ use kcmc::length_unit::LengthUnit;
 use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
 use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::{self as kcmc};
+use uuid::Uuid;
 
 use super::DEFAULT_TOLERANCE_MM;
 use super::args::TyF64;
+use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
+use crate::execution::ConsumedSolidInfo;
+use crate::execution::ConsumedSolidOperation;
 use crate::execution::ExecState;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
@@ -63,6 +67,8 @@ pub(crate) async fn inner_union(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
+    validate_solids_not_consumed(&solids, exec_state, args.source_range)?;
+
     let solid_out_id = exec_state.next_uuid();
 
     let mut solid = solids[0].clone();
@@ -71,6 +77,7 @@ pub(crate) async fn inner_union(
     let mut new_solids = vec![solid.clone()];
 
     if args.ctx.no_engine_commands().await {
+        record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Union, Some(solid_out_id));
         return Ok(new_solids);
     }
 
@@ -113,6 +120,8 @@ pub(crate) async fn inner_union(
         new_solids.push(new_solid);
     }
 
+    record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Union, Some(solid_out_id));
+
     Ok(new_solids)
 }
 
@@ -142,6 +151,8 @@ pub(crate) async fn inner_intersect(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
+    validate_solids_not_consumed(&solids, exec_state, args.source_range)?;
+
     let solid_out_id = exec_state.next_uuid();
 
     let mut solid = solids[0].clone();
@@ -150,6 +161,12 @@ pub(crate) async fn inner_intersect(
     let mut new_solids = vec![solid.clone()];
 
     if args.ctx.no_engine_commands().await {
+        record_consumed_solids(
+            exec_state,
+            &solids,
+            ConsumedSolidOperation::Intersect,
+            Some(solid_out_id),
+        );
         return Ok(new_solids);
     }
 
@@ -192,6 +209,13 @@ pub(crate) async fn inner_intersect(
         new_solids.push(new_solid);
     }
 
+    record_consumed_solids(
+        exec_state,
+        &solids,
+        ConsumedSolidOperation::Intersect,
+        Some(solid_out_id),
+    );
+
     Ok(new_solids)
 }
 
@@ -216,6 +240,9 @@ pub(crate) async fn inner_subtract(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
+    let combined_solids = solids.iter().chain(tools.iter()).cloned().collect::<Vec<Solid>>();
+    validate_solids_not_consumed(&combined_solids, exec_state, args.source_range)?;
+
     let solid_out_id = exec_state.next_uuid();
 
     let mut solid = solids[0].clone();
@@ -224,11 +251,17 @@ pub(crate) async fn inner_subtract(
     let mut new_solids = vec![solid.clone()];
 
     if args.ctx.no_engine_commands().await {
+        record_consumed_solids(
+            exec_state,
+            &solids,
+            ConsumedSolidOperation::Subtract,
+            Some(solid_out_id),
+        );
+        record_consumed_solids(exec_state, &tools, ConsumedSolidOperation::Subtract, None);
         return Ok(new_solids);
     }
 
     // Flush the fillets for the solids and the tools.
-    let combined_solids = solids.iter().chain(tools.iter()).cloned().collect::<Vec<Solid>>();
     exec_state
         .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), &combined_solids)
         .await?;
@@ -267,6 +300,14 @@ pub(crate) async fn inner_subtract(
         new_solid.artifact_id = extra_solid_id.into();
         new_solids.push(new_solid);
     }
+
+    record_consumed_solids(
+        exec_state,
+        &solids,
+        ConsumedSolidOperation::Subtract,
+        Some(solid_out_id),
+    );
+    record_consumed_solids(exec_state, &tools, ConsumedSolidOperation::Subtract, None);
 
     Ok(new_solids)
 }
@@ -317,6 +358,11 @@ pub(crate) async fn inner_imprint(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
+    validate_solids_not_consumed(&targets, exec_state, args.source_range)?;
+    if let Some(tools) = tools.as_ref() {
+        validate_solids_not_consumed(tools, exec_state, args.source_range)?;
+    }
+
     let body_out_id = exec_state.next_uuid();
 
     let mut body = targets[0].clone();
@@ -332,6 +378,10 @@ pub(crate) async fn inner_imprint(
             new_solid.set_id(extra_solid_id);
             new_solid.artifact_id = extra_solid_id.into();
             new_solids.push(new_solid);
+        }
+        record_consumed_solids(exec_state, &targets, ConsumedSolidOperation::Split, Some(body_out_id));
+        if !keep_tools && let Some(tools) = tools.as_ref() {
+            record_consumed_solids(exec_state, tools, ConsumedSolidOperation::Split, None);
         }
         return Ok(new_solids);
     }
@@ -384,5 +434,417 @@ pub(crate) async fn inner_imprint(
         new_solids.push(new_solid);
     }
 
+    record_consumed_solids(exec_state, &targets, ConsumedSolidOperation::Split, Some(body_out_id));
+    if !keep_tools && let Some(tools) = tools.as_ref() {
+        record_consumed_solids(exec_state, tools, ConsumedSolidOperation::Split, None);
+    }
+
     Ok(new_solids)
+}
+
+fn validate_solids_not_consumed(
+    solids: &[Solid],
+    exec_state: &ExecState,
+    source_range: SourceRange,
+) -> Result<(), KclError> {
+    for solid in solids {
+        let Some(info) = exec_state.check_solid_consumed(&solid.id) else {
+            continue;
+        };
+        let operation = info.operation;
+        let output_solid_id = info.output_solid_id;
+        let consumed_var = exec_state.find_var_name_for_solid_id(solid.id);
+        let output_var = exec_state
+            .latest_consumed_output(output_solid_id)
+            .and_then(|id| exec_state.find_var_name_for_solid_id(id));
+        let message = build_consumed_error_message(consumed_var.as_deref(), operation, output_var.as_deref());
+
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            message,
+            vec![source_range],
+        )));
+    }
+
+    Ok(())
+}
+
+fn record_consumed_solids(
+    exec_state: &mut ExecState,
+    solids: &[Solid],
+    operation: ConsumedSolidOperation,
+    output_solid_id: Option<Uuid>,
+) {
+    for solid in solids {
+        exec_state.mark_solid_consumed(
+            solid.id,
+            ConsumedSolidInfo {
+                operation,
+                output_solid_id,
+            },
+        );
+    }
+}
+
+fn build_consumed_error_message(
+    consumed_var: Option<&str>,
+    operation: ConsumedSolidOperation,
+    output_var: Option<&str>,
+) -> String {
+    let article = operation.indefinite_article();
+
+    match (consumed_var, output_var) {
+        (Some(consumed), Some(output)) => format!(
+            "`{consumed}` was already consumed by {article} `{operation}` operation. \
+             The operation result is now in `{output}`; use that for subsequent operations."
+        ),
+        (Some(consumed), None) => format!(
+            "`{consumed}` was already consumed by {article} `{operation}` operation \
+             and can no longer be used. Boolean operations destroy their inputs; \
+             assign the result to a variable and use it for subsequent operations."
+        ),
+        (None, Some(output)) => format!(
+            "A solid was already consumed by {article} `{operation}` operation. \
+             The operation result is now in `{output}`; use that for subsequent operations."
+        ),
+        (None, None) => format!(
+            "A solid was already consumed by {article} `{operation}` operation \
+             and can no longer be used. Boolean operations destroy their inputs; \
+             assign the result to a variable and use it for subsequent operations."
+        ),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::errors::KclError;
+    use crate::execution::MockConfig;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn subtract_reusing_consumed_target_reports_kcl_error() {
+        let code = r#"
+targetSketch = sketch(on = XY) {
+  line1 = line(start = [var -10, var -10], end = [var 10, var -10])
+  line2 = line(start = [var 10, var -10], end = [var 10, var 10])
+  line3 = line(start = [var 10, var 10], end = [var -10, var 10])
+  line4 = line(start = [var -10, var 10], end = [var -10, var -10])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+target = extrude(region(point = [0, 0], sketch = targetSketch), length = 20)
+
+tool1Sketch = sketch(on = XY) {
+  line1 = line(start = [var -11, var -11], end = [var -7, var -11])
+  line2 = line(start = [var -7, var -11], end = [var -7, var -7])
+  line3 = line(start = [var -7, var -7], end = [var -11, var -7])
+  line4 = line(start = [var -11, var -7], end = [var -11, var -11])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+tool1 = extrude(region(point = [-9, -9], sketch = tool1Sketch), length = 4)
+
+tool2Sketch = sketch(on = XY) {
+  line1 = line(start = [var 7, var 7], end = [var 11, var 7])
+  line2 = line(start = [var 11, var 7], end = [var 11, var 11])
+  line3 = line(start = [var 11, var 11], end = [var 7, var 11])
+  line4 = line(start = [var 7, var 11], end = [var 7, var 7])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+tool2 = extrude(region(point = [9, 9], sketch = tool2Sketch), length = 4)
+
+first = subtract(target, tools = [tool1])
+second = subtract(target, tools = [tool2])
+"#;
+
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let err = ctx.run_mock(&program, &MockConfig::default()).await.unwrap_err();
+        ctx.close().await;
+
+        assert!(matches!(&err.error, KclError::Semantic { .. }), "{:?}", err.error);
+        let message = err.error.message();
+        assert!(
+            message.contains("`target` was already consumed by a `subtract` operation"),
+            "{message}"
+        );
+        assert!(message.contains("The operation result is now in `first`"), "{message}");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn subtract_reusing_consumed_tool_reports_kcl_error() {
+        let code = r#"
+targetSketch = sketch(on = XY) {
+  line1 = line(start = [var -10, var -10], end = [var 10, var -10])
+  line2 = line(start = [var 10, var -10], end = [var 10, var 10])
+  line3 = line(start = [var 10, var 10], end = [var -10, var 10])
+  line4 = line(start = [var -10, var 10], end = [var -10, var -10])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+target = extrude(region(point = [0, 0], sketch = targetSketch), length = 20)
+
+toolSketch = sketch(on = XY) {
+  line1 = line(start = [var -2, var -2], end = [var 2, var -2])
+  line2 = line(start = [var 2, var -2], end = [var 2, var 2])
+  line3 = line(start = [var 2, var 2], end = [var -2, var 2])
+  line4 = line(start = [var -2, var 2], end = [var -2, var -2])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+tool = extrude(region(point = [0, 0], sketch = toolSketch), length = 4)
+
+first = subtract(target, tools = [tool])
+second = subtract(first, tools = [tool])
+"#;
+
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let err = ctx.run_mock(&program, &MockConfig::default()).await.unwrap_err();
+        ctx.close().await;
+
+        assert!(matches!(&err.error, KclError::Semantic { .. }), "{:?}", err.error);
+        let message = err.error.message();
+        assert!(
+            message.contains("`tool` was already consumed by a `subtract` operation"),
+            "{message}"
+        );
+        assert!(message.contains("can no longer be used"), "{message}");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn union_reusing_consumed_solid_reports_kcl_error() {
+        let code = r#"
+leftSketch = sketch(on = XY) {
+  line1 = line(start = [var -10, var -10], end = [var -2, var -10])
+  line2 = line(start = [var -2, var -10], end = [var -2, var -2])
+  line3 = line(start = [var -2, var -2], end = [var -10, var -2])
+  line4 = line(start = [var -10, var -2], end = [var -10, var -10])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+left = extrude(region(point = [-6, -6], sketch = leftSketch), length = 8)
+
+rightSketch = sketch(on = XY) {
+  line1 = line(start = [var -2, var -2], end = [var 6, var -2])
+  line2 = line(start = [var 6, var -2], end = [var 6, var 6])
+  line3 = line(start = [var 6, var 6], end = [var -2, var 6])
+  line4 = line(start = [var -2, var 6], end = [var -2, var -2])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+right = extrude(region(point = [2, 2], sketch = rightSketch), length = 8)
+
+toolSketch = sketch(on = XY) {
+  line1 = line(start = [var -1, var -1], end = [var 1, var -1])
+  line2 = line(start = [var 1, var -1], end = [var 1, var 1])
+  line3 = line(start = [var 1, var 1], end = [var -1, var 1])
+  line4 = line(start = [var -1, var 1], end = [var -1, var -1])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+tool = extrude(region(point = [0, 0], sketch = toolSketch), length = 2)
+
+first = union([left, right])
+second = union([first, tool])
+third = subtract(left, tools = [tool])
+"#;
+
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let err = ctx.run_mock(&program, &MockConfig::default()).await.unwrap_err();
+        ctx.close().await;
+
+        assert!(matches!(&err.error, KclError::Semantic { .. }), "{:?}", err.error);
+        let message = err.error.message();
+        assert!(
+            message.contains("`left` was already consumed by a `union` operation"),
+            "{message}"
+        );
+        assert!(message.contains("The operation result is now in `second`"), "{message}");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn intersect_reusing_consumed_solid_reports_kcl_error() {
+        let code = r#"
+leftSketch = sketch(on = XY) {
+  line1 = line(start = [var -10, var -10], end = [var 4, var -10])
+  line2 = line(start = [var 4, var -10], end = [var 4, var 4])
+  line3 = line(start = [var 4, var 4], end = [var -10, var 4])
+  line4 = line(start = [var -10, var 4], end = [var -10, var -10])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+left = extrude(region(point = [-3, -3], sketch = leftSketch), length = 8)
+
+rightSketch = sketch(on = XY) {
+  line1 = line(start = [var -4, var -4], end = [var 10, var -4])
+  line2 = line(start = [var 10, var -4], end = [var 10, var 10])
+  line3 = line(start = [var 10, var 10], end = [var -4, var 10])
+  line4 = line(start = [var -4, var 10], end = [var -4, var -4])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+right = extrude(region(point = [3, 3], sketch = rightSketch), length = 8)
+
+toolSketch = sketch(on = XY) {
+  line1 = line(start = [var -1, var -1], end = [var 1, var -1])
+  line2 = line(start = [var 1, var -1], end = [var 1, var 1])
+  line3 = line(start = [var 1, var 1], end = [var -1, var 1])
+  line4 = line(start = [var -1, var 1], end = [var -1, var -1])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+tool = extrude(region(point = [0, 0], sketch = toolSketch), length = 2)
+
+first = intersect([left, right])
+second = subtract(left, tools = [tool])
+"#;
+
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let err = ctx.run_mock(&program, &MockConfig::default()).await.unwrap_err();
+        ctx.close().await;
+
+        assert!(matches!(&err.error, KclError::Semantic { .. }), "{:?}", err.error);
+        let message = err.error.message();
+        assert!(
+            message.contains("`left` was already consumed by an `intersect` operation"),
+            "{message}"
+        );
+        assert!(message.contains("The operation result is now in `first`"), "{message}");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn split_keep_tools_does_not_consume_tools() {
+        let code = r#"
+targetSketch = sketch(on = XY) {
+  line1 = line(start = [var -10, var -10], end = [var 10, var -10])
+  line2 = line(start = [var 10, var -10], end = [var 10, var 10])
+  line3 = line(start = [var 10, var 10], end = [var -10, var 10])
+  line4 = line(start = [var -10, var 10], end = [var -10, var -10])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+target = extrude(region(point = [0, 0], sketch = targetSketch), length = 20)
+
+toolSketch = sketch(on = XY) {
+  line1 = line(start = [var -2, var -10], end = [var 2, var -10])
+  line2 = line(start = [var 2, var -10], end = [var 2, var 10])
+  line3 = line(start = [var 2, var 10], end = [var -2, var 10])
+  line4 = line(start = [var -2, var 10], end = [var -2, var -10])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+
+tool = extrude(region(point = [0, 0], sketch = toolSketch), length = 20)
+
+first = split(target, tools = [tool], keepTools = true)
+second = subtract(first, tools = [tool])
+"#;
+
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        ctx.close().await;
+
+        assert!(outcome.variables.contains_key("second"));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn split_without_keep_tools_consumes_tools() {
+        let code = r#"
+targetSketch = sketch(on = XY) {
+  line1 = line(start = [var -10, var -10], end = [var 10, var -10])
+  line2 = line(start = [var 10, var -10], end = [var 10, var 10])
+  line3 = line(start = [var 10, var 10], end = [var -10, var 10])
+  line4 = line(start = [var -10, var 10], end = [var -10, var -10])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+target = extrude(region(point = [0, 0], sketch = targetSketch), length = 20)
+
+toolSketch = sketch(on = XY) {
+  line1 = line(start = [var -2, var -10], end = [var 2, var -10])
+  line2 = line(start = [var 2, var -10], end = [var 2, var 10])
+  line3 = line(start = [var 2, var 10], end = [var -2, var 10])
+  line4 = line(start = [var -2, var 10], end = [var -2, var -10])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+
+tool = extrude(region(point = [0, 0], sketch = toolSketch), length = 20)
+
+first = split(target, tools = [tool])
+second = subtract(first, tools = [tool])
+"#;
+
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let err = ctx.run_mock(&program, &MockConfig::default()).await.unwrap_err();
+        ctx.close().await;
+
+        assert!(matches!(&err.error, KclError::Semantic { .. }), "{:?}", err.error);
+        let message = err.error.message();
+        assert!(
+            message.contains("`tool` was already consumed by a `split` operation"),
+            "{message}"
+        );
+        assert!(message.contains("can no longer be used"), "{message}");
+    }
 }
