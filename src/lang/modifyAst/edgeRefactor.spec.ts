@@ -170,6 +170,39 @@ yo = edgeId(solid001, index = 5)
 fillet(solid001, radius = 0.1, tags = [yo])
 `
 
+const KCL_SKETCH_BLOCK_EDGE_ID_INLINE = `startX = 2
+
+baseSketch = sketch(on = XY) {
+  yoyo = line(start = [startX, 0], end = [7, 6])
+  line2 = line(start = [7, 6], end = [7, 12])
+  hi = line(start = [7, 12], end = [startX, 0])
+}
+
+baseRegion = region(point = [5.5, 6], sketch = baseSketch)
+myExtrude = extrude(
+  baseRegion,
+  length = 5,
+  tagEnd = $endCap,
+  tagStart = $startCap,
+)
+yodawg = getCommonEdge(faces = [
+  baseRegion.tags.hi,
+  baseRegion.tags.yoyo
+])
+
+cutSketch = sketch(on = YZ) {
+  myDisambigutator = line(start = [-3.29, 4.75], end = [2.03, 2.44])
+  myDisambigutator2 = line(start = [2.03, 2.44], end = [-3.49, 0.31])
+  line3 = line(start = [-3.49, 0.31], end = [-3.29, 4.75])
+}
+
+cutRegion = region(point = [-1.5833333333, 2.5], sketch = cutSketch)
+extrude001 = extrude(cutRegion, length = 5)
+solid001 = subtract(myExtrude, tools = extrude001)
+
+fillet(solid001, radius = 0.1, tags = [edgeId(solid001, index = 5)])
+`
+
 const KCL_MULTIPLE_IN_TAGS = `body = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [10, 0], tag = $e1)
@@ -734,6 +767,43 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
         )
         expect(n).toContain('endFaces = [startCap]')
         expect(n).not.toContain('tags = [yo]')
+      }
+    )
+
+    it(
+      'refactors inline edgeId in sketch-block code',
+      { timeout: 30_000 },
+      async () => {
+        const ast = assertParse(
+          KCL_SKETCH_BLOCK_EDGE_ID_INLINE,
+          instanceInThisFile
+        )
+        await kclManagerInThisFile.executeAst({ ast })
+        const execState = kclManagerInThisFile.execState
+        expect(
+          execState.edgeRefactorMetadata?.length ?? 0
+        ).toBeGreaterThanOrEqual(1)
+        expect(execState.artifactGraph.size).toBeGreaterThan(0)
+
+        const refactored = refactorZ0006Unified(
+          ast,
+          execState.edgeRefactorMetadata ?? [],
+          execState.directTagFilletMetadata ?? [],
+          execState.artifactGraph,
+          instanceInThisFile
+        )
+        expect(err(refactored)).toBe(false)
+        if (err(refactored)) throw refactored
+
+        const n = norm(refactored)
+        expect(n).toContain('fillet(')
+        expect(n).toContain('radius = 0.1')
+        expect(n).toContain('edges = [')
+        expect(n).toContain(
+          'sideFaces = [ baseRegion.tags.line2, baseRegion.tags.yoyo ]'
+        )
+        expect(n).toContain('endFaces = [startCap]')
+        expect(n).not.toContain('tags = [edgeId(solid001, index = 5)]')
       }
     )
 

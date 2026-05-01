@@ -1179,8 +1179,8 @@ function getExistingEdgeRefsFromCall(call: Node<CallExpressionKw>): Expr[] {
 }
 
 function getTagsBaseFromTagElement(el: Expr): Expr | null {
-  if (el.type !== 'CallExpressionKw') return null
-  const inner = el as Node<CallExpressionKw>
+  const inner = getCallFromExpr(el)
+  if (!inner) return null
   const calleeName = (inner.callee as { name?: { name?: string } })?.name?.name
   if (
     !calleeName ||
@@ -1390,8 +1390,8 @@ function findFilletChamferCallsToFixUnified(
           tagsBaseExpr = getTagsBaseFromTagElement(el)
         }
 
-        if (el.type === 'CallExpressionKw') {
-          const inner = el as Node<CallExpressionKw>
+        const inner = getCallFromExpr(el)
+        if (inner) {
           const innerCallee = (inner.callee as { name?: { name?: string } })
             ?.name?.name
           if (
