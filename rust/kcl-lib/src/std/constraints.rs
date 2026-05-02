@@ -2736,6 +2736,7 @@ pub async fn vertical_distance(exec_state: &mut ExecState, args: Args) -> Result
 #[derive(Debug, Clone, Copy)]
 struct MidpointPointVars {
     coords: [SketchVarId; 2],
+    #[cfg(feature = "artifact-graph")]
     object_id: ObjectId,
 }
 
@@ -2744,17 +2745,20 @@ enum MidpointTargetVars {
     Line {
         start: [SketchVarId; 2],
         end: [SketchVarId; 2],
+        #[cfg(feature = "artifact-graph")]
         object_id: ObjectId,
     },
     Arc {
         center: [SketchVarId; 2],
         start: [SketchVarId; 2],
         end: [SketchVarId; 2],
+        #[cfg(feature = "artifact-graph")]
         object_id: ObjectId,
     },
 }
 
 impl MidpointTargetVars {
+    #[cfg(feature = "artifact-graph")]
     fn object_id(self) -> ObjectId {
         match self {
             Self::Line { object_id, .. } | Self::Arc { object_id, .. } => object_id,
@@ -2793,6 +2797,7 @@ fn extract_midpoint_point(segment_value: &KclValue, range: crate::SourceRange) -
 
     Ok(MidpointPointVars {
         coords: [*point_x, *point_y],
+        #[cfg(feature = "artifact-graph")]
         object_id: unsolved.object_id,
     })
 }
@@ -2834,6 +2839,7 @@ fn extract_midpoint_target(
             Ok(MidpointTargetVars::Line {
                 start: [*start_x, *start_y],
                 end: [*end_x, *end_y],
+                #[cfg(feature = "artifact-graph")]
                 object_id: unsolved.object_id,
             })
         }
@@ -2857,6 +2863,7 @@ fn extract_midpoint_target(
                 center: [*center_x, *center_y],
                 start: [*start_x, *start_y],
                 end: [*end_x, *end_y],
+                #[cfg(feature = "artifact-graph")]
                 object_id: unsolved.object_id,
             })
         }
@@ -3642,6 +3649,7 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 #[derive(Debug, Clone, Copy)]
 struct SymmetricPointVars {
     coords: [SketchVarId; 2],
+    #[cfg(feature = "artifact-graph")]
     object_id: ObjectId,
 }
 
@@ -3650,6 +3658,7 @@ struct SymmetricPointVars {
 struct SymmetricLineVars {
     start: [SketchVarId; 2],
     end: [SketchVarId; 2],
+    #[cfg(feature = "artifact-graph")]
     object_id: ObjectId,
 }
 
@@ -3658,6 +3667,7 @@ struct SymmetricArcVars {
     center: [SketchVarId; 2],
     start: [SketchVarId; 2],
     end: [SketchVarId; 2],
+    #[cfg(feature = "artifact-graph")]
     object_id: ObjectId,
 }
 
@@ -3665,6 +3675,7 @@ struct SymmetricArcVars {
 struct SymmetricCircleVars {
     center: [SketchVarId; 2],
     start: [SketchVarId; 2],
+    #[cfg(feature = "artifact-graph")]
     object_id: ObjectId,
 }
 
@@ -3724,6 +3735,7 @@ fn extract_symmetric_input(segment_value: &KclValue, range: crate::SourceRange) 
             };
             Ok(SymmetricInput::Point(SymmetricPointVars {
                 coords: [*x, *y],
+                #[cfg(feature = "artifact-graph")]
                 object_id: unsolved.object_id,
             }))
         }
@@ -3743,6 +3755,7 @@ fn extract_symmetric_input(segment_value: &KclValue, range: crate::SourceRange) 
             Ok(SymmetricInput::Line(SymmetricLineVars {
                 start: [*start_x, *start_y],
                 end: [*end_x, *end_y],
+                #[cfg(feature = "artifact-graph")]
                 object_id: unsolved.object_id,
             }))
         }
@@ -3765,6 +3778,7 @@ fn extract_symmetric_input(segment_value: &KclValue, range: crate::SourceRange) 
                 center: [*center_x, *center_y],
                 start: [*start_x, *start_y],
                 end: [*end_x, *end_y],
+                #[cfg(feature = "artifact-graph")]
                 object_id: unsolved.object_id,
             }))
         }
@@ -3784,6 +3798,7 @@ fn extract_symmetric_input(segment_value: &KclValue, range: crate::SourceRange) 
             Ok(SymmetricInput::Circle(SymmetricCircleVars {
                 center: [*center_x, *center_y],
                 start: [*start_x, *start_y],
+                #[cfg(feature = "artifact-graph")]
                 object_id: unsolved.object_id,
             }))
         }
@@ -3835,6 +3850,7 @@ fn extract_symmetric_axis_line(
     Ok(SymmetricLineVars {
         start: [*start_x, *start_y],
         end: [*end_x, *end_y],
+        #[cfg(feature = "artifact-graph")]
         object_id: unsolved.object_id,
     })
 }

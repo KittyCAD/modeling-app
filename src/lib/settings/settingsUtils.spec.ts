@@ -9,6 +9,7 @@ import {
   serializeProjectConfiguration,
 } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
+import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 import { createSettings, type Setting } from '@src/lib/settings/initialSettings'
 import {
   configurationToSettingsPayload,
@@ -25,6 +26,20 @@ import {
 } from '@src/lib/settings/settingsUtils'
 import type { DeepPartial } from '@src/lib/types'
 import { expect, describe, it } from 'vitest'
+
+const pluginExtensionSettings = {
+  plugins: {
+    telemetry: defineBooleanExtensionSetting({
+      defaultValue: true,
+      description: 'Whether the telemetry plugin is enabled.',
+      hideOnLevel: 'project',
+      userToml: {
+        sectionKey: 'plugins',
+        tomlKey: 'telemetry',
+      },
+    }),
+  },
+}
 
 describe(`testing settings initialization`, () => {
   it(`sets settings at the 'user' level`, () => {
@@ -243,6 +258,36 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.commandBar?.includeSettings).toBe(false)
     expect(parsedPayload.textEditor?.textWrapping).toBe(false)
     expect(parsedPayload.textEditor?.blinkingCursor).toBe(false)
+  })
+
+  it('preserves extension-contributed plugin settings through wasm round-trip', async () => {
+    const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+    const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
+
+    const serializedToml = serializeConfiguration(
+      settingsPayloadToConfiguration(
+        {
+          plugins: {
+            telemetry: false,
+          },
+        },
+        pluginExtensionSettings
+      ),
+      wasmInstance
+    )
+    if (serializedToml instanceof Error) throw serializedToml
+
+    expect(serializedToml).toContain('[settings.plugins]')
+    expect(serializedToml).toContain('telemetry = false')
+
+    const parsedConfiguration = parseAppSettings(serializedToml, wasmInstance)
+    if (parsedConfiguration instanceof Error) throw parsedConfiguration
+
+    const parsedPayload = configurationToSettingsPayload(
+      parsedConfiguration,
+      pluginExtensionSettings
+    )
+    expect(parsedPayload.plugins?.telemetry).toBe(false)
   })
 
   it('preserves explicit project defaults when user values differ', async () => {
