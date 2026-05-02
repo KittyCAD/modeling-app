@@ -56,6 +56,7 @@ use crate::front::LineCtor;
 use crate::front::LinesEqualLength;
 #[cfg(feature = "artifact-graph")]
 use crate::front::Midpoint;
+use crate::front::Number;
 #[cfg(feature = "artifact-graph")]
 use crate::front::Object;
 use crate::front::ObjectId;
@@ -2158,6 +2159,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
         exec_state,
     )?;
+    let label_position = get_constraint_label_position(exec_state, &args, "distance")?;
     let [point0, point1]: [KclValue; 2] = points.try_into().map_err(|_| {
         KclError::new_semantic(KclErrorDetails::new(
             "must have two input points".to_owned(),
@@ -2206,6 +2208,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                                             object_id: unsolved1.object_id,
                                         }),
                                     ],
+                                    label_position,
                                 },
                                 meta: vec![args.source_range.into()],
                             };
@@ -2236,6 +2239,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                                 point,
                                 line,
                                 input_object_ids: [unsolved0.object_id, unsolved1.object_id],
+                                label_position,
                             },
                             meta: vec![args.source_range.into()],
                         }),
@@ -2269,6 +2273,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                                 start,
                                 end,
                                 input_object_ids: [unsolved0.object_id, unsolved1.object_id],
+                                label_position,
                             },
                             meta: vec![args.source_range.into()],
                         }),
@@ -2301,6 +2306,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                                 start,
                                 end,
                                 input_object_ids: [unsolved0.object_id, unsolved1.object_id],
+                                label_position,
                             },
                             meta: vec![args.source_range.into()],
                         }),
@@ -2325,6 +2331,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                                 start1,
                                 end1,
                                 input_object_ids: [unsolved0.object_id, unsolved1.object_id],
+                                label_position,
                             },
                             meta: vec![args.source_range.into()],
                         }),
@@ -2340,6 +2347,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                                 line0,
                                 line1,
                                 input_object_ids: [unsolved0.object_id, unsolved1.object_id],
+                                label_position,
                             },
                             meta: vec![args.source_range.into()],
                         }),
@@ -2384,7 +2392,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                     };
                     Ok(KclValue::SketchConstraint {
                         value: Box::new(SketchConstraint {
-                            kind: SketchConstraintKind::Distance { points },
+                            kind: SketchConstraintKind::Distance { points, label_position },
                             meta: vec![args.source_range.into()],
                         }),
                     })
@@ -2400,6 +2408,25 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
             vec![args.source_range],
         ))),
     }
+}
+
+fn get_constraint_label_position(
+    exec_state: &mut ExecState,
+    args: &Args,
+    constraint_name: &str,
+) -> Result<Option<Point2d<Number>>, KclError> {
+    let label_position = args.get_kw_arg_opt::<[TyF64; 2]>("labelPosition", &RuntimeType::point2d(), exec_state)?;
+
+    label_position
+        .map(|label| {
+            TyF64::to_point2d(&label).map_err(|_| {
+                KclError::new_internal(KclErrorDetails::new(
+                    format!("Could not convert {constraint_name} label position to a Point2d"),
+                    vec![args.source_range],
+                ))
+            })
+        })
+        .transpose()
 }
 
 /// Helper function to create a radius or diameter constraint from a circular segment.
@@ -2535,6 +2562,7 @@ pub async fn horizontal_distance(exec_state: &mut ExecState, args: Args) -> Resu
         &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
         exec_state,
     )?;
+    let label_position = get_constraint_label_position(exec_state, &args, "horizontalDistance")?;
     let [p1, p2] = points.as_slice() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "must have two input points".to_owned(),
@@ -2582,6 +2610,7 @@ pub async fn horizontal_distance(exec_state: &mut ExecState, args: Args) -> Resu
                                             object_id: unsolved1.object_id,
                                         }),
                                     ],
+                                    label_position,
                                 },
                                 meta: vec![args.source_range.into()],
                             };
@@ -2650,7 +2679,7 @@ pub async fn horizontal_distance(exec_state: &mut ExecState, args: Args) -> Resu
                     };
                     Ok(KclValue::SketchConstraint {
                         value: Box::new(SketchConstraint {
-                            kind: SketchConstraintKind::HorizontalDistance { points },
+                            kind: SketchConstraintKind::HorizontalDistance { points, label_position },
                             meta: vec![args.source_range.into()],
                         }),
                     })
@@ -2675,6 +2704,7 @@ pub async fn vertical_distance(exec_state: &mut ExecState, args: Args) -> Result
         &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
         exec_state,
     )?;
+    let label_position = get_constraint_label_position(exec_state, &args, "verticalDistance")?;
     let [p1, p2] = points.as_slice() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "must have two input points".to_owned(),
@@ -2722,6 +2752,7 @@ pub async fn vertical_distance(exec_state: &mut ExecState, args: Args) -> Result
                                             object_id: unsolved1.object_id,
                                         }),
                                     ],
+                                    label_position,
                                 },
                                 meta: vec![args.source_range.into()],
                             };
@@ -2789,7 +2820,7 @@ pub async fn vertical_distance(exec_state: &mut ExecState, args: Args) -> Result
                     };
                     Ok(KclValue::SketchConstraint {
                         value: Box::new(SketchConstraint {
-                            kind: SketchConstraintKind::VerticalDistance { points },
+                            kind: SketchConstraintKind::VerticalDistance { points, label_position },
                             meta: vec![args.source_range.into()],
                         }),
                     })
@@ -2811,6 +2842,7 @@ pub async fn vertical_distance(exec_state: &mut ExecState, args: Args) -> Result
 #[derive(Debug, Clone, Copy)]
 struct MidpointPointVars {
     coords: [SketchVarId; 2],
+    #[cfg(feature = "artifact-graph")]
     object_id: ObjectId,
 }
 
@@ -2819,17 +2851,20 @@ enum MidpointTargetVars {
     Line {
         start: [SketchVarId; 2],
         end: [SketchVarId; 2],
+        #[cfg(feature = "artifact-graph")]
         object_id: ObjectId,
     },
     Arc {
         center: [SketchVarId; 2],
         start: [SketchVarId; 2],
         end: [SketchVarId; 2],
+        #[cfg(feature = "artifact-graph")]
         object_id: ObjectId,
     },
 }
 
 impl MidpointTargetVars {
+    #[cfg(feature = "artifact-graph")]
     fn object_id(self) -> ObjectId {
         match self {
             Self::Line { object_id, .. } | Self::Arc { object_id, .. } => object_id,
@@ -2868,6 +2903,7 @@ fn extract_midpoint_point(segment_value: &KclValue, range: crate::SourceRange) -
 
     Ok(MidpointPointVars {
         coords: [*point_x, *point_y],
+        #[cfg(feature = "artifact-graph")]
         object_id: unsolved.object_id,
     })
 }
@@ -2909,6 +2945,7 @@ fn extract_midpoint_target(
             Ok(MidpointTargetVars::Line {
                 start: [*start_x, *start_y],
                 end: [*end_x, *end_y],
+                #[cfg(feature = "artifact-graph")]
                 object_id: unsolved.object_id,
             })
         }
@@ -2932,6 +2969,7 @@ fn extract_midpoint_target(
                 center: [*center_x, *center_y],
                 start: [*start_x, *start_y],
                 end: [*end_x, *end_y],
+                #[cfg(feature = "artifact-graph")]
                 object_id: unsolved.object_id,
             })
         }
@@ -3717,6 +3755,7 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 #[derive(Debug, Clone, Copy)]
 struct SymmetricPointVars {
     coords: [SketchVarId; 2],
+    #[cfg(feature = "artifact-graph")]
     object_id: ObjectId,
 }
 
@@ -3725,6 +3764,7 @@ struct SymmetricPointVars {
 struct SymmetricLineVars {
     start: [SketchVarId; 2],
     end: [SketchVarId; 2],
+    #[cfg(feature = "artifact-graph")]
     object_id: ObjectId,
 }
 
@@ -3733,6 +3773,7 @@ struct SymmetricArcVars {
     center: [SketchVarId; 2],
     start: [SketchVarId; 2],
     end: [SketchVarId; 2],
+    #[cfg(feature = "artifact-graph")]
     object_id: ObjectId,
 }
 
@@ -3740,6 +3781,7 @@ struct SymmetricArcVars {
 struct SymmetricCircleVars {
     center: [SketchVarId; 2],
     start: [SketchVarId; 2],
+    #[cfg(feature = "artifact-graph")]
     object_id: ObjectId,
 }
 
@@ -3799,6 +3841,7 @@ fn extract_symmetric_input(segment_value: &KclValue, range: crate::SourceRange) 
             };
             Ok(SymmetricInput::Point(SymmetricPointVars {
                 coords: [*x, *y],
+                #[cfg(feature = "artifact-graph")]
                 object_id: unsolved.object_id,
             }))
         }
@@ -3818,6 +3861,7 @@ fn extract_symmetric_input(segment_value: &KclValue, range: crate::SourceRange) 
             Ok(SymmetricInput::Line(SymmetricLineVars {
                 start: [*start_x, *start_y],
                 end: [*end_x, *end_y],
+                #[cfg(feature = "artifact-graph")]
                 object_id: unsolved.object_id,
             }))
         }
@@ -3840,6 +3884,7 @@ fn extract_symmetric_input(segment_value: &KclValue, range: crate::SourceRange) 
                 center: [*center_x, *center_y],
                 start: [*start_x, *start_y],
                 end: [*end_x, *end_y],
+                #[cfg(feature = "artifact-graph")]
                 object_id: unsolved.object_id,
             }))
         }
@@ -3859,6 +3904,7 @@ fn extract_symmetric_input(segment_value: &KclValue, range: crate::SourceRange) 
             Ok(SymmetricInput::Circle(SymmetricCircleVars {
                 center: [*center_x, *center_y],
                 start: [*start_x, *start_y],
+                #[cfg(feature = "artifact-graph")]
                 object_id: unsolved.object_id,
             }))
         }
@@ -3906,6 +3952,7 @@ fn extract_symmetric_axis_line(
     Ok(SymmetricLineVars {
         start: [*start_x, *start_y],
         end: [*end_x, *end_y],
+        #[cfg(feature = "artifact-graph")]
         object_id: unsolved.object_id,
     })
 }
