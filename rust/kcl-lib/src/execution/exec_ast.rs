@@ -3300,7 +3300,7 @@ impl Node<BinaryExpression> {
                                 );
                             }
                         }
-                        SketchConstraintKind::Radius { points } | SketchConstraintKind::Diameter { points } => {
+                        SketchConstraintKind::Radius { .. } | SketchConstraintKind::Diameter { .. } => {
                             #[derive(Clone, Copy)]
                             enum CircularSegmentConstraintTarget {
                                 Arc {
@@ -3341,6 +3341,17 @@ impl Node<BinaryExpression> {
                                     })
                             }
 
+                            let (points, label_position) = match &constraint.kind {
+                                SketchConstraintKind::Radius { points, label_position } => {
+                                    (points, label_position.clone())
+                                }
+                                SketchConstraintKind::Diameter { points, label_position } => {
+                                    (points, label_position.clone())
+                                }
+                                _ => unreachable!(),
+                            };
+                            #[cfg(not(feature = "artifact-graph"))]
+                            let _ = &label_position;
                             let range = self.as_source_range();
                             let center = &points[0];
                             let start = &points[1];
@@ -3492,6 +3503,7 @@ impl Node<BinaryExpression> {
                                         diameter: n.try_into().map_err(|_| {
                                             internal_err("Failed to convert diameter units numeric suffix:", range)
                                         })?,
+                                        label_position,
                                         source,
                                     })
                                 } else {
@@ -3501,6 +3513,7 @@ impl Node<BinaryExpression> {
                                         radius: n.try_into().map_err(|_| {
                                             internal_err("Failed to convert radius units numeric suffix:", range)
                                         })?,
+                                        label_position,
                                         source,
                                     })
                                 };
