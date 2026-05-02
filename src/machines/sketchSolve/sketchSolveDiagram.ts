@@ -18,6 +18,7 @@ import type {
   OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
 import {
+  buildAngleConstraintInput,
   isArcSegment,
   isCircleSegment,
   isLineSegment,
@@ -534,6 +535,26 @@ export const sketchSolveMachine = setup({
               )
               if (currentDistance !== null) {
                 distance = roundOff(currentDistance)
+              } else if (
+                isLineSegment(firstObject) &&
+                isLineSegment(secondObject)
+              ) {
+                const angleConstraint = buildAngleConstraintInput(
+                  firstObject,
+                  secondObject,
+                  objects
+                )
+                if (angleConstraint) {
+                  const result = await context.rustContext.addConstraint(
+                    0,
+                    context.sketchId,
+                    angleConstraint,
+                    jsAppSettings(context.kclManager.systemDeps.settings),
+                    true
+                  )
+                  sendToolbarConstraintOutcome(self, result, keepSelection)
+                  return
+                }
               } else if (
                 isPointSegment(firstObject) &&
                 isPointSegment(secondObject)

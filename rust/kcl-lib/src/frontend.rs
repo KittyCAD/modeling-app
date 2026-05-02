@@ -9095,7 +9095,7 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_distance_non_parallel_lines_errors() {
+    async fn test_distance_non_parallel_lines_lowers_to_distance() {
         let initial_source = "\
 sketch(on = XY) {
   line(start = [var 0, var 0], end = [var 10, var 0])
@@ -9137,11 +9137,20 @@ sketch(on = XY) {
             },
             source: Default::default(),
         });
-        let error = frontend
+        let (src_delta, _scene_delta) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
-            .unwrap_err();
-        assert!(format!("{error:?}").contains("non-parallel lines"));
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  line2 = line(start = [var 0, var 0], end = [var 0, var 10])
+  distance([line1, line2]) == 5mm
+}
+"
+        );
 
         ctx.close().await;
         mock_ctx.close().await;

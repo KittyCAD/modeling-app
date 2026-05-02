@@ -280,41 +280,6 @@ fn constrainable_line_from_unsolved_segment(
     }
 }
 
-fn line_initial_direction(
-    sketch_vars: &[KclValue],
-    line: &ConstrainableLine2d,
-    exec_state: &mut ExecState,
-    range: crate::SourceRange,
-) -> Result<[f64; 2], KclError> {
-    let start = [line.vars[0].x, line.vars[0].y];
-    let end = [line.vars[1].x, line.vars[1].y];
-    let [start_x, start_y] = point_initial_position(sketch_vars, start, exec_state, range)?;
-    let [end_x, end_y] = point_initial_position(sketch_vars, end, exec_state, range)?;
-    Ok([end_x - start_x, end_y - start_y])
-}
-
-fn lines_initially_parallel(
-    sketch_vars: &[KclValue],
-    line0: &ConstrainableLine2d,
-    line1: &ConstrainableLine2d,
-    exec_state: &mut ExecState,
-    range: crate::SourceRange,
-) -> Result<bool, KclError> {
-    let [dx0, dy0] = line_initial_direction(sketch_vars, line0, exec_state, range)?;
-    let [dx1, dy1] = line_initial_direction(sketch_vars, line1, exec_state, range)?;
-    let len0 = libm::hypot(dx0, dy0);
-    let len1 = libm::hypot(dx1, dy1);
-
-    if len0 == 0.0 || len1 == 0.0 {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "distance() line inputs must have non-zero length".to_owned(),
-            vec![range],
-        )));
-    }
-
-    Ok((dx0 * dy1 - dy0 * dx1).abs() <= 1e-9 * len0 * len1)
-}
-
 /// Arcs have 6 scalar values (start, end and center; x and y).
 /// These could be fixed constants or sketch variables to be solved.
 /// Each of these needs a sketch variable to feed into the solver.
@@ -2217,23 +2182,6 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                 (UnsolvedSegmentKind::Line { .. }, UnsolvedSegmentKind::Line { .. }) => {
                     let line0 = constrainable_line_from_unsolved_segment(unsolved0, "distance", args.source_range)?;
                     let line1 = constrainable_line_from_unsolved_segment(unsolved1, "distance", args.source_range)?;
-                    let sketch_vars = exec_state
-                        .sketch_block()
-                        .ok_or_else(|| {
-                            KclError::new_semantic(KclErrorDetails::new(
-                                "distance() can only be used inside a sketch block".to_owned(),
-                                vec![args.source_range],
-                            ))
-                        })?
-                        .sketch_vars
-                        .clone();
-
-                    if !lines_initially_parallel(&sketch_vars, &line0, &line1, exec_state, args.source_range)? {
-                        return Err(KclError::new_semantic(KclErrorDetails::new(
-                            "distance() between two non-parallel lines is invalid because the constraint is under-specified".to_owned(),
-                            vec![args.source_range],
-                        )));
-                    }
 
                     Ok(KclValue::SketchConstraint {
                         value: Box::new(SketchConstraint {
