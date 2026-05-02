@@ -147,6 +147,26 @@ function getLineCoords(objects: ApiObject[], line: ApiObject | undefined) {
   return { start, end }
 }
 
+function getCircularCoords(
+  objects: ApiObject[],
+  circular: ApiObject | undefined
+) {
+  if (!isArcSegment(circular) && !isCircleSegment(circular)) {
+    return null
+  }
+
+  const center = getPointCoordsById(objects, circular.kind.segment.center)
+  const start = getPointCoordsById(objects, circular.kind.segment.start)
+  if (!center || !start) {
+    return null
+  }
+
+  return {
+    center,
+    radius: Math.hypot(start.x - center.x, start.y - center.y),
+  }
+}
+
 function pointToLineDistance(
   point: { x: number; y: number },
   line: { start: { x: number; y: number }; end: { x: number; y: number } }
@@ -160,6 +180,16 @@ function pointToLineDistance(
 
   return Math.abs(
     ((point.x - line.start.x) * dy - (point.y - line.start.y) * dx) / length
+  )
+}
+
+function pointToCircularDistance(
+  point: { x: number; y: number },
+  circular: { center: { x: number; y: number }; radius: number }
+) {
+  return Math.abs(
+    Math.hypot(point.x - circular.center.x, point.y - circular.center.y) -
+      circular.radius
   )
 }
 
@@ -191,6 +221,8 @@ function getCurrentDistanceBetweenSelections(
   const secondObject = second === ORIGIN_TARGET ? undefined : second
   const firstLine = getLineCoords(objects, firstObject)
   const secondLine = getLineCoords(objects, secondObject)
+  const firstCircular = getCircularCoords(objects, firstObject)
+  const secondCircular = getCircularCoords(objects, secondObject)
 
   if (point1 && secondLine) {
     return pointToLineDistance(point1, secondLine)
@@ -198,6 +230,39 @@ function getCurrentDistanceBetweenSelections(
 
   if (firstLine && point2) {
     return pointToLineDistance(point2, firstLine)
+  }
+
+  if (point1 && secondCircular) {
+    return pointToCircularDistance(point1, secondCircular)
+  }
+
+  if (firstCircular && point2) {
+    return pointToCircularDistance(point2, firstCircular)
+  }
+
+  if (firstLine && secondCircular) {
+    const centerDistance = pointToLineDistance(secondCircular.center, firstLine)
+    return centerDistance === null
+      ? null
+      : Math.abs(centerDistance - secondCircular.radius)
+  }
+
+  if (firstCircular && secondLine) {
+    const centerDistance = pointToLineDistance(firstCircular.center, secondLine)
+    return centerDistance === null
+      ? null
+      : Math.abs(centerDistance - firstCircular.radius)
+  }
+
+  if (firstCircular && secondCircular) {
+    return Math.abs(
+      Math.hypot(
+        firstCircular.center.x - secondCircular.center.x,
+        firstCircular.center.y - secondCircular.center.y
+      ) -
+        firstCircular.radius -
+        secondCircular.radius
+    )
   }
 
   if (firstLine && secondLine && linesAreParallel(firstLine, secondLine)) {

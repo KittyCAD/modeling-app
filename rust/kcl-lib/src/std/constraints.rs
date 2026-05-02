@@ -280,6 +280,68 @@ fn constrainable_line_from_unsolved_segment(
     }
 }
 
+fn constrainable_point_from_exprs(
+    position: &[UnsolvedExpr; 2],
+    object_id: ObjectId,
+    function_name: &str,
+    range: crate::SourceRange,
+    description: &str,
+) -> Result<ConstrainablePoint2d, KclError> {
+    match (&position[0], &position[1]) {
+        (UnsolvedExpr::Unknown(x), UnsolvedExpr::Unknown(y)) => Ok(ConstrainablePoint2d {
+            vars: crate::front::Point2d { x: *x, y: *y },
+            object_id,
+        }),
+        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("unimplemented: {function_name}() {description} must be sketch vars in all coordinates"),
+            vec![range],
+        ))),
+    }
+}
+
+fn constrainable_circular_from_unsolved_segment(
+    segment: &UnsolvedSegment,
+    function_name: &str,
+    range: crate::SourceRange,
+) -> Result<(ConstrainablePoint2d, ConstrainablePoint2d, Option<ConstrainablePoint2d>), KclError> {
+    match &segment.kind {
+        UnsolvedSegmentKind::Arc {
+            center,
+            start,
+            end,
+            center_object_id,
+            start_object_id,
+            end_object_id,
+            ..
+        } => Ok((
+            constrainable_point_from_exprs(center, *center_object_id, function_name, range, "arc center")?,
+            constrainable_point_from_exprs(start, *start_object_id, function_name, range, "arc start")?,
+            Some(constrainable_point_from_exprs(
+                end,
+                *end_object_id,
+                function_name,
+                range,
+                "arc end",
+            )?),
+        )),
+        UnsolvedSegmentKind::Circle {
+            center,
+            start,
+            center_object_id,
+            start_object_id,
+            ..
+        } => Ok((
+            constrainable_point_from_exprs(center, *center_object_id, function_name, range, "circle center")?,
+            constrainable_point_from_exprs(start, *start_object_id, function_name, range, "circle start")?,
+            None,
+        )),
+        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("{function_name}() expected an arc or circle segment"),
+            vec![range],
+        ))),
+    }
+}
+
 /// Arcs have 6 scalar values (start, end and center; x and y).
 /// These could be fixed constants or sketch variables to be solved.
 /// Each of these needs a sketch variable to feed into the solver.
@@ -2179,6 +2241,95 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                         }),
                     })
                 }
+                (UnsolvedSegmentKind::Point { .. }, UnsolvedSegmentKind::Arc { .. })
+                | (UnsolvedSegmentKind::Point { .. }, UnsolvedSegmentKind::Circle { .. })
+                | (UnsolvedSegmentKind::Arc { .. }, UnsolvedSegmentKind::Point { .. })
+                | (UnsolvedSegmentKind::Circle { .. }, UnsolvedSegmentKind::Point { .. }) => {
+                    let (point_segment, circular_segment) = match (&unsolved0.kind, &unsolved1.kind) {
+                        (UnsolvedSegmentKind::Point { .. }, UnsolvedSegmentKind::Arc { .. })
+                        | (UnsolvedSegmentKind::Point { .. }, UnsolvedSegmentKind::Circle { .. }) => {
+                            (unsolved0, unsolved1)
+                        }
+                        (UnsolvedSegmentKind::Arc { .. }, UnsolvedSegmentKind::Point { .. })
+                        | (UnsolvedSegmentKind::Circle { .. }, UnsolvedSegmentKind::Point { .. }) => {
+                            (unsolved1, unsolved0)
+                        }
+                        _ => unreachable!(),
+                    };
+                    let point =
+                        constrainable_point_from_unsolved_segment(point_segment, "distance", args.source_range)?;
+                    let (center, start, end) =
+                        constrainable_circular_from_unsolved_segment(circular_segment, "distance", args.source_range)?;
+
+                    Ok(KclValue::SketchConstraint {
+                        value: Box::new(SketchConstraint {
+                            kind: SketchConstraintKind::PointCircularDistance {
+                                point,
+                                center,
+                                start,
+                                end,
+                                input_object_ids: [unsolved0.object_id, unsolved1.object_id],
+                            },
+                            meta: vec![args.source_range.into()],
+                        }),
+                    })
+                }
+                (UnsolvedSegmentKind::Line { .. }, UnsolvedSegmentKind::Arc { .. })
+                | (UnsolvedSegmentKind::Line { .. }, UnsolvedSegmentKind::Circle { .. })
+                | (UnsolvedSegmentKind::Arc { .. }, UnsolvedSegmentKind::Line { .. })
+                | (UnsolvedSegmentKind::Circle { .. }, UnsolvedSegmentKind::Line { .. }) => {
+                    let (line_segment, circular_segment) = match (&unsolved0.kind, &unsolved1.kind) {
+                        (UnsolvedSegmentKind::Line { .. }, UnsolvedSegmentKind::Arc { .. })
+                        | (UnsolvedSegmentKind::Line { .. }, UnsolvedSegmentKind::Circle { .. }) => {
+                            (unsolved0, unsolved1)
+                        }
+                        (UnsolvedSegmentKind::Arc { .. }, UnsolvedSegmentKind::Line { .. })
+                        | (UnsolvedSegmentKind::Circle { .. }, UnsolvedSegmentKind::Line { .. }) => {
+                            (unsolved1, unsolved0)
+                        }
+                        _ => unreachable!(),
+                    };
+                    let line = constrainable_line_from_unsolved_segment(line_segment, "distance", args.source_range)?;
+                    let (center, start, end) =
+                        constrainable_circular_from_unsolved_segment(circular_segment, "distance", args.source_range)?;
+
+                    Ok(KclValue::SketchConstraint {
+                        value: Box::new(SketchConstraint {
+                            kind: SketchConstraintKind::LineCircularDistance {
+                                line,
+                                center,
+                                start,
+                                end,
+                                input_object_ids: [unsolved0.object_id, unsolved1.object_id],
+                            },
+                            meta: vec![args.source_range.into()],
+                        }),
+                    })
+                }
+                (UnsolvedSegmentKind::Arc { .. }, UnsolvedSegmentKind::Arc { .. })
+                | (UnsolvedSegmentKind::Arc { .. }, UnsolvedSegmentKind::Circle { .. })
+                | (UnsolvedSegmentKind::Circle { .. }, UnsolvedSegmentKind::Arc { .. })
+                | (UnsolvedSegmentKind::Circle { .. }, UnsolvedSegmentKind::Circle { .. }) => {
+                    let (center0, start0, end0) =
+                        constrainable_circular_from_unsolved_segment(unsolved0, "distance", args.source_range)?;
+                    let (center1, start1, end1) =
+                        constrainable_circular_from_unsolved_segment(unsolved1, "distance", args.source_range)?;
+
+                    Ok(KclValue::SketchConstraint {
+                        value: Box::new(SketchConstraint {
+                            kind: SketchConstraintKind::CircularCircularDistance {
+                                center0,
+                                start0,
+                                end0,
+                                center1,
+                                start1,
+                                end1,
+                                input_object_ids: [unsolved0.object_id, unsolved1.object_id],
+                            },
+                            meta: vec![args.source_range.into()],
+                        }),
+                    })
+                }
                 (UnsolvedSegmentKind::Line { .. }, UnsolvedSegmentKind::Line { .. }) => {
                     let line0 = constrainable_line_from_unsolved_segment(unsolved0, "distance", args.source_range)?;
                     let line1 = constrainable_line_from_unsolved_segment(unsolved1, "distance", args.source_range)?;
@@ -2194,10 +2345,6 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                         }),
                     })
                 }
-                _ => Err(KclError::new_semantic(KclErrorDetails::new(
-                    "distance() arguments must be unsolved points".to_owned(),
-                    vec![args.source_range],
-                ))),
             }
         }
         // Segment + point-literal branch; for now the only supported Point2d literal here is ORIGIN.

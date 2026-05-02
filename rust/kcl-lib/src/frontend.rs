@@ -9033,6 +9033,214 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_distance_point_arc() {
+        let initial_source = "\
+sketch(on = XY) {
+  point(at = [var 0, var 8])
+  arc(start = [var 5, var 0], end = [var 0, var 5], center = [var 0, var 0])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point_id = *sketch.segments.first().unwrap();
+        let arc_id = *sketch
+            .segments
+            .iter()
+            .find(|segment_id| {
+                matches!(
+                    frontend.scene_graph.objects.get(segment_id.0).map(|obj| &obj.kind),
+                    Some(ObjectKind::Segment {
+                        segment: Segment::Arc(_)
+                    })
+                )
+            })
+            .unwrap();
+
+        let constraint = Constraint::Distance(Distance {
+            points: vec![point_id.into(), arc_id.into()],
+            distance: Number {
+                value: 3.0,
+                units: NumericSuffix::Mm,
+            },
+            source: Default::default(),
+        });
+        let (src_delta, _scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  point1 = point(at = [var 0, var 8])
+  arc1 = arc(start = [var 5, var 0], end = [var 0, var 5], center = [var 0, var 0])
+  distance([point1, arc1]) == 3mm
+}
+"
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_distance_line_circle() {
+        let initial_source = "\
+sketch(on = XY) {
+  line(start = [var -10, var 8], end = [var 10, var 8])
+  circle(start = [var 5, var 0], center = [var 0, var 0])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line_id = *sketch
+            .segments
+            .iter()
+            .find(|segment_id| {
+                matches!(
+                    frontend.scene_graph.objects.get(segment_id.0).map(|obj| &obj.kind),
+                    Some(ObjectKind::Segment {
+                        segment: Segment::Line(_)
+                    })
+                )
+            })
+            .unwrap();
+        let circle_id = *sketch
+            .segments
+            .iter()
+            .find(|segment_id| {
+                matches!(
+                    frontend.scene_graph.objects.get(segment_id.0).map(|obj| &obj.kind),
+                    Some(ObjectKind::Segment {
+                        segment: Segment::Circle(_)
+                    })
+                )
+            })
+            .unwrap();
+
+        let constraint = Constraint::Distance(Distance {
+            points: vec![line_id.into(), circle_id.into()],
+            distance: Number {
+                value: 3.0,
+                units: NumericSuffix::Mm,
+            },
+            source: Default::default(),
+        });
+        let (src_delta, _scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var -10, var 8], end = [var 10, var 8])
+  circle1 = circle(start = [var 5, var 0], center = [var 0, var 0])
+  distance([line1, circle1]) == 3mm
+}
+"
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_distance_circle_arc() {
+        let initial_source = "\
+sketch(on = XY) {
+  circle(start = [var 5, var 0], center = [var 0, var 0])
+  arc(start = [var 15, var 0], end = [var 10, var 5], center = [var 10, var 0])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let circle_id = *sketch
+            .segments
+            .iter()
+            .find(|segment_id| {
+                matches!(
+                    frontend.scene_graph.objects.get(segment_id.0).map(|obj| &obj.kind),
+                    Some(ObjectKind::Segment {
+                        segment: Segment::Circle(_)
+                    })
+                )
+            })
+            .unwrap();
+        let arc_id = *sketch
+            .segments
+            .iter()
+            .find(|segment_id| {
+                matches!(
+                    frontend.scene_graph.objects.get(segment_id.0).map(|obj| &obj.kind),
+                    Some(ObjectKind::Segment {
+                        segment: Segment::Arc(_)
+                    })
+                )
+            })
+            .unwrap();
+
+        let constraint = Constraint::Distance(Distance {
+            points: vec![circle_id.into(), arc_id.into()],
+            distance: Number {
+                value: 3.0,
+                units: NumericSuffix::Mm,
+            },
+            source: Default::default(),
+        });
+        let (src_delta, _scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  circle1 = circle(start = [var 5, var 0], center = [var 0, var 0])
+  arc1 = arc(start = [var 15, var 0], end = [var 10, var 5], center = [var 10, var 0])
+  distance([circle1, arc1]) == 3mm
+}
+"
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_distance_parallel_lines() {
         let initial_source = "\
 sketch(on = XY) {

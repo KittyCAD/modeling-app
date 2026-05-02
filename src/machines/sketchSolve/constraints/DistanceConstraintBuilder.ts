@@ -13,6 +13,8 @@ import {
 import {
   type DistanceConstraint,
   getLinePointSegments,
+  isArcSegment,
+  isCircleSegment,
   isLineSegment,
   isPointSegment,
   pointToVec3,
@@ -229,6 +231,8 @@ function getDistanceConstraintEndpointPositions(
 
   const firstLine = getDistanceConstraintLinePoints(firstId, objects)
   const secondLine = getDistanceConstraintLinePoints(secondId, objects)
+  const firstCircular = getDistanceConstraintCircular(firstId, objects)
+  const secondCircular = getDistanceConstraintCircular(secondId, objects)
 
   if (firstPoint && secondLine) {
     return {
@@ -242,6 +246,43 @@ function getDistanceConstraintEndpointPositions(
       p1: projectPointToLine(secondPoint, firstLine),
       p2: secondPoint,
     }
+  }
+
+  if (firstPoint && secondCircular) {
+    return {
+      p1: firstPoint,
+      p2: projectPointToCircular(firstPoint, secondCircular),
+    }
+  }
+
+  if (firstCircular && secondPoint) {
+    return {
+      p1: projectPointToCircular(secondPoint, firstCircular),
+      p2: secondPoint,
+    }
+  }
+
+  if (firstLine && secondCircular) {
+    const linePoint = projectPointToLine(secondCircular.center, firstLine)
+    return {
+      p1: linePoint,
+      p2: projectPointToCircular(linePoint, secondCircular),
+    }
+  }
+
+  if (firstCircular && secondLine) {
+    const linePoint = projectPointToLine(firstCircular.center, secondLine)
+    return {
+      p1: projectPointToCircular(linePoint, firstCircular),
+      p2: linePoint,
+    }
+  }
+
+  if (firstCircular && secondCircular) {
+    return getCircularCircularDistanceEndpointPositions(
+      firstCircular,
+      secondCircular
+    )
   }
 
   if (firstLine && secondLine) {
@@ -290,6 +331,34 @@ function getDistanceConstraintLinePoints(
   }
 }
 
+function getDistanceConstraintCircular(
+  circularId: number | 'ORIGIN',
+  objects: ApiObject[]
+) {
+  if (circularId === 'ORIGIN') {
+    return null
+  }
+
+  const circularObject = objects[circularId]
+  if (!isArcSegment(circularObject) && !isCircleSegment(circularObject)) {
+    return null
+  }
+
+  const centerObject = objects[circularObject.kind.segment.center]
+  const startObject = objects[circularObject.kind.segment.start]
+  if (!isPointSegment(centerObject) || !isPointSegment(startObject)) {
+    return null
+  }
+
+  const center = pointToVec3(centerObject)
+  const start = pointToVec3(startObject)
+  return {
+    center,
+    start,
+    radius: center.distanceTo(start),
+  }
+}
+
 function projectPointToLine(
   point: Vector3,
   line: { start: Vector3; end: Vector3 }
@@ -302,6 +371,46 @@ function projectPointToLine(
 
   const t = point.clone().sub(line.start).dot(lineVector) / lengthSq
   return line.start.clone().add(lineVector.multiplyScalar(t))
+}
+
+function projectPointToCircular(
+  point: Vector3,
+  circular: { center: Vector3; start: Vector3; radius: number }
+) {
+  const direction = point.clone().sub(circular.center)
+  if (direction.lengthSq() === 0) {
+    direction.copy(circular.start).sub(circular.center)
+  }
+  if (direction.lengthSq() === 0) {
+    direction.set(1, 0, 0)
+  }
+
+  return circular.center
+    .clone()
+    .add(direction.normalize().multiplyScalar(circular.radius))
+}
+
+function getCircularCircularDistanceEndpointPositions(
+  firstCircular: { center: Vector3; start: Vector3; radius: number },
+  secondCircular: { center: Vector3; start: Vector3; radius: number }
+) {
+  const direction = secondCircular.center.clone().sub(firstCircular.center)
+  if (direction.lengthSq() === 0) {
+    direction.copy(firstCircular.start).sub(firstCircular.center)
+  }
+  if (direction.lengthSq() === 0) {
+    direction.set(1, 0, 0)
+  }
+
+  const unitDirection = direction.normalize()
+  return {
+    p1: firstCircular.center
+      .clone()
+      .add(unitDirection.clone().multiplyScalar(firstCircular.radius)),
+    p2: secondCircular.center
+      .clone()
+      .add(unitDirection.clone().multiplyScalar(-secondCircular.radius)),
+  }
 }
 
 function getDirections(

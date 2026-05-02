@@ -220,6 +220,152 @@ fn projected_point_on_line_initial_position(
     Ok([line_start[0] + t * dx, line_start[1] + t * dy])
 }
 
+fn constrainable_points_initial_distance(
+    sketch_vars: &[KclValue],
+    point0: &crate::execution::ConstrainablePoint2d,
+    point1: &crate::execution::ConstrainablePoint2d,
+    exec_state: &mut ExecState,
+    range: SourceRange,
+    description: &str,
+) -> Result<f64, KclError> {
+    let p0 = constrainable_point_initial_position(sketch_vars, point0, exec_state, range, description)?;
+    let p1 = constrainable_point_initial_position(sketch_vars, point1, exec_state, range, description)?;
+    Ok(libm::hypot(p0[0] - p1[0], p0[1] - p1[1]))
+}
+
+#[derive(Clone, Copy)]
+struct CircularDistanceDatums {
+    center: ezpz::datatypes::inputs::DatumPoint,
+    start: ezpz::datatypes::inputs::DatumPoint,
+    end: Option<ezpz::datatypes::inputs::DatumPoint>,
+    radius_initial_value: f64,
+}
+
+fn circular_distance_datums(
+    sketch_vars: &[KclValue],
+    center: &crate::execution::ConstrainablePoint2d,
+    start: &crate::execution::ConstrainablePoint2d,
+    end: Option<&crate::execution::ConstrainablePoint2d>,
+    exec_state: &mut ExecState,
+    range: SourceRange,
+) -> Result<CircularDistanceDatums, KclError> {
+    Ok(CircularDistanceDatums {
+        center: datum_point_from_constrainable(center, range)?,
+        start: datum_point_from_constrainable(start, range)?,
+        end: end.map(|end| datum_point_from_constrainable(end, range)).transpose()?,
+        radius_initial_value: constrainable_points_initial_distance(
+            sketch_vars,
+            center,
+            start,
+            exec_state,
+            range,
+            "circular distance radius initial value",
+        )?,
+    })
+}
+
+fn circular_circular_support_initial_position(
+    sketch_vars: &[KclValue],
+    center0: &crate::execution::ConstrainablePoint2d,
+    center1: &crate::execution::ConstrainablePoint2d,
+    radius0: f64,
+    distance_value: f64,
+    exec_state: &mut ExecState,
+    range: SourceRange,
+) -> Result<[f64; 2], KclError> {
+    let center0_initial =
+        constrainable_point_initial_position(sketch_vars, center0, exec_state, range, "circular distance center")?;
+    let center1_initial =
+        constrainable_point_initial_position(sketch_vars, center1, exec_state, range, "circular distance center")?;
+    let dx = center1_initial[0] - center0_initial[0];
+    let dy = center1_initial[1] - center0_initial[1];
+    let center_distance = libm::hypot(dx, dy);
+    let support_distance = radius0 + distance_value / 2.0;
+
+    if center_distance <= f64::EPSILON {
+        return Ok([center0_initial[0] + support_distance, center0_initial[1]]);
+    }
+
+    Ok([
+        center0_initial[0] + dx / center_distance * support_distance,
+        center0_initial[1] + dy / center_distance * support_distance,
+    ])
+}
+
+fn push_circular_radius_constraints(
+    sketch_block_state: &mut SketchBlockState,
+    sketch_var_ty: NumericType,
+    circular: CircularDistanceDatums,
+    range: SourceRange,
+) -> Result<ezpz::datatypes::inputs::DatumCircle, KclError> {
+    let circular_radius_id = sketch_block_state.next_sketch_var_id();
+    sketch_block_state.sketch_vars.push(KclValue::SketchVar {
+        value: Box::new(crate::execution::SketchVar {
+            id: circular_radius_id,
+            initial_value: circular.radius_initial_value,
+            ty: sketch_var_ty,
+            meta: vec![],
+        }),
+    });
+    let circular_radius = ezpz::datatypes::inputs::DatumDistance::new(circular_radius_id.to_constraint_id(range)?);
+
+    sketch_block_state.solver_constraints.push(Constraint::DistanceVar(
+        circular.start,
+        circular.center,
+        circular_radius,
+    ));
+    if let Some(end) = circular.end {
+        sketch_block_state
+            .solver_constraints
+            .push(Constraint::DistanceVar(end, circular.center, circular_radius));
+    }
+
+    Ok(ezpz::datatypes::inputs::DatumCircle {
+        center: circular.center,
+        radius: circular_radius,
+    })
+}
+
+fn push_circular_distance_constraints(
+    sketch_block_state: &mut SketchBlockState,
+    sketch_var_ty: NumericType,
+    target_point: ezpz::datatypes::inputs::DatumPoint,
+    circular: CircularDistanceDatums,
+    distance_value: f64,
+    range: SourceRange,
+) -> Result<(), KclError> {
+    let circular_target = push_circular_radius_constraints(sketch_block_state, sketch_var_ty, circular, range)?;
+
+    let target_distance_id = sketch_block_state.next_sketch_var_id();
+    sketch_block_state.sketch_vars.push(KclValue::SketchVar {
+        value: Box::new(crate::execution::SketchVar {
+            id: target_distance_id,
+            initial_value: distance_value,
+            ty: sketch_var_ty,
+            meta: vec![],
+        }),
+    });
+    let target_distance = ezpz::datatypes::inputs::DatumDistance::new(target_distance_id.to_constraint_id(range)?);
+
+    sketch_block_state
+        .solver_constraints
+        .push(Constraint::Fixed(target_distance.id, distance_value));
+
+    let target_circle = ezpz::datatypes::inputs::DatumCircle {
+        center: target_point,
+        radius: target_distance,
+    };
+    sketch_block_state
+        .solver_constraints
+        .push(Constraint::CircleTangentToCircle(
+            target_circle,
+            circular_target,
+            ezpz::CircleSide::Exterior,
+        ));
+
+    Ok(())
+}
+
 fn sketch_on_cache_name(sketch_id: ObjectId) -> String {
     format!("{SKETCH_PREFIX}{}_on", sketch_id.0)
 }
@@ -3127,6 +3273,9 @@ impl Node<BinaryExpression> {
                         SketchConstraintKind::Distance { .. }
                         | SketchConstraintKind::PointLineDistance { .. }
                         | SketchConstraintKind::LineLineDistance { .. }
+                        | SketchConstraintKind::PointCircularDistance { .. }
+                        | SketchConstraintKind::LineCircularDistance { .. }
+                        | SketchConstraintKind::CircularCircularDistance { .. }
                         | SketchConstraintKind::Radius { .. }
                         | SketchConstraintKind::Diameter { .. }
                         | SketchConstraintKind::HorizontalDistance { .. }
@@ -3617,6 +3766,398 @@ impl Node<BinaryExpression> {
                                 support_point,
                                 n.n,
                             ));
+
+                            #[cfg(feature = "artifact-graph")]
+                            {
+                                use crate::execution::Artifact;
+                                use crate::execution::CodeRef;
+                                use crate::execution::SketchBlockConstraint;
+                                use crate::execution::SketchBlockConstraintType;
+                                use crate::front::Distance;
+                                use crate::front::SourceRef;
+                                use crate::frontend::sketch::ConstraintSegment;
+
+                                let Some(sketch_id) = sketch_block_state.sketch_id else {
+                                    let message = "Sketch id missing for constraint artifact".to_owned();
+                                    debug_assert!(false, "{}", &message);
+                                    return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
+                                };
+                                let sketch_constraint = crate::front::Constraint::Distance(Distance {
+                                    points: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
+                                    distance: n.try_into().map_err(|_| {
+                                        internal_err("Failed to convert distance units numeric suffix:", range)
+                                    })?,
+                                    source,
+                                });
+                                sketch_block_state.sketch_constraints.push(constraint_id);
+                                let artifact_id = exec_state.next_artifact_id();
+                                exec_state.add_artifact(Artifact::SketchBlockConstraint(SketchBlockConstraint {
+                                    id: artifact_id,
+                                    sketch_id,
+                                    constraint_id,
+                                    constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                    code_ref: CodeRef::placeholder(range),
+                                }));
+                                exec_state.add_scene_object(
+                                    Object {
+                                        id: constraint_id,
+                                        kind: ObjectKind::Constraint {
+                                            constraint: sketch_constraint,
+                                        },
+                                        label: Default::default(),
+                                        comments: Default::default(),
+                                        artifact_id,
+                                        source: SourceRef::new(range, self.node_path.clone()),
+                                    },
+                                    range,
+                                );
+                            }
+                        }
+                        SketchConstraintKind::PointCircularDistance {
+                            point,
+                            center,
+                            start,
+                            end,
+                            input_object_ids,
+                        } => {
+                            let range = self.as_source_range();
+                            let sketch_var_ty = solver_numeric_type(exec_state);
+                            let sketch_vars = exec_state
+                                .mod_local
+                                .sketch_block
+                                .as_ref()
+                                .ok_or_else(|| {
+                                    internal_err(
+                                        "Being inside a sketch block should have already been checked above",
+                                        self,
+                                    )
+                                })?
+                                .sketch_vars
+                                .clone();
+                            let target_point = datum_point_from_constrainable(point, range)?;
+                            let circular =
+                                circular_distance_datums(&sketch_vars, center, start, end.as_ref(), exec_state, range)?;
+
+                            #[cfg(feature = "artifact-graph")]
+                            let constraint_id = exec_state.next_object_id();
+                            let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
+                                let message =
+                                    "Being inside a sketch block should have already been checked above".to_owned();
+                                debug_assert!(false, "{}", &message);
+                                return Err(internal_err(message, self));
+                            };
+
+                            push_circular_distance_constraints(
+                                sketch_block_state,
+                                sketch_var_ty,
+                                target_point,
+                                circular,
+                                n.n,
+                                range,
+                            )?;
+
+                            #[cfg(feature = "artifact-graph")]
+                            {
+                                use crate::execution::Artifact;
+                                use crate::execution::CodeRef;
+                                use crate::execution::SketchBlockConstraint;
+                                use crate::execution::SketchBlockConstraintType;
+                                use crate::front::Distance;
+                                use crate::front::SourceRef;
+                                use crate::frontend::sketch::ConstraintSegment;
+
+                                let Some(sketch_id) = sketch_block_state.sketch_id else {
+                                    let message = "Sketch id missing for constraint artifact".to_owned();
+                                    debug_assert!(false, "{}", &message);
+                                    return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
+                                };
+                                let sketch_constraint = crate::front::Constraint::Distance(Distance {
+                                    points: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
+                                    distance: n.try_into().map_err(|_| {
+                                        internal_err("Failed to convert distance units numeric suffix:", range)
+                                    })?,
+                                    source,
+                                });
+                                sketch_block_state.sketch_constraints.push(constraint_id);
+                                let artifact_id = exec_state.next_artifact_id();
+                                exec_state.add_artifact(Artifact::SketchBlockConstraint(SketchBlockConstraint {
+                                    id: artifact_id,
+                                    sketch_id,
+                                    constraint_id,
+                                    constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                    code_ref: CodeRef::placeholder(range),
+                                }));
+                                exec_state.add_scene_object(
+                                    Object {
+                                        id: constraint_id,
+                                        kind: ObjectKind::Constraint {
+                                            constraint: sketch_constraint,
+                                        },
+                                        label: Default::default(),
+                                        comments: Default::default(),
+                                        artifact_id,
+                                        source: SourceRef::new(range, self.node_path.clone()),
+                                    },
+                                    range,
+                                );
+                            }
+                        }
+                        SketchConstraintKind::LineCircularDistance {
+                            line,
+                            center,
+                            start,
+                            end,
+                            input_object_ids,
+                        } => {
+                            let range = self.as_source_range();
+                            let sketch_var_ty = solver_numeric_type(exec_state);
+                            let sketch_vars = exec_state
+                                .mod_local
+                                .sketch_block
+                                .as_ref()
+                                .ok_or_else(|| {
+                                    internal_err(
+                                        "Being inside a sketch block should have already been checked above",
+                                        self,
+                                    )
+                                })?
+                                .sketch_vars
+                                .clone();
+                            let support_initial = projected_point_on_line_initial_position(
+                                &sketch_vars,
+                                center,
+                                line,
+                                exec_state,
+                                range,
+                            )?;
+                            let solver_line = datum_line_from_constrainable(line, range)?;
+                            let circular =
+                                circular_distance_datums(&sketch_vars, center, start, end.as_ref(), exec_state, range)?;
+
+                            #[cfg(feature = "artifact-graph")]
+                            let constraint_id = exec_state.next_object_id();
+                            let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
+                                let message =
+                                    "Being inside a sketch block should have already been checked above".to_owned();
+                                debug_assert!(false, "{}", &message);
+                                return Err(internal_err(message, self));
+                            };
+
+                            let support_x_id = sketch_block_state.next_sketch_var_id();
+                            sketch_block_state.sketch_vars.push(KclValue::SketchVar {
+                                value: Box::new(crate::execution::SketchVar {
+                                    id: support_x_id,
+                                    initial_value: support_initial[0],
+                                    ty: sketch_var_ty,
+                                    meta: vec![],
+                                }),
+                            });
+                            let support_y_id = sketch_block_state.next_sketch_var_id();
+                            sketch_block_state.sketch_vars.push(KclValue::SketchVar {
+                                value: Box::new(crate::execution::SketchVar {
+                                    id: support_y_id,
+                                    initial_value: support_initial[1],
+                                    ty: sketch_var_ty,
+                                    meta: vec![],
+                                }),
+                            });
+                            let support_point = ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                support_x_id.to_constraint_id(range)?,
+                                support_y_id.to_constraint_id(range)?,
+                            );
+                            let support_line =
+                                ezpz::datatypes::inputs::DatumLineSegment::new(circular.center, support_point);
+
+                            sketch_block_state
+                                .solver_constraints
+                                .push(Constraint::PointLineDistance(support_point, solver_line, 0.0));
+                            sketch_block_state.solver_constraints.push(Constraint::LinesAtAngle(
+                                support_line,
+                                solver_line,
+                                ezpz::datatypes::AngleKind::Perpendicular,
+                            ));
+                            push_circular_distance_constraints(
+                                sketch_block_state,
+                                sketch_var_ty,
+                                support_point,
+                                circular,
+                                n.n,
+                                range,
+                            )?;
+
+                            #[cfg(feature = "artifact-graph")]
+                            {
+                                use crate::execution::Artifact;
+                                use crate::execution::CodeRef;
+                                use crate::execution::SketchBlockConstraint;
+                                use crate::execution::SketchBlockConstraintType;
+                                use crate::front::Distance;
+                                use crate::front::SourceRef;
+                                use crate::frontend::sketch::ConstraintSegment;
+
+                                let Some(sketch_id) = sketch_block_state.sketch_id else {
+                                    let message = "Sketch id missing for constraint artifact".to_owned();
+                                    debug_assert!(false, "{}", &message);
+                                    return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
+                                };
+                                let sketch_constraint = crate::front::Constraint::Distance(Distance {
+                                    points: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
+                                    distance: n.try_into().map_err(|_| {
+                                        internal_err("Failed to convert distance units numeric suffix:", range)
+                                    })?,
+                                    source,
+                                });
+                                sketch_block_state.sketch_constraints.push(constraint_id);
+                                let artifact_id = exec_state.next_artifact_id();
+                                exec_state.add_artifact(Artifact::SketchBlockConstraint(SketchBlockConstraint {
+                                    id: artifact_id,
+                                    sketch_id,
+                                    constraint_id,
+                                    constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                    code_ref: CodeRef::placeholder(range),
+                                }));
+                                exec_state.add_scene_object(
+                                    Object {
+                                        id: constraint_id,
+                                        kind: ObjectKind::Constraint {
+                                            constraint: sketch_constraint,
+                                        },
+                                        label: Default::default(),
+                                        comments: Default::default(),
+                                        artifact_id,
+                                        source: SourceRef::new(range, self.node_path.clone()),
+                                    },
+                                    range,
+                                );
+                            }
+                        }
+                        SketchConstraintKind::CircularCircularDistance {
+                            center0,
+                            start0,
+                            end0,
+                            center1,
+                            start1,
+                            end1,
+                            input_object_ids,
+                        } => {
+                            let range = self.as_source_range();
+                            let sketch_var_ty = solver_numeric_type(exec_state);
+                            let sketch_vars = exec_state
+                                .mod_local
+                                .sketch_block
+                                .as_ref()
+                                .ok_or_else(|| {
+                                    internal_err(
+                                        "Being inside a sketch block should have already been checked above",
+                                        self,
+                                    )
+                                })?
+                                .sketch_vars
+                                .clone();
+                            let circular0 = circular_distance_datums(
+                                &sketch_vars,
+                                center0,
+                                start0,
+                                end0.as_ref(),
+                                exec_state,
+                                range,
+                            )?;
+                            let circular1 = circular_distance_datums(
+                                &sketch_vars,
+                                center1,
+                                start1,
+                                end1.as_ref(),
+                                exec_state,
+                                range,
+                            )?;
+                            let support_initial = circular_circular_support_initial_position(
+                                &sketch_vars,
+                                center0,
+                                center1,
+                                circular0.radius_initial_value,
+                                n.n,
+                                exec_state,
+                                range,
+                            )?;
+
+                            #[cfg(feature = "artifact-graph")]
+                            let constraint_id = exec_state.next_object_id();
+                            let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
+                                let message =
+                                    "Being inside a sketch block should have already been checked above".to_owned();
+                                debug_assert!(false, "{}", &message);
+                                return Err(internal_err(message, self));
+                            };
+
+                            let circular_target0 =
+                                push_circular_radius_constraints(sketch_block_state, sketch_var_ty, circular0, range)?;
+                            let circular_target1 =
+                                push_circular_radius_constraints(sketch_block_state, sketch_var_ty, circular1, range)?;
+
+                            let support_x_id = sketch_block_state.next_sketch_var_id();
+                            sketch_block_state.sketch_vars.push(KclValue::SketchVar {
+                                value: Box::new(crate::execution::SketchVar {
+                                    id: support_x_id,
+                                    initial_value: support_initial[0],
+                                    ty: sketch_var_ty,
+                                    meta: vec![],
+                                }),
+                            });
+                            let support_y_id = sketch_block_state.next_sketch_var_id();
+                            sketch_block_state.sketch_vars.push(KclValue::SketchVar {
+                                value: Box::new(crate::execution::SketchVar {
+                                    id: support_y_id,
+                                    initial_value: support_initial[1],
+                                    ty: sketch_var_ty,
+                                    meta: vec![],
+                                }),
+                            });
+                            let support_point = ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                support_x_id.to_constraint_id(range)?,
+                                support_y_id.to_constraint_id(range)?,
+                            );
+
+                            let support_radius_id = sketch_block_state.next_sketch_var_id();
+                            let support_radius_value = n.n / 2.0;
+                            sketch_block_state.sketch_vars.push(KclValue::SketchVar {
+                                value: Box::new(crate::execution::SketchVar {
+                                    id: support_radius_id,
+                                    initial_value: support_radius_value,
+                                    ty: sketch_var_ty,
+                                    meta: vec![],
+                                }),
+                            });
+                            let support_radius =
+                                ezpz::datatypes::inputs::DatumDistance::new(support_radius_id.to_constraint_id(range)?);
+                            let support_circle = ezpz::datatypes::inputs::DatumCircle {
+                                center: support_point,
+                                radius: support_radius,
+                            };
+                            let center_line = ezpz::datatypes::inputs::DatumLineSegment::new(
+                                circular_target0.center,
+                                circular_target1.center,
+                            );
+
+                            sketch_block_state
+                                .solver_constraints
+                                .push(Constraint::Fixed(support_radius.id, support_radius_value));
+                            sketch_block_state
+                                .solver_constraints
+                                .push(Constraint::PointLineDistance(support_point, center_line, 0.0));
+                            sketch_block_state
+                                .solver_constraints
+                                .push(Constraint::CircleTangentToCircle(
+                                    circular_target0,
+                                    support_circle,
+                                    ezpz::CircleSide::Exterior,
+                                ));
+                            sketch_block_state
+                                .solver_constraints
+                                .push(Constraint::CircleTangentToCircle(
+                                    support_circle,
+                                    circular_target1,
+                                    ezpz::CircleSide::Exterior,
+                                ));
 
                             #[cfg(feature = "artifact-graph")]
                             {
