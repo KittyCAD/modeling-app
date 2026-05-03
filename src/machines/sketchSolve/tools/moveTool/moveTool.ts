@@ -975,7 +975,7 @@ function localToScreen(
 }
 
 const CONSTRAINT_HOVER_POPUP_TIMEOUT_MS = 2000
-const DRAG_SETTLE_PREVIEW_DEBOUNCE_MS = 100
+const DRAG_SETTLE_PREVIEW_DEBOUNCE_MS = 40
 
 type ConstraintHoverPopupEntry = {
   popup: ConstraintHoverPopup
@@ -1079,6 +1079,7 @@ export function createOnDragCallback({
     sceneGraphDelta: SceneGraphDelta
     writeToDisk?: boolean
     suppressExecOutcomeIssues?: boolean
+    suppressFreedomConflictColoring?: boolean
   }) => void
   getDefaultLengthUnit: () => UnitLength | undefined
   getJsAppSettings: () => Promise<DeepPartial<Configuration>>
@@ -1153,6 +1154,7 @@ export function createOnDragCallback({
             ...result,
             writeToDisk: false,
             suppressExecOutcomeIssues: true,
+            suppressFreedomConflictColoring: true,
           })
           await new Promise((resolve) => requestAnimationFrame(resolve))
         }
@@ -1313,6 +1315,7 @@ export function createOnDragCallback({
             ...result,
             writeToDisk: false,
             suppressExecOutcomeIssues: true,
+            suppressFreedomConflictColoring: true,
           })
         } else {
           const fallbackOutcome =
@@ -1337,6 +1340,7 @@ export function createOnDragCallback({
               : result),
             writeToDisk: false,
             suppressExecOutcomeIssues: true,
+            suppressFreedomConflictColoring: true,
           })
         }
         await new Promise((resolve) => requestAnimationFrame(resolve))
@@ -1687,6 +1691,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
           sceneGraphDelta: result.sceneGraphDelta,
           writeToDisk: false,
           suppressExecOutcomeIssues: true,
+          suppressFreedomConflictColoring: true,
         },
       })
     } catch (err) {
@@ -2240,6 +2245,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
             sceneGraphDelta: outcome.sceneGraphDelta,
             writeToDisk: false,
             suppressExecOutcomeIssues: outcome.suppressExecOutcomeIssues,
+            suppressFreedomConflictColoring:
+              outcome.suppressFreedomConflictColoring,
           },
         })
         scheduleDragSettlePreview()
