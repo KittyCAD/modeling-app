@@ -1446,7 +1446,7 @@ async fn test_trim_arc2_left_side() {
     // Case 1: trim arc2 from [-2, -2] to [-2, 2] - should trim left side (start)
     let base_kcl_code = r#"sketch(on = YZ) {
   arc1 = arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
-  arc2 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
+  arc2 = arc(start = [var 5mm, var -0mm], end = [var -5mm, var -0mm], center = [var 0mm, var -30mm])
 }
 "#;
 
@@ -1467,7 +1467,7 @@ async fn test_trim_arc2_right_side() {
     // Case 2: trim arc2 from [2, -2] to [2, 2] - should trim right side (end)
     let base_kcl_code = r#"sketch(on = YZ) {
   arc1 = arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
-  arc2 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
+  arc2 = arc(start = [var 5mm, var -0mm], end = [var -5mm, var -0mm], center = [var 0mm, var -30mm])
 }
 "#;
 
@@ -1488,7 +1488,7 @@ async fn test_trim_arc1_bottom() {
     // Case 3: trim arc1 from [-2, 2] to [2, 2] - should trim bottom (end)
     let base_kcl_code = r#"sketch(on = YZ) {
   arc1 = arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
-  arc2 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
+  arc2 = arc(start = [var 5mm, var -0mm], end = [var -5mm, var -0mm], center = [var 0mm, var -30mm])
 }
 "#;
 
@@ -1496,7 +1496,7 @@ async fn test_trim_arc1_bottom() {
 
     let expected_code = r#"sketch(on = YZ) {
   arc1 = arc(start = [var -0.41mm, var 0.41mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
-  arc2 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
+  arc2 = arc(start = [var 5mm, var -0mm], end = [var -5mm, var -0mm], center = [var 0mm, var -30mm])
   coincident([arc1.start, arc2])
 }
 "#;
@@ -1509,7 +1509,7 @@ async fn test_trim_arc1_top() {
     // Case 4: trim arc1 from [-2, -2] to [2, -2] - should trim top (start)
     let base_kcl_code = r#"sketch(on = YZ) {
   arc1 = arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
-  arc2 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
+  arc2 = arc(start = [var 5mm, var -0mm], end = [var -5mm, var -0mm], center = [var 0mm, var -30mm])
 }
 "#;
 
@@ -1517,7 +1517,7 @@ async fn test_trim_arc1_top() {
 
     let expected_code = r#"sketch(on = YZ) {
   arc1 = arc(start = [var 0mm, var 5mm], end = [var -0.41mm, var 0.41mm], center = [var 30mm, var 0mm])
-  arc2 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
+  arc2 = arc(start = [var 5mm, var -0mm], end = [var -5mm, var -0mm], center = [var 0mm, var -30mm])
   coincident([arc1.end, arc2])
 }
 "#;
@@ -1776,9 +1776,9 @@ async fn test_split_arc_with_point_segment_coincident_constraints() {
     ];
 
     let expected_code = r#"sketch(on = YZ) {
-  arc1 = arc(start = [var -3.2mm, var 6.2mm], end = [var -5.12mm, var 2.3mm], center = [var 1.8mm, var 1.3mm])
+  arc1 = arc(start = [var -3.2mm, var 6.2mm], end = [var -5.13mm, var 2.29mm], center = [var 1.8mm, var 1.3mm])
   arc2 = arc(start = [var -4.59mm, var -1.62mm], end = [var -6.51mm, var -1.97mm], center = [var -4.39mm, var -8.2mm])
-  line1 = line(start = [var -7.5mm, var 2.5mm], end = [var -5.12mm, var 2.3mm])
+  line1 = line(start = [var -7.5mm, var 2.5mm], end = [var -5.13mm, var 2.29mm])
   arc3 = arc(start = [var -4.59mm, var -1.62mm], end = [var -1.81mm, var -4.72mm], center = [var 1.8mm, var 1.3mm])
   coincident([arc1.end, line1.end])
   coincident([arc3.start, arc2.start])
@@ -1981,10 +1981,10 @@ async fn test_trim_with_distance_constraints_preserve_constraints() {
     line3.start
   ])
   line5 = line(start = [var 1.24mm, var 0.92mm], end = [var 1.84mm, var -1.64mm])
-  splitTrimLineDistanceConstraintMigrated = line(start = [var -2.67mm, var -3.46mm], end = [var -1.78mm, var -3.62mm])
-  line8 = line(start = [var 2.87mm, var -3.72mm], end = [var 5.42mm, var -1.72mm])
-  line9 = line(start = [var 1.1mm, var -3.91mm], end = [var 1.28mm, var -5.69mm])
-  line10 = line(start = [var 1.99mm, var -3.81mm], end = [var 2.57mm, var -5.65mm])
+  splitTrimLineDistanceConstraintMigrated = line(start = [var -2.67mm, var -3.6mm], end = [var -1.78mm, var -3.63mm])
+  line8 = line(start = [var 2.87mm, var -3.77mm], end = [var 5.42mm, var -1.72mm])
+  line9 = line(start = [var 1.1mm, var -3.71mm], end = [var 1.28mm, var -5.69mm])
+  line10 = line(start = [var 1.99mm, var -3.74mm], end = [var 2.57mm, var -5.65mm])
   line11 = line(start = [var -1.93mm, var -2.2mm], end = [var -1.6mm, var -5.43mm])
   coincident([
     endTrimmedShouldDeleteDisConstraint.end,
@@ -1994,7 +1994,7 @@ async fn test_trim_with_distance_constraints_preserve_constraints() {
     startTrimmedAlsoDeleteDisConstraint.start,
     line5
   ])
-  line2 = line(start = [var 1.1mm, var -3.91mm], end = [var 2.87mm, var -3.72mm])
+  line2 = line(start = [var 1.1mm, var -3.71mm], end = [var 2.87mm, var -3.77mm])
   coincident([
     splitTrimLineDistanceConstraintMigrated.end,
     line11
@@ -2031,14 +2031,14 @@ async fn test_split_trim_migrate_angle_constraints() {
     let trim_points = vec![Coords2d { x: -1.75, y: -0.56 }, Coords2d { x: -1.75, y: -2.93 }];
 
     let expected_code = r#"sketch(on = YZ) {
-  line1 = line(start = [var -2.05mm, var 6.06mm], end = [var 0.27mm, var 4.61mm])
-  line2 = line(start = [var -4.18mm, var -0.05mm], end = [var -3.02mm, var -0.78mm])
+  line1 = line(start = [var -1.99mm, var 6.14mm], end = [var 0.21mm, var 4.53mm])
+  line2 = line(start = [var -4.15mm, var 0mm], end = [var -3.03mm, var -0.82mm])
   parallel([line1, line2])
-  line3 = line(start = [var -3.09mm, var 1.3mm], end = [var -2.95mm, var -3.08mm])
-  line4 = line(start = [var -0.59mm, var -0.81mm], end = [var -1.14mm, var -4.94mm])
-  line5 = line(start = [var 0.1mm, var -2.99mm], end = [var -0.11mm, var -5.63mm])
-  line6 = line(start = [var 1.18mm, var -3.67mm], end = [var 3.5mm, var -1.84mm])
-  line7 = line(start = [var -0.81mm, var -2.42mm], end = [var 1.18mm, var -3.67mm])
+  line3 = line(start = [var -3.1mm, var 1.3mm], end = [var -2.96mm, var -3.08mm])
+  line4 = line(start = [var -0.57mm, var -0.81mm], end = [var -1.13mm, var -4.94mm])
+  line5 = line(start = [var 0.11mm, var -2.98mm], end = [var -0.11mm, var -5.63mm])
+  line6 = line(start = [var 1.14mm, var -3.73mm], end = [var 3.5mm, var -1.84mm])
+  line7 = line(start = [var -0.78mm, var -2.33mm], end = [var 1.14mm, var -3.73mm])
   coincident([line2.end, line3])
   coincident([line7.start, line4])
   coincident([line7.end, line6.start])
@@ -2177,12 +2177,12 @@ async fn test_split_trim_migrate_perpendicular_constraint() {
     let trim_points = vec![Coords2d { x: 0.95, y: 1.67 }, Coords2d { x: -2.3, y: -0.08 }];
 
     let expected_code = r#"sketch(on = YZ) {
-  line4 = line(start = [var -0.92mm, var 5.82mm], end = [var 1.87mm, var 7.19mm])
-  line1 = line(start = [var -2mm, var 3.22mm], end = [var -1.22mm, var 1.64mm])
+  line4 = line(start = [var -0.95mm, var 5.87mm], end = [var 1.9mm, var 7.14mm])
+  line1 = line(start = [var -1.97mm, var 3.24mm], end = [var -1.25mm, var 1.62mm])
   line2 = line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
   line3 = line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
   perpendicular([line4, line1])
-  line5 = line(start = [var -0.18mm, var -0.71mm], end = [var 0.6mm, var -2.29mm])
+  line5 = line(start = [var -0.15mm, var -0.69mm], end = [var 0.57mm, var -2.31mm])
   coincident([line1.end, line2])
   coincident([line5.start, line3])
   perpendicular([line4, line5])
@@ -2217,12 +2217,12 @@ async fn test_split_arc_duplicate_center_point_constraints() {
     let trim_points = vec![Coords2d { x: -1.66, y: 7.54 }, Coords2d { x: -1.81, y: 2.11 }];
 
     let expected_code = r#"sketch(on = YZ) {
-  arcToSplit = arc(start = [var 11.07mm, var 1.06mm], end = [var 3.54mm, var 5.27mm], center = [var 0.67mm, var -8.71mm])
+  arcToSplit = arc(start = [var 10.61mm, var 1.1mm], end = [var 3.51mm, var 5.16mm], center = [var 0.43mm, var -8.46mm])
   line1 = line(start = [var -6mm, var 8mm], end = [var -5.5mm, var 0mm])
-  line2 = line(start = [var 4mm, var 8.5mm], end = [var 3mm, var 1.5mm])
-  lineCoincidentWithArcCen = line(start = [var 0.67mm, var -8.71mm], end = [var 11.5mm, var -7.5mm])
-  line4 = line(start = [var 11.07mm, var 1.06mm], end = [var 13.27mm, var 6.82mm])
-  line5 = line(start = [var 7.64mm, var 3.74mm], end = [var 10mm, var 8mm])
+  line2 = line(start = [var 3.99mm, var 8.5mm], end = [var 2.99mm, var 1.5mm])
+  lineCoincidentWithArcCen = line(start = [var 0.43mm, var -8.46mm], end = [var 11.5mm, var -7.5mm])
+  line4 = line(start = [var 10.61mm, var 1.1mm], end = [var 13.29mm, var 6.85mm])
+  line5 = line(start = [var 7.25mm, var 3.72mm], end = [var 10mm, var 8mm])
   coincident([line5.start, arcToSplit])
   coincident([line4.start, arcToSplit.start])
   coincident([
@@ -2230,9 +2230,9 @@ async fn test_split_arc_duplicate_center_point_constraints() {
     arcToSplit.center
   ])
   distance([arcToSplit.center, line4.end]) == 20mm
-  line3 = line(start = [var -0.92mm, var -6.92mm], end = [var 2.89mm, var -11.21mm])
+  line3 = line(start = [var -0.93mm, var -6.93mm], end = [var 2.88mm, var -11.22mm])
   coincident([arcToSplit.center, line3])
-  arc1 = arc(start = [var -5.76mm, var 4.08mm], end = [var -10.37mm, var 0.39mm], center = [var 0.67mm, var -8.71mm])
+  arc1 = arc(start = [var -5.75mm, var 4.07mm], end = [var -10.38mm, var 0.4mm], center = [var 0.43mm, var -8.46mm])
   coincident([arcToSplit.end, line2])
   coincident([arc1.start, line1])
   coincident([
