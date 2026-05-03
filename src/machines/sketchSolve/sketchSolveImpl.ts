@@ -176,6 +176,11 @@ export type UpdateSketchOutcomeEvent = {
      */
     suppressExecOutcomeIssues?: boolean
     /**
+     * If true, preserve sketch-wide solve error styling but do not color
+     * individual segments red from transient point freedom conflicts.
+     */
+    suppressFreedomConflictColoring?: boolean
+    /**
      * If true, debounce editor updates to allow cancellation (e.g., for double-click handling)
      */
     debounceEditorUpdate?: boolean
@@ -375,6 +380,7 @@ export function updateSegmentGroup({
   scale,
   theme,
   hasSolveErrors,
+  suppressFreedomConflictColoring,
   objects,
 }: {
   group: Group
@@ -383,6 +389,7 @@ export function updateSegmentGroup({
   scale: number
   theme: Themes
   hasSolveErrors: boolean
+  suppressFreedomConflictColoring?: boolean
   objects: ApiObject[]
 }): void {
   const idNum = Number(group.name)
@@ -403,6 +410,7 @@ export function updateSegmentGroup({
       group,
       state,
       hasSolveErrors,
+      suppressFreedomConflictColoring,
       freedom: freedomResult,
     })
   } else if (input.type === 'Line') {
@@ -413,6 +421,7 @@ export function updateSegmentGroup({
       group,
       state,
       hasSolveErrors,
+      suppressFreedomConflictColoring,
       freedom: freedomResult,
     })
   } else if (input.type === 'Arc') {
@@ -423,6 +432,7 @@ export function updateSegmentGroup({
       group,
       state,
       hasSolveErrors,
+      suppressFreedomConflictColoring,
       freedom: freedomResult,
     })
   } else if (input.type === 'Circle') {
@@ -433,6 +443,7 @@ export function updateSegmentGroup({
       group,
       state,
       hasSolveErrors,
+      suppressFreedomConflictColoring,
       freedom: freedomResult,
     })
   }
@@ -491,6 +502,7 @@ export interface IUpdateSketchSceneGraph {
   context: SketchSolveContext
   selectedIds: Array<SketchSolveSelectionId>
   duringAreaSelectIds: Array<number>
+  suppressFreedomConflictColoring?: boolean
 }
 export const updateSketchSceneGraphEffect =
   StateEffect.define<IUpdateSketchSceneGraph>()
@@ -504,6 +516,7 @@ export function updateSceneGraphFromDelta({
   context,
   selectedIds,
   duringAreaSelectIds,
+  suppressFreedomConflictColoring,
 }: IUpdateSketchSceneGraph): void {
   const objects = sceneGraphDelta.new_graph.objects
   const hasSolveErrors =
@@ -643,6 +656,7 @@ export function updateSceneGraphFromDelta({
       scale: factor,
       theme: context.sceneInfra.theme,
       hasSolveErrors,
+      suppressFreedomConflictColoring,
       objects,
     })
   })
@@ -1270,6 +1284,8 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
         context,
         selectedIds: context.selectedIds,
         duringAreaSelectIds: context.duringAreaSelectIds,
+        suppressFreedomConflictColoring:
+          event.data.suppressFreedomConflictColoring,
       }),
     ],
   }
