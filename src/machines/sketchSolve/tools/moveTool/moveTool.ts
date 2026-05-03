@@ -1621,80 +1621,80 @@ export function setUpOnDragAndSelectionClickCallbacks({
   }
 
   const settleDragPreviewAfterPause = async (dragSessionId: number) => {
-      setDragSettlePreviewTimeoutId(null)
+    setDragSettlePreviewTimeoutId(null)
+
+    if (
+      !getIsDragActive() ||
+      getActiveDragSessionId() !== dragSessionId ||
+      getIsSolveInProgress()
+    ) {
+      return
+    }
+
+    const lastGoodPreview = getLastGoodPreview()
+    if (!lastGoodPreview?.segmentsToEdit.length) {
+      return
+    }
+
+    setIsSolveInProgress(true)
+    markPreviewSolveStarted()
+    try {
+      const settings = jsAppSettings(context.rustContext.settingsActor)
+      const anchorSegmentIds = lastGoodPreview.segmentsToEdit.map(
+        ({ id }) => id
+      )
+
+      await context.rustContext.editSegments(
+        0,
+        context.sketchId,
+        lastGoodPreview.segmentsToEdit,
+        settings,
+        false
+      )
+
+      for (const {
+        constraintId,
+        labelPosition,
+      } of lastGoodPreview.distanceLabelEdits) {
+        await context.rustContext.editDistanceConstraintLabelPosition(
+          SKETCH_FILE_VERSION,
+          context.sketchId,
+          constraintId,
+          labelPosition,
+          settings,
+          false,
+          anchorSegmentIds
+        )
+      }
+
+      const result = await context.rustContext.sketchExecuteMock(
+        SKETCH_FILE_VERSION,
+        context.sketchId
+      )
 
       if (
         !getIsDragActive() ||
         getActiveDragSessionId() !== dragSessionId ||
-        getIsSolveInProgress()
+        hasSketchSolveIssues(result.sceneGraphDelta)
       ) {
         return
       }
 
-      const lastGoodPreview = getLastGoodPreview()
-      if (!lastGoodPreview?.segmentsToEdit.length) {
-        return
-      }
-
-      setIsSolveInProgress(true)
-      markPreviewSolveStarted()
-      try {
-        const settings = jsAppSettings(context.rustContext.settingsActor)
-        const anchorSegmentIds = lastGoodPreview.segmentsToEdit.map(
-          ({ id }) => id
-        )
-
-        await context.rustContext.editSegments(
-          0,
-          context.sketchId,
-          lastGoodPreview.segmentsToEdit,
-          settings,
-          false
-        )
-
-        for (const {
-          constraintId,
-          labelPosition,
-        } of lastGoodPreview.distanceLabelEdits) {
-          await context.rustContext.editDistanceConstraintLabelPosition(
-            SKETCH_FILE_VERSION,
-            context.sketchId,
-            constraintId,
-            labelPosition,
-            settings,
-            false,
-            anchorSegmentIds
-          )
-        }
-
-        const result = await context.rustContext.sketchExecuteMock(
-          SKETCH_FILE_VERSION,
-          context.sketchId
-        )
-
-        if (
-          !getIsDragActive() ||
-          getActiveDragSessionId() !== dragSessionId ||
-          hasSketchSolveIssues(result.sceneGraphDelta)
-        ) {
-          return
-        }
-
-        self.send({
-          type: 'update sketch outcome',
-          data: {
-            sourceDelta: result.kclSource,
-            sceneGraphDelta: result.sceneGraphDelta,
-            writeToDisk: false,
-            suppressExecOutcomeIssues: true,
-          },
-        })
-      } catch (err) {
-        console.error('error in debounced drag settle preview', err)
-      } finally {
-        markPreviewSolveSettled()
-        setIsSolveInProgress(false)
-      }
+      self.send({
+        type: 'update sketch outcome',
+        data: {
+          sourceDelta: result.kclSource,
+          sceneGraphDelta: result.sceneGraphDelta,
+          writeToDisk: false,
+          suppressExecOutcomeIssues: true,
+        },
+      })
+    } catch (err) {
+      console.error('error in debounced drag settle preview', err)
+    } finally {
+      markPreviewSolveSettled()
+      setIsSolveInProgress(false)
+    }
   }
 
   const dismissConstraintHoverPopupOnDragStart = () => {
