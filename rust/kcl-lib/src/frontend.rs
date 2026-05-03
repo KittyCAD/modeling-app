@@ -11378,10 +11378,10 @@ x = segLen(seg1)
 
 // Triangle with side length 2*x.
 sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 1.28mm, var -0.78mm])
-  line2 = line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
+  line1 = line(start = [var 2mm, var 2mm], end = [var 2.32mm, var -1.78mm])
+  line2 = line(start = [var 2.32mm, var -1.78mm], end = [var -1.61mm, var -1.03mm])
   coincident([line1.end, line2.start])
-  line3 = line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
+  line3 = line(start = [var -1.61mm, var -1.03mm], end = [var 1mm, var 2mm])
   coincident([line2.end, line3.start])
   coincident([line3.end, line1.start])
   equalLength([line3, line1])
@@ -11465,10 +11465,10 @@ x = segLen(seg1)
 
 // Triangle with side length 2*x.
 sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 1.28mm, var -0.78mm])
-  line2 = line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
+  line1 = line(start = [var 2mm, var 2mm], end = [var 2.32mm, var -1.78mm])
+  line2 = line(start = [var 2.32mm, var -1.78mm], end = [var -1.61mm, var -1.03mm])
   coincident([line1.end, line2.start])
-  line3 = line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
+  line3 = line(start = [var -1.61mm, var -1.03mm], end = [var 1mm, var 2mm])
   coincident([line2.end, line3.start])
   coincident([line3.end, line1.start])
   equalLength([line3, line1])
@@ -11506,10 +11506,10 @@ x = segLen(seg1)
 
 // Triangle with side length 2*x.
 sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 1.28mm, var -0.78mm])
-  line2 = line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
+  line1 = line(start = [var 2mm, var 2mm], end = [var 2.32mm, var -1.78mm])
+  line2 = line(start = [var 2.32mm, var -1.78mm], end = [var -1.61mm, var -1.03mm])
   coincident([line1.end, line2.start])
-  line3 = line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
+  line3 = line(start = [var -1.61mm, var -1.03mm], end = [var 1mm, var 2mm])
   coincident([line2.end, line3.start])
   coincident([line3.end, line1.start])
   equalLength([line3, line1])
@@ -11519,7 +11519,7 @@ sketch(on = XY) {
 
 // Line segment with length x.
 sketch2 = sketch(on = XY) {
-  line1 = line(start = [var 3mm, var 4mm], end = [var 1.28mm, var -0.78mm])
+  line1 = line(start = [var 2.12mm, var 4mm], end = [var 2.32mm, var 2.12mm])
   distance([line1.start, line1.end]) == x
 }
 "
