@@ -115,9 +115,7 @@ function getCircularDimensionLine(
   }
 
   return {
-    start: center
-      .clone()
-      .sub(labelDirection.clone().multiplyScalar(radius)),
+    start: center.clone().sub(labelDirection.clone().multiplyScalar(radius)),
     end: center.clone().add(labelDirection.clone().multiplyScalar(radius)),
   }
 }
