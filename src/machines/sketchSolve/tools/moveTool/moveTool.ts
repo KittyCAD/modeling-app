@@ -975,6 +975,7 @@ function localToScreen(
 }
 
 const CONSTRAINT_HOVER_POPUP_TIMEOUT_MS = 2000
+const DRAG_SETTLE_PREVIEW_DEBOUNCE_MS = 100
 
 type ConstraintHoverPopupEntry = {
   popup: ConstraintHoverPopup
@@ -1373,6 +1374,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
     createGetSet<number>(0)
   const [getInFlightPreviewSolve, setInFlightPreviewSolve] =
     createGetSet<DeferredVoid | null>(null)
+  const [getDragSettlePreviewTimeoutId, setDragSettlePreviewTimeoutId] =
+    createGetSet<ReturnType<typeof setTimeout> | null>(null)
   const [getLastGoodPreview, setLastGoodPreview] =
     createGetSet<DragCommitCandidate | null>(null)
   const [getDragStartOutcome, setDragStartOutcome] =
@@ -1571,12 +1574,14 @@ export function setUpOnDragAndSelectionClickCallbacks({
   }
 
   const beginDragSession = () => {
+    clearDragSettlePreview()
     setIsDragActive(true)
     const nextDragSessionId = getActiveDragSessionId() + 1
     setActiveDragSessionId(nextDragSessionId)
   }
 
   const invalidateDragSession = () => {
+    clearDragSettlePreview()
     setIsDragActive(false)
     const nextDragSessionId = getActiveDragSessionId() + 1
     setActiveDragSessionId(nextDragSessionId)
@@ -1590,6 +1595,106 @@ export function setUpOnDragAndSelectionClickCallbacks({
     const pendingPreviewSolve = getInFlightPreviewSolve()
     pendingPreviewSolve?.resolve()
     setInFlightPreviewSolve(null)
+  }
+
+  function clearDragSettlePreview() {
+    const timeoutId = getDragSettlePreviewTimeoutId()
+    if (timeoutId !== null) {
+      clearTimeout(timeoutId)
+      setDragSettlePreviewTimeoutId(null)
+    }
+  }
+
+  const scheduleDragSettlePreview = () => {
+    clearDragSettlePreview()
+
+    if (!getIsDragActive()) {
+      return
+    }
+
+    const dragSessionId = getActiveDragSessionId()
+    const timeoutId = setTimeout(() => {
+      void settleDragPreviewAfterPause(dragSessionId)
+    }, DRAG_SETTLE_PREVIEW_DEBOUNCE_MS)
+
+    setDragSettlePreviewTimeoutId(timeoutId)
+  }
+
+  const settleDragPreviewAfterPause = async (dragSessionId: number) => {
+      setDragSettlePreviewTimeoutId(null)
+
+      if (
+        !getIsDragActive() ||
+        getActiveDragSessionId() !== dragSessionId ||
+        getIsSolveInProgress()
+      ) {
+        return
+      }
+
+      const lastGoodPreview = getLastGoodPreview()
+      if (!lastGoodPreview?.segmentsToEdit.length) {
+        return
+      }
+
+      setIsSolveInProgress(true)
+      markPreviewSolveStarted()
+      try {
+        const settings = jsAppSettings(context.rustContext.settingsActor)
+        const anchorSegmentIds = lastGoodPreview.segmentsToEdit.map(
+          ({ id }) => id
+        )
+
+        await context.rustContext.editSegments(
+          0,
+          context.sketchId,
+          lastGoodPreview.segmentsToEdit,
+          settings,
+          false
+        )
+
+        for (const {
+          constraintId,
+          labelPosition,
+        } of lastGoodPreview.distanceLabelEdits) {
+          await context.rustContext.editDistanceConstraintLabelPosition(
+            SKETCH_FILE_VERSION,
+            context.sketchId,
+            constraintId,
+            labelPosition,
+            settings,
+            false,
+            anchorSegmentIds
+          )
+        }
+
+        const result = await context.rustContext.sketchExecuteMock(
+          SKETCH_FILE_VERSION,
+          context.sketchId
+        )
+
+        if (
+          !getIsDragActive() ||
+          getActiveDragSessionId() !== dragSessionId ||
+          hasSketchSolveIssues(result.sceneGraphDelta)
+        ) {
+          return
+        }
+
+        self.send({
+          type: 'update sketch outcome',
+          data: {
+            sourceDelta: result.kclSource,
+            sceneGraphDelta: result.sceneGraphDelta,
+            writeToDisk: false,
+            suppressExecOutcomeIssues: true,
+          },
+        })
+      } catch (err) {
+        console.error('error in debounced drag settle preview', err)
+      } finally {
+        markPreviewSolveSettled()
+        setIsSolveInProgress(false)
+      }
   }
 
   const dismissConstraintHoverPopupOnDragStart = () => {
@@ -2137,6 +2242,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
             suppressExecOutcomeIssues: outcome.suppressExecOutcomeIssues,
           },
         })
+        scheduleDragSettlePreview()
       },
       getDefaultLengthUnit: () =>
         context.kclManager.fileSettings.defaultLengthUnit,
