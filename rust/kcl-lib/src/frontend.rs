@@ -130,6 +130,7 @@ const CIRCLE_FN: &str = "circle";
 const CIRCLE_VARIABLE: &str = "circle";
 const CIRCLE_START_PARAM: &str = "start";
 const CIRCLE_CENTER_PARAM: &str = "center";
+const LABEL_POSITION_PARAM: &str = "labelPosition";
 
 const COINCIDENT_FN: &str = "coincident";
 const DIAMETER_FN: &str = "diameter";
@@ -1231,6 +1232,59 @@ impl SketchApi for FrontendState {
             sketch,
             sketch_block_ref,
             Default::default(),
+            EditDeleteKind::Edit,
+            &mut new_ast,
+        )
+        .await
+    }
+
+    async fn edit_distance_constraint_label_position(
+        &mut self,
+        ctx: &ExecutorContext,
+        _version: Version,
+        sketch: ObjectId,
+        constraint_id: ObjectId,
+        label_position: Point2d<Number>,
+        anchor_segment_ids: Vec<ObjectId>,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        // TODO: Check version.
+        let sketch_block_ref =
+            sketch_block_ref_from_id(&self.scene_graph, sketch).map_err(KclErrorWithOutputs::no_outputs)?;
+
+        let object = self.scene_graph.objects.get(constraint_id.0).ok_or_else(|| {
+            KclErrorWithOutputs::no_outputs(KclError::refactor(format!("Object not found: {constraint_id:?}")))
+        })?;
+        if !matches!(
+            &object.kind,
+            ObjectKind::Constraint {
+                constraint: Constraint::Distance(_)
+                    | Constraint::HorizontalDistance(_)
+                    | Constraint::VerticalDistance(_),
+            }
+        ) {
+            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
+                "Object is not a distance constraint: {constraint_id:?}"
+            ))));
+        }
+
+        let label_position = to_ast_point2d_number(&label_position).map_err(|err| {
+            KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
+                "Could not convert label position to AST: {err}"
+            )))
+        })?;
+        let mut new_ast = self.program.ast.clone();
+        self.mutate_ast(
+            &mut new_ast,
+            constraint_id,
+            AstMutateCommand::EditDistanceConstraintLabelPosition { label_position },
+        )
+        .map_err(KclErrorWithOutputs::no_outputs)?;
+
+        self.execute_after_edit(
+            ctx,
+            sketch,
+            sketch_block_ref,
+            anchor_segment_ids.into_iter().collect(),
             EditDeleteKind::Edit,
             &mut new_ast,
         )
@@ -3083,6 +3137,14 @@ impl FrontendState {
             }
         };
 
+        let arguments = match &distance.label_position {
+            Some(label_position) => vec![ast::LabeledArg {
+                label: Some(ast::Identifier::new(LABEL_POSITION_PARAM)),
+                arg: to_ast_point2d_number(label_position).map_err(|err| KclError::refactor(err.to_string()))?,
+            }],
+            None => Default::default(),
+        };
+
         // Create the distance() call.
         let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(DISTANCE_FN)),
@@ -3093,7 +3155,7 @@ impl FrontendState {
                     non_code_meta: Default::default(),
                 },
             )))),
-            arguments: Default::default(),
+            arguments,
             digest: None,
             non_code_meta: Default::default(),
         })));
@@ -3516,6 +3578,14 @@ impl FrontendState {
             }
         };
 
+        let arguments = match &distance.label_position {
+            Some(label_position) => vec![ast::LabeledArg {
+                label: Some(ast::Identifier::new(LABEL_POSITION_PARAM)),
+                arg: to_ast_point2d_number(label_position).map_err(|err| KclError::refactor(err.to_string()))?,
+            }],
+            None => Default::default(),
+        };
+
         // Create the horizontalDistance() call.
         let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(HORIZONTAL_DISTANCE_FN)),
@@ -3526,7 +3596,7 @@ impl FrontendState {
                     non_code_meta: Default::default(),
                 },
             )))),
-            arguments: Default::default(),
+            arguments,
             digest: None,
             non_code_meta: Default::default(),
         })));
@@ -3578,6 +3648,14 @@ impl FrontendState {
             }
         };
 
+        let arguments = match &distance.label_position {
+            Some(label_position) => vec![ast::LabeledArg {
+                label: Some(ast::Identifier::new(LABEL_POSITION_PARAM)),
+                arg: to_ast_point2d_number(label_position).map_err(|err| KclError::refactor(err.to_string()))?,
+            }],
+            None => Default::default(),
+        };
+
         // Create the verticalDistance() call.
         let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(VERTICAL_DISTANCE_FN)),
@@ -3588,7 +3666,7 @@ impl FrontendState {
                     non_code_meta: Default::default(),
                 },
             )))),
-            arguments: Default::default(),
+            arguments,
             digest: None,
             non_code_meta: Default::default(),
         })));
@@ -4876,6 +4954,9 @@ enum AstMutateCommand {
     EditConstraintValue {
         value: ast::BinaryPart,
     },
+    EditDistanceConstraintLabelPosition {
+        label_position: ast::Expr,
+    },
     EditCallUnlabeled {
         arg: ast::Expr,
     },
@@ -5351,6 +5432,34 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
+        AstMutateCommand::EditDistanceConstraintLabelPosition { label_position } => {
+            if let NodeMut::BinaryExpression(binary_expr) = node {
+                let ast::BinaryPart::CallExpressionKw(call) = &mut binary_expr.left else {
+                    return TraversalReturn::new_continue(());
+                };
+                if !matches!(
+                    call.callee.name.name.as_str(),
+                    DISTANCE_FN | HORIZONTAL_DISTANCE_FN | VERTICAL_DISTANCE_FN
+                ) {
+                    return TraversalReturn::new_continue(());
+                }
+
+                if let Some(label_arg) = call
+                    .arguments
+                    .iter_mut()
+                    .find(|arg| arg.label.as_ref().map(|id| id.name.as_str()) == Some(LABEL_POSITION_PARAM))
+                {
+                    label_arg.arg = label_position.clone();
+                } else {
+                    call.arguments.push(ast::LabeledArg {
+                        label: Some(ast::Identifier::new(LABEL_POSITION_PARAM)),
+                        arg: label_position.clone(),
+                    });
+                }
+
+                return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
+            }
+        }
         AstMutateCommand::EditCallUnlabeled { arg } => {
             if let NodeMut::CallExpressionKw(call) = node {
                 call.unlabeled = Some(arg.clone());
@@ -5533,6 +5642,23 @@ pub(crate) fn to_ast_point2d(point: &Point2d<Expr>) -> anyhow::Result<ast::Expr>
         pre_comments: Default::default(),
         comment_start: Default::default(),
     })))
+}
+
+fn to_ast_point2d_number(point: &Point2d<Number>) -> anyhow::Result<ast::Expr> {
+    Ok(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+        ast::ArrayExpression {
+            elements: vec![
+                ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
+                    point.x,
+                )?)))),
+                ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
+                    point.y,
+                )?)))),
+            ],
+            non_code_meta: Default::default(),
+            digest: None,
+        },
+    ))))
 }
 
 fn to_source_expr(expr: &Expr) -> anyhow::Result<ast::Expr> {
@@ -5970,6 +6096,22 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
         } else {
             panic!("Object is not a sketch: {:?}", object);
         }
+    }
+
+    fn point_position(scene_graph: &SceneGraph, point_id: ObjectId) -> Point2d<Number> {
+        let point_object = scene_graph.objects.get(point_id.0).unwrap();
+        let ObjectKind::Segment {
+            segment: Segment::Point(point),
+        } = &point_object.kind
+        else {
+            panic!("Object is not a point segment: {point_object:?}");
+        };
+        point.position.clone()
+    }
+
+    fn assert_point_position_close(actual: Point2d<Number>, expected: Point2d<Number>) {
+        assert!((actual.x.value - expected.x.value).abs() < 1e-6);
+        assert!((actual.y.value - expected.y.value).abs() < 1e-6);
     }
 
     fn make_line_ctor(start_x: f64, start_y: f64, end_x: f64, end_y: f64, units: NumericSuffix) -> LineCtor {
@@ -7099,9 +7241,236 @@ sketch001 = sketch(on = XZ) {
             "sketch was not deleted: {}",
             src_delta.text
         );
+        // The leading line comment must survive deletion.
+        assert_eq!(src_delta.text.as_str(), "// test 1\n");
         assert_eq!(scene_delta.new_graph.objects.len(), 0);
 
         ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_sketch_preserves_pre_comment_when_followed_by_code() {
+        let initial_source = "sketch001 = sketch(on = XZ) {
+}
+foo = 1
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_engine(
+            std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            Default::default(),
+        );
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+
+        let commented_source = "// keep me
+sketch001 = sketch(on = XZ) {
+}
+foo = 1
+";
+        let commented_program = Program::parse(commented_source).unwrap().0.unwrap();
+        frontend.engine_execute(&ctx, commented_program).await.unwrap();
+
+        let (src_delta, _scene_delta) = frontend.delete_sketch(&ctx, version, sketch_id).await.unwrap();
+        // The leading comment should remain, now attached to the following body item.
+        assert_eq!(src_delta.text.as_str(), "// keep me\nfoo = 1\n");
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_segment_preserves_pre_comment() {
+        let initial_source = "\
+sketch(on = XY) {
+  point(at = [var 1, var 2])
+  // describe the middle point
+  point(at = [var 3, var 4])
+  point(at = [var 5, var 6])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+
+        let middle_point_id = *sketch.segments.get(1).unwrap();
+
+        let (src_delta, _scene_delta) = frontend
+            .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![middle_point_id])
+            .await
+            .unwrap();
+        // The line comment on the line above the deleted point must be preserved.
+        // It is reattached to the next surviving body item.
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  point(at = [var 1mm, var 2mm])
+  // describe the middle point
+  point(at = [var 5mm, var 6mm])
+}
+"
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_last_segment_preserves_pre_comment() {
+        let initial_source = "\
+sketch(on = XY) {
+  point(at = [var 1, var 2])
+  // describe the trailing point
+  point(at = [var 3, var 4])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+
+        let last_point_id = *sketch.segments.last().unwrap();
+
+        let (src_delta, _scene_delta) = frontend
+            .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![last_point_id])
+            .await
+            .unwrap();
+        // No following item to attach to; the comment is kept inside the sketch
+        // block as trailing non-code metadata so the user does not lose it.
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  point(at = [var 1mm, var 2mm])
+  // describe the trailing point
+}
+"
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_segment_drops_inline_trailing_comment() {
+        let initial_source = "\
+sketch(on = XY) {
+  point(at = [var 1, var 2])
+  point(at = [var 3, var 4]) // same-line note that gets dropped
+  point(at = [var 5, var 6])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+
+        let middle_point_id = *sketch.segments.get(1).unwrap();
+
+        let (src_delta, _scene_delta) = frontend
+            .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![middle_point_id])
+            .await
+            .unwrap();
+        // The same-line trailing comment is removed along with the deleted code.
+        assert!(
+            !src_delta.text.contains("same-line note"),
+            "inline comment should have been removed: {}",
+            src_delta.text
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_segments_preserves_block_comments_across_positions() {
+        // One test exercising several `delete_body_item_preserving_pre_comments`
+        // branches at once with `/* ... */` block comments:
+        //   - first point: leading block comment must migrate to the next item.
+        //   - first point: same-line trailing block comment must be dropped.
+        //   - middle point: leading block comment must stay attached after migration.
+        //   - last point: leading block comment, with no surviving next item,
+        //     must be converted into a trailing NonCodeNode.
+        let initial_source = "\
+sketch(on = XY) {
+  /* above first - moves to middle */
+  point(at = [var 1, var 2]) /* same-line on first - dropped */
+  /* above middle - stays */
+  point(at = [var 3, var 4])
+  /* above last - moves to trailing meta */
+  point(at = [var 5, var 6])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+
+        let first_point_id = *sketch.segments.first().unwrap();
+        let last_point_id = *sketch.segments.last().unwrap();
+
+        let (src_delta, _scene_delta) = frontend
+            .delete_objects(
+                &mock_ctx,
+                version,
+                sketch_id,
+                Vec::new(),
+                vec![first_point_id, last_point_id],
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  /* above first - moves to middle */
+  /* above middle - stays */
+  point(at = [var 3mm, var 4mm])
+  /* above last - moves to trailing meta */
+}
+"
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -8750,6 +9119,7 @@ sketch(on = XY) {
                 value: 2.0,
                 units: NumericSuffix::Mm,
             },
+            label_position: None,
             source: Default::default(),
         });
         let (src_delta, scene_delta) = frontend
@@ -8779,6 +9149,246 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_distance_two_points_with_label() {
+        let initial_source = "\
+sketch(on = XY) {
+  point(at = [var 1, var 2])
+  point(at = [var 3, var 4])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point0_id = *sketch.segments.first().unwrap();
+        let point1_id = *sketch.segments.get(1).unwrap();
+
+        let label_position = Point2d {
+            x: Number {
+                value: 10.0,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: 11.0,
+                units: NumericSuffix::Mm,
+            },
+        };
+        let constraint = Constraint::Distance(Distance {
+            points: vec![point0_id.into(), point1_id.into()],
+            distance: Number {
+                value: 2.0,
+                units: NumericSuffix::Mm,
+            },
+            label_position: Some(label_position.clone()),
+            source: Default::default(),
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  point1 = point(at = [var 1, var 2])
+  point2 = point(at = [var 3, var 4])
+  distance([point1, point2], labelPosition = [10mm, 11mm]) == 2mm
+}
+"
+        );
+
+        let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
+        let sketch = expect_sketch(sketch_object);
+        let constraint_object = scene_delta.new_graph.objects.get(sketch.constraints[0].0).unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("Expected constraint object");
+        };
+        let Constraint::Distance(distance) = constraint else {
+            panic!("Expected distance constraint");
+        };
+        assert_eq!(distance.label_position, Some(label_position));
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_distance_constraint_label_position() {
+        let initial_source = "\
+sketch(on = XY) {
+  point(at = [var 1, var 2])
+  point(at = [var 3, var 2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point0_id = *sketch.segments.first().unwrap();
+        let point1_id = *sketch.segments.get(1).unwrap();
+
+        let constraint = Constraint::Distance(Distance {
+            points: vec![point0_id.into(), point1_id.into()],
+            distance: Number {
+                value: 2.0,
+                units: NumericSuffix::Mm,
+            },
+            label_position: None,
+            source: Default::default(),
+        });
+        let (_, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = sketch.constraints[0];
+        let label_position = Point2d {
+            x: Number {
+                value: 10.0,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: 11.0,
+                units: NumericSuffix::Mm,
+            },
+        };
+
+        let (src_delta, scene_delta) = frontend
+            .edit_distance_constraint_label_position(
+                &mock_ctx,
+                version,
+                sketch_id,
+                constraint_id,
+                label_position.clone(),
+                vec![],
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  point1 = point(at = [var 1mm, var 2mm])
+  point2 = point(at = [var 3mm, var 2mm])
+  distance([point1, point2], labelPosition = [10mm, 11mm]) == 2mm
+}
+"
+        );
+
+        let constraint_object = scene_delta.new_graph.objects.get(constraint_id.0).unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("Expected constraint object");
+        };
+        let Constraint::Distance(distance) = constraint else {
+            panic!("Expected distance constraint");
+        };
+        assert_eq!(distance.label_position, Some(label_position));
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_distance_constraint_label_position_preserves_anchor_segment_solution() {
+        let initial_source = "\
+sketch(on = XY) {
+  point1 = point(at = [var 0mm, var 0mm])
+  point2 = point(at = [var 10mm, var 0mm])
+  distance([point1, point2]) == 5mm
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point0_id = sketch.segments[0];
+        let point1_id = sketch.segments[1];
+        let constraint_id = sketch.constraints[0];
+
+        let edited_segments = vec![ExistingSegmentCtor {
+            id: point0_id,
+            ctor: SegmentCtor::Point(PointCtor {
+                position: Point2d {
+                    x: Expr::Var(Number {
+                        value: 2.0,
+                        units: NumericSuffix::Mm,
+                    }),
+                    y: Expr::Var(Number {
+                        value: 1.0,
+                        units: NumericSuffix::Mm,
+                    }),
+                },
+            }),
+        }];
+        let (_, scene_delta) = frontend
+            .edit_segments(&mock_ctx, version, sketch_id, edited_segments)
+            .await
+            .unwrap();
+        let point0_after_segment_edit = point_position(&scene_delta.new_graph, point0_id);
+        let point1_after_segment_edit = point_position(&scene_delta.new_graph, point1_id);
+
+        let label_position = Point2d {
+            x: Number {
+                value: 3.0,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: 4.0,
+                units: NumericSuffix::Mm,
+            },
+        };
+        let (_, scene_delta) = frontend
+            .edit_distance_constraint_label_position(
+                &mock_ctx,
+                version,
+                sketch_id,
+                constraint_id,
+                label_position,
+                vec![point0_id],
+            )
+            .await
+            .unwrap();
+
+        assert_point_position_close(
+            point_position(&scene_delta.new_graph, point0_id),
+            point0_after_segment_edit,
+        );
+        assert_point_position_close(
+            point_position(&scene_delta.new_graph, point1_id),
+            point1_after_segment_edit,
+        );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_horizontal_distance_two_points() {
         let initial_source = "\
 sketch(on = XY) {
@@ -8791,16 +9401,27 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
         let point0_id = *sketch.segments.first().unwrap();
         let point1_id = *sketch.segments.get(1).unwrap();
+        let label_position = Point2d {
+            x: Number {
+                value: 10.0,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: 11.0,
+                units: NumericSuffix::Mm,
+            },
+        };
 
         let constraint = Constraint::HorizontalDistance(Distance {
             points: vec![point0_id.into(), point1_id.into()],
@@ -8808,6 +9429,7 @@ sketch(on = XY) {
                 value: 2.0,
                 units: NumericSuffix::Mm,
             },
+            label_position: Some(label_position.clone()),
             source: Default::default(),
         });
         let (src_delta, scene_delta) = frontend
@@ -8821,7 +9443,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   point1 = point(at = [var 1, var 2])
   point2 = point(at = [var 3, var 4])
-  horizontalDistance([point1, point2]) == 2mm
+  horizontalDistance([point1, point2], labelPosition = [10mm, 11mm]) == 2mm
 }
 "
         );
@@ -8831,8 +9453,17 @@ sketch(on = XY) {
             "{:#?}",
             scene_delta.new_graph.objects
         );
+        let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
+        let sketch = expect_sketch(sketch_object);
+        let constraint_object = scene_delta.new_graph.objects.get(sketch.constraints[0].0).unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("Expected constraint object");
+        };
+        let Constraint::HorizontalDistance(distance) = constraint else {
+            panic!("Expected horizontal distance constraint");
+        };
+        assert_eq!(distance.label_position, Some(label_position));
 
-        ctx.close().await;
         mock_ctx.close().await;
     }
 
@@ -8917,16 +9548,27 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
         let point0_id = *sketch.segments.first().unwrap();
         let point1_id = *sketch.segments.get(1).unwrap();
+        let label_position = Point2d {
+            x: Number {
+                value: 10.0,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: 11.0,
+                units: NumericSuffix::Mm,
+            },
+        };
 
         let constraint = Constraint::VerticalDistance(Distance {
             points: vec![point0_id.into(), point1_id.into()],
@@ -8934,6 +9576,7 @@ sketch(on = XY) {
                 value: 2.0,
                 units: NumericSuffix::Mm,
             },
+            label_position: Some(label_position.clone()),
             source: Default::default(),
         });
         let (src_delta, scene_delta) = frontend
@@ -8947,7 +9590,7 @@ sketch(on = XY) {
 sketch(on = XY) {
   point1 = point(at = [var 1, var 2])
   point2 = point(at = [var 3, var 4])
-  verticalDistance([point1, point2]) == 2mm
+  verticalDistance([point1, point2], labelPosition = [10mm, 11mm]) == 2mm
 }
 "
         );
@@ -8957,8 +9600,17 @@ sketch(on = XY) {
             "{:#?}",
             scene_delta.new_graph.objects
         );
+        let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
+        let sketch = expect_sketch(sketch_object);
+        let constraint_object = scene_delta.new_graph.objects.get(sketch.constraints[0].0).unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("Expected constraint object");
+        };
+        let Constraint::VerticalDistance(distance) = constraint else {
+            panic!("Expected vertical distance constraint");
+        };
+        assert_eq!(distance.label_position, Some(label_position));
 
-        ctx.close().await;
         mock_ctx.close().await;
     }
 

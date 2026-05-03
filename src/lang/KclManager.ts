@@ -571,7 +571,7 @@ export class File extends EventTarget {
   private pathSignal: Signal<string>
   private fileWatcherKey = uuidv4()
   public watching: boolean = false
-  /** Array of listeners. TODO: Make this a CodeMirror-like Facet */
+  /** Array of listeners. TODO: Make this a CodeMirror-style extension point */
   public onWatchEvent: ((eventType: string, path: string) => void)[] = [
     () => ({}),
   ]

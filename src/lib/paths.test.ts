@@ -1,6 +1,10 @@
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { beforeAll, expect, describe, it } from 'vitest'
-import { getFilePathRelativeToProject, parseProjectRoute } from '@src/lib/paths'
+import {
+  getFilePathRelativeToProject,
+  getRouterSearchFromRequestUrl,
+  parseProjectRoute,
+} from '@src/lib/paths'
 
 beforeAll(async () => {
   await moduleFsViaModuleImport({
@@ -85,5 +89,61 @@ describe('testing getFilePathRelativeToProject', () => {
     expect(getFilePathRelativeToProject(filePath, projectName, '/')).toEqual(
       expectedProjectRelativeFilePath
     )
+  })
+})
+
+describe('testing getRouterSearchFromRequestUrl', () => {
+  it('should read search params from normal browser router URLs', () => {
+    expect(
+      getRouterSearchFromRequestUrl(
+        'https://zoo.dev/?project-id=abc&ask-open-desktop=true',
+        false
+      )
+    ).toEqual('?project-id=abc&ask-open-desktop=true')
+  })
+
+  it('should read search params from hash router root URLs', () => {
+    expect(
+      getRouterSearchFromRequestUrl(
+        'http://localhost:3000/#/?project-id=abc',
+        true
+      )
+    ).toEqual('?project-id=abc')
+  })
+
+  it('should read search params from hash router root URLs without a slash', () => {
+    expect(
+      getRouterSearchFromRequestUrl(
+        'file:///Applications/Zoo%20Design%20Studio.app/index.html#?project-id=abc',
+        true
+      )
+    ).toEqual('?project-id=abc')
+  })
+
+  it('should read search params from hash router route URLs', () => {
+    expect(
+      getRouterSearchFromRequestUrl(
+        'file:///Applications/Zoo%20Design%20Studio.app/index.html#/home?project-id=abc',
+        true
+      )
+    ).toEqual('?project-id=abc')
+  })
+
+  it('should ignore nested hash fragments after hash router search params', () => {
+    expect(
+      getRouterSearchFromRequestUrl(
+        'http://localhost:3000/#/home?project-id=abc#section',
+        true
+      )
+    ).toEqual('?project-id=abc')
+  })
+
+  it('should fall back to document search when a hash router URL has no route search', () => {
+    expect(
+      getRouterSearchFromRequestUrl(
+        'http://localhost:3000/?debug=true#/home',
+        true
+      )
+    ).toEqual('?debug=true')
   })
 })

@@ -18,7 +18,6 @@ import { isExternalFileDrag } from '@src/components/Explorer/utils'
 import { takeViewportScreenshot } from '@src/lib/screenshot'
 import { isNonNullable } from '@src/lib/utils'
 import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
-import { isPlaywright } from '@src/lib/isPlaywright'
 
 const noop = () => {}
 
@@ -46,6 +45,7 @@ export interface MlEphantConversationProps {
   needsReconnect: boolean
   hasPromptCompleted: boolean
   userAvatarSrc?: string
+  showMakeathonAnnouncement?: boolean
   blockedReason?: string
   defaultPrompt?: string
   initialMlCopilotMode?: MlCopilotMode // resolved from project settings
@@ -697,7 +697,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
             />
           </div>
         </div>
-        {!isPlaywright() ? (
+        {props.showMakeathonAnnouncement ? (
           <MakeathonAnnouncement
             presentation="dialog"
             className="w-[min(28rem,100%)]"
