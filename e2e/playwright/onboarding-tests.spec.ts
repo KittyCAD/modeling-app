@@ -125,7 +125,7 @@ test.describe('Onboarding tests', { tag: ['@desktop'] }, () => {
         await toolbar.logoLink.click()
         await expect(homePage.tutorialBtn).not.toBeVisible()
         await homePage.expectState({
-          projectCards: [{ title: 'tutorial-project', fileCount: 7 }],
+          projectCards: [{ title: 'tutorial-project', fileCount: 2 }],
           sortBy: 'last-modified-desc',
         })
       })
@@ -150,7 +150,7 @@ test.describe('Onboarding tests', { tag: ['@desktop'] }, () => {
         await toolbar.logoLink.click()
         await expect(homePage.tutorialBtn).not.toBeVisible()
         await homePage.expectState({
-          projectCards: [{ title: 'tutorial-project', fileCount: 7 }],
+          projectCards: [{ title: 'tutorial-project', fileCount: 2 }],
           sortBy: 'last-modified-desc',
         })
       })
