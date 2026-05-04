@@ -2043,6 +2043,10 @@ fn artifacts_to_update(
                     new_comp.composite_solid_id = Some(id);
                     new_comp.consumed = true;
                     return_arr.push(Artifact::CompositeSolid(new_comp));
+                } else if let Some(Artifact::Sweep(sweep)) = artifacts.get(input_id) {
+                    let mut new_sweep = sweep.clone();
+                    new_sweep.consumed = true;
+                    return_arr.push(Artifact::Sweep(new_sweep));
                 }
             }
             return Ok(return_arr);
@@ -2249,6 +2253,11 @@ fn artifacts_to_update(
                                 new_comp.consumed = true;
                                 return_arr.push(Artifact::CompositeSolid(new_comp));
                             }
+                            Artifact::Sweep(sweep) => {
+                                let mut new_sweep = sweep.clone();
+                                new_sweep.consumed = true;
+                                return_arr.push(Artifact::Sweep(new_sweep));
+                            }
                             Artifact::Path(path) => {
                                 let mut new_path = path.clone();
                                 new_path.composite_solid_id = Some(*solid_id);
@@ -2279,6 +2288,11 @@ fn artifacts_to_update(
                                 new_comp.composite_solid_id = Some(*solid_id);
                                 new_comp.consumed = true;
                                 return_arr.push(Artifact::CompositeSolid(new_comp));
+                            }
+                            Artifact::Sweep(sweep) => {
+                                let mut new_sweep = sweep.clone();
+                                new_sweep.consumed = true;
+                                return_arr.push(Artifact::Sweep(new_sweep));
                             }
                             Artifact::Path(path) => {
                                 let mut new_path = path.clone();
@@ -2352,6 +2366,11 @@ fn artifacts_to_update(
                                 new_comp.composite_solid_id = Some(*solid_id);
                                 new_comp.consumed = true;
                                 return_arr.push(Artifact::CompositeSolid(new_comp));
+                            }
+                            Artifact::Sweep(sweep) => {
+                                let mut new_sweep = sweep.clone();
+                                new_sweep.consumed = true;
+                                return_arr.push(Artifact::Sweep(new_sweep));
                             }
                             Artifact::Path(path) => {
                                 let mut new_path = path.clone();
