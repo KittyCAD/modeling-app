@@ -9,15 +9,12 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
-import { isPlaywright } from '@src/lib/isPlaywright'
-import { PATHS } from '@src/lib/paths'
 import {
   MlEphantConversationToMarkdown,
   MlEphantManagerReactContext,
 } from '@src/machines/mlEphantManagerMachine'
 import { BillingTransition } from '@src/machines/billingMachine'
 import { useSignals } from '@preact/signals-react/runtime'
-import { useLocation } from 'react-router-dom'
 
 export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
   useSignals()
@@ -26,8 +23,6 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
   const settingsValues = settings.useSettings()
   const user = auth.useUser()
   const token = auth.useToken()
-  const billingContext = billing.useContext()
-  const location = useLocation()
   const {
     context: contextModeling,
     send: sendModeling,
@@ -43,10 +38,11 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
     })
   }
 
-  const showMakeathonAnnouncement =
-    !isPlaywright() &&
-    !location.pathname.includes(String(PATHS.ONBOARDING)) &&
-    !billingContext.isOrg
+  // During the makethon, this was set to the following:
+  // !isPlaywright() &&
+  // !location.pathname.includes(String(PATHS.ONBOARDING)) &&
+  // !billingContext.isOrg
+  const showMakeathonAnnouncement = false
 
   return (
     <LayoutPanel
