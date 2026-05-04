@@ -445,11 +445,10 @@ function buildCircularLabelEditsForMovedSegments({
     return []
   }
 
-  const transformedLabel = transformCircularLabelPosition(
-    new Vector2(labelPosition.x.value, labelPosition.y.value),
-    beforeCenter,
-    afterCenter
-  )
+  const transformedLabel = new Vector2(
+    labelPosition.x.value,
+    labelPosition.y.value
+  ).add(afterCenter.clone().sub(beforeCenter))
 
   return [
     {
@@ -543,29 +542,21 @@ function transformDistanceLabelFromPointPairs(
 
 function transformDistanceLabelWithAxes(
   labelPosition: Vector2,
-  beforeStart: Vector2,
-  afterStart: Vector2,
+  beforePivot: Vector2,
+  afterPivot: Vector2,
   beforeAxis: Vector2,
   afterAxis: Vector2
 ): Vector2 {
   const beforePerp = new Vector2(-beforeAxis.y, beforeAxis.x)
   const afterPerp = new Vector2(-afterAxis.y, afterAxis.x)
-  const labelDelta = labelPosition.clone().sub(beforeStart)
+  const labelDelta = labelPosition.clone().sub(beforePivot)
   const offset = labelDelta.dot(beforeAxis)
   const perpOffset = labelDelta.dot(beforePerp)
 
-  return afterStart
+  return afterPivot
     .clone()
     .add(afterAxis.multiplyScalar(offset))
     .add(afterPerp.multiplyScalar(perpOffset))
-}
-
-function transformCircularLabelPosition(
-  labelPosition: Vector2,
-  beforeCenter: Vector2,
-  afterCenter: Vector2
-): Vector2 {
-  return labelPosition.clone().add(afterCenter.clone().sub(beforeCenter))
 }
 
 async function applyConstraintLabelPreviewEdits({
