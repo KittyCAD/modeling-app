@@ -129,6 +129,47 @@ export type SimpleLayout = BaseLayout & {
 }
 export type Layout = SimpleLayout | SplitLayout | PaneLayout
 
+export type LayoutContributionPlacement = {
+  targetPaneId: string
+  position?: 'start' | 'end'
+  beforeId?: string
+  afterId?: string
+  index?: number
+}
+
+export type LayoutAreaContribution = {
+  id: string
+  kind: 'area'
+  pane: PaneChild
+  placement: LayoutContributionPlacement
+  initiallyOpen?: boolean
+}
+
+export type LayoutActionContribution = {
+  id: string
+  kind: 'action'
+  action: Action
+  placement: LayoutContributionPlacement
+}
+
+export type LayoutContribution =
+  | LayoutAreaContribution
+  | LayoutActionContribution
+
+export type LayoutContributionResult = {
+  applied: boolean
+  reason?: 'already-present' | 'target-not-found' | 'invalid-target' | 'applied'
+}
+
+export type LayoutService = {
+  applyContribution: (
+    contribution: LayoutContribution
+  ) => LayoutContributionResult
+  applyContributions: (
+    contributions: readonly LayoutContribution[]
+  ) => LayoutContributionResult[]
+}
+
 type LayoutVersion = `v${number}`
 
 /** add more fields as needed */
