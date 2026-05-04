@@ -57,10 +57,10 @@ export class RadiusConstraintBuilder {
         const constraintLabelPosition = obj.kind.constraint.labelPosition
         const labelPosition = constraintLabelPosition
           ? new Vector3(
-            constraintLabelPosition.x.value,
-            constraintLabelPosition.y.value,
-            0
-          )
+              constraintLabelPosition.x.value,
+              constraintLabelPosition.y.value,
+              0
+            )
           : undefined
         const isDiameter = isDiameterConstraint(obj)
         const { start, end } = getCircularDimensionLine(
@@ -95,10 +95,7 @@ export class RadiusConstraintBuilder {
   }
 }
 
-function createExtensionArcLines(
-  group: Group,
-  resources: ConstraintResources
-) {
+function createExtensionArcLines(group: Group, resources: ConstraintResources) {
   for (let index = 0; index < 2; index++) {
     const geometry = new LineGeometry()
     geometry.setPositions([0, 0, 0, 0, 0, 0])
