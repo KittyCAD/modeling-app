@@ -3,6 +3,7 @@ import { DISTANCE_CONSTRAINT_BODY } from '@src/clientSideScene/sceneConstants'
 import type { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
 import {
   isArcLikeSegment,
+  isArcSegment,
   isDiameterConstraint,
   isPointSegment,
   isRadiusConstraint,
@@ -121,8 +122,13 @@ function updateExtensionArcs(
     (child) =>
       child instanceof Line2 && child.userData.role === EXTENSION_ARC_ROLE
   ) as Line2[]
+  const [startExtensionArc, endExtensionArc] = extensionArcs
+  if (!startExtensionArc || !endExtensionArc) {
+    console.error('Missing radius constraint extension arc lines')
+    return
+  }
 
-  if (arc.kind.type !== 'Segment' || arc.kind.segment.type !== 'Arc') {
+  if (!isArcSegment(arc)) {
     hideExtensionArcs(extensionArcs)
     return
   }
@@ -148,21 +154,25 @@ function updateExtensionArcs(
   )
   const endAngle = getPolarAngle2d([center.x, center.y], [arcEnd.x, arcEnd.y])
   updateExtensionArc(
-    extensionArcs[0],
+    startExtensionArc,
     center,
     radius,
     startAngle,
     endAngle,
     dimensionStart
   )
-  updateExtensionArc(
-    extensionArcs[1],
-    center,
-    radius,
-    startAngle,
-    endAngle,
-    isDiameter ? dimensionEnd : undefined
-  )
+  if (isDiameter) {
+    updateExtensionArc(
+      endExtensionArc,
+      center,
+      radius,
+      startAngle,
+      endAngle,
+      dimensionEnd
+    )
+  } else {
+    hideExtensionArc(endExtensionArc)
+  }
 }
 
 function hideExtensionArcs(extensionArcs: Line2[]) {
@@ -176,21 +186,15 @@ function hideExtensionArc(extensionArc: Line2) {
   delete extensionArc.userData.hitObjects
 }
 
+// Draws the shortest extension arc from the arc sweep towards target unless it's already on the arc.
 function updateExtensionArc(
-  extensionArc: Line2 | undefined,
+  extensionArc: Line2,
   center: Vector3,
   radius: number,
   arcStartAngle: number,
   arcEndAngle: number,
-  target?: Vector3
+  target: Vector3
 ) {
-  if (!extensionArc || !target) {
-    if (extensionArc) {
-      hideExtensionArc(extensionArc)
-    }
-    return
-  }
-
   const targetAngle = getPolarAngle2d(
     [center.x, center.y],
     [target.x, target.y]
@@ -198,6 +202,7 @@ function updateExtensionArc(
   const arcSweep = getAngleDiff(arcStartAngle, arcEndAngle, true)
   const targetOffset = getAngleDiff(arcStartAngle, targetAngle, true)
   if (targetOffset <= arcSweep + 1e-8) {
+    // target is already on the arc sweep from start to end -> no need to draw an extension
     hideExtensionArc(extensionArc)
     return
   }
