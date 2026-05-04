@@ -172,6 +172,19 @@ async def test_kcl_mock_execute_code():
         assert result is True
 
 
+@pytest.mark.asyncio
+async def test_kcl_mock_execute_code_with_request_context():
+    request_context = kcl.RequestContext(api_token="test-api-token")
+    assert request_context.api_token == "test-api-token"
+
+    with open(lego_file, "r") as f:
+        code = str(f.read())
+        assert code is not None
+        assert len(code) > 0
+        result = await kcl.mock_execute_code(code, request_context=request_context)
+        assert result is True
+
+
 @requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_code():
