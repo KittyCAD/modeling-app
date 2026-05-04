@@ -2706,18 +2706,22 @@ fn unnecessarily_bracketed(i: &mut TokenSlice) -> ModalResult<Expr> {
 
 fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
     let parsed_expr = alt((
-        bool_value.map(Box::new).map(Expr::Literal),
-        tag.map(Box::new).map(Expr::TagDeclarator),
-        literal.map(Expr::Literal),
-        sketch_var.map(Box::new).map(Expr::SketchVar),
-        fn_call_or_sketch_block,
-        name.map(Box::new).map(Expr::Name),
-        array,
-        object.map(Box::new).map(Expr::ObjectExpression),
-        pipe_sub.map(Box::new).map(Expr::PipeSubstitution),
-        function_expr,
-        if_expr.map(Expr::IfExpression),
-        unnecessarily_bracketed,
+        alt((
+            bool_value.map(Box::new).map(Expr::Literal),
+            tag.map(Box::new).map(Expr::TagDeclarator),
+            literal.map(Expr::Literal),
+            sketch_var.map(Box::new).map(Expr::SketchVar),
+            fn_call_or_sketch_block,
+            name.map(Box::new).map(Expr::Name),
+            array,
+            object.map(Box::new).map(Expr::ObjectExpression),
+            pipe_sub.map(Box::new).map(Expr::PipeSubstitution),
+        )),
+        alt((
+            function_expr,
+            if_expr.map(Expr::IfExpression),
+            unnecessarily_bracketed,
+        )),
     ))
     .context(expected("a KCL expression (but not a pipe expression)"))
     .parse_next(i)?;
@@ -2732,17 +2736,21 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
 fn possible_operands(i: &mut TokenSlice) -> ModalResult<Expr> {
     let _nesting_guard = ParseContext::enter_nesting(i.as_source_range())?;
     let mut expr = alt((
-        if_expr.map(Expr::IfExpression),
-        unary_expression.map(Box::new).map(Expr::UnaryExpression),
-        bool_value.map(Box::new).map(Expr::Literal),
-        literal.map(Expr::Literal),
-        sketch_var.map(Box::new).map(Expr::SketchVar),
-        fn_call_or_sketch_block,
-        name.map(Box::new).map(Expr::Name),
-        array,
-        object.map(Box::new).map(Expr::ObjectExpression),
-        binary_expr_in_parens.map(Box::new).map(Expr::BinaryExpression),
-        unnecessarily_bracketed,
+        alt((
+            if_expr.map(Expr::IfExpression),
+            unary_expression.map(Box::new).map(Expr::UnaryExpression),
+            bool_value.map(Box::new).map(Expr::Literal),
+            literal.map(Expr::Literal),
+            sketch_var.map(Box::new).map(Expr::SketchVar),
+            fn_call_or_sketch_block,
+            name.map(Box::new).map(Expr::Name),
+            array,
+            object.map(Box::new).map(Expr::ObjectExpression),
+        )),
+        alt((
+            binary_expr_in_parens.map(Box::new).map(Expr::BinaryExpression),
+            unnecessarily_bracketed,
+        )),
     ))
     .context(expected(
         "a KCL value which can be used as an argument/operand to an operator",
@@ -3682,13 +3690,16 @@ struct ParamDescription {
 }
 
 fn parameter(i: &mut TokenSlice) -> ModalResult<ParamDescription> {
-    let (_, comments, _, attr, _, found_at_sign, arg_name, question_mark, _, type_, _ws, default_literal) = (
+    let (_, comments, _, attr, _, found_at_sign) = (
         opt(whitespace),
         opt(comments),
         opt(whitespace),
         opt(outer_annotation),
         opt(whitespace),
         opt(at_sign),
+    )
+        .parse_next(i)?;
+    let (arg_name, question_mark, _, type_, _ws, default_literal) = (
         any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")"),
         opt(question_mark),
         opt(whitespace),
