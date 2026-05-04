@@ -29,10 +29,11 @@ export function polar2d(
   ]
 }
 
-// Returns the signed direction angle from point a to point b in radians.
+// Returns the signed direction angle from center to point in radians.
+// This is the angle between the vector that goes from center to point and the positive X axis, [1, 0].
 // The returned value is in the range [-PI, PI].
-export function getAngleBetweenVec2(a: Coords2d, b: Coords2d): number {
-  return Math.atan2(b[1] - a[1], b[0] - a[0])
+export function getPolarAngle2d(center: Coords2d, point: Coords2d): number {
+  return Math.atan2(point[1] - center[1], point[0] - center[0])
 }
 
 // Returns the signed angle between 2 2D vectors in radians.
@@ -50,6 +51,8 @@ export function getSignedAngleBetweenVec(a: Coords2d, b: Coords2d) {
   return Math.atan2(cross2d(a, b), dot2d(a, b))
 }
 
+// Returns the unsigned minor angle between 2 2D vectors in radians.
+// The returned value is in the range [0, PI], or 0 if either vector is zero.
 export function getMinorAngleBetweenVec(a: Coords2d, b: Coords2d) {
   const length_a = length2d(a)
   const length_b = length2d(b)

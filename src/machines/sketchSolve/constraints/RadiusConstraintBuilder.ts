@@ -20,7 +20,7 @@ import {
 } from '@src/machines/sketchSolve/constraints/DimensionLine'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { getAngleDiff } from '@src/lib/utils'
-import { getAngleBetweenVec2 } from '@src/lib/utils2d'
+import { getPolarAngle2d } from '@src/lib/utils2d'
 
 const EXTENSION_ARC_ROLE = 'radius-constraint-extension-arc'
 
@@ -142,11 +142,11 @@ function updateExtensionArcs(
     return
   }
 
-  const startAngle = getAngleBetweenVec2(
+  const startAngle = getPolarAngle2d(
     [center.x, center.y],
     [arcStart.x, arcStart.y]
   )
-  const endAngle = getAngleBetweenVec2(
+  const endAngle = getPolarAngle2d(
     [center.x, center.y],
     [arcEnd.x, arcEnd.y]
   )
@@ -194,7 +194,10 @@ function updateExtensionArc(
     return
   }
 
-  const targetAngle = Math.atan2(target.y - center.y, target.x - center.x)
+  const targetAngle = getPolarAngle2d(
+    [center.x, center.y],
+    [target.x, target.y]
+  )
   const arcSweep = getAngleDiff(arcStartAngle, arcEndAngle, true)
   const targetOffset = getAngleDiff(arcStartAngle, targetAngle, true)
   if (targetOffset <= arcSweep + 1e-8) {
