@@ -19,7 +19,7 @@ import {
   ONBOARDING_PROJECT_NAME,
   ONBOARDING_TOAST_ID,
 } from '@src/lib/constants'
-import { fanParts } from '@src/lib/exampleKcl'
+import { coldPlateParts } from '@src/lib/exampleKcl'
 import {
   type OnboardingStatus,
   type OnboardingPath,
@@ -340,12 +340,12 @@ export function acceptOnboarding(deps: OnboardingUtilDeps) {
     : deps.onboardingStatus
 
   /**
-   * Bulk create the assembly and navigate to the project
+   * Bulk create the tutorial sample and navigate to the project.
    */
   deps.systemIOActor.send({
     type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
     data: {
-      files: fanParts.map((part) => ({
+      files: coldPlateParts.map((part) => ({
         requestedProjectName: ONBOARDING_PROJECT_NAME,
         ...part,
       })),
