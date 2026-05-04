@@ -432,13 +432,22 @@ impl EngineManager for EngineConnection {
     async fn fetch_debug(&self) -> Result<(), KclError> {
         let (tx, rx) = oneshot::channel();
 
+        // Get the API call ID from session data if available
+        let session_data = self.session_data.read().await;
+        let api_call_id_msg = if let Some(session) = session_data.as_ref() {
+            format!(" (API call ID: {})", session.api_call_id)
+        } else {
+            String::new()
+        };
+        drop(session_data);
+
         self.engine_req_tx
             .send(ToEngineReq {
                 req: WebSocketRequest::Debug {},
                 request_sent: tx,
             })
             .await
-            .map_err(|e| KclError::new_engine(KclErrorDetails::new(format!("Failed to send debug: {e}"), vec![])))?;
+            .map_err(|e| KclError::new_engine(KclErrorDetails::new(format!("Failed to send debug: {e}{}", api_call_id_msg), vec![])))?;
 
         let _ = rx.await;
         Ok(())
@@ -465,6 +474,15 @@ impl EngineManager for EngineConnection {
     ) -> Result<(), KclError> {
         let (tx, rx) = oneshot::channel();
 
+        // Get the API call ID from session data if available
+        let session_data = self.session_data.read().await;
+        let api_call_id_msg = if let Some(session) = session_data.as_ref() {
+            format!(" (API call ID: {})", session.api_call_id)
+        } else {
+            String::new()
+        };
+        drop(session_data);
+
         // Send the request to the engine, via the actor.
         self.engine_req_tx
             .send(ToEngineReq {
@@ -474,7 +492,7 @@ impl EngineManager for EngineConnection {
             .await
             .map_err(|e| {
                 KclError::new_engine(KclErrorDetails::new(
-                    format!("Failed to send modeling command: {e}"),
+                    format!("Failed to send modeling command: {e}{}", api_call_id_msg),
                     vec![source_range],
                 ))
             })?;
@@ -483,13 +501,13 @@ impl EngineManager for EngineConnection {
         rx.await
             .map_err(|e| {
                 KclError::new_engine(KclErrorDetails::new(
-                    format!("could not send request to the engine actor: {e}"),
+                    format!("could not send request to the engine actor: {e}{}", api_call_id_msg),
                     vec![source_range],
                 ))
             })?
             .map_err(|e| {
                 KclError::new_engine(KclErrorDetails::new(
-                    format!("could not send request to the engine: {e}"),
+                    format!("could not send request to the engine: {e}{}", api_call_id_msg),
                     vec![source_range],
                 ))
             })?;
