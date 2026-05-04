@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+import type { LayoutsWithMetadata } from '@src/lib/layout/types'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { OnboardingStatus } from '@src/lib/onboardingPaths'
 import { type MlCopilotMode } from '@kittycad/lib'
@@ -781,6 +782,34 @@ function createCoreSettings() {
         commandConfig: {
           inputType: 'boolean',
         },
+      }),
+    },
+    /**
+     * App-owned layout settings.
+     *
+     * These settings are intentionally hidden from the generic settings UI and
+     * command bar. They persist layout state that should travel through the same
+     * user settings file as plugin and other TypeScript-only settings.
+     */
+    layout: {
+      configs: new Setting<LayoutsWithMetadata>({
+        defaultValue: {},
+        hideOnLevel: 'project',
+        hideOnPlatform: 'both',
+        validate: (v) =>
+          typeof v === 'object' &&
+          v !== null &&
+          !isArray(v) &&
+          Object.values(v).every(
+            (layout) =>
+              typeof layout === 'object' &&
+              layout !== null &&
+              'version' in layout &&
+              typeof layout.version === 'string' &&
+              'layout' in layout &&
+              typeof layout.layout === 'object' &&
+              layout.layout !== null
+          ),
       }),
     },
     /** Settings that affect the behavior of the entire app,

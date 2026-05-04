@@ -37,9 +37,12 @@ import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import { initialiseWasm } from '@src/lang/wasmUtils'
 import {
+  createLayoutWithMetadata,
   defaultLayout,
   defaultLayoutConfig,
+  loadLayout,
   saveLayout,
+  setLayoutSaveHandler,
   type Layout,
 } from '@src/lib/layout'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
@@ -49,7 +52,7 @@ import {
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
 import { MachineManager } from '@src/lib/MachineManager'
-import { reportRejection } from '@src/lib/trap'
+import { err, reportRejection } from '@src/lib/trap'
 import type { Project } from '@src/lib/project'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { Registry, pluginsValueSpec } from '@kittycad/registry'
@@ -298,6 +301,48 @@ export class App implements AppSubsystems {
         saveLayout({ layout: layoutSignal.value })
       ),
     }
+
+    let hasHydratedLayout = false
+    const hydrateLayoutFromSettings = (
+      snapshot: SnapshotFrom<typeof settingsActor>
+    ) => {
+      if (hasHydratedLayout || snapshot.value !== 'idle') {
+        return
+      }
+
+      setLayoutSaveHandler(({ layout, layoutName }) => {
+        const currentLayouts = getOnlySettingsFromContext(
+          settingsActor.getSnapshot().context
+        ).layout.configs.current
+
+        settingsActor.send({
+          type: 'set.layout.configs',
+          data: {
+            level: 'user',
+            value: {
+              ...currentLayouts,
+              [layoutName ?? 'default']: createLayoutWithMetadata(layout),
+            },
+          },
+        })
+      })
+
+      const settingsSnapshot = getOnlySettingsFromContext(snapshot.context)
+      const settingsLayout = settingsSnapshot.layout.configs.current.default
+      if (settingsLayout) {
+        layoutSignal.value = structuredClone(settingsLayout.layout)
+      } else {
+        const legacyLayout = loadLayout('default')
+        if (!err(legacyLayout)) {
+          layoutSignal.value = structuredClone(legacyLayout)
+        }
+      }
+
+      hasHydratedLayout = true
+    }
+    settingsActor.subscribe(hydrateLayoutFromSettings)
+    hydrateLayoutFromSettings(settingsActor.getSnapshot())
+
     return {
       wasmPromise,
       auth,

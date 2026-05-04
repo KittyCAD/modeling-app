@@ -23,6 +23,12 @@ import {
 import { isDesktop } from '@src/lib/isDesktop'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import {
+  createLayoutWithMetadata,
+  parseLayoutJsonWithMigrations,
+  parseLayoutWithMigrations,
+} from '@src/lib/layout'
+import type { LayoutsWithMetadata, LayoutWithMetadata } from '@src/lib/layout'
+import {
   createSettings,
   Setting,
   type SettingsType,
@@ -250,6 +256,80 @@ function defineMappedAppOnlyField(
   codec: AppOnlySettingCodec
 ): AppOnlySettingsFieldDefinition {
   return defineAppOnlyField(selector, tomlKey, codec)
+}
+
+function parseLayoutSettingValue(value: unknown): LayoutWithMetadata | Error {
+  if (typeof value === 'string') {
+    return parseLayoutJsonWithMigrations(value)
+  }
+
+  return parseLayoutWithMigrations(value)
+}
+
+function defineLayoutsAppOnlyField(
+  selector: AppOnlySettingsFieldSelector,
+  tomlKey: string
+): AppOnlySettingsFieldDefinition {
+  return defineAppOnlyField(selector, tomlKey, {
+    fromToml: (value) => {
+      const layoutsValue =
+        typeof value === 'string'
+          ? (() => {
+              try {
+                return JSON.parse(value)
+              } catch {
+                return undefined
+              }
+            })()
+          : value
+      if (!layoutsValue || typeof layoutsValue !== 'object') {
+        return undefined
+      }
+
+      const layouts = Object.entries(layoutsValue).reduce<LayoutsWithMetadata>(
+        (parsedLayouts, [name, layoutValue]) => {
+          const parsed = parseLayoutSettingValue(layoutValue)
+          if (!err(parsed)) {
+            parsedLayouts[name] = parsed
+          }
+          return parsedLayouts
+        },
+        {}
+      )
+
+      return Object.keys(layouts).length > 0 ? layouts : undefined
+    },
+    toToml: (value) => {
+      if (!value || typeof value !== 'object') {
+        return undefined
+      }
+
+      const layouts = Object.entries(value).reduce<Record<string, string>>(
+        (serializedLayouts, [name, layoutValue]) => {
+          if (
+            !layoutValue ||
+            typeof layoutValue !== 'object' ||
+            !('layout' in layoutValue) ||
+            !layoutValue.layout
+          ) {
+            return serializedLayouts
+          }
+
+          const layoutWithMetadata =
+            'version' in layoutValue && typeof layoutValue.version === 'string'
+              ? (layoutValue as LayoutWithMetadata)
+              : createLayoutWithMetadata(
+                  layoutValue.layout as LayoutWithMetadata['layout']
+                )
+          serializedLayouts[name] = JSON.stringify(layoutWithMetadata)
+          return serializedLayouts
+        },
+        {}
+      )
+
+      return Object.keys(layouts).length > 0 ? layouts : undefined
+    },
+  })
 }
 
 function readAppOnlySettingsPayload(
@@ -506,6 +586,12 @@ const USER_APP_ONLY_SETTINGS_SECTIONS = [
     defineBooleanAppOnlyField(
       { category: 'textEditor', field: 'blinkingCursor' },
       'blinking_cursor'
+    ),
+  ]),
+  defineAppOnlySection('layout', [
+    defineLayoutsAppOnlyField(
+      { category: 'layout', field: 'configs' },
+      'configs'
     ),
   ]),
 ] as const

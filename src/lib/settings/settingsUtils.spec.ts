@@ -9,6 +9,7 @@ import {
   serializeProjectConfiguration,
 } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
+import { createLayoutWithMetadata, defaultLayoutConfig } from '@src/lib/layout'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 import { createSettings, type Setting } from '@src/lib/settings/initialSettings'
 import {
@@ -213,6 +214,11 @@ describe('project settings serialization regression', () => {
           textWrapping: false,
           blinkingCursor: false,
         },
+        layout: {
+          configs: {
+            default: createLayoutWithMetadata(defaultLayoutConfig),
+          },
+        },
       }),
       wasmInstance
     )
@@ -240,6 +246,9 @@ describe('project settings serialization regression', () => {
     expect(serializedToml).toContain('[settings.text_editor]')
     expect(serializedToml).toContain('text_wrapping = false')
     expect(serializedToml).toContain('blinking_cursor = false')
+    expect(serializedToml).toContain('[settings.layout.configs]')
+    expect(serializedToml).toContain('default = ')
+    expect(serializedToml).not.toContain('[settings.zds')
 
     const parsedConfiguration = parseAppSettings(serializedToml, wasmInstance)
     if (parsedConfiguration instanceof Error) throw parsedConfiguration
@@ -263,6 +272,10 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.commandBar?.includeSettings).toBe(false)
     expect(parsedPayload.textEditor?.textWrapping).toBe(false)
     expect(parsedPayload.textEditor?.blinkingCursor).toBe(false)
+    expect(parsedPayload.layout?.configs?.default.version).toBe('v2')
+    expect(parsedPayload.layout?.configs?.default.layout.id).toBe(
+      defaultLayoutConfig.id
+    )
   })
 
   it('preserves extension-contributed plugin settings through wasm round-trip', async () => {
