@@ -28,7 +28,6 @@ import {
 import Tooltip from '@src/components/Tooltip'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
-import { useSignals } from '@preact/signals-react/runtime'
 import {
   autoUpdateDownloadProgressSignal,
   autoUpdateReadySignal,
@@ -67,6 +66,7 @@ import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { ActorRefFrom } from 'xstate'
 import { waitFor } from 'xstate'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
+import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -76,8 +76,8 @@ type ReadWriteProjectState = {
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
-  useSignals()
-  const { auth, billing, commands, settings, systemIOActor } = useApp()
+  const { auth, billing, commands, settings, systemIOActor, registry } =
+    useApp()
   const { kclManager } = useSingletons()
   const executingPath = useAbsoluteFilePath()
   const settingsActor = settings.actor
@@ -417,14 +417,13 @@ const Home = () => {
         globalItems={[
           ...(isDesktop() && machineApiEnabled ? [networkMachineStatus] : []),
           ...defaultGlobalStatusBarItems({
-            location,
-            filePath: undefined,
             autoUpdateDownloadProgress,
             autoUpdateReady,
             onRestartToUpdate: () => {
               window.electron?.appRestart()
             },
           }),
+          ...registry.signal(statusBarGlobalItemsValueSpec).value,
         ]}
         localItems={defaultLocalStatusBarItems}
       />

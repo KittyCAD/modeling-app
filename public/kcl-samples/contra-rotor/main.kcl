@@ -1,0 +1,12 @@
+// Contra-Rotor Assembly
+// A contra-rotor is a geared mechanism that drives two coaxial propellers in opposite directions, magnifying thrust while cancelling angular momentum.
+// Categories: Aerospace
+
+// Define units
+@settings(defaultLengthUnit = mm)
+
+// Import Subassemblies
+import "primary-assembly.kcl" as primaryAssembly
+import "contra-assembly.kcl" as contraAssembly
+import "secondary-assembly.kcl" as secondaryAssembly
+import "tertiary.kcl" as tertiary

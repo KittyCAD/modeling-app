@@ -11,9 +11,11 @@ import type {
   ApiFile,
   ApiFileId,
   ApiObjectId,
+  ApiPoint2d,
   ApiProjectId,
   ApiVersion,
   ExistingSegmentCtor,
+  Number,
   SceneGraphDelta,
   SegmentCtor,
   SetProgramOutcome as RustSetProgramOutcome,
@@ -36,7 +38,7 @@ import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 import type { ConnectionManager } from '@src/network/connectionManager'
-import { Signal } from '@src/lib/signal'
+import { Signal as LegacySignal } from '@src/lib/signal'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import {
   getSettingsFromActorContext,
@@ -47,7 +49,7 @@ export default class RustContext {
   private rustInstance: ModuleType | null = null
   private ctxInstance: Context | null = null
   private _defaultPlanes: DefaultPlanes | null = null
-  public readonly planesCreated = new Signal()
+  public readonly planesCreated = new LegacySignal()
 
   constructor(
     public readonly wasmInstancePromise: Promise<ModuleType>,
@@ -656,6 +658,46 @@ export default class RustContext {
         valueExpression,
         JSON.stringify(settings),
         createCheckpoint
+      )
+      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+      if (checkpointId instanceof Error) {
+        return Promise.reject(checkpointId)
+      }
+      return {
+        kclSource: result.sourceDelta,
+        sceneGraphDelta: result.sceneGraphDelta,
+        checkpointId,
+      }
+    } catch (e: any) {
+      const err = errFromErrWithOutputs(e)
+      return Promise.reject(err)
+    }
+  }
+
+  async editDistanceConstraintLabelPosition(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    constraintId: ApiObjectId,
+    labelPosition: ApiPoint2d<Number>,
+    settings: DeepPartial<Configuration>,
+    createCheckpoint = false,
+    anchorSegmentIds: ApiObjectId[] = []
+  ): Promise<SketchMutationResult> {
+    const instance = await this._checkContextInstance()
+
+    try {
+      const result: {
+        sourceDelta: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
+      } = await instance.edit_distance_constraint_label_position(
+        JSON.stringify(version),
+        JSON.stringify(sketch),
+        JSON.stringify(constraintId),
+        JSON.stringify(labelPosition),
+        JSON.stringify(settings),
+        createCheckpoint,
+        JSON.stringify(anchorSegmentIds)
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
       if (checkpointId instanceof Error) {

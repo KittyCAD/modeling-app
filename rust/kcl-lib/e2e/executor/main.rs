@@ -2024,6 +2024,24 @@ async fn kcl_test_error_no_auth_websocket() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_error_no_csg_overlap() {
+    // Test that if you do a CSG operation where the bodies don't have any overlap,
+    // you get a warning about it. That warning can be upgraded to an error, if the
+    // user configures it to.
+    let code = kcl_input!("no_csg_overlap");
+
+    let result = execute_and_snapshot(code, None).await;
+    let err = result.unwrap_err();
+    let err = err.as_kcl_error().unwrap();
+    // The error message should be meaningful.
+    assert!(
+        err.message().contains("The bodies in this subtraction had no overlap"),
+        "actual: {}",
+        err.message()
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_ensure_nothing_left_in_batch_single_file() {
     let code = r#"@settings(defaultLengthUnit = in)
 // Set units in inches (in)

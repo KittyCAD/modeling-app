@@ -29,7 +29,7 @@ import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { MouseGuard } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import { Signal } from '@src/lib/signal'
+import { Signal as LegacySignal } from '@src/lib/signal'
 import { reportRejection } from '@src/lib/trap'
 import { err } from '@src/lib/trap'
 import {
@@ -429,7 +429,7 @@ export class CameraControls {
     this._isCamMovingCallback = cb
   }
 
-  public readonly cameraChange = new Signal()
+  public readonly cameraChange = new LegacySignal()
 
   onWindowResize = () => {
     if (this.camera instanceof PerspectiveCamera) {

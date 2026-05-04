@@ -61,18 +61,33 @@ function createConstraintApiObject({
   type,
   line = 3,
   points,
+  labelPosition,
 }: {
   id: number
-  type: 'Distance' | 'Horizontal' | 'Vertical'
+  type:
+    | 'Distance'
+    | 'HorizontalDistance'
+    | 'VerticalDistance'
+    | 'Horizontal'
+    | 'Vertical'
   line?: number
   points?: Array<number | 'ORIGIN'>
+  labelPosition?: {
+    x: { value: number; units: 'Mm' }
+    y: { value: number; units: 'Mm' }
+  }
 }): ApiObject {
   let constraint: ApiConstraint
-  if (type === 'Distance') {
+  if (
+    type === 'Distance' ||
+    type === 'HorizontalDistance' ||
+    type === 'VerticalDistance'
+  ) {
     constraint = {
       type,
-      points: [1, 2],
+      points: points ?? [1, 2],
       distance: { value: 10, units: 'Mm' },
+      ...(labelPosition ? { labelPosition } : {}),
       source: {
         expr: '10',
         is_literal: true,
@@ -229,6 +244,7 @@ function setUpMoveToolCallbacks({
     sceneInfra,
     rustContext: {
       editSegments: vi.fn(),
+      editDistanceConstraintLabelPosition: vi.fn(),
       addConstraint: vi.fn(),
       deleteObjects: vi.fn(),
       restoreSketchCheckpoint: vi.fn(),
@@ -630,6 +646,203 @@ function createSceneGraphDelta(objects: Array<ApiObject>): SceneGraphDelta {
 }
 
 describe('createOnDragCallback', () => {
+  it.each(['Distance', 'HorizontalDistance', 'VerticalDistance'] as const)(
+    'should edit a dragged %s constraint label instead of editing segments',
+    async (constraintType) => {
+      const setIsSolveInProgress = vi.fn()
+      const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
+      const setLastSuccessfulDragFromPoint = vi.fn()
+      const getDraggedEntityId = createDraggedEntityIdGetter(8)
+      const distanceConstraint = createConstraintApiObject({
+        id: 8,
+        type: constraintType,
+      })
+      const sceneGraphDelta = createSceneGraphDelta([distanceConstraint])
+      const getContextData = vi.fn(() => ({
+        selectedIds: [],
+        sketchId: 2,
+        sketchExecOutcome: { sceneGraphDelta },
+      }))
+      const editSegments = vi.fn()
+      const editDistanceConstraintLabelPosition = vi.fn(async () => ({
+        kclSource: { text: 'updated' },
+        sceneGraphDelta,
+      }))
+      const onNewSketchOutcome = vi.fn()
+      const getDefaultLengthUnit = vi.fn((): UnitLength => 'mm')
+      const getJsAppSettings = vi.fn(() => Promise.resolve({}))
+
+      const callback = createOnDragCallback({
+        getIsSolveInProgress: vi.fn(() => false),
+        setIsSolveInProgress,
+        getLastSuccessfulDragFromPoint,
+        setLastSuccessfulDragFromPoint,
+        getDraggedEntityId,
+        getContextData,
+        editSegments,
+        editDistanceConstraintLabelPosition,
+        onNewSketchOutcome,
+        getDefaultLengthUnit,
+        getJsAppSettings,
+        ...createDragSnappingDeps(),
+      })
+
+      await callback({
+        intersectionPoint: {
+          twoD: new Vector2(12.3456, 20.1234),
+          threeD: new Vector3(12.3456, 20.1234, 0),
+        },
+        selected: undefined,
+        mouseEvent: createTestMouseEvent(),
+        intersects: [],
+      })
+
+      expect(editSegments).not.toHaveBeenCalled()
+      expect(editDistanceConstraintLabelPosition).toHaveBeenCalledWith(
+        0,
+        2,
+        8,
+        {
+          x: { value: 12.35, units: 'Mm' },
+          y: { value: 20.12, units: 'Mm' },
+        },
+        {}
+      )
+      expect(onNewSketchOutcome).toHaveBeenCalledWith({
+        kclSource: { text: 'updated' },
+        sceneGraphDelta,
+        writeToDisk: false,
+        suppressExecOutcomeIssues: true,
+      })
+      expect(setIsSolveInProgress).toHaveBeenCalledWith(true)
+      expect(setIsSolveInProgress).toHaveBeenCalledWith(false)
+    }
+  )
+
+  it.each(['Distance', 'HorizontalDistance', 'VerticalDistance'] as const)(
+    'should move explicit %s constraint labels with dragged segments using anchored label edits',
+    async (constraintType) => {
+      const setIsSolveInProgress = vi.fn()
+      const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
+      const setLastSuccessfulDragFromPoint = vi.fn()
+      const getDraggedEntityId = createDraggedEntityIdGetter(3)
+      const point1 = createPointApiObject({ id: 1, x: 0, y: 0, owner: 3 })
+      const point2 = createPointApiObject({ id: 2, x: 10, y: 0, owner: 3 })
+      const line = createLineApiObject({ id: 3, start: 1, end: 2 })
+      const distanceConstraint = createConstraintApiObject({
+        id: 8,
+        type: constraintType,
+        points: [1, 2],
+        labelPosition: {
+          x: { value: 5, units: 'Mm' },
+          y: { value: 4, units: 'Mm' },
+        },
+      })
+      const sceneGraphDelta = createSceneGraphDelta([
+        point1,
+        point2,
+        line,
+        distanceConstraint,
+      ])
+      const updatedPoint1 = createPointApiObject({
+        id: 1,
+        x: 2,
+        y: 3,
+        owner: 3,
+      })
+      const updatedPoint2 = createPointApiObject({
+        id: 2,
+        x: 12,
+        y: 3,
+        owner: 3,
+      })
+      const updatedSceneGraphDelta = createSceneGraphDelta([
+        updatedPoint1,
+        updatedPoint2,
+        line,
+        distanceConstraint,
+      ])
+      const getContextData = vi.fn(() => ({
+        selectedIds: [3],
+        sketchId: 2,
+        sketchExecOutcome: { sceneGraphDelta },
+      }))
+      const editSegments = vi.fn(async () => ({
+        kclSource: { text: 'segments updated' },
+        sceneGraphDelta: updatedSceneGraphDelta,
+      }))
+      const editDistanceConstraintLabelPosition = vi.fn(async () => ({
+        kclSource: { text: 'label updated' },
+        sceneGraphDelta: updatedSceneGraphDelta,
+      }))
+      const onNewSketchOutcome = vi.fn()
+
+      const callback = createOnDragCallback({
+        getIsSolveInProgress: vi.fn(() => false),
+        setIsSolveInProgress,
+        getLastSuccessfulDragFromPoint,
+        setLastSuccessfulDragFromPoint,
+        getDraggedEntityId,
+        getContextData,
+        editSegments,
+        editDistanceConstraintLabelPosition,
+        onNewSketchOutcome,
+        getDefaultLengthUnit: vi.fn((): UnitLength => 'mm'),
+        getJsAppSettings: vi.fn(() => Promise.resolve({})),
+        ...createDragSnappingDeps(),
+      })
+
+      await callback({
+        intersectionPoint: {
+          twoD: new Vector2(2, 3),
+          threeD: new Vector3(2, 3, 0),
+        },
+        selected: undefined,
+        mouseEvent: createTestMouseEvent(),
+        intersects: [],
+      })
+
+      expect(editSegments).toHaveBeenCalledWith(
+        0,
+        2,
+        [
+          {
+            id: 3,
+            ctor: {
+              type: 'Line',
+              start: {
+                x: { type: 'Var', value: 2, units: 'Mm' },
+                y: { type: 'Var', value: 3, units: 'Mm' },
+              },
+              end: {
+                x: { type: 'Var', value: 12, units: 'Mm' },
+                y: { type: 'Var', value: 3, units: 'Mm' },
+              },
+            },
+          },
+        ],
+        {}
+      )
+      expect(editDistanceConstraintLabelPosition).toHaveBeenCalledWith(
+        0,
+        2,
+        8,
+        {
+          x: { value: 7, units: 'Mm' },
+          y: { value: 7, units: 'Mm' },
+        },
+        {},
+        [3]
+      )
+      expect(onNewSketchOutcome).toHaveBeenCalledWith({
+        kclSource: { text: 'label updated' },
+        sceneGraphDelta: updatedSceneGraphDelta,
+        writeToDisk: false,
+        suppressExecOutcomeIssues: true,
+      })
+    }
+  )
+
   it('should prevent concurrent drag operations to avoid race conditions', async () => {
     const getIsSolveInProgress = vi.fn(() => true) // Already in progress
     const setIsSolveInProgress = vi.fn()

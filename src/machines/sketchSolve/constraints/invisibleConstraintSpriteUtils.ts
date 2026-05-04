@@ -23,6 +23,7 @@ import {
   isPointSegment,
   pointToVec3,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { SKETCH_HIGHLIGHT_SECONDARY_COLOR } from '@src/lib/constants'
 
 export type InvisibleConstraint = Extract<
   ApiConstraint,
@@ -37,6 +38,7 @@ export type InvisibleConstraint = Extract<
       | 'Parallel'
       | 'Perpendicular'
       | 'Tangent'
+      | 'Symmetric'
   }
 >
 
@@ -67,6 +69,7 @@ export function isInvisibleConstraintObject(
     case 'Parallel':
     case 'Perpendicular':
     case 'Tangent':
+    case 'Symmetric':
       return true
     default:
       return false
@@ -112,6 +115,12 @@ export function getInvisibleConstraintAnchor(
     case 'EqualRadius':
       return averageVectors(
         constraint.input
+          .map((objectId) => getObjectAnchor(objectId, objects))
+          .filter(isVector3)
+      )
+    case 'Symmetric':
+      return averageVectors(
+        [...constraint.input, constraint.axis]
           .map((objectId) => getObjectAnchor(objectId, objects))
           .filter(isVector3)
       )
@@ -214,11 +223,40 @@ export function findSegmentsForInvisibleConstraint(
       case 'EqualRadius':
       case 'Tangent':
         return constraint.kind.constraint.input
+      case 'Symmetric':
+        return [
+          ...constraint.kind.constraint.input,
+          constraint.kind.constraint.axis,
+        ]
     }
   })()
 
   return Array.from(
     new Set(constrainedIds.filter((id) => objects[id]?.kind.type === 'Segment'))
+  )
+}
+
+export function getInvisibleConstraintSegmentHoverColor(
+  segmentId: number,
+  constraint: InvisibleConstraintObject | null
+): number | undefined {
+  if (
+    constraint?.kind.constraint.type === 'Symmetric' &&
+    constraint.kind.constraint.axis === segmentId
+  ) {
+    return SKETCH_HIGHLIGHT_SECONDARY_COLOR
+  }
+
+  return undefined
+}
+
+export function isInvisibleConstraintSegmentSecondaryHovered(
+  segmentId: number,
+  constraint: InvisibleConstraintObject | null
+): boolean {
+  return (
+    constraint?.kind.constraint.type === 'Symmetric' &&
+    constraint.kind.constraint.axis === segmentId
   )
 }
 
@@ -287,6 +325,13 @@ export function isConstrainingSegment(
         isArcLikeSegment(segment) &&
         constraint.kind.constraint.input.includes(segment.id)
       )
+    case 'Symmetric':
+      return (
+        ((isLineSegment(segment) || isArcLikeSegment(segment)) &&
+          constraint.kind.constraint.input.includes(segment.id)) ||
+        (isLineSegment(segment) &&
+          constraint.kind.constraint.axis === segment.id)
+      )
     case 'Tangent':
       return (
         (isLineSegment(segment) || isArcLikeSegment(segment)) &&
@@ -307,6 +352,10 @@ function isConstrainingPointCluster(
     case 'Horizontal':
     case 'Vertical':
       return getAxisConstraintPointIds(constraint.kind.constraint).some((id) =>
+        pointIds.includes(id)
+      )
+    case 'Symmetric':
+      return constraint.kind.constraint.input.some((id) =>
         pointIds.includes(id)
       )
     case 'Midpoint':

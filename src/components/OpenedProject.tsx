@@ -60,6 +60,7 @@ import {
   MlEphantManagerTransitions,
 } from '@src/machines/mlEphantManagerMachine'
 import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
+import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import {
   TutorialRequestToast,
@@ -81,8 +82,16 @@ if (window.electron) {
 
 export function OpenedProject() {
   useSignals()
-  const { auth, billing, settings, layout, project, systemIOActor, commands } =
-    useApp()
+  const {
+    auth,
+    billing,
+    settings,
+    layout,
+    project,
+    systemIOActor,
+    commands,
+    registry,
+  } = useApp()
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
   const defaultAreaLibrary = useDefaultAreaLibrary()
@@ -460,14 +469,13 @@ export function OpenedProject() {
             networkHealthStatus,
             ...(isDesktop() && machineApiEnabled ? [networkMachineStatus] : []),
             ...defaultGlobalStatusBarItems({
-              location,
-              filePath,
               autoUpdateDownloadProgress,
               autoUpdateReady,
               onRestartToUpdate: () => {
                 window.electron?.appRestart()
               },
             }),
+            ...registry.signal(statusBarGlobalItemsValueSpec).value,
           ]}
           localItems={[
             ...(settingsValues.debug.showModelingMachineState.current

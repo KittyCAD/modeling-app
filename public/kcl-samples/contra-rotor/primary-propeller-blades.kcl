@@ -1,0 +1,84 @@
+// Propeller Blades
+// Rotating blade set
+// Categories: Aerospace
+
+@settings(defaultLengthUnit = mm)
+
+// Hub parameters
+bladeCount = 5
+bladeDiameter = 2500
+hubDiameter = 200
+hubThickness = 150
+bladeTwistAngle = 75deg
+
+// Blade design
+bladeFootprintSketch = sketch(on = XZ) {
+  line1 = line(start = [var 66.67mm, var 0mm], end = [var 66.67mm, var 65mm])
+  verticalDistance([line1.start, ORIGIN]) == 0mm
+  arc2 = arc(start = [var 1150mm, var 100mm], end = [var 166.67mm, var 35mm], center = [var 761.95mm, var -1500mm])
+  vertical(line1)
+  horizontalDistance([ORIGIN, line1.start]) == hubDiameter / 3
+  line2 = line(start = [var 66.67mm, var 0mm], end = [var 1250mm, var 0mm])
+  coincident([line2.start, line1.start])
+  horizontal(line2)
+  horizontalDistance([ORIGIN, line2.end]) == bladeDiameter / 2
+  verticalDistance([line1.start, line1.end]) == 65
+  verticalDistance([line2.start, arc2.end]) == 35
+  horizontalDistance([line2.start, arc2.end]) == 100
+  verticalDistance([arc2.center, ORIGIN]) == 1500
+  horizontalDistance([arc2.start, line2.end]) == 100
+  verticalDistance([line2.end, arc2.start]) == 100
+  arc1 = arc(start = [var 1250mm, var 0mm], end = [var 1150mm, var 100mm], center = [var 1117.98mm, var -32.02mm])
+  coincident([arc1.start, line2.end])
+  coincident([arc1.end, arc2.start])
+  arc3 = arc(start = [var 66.67mm, var 65mm], end = [var 166.67mm, var 35mm], center = [var 135.94mm, var 114.24mm])
+  coincident([arc3.start, line1.end])
+  coincident([arc3.end, arc2.end])
+  tangent([arc3, arc2])
+  line3 = line(start = [var 761.95mm, var -1500mm], end = [var 1150mm, var 100mm], construction = true)
+  coincident([line3.start, arc2.center])
+  coincident([line3.end, arc1.end])
+  coincident([arc1.center, line3])
+}
+bladeFootprintRegion = region(segments = [bladeFootprintSketch.line1])
+bladeRevolve = revolve(bladeFootprintRegion, axis = X)
+hide(bladeFootprintSketch)
+
+// Blade Cut Out
+hubSketch = sketch(on = XZ) {
+  circle1 = circle(start = [var 175.95mm, var 95.08mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  diameter(circle1) == hubDiameter
+}
+hubRegion = region(segments = [hubSketch.circle1])
+hide(hubSketch)
+hubBody = extrude(hubRegion, length = hubThickness * 4, symmetric = true)
+bladeWithHubCutOut = subtract([bladeRevolve], tools = [hubBody])
+
+// Blade section and twist
+bladeSectionSketch = sketch(on = YZ) {
+  arc2 = arc(start = [var 250mm, var 0mm], end = [var -250mm, var 0mm], center = [var 0mm, var -1984.31mm])
+  arc1 = arc(start = [var -250mm, var 0mm], end = [var 250mm, var 0mm], center = [var 0mm, var 1984.31mm])
+  coincident([arc1.start, arc2.end])
+  coincident([arc1.end, arc2.start])
+  equalRadius([arc2, arc1])
+  radius(arc2) == 2000
+  horizontalDistance([arc1.start, ORIGIN]) == bladeDiameter / 10
+  line1 = line(start = [var -250mm, var 0mm], end = [var 0mm, var 0mm], construction = true)
+  coincident([line1.start, arc1.start])
+  coincident([line1.end, ORIGIN])
+  line2 = line(start = [var 250mm, var 0mm], end = [var 0mm, var 0mm], construction = true)
+  coincident([line2.start, arc1.end])
+  coincident([line2.end, line1.end])
+  horizontal(line1)
+  horizontal(line2)
+  equalLength([line2, line1])
+}
+bladeSectionRegion = region(segments = [bladeSectionSketch.arc1])
+bladeTwistTool = extrude(bladeSectionRegion, length = bladeDiameter / 1.9, twistAngle = bladeTwistAngle)
+hide(bladeSectionSketch)
+
+// Blade Body
+blade = intersect([bladeWithHubCutOut, bladeTwistTool])
+  |> patternCircular3d(instances = bladeCount, axis = Y, center = [0, 0, 0])
+  |> appearance(color = "#e88811", metalness = 10, roughness = 80)
