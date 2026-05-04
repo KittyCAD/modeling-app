@@ -70,7 +70,7 @@ describe('ProjectSidebarMenu tests', () => {
     )
 
     expect(screen.getByTestId('app-header-file-name')).toHaveTextContent(
-      'parts/generated/nested-part.kcl'
+      'parts / generated / nested-part.kcl'
     )
   })
 
@@ -89,7 +89,7 @@ describe('ProjectSidebarMenu tests', () => {
     )
 
     expect(await screen.findByRole('tooltip')).toHaveTextContent(
-      'Simple Box/parts/generated/nested-part.kcl'
+      'Simple Box / parts / generated / nested-part.kcl'
     )
   })
 })

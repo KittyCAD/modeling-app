@@ -249,10 +249,12 @@ function ProjectMenuPopover({
   )
 
   // Breadcrumb for project and project-relative file path
+  const relativeFilePath = getProjectRelativeFilePath(project, file)
+  const formattedRelativeFilePath = relativeFilePath.replaceAll('/', ' / ')
   const breadCrumb = {
     projectName: project?.name || '',
-    sep: '/',
-    filePath: getProjectRelativeFilePath(project, file),
+    sep: ' / ',
+    filePath: formattedRelativeFilePath,
   }
   const breadCrumbTooltip = breadCrumb.projectName
     ? `${breadCrumb.projectName}${breadCrumb.sep}${breadCrumb.filePath}`
@@ -309,7 +311,9 @@ function ProjectMenuPopover({
               >
                 {breadCrumb.projectName}
               </span>
-              <span className="hidden md:block">{breadCrumb.sep}</span>
+              <span className="hidden whitespace-pre md:inline">
+                {breadCrumb.sep}
+              </span>
             </>
           )}
           <span
