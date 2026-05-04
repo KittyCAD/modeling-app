@@ -978,9 +978,9 @@ dependencies = [
 
 [[package]]
 name = "digest"
-version = "0.11.2"
+version = "0.11.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4850db49bf08e663084f7fb5c87d202ef91a3907271aff24a94eb97ff039153c"
+checksum = "f1dd6dbb5841937940781866fa1281a1ff7bd3bf827091440879f9994983d5c2"
 dependencies = [
  "block-buffer 0.12.0",
  "const-oid",
@@ -1167,9 +1167,9 @@ dependencies = [
 
 [[package]]
 name = "ezpz"
-version = "0.2.23"
+version = "0.2.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bf3e22d1dd17c54fe70f81b13886fa63da3b9687bb950bb40fc43838b90db07d"
+checksum = "d0720ec6a0f8b3a447710c4d64204d30e9939a5f61b76338c9b4009ea206073b"
 dependencies = [
  "faer",
  "indexmap 2.14.0",
@@ -1845,7 +1845,7 @@ version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6303bc9732ae41b04cb554b844a762b4115a61bfaa81e3e83050991eeb56863f"
 dependencies = [
- "digest 0.11.2",
+ "digest 0.11.3",
 ]
 
 [[package]]
@@ -2370,7 +2370,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.147"
+version = "0.1.148"
 dependencies = [
  "anyhow",
  "clap",
@@ -2381,7 +2381,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.2.147"
+version = "0.2.148"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2390,7 +2390,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.147"
+version = "0.1.148"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -2400,7 +2400,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-error"
-version = "0.2.147"
+version = "0.2.148"
 dependencies = [
  "miette",
  "serde",
@@ -2410,7 +2410,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.147"
+version = "0.2.148"
 dependencies = [
  "anyhow",
  "clap",
@@ -2431,7 +2431,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.147"
+version = "0.1.148"
 dependencies = [
  "anyhow",
  "clap",
@@ -2451,7 +2451,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.147"
+version = "0.2.148"
 dependencies = [
  "ahash",
  "anyhow",
@@ -2536,7 +2536,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.147"
+version = "0.3.148"
 dependencies = [
  "anyhow",
  "kcl-lib",
@@ -2552,7 +2552,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.2.147"
+version = "0.2.148"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -2565,7 +2565,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-to-core"
-version = "0.1.147"
+version = "0.1.148"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2579,7 +2579,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.147"
+version = "0.1.148"
 dependencies = [
  "anyhow",
  "console_error_panic_hook",
@@ -2647,8 +2647,8 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.188"
-source = "git+https://github.com/KittyCAD/modeling-api.git?rev=4502b0b6f075dc5baa8b4a78e0d7574255f11143#4502b0b6f075dc5baa8b4a78e0d7574255f11143"
+version = "0.2.194"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben%2Fface_api#e763d40502f12589d1851f34bdd7a3f94c92c2c4"
 dependencies = [
  "anyhow",
  "bon",
@@ -2675,8 +2675,8 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds-macros"
-version = "0.1.12"
-source = "git+https://github.com/KittyCAD/modeling-api.git?rev=4502b0b6f075dc5baa8b4a78e0d7574255f11143#4502b0b6f075dc5baa8b4a78e0d7574255f11143"
+version = "0.1.13"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben%2Fface_api#e763d40502f12589d1851f34bdd7a3f94c92c2c4"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -2686,8 +2686,8 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
-version = "0.1.13"
-source = "git+https://github.com/KittyCAD/modeling-api.git?rev=4502b0b6f075dc5baa8b4a78e0d7574255f11143#4502b0b6f075dc5baa8b4a78e0d7574255f11143"
+version = "0.1.14"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben%2Fface_api#e763d40502f12589d1851f34bdd7a3f94c92c2c4"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3371,7 +3371,7 @@ version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "112d82ceb8c5bf524d9af484d4e4970c9fd5a0cc15ba14ad93dccd28873b0629"
 dependencies = [
- "digest 0.11.2",
+ "digest 0.11.3",
  "hmac",
 ]
 
@@ -4510,7 +4510,7 @@ checksum = "aacc4cc499359472b4abe1bf11d0b12e688af9a805fa5e3016f9a386dc2d0214"
 dependencies = [
  "cfg-if",
  "cpufeatures 0.3.0",
- "digest 0.11.2",
+ "digest 0.11.3",
 ]
 
 [[package]]
@@ -4538,7 +4538,7 @@ checksum = "446ba717509524cb3f22f17ecc096f10f4822d76ab5c0b9822c5f9c284e825f4"
 dependencies = [
  "cfg-if",
  "cpufeatures 0.3.0",
- "digest 0.11.2",
+ "digest 0.11.3",
 ]
 
 [[package]]
@@ -4603,9 +4603,9 @@ checksum = "bbbb5d9659141646ae647b42fe094daf6c6192d1620870b449d9557f748b2daa"
 
 [[package]]
 name = "siphasher"
-version = "1.0.2"
+version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b2aa850e253778c88a04c3d7323b043aeda9d3e30d5971937c1855769763678e"
+checksum = "8ee5873ec9cce0195efcb7a4e9507a04cd49aec9c83d0389df45b1ef7ba2e649"
 
 [[package]]
 name = "slab"

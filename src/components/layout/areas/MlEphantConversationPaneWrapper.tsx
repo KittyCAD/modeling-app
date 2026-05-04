@@ -9,12 +9,15 @@ import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantC
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
+import { isPlaywright } from '@src/lib/isPlaywright'
+import { PATHS } from '@src/lib/paths'
 import {
   MlEphantConversationToMarkdown,
   MlEphantManagerReactContext,
 } from '@src/machines/mlEphantManagerMachine'
 import { BillingTransition } from '@src/machines/billingMachine'
 import { useSignals } from '@preact/signals-react/runtime'
+import { useLocation } from 'react-router-dom'
 
 export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
   useSignals()
@@ -23,6 +26,8 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
   const settingsValues = settings.useSettings()
   const user = auth.useUser()
   const token = auth.useToken()
+  const billingContext = billing.useContext()
+  const location = useLocation()
   const {
     context: contextModeling,
     send: sendModeling,
@@ -37,6 +42,11 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
       apiToken: token,
     })
   }
+
+  const showMakeathonAnnouncement =
+    !isPlaywright() &&
+    !location.pathname.includes(String(PATHS.ONBOARDING)) &&
+    !Boolean(billingContext.isOrg)
 
   return (
     <LayoutPanel
@@ -63,6 +73,7 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
           loaderFile,
           settings: settingsValues,
           user,
+          showMakeathonAnnouncement,
           onMlCopilotModeChange: (mode) => {
             settings.actor.send({
               type: 'set.app.zookeeperMode',

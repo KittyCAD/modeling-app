@@ -340,6 +340,7 @@ describe('MlEphantConversation', () => {
         queue={[]}
         onRemoveFromQueue={() => {}}
         onSteer={() => {}}
+        showMakeathonAnnouncement={true}
       />
     )
 
@@ -353,6 +354,32 @@ describe('MlEphantConversation', () => {
     expect(
       within(announcement).getByRole('link', { name: 'Register now' })
     ).toHaveAttribute('href', withSiteBaseURL('/makeathon'))
+  })
+
+  test('does not render the Makeathon announcement when hidden', () => {
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        conversation={{ exchanges: [] }}
+        onProcess={vi.fn()}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+        showMakeathonAnnouncement={false}
+      />
+    )
+
+    expect(
+      screen.queryByTestId('zookeeper-makeathon-announcement')
+    ).not.toBeInTheDocument()
   })
 
   test('dismisses the Makeathon announcement and persists the choice', () => {
@@ -372,6 +399,7 @@ describe('MlEphantConversation', () => {
         queue={[]}
         onRemoveFromQueue={() => {}}
         onSteer={() => {}}
+        showMakeathonAnnouncement={true}
       />
     )
 
@@ -411,6 +439,7 @@ describe('MlEphantConversation', () => {
         queue={[]}
         onRemoveFromQueue={() => {}}
         onSteer={() => {}}
+        showMakeathonAnnouncement={true}
       />
     )
 
