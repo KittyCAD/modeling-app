@@ -81,6 +81,10 @@ export type EntityReference =
       path_id: string
       segment_id: string
     }
+  | {
+      type: 'region'
+      region_id: string
+    }
 
 /**
  * Shape of edgeRef when parsed from op args. KCL uses camelCase (sideFaces, endFaces);

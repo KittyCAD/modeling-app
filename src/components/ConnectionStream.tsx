@@ -134,6 +134,8 @@ export const ConnectionStream = (props: {
               entityId = selectedEntityRef.edge_id
             else if (selectedEntityRef?.type === 'segment')
               entityId = selectedEntityRef.segment_id
+            else if (selectedEntityRef?.type === 'region')
+              entityId = selectedEntityRef.region_id
             else if (
               selectedEntityRef?.type === 'edge' &&
               selectedEntityRef.side_faces[0]

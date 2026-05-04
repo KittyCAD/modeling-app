@@ -393,6 +393,12 @@ export function normalizeEntityReference(
     return { type: 'segment', path_id, segment_id }
   }
 
+  if (type === 'region') {
+    const region_id = raw.region_id ?? raw.regionId
+    if (typeof region_id !== 'string') return null
+    return { type: 'region', region_id }
+  }
+
   return null
 }
 
@@ -678,6 +684,8 @@ export async function getEventForQueryEntityTypeWithPoint(
     entityId = entityRef.edge_id
   } else if (entityRef.type === 'segment') {
     entityId = entityRef.segment_id
+  } else if (entityRef.type === 'region') {
+    entityId = entityRef.region_id
   } else if (entityRef.type === 'edge' && entityRef.side_faces.length > 0) {
     // For edges, we need to find the edge artifact from the faces
     // Try to find an edge artifact that connects these faces
@@ -763,6 +771,25 @@ export async function getEventForQueryEntityTypeWithPoint(
   }
   const skipRegionSelectionForTopologyEdge =
     entityRef.type === 'edge' && engineTopologyFallbackResolved !== undefined
+
+  if (entityRef.type === 'region') {
+    const regionSelection = await getEngineRegionSelectionFromEntity(
+      entityRef.region_id,
+      artifactGraph,
+      ast,
+      engineCommandManager,
+      wasmInstance
+    )
+    if (regionSelection) {
+      return {
+        type: 'Set selection',
+        data: {
+          selectionType: 'engineRegionSelection',
+          selection: regionSelection,
+        },
+      }
+    }
+  }
 
   if (
     !_artifactByEventId &&
@@ -1760,6 +1787,7 @@ export async function tryEnterSketchOnDoubleClickFromScene(
       else if (entityRef.type === 'solid3d') entityId = entityRef.solid3d_id
       else if (entityRef.type === 'solid2d_edge') entityId = entityRef.edge_id
       else if (entityRef.type === 'segment') entityId = entityRef.segment_id
+      else if (entityRef.type === 'region') entityId = entityRef.region_id
       else if (entityRef.type === 'edge' && entityRef.side_faces.length > 0)
         entityId = entityRef.side_faces[0]
       else if (entityRef.type === 'vertex' && entityRef.side_faces.length > 0)

@@ -10,7 +10,9 @@ import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import {
   codeToIdSelections,
   findLastRangeStartingBefore,
+  getEventForQueryEntityTypeWithPoint,
   getSelectionTypeDisplayText,
+  normalizeEntityReference,
 } from '@src/lib/selections'
 import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
@@ -1411,6 +1413,114 @@ describe('findLastRangeStartingBefore', () => {
 })
 
 describe('getSelectionTypeDisplayText', () => {
+  test('normalizes region entity references', () => {
+    expect(
+      normalizeEntityReference({
+        type: 'region',
+        region_id: 'region-1',
+      })
+    ).toEqual({
+      type: 'region',
+      region_id: 'region-1',
+    })
+  })
+
+  test('converts region query responses to engine region selections', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse('', instance)
+    const pathToNode = [['body', '']] as any
+    const codeRef = {
+      range: [0, 0, 0] as SourceRange,
+      pathToNode,
+      nodePath: { steps: [] },
+    }
+    const artifactGraph: ArtifactGraph = new Map([
+      [
+        'sketch-1',
+        {
+          type: 'sketchBlock',
+          id: 'sketch-1',
+          codeRef,
+          planeId: 'plane-1',
+          sketchId: 1,
+        } as unknown as Artifact,
+      ],
+      [
+        'path-1',
+        {
+          type: 'path',
+          subType: 'sketch',
+          id: 'path-1',
+          codeRef,
+          planeId: 'plane-1',
+          segIds: [],
+          trajectorySweepId: null,
+          consumed: false,
+          sketchBlockId: 'sketch-1',
+        } as unknown as Artifact,
+      ],
+    ])
+    const engineCommandManager = {
+      sendSceneCommand: vi.fn(async (event: any) => {
+        if (event.cmd.type === 'region_get_query_point') {
+          return {
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: {
+                  type: 'region_get_query_point',
+                  data: { query_point: { x: 12, y: 34 } },
+                },
+              },
+            },
+          }
+        }
+        if (event.cmd.type === 'entity_get_parent_id') {
+          return {
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: {
+                  type: 'entity_get_parent_id',
+                  data: { entity_id: 'path-1' },
+                },
+              },
+            },
+          }
+        }
+        return undefined
+      }),
+    }
+
+    await expect(
+      getEventForQueryEntityTypeWithPoint(
+        {
+          reference: {
+            type: 'region',
+            region_id: 'region-1',
+          },
+        },
+        {
+          engineCommandManager: engineCommandManager as any,
+          kclManager: { ast, artifactGraph } as any,
+          rustContext: { defaultPlanes: null } as any,
+          wasmInstance: instance,
+        }
+      )
+    ).resolves.toEqual({
+      type: 'Set selection',
+      data: {
+        selectionType: 'engineRegionSelection',
+        selection: {
+          type: 'engineRegion',
+          id: 'region-1',
+          point: { x: 12, y: 34 },
+          sketchId: 'sketch-1',
+        },
+      },
+    })
+  })
+
   test('coalesces face-like selections under face', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
     const selection: Selections = {

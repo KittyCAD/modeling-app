@@ -1120,6 +1120,8 @@ function entityRefToArtifactId(entityRef: EntityReference): string | undefined {
       return entityRef.edge_id
     case 'segment':
       return entityRef.segment_id
+    case 'region':
+      return entityRef.region_id
     case 'edge':
       return entityRef.side_faces?.[0]
     default:
@@ -1167,6 +1169,8 @@ function entityRefEquals(a: EntityReference, b: EntityReference): boolean {
         a.path_id === b.path_id &&
         a.segment_id === b.segment_id
       )
+    case 'region':
+      return b.type === 'region' && a.region_id === b.region_id
     default:
       return false
   }
