@@ -1361,6 +1361,41 @@ export function getSelectionCountByType(
     selectionsByType.set(type, count + 1)
   }
 
+  function getArtifactById(id: string): Artifact | undefined {
+    if (!artifactGraph) return undefined
+    return (
+      artifactGraph.get(id) ??
+      artifactGraph.get(String(id)) ??
+      [...artifactGraph.values()].find(
+        (artifact) => artifact.id === id || String(artifact.id) === String(id)
+      )
+    )
+  }
+
+  function incrementArtifactSelectionType(artifact: Artifact): boolean {
+    if (artifact.type === 'helix') {
+      incrementOrInitializeSelectionType('helix')
+      return true
+    }
+    if (artifact.type === 'path' && artifact.subType === 'region') {
+      incrementOrInitializeSelectionType('pathRegion')
+      return true
+    }
+    if (artifact.type === 'path') {
+      incrementOrInitializeSelectionType('path')
+      return true
+    }
+    if (artifact.type === 'sweep') {
+      incrementOrInitializeSelectionType('sweep')
+      return true
+    }
+    if (artifact.type === 'solid2d') {
+      incrementOrInitializeSelectionType('solid2d')
+      return true
+    }
+    return false
+  }
+
   otherSelections.forEach((sel) => {
     if (typeof sel === 'string') {
       incrementOrInitializeSelectionType('other')
@@ -1385,23 +1420,11 @@ export function getSelectionCountByType(
     ).artifact
 
     if (v2Selection.entityRef) {
-      // solid2d_edge first: may be helix (count as path) or segment curve (count as segment)
+      // solid2d_edge first: may be helix or segment curve.
       if (v2Selection.entityRef.type === 'solid2d_edge') {
-        if (artifactGraph) {
-          const edgeId = v2Selection.entityRef.edge_id
-          let artifact =
-            artifactGraph.get(edgeId) ?? artifactGraph.get(String(edgeId))
-          if (!artifact) {
-            artifact =
-              [...artifactGraph.values()].find(
-                (a) => a.id === edgeId || String(a.id) === String(edgeId)
-              ) ?? undefined
-          }
-          if (artifact?.type === 'helix') {
-            incrementOrInitializeSelectionType('path')
-          } else {
-            incrementOrInitializeSelectionType('segment')
-          }
+        const artifact = getArtifactById(v2Selection.entityRef.edge_id)
+        if (artifact?.type === 'helix') {
+          incrementOrInitializeSelectionType('helix')
         } else {
           incrementOrInitializeSelectionType('segment')
         }
@@ -1418,12 +1441,18 @@ export function getSelectionCountByType(
       } else if (v2Selection.entityRef.type === 'plane') {
         incrementOrInitializeSelectionType('plane')
       } else if (v2Selection.entityRef.type === 'solid2d') {
-        incrementOrInitializeSelectionType('solid2d')
+        const artifact = getArtifactById(v2Selection.entityRef.solid2d_id)
+        if (!artifact || !incrementArtifactSelectionType(artifact)) {
+          incrementOrInitializeSelectionType('solid2d')
+        }
       } else if (v2Selection.entityRef.type === 'solid3d') {
-        incrementOrInitializeSelectionType('path')
+        const artifact = getArtifactById(v2Selection.entityRef.solid3d_id)
+        if (!artifact || !incrementArtifactSelectionType(artifact)) {
+          incrementOrInitializeSelectionType('path')
+        }
       }
     } else if (inlineArtifact?.type === 'helix') {
-      incrementOrInitializeSelectionType('path')
+      incrementOrInitializeSelectionType('helix')
     } else if (
       inlineArtifact?.type === 'path' &&
       inlineArtifact.subType === 'region'
@@ -1439,18 +1468,12 @@ export function getSelectionCountByType(
     ) {
       incrementOrInitializeSelectionType('segment')
     } else if (v2Selection.codeRef && artifactGraph) {
-      // Selection may have codeRef only (e.g. feature tree click when getArtifactFromRange failed); resolve and count helix as path
+      // Selection may have codeRef only (e.g. feature tree click when getArtifactFromRange failed).
       const artifact = getArtifactFromRange(
         v2Selection.codeRef.range,
         artifactGraph
       )
-      if (artifact?.type === 'helix') {
-        incrementOrInitializeSelectionType('path')
-      } else if (artifact?.type === 'path' && artifact.subType === 'region') {
-        incrementOrInitializeSelectionType('pathRegion')
-      } else if (artifact?.type === 'path') {
-        incrementOrInitializeSelectionType('path')
-      } else {
+      if (!artifact || !incrementArtifactSelectionType(artifact)) {
         incrementOrInitializeSelectionType('other')
       }
     } else {

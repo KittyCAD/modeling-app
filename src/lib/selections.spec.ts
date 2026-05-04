@@ -1580,6 +1580,76 @@ describe('getSelectionTypeDisplayText', () => {
     )
   })
 
+  test('resolves solid2d entity refs to region path artifacts before display', () => {
+    const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
+    const artifactGraph = new Map([
+      [
+        'path-1',
+        {
+          id: 'path-1',
+          type: 'path',
+          subType: 'region',
+        } as unknown as Artifact,
+      ],
+    ]) as ArtifactGraph
+    const selection: Selections = {
+      graphSelections: [
+        { entityRef: { type: 'solid2d', solid2d_id: 'path-1' }, codeRef },
+      ],
+      otherSelections: [],
+    }
+
+    expect(
+      getSelectionTypeDisplayText({} as any, selection, artifactGraph)
+    ).toBe('1 region')
+  })
+
+  test('resolves solid3d entity refs to sweep artifacts before display', () => {
+    const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
+    const artifactGraph = new Map([
+      [
+        'sweep-1',
+        {
+          id: 'sweep-1',
+          type: 'sweep',
+        } as unknown as Artifact,
+      ],
+    ]) as ArtifactGraph
+    const selection: Selections = {
+      graphSelections: [
+        { entityRef: { type: 'solid3d', solid3d_id: 'sweep-1' }, codeRef },
+      ],
+      otherSelections: [],
+    }
+
+    expect(
+      getSelectionTypeDisplayText({} as any, selection, artifactGraph)
+    ).toBe('1 sweep')
+  })
+
+  test('resolves solid2d edge refs to helix artifacts before display', () => {
+    const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
+    const artifactGraph = new Map([
+      [
+        'helix-1',
+        {
+          id: 'helix-1',
+          type: 'helix',
+        } as unknown as Artifact,
+      ],
+    ]) as ArtifactGraph
+    const selection: Selections = {
+      graphSelections: [
+        { entityRef: { type: 'solid2d_edge', edge_id: 'helix-1' }, codeRef },
+      ],
+      otherSelections: [],
+    }
+
+    expect(
+      getSelectionTypeDisplayText({} as any, selection, artifactGraph)
+    ).toBe('1 helix')
+  })
+
   test('coalesces edge-like selections under edge', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
     const selection = {

@@ -110,7 +110,7 @@ test.describe(
             await cmdBar.expectState({
               stage: 'review',
               headerArguments: {
-                Solids: '2 regions',
+                Solids: '2 sweeps',
               },
               commandName,
             })
@@ -118,8 +118,8 @@ test.describe(
             await cmdBar.expectState({
               stage: 'review',
               headerArguments: {
-                Solids: '1 region',
-                Tools: '1 region',
+                Solids: '1 sweep',
+                Tools: '1 sweep',
               },
               commandName,
             })
@@ -127,7 +127,7 @@ test.describe(
             await cmdBar.expectState({
               stage: 'review',
               headerArguments: {
-                Targets: '2 regions',
+                Targets: '2 sweeps',
               },
               commandName,
             })

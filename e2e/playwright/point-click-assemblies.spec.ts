@@ -187,7 +187,7 @@ test.describe(
         fn: (dir: string) => Promise<void>
       ) => Promise<{ dir: string }>
     ) {
-      const selectedObjects = selectionType === 'scene' ? '1 path' : '1 profile'
+      const selectedObjects = '1 sweep'
       async function selectBracket() {
         if (selectionType === 'scene') {
           const [clickBracketInScene] = scene.makeMouseHelpers(0.5, 0.5, {
