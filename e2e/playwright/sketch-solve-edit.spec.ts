@@ -248,11 +248,20 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     cmdBar,
     editor,
     toolbar,
+    tronApp,
   }) => {
     const INITIAL_CODE = ''
     const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
 
     await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
+      if (tronApp) {
+        await tronApp.cleanProjectDir({
+          modeling: {
+            use_sketch_solve_mode: true,
+          },
+        })
+      }
+
       await context.addInitScript(
         async ({ code }) => {
           localStorage.setItem('persistCode', code)
@@ -438,12 +447,21 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     cmdBar,
     editor,
     toolbar,
+    tronApp,
   }) => {
     const INITIAL_CODE = ''
     const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
     const getLineCount = (code: string) => (code.match(/line\(/g) ?? []).length
 
     await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
+      if (tronApp) {
+        await tronApp.cleanProjectDir({
+          modeling: {
+            use_sketch_solve_mode: true,
+          },
+        })
+      }
+
       await context.addInitScript(
         async ({ code }) => {
           localStorage.setItem('persistCode', code)

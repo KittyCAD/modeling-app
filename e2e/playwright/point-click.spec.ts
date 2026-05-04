@@ -967,8 +967,8 @@ region001 = region(segments = [sketch001.circle1])`
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
-    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,capEnd001]}], radius=5)`
-    const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,capStart001]}], radius=5)`
+    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[capEnd001,region001.tags.line2]}], radius=5,)`
+    const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,capStart001]}], radius=5,)`
 
     // Locators
     // TODO: find a way to not have hardcoded pixel values for region edges and sweepEdges
@@ -1775,8 +1775,8 @@ sketch001 = sketch(on = XY) {
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
-    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, edges=[{sideFaces=[region001.tags.line2,capEnd001]}], length=5)`
-    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, edges=[{sideFaces=[region001.tags.line2,capStart001]}], length=5)`
+    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, edges=[{sideFaces=[region001.tags.line2,capEnd001]}], length=5,)`
+    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, edges=[{sideFaces=[region001.tags.line2,capStart001]}], length=5,)`
 
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
@@ -2444,7 +2444,13 @@ sketch002 = sketch(on = face001) {
 hidden001 = hide(sketch002)
 region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
     // TODO: replace region line above with topological selection, see https://kittycadworkspace.slack.com/archives/C09CJ6XPY1Y/p1775311720628419?thread_ts=1775157918.840339&cid=C09CJ6XPY1Y
-    const newCodeToFind = `revolve001 = revolve(region002, angle = 360deg, axis = getCommonEdge(faces = [region001.tags.line1, capEnd001]))`
+    const newCodeToFind = `revolve001 = revolve(
+  region002,
+  angle = 360deg,
+  axis = {
+    sideFaces = [capEnd001, region001.tags.line1]
+  },
+)`
 
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
@@ -2530,7 +2536,9 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
       })
       await cmdBar.submit()
 
-      await editor.expectEditor.toContain(newCodeToFind)
+      await editor.expectEditor.toContain(newCodeToFind, {
+        shouldNormalise: true,
+      })
     })
 
     await test.step('Edit revolve feature via feature tree selection', async () => {
@@ -2568,7 +2576,10 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       await editor.expectEditor.toContain('angle001 = ' + newAngle)
       await editor.expectEditor.toContain(
-        newCodeToFind.replace('angle = 360deg', 'angle = angle001')
+        newCodeToFind.replace('angle = 360deg', 'angle = angle001'),
+        {
+          shouldNormalise: true,
+        }
       )
     })
   })
