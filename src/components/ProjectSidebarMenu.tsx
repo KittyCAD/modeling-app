@@ -14,14 +14,12 @@ import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import usePlatform from '@src/hooks/usePlatform'
 import { APP_NAME } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import { PATHS } from '@src/lib/paths'
+import { PATHS, toProjectRelativePath, toWebSafePath } from '@src/lib/paths'
 import { useApp, useSingletons } from '@src/lib/boot'
 import type { IndexLoaderData } from '@src/lib/types'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import type { FileEntry, Project } from '@src/lib/project'
-
-import fsZds from '@src/lib/fs-zds'
 
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   enableMenu?: boolean
@@ -29,22 +27,19 @@ interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   file?: FileEntry
 }
 
-const normalizeBreadcrumbPath = (path: string) =>
-  fsZds.sep && fsZds.sep !== '/' ? path.replaceAll(fsZds.sep, '/') : path
-
 const getProjectRelativeFilePath = (project?: Project, file?: FileEntry) => {
   if (!file) {
     return APP_NAME
   }
 
   if (project?.path && file.path) {
-    const relativeFilePath = fsZds.relative(project.path, file.path)
+    const relativeFilePath = toProjectRelativePath(project.path, file.path)
     if (relativeFilePath) {
-      return normalizeBreadcrumbPath(relativeFilePath)
+      return relativeFilePath
     }
   }
 
-  return normalizeBreadcrumbPath(file.name || APP_NAME)
+  return toWebSafePath(file.name || APP_NAME)
 }
 
 const ProjectSidebarMenu = ({

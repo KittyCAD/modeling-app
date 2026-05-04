@@ -4,6 +4,8 @@ import {
   getFilePathRelativeToProject,
   getRouterSearchFromRequestUrl,
   parseProjectRoute,
+  toProjectRelativePath,
+  toWebSafePath,
 } from '@src/lib/paths'
 
 beforeAll(async () => {
@@ -89,6 +91,23 @@ describe('testing getFilePathRelativeToProject', () => {
     expect(getFilePathRelativeToProject(filePath, projectName, '/')).toEqual(
       expectedProjectRelativeFilePath
     )
+  })
+})
+
+describe('testing web-safe project paths', () => {
+  it('should normalize Windows separators for display paths', () => {
+    expect(toWebSafePath('parts\\generated\\nested-part.kcl', '\\')).toEqual(
+      'parts/generated/nested-part.kcl'
+    )
+  })
+
+  it('should return a project-relative file path', () => {
+    expect(
+      toProjectRelativePath(
+        '/some/path/Simple Box',
+        '/some/path/Simple Box/parts/generated/nested-part.kcl'
+      )
+    ).toEqual('parts/generated/nested-part.kcl')
   })
 })
 

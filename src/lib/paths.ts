@@ -249,6 +249,17 @@ export function webSafeJoin(paths: string[]): string {
   return paths.join('/')
 }
 
+export function toWebSafePath(targetPath: string, sep = fsZds.sep): string {
+  return sep && sep !== '/' ? targetPath.replaceAll(sep, '/') : targetPath
+}
+
+export function toProjectRelativePath(
+  projectPath: string,
+  filePath: string
+): string {
+  return toWebSafePath(fsZds.relative(projectPath, filePath))
+}
+
 /**
  * Splits any paths safely based on the runtime
  */
