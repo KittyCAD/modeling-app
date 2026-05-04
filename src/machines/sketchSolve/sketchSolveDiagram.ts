@@ -798,7 +798,8 @@ export const sketchSolveMachine = setup({
               context.sketchId,
               constraintIds,
               segmentIds,
-              jsAppSettings(context.kclManager.systemDeps.settings)
+              jsAppSettings(context.kclManager.systemDeps.settings),
+              true
             )
             .catch((err) => {
               console.error('failed to delete objects', err)
@@ -817,6 +818,7 @@ export const sketchSolveMachine = setup({
               data: {
                 sourceDelta: result.kclSource,
                 sceneGraphDelta: result.sceneGraphDelta,
+                checkpointId: result.checkpointId ?? null,
               },
             })
           }
@@ -853,6 +855,10 @@ export const sketchSolveMachine = setup({
                 return false
               }
 
+              if (event.data.tool === 'symmetricConstraintTool') {
+                return false
+              }
+
               return (
                 getPreparedApplyForConstraintTool(context, event.data.tool) !==
                 null
@@ -877,15 +883,6 @@ export const sketchSolveMachine = setup({
             ],
           },
         ],
-        escape: {
-          target: '#Sketch Solve Mode.exiting',
-          actions: [
-            'send tool unequipped to parent',
-            'cleanup sketch solve group',
-          ],
-          description:
-            'ESC in move and select (no tool equipped) exits sketch mode',
-        },
       },
       invoke: {
         id: 'moveTool',

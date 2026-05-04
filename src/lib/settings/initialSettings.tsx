@@ -20,6 +20,10 @@ import {
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import type {
+  DynamicSettingsCategories,
+  ResolvedExtensionSettings,
+} from '@src/lib/settings/extensionSettings'
+import type {
   BaseUnit,
   SettingProps,
   SettingsLevel,
@@ -134,7 +138,7 @@ export class Setting<T = unknown> {
 const MS_IN_MINUTE = 1000 * 60
 const COLOR_INPUT_DEBOUNCE_MS = 500
 
-export function createSettings() {
+function createCoreSettings() {
   const settings = {
     // Gotcha: Only settings that must be understood by Rust/KCL/CLI need a
     // matching schema in rust/kcl-lib. App-owned settings can stay TS-only if
@@ -163,18 +167,6 @@ export function createSettings() {
             })),
         },
       }),
-      /**
-       * Whether to show the debug panel, which lets you see
-       * various states of the app to aid in development
-       */
-      showDebugPanel: new Setting<boolean>({
-        defaultValue: false,
-        description: 'Whether to show the debug panel, a development tool.',
-        validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
-        },
-      }),
       machineApi: new Setting<boolean>({
         defaultValue: false,
         hideOnLevel: 'project',
@@ -199,7 +191,7 @@ export function createSettings() {
             context.app.zookeeperMode.current,
           options: (cmdContext, settingsContext) =>
             (['fast', 'thoughtful'] as const).map((v) => ({
-              name: capitaliseFC(v),
+              name: v === 'fast' ? 'Standard' : capitaliseFC(v),
               value: v,
               isCurrent:
                 settingsContext.app.zookeeperMode.shouldShowCurrentLabel(
@@ -321,6 +313,38 @@ export function createSettings() {
         defaultValue: {},
         validate: (_v) => true,
         hideOnLevel: 'user',
+      }),
+    },
+    /**
+     * App-owned debug settings.
+     *
+     * These stay in TypeScript and round-trip through an opaque `debug`
+     * section so we can keep app-only debugging tools out of the Rust schema.
+     */
+    debug: {
+      /**
+       * Whether to show the debug panel, which lets you see
+       * various states of the app to aid in development
+       */
+      showPanel: new Setting<boolean>({
+        defaultValue: false,
+        description: 'Whether to show the debug panel, a development tool.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
+      /**
+       * Whether to show the current modeling machine state in the status bar.
+       */
+      showModelingMachineState: new Setting<boolean>({
+        defaultValue: false,
+        description:
+          'Whether to show the current modeling machine state in the status bar.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
       }),
     },
     /**
@@ -470,8 +494,8 @@ export function createSettings() {
       }),
       /**
        * Determines if new sketches should use the solver-based sketch mode.
-       * This setting is hidden and defaults to true except for Playwright or
-       * when the user has the 'classic_sketch_mode' feature flag enabled.
+       * This setting is hidden and defaults to true. It now exists only so
+       * Playwright can set it to false for regression testing.
        */
       useSketchSolveMode: new Setting<boolean>({
         hideOnLevel: 'project',
@@ -790,4 +814,48 @@ export function createSettings() {
   return settings
 }
 
-export type SettingsType = ReturnType<typeof createSettings>
+function instantiateExtensionSettings(
+  resolved: ResolvedExtensionSettings
+): DynamicSettingsCategories {
+  return Object.fromEntries(
+    Object.entries(resolved).map(([category, settings]) => [
+      category,
+      Object.fromEntries(
+        Object.entries(settings).map(([settingName, definition]) => [
+          settingName,
+          definition.createSetting(),
+        ])
+      ),
+    ])
+  )
+}
+
+type CoreSettingsType = ReturnType<typeof createCoreSettings>
+
+export type SettingsType = CoreSettingsType & {
+  plugins: Record<string, Setting<boolean>>
+}
+
+export function createSettings(
+  extensionSettings: ResolvedExtensionSettings = {}
+): SettingsType {
+  const settings = createCoreSettings() as SettingsType
+  settings.plugins = {}
+
+  // For now, core settings remain defined here and extension-provided settings
+  // are merged into the same mutable settings object during app bootstrap.
+  // A narrower follow-up can invert this so the signal output becomes the
+  // canonical registry and core settings are just another contribution.
+  Object.entries(instantiateExtensionSettings(extensionSettings)).forEach(
+    ([category, categorySettings]) => {
+      ;(settings as Record<string, Record<string, Setting<any>>>)[category] = {
+        ...((settings as Record<string, Record<string, Setting<any>>>)[
+          category
+        ] ?? {}),
+        ...categorySettings,
+      }
+    }
+  )
+
+  return settings
+}

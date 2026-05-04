@@ -1050,6 +1050,10 @@ ${simpleHole}`,
         '2',
         rustContextInThisFile
       )) as KclCommandValue
+      const cHeadClearance = (await stringToKclExpression(
+        '0.25',
+        rustContextInThisFile
+      )) as KclCommandValue
       const result = addHole({
         ast,
         artifactGraph,
@@ -1062,6 +1066,7 @@ ${simpleHole}`,
         holeType: 'countersink',
         countersinkAngle: cAngle,
         countersinkDiameter: cDiameter,
+        countersinkHeadClearance: cHeadClearance,
         holeBottom: 'drill',
         drillPointAngle: dAngle,
         wasmInstance: instanceInThisFile,
@@ -1079,7 +1084,7 @@ hole001 = hole::hole(
   cutAt = [1, 1],
   holeBottom = hole::drill(pointAngle = 110),
   holeBody = hole::blind(depth = 6, diameter = 1.1),
-  holeType = hole::countersink(angle = 120, diameter = 2),
+  holeType = hole::countersink(angle = 120, diameter = 2, headClearance = 0.25),
 )`
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
@@ -1234,6 +1239,29 @@ hole001 = hole::hole(
       expect(result.countersinkDiameter?.valueText).toEqual('2')
       expect(result.counterboreDepth).toBeUndefined()
       expect(result.counterboreDiameter).toBeUndefined()
+    })
+
+    it('should retrieve head clearance on countersink', async () => {
+      const countersinkHole = `${cylinderForHole}
+hole001 = hole::hole(
+  extrude001,
+  face = END,
+  cutAt = [0, 0],
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = 5, diameter = 1),
+  holeType = hole::countersink(angle = 90deg, diameter = 2, headClearance = 0.25),
+)`
+      const op = await getHoleOp(countersinkHole)
+      const result = await retrieveHoleTypeArgs(
+        op.labeledArgs?.holeType,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      if (err(result)) throw result
+      expect(result.holeType).toEqual('countersink')
+      expect(result.countersinkAngle?.valueText).toEqual('90deg')
+      expect(result.countersinkDiameter?.valueText).toEqual('2')
+      expect(result.countersinkHeadClearance?.valueText).toEqual('0.25')
     })
 
     it('should retrieve the string type on counterbore, plus depth and diameter', async () => {

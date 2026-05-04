@@ -1,0 +1,36 @@
+// Primary Shaft Module
+// Main shaft, spine teeth, and demo instances
+// Categories: Aerospace
+
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+
+// Import gear and propeller
+import "primary-shaft.kcl" as primaryShaft
+import "primary-propeller-assembly.kcl" as primaryPropellerAssembly
+import "primary-propeller-nose-cone.kcl" as primaryPropellerNoseCone
+
+translate(primaryShaft, y = -1070)
+translate(primaryPropellerAssembly, y = -940)
+translate(primaryPropellerNoseCone, y = -1090)
+
+// Build helical gear
+helicaGear = gear::helical(
+  nTeeth = 32,
+  module = 16,
+  pressureAngle = 20deg,
+  helixAngle = 25,
+  gearHeight = 100,
+)
+
+gearHoleSketch = sketch(on = XY) {
+  circle1 = circle(start = [var 170mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  diameter(circle1) == 170.1 // 0.1 tolerance
+}
+gearHoleRegion = region(point = [0mm, 0mm], sketch = gearHoleSketch)
+gearHoleTool = extrude(gearHoleRegion, length = 500, symmetric = true)
+hide(gearHoleSketch)
+gearWitHole = subtract(helicaGear, tools = gearHoleTool)
+
+gearPlaced = gearWitHole
+  |> rotate(axis = X, angle = 90deg)
