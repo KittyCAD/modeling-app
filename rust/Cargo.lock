@@ -2529,7 +2529,7 @@ dependencies = [
  "wasm-bindgen-futures",
  "web-sys",
  "web-time",
- "winnow 0.7.15",
+ "winnow 1.0.2",
  "zduny-wasm-timer",
  "zip",
 ]
@@ -2647,8 +2647,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.194"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben%2Fface_api#e763d40502f12589d1851f34bdd7a3f94c92c2c4"
+version = "0.2.195"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "adea5e242fa7d56bc95a51df88654b5fe26d06f0f62b6619e3732440ec7d42e3"
 dependencies = [
  "anyhow",
  "bon",
@@ -2676,7 +2677,8 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.13"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben%2Fface_api#e763d40502f12589d1851f34bdd7a3f94c92c2c4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eb4ba190f74f6d32f4607ecac4bdebd4a935d4943b8ca8369305e6e7a59b5976"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -2687,7 +2689,8 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.14"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben%2Fface_api#e763d40502f12589d1851f34bdd7a3f94c92c2c4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "743b6533d1848de67e3455a28614a2b7896807ab0d3358ccd3ea1863de3c4e6b"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -5063,9 +5066,9 @@ checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
 name = "tokio"
-version = "1.52.1"
+version = "1.52.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b67dee974fe86fd92cc45b7a95fdd2f99a36a6d7b0d431a231178d3d670bbcc6"
+checksum = "110a78583f19d5cdb2c5ccf321d1290344e71313c6c37d43520d386027d18386"
 dependencies = [
  "bytes",
  "libc",
