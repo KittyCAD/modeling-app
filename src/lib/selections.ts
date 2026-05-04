@@ -277,9 +277,10 @@ export async function getEventForSelectWithPoint(
     }
   }
 
+  const selectedEngineEntityId = data.entity_id
   let _artifact =
-    artifactGraph.get(data.entity_id) ??
-    getPatternArtifactForCopyId(data.entity_id, artifactGraph)
+    artifactGraph.get(selectedEngineEntityId) ??
+    getPatternArtifactForCopyId(selectedEngineEntityId, artifactGraph)
   if (!_artifact) {
     // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
 
@@ -333,6 +334,7 @@ export async function getEventForSelectWithPoint(
         selection: {
           artifact: _artifact,
           codeRef: codeRefs[0],
+          engineEntityId: selectedEngineEntityId,
         },
       },
     }
@@ -439,15 +441,19 @@ export function handleSelectionBatch({
   const ranges: ReturnType<typeof EditorSelection.cursor>[] = []
   const selectionToEngine: SelectionToEngine[] = []
 
-  selections.graphSelections.forEach(({ artifact }) => {
-    if (artifact?.id) {
+  selections.graphSelections.forEach((selection) => {
+    const engineIds = getEngineEntityIdsForSelection(selection)
+    engineIds.forEach((id) => {
+      const range =
+        getCodeRefsByArtifactId(
+          selection.artifact?.id || '',
+          artifactGraph
+        )?.[0]?.range || defaultSourceRange()
       selectionToEngine.push({
-        id: artifact?.id,
-        range:
-          getCodeRefsByArtifactId(artifact.id, artifactGraph)?.[0].range ||
-          defaultSourceRange(),
+        id,
+        range,
       })
-    }
+    })
   })
   selections.otherSelections.forEach((s) => {
     if (isEnginePrimitiveSelection(s)) {
@@ -980,6 +986,29 @@ function createSelectionToEngine(
   }
 }
 
+function getEngineEntityIdsForSelection(selection: Selection): ArtifactId[] {
+  if (selection.engineEntityId) {
+    return [selection.engineEntityId]
+  }
+
+  const artifact = selection.artifact
+  if (!artifact?.id) {
+    return []
+  }
+
+  if (artifact.type !== 'pattern') {
+    return [artifact.id]
+  }
+
+  return [
+    ...new Set([
+      ...artifact.copyIds,
+      ...artifact.copyFaceIds,
+      ...artifact.copyEdgeIds,
+    ]),
+  ]
+}
+
 export function codeToIdSelections(
   selections: Selection[],
   artifactGraph: ArtifactGraph,
@@ -1003,7 +1032,10 @@ export function codeToIdSelections(
 
       // Direct artifact case
       if (selection.artifact?.id) {
-        return [createSelectionToEngine(selection, selection.artifact.id)]
+        const engineIds = getEngineEntityIdsForSelection(selection)
+        return engineIds.length
+          ? engineIds.map((id) => createSelectionToEngine(selection, id))
+          : [createSelectionToEngine(selection)]
       }
 
       // Find matching artifacts by code range overlap
@@ -1016,9 +1048,15 @@ export function codeToIdSelections(
         artifactGraph
       )
       if (bestCandidates.length) {
-        return bestCandidates.map((entry) =>
-          createSelectionToEngine(selection, entry.id)
-        )
+        return bestCandidates.flatMap((entry) => {
+          const engineIds = getEngineEntityIdsForSelection({
+            ...selection,
+            artifact: entry.artifact,
+          })
+          return engineIds.length
+            ? engineIds.map((id) => createSelectionToEngine(selection, id))
+            : [createSelectionToEngine(selection, entry.id)]
+        })
       }
 
       return [createSelectionToEngine(selection)]
