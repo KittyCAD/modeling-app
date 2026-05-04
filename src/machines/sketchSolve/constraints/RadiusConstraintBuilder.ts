@@ -146,10 +146,7 @@ function updateExtensionArcs(
     [center.x, center.y],
     [arcStart.x, arcStart.y]
   )
-  const endAngle = getPolarAngle2d(
-    [center.x, center.y],
-    [arcEnd.x, arcEnd.y]
-  )
+  const endAngle = getPolarAngle2d([center.x, center.y], [arcEnd.x, arcEnd.y])
   updateExtensionArc(
     extensionArcs[0],
     center,
