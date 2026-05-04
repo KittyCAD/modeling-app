@@ -1233,11 +1233,13 @@ impl SketchApi for FrontendState {
             ObjectKind::Constraint {
                 constraint: Constraint::Distance(_)
                     | Constraint::HorizontalDistance(_)
-                    | Constraint::VerticalDistance(_),
+                    | Constraint::VerticalDistance(_)
+                    | Constraint::Radius(_)
+                    | Constraint::Diameter(_),
             }
         ) {
             return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Object is not a distance constraint: {constraint_id:?}"
+                "Object does not support labelPosition: {constraint_id:?}"
             ))));
         }
 
@@ -5414,7 +5416,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 };
                 if !matches!(
                     call.callee.name.name.as_str(),
-                    DISTANCE_FN | HORIZONTAL_DISTANCE_FN | VERTICAL_DISTANCE_FN
+                    DISTANCE_FN | HORIZONTAL_DISTANCE_FN | VERTICAL_DISTANCE_FN | RADIUS_FN | DIAMETER_FN
                 ) {
                     return TraversalReturn::new_continue(());
                 }
@@ -9592,6 +9594,71 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_radius_constraint_label_position() {
+        let initial_source = "\
+sketch(on = XY) {
+  arc1 = arc(start = [var 5mm, var 0mm], end = [var 0mm, var 5mm], center = [var 0mm, var 0mm])
+  radius(arc1) == 5mm
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = sketch.constraints[0];
+        let label_position = Point2d {
+            x: Number {
+                value: 10.0,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: 11.0,
+                units: NumericSuffix::Mm,
+            },
+        };
+
+        let (src_delta, scene_delta) = frontend
+            .edit_distance_constraint_label_position(
+                &mock_ctx,
+                version,
+                sketch_id,
+                constraint_id,
+                label_position.clone(),
+                vec![],
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  arc1 = arc(start = [var 5mm, var 0mm], end = [var 0mm, var 5mm], center = [var 0mm, var 0mm])
+  radius(arc1, labelPosition = [10mm, 11mm]) == 5mm
+}
+"
+        );
+
+        let constraint_object = scene_delta.new_graph.objects.get(constraint_id.0).unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("Expected constraint object");
+        };
+        let Constraint::Radius(radius) = constraint else {
+            panic!("Expected radius constraint");
+        };
+        assert_eq!(radius.label_position, Some(label_position));
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_vertical_distance_two_points() {
         let initial_source = "\
 sketch(on = XY) {
@@ -10088,6 +10155,71 @@ sketch(on = XY) {
         let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
         let sketch = expect_sketch(sketch_object);
         let constraint_object = scene_delta.new_graph.objects.get(sketch.constraints[0].0).unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("Expected constraint object");
+        };
+        let Constraint::Diameter(diameter) = constraint else {
+            panic!("Expected diameter constraint");
+        };
+        assert_eq!(diameter.label_position, Some(label_position));
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_diameter_constraint_label_position() {
+        let initial_source = "\
+sketch(on = XY) {
+  arc1 = arc(start = [var 5mm, var 0mm], end = [var 0mm, var 5mm], center = [var 0mm, var 0mm])
+  diameter(arc1) == 10mm
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = sketch.constraints[0];
+        let label_position = Point2d {
+            x: Number {
+                value: 10.0,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: 11.0,
+                units: NumericSuffix::Mm,
+            },
+        };
+
+        let (src_delta, scene_delta) = frontend
+            .edit_distance_constraint_label_position(
+                &mock_ctx,
+                version,
+                sketch_id,
+                constraint_id,
+                label_position.clone(),
+                vec![],
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  arc1 = arc(start = [var 5mm, var 0mm], end = [var 0mm, var 5mm], center = [var 0mm, var 0mm])
+  diameter(arc1, labelPosition = [10mm, 11mm]) == 10mm
+}
+"
+        );
+
+        let constraint_object = scene_delta.new_graph.objects.get(constraint_id.0).unwrap();
         let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
             panic!("Expected constraint object");
         };
