@@ -832,9 +832,9 @@ dependencies = [
 
 [[package]]
 name = "data-encoding"
-version = "2.10.0"
+version = "2.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d7a1e2f27636f116493b8b860f5546edb47c8d8f8ea73e1d2a20be88e28d1fea"
+checksum = "a4ae5f15dda3c708c0ade84bfee31ccab44a3da4f88015ed22f63732abe300c8"
 
 [[package]]
 name = "defer"
@@ -2580,9 +2580,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.189"
+version = "0.2.193"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "03349615e4d1455f337228f4eff9982090c7cd8aa01b23d9964bdc2a2db15ad3"
+checksum = "64de85fb38082d752777827f4fb0410bbe6a26b2832b4e943ba3f889a84a9e39"
 dependencies = [
  "anyhow",
  "bon",

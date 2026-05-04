@@ -63,8 +63,8 @@ import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
 import {
   layoutActionDefinitionsValueSpec,
   layoutPaneActionsValueSpec,
-  statusBarGlobalItemsValueSpec,
 } from '@src/valueSpecs'
+import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import {
   TutorialRequestToast,

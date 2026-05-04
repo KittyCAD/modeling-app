@@ -11,9 +11,11 @@ import type {
   ApiFile,
   ApiFileId,
   ApiObjectId,
+  ApiPoint2d,
   ApiProjectId,
   ApiVersion,
   ExistingSegmentCtor,
+  Number,
   SceneGraphDelta,
   SegmentCtor,
   SetProgramOutcome as RustSetProgramOutcome,
@@ -656,6 +658,46 @@ export default class RustContext {
         valueExpression,
         JSON.stringify(settings),
         createCheckpoint
+      )
+      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+      if (checkpointId instanceof Error) {
+        return Promise.reject(checkpointId)
+      }
+      return {
+        kclSource: result.sourceDelta,
+        sceneGraphDelta: result.sceneGraphDelta,
+        checkpointId,
+      }
+    } catch (e: any) {
+      const err = errFromErrWithOutputs(e)
+      return Promise.reject(err)
+    }
+  }
+
+  async editDistanceConstraintLabelPosition(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    constraintId: ApiObjectId,
+    labelPosition: ApiPoint2d<Number>,
+    settings: DeepPartial<Configuration>,
+    createCheckpoint = false,
+    anchorSegmentIds: ApiObjectId[] = []
+  ): Promise<SketchMutationResult> {
+    const instance = await this._checkContextInstance()
+
+    try {
+      const result: {
+        sourceDelta: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
+      } = await instance.edit_distance_constraint_label_position(
+        JSON.stringify(version),
+        JSON.stringify(sketch),
+        JSON.stringify(constraintId),
+        JSON.stringify(labelPosition),
+        JSON.stringify(settings),
+        createCheckpoint,
+        JSON.stringify(anchorSegmentIds)
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
       if (checkpointId instanceof Error) {

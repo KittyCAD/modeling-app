@@ -32,7 +32,7 @@ import { TestLayout } from '@src/lib/layout/TestLayout'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import Loading from '@src/components/Loading'
 import { MachineApiController } from '@src/components/MachineApiController'
-import { routesValueSpec } from '@src/valueSpecs'
+import { routesValueSpec } from '@src/registry/contracts/routes'
 import { useSignals } from '@preact/signals-react/runtime'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter

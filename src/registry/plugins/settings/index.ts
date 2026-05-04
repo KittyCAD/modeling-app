@@ -1,4 +1,4 @@
-import { statusBarGlobalItemsValueSpec } from '@src/valueSpecs'
+import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { defineRegistryItem, provide } from '@kittycad/registry'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { PATHS, webSafeJoin } from '@src/lib/paths'

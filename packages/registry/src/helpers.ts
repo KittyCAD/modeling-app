@@ -203,6 +203,24 @@ export function defineRuntimeRegistryItem<
   return spec
 }
 
+/**
+ * Mark a small bundle of ValueSpecs and Services as a shared contract surface.
+ *
+ * This helper is intentionally a typed identity function. Its value is
+ * architectural, not behavioral:
+ * - contract modules export only ValueSpecs and Services
+ * - provider registry items import the contract and provide implementations
+ * - consumer registry items import the same contract and depend on the tokens
+ *
+ * That keeps consumers decoupled from provider modules and helps avoid import
+ * cycles as the registry graph grows.
+ */
+export function defineContract<T extends Record<string, unknown>>(
+  contract: T
+): T {
+  return contract
+}
+
 /** Human-facing metadata shown for a plugin in plugin-management UIs. */
 interface PluginInfo {
   id: string
