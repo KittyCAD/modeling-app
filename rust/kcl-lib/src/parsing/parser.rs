@@ -2717,11 +2717,7 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
             object.map(Box::new).map(Expr::ObjectExpression),
             pipe_sub.map(Box::new).map(Expr::PipeSubstitution),
         )),
-        alt((
-            function_expr,
-            if_expr.map(Expr::IfExpression),
-            unnecessarily_bracketed,
-        )),
+        alt((function_expr, if_expr.map(Expr::IfExpression), unnecessarily_bracketed)),
     ))
     .context(expected("a KCL expression (but not a pipe expression)"))
     .parse_next(i)?;
