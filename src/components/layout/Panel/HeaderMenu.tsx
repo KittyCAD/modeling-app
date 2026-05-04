@@ -1,30 +1,8 @@
 import { Menu, Portal } from '@headlessui/react'
-import type { CSSProperties, MouseEvent, PropsWithChildren } from 'react'
+import type { MouseEvent, PropsWithChildren } from 'react'
 import { useId, useLayoutEffect, useRef } from 'react'
 
 import { ActionIcon } from '@src/components/ActionIcon'
-
-const MENU_GAP_PX = 4
-
-type AnchorPositionStyle = CSSProperties & {
-  anchorName?: string
-  positionAnchor?: string
-  positionTry?: string
-  positionTryFallbacks?: string
-}
-
-type PopoverElement = HTMLDivElement & {
-  showPopover: () => void
-  hidePopover: () => void
-}
-
-function isPopoverElement(element: HTMLDivElement): element is PopoverElement {
-  return 'showPopover' in element && 'hidePopover' in element
-}
-
-function stopPanelMenuButtonClick(e: MouseEvent) {
-  e.stopPropagation()
-}
 
 function stopPanelMenuItemsClick(e: MouseEvent) {
   const target = e.target as HTMLElement
@@ -56,7 +34,12 @@ const HeaderMenuContents = ({
   useLayoutEffect(() => {
     const items = itemsRef.current
 
-    if (!open || !items || !isPopoverElement(items)) {
+    if (
+      !open ||
+      !items ||
+      !('showPopover' in items) ||
+      !('hidePopover' in items)
+    ) {
       return
     }
 
@@ -71,24 +54,13 @@ const HeaderMenuContents = ({
     }
   }, [open])
 
-  const menuItemsStyle = {
-    positionAnchor: anchorName,
-    right: `anchor(${anchorName} right)`,
-    top: `anchor(${anchorName} bottom)`,
-    left: 'auto',
-    bottom: 'auto',
-    marginTop: MENU_GAP_PX,
-    positionTry: 'flip-block, flip-inline, flip-block flip-inline',
-    positionTryFallbacks: 'flip-block, flip-inline, flip-block flip-inline',
-  } as AnchorPositionStyle
-
   return (
     <div className="relative">
       <Menu.Button
         ref={buttonRef}
         className="!p-0 !bg-transparent hover:text-primary border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 ui-open:!border-primary dark:ui-open:!border-chalkboard-70 !outline-none"
-        onClick={stopPanelMenuButtonClick}
-        style={{ anchorName } as AnchorPositionStyle}
+        onClick={(e) => e.stopPropagation()}
+        style={{ anchorName }}
       >
         <ActionIcon
           icon="three-dots"
@@ -104,7 +76,17 @@ const HeaderMenuContents = ({
           popover="manual"
           className="fixed z-50 m-0 w-72 max-w-[calc(100vw-1rem)] max-h-[calc(100vh-1rem)] overflow-y-auto flex flex-col gap-1 divide-y divide-chalkboard-20 dark:divide-chalkboard-70 align-stretch px-0 py-1 bg-chalkboard-10 dark:bg-chalkboard-100 rounded-sm shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50"
           onClick={stopPanelMenuItemsClick}
-          style={menuItemsStyle}
+          style={{
+            positionAnchor: anchorName,
+            right: `anchor(${anchorName} right)`,
+            top: `anchor(${anchorName} bottom)`,
+            left: 'auto',
+            bottom: 'auto',
+            marginTop: 4,
+            positionTry: 'flip-block, flip-inline, flip-block flip-inline',
+            positionTryFallbacks:
+              'flip-block, flip-inline, flip-block flip-inline',
+          }}
         >
           {children}
         </Menu.Items>
