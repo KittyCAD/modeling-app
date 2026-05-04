@@ -52,11 +52,7 @@ import type {
   Program,
   SourceRange,
 } from '@src/lang/wasm'
-import type {
-  EntityReference,
-  RawEdgeRefFromAPI,
-  RawVertexRefFromAPI,
-} from '@src/machines/modelingSharedTypes'
+import type { EntityReference } from '@kittycad/lib'
 import type { ArtifactEntry, ArtifactIndex } from '@src/lib/artifactIndex'
 import type {
   CommandArgument,
@@ -104,6 +100,23 @@ import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { KclManager } from '@src/lang/KclManager'
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
+
+type NormalizableEdgeReference = Partial<
+  Extract<EntityReference, { type: 'edge' }>
+> & {
+  sideFaces?: unknown
+  /** Legacy alias accepted by older engine/API payloads. */
+  faces?: unknown
+  endFaces?: unknown
+}
+
+type NormalizableVertexReference = Partial<
+  Extract<EntityReference, { type: 'vertex' }>
+> & {
+  sideFaces?: unknown
+  /** Legacy alias accepted by older engine/API payloads. */
+  faces?: unknown
+}
 
 async function getParentEntityIdForEntity(
   entityId: string,
@@ -361,7 +374,7 @@ export function normalizeEntityReference(
   }
 
   if (type === 'edge') {
-    const r = raw as RawEdgeRefFromAPI
+    const r = raw as NormalizableEdgeReference
     // CMS / engine may send side_faces, sideFaces, or faces (OpenAPI EntityReference uses "faces")
     const sideFacesRaw = r.side_faces ?? r.sideFaces ?? r.faces
     const side_faces = isArray(sideFacesRaw)
@@ -376,7 +389,7 @@ export function normalizeEntityReference(
   }
 
   if (type === 'vertex') {
-    const r = raw as RawVertexRefFromAPI
+    const r = raw as NormalizableVertexReference
     const sideFacesRaw = r.side_faces ?? r.sideFaces ?? r.faces
     const side_faces = isArray(sideFacesRaw)
       ? sideFacesRaw.filter((v): v is string => typeof v === 'string')

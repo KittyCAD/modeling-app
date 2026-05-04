@@ -20,7 +20,7 @@ import {
   getCodeRefsByArtifactId,
   getSketchBlockForArtifact,
 } from '@src/lang/std/artifactGraph'
-import type { EntityReference } from '@src/machines/modelingSharedTypes'
+import type { EntityReference } from '@kittycad/lib'
 import { artifactToEntityRef } from '@src/lang/queryAst'
 import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
 import { useOnPageResize } from '@src/hooks/network/useOnPageResize'

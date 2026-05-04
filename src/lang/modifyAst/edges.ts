@@ -48,9 +48,9 @@ import type {
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
+import type { EntityReference } from '@kittycad/lib'
 import type {
   EdgeRefFromOpArgs,
-  EntityReference,
   Selection,
   Selections,
   EnginePrimitiveSelection,

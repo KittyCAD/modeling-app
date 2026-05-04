@@ -64,8 +64,8 @@ import type { OpArg, Operation } from '@rust/kcl-lib/bindings/Operation'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { UnaryExpression } from 'typescript'
+import type { EntityReference } from '@kittycad/lib'
 import type {
-  EntityReference,
   Selection,
   Selections,
   EdgeCutInfo,

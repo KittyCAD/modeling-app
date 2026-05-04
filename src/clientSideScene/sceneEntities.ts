@@ -153,10 +153,8 @@ import {
   updateRectangleSketch,
 } from '@src/lib/rectangleTool'
 import type RustContext from '@src/lib/rustContext'
-import type {
-  EntityReference,
-  Selections,
-} from '@src/machines/modelingSharedTypes'
+import type { EntityReference } from '@kittycad/lib'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type {
   DefaultPlane,
   ExtrudeFacePlane,

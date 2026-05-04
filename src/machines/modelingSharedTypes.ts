@@ -1,4 +1,4 @@
-import type { EntityType, Point2d } from '@kittycad/lib'
+import type { EntityReference, EntityType, Point2d } from '@kittycad/lib'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { PathToNode } from '@src/lang/wasm'
 import type { ArtifactId, CodeRef } from '@src/lang/std/artifactGraph'
@@ -44,48 +44,6 @@ export type NonCodeSelection =
   | EnginePrimitiveSelection
   | EngineRegionSelection
 
-export type EntityReference =
-  | {
-      type: 'plane'
-      plane_id: string
-    }
-  | {
-      type: 'face'
-      face_id: string
-    }
-  | {
-      type: 'solid2d'
-      solid2d_id: string
-    }
-  | {
-      type: 'solid3d'
-      solid3d_id: string
-    }
-  | {
-      type: 'edge'
-      side_faces: string[]
-      end_faces?: string[]
-      index?: number
-    }
-  | {
-      type: 'solid2d_edge'
-      edge_id: string
-    }
-  | {
-      type: 'vertex'
-      side_faces: string[]
-      index?: number
-    }
-  | {
-      type: 'segment'
-      path_id: string
-      segment_id: string
-    }
-  | {
-      type: 'region'
-      region_id: string
-    }
-
 /**
  * Shape of edgeRef when parsed from op args. KCL uses camelCase (sideFaces, endFaces);
  * op args may also contain snake_case from API. Use when reading so TS enforces
@@ -96,32 +54,6 @@ export type EdgeRefFromOpArgs = {
   sideFaces?: unknown
   end_faces?: unknown
   endFaces?: unknown
-  index?: unknown
-}
-
-/**
- * Shape of edge ref when parsed from API (may be camelCase). Use when reading
- * so TS enforces side_faces/end_faces.
- */
-export type RawEdgeRefFromAPI = {
-  side_faces?: unknown
-  sideFaces?: unknown
-  /** OpenAPI / engine alias for side_faces on edge references */
-  faces?: unknown
-  end_faces?: unknown
-  endFaces?: unknown
-  index?: unknown
-}
-
-/**
- * Shape of vertex ref when parsed from API (may be camelCase). Use when
- * reading so TS enforces side_faces (not faces/disambiguators).
- */
-export type RawVertexRefFromAPI = {
-  side_faces?: unknown
-  sideFaces?: unknown
-  /** OpenAPI / engine alias for side_faces */
-  faces?: unknown
   index?: unknown
 }
 
