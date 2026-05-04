@@ -1,6 +1,6 @@
+import { join } from 'node:path'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
-import { join } from 'path'
 
 import {
   parseAppSettings,
@@ -9,24 +9,25 @@ import {
   serializeProjectConfiguration,
 } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
-import { createLayoutWithMetadata, defaultLayoutConfig } from '@src/lib/layout'
+import { defaultLayoutConfig } from '@src/lib/layout/configs/default'
+import { createLayoutWithMetadata } from '@src/lib/layout/utils'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
-import { createSettings, type Setting } from '@src/lib/settings/initialSettings'
+import { type Setting, createSettings } from '@src/lib/settings/initialSettings'
 import {
   configurationToSettingsPayload,
   formatSettingsLabel,
-  getChangedSettingsAtLevel,
   getAllCurrentSettings,
+  getChangedSettingsAtLevel,
   hiddenOnPlatform,
   mergeProjectConfiguration,
   projectConfigurationToSettingsPayload,
   replaceProjectSettingsPreservingMetadata,
+  setSettingsAtLevel,
   settingsPayloadToConfiguration,
   settingsPayloadToProjectConfiguration,
-  setSettingsAtLevel,
 } from '@src/lib/settings/settingsUtils'
 import type { DeepPartial } from '@src/lib/types'
-import { expect, describe, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 const pluginExtensionSettings = {
   plugins: {
@@ -42,9 +43,9 @@ const pluginExtensionSettings = {
   },
 }
 
-describe(`testing settings initialization`, () => {
+describe('testing settings initialization', () => {
   it(`sets settings at the 'user' level`, () => {
-    let settings = createSettings()
+    const settings = createSettings()
     const appConfiguration: DeepPartial<Configuration> = {
       settings: {
         app: {
@@ -63,7 +64,7 @@ describe(`testing settings initialization`, () => {
   })
 
   it(`doesn't read theme from project settings`, () => {
-    let settings = createSettings()
+    const settings = createSettings()
     const appConfiguration: DeepPartial<Configuration> = {
       settings: {
         app: {
@@ -103,10 +104,10 @@ describe(`testing settings initialization`, () => {
   })
 })
 
-describe(`testing getAllCurrentSettings`, () => {
-  it(`returns the correct settings`, () => {
+describe('testing getAllCurrentSettings', () => {
+  it('returns the correct settings', () => {
     // Set up the settings
-    let settings = createSettings()
+    const settings = createSettings()
     const appConfiguration: DeepPartial<Configuration> = {
       settings: {
         app: {
@@ -222,7 +223,9 @@ describe('project settings serialization regression', () => {
       }),
       wasmInstance
     )
-    if (serializedToml instanceof Error) throw serializedToml
+    if (serializedToml instanceof Error) {
+      throw serializedToml
+    }
 
     expect(serializedToml).toContain('onboarding_status = "dismissed"')
     expect(serializedToml).toContain('allow_orbit_in_sketch_mode = true')
@@ -251,7 +254,9 @@ describe('project settings serialization regression', () => {
     expect(serializedToml).not.toContain('[settings.zds')
 
     const parsedConfiguration = parseAppSettings(serializedToml, wasmInstance)
-    if (parsedConfiguration instanceof Error) throw parsedConfiguration
+    if (parsedConfiguration instanceof Error) {
+      throw parsedConfiguration
+    }
 
     const parsedPayload = configurationToSettingsPayload(parsedConfiguration)
     expect(parsedPayload.app?.onboardingStatus).toBe('dismissed')
@@ -293,13 +298,17 @@ describe('project settings serialization regression', () => {
       ),
       wasmInstance
     )
-    if (serializedToml instanceof Error) throw serializedToml
+    if (serializedToml instanceof Error) {
+      throw serializedToml
+    }
 
     expect(serializedToml).toContain('[settings.plugins]')
     expect(serializedToml).toContain('telemetry = false')
 
     const parsedConfiguration = parseAppSettings(serializedToml, wasmInstance)
-    if (parsedConfiguration instanceof Error) throw parsedConfiguration
+    if (parsedConfiguration instanceof Error) {
+      throw parsedConfiguration
+    }
 
     const parsedPayload = configurationToSettingsPayload(
       parsedConfiguration,
@@ -334,7 +343,9 @@ describe('project settings serialization regression', () => {
       settingsPayloadToProjectConfiguration(changedProjectSettings),
       wasmInstance
     )
-    if (serializedToml instanceof Error) throw serializedToml
+    if (serializedToml instanceof Error) {
+      throw serializedToml
+    }
 
     // Explicit project overrides should be present in serialized TOML.
     expect(serializedToml).toContain('show_panel = false')
@@ -397,7 +408,9 @@ describe('project settings serialization regression', () => {
       mergedProjectConfiguration,
       wasmInstance
     )
-    if (serializedToml instanceof Error) throw serializedToml
+    if (serializedToml instanceof Error) {
+      throw serializedToml
+    }
 
     expect(serializedToml).toContain('show_panel = true')
     expect(serializedToml).toContain(
@@ -447,7 +460,9 @@ describe('project settings serialization regression', () => {
       }),
       wasmInstance
     )
-    if (serializedToml instanceof Error) throw serializedToml
+    if (serializedToml instanceof Error) {
+      throw serializedToml
+    }
 
     expect(serializedToml).toContain('onboarding_status = "dismissed"')
     expect(serializedToml).toContain('allow_orbit_in_sketch_mode = true')
@@ -533,7 +548,9 @@ describe('project settings serialization regression', () => {
       rewrittenProjectConfiguration,
       wasmInstance
     )
-    if (serializedToml instanceof Error) throw serializedToml
+    if (serializedToml instanceof Error) {
+      throw serializedToml
+    }
 
     expect(serializedToml).not.toContain('base_unit = "cm"')
     expect(serializedToml).not.toContain('named_views')
@@ -553,7 +570,9 @@ describe('project settings serialization regression', () => {
       '[settings.debug]\nshow_panel = true\nshow_modeling_machine_state = false\n',
       wasmInstance
     )
-    if (parsedConfiguration instanceof Error) throw parsedConfiguration
+    if (parsedConfiguration instanceof Error) {
+      throw parsedConfiguration
+    }
 
     const parsedPayload = configurationToSettingsPayload(parsedConfiguration)
     expect(parsedPayload.debug?.showPanel).toBe(true)

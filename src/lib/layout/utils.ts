@@ -328,7 +328,7 @@ interface ISaveLayout {
 
 type LayoutSaveHandler = (
   props: ISaveLayout & { value: LayoutWithMetadata }
-) => void | Promise<void>
+) => void
 
 let layoutSaveHandler: LayoutSaveHandler | undefined
 
