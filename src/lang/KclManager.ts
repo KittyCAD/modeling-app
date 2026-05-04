@@ -2901,6 +2901,7 @@ export class KclManager extends File {
       if (shouldCreateCheckpointOnlyHistoryCommit) {
         this.editorView.dispatch({
           annotations: [
+            updateOutsideEditorEvent,
             Transaction.addToHistory.of(true),
             isolateHistory.of('full'),
             ...(additionalSpec?.annotations || []),
@@ -2922,6 +2923,7 @@ export class KclManager extends File {
                 sketchCheckpointId: additionalSpec?.sketchCheckpointId,
               },
             }),
+            requestWriteToFile.of(resolvedOptions.shouldWriteToDisk),
           ],
         })
       } else {
