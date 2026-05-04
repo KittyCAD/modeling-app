@@ -40,31 +40,31 @@ Assign someone to each section of the manual checklist.
 ### Windows via ???
 
 * [ ] Download the release build for this platform
-* [ ] Confirm the application opens (dismiss the updater)
-* [ ] Create a project
-* [ ] Run two basic Zookeeper prompts
+* [ ] Install and run it (ignore the status bar update)
+* [ ] Create a new project
+* [ ] Send and queue two basic Zookeeper prompts
 * [ ] Confirm the result is viewable in an engine stream
-* [ ] Use 'Check for updates' to bring back the updater toast
+* [ ] Click **Restart to update** in the status bar
 * [ ] Confirm the app can update to the previous release
 
 ### macOS via ???
 
 * [ ] Download the release build for this platform
-* [ ] Confirm the application opens (dismiss the updater)
-* [ ] Create a project
-* [ ] Run two basic Zookeeper prompts
+* [ ] Install and run it (ignore the status bar update)
+* [ ] Create a new project
+* [ ] Send and queue two basic Zookeeper prompts
 * [ ] Confirm the result is viewable in an engine stream
-* [ ] Use 'Check for updates' to bring back the updater toast
+* [ ] Click **Restart to update** in the status bar
 * [ ] Confirm the app can update to the previous release
 
 ### Linux via ???
 
 * [ ] Download the release build for this platform
-* [ ] Confirm the application opens (dismiss the updater)
-* [ ] Create a project
-* [ ] Run two basic Zookeeper prompts
+* [ ] Install and run it (ignore the status bar update)
+* [ ] Create a new project
+* [ ] Send and queue two basic Zookeeper prompts
 * [ ] Confirm the result is viewable in an engine stream
-* [ ] Use 'Check for updates' to bring back the updater toast
+* [ ] Click **Restart to update** in the status bar
 * [ ] Confirm the app can update to the previous release
 
 ## 3. Draft release notes
@@ -134,18 +134,6 @@ Paste a link to the PR below.
 
 Release PR: ???
 
-# Website
-
-<details><summary>Instructions</summary><br>
-
-Merge the latest `documentation` Dependabot PR [here](https://github.com/KittyCAD/website/pulls?q=is%3Apr+documentation). If none are present, click **Check for updates** [here](https://github.com/KittyCAD/website/network/updates/17261214/jobs).
-
-Paste a link to the PR below or replace `???` with `N/A`.
-
-</details><br>
-
-Release PR: ???
-
 # CLI
 
 <details><summary>Instructions</summary><br>
@@ -179,6 +167,18 @@ Release PR: ???
 Merge the corresponding `zoo-kcl` Dependabot PR [here](https://github.com/KittyCAD/text-to-cad/pulls?q=is%3Apr+zoo-kcl). If none are present, click **Check for updates** [here](https://github.com/KittyCAD/text-to-cad/network/updates/27829916/jobs).
 
 Paste a link to the PR below.
+
+</details><br>
+
+Release PR: ???
+
+# Website
+
+<details><summary>Instructions</summary><br>
+
+Merge the latest `documentation` Dependabot PR [here](https://github.com/KittyCAD/website/pulls?q=is%3Apr+documentation). If none are present, click **Check for updates** [here](https://github.com/KittyCAD/website/network/updates/17261214/jobs).
+
+Paste a link to the PR below or replace `???` with `N/A`.
 
 </details><br>
 

@@ -215,6 +215,32 @@ describe('KclManager diagnostics', () => {
     })
   })
 
+  it('writes to file for same-code sketch checkpoint commits', () => {
+    const previewCode = 'drag preview source'
+    const { kclManager } = createKclManagerTestHarness(previewCode)
+    const writeToFileSpy = vi
+      .spyOn(kclManager, 'writeToFile')
+      .mockResolvedValue(undefined)
+    ;(kclManager as any).lastCommittedCode = 'source before drag'
+    ;(kclManager as any).lastCommittedSketchCheckpointId = 2
+
+    kclManager.updateCodeEditor(
+      previewCode,
+      {
+        shouldExecute: false,
+        shouldWriteToDisk: true,
+        shouldResetCamera: false,
+      },
+      {
+        sketchCheckpointId: 3,
+      }
+    )
+
+    expect(writeToFileSpy).toHaveBeenCalledWith(previewCode, undefined, {
+      suppressConflictToast: true,
+    })
+  })
+
   it('does not write to file when the code is unchanged and shouldWriteToDisk is false', () => {
     const { kclManager } = createKclManagerTestHarness('persist me')
     const writeToFileSpy = vi
