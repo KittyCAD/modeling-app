@@ -1,9 +1,11 @@
 import { useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
+import { useSearchParams } from 'react-router-dom'
 import { waitFor } from 'xstate'
 
+import type { KclManager } from '@src/lang/KclManager'
 import { base64ToString } from '@src/lib/base64'
+import { useApp } from '@src/lib/boot'
 import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
@@ -17,23 +19,22 @@ import {
   PROJECT_ENTRYPOINT,
   PROJECT_ID_QUERY_PARAM,
 } from '@src/lib/constants'
-import { isDesktop } from '@src/lib/isDesktop'
-import type { FileLinkParams } from '@src/lib/links'
+import { getUniqueProjectName } from '@src/lib/desktopFS'
 import {
   downloadProjectById,
   getPublicProjectNameById,
 } from '@src/lib/downloadProject'
-import { getUniqueProjectName } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
+import { hasWebAppFileBrowserFeatureEnabled } from '@src/lib/fs-zds/opfsCloud'
+import { isDesktop } from '@src/lib/isDesktop'
+import type { FileLinkParams } from '@src/lib/links'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
-import { useApp } from '@src/lib/boot'
-import type { KclManager } from '@src/lang/KclManager'
 import { err } from '@src/lib/trap'
+import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import {
   SystemIOMachineEvents,
   waitForIdleState,
 } from '@src/machines/systemIO/utils'
-import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 
 // For initializing the command arguments, we actually want `method` to be undefined
 // so that we don't skip it in the command palette.
@@ -50,11 +51,13 @@ export type CreateFileSchemaMethodOptional = Omit<
  * `?createFile`
  * "?cmd=<some-command-name>&groupId=<some-group-id>"
  */
-export function useQueryParamEffects(kclManager: KclManager) {
+export function useQueryParamEffects(_kclManager: KclManager) {
   const app = useApp()
   const { auth, commands } = app
   const authState = auth.useAuthState()
   const [searchParams, setSearchParams] = useSearchParams()
+  const hasMultiProjectFileBrowser =
+    isDesktop() || hasWebAppFileBrowserFeatureEnabled()
   const hasAskToOpen = !isDesktop() && searchParams.has(ASK_TO_OPEN_QUERY_PARAM)
   // Let hasAskToOpen be handled by the OpenInDesktopAppHandler component first to avoid racing with it,
   // only deal with other params after user decided to open in desktop or web.
@@ -72,15 +75,17 @@ export function useQueryParamEffects(kclManager: KclManager) {
   /**
    * Watches for legacy `?create-file` hook, which share links currently use.
    */
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Existing query-param effects intentionally use selected stable dependencies.
   useEffect(() => {
     if (shouldInvokeCreateFile && authState.matches('loggedIn')) {
-      const webProjectName = !isDesktop()
+      const webProjectName = !hasMultiProjectFileBrowser
         ? (app.settings.actor.getSnapshot().context.currentProject?.name ??
           DEFAULT_WEB_PROJECT_NAME)
         : undefined
       const argDefaultValues = buildCreateFileCommandArgs(
         searchParams,
-        webProjectName
+        webProjectName,
+        hasMultiProjectFileBrowser
       )
       commands.send({
         type: 'Find and select command',
@@ -100,8 +105,11 @@ export function useQueryParamEffects(kclManager: KclManager) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [shouldInvokeCreateFile, setSearchParams, authState])
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Existing query-param effects intentionally use selected stable dependencies.
   useEffect(() => {
-    if (!shouldOpenProjectId || !authState.matches('loggedIn')) return
+    if (!shouldOpenProjectId || !authState.matches('loggedIn')) {
+      return
+    }
 
     const projectId = searchParams.get(PROJECT_ID_QUERY_PARAM)
     if (!projectId) {
@@ -142,7 +150,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
         return
       }
 
-      const files = !isDesktop()
+      const files = !hasMultiProjectFileBrowser
         ? downloadedProject.files.map((file) => ({
             ...file,
             requestedProjectName:
@@ -154,7 +162,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
           }))
         : downloadedProject.files
       const requestedFileNameWithExtension =
-        !isDesktop() && downloadedProject.entrypointFilePath
+        !hasMultiProjectFileBrowser && downloadedProject.entrypointFilePath
           ? fsZds.join(
               reservedProjectDestination.requestedSubDirectoryName,
               downloadedProject.entrypointFilePath
@@ -211,7 +219,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
       return new Error('Unable to determine the project directory.')
     }
 
-    if (isDesktop()) {
+    if (hasMultiProjectFileBrowser) {
       const projectDirectoryEntries = await fsZds.readdir(projectDirectoryPath)
       const requestedProjectName = getUniqueProjectName(
         projectName,
@@ -261,15 +269,23 @@ export function useQueryParamEffects(kclManager: KclManager) {
    * Generic commands are triggered by query parameters
    * with the pattern: `?cmd=<command-name>&groupId=<group-id>`
    */
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Existing query-param effects intentionally use selected stable dependencies.
   useEffect(() => {
-    if (!shouldInvokeGenericCmd || !authState.matches('loggedIn')) return
+    if (!shouldInvokeGenericCmd || !authState.matches('loggedIn')) {
+      return
+    }
 
     const rawCommandData = buildGenericCommandArgs(searchParams)
-    if (!rawCommandData) return
+    if (!rawCommandData) {
+      return
+    }
     const commandData = rawCommandData
 
-    // Web-only: prefill command data to automatically add to the demo project
-    if (!isDesktop() && commandData.name === 'add-kcl-file-to-project') {
+    // Unflagged web-only: prefill command data to automatically add to the demo project.
+    if (
+      !hasMultiProjectFileBrowser &&
+      commandData.name === 'add-kcl-file-to-project'
+    ) {
       if (commandData.argDefaultValues?.projectName === 'browser') {
         const currentProjectName =
           app.settings.actor.getSnapshot().context.currentProject?.name
@@ -284,7 +300,9 @@ export function useQueryParamEffects(kclManager: KclManager) {
     // Helper function to send the command exactly once
     let sent = false
     function sendCommand() {
-      if (sent) return
+      if (sent) {
+        return
+      }
       sent = true
       commands.send({
         type: 'Find and select command',
@@ -293,9 +311,9 @@ export function useQueryParamEffects(kclManager: KclManager) {
       cleanupQueryParams()
     }
 
-    // Web-only: wait for folders to load before sending the command
+    // Unflagged web-only: wait for folders to load before sending the command.
     if (
-      !isDesktop() &&
+      !hasMultiProjectFileBrowser &&
       commandData.name === 'add-kcl-file-to-project' &&
       commandData.argDefaultValues?.projectName
     ) {
@@ -351,7 +369,8 @@ export function useQueryParamEffects(kclManager: KclManager) {
 
 function buildCreateFileCommandArgs(
   searchParams: URLSearchParams,
-  webProjectName?: string
+  webProjectName: string | undefined,
+  hasMultiProjectFileBrowser: boolean
 ) {
   const params: Omit<FileLinkParams, 'isRestrictedToOrg'> = {
     code: base64ToString(decodeURIComponent(searchParams.get('code') ?? '')),
@@ -361,9 +380,9 @@ function buildCreateFileCommandArgs(
   const argDefaultValues: CreateFileSchemaMethodOptional = {
     name: PROJECT_ENTRYPOINT,
     code: params.code || '',
-    method: isDesktop() ? undefined : 'existingProject',
+    method: hasMultiProjectFileBrowser ? undefined : 'existingProject',
   }
-  if (!isDesktop()) {
+  if (!hasMultiProjectFileBrowser) {
     argDefaultValues.projectName = webProjectName ?? DEFAULT_WEB_PROJECT_NAME
   }
 

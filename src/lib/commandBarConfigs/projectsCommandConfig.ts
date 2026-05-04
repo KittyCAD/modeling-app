@@ -1,11 +1,12 @@
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
+import { hasWebAppFileBrowserFeatureEnabled } from '@src/lib/fs-zds/opfsCloud'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type { ActorRefFrom, ContextFrom } from 'xstate'
-import type { commandBarMachine } from '@src/machines/commandBarMachine'
 export type ProjectsCommandSchema = {
   'Import file from URL': {
     name: string
@@ -20,6 +21,9 @@ export function createProjectCommands({
 }: {
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
 }) {
+  const hasMultiProjectFileBrowser =
+    isDesktop() || hasWebAppFileBrowserFeatureEnabled()
+
   /**
    * Helper functions instead of importing these due to circular deps.
    * unable to resolve this in a cleaner way at the moment.
@@ -31,6 +35,24 @@ export function createProjectCommands({
     return folders
   }
 
+  const folderOptions = () => {
+    const folders = folderSnapshot()
+    const options: CommandArgumentOption<string>[] = []
+    if (!folders) {
+      return options
+    }
+
+    for (const folder of folders) {
+      options.push({
+        name: folder.name,
+        value: folder.name,
+        isCurrent: false,
+      })
+    }
+
+    return options
+  }
+
   const defaultProjectFolderNameSnapshot = () => {
     const { defaultProjectFolderName } = systemIOActor.getSnapshot().context
     return defaultProjectFolderName
@@ -39,7 +61,7 @@ export function createProjectCommands({
   const openProjectCommand: Command = {
     icon: 'folder',
     name: 'Open project',
-    displayName: `Open project`,
+    displayName: 'Open project',
     description: 'Open a project',
     groupId: 'projects',
     needsReview: false,
@@ -55,20 +77,7 @@ export function createProjectCommands({
       name: {
         required: true,
         inputType: 'options',
-        options: () => {
-          const folders = folderSnapshot()
-          const options: CommandArgumentOption<string>[] = []
-          if (!folders) return options
-
-          folders.forEach((folder) => {
-            options.push({
-              name: folder.name,
-              value: folder.name,
-              isCurrent: false,
-            })
-          })
-          return options
-        },
+        options: folderOptions,
       },
     },
   }
@@ -76,7 +85,7 @@ export function createProjectCommands({
   const createProjectCommand: Command = {
     icon: 'folder',
     name: 'Create project',
-    displayName: `Create project`,
+    displayName: 'Create project',
     description: 'Create a project',
     groupId: 'projects',
     needsReview: false,
@@ -100,7 +109,7 @@ export function createProjectCommands({
   const deleteProjectCommand: Command = {
     icon: 'folder',
     name: 'Delete project',
-    displayName: `Delete project`,
+    displayName: 'Delete project',
     description: 'Delete a project',
     groupId: 'projects',
     needsReview: true,
@@ -121,20 +130,7 @@ export function createProjectCommands({
       name: {
         inputType: 'options',
         required: true,
-        options: () => {
-          const folders = folderSnapshot()
-          const options: CommandArgumentOption<string>[] = []
-          if (!folders) return options
-
-          folders.forEach((folder) => {
-            options.push({
-              name: folder.name,
-              value: folder.name,
-              isCurrent: false,
-            })
-          })
-          return options
-        },
+        options: folderOptions,
       },
     },
   }
@@ -142,7 +138,7 @@ export function createProjectCommands({
   const renameProjectCommand: Command = {
     icon: 'folder',
     name: 'Rename project',
-    displayName: `Rename project`,
+    displayName: 'Rename project',
     description: 'Rename a project',
     groupId: 'projects',
     needsReview: true,
@@ -168,20 +164,7 @@ export function createProjectCommands({
       oldName: {
         inputType: 'options',
         required: true,
-        options: () => {
-          const folders = folderSnapshot()
-          const options: CommandArgumentOption<string>[] = []
-          if (!folders) return options
-
-          folders.forEach((folder) => {
-            options.push({
-              name: folder.name,
-              value: folder.name,
-              isCurrent: false,
-            })
-          })
-          return options
-        },
+        options: folderOptions,
       },
       newName: {
         inputType: 'string',
@@ -220,14 +203,14 @@ export function createProjectCommands({
         inputType: 'options',
         required: true,
         skip: true,
-        options: isDesktop()
+        options: hasMultiProjectFileBrowser
           ? [
               { name: 'New project', value: 'newProject' },
               { name: 'Existing project', value: 'existingProject' },
             ]
           : [{ name: 'Overwrite', value: 'existingProject' }],
         valueSummary(value) {
-          return isDesktop()
+          return hasMultiProjectFileBrowser
             ? value === 'newProject'
               ? 'New project'
               : 'Existing project'
@@ -239,27 +222,14 @@ export function createProjectCommands({
       projectName: {
         inputType: 'options',
         required: (commandsContext) =>
-          isDesktop() &&
+          hasMultiProjectFileBrowser &&
           commandsContext.argumentsToSubmit.method === 'existingProject',
         skip: true,
-        options: (_, _context) => {
-          const folders = folderSnapshot()
-          const options: CommandArgumentOption<string>[] = []
-          if (!folders) return options
-
-          folders.forEach((folder) => {
-            options.push({
-              name: folder.name,
-              value: folder.name,
-              isCurrent: false,
-            })
-          })
-          return options
-        },
+        options: folderOptions,
       },
       name: {
         inputType: 'string',
-        required: isDesktop(),
+        required: hasMultiProjectFileBrowser,
         skip: true,
       },
       code: {
@@ -273,7 +243,7 @@ export function createProjectCommands({
       },
     },
     reviewMessage(commandBarContext) {
-      return isDesktop()
+      return hasMultiProjectFileBrowser
         ? `Will add the contents from URL to a new ${
             commandBarContext.argumentsToSubmit.method === 'newProject'
               ? 'project with file main.kcl'
@@ -283,12 +253,11 @@ export function createProjectCommands({
           }", and set default units to "${
             commandBarContext.argumentsToSubmit.units
           }".`
-        : `Will overwrite the contents of the current file with the contents from the URL.`
+        : 'Will overwrite the contents of the current file with the contents from the URL.'
     },
   }
 
-  /** No disk-writing commands are available in the browser */
-  const projectCommands = window.electron
+  const projectCommands = hasMultiProjectFileBrowser
     ? [
         openProjectCommand,
         createProjectCommand,

@@ -1,24 +1,29 @@
 import { App } from '@src/lib/app'
-import React from 'react'
-import { isPlaywright } from '@src/lib/isPlaywright'
 import {
+  StorageName,
   moduleFsViaModuleImport,
   moduleFsViaWindow,
-  StorageName,
 } from '@src/lib/fs-zds'
+import { userHasWebAppFileBrowserFeature } from '@src/lib/fs-zds/opfsCloud'
+import { isPlaywright } from '@src/lib/isPlaywright'
+import React from 'react'
 
 // Earliest as possible point to configure the fs layer.
 // In the future we can have the user switch between them at run-time, but
 // for now, there is no intention.
-let fsModulePromise
+let fsModulePromise: Promise<unknown>
+let browserStorageName = StorageName.OPFS
 if (window.electron) {
   fsModulePromise = moduleFsViaModuleImport({
     type: StorageName.ElectronFS,
     options: {},
   })
 } else {
+  browserStorageName = (await userHasWebAppFileBrowserFeature())
+    ? StorageName.OPFSCloud
+    : StorageName.OPFS
   fsModulePromise = moduleFsViaModuleImport({
-    type: StorageName.OPFS,
+    type: browserStorageName,
     options: {},
   })
 }
@@ -30,7 +35,7 @@ await fsModulePromise
 // page.evaluate.
 if (typeof window !== 'undefined' && isPlaywright()) {
   void moduleFsViaWindow({
-    type: window.electron ? StorageName.ElectronFS : StorageName.OPFS,
+    type: window.electron ? StorageName.ElectronFS : browserStorageName,
     options: {},
   })
 }

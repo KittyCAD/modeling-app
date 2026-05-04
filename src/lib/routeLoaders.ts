@@ -1,11 +1,11 @@
-import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
-import type { LoaderFunction } from 'react-router-dom'
-import fsZds from '@src/lib/fs-zds'
-import { redirect } from 'react-router-dom'
-import { waitFor } from 'xstate'
+import { projectSkeletonCreate } from '@src/lang/project'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
-import { getProjectInfo, getInitialDefaultDir } from '@src/lib/desktop'
+import type { App } from '@src/lib/app'
+import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
+import { getInitialDefaultDir, getProjectInfo } from '@src/lib/desktop'
 import { readAppSettingsFile } from '@src/lib/desktop'
+import fsZds from '@src/lib/fs-zds'
+import { hasWebAppFileBrowserFeatureEnabled } from '@src/lib/fs-zds/opfsCloud'
 import {
   PATHS,
   getParentAbsolutePath,
@@ -14,22 +14,22 @@ import {
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
-import type { App } from '@src/lib/app'
 import type {
   FileLoaderData,
   HomeLoaderData,
   IndexLoaderData,
 } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { projectSkeletonCreate } from '@src/lang/project'
+import type { LoaderFunction } from 'react-router-dom'
+import { redirect } from 'react-router-dom'
+import { waitFor } from 'xstate'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
 
 /**
  * The base loader is used to reroute `/` root path requests,
- * to the home route on desktop, and to a constrained single project view on web.
- *
- * Once we get cloud storage or another solution we'll introduce the home, multi-project view on web.
+ * to the home route on desktop and flagged cloud-backed web sessions,
+ * and to a constrained single project view on unflagged web sessions.
  */
 export const baseLoader =
   ({
@@ -44,8 +44,8 @@ export const baseLoader =
       Boolean(window.electron)
     )
 
-    // Desktop, redirect and return early
-    if (window.electron) {
+    // Desktop and flagged cloud-backed web sessions use the multi-project home.
+    if (window.electron || hasWebAppFileBrowserFeatureEnabled()) {
       return redirect(PATHS.HOME + routerSearch)
     }
 
@@ -80,8 +80,9 @@ export const baseLoader =
         )
       )
 
-      const fileURLPath =
-        PATHS.FILE + '/' + encodeURIComponent(requestedProjectName)
+      const fileURLPath = `${PATHS.FILE}/${encodeURIComponent(
+        requestedProjectName
+      )}`
       return redirect(fileURLPath + routerSearch)
     }
   }
@@ -113,7 +114,7 @@ export const fileLoader =
 
     const wasmInstance = await kclManager.wasmInstancePromise
 
-    let settings = await loadAndValidateSettings(
+    const settings = await loadAndValidateSettings(
       wasmInstance,
       heuristicProjectFilePath
     )
@@ -247,9 +248,9 @@ export const homeLoader =
   }: {
     app: App
   }): LoaderFunction =>
-  async ({ request }): Promise<HomeLoaderData | Response> => {
-    // If on web, bump out to root, which will redirect to a project.
-    if (!window.electron) {
+  async (): Promise<HomeLoaderData | Response> => {
+    // If on unflagged web, bump out to root, which will redirect to a project.
+    if (!window.electron && !hasWebAppFileBrowserFeatureEnabled()) {
       return redirect(PATHS.INDEX)
     }
 

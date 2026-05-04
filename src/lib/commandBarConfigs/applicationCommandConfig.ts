@@ -1,6 +1,6 @@
 import env from '@src/env'
-import fsZds from '@src/lib/fs-zds'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import type { App } from '@src/lib/app'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
   writeEnvironmentConfigurationKittycadWebSocketUrl,
@@ -8,27 +8,28 @@ import {
   writeEnvironmentFile,
 } from '@src/lib/desktop'
 import { getNextFileName, getUniqueProjectName } from '@src/lib/desktopFS'
+import fsZds from '@src/lib/fs-zds'
+import { hasWebAppFileBrowserFeatureEnabled } from '@src/lib/fs-zds/opfsCloud'
 import { isDesktop } from '@src/lib/isDesktop'
 import { everyKclSample, findKclSample } from '@src/lib/kclSamples'
+import { isUserLoadableLayoutKey, userLoadableLayouts } from '@src/lib/layout'
 import {
-  getStringAfterLastSeparator,
   getEXTNoPeriod,
+  getStringAfterLastSeparator,
   joinOSPaths,
   webSafePathSplit,
 } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
 import { isArray, returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom } from 'xstate'
-import { isUserLoadableLayoutKey, userLoadableLayouts } from '@src/lib/layout'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { SettingsActorType } from '@src/machines/settingsMachine'
-import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import type { App } from '@src/lib/app'
 
 function onSubmitKCLSampleCreation({
   sample,
@@ -37,9 +38,9 @@ function onSubmitKCLSampleCreation({
   systemIOActor,
   isProjectNew,
 }: {
-  sample: any
+  sample: string
   kclSample: ReturnType<typeof findKclSample>
-  uniqueNameIfNeeded: any
+  uniqueNameIfNeeded: string
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
   isProjectNew: boolean
 }) {
@@ -54,11 +55,9 @@ function onSubmitKCLSampleCreation({
   const files = kclSample.files
 
   const filePromises = files.map((file) => {
-    const sampleCodeUrl =
-      (isDesktop() ? '.' : '') +
-      `/kcl-samples/${encodeURIComponent(
-        projectPathPart
-      )}/${encodeURIComponent(file)}`
+    const sampleCodeUrl = `${isDesktop() ? '.' : ''}/kcl-samples/${encodeURIComponent(
+      projectPathPart
+    )}/${encodeURIComponent(file)}`
     return fetch(sampleCodeUrl).then((response) => {
       return {
         response,
@@ -88,7 +87,7 @@ function onSubmitKCLSampleCreation({
        * When adding assemblies to an existing project create the assembly into a unique sub directory
        */
       if (!isProjectNew) {
-        requestedFiles.forEach((requestedFile) => {
+        for (const requestedFile of requestedFiles) {
           const subDirectoryName = projectPathPart
           const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot(
             systemIOActor.getSnapshot().context,
@@ -102,7 +101,7 @@ function onSubmitKCLSampleCreation({
             requestedFile.requestedProjectName,
             uniqueSubDirectoryName
           )
-        })
+        }
       }
 
       if (requestedFiles.length === 1) {
@@ -137,6 +136,27 @@ export function createApplicationCommands({
   app: App
   wasmInstance: ModuleType
 }) {
+  const hasMultiProjectFileBrowser =
+    isDesktop() || hasWebAppFileBrowserFeatureEnabled()
+
+  const folderOptions = () => {
+    const { folders } = app.systemIOActor.getSnapshot().context
+    const options: CommandArgumentOption<string>[] = []
+    if (!folders) {
+      return options
+    }
+
+    for (const folder of folders) {
+      options.push({
+        name: folder.name,
+        value: folder.name,
+        isCurrent: false,
+      })
+    }
+
+    return options
+  }
+
   const addKCLFileToProject: Command = {
     name: 'add-kcl-file-to-project',
     displayName: 'Add file to project',
@@ -284,7 +304,7 @@ export function createApplicationCommands({
           const MAX_LENGTH = 12
           if (typeof value === 'string') {
             return value.length > MAX_LENGTH
-              ? value.substring(0, MAX_LENGTH) + '...'
+              ? `${value.substring(0, MAX_LENGTH)}...`
               : value
           }
           return value
@@ -303,8 +323,10 @@ export function createApplicationCommands({
         inputType: 'options',
         required: true,
         skip: true,
-        defaultValue: window.electron ? undefined : 'existingProject',
-        options: window.electron
+        defaultValue: hasMultiProjectFileBrowser
+          ? undefined
+          : 'existingProject',
+        options: hasMultiProjectFileBrowser
           ? [
               { name: 'New project', value: 'newProject', isCurrent: true },
               { name: 'Existing project', value: 'existingProject' },
@@ -320,20 +342,7 @@ export function createApplicationCommands({
           commandsContext.argumentsToSubmit.method === 'existingProject',
         skip: true,
         defaultValue: () => app.project?.name,
-        options: (_, _context) => {
-          const { folders } = app.systemIOActor.getSnapshot().context
-          const options: CommandArgumentOption<string>[] = []
-          if (!folders) return options
-
-          folders.forEach((folder) => {
-            options.push({
-              name: folder.name,
-              value: folder.name,
-              isCurrent: false,
-            })
-          })
-          return options
-        },
+        options: folderOptions,
       },
       newProjectName: {
         inputType: 'string',
@@ -346,7 +355,9 @@ export function createApplicationCommands({
         skip: true,
         hidden: false,
         valueSummary: (value) => {
-          if (typeof value === 'string') return fsZds.basename(value)
+          if (typeof value === 'string') {
+            return fsZds.basename(value)
+          }
           if (isArray(value) && typeof value[0] === 'string') {
             return fsZds.basename(value[0])
           }
@@ -382,7 +393,9 @@ export function createApplicationCommands({
     onSubmit: (data) => {
       if (data) {
         const folders = app.systemIOActor.getSnapshot().context.folders
-        if (!folders) return
+        if (!folders) {
+          return
+        }
         const kclSample = findKclSample(data.sample)
         if (!kclSample) {
           toast.error(
@@ -422,7 +435,7 @@ export function createApplicationCommands({
           const MAX_LENGTH = 12
           if (typeof value === 'string') {
             return value.length > MAX_LENGTH
-              ? value.substring(0, MAX_LENGTH) + '...'
+              ? `${value.substring(0, MAX_LENGTH)}...`
               : value
           }
           return value
@@ -486,7 +499,7 @@ export function createApplicationCommands({
     },
     onSubmit: (data) => {
       const environmentName = env().VITE_ZOO_BASE_DOMAIN
-      if (environmentName)
+      if (environmentName) {
         writeEnvironmentConfigurationKittycadWebSocketUrl(
           environmentName,
           data?.url ?? ''
@@ -495,6 +508,7 @@ export function createApplicationCommands({
             window.location.reload()
           })
           .catch(reportRejection)
+      }
     },
     args: {
       url: {
@@ -530,7 +544,7 @@ export function createApplicationCommands({
     },
     onSubmit: (data) => {
       const environmentName = env().VITE_ZOO_BASE_DOMAIN
-      if (environmentName)
+      if (environmentName) {
         writeEnvironmentConfigurationMlephantWebSocketUrl(
           environmentName,
           data?.url ?? ''
@@ -539,6 +553,7 @@ export function createApplicationCommands({
             window.location.reload()
           })
           .catch(reportRejection)
+      }
     },
     args: {
       url: {
