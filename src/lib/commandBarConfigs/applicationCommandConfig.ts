@@ -603,8 +603,27 @@ export function createApplicationCommands({
     },
   }
 
+  const checkForUpdatesCommand: Command = {
+    name: 'check-for-updates',
+    displayName: 'Check for updates',
+    description: 'Check for a newer desktop app version.',
+    needsReview: false,
+    icon: 'download',
+    groupId: 'application',
+    onSubmit: () => {
+      if (!window.electron) {
+        return new Error(
+          'Checking for updates is only available in the desktop app.'
+        )
+      }
+
+      return window.electron.appCheckForUpdates()
+    },
+  }
+
   return [
     addKCLFileToProject,
+    ...(isDesktop() ? [checkForUpdatesCommand] : []),
     resetLayoutCommand,
     setLayoutCommand,
     createASampleDesktopOnly,
