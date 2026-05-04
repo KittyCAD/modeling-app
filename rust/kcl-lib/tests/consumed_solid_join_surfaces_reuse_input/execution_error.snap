@@ -10,7 +10,7 @@ KCL Semantic error
  50 │ tool = extrude(region(point = [13, 13], sketch = toolSketch), length = 2)
  51 │ second = subtract(pieces[0], tools = [tool])
     ·          ─────────────────┬─────────────────┬
-    ·                           ╰── tests/consumed_solid_join_surfaces_reuse_input/input.kcl
+    ·                           │                 ╰── tests/consumed_solid_join_surfaces_reuse_input/input.kcl
     ·                           ╰── tests/consumed_solid_join_surfaces_reuse_input/input.kcl
     ╰────
   ╰─▶ KCL Semantic error
@@ -18,11 +18,11 @@ KCL Semantic error
         × semantic: `pieces` was already consumed by a `joinSurfaces`
         │ operation. The operation result is now in `joined`; use that for
         │ subsequent operations.
-          ╭─[51:10]
+          ╭─[51:19]
        50 │ tool = extrude(region(point = [13, 13], sketch = toolSketch),
       length = 2)
        51 │ second = subtract(pieces[0], tools = [tool])
-          ·          ─────────────────┬─────────────────
-          ·                           ╰── tests/
+          ·                   ────┬────
+          ·                       ╰── tests/
       consumed_solid_join_surfaces_reuse_input/input.kcl
           ╰────

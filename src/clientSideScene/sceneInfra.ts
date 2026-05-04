@@ -32,7 +32,7 @@ import type { Coords2d } from '@src/lang/util'
 import { vec2WithinDistance } from '@src/lang/std/sketch'
 import type { Axis, NonCodeSelection } from '@src/machines/modelingSharedTypes'
 import { type BaseUnit } from '@src/lib/settings/settingsTypes'
-import { Signal } from '@src/lib/signal'
+import { Signal as LegacySignal } from '@src/lib/signal'
 import { Themes } from '@src/lib/theme'
 import { baseUnitToMm, getAngle, getLength } from '@src/lib/utils'
 import type {
@@ -109,7 +109,7 @@ export class SceneInfra {
   private onBeforeRender: (() => void) | null = null // Used by sketch solve currently to update segments to keep their size fixed in screen space
   lastMouseState: MouseState = { type: 'idle' }
 
-  public readonly baseUnitChange = new Signal()
+  public readonly baseUnitChange = new LegacySignal()
 
   onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onDragEndCallback: (arg: OnDragEndCallbackArgs) => Voidish = () => {}

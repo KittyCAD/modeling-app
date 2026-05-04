@@ -1264,8 +1264,6 @@ impl Node<SketchBlock> {
         };
         #[cfg(not(feature = "artifact-graph"))]
         let _ = on_object_id;
-        #[cfg(not(feature = "artifact-graph"))]
-        let _ = sketch_id;
         #[cfg(feature = "artifact-graph")]
         let sketch_ctor_on = sketch_on_frontend_plane(&self.arguments, on_object_id);
         #[cfg(feature = "artifact-graph")]
@@ -1324,15 +1322,12 @@ impl Node<SketchBlock> {
             self.prep_mem(exec_state.mut_stack().snapshot(), exec_state);
 
             // Track that we're executing a sketch block.
-            #[cfg(feature = "artifact-graph")]
             let initial_sketch_block_state = {
                 SketchBlockState {
                     sketch_id: Some(sketch_id),
                     ..Default::default()
                 }
             };
-            #[cfg(not(feature = "artifact-graph"))]
-            let initial_sketch_block_state = SketchBlockState::default();
 
             let original_value = exec_state.mod_local.sketch_block.replace(initial_sketch_block_state);
 
@@ -3155,6 +3150,8 @@ impl Node<BinaryExpression> {
                             }
                         }
                         SketchConstraintKind::Distance { points, label_position } => {
+                            #[cfg(not(feature = "artifact-graph"))]
+                            let _ = label_position;
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];
@@ -3535,6 +3532,8 @@ impl Node<BinaryExpression> {
                             }
                         }
                         SketchConstraintKind::HorizontalDistance { points, label_position } => {
+                            #[cfg(not(feature = "artifact-graph"))]
+                            let _ = label_position;
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];
@@ -3654,6 +3653,8 @@ impl Node<BinaryExpression> {
                             }
                         }
                         SketchConstraintKind::VerticalDistance { points, label_position } => {
+                            #[cfg(not(feature = "artifact-graph"))]
+                            let _ = label_position;
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];
