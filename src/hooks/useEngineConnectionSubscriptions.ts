@@ -83,7 +83,7 @@ export function useEngineConnectionSubscriptions() {
       let res = await engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
-          type: 'query_entity_type' as any,
+          type: 'query_entity_type',
           entity_id: entityId,
         },
         cmd_id: uuidv4(),
@@ -109,7 +109,7 @@ export function useEngineConnectionSubscriptions() {
       }
 
       if (isModelingResponse(res)) {
-        const mr = res.resp.data.modeling_response as any
+        const mr = res.resp.data.modeling_response
         if (mr.type === 'query_entity_type') {
           applyHoverReference(mr.data?.reference)
           resolvedEntityIdRef.current = entityId
@@ -169,7 +169,7 @@ export function useEngineConnectionSubscriptions() {
       },
     })
     const unSubClick = engineCommandManager.subscribeTo({
-      event: 'query_entity_type_with_point' as any, // TODO: Add to generated types when OpenAPI spec is updated
+      event: 'query_entity_type_with_point',
       callback: (engineEvent) => {
         const isSketchNoFace = stateRef.current.matches('Sketch no face')
         const isSketchSolveMode = stateRef.current.matches('sketchSolveMode')

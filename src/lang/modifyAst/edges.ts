@@ -1213,15 +1213,6 @@ function sourceRangeMatch(
   return false
 }
 
-/** One entry per fillet/chamfer call: ordered face IDs from tags (stdlib + direct). Existing edgeRefs read from call when mutating. */
-interface UnifiedCallToFix {
-  range: [number, number, number]
-  orderedFaceIds: [string, string][]
-  hasExistingEdgeRefs: boolean
-  /** When tags were referenced as base.tags.x (e.g. bs.tags.edge7), the base expr so we emit the same style. */
-  tagsBaseExpr?: Expr | null
-}
-
 interface ExprWalkOptions {
   resolveWrappedCalls?: boolean
   includeCallUnlabeled?: boolean

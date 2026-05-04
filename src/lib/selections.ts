@@ -1,6 +1,10 @@
 import type { SelectionRange } from '@codemirror/state'
 import { EditorSelection } from '@codemirror/state'
-import type { EntityType, Point2d, WebSocketRequest } from '@kittycad/lib'
+import type {
+  Point2d,
+  QueryEntityTypeWithPoint,
+  WebSocketRequest,
+} from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type { Object3D } from 'three'
 import { Mesh } from 'three'
@@ -207,9 +211,9 @@ async function getRegionQueryPointForRegion(
       type: 'region_get_query_point',
       region_id: regionId,
     },
-  } as unknown as WebSocketRequest)
+  })
   if (!isModelingResponse(response)) return null
-  const queryPointResponse = (response as any).resp.data.modeling_response
+  const queryPointResponse = response.resp.data.modeling_response
   if (queryPointResponse?.type !== 'region_get_query_point') return null
   return queryPointResponse.data?.query_point ?? null
 }
@@ -270,18 +274,14 @@ export async function getPrimitiveSelectionForEntity(
       type: 'entity_get_primitive_index',
       entity_id: entityId,
     },
-  } as unknown as WebSocketRequest)
+  })
 
   if (!isModelingResponse(websocketResponse)) return null
 
-  const primitiveIndexResponse = (websocketResponse as any).resp.data
-    .modeling_response
+  const primitiveIndexResponse = websocketResponse.resp.data.modeling_response
   if (primitiveIndexResponse?.type !== 'entity_get_primitive_index') return null
 
-  const entityGetPrimitiveIndex = primitiveIndexResponse.data as {
-    primitive_index: number
-    entity_type: EntityType
-  }
+  const entityGetPrimitiveIndex = primitiveIndexResponse.data
 
   const parentEntityId = await resolveSweepParentEntityIdForEdge(
     entityId,
@@ -553,7 +553,7 @@ export function mergeEngineTopologyFallbackFromLiveSelection(
 }
 
 export async function getEventForQueryEntityTypeWithPoint(
-  engineEvent: any, // Using any for now since TypeScript types may not be updated yet
+  engineEvent: QueryEntityTypeWithPointEvent | undefined,
   {
     engineCommandManager,
     kclManager,
@@ -567,17 +567,10 @@ export async function getEventForQueryEntityTypeWithPoint(
   }
 ): Promise<ModelingMachineEvent | null> {
   // Engine may return reference under data (e.g. { type, data: { reference } }) or at top level (e.g. { type, reference })
-  const data = engineEvent?.data as
-    | {
-        reference?: any
-        entity_id?: string
-      }
-    | undefined
+  const data = getQueryEntityTypeWithPointEventData(engineEvent)
   const { ast, artifactGraph } = kclManager
-  const clickEntityId =
-    data?.entity_id ??
-    (engineEvent as { entity_id?: string } | undefined)?.entity_id
-  const reference = data?.reference ?? engineEvent?.reference
+  const clickEntityId = data?.entity_id
+  const reference = data?.reference
   if (!reference) {
     // No reference - clear selection (clicked in empty space)
     return {
@@ -1262,10 +1255,30 @@ function setEngineEntitySelectionV2(
       cmd: {
         type: 'select_entity',
         entities: entityReferences,
-      } as any, // @kittycad/lib types may not be updated yet, but engine supports it
+      },
       cmd_id: uuidv4(),
     },
-  ] as WebSocketRequest[]
+  ]
+}
+
+function getQueryEntityTypeWithPointData(
+  res: unknown
+): QueryEntityTypeWithPoint | undefined {
+  if (!isModelingResponse(res)) return undefined
+  const mr = res.resp.data.modeling_response
+  return mr.type === 'query_entity_type_with_point' ? mr.data : undefined
+}
+
+type QueryEntityTypeWithPointEvent =
+  | (QueryEntityTypeWithPoint & { entity_id?: string })
+  | { data: QueryEntityTypeWithPoint & { entity_id?: string } }
+
+function getQueryEntityTypeWithPointEventData(
+  engineEvent: QueryEntityTypeWithPointEvent | undefined
+): (QueryEntityTypeWithPoint & { entity_id?: string }) | undefined {
+  if (!engineEvent) return undefined
+  if ('data' in engineEvent) return engineEvent.data
+  return engineEvent
 }
 
 /**
@@ -1672,7 +1685,7 @@ export async function sendQueryEntityTypeWithPoint(
   let res = await systemDeps.engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd: {
-      type: 'query_entity_type_with_point' as any, // Type may not be in generated types yet
+      type: 'query_entity_type_with_point',
       selected_at_window: { x, y },
       selection_type: 'add',
     },
@@ -1686,12 +1699,7 @@ export async function sendQueryEntityTypeWithPoint(
   if (isArray(res)) {
     res = res[0]
   }
-  const singleRes = res
-  if (isModelingResponse(singleRes)) {
-    const mr = singleRes.resp.data.modeling_response as any
-    if (mr.type === 'query_entity_type_with_point') return mr.data
-  }
-  return undefined
+  return getQueryEntityTypeWithPointData(res)
 }
 
 /** Query entity at point using scene element for coordinates (e.g. renderer.domElement). Used when handling double-click from scene onClick. */
@@ -1708,7 +1716,7 @@ export async function sendQueryEntityTypeWithPointFromSceneClick(
   let res = await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd: {
-      type: 'query_entity_type_with_point' as any,
+      type: 'query_entity_type_with_point',
       selected_at_window: { x, y },
       selection_type: 'add',
     },
@@ -1716,12 +1724,7 @@ export async function sendQueryEntityTypeWithPointFromSceneClick(
   })
   if (!res) return undefined
   if (isArray(res)) res = res[0]
-  const singleRes = res
-  if (isModelingResponse(singleRes)) {
-    const mr = singleRes.resp.data.modeling_response as any
-    if (mr.type === 'query_entity_type_with_point') return mr.data
-  }
-  return undefined
+  return getQueryEntityTypeWithPointData(res)
 }
 
 /** Handle double-click in scene (onClick path): query entity, set selection, send Enter sketch. Call when args.mouseEvent.detail === 2 in idle. */
