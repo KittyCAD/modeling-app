@@ -14,7 +14,7 @@ import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import usePlatform from '@src/hooks/usePlatform'
 import { APP_NAME } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import { PATHS, toProjectRelativePath, toWebSafePath } from '@src/lib/paths'
+import { PATHS, getProjectRelativeFilePath } from '@src/lib/paths'
 import { useApp, useSingletons } from '@src/lib/boot'
 import type { IndexLoaderData } from '@src/lib/types'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
@@ -25,21 +25,6 @@ interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   enableMenu?: boolean
   project?: Project
   file?: FileEntry
-}
-
-const getProjectRelativeFilePath = (project?: Project, file?: FileEntry) => {
-  if (!file) {
-    return APP_NAME
-  }
-
-  if (project?.path && file.path) {
-    const relativeFilePath = toProjectRelativePath(project.path, file.path)
-    if (relativeFilePath) {
-      return relativeFilePath
-    }
-  }
-
-  return toWebSafePath(file.name || APP_NAME)
 }
 
 const ProjectSidebarMenu = ({
