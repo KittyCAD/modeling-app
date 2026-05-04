@@ -178,7 +178,7 @@ pub(crate) struct SketchModeState {
     /// Sticky per-constraint state persisted across sketch-mode mock solves.
     pub constraint_state: IndexMap<ObjectId, IndexMap<ConstraintKey, ConstraintState>>,
     /// The scene objects.
-    #[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
+    #[cfg_attr(not(feature = "artifact-graph"), allow(dead_code))]
     pub scene_objects: Vec<Object>,
 }
 

@@ -572,7 +572,7 @@ export class File extends EventTarget {
   private pathSignal: Signal<string>
   private fileWatcherKey = uuidv4()
   public watching: boolean = false
-  /** Array of listeners. TODO: Make this a CodeMirror-like Facet */
+  /** Array of listeners. TODO: Make this a CodeMirror-style extension point */
   public onWatchEvent: ((eventType: string, path: string) => void)[] = [
     () => ({}),
   ]
@@ -2968,6 +2968,7 @@ export class KclManager extends File {
       if (shouldCreateCheckpointOnlyHistoryCommit) {
         this.editorView.dispatch({
           annotations: [
+            updateOutsideEditorEvent,
             Transaction.addToHistory.of(true),
             isolateHistory.of('full'),
             ...(additionalSpec?.annotations || []),
@@ -2989,6 +2990,7 @@ export class KclManager extends File {
                 sketchCheckpointId: additionalSpec?.sketchCheckpointId,
               },
             }),
+            requestWriteToFile.of(resolvedOptions.shouldWriteToDisk),
           ],
         })
       } else {
