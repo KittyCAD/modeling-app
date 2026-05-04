@@ -255,6 +255,14 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         id: uuid::Uuid,
         source_range: Option<SourceRange>,
     ) -> Result<OkWebSocketResponseData, KclError> {
+        // Get the API call ID from session data if available
+        let session_data = self.get_session_data().await;
+        let api_call_id_msg = if let Some(session) = session_data.as_ref() {
+            format!(" (API call ID: {})", session.api_call_id)
+        } else {
+            String::new()
+        };
+
         let source_range = if let Some(source_range) = source_range {
             source_range
         } else {
@@ -290,12 +298,12 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
             // If the response is an error, return it.
             // Parsing will do that and we can ignore the result, we don't care.
-            let response = self.parse_websocket_response(resp.clone(), source_range)?;
+            let response = self.parse_websocket_response(resp.clone(), source_range, &api_call_id_msg)?;
             return Ok(response);
         }
 
         Err(KclError::new_engine(KclErrorDetails::new(
-            "async command timed out".to_string(),
+            format!("async command timed out{}", api_call_id_msg),
             vec![source_range],
         )))
     }
@@ -486,6 +494,14 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         orig_requests: Vec<(WebSocketRequest, SourceRange)>,
         source_range: SourceRange,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
+        // Get the API call ID from session data if available
+        let session_data = self.get_session_data().await;
+        let api_call_id_msg = if let Some(session) = session_data.as_ref() {
+            format!(" (API call ID: {})", session.api_call_id)
+        } else {
+            String::new()
+        };
+
         // Return early if we have no commands to send.
         if orig_requests.is_empty() {
             return Ok(OkWebSocketResponseData::Modeling {
@@ -527,7 +543,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 }
                 _ => {
                     return Err(KclError::new_engine(KclErrorDetails::new(
-                        format!("The request is not a modeling command: {req:?}"),
+                        format!("The request is not a modeling command: {req:?}{}", api_call_id_msg),
                         vec![*range],
                     )));
                 }
@@ -548,16 +564,16 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 let ws_resp = self
                     .inner_send_modeling_cmd(batch_id.into(), source_range, final_req, id_to_source_range.clone())
                     .await?;
-                let response = self.parse_websocket_response(ws_resp, source_range)?;
+                let response = self.parse_websocket_response(ws_resp, source_range, &api_call_id_msg)?;
 
                 // If we have a batch response, we want to return the specific id we care about.
                 if let OkWebSocketResponseData::ModelingBatch { responses } = response {
                     let responses = responses.into_iter().map(|(k, v)| (Uuid::from(k), v)).collect();
-                    self.parse_batch_responses(last_id.into(), id_to_source_range, responses)
+                    self.parse_batch_responses(last_id.into(), id_to_source_range, responses, &api_call_id_msg)
                 } else {
                     // We should never get here.
                     Err(KclError::new_engine(KclErrorDetails::new(
-                        format!("Failed to get batch response: {response:?}"),
+                        format!("Failed to get batch response: {response:?}{}", api_call_id_msg),
                         vec![source_range],
                     )))
                 }
@@ -572,17 +588,17 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 // an error.
                 let source_range = id_to_source_range.get(cmd_id.as_ref()).cloned().ok_or_else(|| {
                     KclError::new_engine(KclErrorDetails::new(
-                        format!("Failed to get source range for command ID: {cmd_id:?}"),
+                        format!("Failed to get source range for command ID: {cmd_id:?}{}", api_call_id_msg),
                         vec![],
                     ))
                 })?;
                 let ws_resp = self
                     .inner_send_modeling_cmd(cmd_id.into(), source_range, final_req, id_to_source_range)
                     .await?;
-                self.parse_websocket_response(ws_resp, source_range)
+                self.parse_websocket_response(ws_resp, source_range, &api_call_id_msg)
             }
             _ => Err(KclError::new_engine(KclErrorDetails::new(
-                format!("The final request is not a modeling command: {final_req:?}"),
+                format!("The final request is not a modeling command: {final_req:?}{}", api_call_id_msg),
                 vec![source_range],
             ))),
         }
@@ -652,6 +668,14 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
     ) -> Result<DefaultPlanes, KclError> {
+        // Get the API call ID from session data if available
+        let session_data = self.get_session_data().await;
+        let api_call_id_msg = if let Some(session) = session_data.as_ref() {
+            format!(" (API call ID: {})", session.api_call_id)
+        } else {
+            String::new()
+        };
+
         let plane_opacity = 0.1;
         let plane_settings: Vec<(PlaneName, Uuid, Option<Color>)> = vec![
             (
@@ -679,7 +703,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             let info = DEFAULT_PLANE_INFO.get(&name).ok_or_else(|| {
                 // We should never get here.
                 KclError::new_engine(KclErrorDetails::new(
-                    format!("Failed to get default plane info for: {name:?}"),
+                    format!("Failed to get default plane info for: {name:?}{}", api_call_id_msg),
                     vec![source_range],
                 ))
             })?;
@@ -707,6 +731,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         &self,
         response: WebSocketResponse,
         source_range: SourceRange,
+        api_call_id_msg: &str,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
         match response {
             WebSocketResponse::Success(success) => Ok(success.resp),
@@ -714,16 +739,20 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 let _request_id = fail.request_id;
                 if fail.errors.is_empty() {
                     return Err(KclError::new_engine(KclErrorDetails::new(
-                        "Failure response with no error details".to_owned(),
+                        format!("Failure response with no error details{}", api_call_id_msg),
                         vec![source_range],
                     )));
                 }
                 Err(KclError::new_engine(KclErrorDetails::new(
-                    fail.errors
-                        .iter()
-                        .map(|e| e.message.clone())
-                        .collect::<Vec<_>>()
-                        .join("\n"),
+                    format!(
+                        "{}{}",
+                        fail.errors
+                            .iter()
+                            .map(|e| e.message.clone())
+                            .collect::<Vec<_>>()
+                            .join("\n"),
+                        api_call_id_msg
+                    ),
                     vec![source_range],
                 )))
             }
@@ -738,6 +767,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         id_to_source_range: HashMap<uuid::Uuid, SourceRange>,
         // The response from the engine.
         responses: HashMap<uuid::Uuid, BatchResponse>,
+        api_call_id_msg: &str,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
         // Iterate over the responses and check for errors.
         #[expect(
@@ -761,18 +791,22 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     // Get the source range for the command.
                     let source_range = id_to_source_range.get(cmd_id).cloned().ok_or_else(|| {
                         KclError::new_engine(KclErrorDetails::new(
-                            format!("Failed to get source range for command ID: {cmd_id:?}"),
+                            format!("Failed to get source range for command ID: {cmd_id:?}{}", api_call_id_msg),
                             vec![],
                         ))
                     })?;
                     if errors.is_empty() {
                         return Err(KclError::new_engine(KclErrorDetails::new(
-                            "Failure response for batch with no error details".to_owned(),
+                            format!("Failure response for batch with no error details{}", api_call_id_msg),
                             vec![source_range],
                         )));
                     }
                     return Err(KclError::new_engine(KclErrorDetails::new(
-                        errors.iter().map(|e| e.message.clone()).collect::<Vec<_>>().join("\n"),
+                        format!(
+                            "{}{}",
+                            errors.iter().map(|e| e.message.clone()).collect::<Vec<_>>().join("\n"),
+                            api_call_id_msg
+                        ),
                         vec![source_range],
                     )));
                 }
@@ -782,7 +816,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Return an error that we did not get an error or the response we wanted.
         // This should never happen but who knows.
         Err(KclError::new_engine(KclErrorDetails::new(
-            format!("Failed to find response for command ID: {id:?}"),
+            format!("Failed to find response for command ID: {id:?}{}", api_call_id_msg),
             vec![],
         )))
     }
