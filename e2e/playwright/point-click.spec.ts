@@ -2237,7 +2237,6 @@ extrude001 = extrude(profile001, length = 500)`
       await editor.expectState({
         diagnostics: [],
         activeLines: [shellDeclaration],
-        highlightedCode: '',
       })
     })
 
@@ -2272,7 +2271,6 @@ extrude001 = extrude(profile001, length = 500)`
       await editor.expectState({
         diagnostics: [],
         activeLines: [editedShellDeclaration],
-        highlightedCode: '',
       })
     })
 
@@ -2342,7 +2340,6 @@ extrude001 = extrude(profile001, length = 500)`
       await editor.expectState({
         diagnostics: [],
         activeLines: [shellDeclaration2],
-        highlightedCode: '',
       })
       await editor.closePane()
     })

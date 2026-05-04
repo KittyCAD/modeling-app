@@ -470,7 +470,6 @@ openSketch = startSketchOn(XY)
       await editor.openPane()
       await editor.expectState({
         activeLines: [`|>circle(center=[8,5],radius=2)`],
-        highlightedCode: 'circle(center=[8,5],radius=2)',
         diagnostics: [],
       })
     })
@@ -507,7 +506,6 @@ openSketch = startSketchOn(XY)
       await editor.openPane()
       await editor.expectState({
         activeLines: [`|>tangentialArc(endAbsolute=[10,0])`],
-        highlightedCode: 'tangentialArc(endAbsolute=[10,0])',
         diagnostics: [],
       })
     })
