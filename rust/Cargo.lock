@@ -2529,7 +2529,7 @@ dependencies = [
  "wasm-bindgen-futures",
  "web-sys",
  "web-time",
- "winnow 0.7.15",
+ "winnow 1.0.2",
  "zduny-wasm-timer",
  "zip",
 ]
