@@ -24,6 +24,8 @@ export enum DefaultLayoutPaneID {
   TTC = 'ttc',
   Variables = 'variables',
   Logs = 'logs',
+  Operations = 'operations',
+  Bodies = 'bodies',
 }
 
 export function isDefaultLayoutPaneID(s: string): s is DefaultLayoutPaneID {
@@ -64,9 +66,24 @@ const primaryPane: Layout = {
     {
       id: DefaultLayoutPaneID.FeatureTree,
       label: 'Feature Tree',
-      type: LayoutType.Simple,
+      type: LayoutType.Splits,
+      orientation: 'block',
+      sizes: [75, 25],
       icon: 'model',
-      areaType: AreaType.FeatureTree,
+      children: [
+        {
+          id: DefaultLayoutPaneID.Operations,
+          label: 'Feature Tree',
+          type: LayoutType.Simple,
+          areaType: AreaType.FeatureTree,
+        },
+        {
+          id: DefaultLayoutPaneID.Bodies,
+          label: 'Bodies',
+          type: LayoutType.Simple,
+          areaType: AreaType.Bodies,
+        },
+      ],
     },
     {
       id: DefaultLayoutPaneID.Code,
