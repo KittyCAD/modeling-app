@@ -158,7 +158,7 @@ flowchart LR
   84["SweepEdge Adjacent"]
   85["CompositeSolid Intersect<br>[8163, 8202, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  86["Pattern Circular<br>[8208, 8295, 0]"]
+  86["Pattern Circular<br>[8208, 8295, 0]<br>Copies: 8<br>Faces: 56<br>Edges: 120"]
     %% [ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
   87["SketchBlock<br>[685, 5845, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
@@ -335,11 +335,11 @@ flowchart LR
   16 --- 25
   16 --- 34
   23 <--x 17
-  17 --- 29
-  17 --- 38
+  17 --- 28
+  17 --- 37
   23 <--x 18
-  18 --- 28
-  18 --- 37
+  18 --- 29
+  18 --- 38
   23 <--x 19
   19 --- 27
   19 --- 36

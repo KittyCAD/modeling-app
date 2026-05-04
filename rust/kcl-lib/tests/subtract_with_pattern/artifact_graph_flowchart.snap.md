@@ -58,7 +58,7 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   32["SweepEdge Opposite"]
   33["SweepEdge Adjacent"]
-  34["Pattern Transform<br>[469, 639, 0]"]
+  34["Pattern Transform<br>[469, 639, 0]<br>Copies: 9<br>Faces: 27<br>Edges: 27"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   35["CompositeSolid Subtract<br>[641, 685, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 7 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]

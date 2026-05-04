@@ -62,7 +62,7 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   11["SweepEdge Opposite"]
   12["SweepEdge Adjacent"]
-  13["Pattern Circular<br>[1256, 1318, 0]"]
+  13["Pattern Circular<br>[1256, 1318, 0]<br>Copies: 1<br>Faces: 3<br>Edges: 3"]
     %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
   24["Sweep Extrusion<br>[1957, 2008, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
@@ -102,7 +102,7 @@ flowchart LR
   50["SweepEdge Adjacent"]
   51["EdgeCut Fillet<br>[2687, 2772, 0]"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-  52["Pattern Circular<br>[2778, 2840, 0]"]
+  52["Pattern Circular<br>[2778, 2840, 0]<br>Copies: 1<br>Faces: 4<br>Edges: 5"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
   53["EdgeCut Fillet<br>[2854, 3272, 0]"]
     %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit]

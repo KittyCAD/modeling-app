@@ -332,7 +332,7 @@ flowchart LR
   174["SweepEdge Adjacent"]
   175["SweepEdge Opposite"]
   176["SweepEdge Adjacent"]
-  177["Pattern Transform<br>[17293, 17395, 0]"]
+  177["Pattern Transform<br>[17293, 17395, 0]<br>Copies: 3<br>Faces: 18<br>Edges: 36"]
     %% [ProgramBodyItem { index: 93 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   178["Plane<br>[17593, 17629, 0]"]
     %% [ProgramBodyItem { index: 96 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockArgs]

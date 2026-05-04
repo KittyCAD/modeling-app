@@ -541,9 +541,12 @@ impl ArtifactGraph {
             Artifact::Pattern(pattern) => {
                 writeln!(
                     output,
-                    "{prefix}{id}[\"Pattern {:?}<br>{:?}\"]",
+                    "{prefix}{id}[\"Pattern {:?}<br>{:?}<br>Copies: {}<br>Faces: {}<br>Edges: {}\"]",
                     pattern.sub_type,
                     code_ref_display(&pattern.code_ref),
+                    pattern.copy_ids.len(),
+                    pattern.copy_face_ids.len(),
+                    pattern.copy_edge_ids.len(),
                 )?;
                 node_path_display(output, prefix, None, &pattern.code_ref)?;
             }
@@ -834,7 +837,18 @@ fn pattern_artifact_links_to_source_geometry() {
     let sweep_id = ArtifactId::new(Uuid::new_v4());
     let pattern_id = ArtifactId::new(Uuid::new_v4());
     let plane_id = ArtifactId::new(Uuid::new_v4());
+    let copy_id = Uuid::new_v4();
+    let copy_face_id = Uuid::new_v4();
+    let copy_edge_id = Uuid::new_v4();
     let code_ref = CodeRef::placeholder(SourceRange::synthetic());
+    let face_edge_infos: Vec<kcmc::output::FaceEdgeInfo> = serde_json::from_value(serde_json::json!([
+        {
+            "object_id": copy_id,
+            "faces": [copy_face_id],
+            "edges": [copy_edge_id],
+        }
+    ]))
+    .expect("valid face-edge info");
 
     let mut artifacts = IndexMap::new();
     artifacts.insert(
@@ -873,7 +887,14 @@ fn pattern_artifact_links_to_source_geometry() {
         }),
     );
 
-    let updated = pattern_artifact_updates(&artifacts, pattern_id, PatternSubType::Circular, path_id, &[], code_ref);
+    let updated = pattern_artifact_updates(
+        &artifacts,
+        pattern_id,
+        PatternSubType::Circular,
+        path_id,
+        &face_edge_infos,
+        code_ref,
+    );
 
     assert!(matches!(
         updated.first(),
@@ -881,9 +902,24 @@ fn pattern_artifact_links_to_source_geometry() {
             id,
             sub_type: PatternSubType::Circular,
             source_id,
+            copy_ids,
+            copy_face_ids,
+            copy_edge_ids,
             ..
-        })) if *id == pattern_id && *source_id == path_id
+        })) if *id == pattern_id
+            && *source_id == path_id
+            && copy_ids == &vec![ArtifactId::new(copy_id)]
+            && copy_face_ids == &vec![ArtifactId::new(copy_face_id)]
+            && copy_edge_ids == &vec![ArtifactId::new(copy_edge_id)]
     ));
+    assert_eq!(
+        updated.first().map(Artifact::child_ids),
+        Some(vec![
+            ArtifactId::new(copy_id),
+            ArtifactId::new(copy_face_id),
+            ArtifactId::new(copy_edge_id)
+        ])
+    );
     assert!(updated.iter().any(|artifact| {
         matches!(artifact, Artifact::Path(path) if path.id == path_id && path.pattern_ids == vec![pattern_id])
     }));

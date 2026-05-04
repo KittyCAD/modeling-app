@@ -78,7 +78,7 @@ flowchart LR
   21["SweepEdge Adjacent"]
   22["SweepEdge Adjacent"]
   23["SweepEdge Adjacent"]
-  24["Pattern Circular<br>[2443, 2566, 0]"]
+  24["Pattern Circular<br>[2443, 2566, 0]<br>Copies: 11<br>Faces: 66<br>Edges: 132"]
     %% [ProgramBodyItem { index: 19 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   25["Plane<br>[2600, 2617, 0]"]
     %% [ProgramBodyItem { index: 20 }, VariableDeclarationDeclaration, VariableDeclarationInit]

@@ -338,7 +338,7 @@ flowchart LR
   122["SweepEdge Adjacent"]
   123["SweepEdge Opposite"]
   124["SweepEdge Adjacent"]
-  125["Pattern Circular<br>[238, 276, 0]"]
+  125["Pattern Circular<br>[238, 276, 0]<br>Copies: 2<br>Faces: 14<br>Edges: 30"]
     %% [ProgramBodyItem { index: 0 }]
   126["CompositeSolid Subtract<br>[238, 276, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 0 }]
@@ -432,7 +432,7 @@ flowchart LR
   224["SweepEdge Adjacent"]
   225["SweepEdge Opposite"]
   226["SweepEdge Adjacent"]
-  227["Pattern Circular<br>[305, 328, 0]"]
+  227["Pattern Circular<br>[305, 328, 0]<br>Copies: 8<br>Faces: 48<br>Edges: 96"]
     %% [ProgramBodyItem { index: 2 }]
   228["SketchBlock<br>[238, 276, 0]"]
     %% [ProgramBodyItem { index: 0 }]
@@ -981,14 +981,14 @@ flowchart LR
   101 ---- 107
   101 --- 125
   101 --- 128
-  102 --- 108
+  102 --- 112
   102 x--> 113
-  102 --- 115
-  102 --- 116
-  103 --- 112
+  102 --- 123
+  102 --- 124
+  103 --- 108
   103 x--> 113
-  103 --- 123
-  103 --- 124
+  103 --- 115
+  103 --- 116
   104 --- 109
   104 x--> 113
   104 --- 117

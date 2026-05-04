@@ -314,7 +314,7 @@ flowchart LR
   171["SweepEdge Adjacent"]
   172["CompositeSolid Union<br>[11431, 11459, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 47 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  173["Pattern Transform<br>[11594, 11693, 0]"]
+  173["Pattern Transform<br>[11594, 11693, 0]<br>Copies: 1<br>Faces: 26<br>Edges: 64"]
     %% [ProgramBodyItem { index: 47 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
   174["SketchBlock<br>[883, 2150, 0]"]
     %% [ProgramBodyItem { index: 18 }, VariableDeclarationDeclaration, VariableDeclarationInit]

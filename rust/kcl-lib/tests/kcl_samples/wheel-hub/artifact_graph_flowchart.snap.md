@@ -206,7 +206,7 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   57["SweepEdge Opposite"]
   58["SweepEdge Adjacent"]
-  59["Pattern Circular<br>[4884, 4972, 0]"]
+  59["Pattern Circular<br>[4884, 4972, 0]<br>Copies: 2<br>Faces: 6<br>Edges: 6"]
     %% [ProgramBodyItem { index: 30 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   60["CompositeSolid Subtract<br>[5009, 5074, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 32 }, VariableDeclarationDeclaration, VariableDeclarationInit]
@@ -250,7 +250,7 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   102["SweepEdge Opposite"]
   103["SweepEdge Adjacent"]
-  104["Pattern Circular<br>[9195, 9297, 0]"]
+  104["Pattern Circular<br>[9195, 9297, 0]<br>Copies: 9<br>Faces: 27<br>Edges: 27"]
     %% [ProgramBodyItem { index: 48 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   105["EdgeCut Chamfer<br>[9384, 9543, 0]"]
     %% [ProgramBodyItem { index: 50 }, VariableDeclarationDeclaration, VariableDeclarationInit]
@@ -296,7 +296,7 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   150["SweepEdge Opposite"]
   151["SweepEdge Adjacent"]
-  152["Pattern Circular<br>[13045, 13114, 0]"]
+  152["Pattern Circular<br>[13045, 13114, 0]<br>Copies: 4<br>Faces: 40<br>Edges: 84"]
     %% [ProgramBodyItem { index: 59 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
   153["SketchBlock<br>[920, 3177, 0]"]
     %% [ProgramBodyItem { index: 19 }, VariableDeclarationDeclaration, VariableDeclarationInit]

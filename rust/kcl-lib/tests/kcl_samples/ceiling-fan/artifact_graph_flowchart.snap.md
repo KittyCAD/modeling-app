@@ -148,7 +148,7 @@ flowchart LR
     %% [ProgramBodyItem { index: 36 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   84["CompositeSolid Subtract<br>[9196, 9261, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 39 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  85["Pattern Circular<br>[9343, 9449, 0]"]
+  85["Pattern Circular<br>[9343, 9449, 0]<br>Copies: 2<br>Faces: 32<br>Edges: 84"]
     %% [ProgramBodyItem { index: 40 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   86["SketchBlock<br>[1352, 6421, 0]"]
     %% [ProgramBodyItem { index: 25 }, VariableDeclarationDeclaration, VariableDeclarationInit]

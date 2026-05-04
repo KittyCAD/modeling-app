@@ -98,7 +98,7 @@ flowchart LR
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   21[Wall]
     %% face_code_ref=Missing NodePath
-  22["Pattern Circular<br>[2060, 2148, 0]"]
+  22["Pattern Circular<br>[2060, 2148, 0]<br>Copies: 9<br>Faces: 9<br>Edges: 9"]
     %% [ProgramBodyItem { index: 18 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   23["Plane<br>[2216, 3082, 0]"]
     %% [ProgramBodyItem { index: 19 }, VariableDeclarationDeclaration, VariableDeclarationInit]
@@ -116,7 +116,7 @@ flowchart LR
   40["SweepEdge Adjacent"]
   41["SweepEdge Adjacent"]
   42["SweepEdge Adjacent"]
-  43["Pattern Circular<br>[3356, 3449, 0]"]
+  43["Pattern Circular<br>[3356, 3449, 0]<br>Copies: 9<br>Faces: 36<br>Edges: 72"]
     %% [ProgramBodyItem { index: 24 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   44["Plane<br>[3521, 4272, 0]"]
     %% [ProgramBodyItem { index: 25 }, VariableDeclarationDeclaration, VariableDeclarationInit]
@@ -130,7 +130,7 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   53["SweepEdge Opposite"]
   54["SweepEdge Adjacent"]
-  55["Pattern Circular<br>[4518, 4609, 0]"]
+  55["Pattern Circular<br>[4518, 4609, 0]<br>Copies: 9<br>Faces: 27<br>Edges: 27"]
     %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   56["Plane<br>[4686, 4733, 0]"]
     %% [ProgramBodyItem { index: 30 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockArgs]

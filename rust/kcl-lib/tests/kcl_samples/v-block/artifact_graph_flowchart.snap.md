@@ -143,7 +143,7 @@ flowchart LR
   79["SweepEdge Adjacent"]
   80["SweepEdge Opposite"]
   81["SweepEdge Adjacent"]
-  85["Pattern Transform<br>[3006, 3119, 0]"]
+  85["Pattern Transform<br>[3006, 3119, 0]<br>Copies: 1<br>Faces: 1<br>Edges: 1"]
     %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
   86["Sweep Extrusion<br>[3132, 3179, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 17 }, VariableDeclarationDeclaration, VariableDeclarationInit]
