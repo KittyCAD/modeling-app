@@ -1,4 +1,5 @@
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import { DISTANCE_CONSTRAINT_BODY } from '@src/clientSideScene/sceneConstants'
 import type { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
 import {
   isArcLikeSegment,
@@ -10,11 +11,18 @@ import {
   type RadiusConstraint,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { type Group, Vector3 } from 'three'
+import { Line2 } from 'three/examples/jsm/lines/Line2'
+import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
+import { createArcPositions } from '@src/machines/sketchSolve/arcPositions'
 import {
   createDimensionLine,
   updateDimensionLine,
 } from '@src/machines/sketchSolve/constraints/DimensionLine'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { getAngleDiff } from '@src/lib/utils'
+import { getAngleBetweenVec2 } from '@src/lib/utils2d'
+
+const EXTENSION_ARC_ROLE = 'radius-constraint-extension-arc'
 
 export class RadiusConstraintBuilder {
   private readonly resources: ConstraintResources
@@ -24,7 +32,9 @@ export class RadiusConstraintBuilder {
   }
 
   public init(obj: RadiusConstraint | DiameterConstraint) {
-    return createDimensionLine(obj, this.resources)
+    const group = createDimensionLine(obj, this.resources)
+    createExtensionArcLines(group, this.resources)
+    return group
   }
 
   public update(
@@ -47,10 +57,10 @@ export class RadiusConstraintBuilder {
         const constraintLabelPosition = obj.kind.constraint.labelPosition
         const labelPosition = constraintLabelPosition
           ? new Vector3(
-              constraintLabelPosition.x.value,
-              constraintLabelPosition.y.value,
-              0
-            )
+            constraintLabelPosition.x.value,
+            constraintLabelPosition.y.value,
+            0
+          )
           : undefined
         const isDiameter = isDiameterConstraint(obj)
         const { start, end } = getCircularDimensionLine(
@@ -79,9 +89,142 @@ export class RadiusConstraintBuilder {
           isDiameter,
           labelPosition
         )
+        updateExtensionArcs(group, arc, objects, center, start, end, isDiameter)
       }
     }
   }
+}
+
+function createExtensionArcLines(
+  group: Group,
+  resources: ConstraintResources
+) {
+  for (let index = 0; index < 2; index++) {
+    const geometry = new LineGeometry()
+    geometry.setPositions([0, 0, 0, 0, 0, 0])
+
+    const line = new Line2(geometry, resources.materials.default.line)
+    line.userData.type = DISTANCE_CONSTRAINT_BODY
+    line.userData.role = EXTENSION_ARC_ROLE
+    line.visible = false
+    group.add(line)
+  }
+}
+
+function updateExtensionArcs(
+  group: Group,
+  arc: ApiObject,
+  objects: ApiObject[],
+  center: Vector3,
+  dimensionStart: Vector3,
+  dimensionEnd: Vector3,
+  isDiameter: boolean
+) {
+  const extensionArcs = group.children.filter(
+    (child) =>
+      child instanceof Line2 && child.userData.role === EXTENSION_ARC_ROLE
+  ) as Line2[]
+
+  if (arc.kind.type !== 'Segment' || arc.kind.segment.type !== 'Arc') {
+    hideExtensionArcs(extensionArcs)
+    return
+  }
+
+  const arcStartObject = objects[arc.kind.segment.start]
+  const arcEndObject = objects[arc.kind.segment.end]
+  if (!isPointSegment(arcStartObject) || !isPointSegment(arcEndObject)) {
+    hideExtensionArcs(extensionArcs)
+    return
+  }
+
+  const arcStart = pointToVec3(arcStartObject)
+  const arcEnd = pointToVec3(arcEndObject)
+  const radius = arcStart.distanceTo(center)
+  if (radius === 0) {
+    hideExtensionArcs(extensionArcs)
+    return
+  }
+
+  const startAngle = getAngleBetweenVec2(
+    [center.x, center.y],
+    [arcStart.x, arcStart.y]
+  )
+  const endAngle = getAngleBetweenVec2(
+    [center.x, center.y],
+    [arcEnd.x, arcEnd.y]
+  )
+  updateExtensionArc(
+    extensionArcs[0],
+    center,
+    radius,
+    startAngle,
+    endAngle,
+    dimensionStart
+  )
+  updateExtensionArc(
+    extensionArcs[1],
+    center,
+    radius,
+    startAngle,
+    endAngle,
+    isDiameter ? dimensionEnd : undefined
+  )
+}
+
+function hideExtensionArcs(extensionArcs: Line2[]) {
+  for (const extensionArc of extensionArcs) {
+    hideExtensionArc(extensionArc)
+  }
+}
+
+function hideExtensionArc(extensionArc: Line2) {
+  extensionArc.visible = false
+  delete extensionArc.userData.hitObjects
+}
+
+function updateExtensionArc(
+  extensionArc: Line2 | undefined,
+  center: Vector3,
+  radius: number,
+  arcStartAngle: number,
+  arcEndAngle: number,
+  target?: Vector3
+) {
+  if (!extensionArc || !target) {
+    if (extensionArc) {
+      hideExtensionArc(extensionArc)
+    }
+    return
+  }
+
+  const targetAngle = Math.atan2(target.y - center.y, target.x - center.x)
+  const arcSweep = getAngleDiff(arcStartAngle, arcEndAngle, true)
+  const targetOffset = getAngleDiff(arcStartAngle, targetAngle, true)
+  if (targetOffset <= arcSweep + 1e-8) {
+    hideExtensionArc(extensionArc)
+    return
+  }
+
+  const fromEndSweep = getAngleDiff(arcEndAngle, targetAngle, true)
+  const toStartSweep = getAngleDiff(targetAngle, arcStartAngle, true)
+  const extensionStartAngle =
+    fromEndSweep <= toStartSweep ? arcEndAngle : targetAngle
+  const extensionEndAngle =
+    fromEndSweep <= toStartSweep ? targetAngle : arcStartAngle
+
+  extensionArc.visible = true
+  extensionArc.userData.hitObjects = 'auto'
+  extensionArc.geometry.setPositions(
+    createArcPositions({
+      center: [center.x, center.y],
+      radius,
+      startAngle: extensionStartAngle,
+      endAngle: extensionEndAngle,
+      ccw: true,
+    })
+  )
+  extensionArc.geometry.computeBoundingSphere()
+  extensionArc.computeLineDistances()
 }
 
 function getCircularDimensionLine(

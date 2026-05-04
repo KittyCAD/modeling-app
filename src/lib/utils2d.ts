@@ -29,12 +29,18 @@ export function polar2d(
   ]
 }
 
+// Returns the signed direction angle from point a to point b in radians.
+// The returned value is in the range [-PI, PI].
+export function getAngleBetweenVec2(a: Coords2d, b: Coords2d): number {
+  return Math.atan2(b[1] - a[1], b[0] - a[0])
+}
+
 // Returns the signed angle between 2 2D vectors in radians.
 // The order of parameter matters:
 // getSignedAngleBetweenVec(a, b) = 2 * PI - getSignedAngleBetweenVec(b, a).
 // The returned value is in the range [-PI, PI].
 //
-// Note: utils/getAngle return the unsigned angle.
+// Note: utils/getAngle returns a signed direction angle in degrees.
 export function getSignedAngleBetweenVec(a: Coords2d, b: Coords2d) {
   // cross = |a||b| sin(theta)
   // dot = |a||b| cos(theta)
