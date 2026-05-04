@@ -3567,7 +3567,7 @@ impl Node<BinaryExpression> {
                             label_position,
                         } => {
                             #[cfg(not(feature = "artifact-graph"))]
-                            let _ = label_position;
+                            let _ = (input_object_ids, label_position);
                             let range = self.as_source_range();
                             let sketch_var_ty = solver_numeric_type(exec_state);
                             let sketch_vars = exec_state
@@ -3689,7 +3689,7 @@ impl Node<BinaryExpression> {
                             label_position,
                         } => {
                             #[cfg(not(feature = "artifact-graph"))]
-                            let _ = label_position;
+                            let _ = (input_object_ids, label_position);
                             let range = self.as_source_range();
                             let reference_point = crate::execution::ConstrainablePoint2d {
                                 vars: line0.vars[0].clone(),
@@ -3828,7 +3828,7 @@ impl Node<BinaryExpression> {
                             label_position,
                         } => {
                             #[cfg(not(feature = "artifact-graph"))]
-                            let _ = label_position;
+                            let _ = (input_object_ids, label_position);
                             let range = self.as_source_range();
                             let sketch_var_ty = solver_numeric_type(exec_state);
                             let sketch_vars = exec_state
@@ -3921,7 +3921,7 @@ impl Node<BinaryExpression> {
                             label_position,
                         } => {
                             #[cfg(not(feature = "artifact-graph"))]
-                            let _ = label_position;
+                            let _ = (input_object_ids, label_position);
                             let range = self.as_source_range();
                             let sketch_var_ty = solver_numeric_type(exec_state);
                             let sketch_vars = exec_state
@@ -4056,7 +4056,7 @@ impl Node<BinaryExpression> {
                             label_position,
                         } => {
                             #[cfg(not(feature = "artifact-graph"))]
-                            let _ = label_position;
+                            let _ = (input_object_ids, label_position);
                             let range = self.as_source_range();
                             let sketch_var_ty = solver_numeric_type(exec_state);
                             let sketch_vars = exec_state
