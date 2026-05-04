@@ -162,10 +162,6 @@ async fn execute_pattern_transform<T: GeometryTrait>(
     T::flush_batch(args, exec_state, &geo_set).await?;
     let starting: Vec<T> = geo_set.into();
 
-    if args.ctx.context_type == crate::execution::ContextType::Mock {
-        return Ok(starting);
-    }
-
     let mut output = Vec::new();
     for geo in starting {
         let new = send_pattern_transform(transforms.clone(), &geo, use_original, exec_state, args).await?;

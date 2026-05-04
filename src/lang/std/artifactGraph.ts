@@ -1001,13 +1001,42 @@ export function coerceSelectionsToBody(
  * in the engine, but we mean: Solid3Ds of any kind, as well as 3D curves like helices.
  */
 export function getBodiesFromArtifactGraph(artifactGraph: ArtifactGraph) {
-  const artifacts = filterArtifacts(
-    {
-      types: ['compositeSolid', 'sweep'],
-      predicate: (a) => !a.consumed,
-    },
-    artifactGraph
+  const artifacts: Map<
+    ArtifactId,
+    Extract<Artifact, { type: 'compositeSolid' | 'sweep' | 'pattern' }>
+  > = new Map(
+    filterArtifacts(
+      {
+        types: ['compositeSolid', 'sweep'],
+        predicate: (a) => !a.consumed,
+      },
+      artifactGraph
+    )
   )
+
+  for (const artifact of artifactGraph.values()) {
+    if (artifact.type !== 'pattern') continue
+    const directSource = artifactGraph.get(artifact.sourceId)
+    const sourceBody =
+      directSource?.type === 'sweep' || directSource?.type === 'compositeSolid'
+        ? directSource
+        : [...artifactGraph.values()].find(
+            (
+              source
+            ): source is Extract<
+              Artifact,
+              { type: 'sweep' | 'compositeSolid' }
+            > =>
+              (source.type === 'sweep' || source.type === 'compositeSolid') &&
+              (source.patternIds || []).includes(artifact.id)
+          )
+    if (sourceBody) {
+      artifacts.set(sourceBody.id, artifact)
+    }
+    artifact.copyIds.forEach((copyId) => {
+      artifacts.set(copyId, artifact)
+    })
+  }
 
   return artifacts
 }

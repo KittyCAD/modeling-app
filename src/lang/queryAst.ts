@@ -1172,6 +1172,21 @@ export function getVariableExprsFromSelection(
   let exprs: Expr[] = []
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
+    const patternCopyExpr = getPatternCopyExprFromSelection(
+      s,
+      ast,
+      wasmInstance
+    )
+    if (patternCopyExpr) {
+      const key = splitOutputExprKey(patternCopyExpr)
+      if (pushedNames[key]) {
+        continue
+      }
+      exprs.push(patternCopyExpr)
+      pushedNames[key] = true
+      continue
+    }
+
     const splitOutputExpr = getSplitOutputExprFromSelection(
       s,
       ast,
@@ -1331,6 +1346,49 @@ export function getVariableExprsFromSelection(
   }
 
   return { exprs, pathIfPipe }
+}
+
+function getPatternCopyExprFromSelection(
+  selection: Selection,
+  ast: Node<Program>,
+  wasmInstance: ModuleType
+): Expr | null {
+  const artifact = selection.artifact
+  if (artifact?.type !== 'pattern') {
+    return null
+  }
+
+  const patternIndex =
+    selection.patternIndex ??
+    (selection.engineEntityId
+      ? artifact.copyIds.indexOf(selection.engineEntityId) + 1
+      : -1)
+  if (patternIndex < 0) {
+    return null
+  }
+
+  const pathCandidates = [
+    getNodePathFromSourceRange(ast, artifact.codeRef.range),
+    artifact.codeRef.pathToNode,
+    selection.codeRef.pathToNode,
+  ]
+
+  for (const pathToNode of pathCandidates) {
+    const patternVariableName = getVariableNameFromNodePath(
+      pathToNode,
+      ast,
+      wasmInstance
+    )
+    if (patternVariableName) {
+      return createMemberExpression(
+        patternVariableName,
+        createLiteral(patternIndex, wasmInstance),
+        true
+      )
+    }
+  }
+
+  return null
 }
 
 function getSplitOutputExprFromSelection(

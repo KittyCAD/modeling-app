@@ -48,6 +48,7 @@ export interface Selection {
   artifact?: Artifact
   codeRef: CodeRef
   engineEntityId?: ArtifactId
+  patternIndex?: number
 }
 
 export type Selections = {
