@@ -60,6 +60,17 @@ export function getMinorAngleBetweenVec(a: Coords2d, b: Coords2d) {
   return Math.acos(dot2d(a, b) / length_a / length_b)
 }
 
+// Returns true when 2 vectors are parallel or anti-parallel within the given angular tolerance.
+export function isParallel(
+  a: Coords2d,
+  b: Coords2d,
+  epsilonRadians = 1e-8
+): boolean {
+  const denominator = length2d(a) * length2d(b)
+  if (denominator === 0) return false
+  return Math.abs(cross2d(a, b) / denominator) < Math.sin(epsilonRadians)
+}
+
 export function addVec(a: Coords2d, b: Coords2d): Coords2d {
   return [a[0] + b[0], a[1] + b[1]]
 }
