@@ -120,7 +120,7 @@ uuid = { workspace = true, features = ["v4", "v5", "js", "serde"] }
 validator = { version = "0.20.0", features = ["derive"] }
 walkdir = "2.5.0"
 web-time = "1.1"
-winnow = "0.7"
+winnow = "1.0"
 zip = { workspace = true }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
