@@ -5,6 +5,8 @@ excerpt: "Draw a line segment relative to the current origin using the polar mea
 layout: manual
 ---
 
+**WARNING:** This function is deprecated as of KCL 2.0.
+
 Draw a line segment relative to the current origin using the polar measure of some angle and distance.
 
 ```kcl
@@ -20,7 +22,7 @@ angledLine(
 ): Sketch
 ```
 
-This is part of sketch v1 and is soft deprecated in favor of
+This is part of sketch v1 and is deprecated in favor of
 [sketch-solve](/docs/kcl-std/modules/std-solver).
 
 ### Arguments
