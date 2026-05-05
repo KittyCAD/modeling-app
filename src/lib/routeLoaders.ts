@@ -259,9 +259,6 @@ export const homeLoader =
       return redirect(PATHS.INDEX)
     }
 
-    app.systemIOActor.send({
-      type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-    })
     app.closeProject()
     app.settings.actor.send({
       type: 'clear.project',

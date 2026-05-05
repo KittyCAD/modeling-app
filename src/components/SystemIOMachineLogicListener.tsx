@@ -201,11 +201,19 @@ export function SystemIOMachineLogicListener() {
   const useApplicationProjectDirectory = () => {
     useEffect(() => {
       if (pathname === PATHS.HOME || pathname === PATHS.HOME_SETTINGS) {
+        const requestedProjectDirectoryPath =
+          settingsValues.app.projectDirectory.current || ''
+        if (
+          systemIOActor.getSnapshot().context.projectDirectoryPath ===
+          requestedProjectDirectoryPath
+        ) {
+          return
+        }
+
         systemIOActor.send({
           type: SystemIOMachineEvents.setProjectDirectoryPath,
           data: {
-            requestedProjectDirectoryPath:
-              settingsValues.app.projectDirectory.current || '',
+            requestedProjectDirectoryPath,
           },
         })
       }

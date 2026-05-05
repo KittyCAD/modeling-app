@@ -55,12 +55,6 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       return
     }
 
-    if (projects === undefined) {
-      systemIOActor.send({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-      })
-    }
-
     const openedProject = project.projectIORefSignal.value
     const foundProject = projects?.find((p) => {
       return p.path === openedProject.path
