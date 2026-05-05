@@ -7,7 +7,6 @@ import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { AxisNames } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
-import { isArray } from '@src/lib/utils'
 import type { ColorRepresentation, Intersection, Object3D } from 'three'
 import {
   BoxGeometry,
@@ -104,7 +103,9 @@ export default function AxisGizmo() {
           axisLabelElements
         )
       } else {
-        resetAxisObjectScales(raycasterObjects)
+        for (const object of raycasterObjects) {
+          object.scale.setScalar(1)
+        }
         updateAxisLabelHover(axisLabelElements)
         raycasterIntersect.current = null // Clear intersection
       }
@@ -268,8 +269,6 @@ const createAxisHead = (name: AxisNames, color: ColorRepresentation): Mesh => {
   mesh.position.set(position[0], position[1], position[2])
   mesh.updateMatrixWorld()
   mesh.name = name
-  mesh.userData.axisName = name
-  mesh.userData.baseScale = [1, 1, 1]
   return mesh
 }
 
@@ -313,40 +312,6 @@ const createAxisLabel = (
   labelObject.center.set(0.5, 0.5)
 
   return { labelObject, labelElement }
-}
-
-const getAxisName = (object: Object3D): AxisNames | undefined => {
-  return Object.values(AxisNames).find((axisName) => {
-    return object.userData.axisName === axisName
-  })
-}
-
-const getBaseScale = (object: Object3D): [number, number, number] => {
-  if (
-    isArray(object.userData.baseScale) &&
-    object.userData.baseScale.length === 3
-  ) {
-    const [x, y, z] = object.userData.baseScale
-    if (
-      typeof x === 'number' &&
-      typeof y === 'number' &&
-      typeof z === 'number'
-    ) {
-      return [x, y, z]
-    }
-  }
-  return [1, 1, 1]
-}
-
-const setAxisObjectScale = (object: Object3D, scale: number) => {
-  const [x, y, z] = getBaseScale(object)
-  object.scale.set(x * scale, y * scale, z * scale)
-}
-
-const resetAxisObjectScales = (objects: Object3D[]) => {
-  for (const object of objects) {
-    setAxisObjectScale(object, 1)
-  }
 }
 
 const renderGizmo = (
@@ -430,10 +395,7 @@ const initializeMouseEvents = (
     if (disableOrbitRef.current || !raycasterIntersect.current) {
       return
     }
-    const axisName = getAxisName(raycasterIntersect.current.object)
-    if (!axisName) {
-      return
-    }
+    const axisName = raycasterIntersect.current.object.name as AxisNames
     sceneInfra.camControls.updateCameraToAxis(axisName).catch(reportRejection)
   }
 
@@ -463,17 +425,13 @@ const updateRayCaster = (
   raycaster.setFromCamera(mouse, camera)
   const intersects = raycaster.intersectObjects(objects)
 
-  resetAxisObjectScales(objects)
+  for (const object of objects) {
+    object.scale.setScalar(1)
+  }
   if (intersects.length) {
-    const axisName = getAxisName(intersects[0].object)
+    const axisName = intersects[0].object.name as AxisNames
     updateAxisLabelHover(axisLabelElements, axisName)
-    if (axisName) {
-      for (const object of objects) {
-        if (getAxisName(object) === axisName) {
-          setAxisObjectScale(object, AXIS_HOVER_SCALE)
-        }
-      }
-    }
+    intersects[0].object.scale.setScalar(AXIS_HOVER_SCALE)
     raycasterIntersect.current = intersects[0] // filter first object
   } else {
     updateAxisLabelHover(axisLabelElements)
