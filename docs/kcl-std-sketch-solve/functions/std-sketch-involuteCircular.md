@@ -5,6 +5,8 @@ excerpt: "Extend the current sketch with a new involute circular curve."
 layout: manual
 ---
 
+**WARNING:** This function is deprecated as of KCL 2.0.
+
 Extend the current sketch with a new involute circular curve.
 
 ```kcl
@@ -20,9 +22,9 @@ involuteCircular(
 ): Sketch
 ```
 
-This is part of sketch v1 and is soft deprecated in favor of
-sketch-solve. The sketch-solve version
-of involute circular is still under development.
+This is part of sketch v1 and is deprecated in favor of
+sketch-solve and the
+gear module.
 
 ### Arguments
 
