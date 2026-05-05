@@ -169,6 +169,11 @@ fn constrainable_point_initial_position(
     ])
 }
 
+// These helpers read the current sketch variable guesses so hidden support
+// geometry starts near the geometry the user selected. The visible constraint
+// value still comes from the KCL RHS. These initial values are only solver
+// seeds for new hidden points/radii, which helps ezpz converge to the intended
+// geometric branch instead of an equivalent but visually surprising one.
 fn constrainable_line_initial_positions(
     sketch_vars: &[KclValue],
     line: &crate::execution::ConstrainableLine2d,
@@ -216,6 +221,8 @@ fn projected_point_on_line_initial_position(
         )));
     }
 
+    // Project the point onto the infinite target line. `t` is the scalar
+    // projection of the point-start vector onto the line direction.
     let t = ((point[0] - line_start[0]) * dx + (point[1] - line_start[1]) * dy) / len_sq;
     Ok([line_start[0] + t * dx, line_start[1] + t * dy])
 }
@@ -233,6 +240,9 @@ fn constrainable_points_initial_distance(
     Ok(libm::hypot(p0[0] - p1[0], p0[1] - p1[1]))
 }
 
+// Circular distance lowering needs an ezpz DatumCircle, but arcs/circles in
+// KCL are represented by points. This bundles the center/start/end datums and
+// seeds a hidden radius variable from the current center-start distance.
 #[derive(Clone, Copy)]
 struct CircularDistanceDatums {
     center: ezpz::datatypes::inputs::DatumPoint,
@@ -280,9 +290,15 @@ fn circular_circular_support_initial_position(
     let dx = center1_initial[0] - center0_initial[0];
     let dy = center1_initial[1] - center0_initial[1];
     let center_distance = libm::hypot(dx, dy);
+    // The circular-circular distance lowering uses a hidden spacer circle
+    // with radius d/2 tangent to both targets. Seed its center on the
+    // center-to-center ray at r0 + d/2 so the nonlinear solver starts on the
+    // intended between-centers tangency branch.
     let support_distance = radius0 + distance_value / 2.0;
 
     if center_distance <= f64::EPSILON {
+        // Concentric initial guesses have no center-to-center direction, so
+        // pick a deterministic horizontal ray for the hidden spacer point.
         return Ok([center0_initial[0] + support_distance, center0_initial[1]]);
     }
 
@@ -298,6 +314,9 @@ fn push_circular_radius_constraints(
     circular: CircularDistanceDatums,
     range: SourceRange,
 ) -> Result<ezpz::datatypes::inputs::DatumCircle, KclError> {
+    // Create a hidden radius variable and constrain the circular segment's
+    // defining points to it. For arcs, both start and end stay on the same
+    // radius; for circles, the start point alone defines the radius.
     let circular_radius_id = sketch_block_state.next_sketch_var_id();
     sketch_block_state.sketch_vars.push(KclValue::SketchVar {
         value: Box::new(crate::execution::SketchVar {
@@ -336,6 +355,8 @@ fn push_circular_distance_constraints(
 ) -> Result<(), KclError> {
     let circular_target = push_circular_radius_constraints(sketch_block_state, sketch_var_ty, circular, range)?;
 
+    // Point-circular distance becomes tangency between the target circle and
+    // a hidden circle centered on the point with radius equal to the distance.
     let target_distance_id = sketch_block_state.next_sketch_var_id();
     sketch_block_state.sketch_vars.push(KclValue::SketchVar {
         value: Box::new(crate::execution::SketchVar {
@@ -3596,6 +3617,11 @@ impl Node<BinaryExpression> {
                                 return Err(internal_err(message, self));
                             };
 
+                            // Lower point-line distance by adding a hidden
+                            // support point on the line, then constrain the
+                            // selected point-to-support segment to be
+                            // perpendicular and equal to the requested
+                            // distance.
                             let support_x_id = sketch_block_state.next_sketch_var_id();
                             sketch_block_state.sketch_vars.push(KclValue::SketchVar {
                                 value: Box::new(crate::execution::SketchVar {
@@ -3728,6 +3754,11 @@ impl Node<BinaryExpression> {
                                 return Err(internal_err(message, self));
                             };
 
+                            // Lower line-line distance to the point-line
+                            // construction above by choosing one endpoint on
+                            // line0 as the reference point, forcing the lines
+                            // parallel, and measuring perpendicularly to
+                            // line1.
                             let support_x_id = sketch_block_state.next_sketch_var_id();
                             sketch_block_state.sketch_vars.push(KclValue::SketchVar {
                                 value: Box::new(crate::execution::SketchVar {
@@ -3856,6 +3887,10 @@ impl Node<BinaryExpression> {
                                 return Err(internal_err(message, self));
                             };
 
+                            // Lower point-circular distance to exterior
+                            // circle tangency: a hidden circle centered on the
+                            // point has radius equal to the requested distance
+                            // and is tangent to the target arc/circle.
                             push_circular_distance_constraints(
                                 sketch_block_state,
                                 sketch_var_ty,
@@ -3956,6 +3991,11 @@ impl Node<BinaryExpression> {
                                 return Err(internal_err(message, self));
                             };
 
+                            // Lower line-circular distance by first projecting
+                            // the circular center onto the target line with a
+                            // hidden support point. The circular distance is
+                            // then the point-circular construction from that
+                            // support point.
                             let support_x_id = sketch_block_state.next_sketch_var_id();
                             sketch_block_state.sketch_vars.push(KclValue::SketchVar {
                                 value: Box::new(crate::execution::SketchVar {
@@ -4106,6 +4146,11 @@ impl Node<BinaryExpression> {
                                 return Err(internal_err(message, self));
                             };
 
+                            // Lower circular-circular distance with a hidden
+                            // spacer circle of radius d/2. Constraining its
+                            // center onto the line between target centers and
+                            // making it exterior-tangent to both targets gives
+                            // center distance r0 + d + r1.
                             let circular_target0 =
                                 push_circular_radius_constraints(sketch_block_state, sketch_var_ty, circular0, range)?;
                             let circular_target1 =

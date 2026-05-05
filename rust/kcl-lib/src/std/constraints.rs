@@ -2227,7 +2227,12 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                     let (point_segment, line_segment) = match (&unsolved0.kind, &unsolved1.kind) {
                         (UnsolvedSegmentKind::Point { .. }, UnsolvedSegmentKind::Line { .. }) => (unsolved0, unsolved1),
                         (UnsolvedSegmentKind::Line { .. }, UnsolvedSegmentKind::Point { .. }) => (unsolved1, unsolved0),
-                        _ => unreachable!(),
+                        _ => {
+                            return Err(KclError::new_semantic(KclErrorDetails::new(
+                                "distance() expected a point-line segment pair".to_owned(),
+                                vec![args.source_range],
+                            )));
+                        }
                     };
                     let point =
                         constrainable_point_from_unsolved_segment(point_segment, "distance", args.source_range)?;
@@ -2258,7 +2263,12 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                         | (UnsolvedSegmentKind::Circle { .. }, UnsolvedSegmentKind::Point { .. }) => {
                             (unsolved1, unsolved0)
                         }
-                        _ => unreachable!(),
+                        _ => {
+                            return Err(KclError::new_semantic(KclErrorDetails::new(
+                                "distance() expected a point-arc or point-circle segment pair".to_owned(),
+                                vec![args.source_range],
+                            )));
+                        }
                     };
                     let point =
                         constrainable_point_from_unsolved_segment(point_segment, "distance", args.source_range)?;
@@ -2292,7 +2302,12 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                         | (UnsolvedSegmentKind::Circle { .. }, UnsolvedSegmentKind::Line { .. }) => {
                             (unsolved1, unsolved0)
                         }
-                        _ => unreachable!(),
+                        _ => {
+                            return Err(KclError::new_semantic(KclErrorDetails::new(
+                                "distance() expected a line-arc or line-circle segment pair".to_owned(),
+                                vec![args.source_range],
+                            )));
+                        }
                     };
                     let line = constrainable_line_from_unsolved_segment(line_segment, "distance", args.source_range)?;
                     let (center, start, end) =
