@@ -870,6 +870,8 @@ pub struct ArgData {
     pub docs: Option<String>,
     /// If given, LSP should use these as completion items.
     pub snippet_array: Option<Vec<String>>,
+    /// Constraint on the KCL version at or after which this argument is deprecated.
+    pub deprecated_since: Option<VersionConstraint>,
 }
 
 impl fmt::Display for ArgData {
@@ -907,6 +909,7 @@ impl ArgData {
             } else {
                 ArgKind::Special
             },
+            deprecated_since: arg.deprecated_since.clone(),
         };
 
         for attr in &arg.identifier.outer_attrs {
