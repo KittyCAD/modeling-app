@@ -34,6 +34,7 @@ use crate::execution::UnsolvedExpr;
 use crate::execution::annotations::FnAttrs;
 use crate::execution::annotations::SETTINGS;
 use crate::execution::annotations::SETTINGS_UNIT_LENGTH;
+use crate::execution::annotations::VersionConstraint;
 use crate::execution::annotations::{self};
 use crate::execution::types::NumericType;
 use crate::execution::types::PrimitiveType;
@@ -181,7 +182,7 @@ pub struct FunctionSource {
     /// Constraint on the KCL version at which this function is deprecated, e.g.
     /// "2.0". When the active `kclVersion` is at or after this, calls trigger a
     /// deprecation warning.
-    pub deprecated_since: Option<crate::execution::annotations::VersionConstraint>,
+    pub deprecated_since: Option<VersionConstraint>,
     pub experimental: bool,
     pub include_in_feature_tree: bool,
     pub std_props: Option<StdFnProps>,
