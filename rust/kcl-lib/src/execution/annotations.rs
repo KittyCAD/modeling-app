@@ -300,7 +300,7 @@ impl Default for FnAttrs {
 /// concrete version are expressed via the free `version_*` functions below
 /// rather than `Ord` so the direction of comparison stays explicit at every
 /// call site.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
 pub struct VersionConstraint(Vec<u32>);
 
 impl VersionConstraint {
