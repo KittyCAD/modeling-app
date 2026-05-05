@@ -1,9 +1,13 @@
+import { APP_NAME } from '@src/lib/constants'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { beforeAll, expect, describe, it } from 'vitest'
 import {
   getFilePathRelativeToProject,
+  getProjectRelativeFilePath,
   getRouterSearchFromRequestUrl,
   parseProjectRoute,
+  toProjectRelativePath,
+  toWebSafePath,
 } from '@src/lib/paths'
 
 beforeAll(async () => {
@@ -89,6 +93,37 @@ describe('testing getFilePathRelativeToProject', () => {
     expect(getFilePathRelativeToProject(filePath, projectName, '/')).toEqual(
       expectedProjectRelativeFilePath
     )
+  })
+})
+
+describe('testing web-safe project paths', () => {
+  it('should normalize Windows separators for display paths', () => {
+    expect(toWebSafePath('parts\\generated\\nested-part.kcl', '\\')).toEqual(
+      'parts/generated/nested-part.kcl'
+    )
+  })
+
+  it('should return a project-relative file path', () => {
+    expect(
+      toProjectRelativePath(
+        '/some/path/Simple Box',
+        '/some/path/Simple Box/parts/generated/nested-part.kcl'
+      )
+    ).toEqual('parts/generated/nested-part.kcl')
+  })
+
+  it('should return the app name when there is no file', () => {
+    expect(getProjectRelativeFilePath()).toEqual(APP_NAME)
+  })
+
+  it('should return the file name when a relative path cannot be derived', () => {
+    expect(
+      getProjectRelativeFilePath(undefined, {
+        name: 'nested-part.kcl',
+        path: '',
+        children: null,
+      })
+    ).toEqual('nested-part.kcl')
   })
 })
 
