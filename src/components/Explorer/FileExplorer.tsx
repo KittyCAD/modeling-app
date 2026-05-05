@@ -359,6 +359,14 @@ export const FileExplorerRowElement = ({
       onClick={() => {
         row.onClick(row.domIndex)
       }}
+      onDoubleClick={
+        row.onDoubleClick
+          ? (event) => {
+              event.preventDefault()
+              row.onDoubleClick?.(row.domIndex)
+            }
+          : undefined
+      }
       draggable="true"
       onDragOver={(event) => {
         event.preventDefault()

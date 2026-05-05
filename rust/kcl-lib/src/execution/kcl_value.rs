@@ -34,6 +34,7 @@ use crate::execution::UnsolvedExpr;
 use crate::execution::annotations::FnAttrs;
 use crate::execution::annotations::SETTINGS;
 use crate::execution::annotations::SETTINGS_UNIT_LENGTH;
+use crate::execution::annotations::VersionConstraint;
 use crate::execution::annotations::{self};
 use crate::execution::types::NumericType;
 use crate::execution::types::PrimitiveType;
@@ -178,6 +179,10 @@ pub struct FunctionSource {
     pub named_args: IndexMap<String, NamedParam>,
     pub return_type: Option<Node<Type>>,
     pub deprecated: bool,
+    /// Constraint on the KCL version at which this function is deprecated, e.g.
+    /// "2.0". When the active `kclVersion` is at or after this, calls trigger a
+    /// deprecation warning.
+    pub deprecated_since: Option<VersionConstraint>,
     pub experimental: bool,
     pub include_in_feature_tree: bool,
     pub std_props: Option<StdFnProps>,
@@ -205,6 +210,7 @@ impl FunctionSource {
             named_args,
             return_type: ast.return_type.clone(),
             deprecated: attrs.deprecated,
+            deprecated_since: attrs.deprecated_since,
             experimental: attrs.experimental,
             include_in_feature_tree: attrs.include_in_feature_tree,
             std_props: Some(props),
@@ -225,6 +231,7 @@ impl FunctionSource {
             named_args,
             return_type: ast.return_type.clone(),
             deprecated: false,
+            deprecated_since: None,
             experimental,
             include_in_feature_tree,
             std_props,

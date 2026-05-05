@@ -42,6 +42,7 @@ use crate::execution::UnsolvedExpr;
 use crate::execution::UnsolvedSegment;
 use crate::execution::UnsolvedSegmentKind;
 use crate::execution::annotations;
+use crate::execution::annotations::FnAttrs;
 use crate::execution::cad_op::OpKclValue;
 use crate::execution::control_continue;
 use crate::execution::early_return;
@@ -1058,10 +1059,18 @@ impl ExecutorContext {
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
             Expr::FunctionExpression(function_expression) => {
                 let attrs = annotations::get_fn_attrs(annotations, metadata.source_range)?;
-                let experimental = attrs.map(|a| a.experimental).unwrap_or_default();
+                let experimental = attrs
+                    .as_ref()
+                    .map(|a| a.experimental)
+                    // Use the default for the field, not the bool type.
+                    .unwrap_or_else(|| FnAttrs::default().experimental);
 
                 // Check the KCL @(feature_tree = ) annotation.
-                let include_in_feature_tree = attrs.unwrap_or_default().include_in_feature_tree;
+                let include_in_feature_tree = attrs
+                    .as_ref()
+                    .map(|a| a.include_in_feature_tree)
+                    // Use the default for the field, not the bool type.
+                    .unwrap_or_else(|| FnAttrs::default().include_in_feature_tree);
                 let (mut closure, placeholder_env_ref) = if let Some(attrs) = attrs
                     && (attrs.impl_ == annotations::Impl::Rust
                         || attrs.impl_ == annotations::Impl::RustConstrainable
@@ -1266,8 +1275,6 @@ impl Node<SketchBlock> {
         };
         #[cfg(not(feature = "artifact-graph"))]
         let _ = on_object_id;
-        #[cfg(not(feature = "artifact-graph"))]
-        let _ = sketch_id;
         #[cfg(feature = "artifact-graph")]
         let sketch_ctor_on = sketch_on_frontend_plane(&self.arguments, on_object_id);
         #[cfg(feature = "artifact-graph")]
@@ -1333,15 +1340,12 @@ impl Node<SketchBlock> {
             self.prep_mem(exec_state.mut_stack().snapshot(), exec_state);
 
             // Track that we're executing a sketch block.
-            #[cfg(feature = "artifact-graph")]
             let initial_sketch_block_state = {
                 SketchBlockState {
                     sketch_id: Some(sketch_id),
                     ..Default::default()
                 }
             };
-            #[cfg(not(feature = "artifact-graph"))]
-            let initial_sketch_block_state = SketchBlockState::default();
 
             let original_value = exec_state.mod_local.sketch_block.replace(initial_sketch_block_state);
 
@@ -3160,6 +3164,8 @@ impl Node<BinaryExpression> {
                             }
                         }
                         SketchConstraintKind::Distance { points, label_position } => {
+                            #[cfg(not(feature = "artifact-graph"))]
+                            let _ = label_position;
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];
@@ -3540,6 +3546,8 @@ impl Node<BinaryExpression> {
                             }
                         }
                         SketchConstraintKind::HorizontalDistance { points, label_position } => {
+                            #[cfg(not(feature = "artifact-graph"))]
+                            let _ = label_position;
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];
@@ -3659,6 +3667,8 @@ impl Node<BinaryExpression> {
                             }
                         }
                         SketchConstraintKind::VerticalDistance { points, label_position } => {
+                            #[cfg(not(feature = "artifact-graph"))]
+                            let _ = label_position;
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];

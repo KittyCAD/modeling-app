@@ -5,6 +5,8 @@ excerpt: "Construct a 2-dimensional circle, of the specified radius, centered at
 layout: manual
 ---
 
+**WARNING:** This function is deprecated as of KCL 2.0.
+
 Construct a 2-dimensional circle, of the specified radius, centered at the provided (x, y) origin point.
 
 ```kcl
@@ -17,7 +19,7 @@ circle(
 ): Sketch
 ```
 
-This is part of sketch v1 and is soft deprecated in favor of
+This is part of sketch v1 and is deprecated in favor of
 [sketch-solve](/docs/kcl-std/modules/std-solver).
 
 ### Arguments

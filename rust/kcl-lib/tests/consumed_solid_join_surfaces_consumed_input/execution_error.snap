@@ -1,0 +1,27 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing consumed_solid_join_surfaces_consumed_input.kcl
+---
+KCL Semantic error
+
+  × semantic: `target` was already consumed by a `subtract` operation. The
+  │ operation result is now in `first`; use that for subsequent operations.
+    ╭─[51:10]
+ 50 │ 
+ 51 │ joined = joinSurfaces([target, other])
+    ·          ──────────────┬──────────────┬
+    ·                        │              ╰── tests/consumed_solid_join_surfaces_consumed_input/input.kcl
+    ·                        ╰── tests/consumed_solid_join_surfaces_consumed_input/input.kcl
+    ╰────
+  ╰─▶ KCL Semantic error
+      
+        × semantic: `target` was already consumed by a `subtract` operation.
+        │ The operation result is now in `first`; use that for subsequent
+        │ operations.
+          ╭─[51:23]
+       50 │
+       51 │ joined = joinSurfaces([target, other])
+          ·                       ───────┬───────
+          ·                              ╰── tests/
+      consumed_solid_join_surfaces_consumed_input/input.kcl
+          ╰────

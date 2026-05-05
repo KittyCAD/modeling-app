@@ -31,6 +31,7 @@ use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::CallExpressionKw;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Type;
+use crate::std::solid_consumption::validate_value_not_consumed;
 
 #[derive(Debug, Clone)]
 pub struct Args<Status: ArgsStatus = Desugared> {
@@ -280,6 +281,22 @@ impl FunctionSource {
                     callsite,
                     format!(
                         "{} is deprecated, see the docs for a recommended replacement",
+                        match &fn_name {
+                            Some(n) => format!("`{n}`"),
+                            None => "This function".to_owned(),
+                        }
+                    ),
+                ),
+                annotations::WARN_DEPRECATED,
+            );
+        } else if let Some(since) = &self.deprecated_since
+            && annotations::version_ge(&exec_state.mod_local.settings.kcl_version, since)
+        {
+            exec_state.warn(
+                CompilationIssue::err(
+                    callsite,
+                    format!(
+                        "{} is deprecated as of KCL {since}. See the docs for a recommended replacement.",
                         match &fn_name {
                             Some(n) => format!("`{n}`"),
                             None => "This function".to_owned(),
@@ -924,6 +941,13 @@ fn type_check_params_kw(
             }
         }
     }
+
+    result
+        .unlabeled
+        .iter()
+        .map(|(_, arg)| arg)
+        .chain(result.labeled.values())
+        .try_for_each(|arg| validate_value_not_consumed(&arg.value, exec_state, arg.source_range))?;
 
     Ok(result)
 }

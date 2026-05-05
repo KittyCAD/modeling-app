@@ -38,7 +38,7 @@ import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 import type { ConnectionManager } from '@src/network/connectionManager'
-import { Signal } from '@src/lib/signal'
+import { Signal as LegacySignal } from '@src/lib/signal'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import {
   getSettingsFromActorContext,
@@ -49,7 +49,7 @@ export default class RustContext {
   private rustInstance: ModuleType | null = null
   private ctxInstance: Context | null = null
   private _defaultPlanes: DefaultPlanes | null = null
-  public readonly planesCreated = new Signal()
+  public readonly planesCreated = new LegacySignal()
 
   constructor(
     public readonly wasmInstancePromise: Promise<ModuleType>,
