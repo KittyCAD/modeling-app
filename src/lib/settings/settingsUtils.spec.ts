@@ -77,6 +77,11 @@ describe(`testing settings initialization`, () => {
     }
     const projectConfiguration: DeepPartial<ProjectConfiguration> = {
       settings: {
+        app: {
+          appearance: {
+            theme: 'light',
+          },
+        },
         modeling: {
           base_unit: 'ft',
         },

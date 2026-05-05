@@ -5,14 +5,7 @@ import type { DeepPartial } from '@src/lib/types'
 import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 
 export const TEST_SETTINGS_KEY = '/settings.toml'
-type TestSettings = DeepPartial<Settings> & {
-  debug?: {
-    show_panel?: boolean
-    show_modeling_machine_state?: boolean
-  }
-}
-
-export const TEST_SETTINGS: TestSettings = {
+export const TEST_SETTINGS: DeepPartial<Settings> = {
   app: {
     appearance: {
       theme: Themes.Dark,
@@ -43,12 +36,12 @@ export const TEST_SETTINGS: TestSettings = {
   },
 }
 
-export const TEST_SETTINGS_ONBOARDING_START: TestSettings = {
+export const TEST_SETTINGS_ONBOARDING_START: DeepPartial<Settings> = {
   ...TEST_SETTINGS,
   app: { ...TEST_SETTINGS.app, onboarding_status: '' },
 }
 
-export const TEST_SETTINGS_DEFAULT_THEME: TestSettings = {
+export const TEST_SETTINGS_DEFAULT_THEME: DeepPartial<Settings> = {
   ...TEST_SETTINGS,
   app: { ...TEST_SETTINGS.app, appearance: { theme: Themes.System } },
 }

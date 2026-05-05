@@ -1,4 +1,5 @@
 import JSZip from 'jszip'
+import { projects } from '@kittycad/lib'
 
 import env from '@src/env'
 import {
@@ -35,20 +36,12 @@ export async function getPublicProjectNameById(
   projectId: string
 ): Promise<string | Error> {
   const client = createKCClient()
-  const result = await kcCall(async () => {
-    const fetchImpl = client.fetch || fetch
-    const response = await fetchImpl(
-      `${client.baseUrl}/projects/public/${projectId}`,
-      {
-        method: 'GET',
-      }
-    )
-    if (!response.ok) {
-      return new Error(`Failed to load project ${projectId}`)
-    }
-
-    return response.json() as Promise<{ title?: string }>
-  })
+  const result = await kcCall(() =>
+    projects.get_public_project({
+      client,
+      id: projectId,
+    })
+  )
 
   if (err(result)) {
     return result
@@ -82,30 +75,83 @@ async function downloadProjectArchiveById(
   projectId: string
 ): Promise<DownloadedProjectArchive | Error> {
   const client = createKCClient()
-  const result = await kcCall(async () => {
-    const fetchImpl = client.fetch || fetch
-    const response = await fetchImpl(
-      `${client.baseUrl}/projects/public/${projectId}/download?format=${PROJECT_DOWNLOAD_FORMAT}`,
-      {
-        method: 'GET',
-      }
+  const originalFetch = client.fetch || fetch
+
+  client.fetch = async (input, init) => {
+    const response = await originalFetch(
+      ensureProjectIdDownloadFormat(input),
+      init
     )
     if (!response.ok || isJsonResponse(response)) {
-      return new Error(`Failed to download project ${projectId}`)
+      return response
     }
 
     const archive = await response.arrayBuffer()
-    return {
-      archive,
-      contentDisposition: response.headers.get('content-disposition'),
-    }
-  })
+    return createArchiveResponse(response, archive)
+  }
+
+  const result = await kcCall(() =>
+    projects.download_public_project({
+      client,
+      id: projectId,
+      format: PROJECT_DOWNLOAD_FORMAT,
+    })
+  )
 
   if (err(result)) {
     return result
   }
 
-  return result
+  return result as DownloadedProjectArchive
+}
+
+function ensureProjectIdDownloadFormat(input: RequestInfo | URL) {
+  const url = getRequestUrl(input)
+  if (
+    !url ||
+    !/\/projects\/public\/[^/]+\/download$/.test(url.pathname) ||
+    url.searchParams.has('format')
+  ) {
+    return input
+  }
+
+  url.searchParams.set('format', PROJECT_DOWNLOAD_FORMAT)
+
+  if (typeof input === 'string' || input instanceof URL) {
+    return url.toString()
+  }
+
+  return new Request(url.toString(), input)
+}
+
+function getRequestUrl(input: RequestInfo | URL) {
+  if (typeof input === 'string' || input instanceof URL) {
+    return new URL(String(input), globalThis.location?.origin)
+  }
+
+  if (input instanceof Request) {
+    return new URL(input.url, globalThis.location?.origin)
+  }
+
+  return undefined
+}
+
+function createArchiveResponse(response: Response, archive: ArrayBuffer) {
+  const wrappedResponse = new Response(null, {
+    headers: response.headers,
+    status: response.status,
+    statusText: response.statusText,
+  })
+  const payload: DownloadedProjectArchive = {
+    archive,
+    contentDisposition: response.headers.get('content-disposition'),
+  }
+
+  Object.defineProperty(wrappedResponse, 'json', {
+    value: async () => payload,
+  })
+
+  return wrappedResponse
 }
 
 function isJsonResponse(response: Response) {
