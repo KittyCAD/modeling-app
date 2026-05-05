@@ -37,6 +37,7 @@ use crate::errors::KclError;
 use crate::execution::KclValue;
 use crate::execution::Metadata;
 use crate::execution::TagIdentifier;
+use crate::execution::annotations::VersionConstraint;
 use crate::execution::annotations::WarningLevel;
 use crate::execution::annotations::{self};
 use crate::execution::types::ArrayLen;
@@ -4063,6 +4064,11 @@ pub struct Parameter {
     /// Whether it's experimental.
     #[serde(default, skip_serializing_if = "is_false")]
     pub experimental: bool,
+    /// If set, this parameter is deprecated as of the given KCL version (e.g.,
+    /// "2.0"). The parser validates that this is a dotted integer version;
+    /// downstream code reparses it into a `VersionConstraint`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub deprecated_since: Option<VersionConstraint>,
     /// The parameter's label or name.
     pub identifier: Node<Identifier>,
     /// The type of the parameter.
@@ -4806,6 +4812,7 @@ cylinder = startSketchOn(-XZ)
                     name: None,
                     params: vec![Parameter {
                         experimental: Default::default(),
+                        deprecated_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
                             digest: None,
@@ -4827,6 +4834,7 @@ cylinder = startSketchOn(-XZ)
                     name: None,
                     params: vec![Parameter {
                         experimental: Default::default(),
+                        deprecated_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
                             digest: None,
@@ -4849,6 +4857,7 @@ cylinder = startSketchOn(-XZ)
                     params: vec![
                         Parameter {
                             experimental: Default::default(),
+                            deprecated_since: None,
                             identifier: Node::no_src(Identifier {
                                 name: "foo".to_owned(),
                                 digest: None,
@@ -4860,6 +4869,7 @@ cylinder = startSketchOn(-XZ)
                         },
                         Parameter {
                             experimental: Default::default(),
+                            deprecated_since: None,
                             identifier: Node::no_src(Identifier {
                                 name: "bar".to_owned(),
                                 digest: None,

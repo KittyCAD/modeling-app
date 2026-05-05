@@ -40,6 +40,7 @@ use crate::execution::UnsolvedExpr;
 use crate::execution::UnsolvedSegment;
 use crate::execution::UnsolvedSegmentKind;
 use crate::execution::annotations;
+use crate::execution::annotations::FnAttrs;
 use crate::execution::cad_op::OpKclValue;
 use crate::execution::control_continue;
 use crate::execution::early_return;
@@ -1056,10 +1057,18 @@ impl ExecutorContext {
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
             Expr::FunctionExpression(function_expression) => {
                 let attrs = annotations::get_fn_attrs(annotations, metadata.source_range)?;
-                let experimental = attrs.map(|a| a.experimental).unwrap_or_default();
+                let experimental = attrs
+                    .as_ref()
+                    .map(|a| a.experimental)
+                    // Use the default for the field, not the bool type.
+                    .unwrap_or_else(|| FnAttrs::default().experimental);
 
                 // Check the KCL @(feature_tree = ) annotation.
-                let include_in_feature_tree = attrs.unwrap_or_default().include_in_feature_tree;
+                let include_in_feature_tree = attrs
+                    .as_ref()
+                    .map(|a| a.include_in_feature_tree)
+                    // Use the default for the field, not the bool type.
+                    .unwrap_or_else(|| FnAttrs::default().include_in_feature_tree);
                 let (mut closure, placeholder_env_ref) = if let Some(attrs) = attrs
                     && (attrs.impl_ == annotations::Impl::Rust
                         || attrs.impl_ == annotations::Impl::RustConstrainable
