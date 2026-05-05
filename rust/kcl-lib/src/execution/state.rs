@@ -836,6 +836,33 @@ impl ExecState {
     ) -> Result<(), KclError> {
         Ok(())
     }
+
+    pub(crate) fn kcl_version(&self) -> KclVersion {
+        self.mod_local.settings.kcl_version.parse().unwrap_or_default()
+    }
+}
+
+#[derive(Default)]
+pub enum KclVersion {
+    #[default]
+    V1,
+    V2,
+}
+
+impl FromStr for KclVersion {
+    type Err = KclError;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        match s {
+            "1" | "1.0" | "1.0.0" => Ok(Self::V1),
+            "2" | "2.0" | "2.0.0" => Ok(Self::V2),
+            other => Err(KclError::new_semantic(KclErrorDetails {
+                source_ranges: Default::default(),
+                backtrace: Default::default(),
+                message: format!("Unrecognized version {other}. Valid versions are 1.0 and 2.0"),
+            })),
+        }
+    }
 }
 
 impl GlobalState {

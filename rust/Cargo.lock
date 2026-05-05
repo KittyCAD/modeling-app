@@ -2303,7 +2303,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.148"
+version = "0.1.149"
 dependencies = [
  "anyhow",
  "clap",
@@ -2314,7 +2314,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.2.148"
+version = "0.2.149"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2323,7 +2323,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.148"
+version = "0.1.149"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -2333,7 +2333,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-error"
-version = "0.2.148"
+version = "0.2.149"
 dependencies = [
  "miette",
  "serde",
@@ -2343,7 +2343,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.148"
+version = "0.2.149"
 dependencies = [
  "anyhow",
  "clap",
@@ -2364,7 +2364,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.148"
+version = "0.1.149"
 dependencies = [
  "anyhow",
  "clap",
@@ -2384,7 +2384,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.148"
+version = "0.2.149"
 dependencies = [
  "ahash",
  "anyhow",
@@ -2462,14 +2462,14 @@ dependencies = [
  "wasm-bindgen-futures",
  "web-sys",
  "web-time",
- "winnow 0.7.15",
+ "winnow 1.0.2",
  "zduny-wasm-timer",
  "zip",
 ]
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.148"
+version = "0.3.149"
 dependencies = [
  "anyhow",
  "kcl-lib",
@@ -2485,7 +2485,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.2.148"
+version = "0.2.149"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -2498,7 +2498,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-to-core"
-version = "0.1.148"
+version = "0.1.149"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2512,7 +2512,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.148"
+version = "0.1.149"
 dependencies = [
  "anyhow",
  "console_error_panic_hook",
@@ -2580,9 +2580,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.193"
+version = "0.2.195"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "64de85fb38082d752777827f4fb0410bbe6a26b2832b4e943ba3f889a84a9e39"
+checksum = "adea5e242fa7d56bc95a51df88654b5fe26d06f0f62b6619e3732440ec7d42e3"
 dependencies = [
  "anyhow",
  "bon",
@@ -5073,7 +5073,7 @@ dependencies = [
  "toml_datetime 1.1.0+spec-1.1.0",
  "toml_parser",
  "toml_writer",
- "winnow 1.0.0",
+ "winnow 1.0.2",
 ]
 
 [[package]]
@@ -5118,7 +5118,7 @@ dependencies = [
  "toml_datetime 1.1.0+spec-1.1.0",
  "toml_parser",
  "toml_writer",
- "winnow 1.0.0",
+ "winnow 1.0.2",
 ]
 
 [[package]]
@@ -5127,7 +5127,7 @@ version = "1.1.0+spec-1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2334f11ee363607eb04df9b8fc8a13ca1715a72ba8662a26ac285c98aabb4011"
 dependencies = [
- "winnow 1.0.0",
+ "winnow 1.0.2",
 ]
 
 [[package]]
@@ -6028,9 +6028,9 @@ dependencies = [
 
 [[package]]
 name = "winnow"
-version = "1.0.0"
+version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a90e88e4667264a994d34e6d1ab2d26d398dcdca8b7f52bec8668957517fc7d8"
+checksum = "2ee1708bef14716a11bae175f579062d4554d95be2c6829f518df847b7b3fdd0"
 dependencies = [
  "memchr",
 ]

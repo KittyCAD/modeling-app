@@ -184,6 +184,7 @@ function createCoreSettings() {
        */
       zookeeperMode: new Setting<MlCopilotMode>({
         defaultValue: DEFAULT_ML_COPILOT_MODE,
+        hideOnLevel: 'user',
         validate: (v) => v === 'fast' || v === 'thoughtful',
         description: 'The default reasoning mode for Zookeeper.',
         commandConfig: {

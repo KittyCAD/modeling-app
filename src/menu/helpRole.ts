@@ -98,6 +98,7 @@ export const helpRole = (
         },
       },
       {
+        id: 'Help.Check for updates',
         label: 'Check for Updates',
         click: () => {
           appUpdater.checkForUpdates().catch(reportRejection)
