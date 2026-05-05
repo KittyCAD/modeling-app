@@ -39,10 +39,14 @@ import { test } from '@e2e/playwright/zoo-test'
 import { createLayoutWithMetadata } from '@src/lib/layout'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
 
+export const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
+
 export const PLAYWRIGHT_LAYOUT_SETTINGS = {
   layout: {
     configs: {
-      default: JSON.stringify(createLayoutWithMetadata(playwrightLayoutConfig)),
+      [PLAYWRIGHT_LAYOUT_CONFIG_NAME]: JSON.stringify(
+        createLayoutWithMetadata(playwrightLayoutConfig)
+      ),
     },
   },
 } as const

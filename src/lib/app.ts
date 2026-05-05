@@ -39,18 +39,19 @@ import { initialiseWasm } from '@src/lang/wasmUtils'
 import {
   createLayoutWithMetadata,
   defaultLayout,
-  defaultLayoutConfig,
   loadLayout,
   saveLayout,
   setLayoutSaveHandler,
   type Layout,
 } from '@src/lib/layout'
+import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { type Signal, signal, effect } from '@preact/signals-core'
 import {
   getAllCurrentSettings,
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
+import { isPlaywright } from '@src/lib/isPlaywright'
 import { MachineManager } from '@src/lib/MachineManager'
 import { err, reportRejection } from '@src/lib/trap'
 import type { Project } from '@src/lib/project'
@@ -60,6 +61,13 @@ import type { UserResponse } from '@kittycad/lib/dist/types/src'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
 import { coreRegistryItems } from '@src/registry/registry'
+
+const DEFAULT_LAYOUT_CONFIG_NAME = 'default'
+const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
+
+function isPlaywrightRuntime() {
+  return typeof window !== 'undefined' && isPlaywright()
+}
 
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
@@ -287,7 +295,14 @@ export class App implements AppSubsystems {
       useContext: () => useSelector(billingActor, ({ context }) => context),
     }
 
-    const layoutSignal = signal<Layout>(defaultLayout)
+    const usePlaywrightLayout = isPlaywrightRuntime()
+    const layoutConfigName = usePlaywrightLayout
+      ? PLAYWRIGHT_LAYOUT_CONFIG_NAME
+      : DEFAULT_LAYOUT_CONFIG_NAME
+    const runtimeDefaultLayout = usePlaywrightLayout
+      ? playwrightLayoutConfig
+      : defaultLayout
+    const layoutSignal = signal<Layout>(runtimeDefaultLayout)
     const layout: AppLayoutSystem = {
       signal: layoutSignal,
       get: () => layoutSignal.value,
@@ -295,10 +310,10 @@ export class App implements AppSubsystems {
         layoutSignal.value = structuredClone(l)
       },
       reset: () => {
-        layoutSignal.value = structuredClone(defaultLayoutConfig)
+        layoutSignal.value = structuredClone(runtimeDefaultLayout)
       },
       saveEffectUnsubscribeFn: effect(() =>
-        saveLayout({ layout: layoutSignal.value })
+        saveLayout({ layout: layoutSignal.value, layoutName: layoutConfigName })
       ),
     }
 
@@ -328,13 +343,19 @@ export class App implements AppSubsystems {
       })
 
       const settingsSnapshot = getOnlySettingsFromContext(snapshot.context)
-      const settingsLayout = settingsSnapshot.layout.configs.current.default
+      const settingsLayout =
+        settingsSnapshot.layout.configs.current[layoutConfigName] ??
+        settingsSnapshot.layout.configs.current.default
       if (settingsLayout) {
         layoutSignal.value = structuredClone(settingsLayout.layout)
       } else {
-        const legacyLayout = loadLayout('default')
-        if (!err(legacyLayout)) {
-          layoutSignal.value = structuredClone(legacyLayout)
+        const legacyLayout = loadLayout(layoutConfigName)
+        const fallbackLegacyLayout =
+          err(legacyLayout) && layoutConfigName !== DEFAULT_LAYOUT_CONFIG_NAME
+            ? loadLayout(DEFAULT_LAYOUT_CONFIG_NAME)
+            : legacyLayout
+        if (!err(fallbackLegacyLayout)) {
+          layoutSignal.value = structuredClone(fallbackLegacyLayout)
         }
       }
 

@@ -307,7 +307,7 @@ export function parseLayoutJsonWithMigrations(
 /**
  * Load a layout's legacy localStorage persisted JSON and parse and validate it.
  * User layout persistence now lives in the hidden `layout.configs` user setting;
- * this remains for migration and isolated layout test/demo surfaces.
+ * this remains for migration from pre-settings layout storage.
  */
 export function loadLayout(id: string): Layout | Error {
   if (!globalThis.localStorage) {
