@@ -343,7 +343,8 @@ pub(super) fn get_fn_attrs(
     annotations: &[Node<Annotation>],
     source_range: SourceRange,
 ) -> Result<Option<FnAttrs>, KclError> {
-    let mut result = None;
+    let mut found_attrs = false;
+    let mut fn_attrs = FnAttrs::default();
     for attr in annotations {
         if attr.name.is_some() || attr.properties.is_none() {
             continue;
@@ -352,11 +353,8 @@ pub(super) fn get_fn_attrs(
             if &*p.key.name == IMPL
                 && let Some(s) = p.value.ident_name()
             {
-                if result.is_none() {
-                    result = Some(FnAttrs::default());
-                }
-
-                result.as_mut().unwrap().impl_ = Impl::from_str(s).map_err(|_| {
+                found_attrs = true;
+                fn_attrs.impl_ = Impl::from_str(s).map_err(|_| {
                     KclError::new_semantic(KclErrorDetails::new(
                         format!(
                             "Invalid value for {} attribute, expected one of: {}",
@@ -372,10 +370,8 @@ pub(super) fn get_fn_attrs(
             if &*p.key.name == DEPRECATED
                 && let Some(b) = p.value.literal_bool()
             {
-                if result.is_none() {
-                    result = Some(FnAttrs::default());
-                }
-                result.as_mut().unwrap().deprecated = b;
+                found_attrs = true;
+                fn_attrs.deprecated = b;
                 continue;
             }
 
@@ -394,14 +390,8 @@ pub(super) fn get_fn_attrs(
                         vec![source_range],
                     )));
                 };
-                if result.is_none() {
-                    result = Some(FnAttrs::default());
-                }
-                if let Some(fn_attrs) = result.as_mut() {
-                    fn_attrs.deprecated_since = Some(constraint);
-                } else {
-                    debug_assert!(false, "fn_attrs should have been set");
-                }
+                found_attrs = true;
+                fn_attrs.deprecated_since = Some(constraint);
                 continue;
             }
 
@@ -413,20 +403,16 @@ pub(super) fn get_fn_attrs(
             if &*p.key.name == EXPERIMENTAL
                 && let Some(b) = p.value.literal_bool()
             {
-                if result.is_none() {
-                    result = Some(FnAttrs::default());
-                }
-                result.as_mut().unwrap().experimental = b;
+                found_attrs = true;
+                fn_attrs.experimental = b;
                 continue;
             }
 
             if &*p.key.name == INCLUDE_IN_FEATURE_TREE
                 && let Some(b) = p.value.literal_bool()
             {
-                if result.is_none() {
-                    result = Some(FnAttrs::default());
-                }
-                result.as_mut().unwrap().include_in_feature_tree = b;
+                found_attrs = true;
+                fn_attrs.include_in_feature_tree = b;
                 continue;
             }
 
@@ -440,7 +426,7 @@ pub(super) fn get_fn_attrs(
         }
     }
 
-    Ok(result)
+    Ok(if found_attrs { Some(fn_attrs) } else { None })
 }
 
 #[cfg(test)]
