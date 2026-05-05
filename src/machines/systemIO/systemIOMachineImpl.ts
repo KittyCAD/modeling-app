@@ -418,13 +418,13 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       const requestedCode = input.requestedCode
       const folders = input.context.folders
 
-      if (!folders) {
-        return Promise.reject(new Error('no folders'))
-      }
-
       let newProjectName = requestedProjectName
 
       if (!newProjectName) {
+        if (!folders) {
+          return Promise.reject(new Error('no folders'))
+        }
+
         newProjectName = getUniqueProjectName(
           input.context.defaultProjectFolderName,
           folders
@@ -433,7 +433,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
 
       const needsInterpolated = doesProjectNameNeedInterpolated(newProjectName)
       if (needsInterpolated) {
-        const nextIndex = getNextProjectIndex(newProjectName, folders)
+        const nextIndex = getNextProjectIndex(newProjectName, folders ?? [])
         newProjectName = interpolateProjectNameWithIndex(
           newProjectName,
           nextIndex
