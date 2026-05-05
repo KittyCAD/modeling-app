@@ -1,7 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-assertion_line: 538
-description: Artifact graph flowchart multi_target_csg.kcl
+description: Artifact graph flowchart csg_subtract_self_empty_result.kcl
 extension: md
 snapshot_kind: binary
 ---
