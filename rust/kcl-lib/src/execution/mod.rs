@@ -70,6 +70,7 @@ pub(crate) use state::ConstraintState;
 pub(crate) use state::ConsumedSolidInfo;
 pub(crate) use state::ConsumedSolidOperation;
 pub use state::ExecState;
+pub(crate) use state::KclVersion;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
 #[cfg(feature = "artifact-graph")]

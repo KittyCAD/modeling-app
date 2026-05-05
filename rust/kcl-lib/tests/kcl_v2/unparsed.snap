@@ -1,0 +1,13 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing kcl_v2.kcl
+---
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+triangle = sketch(on = XY) {
+  a = line(start = [0, 0], end = [4, 0])
+  b = line(start = [4, 0], end = [4, 3])
+  c = line(start = [4, 3], end = [0, 0])
+}
+
+triangleRegion = region(sketch = triangle, point = [2, 1])

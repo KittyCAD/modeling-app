@@ -1,0 +1,23 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing kcl_v2.kcl
+---
+KCL Engine error
+
+  × engine: KittyCAD engine has not yet implemented this
+   ╭─[9:18]
+ 8 │ 
+ 9 │ triangleRegion = region(sketch = triangle, point = [2, 1])
+   ·                  ────────────────────┬────────────────────┬
+   ·                                      ╰── tests/kcl_v2/input.kcl
+   ·                                      ╰── tests/kcl_v2/input.kcl
+   ╰────
+  ╰─▶ KCL Engine error
+      
+        × engine: KittyCAD engine has not yet implemented this
+         ╭─[9:18]
+       8 │
+       9 │ triangleRegion = region(sketch = triangle, point = [2, 1])
+         ·                  ────────────────────┬────────────────────
+         ·                                      ╰── tests/kcl_v2/input.kcl
+         ╰────
