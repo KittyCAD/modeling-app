@@ -397,7 +397,11 @@ pub(super) fn get_fn_attrs(
                 if result.is_none() {
                     result = Some(FnAttrs::default());
                 }
-                result.as_mut().unwrap().deprecated_since = Some(constraint);
+                if let Some(fn_attrs) = result.as_mut() {
+                    fn_attrs.deprecated_since = Some(constraint);
+                } else {
+                    debug_assert!(false, "fn_attrs should have been set");
+                }
                 continue;
             }
 
