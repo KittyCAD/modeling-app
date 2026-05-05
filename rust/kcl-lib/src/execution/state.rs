@@ -1,3 +1,4 @@
+#[cfg(feature = "artifact-graph")]
 use std::collections::BTreeMap;
 use std::str::FromStr;
 use std::sync::Arc;
