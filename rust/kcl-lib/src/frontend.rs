@@ -982,8 +982,10 @@ impl SketchApi for FrontendState {
                     Segment::Line(_) | Segment::Arc(_) | Segment::Circle(_) | Segment::ControlPointSpline(_)
                 )
             {
+                // segment is owned -> delete the owner
                 resolved_segment_ids_to_delete.insert(owner_id);
             } else {
+                // segment is not owned by anything -> can be deleted
                 resolved_segment_ids_to_delete.insert(segment_id);
             }
         }
@@ -5824,6 +5826,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                         .any(|arg| arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM));
                     if *construction_value {
                         if construction_exists {
+                            // Update existing construction kwarg
                             for labeled_arg in &mut call.arguments {
                                 if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM) {
                                     labeled_arg.arg = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
@@ -5834,6 +5837,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                                 }
                             }
                         } else {
+                            // Add new construction kwarg
                             call.arguments.push(ast::LabeledArg {
                                 label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
                                 arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
@@ -5844,6 +5848,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                             });
                         }
                     } else {
+                        // Remove construction kwarg if it exists
                         call.arguments
                             .retain(|arg| arg.label.as_ref().map(|id| id.name.as_str()) != Some(CONSTRUCTION_PARAM));
                     }
@@ -5862,6 +5867,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                         labeled_arg.arg = points.clone();
                     }
                 }
+                // Handle construction kwarg
                 if let Some(construction_value) = construction {
                     let construction_exists = call
                         .arguments
