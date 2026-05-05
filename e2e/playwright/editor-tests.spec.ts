@@ -92,7 +92,7 @@ sketch001 = startSketchOn(XY)
     await page.keyboard.up('ControlOrMeta')
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `@settings(defaultLengthUnit = in)
+      `foobar @settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
