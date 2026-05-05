@@ -10,6 +10,7 @@ import {
 } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
+import { toProjectRelativePath } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -430,10 +431,6 @@ function flattenProjectFiles(fileEntries: FileEntry[]): FileEntry[] {
 
 function cloneFileBytes(fileBytes: Uint8Array) {
   return Uint8Array.from(fileBytes)
-}
-
-function toProjectRelativePath(projectPath: string, filePath: string) {
-  return fsZds.relative(projectPath, filePath).replaceAll(fsZds.sep, '/')
 }
 
 function toKittyCadFiles(
