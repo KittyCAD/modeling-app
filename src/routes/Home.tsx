@@ -119,24 +119,29 @@ const Home = () => {
   const onboardingStatus = settingsValues.app.onboardingStatus.current
 
   useEffect(() => {
-    systemIOActor.send({
-      type: SystemIOMachineEvents.setProjectDirectoryPath,
-      data: {
-        requestedProjectDirectoryPath:
-          settingsValues.app?.projectDirectory?.current,
-      },
-    })
-    void waitFor(systemIOActor, (state) =>
-      state.matches(SystemIOMachineStates.idle)
-    ).then(() => {
+    let cancelled = false
+    const requestedProjectDirectoryPath =
+      settingsValues.app?.projectDirectory?.current || ''
+    const setProjectDirectoryPath = () => {
       systemIOActor.send({
         type: SystemIOMachineEvents.setProjectDirectoryPath,
         data: {
-          requestedProjectDirectoryPath:
-            settingsValues.app?.projectDirectory?.current,
+          requestedProjectDirectoryPath,
         },
       })
+    }
+
+    setProjectDirectoryPath()
+    void waitFor(systemIOActor, (state) =>
+      state.matches(SystemIOMachineStates.idle)
+    ).then(() => {
+      if (!cancelled) {
+        setProjectDirectoryPath()
+      }
     })
+    return () => {
+      cancelled = true
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [settingsValues.app?.projectDirectory?.current])
 

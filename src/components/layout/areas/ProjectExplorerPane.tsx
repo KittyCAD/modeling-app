@@ -46,9 +46,12 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   } = useModelingContext()
 
   useEffect(() => {
-    // Have no idea why the project loader data doesn't have the children from the ls on disk
-    // That means it is a different object or cached incorrectly?
-    if (!project || !file || !projects) {
+    projectRef.current = project?.projectIORefSignal
+  }, [project?.projectIORefSignal])
+
+  useEffect(() => {
+    if (!project || !file) {
+      setTheProject(null)
       return
     }
 
@@ -56,21 +59,24 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       systemIOActor.send({
         type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
       })
-      return
     }
 
-    // You need to find the real project in the storage from the loader information since the loader Project is not hydrated
-    const foundProject = projects.find((p) => {
-      return p.name === project?.name
+    const openedProject = project.projectIORefSignal.value
+    const foundProject = projects?.find((p) => {
+      return p.path === openedProject.path
     })
+    const projectForExplorer = foundProject ?? openedProject
 
-    if (!foundProject) {
+    const duplicated = structuredClone(projectForExplorer)
+    if (!duplicated.children) {
+      setTheProject(null)
       return
     }
 
-    // Duplicate the state to not edit the raw data
-    const duplicated = structuredClone(foundProject)
-    addPlaceHoldersForNewFileAndFolder(duplicated.children, foundProject.path)
+    addPlaceHoldersForNewFileAndFolder(
+      duplicated.children,
+      projectForExplorer.path
+    )
     setTheProject(duplicated)
   }, [file, projects, project, systemIOActor])
 
@@ -108,9 +114,12 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   )
 
   const onRowClicked = (entry: FileExplorerEntry) => {
+    const explorerProjectDirectoryPath = theProject
+      ? fsZds.dirname(theProject.path)
+      : projectDirectoryPath
     const requestedFileName = parentPathRelativeToProject(
       entry.path,
-      projectDirectoryPath
+      explorerProjectDirectoryPath
     )
 
     const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions(wasmInstance)
@@ -226,7 +235,9 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             onRowEnter={onRowClicked}
             canNavigate={true}
             readOnly={false}
-            overrideApplicationProjectDirectory={projectDirectoryPath}
+            overrideApplicationProjectDirectory={
+              fsZds.dirname(theProject.path) || projectDirectoryPath
+            }
           />
         </div>
       ) : (

@@ -227,6 +227,9 @@ export function SystemIOMachineLogicListener() {
   }
 
   const useWatchingApplicationProjectDirectory = () => {
+    const activeProjectDirectoryPath =
+      projectDirectoryPath || settingsValues.app.projectDirectory.current
+
     useFileSystemWatcher(
       async (eventType, targetPath) => {
         // Gotcha: Chokidar is buggy. It will emit addDir or add on files that did not get created.
@@ -256,9 +259,7 @@ export function SystemIOMachineLogicListener() {
           })
         }
       },
-      settingsValues.app.projectDirectory.current
-        ? [settingsValues.app.projectDirectory.current]
-        : []
+      activeProjectDirectoryPath ? [activeProjectDirectoryPath] : []
     )
   }
 

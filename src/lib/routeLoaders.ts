@@ -212,7 +212,13 @@ export const fileLoader =
     )
 
     const appProjectDir = settings.settings.app.projectDirectory.current
-    const requestedProjectDirectoryPath = project.path.includes(appProjectDir)
+    const appProjectDirWithSep = appProjectDir.endsWith(fsZds.sep)
+      ? appProjectDir
+      : `${appProjectDir}${fsZds.sep}`
+    const projectIsInAppProjectDir =
+      project.path === appProjectDir ||
+      Boolean(appProjectDir && project.path.startsWith(appProjectDirWithSep))
+    const requestedProjectDirectoryPath = projectIsInAppProjectDir
       ? appProjectDir
       : getParentAbsolutePath(project.path) // Fallback to parent directory if foreign to app project dir
     app.systemIOActor.send({
