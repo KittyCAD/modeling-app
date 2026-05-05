@@ -3150,6 +3150,8 @@ impl Node<BinaryExpression> {
                             }
                         }
                         SketchConstraintKind::Distance { points, label_position } => {
+                            #[cfg(not(feature = "artifact-graph"))]
+                            let _ = label_position;
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];
@@ -3530,6 +3532,8 @@ impl Node<BinaryExpression> {
                             }
                         }
                         SketchConstraintKind::HorizontalDistance { points, label_position } => {
+                            #[cfg(not(feature = "artifact-graph"))]
+                            let _ = label_position;
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];
@@ -3649,6 +3653,8 @@ impl Node<BinaryExpression> {
                             }
                         }
                         SketchConstraintKind::VerticalDistance { points, label_position } => {
+                            #[cfg(not(feature = "artifact-graph"))]
+                            let _ = label_position;
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];

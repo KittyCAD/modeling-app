@@ -2456,47 +2456,6 @@ description: Operations executed consumed_solid_join_surfaces_consumed_input.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "joinSurfaces",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 7
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": [],
-      "isError": true
     }
   ],
   "std::math": [
