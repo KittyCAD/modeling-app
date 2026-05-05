@@ -6664,6 +6664,12 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
         (sketch_id, line_id, source_delta, scene_graph_delta)
     }
 
+    async fn seed_frontend_with_mock(frontend: &mut FrontendState, mock_ctx: &ExecutorContext, program: &Program) {
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn test_sketch_checkpoint_round_trip_restores_state() {
         let mut frontend = FrontendState::new();
@@ -7437,10 +7443,11 @@ bad = missing_name
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&mock_ctx, program).await.unwrap();
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -7464,6 +7471,7 @@ bad = missing_name
         let new_sketch = expect_sketch(new_sketch_object);
         assert_eq!(new_sketch.segments.len(), 0);
 
+        ctx.close().await;
         mock_ctx.close().await;
     }
 
@@ -7477,10 +7485,11 @@ bad = missing_name
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let mut frontend = FrontendState::new();
 
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&mock_ctx, program).await.unwrap();
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -7536,6 +7545,7 @@ bad = missing_name
 "
         );
 
+        ctx.close().await;
         mock_ctx.close().await;
     }
 
@@ -7548,10 +7558,11 @@ bad = missing_name
 
         let mut frontend = FrontendState::new();
 
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&mock_ctx, program).await.unwrap();
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
 
@@ -7593,6 +7604,7 @@ bad = missing_name
         assert_eq!(scene_delta.new_objects, vec![ObjectId(2), ObjectId(3), ObjectId(4)]);
         assert_eq!(scene_delta.new_graph.objects.len(), 5);
 
+        ctx.close().await;
         mock_ctx.close().await;
     }
 
@@ -7685,11 +7697,13 @@ bad = missing_name
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
-        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_with_engine(
+            std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            Default::default(),
+        );
         let version = Version(0);
 
-        frontend.hack_set_program(&mock_ctx, program).await.unwrap();
+        frontend.hack_set_program(&ctx, program).await.unwrap();
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
 
@@ -7698,7 +7712,6 @@ bad = missing_name
         assert_eq!(scene_delta.new_graph.objects.len(), 0);
 
         ctx.close().await;
-        mock_ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -7797,7 +7810,7 @@ sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -7842,7 +7855,7 @@ sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -7886,7 +7899,7 @@ sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -7935,7 +7948,7 @@ sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -7985,7 +7998,7 @@ sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&mock_ctx, program).await.unwrap();
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -8043,7 +8056,7 @@ sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&mock_ctx, program).await.unwrap();
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -8109,7 +8122,7 @@ sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&mock_ctx, program).await.unwrap();
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -8175,7 +8188,7 @@ sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&mock_ctx, program).await.unwrap();
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -8220,7 +8233,7 @@ sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&mock_ctx, program).await.unwrap();
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -8265,7 +8278,7 @@ sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&mock_ctx, program).await.unwrap();
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
 
@@ -8312,7 +8325,7 @@ sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&mock_ctx, program).await.unwrap();
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -8358,7 +8371,7 @@ sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&mock_ctx, program).await.unwrap();
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -8405,7 +8418,7 @@ sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&mock_ctx, program).await.unwrap();
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -8658,7 +8671,7 @@ sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&mock_ctx, program).await.unwrap();
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -8883,7 +8896,7 @@ sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&mock_ctx, program).await.unwrap();
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -8930,7 +8943,7 @@ sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&mock_ctx, program).await.unwrap();
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -8987,7 +9000,7 @@ sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&mock_ctx, program).await.unwrap();
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -9033,7 +9046,7 @@ sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&mock_ctx, program).await.unwrap();
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -10586,7 +10599,7 @@ splineSketch = sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&mock_ctx, program).await.unwrap();
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -10653,7 +10666,7 @@ splineSketch = sketch(on = XY) {
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
 
-        frontend.hack_set_program(&mock_ctx, program).await.unwrap();
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
 
         let ui_scene_graph = frontend.scene_graph_for_ui();
         let sketch_object = find_first_sketch_object(&ui_scene_graph).unwrap();
@@ -10712,7 +10725,7 @@ splineSketch = sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&mock_ctx, program).await.unwrap();
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
