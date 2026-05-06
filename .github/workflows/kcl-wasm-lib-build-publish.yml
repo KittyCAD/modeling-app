@@ -1,6 +1,7 @@
 name: kcl-wasm-lib-build-and-publish
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
