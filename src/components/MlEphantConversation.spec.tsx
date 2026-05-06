@@ -156,6 +156,44 @@ describe('MlEphantConversation', () => {
     rendersRequestBubbleThenDisplayResponse('thoughtful')
   })
 
+  test('keeps fallback mode metadata aligned with the selected mode', () => {
+    const handleProcess = vi.fn()
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        conversation={{ exchanges: [] }}
+        onProcess={handleProcess}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        initialMlCopilotMode="fast"
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    expect(screen.getByTestId('ml-copilot-efforts-button')).toHaveTextContent(
+      'Standard'
+    )
+
+    fireEvent.change(screen.getByTestId('ml-ephant-conversation-input'), {
+      target: { value: 'Generate a fast cube' },
+    })
+    fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
+
+    expect(handleProcess).toHaveBeenCalledWith(
+      'Generate a fast cube',
+      'fast',
+      []
+    )
+  })
+
   test('does not render unknown response types', () => {
     const unknownResponseText = 'this should never be visible'
 

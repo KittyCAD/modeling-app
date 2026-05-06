@@ -59,10 +59,16 @@ export interface MlEphantConversationProps {
 }
 
 // Used only until the server's modes_response arrives (or if it never does).
-// Kept to a single safe option so we never display label/icon metadata that
-// doesn't reflect what the server actually offers.
+// Mirrors the local mode union so the fallback label/icon always matches the
+// mode we will submit while waiting for server-provided metadata.
 const FALLBACK_ML_COPILOT_MODE_OPTIONS: ReadonlyArray<MlCopilotModeOption> =
   Object.freeze([
+    {
+      id: 'fast',
+      label: 'Standard',
+      description: 'Faster reasoning. Best for quick edits and simple tasks.',
+      icon: 'stopwatch',
+    },
     {
       id: 'thoughtful',
       label: 'Thoughtful',

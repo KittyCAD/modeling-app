@@ -520,6 +520,13 @@ export const mlEphantManagerMachine = setup({
       }
       return {}
     }),
+    assignModeOptions: assign(({ event }) => {
+      assertEvent(event, MlEphantManagerTransitions.ModesReceive)
+      return {
+        defaultMode: event.defaultMode,
+        modeOptions: event.modeOptions,
+      }
+    }),
     disconnectIfIdle: ({ context }) => {
       if (!context.awaitingResponse) {
         logZookeeperDisconnect(
@@ -1026,6 +1033,11 @@ export const mlEphantManagerMachine = setup({
     if (args.context?.ws?.readyState !== WebSocket.OPEN) return
     args.context?.ws?.close()
   },
+  on: {
+    [MlEphantManagerTransitions.ModesReceive]: {
+      actions: ['assignModeOptions'],
+    },
+  },
   states: {
     [S.Await]: {
       on: {
@@ -1038,6 +1050,8 @@ export const mlEphantManagerMachine = setup({
               lastMessageType: undefined,
               conversation: undefined,
               conversationId: undefined,
+              defaultMode: undefined,
+              modeOptions: undefined,
               awaitingResponse: false,
               pendingBackendShutdown: false,
             }),
@@ -1070,8 +1084,10 @@ export const mlEphantManagerMachine = setup({
         onDone: {
           target: MlEphantManagerStates.WaitForContinueCheck,
           actions: [
-            assign(({ event }) => ({
+            assign(({ event, context }) => ({
               ...event.output,
+              defaultMode: event.output.defaultMode ?? context.defaultMode,
+              modeOptions: event.output.modeOptions ?? context.modeOptions,
               awaitingResponse: false,
               pendingBackendShutdown: false,
             })),
@@ -1153,15 +1169,6 @@ export const mlEphantManagerMachine = setup({
     [MlEphantManagerStates.Ready]: {
       type: 'parallel',
       on: {
-        [MlEphantManagerTransitions.ModesReceive]: {
-          actions: assign(({ event }) => {
-            assertEvent(event, MlEphantManagerTransitions.ModesReceive)
-            return {
-              defaultMode: event.defaultMode,
-              modeOptions: event.modeOptions,
-            }
-          }),
-        },
         [MlEphantManagerTransitions.BackendShutdown]: {
           actions: ['handleBackendShutdown', 'disconnectIfIdle'],
         },

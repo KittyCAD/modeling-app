@@ -1,16 +1,17 @@
-import { expect, describe, it, vi } from 'vitest'
-import { createActor, fromPromise, waitFor } from 'xstate'
+import type { FileMeta } from '@src/lib/types'
 import {
+  type Conversation,
+  type MlCopilotModeOption,
   MlEphantConversationToMarkdown,
+  type MlEphantManagerContext,
   type MlEphantManagerEvents,
   MlEphantManagerStates,
   MlEphantManagerTransitions,
-  type Conversation,
-  type MlEphantManagerContext,
   mlEphantManagerMachine,
   parseMlCopilotModesResult,
 } from '@src/machines/mlEphantManagerMachine'
-import type { FileMeta } from '@src/lib/types'
+import { describe, expect, it, vi } from 'vitest'
+import { createActor, fromPromise, waitFor } from 'xstate'
 
 class TestSocket extends EventTarget {
   sentPayloads: string[] = []
@@ -74,6 +75,56 @@ describe('mlEphantManagerMachine', () => {
           },
         })
       ).toBeNull()
+    })
+  })
+
+  describe('ModesReceive', () => {
+    it('updates mode metadata before the machine reaches ready', async () => {
+      const ws: TestWebSocket = new TestSocket() as TestWebSocket
+      const modeOptions: MlCopilotModeOption[] = [
+        {
+          id: 'fast',
+          label: 'Standard',
+          description: 'Faster reasoning.',
+          icon: 'stopwatch',
+        },
+      ]
+      const machine = mlEphantManagerMachine.provide({
+        actors: {
+          [MlEphantManagerStates.Setup]: fromPromise<
+            Partial<MlEphantManagerContext>,
+            SetupActorInput
+          >(async () => ({
+            ws,
+            conversation: { exchanges: [] },
+          })),
+        },
+      })
+      const actor = createActor(machine, {
+        input: {
+          apiToken: '',
+        },
+      }).start()
+
+      actor.send({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+      })
+
+      await waitFor(actor, (state) =>
+        state.matches(MlEphantManagerStates.WaitForContinueCheck)
+      )
+
+      actor.send({
+        type: MlEphantManagerTransitions.ModesReceive,
+        defaultMode: 'fast',
+        modeOptions,
+      })
+
+      expect(actor.getSnapshot().context.defaultMode).toBe('fast')
+      expect(actor.getSnapshot().context.modeOptions).toStrictEqual(modeOptions)
+
+      actor.stop()
     })
   })
 
