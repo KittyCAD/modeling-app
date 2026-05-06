@@ -246,7 +246,7 @@ description: Artifact commands sketch_block_get_common_edge_fillet.kcl
         "edge_ids": [
           "[uuid]"
         ],
-        "radius": 5.0,
+        "radius": 20.0,
         "tolerance": 0.0000001,
         "cut_type": "fillet",
         "strategy": "automatic",

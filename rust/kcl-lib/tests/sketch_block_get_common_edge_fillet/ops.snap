@@ -688,7 +688,7 @@ description: Operations executed sketch_block_get_common_edge_fillet.kcl
         "radius": {
           "value": {
             "type": "Number",
-            "value": 5.0,
+            "value": 20.0,
             "ty": {
               "mm": null,
               "type": "Known",

@@ -1731,12 +1731,12 @@ description: Result of parsing sketch_block_get_common_edge_fillet.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "raw": "5mm",
+                  "raw": "20mm",
                   "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
-                    "value": 5.0,
+                    "value": 20.0,
                     "suffix": "Mm"
                   }
                 }

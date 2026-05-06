@@ -520,7 +520,7 @@ description: Variables in memory after executing sketch_block_get_common_edge_fi
           "type": "fillet",
           "id": "[uuid]",
           "radius": {
-            "n": 5.0,
+            "n": 20.0,
             "ty": {
               "mm": null,
               "type": "Known",

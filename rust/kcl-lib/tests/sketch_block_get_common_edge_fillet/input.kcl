@@ -18,5 +18,5 @@ fillet001 = fillet(
     region001.tags.line2,
     region001.tags.line3
   ]),
-  radius = 5mm,
+  radius = 20mm,
 )
