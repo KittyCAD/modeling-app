@@ -44,9 +44,8 @@ function AutoexecuteHeaderItem({ className }: CodeEditorHeaderItemProps) {
       onLabel: '',
       onChange: (event: ChangeEvent<HTMLInputElement>) => {
         settingsActor.send({
-          type: '*',
+          type: 'set.textEditor.autoexecute',
           data: {
-            path: 'textEditor.autoexecute',
             level: 'user',
             value: event.target.checked,
           },
