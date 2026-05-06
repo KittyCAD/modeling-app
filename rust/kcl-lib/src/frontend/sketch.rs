@@ -123,6 +123,16 @@ pub trait SketchApi {
         value_expression: String,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
+    async fn edit_distance_constraint_label_position(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        constraint_id: ObjectId,
+        label_position: Point2d<Number>,
+        anchor_segment_ids: Vec<ObjectId>,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
+
     /// Batch operations for split segment: edit segments, add constraints, delete objects.
     /// All operations are applied to a single AST and execute_after_edit is called once at the end.
     /// new_segment_info contains the IDs from the segment(s) added in a previous step.
@@ -412,9 +422,11 @@ pub enum Constraint {
     VerticalDistance(Distance),
     Horizontal(Horizontal),
     LinesEqualLength(LinesEqualLength),
+    Midpoint(Midpoint),
     Parallel(Parallel),
     Perpendicular(Perpendicular),
     Radius(Radius),
+    Symmetric(Symmetric),
     Tangent(Tangent),
     Vertical(Vertical),
 }
@@ -478,6 +490,11 @@ impl From<ObjectId> for ConstraintSegment {
 pub struct Distance {
     pub points: Vec<ConstraintSegment>,
     pub distance: Number,
+    #[serde(rename = "labelPosition")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(rename = "labelPosition")]
+    #[ts(optional)]
+    pub label_position: Option<Point2d<Number>>,
     pub source: ConstraintSource,
 }
 
@@ -514,6 +531,11 @@ pub struct ConstraintSource {
 pub struct Radius {
     pub arc: ObjectId,
     pub radius: Number,
+    #[serde(rename = "labelPosition")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(rename = "labelPosition")]
+    #[ts(optional)]
+    pub label_position: Option<Point2d<Number>>,
     #[serde(default)]
     pub source: ConstraintSource,
 }
@@ -523,6 +545,11 @@ pub struct Radius {
 pub struct Diameter {
     pub arc: ObjectId,
     pub diameter: Number,
+    #[serde(rename = "labelPosition")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(rename = "labelPosition")]
+    #[ts(optional)]
+    pub label_position: Option<Point2d<Number>>,
     #[serde(default)]
     pub source: ConstraintSource,
 }
@@ -565,6 +592,14 @@ pub struct LinesEqualLength {
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
+pub struct Midpoint {
+    pub point: ObjectId,
+    #[serde(alias = "line")]
+    pub segment: ObjectId,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
 #[serde(untagged)]
 pub enum Vertical {
     Line { line: ObjectId },
@@ -581,6 +616,13 @@ pub struct Parallel {
 #[ts(export, export_to = "FrontendApi.ts", optional_fields)]
 pub struct Perpendicular {
     pub lines: Vec<ObjectId>,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", optional_fields)]
+pub struct Symmetric {
+    pub input: Vec<ObjectId>,
+    pub axis: ObjectId,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

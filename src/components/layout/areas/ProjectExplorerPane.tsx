@@ -18,15 +18,20 @@ import {
   useProjectDirectoryPath,
 } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { useState, use, useEffect, useRef } from 'react'
+import { useState, use, useEffect, useRef, useCallback } from 'react'
 import toast from 'react-hot-toast'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
-import type { AreaTypeComponentProps } from '@src/lib/layout'
+import {
+  type AreaTypeComponentProps,
+  DefaultLayoutPaneID,
+  getOpenPanes,
+  togglePaneLayoutNode,
+} from '@src/lib/layout'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { reportRejection } from '@src/lib/trap'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
-  const { commands, project, systemIOActor } = useApp()
+  const { commands, project, systemIOActor, layout } = useApp()
   const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const projects = useFolders()
@@ -73,6 +78,34 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   const [createFolderPressed, setCreateFolderPressed] = useState<number>(0)
   const [refreshExplorerPressed, setRefresFolderPressed] = useState<number>(0)
   const [collapsePressed, setCollapsedPressed] = useState<number>(0)
+
+  const openCodeEditorPaneIfClosed = useCallback(() => {
+    const rootLayout = layout.get()
+    if (getOpenPanes({ rootLayout }).includes(DefaultLayoutPaneID.Code)) {
+      return
+    }
+    layout.set(
+      togglePaneLayoutNode({
+        rootLayout: structuredClone(rootLayout),
+        targetNodeId: DefaultLayoutPaneID.Code,
+        shouldExpand: true,
+      })
+    )
+  }, [layout])
+
+  const onRowDoubleClicked = useCallback(
+    (entry: FileExplorerEntry) => {
+      if (
+        !projectRef.current?.value.name ||
+        entry.children != null ||
+        !entry.path.endsWith(FILE_EXT)
+      ) {
+        return
+      }
+      openCodeEditorPaneIfClosed()
+    },
+    [openCodeEditorPaneIfClosed]
+  )
 
   const onRowClicked = (entry: FileExplorerEntry) => {
     const requestedFileName = parentPathRelativeToProject(
@@ -189,6 +222,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             refreshExplorerPressed={refreshExplorerPressed}
             collapsePressed={collapsePressed}
             onRowClicked={onRowClicked}
+            onRowDoubleClicked={onRowDoubleClicked}
             onRowEnter={onRowClicked}
             canNavigate={true}
             readOnly={false}

@@ -3,6 +3,7 @@ use std::collections::BTreeMap;
 use std::str::FromStr;
 use std::sync::Arc;
 
+use ahash::AHashMap;
 use anyhow::Result;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds::units::UnitAngle;
@@ -126,8 +127,7 @@ pub(super) struct ArtifactState {}
 
 /// Artifact state for a single module.
 #[cfg(feature = "artifact-graph")]
-#[derive(Debug, Clone, Default, Serialize)]
-#[cfg_attr(not(feature = "snapshot-engine-responses"), derive(PartialEq))]
+#[derive(Debug, Clone, Default, PartialEq, Serialize)]
 pub struct ModuleArtifactState {
     /// Internal map of UUIDs to exec artifacts.
     pub artifacts: IndexMap<ArtifactId, Artifact>,
@@ -154,25 +154,6 @@ pub struct ModuleArtifactState {
     pub artifact_id_to_scene_object: IndexMap<ArtifactId, ObjectId>,
     /// Solutions for sketch variables.
     pub var_solutions: Vec<(SourceRange, Number)>,
-}
-
-// It's error-prone to implement this manually. New fields are likely to be
-// forgotten. So we only use this implementation when the feature is enabled.
-#[cfg(feature = "snapshot-engine-responses")]
-impl PartialEq for ModuleArtifactState {
-    fn eq(&self, other: &Self) -> bool {
-        self.artifacts == other.artifacts
-            && self.unprocessed_commands == other.unprocessed_commands
-            && self.commands == other.commands
-            // WebSocketResponse type doesn't implement `PartialEq`.
-            // && self.responses == other.responses
-            && self.operations == other.operations
-            && self.object_id_generator == other.object_id_generator
-            && self.scene_objects == other.scene_objects
-            && self.source_range_to_object == other.source_range_to_object
-            && self.artifact_id_to_scene_object == other.artifact_id_to_scene_object
-            && self.var_solutions == other.var_solutions
-    }
 }
 
 #[cfg(not(feature = "artifact-graph"))]
@@ -227,12 +208,60 @@ pub(super) struct ModuleState {
 
     pub(super) allowed_warnings: Vec<&'static str>,
     pub(super) denied_warnings: Vec<&'static str>,
+
+    /// Map from consumed solid UUIDs to information about the operation that
+    /// consumed them. Populated by operations that destroy their inputs so that
+    /// subsequent attempts to use a consumed solid produce a clear KCL-level
+    /// error rather than a cryptic engine error.
+    pub(super) consumed_solids: AHashMap<Uuid, ConsumedSolidInfo>,
+}
+
+/// Information about a solid that was consumed by an operation.
+/// Stored in `ModuleState.consumed_solids` so subsequent attempts to use the
+/// solid produce a clear error pointing at the operation that consumed it.
+#[derive(Debug, Clone)]
+pub(crate) struct ConsumedSolidInfo {
+    /// The operation that consumed the solid.
+    pub operation: ConsumedSolidOperation,
+    /// The UUID of the result solid produced by that operation, when this
+    /// consumed solid has a direct replacement. Used to suggest a replacement
+    /// variable in the error message.
+    pub output_solid_id: Option<Uuid>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ConsumedSolidOperation {
+    Union,
+    Intersect,
+    Subtract,
+    Split,
+    JoinSurfaces,
+}
+
+impl ConsumedSolidOperation {
+    pub(crate) fn indefinite_article(self) -> &'static str {
+        match self {
+            Self::Intersect => "an",
+            Self::Union | Self::Subtract | Self::Split | Self::JoinSurfaces => "a",
+        }
+    }
+}
+
+impl std::fmt::Display for ConsumedSolidOperation {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Union => f.write_str("union"),
+            Self::Intersect => f.write_str("intersect"),
+            Self::Subtract => f.write_str("subtract"),
+            Self::Split => f.write_str("split"),
+            Self::JoinSurfaces => f.write_str("joinSurfaces"),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Default)]
 pub(crate) struct SketchBlockState {
     pub sketch_vars: Vec<KclValue>,
-    #[cfg(feature = "artifact-graph")]
     pub sketch_id: Option<ObjectId>,
     #[cfg(feature = "artifact-graph")]
     pub sketch_constraints: Vec<ObjectId>,
@@ -524,6 +553,54 @@ impl ExecState {
         &mut self.mod_local.id_generator
     }
 
+    /// Record that a solid UUID has been consumed by a CSG boolean operation.
+    pub(crate) fn mark_solid_consumed(&mut self, consumed_id: Uuid, info: ConsumedSolidInfo) {
+        self.mod_local.consumed_solids.insert(consumed_id, info);
+    }
+
+    /// Look up whether a solid UUID was consumed by a previous CSG boolean
+    /// operation. Returns the consumption info if so, or `None` otherwise.
+    pub(crate) fn check_solid_consumed(&self, id: &Uuid) -> Option<&ConsumedSolidInfo> {
+        self.mod_local.consumed_solids.get(id)
+    }
+
+    /// Follow direct replacement links until we find the latest known output.
+    /// Used only on error paths so diagnostics can suggest the current solid.
+    pub(crate) fn latest_consumed_output(&self, output_solid_id: Option<Uuid>) -> Option<Uuid> {
+        let mut latest = output_solid_id?;
+        let mut seen = AhashIndexSet::default();
+
+        while seen.insert(latest) {
+            let Some(next) = self
+                .mod_local
+                .consumed_solids
+                .get(&latest)
+                .and_then(|info| info.output_solid_id)
+            else {
+                break;
+            };
+            latest = next;
+        }
+
+        Some(latest)
+    }
+
+    /// Search the live environment for the name of a variable holding a Solid
+    /// (or an array of Solids) whose id matches `target_id`. Used only on
+    /// error paths to recover variable names for diagnostics.
+    pub(crate) fn find_var_name_for_solid_id(&self, target_id: Uuid) -> Option<String> {
+        fn contains_solid_id(value: &KclValue, target_id: Uuid) -> bool {
+            match value {
+                KclValue::Solid { value } => value.id == target_id,
+                KclValue::HomArray { value, .. } => value.iter().any(|v| contains_solid_id(v, target_id)),
+                _ => false,
+            }
+        }
+        self.mod_local
+            .stack
+            .find_var_name_in_all_envs(|value| contains_solid_id(value, target_id))
+    }
+
     #[cfg(feature = "artifact-graph")]
     pub(crate) fn add_artifact(&mut self, artifact: Artifact) {
         let id = artifact.id();
@@ -759,6 +836,33 @@ impl ExecState {
     ) -> Result<(), KclError> {
         Ok(())
     }
+
+    pub(crate) fn kcl_version(&self) -> KclVersion {
+        self.mod_local.settings.kcl_version.parse().unwrap_or_default()
+    }
+}
+
+#[derive(Default)]
+pub enum KclVersion {
+    #[default]
+    V1,
+    V2,
+}
+
+impl FromStr for KclVersion {
+    type Err = KclError;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        match s {
+            "1" | "1.0" | "1.0.0" => Ok(Self::V1),
+            "2" | "2.0" | "2.0.0" => Ok(Self::V2),
+            other => Err(KclError::new_semantic(KclErrorDetails {
+                source_ranges: Default::default(),
+                backtrace: Default::default(),
+                message: format!("Unrecognized version {other}. Valid versions are 1.0 and 2.0"),
+            })),
+        }
+    }
 }
 
 impl GlobalState {
@@ -965,6 +1069,7 @@ impl ModuleState {
             constraint_state: Default::default(),
             allowed_warnings: Vec::new(),
             denied_warnings: Vec::new(),
+            consumed_solids: AHashMap::default(),
             inside_stdlib: false,
         }
     }

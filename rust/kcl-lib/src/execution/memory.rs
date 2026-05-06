@@ -748,6 +748,33 @@ impl Stack {
         self.memory.find_all_in_env(env, |_| true, self.id)
     }
 
+    /// Search the current environment and all environments in the call stack
+    /// for a variable whose value satisfies the predicate. Returns the name of
+    /// the first matching variable found, or `None` if no match.
+    ///
+    /// Used on error paths to recover variable names for diagnostics; not
+    /// performance-critical.
+    pub(crate) fn find_var_name_in_all_envs(&self, pred: impl Fn(&KclValue) -> bool) -> Option<String> {
+        if !self.current_env.skip_env() {
+            for (name, value) in self.find_all_in_env(self.current_env) {
+                if pred(value) {
+                    return Some(name.clone());
+                }
+            }
+        }
+        for env in self.call_stack.iter().rev() {
+            if env.skip_env() {
+                continue;
+            }
+            for (name, value) in self.find_all_in_env(*env) {
+                if pred(value) {
+                    return Some(name.clone());
+                }
+            }
+        }
+        None
+    }
+
     /// Walk all values accessible from any environment in the call stack.
     ///
     /// This may include duplicate values or different versions of a value known by the same key,

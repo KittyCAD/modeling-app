@@ -1,4 +1,5 @@
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { Coords2d } from '@src/lang/util'
 import { distance2d, dot2d, polar2d, subVec } from '@src/lib/utils2d'
@@ -207,6 +208,76 @@ function getClosestConstraintHitDistance(
     closestDistance =
       closestDistance === null ? distance : Math.min(closestDistance, distance)
   }
+
+  return closestDistance
+}
+
+export function getClosestConstraintLabelHitDistance(
+  mousePosition: Coords2d,
+  constraintId: number,
+  sceneInfra: SceneInfra
+): number | null {
+  const constraintGroup = sceneInfra.scene.getObjectByName(String(constraintId))
+  if (!(constraintGroup instanceof Group) || !constraintGroup.visible) {
+    return null
+  }
+
+  const sketchSceneObject = sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+  const sketchSceneGroup =
+    sketchSceneObject instanceof Group ? sketchSceneObject : null
+  const scale = sceneInfra.getClientSceneScaleFactor(sketchSceneGroup)
+  const hoverDistance = getSketchHoverDistance(scale)
+  let mouseScreenPosition: Coords2d | undefined
+  const getMouseScreenPosition = () =>
+    (mouseScreenPosition ??= localToScreen(
+      [mousePosition[0], mousePosition[1], 0],
+      sceneInfra,
+      sketchSceneGroup
+    ))
+
+  let closestDistance: number | null = null
+  constraintGroup.traverse((child) => {
+    if (
+      child.userData.type !== DISTANCE_CONSTRAINT_LABEL ||
+      !child.visible ||
+      !('hitObjects' in child.userData)
+    ) {
+      return
+    }
+
+    const hitObjects = child.userData.hitObjects as ConstraintHitObjects
+    if (!isArray(hitObjects)) {
+      return
+    }
+
+    for (const hitObject of hitObjects) {
+      const distance =
+        hitObject.type === 'arc'
+          ? getClosestPointOnArcSegment(mousePosition, hitObject).distance
+          : hitObject.type === 'line'
+            ? getClosestPointOnLineSegment(mousePosition, hitObject.line)
+                .distance
+            : distanceToScreenRect(
+                getMouseScreenPosition(),
+                hitObject,
+                sceneInfra,
+                sketchSceneGroup,
+                scale
+              )
+      const maxDistance =
+        hitObject.type === 'screenRect'
+          ? Number.POSITIVE_INFINITY
+          : hoverDistance
+      if (distance === null || distance > maxDistance) {
+        continue
+      }
+
+      closestDistance =
+        closestDistance === null
+          ? distance
+          : Math.min(closestDistance, distance)
+    }
+  })
 
   return closestDistance
 }

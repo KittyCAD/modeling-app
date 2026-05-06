@@ -1,0 +1,15 @@
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+
+nTeeth = 24: number(_)
+moduleSize = 2mm
+pressureAngle = 20deg
+helixAngle = 10deg
+gearHeight = 8mm
+
+gearBlank = gear::helical(
+  nTeeth = nTeeth,
+  module = moduleSize,
+  pressureAngle = pressureAngle,
+  helixAngle = helixAngle,
+  gearHeight = gearHeight,
+)

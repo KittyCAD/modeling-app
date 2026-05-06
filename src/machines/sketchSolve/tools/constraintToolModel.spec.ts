@@ -59,9 +59,11 @@ function createConstraintApiObject({
 }
 
 describe('constraintToolModel', () => {
-  it('defines all eight constraint tool names', () => {
+  it('defines all constraint tool names', () => {
     expect(constraintToolNames).toEqual([
       'coincidentConstraintTool',
+      'midpointConstraintTool',
+      'symmetricConstraintTool',
       'tangentConstraintTool',
       'parallelConstraintTool',
       'equalLengthConstraintTool',
@@ -70,6 +72,47 @@ describe('constraintToolModel', () => {
       'perpendicularConstraintTool',
       'fixedConstraintTool',
     ])
+  })
+
+  it('recognizes midpoint selections in either point-line order', () => {
+    const point = createPointApiObject({ id: 1 })
+    const lineStart = createPointApiObject({ id: 2 })
+    const lineEnd = createPointApiObject({ id: 3 })
+    const line = createLineApiObject({ id: 10, start: 2, end: 3 })
+    const arc = createArcApiObject({ id: 11, center: 1, start: 2, end: 3 })
+    const objects = createObjectsArray([point, lineStart, lineEnd, line, arc])
+
+    const pointLine = getConstraintToolSelectionMatches(
+      'midpointConstraintTool',
+      [1, 10],
+      objects
+    )
+    expect(pointLine.status).toBe('complete')
+    expect(pointLine.bestMatch?.mode.id).toBe('point-line')
+
+    const linePoint = getConstraintToolSelectionMatches(
+      'midpointConstraintTool',
+      [10, 1],
+      objects
+    )
+    expect(linePoint.status).toBe('complete')
+    expect(linePoint.bestMatch?.mode.id).toBe('line-point')
+
+    const pointArc = getConstraintToolSelectionMatches(
+      'midpointConstraintTool',
+      [1, 11],
+      objects
+    )
+    expect(pointArc.status).toBe('complete')
+    expect(pointArc.bestMatch?.mode.id).toBe('point-arc')
+
+    const arcPoint = getConstraintToolSelectionMatches(
+      'midpointConstraintTool',
+      [11, 1],
+      objects
+    )
+    expect(arcPoint.status).toBe('complete')
+    expect(arcPoint.bestMatch?.mode.id).toBe('arc-point')
   })
 
   it('classifies sketch solve selections into reusable kinds', () => {
@@ -255,6 +298,65 @@ describe('constraintToolModel', () => {
     ).toBe('invalid')
   })
 
+  it('recognizes symmetric selections for points, arc-like segments, and lines', () => {
+    const pointA = createPointApiObject({ id: 1 })
+    const pointB = createPointApiObject({ id: 2 })
+    const pointC = createPointApiObject({ id: 3 })
+    const pointD = createPointApiObject({ id: 4 })
+    const pointE = createPointApiObject({ id: 5 })
+    const pointF = createPointApiObject({ id: 6 })
+    const lineA = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const lineB = createLineApiObject({ id: 11, start: 3, end: 4 })
+    const lineC = createLineApiObject({ id: 12, start: 5, end: 6 })
+    const arc = createArcApiObject({ id: 13, center: 1, start: 2, end: 3 })
+    const circle = createCircleApiObject({ id: 14, center: 4, start: 5 })
+    const objects = createObjectsArray([
+      pointA,
+      pointB,
+      pointC,
+      pointD,
+      pointE,
+      pointF,
+      lineA,
+      lineB,
+      lineC,
+      arc,
+      circle,
+    ])
+
+    const pointPointLine = getConstraintToolSelectionMatches(
+      'symmetricConstraintTool',
+      [1, 2, 10],
+      objects
+    )
+    expect(pointPointLine.status).toBe('complete')
+    expect(pointPointLine.bestMatch?.mode.id).toBe('point-point-line')
+
+    const arcLikeLineArcLike = getConstraintToolSelectionMatches(
+      'symmetricConstraintTool',
+      [13, 10, 14],
+      objects
+    )
+    expect(arcLikeLineArcLike.status).toBe('complete')
+    expect(arcLikeLineArcLike.bestMatch?.mode.id).toBe('arcLike-line-arcLike')
+
+    const lineTriple = getConstraintToolSelectionMatches(
+      'symmetricConstraintTool',
+      [10, 11, 12],
+      objects
+    )
+    expect(lineTriple.status).toBe('complete')
+    expect(lineTriple.bestMatch?.mode.id).toBe('line-line-line')
+
+    expect(
+      getConstraintToolSelectionMatches(
+        'symmetricConstraintTool',
+        [1, 10, 11],
+        objects
+      ).status
+    ).toBe('invalid')
+  })
+
   it('captures equal-length line and arc-like set behavior', () => {
     const pointA = createPointApiObject({ id: 1 })
     const pointB = createPointApiObject({ id: 2 })
@@ -378,6 +480,9 @@ describe('constraintToolModel', () => {
     expect(
       getConstraintToolPermittedSelectionKinds('tangentConstraintTool')
     ).toEqual(expect.arrayContaining(['line', 'arc', 'circle']))
+    expect(
+      getConstraintToolPermittedSelectionKinds('symmetricConstraintTool')
+    ).toEqual(expect.arrayContaining(['point', 'line', 'arc', 'circle']))
     expect(
       getConstraintToolPermittedSelectionKinds('parallelConstraintTool')
     ).toEqual(['line'])

@@ -1,6 +1,7 @@
 import path from 'path'
 import fs from 'node:fs/promises'
 import os from 'node:os'
+import type { DeviceFlowAuthorization } from '@root/interface'
 import packageJson from '@root/package.json'
 import type { MachinesListing } from '@src/lib/MachineManager'
 import chokidar from 'chokidar'
@@ -8,6 +9,7 @@ import type { IpcRendererEvent } from 'electron'
 import { contextBridge, ipcRenderer } from 'electron'
 
 import type { Channel } from '@src/channels'
+import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
 import type { WebContentSendPayload } from '@src/menu/channels'
 
 const typeSafeIpcRendererOn = (
@@ -30,7 +32,7 @@ const takeElectronWindowScreenshot = ({
 }) => ipcRenderer.invoke('take.screenshot', { width, height })
 const showInFolder = (path: string) =>
   ipcRenderer.invoke('shell.showItemInFolder', path)
-const startDeviceFlow = (host: string): Promise<string> =>
+const startDeviceFlow = (host: string): Promise<DeviceFlowAuthorization> =>
   ipcRenderer.invoke('startDeviceFlow', host)
 const loginWithDeviceFlow = (): Promise<string> =>
   ipcRenderer.invoke('loginWithDeviceFlow')
@@ -39,9 +41,15 @@ const onUpdateDownloaded = (
 ) =>
   ipcRenderer.on('update-downloaded', (_event: any, value) => callback(value))
 const onUpdateDownloadStart = (
-  callback: (value: { version: string }) => void
+  callback: (value: AutoUpdateDownloadProgress) => void
 ) =>
   ipcRenderer.on('update-download-start', (_event: any, value) =>
+    callback(value)
+  )
+const onUpdateDownloadProgress = (
+  callback: (value: AutoUpdateDownloadProgress) => void
+) =>
+  ipcRenderer.on('update-download-progress', (_event: any, value) =>
     callback(value)
   )
 const onUpdateChecking = (callback: () => void) =>
@@ -339,6 +347,7 @@ contextBridge.exposeInMainWorld('electron', {
   onUpdateChecking,
   onUpdateNotAvailable,
   onUpdateDownloadStart,
+  onUpdateDownloadProgress,
   onUpdateDownloaded,
   onUpdateError,
   appRestart,

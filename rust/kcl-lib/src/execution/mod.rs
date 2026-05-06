@@ -59,7 +59,10 @@ pub use sketch_transpiler::transpile_old_sketch_to_new_ast;
 pub use sketch_transpiler::transpile_old_sketch_to_new_with_execution;
 pub(crate) use state::ConstraintKey;
 pub(crate) use state::ConstraintState;
+pub(crate) use state::ConsumedSolidInfo;
+pub(crate) use state::ConsumedSolidOperation;
 pub use state::ExecState;
+pub(crate) use state::KclVersion;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
 pub(crate) use state::TangencyMode;
@@ -291,6 +294,7 @@ pub struct ExecOutcome {
 /// Per-segment freedom used by the constraint report. Mirrors
 /// [`crate::front::Freedom`] but adds an `Error` variant for when
 /// a point lookup fails.
+#[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
 #[derive(Debug, Clone, Copy, PartialEq)]
 enum SegmentFreedom {
     Free,
@@ -3276,6 +3280,29 @@ extrude001 = extrude(region001, length = 1)
         ctx.close().await;
     }
 
+    #[tokio::test(flavor = "multi_thread")]
+    async fn face_parent_solid_stays_compact_for_repeated_sketch_on_face() {
+        let code = format!(
+            r#"{}
+
+face7 = faceOf(solid6, face = r6.tags.line1)
+r7 = squareRegion(onSurface = face7)
+solid7 = extrude(r7, length = width)
+"#,
+            include_str!("../../tests/endless_impeller/input.kcl")
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        let solid7 = mem_get_json(result.exec_state.stack(), result.mem_env, "solid7");
+        assert!(matches!(solid7, KclValue::Solid { .. }), "actual: {solid7:?}");
+
+        let face7 = match mem_get_json(result.exec_state.stack(), result.mem_env, "face7") {
+            KclValue::Face { value } => value,
+            value => panic!("expected face7 to be a Face, got {value:?}"),
+        };
+        assert!(face7.parent_solid.creator_sketch_id.is_some());
+    }
+
     #[cfg(feature = "artifact-graph")]
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_has_stable_ids() {
@@ -3586,6 +3613,45 @@ sketch(on = XY) {
         parse_execute(&code).await.unwrap();
     }
 
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_shadowed_get_opposite_edge_binding_does_not_panic() {
+        let code = r#"startX = 2
+
+baseSketch = sketch(on = XY) {
+  yoyo = line(start = [startX, 0], end = [7, 6])
+  line2 = line(start = [7, 6], end = [7, 12])
+  hi = line(start = [7, 12], end = [startX, 0])
+}
+
+baseRegion = region(point = [5.5, 6], sketch = baseSketch)
+myExtrude = extrude(
+  baseRegion,
+  length = 5,
+  tagEnd = $endCap,
+  tagStart = $startCap,
+)
+yodawg = getCommonEdge(faces = [
+  baseRegion.tags.hi,
+  baseRegion.tags.yoyo
+])
+
+cutSketch = sketch(on = YZ) {
+  myDisambigutator = line(start = [-3.29, 4.75], end = [2.03, 2.44])
+  myDisambigutator2 = line(start = [2.03, 2.44], end = [-3.49, 0.31])
+  line3 = line(start = [-3.49, 0.31], end = [-3.29, 4.75])
+}
+
+cutRegion = region(point = [-1.5833333333, 2.5], sketch = cutSketch)
+extrude001 = extrude(cutRegion, length = 5)
+solid001 = subtract(myExtrude, tools = extrude001)
+
+yoyo = getOppositeEdge(baseRegion.tags.hi)
+fillet(solid001, radius = 0.1, tags = yoyo)
+"#;
+
+        parse_execute(code).await.unwrap();
+    }
+
     // END Mock Execution tests
 
     // Sketch constraint report tests
@@ -3696,5 +3762,25 @@ s2 = sketch(on = XZ) {
         );
         assert_eq!(report.fully_constrained.len(), 1);
         assert_eq!(report.under_constrained.len(), 1);
+    }
+
+    #[cfg(not(feature = "artifact-graph"))]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_sketch_solve_works_without_artifact_graph_feature() {
+        let code = r#"
+sketch001 = sketch(on = XY) {
+    line1 = line(start = [var -3.38mm, var 3.71mm], end = [var 4.29mm, var 3.59mm])
+    line2 = line(start = [var 4.29mm, var 3.59mm], end = [var 4.31mm, var -3.13mm])
+    coincident([line1.end, line2.start])
+    line3 = line(start = [var 4.31mm, var -3.13mm], end = [var -3.61mm, var -3.18mm])
+    coincident([line2.end, line3.start])
+    line4 = line(start = [var -3.61mm, var -3.18mm], end = [var -3.38mm, var 3.71mm])
+    coincident([line3.end, line4.start])
+    coincident([line4.end, line1.start])
+    circle1 = circle(start = [var -5.73mm, var 1.42mm], center = [var -7.07mm, var 1.47mm])
+    tangent([line4, circle1])
+}
+"#;
+        parse_execute(code).await.unwrap();
     }
 }

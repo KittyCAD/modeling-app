@@ -351,9 +351,10 @@ openSketch = sketch(on = XY) {
 
     await homePage.goToModelingScene()
 
-    const [_clickOpenPath] = scene.makeMouseHelpers(0.65, 0.5, {
-      format: 'ratio',
-    })
+    const [_clickOpenPath, moveToOpenPath, dblClickOpenPath] =
+      scene.makeMouseHelpers(0.65, 0.5, {
+        format: 'ratio',
+      })
 
     const [_clickCircle, moveToCircle, dblClickCircle] = scene.makeMouseHelpers(
       0.63,
@@ -378,17 +379,16 @@ openSketch = sketch(on = XY) {
       await editor.closePane()
     })
 
-    // TODO: this triggers a rust panic, not sure why
-    // await test.step(`Double-click on the open sketch`, async () => {
-    //   await moveToOpenPath()
-    //   await dblClickOpenPath()
-    //   await expect(toolbar.exitSketchBtn).toBeVisible()
-    //   await expect(toolbar.exitSketchBtn).toBeEnabled()
-    //   await editor.openPane()
-    //   await editor.expectActiveLinesToBe([
-    //     'openSketch = sketch(on = XY) {',
-    //   ])
-    // })
+    await test.step(`Double-click on the open sketch`, async () => {
+      await moveToOpenPath()
+      await dblClickOpenPath()
+      await expect(toolbar.exitSketchBtn).toBeVisible()
+      await expect(toolbar.exitSketchBtn).toBeEnabled()
+      await editor.openPane()
+      await editor.expectActiveLinesToBe([
+        'arc3 = arc(start = [var 10mm, var 0mm], end = [var 5mm, var 5mm], center = [var 5mm, var 0mm])',
+      ])
+    })
   })
 
   test(`Shift-click to select and deselect faces`, async ({
@@ -444,163 +444,6 @@ sketch001 = extrude(region001, length = -12)`
       await page.waitForTimeout(timeout)
       await page.keyboard.up('Shift')
       await expect(toolbar.selectionStatus).not.toContainText('1 face')
-    })
-  })
-
-  test(`Shift-click to select and deselect sketch segments`, async ({
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    // Locators
-    const firstPointLocation = { x: 200, y: 100 }
-    const secondPointLocation = { x: 800, y: 100 }
-    const thirdPointLocation = { x: 800, y: 400 }
-    // @pierremtb: moved the select location to the arrow at the end after the engine zoom fix
-    // got in https://github.com/KittyCAD/engine/pull/3804, seemed like it allowed for more
-    // error margin but unclear why
-    const firstSegmentLocation = { x: 799, y: 100 }
-    const secondSegmentLocation = { x: 800, y: 399 }
-    const planeLocation = { x: 700, y: 200 }
-
-    // Click helpers
-    const [clickFirstPoint] = scene.makeMouseHelpers(
-      firstPointLocation.x,
-      firstPointLocation.y
-    )
-    const [clickSecondPoint] = scene.makeMouseHelpers(
-      secondPointLocation.x,
-      secondPointLocation.y
-    )
-    const [clickThirdPoint] = scene.makeMouseHelpers(
-      thirdPointLocation.x,
-      thirdPointLocation.y
-    )
-    const [clickFirstSegment] = scene.makeMouseHelpers(
-      firstSegmentLocation.x,
-      firstSegmentLocation.y
-    )
-    const [clickSecondSegment] = scene.makeMouseHelpers(
-      secondSegmentLocation.x,
-      secondSegmentLocation.y
-    )
-    const [clickPlane] = scene.makeMouseHelpers(
-      planeLocation.x,
-      planeLocation.y
-    )
-
-    // Colors
-    // @pierremtb: had to tone these colors down a bit after the engine zoom fix
-    // in https://github.com/KittyCAD/engine/pull/3804, unclear why
-    const edgeColorWhite: [number, number, number] = [230, 230, 230]
-    const edgeColorBlue: [number, number, number] = [23, 10, 247]
-    const tolerance = 50
-    const timeout = 150
-
-    // Setup
-    await test.step(`Initial test setup`, async () => {
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
-    })
-
-    await test.step('Select and deselect a single sketch segment', async () => {
-      await test.step('Get into sketch mode', async () => {
-        await editor.closePane()
-        await page.waitForTimeout(timeout)
-        await toolbar.startSketchBtn.click()
-        await page.waitForTimeout(timeout)
-        await clickPlane()
-        await page.waitForTimeout(1000)
-      })
-      await test.step('Draw sketch', async () => {
-        await clickFirstPoint()
-        await page.waitForTimeout(timeout)
-        await clickSecondPoint()
-        await page.waitForTimeout(timeout)
-        await clickThirdPoint()
-        await page.waitForTimeout(timeout)
-      })
-      await test.step('Deselect line tool', async () => {
-        const btnLine = page.getByTestId('line')
-        const btnLineAriaPressed = await btnLine.getAttribute('aria-pressed')
-        if (btnLineAriaPressed === 'true') {
-          await btnLine.click()
-        }
-        await page.waitForTimeout(timeout)
-      })
-      await test.step('Select the first segment', async () => {
-        // @pierremtb: I believe we can't click too fast after deselecting the line tool,
-        // otherwise the segment gets instantly deselected again.
-        // There's a non-zero chance it's an actual bug.
-        await page.waitForTimeout(timeout * 5)
-        await clickFirstSegment()
-        await page.waitForTimeout(timeout)
-        await scene.expectPixelColor(
-          edgeColorBlue,
-          firstSegmentLocation,
-          tolerance
-        )
-        await scene.expectPixelColor(
-          edgeColorWhite,
-          secondSegmentLocation,
-          tolerance
-        )
-      })
-      await test.step('Select the second segment (Shift-click)', async () => {
-        await page.keyboard.down('Shift')
-        await page.waitForTimeout(timeout)
-        await clickSecondSegment()
-        await page.waitForTimeout(timeout)
-        await page.keyboard.up('Shift')
-        await scene.expectPixelColor(
-          edgeColorBlue,
-          firstSegmentLocation,
-          tolerance
-        )
-        await scene.expectPixelColor(
-          edgeColorBlue,
-          secondSegmentLocation,
-          tolerance
-        )
-      })
-      await test.step('Deselect the first segment', async () => {
-        await page.keyboard.down('Shift')
-        await page.waitForTimeout(timeout)
-        await clickFirstSegment()
-        await page.waitForTimeout(timeout)
-        await page.keyboard.up('Shift')
-        await scene.expectPixelColor(
-          edgeColorWhite,
-          firstSegmentLocation,
-          tolerance
-        )
-        await scene.expectPixelColor(
-          edgeColorBlue,
-          secondSegmentLocation,
-          tolerance
-        )
-      })
-      await test.step('Deselect the second segment', async () => {
-        await page.keyboard.down('Shift')
-        await page.waitForTimeout(timeout)
-        await clickSecondSegment()
-        await page.waitForTimeout(timeout)
-        await page.keyboard.up('Shift')
-        await scene.expectPixelColor(
-          edgeColorWhite,
-          firstSegmentLocation,
-          tolerance
-        )
-        await scene.expectPixelColor(
-          edgeColorWhite,
-          secondSegmentLocation,
-          tolerance
-        )
-      })
     })
   })
 

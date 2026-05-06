@@ -4,10 +4,13 @@ import toast, { Toaster } from 'react-hot-toast'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
 import { Router } from '@src/Router'
-import { ToastUpdate } from '@src/components/ToastUpdate'
 import '@src/index.css'
+import {
+  clearAutoUpdateDownloadProgress,
+  setAutoUpdateReady,
+  setAutoUpdateDownloadProgress,
+} from '@src/lib/autoUpdate'
 import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicationCommandConfig'
-import { AUTO_UPDATER_TOAST_ID } from '@src/lib/constants'
 import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
 import { markOnce } from '@src/lib/performance'
 import type { App } from '@src/lib/app'
@@ -64,43 +67,35 @@ function initElectronBehavior(electron: NonNullable<typeof window.electron>) {
   monkeyPatchForBrowserTranslation()
 
   electron.onUpdateChecking(() => {
-    const message = `Checking for updates...`
-    console.log(message)
-    toast.loading(message, { id: AUTO_UPDATER_TOAST_ID })
+    console.log('Checking for updates...')
   })
 
   electron.onUpdateNotAvailable(() => {
-    const message = `You're already using the latest version of the app.`
+    clearAutoUpdateDownloadProgress()
+    const message = "You're already using the latest version of the app."
     console.log(message)
-    toast.success(message, { id: AUTO_UPDATER_TOAST_ID })
+    toast.success(message)
   })
 
-  electron.onUpdateDownloadStart(() => {
-    const message = `Downloading app update...`
-    console.log(message)
-    toast.loading(message, { id: AUTO_UPDATER_TOAST_ID })
+  electron.onUpdateDownloadStart((progress) => {
+    console.log('Downloading app update...', progress)
+    setAutoUpdateDownloadProgress(progress)
+  })
+
+  electron.onUpdateDownloadProgress((progress) => {
+    setAutoUpdateDownloadProgress(progress)
   })
 
   electron.onUpdateError(({ error }) => {
+    clearAutoUpdateDownloadProgress()
     console.error(error)
-    toast.error('An error occurred while downloading the update.', {
-      id: AUTO_UPDATER_TOAST_ID,
-    })
   })
 
   electron.onUpdateDownloaded(({ version, releaseNotes }) => {
-    const message = `A new update (${version}) was downloaded and will be available next time you open the app.`
-    console.log(message)
-    toast.custom(
-      ToastUpdate({
-        version,
-        releaseNotes,
-        onRestart: () => {
-          electron.appRestart()
-        },
-        onDismiss: () => {},
-      }),
-      { duration: 30000, id: AUTO_UPDATER_TOAST_ID }
+    clearAutoUpdateDownloadProgress()
+    setAutoUpdateReady({ version, releaseNotes })
+    console.log(
+      `A new update (${version}) was downloaded and is ready to install.`
     )
   })
 }

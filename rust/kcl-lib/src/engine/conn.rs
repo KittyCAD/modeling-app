@@ -482,16 +482,19 @@ impl EngineManager for EngineConnection {
         // Wait for the request to be sent.
         rx.await
             .map_err(|e| {
-                KclError::new_engine(KclErrorDetails::new(
-                    format!("could not send request to the engine actor: {e}"),
-                    vec![source_range],
-                ))
+                KclError::new_engine_hangup(
+                    KclErrorDetails::new(
+                        format!("could not send request to the engine actor: {e}"),
+                        vec![source_range],
+                    ),
+                    None,
+                )
             })?
             .map_err(|e| {
-                KclError::new_engine(KclErrorDetails::new(
-                    format!("could not send request to the engine: {e}"),
-                    vec![source_range],
-                ))
+                KclError::new_engine_hangup(
+                    KclErrorDetails::new(format!("could not send request to the engine: {e}"), vec![source_range]),
+                    None,
+                )
             })?;
 
         Ok(())

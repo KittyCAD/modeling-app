@@ -9,6 +9,7 @@ import {
   serializeProjectConfiguration,
 } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
+import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 import { createSettings, type Setting } from '@src/lib/settings/initialSettings'
 import {
   configurationToSettingsPayload,
@@ -25,6 +26,20 @@ import {
 } from '@src/lib/settings/settingsUtils'
 import type { DeepPartial } from '@src/lib/types'
 import { expect, describe, it } from 'vitest'
+
+const pluginExtensionSettings = {
+  plugins: {
+    telemetry: defineBooleanExtensionSetting({
+      defaultValue: true,
+      description: 'Whether the telemetry plugin is enabled.',
+      hideOnLevel: 'project',
+      userToml: {
+        sectionKey: 'plugins',
+        tomlKey: 'telemetry',
+      },
+    }),
+  },
+}
 
 describe(`testing settings initialization`, () => {
   it(`sets settings at the 'user' level`, () => {
@@ -155,9 +170,9 @@ describe('testing hiddenOnPlatform', () => {
 
 // This tests if default project level settings can override non-default user level settings.
 // Eg.:
-// user.showDebugPanel = true
-// project.showDebugPanel = false (the default is false)
-// Then we expect showDebugPanel to resolve to false.
+// user.debug.showPanel = true
+// project.debug.showPanel = false (the default is false)
+// Then we expect debug.showPanel to resolve to false.
 // We used to have a bug where this project level default value was not serialized,
 // this regression test protects against that.
 
@@ -171,9 +186,12 @@ describe('project settings serialization regression', () => {
         app: {
           onboardingStatus: 'dismissed',
           allowOrbitInSketchMode: true,
-          showDebugPanel: true,
           machineApi: true,
           projectDirectory: '/tmp/projects',
+        },
+        debug: {
+          showPanel: true,
+          showModelingMachineState: true,
         },
         projects: {
           defaultProjectName: 'plugin-template',
@@ -202,8 +220,10 @@ describe('project settings serialization regression', () => {
 
     expect(serializedToml).toContain('onboarding_status = "dismissed"')
     expect(serializedToml).toContain('allow_orbit_in_sketch_mode = true')
-    expect(serializedToml).toContain('show_debug_panel = true')
     expect(serializedToml).toContain('machine_api = true')
+    expect(serializedToml).toContain('[settings.debug]')
+    expect(serializedToml).toContain('show_panel = true')
+    expect(serializedToml).toContain('show_modeling_machine_state = true')
     expect(serializedToml).toContain('mouse_controls = "onshape"')
     expect(serializedToml).toContain('gizmo_type = "axis"')
     expect(serializedToml).toContain('enable_touch_controls = false')
@@ -227,9 +247,10 @@ describe('project settings serialization regression', () => {
     const parsedPayload = configurationToSettingsPayload(parsedConfiguration)
     expect(parsedPayload.app?.onboardingStatus).toBe('dismissed')
     expect(parsedPayload.app?.allowOrbitInSketchMode).toBe(true)
-    expect(parsedPayload.app?.showDebugPanel).toBe(true)
     expect(parsedPayload.app?.machineApi).toBe(true)
     expect(parsedPayload.app?.projectDirectory).toBe('/tmp/projects')
+    expect(parsedPayload.debug?.showPanel).toBe(true)
+    expect(parsedPayload.debug?.showModelingMachineState).toBe(true)
     expect(parsedPayload.projects?.defaultProjectName).toBe('plugin-template')
     expect(parsedPayload.modeling?.mouseControls).toBe('OnShape')
     expect(parsedPayload.modeling?.gizmoType).toBe('axis')
@@ -244,6 +265,36 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.textEditor?.blinkingCursor).toBe(false)
   })
 
+  it('preserves extension-contributed plugin settings through wasm round-trip', async () => {
+    const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+    const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
+
+    const serializedToml = serializeConfiguration(
+      settingsPayloadToConfiguration(
+        {
+          plugins: {
+            telemetry: false,
+          },
+        },
+        pluginExtensionSettings
+      ),
+      wasmInstance
+    )
+    if (serializedToml instanceof Error) throw serializedToml
+
+    expect(serializedToml).toContain('[settings.plugins]')
+    expect(serializedToml).toContain('telemetry = false')
+
+    const parsedConfiguration = parseAppSettings(serializedToml, wasmInstance)
+    if (parsedConfiguration instanceof Error) throw parsedConfiguration
+
+    const parsedPayload = configurationToSettingsPayload(
+      parsedConfiguration,
+      pluginExtensionSettings
+    )
+    expect(parsedPayload.plugins?.telemetry).toBe(false)
+  })
+
   it('preserves explicit project defaults when user values differ', async () => {
     const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
     const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
@@ -252,19 +303,19 @@ describe('project settings serialization regression', () => {
 
     // Set User-level value to the non-default true
     setSettingsAtLevel(settings, 'user', {
-      app: { showDebugPanel: true },
+      debug: { showPanel: true },
     })
 
     // Project-level value is set to the default value
     setSettingsAtLevel(settings, 'project', {
-      app: { showDebugPanel: false },
+      debug: { showPanel: false },
     })
 
     const changedProjectSettings = getChangedSettingsAtLevel(
       settings,
       'project'
     )
-    expect(changedProjectSettings.app?.showDebugPanel).toBe(false)
+    expect(changedProjectSettings.debug?.showPanel).toBe(false)
 
     const serializedToml = serializeProjectConfiguration(
       settingsPayloadToProjectConfiguration(changedProjectSettings),
@@ -273,7 +324,7 @@ describe('project settings serialization regression', () => {
     if (serializedToml instanceof Error) throw serializedToml
 
     // Explicit project overrides should be present in serialized TOML.
-    expect(serializedToml).toContain('show_debug_panel = false')
+    expect(serializedToml).toContain('show_panel = false')
 
     const parsedProjectConfiguration = parseProjectSettings(
       serializedToml,
@@ -287,19 +338,19 @@ describe('project settings serialization regression', () => {
       parsedProjectConfiguration
     )
     // Technically this is enough to check for:
-    // parsed showDebugPanel should be false
-    expect(parsedProjectPayload.app?.showDebugPanel).toBe(false)
+    // parsed debug.showPanel should be false
+    expect(parsedProjectPayload.debug?.showPanel).toBe(false)
 
     // Double check: reapply parsed settings and verify project-level takes precedence
     settings = createSettings()
     setSettingsAtLevel(settings, 'user', {
-      app: { showDebugPanel: true },
+      debug: { showPanel: true },
     })
     setSettingsAtLevel(settings, 'project', parsedProjectPayload)
 
-    expect(settings.app.showDebugPanel.user).toBe(true)
-    expect(settings.app.showDebugPanel.project).toBe(false)
-    expect(settings.app.showDebugPanel.current).toBe(false)
+    expect(settings.debug.showPanel.user).toBe(true)
+    expect(settings.debug.showPanel.project).toBe(false)
+    expect(settings.debug.showPanel.current).toBe(false)
   })
 
   it('preserves cloud metadata when project settings are reserialized', async () => {
@@ -320,8 +371,8 @@ describe('project settings serialization regression', () => {
     }
 
     const changedProjectSettings = settingsPayloadToProjectConfiguration({
-      app: {
-        showDebugPanel: true,
+      debug: {
+        showPanel: true,
       },
     })
 
@@ -335,7 +386,7 @@ describe('project settings serialization regression', () => {
     )
     if (serializedToml instanceof Error) throw serializedToml
 
-    expect(serializedToml).toContain('show_debug_panel = true')
+    expect(serializedToml).toContain('show_panel = true')
     expect(serializedToml).toContain(
       '[cloud."dev.zoo.dev"]\nproject_id = "e9632dae-19ca-49ea-bcc1-ee8e34ff9de3"'
     )
@@ -362,7 +413,10 @@ describe('project settings serialization regression', () => {
         app: {
           onboardingStatus: 'dismissed',
           allowOrbitInSketchMode: true,
-          showDebugPanel: false,
+        },
+        debug: {
+          showPanel: false,
+          showModelingMachineState: true,
         },
         modeling: {
           snapToGrid: true,
@@ -384,7 +438,9 @@ describe('project settings serialization regression', () => {
 
     expect(serializedToml).toContain('onboarding_status = "dismissed"')
     expect(serializedToml).toContain('allow_orbit_in_sketch_mode = true')
-    expect(serializedToml).toContain('show_debug_panel = false')
+    expect(serializedToml).toContain('[settings.debug]')
+    expect(serializedToml).toContain('show_panel = false')
+    expect(serializedToml).toContain('show_modeling_machine_state = true')
     expect(serializedToml).toContain('snap_to_grid = true')
     expect(serializedToml).toContain('major_grid_spacing = 2.5')
     expect(serializedToml).toContain('minor_grids_per_major = 5')
@@ -408,7 +464,8 @@ describe('project settings serialization regression', () => {
     )
     expect(parsedProjectPayload.app?.onboardingStatus).toBe('dismissed')
     expect(parsedProjectPayload.app?.allowOrbitInSketchMode).toBe(true)
-    expect(parsedProjectPayload.app?.showDebugPanel).toBe(false)
+    expect(parsedProjectPayload.debug?.showPanel).toBe(false)
+    expect(parsedProjectPayload.debug?.showModelingMachineState).toBe(true)
     expect(parsedProjectPayload.modeling?.snapToGrid).toBe(true)
     expect(parsedProjectPayload.modeling?.majorGridSpacing).toBe(2.5)
     expect(parsedProjectPayload.modeling?.minorGridsPerMajor).toBe(5)
@@ -473,6 +530,40 @@ describe('project settings serialization regression', () => {
     expect(serializedToml).toContain(
       '[cloud."dev.zoo.dev"]\nproject_id = "e9632dae-19ca-49ea-bcc1-ee8e34ff9de3"'
     )
+  })
+
+  it('preserves debug settings through the app debug section', async () => {
+    const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+    const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
+
+    const parsedConfiguration = parseAppSettings(
+      '[settings.debug]\nshow_panel = true\nshow_modeling_machine_state = false\n',
+      wasmInstance
+    )
+    if (parsedConfiguration instanceof Error) throw parsedConfiguration
+
+    const parsedPayload = configurationToSettingsPayload(parsedConfiguration)
+    expect(parsedPayload.debug?.showPanel).toBe(true)
+    expect(parsedPayload.debug?.showModelingMachineState).toBe(false)
+  })
+
+  it('preserves debug settings through the project debug section', async () => {
+    const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+    const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
+
+    const parsedProjectConfiguration = parseProjectSettings(
+      '[settings.debug]\nshow_panel = false\nshow_modeling_machine_state = true\n',
+      wasmInstance
+    )
+    if (parsedProjectConfiguration instanceof Error) {
+      throw parsedProjectConfiguration
+    }
+
+    const parsedProjectPayload = projectConfigurationToSettingsPayload(
+      parsedProjectConfiguration
+    )
+    expect(parsedProjectPayload.debug?.showPanel).toBe(false)
+    expect(parsedProjectPayload.debug?.showModelingMachineState).toBe(true)
   })
 })
 

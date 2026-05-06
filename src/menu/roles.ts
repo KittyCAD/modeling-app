@@ -14,6 +14,7 @@ type HeaderLabel =
 type FileRoleLabel =
   | 'Open Project'
   | 'Create Project'
+  | 'New Window'
   | 'Import File from URL'
   | 'Preferences'
   | 'User Settings'

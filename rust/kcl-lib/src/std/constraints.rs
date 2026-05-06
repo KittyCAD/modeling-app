@@ -54,6 +54,9 @@ use crate::front::LineCtor;
 #[cfg(feature = "artifact-graph")]
 use crate::front::LinesEqualLength;
 #[cfg(feature = "artifact-graph")]
+use crate::front::Midpoint;
+use crate::front::Number;
+#[cfg(feature = "artifact-graph")]
 use crate::front::Object;
 use crate::front::ObjectId;
 #[cfg(feature = "artifact-graph")]
@@ -66,6 +69,8 @@ use crate::front::Point2d;
 use crate::front::PointCtor;
 #[cfg(feature = "artifact-graph")]
 use crate::front::SourceRef;
+#[cfg(feature = "artifact-graph")]
+use crate::front::Symmetric;
 #[cfg(feature = "artifact-graph")]
 use crate::front::Tangent;
 #[cfg(feature = "artifact-graph")]
@@ -2032,6 +2037,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
         exec_state,
     )?;
+    let label_position = get_constraint_label_position(exec_state, &args, "distance")?;
     let [point0, point1]: [KclValue; 2] = points.try_into().map_err(|_| {
         KclError::new_semantic(KclErrorDetails::new(
             "must have two input points".to_owned(),
@@ -2080,6 +2086,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                                             object_id: unsolved1.object_id,
                                         }),
                                     ],
+                                    label_position,
                                 },
                                 meta: vec![args.source_range.into()],
                             };
@@ -2136,7 +2143,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                     };
                     Ok(KclValue::SketchConstraint {
                         value: Box::new(SketchConstraint {
-                            kind: SketchConstraintKind::Distance { points },
+                            kind: SketchConstraintKind::Distance { points, label_position },
                             meta: vec![args.source_range.into()],
                         }),
                     })
@@ -2154,11 +2161,30 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     }
 }
 
+fn get_constraint_label_position(
+    exec_state: &mut ExecState,
+    args: &Args,
+    constraint_name: &str,
+) -> Result<Option<Point2d<Number>>, KclError> {
+    let label_position = args.get_kw_arg_opt::<[TyF64; 2]>("labelPosition", &RuntimeType::point2d(), exec_state)?;
+
+    label_position
+        .map(|label| {
+            TyF64::to_point2d(&label).map_err(|_| {
+                KclError::new_internal(KclErrorDetails::new(
+                    format!("Could not convert {constraint_name} label position to a Point2d"),
+                    vec![args.source_range],
+                ))
+            })
+        })
+        .transpose()
+}
+
 /// Helper function to create a radius or diameter constraint from a circular segment.
 /// Used by both radius() and diameter() functions.
 fn create_circular_radius_constraint(
     segment: KclValue,
-    constraint_kind: fn([ConstrainablePoint2d; 2]) -> SketchConstraintKind,
+    constraint_kind: impl Fn([ConstrainablePoint2d; 2]) -> SketchConstraintKind,
     source_range: crate::SourceRange,
 ) -> Result<SketchConstraint, KclError> {
     // Create a dummy constraint to get its name for error messages
@@ -2256,10 +2282,14 @@ fn create_circular_radius_constraint(
 pub async fn radius(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let segment: KclValue =
         args.get_unlabeled_kw_arg("points", &RuntimeType::Primitive(PrimitiveType::Any), exec_state)?;
+    let label_position = get_constraint_label_position(exec_state, &args, "radius")?;
 
     create_circular_radius_constraint(
         segment,
-        |points| SketchConstraintKind::Radius { points },
+        |points| SketchConstraintKind::Radius {
+            points,
+            label_position: label_position.clone(),
+        },
         args.source_range,
     )
     .map(|constraint| KclValue::SketchConstraint {
@@ -2270,10 +2300,14 @@ pub async fn radius(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 pub async fn diameter(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let segment: KclValue =
         args.get_unlabeled_kw_arg("points", &RuntimeType::Primitive(PrimitiveType::Any), exec_state)?;
+    let label_position = get_constraint_label_position(exec_state, &args, "diameter")?;
 
     create_circular_radius_constraint(
         segment,
-        |points| SketchConstraintKind::Diameter { points },
+        |points| SketchConstraintKind::Diameter {
+            points,
+            label_position: label_position.clone(),
+        },
         args.source_range,
     )
     .map(|constraint| KclValue::SketchConstraint {
@@ -2287,6 +2321,7 @@ pub async fn horizontal_distance(exec_state: &mut ExecState, args: Args) -> Resu
         &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
         exec_state,
     )?;
+    let label_position = get_constraint_label_position(exec_state, &args, "horizontalDistance")?;
     let [p1, p2] = points.as_slice() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "must have two input points".to_owned(),
@@ -2334,6 +2369,7 @@ pub async fn horizontal_distance(exec_state: &mut ExecState, args: Args) -> Resu
                                             object_id: unsolved1.object_id,
                                         }),
                                     ],
+                                    label_position,
                                 },
                                 meta: vec![args.source_range.into()],
                             };
@@ -2391,7 +2427,7 @@ pub async fn horizontal_distance(exec_state: &mut ExecState, args: Args) -> Resu
                     };
                     Ok(KclValue::SketchConstraint {
                         value: Box::new(SketchConstraint {
-                            kind: SketchConstraintKind::HorizontalDistance { points },
+                            kind: SketchConstraintKind::HorizontalDistance { points, label_position },
                             meta: vec![args.source_range.into()],
                         }),
                     })
@@ -2416,6 +2452,7 @@ pub async fn vertical_distance(exec_state: &mut ExecState, args: Args) -> Result
         &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
         exec_state,
     )?;
+    let label_position = get_constraint_label_position(exec_state, &args, "verticalDistance")?;
     let [p1, p2] = points.as_slice() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "must have two input points".to_owned(),
@@ -2463,6 +2500,7 @@ pub async fn vertical_distance(exec_state: &mut ExecState, args: Args) -> Result
                                             object_id: unsolved1.object_id,
                                         }),
                                     ],
+                                    label_position,
                                 },
                                 meta: vec![args.source_range.into()],
                             };
@@ -2519,7 +2557,7 @@ pub async fn vertical_distance(exec_state: &mut ExecState, args: Args) -> Result
                     };
                     Ok(KclValue::SketchConstraint {
                         value: Box::new(SketchConstraint {
-                            kind: SketchConstraintKind::VerticalDistance { points },
+                            kind: SketchConstraintKind::VerticalDistance { points, label_position },
                             meta: vec![args.source_range.into()],
                         }),
                     })
@@ -2536,6 +2574,200 @@ pub async fn vertical_distance(exec_state: &mut ExecState, args: Args) -> Result
             vec![args.source_range],
         ))),
     }
+}
+
+#[derive(Debug, Clone, Copy)]
+struct MidpointPointVars {
+    coords: [SketchVarId; 2],
+    #[cfg(feature = "artifact-graph")]
+    object_id: ObjectId,
+}
+
+#[derive(Debug, Clone, Copy)]
+enum MidpointTargetVars {
+    Line {
+        start: [SketchVarId; 2],
+        end: [SketchVarId; 2],
+        #[cfg(feature = "artifact-graph")]
+        object_id: ObjectId,
+    },
+    Arc {
+        center: [SketchVarId; 2],
+        start: [SketchVarId; 2],
+        end: [SketchVarId; 2],
+        #[cfg(feature = "artifact-graph")]
+        object_id: ObjectId,
+    },
+}
+
+impl MidpointTargetVars {
+    #[cfg(feature = "artifact-graph")]
+    fn object_id(self) -> ObjectId {
+        match self {
+            Self::Line { object_id, .. } | Self::Arc { object_id, .. } => object_id,
+        }
+    }
+}
+
+fn extract_midpoint_point(segment_value: &KclValue, range: crate::SourceRange) -> Result<MidpointPointVars, KclError> {
+    let KclValue::Segment { value: segment } = segment_value else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "midpoint() point must be a point Segment, but found {}",
+                segment_value.human_friendly_type()
+            ),
+            vec![range],
+        )));
+    };
+    let SegmentRepr::Unsolved { segment: unsolved } = &segment.repr else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "midpoint() point must be an unsolved point Segment".to_owned(),
+            vec![range],
+        )));
+    };
+    let UnsolvedSegmentKind::Point { position, .. } = &unsolved.kind else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "midpoint() point must be a point Segment".to_owned(),
+            vec![range],
+        )));
+    };
+    let (UnsolvedExpr::Unknown(point_x), UnsolvedExpr::Unknown(point_y)) = (&position[0], &position[1]) else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "midpoint() point coordinates must be sketch vars".to_owned(),
+            vec![range],
+        )));
+    };
+
+    Ok(MidpointPointVars {
+        coords: [*point_x, *point_y],
+        #[cfg(feature = "artifact-graph")]
+        object_id: unsolved.object_id,
+    })
+}
+
+fn extract_midpoint_target(
+    segment_value: &KclValue,
+    range: crate::SourceRange,
+) -> Result<MidpointTargetVars, KclError> {
+    let KclValue::Segment { value: segment } = segment_value else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "midpoint() target must be a line or arc Segment, but found {}",
+                segment_value.human_friendly_type()
+            ),
+            vec![range],
+        )));
+    };
+    let SegmentRepr::Unsolved { segment: unsolved } = &segment.repr else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "midpoint() target must be an unsolved line or arc Segment".to_owned(),
+            vec![range],
+        )));
+    };
+    match &unsolved.kind {
+        UnsolvedSegmentKind::Line { start, end, .. } => {
+            let (
+                UnsolvedExpr::Unknown(start_x),
+                UnsolvedExpr::Unknown(start_y),
+                UnsolvedExpr::Unknown(end_x),
+                UnsolvedExpr::Unknown(end_y),
+            ) = (&start[0], &start[1], &end[0], &end[1])
+            else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "midpoint() line coordinates must be sketch vars".to_owned(),
+                    vec![range],
+                )));
+            };
+
+            Ok(MidpointTargetVars::Line {
+                start: [*start_x, *start_y],
+                end: [*end_x, *end_y],
+                #[cfg(feature = "artifact-graph")]
+                object_id: unsolved.object_id,
+            })
+        }
+        UnsolvedSegmentKind::Arc { center, start, end, .. } => {
+            let (
+                UnsolvedExpr::Unknown(center_x),
+                UnsolvedExpr::Unknown(center_y),
+                UnsolvedExpr::Unknown(start_x),
+                UnsolvedExpr::Unknown(start_y),
+                UnsolvedExpr::Unknown(end_x),
+                UnsolvedExpr::Unknown(end_y),
+            ) = (&center[0], &center[1], &start[0], &start[1], &end[0], &end[1])
+            else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "midpoint() arc center/start/end coordinates must be sketch vars".to_owned(),
+                    vec![range],
+                )));
+            };
+
+            Ok(MidpointTargetVars::Arc {
+                center: [*center_x, *center_y],
+                start: [*start_x, *start_y],
+                end: [*end_x, *end_y],
+                #[cfg(feature = "artifact-graph")]
+                object_id: unsolved.object_id,
+            })
+        }
+        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+            "midpoint() target must be a line or circular arc Segment".to_owned(),
+            vec![range],
+        ))),
+    }
+}
+
+pub async fn midpoint(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let target: KclValue =
+        args.get_unlabeled_kw_arg("input", &RuntimeType::Primitive(PrimitiveType::Segment), exec_state)?;
+    let point: KclValue = args.get_kw_arg("point", &RuntimeType::Primitive(PrimitiveType::Segment), exec_state)?;
+    let range = args.source_range;
+
+    let point = extract_midpoint_point(&point, range)?;
+    let target = extract_midpoint_target(&target, range)?;
+
+    #[cfg(feature = "artifact-graph")]
+    let constraint_id = exec_state.next_object_id();
+    let Some(sketch_state) = exec_state.sketch_block_mut() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "midpoint() can only be used inside a sketch block".to_owned(),
+            vec![range],
+        )));
+    };
+
+    let solver_point = datum_point(point.coords, range)?;
+    match target {
+        MidpointTargetVars::Line { start, end, .. } => {
+            sketch_state.solver_constraints.push(SolverConstraint::Midpoint(
+                DatumLineSegment::new(datum_point(start, range)?, datum_point(end, range)?),
+                solver_point,
+            ));
+        }
+        MidpointTargetVars::Arc { center, start, end, .. } => {
+            sketch_state
+                .solver_constraints
+                .extend(SolverConstraint::point_bisects_arc(
+                    DatumCircularArc {
+                        center: datum_point(center, range)?,
+                        start: datum_point(start, range)?,
+                        end: datum_point(end, range)?,
+                    },
+                    solver_point,
+                ));
+        }
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    {
+        let constraint = Constraint::Midpoint(Midpoint {
+            point: point.object_id,
+            segment: target.object_id(),
+        });
+        sketch_state.sketch_constraints.push(constraint_id);
+        track_constraint(constraint_id, constraint, exec_state, &args);
+    }
+
+    Ok(KclValue::none())
 }
 
 pub async fn equal_length(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -2683,6 +2915,85 @@ fn radius_guess(
     let dy = sketch_var_initial_value(sketch_vars, point[1], exec_state, range)?
         - sketch_var_initial_value(sketch_vars, center[1], exec_state, range)?;
     Ok(libm::hypot(dx, dy))
+}
+
+fn reflect_point_across_line(point: [f64; 2], axis_start: [f64; 2], axis_end: [f64; 2]) -> [f64; 2] {
+    let [px, py] = point;
+    let [ax, ay] = axis_start;
+    let [bx, by] = axis_end;
+    let dx = bx - ax;
+    let dy = by - ay;
+    let axis_len_sq = dx * dx + dy * dy;
+    if axis_len_sq <= f64::EPSILON {
+        return point;
+    }
+
+    let point_from_axis = [px - ax, py - ay];
+    let projection_scale = (point_from_axis[0] * dx + point_from_axis[1] * dy) / axis_len_sq;
+    let projected = [ax + projection_scale * dx, ay + projection_scale * dy];
+
+    [2.0 * projected[0] - px, 2.0 * projected[1] - py]
+}
+
+/// Calculate some initial guesses for the given points,
+/// which are being constrained to symmetric across the given line.
+fn symmetric_hidden_point_guess(
+    sketch_vars: &[KclValue],
+    point: [SketchVarId; 2],
+    axis: SymmetricLineVars,
+    exec_state: &mut ExecState,
+    range: crate::SourceRange,
+) -> Result<[f64; 2], KclError> {
+    let point = [
+        sketch_var_initial_value(sketch_vars, point[0], exec_state, range)?,
+        sketch_var_initial_value(sketch_vars, point[1], exec_state, range)?,
+    ];
+    let axis_start = [
+        sketch_var_initial_value(sketch_vars, axis.start[0], exec_state, range)?,
+        sketch_var_initial_value(sketch_vars, axis.start[1], exec_state, range)?,
+    ];
+    let axis_end = [
+        sketch_var_initial_value(sketch_vars, axis.end[0], exec_state, range)?,
+        sketch_var_initial_value(sketch_vars, axis.end[1], exec_state, range)?,
+    ];
+
+    Ok(reflect_point_across_line(point, axis_start, axis_end))
+}
+
+fn create_hidden_point(
+    exec_state: &mut ExecState,
+    initial_position: [f64; 2],
+    range: crate::SourceRange,
+) -> Result<[SketchVarId; 2], KclError> {
+    let sketch_var_ty = solver_numeric_type(exec_state);
+    let Some(sketch_state) = exec_state.sketch_block_mut() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "symmetric() can only be used inside a sketch block".to_owned(),
+            vec![range],
+        )));
+    };
+
+    let x_id = sketch_state.next_sketch_var_id();
+    sketch_state.sketch_vars.push(KclValue::SketchVar {
+        value: Box::new(crate::execution::SketchVar {
+            id: x_id,
+            initial_value: initial_position[0],
+            ty: sketch_var_ty,
+            meta: vec![],
+        }),
+    });
+
+    let y_id = sketch_state.next_sketch_var_id();
+    sketch_state.sketch_vars.push(KclValue::SketchVar {
+        value: Box::new(crate::execution::SketchVar {
+            id: y_id,
+            initial_value: initial_position[1],
+            ty: sketch_var_ty,
+            meta: vec![],
+        }),
+    });
+
+    Ok([x_id, y_id])
 }
 
 pub async fn equal_radius(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -3179,6 +3490,403 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 }
 
 #[derive(Debug, Clone, Copy)]
+struct SymmetricPointVars {
+    coords: [SketchVarId; 2],
+    #[cfg(feature = "artifact-graph")]
+    object_id: ObjectId,
+}
+
+/// The line that geometry should be symmetric across.
+#[derive(Debug, Clone, Copy)]
+struct SymmetricLineVars {
+    start: [SketchVarId; 2],
+    end: [SketchVarId; 2],
+    #[cfg(feature = "artifact-graph")]
+    object_id: ObjectId,
+}
+
+#[derive(Debug, Clone, Copy)]
+struct SymmetricArcVars {
+    center: [SketchVarId; 2],
+    start: [SketchVarId; 2],
+    end: [SketchVarId; 2],
+    #[cfg(feature = "artifact-graph")]
+    object_id: ObjectId,
+}
+
+#[derive(Debug, Clone, Copy)]
+struct SymmetricCircleVars {
+    center: [SketchVarId; 2],
+    start: [SketchVarId; 2],
+    #[cfg(feature = "artifact-graph")]
+    object_id: ObjectId,
+}
+
+#[derive(Debug, Clone, Copy)]
+enum SymmetricInput {
+    Point(SymmetricPointVars),
+    Line(SymmetricLineVars),
+    Arc(SymmetricArcVars),
+    Circle(SymmetricCircleVars),
+}
+
+impl SymmetricInput {
+    fn type_name(self) -> &'static str {
+        match self {
+            SymmetricInput::Point(_) => "points",
+            SymmetricInput::Line(_) => "lines",
+            SymmetricInput::Arc(_) => "arcs",
+            SymmetricInput::Circle(_) => "circles",
+        }
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    fn object_id(self) -> ObjectId {
+        match self {
+            SymmetricInput::Point(point) => point.object_id,
+            SymmetricInput::Line(line) => line.object_id,
+            SymmetricInput::Arc(arc) => arc.object_id,
+            SymmetricInput::Circle(circle) => circle.object_id,
+        }
+    }
+}
+
+fn extract_symmetric_input(segment_value: &KclValue, range: crate::SourceRange) -> Result<SymmetricInput, KclError> {
+    let KclValue::Segment { value: segment } = segment_value else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "symmetric() arguments must be point, line, arc, or circle segments, but found {}",
+                segment_value.human_friendly_type()
+            ),
+            vec![range],
+        )));
+    };
+    let SegmentRepr::Unsolved { segment: unsolved } = &segment.repr else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "symmetric() arguments must be unsolved segments".to_owned(),
+            vec![range],
+        )));
+    };
+
+    match &unsolved.kind {
+        UnsolvedSegmentKind::Point { position, .. } => {
+            let (UnsolvedExpr::Unknown(x), UnsolvedExpr::Unknown(y)) = (&position[0], &position[1]) else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "point coordinates must be sketch vars for symmetric()".to_owned(),
+                    vec![range],
+                )));
+            };
+            Ok(SymmetricInput::Point(SymmetricPointVars {
+                coords: [*x, *y],
+                #[cfg(feature = "artifact-graph")]
+                object_id: unsolved.object_id,
+            }))
+        }
+        UnsolvedSegmentKind::Line { start, end, .. } => {
+            let (
+                UnsolvedExpr::Unknown(start_x),
+                UnsolvedExpr::Unknown(start_y),
+                UnsolvedExpr::Unknown(end_x),
+                UnsolvedExpr::Unknown(end_y),
+            ) = (&start[0], &start[1], &end[0], &end[1])
+            else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "line coordinates must be sketch vars for symmetric()".to_owned(),
+                    vec![range],
+                )));
+            };
+            Ok(SymmetricInput::Line(SymmetricLineVars {
+                start: [*start_x, *start_y],
+                end: [*end_x, *end_y],
+                #[cfg(feature = "artifact-graph")]
+                object_id: unsolved.object_id,
+            }))
+        }
+        UnsolvedSegmentKind::Arc { center, start, end, .. } => {
+            let (
+                UnsolvedExpr::Unknown(center_x),
+                UnsolvedExpr::Unknown(center_y),
+                UnsolvedExpr::Unknown(start_x),
+                UnsolvedExpr::Unknown(start_y),
+                UnsolvedExpr::Unknown(end_x),
+                UnsolvedExpr::Unknown(end_y),
+            ) = (&center[0], &center[1], &start[0], &start[1], &end[0], &end[1])
+            else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "arc center/start/end coordinates must be sketch vars for symmetric()".to_owned(),
+                    vec![range],
+                )));
+            };
+            Ok(SymmetricInput::Arc(SymmetricArcVars {
+                center: [*center_x, *center_y],
+                start: [*start_x, *start_y],
+                end: [*end_x, *end_y],
+                #[cfg(feature = "artifact-graph")]
+                object_id: unsolved.object_id,
+            }))
+        }
+        UnsolvedSegmentKind::Circle { center, start, .. } => {
+            let (
+                UnsolvedExpr::Unknown(center_x),
+                UnsolvedExpr::Unknown(center_y),
+                UnsolvedExpr::Unknown(start_x),
+                UnsolvedExpr::Unknown(start_y),
+            ) = (&center[0], &center[1], &start[0], &start[1])
+            else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "circle center/start coordinates must be sketch vars for symmetric()".to_owned(),
+                    vec![range],
+                )));
+            };
+            Ok(SymmetricInput::Circle(SymmetricCircleVars {
+                center: [*center_x, *center_y],
+                start: [*start_x, *start_y],
+                #[cfg(feature = "artifact-graph")]
+                object_id: unsolved.object_id,
+            }))
+        }
+    }
+}
+
+fn extract_symmetric_axis_line(
+    segment_value: &KclValue,
+    range: crate::SourceRange,
+) -> Result<SymmetricLineVars, KclError> {
+    let KclValue::Segment { value: segment } = segment_value else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "symmetric() axis must be a line Segment, but found {}",
+                segment_value.human_friendly_type()
+            ),
+            vec![range],
+        )));
+    };
+    let SegmentRepr::Unsolved { segment: unsolved } = &segment.repr else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "symmetric() axis must be an unsolved line Segment".to_owned(),
+            vec![range],
+        )));
+    };
+    let UnsolvedSegmentKind::Line { start, end, .. } = &unsolved.kind else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "symmetric() axis must be a line Segment".to_owned(),
+            vec![range],
+        )));
+    };
+    let (
+        UnsolvedExpr::Unknown(start_x),
+        UnsolvedExpr::Unknown(start_y),
+        UnsolvedExpr::Unknown(end_x),
+        UnsolvedExpr::Unknown(end_y),
+    ) = (&start[0], &start[1], &end[0], &end[1])
+    else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "symmetric() axis line coordinates must be sketch vars".to_owned(),
+            vec![range],
+        )));
+    };
+
+    Ok(SymmetricLineVars {
+        start: [*start_x, *start_y],
+        end: [*end_x, *end_y],
+        #[cfg(feature = "artifact-graph")]
+        object_id: unsolved.object_id,
+    })
+}
+
+pub async fn symmetric(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    #[derive(Debug, Clone, Copy)]
+    struct SymmetricCircularVars {
+        center: [SketchVarId; 2],
+        start: [SketchVarId; 2],
+        end: Option<[SketchVarId; 2]>,
+    }
+
+    let input: Vec<KclValue> = args.get_unlabeled_kw_arg(
+        "input",
+        &RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Segment)),
+            ArrayLen::Known(2),
+        ),
+        exec_state,
+    )?;
+    let [item0, item1]: [KclValue; 2] = input.try_into().map_err(|_| {
+        KclError::new_semantic(KclErrorDetails::new(
+            "symmetric() requires exactly 2 input segments".to_owned(),
+            vec![args.source_range],
+        ))
+    })?;
+    let axis: KclValue = args.get_kw_arg("axis", &RuntimeType::Primitive(PrimitiveType::Segment), exec_state)?;
+    let range = args.source_range;
+
+    let input0 = extract_symmetric_input(&item0, range)?;
+    let input1 = extract_symmetric_input(&item1, range)?;
+    let axis_line = extract_symmetric_axis_line(&axis, range)?;
+
+    let solver_axis = DatumLineSegment::new(datum_point(axis_line.start, range)?, datum_point(axis_line.end, range)?);
+
+    let (mut solver_constraints, circular_inputs) = match (input0, input1) {
+        (SymmetricInput::Point(point0), SymmetricInput::Point(point1)) => (
+            vec![SolverConstraint::Symmetric(
+                solver_axis,
+                datum_point(point0.coords, range)?,
+                datum_point(point1.coords, range)?,
+            )],
+            None,
+        ),
+        (SymmetricInput::Line(line0), SymmetricInput::Line(line1)) => {
+            let sketch_vars = {
+                let Some(sketch_state) = exec_state.sketch_block_mut() else {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "symmetric() can only be used inside a sketch block".to_owned(),
+                        vec![range],
+                    )));
+                };
+                sketch_state.sketch_vars.clone()
+            };
+            let mirrored_start = symmetric_hidden_point_guess(&sketch_vars, line0.start, axis_line, exec_state, range)?;
+            let mirrored_end = symmetric_hidden_point_guess(&sketch_vars, line0.end, axis_line, exec_state, range)?;
+            let hidden_start = create_hidden_point(exec_state, mirrored_start, range)?;
+            let hidden_end = create_hidden_point(exec_state, mirrored_end, range)?;
+            let mirrored_support_line =
+                DatumLineSegment::new(datum_point(hidden_start, range)?, datum_point(hidden_end, range)?);
+            let solver_line1 = DatumLineSegment::new(datum_point(line1.start, range)?, datum_point(line1.end, range)?);
+
+            (
+                vec![
+                    SolverConstraint::Symmetric(
+                        solver_axis,
+                        datum_point(line0.start, range)?,
+                        datum_point(hidden_start, range)?,
+                    ),
+                    SolverConstraint::Symmetric(
+                        solver_axis,
+                        datum_point(line0.end, range)?,
+                        datum_point(hidden_end, range)?,
+                    ),
+                    SolverConstraint::LinesAtAngle(mirrored_support_line, solver_line1, AngleKind::Parallel),
+                    // Keep the second segment on the mirrored support line without
+                    // forcing its endpoints to be pairwise mirrored.
+                    SolverConstraint::PointLineDistance(datum_point(line1.start, range)?, mirrored_support_line, 0.0),
+                ],
+                None,
+            )
+        }
+        (SymmetricInput::Arc(arc0), SymmetricInput::Arc(arc1)) => (
+            vec![SolverConstraint::Symmetric(
+                solver_axis,
+                datum_point(arc0.center, range)?,
+                datum_point(arc1.center, range)?,
+            )],
+            Some([
+                SymmetricCircularVars {
+                    center: arc0.center,
+                    start: arc0.start,
+                    end: Some(arc0.end),
+                },
+                SymmetricCircularVars {
+                    center: arc1.center,
+                    start: arc1.start,
+                    end: Some(arc1.end),
+                },
+            ]),
+        ),
+        (SymmetricInput::Circle(circle0), SymmetricInput::Circle(circle1)) => (
+            vec![SolverConstraint::Symmetric(
+                solver_axis,
+                datum_point(circle0.center, range)?,
+                datum_point(circle1.center, range)?,
+            )],
+            Some([
+                SymmetricCircularVars {
+                    center: circle0.center,
+                    start: circle0.start,
+                    end: None,
+                },
+                SymmetricCircularVars {
+                    center: circle1.center,
+                    start: circle1.start,
+                    end: None,
+                },
+            ]),
+        ),
+        _ => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "symmetric() inputs must be homogeneous. You provided {} and {}",
+                    input0.type_name(),
+                    input1.type_name()
+                ),
+                vec![range],
+            )));
+        }
+    };
+
+    if let Some([circular0, circular1]) = circular_inputs {
+        let sketch_var_ty = solver_numeric_type(exec_state);
+        let sketch_vars = {
+            let Some(sketch_state) = exec_state.sketch_block_mut() else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "symmetric() can only be used inside a sketch block".to_owned(),
+                    vec![range],
+                )));
+            };
+            sketch_state.sketch_vars.clone()
+        };
+        let radius_initial_value = radius_guess(&sketch_vars, circular0.center, circular0.start, exec_state, range)?;
+
+        let Some(sketch_state) = exec_state.sketch_block_mut() else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "symmetric() can only be used inside a sketch block".to_owned(),
+                vec![range],
+            )));
+        };
+        let radius_id = sketch_state.next_sketch_var_id();
+        sketch_state.sketch_vars.push(KclValue::SketchVar {
+            value: Box::new(crate::execution::SketchVar {
+                id: radius_id,
+                initial_value: radius_initial_value,
+                ty: sketch_var_ty,
+                meta: vec![],
+            }),
+        });
+        let radius = DatumDistance::new(radius_id.to_constraint_id(range)?);
+
+        for circular in [circular0, circular1] {
+            let center = datum_point(circular.center, range)?;
+            let start = datum_point(circular.start, range)?;
+            solver_constraints.push(SolverConstraint::DistanceVar(start, center, radius));
+            if let Some(end) = circular.end {
+                let end = datum_point(end, range)?;
+                solver_constraints.push(SolverConstraint::DistanceVar(end, center, radius));
+            }
+        }
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    let constraint_id = exec_state.next_object_id();
+    let Some(sketch_state) = exec_state.sketch_block_mut() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "symmetric() can only be used inside a sketch block".to_owned(),
+            vec![range],
+        )));
+    };
+    sketch_state.solver_constraints.extend(solver_constraints);
+
+    #[cfg(feature = "artifact-graph")]
+    {
+        let constraint = crate::front::Constraint::Symmetric(Symmetric {
+            input: vec![input0.object_id(), input1.object_id()],
+            axis: axis_line.object_id,
+        });
+        sketch_state.sketch_constraints.push(constraint_id);
+        track_constraint(constraint_id, constraint, exec_state, &args);
+    }
+
+    Ok(KclValue::none())
+}
+
+#[derive(Debug, Clone, Copy)]
 pub(crate) enum LinesAtAngleKind {
     Parallel,
     Perpendicular,
@@ -3400,6 +4108,7 @@ impl AxisConstraintKind {
 struct AxisLineVars {
     start: [SketchVarId; 2],
     end: [SketchVarId; 2],
+    #[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
     object_id: ObjectId,
 }
 
