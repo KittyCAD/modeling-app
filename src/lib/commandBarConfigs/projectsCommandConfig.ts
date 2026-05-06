@@ -9,6 +9,7 @@ import type { ActorRefFrom, ContextFrom } from 'xstate'
 export type ProjectsCommandSchema = {
   'Duplicate project': {
     name: string
+    newName: string
   }
   'Import file from URL': {
     name: string
@@ -116,7 +117,10 @@ export function createProjectCommands({
       if (record) {
         systemIOActor.send({
           type: SystemIOMachineEvents.duplicateProject,
-          data: { projectName: record.name },
+          data: {
+            projectName: record.name,
+            requestedProjectName: record.newName,
+          },
         })
       }
     },
@@ -140,6 +144,14 @@ export function createProjectCommands({
             })
           }
           return options
+        },
+      },
+      newName: {
+        inputType: 'string',
+        required: true,
+        defaultValue: (context: ContextFrom<typeof commandBarMachine>) => {
+          const name = context.argumentsToSubmit.name as string | undefined
+          return name || requestedProjectNameSnapshot()
         },
       },
     },

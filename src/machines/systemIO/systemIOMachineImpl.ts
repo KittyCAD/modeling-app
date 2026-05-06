@@ -387,7 +387,11 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       async ({
         input,
       }: {
-        input: { context: SystemIOContext; projectName: string }
+        input: {
+          context: SystemIOContext
+          projectName: string
+          requestedProjectName: string
+        }
       }) => {
         const folders = input.context.folders
         if (!folders) {
@@ -413,7 +417,10 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           )
         }
 
-        const duplicateName = getUniqueProjectName(input.projectName, folders)
+        const duplicateName = getUniqueProjectName(
+          input.requestedProjectName,
+          folders
+        )
         if (duplicateName.length > MAX_PROJECT_NAME_LENGTH) {
           return Promise.reject(
             new Error(

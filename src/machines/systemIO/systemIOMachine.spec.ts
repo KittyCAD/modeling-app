@@ -278,6 +278,7 @@ project_id = "${sourceCloudProjectId}"
             type: SystemIOMachineEvents.duplicateProject,
             data: {
               projectName: 'bracket',
+              requestedProjectName: 'bracket',
             },
           })
           await waitFor(

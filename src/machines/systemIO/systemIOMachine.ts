@@ -77,7 +77,7 @@ export const systemIOMachine = setup({
         }
       | {
           type: SystemIOMachineEvents.duplicateProject
-          data: { projectName: string }
+          data: { projectName: string; requestedProjectName: string }
         }
       | {
           type: SystemIOMachineEvents.renameProject
@@ -447,9 +447,13 @@ export const systemIOMachine = setup({
     ),
     [SystemIOMachineActors.duplicateProject]: fromPromise(
       async ({
-        input: { context, projectName },
+        input: { context, projectName, requestedProjectName },
       }: {
-        input: { context: SystemIOContext; projectName: string }
+        input: {
+          context: SystemIOContext
+          projectName: string
+          requestedProjectName: string
+        }
       }) => {
         return { message: '', name: '' }
       }
@@ -997,6 +1001,7 @@ export const systemIOMachine = setup({
           return {
             context,
             projectName: event.data.projectName,
+            requestedProjectName: event.data.requestedProjectName,
           }
         },
         onDone: {
