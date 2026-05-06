@@ -54,14 +54,6 @@ describe('mlEphantManagerMachine', () => {
       ).toStrictEqual({ defaultMode: 'fast', modeOptions: modes })
     })
 
-    it('parses the legacy modes envelope', () => {
-      expect(
-        parseMlCopilotModesResult({
-          modes: { default_mode: 'thoughtful', modes },
-        })
-      ).toStrictEqual({ defaultMode: 'thoughtful', modeOptions: modes })
-    })
-
     it('returns null for unrelated payloads', () => {
       expect(parseMlCopilotModesResult({ something_else: true })).toBeNull()
     })

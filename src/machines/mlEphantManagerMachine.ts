@@ -104,11 +104,8 @@ export function parseMlCopilotModesResult(
 ): MlCopilotModesResult | null {
   if (typeof response !== 'object' || response === null) return null
 
-  const envelope = response as {
-    modes_response?: unknown
-    modes?: unknown
-  }
-  const modesResponse = envelope.modes_response ?? envelope.modes
+  const envelope = response as { modes_response?: unknown }
+  const modesResponse = envelope.modes_response
   if (typeof modesResponse !== 'object' || modesResponse === null) return null
 
   const candidate = modesResponse as {

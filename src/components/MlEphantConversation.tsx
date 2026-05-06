@@ -58,14 +58,11 @@ export interface MlEphantConversationProps {
   modeOptions?: MlCopilotModeOption[]
 }
 
+// Used only until the server's modes_response arrives (or if it never does).
+// Kept to a single safe option so we never display label/icon metadata that
+// doesn't reflect what the server actually offers.
 const FALLBACK_ML_COPILOT_MODE_OPTIONS: ReadonlyArray<MlCopilotModeOption> =
   Object.freeze([
-    {
-      id: 'fast',
-      label: 'Standard',
-      description: 'Faster reasoning. Best for quick edits and simple tasks.',
-      icon: 'stopwatch',
-    },
     {
       id: 'thoughtful',
       label: 'Thoughtful',
@@ -81,13 +78,17 @@ const getModeOptions = (
     ? modeOptions
     : FALLBACK_ML_COPILOT_MODE_OPTIONS
 
+// Resolve the metadata for `mode` against whatever options are currently in
+// effect. If `mode` isn't present (e.g. a persisted id the server no longer
+// offers), fall back to the first available option rather than inventing
+// metadata for a mode that doesn't exist on this server.
 const getModeOption = (
   mode: MlCopilotMode,
   modeOptions?: MlCopilotModeOption[]
-): MlCopilotModeOption =>
-  getModeOptions(modeOptions).find((option) => option.id === mode) ??
-  FALLBACK_ML_COPILOT_MODE_OPTIONS.find((option) => option.id === mode) ??
-  FALLBACK_ML_COPILOT_MODE_OPTIONS[0]
+): MlCopilotModeOption => {
+  const options = getModeOptions(modeOptions)
+  return options.find((option) => option.id === mode) ?? options[0]
+}
 
 export interface MlCopilotModesProps {
   onClick: (mode: MlCopilotMode) => void
