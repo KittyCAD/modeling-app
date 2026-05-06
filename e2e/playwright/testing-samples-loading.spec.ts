@@ -104,7 +104,7 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
     const overwriteWarning = page.getByText(
       'Overwrite current file with sample?'
     )
-    const projectMenuButton = page.getByTestId('project-sidebar-toggle')
+    const headerFileName = page.getByTestId('app-header-file-name')
     const newlyCreatedFile = (name: string) =>
       page.getByRole('listitem').filter({
         has: page.getByRole('button', { name }),
@@ -135,7 +135,7 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
       await editor.expectEditor.toContain(bracket.split('\n')[0])
       await u.openFilePanel()
 
-      await expect(projectMenuButton).toContainText('main.kcl')
+      await expect(headerFileName).toContainText('main.kcl')
       await expect(newlyCreatedFile(sampleOne.file)).not.toBeVisible()
     })
 
@@ -145,7 +145,7 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
       await cmdBar.expectState(defaultLoadCmdBarState)
       await cmdBar.selectOption({ name: sampleOne.title }).click()
       await expect(overwriteWarning).not.toBeVisible()
-      await page.waitForTimeout(1000)
+      await expect(headerFileName).toContainText('main.kcl')
     })
 
     await test.step(`Ensure we made and opened a new file`, async () => {
@@ -153,7 +153,7 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
       await expect(
         page.getByTestId('file-tree-item').getByText(sampleOne.folderName)
       ).toBeVisible()
-      await expect(projectMenuButton).toContainText('main.kcl')
+      await expect(headerFileName).toContainText('main.kcl')
     })
 
     await test.step(`Load a KCL sample with the command palette`, async () => {
@@ -162,7 +162,7 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
       await cmdBar.expectState(defaultLoadCmdBarState)
       await cmdBar.selectOption({ name: sampleOne.title }).click()
       await expect(overwriteWarning).not.toBeVisible()
-      await page.waitForTimeout(1000)
+      await expect(headerFileName).toContainText('main.kcl')
     })
 
     await test.step(`Ensure we made and opened a new file with a unique name`, async () => {
@@ -170,7 +170,7 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
       await expect(
         page.getByTestId('file-tree-item').getByText(sampleOne.folderName1)
       ).toBeVisible()
-      await expect(projectMenuButton).toContainText('main.kcl')
+      await expect(headerFileName).toContainText('main.kcl')
     })
   })
 })
