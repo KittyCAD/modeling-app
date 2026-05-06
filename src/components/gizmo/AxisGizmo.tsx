@@ -169,9 +169,10 @@ const CANVAS_SIZE = 80
 const FRUSTUM_SIZE = 0.5
 const AXIS_LENGTH = 0.35
 const AXIS_WIDTH = 0.02
+const AXIS_HEAD_RADIUS = 0.085
 const AXIS_HOVER_SCALE = 1.5
-const AXIS_LABEL_FONT_SIZE = 7
-const AXIS_LABEL_CONTOUR_WIDTH = 1
+const AXIS_LABEL_FONT_SIZE = 9
+const AXIS_LABEL_CONTOUR_WIDTH = 1.2
 const AXIS_LABEL_CENTER = 8
 const AXIS_LABEL_CENTER_Y = 8.5
 enum AxisColors {
@@ -261,7 +262,7 @@ const createAxis = (
 }
 
 const createAxisHead = (name: AxisNames, color: ColorRepresentation): Mesh => {
-  const geometry = new SphereGeometry(0.065, 16, 8)
+  const geometry = new SphereGeometry(AXIS_HEAD_RADIUS, 16, 8)
   const material = new MeshBasicMaterial({ color: new Color(color) })
   const mesh = new Mesh(geometry, material)
   const position = AXIS_HEAD_POSITIONS[name]
@@ -284,13 +285,14 @@ const createAxisLabel = (
   labelElement.setAttribute('height', '16')
   labelElement.classList.add('block', 'h-4', 'w-4', 'select-none')
   labelElement.style.overflow = 'visible'
-  labelElement.style.transform = 'scale(1)'
   labelElement.style.transformOrigin = 'center'
 
   const labelText = document.createElementNS(SVG_NAMESPACE, 'text')
+  const labelCenterY =
+    axisName === AxisNames.Y ? AXIS_LABEL_CENTER_Y + 0.25 : AXIS_LABEL_CENTER_Y
   labelText.textContent = AXIS_LABELS[axisName]
   labelText.setAttribute('x', String(AXIS_LABEL_CENTER))
-  labelText.setAttribute('y', String(AXIS_LABEL_CENTER_Y))
+  labelText.setAttribute('y', String(labelCenterY))
   labelText.setAttribute('fill', 'var(--chalkboard-10)')
   labelText.setAttribute('stroke', AXIS_LABEL_CONTOUR_COLORS[axisName])
   labelText.setAttribute('stroke-width', String(AXIS_LABEL_CONTOUR_WIDTH))
@@ -334,8 +336,11 @@ const updateAxisLabelHover = (
       continue
     }
 
-    const scale = hoveredAxisName === axisName ? AXIS_HOVER_SCALE : 1
-    labelElement.style.transform = `scale(${scale})`
+    if (hoveredAxisName === axisName) {
+      labelElement.style.transform = `scale(${AXIS_HOVER_SCALE})`
+    } else {
+      labelElement.style.removeProperty('transform')
+    }
   }
 }
 
@@ -424,14 +429,14 @@ const updateRayCaster = (
 ) => {
   raycaster.setFromCamera(mouse, camera)
   const intersects = raycaster.intersectObjects(objects)
+  const hoveredObject = intersects[0]?.object
 
   for (const object of objects) {
-    object.scale.setScalar(1)
+    object.scale.setScalar(object === hoveredObject ? AXIS_HOVER_SCALE : 1)
   }
   if (intersects.length) {
     const axisName = intersects[0].object.name as AxisNames
     updateAxisLabelHover(axisLabelElements, axisName)
-    intersects[0].object.scale.setScalar(AXIS_HOVER_SCALE)
     raycasterIntersect.current = intersects[0] // filter first object
   } else {
     updateAxisLabelHover(axisLabelElements)
