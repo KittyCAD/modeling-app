@@ -1574,34 +1574,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
     return sketchSolveGroup instanceof Group ? sketchSolveGroup : null
   }
 
-  const getHoveredConstraintLabelId = () => {
-    const snapshot = self.getSnapshot()
-    const hoveredId = snapshot.context.hoveredId
-    if (!isObjectSelectionId(hoveredId)) {
-      return null
-    }
-
-    const objects =
-      snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects ??
-      []
-    const hoveredObject = objects[hoveredId]
-    if (!isConstraintWithDraggableLabel(hoveredObject)) {
-      return null
-    }
-
-    const planeIntersectPoint = context.sceneInfra.getPlaneIntersectPoint()
-    if (!planeIntersectPoint?.twoD) {
-      return null
-    }
-
-    const labelHitDistance = getClosestConstraintLabelHitDistance(
-      [planeIntersectPoint.twoD.x, planeIntersectPoint.twoD.y],
-      hoveredId,
-      context.sceneInfra
-    )
-    return labelHitDistance === null ? null : hoveredId
-  }
-
   const clearDragSnappingState = () => {
     const sketchSolveGroup = getSketchSolveGroup()
     if (sketchSolveGroup) {
@@ -2217,9 +2189,18 @@ export function setUpOnDragAndSelectionClickCallbacks({
       const hoveredObject = objects[hoveredId]
       if (isConstraintWithDraggableLabel(hoveredObject)) {
         // Allow dragging the label of a constraint
-        const constraintLabelId = getHoveredConstraintLabelId()
-        if (constraintLabelId !== null) {
-          setDraggedEntityId(constraintLabelId)
+        const planeIntersectPoint = context.sceneInfra.getPlaneIntersectPoint()
+        if (!planeIntersectPoint?.twoD) {
+          return false
+        }
+
+        const labelHitDistance = getClosestConstraintLabelHitDistance(
+          [planeIntersectPoint.twoD.x, planeIntersectPoint.twoD.y],
+          hoveredId,
+          context.sceneInfra
+        )
+        if (labelHitDistance !== null) {
+          setDraggedEntityId(hoveredId)
           return true
         }
         return false
