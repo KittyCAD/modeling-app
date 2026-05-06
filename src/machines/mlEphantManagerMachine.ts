@@ -292,6 +292,29 @@ export const mlEphantDefaultContext = (args: {
   modeOptions: undefined,
 })
 
+const ZOOKEEPER_DISCONNECT_LOG_PREFIX = '[zookeeper-disconnect]'
+
+function logZookeeperDisconnect(message: string, metadata?: unknown) {
+  console.warn(ZOOKEEPER_DISCONNECT_LOG_PREFIX, message, metadata)
+}
+
+function getWebSocketReadyStateLabel(
+  readyState: number | undefined
+): string | undefined {
+  switch (readyState) {
+    case WebSocket.CONNECTING:
+      return 'CONNECTING'
+    case WebSocket.OPEN:
+      return 'OPEN'
+    case WebSocket.CLOSING:
+      return 'CLOSING'
+    case WebSocket.CLOSED:
+      return 'CLOSED'
+    default:
+      return undefined
+  }
+}
+
 function isString(x: unknown): x is string {
   return typeof x === 'string'
 }
@@ -474,6 +497,9 @@ export const mlEphantManagerMachine = setup({
     },
     handleAbruptClose: assign(({ event }) => {
       assertEvent(event, MlEphantManagerTransitions.AbruptClose)
+      logZookeeperDisconnect('machine handling abrupt websocket close', {
+        closeReason: event.closeReason,
+      })
       if (event.closeReason) {
         toast.error(event.closeReason)
       }
@@ -483,6 +509,12 @@ export const mlEphantManagerMachine = setup({
       }
     }),
     handleBackendShutdown: assign(({ context }) => {
+      logZookeeperDisconnect('received backend shutdown message', {
+        awaitingResponse: context.awaitingResponse,
+        pendingBackendShutdown: context.pendingBackendShutdown,
+        conversationId: context.conversationId,
+        lastMessageType: context.lastMessageType,
+      })
       if (context.awaitingResponse) {
         return { pendingBackendShutdown: true }
       }
@@ -490,6 +522,14 @@ export const mlEphantManagerMachine = setup({
     }),
     disconnectIfIdle: ({ context }) => {
       if (!context.awaitingResponse) {
+        logZookeeperDisconnect(
+          'closing websocket because backend shutdown arrived while idle',
+          {
+            conversationId: context.conversationId,
+            lastMessageType: context.lastMessageType,
+            readyState: getWebSocketReadyStateLabel(context.ws?.readyState),
+          }
+        )
         context.ws?.close()
       }
     },
@@ -499,6 +539,15 @@ export const mlEphantManagerMachine = setup({
         context.pendingBackendShutdown &&
         isResponseComplete(event.response)
       ) {
+        logZookeeperDisconnect(
+          'closing websocket because backend shutdown was pending and response stream completed',
+          {
+            conversationId: context.conversationId,
+            lastMessageType: context.lastMessageType,
+            responseType: Object.keys(event.response),
+            readyState: getWebSocketReadyStateLabel(context.ws?.readyState),
+          }
+        )
         context.ws?.close()
       }
     },
@@ -560,6 +609,13 @@ export const mlEphantManagerMachine = setup({
       const ws = await Socket(WebSocket, url, args.input.context.apiToken)
       ws.binaryType = 'arraybuffer'
 
+      logZookeeperDisconnect('websocket opened and authenticated', {
+        conversationId:
+          args.input.context.conversationId ?? args.input.event.conversationId,
+        url,
+        readyState: getWebSocketReadyStateLabel(ws.readyState),
+      })
+
       let maybeReplayedExchanges: Exchange[] = []
       let maybeModeOptions: MlCopilotModeOption[] | undefined
       let maybeDefaultMode: MlCopilotMode | undefined
@@ -574,6 +630,16 @@ export const mlEphantManagerMachine = setup({
             if (ws.readyState !== WebSocket.OPEN) return
             ws.send(JSON.stringify({ type: 'ping' }))
           }, 4_000)
+
+          ws.addEventListener('error', function (event: Event) {
+            logZookeeperDisconnect('websocket error event received', {
+              conversationId:
+                args.input.context.conversationId ??
+                args.input.event.conversationId,
+              readyState: getWebSocketReadyStateLabel(ws.readyState),
+              eventType: event.type,
+            })
+          })
 
           ws.addEventListener('message', function (event: MessageEvent<any>) {
             let response: unknown
@@ -610,6 +676,14 @@ export const mlEphantManagerMachine = setup({
             }
 
             if (isBackendShutdownMessage(response)) {
+              logZookeeperDisconnect('server sent backend_shutdown', {
+                backendShutdownReason: response.backend_shutdown.reason,
+                conversationId:
+                  args.input.context.conversationId ??
+                  args.input.event.conversationId,
+                lastMessageType: args.input.context.lastMessageType,
+                readyState: getWebSocketReadyStateLabel(ws.readyState),
+              })
               if (theRefParentSend) {
                 theRefParentSend({
                   type: MlEphantManagerTransitions.BackendShutdown,
@@ -648,6 +722,16 @@ export const mlEphantManagerMachine = setup({
                   MlEphantSetupErrors.InvalidConversationId
                 ))
             ) {
+              logZookeeperDisconnect(
+                'closing websocket because conversation replay/setup is invalid',
+                {
+                  errorDetail: response.error.detail,
+                  conversationId:
+                    args.input.context.conversationId ??
+                    args.input.event.conversationId,
+                  readyState: getWebSocketReadyStateLabel(ws.readyState),
+                }
+              )
               devCalledClose = true
               ws.close()
               // Pass that the conversation is not found to the onError handler which will set the conversationId
@@ -743,13 +827,26 @@ export const mlEphantManagerMachine = setup({
           ws.send(JSON.stringify(listModesRequest))
 
           ws.addEventListener('close', function (event: CloseEvent) {
+            clearInterval(pingIntervalId)
+
+            logZookeeperDisconnect('websocket close event received', {
+              code: event.code,
+              reason: event.reason,
+              wasClean: event.wasClean,
+              devCalledClose,
+              conversationId:
+                args.input.context.conversationId ??
+                args.input.event.conversationId,
+              lastMessageType: args.input.context.lastMessageType,
+              readyState: getWebSocketReadyStateLabel(ws.readyState),
+            })
+
             if (theRefParentSend !== undefined && devCalledClose === false) {
               let closeReason: string | undefined
               if (event.code === 1009) {
                 closeReason =
                   'Your project files are too large to send to Zookeeper. Try removing large STL/STEP files or splitting your project.'
               }
-              clearInterval(pingIntervalId)
               theRefParentSend({
                 type: MlEphantManagerTransitions.AbruptClose,
                 closeReason,
