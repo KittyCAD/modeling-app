@@ -404,7 +404,7 @@ type ArcSizeDimensionUnit = Extract<
   { type: 'Radius' }
 >['radius']['units']
 
-export function buildArcSizeDimensionConstraintInput({
+export function buildCircularSizeDimensionConstraintInput({
   segment,
   radius,
   units,

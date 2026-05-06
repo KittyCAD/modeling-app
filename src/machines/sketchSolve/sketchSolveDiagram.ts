@@ -19,7 +19,7 @@ import type {
 } from '@src/machines/modelingSharedTypes'
 import {
   buildAngleConstraintInput,
-  buildArcSizeDimensionConstraintInput,
+  buildCircularSizeDimensionConstraintInput,
   isArcSegment,
   isCircleSegment,
   isLineSegment,
@@ -502,7 +502,7 @@ export const sketchSolveMachine = setup({
               const first = currentSelections[0]
               const firstObject = first === ORIGIN_TARGET ? undefined : first
               if (isArcSegment(firstObject) || isCircleSegment(firstObject)) {
-                // Calculate radius for arc/circle segment from its center and start point.
+                // Calculate radius for circular segment from its center and start point.
                 const centerPoint =
                   context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
                     firstObject.kind.segment.center
@@ -529,7 +529,7 @@ export const sketchSolveMachine = setup({
                     distance = roundOff(distanceResult.distance)
                   }
                 }
-                const constraint = buildArcSizeDimensionConstraintInput({
+                const constraint = buildCircularSizeDimensionConstraintInput({
                   segment: firstObject,
                   radius: distance,
                   units,

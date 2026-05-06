@@ -8,7 +8,7 @@ import {
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
 import {
   buildAngleConstraintInput,
-  buildArcSizeDimensionConstraintInput,
+  buildCircularSizeDimensionConstraintInput,
   buildFixedConstraintInput,
   buildSymmetricConstraintInput,
   buildSymmetricConstraintInputWithExplicitAxis,
@@ -92,7 +92,7 @@ describe('buildArcSizeDimensionConstraintInput', () => {
     const arc = createArcApiObject({ id: 10, center: 1, start: 2, end: 3 })
 
     expect(
-      buildArcSizeDimensionConstraintInput({
+      buildCircularSizeDimensionConstraintInput({
         segment: arc,
         radius: 5,
         units: 'Mm',
@@ -109,7 +109,7 @@ describe('buildArcSizeDimensionConstraintInput', () => {
     const circle = createCircleApiObject({ id: 11, center: 1, start: 2 })
 
     expect(
-      buildArcSizeDimensionConstraintInput({
+      buildCircularSizeDimensionConstraintInput({
         segment: circle,
         radius: 5,
         units: 'Mm',
