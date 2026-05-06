@@ -29,6 +29,6 @@ blend001 = blend([
   {
     sideFaces = [seg03],
     endFaces = [seg04, rectangleSegmentA001],
-    index = 1
+    index = 0
   }
 ])
