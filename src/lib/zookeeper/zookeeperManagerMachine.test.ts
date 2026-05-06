@@ -1172,6 +1172,50 @@ describe('zookeeperManagerMachine', () => {
       actor.stop()
     })
 
+    it('logs current connection diagnostics without reporting a transient disconnect', async () => {
+      vi.useFakeTimers()
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      const { fetchMock } = stubClientErrorFetch()
+      const actor = createActor(zookeeperManagerMachine, {
+        input: { apiToken: 'token' },
+      }).start()
+
+      try {
+        actor.send({
+          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+          refParentSend: vi.fn(),
+        })
+        const socket = ControllableSetupWebSocket.instances[0]
+        await completeSetupToReady(actor, socket)
+        socket.receive({ session_data: { api_call_id: 'api-call-id' } })
+        await vi.advanceTimersByTimeAsync(ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
+        socket.receive({ pong: {} })
+        window.dispatchEvent(new Event('offline'))
+        await vi.advanceTimersByTimeAsync(1000)
+        socket.closeWithCode(1006)
+
+        expect(warn).toHaveBeenCalledWith(
+          '[zookeeper-disconnect]',
+          'websocket close event received',
+          expect.objectContaining({
+            conversationId: 'conversation-id',
+            apiCallId: 'api-call-id',
+            lastSocketMessageType: 'pong',
+            lastLifecycleEventType: 'offline',
+            timeSinceLastPingMs: expect.any(Number),
+            timeSinceLastPongMs: 1000,
+            timeSinceLastInboundMessageMs: 1000,
+            closeClassification: 'transport_reset_or_unclean_close',
+          })
+        )
+        expect(fetchMock).not.toHaveBeenCalled()
+        expect(actor.getSnapshot().context.abruptlyClosed).toBe(true)
+      } finally {
+        stopZookeeperManagerActor(actor)
+      }
+    })
+
     it('closes the socket and stops its heartbeat when stopped', async () => {
       vi.useFakeTimers()
       vi.stubGlobal('WebSocket', ControllableSetupWebSocket)

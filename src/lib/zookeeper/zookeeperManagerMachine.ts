@@ -629,6 +629,25 @@ function logZookeeperDisconnect(message: string, metadata?: unknown) {
   console.warn(ZOOKEEPER_DISCONNECT_LOG_PREFIX, message, metadata)
 }
 
+function getElapsedMs(timestamp: number | undefined): number | undefined {
+  return timestamp === undefined ? undefined : Date.now() - timestamp
+}
+
+function classifyZookeeperClose(params: {
+  code: number
+  wasClean: boolean
+  intentionalClose: boolean
+}): string {
+  if (params.intentionalClose) return 'client_intentional'
+  if (params.code === 1006 || !params.wasClean) {
+    return 'transport_reset_or_unclean_close'
+  }
+  if (params.code === 1000 || params.code === 1001) {
+    return 'clean_unexpected_close'
+  }
+  return 'unexpected_close'
+}
+
 type ZookeeperErrorContext = Pick<
   ZookeeperManagerContext,
   | 'conversationId'
@@ -716,10 +735,15 @@ function isPresent<T>(x: undefined | T): x is T {
 }
 
 const intentionalZookeeperCloses = new WeakSet<WebSocket>()
+const zookeeperCloseReasons = new WeakMap<WebSocket, string>()
 
-function closeZookeeperWebSocket(ws: WebSocket | undefined) {
+function closeZookeeperWebSocket(
+  ws: WebSocket | undefined,
+  reason = 'machine_exit'
+) {
   if (ws?.readyState !== WebSocket.OPEN) return
   intentionalZookeeperCloses.add(ws)
+  zookeeperCloseReasons.set(ws, reason)
   ws.close()
 }
 
@@ -1373,7 +1397,10 @@ export const zookeeperManagerMachine = setup({
             readyState: getWebSocketReadyStateLabel(context.ws?.readyState),
           }
         )
-        context.ws?.close()
+        if (context.ws) {
+          zookeeperCloseReasons.set(context.ws, 'backend_shutdown_idle')
+          context.ws.close()
+        }
       }
     },
     disconnectIfPendingBackendShutdown: ({ context, event }) => {
@@ -1391,12 +1418,18 @@ export const zookeeperManagerMachine = setup({
             readyState: getWebSocketReadyStateLabel(context.ws?.readyState),
           }
         )
-        context.ws?.close()
+        if (context.ws) {
+          zookeeperCloseReasons.set(
+            context.ws,
+            'backend_shutdown_after_response'
+          )
+          context.ws.close()
+        }
       }
     },
     prepareSetup: assign(({ context, event }) => {
       assertEvent(event, ZookeeperManagerTransitions.CacheSetupAndConnect)
-      closeZookeeperWebSocket(context.ws)
+      closeZookeeperWebSocket(context.ws, 'prepare_setup')
 
       return {
         ws: undefined,
@@ -1500,11 +1533,11 @@ export const zookeeperManagerMachine = setup({
         ? `?${queryParams.toString()}`
         : ''
       const url = withZookeeperWebSocketURL(querystring)
-      const conversationId =
+      let conversationId =
         args.input.context.conversationId ?? args.input.event.conversationId
 
       // Defensive: if there's already an open connection, close it.
-      closeZookeeperWebSocket(args.input.context.ws)
+      closeZookeeperWebSocket(args.input.context.ws, 'replace_existing_socket')
 
       const ws = await Socket(
         WebSocket,
@@ -1530,6 +1563,80 @@ export const zookeeperManagerMachine = setup({
         (onFulfilled, onRejected) => {
           let devCalledClose = false
           let attemptCanceled = false
+          let apiCallId: string | undefined
+          let lastSocketMessageType: string | undefined
+          let lastPingSentAt: number | undefined
+          let lastPongReceivedAt: number | undefined
+          let lastInboundMessageAt: number | undefined
+          let lastLifecycleEventType: string | undefined
+          let lastLifecycleEventAt: number | undefined
+          const cleanupCallbacks: Array<() => void> = []
+
+          const trackLifecycleEvent = (eventType: string) => {
+            lastLifecycleEventType = eventType
+            lastLifecycleEventAt = Date.now()
+          }
+          if (typeof document !== 'undefined') {
+            const handleVisibilityChange = () => {
+              trackLifecycleEvent(
+                `visibilitychange:${document.visibilityState}`
+              )
+            }
+            document.addEventListener(
+              'visibilitychange',
+              handleVisibilityChange
+            )
+            cleanupCallbacks.push(() => {
+              document.removeEventListener(
+                'visibilitychange',
+                handleVisibilityChange
+              )
+            })
+          }
+          if (typeof window !== 'undefined') {
+            for (const eventType of [
+              'online',
+              'offline',
+              'pagehide',
+              'beforeunload',
+              'focus',
+              'blur',
+            ]) {
+              const handleEvent = () => trackLifecycleEvent(eventType)
+              window.addEventListener(eventType, handleEvent)
+              cleanupCallbacks.push(() =>
+                window.removeEventListener(eventType, handleEvent)
+              )
+            }
+          }
+          const cleanupLifecycleListeners = () => {
+            for (const cleanup of cleanupCallbacks) cleanup()
+            cleanupCallbacks.length = 0
+          }
+          const getDisconnectMetadata = (
+            extra: Record<string, unknown> = {}
+          ): Record<string, unknown> => ({
+            apiCallId,
+            conversationId,
+            lastSocketMessageType,
+            lastPingSentAt,
+            lastPongReceivedAt,
+            lastInboundMessageAt,
+            timeSinceLastPingMs: getElapsedMs(lastPingSentAt),
+            timeSinceLastPongMs: getElapsedMs(lastPongReceivedAt),
+            timeSinceLastInboundMessageMs: getElapsedMs(lastInboundMessageAt),
+            documentVisibilityState:
+              typeof document === 'undefined'
+                ? undefined
+                : document.visibilityState,
+            navigatorOnline:
+              typeof navigator === 'undefined' ? undefined : navigator.onLine,
+            lastLifecycleEventType,
+            lastLifecycleEventAt,
+            readyState: getWebSocketReadyStateLabel(ws.readyState),
+            url,
+            ...extra,
+          })
 
           // Any WS protocol messages will trigger the `api` heartbeat update.
           let timeoutStartedAt: number | undefined
@@ -1561,10 +1668,10 @@ export const zookeeperManagerMachine = setup({
                   ZOOKEEPER_HEARTBEAT_TIMER_DRIFT_GRACE_MS
                 ) {
                   clearInterval(pingIntervalId)
-                  logZookeeperDisconnect('websocket heartbeat timed out', {
-                    conversationId,
-                    readyState: getWebSocketReadyStateLabel(ws.readyState),
-                  })
+                  logZookeeperDisconnect(
+                    'websocket heartbeat timed out',
+                    getDisconnectMetadata()
+                  )
                   theRefParentSend({
                     type: ZookeeperManagerTransitions.AbruptClose,
                     closeReason: 'Zookeeper connection timed out.',
@@ -1577,6 +1684,7 @@ export const zookeeperManagerMachine = setup({
             if (bufferedAmount > 0) {
               return
             }
+            lastPingSentAt = now
             ws.send(JSON.stringify({ type: 'ping' }))
             timeoutStartedAt ??= now
           }, ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
@@ -1587,6 +1695,10 @@ export const zookeeperManagerMachine = setup({
             attemptCanceled = true
             devCalledClose = true
             clearInterval(pingIntervalId)
+            cleanupLifecycleListeners()
+            if (!zookeeperCloseReasons.has(ws)) {
+              zookeeperCloseReasons.set(ws, 'setup_canceled')
+            }
             ws.close()
           }
           args.signal.addEventListener('abort', cancelSetupAttempt, {
@@ -1602,11 +1714,12 @@ export const zookeeperManagerMachine = setup({
             if (attemptCanceled) {
               return
             }
-            logZookeeperDisconnect('websocket error event received', {
-              conversationId,
-              readyState: getWebSocketReadyStateLabel(ws.readyState),
-              eventType: event.type,
-            })
+            logZookeeperDisconnect(
+              'websocket error event received',
+              getDisconnectMetadata({
+                eventType: event.type,
+              })
+            )
           })
 
           ws.addEventListener('message', function (event: MessageEvent<any>) {
@@ -1614,6 +1727,7 @@ export const zookeeperManagerMachine = setup({
               return
             }
             timeoutStartedAt = undefined
+            lastInboundMessageAt = Date.now()
 
             let response: unknown
             if (!isString(event.data)) {
@@ -1635,7 +1749,7 @@ export const zookeeperManagerMachine = setup({
                   dedupeKey: `ZookeeperManagerMachine:binary-decode:${String(conversationId)}:${msgpackError.message}`,
                   extra: {
                     ...zookeeperErrorContext(args.input.context),
-                    conversationId,
+                    ...getDisconnectMetadata(),
                     byteLength: binaryData.byteLength,
                     readyState: getWebSocketReadyStateLabel(ws.readyState),
                   },
@@ -1655,13 +1769,20 @@ export const zookeeperManagerMachine = setup({
                   dedupeKey: `ZookeeperManagerMachine:json-parse:${String(conversationId)}:${e.message}`,
                   extra: {
                     ...zookeeperErrorContext(args.input.context),
-                    conversationId,
+                    ...getDisconnectMetadata(),
                     dataLength: event.data.length,
                     readyState: getWebSocketReadyStateLabel(ws.readyState),
                   },
                 })
                 return
               }
+            }
+
+            if (isRecord(response)) {
+              lastSocketMessageType =
+                typeof response.type === 'string'
+                  ? response.type
+                  : Object.keys(response).at(0)
             }
 
             if (!setupResolved) {
@@ -1702,12 +1823,13 @@ export const zookeeperManagerMachine = setup({
             }
 
             if (isBackendShutdownMessage(response)) {
-              logZookeeperDisconnect('server sent backend_shutdown', {
-                backendShutdownReason: response.backend_shutdown.reason,
-                conversationId,
-                lastMessageType: args.input.context.lastMessageType,
-                readyState: getWebSocketReadyStateLabel(ws.readyState),
-              })
+              logZookeeperDisconnect(
+                'server sent backend_shutdown',
+                getDisconnectMetadata({
+                  backendShutdownReason: response.backend_shutdown.reason,
+                  lastMessageType: args.input.context.lastMessageType,
+                })
+              )
               if (theRefParentSend) {
                 theRefParentSend({
                   type: ZookeeperManagerTransitions.BackendShutdown,
@@ -1839,11 +1961,13 @@ export const zookeeperManagerMachine = setup({
 
             // Ignore the session data
             if ('session_data' in response) {
+              apiCallId = response.session_data.api_call_id
               return
             }
 
             // Ignore pong
             if ('pong' in response) {
+              lastPongReceivedAt = Date.now()
               return
             }
 
@@ -1863,6 +1987,10 @@ export const zookeeperManagerMachine = setup({
                   conversationId,
                   readyState: getWebSocketReadyStateLabel(ws.readyState),
                 }
+              )
+              zookeeperCloseReasons.set(
+                ws,
+                'invalid_conversation_replay_or_setup'
               )
               cancelSetupAttempt()
               onRejected(ZookeeperSetupErrors.ConversationNotFound)
@@ -1905,6 +2033,7 @@ export const zookeeperManagerMachine = setup({
             // We're only considered setup when a conversation_id is assigned
             // to us. That means data is being stored and the system is ready.
             if ('conversation_id' in response) {
+              conversationId = response.conversation_id.conversation_id
               const activeExchange = maybeReplayedExchanges.findLast(
                 (exchange) => isMlCopilotUserRequest(exchange.request)
               )
@@ -1951,22 +2080,35 @@ export const zookeeperManagerMachine = setup({
 
           ws.addEventListener('close', function (event: CloseEvent) {
             clearInterval(pingIntervalId)
+            cleanupLifecycleListeners()
             attemptCanceled = true
+            const intentionalCloseReason = zookeeperCloseReasons.get(ws)
+            zookeeperCloseReasons.delete(ws)
             const intentionallyClosed = intentionalZookeeperCloses.has(ws)
             if (intentionallyClosed) {
               intentionalZookeeperCloses.delete(ws)
             }
 
-            logZookeeperDisconnect('websocket close event received', {
-              code: event.code,
-              reason: event.reason,
-              wasClean: event.wasClean,
-              devCalledClose,
-              intentionallyClosed,
-              conversationId,
-              lastMessageType: args.input.context.lastMessageType,
-              readyState: getWebSocketReadyStateLabel(ws.readyState),
-            })
+            logZookeeperDisconnect(
+              'websocket close event received',
+              getDisconnectMetadata({
+                code: event.code,
+                reason: event.reason,
+                wasClean: event.wasClean,
+                devCalledClose,
+                intentionallyClosed,
+                intentionalCloseReason,
+                closeClassification: classifyZookeeperClose({
+                  code: event.code,
+                  wasClean: event.wasClean,
+                  intentionalClose:
+                    intentionallyClosed ||
+                    devCalledClose ||
+                    intentionalCloseReason !== undefined,
+                }),
+                lastMessageType: args.input.context.lastMessageType,
+              })
+            )
 
             if (intentionallyClosed) {
               return
@@ -2708,7 +2850,7 @@ export const zookeeperManagerMachine = setup({
           cancel('replay-page-timeout'),
           ({ context }) => {
             // Close before clearing context so the live socket is still reachable.
-            closeZookeeperWebSocket(context.ws)
+            closeZookeeperWebSocket(context.ws, 'conversation_close')
           },
           assign(({ context }) => {
             if (context.abruptlyClosed) return {}
@@ -2760,6 +2902,6 @@ export function createZookeeperManagerActor(
  * Connecting sockets are still closed by the setup actor's abort handler.
  */
 export function stopZookeeperManagerActor(actor: ZookeeperManagerActor) {
-  closeZookeeperWebSocket(actor.getSnapshot().context.ws)
+  closeZookeeperWebSocket(actor.getSnapshot().context.ws, 'actor_stop')
   actor.stop()
 }
