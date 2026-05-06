@@ -158,7 +158,8 @@ description: Artifact commands sketch_block_get_common_edge_fillet.kcl
         "query_point": {
           "x": 50.0,
           "y": 0.0025
-        }
+        },
+        "version": "V1"
       }
     },
     {
@@ -233,6 +234,23 @@ description: Artifact commands sketch_block_get_common_edge_fillet.kcl
           "[uuid]",
           "[uuid]"
         ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_fillet_edge",
+        "object_id": "[uuid]",
+        "edge_id": null,
+        "edge_ids": [
+          "[uuid]"
+        ],
+        "radius": 5.0,
+        "tolerance": 0.0000001,
+        "cut_type": "fillet",
+        "strategy": "automatic",
+        "extra_face_ids": []
       }
     }
   ]
