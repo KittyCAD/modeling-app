@@ -1,3 +1,5 @@
+@settings(kclVersion = 2.0)
+
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 100mm, var 0mm])
   line2 = line(start = [var 100mm, var 0mm], end = [var 100mm, var 100mm])
