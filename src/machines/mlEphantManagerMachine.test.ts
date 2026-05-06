@@ -57,6 +57,24 @@ describe('mlEphantManagerMachine', () => {
     it('returns null for unrelated payloads', () => {
       expect(parseMlCopilotModesResult({ something_else: true })).toBeNull()
     })
+
+    it('returns null when every mode entry fails validation', () => {
+      expect(
+        parseMlCopilotModesResult({
+          modes_response: {
+            default_mode: 'fast',
+            modes: [
+              {
+                id: 'fast',
+                label: 'Standard',
+                description: 'Faster reasoning.',
+                icon: 'not-a-real-icon',
+              },
+            ],
+          },
+        })
+      ).toBeNull()
+    })
   })
 
   describe('ContinueCheck', () => {

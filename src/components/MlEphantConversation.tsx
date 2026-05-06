@@ -266,16 +266,30 @@ export const MlEphantConversationInput = (
   const [mode, setMode] = useState<MlCopilotMode>(
     props.initialMlCopilotMode ?? DEFAULT_ML_COPILOT_MODE
   )
+  const userHasPickedMode = useRef(false)
   const [attachments, setAttachments] = useState<File[]>([])
   const [isDraggingOver, setIsDraggingOver] = useState(false)
 
   // Without this the cursor ends up at the start of the text
   useEffect(() => setValue(props.defaultPrompt || ''), [props.defaultPrompt])
 
+  // Follow updates to the resolved initial mode (settings load, server
+  // defaultMode arriving) until the user picks a mode themselves. After that,
+  // preserve their choice across reconnects rather than clobbering it.
   useEffect(() => {
-    const next = props.initialMlCopilotMode ?? DEFAULT_ML_COPILOT_MODE
-    setMode(next)
+    if (userHasPickedMode.current) return
+    setMode(props.initialMlCopilotMode ?? DEFAULT_ML_COPILOT_MODE)
   }, [props.initialMlCopilotMode])
+
+  // Reconcile if the server's options change such that the current selection
+  // is no longer offered — otherwise the dropdown would display one mode
+  // while submission still sends another.
+  useEffect(() => {
+    if (!props.modeOptions || props.modeOptions.length === 0) return
+    if (!props.modeOptions.some((option) => option.id === mode)) {
+      setMode(props.modeOptions[0].id)
+    }
+  }, [props.modeOptions, mode])
 
   const onClick = () => {
     if (props.disabled) return
@@ -494,6 +508,7 @@ export const MlEphantConversationInput = (
             context={selectionsContext}
             mode={mode}
             onSetMode={(m) => {
+              userHasPickedMode.current = true
               setMode(m)
               props.onMlCopilotModeChange?.(m)
             }}

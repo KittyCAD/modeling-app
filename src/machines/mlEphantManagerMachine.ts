@@ -118,6 +118,16 @@ export function parseMlCopilotModesResult(
     .map(toMlCopilotModeOption)
     .filter(isPresent)
 
+  // If every option failed validation, treat as no usable response so the UI
+  // falls back to client defaults instead of stranding a defaultMode with no
+  // matching label/icon to display.
+  if (modeOptions.length === 0) {
+    console.warn(
+      'modes_response contained no usable mode options; falling back to client defaults'
+    )
+    return null
+  }
+
   return {
     defaultMode: isMlCopilotMode(candidate.default_mode)
       ? candidate.default_mode
