@@ -1,13 +1,14 @@
-import { describe, it, expect } from 'vitest'
 import {
+  type Artifact,
   coerceSelectionsToBody,
+  getBodiesFromArtifactGraph,
   getSketchBlockForArtifact,
   getSweepArtifactFromSelection,
   isFaceFromLegacySketch,
-  type Artifact,
 } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, PathToNode } from '@src/lang/wasm'
-import type { Selections, Selection } from '@src/machines/modelingSharedTypes'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+import { describe, expect, it } from 'vitest'
 
 describe('getSweepArtifactFromSelection', () => {
   it('should return sweep from edgeCut -> segment selection', () => {
@@ -308,6 +309,103 @@ describe('coerceSelectionsToBody', () => {
       expect(result.graphSelections[0].artifact?.type).toBe('path')
       expect(result.graphSelections[0].artifact?.id).toBe('path-1')
     }
+  })
+})
+
+describe('getBodiesFromArtifactGraph', () => {
+  it('includes copied pattern body ids as body entries', () => {
+    const artifactGraph: ArtifactGraph = new Map()
+    const sourceSweep: Artifact = {
+      type: 'sweep',
+      id: 'sweep-1',
+      codeRef: {
+        range: [0, 100, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      pathId: 'path-1',
+      subType: 'extrusion',
+      surfaceIds: [],
+      edgeIds: [],
+      method: 'merge',
+      trajectoryId: null,
+      consumed: false,
+      patternIds: ['pattern-1'],
+    }
+    const pattern: Artifact = {
+      type: 'pattern',
+      id: 'pattern-1',
+      subType: 'linear',
+      sourceId: 'sweep-1',
+      copyIds: ['copy-1', 'copy-2'],
+      copyFaceIds: ['copy-face-1'],
+      copyEdgeIds: ['copy-edge-1'],
+      codeRef: { range: [0, 100, 0], pathToNode: [], nodePath: { steps: [] } },
+    }
+
+    artifactGraph.set(sourceSweep.id, sourceSweep)
+    artifactGraph.set(pattern.id, pattern)
+
+    const result = getBodiesFromArtifactGraph(artifactGraph)
+
+    expect([...result.keys()]).toEqual(['sweep-1', 'copy-1', 'copy-2'])
+    expect(result.get('sweep-1')).toBe(pattern)
+    expect(result.get('copy-1')).toBe(pattern)
+    expect(result.get('copy-2')).toBe(pattern)
+  })
+
+  it('includes copied pattern body ids when pattern source id is not a body artifact', () => {
+    const artifactGraph: ArtifactGraph = new Map()
+    const sourceSweep: Artifact = {
+      type: 'sweep',
+      id: 'sweep-1',
+      codeRef: {
+        range: [0, 100, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      pathId: 'path-1',
+      subType: 'extrusion',
+      surfaceIds: [],
+      edgeIds: [],
+      method: 'merge',
+      trajectoryId: null,
+      consumed: false,
+      patternIds: ['pattern-1'],
+    }
+    const sourcePath: Artifact = {
+      type: 'path',
+      subType: 'sketch',
+      id: 'path-1',
+      codeRef: { range: [0, 100, 0], pathToNode: [], nodePath: { steps: [] } },
+      planeId: 'plane-1',
+      segIds: [],
+      trajectorySweepId: null,
+      consumed: true,
+      sweepId: 'sweep-1',
+      patternIds: ['pattern-1'],
+    }
+    const pattern: Artifact = {
+      type: 'pattern',
+      id: 'pattern-1',
+      subType: 'linear',
+      sourceId: 'path-1',
+      copyIds: ['copy-1', 'copy-2'],
+      copyFaceIds: [],
+      copyEdgeIds: [],
+      codeRef: { range: [0, 100, 0], pathToNode: [], nodePath: { steps: [] } },
+    }
+
+    artifactGraph.set(sourcePath.id, sourcePath)
+    artifactGraph.set(sourceSweep.id, sourceSweep)
+    artifactGraph.set(pattern.id, pattern)
+
+    const result = getBodiesFromArtifactGraph(artifactGraph)
+
+    expect([...result.keys()]).toEqual(['sweep-1', 'copy-1', 'copy-2'])
+    expect(result.get('sweep-1')).toBe(pattern)
+    expect(result.get('copy-1')).toBe(pattern)
+    expect(result.get('copy-2')).toBe(pattern)
   })
 })
 
