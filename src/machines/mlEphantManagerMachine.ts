@@ -520,10 +520,10 @@ export const mlEphantManagerMachine = setup({
       }
       return {}
     }),
-    assignModeOptions: assign(({ event }) => {
+    assignModeOptions: assign(({ context, event }) => {
       assertEvent(event, MlEphantManagerTransitions.ModesReceive)
       return {
-        defaultMode: event.defaultMode,
+        defaultMode: event.defaultMode ?? context.defaultMode,
         modeOptions: event.modeOptions,
       }
     }),

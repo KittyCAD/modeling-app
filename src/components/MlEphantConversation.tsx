@@ -293,9 +293,11 @@ export const MlEphantConversationInput = (
   useEffect(() => {
     if (!props.modeOptions || props.modeOptions.length === 0) return
     if (!props.modeOptions.some((option) => option.id === mode)) {
-      setMode(props.modeOptions[0].id)
+      const nextMode = props.modeOptions[0].id
+      setMode(nextMode)
+      props.onMlCopilotModeChange?.(nextMode)
     }
-  }, [props.modeOptions, mode])
+  }, [props.modeOptions, mode, props.onMlCopilotModeChange])
 
   const onClick = () => {
     if (props.disabled) return
