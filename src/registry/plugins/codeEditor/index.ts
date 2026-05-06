@@ -26,36 +26,6 @@ function useAutoexecuteSetting() {
   return { enabled, settingsActor }
 }
 
-function AutoexecuteHeaderItem({ className }: CodeEditorHeaderItemProps) {
-  const { enabled, settingsActor } = useAutoexecuteSetting()
-
-  return createElement(
-    'div',
-    {
-      className,
-      title: 'Automatic execution',
-      onClick: (event: MouseEvent<HTMLDivElement>) => event.stopPropagation(),
-    },
-    createElement('span', null, 'Auto'),
-    createElement(Toggle, {
-      name: 'code-editor-autoexecute',
-      checked: enabled,
-      offLabel: '',
-      onLabel: '',
-      onChange: (event: ChangeEvent<HTMLInputElement>) => {
-        settingsActor.send({
-          type: 'set.textEditor.autoexecute',
-          data: {
-            level: 'user',
-            value: event.target.checked,
-          },
-        } as never)
-      },
-      className: 'flex-none',
-    })
-  )
-}
-
 function ExecuteHeaderItem({ className }: CodeEditorHeaderItemProps) {
   const { enabled } = useAutoexecuteSetting()
 
@@ -100,11 +70,6 @@ const codeEditorSettingsItem = defineRegistryItem({
 
 const codeEditorHeaderItem = defineRegistryItem({
   provides: [
-    provide(codeEditorHeaderItemsValueSpec, {
-      id: 'code-editor.autoexecute',
-      order: 10,
-      Component: AutoexecuteHeaderItem,
-    }),
     provide(codeEditorHeaderItemsValueSpec, {
       id: 'code-editor.execute',
       order: 20,
