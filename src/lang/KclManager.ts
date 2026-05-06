@@ -1165,7 +1165,7 @@ export class KclManager extends File {
 
   private manualRenderHotkeyEffect = keymap.of([
     {
-      key: 'Mod-Enter',
+      key: 'Mod-s',
       run: () => {
         if (this._hasEditsSinceLastExecution.value) {
           this.executeCode().catch(reportRejection)

@@ -19,7 +19,7 @@ type BooleanSettingSnapshot = {
   current: boolean
 }
 
-const RENDER_HOTKEY = 'mod+enter'
+const RENDER_HOTKEY = 'mod+s'
 
 function RenderHeaderItem({ app, className }: AppHeaderItemProps) {
   useSignals()
@@ -35,10 +35,7 @@ function RenderHeaderItem({ app, className }: AppHeaderItemProps) {
   const executionService = app.registry.signal(executingEditorService).value
   const hasEditsSinceLastExecution =
     executionService?.hasEditsSinceLastExecution.value ?? false
-  const renderHotkeyLabel = hotkeyDisplay(RENDER_HOTKEY, platform)?.replace(
-    'enter',
-    'Enter'
-  )
+  const renderHotkeyLabel = hotkeyDisplay(RENDER_HOTKEY, platform)
 
   useHotkeys(
     RENDER_HOTKEY,
@@ -133,7 +130,7 @@ const renderHeaderItem = defineRegistryItem({
   provides: [
     provide(appHeaderItemsValueSpec, {
       id: 'code-editor.render',
-      order: 20,
+      order: 5,
       Component: RenderHeaderItem,
     }),
   ],
