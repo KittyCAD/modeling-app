@@ -44,6 +44,9 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { useApp } from '@src/lib/boot'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import { userHasFeature } from '@src/lib/settings/settingsUtils'
+
+const WEB_APP_FILE_BROWSER_FEATURE_FLAG = 'web_app_file_browser'
 
 // Get the 1-indexed step number of the current onboarding step
 function getStepNumber(
@@ -158,13 +161,25 @@ export function useDismiss() {
         data: { level: 'user', value: dismissalType },
       })
       waitFor(settings.actor, (state) => state.matches('idle'))
-        .then(() => {
+        .then(async () => {
           if (!filePath) {
             return Promise.reject(new Error('bug: filePath is undefined'))
           }
 
+          const shouldCheckWebAppFileBrowser =
+            !window.electron &&
+            dismissalType === 'dismissed' &&
+            project?.name === ONBOARDING_PROJECT_NAME
+          const hasWebAppFileBrowser =
+            shouldCheckWebAppFileBrowser &&
+            (await userHasFeature(WEB_APP_FILE_BROWSER_FEATURE_FLAG, false))
+
           if (
-            shouldEmptyOnboardingProjectOnDismiss(dismissalType, project?.name)
+            shouldEmptyOnboardingProjectOnDismiss(
+              dismissalType,
+              project?.name,
+              hasWebAppFileBrowser
+            )
           ) {
             emptyOnboardingProject(systemIOActor)
             return
@@ -388,10 +403,12 @@ export function onDismissOnboardingInvite(settingsActor: SettingsActorType) {
 
 export function shouldEmptyOnboardingProjectOnDismiss(
   dismissalType: Extract<OnboardingStatus, 'completed' | 'dismissed'>,
-  projectName: string | undefined
+  projectName: string | undefined,
+  hasWebAppFileBrowser: boolean
 ) {
   return (
     !window.electron &&
+    !hasWebAppFileBrowser &&
     dismissalType === 'dismissed' &&
     projectName === ONBOARDING_PROJECT_NAME
   )

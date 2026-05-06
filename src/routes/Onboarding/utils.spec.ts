@@ -1,7 +1,4 @@
 import type { OnboardingStatus, OnboardingPath } from '@src/lib/onboardingPaths'
-import toast from 'react-hot-toast'
-import { ONBOARDING_TOAST_ID } from '@src/lib/constants'
-import { DefaultLayoutPaneID } from '@src/lib/layout'
 import {
   consumeRememberedOnboardingWorkflowPanes,
   emptyOnboardingProject,
@@ -141,13 +138,32 @@ describe('Onboarding utility functions', () => {
 
     it('only clears the project when dismissing the web onboarding tutorial', () => {
       expect(
-        shouldEmptyOnboardingProjectOnDismiss('dismissed', 'tutorial-project')
+        shouldEmptyOnboardingProjectOnDismiss(
+          'dismissed',
+          'tutorial-project',
+          false
+        )
       ).toBe(true)
       expect(
-        shouldEmptyOnboardingProjectOnDismiss('completed', 'tutorial-project')
+        shouldEmptyOnboardingProjectOnDismiss(
+          'completed',
+          'tutorial-project',
+          false
+        )
       ).toBe(false)
       expect(
-        shouldEmptyOnboardingProjectOnDismiss('dismissed', 'demo-project')
+        shouldEmptyOnboardingProjectOnDismiss(
+          'dismissed',
+          'demo-project',
+          false
+        )
+      ).toBe(false)
+      expect(
+        shouldEmptyOnboardingProjectOnDismiss(
+          'dismissed',
+          'tutorial-project',
+          true
+        )
       ).toBe(false)
     })
   })
