@@ -33,12 +33,15 @@ function AutoexecuteHeaderItem({ className }: CodeEditorHeaderItemProps) {
     'div',
     {
       className,
+      title: 'Automatic execution',
       onClick: (event: MouseEvent<HTMLDivElement>) => event.stopPropagation(),
     },
-    createElement('span', null, 'Automatic execution'),
+    createElement('span', null, 'Auto'),
     createElement(Toggle, {
       name: 'code-editor-autoexecute',
       checked: enabled,
+      offLabel: '',
+      onLabel: '',
       onChange: (event: ChangeEvent<HTMLInputElement>) => {
         settingsActor.send({
           type: '*',
@@ -66,11 +69,12 @@ function ExecuteHeaderItem({ className }: CodeEditorHeaderItemProps) {
     {
       type: 'button',
       className,
+      title: 'Execute code',
       onClick: () => {
         window.kclManager.executeCode().catch(reportRejection)
       },
     },
-    createElement('span', null, 'Execute code')
+    createElement('span', null, 'Execute')
   )
 }
 

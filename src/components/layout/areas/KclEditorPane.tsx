@@ -38,7 +38,7 @@ export const KclEditorPane = (props: AreaTypeComponentProps) => {
         id={props.layout.id}
         icon="code"
         title={props.layout.label}
-        Menu={KclEditorMenu}
+        Menu={KclEditorHeaderControls}
         onClose={props.onClose}
       />
       <KclEditorPaneContents />
@@ -84,14 +84,10 @@ function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
 }
 
 export const KclEditorMenu = () => {
-  useSignals()
-  const { commands, settings, registry } = useApp()
+  const { commands, settings } = useApp()
   const { kclManager } = useSingletons()
   const platform = usePlatform()
   const settingsActor = settings.actor
-  const codeEditorHeaderItems = registry.signal(
-    codeEditorHeaderItemsValueSpec
-  ).value
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
     useConvertToVariable(kclManager)
 
@@ -193,11 +189,23 @@ export const KclEditorMenu = () => {
           </small>
         </a>
       </Menu.Item>
-      {codeEditorHeaderItems.map(({ id, Component }) => (
-        <Menu.Item key={id}>
-          <Component className={styles.button} />
-        </Menu.Item>
-      ))}
     </HeaderMenu>
+  )
+}
+
+export const KclEditorHeaderControls = () => {
+  useSignals()
+  const { registry } = useApp()
+  const codeEditorHeaderItems = registry.signal(
+    codeEditorHeaderItemsValueSpec
+  ).value
+
+  return (
+    <>
+      {codeEditorHeaderItems.map(({ id, Component }) => (
+        <Component key={id} className={styles.headerItem} />
+      ))}
+      <KclEditorMenu />
+    </>
   )
 }
