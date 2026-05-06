@@ -124,6 +124,30 @@ describe('project system', () => {
     }
   })
 
+  it('loads the code editor autoexecute plugin setting enabled by default', async () => {
+    const app = App.fromProvided({
+      wasmPromise: loadWasm(),
+    })
+
+    try {
+      await waitForSettingsIdle(app)
+
+      const codeEditorPlugin = app.registry
+        .get(pluginsValueSpec)
+        .find((plugin) => plugin.id === 'code-editor')
+      expect(codeEditorPlugin).toBeDefined()
+
+      const textEditorSettings = app.settings.get().textEditor as Record<
+        string,
+        { current: unknown; hideOnLevel?: unknown }
+      >
+      expect(textEditorSettings.autoexecute.current).toBe(true)
+      expect(textEditorSettings.autoexecute.hideOnLevel).toBe('project')
+    } finally {
+      disposeApp(app)
+    }
+  })
+
   it('can open, close project', async () => {
     // Stub out File read and write implementations
     File.ioImplementations.read = () => Promise.resolve('')
