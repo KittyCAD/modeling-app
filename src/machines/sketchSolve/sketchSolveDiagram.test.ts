@@ -9,6 +9,7 @@ import {
 import {
   buildAngleConstraintInput,
   buildEqualLengthConstraintInput,
+  buildCircularSizeDimensionConstraintInput,
   buildFixedConstraintInput,
   buildSymmetricConstraintInput,
   buildSymmetricConstraintInputWithExplicitAxis,
@@ -113,6 +114,42 @@ describe('buildAngleConstraintInput', () => {
         source: { expr: '45deg', is_literal: true },
       }
     )
+  })
+})
+
+describe('buildArcSizeDimensionConstraintInput', () => {
+  it('builds radius dimensions for arcs', () => {
+    const arc = createArcApiObject({ id: 10, center: 1, start: 2, end: 3 })
+
+    expect(
+      buildCircularSizeDimensionConstraintInput({
+        segment: arc,
+        radius: 5,
+        units: 'Mm',
+      })
+    ).toEqual({
+      type: 'Radius',
+      radius: { value: 5, units: 'Mm' },
+      arc: 10,
+      source: { expr: '5', is_literal: true },
+    })
+  })
+
+  it('builds diameter dimensions for circles', () => {
+    const circle = createCircleApiObject({ id: 11, center: 1, start: 2 })
+
+    expect(
+      buildCircularSizeDimensionConstraintInput({
+        segment: circle,
+        radius: 5,
+        units: 'Mm',
+      })
+    ).toEqual({
+      type: 'Diameter',
+      diameter: { value: 10, units: 'Mm' },
+      arc: 11,
+      source: { expr: '10', is_literal: true },
+    })
   })
 })
 

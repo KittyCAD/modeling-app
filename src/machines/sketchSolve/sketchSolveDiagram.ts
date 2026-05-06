@@ -20,6 +20,7 @@ import type {
 } from '@src/machines/modelingSharedTypes'
 import {
   buildAngleConstraintInput,
+  buildCircularSizeDimensionConstraintInput,
   isArcSegment,
   isCircleSegment,
   isControlPointSplineSegment,
@@ -564,7 +565,7 @@ export const sketchSolveMachine = setup({
               const first = currentSelections[0]
               const firstObject = first === ORIGIN_TARGET ? undefined : first
               if (isArcSegment(firstObject) || isCircleSegment(firstObject)) {
-                // Calculate radius for arc segment from its center and start point
+                // Calculate radius for circular segment from its center and start point.
                 const centerPoint =
                   context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
                     firstObject.kind.segment.center
@@ -591,19 +592,18 @@ export const sketchSolveMachine = setup({
                     distance = roundOff(distanceResult.distance)
                   }
                 }
-                // Apply radius constraint for arc
+                const constraint = buildCircularSizeDimensionConstraintInput({
+                  segment: firstObject,
+                  radius: distance,
+                  units,
+                })
+                if (!constraint) {
+                  return
+                }
                 const result = await context.rustContext.addConstraint(
                   0,
                   context.sketchId,
-                  {
-                    type: 'Radius',
-                    radius: { value: distance, units },
-                    arc: firstObject.id,
-                    source: {
-                      expr: distance.toString(),
-                      is_literal: true,
-                    },
-                  },
+                  constraint,
                   jsAppSettings(context.kclManager.systemDeps.settings),
                   true
                 )
