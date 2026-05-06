@@ -2317,9 +2317,19 @@ pub enum SketchConstraintKind {
     },
     Radius {
         points: [ConstrainablePoint2d; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
     },
     Diameter {
         points: [ConstrainablePoint2d; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
     },
     HorizontalDistance {
         points: [ConstrainablePoint2dOrOrigin; 2],

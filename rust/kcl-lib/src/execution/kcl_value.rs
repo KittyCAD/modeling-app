@@ -169,6 +169,8 @@ where
 #[derive(Debug, Clone, PartialEq)]
 pub struct NamedParam {
     pub experimental: bool,
+    /// Constraint marking the KCL version at or after which this parameter is deprecated.
+    pub deprecated_since: Option<VersionConstraint>,
     pub default_value: Option<DefaultParamVal>,
     pub ty: Option<Type>,
 }
@@ -257,6 +259,7 @@ impl FunctionSource {
                 p.identifier.name.clone(),
                 NamedParam {
                     experimental: p.experimental,
+                    deprecated_since: p.deprecated_since.clone(),
                     default_value: p.default_value.clone(),
                     ty: p.param_type.as_ref().map(|t| t.inner.clone()),
                 },

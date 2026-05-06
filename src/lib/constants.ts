@@ -24,6 +24,7 @@ export const PROJECT_FOLDER = 'zoo-design-studio-projects'
  * @link - https://zoo.dev/docs/kcl
  * */
 export const FILE_EXT = '.kcl'
+export const DEFAULT_KCL_VERSION = '2.0'
 /** Default file to open when a project is opened */
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
 /** Thumbnail file name */
