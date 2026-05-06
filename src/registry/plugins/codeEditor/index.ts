@@ -4,13 +4,11 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { useSelector } from '@xstate/react'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 import type { CodeEditorHeaderItemProps } from '@src/registry/contracts/codeEditor'
-import {
-  codeEditorExecutionService,
-  codeEditorHeaderItemsValueSpec,
-} from '@src/registry/contracts/codeEditor'
+import { codeEditorHeaderItemsValueSpec } from '@src/registry/contracts/codeEditor'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { reportRejection } from '@src/lib/trap'
+import { executingEditorService } from '@src/registry/contracts/executingEditor'
 
 type BooleanSettingSnapshot = {
   current: boolean
@@ -25,7 +23,7 @@ function ExecuteHeaderItem({ app, className }: CodeEditorHeaderItemProps) {
     >
     return textEditorSettings.autoexecute.current
   })
-  const executionService = app.registry.signal(codeEditorExecutionService).value
+  const executionService = app.registry.signal(executingEditorService).value
   const hasEditsSinceLastExecution =
     executionService?.hasEditsSinceLastExecution.value ?? false
 

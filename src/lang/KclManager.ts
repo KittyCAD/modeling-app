@@ -142,7 +142,7 @@ import { requestWriteToFile } from '@src/editor/plugins/write'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
 import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
-import type { CodeEditorExecutionService } from '@src/registry/contracts/codeEditor'
+import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
 import { sketchCheckpointHistoryEffect } from '@src/editor/plugins/sketchCheckpoints'
 import { bracket } from '@src/lib/exampleKcl'
 import { setKclVersion } from '@src/lib/kclVersion'
@@ -727,10 +727,13 @@ export class KclManager extends File {
   get hasEditsSinceLastExecutionSignal() {
     return this._hasEditsSinceLastExecution
   }
-  get codeEditorExecutionService(): CodeEditorExecutionService {
+  get executingEditorService(): ExecutingEditorService {
     return {
+      code: this._code,
       hasEditsSinceLastExecution: this._hasEditsSinceLastExecution,
-      executeCode: () => this.executeCode(),
+      isExecuting: this._isExecuting,
+      executeCode: (code) => this.executeCode(code),
+      updateCode: (code, options) => this.updateCodeEditor(code, options),
     }
   }
   private markCodeAsExecuted(code: string) {

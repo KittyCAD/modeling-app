@@ -51,7 +51,7 @@ import {
 import { MachineManager } from '@src/lib/MachineManager'
 import { reportRejection } from '@src/lib/trap'
 import type { Project } from '@src/lib/project'
-import { codeEditorExecutionService } from '@src/registry/contracts/codeEditor'
+import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import {
   Registry,
@@ -434,11 +434,11 @@ export class App implements AppSubsystems {
 
     this.registry.reconfigure(appRegistryServicesSlot, [
       defineRegistryItem({
-        id: 'kcl-manager-services',
+        id: 'executing-editor-services',
         providesServices: [
           provideService(
-            codeEditorExecutionService,
-            kclManager.codeEditorExecutionService
+            executingEditorService,
+            kclManager.executingEditorService
           ),
         ],
       }),

@@ -4,10 +4,8 @@ import { App } from '@src/lib/app'
 import { File } from '@src/lang/KclManager'
 import type { Project } from '@src/lib/project'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
-import {
-  codeEditorExecutionService,
-  codeEditorHeaderItemsValueSpec,
-} from '@src/registry/contracts/codeEditor'
+import { codeEditorHeaderItemsValueSpec } from '@src/registry/contracts/codeEditor'
+import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { loadWasm } from '@src/unitTestUtils'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 
@@ -146,9 +144,10 @@ describe('project system', () => {
           .some((item) => item.id === 'code-editor.execute')
       ).toBe(true)
       expect(
-        app.registry.get(codeEditorExecutionService).hasEditsSinceLastExecution
+        app.registry.get(executingEditorService).hasEditsSinceLastExecution
           .value
       ).toBe(false)
+      expect(app.registry.get(executingEditorService).code.value).toBe('')
 
       const textEditorSettings = app.settings.get().textEditor as Record<
         string,
