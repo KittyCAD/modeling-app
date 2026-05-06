@@ -133,7 +133,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     Ok(result.into())
 }
 
-async fn coerce_extrude_targets(
+pub async fn coerce_extrude_targets(
     sketch_values: Vec<KclValue>,
     body_type: BodyType,
     tag_start: Option<&TagNode>,
