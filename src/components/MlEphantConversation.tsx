@@ -3,11 +3,7 @@ import Loading from '@src/components/Loading'
 import { type Selections } from '@src/machines/modelingSharedTypes'
 import type { MlCopilotMode } from '@kittycad/lib'
 import { Popover } from '@headlessui/react'
-import {
-  CustomIcon,
-  isCustomIconName,
-  type CustomIconName,
-} from '@src/components/CustomIcon'
+import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
 import type {
   Conversation,
@@ -93,9 +89,6 @@ const getModeOption = (
   FALLBACK_ML_COPILOT_MODE_OPTIONS.find((option) => option.id === mode) ??
   FALLBACK_ML_COPILOT_MODE_OPTIONS[0]
 
-const getModeIconName = (mode: MlCopilotModeOption): CustomIconName =>
-  isCustomIconName(mode.icon) ? mode.icon : 'brain'
-
 export interface MlCopilotModesProps {
   onClick: (mode: MlCopilotMode) => void
   children: ReactNode
@@ -132,7 +125,7 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
                   data-testid={`ml-copilot-effort-button-${mode.id}`}
                 >
                   <CustomIcon
-                    name={getModeIconName(mode)}
+                    name={mode.icon}
                     className="w-5 h-5 shrink-0 mt-0.5"
                   />
                   <div className="flex flex-col gap-0.5 min-w-0">
@@ -178,10 +171,7 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
             current={props.mode}
             modeOptions={props.modeOptions}
           >
-            <CustomIcon
-              name={getModeIconName(currentMode)}
-              className="w-5 h-5"
-            />
+            <CustomIcon name={currentMode.icon} className="w-5 h-5" />
             {currentMode.label}
           </MlCopilotModes>
         )}

@@ -24,7 +24,10 @@ vi.mock('@src/lib/boot', () => ({
 }))
 
 import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
-import type { Conversation } from '@src/machines/mlEphantManagerMachine'
+import type {
+  Conversation,
+  MlCopilotModeOption,
+} from '@src/machines/mlEphantManagerMachine'
 import { MlEphantManagerTransitions } from '@src/machines/mlEphantManagerMachine'
 
 const completedConversation: Conversation = {
@@ -54,12 +57,7 @@ const createFakeActor = ({
 }: {
   conversation?: Conversation
   defaultMode?: 'fast' | 'thoughtful'
-  modeOptions?: {
-    id: 'fast' | 'thoughtful'
-    label: string
-    description: string
-    icon: string
-  }[]
+  modeOptions?: MlCopilotModeOption[]
   value?: string
 } = {}) => {
   const snapshot = {

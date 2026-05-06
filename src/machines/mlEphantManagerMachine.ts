@@ -13,6 +13,11 @@ import type { ActorRefFrom } from 'xstate'
 import type { KittyCadLibFile } from '@src/lib/promptToEditTypes'
 import type { KclFileMetaMap } from '@src/lib/promptToEditTypes'
 
+import {
+  isCustomIconName,
+  type CustomIconName,
+} from '@src/components/CustomIcon'
+
 import { S, transitions } from '@src/machines/utils'
 import { getKclVersion } from '@src/lib/kclVersion'
 
@@ -50,7 +55,7 @@ export interface MlCopilotModeOption {
   id: MlCopilotMode
   label: string
   description: string
-  icon: string
+  icon: CustomIconName
 }
 
 type MlCopilotModesResult = {
@@ -75,10 +80,16 @@ function toMlCopilotModeOption(value: unknown): MlCopilotModeOption | null {
   if (
     !isMlCopilotMode(candidate.id) ||
     typeof candidate.label !== 'string' ||
-    typeof candidate.description !== 'string' ||
-    typeof candidate.icon !== 'string'
+    typeof candidate.description !== 'string'
   )
     return null
+
+  if (!isCustomIconName(candidate.icon)) {
+    console.warn(
+      `Discarding ml copilot mode option with unrecognized icon: ${String(candidate.icon)}`
+    )
+    return null
+  }
 
   return {
     id: candidate.id,
