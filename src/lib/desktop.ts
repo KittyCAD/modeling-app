@@ -382,7 +382,8 @@ const collectAllFilesRecursiveFrom = async (
 
 export async function getDefaultKclFileForDir(
   projectDir: string,
-  file: FileEntry
+  file: FileEntry,
+  wasmInstance: ModuleType
 ) {
   // Make sure the dir is a directory.
   const isFileEntryDir = await statIsDirectory(projectDir)
@@ -402,11 +403,27 @@ export async function getDefaultKclFileForDir(
             return fsZds.join(projectDir, entry.name)
           } else if ((entry.children?.length ?? 0) > 0) {
             // Recursively find a kcl file in the directory.
-            return getDefaultKclFileForDir(entry.path, entry)
+            return getDefaultKclFileForDir(entry.path, entry, wasmInstance)
           }
         }
         // If we didn't find a kcl file, create one.
-        await fsZds.writeFile(defaultFilePath, new Uint8Array())
+        const configuration = await readAppSettingsFile(wasmInstance)
+        if (err(configuration)) {
+          return Promise.reject(configuration)
+        }
+        const codeToWrite = newKclFile(
+          undefined,
+          configuration?.settings?.modeling?.base_unit ??
+            DEFAULT_DEFAULT_LENGTH_UNIT,
+          wasmInstance
+        )
+        if (err(codeToWrite)) {
+          return Promise.reject(codeToWrite)
+        }
+        await fsZds.writeFile(
+          defaultFilePath,
+          new TextEncoder().encode(codeToWrite)
+        )
         return defaultFilePath
       }
     }
@@ -491,7 +508,11 @@ export async function getProjectInfo(
   let default_file = ''
   if (canReadWriteProjectPath) {
     // Create the default main.kcl file only if the project path has read write permissions
-    default_file = await getDefaultKclFileForDir(projectPath, walked)
+    default_file = await getDefaultKclFileForDir(
+      projectPath,
+      walked,
+      wasmInstance
+    )
   }
 
   let project = {

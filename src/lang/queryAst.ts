@@ -16,6 +16,7 @@ import {
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
   getFaceCodeRef,
+  getPatternArtifactForCopyId,
 } from '@src/lang/std/artifactGraph'
 import { getArgForEnd, sketchLineHelperMapKw } from '@src/lang/std/sketch'
 import { getSketchSegmentFromSourceRange } from '@src/lang/std/sketchConstraints'
@@ -58,16 +59,16 @@ import {
 import type { Artifact, Plane } from '@rust/kcl-lib/bindings/Artifact'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
 import type { OpArg, Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { SketchBlock } from '@rust/kcl-lib/bindings/SketchBlock'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import type { UnaryExpression } from 'typescript'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
+  EdgeCutInfo,
   Selection,
   Selections,
-  EdgeCutInfo,
 } from '@src/machines/modelingSharedTypes'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { SketchBlock } from '@rust/kcl-lib/bindings/SketchBlock'
+import type { UnaryExpression } from 'typescript'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -1172,6 +1173,21 @@ export function getVariableExprsFromSelection(
   let exprs: Expr[] = []
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
+    const patternCopyExpr = getPatternCopyExprFromSelection(
+      s,
+      ast,
+      wasmInstance
+    )
+    if (patternCopyExpr) {
+      const key = splitOutputExprKey(patternCopyExpr)
+      if (pushedNames[key]) {
+        continue
+      }
+      exprs.push(patternCopyExpr)
+      pushedNames[key] = true
+      continue
+    }
+
     const splitOutputExpr = getSplitOutputExprFromSelection(
       s,
       ast,
@@ -1333,6 +1349,49 @@ export function getVariableExprsFromSelection(
   return { exprs, pathIfPipe }
 }
 
+function getPatternCopyExprFromSelection(
+  selection: Selection,
+  ast: Node<Program>,
+  wasmInstance: ModuleType
+): Expr | null {
+  const artifact = selection.artifact
+  if (artifact?.type !== 'pattern') {
+    return null
+  }
+
+  const patternIndex =
+    selection.patternIndex ??
+    (selection.engineEntityId
+      ? artifact.copyIds.indexOf(selection.engineEntityId) + 1
+      : -1)
+  if (patternIndex < 0) {
+    return null
+  }
+
+  const pathCandidates = [
+    getNodePathFromSourceRange(ast, artifact.codeRef.range),
+    artifact.codeRef.pathToNode,
+    selection.codeRef.pathToNode,
+  ]
+
+  for (const pathToNode of pathCandidates) {
+    const patternVariableName = getVariableNameFromNodePath(
+      pathToNode,
+      ast,
+      wasmInstance
+    )
+    if (patternVariableName) {
+      return createMemberExpression(
+        patternVariableName,
+        createLiteral(patternIndex, wasmInstance),
+        true
+      )
+    }
+  }
+
+  return null
+}
+
 function getSplitOutputExprFromSelection(
   selection: Selection,
   ast: Node<Program>,
@@ -1482,7 +1541,9 @@ export function retrieveSelectionsFromOpArg(
 
   const graphSelections: Selection[] = []
   for (const artifactId of artifactIds) {
-    let artifact = artifactGraph.get(artifactId)
+    let artifact =
+      artifactGraph.get(artifactId) ??
+      getPatternArtifactForCopyId(artifactId, artifactGraph)
     if (!artifact) {
       continue
     }
@@ -1854,9 +1915,11 @@ export function findAllChildrenAndOrderByPlaceInCode(
       pushToSomething(currentId, current.sweepId)
       pushToSomething(currentId, current.segIds)
       pushToSomething(currentId, current.compositeSolidId)
+      pushToSomething(currentId, current.patternIds)
     } else if (current?.type === 'sweep') {
       pushToSomething(currentId, current.surfaceIds)
       pushToSomething(currentId, current.pathId)
+      pushToSomething(currentId, current.patternIds)
     } else if (current?.type === 'wall' || current?.type === 'cap') {
       pushToSomething(currentId, current?.pathIds)
     } else if (current?.type === 'segment') {
@@ -1870,6 +1933,11 @@ export function findAllChildrenAndOrderByPlaceInCode(
       pushToSomething(currentId, current.pathIds)
     } else if (current?.type === 'compositeSolid') {
       pushToSomething(currentId, current.compositeSolidId)
+      pushToSomething(currentId, current.patternIds)
+    } else if (current?.type === 'pattern') {
+      pushToSomething(currentId, current.copyIds)
+      pushToSomething(currentId, current.copyFaceIds)
+      pushToSomething(currentId, current.copyEdgeIds)
     }
     result.add(currentId)
   }
