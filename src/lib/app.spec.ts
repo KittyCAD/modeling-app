@@ -4,7 +4,10 @@ import { App } from '@src/lib/app'
 import { File } from '@src/lang/KclManager'
 import type { Project } from '@src/lib/project'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
-import { codeEditorHeaderItemsValueSpec } from '@src/registry/contracts/codeEditor'
+import {
+  codeEditorExecutionService,
+  codeEditorHeaderItemsValueSpec,
+} from '@src/registry/contracts/codeEditor'
 import { loadWasm } from '@src/unitTestUtils'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 
@@ -140,13 +143,12 @@ describe('project system', () => {
       expect(
         app.registry
           .get(codeEditorHeaderItemsValueSpec)
-          .some((item) => item.id === 'code-editor.autoexecute')
-      ).toBe(true)
-      expect(
-        app.registry
-          .get(codeEditorHeaderItemsValueSpec)
           .some((item) => item.id === 'code-editor.execute')
       ).toBe(true)
+      expect(
+        app.registry.get(codeEditorExecutionService).hasEditsSinceLastExecution
+          .value
+      ).toBe(false)
 
       const textEditorSettings = app.settings.get().textEditor as Record<
         string,

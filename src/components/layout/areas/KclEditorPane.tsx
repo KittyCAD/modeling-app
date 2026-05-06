@@ -195,15 +195,15 @@ export const KclEditorMenu = () => {
 
 export const KclEditorHeaderControls = () => {
   useSignals()
-  const { registry } = useApp()
-  const codeEditorHeaderItems = registry.signal(
+  const app = useApp()
+  const codeEditorHeaderItems = app.registry.signal(
     codeEditorHeaderItemsValueSpec
   ).value
 
   return (
     <>
       {codeEditorHeaderItems.map(({ id, Component }) => (
-        <Component key={id} className={styles.headerItem} />
+        <Component key={id} app={app} className={styles.headerItem} />
       ))}
       <KclEditorMenu />
     </>

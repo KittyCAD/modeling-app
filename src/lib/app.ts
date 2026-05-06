@@ -51,12 +51,21 @@ import {
 import { MachineManager } from '@src/lib/MachineManager'
 import { reportRejection } from '@src/lib/trap'
 import type { Project } from '@src/lib/project'
+import { codeEditorExecutionService } from '@src/registry/contracts/codeEditor'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
-import { Registry, pluginsValueSpec } from '@kittycad/registry'
+import {
+  Registry,
+  defineRegistryItem,
+  pluginsValueSpec,
+  provideService,
+} from '@kittycad/registry'
 import type { UserResponse } from '@kittycad/lib/dist/types/src'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
-import { coreRegistryItems } from '@src/registry/registry'
+import {
+  appRegistryServicesSlot,
+  coreRegistryItems,
+} from '@src/registry/registry'
 
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
@@ -241,7 +250,7 @@ export class App implements AppSubsystems {
     }
 
     const appRegistry = new Registry()
-    appRegistry.configure(coreRegistryItems)
+    appRegistry.configure([...coreRegistryItems, appRegistryServicesSlot.of()])
     const extensionSettings = appRegistry.get(settingsValueSpec)
 
     const settingsActor = createActor(settingsMachine, {
@@ -422,6 +431,18 @@ export class App implements AppSubsystems {
       engineCommandManager: this.engineCommandManager,
       rustContext: this.rustContext,
     })
+
+    this.registry.reconfigure(appRegistryServicesSlot, [
+      defineRegistryItem({
+        id: 'kcl-manager-services',
+        providesServices: [
+          provideService(
+            codeEditorExecutionService,
+            kclManager.codeEditorExecutionService
+          ),
+        ],
+      }),
+    ])
 
     if (typeof window !== 'undefined') {
       // Accessible for tests mostly

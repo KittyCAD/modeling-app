@@ -4,7 +4,10 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { useSelector } from '@xstate/react'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 import type { CodeEditorHeaderItemProps } from '@src/registry/contracts/codeEditor'
-import { codeEditorHeaderItemsValueSpec } from '@src/registry/contracts/codeEditor'
+import {
+  codeEditorExecutionService,
+  codeEditorHeaderItemsValueSpec,
+} from '@src/registry/contracts/codeEditor'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { reportRejection } from '@src/lib/trap'
@@ -13,28 +16,25 @@ type BooleanSettingSnapshot = {
   current: boolean
 }
 
-function useAutoexecuteSetting() {
-  return useSelector(window.app.settings.actor, (state) => {
+function ExecuteHeaderItem({ app, className }: CodeEditorHeaderItemProps) {
+  useSignals()
+  const enabled = useSelector(app.settings.actor, (state) => {
     const textEditorSettings = state.context.textEditor as Record<
       string,
       BooleanSettingSnapshot
     >
     return textEditorSettings.autoexecute.current
   })
-}
-
-function ExecuteHeaderItem({ className }: CodeEditorHeaderItemProps) {
-  useSignals()
-  const enabled = useAutoexecuteSetting()
+  const executionService = app.registry.signal(codeEditorExecutionService).value
   const hasEditsSinceLastExecution =
-    window.kclManager.hasEditsSinceLastExecutionSignal.value
+    executionService?.hasEditsSinceLastExecution.value ?? false
 
-  if (enabled) {
+  if (enabled || !executionService) {
     return null
   }
 
   const buttonClassName = hasEditsSinceLastExecution
-    ? `${className} !border-primary !bg-primary/10 !text-primary dark:!bg-primary/20 dark:!text-primary`
+    ? `${className} !border-primary !bg-primary/10 dark:!bg-primary/20`
     : className
 
   return createElement(
@@ -44,7 +44,7 @@ function ExecuteHeaderItem({ className }: CodeEditorHeaderItemProps) {
       className: buttonClassName,
       title: 'Execute code',
       onClick: () => {
-        window.kclManager.executeCode().catch(reportRejection)
+        executionService.executeCode().catch(reportRejection)
       },
     },
     createElement('span', null, 'Execute')

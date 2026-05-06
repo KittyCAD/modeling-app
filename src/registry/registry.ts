@@ -1,4 +1,4 @@
-import type { RegistryItem } from '@kittycad/registry'
+import { Slot, type RegistryItem } from '@kittycad/registry'
 
 type PluginModule = {
   default?: RegistryItem
@@ -11,6 +11,8 @@ const pluginModules: Record<string, PluginModule> = import.meta.glob(
     eager: true,
   }
 )
+
+export const appRegistryServicesSlot = new Slot()
 
 // Core app plugins discovered from src/registry/plugins/*/index.ts.
 // Keep ordering deterministic so adding folders does not create unstable load order.
