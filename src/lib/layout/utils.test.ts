@@ -1,5 +1,7 @@
 import { AreaType, LayoutType } from '@src/lib/layout/types'
 import type {
+  ActionLibrary,
+  AreaLibrary,
   Layout,
   LayoutMigrationMap,
   LayoutWithMetadata,
@@ -8,6 +10,7 @@ import {
   applyLayoutContribution,
   applyLayoutMigrationMap,
   closeAllPanes,
+  pruneUnavailableLayoutNodes,
   setOpenPanes,
 } from '@src/lib/layout/utils'
 import {
@@ -41,6 +44,117 @@ const basicSplitLayout: Layout = {
 }
 
 describe('Layout utils', () => {
+  describe('layout pruning', () => {
+    const areaLibrary = {
+      [AreaType.FeatureTree]: {
+        hide: () => false,
+        Component: () => null,
+      },
+      [AreaType.Code]: {
+        hide: () => false,
+        Component: () => null,
+      },
+    } satisfies AreaLibrary
+    const actionLibrary = {
+      [AreaType.Code]: {
+        execute: () => {},
+      },
+    } satisfies ActionLibrary
+
+    it('drops simple layout nodes whose area type is unavailable', () => {
+      const layout: Layout = {
+        id: 'feature-tree',
+        label: 'Feature Tree',
+        type: LayoutType.Splits,
+        orientation: 'block',
+        sizes: [70, 30],
+        children: [
+          {
+            id: 'operations-list',
+            label: 'Feature Tree',
+            type: LayoutType.Simple,
+            areaType: AreaType.FeatureTree,
+          },
+          {
+            id: 'bodies-list',
+            label: 'Bodies',
+            type: LayoutType.Simple,
+            areaType: AreaType.Bodies,
+          },
+        ],
+      }
+
+      expect(
+        pruneUnavailableLayoutNodes({
+          rootLayout: layout,
+          areaLibrary,
+          actionLibrary,
+        })
+      ).toStrictEqual({
+        ...layout,
+        sizes: [100],
+        children: [
+          {
+            id: 'operations-list',
+            label: 'Feature Tree',
+            type: LayoutType.Simple,
+            areaType: AreaType.FeatureTree,
+          },
+        ],
+      })
+    })
+
+    it('drops pane actions whose action type is unavailable', () => {
+      const layout: Layout = {
+        id: 'root',
+        label: 'Root',
+        type: LayoutType.Panes,
+        side: 'inline-start',
+        activeIndices: [0],
+        sizes: [100],
+        splitOrientation: 'block',
+        children: [
+          {
+            id: 'code',
+            label: 'Code',
+            type: LayoutType.Simple,
+            areaType: AreaType.Code,
+            icon: 'code',
+          },
+        ],
+        actions: [
+          {
+            id: 'available-action',
+            label: 'Available',
+            icon: 'command',
+            actionType: AreaType.Code,
+          },
+          {
+            id: 'missing-action',
+            label: 'Missing',
+            icon: 'stopwatch',
+            actionType: 'missing.action',
+          },
+        ],
+      }
+
+      expect(
+        pruneUnavailableLayoutNodes({
+          rootLayout: layout,
+          areaLibrary,
+          actionLibrary,
+        })
+      ).toHaveProperty('actions', [
+        {
+          id: 'available-action',
+          label: 'Available',
+          icon: 'command',
+          actionType: AreaType.Code,
+        },
+      ])
+    })
+  })
+
   describe('pane visibility utilities', () => {
     it('closes every open pane in a pane layout', () => {
       const layout: Layout = {

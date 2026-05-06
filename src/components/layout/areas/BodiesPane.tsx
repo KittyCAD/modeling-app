@@ -24,11 +24,49 @@ import { err } from '@src/lib/trap'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { useSignals } from '@preact/signals-react/runtime'
 import toast from 'react-hot-toast'
+import { Disclosure } from '@headlessui/react'
+import { CustomIcon } from '@src/components/CustomIcon'
 
 type SolidArtifact = Artifact & { type: 'compositeSolid' | 'sweep' | 'pattern' }
 
 export function BodiesPane(props: AreaTypeComponentProps) {
   useSignals()
+  return (
+    <LayoutPanel
+      title={props.layout.label}
+      id={`${props.layout.id}-pane`}
+      className="border-none"
+    >
+      <LayoutPanelHeader
+        id={props.layout.id}
+        icon="model"
+        title={props.layout.label}
+      />
+      <BodiesPaneContents />
+    </LayoutPanel>
+  )
+}
+
+export function BodiesFeatureTreeSection() {
+  return (
+    <Disclosure defaultOpen>
+      <Disclosure.Button className="reset w-full min-w-[0px] !px-1 flex items-center gap-2 text-left text-base !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25">
+        <CustomIcon
+          name="caretDown"
+          className="w-6 h-6 block self-start -rotate-90 ui-open:rotate-0 ui-open:transform"
+          aria-hidden
+        />
+        <CustomIcon name="body" className="w-4 h-4" aria-hidden />
+        <span className="text-sm flex-1">Bodies</span>
+      </Disclosure.Button>
+      <Disclosure.Panel>
+        <BodiesPaneContents />
+      </Disclosure.Panel>
+    </Disclosure>
+  )
+}
+
+function BodiesPaneContents() {
   const { kclManager } = useSingletons()
   const execState = kclManager.execStateSignal.value
   const artifactGraph = execState.artifactGraph
@@ -60,20 +98,7 @@ export function BodiesPane(props: AreaTypeComponentProps) {
     }
   }
 
-  return (
-    <LayoutPanel
-      title={props.layout.label}
-      id={`${props.layout.id}-pane`}
-      className="border-none"
-    >
-      <LayoutPanelHeader
-        id={props.layout.id}
-        icon="model"
-        title={props.layout.label}
-      />
-      {bodies && <BodiesList bodies={bodiesWithProps} />}
-    </LayoutPanel>
-  )
+  return bodies ? <BodiesList bodies={bodiesWithProps} /> : null
 }
 
 function BodiesList({

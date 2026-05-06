@@ -9,11 +9,13 @@ import type {
   LayoutContribution,
   LayoutContributionPlacement,
   LayoutContributionResult,
+  AreaLibrary,
+  ActionLibrary,
   Orientation,
   PaneChild,
   Side,
 } from '@src/lib/layout/types'
-import { AreaType, LayoutType } from '@src/lib/layout/types'
+import { LayoutType } from '@src/lib/layout/types'
 import type React from 'react'
 import { capitaliseFC, throttle } from '@src/lib/utils'
 import type { TooltipProps } from '@src/components/Tooltip'
@@ -296,6 +298,121 @@ function actionExists(rootLayout: Layout, actionId: string): boolean {
   }
 
   return false
+}
+
+function normalizeSizes(sizes: number[], itemCount: number): number[] {
+  if (itemCount === 0) {
+    return []
+  }
+
+  if (sizes.length !== itemCount) {
+    return new Array(itemCount).fill(100 / itemCount)
+  }
+
+  const total = sizes.reduce((sum, size) => sum + size, 0)
+  if (!Number.isFinite(total) || total <= 0) {
+    return new Array(itemCount).fill(100 / itemCount)
+  }
+
+  return sizes.map((size) => (size / total) * 100)
+}
+
+function pruneLayoutNode({
+  node,
+  areaLibrary,
+  actionLibrary,
+}: {
+  node: Layout
+  areaLibrary: AreaLibrary
+  actionLibrary: ActionLibrary
+}): Layout | null {
+  if (node.type === LayoutType.Simple) {
+    return node.areaType in areaLibrary ? node : null
+  }
+
+  if (node.type === LayoutType.Splits) {
+    const childrenWithSizes = node.children
+      .map((child, index) => ({
+        child: pruneLayoutNode({ node: child, areaLibrary, actionLibrary }),
+        size: node.sizes[index] ?? 0,
+      }))
+      .filter(
+        (entry): entry is { child: Layout; size: number } =>
+          entry.child !== null
+      )
+
+    if (childrenWithSizes.length === 0) {
+      return null
+    }
+
+    return {
+      ...node,
+      children: childrenWithSizes.map(({ child }) => child),
+      sizes: normalizeSizes(
+        childrenWithSizes.map(({ size }) => size),
+        childrenWithSizes.length
+      ),
+    }
+  }
+
+  const activeSizeByChildId = new Map<string, number>()
+  for (const [sizeIndex, activeIndex] of node.activeIndices.entries()) {
+    const childId = node.children[activeIndex]?.id
+    const size = node.sizes[sizeIndex]
+    if (childId && size !== undefined) {
+      activeSizeByChildId.set(childId, size)
+    }
+  }
+
+  const children = node.children
+    .map((child) =>
+      pruneLayoutNode({ node: child, areaLibrary, actionLibrary })
+    )
+    .filter((child): child is PaneChild => child !== null && 'icon' in child)
+
+  if (children.length === 0) {
+    return null
+  }
+
+  const activeChildren = children.filter((child) =>
+    activeSizeByChildId.has(child.id)
+  )
+  const activeIndices = activeChildren
+    .map((activeChild) =>
+      children.findIndex((child) => child.id === activeChild.id)
+    )
+    .filter((index) => index >= 0)
+  const sizes = normalizeSizes(
+    activeChildren
+      .map((activeChild) => activeSizeByChildId.get(activeChild.id))
+      .filter((size): size is number => size !== undefined),
+    activeIndices.length
+  )
+
+  return {
+    ...node,
+    children,
+    activeIndices,
+    sizes,
+    actions: node.actions?.filter(
+      (action) => action.actionType in actionLibrary
+    ),
+  }
+}
+
+export function pruneUnavailableLayoutNodes({
+  rootLayout,
+  areaLibrary,
+  actionLibrary,
+}: {
+  rootLayout: Layout
+  areaLibrary: AreaLibrary
+  actionLibrary: ActionLibrary
+}): Layout {
+  return (
+    pruneLayoutNode({ node: rootLayout, areaLibrary, actionLibrary }) ??
+    defaultLayoutConfig
+  )
 }
 
 function recomputePaneActiveState({
@@ -945,43 +1062,6 @@ function getLayoutMigrations(): LayoutMigrationMap {
       {
         newVersion: 'v2',
         transformationSets: [{ matcher: true, transformations: [(l) => l] }],
-      },
-    ],
-    [
-      'v3',
-      {
-        newVersion: 'v4',
-        transformationSets: [
-          {
-            matcher: (l) =>
-              l.id === 'feature-tree' && l.type === LayoutType.Simple,
-            transformations: [
-              () =>
-                ({
-                  id: 'feature-tree',
-                  label: 'Feature Tree',
-                  icon: 'model',
-                  type: LayoutType.Splits,
-                  orientation: 'block',
-                  sizes: [70, 30],
-                  children: [
-                    {
-                      id: 'operations-list',
-                      label: 'Feature Tree',
-                      type: LayoutType.Simple,
-                      areaType: AreaType.FeatureTree,
-                    },
-                    {
-                      id: 'bodies-list',
-                      label: 'Bodies',
-                      type: LayoutType.Simple,
-                      areaType: AreaType.Bodies,
-                    },
-                  ],
-                }) satisfies PaneChild,
-            ],
-          },
-        ],
       },
     ],
   ])

@@ -61,6 +61,7 @@ import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
 import type { ConnectionManager } from '@src/network/connectionManager'
+import { featureTreeSectionsValueSpec } from '@src/registry/contracts/featureTree'
 
 type Singletons = ReturnType<typeof useSingletons>
 type SystemDeps = Pick<Singletons, 'kclManager'> & {
@@ -111,7 +112,7 @@ function openCodePane(layout: Layout, setLayout: (l: Layout) => void) {
 
 export const FeatureTreePaneContents = memo(() => {
   useSignals()
-  const { layout, commands } = useApp()
+  const { layout, commands, registry } = useApp()
   const { kclManager } = useSingletons()
   const { engineCommandManager, rustContext } = kclManager
   const {
@@ -302,6 +303,11 @@ export const FeatureTreePaneContents = memo(() => {
                 />
               )
             })}
+            {registry
+              .signal(featureTreeSectionsValueSpec)
+              .value.map(({ id, Component }) => (
+                <Component key={id} />
+              ))}
           </>
         )}
       </section>

@@ -15,7 +15,6 @@ import { FeatureTreePane } from '@src/components/layout/areas/FeatureTreePane'
 import { MemoryPane } from '@src/components/layout/areas/MemoryPane'
 import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
-import { BodiesPane } from '@src/components/layout/areas/BodiesPane'
 import { useSignals } from '@preact/signals-react/runtime'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { DEFAULT_SKETCH_SOLVE_STREAM_DIMMING } from '@src/clientSideScene/ClientSideSceneComp'
@@ -118,10 +117,6 @@ export const useDefaultAreaLibrary = () => {
           hide: () => false,
           shortcut: 'Shift + T',
           Component: FeatureTreePane,
-        },
-        bodies: {
-          hide: () => false,
-          Component: BodiesPane,
         },
         modeling: {
           hide: () => false,

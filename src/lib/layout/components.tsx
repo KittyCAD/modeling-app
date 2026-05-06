@@ -48,6 +48,7 @@ import {
   shouldDisableFlex,
   defaultLayout,
   isCollapsedPaneLayout,
+  pruneUnavailableLayoutNodes,
 } from '@src/lib/layout/utils'
 import type {
   IUpdateNodeSizes,
@@ -128,6 +129,30 @@ export const LayoutRootNode = memo(
     enableContextMenus = false,
   }: LayoutRootNodeProps) {
     const getLayoutWithFallback = () => getLayout() || defaultLayout
+    const resolvedAreaLibrary = areaLibrary || nullAreaLibrary
+    const resolvedActionLibrary = actionLibrary || nullActionLibrary
+
+    useEffect(() => {
+      if (!areaLibrary) {
+        return
+      }
+
+      const prunedLayout = pruneUnavailableLayoutNodes({
+        rootLayout: layout,
+        areaLibrary: resolvedAreaLibrary,
+        actionLibrary: resolvedActionLibrary,
+      })
+      if (!isEqual(prunedLayout, layout)) {
+        setLayout(prunedLayout)
+      }
+    }, [
+      areaLibrary,
+      resolvedAreaLibrary,
+      resolvedActionLibrary,
+      actionLibrary,
+      layout,
+      setLayout,
+    ])
 
     function updateSplitSizes(props: WithoutRootLayout<IUpdateNodeSizes>) {
       const rootLayout = getLayoutWithFallback()
@@ -163,8 +188,8 @@ export const LayoutRootNode = memo(
 
     const providerValue = useMemo(
       () => ({
-        areaLibrary: areaLibrary || nullAreaLibrary,
-        actionLibrary: actionLibrary || nullActionLibrary,
+        areaLibrary: resolvedAreaLibrary,
+        actionLibrary: resolvedActionLibrary,
         updateSplitSizes,
         replaceLayoutNode,
         togglePane,
@@ -175,8 +200,8 @@ export const LayoutRootNode = memo(
       // eslint-disable-next-line react-hooks/exhaustive-deps
       [
         enableContextMenus,
-        areaLibrary,
-        actionLibrary,
+        resolvedAreaLibrary,
+        resolvedActionLibrary,
         togglePane,
         showDebugPanel,
       ]
@@ -190,6 +215,8 @@ export const LayoutRootNode = memo(
   },
   (oldProps, newProps) =>
     isEqual(oldProps.layout, newProps.layout) &&
+    oldProps.areaLibrary === newProps.areaLibrary &&
+    oldProps.actionLibrary === newProps.actionLibrary &&
     oldProps.enableContextMenus === newProps.enableContextMenus &&
     oldProps.showDebugPanel === newProps.showDebugPanel &&
     isEqual(oldProps.notifications, newProps.notifications) &&
