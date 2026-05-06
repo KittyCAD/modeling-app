@@ -316,12 +316,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
     await u.codeLocator.click()
-    await page.keyboard.type(`sketch_001 = startSketchOn(XY)
-    |> startProfile(at = [-10, -10])
-    |> line(end = [20, 0])
-    |> line(end = [0, 20])
-    |> line(end = [-20, 0])
-    |> close()`)
+    await page.keyboard.type(`my_var =  1+2`)
 
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
@@ -345,12 +340,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
 
     await expect(page.locator('.cm-content')).toHaveText(
       `@settings(defaultLengthUnit = in, kclVersion = 2.0)
-sketch_001 = startSketchOn(XY)
-  |> startProfile(at = [-10, -10])
-  |> line(end = [20, 0])
-  |> line(end = [0, 20])
-  |> line(end = [-20, 0])
-  |> close()`.replaceAll('\n', '')
+my_var = 1 + 2`.replaceAll('\n', '')
     )
 
     // error in guter
