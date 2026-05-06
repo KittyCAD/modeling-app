@@ -1,34 +1,41 @@
-import fsZds from '@src/lib/fs-zds'
-import type { Project } from '@src/lib/project'
-import type { FileExplorerEntry } from '@src/components/Explorer/utils'
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
 import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
+import type { FileExplorerEntry } from '@src/components/Explorer/utils'
 import { addPlaceHoldersForNewFileAndFolder } from '@src/components/Explorer/utils'
 import { ToastInsert } from '@src/components/ToastInsert'
-import { relevantFileExtensions } from '@src/lang/wasmUtils'
-import { FILE_EXT, INSERT_FOREIGN_TOAST_ID } from '@src/lib/constants'
-import {
-  getEXTNoPeriod,
-  isExtensionARelevantExtension,
-  parentPathRelativeToProject,
-} from '@src/lib/paths'
-import { useApp, useSingletons } from '@src/lib/boot'
-import {
-  useFolders,
-  useProjectDirectoryPath,
-} from '@src/machines/systemIO/hooks'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { useState, use, useEffect, useRef, useCallback } from 'react'
-import toast from 'react-hot-toast'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import {
+  clearActiveTextFile,
+  openActiveTextFile,
+} from '@src/lib/activeTextFile'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { FILE_EXT, INSERT_FOREIGN_TOAST_ID } from '@src/lib/constants'
+import fsZds from '@src/lib/fs-zds'
 import {
   type AreaTypeComponentProps,
   DefaultLayoutPaneID,
   getOpenPanes,
   togglePaneLayoutNode,
 } from '@src/lib/layout'
-import { useModelingContext } from '@src/hooks/useModelingContext'
+import {
+  getEXTNoPeriod,
+  isExtensionARelevantExtension,
+  parentPathRelativeToProject,
+} from '@src/lib/paths'
+import type { Project } from '@src/lib/project'
 import { reportRejection } from '@src/lib/trap'
+import {
+  useFolders,
+  useProjectDirectoryPath,
+} from '@src/machines/systemIO/hooks'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { use, useCallback, useEffect, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
+
+const isMarkdownFile = (entry: FileExplorerEntry) =>
+  entry.children == null && entry.path.toLowerCase().endsWith('.md')
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   const { commands, project, systemIOActor, layout } = useApp()
@@ -44,7 +51,6 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     send: modelingSend,
     actor: modelingActor,
   } = useModelingContext()
-
   useEffect(() => {
     // Have no idea why the project loader data doesn't have the children from the ls on disk
     // That means it is a different object or cached incorrectly?
@@ -98,7 +104,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       if (
         !projectRef.current?.value.name ||
         entry.children != null ||
-        !entry.path.endsWith(FILE_EXT)
+        (!entry.path.endsWith(FILE_EXT) && !isMarkdownFile(entry))
       ) {
         return
       }
@@ -128,6 +134,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       entry.children == null &&
       entry.path.endsWith(FILE_EXT)
     ) {
+      clearActiveTextFile()
       const name = projectRef.current.value.name.slice()
 
       const navigateHelper = () => {
@@ -157,6 +164,9 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
         // immediately navigate
         navigateHelper()
       }
+    } else if (isMarkdownFile(entry)) {
+      openCodeEditorPaneIfClosed()
+      openActiveTextFile(entry.path).catch(reportRejection)
     } else if (isRelevantFile(entry.path) && projectRef.current?.value.path) {
       // Allow insert if it is a importable file
       toast.custom(

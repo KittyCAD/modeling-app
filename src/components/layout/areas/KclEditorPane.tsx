@@ -1,18 +1,37 @@
+import { defaultKeymap } from '@codemirror/commands'
+import { searchKeymap } from '@codemirror/search'
+import { EditorState } from '@codemirror/state'
+import {
+  EditorView,
+  drawSelection,
+  highlightActiveLine,
+  highlightSpecialChars,
+  keymap,
+  lineNumbers,
+} from '@codemirror/view'
 import { Menu } from '@headlessui/react'
-import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
-import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { useApp, useSingletons } from '@src/lib/boot'
-import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import toast from 'react-hot-toast'
-import styles from './KclEditorMenu.module.css'
-import { useEffect, useRef } from 'react'
-import { reportRejection, trap } from '@src/lib/trap'
-import type { AreaTypeComponentProps } from '@src/lib/layout'
+import { useSignals } from '@preact/signals-react/runtime'
+import { CustomIcon } from '@src/components/CustomIcon'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
-import { CustomIcon } from '@src/components/CustomIcon'
-import { hotkeyDisplay } from '@src/lib/hotkeys'
+import { editorTheme } from '@src/editor/plugins/theme'
 import usePlatform from '@src/hooks/usePlatform'
+import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
+import {
+  type ActiveTextFile,
+  activeTextFileSignal,
+  clearActiveTextFile,
+} from '@src/lib/activeTextFile'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
+import type { AreaTypeComponentProps } from '@src/lib/layout'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { getResolvedTheme } from '@src/lib/theme'
+import { reportRejection, trap } from '@src/lib/trap'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import { useEffect, useRef } from 'react'
+import toast from 'react-hot-toast'
+import styles from './KclEditorMenu.module.css'
 
 type Singletons = ReturnType<typeof useSingletons>
 
@@ -45,14 +64,116 @@ export const KclEditorPane = (props: AreaTypeComponentProps) => {
 }
 
 export const KclEditorPaneContents = () => {
+  useSignals()
   const { kclManager } = useSingletons()
+  const activeTextFile = activeTextFileSignal.value
   const editorParent = useRef<HTMLDivElement>(null)
+
   useEffect(() => {
+    return () => {
+      clearActiveTextFile()
+    }
+  }, [])
+
+  useEffect(() => {
+    if (activeTextFile) {
+      return
+    }
     editorParent.current?.appendChild(kclManager.editorView.dom)
-  }, [kclManager.editorView.dom])
+  }, [activeTextFile, kclManager.editorView.dom])
+
+  if (activeTextFile) {
+    return <ReadOnlyTextFileEditor activeTextFile={activeTextFile} />
+  }
 
   return (
-    <div className="relative">
+    <div className="relative h-full">
+      <div
+        id="code-mirror-override"
+        className="absolute inset-0 pr-1"
+        ref={editorParent}
+      />
+    </div>
+  )
+}
+
+const textFileEditorTheme = EditorView.theme({
+  '&': {
+    height: '100%',
+    color: 'inherit',
+  },
+  '.cm-scroller': {
+    fontFamily:
+      'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+  },
+  '.cm-content': {
+    paddingBlock: '0.5rem',
+  },
+  '.cm-line': {
+    paddingInline: '0.5rem',
+  },
+  '&.cm-focused': {
+    outline: 'none',
+  },
+})
+
+function ReadOnlyTextFileEditor({
+  activeTextFile,
+}: {
+  activeTextFile: ActiveTextFile
+}) {
+  const { settings } = useApp()
+  const settingsValues = settings.useSettings()
+  const resolvedTheme = getResolvedTheme(settingsValues.app.theme.current)
+  const editorParent = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!editorParent.current || activeTextFile.status !== 'ready') {
+      return
+    }
+
+    const editor = new EditorView({
+      state: EditorState.create({
+        doc: activeTextFile.text,
+        extensions: [
+          editorTheme[resolvedTheme],
+          textFileEditorTheme,
+          EditorState.readOnly.of(true),
+          EditorView.editable.of(false),
+          EditorView.lineWrapping,
+          drawSelection(),
+          lineNumbers(),
+          highlightSpecialChars(),
+          highlightActiveLine(),
+          keymap.of([...defaultKeymap, ...searchKeymap]),
+        ],
+      }),
+      parent: editorParent.current,
+    })
+
+    return () => {
+      editor.destroy()
+    }
+  }, [activeTextFile, resolvedTheme])
+
+  if (activeTextFile.status === 'loading') {
+    return (
+      <div className="h-full p-3 text-sm text-chalkboard-70 dark:text-chalkboard-30">
+        Loading {activeTextFile.name}...
+      </div>
+    )
+  }
+
+  if (activeTextFile.status === 'error') {
+    return (
+      <div className="h-full p-3 text-sm text-destroy-80">
+        Failed to open {activeTextFile.name}: {activeTextFile.error}
+      </div>
+    )
+  }
+
+  return (
+    <div className="relative h-full">
       <div
         id="code-mirror-override"
         className="absolute inset-0 pr-1"
@@ -82,6 +203,17 @@ function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
 }
 
 export const KclEditorMenu = () => {
+  useSignals()
+  const activeTextFile = activeTextFileSignal.value
+
+  if (activeTextFile) {
+    return null
+  }
+
+  return <KclEditorKclMenu />
+}
+
+const KclEditorKclMenu = () => {
   const { commands, settings } = useApp()
   const { kclManager } = useSingletons()
   const platform = usePlatform()
