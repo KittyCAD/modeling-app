@@ -30,6 +30,8 @@ import { constructMultiFileIterationRequestWithPromptHelpers } from '@src/lib/pr
 
 import toast from 'react-hot-toast'
 
+import { reportClientError } from '@src/lib/clientErrors'
+
 export enum MlEphantSetupErrors {
   ConversationNotFound = 'conversation not found',
   InvalidConversationId = 'Invalid conversation_id',
@@ -190,6 +192,10 @@ export const mlEphantDefaultContext = (args: {
 
 const ZOOKEEPER_DISCONNECT_LOG_PREFIX = '[zookeeper-disconnect]'
 
+type ZookeeperManagedWebSocket = WebSocket & {
+  __zookeeperIntentionalCloseReason?: string
+}
+
 function logZookeeperDisconnect(message: string, metadata?: unknown) {
   console.warn(ZOOKEEPER_DISCONNECT_LOG_PREFIX, message, metadata)
 }
@@ -209,6 +215,63 @@ function getWebSocketReadyStateLabel(
     default:
       return undefined
   }
+}
+
+function getDocumentVisibilityState(): string | undefined {
+  return typeof document === 'undefined' ? undefined : document.visibilityState
+}
+
+function getNavigatorOnlineState(): boolean | undefined {
+  return typeof navigator === 'undefined' ? undefined : navigator.onLine
+}
+
+function setZookeeperIntentionalCloseReason(
+  ws: WebSocket | undefined,
+  reason: string
+) {
+  if (!ws) return
+  ;(ws as ZookeeperManagedWebSocket).__zookeeperIntentionalCloseReason = reason
+}
+
+function consumeZookeeperIntentionalCloseReason(
+  ws: WebSocket | undefined
+): string | undefined {
+  if (!ws) return undefined
+  const managedWs = ws as ZookeeperManagedWebSocket
+  const reason = managedWs.__zookeeperIntentionalCloseReason
+  delete managedWs.__zookeeperIntentionalCloseReason
+  return reason
+}
+
+function getElapsedMs(timestamp: number | undefined): number | undefined {
+  return timestamp === undefined ? undefined : Date.now() - timestamp
+}
+
+function classifyZookeeperClose(params: {
+  code: number
+  wasClean: boolean
+  intentionalClose: boolean
+}): string {
+  if (params.intentionalClose) return 'client_intentional'
+  if (params.code === 1006 || params.wasClean === false) {
+    return 'transport_reset_or_unclean_close'
+  }
+  if (params.code === 1000 || params.code === 1001) {
+    return 'clean_unexpected_close'
+  }
+  return 'unexpected_close'
+}
+
+function reportZookeeperTelemetry(params: {
+  code: string
+  message: string
+  extra: Record<string, unknown>
+}) {
+  void reportClientError({
+    code: params.code,
+    message: params.message,
+    extra: params.extra,
+  })
 }
 
 function isString(x: unknown): x is string {
@@ -426,6 +489,7 @@ export const mlEphantManagerMachine = setup({
             readyState: getWebSocketReadyStateLabel(context.ws?.readyState),
           }
         )
+        setZookeeperIntentionalCloseReason(context.ws, 'backend_shutdown_idle')
         context.ws?.close()
       }
     },
@@ -443,6 +507,10 @@ export const mlEphantManagerMachine = setup({
             responseType: Object.keys(event.response),
             readyState: getWebSocketReadyStateLabel(context.ws?.readyState),
           }
+        )
+        setZookeeperIntentionalCloseReason(
+          context.ws,
+          'backend_shutdown_after_response'
         )
         context.ws?.close()
       }
@@ -494,6 +562,10 @@ export const mlEphantManagerMachine = setup({
 
       // Defensive: if there's already an open connection, close it.
       if (args.input.context.ws?.readyState === WebSocket.OPEN) {
+        setZookeeperIntentionalCloseReason(
+          args.input.context.ws,
+          'replace_existing_socket'
+        )
         args.input.context.ws?.close()
       }
 
@@ -511,21 +583,104 @@ export const mlEphantManagerMachine = setup({
 
       return await new Promise<Partial<MlEphantManagerContext>>(
         (onFulfilled, onRejected) => {
-          let devCalledClose = false
+          let trackedConversationId =
+            args.input.context.conversationId ?? args.input.event.conversationId
+          let apiCallId: string | undefined
+          let lastSocketMessageType: string | undefined
+          let lastPingSentAt: number | undefined
+          let lastPongReceivedAt: number | undefined
+          let lastInboundMessageAt: number | undefined
+          let lastLifecycleEventType: string | undefined
+          let lastLifecycleEventAt: number | undefined
+
+          const cleanupCallbacks: Array<() => void> = []
+
+          const trackLifecycleEvent = (eventType: string) => {
+            lastLifecycleEventType = eventType
+            lastLifecycleEventAt = Date.now()
+          }
+
+          if (typeof document !== 'undefined') {
+            const handleVisibilityChange = () => {
+              trackLifecycleEvent(
+                `visibilitychange:${document.visibilityState}`
+              )
+            }
+            document.addEventListener(
+              'visibilitychange',
+              handleVisibilityChange
+            )
+            cleanupCallbacks.push(() => {
+              document.removeEventListener(
+                'visibilitychange',
+                handleVisibilityChange
+              )
+            })
+          }
+
+          if (typeof window !== 'undefined') {
+            const lifecycleEventTypes = [
+              'online',
+              'offline',
+              'pagehide',
+              'beforeunload',
+              'focus',
+              'blur',
+            ] as const
+
+            lifecycleEventTypes.forEach((eventType) => {
+              const handleEvent = () => {
+                trackLifecycleEvent(eventType)
+              }
+              window.addEventListener(eventType, handleEvent)
+              cleanupCallbacks.push(() => {
+                window.removeEventListener(eventType, handleEvent)
+              })
+            })
+          }
+
+          const cleanupLifecycleListeners = () => {
+            cleanupCallbacks.forEach((callback) => callback())
+            cleanupCallbacks.length = 0
+          }
+
+          const getTelemetryMetadata = (
+            extra: Record<string, unknown> = {}
+          ): Record<string, unknown> => ({
+            apiCallId,
+            conversationId: trackedConversationId,
+            lastSocketMessageType,
+            lastPingSentAt,
+            lastPongReceivedAt,
+            lastInboundMessageAt,
+            timeSinceLastPingMs: getElapsedMs(lastPingSentAt),
+            timeSinceLastPongMs: getElapsedMs(lastPongReceivedAt),
+            timeSinceLastInboundMessageMs: getElapsedMs(lastInboundMessageAt),
+            documentVisibilityState: getDocumentVisibilityState(),
+            navigatorOnline: getNavigatorOnlineState(),
+            lastLifecycleEventType,
+            lastLifecycleEventAt,
+            readyState: getWebSocketReadyStateLabel(ws.readyState),
+            url,
+            ...extra,
+          })
 
           // Any WS protocol messages will trigger the `api` heartbeat update.
           const pingIntervalId = setInterval(() => {
             if (ws.readyState !== WebSocket.OPEN) return
+            lastPingSentAt = Date.now()
             ws.send(JSON.stringify({ type: 'ping' }))
           }, 4_000)
 
           ws.addEventListener('error', function (event: Event) {
-            logZookeeperDisconnect('websocket error event received', {
-              conversationId:
-                args.input.context.conversationId ??
-                args.input.event.conversationId,
-              readyState: getWebSocketReadyStateLabel(ws.readyState),
+            const metadata = getTelemetryMetadata({
               eventType: event.type,
+            })
+            logZookeeperDisconnect('websocket error event received', metadata)
+            reportZookeeperTelemetry({
+              code: 'zookeeper_websocket_error',
+              message: 'Zookeeper websocket error event received',
+              extra: metadata,
             })
           })
 
@@ -549,14 +704,20 @@ export const mlEphantManagerMachine = setup({
               }
             }
 
+            if (typeof response === 'object' && response !== null) {
+              lastSocketMessageType = Object.keys(response).at(0)
+              lastInboundMessageAt = Date.now()
+            }
+
             if (isBackendShutdownMessage(response)) {
-              logZookeeperDisconnect('server sent backend_shutdown', {
+              const metadata = getTelemetryMetadata({
                 backendShutdownReason: response.backend_shutdown.reason,
-                conversationId:
-                  args.input.context.conversationId ??
-                  args.input.event.conversationId,
-                lastMessageType: args.input.context.lastMessageType,
-                readyState: getWebSocketReadyStateLabel(ws.readyState),
+              })
+              logZookeeperDisconnect('server sent backend_shutdown', metadata)
+              reportZookeeperTelemetry({
+                code: 'zookeeper_backend_shutdown',
+                message: 'Zookeeper server sent backend_shutdown',
+                extra: metadata,
               })
               if (theRefParentSend) {
                 theRefParentSend({
@@ -579,11 +740,13 @@ export const mlEphantManagerMachine = setup({
 
             // Ignore the session data
             if ('session_data' in response) {
+              apiCallId = response.session_data.api_call_id
               return
             }
 
             // Ignore pong
             if ('pong' in response) {
+              lastPongReceivedAt = Date.now()
               return
             }
 
@@ -598,15 +761,14 @@ export const mlEphantManagerMachine = setup({
             ) {
               logZookeeperDisconnect(
                 'closing websocket because conversation replay/setup is invalid',
-                {
+                getTelemetryMetadata({
                   errorDetail: response.error.detail,
-                  conversationId:
-                    args.input.context.conversationId ??
-                    args.input.event.conversationId,
-                  readyState: getWebSocketReadyStateLabel(ws.readyState),
-                }
+                })
               )
-              devCalledClose = true
+              setZookeeperIntentionalCloseReason(
+                ws,
+                'invalid_conversation_replay_or_setup'
+              )
               ws.close()
               // Pass that the conversation is not found to the onError handler which will set the conversationId
               // to undefined to get us a new id.
@@ -667,6 +829,7 @@ export const mlEphantManagerMachine = setup({
             // We're only considered setup when a conversation_id is assigned
             // to us. That means data is being stored and the system is ready.
             if ('conversation_id' in response) {
+              trackedConversationId = response.conversation_id.conversation_id
               onFulfilled({
                 abruptlyClosed: false,
                 lastMessageId: undefined,
@@ -694,20 +857,32 @@ export const mlEphantManagerMachine = setup({
 
           ws.addEventListener('close', function (event: CloseEvent) {
             clearInterval(pingIntervalId)
+            cleanupLifecycleListeners()
 
-            logZookeeperDisconnect('websocket close event received', {
+            const intentionalCloseReason =
+              consumeZookeeperIntentionalCloseReason(ws)
+            const intentionalClose = intentionalCloseReason !== undefined
+            const metadata = getTelemetryMetadata({
               code: event.code,
               reason: event.reason,
               wasClean: event.wasClean,
-              devCalledClose,
-              conversationId:
-                args.input.context.conversationId ??
-                args.input.event.conversationId,
-              lastMessageType: args.input.context.lastMessageType,
-              readyState: getWebSocketReadyStateLabel(ws.readyState),
+              intentionalClose,
+              intentionalCloseReason,
+              closeClassification: classifyZookeeperClose({
+                code: event.code,
+                wasClean: event.wasClean,
+                intentionalClose,
+              }),
             })
 
-            if (theRefParentSend !== undefined && devCalledClose === false) {
+            logZookeeperDisconnect('websocket close event received', metadata)
+            reportZookeeperTelemetry({
+              code: 'zookeeper_websocket_close',
+              message: 'Zookeeper websocket close event received',
+              extra: metadata,
+            })
+
+            if (theRefParentSend !== undefined && intentionalClose === false) {
               let closeReason: string | undefined
               if (event.code === 1009) {
                 closeReason =
@@ -890,6 +1065,7 @@ export const mlEphantManagerMachine = setup({
   exit: (args) => {
     // Make sure the connection is closed.
     if (args.context?.ws?.readyState !== WebSocket.OPEN) return
+    setZookeeperIntentionalCloseReason(args.context.ws, 'machine_exit')
     args.context?.ws?.close()
   },
   states: {
