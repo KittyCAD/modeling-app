@@ -201,13 +201,23 @@ test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
     })
 
     await test.step(`Postcondition: ${mainFile} still has the original content`, async () => {
-      await editorTextMatches(kclCube)
+      const mainFileText = (await fs.readFile(
+        await fs.join(dir, projectName, mainFile),
+        { encoding: 'utf-8' }
+      )) as unknown as string
+      expect(utils.toNormalizedCode(mainFileText)).toBe(
+        utils.toNormalizedCode(kclCube)
+      )
     })
 
     await test.step(`Postcondition: ${secondFile} still exists with the original content`, async () => {
-      await selectFile(secondFile)
-      await scene.settled(cmdBar)
-      await editorTextMatches(kclCylinder)
+      const secondFileText = (await fs.readFile(
+        await fs.join(dir, projectName, secondFile),
+        { encoding: 'utf-8' }
+      )) as unknown as string
+      expect(utils.toNormalizedCode(secondFileText)).toBe(
+        utils.toNormalizedCode(kclCylinder)
+      )
     })
   })
 
