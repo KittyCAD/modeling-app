@@ -792,6 +792,8 @@ const Toolbar_ = memo(
     oldP.immediateState?.type === newP.immediateState?.type &&
     oldP.isStreamReady === newP.isStreamReady &&
     oldP.isStreamAcceptingInput === newP.isStreamAcceptingInput &&
+    oldP.disableModelingForUnrenderedChanges ===
+      newP.disableModelingForUnrenderedChanges &&
     oldP.context?.currentTool === newP.context?.currentTool
 )
 
