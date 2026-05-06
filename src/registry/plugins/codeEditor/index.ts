@@ -2,6 +2,8 @@ import { defineRegistryItem, provide } from '@kittycad/registry'
 import { createElement } from 'react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { useSelector } from '@xstate/react'
+import { CustomIcon } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 import type { CodeEditorHeaderItemProps } from '@src/registry/contracts/codeEditor'
 import { codeEditorHeaderItemsValueSpec } from '@src/registry/contracts/codeEditor'
@@ -31,21 +33,43 @@ function ExecuteHeaderItem({ app, className }: CodeEditorHeaderItemProps) {
     return null
   }
 
-  const buttonClassName = hasEditsSinceLastExecution
-    ? `${className} !border-primary !bg-primary/10 dark:!bg-primary/20`
-    : className
+  const tooltipText = hasEditsSinceLastExecution ? 'Render' : 'Up to date'
+  const iconName = hasEditsSinceLastExecution ? 'play' : 'checkmark'
+  const buttonClassName = `${className} !p-0 !w-7 justify-center ${
+    hasEditsSinceLastExecution
+      ? '!border-primary !bg-primary/10 !text-primary dark:!bg-primary/20 dark:!text-primary'
+      : 'disabled:!text-chalkboard-60 dark:disabled:!text-chalkboard-50 !border-transparent'
+  }`
 
   return createElement(
-    'button',
-    {
-      type: 'button',
-      className: buttonClassName,
-      title: 'Execute code',
-      onClick: () => {
-        executionService.executeCode().catch(reportRejection)
+    'span',
+    { className: 'inline-flex items-center' },
+    createElement(
+      'button',
+      {
+        type: 'button',
+        className: buttonClassName,
+        disabled: !hasEditsSinceLastExecution,
+        'aria-label': tooltipText,
+        onClick: () => {
+          executionService.executeCode().catch(reportRejection)
+        },
       },
-    },
-    createElement('span', null, 'Execute')
+      createElement(CustomIcon, {
+        name: iconName,
+        className: 'w-5 h-5',
+        'aria-hidden': true,
+      })
+    ),
+    createElement(
+      Tooltip,
+      {
+        position: 'bottom-right',
+        hoverOnly: true,
+        contentClassName: 'text-sm whitespace-nowrap',
+      },
+      tooltipText
+    )
   )
 }
 
