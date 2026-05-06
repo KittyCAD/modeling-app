@@ -93,7 +93,7 @@ import {
   setSelectionFilter,
   setSelectionFilterToDefault,
 } from '@src/lib/selectionFilterUtils'
-import type { StateFrom } from 'xstate'
+import type { StateFrom, Subscription } from 'xstate'
 
 import {
   addLineHighlight,
@@ -554,6 +554,7 @@ const RECOVERY_SNAPSHOT_VERSION = 1
 const RECOVERY_SNAPSHOT_DEBOUNCE_MS = 300
 
 const keymapCompartment = new Compartment()
+const executionCompartment = new Compartment()
 
 const updateOutsideEditorAnnotation = Annotation.define<boolean>()
 export const updateOutsideEditorEvent = updateOutsideEditorAnnotation.of(true)
@@ -882,6 +883,8 @@ export class KclManager extends File {
     undefined
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
+  private settingsSubscription: Subscription | undefined = undefined
+  private _autoexecuteEnabled = true
   private _lastKnownFileCode = ''
   private pendingRecoverySnapshot: {
     path: string
@@ -1119,6 +1122,39 @@ export class KclManager extends File {
     }
   })
 
+  private getAutoexecuteSetting() {
+    const textEditorSettings = getSettingsFromActorContext(
+      this.systemDeps.settings
+    ).textEditor as Record<string, { current?: unknown }> | undefined
+
+    return textEditorSettings?.autoexecute?.current !== false
+  }
+
+  private getExecutionExtension(
+    shouldAutoexecute = this.getAutoexecuteSetting()
+  ) {
+    return shouldAutoexecute ? this.executeKclEffect : []
+  }
+
+  setEditorAutoexecute(shouldAutoexecute: boolean) {
+    if (this._autoexecuteEnabled === shouldAutoexecute) {
+      return
+    }
+
+    this._autoexecuteEnabled = shouldAutoexecute
+    this._editorView.dispatch({
+      effects: [
+        executionCompartment.reconfigure(
+          this.getExecutionExtension(shouldAutoexecute)
+        ),
+      ],
+      annotations: [
+        settingsUpdateAnnotation.of(null),
+        Transaction.addToHistory.of(false),
+      ],
+    })
+  }
+
   /**
    * This is a CodeMirror extension that watches for updates to the document,
    * discerns if the change is a kind that we want to re-execute on,
@@ -1175,6 +1211,10 @@ export class KclManager extends File {
       newCode: string
       shouldResetCamera: boolean
     }) => {
+      if (!this._autoexecuteEnabled) {
+        return
+      }
+
       // If we're in sketchSolveMode, update Rust state with the latest AST
       // This handles the case where the user directly edits in the CodeMirror editor
       // these are short term hacks while in rapid development for sketch revamp
@@ -1488,13 +1528,16 @@ export class KclManager extends File {
   })()
 
   private createEditorExtensions() {
+    const shouldAutoexecute = this.getAutoexecuteSetting()
+    this._autoexecuteEnabled = shouldAutoexecute
+
     return [
       baseEditorExtensions(),
       keymapCompartment.of(keymap.of(this.getCodemirrorHotkeys())),
       this.highlightEngineEntitiesEffect,
       this.undoListenerEffect,
       this.syncCodeSignalToDoc,
-      this.executeKclEffect,
+      executionCompartment.of(this.getExecutionExtension(shouldAutoexecute)),
       this.writeToFileListener,
       this.sketchModeDirectEditHistoryExtension,
       this.syntheticHistoryCommitExtension,
@@ -1584,6 +1627,10 @@ export class KclManager extends File {
 
     this._globalHistoryView = new HistoryView([fsHistoryExtension()])
     this._editorView = this.createEditorView(initialCode)
+    this.settingsSubscription = this.systemDeps.settings.subscribe(() => {
+      this.setEditorAutoexecute(this.getAutoexecuteSetting())
+    })
+    this.setEditorAutoexecute(this.getAutoexecuteSetting())
     // TODO: Delete this._code, only derive from the editorView's doc
     this._code.value = initialCode
     this.markFileCodeAsSynced(initialCode)
@@ -1615,6 +1662,7 @@ export class KclManager extends File {
   public close() {
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
+    this.settingsSubscription?.unsubscribe()
     this.flushRecoverySnapshot()
     this.unwatch()
   }
