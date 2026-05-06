@@ -88,17 +88,16 @@ function toMlCopilotModeOption(value: unknown): MlCopilotModeOption | null {
   }
 }
 
-function parseMlCopilotModesResult(
+export function parseMlCopilotModesResult(
   response: unknown
 ): MlCopilotModesResult | null {
-  if (
-    typeof response !== 'object' ||
-    response === null ||
-    !('modes' in response)
-  )
-    return null
+  if (typeof response !== 'object' || response === null) return null
 
-  const modesResponse = (response as { modes?: unknown }).modes
+  const envelope = response as {
+    modes_response?: unknown
+    modes?: unknown
+  }
+  const modesResponse = envelope.modes_response ?? envelope.modes
   if (typeof modesResponse !== 'object' || modesResponse === null) return null
 
   const candidate = modesResponse as {

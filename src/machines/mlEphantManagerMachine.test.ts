@@ -8,6 +8,7 @@ import {
   type Conversation,
   type MlEphantManagerContext,
   mlEphantManagerMachine,
+  parseMlCopilotModesResult,
 } from '@src/machines/mlEphantManagerMachine'
 import type { FileMeta } from '@src/lib/types'
 
@@ -29,6 +30,43 @@ type SetupActorInput = {
 }
 
 describe('mlEphantManagerMachine', () => {
+  describe('parseMlCopilotModesResult', () => {
+    const modes = [
+      {
+        id: 'fast',
+        label: 'Standard',
+        description: 'Faster reasoning. Best for quick edits and simple tasks.',
+        icon: 'stopwatch',
+      },
+      {
+        id: 'thoughtful',
+        label: 'Thoughtful',
+        description: 'More thorough reasoning. Best for complex designs.',
+        icon: 'brain',
+      },
+    ]
+
+    it('parses the modes_response envelope from the API', () => {
+      expect(
+        parseMlCopilotModesResult({
+          modes_response: { default_mode: 'fast', modes },
+        })
+      ).toStrictEqual({ defaultMode: 'fast', modeOptions: modes })
+    })
+
+    it('parses the legacy modes envelope', () => {
+      expect(
+        parseMlCopilotModesResult({
+          modes: { default_mode: 'thoughtful', modes },
+        })
+      ).toStrictEqual({ defaultMode: 'thoughtful', modeOptions: modes })
+    })
+
+    it('returns null for unrelated payloads', () => {
+      expect(parseMlCopilotModesResult({ something_else: true })).toBeNull()
+    })
+  })
+
   describe('ContinueCheck', () => {
     it('sends continue requests when the last exchange was interrupted', async () => {
       const ws: TestWebSocket = new TestSocket() as TestWebSocket

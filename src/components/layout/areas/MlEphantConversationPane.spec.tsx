@@ -48,9 +48,18 @@ const completedConversation: Conversation = {
 
 const createFakeActor = ({
   conversation = completedConversation,
+  defaultMode = undefined,
+  modeOptions = undefined,
   value = 'ready',
 }: {
   conversation?: Conversation
+  defaultMode?: 'fast' | 'thoughtful'
+  modeOptions?: {
+    id: 'fast' | 'thoughtful'
+    label: string
+    description: string
+    icon: string
+  }[]
   value?: string
 } = {}) => {
   const snapshot = {
@@ -60,6 +69,8 @@ const createFakeActor = ({
       awaitingResponse: true,
       conversation,
       conversationId: 'conversation-id',
+      defaultMode,
+      modeOptions,
     },
     matches: (state: string) => state === value,
   }
@@ -179,6 +190,32 @@ describe('MlEphantConversationPane', () => {
     } finally {
       warnSpy.mockRestore()
     }
+  })
+
+  test('uses the server default mode when no project setting is set', () => {
+    renderPane({
+      mlEphantManagerActor: createFakeActor({
+        defaultMode: 'thoughtful',
+        modeOptions: [
+          {
+            id: 'fast',
+            label: 'Standard',
+            description: 'Faster reasoning.',
+            icon: 'stopwatch',
+          },
+          {
+            id: 'thoughtful',
+            label: 'Thoughtful',
+            description: 'More thorough reasoning.',
+            icon: 'brain',
+          },
+        ],
+      }),
+    })
+
+    expect(screen.getByTestId('ml-copilot-efforts-button')).toHaveTextContent(
+      'Thoughtful'
+    )
   })
 
   test('retries cache setup when the project becomes available after settings load', () => {
