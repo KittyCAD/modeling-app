@@ -22,7 +22,7 @@ type BooleanSettingSnapshot = {
 
 const RENDER_HOTKEY = 'mod+s'
 
-function RenderHeaderItem({ app, className }: AppHeaderItemProps) {
+function RenderHeaderItem({ app }: AppHeaderItemProps) {
   useSignals()
   const platform = usePlatform()
   const currentProject = app.projectSignal.value
@@ -68,10 +68,10 @@ function RenderHeaderItem({ app, className }: AppHeaderItemProps) {
 
   const tooltipText = hasEditsSinceLastExecution ? 'Render' : 'Up to date'
   const iconName = hasEditsSinceLastExecution ? 'play' : 'checkmark'
-  const buttonClassName = `${className} !p-0 !w-7 justify-center ${
+  const buttonClassName = `flex gap-1 items-center justify-center py-0 px-0.5 m-0 text-primary dark:text-inherit bg-chalkboard-10/80 dark:bg-chalkboard-100/50 hover:bg-chalkboard-10 dark:hover:bg-chalkboard-100 border border-solid border-primary/50 hover:border-primary active:border-primary ${
     hasEditsSinceLastExecution
       ? '!border-primary !bg-primary/10 !text-primary dark:!bg-primary/20 dark:!text-primary'
-      : 'disabled:!text-chalkboard-60 dark:disabled:!text-chalkboard-50 !border-transparent'
+      : 'disabled:cursor-default disabled:opacity-70 disabled:hover:border-primary/50'
   }`
 
   return createElement(
