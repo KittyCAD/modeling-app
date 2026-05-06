@@ -13,6 +13,8 @@ import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import usePlatform from '@src/hooks/usePlatform'
+import { codeEditorHeaderItemsValueSpec } from '@src/registry/contracts/codeEditor'
+import { useSignals } from '@preact/signals-react/runtime'
 
 type Singletons = ReturnType<typeof useSingletons>
 
@@ -82,10 +84,14 @@ function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
 }
 
 export const KclEditorMenu = () => {
-  const { commands, settings } = useApp()
+  useSignals()
+  const { commands, settings, registry } = useApp()
   const { kclManager } = useSingletons()
   const platform = usePlatform()
   const settingsActor = settings.actor
+  const codeEditorHeaderItems = registry.signal(
+    codeEditorHeaderItemsValueSpec
+  ).value
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
     useConvertToVariable(kclManager)
 
@@ -187,6 +193,11 @@ export const KclEditorMenu = () => {
           </small>
         </a>
       </Menu.Item>
+      {codeEditorHeaderItems.map(({ id, Component }) => (
+        <Menu.Item key={id}>
+          <Component className={styles.button} />
+        </Menu.Item>
+      ))}
     </HeaderMenu>
   )
 }
