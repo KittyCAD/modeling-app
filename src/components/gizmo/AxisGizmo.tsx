@@ -10,6 +10,7 @@ import { reportRejection } from '@src/lib/trap'
 import type { ColorRepresentation, Intersection, Object3D } from 'three'
 import {
   BoxGeometry,
+  CanvasTexture,
   Clock,
   Color,
   Mesh,
@@ -19,13 +20,11 @@ import {
   Raycaster,
   Scene,
   SphereGeometry,
+  Sprite,
+  SpriteMaterial,
   Vector2,
   WebGLRenderer,
 } from 'three'
-import {
-  CSS2DObject,
-  CSS2DRenderer,
-} from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 export default function AxisGizmo() {
   const { settings } = useApp()
@@ -72,17 +71,10 @@ export default function AxisGizmo() {
     })
     renderer.setSize(CANVAS_SIZE, CANVAS_SIZE)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    const labelRenderer = new CSS2DRenderer()
-    labelRenderer.setSize(CANVAS_SIZE, CANVAS_SIZE)
-    labelRenderer.domElement.style.position = 'absolute'
-    labelRenderer.domElement.style.inset = '0'
-    labelRenderer.domElement.style.pointerEvents = 'none'
-    labelRenderer.domElement.setAttribute('aria-hidden', 'true')
-    wrapperElement.append(labelRenderer.domElement)
 
     const scene = new Scene()
     const camera = createCamera()
-    const { gizmoAxes, gizmoAxisHeads, gizmoAxisLabels, axisLabelElements } =
+    const { gizmoAxes, gizmoAxisHeads, gizmoAxisLabels, axisLabelObjects } =
       createGizmo()
     scene.add(...gizmoAxes, ...gizmoAxisHeads, ...gizmoAxisLabels)
 
@@ -99,14 +91,13 @@ export default function AxisGizmo() {
           raycasterIntersect,
           renderer,
           scene,
-          labelRenderer,
-          axisLabelElements
+          axisLabelObjects
         )
       } else {
         for (const object of raycasterObjects) {
           object.scale.setScalar(1)
         }
-        updateAxisLabelHover(axisLabelElements)
+        updateAxisLabelHover(axisLabelObjects)
         raycasterIntersect.current = null // Clear intersection
       }
     }
@@ -133,7 +124,7 @@ export default function AxisGizmo() {
         delta,
         cameraPassiveUpdateTimer
       )
-      renderGizmo(renderer, labelRenderer, scene, camera)
+      renderGizmo(renderer, scene, camera)
     }
     kclManager.sceneInfra.camControls.cameraChange.add(animate)
 
@@ -141,10 +132,9 @@ export default function AxisGizmo() {
     const q = kclManager.sceneInfra.camControls.camera.quaternion
     camera.position.set(0, 0, 1).applyQuaternion(q)
     camera.quaternion.copy(q)
-    renderGizmo(renderer, labelRenderer, scene, camera)
+    renderGizmo(renderer, scene, camera)
 
     return () => {
-      labelRenderer.domElement.remove()
       renderer.forceContextLoss()
       renderer.dispose()
       disposeMouseEvents()
@@ -173,8 +163,12 @@ const AXIS_HEAD_RADIUS = 0.085
 const AXIS_HOVER_SCALE = 1.5
 const AXIS_LABEL_FONT_SIZE = 9
 const AXIS_LABEL_CONTOUR_WIDTH = 1.2
+const AXIS_LABEL_FILL_COLOR = '#fcfcfc'
 const AXIS_LABEL_CENTER = 8
 const AXIS_LABEL_CENTER_Y = 8.5
+const AXIS_LABEL_VIEWBOX_SIZE = 16
+const AXIS_LABEL_TEXTURE_SIZE = 64
+const AXIS_LABEL_WORLD_SIZE = AXIS_LABEL_VIEWBOX_SIZE / CANVAS_SIZE
 enum AxisColors {
   X = '#fa6668',
   Y = '#11eb6b',
@@ -183,8 +177,7 @@ enum AxisColors {
 }
 type AxisLabel = 'X' | 'Y' | 'Z'
 type PositiveAxisName = AxisNames.X | AxisNames.Y | AxisNames.Z
-type AxisLabelElement = SVGSVGElement
-type AxisLabelElements = Partial<Record<PositiveAxisName, AxisLabelElement>>
+type AxisLabelObjects = Partial<Record<PositiveAxisName, Sprite>>
 const POSITIVE_AXIS_NAMES = [AxisNames.X, AxisNames.Y, AxisNames.Z] as const
 const AXIS_LABELS: Record<PositiveAxisName, AxisLabel> = {
   [AxisNames.X]: 'X',
@@ -204,8 +197,6 @@ const AXIS_HEAD_POSITIONS: Record<AxisNames, [number, number, number]> = {
   [AxisNames.NEG_Y]: [0, -AXIS_LENGTH, 0],
   [AxisNames.NEG_Z]: [0, 0, -AXIS_LENGTH],
 }
-const SVG_NAMESPACE = 'http://www.w3.org/2000/svg'
-
 const createCamera = (): OrthographicCamera => {
   return new OrthographicCamera(
     -FRUSTUM_SIZE,
@@ -236,14 +227,14 @@ const createGizmo = () => {
     createAxisHead(AxisNames.NEG_Z, AxisColors.Gray),
   ]
 
-  const axisLabelElements: AxisLabelElements = {}
+  const axisLabelObjects: AxisLabelObjects = {}
   const gizmoAxisLabels = POSITIVE_AXIS_NAMES.map((axisName) => {
-    const { labelObject, labelElement } = createAxisLabel(axisName)
-    axisLabelElements[axisName] = labelElement
+    const labelObject = createAxisLabel(axisName)
+    axisLabelObjects[axisName] = labelObject
     return labelObject
   })
 
-  return { gizmoAxes, gizmoAxisHeads, gizmoAxisLabels, axisLabelElements }
+  return { gizmoAxes, gizmoAxisHeads, gizmoAxisLabels, axisLabelObjects }
 }
 
 const createAxis = (
@@ -273,75 +264,73 @@ const createAxisHead = (name: AxisNames, color: ColorRepresentation): Mesh => {
   return mesh
 }
 
-const createAxisLabel = (
-  axisName: PositiveAxisName
-): { labelObject: CSS2DObject; labelElement: AxisLabelElement } => {
-  const labelWrapper = document.createElement('div')
-  labelWrapper.className = 'pointer-events-none'
-
-  const labelElement = document.createElementNS(SVG_NAMESPACE, 'svg')
-  labelElement.setAttribute('viewBox', '0 0 16 16')
-  labelElement.setAttribute('width', '16')
-  labelElement.setAttribute('height', '16')
-  labelElement.classList.add('block', 'h-4', 'w-4', 'select-none')
-  labelElement.style.overflow = 'visible'
-  labelElement.style.transformOrigin = 'center'
-
-  const labelText = document.createElementNS(SVG_NAMESPACE, 'text')
+const createAxisLabel = (axisName: PositiveAxisName): Sprite => {
   const labelCenterY =
     axisName === AxisNames.Y ? AXIS_LABEL_CENTER_Y + 0.25 : AXIS_LABEL_CENTER_Y
-  labelText.textContent = AXIS_LABELS[axisName]
-  labelText.setAttribute('x', String(AXIS_LABEL_CENTER))
-  labelText.setAttribute('y', String(labelCenterY))
-  labelText.setAttribute('fill', 'var(--chalkboard-10)')
-  labelText.setAttribute('stroke', AXIS_LABEL_CONTOUR_COLORS[axisName])
-  labelText.setAttribute('stroke-width', String(AXIS_LABEL_CONTOUR_WIDTH))
-  labelText.setAttribute('stroke-linejoin', 'round')
-  labelText.setAttribute('font-family', 'inherit')
-  labelText.setAttribute('font-size', String(AXIS_LABEL_FONT_SIZE))
-  labelText.setAttribute('font-weight', '800')
-  labelText.setAttribute('letter-spacing', '0')
-  labelText.setAttribute('paint-order', 'stroke fill')
-  labelText.setAttribute('text-anchor', 'middle')
-  labelText.setAttribute('dominant-baseline', 'central')
-  labelText.setAttribute('alignment-baseline', 'middle')
-  labelElement.append(labelText)
-  labelWrapper.append(labelElement)
+  const canvas = document.createElement('canvas')
+  canvas.width = AXIS_LABEL_TEXTURE_SIZE
+  canvas.height = AXIS_LABEL_TEXTURE_SIZE
 
-  const labelObject = new CSS2DObject(labelWrapper)
+  const context = canvas.getContext('2d')
+  if (context) {
+    const textureScale = AXIS_LABEL_TEXTURE_SIZE / AXIS_LABEL_VIEWBOX_SIZE
+    context.scale(textureScale, textureScale)
+    context.font = `800 ${AXIS_LABEL_FONT_SIZE}px Inter, system-ui, sans-serif`
+    context.textAlign = 'center'
+    context.textBaseline = 'middle'
+    context.lineJoin = 'round'
+    context.lineWidth = AXIS_LABEL_CONTOUR_WIDTH
+    context.strokeStyle = AXIS_LABEL_CONTOUR_COLORS[axisName]
+    context.fillStyle = AXIS_LABEL_FILL_COLOR
+    context.strokeText(AXIS_LABELS[axisName], AXIS_LABEL_CENTER, labelCenterY)
+    context.fillText(AXIS_LABELS[axisName], AXIS_LABEL_CENTER, labelCenterY)
+  }
+
+  const texture = new CanvasTexture(canvas)
+  const labelObject = new Sprite(
+    new SpriteMaterial({
+      map: texture,
+      transparent: true,
+      depthTest: false,
+      depthWrite: false,
+    })
+  )
   const [x, y, z] = AXIS_HEAD_POSITIONS[axisName]
   labelObject.position.set(x, y, z)
-  labelObject.center.set(0.5, 0.5)
+  setAxisLabelScale(labelObject)
+  labelObject.renderOrder = 1
 
-  return { labelObject, labelElement }
+  return labelObject
 }
 
 const renderGizmo = (
   renderer: WebGLRenderer,
-  labelRenderer: CSS2DRenderer,
   scene: Scene,
   camera: OrthographicCamera
 ) => {
   renderer.render(scene, camera)
-  labelRenderer.render(scene, camera)
 }
 
 const updateAxisLabelHover = (
-  axisLabelElements: AxisLabelElements,
+  axisLabelObjects: AxisLabelObjects,
   hoveredAxisName?: AxisNames
 ) => {
   for (const axisName of POSITIVE_AXIS_NAMES) {
-    const labelElement = axisLabelElements[axisName]
-    if (!labelElement) {
+    const labelObject = axisLabelObjects[axisName]
+    if (!labelObject) {
       continue
     }
 
-    if (hoveredAxisName === axisName) {
-      labelElement.style.transform = `scale(${AXIS_HOVER_SCALE})`
-    } else {
-      labelElement.style.removeProperty('transform')
-    }
+    setAxisLabelScale(
+      labelObject,
+      hoveredAxisName === axisName ? AXIS_HOVER_SCALE : 1
+    )
   }
+}
+
+const setAxisLabelScale = (labelObject: Sprite, scale = 1) => {
+  const size = AXIS_LABEL_WORLD_SIZE * scale
+  labelObject.scale.set(size, size, 1)
 }
 
 const updateCameraOrientation = (
@@ -424,8 +413,7 @@ const updateRayCaster = (
   raycasterIntersect: MutableRefObject<Intersection | null>,
   renderer: WebGLRenderer,
   scene: Scene,
-  labelRenderer: CSS2DRenderer,
-  axisLabelElements: AxisLabelElements
+  axisLabelObjects: AxisLabelObjects
 ) => {
   raycaster.setFromCamera(mouse, camera)
   const intersects = raycaster.intersectObjects(objects)
@@ -436,12 +424,12 @@ const updateRayCaster = (
   }
   if (intersects.length) {
     const axisName = intersects[0].object.name as AxisNames
-    updateAxisLabelHover(axisLabelElements, axisName)
+    updateAxisLabelHover(axisLabelObjects, axisName)
     raycasterIntersect.current = intersects[0] // filter first object
   } else {
-    updateAxisLabelHover(axisLabelElements)
+    updateAxisLabelHover(axisLabelObjects)
     raycasterIntersect.current = null
   }
 
-  renderGizmo(renderer, labelRenderer, scene, camera)
+  renderGizmo(renderer, scene, camera)
 }
