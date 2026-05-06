@@ -156,7 +156,7 @@ test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
       'utf-8'
     )
 
-    await folderSetupFn(async (dir) => {
+    const { dir } = await folderSetupFn(async (dir) => {
       const cubeDir = await fs.join(dir, projectName)
       await fs.mkdir(cubeDir, { recursive: true })
       const testData = await nodeFsP.readFile(executorInputPath('cube.kcl'))
@@ -174,8 +174,8 @@ test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
       )
     })
 
-    const { openFilePanel, renameFile, selectFile, editorTextMatches } =
-      await getUtils(page, test)
+    const utils = await getUtils(page, test)
+    const { openFilePanel, renameFile, selectFile } = utils
 
     await test.step(`Setup: Open project and navigate to ${secondFile}`, async () => {
       await homePage.expectState({
