@@ -29,8 +29,8 @@ use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
 use crate::std::extrude::build_segment_surface_sketch;
-use crate::std::extrude::do_post_extrude;
 use crate::std::extrude::coerce_extrude_targets;
+use crate::std::extrude::do_post_extrude;
 
 /// A path to sweep along.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -55,9 +55,12 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let sketch_values = args.get_unlabeled_kw_arg(
         "sketches",
         &RuntimeType::Array(
-            Box::new(RuntimeType::Union(vec![RuntimeType::sketch(), RuntimeType::segment(),
+            Box::new(RuntimeType::Union(vec![
+                RuntimeType::sketch(),
+                RuntimeType::segment(),
                 RuntimeType::face(),
-                RuntimeType::tagged_face(),])),
+                RuntimeType::tagged_face(),
+            ])),
             ArrayLen::Minimum(1),
         ),
         exec_state,
@@ -129,8 +132,7 @@ async fn inner_sweep(
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
     let body_type = body_type.unwrap_or_default();
-    if matches!(body_type, BodyType::Solid) && sketches.iter().any(|sk| matches!(sk.is_closed(), ProfileClosed::No))
-    {
+    if matches!(body_type, BodyType::Solid) && sketches.iter().any(|sk| matches!(sk.is_closed(), ProfileClosed::No)) {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "Cannot solid extrude an open profile. Either close the profile, or use a surface extrude.".to_owned(),
             vec![args.source_range],
@@ -159,20 +161,20 @@ async fn inner_sweep(
         let sweep_cmd_id = exec_state.next_uuid();
         let sketch_or_face_id = sketch.id_to_extrude(exec_state, &args, false).await?;
         let cmd = ModelingCmd::from(
-                    mcmd::Sweep::builder()
-                        .target(sketch_or_face_id.into())
-                        .trajectory(trajectory)
-                        .sectional(sectional.unwrap_or(false))
-                        .tolerance(LengthUnit(
-                            tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
-                        ))
-                        .relative_to(relative_to)
-                        .body_type(body_type)
-                        .maybe_version(version)
-                        .build(),
-                );
+            mcmd::Sweep::builder()
+                .target(sketch_or_face_id.into())
+                .trajectory(trajectory)
+                .sectional(sectional.unwrap_or(false))
+                .tolerance(LengthUnit(
+                    tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
+                ))
+                .relative_to(relative_to)
+                .body_type(body_type)
+                .maybe_version(version)
+                .build(),
+        );
 
-if let Some(post_extr_sketch) = sketch.as_sketch() {
+        if let Some(post_extr_sketch) = sketch.as_sketch() {
             let cmds = post_extr_sketch.build_sketch_mode_cmds(
                 exec_state,
                 ModelingCmdReq {
@@ -185,21 +187,21 @@ if let Some(post_extr_sketch) = sketch.as_sketch() {
                 .await?;
             solids.push(
                 do_post_extrude(
-                &post_extr_sketch,
-                sweep_cmd_id.into(),
-                sectional.unwrap_or(false),
-                &super::extrude::NamedCapTags {
-                    start: tag_start.as_ref(),
-                    end: tag_end.as_ref(),
-                },
-                kittycad_modeling_cmds::shared::ExtrudeMethod::New,
-                exec_state,
-                &args,
-                None,
-                None,
-                body_type,
-                crate::std::extrude::BeingExtruded::Sketch,
-            )
+                    &post_extr_sketch,
+                    sweep_cmd_id.into(),
+                    sectional.unwrap_or(false),
+                    &super::extrude::NamedCapTags {
+                        start: tag_start.as_ref(),
+                        end: tag_end.as_ref(),
+                    },
+                    kittycad_modeling_cmds::shared::ExtrudeMethod::New,
+                    exec_state,
+                    &args,
+                    None,
+                    None,
+                    body_type,
+                    crate::std::extrude::BeingExtruded::Sketch,
+                )
                 .await?,
             );
         } else {
