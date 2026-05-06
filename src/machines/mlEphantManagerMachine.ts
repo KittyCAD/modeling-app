@@ -18,6 +18,8 @@ import {
   type CustomIconName,
 } from '@src/components/CustomIcon'
 
+import { isArray } from '@src/lib/utils'
+
 import { S, transitions } from '@src/machines/utils'
 import { getKclVersion } from '@src/lib/kclVersion'
 
@@ -112,11 +114,11 @@ export function parseMlCopilotModesResult(
     default_mode?: unknown
     modes?: unknown
   }
-  if (!Array.isArray(candidate.modes)) return null
+  if (!isArray(candidate.modes)) return null
 
   const modeOptions = candidate.modes
     .map(toMlCopilotModeOption)
-    .filter(isPresent)
+    .filter((option): option is MlCopilotModeOption => option !== null)
 
   // If every option failed validation, treat as no usable response so the UI
   // falls back to client defaults instead of stranding a defaultMode with no
