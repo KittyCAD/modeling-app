@@ -690,6 +690,7 @@ export class KclManager extends File {
    * all other state should be derived from the code or selection in some way.
    */
   private _code = signal(bracket)
+  private _hasEditsSinceLastExecution = signal(false)
   private _documentVersion = 0
   private _userDocumentVersion = 0
   private lastCommittedCode = ''
@@ -711,6 +712,7 @@ export class KclManager extends File {
   private nextDirectSketchHistoryEntryId = 0
   private lastSketchCheckpointRestoreRequestId = 0
   private sketchCheckpointLimit = FALLBACK_SKETCH_CHECKPOINT_LIMIT
+  private lastExecutedCode: string = ''
   lastSuccessfulCode: string = ''
   get code(): string {
     return this.editorView.state.doc.toString()
@@ -720,6 +722,13 @@ export class KclManager extends File {
   }
   get codeSignal() {
     return this._code
+  }
+  get hasEditsSinceLastExecutionSignal() {
+    return this._hasEditsSinceLastExecution
+  }
+  private markCodeAsExecuted(code: string) {
+    this.lastExecutedCode = code
+    this._hasEditsSinceLastExecution.value = !isCodeTheSame(this.code, code)
   }
 
   // Derived state
@@ -914,7 +923,9 @@ export class KclManager extends File {
 
     // These belonged to the previous file
     this.lastSuccessfulOperations = []
+    this.lastExecutedCode = ''
     this.lastSuccessfulCode = ''
+    this._hasEditsSinceLastExecution.value = false
     this.lastSuccessfulVariables = {}
 
     // Without this, when leaving a project which has errors and opening another project which doesn't,
@@ -1011,6 +1022,7 @@ export class KclManager extends File {
     this.lastSuccessfulVariables = execState.variables
     this.lastSuccessfulOperations = execState.operations
     this.lastSuccessfulCode = code
+    this.markCodeAsExecuted(code)
     this.dispatchUpdateOperations(execState.operations)
     void this.updateArtifactGraph(execState.artifactGraph)
   }
@@ -1101,6 +1113,10 @@ export class KclManager extends File {
         this._userDocumentVersion += 1
       }
       this._code.value = newCode
+      this._hasEditsSinceLastExecution.value = !isCodeTheSame(
+        newCode,
+        this.lastExecutedCode
+      )
       this.persistRecoverySnapshot()
       this.rustContext.sendUpdateFile(this.id, newCode).catch(reportRejection)
     }
@@ -1947,6 +1963,9 @@ export class KclManager extends File {
 
     this.logs = logs
     this.errors = errors
+    if (!isInterrupted) {
+      this.markCodeAsExecuted(codeThatExecuted)
+    }
     const code = this.code
     // Do not add the errors since the program was interrupted and the error is not a real KCL error
     this.addDiagnostics(
@@ -2042,6 +2061,7 @@ export class KclManager extends File {
       this.lastSuccessfulOperations = execState.operations
       this.lastSuccessfulCode = codeThatExecuted
     }
+    this.markCodeAsExecuted(codeThatExecuted)
     await this.updateArtifactGraph(execState.artifactGraph)
     return null
   }
@@ -2055,6 +2075,7 @@ export class KclManager extends File {
       console.warn('`executeCode` called before engine connection started')
       return
     }
+    this.markCodeAsExecuted(newCode)
     const ast = await this.safeParse(newCode, await this.wasmInstancePromise)
 
     if (!ast) {

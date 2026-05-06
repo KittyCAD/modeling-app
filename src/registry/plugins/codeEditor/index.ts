@@ -1,7 +1,7 @@
 import { defineRegistryItem, provide } from '@kittycad/registry'
-import { createElement, type ChangeEvent, type MouseEvent } from 'react'
+import { createElement } from 'react'
+import { useSignals } from '@preact/signals-react/runtime'
 import { useSelector } from '@xstate/react'
-import { Toggle } from '@src/components/Toggle/Toggle'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 import type { CodeEditorHeaderItemProps } from '@src/registry/contracts/codeEditor'
 import { codeEditorHeaderItemsValueSpec } from '@src/registry/contracts/codeEditor'
@@ -14,30 +14,34 @@ type BooleanSettingSnapshot = {
 }
 
 function useAutoexecuteSetting() {
-  const settingsActor = window.app.settings.actor
-  const enabled = useSelector(settingsActor, (state) => {
+  return useSelector(window.app.settings.actor, (state) => {
     const textEditorSettings = state.context.textEditor as Record<
       string,
       BooleanSettingSnapshot
     >
     return textEditorSettings.autoexecute.current
   })
-
-  return { enabled, settingsActor }
 }
 
 function ExecuteHeaderItem({ className }: CodeEditorHeaderItemProps) {
-  const { enabled } = useAutoexecuteSetting()
+  useSignals()
+  const enabled = useAutoexecuteSetting()
+  const hasEditsSinceLastExecution =
+    window.kclManager.hasEditsSinceLastExecutionSignal.value
 
   if (enabled) {
     return null
   }
 
+  const buttonClassName = hasEditsSinceLastExecution
+    ? `${className} !border-primary !bg-primary/10 !text-primary dark:!bg-primary/20 dark:!text-primary`
+    : className
+
   return createElement(
     'button',
     {
       type: 'button',
-      className,
+      className: buttonClassName,
       title: 'Execute code',
       onClick: () => {
         window.kclManager.executeCode().catch(reportRejection)
