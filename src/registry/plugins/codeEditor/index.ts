@@ -16,14 +16,14 @@ type BooleanSettingSnapshot = {
   current: boolean
 }
 
-function ExecuteHeaderItem({ app, className }: CodeEditorHeaderItemProps) {
+function RenderHeaderItem({ app, className }: CodeEditorHeaderItemProps) {
   useSignals()
   const enabled = useSelector(app.settings.actor, (state) => {
     const textEditorSettings = state.context.textEditor as Record<
       string,
       BooleanSettingSnapshot
     >
-    return textEditorSettings.autoexecute.current
+    return textEditorSettings.automaticallyRender.current
   })
   const executionService = app.registry.signal(executingEditorService).value
   const hasEditsSinceLastExecution =
@@ -77,16 +77,17 @@ const codeEditorSettingsItem = defineRegistryItem({
   provides: [
     provide(settingsValueSpec, {
       textEditor: {
-        autoexecute: defineBooleanExtensionSetting({
+        automaticallyRender: defineBooleanExtensionSetting({
           defaultValue: true,
-          description: 'Whether the code editor should autoexecute changes.',
+          description:
+            'Whether the code editor should automatically render changes.',
           hideOnLevel: 'project',
           commandConfig: {
             inputType: 'boolean',
           },
           userToml: {
             sectionKey: 'text_editor',
-            tomlKey: 'autoexecute',
+            tomlKey: 'automatically_render',
           },
         }),
       },
@@ -97,9 +98,9 @@ const codeEditorSettingsItem = defineRegistryItem({
 const codeEditorHeaderItem = defineRegistryItem({
   provides: [
     provide(codeEditorHeaderItemsValueSpec, {
-      id: 'code-editor.execute',
+      id: 'code-editor.render',
       order: 20,
-      Component: ExecuteHeaderItem,
+      Component: RenderHeaderItem,
     }),
   ],
 })

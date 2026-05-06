@@ -126,7 +126,7 @@ describe('project system', () => {
     }
   })
 
-  it('loads the code editor autoexecute plugin setting enabled by default', async () => {
+  it('loads the code editor automatically render plugin setting enabled by default', async () => {
     const app = App.fromProvided({
       wasmPromise: loadWasm(),
     })
@@ -141,7 +141,7 @@ describe('project system', () => {
       expect(
         app.registry
           .get(codeEditorHeaderItemsValueSpec)
-          .some((item) => item.id === 'code-editor.execute')
+          .some((item) => item.id === 'code-editor.render')
       ).toBe(true)
       expect(
         app.registry.get(executingEditorService).hasEditsSinceLastExecution
@@ -153,8 +153,8 @@ describe('project system', () => {
         string,
         { current: unknown; hideOnLevel?: unknown }
       >
-      expect(textEditorSettings.autoexecute.current).toBe(true)
-      expect(textEditorSettings.autoexecute.hideOnLevel).toBe('project')
+      expect(textEditorSettings.automaticallyRender.current).toBe(true)
+      expect(textEditorSettings.automaticallyRender.hideOnLevel).toBe('project')
     } finally {
       disposeApp(app)
     }

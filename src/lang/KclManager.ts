@@ -903,7 +903,7 @@ export class KclManager extends File {
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
   private settingsSubscription: Subscription | undefined = undefined
-  private _autoexecuteEnabled = true
+  private _automaticallyRenderEnabled = true
   private _lastKnownFileCode = ''
   private pendingRecoverySnapshot: {
     path: string
@@ -1148,30 +1148,30 @@ export class KclManager extends File {
     }
   })
 
-  private getAutoexecuteSetting() {
+  private getAutomaticallyRenderSetting() {
     const textEditorSettings = getSettingsFromActorContext(
       this.systemDeps.settings
     ).textEditor as Record<string, { current?: unknown }> | undefined
 
-    return textEditorSettings?.autoexecute?.current !== false
+    return textEditorSettings?.automaticallyRender?.current !== false
   }
 
   private getExecutionExtension(
-    shouldAutoexecute = this.getAutoexecuteSetting()
+    shouldAutomaticallyRender = this.getAutomaticallyRenderSetting()
   ) {
-    return shouldAutoexecute ? this.executeKclEffect : []
+    return shouldAutomaticallyRender ? this.executeKclEffect : []
   }
 
-  setEditorAutoexecute(shouldAutoexecute: boolean) {
-    if (this._autoexecuteEnabled === shouldAutoexecute) {
+  setEditorAutomaticallyRender(shouldAutomaticallyRender: boolean) {
+    if (this._automaticallyRenderEnabled === shouldAutomaticallyRender) {
       return
     }
 
-    this._autoexecuteEnabled = shouldAutoexecute
+    this._automaticallyRenderEnabled = shouldAutomaticallyRender
     this._editorView.dispatch({
       effects: [
         executionCompartment.reconfigure(
-          this.getExecutionExtension(shouldAutoexecute)
+          this.getExecutionExtension(shouldAutomaticallyRender)
         ),
       ],
       annotations: [
@@ -1237,7 +1237,7 @@ export class KclManager extends File {
       newCode: string
       shouldResetCamera: boolean
     }) => {
-      if (!this._autoexecuteEnabled) {
+      if (!this._automaticallyRenderEnabled) {
         return
       }
 
@@ -1554,8 +1554,8 @@ export class KclManager extends File {
   })()
 
   private createEditorExtensions() {
-    const shouldAutoexecute = this.getAutoexecuteSetting()
-    this._autoexecuteEnabled = shouldAutoexecute
+    const shouldAutomaticallyRender = this.getAutomaticallyRenderSetting()
+    this._automaticallyRenderEnabled = shouldAutomaticallyRender
 
     return [
       baseEditorExtensions(),
@@ -1563,7 +1563,9 @@ export class KclManager extends File {
       this.highlightEngineEntitiesEffect,
       this.undoListenerEffect,
       this.syncCodeSignalToDoc,
-      executionCompartment.of(this.getExecutionExtension(shouldAutoexecute)),
+      executionCompartment.of(
+        this.getExecutionExtension(shouldAutomaticallyRender)
+      ),
       this.writeToFileListener,
       this.sketchModeDirectEditHistoryExtension,
       this.syntheticHistoryCommitExtension,
@@ -1654,9 +1656,9 @@ export class KclManager extends File {
     this._globalHistoryView = new HistoryView([fsHistoryExtension()])
     this._editorView = this.createEditorView(initialCode)
     this.settingsSubscription = this.systemDeps.settings.subscribe(() => {
-      this.setEditorAutoexecute(this.getAutoexecuteSetting())
+      this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
     })
-    this.setEditorAutoexecute(this.getAutoexecuteSetting())
+    this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
     // TODO: Delete this._code, only derive from the editorView's doc
     this._code.value = initialCode
     this.markFileCodeAsSynced(initialCode)
