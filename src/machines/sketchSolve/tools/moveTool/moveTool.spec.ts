@@ -18,6 +18,7 @@ import type {
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { isArray } from '@src/lib/utils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import {
   ORIGIN_TARGET,
@@ -191,6 +192,10 @@ function setUpMoveToolCallbacks({
   const getObjectByName = vi.fn(
     (name: string) => getSceneObjectByName?.(name) ?? null
   )
+  let planeIntersectPoint = {
+    twoD: new Vector2(0, 0),
+    threeD: new Vector3(0, 0, 0),
+  }
   const camera = new OrthographicCamera(-50, 50, 50, -50, 0.1, 1000)
   camera.position.z = 10
   camera.lookAt(0, 0, 0)
@@ -211,6 +216,7 @@ function setUpMoveToolCallbacks({
         clientHeight: 100,
       },
     },
+    getPlaneIntersectPoint: vi.fn(() => planeIntersectPoint),
     getClientSceneScaleFactor: vi.fn(() => 1),
     baseUnitMultiplier: 1,
     isAreaSelectActive,
@@ -312,8 +318,14 @@ function setUpMoveToolCallbacks({
   if (typeof callbacks.onClick !== 'function') {
     throw new Error('Move tool did not register an onClick callback')
   }
+  if (typeof callbacks.onMouseDownSelection !== 'function') {
+    throw new Error(
+      'Move tool did not register an onMouseDownSelection callback'
+    )
+  }
 
   return {
+    onMouseDownSelection: callbacks.onMouseDownSelection as () => boolean,
     onClick: callbacks.onClick as (args: {
       mouseEvent: MouseEvent
       intersectionPoint?: { twoD: Vector2; threeD: Vector3 }
@@ -346,6 +358,12 @@ function setUpMoveToolCallbacks({
       startPoint: { twoD: Vector2; threeD: Vector3 }
       currentPoint: { twoD: Vector2; threeD: Vector3 }
     }) => void,
+    setPlaneIntersectPoint: (twoD: Vector2) => {
+      planeIntersectPoint = {
+        twoD,
+        threeD: new Vector3(twoD.x, twoD.y, 0),
+      }
+    },
     sceneInfra,
     getObjectByName,
     rustContext: context.rustContext,
@@ -383,9 +401,8 @@ function createPointSegmentGroup({
 }
 
 describe('createOnDragStartCallback', () => {
-  it('should track the drag start position, dragged entity id, and dismiss constraint hover popup', () => {
+  it('should track the drag start position and dismiss constraint hover popup', () => {
     const setLastSuccessfulDragFromPoint = vi.fn()
-    const setDraggedEntityId = vi.fn()
     const setLastGoodPreview = vi.fn()
     const setDragStartOutcome = vi.fn()
     const setPreDragCheckpointId = vi.fn()
@@ -395,19 +412,16 @@ describe('createOnDragStartCallback', () => {
       sceneGraphDelta: createSceneGraphDelta([]),
     }))
     const getCurrentCommittedCheckpointId = vi.fn(() => 12)
-    const getHoveredId = vi.fn(() => 13)
     const dismissConstraintHoverPopup = vi.fn()
 
     const callback = createOnDragStartCallback({
       setLastSuccessfulDragFromPoint,
-      setDraggedEntityId,
       setLastGoodPreview,
       setDragStartOutcome,
       setPreDragCheckpointId,
       beginDragSession,
       getCurrentSketchOutcome,
       getCurrentCommittedCheckpointId,
-      getHoveredId,
       dismissConstraintHoverPopup,
     })
 
@@ -434,15 +448,12 @@ describe('createOnDragStartCallback', () => {
     expect(callArg).not.toBe(intersectionPoint.twoD)
     expect(callArg.x).toBe(10)
     expect(callArg.y).toBe(20)
-    expect(setDraggedEntityId).toHaveBeenCalledOnce()
-    expect(setDraggedEntityId).toHaveBeenCalledWith(13)
     expect(setLastGoodPreview).toHaveBeenCalledWith(null)
     expect(setDragStartOutcome).toHaveBeenCalledWith({
       kclSource: { text: 'baseline' },
       sceneGraphDelta: createSceneGraphDelta([]),
     })
     expect(setPreDragCheckpointId).toHaveBeenCalledWith(12)
-    expect(getHoveredId).toHaveBeenCalledOnce()
   })
 })
 
@@ -1168,7 +1179,7 @@ describe('createOnDragCallback', () => {
       source: { type: 'Simple', range: [0, 0, 0] },
     } as ApiObject
 
-    const { onDragStart, onDragEnd, rustContext, send } =
+    const { onMouseDownSelection, onDragStart, onDragEnd, rustContext, send } =
       setUpMoveToolCallbacks({
         apiObjects: [
           lineTargetStart,
@@ -1202,6 +1213,8 @@ describe('createOnDragCallback', () => {
       sceneGraphDelta: editResult.sceneGraphDelta,
       checkpointId: 124,
     })
+
+    expect(onMouseDownSelection()).toBe(true)
 
     onDragStart({
       intersectionPoint: {
@@ -1826,11 +1839,12 @@ describe('createOnDragCallback', () => {
     })
     const draggedLine = createLineApiObject({ id: 11, start: 3, end: 4 })
 
-    const { onDragStart, onDragEnd, rustContext } = setUpMoveToolCallbacks({
-      apiObjects: [draggedStart, draggedPoint, draggedLine],
-      hoveredId: 4,
-      selectedIds: [4],
-    })
+    const { onMouseDownSelection, onDragStart, onDragEnd, rustContext } =
+      setUpMoveToolCallbacks({
+        apiObjects: [draggedStart, draggedPoint, draggedLine],
+        hoveredId: 4,
+        selectedIds: [4],
+      })
 
     const editResult = {
       kclSource: { text: 'edited' },
@@ -1852,6 +1866,8 @@ describe('createOnDragCallback', () => {
     }
     ;(rustContext.editSegments as any).mockResolvedValue(editResult)
     ;(rustContext.addConstraint as any).mockResolvedValue(addResult)
+
+    expect(onMouseDownSelection()).toBe(true)
 
     onDragStart({
       intersectionPoint: {
@@ -3376,6 +3392,100 @@ describe('createOnClickCallback', () => {
       segmentId: 3,
       position: [60, 20],
     })
+  })
+})
+
+describe('setUpOnDragAndSelectionClickCallbacks constraint label dragging', () => {
+  it('keeps dragging a radius label when drag start fires after the cursor leaves the label hit area', async () => {
+    const radiusConstraint = createConstraintApiObject({
+      id: 8,
+      type: 'Radius',
+    })
+    const constraintGroup = new Group()
+    constraintGroup.name = String(radiusConstraint.id)
+    const labelChild = new Group()
+    labelChild.userData.type = DISTANCE_CONSTRAINT_LABEL
+    labelChild.userData.hitObjects = [
+      {
+        type: 'line',
+        line: [
+          [-8, -8],
+          [8, -8],
+        ],
+      },
+      {
+        type: 'line',
+        line: [
+          [8, -8],
+          [8, 8],
+        ],
+      },
+      {
+        type: 'line',
+        line: [
+          [8, 8],
+          [-8, 8],
+        ],
+      },
+      {
+        type: 'line',
+        line: [
+          [-8, 8],
+          [-8, -8],
+        ],
+      },
+    ]
+    constraintGroup.add(labelChild)
+
+    const {
+      onMouseDownSelection,
+      setPlaneIntersectPoint,
+      onDragStart,
+      onDrag,
+      rustContext,
+    } = setUpMoveToolCallbacks({
+      apiObjects: [radiusConstraint],
+      hoveredId: radiusConstraint.id,
+      getSceneObjectByName: (name) =>
+        name === String(radiusConstraint.id) ? constraintGroup : null,
+    })
+
+    setPlaneIntersectPoint(new Vector2(0, 0))
+    expect(onMouseDownSelection()).toBe(true)
+
+    setPlaneIntersectPoint(new Vector2(0, 30))
+    onDragStart({
+      intersectionPoint: {
+        twoD: new Vector2(0, 30),
+        threeD: new Vector3(0, 30, 0),
+      },
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    await onDrag({
+      intersectionPoint: {
+        twoD: new Vector2(1, 31),
+        threeD: new Vector3(1, 31, 0),
+      },
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    expect(
+      rustContext.editDistanceConstraintLabelPosition
+    ).toHaveBeenCalledWith(
+      0,
+      0,
+      radiusConstraint.id,
+      {
+        x: { value: 1, units: 'Mm' },
+        y: { value: 31, units: 'Mm' },
+      },
+      expect.any(Object),
+      false,
+      undefined
+    )
   })
 })
 

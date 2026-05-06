@@ -764,8 +764,6 @@ function buildPreviewOutcomeWithPreservedGeometry({
 type CreateOnDragStartCallbackArgs = {
   // Seeds the drag anchor used to compute relative drag vectors.
   setLastSuccessfulDragFromPoint: (point: Vector2) => void
-  // Captures the object currently being dragged at drag start.
-  setDraggedEntityId: (entityId: number | null) => void
   // Clears any previously cached valid preview from an earlier drag session.
   setLastGoodPreview: (preview: DragCommitCandidate | null) => void
   // Stores the frontend sketch outcome at drag start for preview fallback.
@@ -778,8 +776,6 @@ type CreateOnDragStartCallbackArgs = {
   getCurrentSketchOutcome: () => DragSketchOutcome | null
   // Reads the currently committed checkpoint backing undo/redo.
   getCurrentCommittedCheckpointId: () => number | null
-  // Reads the hovered selection id so drag start can lock onto it.
-  getHoveredId: () => SketchSolveSelectionId | null
   // Clears transient hover UI that should not remain visible during drag.
   dismissConstraintHoverPopup: () => void
 }
@@ -789,18 +785,16 @@ type CreateOnDragStartCallbackArgs = {
  * Captures the drag baseline used by preview and recovery logic:
  * - the current frontend sketch outcome
  * - the current committed Rust checkpoint
- * - the hovered entity being dragged
+ * - the drag anchor point
  */
 export function createOnDragStartCallback({
   setLastSuccessfulDragFromPoint,
-  setDraggedEntityId,
   setLastGoodPreview,
   setDragStartOutcome,
   setPreDragCheckpointId,
   beginDragSession,
   getCurrentSketchOutcome,
   getCurrentCommittedCheckpointId,
-  getHoveredId,
   dismissConstraintHoverPopup,
 }: CreateOnDragStartCallbackArgs): (arg: {
   intersectionPoint: { twoD: Vector2; threeD: Vector3 }
@@ -815,8 +809,6 @@ export function createOnDragStartCallback({
     setLastGoodPreview(null)
     setDragStartOutcome(getCurrentSketchOutcome())
     setPreDragCheckpointId(getCurrentCommittedCheckpointId())
-    const hoveredId = getHoveredId()
-    setDraggedEntityId(isObjectSelectionId(hoveredId) ? hoveredId : null)
   }
 }
 
@@ -1610,24 +1602,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
     return labelHitDistance === null ? null : hoveredId
   }
 
-  const getHoveredDraggableId = () => {
-    const snapshot = self.getSnapshot()
-    const hoveredId = snapshot.context.hoveredId
-    if (!isObjectSelectionId(hoveredId)) {
-      return null
-    }
-
-    const objects =
-      snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects ??
-      []
-    const hoveredObject = objects[hoveredId]
-    if (isConstraint(hoveredObject)) {
-      return getHoveredConstraintLabelId()
-    }
-
-    return hoveredId
-  }
-
   const clearDragSnappingState = () => {
     const sketchSolveGroup = getSketchSolveGroup()
     if (sketchSolveGroup) {
@@ -1735,7 +1709,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
   context.sceneInfra.setCallbacks({
     onDragStart: createOnDragStartCallback({
       setLastSuccessfulDragFromPoint,
-      setDraggedEntityId,
       setLastGoodPreview,
       setDragStartOutcome,
       setPreDragCheckpointId,
@@ -1755,7 +1728,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
       },
       getCurrentCommittedCheckpointId: () =>
         context.kclManager.currentSketchCheckpointId,
-      getHoveredId: getHoveredDraggableId,
       dismissConstraintHoverPopup: dismissConstraintHoverPopupOnDragStart,
     }),
     onDragEnd: createOnDragEndCallback({
@@ -2231,6 +2203,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       onPreviewSolveSettled: markPreviewSolveSettled,
     }),
     onMouseDownSelection: () => {
+      setDraggedEntityId(null)
       const snapshot = self.getSnapshot()
       const hoveredId = snapshot.context.hoveredId
       if (!isObjectSelectionId(hoveredId)) {
@@ -2244,13 +2217,22 @@ export function setUpOnDragAndSelectionClickCallbacks({
       const hoveredObject = objects[hoveredId]
       if (isConstraintWithDraggableLabel(hoveredObject)) {
         // Allow dragging the label of a constraint
-        return getHoveredConstraintLabelId() !== null
+        const constraintLabelId = getHoveredConstraintLabelId()
+        if (constraintLabelId !== null) {
+          setDraggedEntityId(constraintLabelId)
+          return true
+        }
+        return false
       }
       // If it's a point which is already coincident with ORIGIN -> don't allow dragging
-      return !(
+      const canDrag = !(
         isPointSegment(hoveredObject) &&
         hasCoincidentConstraintWithOrigin(hoveredId, objects)
       )
+      if (canDrag) {
+        setDraggedEntityId(hoveredId)
+      }
+      return canDrag
     },
     onClick: createOnClickCallback({
       getApiObjects: () => {
