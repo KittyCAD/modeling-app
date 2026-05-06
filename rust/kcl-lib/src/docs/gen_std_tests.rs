@@ -476,6 +476,7 @@ fn generate_function_from_kcl(
                 ),
                 "required": arg.kind.required(),
                 "deprecated_since": arg.deprecated_since.as_ref().map(ToString::to_string),
+                "experimental": arg.experimental,
             })
         })
         .collect::<Vec<_>>();
