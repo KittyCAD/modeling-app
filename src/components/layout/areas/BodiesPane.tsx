@@ -1,42 +1,60 @@
 import type { PropsOf } from '@headlessui/react/dist/types'
-import type { AreaTypeComponentProps } from '@src/lib/layout'
-import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
+import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { toUtf16 } from '@src/lang/errors'
+import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import {
   type Artifact,
   getBodiesFromArtifactGraph,
+  getCodeRefsByArtifactId,
 } from '@src/lang/std/artifactGraph'
+import type { ArtifactGraph } from '@src/lang/wasm'
+import { useSingletons } from '@src/lib/boot'
+import { sendSelectionEvent } from '@src/lib/featureTree'
+import type { AreaTypeComponentProps } from '@src/lib/layout'
 import {
+  type HideOperation,
   getHideOpByArtifactId,
   onHide,
   onUnhide,
-  type HideOperation,
 } from '@src/lib/operations'
-import { useSingletons } from '@src/lib/boot'
-import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
-import { useModelingContext } from '@src/hooks/useModelingContext'
-import { sourceRangeFromRust } from '@src/lang/sourceRange'
-import { sendSelectionEvent } from '@src/lib/featureTree'
-import toast from 'react-hot-toast'
 import { err } from '@src/lib/trap'
-import { toUtf16 } from '@src/lang/errors'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+import { useSignals } from '@preact/signals-react/runtime'
+import toast from 'react-hot-toast'
 
-type SolidArtifact = Artifact & { type: 'compositeSolid' | 'sweep' }
+type SolidArtifact = Artifact & { type: 'compositeSolid' | 'sweep' | 'pattern' }
 
 export function BodiesPane(props: AreaTypeComponentProps) {
+  useSignals()
   const { kclManager } = useSingletons()
-  const bodies = kclManager.artifactGraph
-    ? getBodiesFromArtifactGraph(kclManager.artifactGraph)
-    : undefined
+  const execState = kclManager.execStateSignal.value
+  const artifactGraph = execState.artifactGraph
+  const operations = execState.operations
+  const bodies = getBodiesFromArtifactGraph(artifactGraph)
   const bodiesWithProps: Map<string, PropsOf<typeof BodyItem>> = new Map()
 
-  if (kclManager.operations) {
+  if (operations) {
     let i = 0
     for (let [id, artifact] of bodies || new Map()) {
+      const patternIndex =
+        artifact.type === 'pattern'
+          ? Math.max(0, artifact.copyIds.indexOf(id) + 1)
+          : undefined
+      const hideOperation =
+        getHideOpByArtifactId(operations, id) ??
+        (artifact.type === 'pattern' && patternIndex === 0
+          ? getHideOpByArtifactId(operations, artifact.sourceId)
+          : undefined)
       bodiesWithProps.set(id, {
         artifact,
+        artifactGraph,
         label: `Body ${i + 1}`,
-        hideOperation: getHideOpByArtifactId(kclManager.operations, id),
+        hideOperation,
+        engineEntityId: artifact.type === 'pattern' ? id : undefined,
+        patternIndex,
       })
       i++
     }
@@ -75,19 +93,61 @@ function BodiesList({
 function BodyItem({
   label,
   artifact,
+  artifactGraph,
   hideOperation,
-}: { label: string; artifact: SolidArtifact; hideOperation?: HideOperation }) {
+  engineEntityId,
+  patternIndex,
+}: {
+  label: string
+  artifact: SolidArtifact
+  artifactGraph: ArtifactGraph
+  hideOperation?: HideOperation
+  engineEntityId?: string
+  patternIndex?: number
+}) {
   const { kclManager } = useSingletons()
-  const { actor: modelingActor, send: modelingSend } = useModelingContext()
+  const {
+    actor: modelingActor,
+    context: modelingContext,
+    send: modelingSend,
+  } = useModelingContext()
 
   const sourceRange = sourceRangeFromRust(artifact.codeRef.range)
+  const codeRef = getCodeRefsByArtifactId(artifact.id, artifactGraph)?.[0] ?? {
+    range: sourceRange,
+    pathToNode: [],
+  }
+  const selection: Selection = {
+    artifact,
+    codeRef,
+    ...(engineEntityId ? { engineEntityId } : {}),
+    ...(patternIndex !== undefined ? { patternIndex } : {}),
+  }
+  const selections: Selections = {
+    graphSelections: [selection],
+    otherSelections: [],
+  }
 
-  const isSelected =
-    kclManager.editorState.selection.main.from >=
-      toUtf16(sourceRange[0], kclManager.code) &&
-    kclManager.editorState.selection.main.to <=
-      toUtf16(sourceRange[1], kclManager.code)
-  const onSelect = () =>
+  const isSelected = engineEntityId
+    ? modelingContext.selectionRanges.graphSelections.some(
+        (selection) => selection.engineEntityId === engineEntityId
+      )
+    : kclManager.editorState.selection.main.from >=
+        toUtf16(sourceRange[0], kclManager.code) &&
+      kclManager.editorState.selection.main.to <=
+        toUtf16(sourceRange[1], kclManager.code)
+  const onSelect = () => {
+    if (engineEntityId) {
+      modelingSend({
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+          selection,
+        },
+      })
+      return
+    }
+
     sendSelectionEvent(
       {
         sourceRange,
@@ -96,6 +156,7 @@ function BodyItem({
       },
       true
     )
+  }
 
   return (
     <li className="px-1 py-0.5 group/visibilityToggle">
@@ -113,6 +174,7 @@ function BodyItem({
                   ast: kclManager.ast,
                   artifactGraph: kclManager.artifactGraph,
                   modelingActor,
+                  objects: selections,
                 })
               } else {
                 onUnhide({
