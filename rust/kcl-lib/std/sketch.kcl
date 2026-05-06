@@ -9,7 +9,7 @@
 
 /// Start a new 2-dimensional sketch on a specific plane or face.
 ///
-/// This is part of sketch v1 and is soft deprecated in favor of
+/// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
 ///
 /// ### Sketch on Face Behavior
@@ -272,7 +272,7 @@
 ///
 /// tower = extrude(sideSketch, length = 1mm)
 /// ```
-@(impl = std_rust, feature_tree = true)
+@(impl = std_rust, feature_tree = true, deprecated_since = "2.0")
 export fn startSketchOn(
   /// Profile whose start is being used.
   @planeOrSolid: Solid | Plane,
@@ -288,7 +288,7 @@ export fn startSketchOn(
 
 /// Start a new profile at a given point.
 ///
-/// This is part of sketch v1 and is soft deprecated in favor of
+/// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
 ///
 /// ```kcl,legacySketch
@@ -342,7 +342,7 @@ export fn startSketchOn(
 ///   |> line(end = [-10, 0])
 ///   |> close()
 /// ```
-@(impl = std_rust, feature_tree = false)
+@(impl = std_rust, feature_tree = false, deprecated_since = "2.0")
 export fn startProfile(
   /// What to start the profile on.
   @startProfileOn: Plane | Face,
@@ -355,7 +355,7 @@ export fn startProfile(
 
 /// Sketch a rectangle.
 ///
-/// This is part of sketch v1 and is soft deprecated in favor of
+/// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
 ///
 /// A rectangle can be defined by its width, height, and location. Either the center or corner must be provided, but not both, to specify its location.
@@ -371,7 +371,7 @@ export fn startProfile(
 ///   |> rectangle(corner = [0, 0], width = 10, height = 5)
 //    |> extrude(length = 2)
 /// ```
-@(impl = std_rust, feature_tree = false)
+@(impl = std_rust, feature_tree = false, deprecated_since = "2.0")
 export fn rectangle(
   /// Sketch to extend, or plane or surface to sketch on.
   @sketchOrSurface: Sketch | Plane | Face,
@@ -393,7 +393,7 @@ export fn rectangle(
 /// Construct a 2-dimensional circle, of the specified radius, centered at
 /// the provided (x, y) origin point.
 ///
-/// This is part of sketch v1 and is soft deprecated in favor of
+/// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
 ///
 /// ```kcl,legacySketch
@@ -414,7 +414,7 @@ export fn rectangle(
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
-@(impl = std_rust, feature_tree = false)
+@(impl = std_rust, feature_tree = false, deprecated_since = "2.0")
 export fn circle(
   /// Sketch to extend, or plane or surface to sketch on.
   @sketchOrSurface: Sketch | Plane | Face,
@@ -1312,7 +1312,7 @@ export fn getBoundedEdge(
 
 /// Construct a circle derived from 3 points.
 ///
-/// This is part of sketch v1 and is soft deprecated in favor of
+/// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
 ///
 /// ```kcl,legacySketch
@@ -1320,7 +1320,7 @@ export fn getBoundedEdge(
 ///   |> circleThreePoint(p1 = [10,10], p2 = [20,8], p3 = [15,5])
 ///   |> extrude(length = 5)
 /// ```
-@(impl = std_rust, feature_tree = false)
+@(impl = std_rust, feature_tree = false, deprecated_since = "2.0")
 export fn circleThreePoint(
   /// Plane or surface to sketch on.
   @sketchOrSurface: Sketch | Plane | Face,
@@ -1336,7 +1336,7 @@ export fn circleThreePoint(
 
 /// Create a regular polygon with the specified number of sides that is either inscribed or circumscribed around a circle of the specified radius.
 ///
-/// This is part of sketch v1 and is soft deprecated in favor of
+/// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
 ///
 /// ```kcl,legacySketch
@@ -1363,7 +1363,7 @@ export fn circleThreePoint(
 ///   )
 /// example = extrude(square, length = 5)
 /// ```
-@(impl = std_rust, feature_tree = false)
+@(impl = std_rust, feature_tree = false, deprecated_since = "2.0")
 export fn polygon(
   /// Plane or surface to sketch on.
   @sketchOrSurface: Sketch | Plane | Face,
@@ -1847,8 +1847,8 @@ export fn sweep(
 /// loft(
 ///   [
 ///     sketch003.arc1,
-///     sketch002.arc1,
-///     sketch001.arc1
+///     sketch001.arc1,
+///     sketch002.arc1
 ///   ],
 ///   bodyType = SURFACE,
 /// )
@@ -2308,9 +2308,9 @@ export fn profileStartY(
 
 /// Extend the current sketch with a new involute circular curve.
 ///
-/// This is part of sketch v1 and is soft deprecated in favor of
-/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
-/// of involute circular is still under development.
+/// This is part of sketch v1 and is deprecated in favor of
+/// [sketch-solve](/docs/kcl-std/modules/std-solver) and the
+/// [gear module](/docs/kcl-std/modules/std-gear).
 ///
 /// ```kcl,legacySketch
 /// a = 10
@@ -2364,7 +2364,7 @@ export fn profileStartY(
 ///   // Extrude the gear to the specified height
 ///   |> extrude(length = gearHeight)
 /// ```
-@(impl = std_rust, feature_tree = false)
+@(impl = std_rust, feature_tree = false, deprecated_since = "2.0")
 export fn involuteCircular(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -2390,7 +2390,7 @@ export fn involuteCircular(
 
 /// Extend the current sketch with a new straight line.
 ///
-/// This is part of sketch v1 and is soft deprecated in favor of
+/// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
 ///
 /// ```kcl,legacySketch
@@ -2415,7 +2415,7 @@ export fn involuteCircular(
 ///   |> close()
 ///   |> extrude(length = 5)
 /// ```
-@(impl = std_rust, feature_tree = false)
+@(impl = std_rust, feature_tree = false, deprecated_since = "2.0")
 export fn line(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -2431,7 +2431,7 @@ export fn line(
 /// Draw a line relative to the current origin to a specified distance away
 /// from the current position along the 'x' axis.
 ///
-/// This is part of sketch v1 and is soft deprecated in favor of
+/// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
 ///
 /// ```kcl,legacySketch
@@ -2453,7 +2453,7 @@ export fn line(
 ///
 /// example = extrude(exampleSketch, length = 10)
 /// ```
-@(impl = std_rust, feature_tree = false)
+@(impl = std_rust, feature_tree = false, deprecated_since = "2.0")
 export fn xLine(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -2469,7 +2469,7 @@ export fn xLine(
 /// Draw a line relative to the current origin to a specified distance away
 /// from the current position along the 'y' axis.
 ///
-/// This is part of sketch v1 and is soft deprecated in favor of
+/// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
 ///
 /// ```kcl,legacySketch
@@ -2486,7 +2486,7 @@ export fn xLine(
 ///
 /// example = extrude(exampleSketch, length = 10)
 /// ```
-@(impl = std_rust, feature_tree = false)
+@(impl = std_rust, feature_tree = false, deprecated_since = "2.0")
 export fn yLine(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -2502,7 +2502,7 @@ export fn yLine(
 /// Draw a line segment relative to the current origin using the polar
 /// measure of some angle and distance.
 ///
-/// This is part of sketch v1 and is soft deprecated in favor of
+/// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
 ///
 /// ```kcl,legacySketch
@@ -2519,7 +2519,7 @@ export fn yLine(
 ///
 /// example = extrude(exampleSketch, length = 10)
 /// ```
-@(impl = std_rust, feature_tree = false)
+@(impl = std_rust, feature_tree = false, deprecated_since = "2.0")
 export fn angledLine(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -2543,7 +2543,7 @@ export fn angledLine(
 /// such that the newly created line intersects the desired target line
 /// segment.
 ///
-/// This is part of sketch v1 and is soft deprecated in favor of
+/// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
 ///
 /// ```kcl,legacySketch
@@ -2561,7 +2561,7 @@ export fn angledLine(
 ///
 /// example = extrude(exampleSketch, length = 10)
 /// ```
-@(impl = std_rust, feature_tree = false)
+@(impl = std_rust, feature_tree = false, deprecated_since = "2.0")
 export fn angledLineThatIntersects(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -2578,7 +2578,7 @@ export fn angledLineThatIntersects(
 /// Construct a line segment from the current origin back to the profile's
 /// origin, ensuring the resulting 2-dimensional sketch is not open-ended.
 ///
-/// This is part of sketch v1 and is soft deprecated in favor of
+/// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
 ///
 /// If you want to perform some 3-dimensional operation on a sketch, like
@@ -2604,7 +2604,7 @@ export fn angledLineThatIntersects(
 ///
 /// example = extrude(exampleSketch, length = 10)
 /// ```
-@(impl = std_rust, feature_tree = false)
+@(impl = std_rust, feature_tree = false, deprecated_since = "2.0")
 export fn close(
   /// The sketch you want to close.
   @sketch: Sketch,
@@ -2614,7 +2614,7 @@ export fn close(
 
 /// Draw a curved line segment along an imaginary circle.
 ///
-/// This is part of sketch v1 and is soft deprecated in favor of
+/// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
 ///
 /// The arc is constructed such that the current position of the sketch is
@@ -2649,7 +2649,7 @@ export fn close(
 ///   |> close()
 /// example = extrude(exampleSketch, length = 10)
 /// ```
-@(impl = std_rust, feature_tree = false)
+@(impl = std_rust, feature_tree = false, deprecated_since = "2.0")
 export fn arc(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -2676,7 +2676,7 @@ export fn arc(
 /// some part of an imaginary circle until it reaches the desired (x, y)
 /// coordinates.
 ///
-/// This is part of sketch v1 and is soft deprecated in favor of
+/// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
 ///
 /// When using radius and angle, draw a curved line segment along part of an
@@ -2729,7 +2729,7 @@ export fn arc(
 ///
 /// example = extrude(exampleSketch, length = 10)
 /// ```
-@(impl = std_rust, feature_tree = false)
+@(impl = std_rust, feature_tree = false, deprecated_since = "2.0")
 export fn tangentialArc(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -2752,7 +2752,7 @@ export fn tangentialArc(
 /// the desired (x, y), using a number of control points to shape the curve's
 /// shape.
 ///
-/// This is part of sketch v1 and is soft deprecated in favor of
+/// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
 /// of bezier curve is still under development.
 ///
@@ -2780,7 +2780,7 @@ export fn tangentialArc(
 ///   |> close()
 ///   |> extrude(length = 10)
 /// ```
-@(impl = std_rust, feature_tree = false)
+@(impl = std_rust, feature_tree = false, deprecated_since = "2.0")
 export fn bezierCurve(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -2802,7 +2802,7 @@ export fn bezierCurve(
 
 /// Use a 2-dimensional sketch to cut a hole in another 2-dimensional sketch.
 ///
-/// This is part of sketch v1 and is soft deprecated in favor of
+/// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
 ///
 /// ```kcl,legacySketch
@@ -2834,7 +2834,7 @@ export fn bezierCurve(
 ///     |> subtract2d(tool = squareHoleSketch())
 /// example = extrude(exampleSketch, length = 1)
 /// ```
-@(impl = std_rust, feature_tree = true)
+@(impl = std_rust, feature_tree = true, deprecated_since = "2.0")
 export fn subtract2d(
   /// Which sketch should this path be added to?
   @sketch: Sketch,

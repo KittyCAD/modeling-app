@@ -6,6 +6,7 @@ import type path from 'path'
 import type { dialog, shell } from 'electron'
 import type { WebContentSendPayload } from 'menu/channels'
 import type { ZooLabel } from 'menu/roles'
+import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
 
 // Extend the interface with additional custom properties
 declare module 'electron' {
@@ -15,6 +16,11 @@ declare module 'electron' {
 }
 
 type EnvFn = (value?: string) => string
+
+export type DeviceFlowAuthorization = {
+  userCode: string
+  verificationUri: string
+}
 
 export interface IElectronAPI {
   resizeWindow: (width: number, height: number) => Promise<void>
@@ -31,7 +37,7 @@ export interface IElectronAPI {
   }) => Promise<string>
   showInFolder: typeof shell.showItemInFolder
   /** Require to be called first before {@link loginWithDeviceFlow} */
-  startDeviceFlow: (host: string) => Promise<string>
+  startDeviceFlow: (host: string) => Promise<DeviceFlowAuthorization>
   /** Registered by first calling {@link startDeviceFlow}, which sets up the device flow handle */
   loginWithDeviceFlow: () => Promise<string>
   platform: typeof process.env.platform
@@ -90,7 +96,10 @@ export interface IElectronAPI {
   onUpdateChecking: (callback: () => void) => Electron.IpcRenderer
   onUpdateNotAvailable: (callback: () => void) => Electron.IpcRenderer
   onUpdateDownloadStart: (
-    callback: (value: { version: string }) => void
+    callback: (value: AutoUpdateDownloadProgress) => void
+  ) => Electron.IpcRenderer
+  onUpdateDownloadProgress: (
+    callback: (value: AutoUpdateDownloadProgress) => void
   ) => Electron.IpcRenderer
   onUpdateDownloaded: (
     callback: (value: { version: string; releaseNotes: string }) => void

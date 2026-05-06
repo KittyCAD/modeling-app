@@ -207,7 +207,7 @@ pub mod front {
             Angle, Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, Distance, EqualRadius,
             ExistingSegmentCtor, Fixed, FixedPoint, Freedom, Horizontal, Line, LineCtor, LinesEqualLength, Midpoint,
             NewSegmentInfo, Parallel, Perpendicular, Point, Point2d, PointCtor, Segment, SegmentCtor, Sketch,
-            SketchApi, SketchCtor, StartOrEnd, Tangent, Vertical,
+            SketchApi, SketchCtor, StartOrEnd, Symmetric, Tangent, Vertical,
         },
         // Re-export trim module items
         trim::{
@@ -312,6 +312,13 @@ impl Program {
     ) -> Result<Self, KclError> {
         Ok(Self {
             ast: self.ast.change_default_units(length_units)?,
+            original_file_contents: self.original_file_contents.clone(),
+        })
+    }
+
+    pub fn change_kcl_version(&self, kcl_version: Option<String>) -> Result<Self, KclError> {
+        Ok(Self {
+            ast: self.ast.change_kcl_version(kcl_version)?,
             original_file_contents: self.original_file_contents.clone(),
         })
     }

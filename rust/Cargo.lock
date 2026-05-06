@@ -832,9 +832,9 @@ dependencies = [
 
 [[package]]
 name = "data-encoding"
-version = "2.10.0"
+version = "2.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d7a1e2f27636f116493b8b860f5546edb47c8d8f8ea73e1d2a20be88e28d1fea"
+checksum = "a4ae5f15dda3c708c0ade84bfee31ccab44a3da4f88015ed22f63732abe300c8"
 
 [[package]]
 name = "defer"
@@ -2303,7 +2303,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.147"
+version = "0.1.150"
 dependencies = [
  "anyhow",
  "clap",
@@ -2314,7 +2314,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.2.147"
+version = "0.2.150"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2323,7 +2323,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.147"
+version = "0.1.150"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -2333,7 +2333,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-error"
-version = "0.2.147"
+version = "0.2.150"
 dependencies = [
  "miette",
  "serde",
@@ -2343,7 +2343,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.147"
+version = "0.2.150"
 dependencies = [
  "anyhow",
  "clap",
@@ -2364,7 +2364,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.147"
+version = "0.1.150"
 dependencies = [
  "anyhow",
  "clap",
@@ -2384,7 +2384,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.147"
+version = "0.2.150"
 dependencies = [
  "ahash",
  "anyhow",
@@ -2462,14 +2462,14 @@ dependencies = [
  "wasm-bindgen-futures",
  "web-sys",
  "web-time",
- "winnow 0.7.15",
+ "winnow 1.0.2",
  "zduny-wasm-timer",
  "zip",
 ]
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.147"
+version = "0.3.150"
 dependencies = [
  "anyhow",
  "kcl-lib",
@@ -2485,7 +2485,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.2.147"
+version = "0.2.150"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -2498,7 +2498,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-to-core"
-version = "0.1.147"
+version = "0.1.150"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2512,7 +2512,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.147"
+version = "0.1.150"
 dependencies = [
  "anyhow",
  "console_error_panic_hook",
@@ -2580,9 +2580,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.187"
+version = "0.2.195"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8a8ea8b8d25ee014d3ef724d515e1f3ec3019360c173afa54027b369b09f59ac"
+checksum = "adea5e242fa7d56bc95a51df88654b5fe26d06f0f62b6619e3732440ec7d42e3"
 dependencies = [
  "anyhow",
  "bon",
@@ -2609,9 +2609,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds-macros"
-version = "0.1.12"
+version = "0.1.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fb9bb1a594541b878adc1c8dcb821328774bf7aa09b65b104a206b1291a5235c"
+checksum = "eb4ba190f74f6d32f4607ecac4bdebd4a935d4943b8ca8369305e6e7a59b5976"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -2621,9 +2621,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
-version = "0.1.13"
+version = "0.1.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fdb4ee23cc996aa2dca7584d410e8826e08161e1ac4335bb646d5ede33f37cb3"
+checksum = "743b6533d1848de67e3455a28614a2b7896807ab0d3358ccd3ea1863de3c4e6b"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -5073,7 +5073,7 @@ dependencies = [
  "toml_datetime 1.1.0+spec-1.1.0",
  "toml_parser",
  "toml_writer",
- "winnow 1.0.0",
+ "winnow 1.0.2",
 ]
 
 [[package]]
@@ -5118,7 +5118,7 @@ dependencies = [
  "toml_datetime 1.1.0+spec-1.1.0",
  "toml_parser",
  "toml_writer",
- "winnow 1.0.0",
+ "winnow 1.0.2",
 ]
 
 [[package]]
@@ -5127,7 +5127,7 @@ version = "1.1.0+spec-1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2334f11ee363607eb04df9b8fc8a13ca1715a72ba8662a26ac285c98aabb4011"
 dependencies = [
- "winnow 1.0.0",
+ "winnow 1.0.2",
 ]
 
 [[package]]
@@ -6028,9 +6028,9 @@ dependencies = [
 
 [[package]]
 name = "winnow"
-version = "1.0.0"
+version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a90e88e4667264a994d34e6d1ab2d26d398dcdca8b7f52bec8668957517fc7d8"
+checksum = "2ee1708bef14716a11bae175f579062d4554d95be2c6829f518df847b7b3fdd0"
 dependencies = [
  "memchr",
 ]

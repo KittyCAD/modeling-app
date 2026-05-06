@@ -739,7 +739,7 @@ type makeTemplateReturn = {
   ) => makeTemplateReturn
 }
 
-const escapeRegExp = (string: string) => {
+export const escapeRegExp = (string: string) => {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // $& means the whole matched string
 }
 
@@ -841,8 +841,16 @@ export const doExport = async (
   rootDir: string,
   page: Page,
   cmdBar: CmdBarFixture,
+  testInfo: TestInfo,
   exportFrom: 'dropdown' | 'sidebarButton' | 'commandBar' = 'dropdown'
 ): Promise<Paths> => {
+  const relPathToSpec = path.relative(testInfo.project.testDir, testInfo.file)
+  const specSubdir = path.dirname(relPathToSpec)
+  const snapshotsDirName = `${path.basename(testInfo.file)}-snapshots`
+  const exportFolder =
+    specSubdir === '.' || specSubdir === ''
+      ? path.join(testInfo.project.testDir, snapshotsDirName)
+      : path.join(testInfo.project.testDir, specSubdir, snapshotsDirName)
   if (exportFrom === 'dropdown') {
     await page.getByTestId('project-sidebar-toggle').click()
 
@@ -897,9 +905,12 @@ export const doExport = async (
 
   // Handle download
   const downloadLocationer = (extra = '', isImage = false) =>
-    `./e2e/playwright/export-snapshots/${output.type}-${
-      'storage' in output ? output.storage : ''
-    }${extra}.${isImage ? 'png' : output.type}`
+    path.join(
+      exportFolder,
+      `${output.type}-${'storage' in output ? output.storage : ''}${extra}.${
+        isImage ? 'png' : output.type
+      }`
+    )
   const downloadLocation = downloadLocationer()
 
   if (output.type === 'step') {
@@ -992,7 +1003,6 @@ export async function setup(
               ...TEST_SETTINGS.app?.appearance,
               theme: 'dark',
             },
-            ...testProjectSettings,
             onboarding_status: 'dismissed',
           },
           project: {

@@ -5,6 +5,8 @@ excerpt: "Draw a line relative to the current origin to a specified distance awa
 layout: manual
 ---
 
+**WARNING:** This function is deprecated as of KCL 2.0.
+
 Draw a line relative to the current origin to a specified distance away from the current position along the 'x' axis.
 
 ```kcl
@@ -16,7 +18,7 @@ xLine(
 ): Sketch
 ```
 
-This is part of sketch v1 and is soft deprecated in favor of
+This is part of sketch v1 and is deprecated in favor of
 [sketch-solve](/docs/kcl-std/modules/std-solver).
 
 ### Arguments

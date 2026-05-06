@@ -1,7 +1,8 @@
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-import { ARCHIVE_DIR, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
+import { APP_NAME, ARCHIVE_DIR, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 
+import type { FileEntry, Project } from '@src/lib/project'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -46,6 +47,29 @@ export const PATHS = {
   ONBOARDING: '/onboarding',
   TELEMETRY: '/telemetry',
 } as const
+
+export function getRouterSearchFromRequestUrl(
+  requestUrl: string,
+  usesHashRouter: boolean
+): string {
+  const url = new URL(requestUrl)
+  if (!usesHashRouter || !url.hash) {
+    return url.search
+  }
+
+  const hashPath = url.hash.slice(1)
+  const searchIndex = hashPath.indexOf('?')
+  if (searchIndex === -1) {
+    return url.search
+  }
+
+  const hashSearch = hashPath.slice(searchIndex)
+  const nestedHashIndex = hashSearch.indexOf('#')
+  const routerSearch =
+    nestedHashIndex === -1 ? hashSearch : hashSearch.slice(0, nestedHashIndex)
+
+  return routerSearch === '?' ? '' : routerSearch
+}
 
 export async function getProjectMetaByRouteId(
   readAppSettingsFile: (
@@ -224,6 +248,35 @@ export function webSafePathSplit(targetPath: string): string[] {
 export function webSafeJoin(paths: string[]): string {
   // eslint-disable-next-line no-restricted-syntax
   return paths.join('/')
+}
+
+export function toWebSafePath(targetPath: string, sep = fsZds.sep): string {
+  return sep && sep !== '/' ? targetPath.replaceAll(sep, '/') : targetPath
+}
+
+export function toProjectRelativePath(
+  projectPath: string,
+  filePath: string
+): string {
+  return toWebSafePath(fsZds.relative(projectPath, filePath))
+}
+
+export function getProjectRelativeFilePath(
+  project?: Project,
+  file?: FileEntry
+): string {
+  if (!file) {
+    return APP_NAME
+  }
+
+  if (project?.path && file.path) {
+    const relativeFilePath = toProjectRelativePath(project.path, file.path)
+    if (relativeFilePath) {
+      return relativeFilePath
+    }
+  }
+
+  return toWebSafePath(file.name || APP_NAME)
 }
 
 /**

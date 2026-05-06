@@ -138,21 +138,6 @@ description: Result of parsing coilover-assembly.kcl
       }
     ],
     "moduleId": 0,
-    "nonCodeMeta": {
-      "nonCodeNodes": {},
-      "startNodes": [
-        {
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "newLine"
-          }
-        }
-      ]
-    },
     "start": 0
   }
 }

@@ -210,7 +210,9 @@ fn word(i: &mut Input<'_>) -> ModalResult<Token> {
 
 fn operator(i: &mut Input<'_>) -> ModalResult<Token> {
     let (value, range) = alt((
-        ">=", "<=", "==", "=>", "!=", "|>", "*", "+", "-", "/", "%", "=", "<", ">", r"\", "^", "||", "&&", "|", "&",
+        alt((">=", "<=", "==", "=>", "!=", "|>", "*", "+", "-")),
+        alt(("/", "%", "=", "<", ">", r"\", "^", "||", "&&")),
+        alt(("|", "&")),
     ))
     .with_span()
     .parse_next(i)?;

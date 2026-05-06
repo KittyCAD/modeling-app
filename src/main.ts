@@ -33,6 +33,7 @@ import {
   OAUTH2_DEVICE_CLIENT_ID,
   ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
+import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { discoverMachineApi } from '@src/lib/discoverMachineApi'
 import { registerFileProtocolCsp } from '@src/lib/csp'
@@ -80,6 +81,8 @@ type MachineApiSignal = 'on' | 'off'
 
 // Check the command line arguments for a project path
 const args = parseCLIArgs(process.argv)
+let startupMacOpenFiles: string[] = []
+let startupOpenUrls: string[] = []
 
 // @ts-ignore: TS1343
 const viteEnv = import.meta.env
@@ -118,6 +121,42 @@ if (!singleInstanceLock && process.env.NODE_ENV !== 'test') {
   app.quit()
 } else {
   registerStartupListeners()
+}
+
+const consumeStartupPathOrUrl = (): string | undefined => {
+  const pathOrUrl = getPathOrUrlFromArgs(args)
+  if (pathOrUrl?.startsWith(ZOO_STUDIO_PROTOCOL + '://')) {
+    console.log('Retrieved deep link from CLI args', pathOrUrl)
+    return pathOrUrl
+  }
+
+  // macOS: open-url events that were received before the app is ready.
+  if (startupOpenUrls[0]) {
+    const openUrl = startupOpenUrls[0]
+    startupOpenUrls = []
+    console.log('Retrieved deep link from open-url', openUrl)
+    return openUrl
+  }
+
+  // The dev and test launchers pass "." as an arg. Do not turn that into a
+  // startup project route.
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL || process.env.NODE_ENV === 'test') {
+    return undefined
+  }
+
+  // macOS: open-file events that were received before the app is ready.
+  if (startupMacOpenFiles[0]) {
+    const filePath = startupMacOpenFiles[0]
+    startupMacOpenFiles = []
+    return filePath
+  }
+
+  if (pathOrUrl) {
+    args._[1] = ''
+    return pathOrUrl
+  }
+
+  return undefined
 }
 
 const createWindow = (pathToOpen?: string): BrowserWindow => {
@@ -182,25 +221,6 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
     })
   })
 
-  // Deep Link: Case of a cold start from Windows or Linux
-  const pathOrUrl = getPathOrUrlFromArgs(args)
-  if (
-    !pathToOpen &&
-    pathOrUrl &&
-    pathOrUrl.startsWith(ZOO_STUDIO_PROTOCOL + '://')
-  ) {
-    pathToOpen = pathOrUrl
-    console.log('Retrieved deep link from CLI args', pathToOpen)
-  }
-
-  // Deep Link: Case of a second window opened for macOS
-  // @ts-ignore
-  if (!pathToOpen && global['openUrls'] && global['openUrls'][0]) {
-    // @ts-ignore
-    pathToOpen = global['openUrls'][0]
-    console.log('Retrieved deep link from open-url', pathToOpen)
-  }
-
   const pathIsCustomProtocolLink =
     pathToOpen?.startsWith(ZOO_STUDIO_PROTOCOL) ?? false
 
@@ -230,8 +250,8 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
         })
         .catch(reportRejection)
     } else {
-      // otherwise we're trying to open a local file from the command line
-      getProjectPathAtStartup(initPromise, pathToOpen)
+      // otherwise we're trying to resolve a local file/project path
+      resolveProjectPathForWindow(initPromise, pathToOpen)
         .then(async (projectPath) => {
           const startIndex = path.join(
             __dirname,
@@ -269,6 +289,12 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
   })
 
   return newWindow
+}
+
+const menuActions = {
+  openNewWindow: () => {
+    createWindow()
+  },
 }
 
 interface LocalDeviceState {
@@ -343,7 +369,7 @@ app.on('ready', (event, data) => {
   registerFileProtocolCsp()
 
   // Create the mainWindow
-  mainWindow = createWindow()
+  mainWindow = createWindow(consumeStartupPathOrUrl())
   // Set menu application to null to avoid default electron menu
   Menu.setApplicationMenu(null)
 })
@@ -473,6 +499,12 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
   })
 
   const handle = await client.deviceAuthorization()
+  const verificationUri =
+    handle.verification_uri_complete || handle.verification_uri
+
+  if (!verificationUri) {
+    return Promise.reject(new Error('No verification URI received'))
+  }
 
   // Register this handle to be used later.
   ipcMain.handleOnce('loginWithDeviceFlow', async () => {
@@ -483,7 +515,7 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
         )
       )
     }
-    shell.openExternal(handle.verification_uri_complete).catch(reportRejection)
+    shell.openExternal(verificationUri).catch(reportRejection)
 
     // Wait for the user to login.
     try {
@@ -499,8 +531,10 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
     return Promise.reject(new Error('No access token received'))
   })
 
-  // Return the user code so the app can display it.
-  return handle.user_code
+  return {
+    userCode: handle.user_code,
+    verificationUri,
+  }
 })
 
 // Used to find other devices on the local network, e.g. 3D printers, CNC machines, etc.
@@ -535,11 +569,11 @@ ipcMain.handle('create-menu', (event, data) => {
   }
 
   if (page === 'project' && mainWindow) {
-    buildAndSetMenuForProjectPage(mainWindow)
+    buildAndSetMenuForProjectPage(mainWindow, menuActions)
   } else if (page === 'modeling' && mainWindow) {
-    buildAndSetMenuForModelingPage(mainWindow)
+    buildAndSetMenuForModelingPage(mainWindow, menuActions)
   } else if (page === 'fallback' && mainWindow) {
-    buildAndSetMenuForFallback(mainWindow)
+    buildAndSetMenuForFallback(mainWindow, menuActions)
   }
 
   scheduleMenuGC()
@@ -607,19 +641,17 @@ app.on('ready', () => {
     console.log('update-available', info)
   })
 
-  appUpdater.prependOnceListener('download-progress', (progress) => {
-    // For now, we'll send nothing and just start a loading spinner.
-    // See below for a TODO to send progress data to the renderer.
-    console.log('update-download-start', {
-      version: '',
-    })
-    mainWindow?.webContents.send('update-download-start', progress)
-  })
+  appUpdater.prependOnceListener(
+    'download-progress',
+    (progress: AutoUpdateDownloadProgress) => {
+      console.log('update-download-start', progress)
+      mainWindow?.webContents.send('update-download-start', progress)
+    }
+  )
 
-  appUpdater.on('download-progress', (progress) => {
-    // TODO: in a future PR (https://github.com/KittyCAD/modeling-app/issues/3994)
-    // send this data to mainWindow to show a progress bar for the download.
+  appUpdater.on('download-progress', (progress: AutoUpdateDownloadProgress) => {
     console.log('download-progress', progress)
+    mainWindow?.webContents.send('update-download-progress', progress)
   })
 
   appUpdater.on('update-downloaded', (info) => {
@@ -683,9 +715,9 @@ app.on('ready', () => {
   })
 })
 
-const getProjectPathAtStartup = async (
+const resolveProjectPathForWindow = async (
   initPromise: Promise<ModuleType>,
-  filePath?: string
+  pathToOpen?: string
 ): Promise<string | null> => {
   // Make sure we have WASM, because we're about to use it indirectly.
   const wasmInstance = await initPromise
@@ -697,37 +729,7 @@ const getProjectPathAtStartup = async (
     return null
   }
 
-  let projectPath: string | null = filePath || null
-  if (projectPath === null) {
-    // macOS: open-file events that were received before the app is ready
-    const macOpenFiles: string[] = (global as any).macOpenFiles
-    if (macOpenFiles && macOpenFiles && macOpenFiles.length > 0) {
-      projectPath = macOpenFiles[0] // We only do one project at a time
-    }
-    // Reset this so we don't accidentally use it again.
-    const macOpenFilesEmpty: string[] = []
-    // @ts-ignore
-    global['macOpenFiles'] = macOpenFilesEmpty
-
-    // macOS: open-url events that were received before the app is ready
-    const getOpenUrls: string[] = (global as any).getOpenUrls
-    if (getOpenUrls && getOpenUrls.length > 0) {
-      projectPath = getOpenUrls[0] // We only do one project at a
-    }
-    // Reset this so we don't accidentally use it again.
-    // @ts-ignore
-    global['getOpenUrls'] = []
-
-    // Check if we have a project path in the command line arguments
-    // If we do, we will load the project at that path
-    if (args._.length > 1) {
-      if (args._[1].length > 0) {
-        projectPath = args._[1]
-        // Reset all this value so we don't accidentally use it again.
-        args._[1] = ''
-      }
-    }
-  }
+  const projectPath: string | null = pathToOpen || null
 
   if (projectPath) {
     // We have a project path, load the project information.
@@ -764,9 +766,7 @@ function registerStartupListeners() {
    * macOS: when someone drops a file to the not-yet running VSCode, the open-file event fires even before
    * the app-ready event. We listen very early for open-file and remember this upon startup as path to open.
    */
-  const macOpenFiles: string[] = []
-  // @ts-ignore
-  global['macOpenFiles'] = macOpenFiles
+  startupMacOpenFiles = []
   app.on('open-file', function (event, path) {
     event.preventDefault()
 
@@ -774,16 +774,14 @@ function registerStartupListeners() {
     if (mainWindow) {
       createWindow(path)
     } else {
-      macOpenFiles.push(path)
+      startupMacOpenFiles.push(path)
     }
   })
 
   /**
    * macOS: react to open-url requests (including Deep Link on second instances)
    */
-  const openUrls: string[] = []
-  // @ts-ignore
-  global['openUrls'] = openUrls
+  startupOpenUrls = []
   const onOpenUrl = function (
     event: { preventDefault: () => void },
     url: string
@@ -794,7 +792,7 @@ function registerStartupListeners() {
     if (mainWindow) {
       createWindow(url)
     } else {
-      openUrls.push(url)
+      startupOpenUrls.push(url)
     }
   }
 
