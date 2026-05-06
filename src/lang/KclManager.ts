@@ -1159,8 +1159,23 @@ export class KclManager extends File {
   private getExecutionExtension(
     shouldAutomaticallyRender = this.getAutomaticallyRenderSetting()
   ) {
-    return shouldAutomaticallyRender ? this.executeKclEffect : []
+    return shouldAutomaticallyRender
+      ? this.executeKclEffect
+      : this.manualRenderHotkeyEffect
   }
+
+  private manualRenderHotkeyEffect = keymap.of([
+    {
+      key: 'Mod-Enter',
+      run: () => {
+        if (this._hasEditsSinceLastExecution.value) {
+          this.executeCode().catch(reportRejection)
+        }
+        return true
+      },
+      preventDefault: true,
+    },
+  ])
 
   setEditorAutomaticallyRender(shouldAutomaticallyRender: boolean) {
     if (this._automaticallyRenderEnabled === shouldAutomaticallyRender) {

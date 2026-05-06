@@ -1,10 +1,13 @@
 import { defineRegistryItem, provide } from '@kittycad/registry'
 import { createElement } from 'react'
 import { useSignals } from '@preact/signals-react/runtime'
+import { useHotkeys } from 'react-hotkeys-hook'
 import { useSelector } from '@xstate/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
+import usePlatform from '@src/hooks/usePlatform'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
 import type { CodeEditorHeaderItemProps } from '@src/registry/contracts/codeEditor'
 import { codeEditorHeaderItemsValueSpec } from '@src/registry/contracts/codeEditor'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
@@ -16,8 +19,11 @@ type BooleanSettingSnapshot = {
   current: boolean
 }
 
+const RENDER_HOTKEY = 'mod+enter'
+
 function RenderHeaderItem({ app, className }: CodeEditorHeaderItemProps) {
   useSignals()
+  const platform = usePlatform()
   const enabled = useSelector(app.settings.actor, (state) => {
     const textEditorSettings = state.context.textEditor as Record<
       string,
@@ -28,6 +34,26 @@ function RenderHeaderItem({ app, className }: CodeEditorHeaderItemProps) {
   const executionService = app.registry.signal(executingEditorService).value
   const hasEditsSinceLastExecution =
     executionService?.hasEditsSinceLastExecution.value ?? false
+  const renderHotkeyLabel = hotkeyDisplay(RENDER_HOTKEY, platform)?.replace(
+    'enter',
+    'Enter'
+  )
+
+  useHotkeys(
+    RENDER_HOTKEY,
+    (event) => {
+      event.preventDefault()
+      if (!hasEditsSinceLastExecution) {
+        return
+      }
+      executionService?.executeCode().catch(reportRejection)
+    },
+    {
+      enabled: !enabled && !!executionService,
+      preventDefault: true,
+    },
+    [executionService, hasEditsSinceLastExecution]
+  )
 
   if (enabled || !executionService) {
     return null
@@ -66,9 +92,16 @@ function RenderHeaderItem({ app, className }: CodeEditorHeaderItemProps) {
       {
         position: 'bottom-right',
         hoverOnly: true,
-        contentClassName: 'text-sm whitespace-nowrap',
+        contentClassName: 'text-sm whitespace-nowrap flex items-center gap-3',
       },
-      tooltipText
+      createElement('span', null, tooltipText),
+      hasEditsSinceLastExecution && renderHotkeyLabel
+        ? createElement(
+            'kbd',
+            { className: 'hotkey tooltip' },
+            renderHotkeyLabel
+          )
+        : null
     )
   )
 }
