@@ -2,7 +2,6 @@ import { useApp, useSingletons } from '@src/lib/boot'
 import { useEffect, useRef } from 'react'
 import type { MutableRefObject } from 'react'
 
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { AxisNames } from '@src/lib/constants'
@@ -36,6 +35,8 @@ export default function AxisGizmo() {
   const raycasterIntersect = useRef<Intersection | null>(null)
   const cameraPassiveUpdateTimer = useRef(0)
   const disableOrbitRef = useRef(false)
+  const isPointerOverRef = useRef(false)
+  const isHoverRefreshPausedRef = useRef(false)
 
   // Temporary fix for #4040:
   // Disable gizmo orbiting in sketch mode
@@ -63,6 +64,9 @@ export default function AxisGizmo() {
 
     const canvas = canvasRef.current
     const wrapperElement = wrapperRef.current
+    isPointerOverRef.current = false
+    isHoverRefreshPausedRef.current = false
+
     const renderer = new WebGLRenderer({
       canvas,
       antialias: true,
@@ -80,6 +84,14 @@ export default function AxisGizmo() {
 
     const raycaster = new Raycaster()
     const raycasterObjects = [...gizmoAxisHeads]
+    const resetRayCast = () => {
+      for (const object of raycasterObjects) {
+        object.scale.setScalar(1)
+      }
+      updateAxisLabelHover(axisLabelObjects)
+      raycasterIntersect.current = null
+      renderGizmo(renderer, scene, camera)
+    }
     const doRayCast = (mouse: Vector2) => {
       // If orbits are disabled, skip click logic
       if (!disableOrbitRef.current) {
@@ -94,26 +106,59 @@ export default function AxisGizmo() {
           axisLabelObjects
         )
       } else {
-        for (const object of raycasterObjects) {
-          object.scale.setScalar(1)
-        }
-        updateAxisLabelHover(axisLabelObjects)
-        raycasterIntersect.current = null // Clear intersection
+        resetRayCast()
       }
+    }
+    const updateHoverAtMouse = (mouse: Vector2) => {
+      if (isHoverRefreshPausedRef.current) {
+        return
+      }
+      doRayCast(mouse)
+    }
+
+    const clock = new Clock()
+    const clientCamera = kclManager.sceneInfra.camControls.camera
+    const currentQuaternion = new Quaternion().copy(clientCamera.quaternion)
+    const mouse = new Vector2()
+    mouse.x = 1 // fix initial mouse position issue
+    let isDisposed = false
+    const refreshHoverAfterCameraUpdate = () => {
+      if (isDisposed) {
+        return
+      }
+
+      isHoverRefreshPausedRef.current = false
+      currentQuaternion.copy(
+        kclManager.sceneInfra.camControls.camera.quaternion
+      )
+      camera.position.set(0, 0, 1).applyQuaternion(currentQuaternion)
+      camera.quaternion.copy(currentQuaternion)
+      if (isPointerOverRef.current) {
+        doRayCast(mouse)
+      } else {
+        resetRayCast()
+      }
+    }
+    const onAxisClick = (axisName: AxisNames) => {
+      isHoverRefreshPausedRef.current = true
+      resetRayCast()
+      void kclManager.sceneInfra.camControls
+        .updateCameraToAxis(axisName)
+        .catch(reportRejection)
+        .finally(refreshHoverAfterCameraUpdate)
     }
 
     const { disposeMouseEvents } = initializeMouseEvents(
       canvas,
       raycasterIntersect,
-      kclManager.sceneInfra,
       disableOrbitRef,
-      doRayCast,
+      isPointerOverRef,
+      updateHoverAtMouse,
+      resetRayCast,
+      onAxisClick,
+      mouse,
       wrapperElement
     )
-
-    const clock = new Clock()
-    const clientCamera = kclManager.sceneInfra.camControls.camera
-    const currentQuaternion = new Quaternion().copy(clientCamera.quaternion)
 
     const animate = () => {
       const delta = clock.getDelta()
@@ -124,7 +169,11 @@ export default function AxisGizmo() {
         delta,
         cameraPassiveUpdateTimer
       )
-      renderGizmo(renderer, scene, camera)
+      if (isPointerOverRef.current && !isHoverRefreshPausedRef.current) {
+        doRayCast(mouse)
+      } else {
+        renderGizmo(renderer, scene, camera)
+      }
     }
     kclManager.sceneInfra.camControls.cameraChange.add(animate)
 
@@ -135,6 +184,9 @@ export default function AxisGizmo() {
     renderGizmo(renderer, scene, camera)
 
     return () => {
+      isDisposed = true
+      isPointerOverRef.current = false
+      isHoverRefreshPausedRef.current = false
       renderer.forceContextLoss()
       renderer.dispose()
       disposeMouseEvents()
@@ -369,19 +421,25 @@ const quaternionsEqual = (
 const initializeMouseEvents = (
   canvas: HTMLCanvasElement,
   raycasterIntersect: MutableRefObject<Intersection | null>,
-  sceneInfra: SceneInfra,
   disableOrbitRef: MutableRefObject<boolean>,
-  doRayCast: (mouse: Vector2) => void,
+  isPointerOverRef: MutableRefObject<boolean>,
+  updateHoverAtMouse: (mouse: Vector2) => void,
+  resetRayCast: () => void,
+  onAxisClick: (axisName: AxisNames) => void,
+  mouse: Vector2,
   wrapperElement: HTMLDivElement
-): { mouse: Vector2; disposeMouseEvents: () => void } => {
-  const mouse = new Vector2()
-  mouse.x = 1 // fix initial mouse position issue
-
+): { disposeMouseEvents: () => void } => {
   const handleMouseMove = (event: MouseEvent) => {
+    isPointerOverRef.current = true
     const { left, top, width, height } = canvas.getBoundingClientRect()
     mouse.x = ((event.clientX - left) / width) * 2 - 1
     mouse.y = ((event.clientY - top) / height) * -2 + 1
-    doRayCast(mouse)
+    updateHoverAtMouse(mouse)
+  }
+
+  const handleMouseLeave = () => {
+    isPointerOverRef.current = false
+    resetRayCast()
   }
 
   const handleClick = () => {
@@ -390,19 +448,21 @@ const initializeMouseEvents = (
       return
     }
     const axisName = raycasterIntersect.current.object.name as AxisNames
-    sceneInfra.camControls.updateCameraToAxis(axisName).catch(reportRejection)
+    onAxisClick(axisName)
   }
 
   // Add the event listener to the div wrapper around the canvas
   wrapperElement.addEventListener('mousemove', handleMouseMove)
+  wrapperElement.addEventListener('mouseleave', handleMouseLeave)
   wrapperElement.addEventListener('click', handleClick)
 
   const disposeMouseEvents = () => {
     wrapperElement.removeEventListener('mousemove', handleMouseMove)
+    wrapperElement.removeEventListener('mouseleave', handleMouseLeave)
     wrapperElement.removeEventListener('click', handleClick)
   }
 
-  return { mouse, disposeMouseEvents }
+  return { disposeMouseEvents }
 }
 
 const updateRayCaster = (
