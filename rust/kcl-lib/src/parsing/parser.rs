@@ -39,7 +39,9 @@ use crate::TypedPath;
 use crate::errors::CompilationIssue;
 use crate::errors::Severity;
 use crate::errors::Tag;
+use crate::execution::annotations::DEPRECATED_SINCE;
 use crate::execution::annotations::EXPERIMENTAL;
+use crate::execution::annotations::VersionConstraint;
 use crate::execution::annotations::{self};
 use crate::execution::types::ArrayLen;
 use crate::parsing::PIPE_OPERATOR;
@@ -3750,17 +3752,33 @@ fn parameters(i: &mut TokenSlice) -> ModalResult<Vec<Parameter>> {
                     identifier.pre_comments = comments.inner;
                 }
                 let mut experimental = false;
+                let mut deprecated_since = None;
                 if let Some(attr) = attr {
                     if let Some(property) = attr.property(EXPERIMENTAL)
                         && let Some(value) = property.value.literal_bool()
                     {
                         experimental = value;
                     }
+                    if let Some(property) = attr.property(DEPRECATED_SINCE) {
+                        if let Some(s) = property.value.literal_str()
+                            && let Some(version) = VersionConstraint::parse(s)
+                        {
+                            deprecated_since = Some(version);
+                        } else {
+                            ParseContext::err(CompilationIssue::fatal(
+                                SourceRange::from(&property.value),
+                                format!(
+                                    "Invalid value for `{DEPRECATED_SINCE}`; expected a dotted integer version string, e.g., \"2.0\"",
+                                ),
+                            ));
+                        }
+                    }
                     identifier.outer_attrs.push(attr);
                 }
 
                 Ok(Parameter {
                     experimental,
+                    deprecated_since,
                     identifier,
                     param_type: type_,
                     default_value,
@@ -5634,6 +5652,7 @@ e
             (
                 vec![Parameter {
                     experimental: Default::default(),
+                    deprecated_since: None,
                     identifier: Node::no_src(Identifier {
                         name: "a".to_owned(),
                         digest: None,
@@ -5648,6 +5667,7 @@ e
             (
                 vec![Parameter {
                     experimental: Default::default(),
+                    deprecated_since: None,
                     identifier: Node::no_src(Identifier {
                         name: "a".to_owned(),
                         digest: None,
@@ -5663,6 +5683,7 @@ e
                 vec![
                     Parameter {
                         experimental: Default::default(),
+                        deprecated_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "a".to_owned(),
                             digest: None,
@@ -5674,6 +5695,7 @@ e
                     },
                     Parameter {
                         experimental: Default::default(),
+                        deprecated_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "b".to_owned(),
                             digest: None,
@@ -5690,6 +5712,7 @@ e
                 vec![
                     Parameter {
                         experimental: Default::default(),
+                        deprecated_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "a".to_owned(),
                             digest: None,
@@ -5701,6 +5724,7 @@ e
                     },
                     Parameter {
                         experimental: Default::default(),
+                        deprecated_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "b".to_owned(),
                             digest: None,

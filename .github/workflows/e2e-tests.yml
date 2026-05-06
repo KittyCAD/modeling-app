@@ -375,7 +375,7 @@ jobs:
         if: ${{ !cancelled() && (success() || failure()) }}
         continue-on-error: true
         with:
-          name: test-results-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
+          name: test-results-desktop-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
           path: test-results/
 
       - name: npm run test:e2e:desktop

@@ -1,4 +1,7 @@
-import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
+import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  PROJECT_ENTRYPOINT,
+} from '@src/lib/constants'
 import type { LoaderFunction } from 'react-router-dom'
 import fsZds from '@src/lib/fs-zds'
 import { redirect } from 'react-router-dom'
@@ -77,7 +80,10 @@ export const baseLoader =
           await getInitialDefaultDir(),
           DEFAULT_WEB_PROJECT_NAME,
           'main.kcl'
-        )
+        ),
+        settings.settings.modeling.defaultUnit.current ??
+          DEFAULT_DEFAULT_LENGTH_UNIT,
+        wasmInstance
       )
 
       const fileURLPath =
