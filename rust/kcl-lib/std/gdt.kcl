@@ -6,7 +6,7 @@
 
 /// GD&T datum feature.
 ///
-/// This is part of MBD in KCL.
+/// This is part of model-based definition (MBD).
 ///
 /// ```kcl,no3d,legacySketch
 /// @settings(experimentalFeatures = allow, defaultLengthUnit = in)
@@ -81,7 +81,7 @@ export fn datum(
 
 /// GD&T annotation specifying how flat faces should be.
 ///
-/// This is part of MBD in KCL.
+/// This is part of model-based definition (MBD).
 ///
 /// ```kcl,no3d,legacySketch
 /// @settings(experimentalFeatures = allow)
