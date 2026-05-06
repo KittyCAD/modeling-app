@@ -7,6 +7,7 @@ import type { CodeEditorHeaderItemProps } from '@src/registry/contracts/codeEdit
 import { codeEditorHeaderItemsValueSpec } from '@src/registry/contracts/codeEditor'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
+import { reportRejection } from '@src/lib/trap'
 
 type BooleanSettingSnapshot = {
   current: boolean
@@ -53,6 +54,26 @@ function AutoexecuteHeaderItem({ className }: CodeEditorHeaderItemProps) {
   )
 }
 
+function ExecuteHeaderItem({ className }: CodeEditorHeaderItemProps) {
+  const { enabled } = useAutoexecuteSetting()
+
+  if (enabled) {
+    return null
+  }
+
+  return createElement(
+    'button',
+    {
+      type: 'button',
+      className,
+      onClick: () => {
+        window.kclManager.executeCode().catch(reportRejection)
+      },
+    },
+    createElement('span', null, 'Execute code')
+  )
+}
+
 const codeEditorSettingsItem = defineRegistryItem({
   provides: [
     provide(settingsValueSpec, {
@@ -80,6 +101,11 @@ const codeEditorHeaderItem = defineRegistryItem({
       id: 'code-editor.autoexecute',
       order: 10,
       Component: AutoexecuteHeaderItem,
+    }),
+    provide(codeEditorHeaderItemsValueSpec, {
+      id: 'code-editor.execute',
+      order: 20,
+      Component: ExecuteHeaderItem,
     }),
   ],
 })

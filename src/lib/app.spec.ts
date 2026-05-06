@@ -142,6 +142,11 @@ describe('project system', () => {
           .get(codeEditorHeaderItemsValueSpec)
           .some((item) => item.id === 'code-editor.autoexecute')
       ).toBe(true)
+      expect(
+        app.registry
+          .get(codeEditorHeaderItemsValueSpec)
+          .some((item) => item.id === 'code-editor.execute')
+      ).toBe(true)
 
       const textEditorSettings = app.settings.get().textEditor as Record<
         string,
