@@ -1,17 +1,19 @@
-import { expect, describe, test } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 
+import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
 import { assertParse } from '@src/lang/wasm'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
-import type { Selection } from '@src/machines/modelingSharedTypes'
 import {
   codeToIdSelections,
   findLastRangeStartingBefore,
   getSelectionTypeDisplayText,
+  handleSelectionBatch,
 } from '@src/lib/selections'
+import type { Selection } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
 describe('testing source range to artifact conversion', () => {
@@ -1409,6 +1411,78 @@ describe('findLastRangeStartingBefore', () => {
   })
 })
 
+describe('pattern copy selection highlighting', () => {
+  const selectionCodeRef = {
+    range: [10, 20, 0] as SourceRange,
+    pathToNode: [],
+  }
+  const patternArtifact = {
+    type: 'pattern',
+    id: 'pattern-command-id',
+    subType: 'transform',
+    sourceId: 'source-body-id',
+    copyIds: ['copy-body-id'],
+    copyFaceIds: ['copy-face-id'],
+    copyEdgeIds: ['copy-edge-id'],
+    codeRef: {
+      range: selectionCodeRef.range,
+      nodePath: [],
+    },
+  } as unknown as Artifact
+  const artifactGraph = new Map([
+    [patternArtifact.id, patternArtifact],
+  ]) as ArtifactGraph
+
+  test('maps pattern code selections to copied engine entities', () => {
+    const selections: Selection[] = [
+      { artifact: patternArtifact, codeRef: selectionCodeRef },
+    ]
+
+    const result = codeToIdSelections(selections, artifactGraph, [])
+
+    expect(result.map(({ id }) => id)).toEqual([
+      'copy-body-id',
+      'copy-face-id',
+      'copy-edge-id',
+    ])
+  })
+
+  test('keeps a selected copied pattern entity highlighted through selection batching', () => {
+    const result = handleSelectionBatch({
+      selections: {
+        graphSelections: [
+          {
+            artifact: patternArtifact,
+            codeRef: selectionCodeRef,
+            engineEntityId: 'copy-face-id',
+          },
+        ],
+        otherSelections: [],
+      },
+      artifactGraph,
+      code: 'patternLinear3d(body, instances = 3)',
+      ast: {} as any,
+      systemDeps: {
+        engineCommandManager: {
+          connection: { pingIntervalId: 1 },
+        } as any,
+        sceneEntitiesManager: { activeSegments: {} } as any,
+        wasmInstance: {} as any,
+      },
+    })
+
+    const selectAdd = result.engineEvents.find(
+      (event) =>
+        event.type === 'modeling_cmd_req' && event.cmd.type === 'select_add'
+    )
+    expect(selectAdd?.type).toBe('modeling_cmd_req')
+    if (selectAdd?.type !== 'modeling_cmd_req') return
+    expect(selectAdd.cmd.type).toBe('select_add')
+    if (selectAdd.cmd.type !== 'select_add') return
+    expect(selectAdd.cmd.entities).toEqual(['copy-face-id'])
+  })
+})
+
 describe('getSelectionTypeDisplayText', () => {
   test('coalesces face-like selections under face', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
@@ -1433,13 +1507,13 @@ describe('getSelectionTypeDisplayText', () => {
     )
   })
 
-  test('coalesces profile-like selections under profile', () => {
+  test('does not coalesce region selections under profile', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
     const selection = {
       graphSelections: [{ artifact: { type: 'solid2d' } as Artifact, codeRef }],
       otherSelections: [
         {
-          type: 'region',
+          type: 'engineRegion',
           id: 'region-1',
           point: { x: 0, y: 0 },
           sketchId: 'sketch-1',
@@ -1448,7 +1522,24 @@ describe('getSelectionTypeDisplayText', () => {
     }
 
     expect(getSelectionTypeDisplayText({} as any, selection as any)).toBe(
-      '2 profiles'
+      '1 region, 1 profile'
+    )
+  })
+
+  test('treats path artifacts with region subtype as region selections', () => {
+    const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
+    const selection = {
+      graphSelections: [
+        {
+          artifact: { type: 'path', subType: 'region' } as Artifact,
+          codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+
+    expect(getSelectionTypeDisplayText({} as any, selection as any)).toBe(
+      '1 region'
     )
   })
 
@@ -1473,5 +1564,25 @@ describe('getSelectionTypeDisplayText', () => {
     expect(getSelectionTypeDisplayText({} as any, selection as any)).toBe(
       '4 edges'
     )
+  })
+})
+
+describe('selectSketchPlane', () => {
+  test('routes offset plane ids into sketch solve when sketch solve mode is enabled', async () => {
+    const modelingSend = vi.fn()
+    const getFaceDetails = vi.fn()
+
+    await selectSketchPlane('plane001', true, {
+      artifactGraph: new Map(),
+      rustContext: { defaultPlanes: null },
+      sceneEntitiesManager: { getFaceDetails },
+      sceneInfra: { modelingSend },
+    } as any)
+
+    expect(modelingSend).toHaveBeenCalledWith({
+      type: 'Select sketch solve plane',
+      data: 'plane001',
+    })
+    expect(getFaceDetails).not.toHaveBeenCalled()
   })
 })

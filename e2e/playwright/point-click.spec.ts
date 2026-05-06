@@ -124,9 +124,7 @@ test.describe('Point-and-click tests', { tag: '@desktop' }, () => {
     toolbar,
     cmdBar,
   }) => {
-    const code = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const code = `sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region001 = region(segments = [sketch001.circle1])`
@@ -153,7 +151,7 @@ region001 = region(segments = [sketch001.circle1])`
           currentArgKey: 'length',
           currentArgValue: '5',
           headerArguments: {
-            Profiles: '1 path',
+            Profiles: '1 region',
             Length: '5',
           },
           highlightedHeaderArg: 'length',
@@ -165,7 +163,7 @@ region001 = region(segments = [sketch001.circle1])`
           stage: 'review',
           headerArguments: {
             Length: '4',
-            Profiles: '1 path',
+            Profiles: '1 region',
           },
           commandName: 'Extrude',
         })
@@ -178,7 +176,7 @@ region001 = region(segments = [sketch001.circle1])`
           currentArgValue: '',
           headerArguments: {
             Length: '4',
-            Profiles: '1 path',
+            Profiles: '1 region',
             TagEnd: '',
           },
           highlightedHeaderArg: 'tagEnd',
@@ -190,7 +188,7 @@ region001 = region(segments = [sketch001.circle1])`
           stage: 'review',
           headerArguments: {
             Length: '4',
-            Profiles: '1 path',
+            Profiles: '1 region',
             TagEnd: 'myEndTag',
           },
           commandName: 'Extrude',
@@ -327,88 +325,71 @@ region001 = region(segments = [sketch001.circle1])`
       }
   })
 
-  // TODO: double check if we want to keep this feature
-  test.fixme(
-    `Verify user can double-click to edit a sketch`,
-    async ({ context, page, homePage, editor, toolbar, scene, cmdBar }) => {
-      page.on('console', console.log)
+  test(`Verify user can double-click to edit a sketch`, async ({
+    context,
+    homePage,
+    editor,
+    toolbar,
+    scene,
+    cmdBar,
+  }) => {
+    const initialCode = `closedSketch = sketch(on = XZ) {
+  circle1 = circle(start = [var 10mm, var 5mm], center = [var 8mm, var 5mm])
+}
+openSketch = sketch(on = XY) {
+  line1 = line(start = [var -5mm, var 0mm], end = [var 0mm, var 5mm])
+  line2 = line(start = [var 0mm, var 5mm], end = [var 5mm, var 5mm])
+  coincident([line1.end, line2.start])
+  arc3 = arc(start = [var 10mm, var 0mm], end = [var 5mm, var 5mm], center = [var 5mm, var 0mm])
+  coincident([line2.end, arc3.end])
+}
+`
 
-      const initialCode = `@settings(experimentalFeatures = allow)
+    await context.addInitScript((code) => {
+      localStorage.setItem('persistCode', code)
+    }, initialCode)
 
-  closedSketch = sketch(on = XZ) {
-    circle1 = circle(start = [var 10mm, var 5mm], center = [var 8mm, var 5mm])
-  }
-  openSketch = sketch(on = XY) {
-    line1 = line(start = [var -5mm, var 0mm], end = [var 0mm, var 5mm])
-    line2 = line(start = [var 0mm, var 5mm], end = [var 5mm, var 5mm])
-    coincident([line1.end, line2.start])
-    arc3 = arc(start = [var 10mm, var 0mm], end = [var 5mm, var 5mm], center = [var 5mm, var 0mm])
-    coincident([line2.end, arc3.end])
-    horizontal(arc3)
-  }`
+    await homePage.goToModelingScene()
 
-      await context.addInitScript((code) => {
-        localStorage.setItem('persistCode', code)
-      }, initialCode)
-
-      await homePage.goToModelingScene()
-
-      const [_clickOpenPath, moveToOpenPath, dblClickOpenPath] =
-        scene.makeMouseHelpers(0.65, 0.5, { format: 'ratio' })
-
-      const [_clickCircle, moveToCircle, dblClickCircle] =
-        scene.makeMouseHelpers(0.63, 0.5, { format: 'ratio' })
-
-      await test.step(`Double-click on the closed sketch`, async () => {
-        await scene.settled(cmdBar)
-        await editor.closePane()
-        await moveToCircle()
-        await page.waitForTimeout(1000)
-        await dblClickCircle()
-        await page.waitForTimeout(1000)
-        await expect(toolbar.exitSketchBtn).toBeVisible()
-        await editor.openPane()
-        await editor.expectActiveLinesToBe([
-          'circle1 = circle(start = [var 10mm, var 5mm], center = [var 8mm, var 5mm])',
-        ])
+    const [_clickOpenPath, moveToOpenPath, dblClickOpenPath] =
+      scene.makeMouseHelpers(0.65, 0.5, {
+        format: 'ratio',
       })
-      await page.waitForTimeout(1000)
 
-      await toolbar.exitSketch()
-      await page.waitForTimeout(1000)
+    const [_clickCircle, moveToCircle, dblClickCircle] = scene.makeMouseHelpers(
+      0.63,
+      0.5,
+      { format: 'ratio' }
+    )
+
+    await test.step(`Double-click on the closed sketch`, async () => {
+      await scene.settled(cmdBar)
       await editor.closePane()
+      await moveToCircle()
+      await dblClickCircle()
+      await expect(toolbar.exitSketchBtn).toBeVisible()
+      await expect(toolbar.exitSketchBtn).toBeEnabled()
+      await editor.openPane()
+      await editor.expectActiveLinesToBe(['closedSketch = sketch(on = XZ) {'])
+    })
 
-      // Drag the sketch line out of the axis view which blocks the click
-      await page.dragAndDrop('#stream', '#stream', {
-        sourcePosition: await scene.convertPagePositionToStream(
-          0.7,
-          0.5,
-          'ratio'
-        ),
-        targetPosition: await scene.convertPagePositionToStream(
-          0.7,
-          0.4,
-          'ratio'
-        ),
-      })
+    await test.step(`Exit the closed sketch and wait for scene`, async () => {
+      await toolbar.exitSketch()
+      await scene.settled(cmdBar)
+      await editor.closePane()
+    })
 
-      await page.waitForTimeout(500)
-
-      await test.step(`Double-click on the open sketch`, async () => {
-        await moveToOpenPath()
-        // There is a full execution after exiting sketch that clears the scene.
-        await page.waitForTimeout(500)
-        await dblClickOpenPath()
-        await expect(toolbar.exitSketchBtn).toBeVisible()
-        // Wait for enter sketch mode to complete
-        await page.waitForTimeout(500)
-        await editor.openPane()
-        await editor.expectActiveLinesToBe([
-          'arc3 = arc(start = [var 10mm, var 0mm], end = [var 5mm, var 5mm], center = [var 5mm, var 0mm])',
-        ])
-      })
-    }
-  )
+    await test.step(`Double-click on the open sketch`, async () => {
+      await moveToOpenPath()
+      await dblClickOpenPath()
+      await expect(toolbar.exitSketchBtn).toBeVisible()
+      await expect(toolbar.exitSketchBtn).toBeEnabled()
+      await editor.openPane()
+      await editor.expectActiveLinesToBe([
+        'arc3 = arc(start = [var 10mm, var 0mm], end = [var 5mm, var 5mm], center = [var 5mm, var 0mm])',
+      ])
+    })
+  })
 
   test(`Shift-click to select and deselect faces`, async ({
     context,
@@ -419,9 +400,7 @@ region001 = region(segments = [sketch001.circle1])`
     scene,
   }) => {
     // Code samples
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch002 = sketch(on = XY) {
+    const initialCode = `sketch002 = sketch(on = XY) {
   line1 = line(start = [var -12mm, var -6mm], end = [var -12mm, var 6mm])
   line2 = line(start = [var -12mm, var 6mm], end = [var 12mm, var 6mm])
   coincident([line1.end, line2.start])
@@ -465,163 +444,6 @@ sketch001 = extrude(region001, length = -12)`
       await page.waitForTimeout(timeout)
       await page.keyboard.up('Shift')
       await expect(toolbar.selectionStatus).not.toContainText('1 face')
-    })
-  })
-
-  test(`Shift-click to select and deselect sketch segments`, async ({
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    // Locators
-    const firstPointLocation = { x: 200, y: 100 }
-    const secondPointLocation = { x: 800, y: 100 }
-    const thirdPointLocation = { x: 800, y: 400 }
-    // @pierremtb: moved the select location to the arrow at the end after the engine zoom fix
-    // got in https://github.com/KittyCAD/engine/pull/3804, seemed like it allowed for more
-    // error margin but unclear why
-    const firstSegmentLocation = { x: 799, y: 100 }
-    const secondSegmentLocation = { x: 800, y: 399 }
-    const planeLocation = { x: 700, y: 200 }
-
-    // Click helpers
-    const [clickFirstPoint] = scene.makeMouseHelpers(
-      firstPointLocation.x,
-      firstPointLocation.y
-    )
-    const [clickSecondPoint] = scene.makeMouseHelpers(
-      secondPointLocation.x,
-      secondPointLocation.y
-    )
-    const [clickThirdPoint] = scene.makeMouseHelpers(
-      thirdPointLocation.x,
-      thirdPointLocation.y
-    )
-    const [clickFirstSegment] = scene.makeMouseHelpers(
-      firstSegmentLocation.x,
-      firstSegmentLocation.y
-    )
-    const [clickSecondSegment] = scene.makeMouseHelpers(
-      secondSegmentLocation.x,
-      secondSegmentLocation.y
-    )
-    const [clickPlane] = scene.makeMouseHelpers(
-      planeLocation.x,
-      planeLocation.y
-    )
-
-    // Colors
-    // @pierremtb: had to tone these colors down a bit after the engine zoom fix
-    // in https://github.com/KittyCAD/engine/pull/3804, unclear why
-    const edgeColorWhite: [number, number, number] = [230, 230, 230]
-    const edgeColorBlue: [number, number, number] = [23, 10, 247]
-    const tolerance = 50
-    const timeout = 150
-
-    // Setup
-    await test.step(`Initial test setup`, async () => {
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
-    })
-
-    await test.step('Select and deselect a single sketch segment', async () => {
-      await test.step('Get into sketch mode', async () => {
-        await editor.closePane()
-        await page.waitForTimeout(timeout)
-        await toolbar.startSketchBtn.click()
-        await page.waitForTimeout(timeout)
-        await clickPlane()
-        await page.waitForTimeout(1000)
-      })
-      await test.step('Draw sketch', async () => {
-        await clickFirstPoint()
-        await page.waitForTimeout(timeout)
-        await clickSecondPoint()
-        await page.waitForTimeout(timeout)
-        await clickThirdPoint()
-        await page.waitForTimeout(timeout)
-      })
-      await test.step('Deselect line tool', async () => {
-        const btnLine = page.getByTestId('line')
-        const btnLineAriaPressed = await btnLine.getAttribute('aria-pressed')
-        if (btnLineAriaPressed === 'true') {
-          await btnLine.click()
-        }
-        await page.waitForTimeout(timeout)
-      })
-      await test.step('Select the first segment', async () => {
-        // @pierremtb: I believe we can't click too fast after deselecting the line tool,
-        // otherwise the segment gets instantly deselected again.
-        // There's a non-zero chance it's an actual bug.
-        await page.waitForTimeout(timeout * 5)
-        await clickFirstSegment()
-        await page.waitForTimeout(timeout)
-        await scene.expectPixelColor(
-          edgeColorBlue,
-          firstSegmentLocation,
-          tolerance
-        )
-        await scene.expectPixelColor(
-          edgeColorWhite,
-          secondSegmentLocation,
-          tolerance
-        )
-      })
-      await test.step('Select the second segment (Shift-click)', async () => {
-        await page.keyboard.down('Shift')
-        await page.waitForTimeout(timeout)
-        await clickSecondSegment()
-        await page.waitForTimeout(timeout)
-        await page.keyboard.up('Shift')
-        await scene.expectPixelColor(
-          edgeColorBlue,
-          firstSegmentLocation,
-          tolerance
-        )
-        await scene.expectPixelColor(
-          edgeColorBlue,
-          secondSegmentLocation,
-          tolerance
-        )
-      })
-      await test.step('Deselect the first segment', async () => {
-        await page.keyboard.down('Shift')
-        await page.waitForTimeout(timeout)
-        await clickFirstSegment()
-        await page.waitForTimeout(timeout)
-        await page.keyboard.up('Shift')
-        await scene.expectPixelColor(
-          edgeColorWhite,
-          firstSegmentLocation,
-          tolerance
-        )
-        await scene.expectPixelColor(
-          edgeColorBlue,
-          secondSegmentLocation,
-          tolerance
-        )
-      })
-      await test.step('Deselect the second segment', async () => {
-        await page.keyboard.down('Shift')
-        await page.waitForTimeout(timeout)
-        await clickSecondSegment()
-        await page.waitForTimeout(timeout)
-        await page.keyboard.up('Shift')
-        await scene.expectPixelColor(
-          edgeColorWhite,
-          firstSegmentLocation,
-          tolerance
-        )
-        await scene.expectPixelColor(
-          edgeColorWhite,
-          secondSegmentLocation,
-          tolerance
-        )
-      })
     })
   })
 
@@ -712,9 +534,7 @@ sketch001 = extrude(region001, length = -12)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
+    const initialCode = `sketch001 = sketch(on = XZ) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 100mm])
   line2 = line(start = [var 0mm, var 100mm], end = [var 100mm, var 0mm])
   coincident([line1.end, line2.start])
@@ -892,9 +712,7 @@ extrude001 = extrude(region001, length = 100)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const initialCode = `sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 1mm, var 1mm], center = [var 0mm, var 0mm])
 }
 region001 = region(segments = [sketch001.circle1])
@@ -902,6 +720,7 @@ plane001 = offsetPlane(XY, offset = 5)
 sketch002 = sketch(on = plane001) {
   circle1 = circle(start = [var 2mm, var 2mm], center = [var 0mm, var 0mm])
 }
+hidden001 = hide(sketch002)
 region002 = region(point = [0mm, 0mm], sketch = sketch002)`
     // TODO: replace point with segments = [sketch002.circle1] when the issue is fixed
     await context.addInitScript((initialCode) => {
@@ -940,7 +759,7 @@ region002 = region(point = [0mm, 0mm], sketch = sketch002)`
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
-        headerArguments: { Profiles: '2 paths' },
+        headerArguments: { Profiles: '2 regions' },
         commandName: 'Loft',
       })
       await cmdBar.submit()
@@ -1012,9 +831,7 @@ region002 = region(point = [0mm, 0mm], sketch = sketch002)`
     cmdBar,
   }) => {
     const circleCode = `circle1 = circle(start = [var 0.1mm, var -1mm], center = [var 0mm, var -1mm])`
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-helix001 = helix(
+    const initialCode = `helix001 = helix(
   axis = X,
   radius = 1,
   length = 10,
@@ -1056,7 +873,7 @@ region001 = region(segments = [sketch001.circle1])`
         currentArgKey: 'path',
         currentArgValue: '',
         headerArguments: {
-          Profiles: '1 path',
+          Profiles: '1 region',
           Path: '',
         },
         highlightedHeaderArg: 'path',
@@ -1069,7 +886,7 @@ region001 = region(segments = [sketch001.circle1])`
         currentArgKey: 'path',
         currentArgValue: '',
         headerArguments: {
-          Profiles: '1 path',
+          Profiles: '1 region',
           Path: '',
         },
         highlightedHeaderArg: 'path',
@@ -1079,7 +896,7 @@ region001 = region(segments = [sketch001.circle1])`
       await cmdBar.expectState({
         commandName: 'Sweep',
         headerArguments: {
-          Profiles: '1 path',
+          Profiles: '1 region',
           Path: '1 helix',
         },
         stage: 'review',
@@ -1138,9 +955,7 @@ region001 = region(segments = [sketch001.circle1])`
     cmdBar,
   }) => {
     // Code samples
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const initialCode = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var -12mm, var -6mm], end = [var -12mm, var 6mm])
   line2 = line(start = [var -12mm, var 6mm], end = [var 12mm, var 6mm])
   coincident([line1.end, line2.start])
@@ -1392,9 +1207,7 @@ extrude001 = extrude(region001, length = -12)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const initialCode = `sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 100mm, var 0mm], center = [var 0mm, var 0mm])
 }
 hide(sketch001)
@@ -1452,9 +1265,7 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tag
     cmdBar,
   }) => {
     // Code samples
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const initialCode = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var -12mm, var -6mm], end = [var -12mm, var 6mm])
   line2 = line(start = [var -12mm, var 6mm], end = [var 12mm, var 6mm])
   coincident([line1.end, line2.start])
@@ -1579,9 +1390,7 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.line2)])`
     cmdBar,
   }) => {
     // Create a cube with small edges that will cause some fillets to fail
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const initialCode = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var -1mm])
   line2 = line(start = [var 0mm, var -1mm], end = [var -10mm, var -1mm])
   coincident([line1.end, line2.start])
@@ -1681,7 +1490,7 @@ extrude001 = extrude(region001, length = 5)`
     cmdBar,
   }) => {
     // Code samples
-    const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+    const initialCode = `@settings(defaultLengthUnit = in)
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var -12in, var -6in], end = [var -12in, var 6in])
@@ -1943,7 +1752,7 @@ extrude001 = extrude(region001, length = -12)`
     cmdBar,
   }) => {
     // Code samples
-    const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+    const initialCode = `@settings(defaultLengthUnit = in)
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var -12in, var -6in], end = [var -12in, var 6in])
@@ -2075,7 +1884,7 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(region001.tags.line2)])`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+    const initialCode = `@settings(defaultLengthUnit = in)
 
 sketch001 = sketch(on = XZ) {
   circle1 = circle(start = [var 30in, var 0in], center = [var 0in, var 0in])
@@ -2270,9 +2079,7 @@ extrude001 = extrude(region001, length = 30)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
+    const initialCode = `sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -102.57mm, var 101.72mm], end = [var 100.03mm, var 101.72mm])
   line2 = line(start = [var 100.03mm, var 101.72mm], end = [var 100.03mm, var -100.88mm])
   coincident([line1.end, line2.start])
@@ -2287,6 +2094,7 @@ face001 = faceOf(extrude001, face = region001.tags.line1)
 sketch002 = sketch(on = face001) {
   circle1 = circle(start = [var -2.65mm, var 10mm], center = [var -11.34mm, var 10mm])
 }
+hidden001 = hide(sketch002)
 region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
     // TODO: replace region line above with topological selection, see https://kittycadworkspace.slack.com/archives/C09CJ6XPY1Y/p1775311720628419?thread_ts=1775157918.840339&cid=C09CJ6XPY1Y
     const newCodeToFind = `revolve001 = revolve(region002, angle = 360deg, axis = getCommonEdge(faces = [region001.tags.line1, capEnd001]))`
@@ -2322,7 +2130,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
         currentArgKey: 'axisOrEdge',
         currentArgValue: '',
         headerArguments: {
-          Profiles: '1 path',
+          Profiles: '1 region',
           AxisOrEdge: '',
           Angle: '',
         },
@@ -2335,7 +2143,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
         currentArgKey: 'edge',
         currentArgValue: '',
         headerArguments: {
-          Profiles: '1 path',
+          Profiles: '1 region',
           Angle: '',
           AxisOrEdge: 'Edge',
           Edge: '',
@@ -2354,7 +2162,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
         currentArgKey: 'angle',
         currentArgValue: '360deg',
         headerArguments: {
-          Profiles: '1 path',
+          Profiles: '1 region',
           Angle: '',
           AxisOrEdge: 'Edge',
           Edge: '1 edge',
@@ -2366,7 +2174,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
       await cmdBar.expectState({
         commandName: 'Revolve',
         headerArguments: {
-          Profiles: '1 path',
+          Profiles: '1 region',
           Angle: '360deg',
           AxisOrEdge: 'Edge',
           Edge: '1 edge',
@@ -2422,9 +2230,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
   test.fixme(
     `Translate point-and-click with segment-to-body coercion`,
     async ({ context, page, homePage, scene, editor, toolbar, cmdBar }) => {
-      const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+      const initialCode = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var -5mm, var -10mm], end = [var 5mm, var -10mm])
   line2 = line(start = [var 5mm, var -10mm], end = [var 5mm, var 10mm])
   coincident([line1.end, line2.start])
@@ -2473,7 +2279,7 @@ box = extrude(region001, length = 30)`
         })
 
         await expect(page.getByText('1 path selected')).toBeVisible()
-        await expect(toolbar.selectionStatus).toContainText('1 path')
+        await expect(toolbar.selectionStatus).toContainText('1 region')
       })
 
       await test.step('Complete command flow', async () => {
@@ -2482,7 +2288,7 @@ box = extrude(region001, length = 30)`
           await cmdBar.expectState({
             stage: 'review',
             headerArguments: {
-              Objects: '1 path',
+              Objects: '1 region',
             },
             commandName: 'Translate',
             reviewValidationError:
@@ -2497,7 +2303,7 @@ box = extrude(region001, length = 30)`
             currentArgKey: 'x',
             currentArgValue: '0',
             headerArguments: {
-              Objects: '1 path',
+              Objects: '1 region',
               X: '',
             },
             highlightedHeaderArg: 'x',
@@ -2511,7 +2317,7 @@ box = extrude(region001, length = 30)`
           await cmdBar.expectState({
             stage: 'review',
             headerArguments: {
-              Objects: '1 path',
+              Objects: '1 region',
               X: '50',
             },
             commandName: 'Translate',
@@ -2534,92 +2340,95 @@ box = extrude(region001, length = 30)`
     }
   )
 
-  // TODO: unskip once https://github.com/KittyCAD/modeling-app/issues/10728 is closed
-  test.fixme(
-    'Blend point-and-click',
-    async ({ context, page, homePage, scene, editor, toolbar, cmdBar }) => {
-      const firstSurfaceEdge = `line1 = line(start = [var -2mm, var 0mm], end = [var 2mm, var 0mm])`
-      const secondSurfaceEdge = `line1 = line(start = [var -1mm, var 0mm], end = [var 1mm, var 0mm])`
-      const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
-  line1 = line(start = [var -2mm, var 0mm], end = [var 2mm, var 0mm])
-}
-hide(sketch001)
-surface001 = extrude(sketch001.line1, length = 2, bodyType = SURFACE)
+  test('Blend point-and-click', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    // It makes more sense to keep this as a sketch v1 test as we can directly select from code instead of px clicks
+    // We're not testing sketch solve stuff here, just the Blend command e2e. Sketch solve tests are at
+    // src/lang/modifyAst/edges.spec.ts
+    const firstSurfaceEdge = `angledLine(angle = 0deg, length = 4)`
+    const secondSurfaceEdge = `angledLine(angle = 0deg, length = 2)`
+    const initialCode = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-2, 0])
+  |> ${firstSurfaceEdge}
+  |> extrude(length = 2, bodyType = SURFACE)
   |> translate(y = 3, z = 2)
 
-sketch002 = sketch(on = XZ) {
-  line1 = line(start = [var -1mm, var 0mm], end = [var 1mm, var 0mm])
-}
-hide(sketch002)
-surface002 = extrude(sketch002.line1, length = 2, bodyType = SURFACE)
+sketch002 = startSketchOn(XZ)
+profile002 = startProfile(sketch002, at = [-1, 0])
+  |> ${secondSurfaceEdge}
+  |> extrude(length = 2, bodyType = SURFACE)
   |> flipSurface()`
-      const blendDeclaration = `blend001 = blend([region001.tags.line1, region002.tags.line1])`
+    const blendDeclaration = `blend001 = blend([  getBoundedEdge(profile001, edge = seg01),  getBoundedEdge(profile002, edge = seg02)])`
 
-      async function selectEdgesFromBothSurfaces() {
-        const multiCursorKey = process.platform === 'linux' ? 'Control' : 'Meta'
-        await editor.selectText(firstSurfaceEdge)
-        await page.keyboard.down(multiCursorKey)
-        await page.getByText(secondSurfaceEdge).click()
-        await page.keyboard.up(multiCursorKey)
-      }
-
-      await test.step('Settle the scene', async () => {
-        await context.addInitScript((initialCode) => {
-          localStorage.setItem('persistCode', initialCode)
-        }, initialCode)
-        await page.setBodyDimensions({ width: 1000, height: 500 })
-        await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
-      })
-
-      await test.step('Click blend in the surface toolbar group', async () => {
-        await toolbar.selectSurface('blend-surface')
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'edges',
-          currentArgValue: '',
-          headerArguments: {
-            Edges: '',
-          },
-          highlightedHeaderArg: 'edges',
-          commandName: 'Blend',
-        })
-      })
-
-      await test.step('Select two edges through the command bar flow', async () => {
-        await selectEdgesFromBothSurfaces()
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Edges: '2 edges',
-          },
-          commandName: 'Blend',
-        })
-        await cmdBar.submit()
-        await scene.settled(cmdBar)
-      })
-
-      await test.step('Check blend code was added', async () => {
-        await editor.expectEditor.toContain(blendDeclaration)
-      })
-
-      await test.step('Delete blend via feature tree selection', async () => {
-        await editor.closePane()
-        await toolbar.openFeatureTreePane()
-        const operationButton = await toolbar.getFeatureTreeOperation(
-          'blend001',
-          0
-        )
-        await operationButton.click()
-        await page.keyboard.press('Delete')
-        await scene.settled(cmdBar)
-        await editor.expectEditor.not.toContain(blendDeclaration)
-      })
+    async function selectEdgesFromBothSurfaces() {
+      const multiCursorKey = process.platform === 'linux' ? 'Control' : 'Meta'
+      await editor.selectText(firstSurfaceEdge)
+      await page.keyboard.down(multiCursorKey)
+      await page.getByText(secondSurfaceEdge).click()
+      await page.keyboard.up(multiCursorKey)
     }
-  )
+
+    await test.step('Settle the scene', async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Click blend in the surface toolbar group', async () => {
+      await toolbar.selectSurface('blend-surface')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'edges',
+        currentArgValue: '',
+        headerArguments: {
+          Edges: '',
+        },
+        highlightedHeaderArg: 'edges',
+        commandName: 'Blend',
+      })
+    })
+
+    await test.step('Select two edges through the command bar flow', async () => {
+      await selectEdgesFromBothSurfaces()
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Edges: '2 edges',
+        },
+        commandName: 'Blend',
+      })
+      await cmdBar.submit()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Check blend code was added', async () => {
+      await editor.expectEditor.toContain(blendDeclaration)
+    })
+
+    await test.step('Delete blend via feature tree selection', async () => {
+      await editor.closePane()
+      await toolbar.openFeatureTreePane()
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'blend001',
+        0
+      )
+      await operationButton.click()
+      await page.keyboard.press('Delete')
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain(blendDeclaration)
+    })
+  })
 
   test('Flip Surface point-and-click', async ({
     context,
@@ -2630,9 +2439,7 @@ surface002 = extrude(sketch002.line1, length = 2, bodyType = SURFACE)
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
+    const initialCode = `sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -6.79mm, var 0mm], end = [var 4.67mm, var 10.74mm])
   line2 = line(start = [var 4.67mm, var 10.74mm], end = [var 7.24mm, var 0mm])
   coincident([line1.end, line2.start])
@@ -2719,9 +2526,7 @@ extrude001 = extrude(region001, length = 5, bodyType = SURFACE)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const initialCode = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 6.07mm, var 1.66mm])
   line2 = line(start = [var 6.07mm, var 1.66mm], end = [var 6.07mm, var -3.67mm])
   coincident([line1.end, line2.start])
@@ -2799,9 +2604,7 @@ extrude002 = extrude(sketch002.line1, length = 5, bodyType = SURFACE)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+    const initialCode = `sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region001 = region(segments = [sketch001.circle1])
@@ -2918,9 +2721,7 @@ extrude001 = extrude(region001, length = 1)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
+    const initialCode = `sketch001 = sketch(on = XZ) {
   circle1 = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region001 = region(segments = [sketch001.circle1])
@@ -3430,9 +3231,7 @@ solid001 = extrude(region001, length = 5)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
+    const initialCode = `sketch001 = sketch(on = XZ) {
   circle1 = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region001 = region(segments = [sketch001.circle1])
@@ -4757,9 +4556,7 @@ extrude001 = extrude(region001, length = 30)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
+    const initialCode = `sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -5mm, var -5mm], end = [var 5mm, var -5mm])
   line2 = line(start = [var 5mm, var -5mm], end = [var 5mm, var 5mm])
   coincident([line1.end, line2.start])
@@ -5070,6 +4867,625 @@ hole001 = hole::hole(
 )`,
         { shouldNormalise: true }
       )
+    })
+  })
+
+  test('Helical gear point-and-click with edit and delete', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)`
+
+    const selectGearCommand = async (
+      item: 'gear-helical' | 'gear-spur' | 'gear-ring'
+    ) => {
+      await page.locator('[data-onboarding-id="gears-dropdown-button"]').click()
+      await expect(page.getByTestId(`dropdown-${item}`)).toBeVisible()
+      await page.getByTestId(`dropdown-${item}`).click()
+    }
+
+    const fillCurrentKclArg = async (value: string) => {
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill(value)
+      await cmdBar.progressCmdBar()
+    }
+
+    await test.step('Settle the scene', async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+    })
+
+    await test.step('Create helical gear via toolbar group', async () => {
+      await selectGearCommand('gear-helical')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Helical Gear',
+        currentArgKey: 'nTeeth',
+        currentArgValue: '10',
+        headerArguments: {
+          NTeeth: '',
+          Module: '',
+          PressureAngle: '',
+          HelixAngle: '',
+          GearHeight: '',
+        },
+        highlightedHeaderArg: 'nTeeth',
+      })
+      await fillCurrentKclArg('12')
+      await fillCurrentKclArg('2.2')
+      await fillCurrentKclArg('25deg')
+      await fillCurrentKclArg('30deg')
+      await fillCurrentKclArg('8')
+      await cmdBar.expectState({
+        stage: 'review',
+        commandName: 'Helical Gear',
+        headerArguments: {
+          NTeeth: '12',
+          Module: '2.2',
+          PressureAngle: '25deg',
+          HelixAngle: '30deg',
+          GearHeight: '8',
+        },
+      })
+      await cmdBar.submit()
+      await scene.settled(cmdBar)
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(
+        `gear001 = gear::helical(
+  nTeeth = 12,
+  module = 2.2,
+  pressureAngle = 25deg,
+  helixAngle = 30deg,
+  gearHeight = 8,
+)`,
+        { shouldNormalise: true }
+      )
+    })
+
+    await test.step('Edit helical gear via feature tree', async () => {
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'gear001',
+        0
+      )
+      await operationButton.dblclick({ button: 'left' })
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Helical Gear',
+        currentArgKey: 'gearHeight',
+        currentArgValue: '8',
+        headerArguments: {
+          NTeeth: '12',
+          Module: '2.2',
+          PressureAngle: '25deg',
+          HelixAngle: '30deg',
+          GearHeight: '8',
+        },
+        highlightedHeaderArg: 'gearHeight',
+      })
+      await page.getByRole('button', { name: 'HelixAngle' }).click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Helical Gear',
+        currentArgKey: 'helixAngle',
+        currentArgValue: '30deg',
+        headerArguments: {
+          NTeeth: '12',
+          Module: '2.2',
+          PressureAngle: '25deg',
+          HelixAngle: '30deg',
+          GearHeight: '8',
+        },
+        highlightedHeaderArg: 'helixAngle',
+      })
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill('15deg')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        commandName: 'Helical Gear',
+        headerArguments: {
+          NTeeth: '12',
+          Module: '2.2',
+          PressureAngle: '25deg',
+          HelixAngle: '15deg',
+          GearHeight: '8',
+        },
+      })
+      await cmdBar.submit()
+      await scene.settled(cmdBar)
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(
+        `gear001 = gear::helical(
+  nTeeth = 12,
+  module = 2.2,
+  pressureAngle = 25deg,
+  helixAngle = 15deg,
+  gearHeight = 8,
+)`,
+        { shouldNormalise: true }
+      )
+    })
+
+    await test.step('Delete helical gear via feature tree', async () => {
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'gear001',
+        0
+      )
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+      await scene.settled(cmdBar)
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.not.toContain('gear::helical(')
+      await expect(
+        await toolbar.getFeatureTreeOperation('gear001', 0)
+      ).not.toBeVisible()
+    })
+  })
+
+  test('Spur gear point-and-click with edit and delete', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)`
+
+    const selectGearCommand = async (
+      item: 'gear-helical' | 'gear-spur' | 'gear-ring'
+    ) => {
+      await page.locator('[data-onboarding-id="gears-dropdown-button"]').click()
+      await expect(page.getByTestId(`dropdown-${item}`)).toBeVisible()
+      await page.getByTestId(`dropdown-${item}`).click()
+    }
+
+    const fillCurrentKclArg = async (value: string) => {
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill(value)
+      await cmdBar.progressCmdBar()
+    }
+
+    await test.step('Settle the scene', async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+    })
+
+    await test.step('Create spur gear via toolbar group', async () => {
+      await selectGearCommand('gear-spur')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Spur Gear',
+        currentArgKey: 'nTeeth',
+        currentArgValue: '21',
+        headerArguments: {
+          NTeeth: '',
+          Module: '',
+          PressureAngle: '',
+          GearHeight: '',
+        },
+        highlightedHeaderArg: 'nTeeth',
+      })
+      await fillCurrentKclArg('22')
+      await fillCurrentKclArg('1.8')
+      await fillCurrentKclArg('16deg')
+      await fillCurrentKclArg('6')
+      await cmdBar.expectState({
+        stage: 'review',
+        commandName: 'Spur Gear',
+        headerArguments: {
+          NTeeth: '22',
+          Module: '1.8',
+          PressureAngle: '16deg',
+          GearHeight: '6',
+        },
+      })
+      await cmdBar.submit()
+      await scene.settled(cmdBar)
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(
+        `gear001 = gear::spur(
+  nTeeth = 22,
+  module = 1.8,
+  pressureAngle = 16deg,
+  gearHeight = 6,
+)`,
+        { shouldNormalise: true }
+      )
+    })
+
+    await test.step('Edit spur gear via feature tree', async () => {
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'gear001',
+        0
+      )
+      await operationButton.dblclick({ button: 'left' })
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Spur Gear',
+        currentArgKey: 'gearHeight',
+        currentArgValue: '6',
+        headerArguments: {
+          NTeeth: '22',
+          Module: '1.8',
+          PressureAngle: '16deg',
+          GearHeight: '6',
+        },
+        highlightedHeaderArg: 'gearHeight',
+      })
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill('7')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        commandName: 'Spur Gear',
+        headerArguments: {
+          NTeeth: '22',
+          Module: '1.8',
+          PressureAngle: '16deg',
+          GearHeight: '7',
+        },
+      })
+      await cmdBar.submit()
+      await scene.settled(cmdBar)
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(
+        `gear001 = gear::spur(
+  nTeeth = 22,
+  module = 1.8,
+  pressureAngle = 16deg,
+  gearHeight = 7,
+)`,
+        { shouldNormalise: true }
+      )
+    })
+
+    await test.step('Delete spur gear via feature tree', async () => {
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'gear001',
+        0
+      )
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+      await scene.settled(cmdBar)
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.not.toContain('gear::spur(')
+      await expect(
+        await toolbar.getFeatureTreeOperation('gear001', 0)
+      ).not.toBeVisible()
+    })
+  })
+
+  test('Herringbone gear point-and-click with edit and delete', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)`
+
+    const selectGearCommand = async (
+      item: 'gear-helical' | 'gear-herringbone' | 'gear-spur' | 'gear-ring'
+    ) => {
+      await page.locator('[data-onboarding-id="gears-dropdown-button"]').click()
+      await expect(page.getByTestId(`dropdown-${item}`)).toBeVisible()
+      await page.getByTestId(`dropdown-${item}`).click()
+    }
+
+    const fillCurrentKclArg = async (value: string) => {
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill(value)
+      await cmdBar.progressCmdBar()
+    }
+
+    await test.step('Settle the scene', async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+    })
+
+    await test.step('Create herringbone gear via toolbar group', async () => {
+      await selectGearCommand('gear-herringbone')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Herringbone Gear',
+        currentArgKey: 'nTeeth',
+        currentArgValue: '10',
+        headerArguments: {
+          NTeeth: '',
+          Module: '',
+          PressureAngle: '',
+          GearHeight: '',
+          HelixAngle: '',
+        },
+        highlightedHeaderArg: 'nTeeth',
+      })
+      await fillCurrentKclArg('11')
+      await fillCurrentKclArg('2.3')
+      await fillCurrentKclArg('24deg')
+      await fillCurrentKclArg('6')
+      await fillCurrentKclArg('35deg')
+      await cmdBar.expectState({
+        stage: 'review',
+        commandName: 'Herringbone Gear',
+        headerArguments: {
+          NTeeth: '11',
+          Module: '2.3',
+          PressureAngle: '24deg',
+          GearHeight: '6',
+          HelixAngle: '35deg',
+        },
+      })
+      await cmdBar.submit()
+      await scene.settled(cmdBar)
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(
+        `gear001 = gear::herringbone(
+  nTeeth = 11,
+  module = 2.3,
+  pressureAngle = 24deg,
+  gearHeight = 6,
+  helixAngle = 35deg,
+)`,
+        { shouldNormalise: true }
+      )
+    })
+
+    await test.step('Edit herringbone gear via feature tree', async () => {
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'gear001',
+        0
+      )
+      await operationButton.dblclick({ button: 'left' })
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Herringbone Gear',
+        currentArgKey: 'helixAngle',
+        currentArgValue: '35deg',
+        headerArguments: {
+          NTeeth: '11',
+          Module: '2.3',
+          PressureAngle: '24deg',
+          GearHeight: '6',
+          HelixAngle: '35deg',
+        },
+        highlightedHeaderArg: 'helixAngle',
+      })
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill('20deg')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        commandName: 'Herringbone Gear',
+        headerArguments: {
+          NTeeth: '11',
+          Module: '2.3',
+          PressureAngle: '24deg',
+          GearHeight: '6',
+          HelixAngle: '20deg',
+        },
+      })
+      await cmdBar.submit()
+      await scene.settled(cmdBar)
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(
+        `gear001 = gear::herringbone(
+  nTeeth = 11,
+  module = 2.3,
+  pressureAngle = 24deg,
+  gearHeight = 6,
+  helixAngle = 20deg,
+)`,
+        { shouldNormalise: true }
+      )
+    })
+
+    await test.step('Delete herringbone gear via feature tree', async () => {
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'gear001',
+        0
+      )
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+      await scene.settled(cmdBar)
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.not.toContain('gear::herringbone(')
+      await expect(
+        await toolbar.getFeatureTreeOperation('gear001', 0)
+      ).not.toBeVisible()
+    })
+  })
+
+  test('Ring gear point-and-click with edit and delete', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)`
+
+    const selectGearCommand = async (
+      item: 'gear-helical' | 'gear-spur' | 'gear-ring'
+    ) => {
+      await page.locator('[data-onboarding-id="gears-dropdown-button"]').click()
+      await expect(page.getByTestId(`dropdown-${item}`)).toBeVisible()
+      await page.getByTestId(`dropdown-${item}`).click()
+    }
+
+    const fillCurrentKclArg = async (value: string) => {
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill(value)
+      await cmdBar.progressCmdBar()
+    }
+
+    await test.step('Settle the scene', async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+    })
+
+    await test.step('Create ring gear via toolbar group', async () => {
+      await selectGearCommand('gear-ring')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Ring Gear',
+        currentArgKey: 'nTeeth',
+        currentArgValue: '40',
+        headerArguments: {
+          NTeeth: '',
+          Module: '',
+          PressureAngle: '',
+          HelixAngle: '',
+          GearHeight: '',
+        },
+        highlightedHeaderArg: 'nTeeth',
+      })
+      await fillCurrentKclArg('42')
+      await fillCurrentKclArg('1.3')
+      await fillCurrentKclArg('14deg')
+      await fillCurrentKclArg('-20deg')
+      await fillCurrentKclArg('5')
+      await cmdBar.expectState({
+        stage: 'review',
+        commandName: 'Ring Gear',
+        headerArguments: {
+          NTeeth: '42',
+          Module: '1.3',
+          PressureAngle: '14deg',
+          HelixAngle: '-20deg',
+          GearHeight: '5',
+        },
+      })
+      await cmdBar.submit()
+      await scene.settled(cmdBar)
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(
+        `gear001 = gear::ring(
+  nTeeth = 42,
+  module = 1.3,
+  pressureAngle = 14deg,
+  helixAngle = -20deg,
+  gearHeight = 5,
+)`,
+        { shouldNormalise: true }
+      )
+    })
+
+    await test.step('Edit ring gear via feature tree', async () => {
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'gear001',
+        0
+      )
+      await operationButton.dblclick({ button: 'left' })
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Ring Gear',
+        currentArgKey: 'gearHeight',
+        currentArgValue: '5',
+        headerArguments: {
+          NTeeth: '42',
+          Module: '1.3',
+          PressureAngle: '14deg',
+          HelixAngle: '-20deg',
+          GearHeight: '5',
+        },
+        highlightedHeaderArg: 'gearHeight',
+      })
+      await page.getByRole('button', { name: 'nTeeth' }).click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Ring Gear',
+        currentArgKey: 'nTeeth',
+        currentArgValue: '42',
+        headerArguments: {
+          NTeeth: '42',
+          Module: '1.3',
+          PressureAngle: '14deg',
+          HelixAngle: '-20deg',
+          GearHeight: '5',
+        },
+        highlightedHeaderArg: 'nTeeth',
+      })
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill('48')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        commandName: 'Ring Gear',
+        headerArguments: {
+          NTeeth: '48',
+          Module: '1.3',
+          PressureAngle: '14deg',
+          HelixAngle: '-20deg',
+          GearHeight: '5',
+        },
+      })
+      await cmdBar.submit()
+      await scene.settled(cmdBar)
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(
+        `gear001 = gear::ring(
+  nTeeth = 48,
+  module = 1.3,
+  pressureAngle = 14deg,
+  helixAngle = -20deg,
+  gearHeight = 5,
+)`,
+        { shouldNormalise: true }
+      )
+    })
+
+    await test.step('Delete ring gear via feature tree', async () => {
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'gear001',
+        0
+      )
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+      await scene.settled(cmdBar)
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.not.toContain('gear::ring(')
+      await expect(
+        await toolbar.getFeatureTreeOperation('gear001', 0)
+      ).not.toBeVisible()
     })
   })
 })

@@ -4,7 +4,9 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { useAppState } from '@src/AppState'
 import { ActionButton } from '@src/components/ActionButton'
 import { ActionButtonDropdown } from '@src/components/ActionButtonDropdown'
+import { ActionButtonRecentDropdown } from '@src/components/ActionButtonRecentDropdown'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { LegacySketchModeBanner } from '@src/components/SketchSolveAnnouncements'
 import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
@@ -22,15 +24,28 @@ import type {
   ToolbarItemResolvedDropdown,
 } from '@src/lib/toolbar'
 import {
+  getDefaultRecentToolbarItemIds,
+  recordRecentToolbarItemId,
+  getToolbarDropdownDisplay,
+  promoteRecentToolbarItemId,
+  resolveRecentToolbarItems,
+  isSketchToolbarTransitioning,
   isToolbarItemResolvedDropdown,
   modelingMachineStateToToolbarModeName,
   useToolbarConfig,
 } from '@src/lib/toolbar'
+import { collectToolbarHotkeyActions } from '@src/lib/toolbarHotkeys'
 import { EngineConnectionStateType } from '@src/network/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { useSignals } from '@preact/signals-react/runtime'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
+import { getSymmetricToolSelectionStep } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { useSelector } from '@xstate/react'
+import type { SnapshotFrom } from 'xstate'
+import { isArray, type Platform } from '@src/lib/utils'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
+import usePlatform from '@src/hooks/usePlatform'
 
 type ToolbarProps = { isExecuting: boolean } & Omit<
   ReturnType<typeof useModelingContext>,
@@ -49,6 +64,7 @@ const Toolbar_ = memo(
   (props: ToolbarProps) => {
     const { commands } = useApp()
     const { kclManager } = useSingletons()
+    const platform = usePlatform()
     const toolbarConfig = useToolbarConfig()
     const wasmInstance = use(kclManager.wasmInstancePromise)
     const iconClassName =
@@ -91,9 +107,59 @@ const Toolbar_ = memo(
     const toolbarConfigurationName = modelingMachineStateToToolbarModeName(
       props.state
     )
+    const disableSketchToolbar =
+      isSketchToolbarTransitioning(props.state) &&
+      (toolbarConfigurationName === 'sketching' ||
+        toolbarConfigurationName === 'sketchSolve')
 
     const showNonVisualConstraints =
       props.state.context.showNonVisualConstraints
+    const sketchSolveSelectedIdsKey = useSelector(
+      props.state.children.sketchSolveMachine,
+      (snapshot) =>
+        isSketchSolveSnapshot(snapshot)
+          ? snapshot.context.selectedIds.join('|')
+          : ''
+    )
+    const symmetricToolPrompt = useSelector(
+      props.state.children.sketchSolveMachine,
+      (snapshot) => {
+        if (!isSketchSolveSnapshot(snapshot)) {
+          return null
+        }
+
+        if (
+          snapshot.context.sketchSolveToolName !== 'symmetricConstraintTool'
+        ) {
+          return null
+        }
+
+        const objects =
+          snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects
+        if (!isArray(objects)) {
+          return null
+        }
+
+        const selectedObjectIds = snapshot.context.selectedIds.filter(
+          (selectionId): selectionId is number =>
+            typeof selectionId === 'number'
+        )
+        const selectionStep = getSymmetricToolSelectionStep(
+          selectedObjectIds,
+          objects
+        )
+
+        if (selectionStep === 'select-axis') {
+          return 'Select a symmetry axis.'
+        }
+
+        if (selectionStep === 'select-pair') {
+          return 'Select two points, lines, arcs, or circles to mirror.'
+        }
+
+        return null
+      }
+    )
 
     /** These are the props that will be passed to the callbacks in the toolbar config
      * They are memoized to prevent unnecessary re-renders,
@@ -107,6 +173,7 @@ const Toolbar_ = memo(
         sketchPathId,
         editorHasFocus: kclManager.editorView.hasFocus,
         isActive: false, // Default value - individual items will override this
+        keepSelection: false,
       }),
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
       [
@@ -170,6 +237,9 @@ const Toolbar_ = memo(
           } else if (isToolbarDropdown(maybeIconConfig)) {
             return {
               id: maybeIconConfig.id,
+              display: maybeIconConfig.display,
+              visibleItemCount: maybeIconConfig.visibleItemCount,
+              defaultVisibleItemIds: maybeIconConfig.defaultVisibleItemIds,
               array: maybeIconConfig.array.map((item) =>
                 resolveItemConfig(item, wasmInstance)
               ),
@@ -189,6 +259,7 @@ const Toolbar_ = memo(
         )
         const isDisabled =
           disableAllButtons ||
+          disableSketchToolbar ||
           !isConfiguredAvailable ||
           maybeIconConfig.disabled?.(props.state, wasmInstance) === true
 
@@ -229,31 +300,102 @@ const Toolbar_ = memo(
     }, [
       toolbarConfigurationName,
       disableAllButtons,
+      disableSketchToolbar,
       configCallbackProps,
       wasmInstance,
       showNonVisualConstraints,
+      sketchSolveSelectedIdsKey,
     ])
 
-    // To remember the last selected item in an ActionButtonDropdown
-    const [lastSelectedMultiActionItem, _] = useState(
-      new Map<
-        number /* index in currentModeItems */,
-        number /* index in maybeIconConfig */
-      >()
+    // To remember the last selected item in a standard ActionButtonDropdown
+    const [lastSelectedMultiActionItem, setLastSelectedMultiActionItem] =
+      useState(
+        new Map<
+          number /* index in currentModeItems */,
+          number /* index in maybeIconConfig */
+        >()
+      )
+    const [, setRecentDropdownItemIds] = useState(new Map<string, string[]>())
+    const [visibleRecentDropdownItemIds, setVisibleRecentDropdownItemIds] =
+      useState(new Map<string, string[]>())
+
+    const getKeepSelectionFromMouseEvent = useCallback(
+      (event: Pick<MouseEvent, 'metaKey' | 'ctrlKey'>) =>
+        event.metaKey || event.ctrlKey,
+      []
+    )
+
+    const rememberRecentDropdownItem = useCallback(
+      (
+        dropdown: ToolbarItemResolvedDropdown,
+        itemId: string,
+        shouldPromoteIntoVisibleItems: boolean
+      ) => {
+        setRecentDropdownItemIds((previous) => {
+          const next = new Map(previous)
+          const nextRecentItemIds = recordRecentToolbarItemId(
+            itemId,
+            next.get(dropdown.id) ?? [],
+            dropdown
+          )
+          next.set(dropdown.id, nextRecentItemIds)
+
+          if (shouldPromoteIntoVisibleItems) {
+            setVisibleRecentDropdownItemIds((previousVisible) => {
+              const nextVisible = new Map(previousVisible)
+              nextVisible.set(
+                dropdown.id,
+                promoteRecentToolbarItemId(
+                  itemId,
+                  nextVisible.get(dropdown.id) ??
+                    getDefaultRecentToolbarItemIds(dropdown),
+                  nextRecentItemIds,
+                  dropdown
+                )
+              )
+              return nextVisible
+            })
+          }
+
+          return next
+        })
+      },
+      []
+    )
+
+    const hotkeyActions = useMemo(
+      () => collectToolbarHotkeyActions(currentModeItems),
+      [currentModeItems]
+    )
+    const hotkeyActionMap = useMemo(
+      () => new Map(hotkeyActions.map((action) => [action.hotkey, action])),
+      [hotkeyActions]
+    )
+
+    useHotkeys(
+      hotkeyActions.map((action) => action.hotkey),
+      (_, hotkeysEvent) => {
+        hotkeyActionMap.get(hotkeysEvent.hotkey)?.onTrigger()
+      },
+      { enabled: hotkeyActions.length > 0 },
+      [hotkeyActionMap]
     )
 
     return (
       <menu
+        aria-disabled={disableSketchToolbar}
         data-current-mode={toolbarConfigurationName}
         data-testid="toolbar"
         data-onboarding-id="toolbar"
-        className="toolbar z-[19] max-w-full whitespace-nowrap px-2 py-1 mx-auto bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm"
+        className={`toolbar z-[19] max-w-full whitespace-nowrap px-2 py-1 mx-auto bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm ${
+          disableSketchToolbar ? 'opacity-50' : ''
+        }`}
       >
         <ul
           ref={toolbarButtonsRef}
-          className={
-            'has-[[aria-expanded=true]]:!pointer-events-none m-0 py-1 rounded-l-sm flex flex-wrap gap-1.5 items-center '
-          }
+          className={`has-[[aria-expanded=true]]:!pointer-events-none m-0 py-1 rounded-l-sm flex flex-wrap gap-1.5 items-center ${
+            disableSketchToolbar ? 'pointer-events-none' : ''
+          }`}
         >
           {/* A menu item will either be a vertical line break, a button with a dropdown, or a single button */}
           {currentModeItems.map((maybeIconConfig, i) => {
@@ -266,16 +408,143 @@ const Toolbar_ = memo(
                 />
               )
             } else if (isToolbarItemResolvedDropdown(maybeIconConfig)) {
-              // A button with a dropdown
+              if (getToolbarDropdownDisplay(maybeIconConfig) === 'recent') {
+                const visibleItemIds =
+                  visibleRecentDropdownItemIds.get(maybeIconConfig.id) ??
+                  getDefaultRecentToolbarItemIds(maybeIconConfig)
+                const { visibleItems } = resolveRecentToolbarItems(
+                  maybeIconConfig,
+                  visibleItemIds
+                )
+
+                return (
+                  <ActionButtonRecentDropdown
+                    key={maybeIconConfig.id}
+                    name={maybeIconConfig.id}
+                    dropdownTooltipText="More constraints"
+                    className={
+                      (maybeIconConfig.array[0]?.alwaysDark
+                        ? 'dark bg-chalkboard-90 '
+                        : '!bg-transparent ') +
+                      'group/wrapper ' +
+                      buttonBorderClassName +
+                      ' relative group'
+                    }
+                    menuItems={maybeIconConfig.array.map((itemConfig) => ({
+                      id: itemConfig.id,
+                      label: itemConfig.title,
+                      icon: itemConfig.icon,
+                      iconColor: itemConfig.iconColor,
+                      hotkey: itemConfig.hotkey,
+                      onClick: (event) => {
+                        rememberRecentDropdownItem(
+                          maybeIconConfig,
+                          itemConfig.id,
+                          !visibleItems.some(
+                            (visibleItem) => visibleItem.id === itemConfig.id
+                          )
+                        )
+                        itemConfig.onClick({
+                          ...itemConfig.callbackProps,
+                          keepSelection: getKeepSelectionFromMouseEvent(event),
+                        })
+                      },
+                      disabled:
+                        disableAllButtons ||
+                        !['available', 'experimental'].includes(
+                          itemConfig.status
+                        ) ||
+                        itemConfig.disabled === true ||
+                        itemConfig.disableHotkey === true,
+                      status: itemConfig.status,
+                    }))}
+                  >
+                    {visibleItems.map((itemConfig, visibleIndex) => (
+                      <div
+                        className="relative"
+                        key={itemConfig.id}
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
+                      >
+                        <ActionButton
+                          Element="button"
+                          id={itemConfig.id}
+                          data-testid={itemConfig.id}
+                          data-onboarding-id={itemConfig.id}
+                          iconStart={{
+                            icon: itemConfig.icon,
+                            iconColor: itemConfig.iconColor,
+                            className: iconClassName,
+                            bgClassName: bgClassName,
+                          }}
+                          className={
+                            '!border-transparent !px-0 pressed:!text-chalkboard-10 pressed:enabled:hovered:!text-chalkboard-10 rounded-none ' +
+                            (visibleIndex === 0 ? '!rounded-l-sm ' : '') +
+                            (visibleIndex === visibleItems.length - 1
+                              ? '!rounded-r-sm '
+                              : '') +
+                            buttonBgClassName
+                          }
+                          aria-pressed={itemConfig.isActive}
+                          disabled={
+                            disableAllButtons ||
+                            !['available', 'experimental'].includes(
+                              itemConfig.status
+                            ) ||
+                            itemConfig.disabled
+                          }
+                          name={itemConfig.title}
+                          aria-description={itemConfig.description}
+                          onClick={(event) => {
+                            rememberRecentDropdownItem(
+                              maybeIconConfig,
+                              itemConfig.id,
+                              false
+                            )
+                            itemConfig.onClick({
+                              ...itemConfig.callbackProps,
+                              keepSelection:
+                                getKeepSelectionFromMouseEvent(event),
+                            })
+                          }}
+                        >
+                          <span
+                            className={!itemConfig.showTitle ? 'sr-only' : ''}
+                          >
+                            {itemConfig.title}
+                          </span>
+                        </ActionButton>
+                        <ToolbarItemTooltip
+                          itemConfig={itemConfig}
+                          configCallbackProps={configCallbackProps}
+                          wrapperClassName="ui-open:!hidden"
+                          contentClassName={tooltipContentClassName}
+                        >
+                          {showRichContent ? (
+                            <ToolbarItemTooltipRichContent
+                              itemConfig={itemConfig}
+                              state={props.state}
+                              platform={platform}
+                            />
+                          ) : (
+                            <ToolbarItemTooltipShortContent
+                              status={itemConfig.status}
+                              title={itemConfig.title}
+                              hotkey={itemConfig.hotkey}
+                              platform={platform}
+                            />
+                          )}
+                        </ToolbarItemTooltip>
+                      </div>
+                    ))}
+                  </ActionButtonRecentDropdown>
+                )
+              }
+
               const selectedIcon =
                 maybeIconConfig.array.find((c) => c.isActive) ||
                 maybeIconConfig.array[lastSelectedMultiActionItem.get(i) ?? 0]
 
-              // Save the last selected item in the dropdown
-              lastSelectedMultiActionItem.set(
-                i,
-                maybeIconConfig.array.indexOf(selectedIcon)
-              )
               return (
                 <ActionButtonDropdown
                   Element="button"
@@ -284,6 +553,7 @@ const Toolbar_ = memo(
                   data-onboarding-id={selectedIcon.id + '-dropdown'}
                   id={selectedIcon.id + '-dropdown'}
                   name={maybeIconConfig.id}
+                  platform={platform}
                   className={
                     (maybeIconConfig.array[0].alwaysDark
                       ? 'dark bg-chalkboard-90 '
@@ -295,8 +565,20 @@ const Toolbar_ = memo(
                   splitMenuItems={maybeIconConfig.array.map((itemConfig) => ({
                     id: itemConfig.id,
                     label: itemConfig.title,
+                    icon: itemConfig.icon,
+                    iconColor: itemConfig.iconColor,
                     hotkey: itemConfig.hotkey,
-                    onClick: () => itemConfig.onClick(itemConfig.callbackProps),
+                    onClick: (event) => {
+                      setLastSelectedMultiActionItem((previous) => {
+                        const next = new Map(previous)
+                        next.set(i, maybeIconConfig.array.indexOf(itemConfig))
+                        return next
+                      })
+                      itemConfig.onClick({
+                        ...itemConfig.callbackProps,
+                        keepSelection: getKeepSelectionFromMouseEvent(event),
+                      })
+                    },
                     disabled:
                       disableAllButtons ||
                       !['available', 'experimental'].includes(
@@ -337,11 +619,12 @@ const Toolbar_ = memo(
                         selectedIcon.disabled
                       }
                       name={selectedIcon.title}
-                      // aria-description is still in ARIA 1.3 draft.
-
                       aria-description={selectedIcon.description}
-                      onClick={() =>
-                        selectedIcon.onClick(selectedIcon.callbackProps)
+                      onClick={(event) =>
+                        selectedIcon.onClick({
+                          ...selectedIcon.callbackProps,
+                          keepSelection: getKeepSelectionFromMouseEvent(event),
+                        })
                       }
                     >
                       <span
@@ -359,12 +642,14 @@ const Toolbar_ = memo(
                           <ToolbarItemTooltipRichContent
                             itemConfig={selectedIcon}
                             state={props.state}
+                            platform={platform}
                           />
                         ) : (
                           <ToolbarItemTooltipShortContent
                             status={selectedIcon.status}
                             title={selectedIcon.title}
                             hotkey={selectedIcon.hotkey}
+                            platform={platform}
                           />
                         )}
                       </ToolbarItemTooltip>
@@ -415,7 +700,12 @@ const Toolbar_ = memo(
                     ) ||
                     itemConfig.disabled
                   }
-                  onClick={() => itemConfig.onClick(itemConfig.callbackProps)}
+                  onClick={(event) =>
+                    itemConfig.onClick({
+                      ...itemConfig.callbackProps,
+                      keepSelection: getKeepSelectionFromMouseEvent(event),
+                    })
+                  }
                 >
                   <span className={!itemConfig.showTitle ? 'sr-only' : ''}>
                     {itemConfig.title}
@@ -430,12 +720,14 @@ const Toolbar_ = memo(
                     <ToolbarItemTooltipRichContent
                       itemConfig={itemConfig}
                       state={props.state}
+                      platform={platform}
                     />
                   ) : (
                     <ToolbarItemTooltipShortContent
                       status={itemConfig.status}
                       title={itemConfig.title}
                       hotkey={itemConfig.hotkey}
+                      platform={platform}
                     />
                   )}
                 </ToolbarItemTooltip>
@@ -451,15 +743,14 @@ const Toolbar_ = memo(
               </p>
             </div>
           )}
-          {props.state.matches('sketchSolveMode') && (
+          {symmetricToolPrompt && (
             <div className="mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg">
-              <p className="text-xs">
-                {IS_STAGING_OR_DEBUG
-                  ? 'Sketch solve mode is experimental. This will soon become the default in production.'
-                  : 'Sketch solve mode is experimental. Disable in settings if you want classic sketch mode.'}
-              </p>
+              <p className="text-xs">{symmetricToolPrompt}</p>
             </div>
           )}
+          {props.state.context.store.useSketchSolveMode?.current === true &&
+            modelingMachineStateToToolbarModeName(props.state) ===
+              'sketching' && <LegacySketchModeBanner />}
         </div>
       </menu>
     )
@@ -482,8 +773,7 @@ interface ToolbarItemContentsProps extends React.PropsWithChildren {
 }
 /**
  * The single button and dropdown button share content, so we extract it here
- * It contains a tooltip with the title, description, and links
- * and a hotkey listener
+ * It contains a tooltip with the title, description, and links.
  */
 const ToolbarItemTooltip = memo(function ToolbarItemContents({
   itemConfig,
@@ -492,24 +782,6 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
   contentClassName = '',
   children,
 }: ToolbarItemContentsProps) {
-  /**
-   * GOTCHA: `useHotkeys` can only register one hotkey listener per component.
-   * TODO: make a global hotkey registration system. make them editable.
-   */
-  useHotkeys(
-    itemConfig.hotkey || '',
-    () => {
-      itemConfig.onClick(itemConfig.callbackProps)
-    },
-    {
-      enabled:
-        ['available', 'experimental'].includes(itemConfig.status) &&
-        !!itemConfig.hotkey &&
-        !itemConfig.disabled &&
-        !itemConfig.disableHotkey,
-    }
-  )
-
   const onDesktop = isDesktop()
   const wrapperStyle = useMemo(
     () =>
@@ -538,10 +810,12 @@ const ToolbarItemTooltipShortContent = ({
   status,
   title,
   hotkey,
+  platform,
 }: {
   status: string
   title: string
   hotkey?: string | string[]
+  platform: Platform
 }) => (
   <div
     className={`text-sm flex flex-col ${
@@ -560,7 +834,7 @@ const ToolbarItemTooltipShortContent = ({
       {title}
       {hotkey && (
         <kbd className="inline-block ml-2 flex-none hotkey">
-          {filterEscHotkey(hotkey)}
+          {hotkeyDisplay(filterEscHotkey(hotkey)[0], platform)}
         </kbd>
       )}
     </div>
@@ -571,9 +845,11 @@ const ToolbarItemTooltipRichContent = memo(
   ({
     itemConfig,
     state,
+    platform,
   }: {
     itemConfig: ToolbarItemResolved
     state: ReturnType<typeof useModelingContext>['state']
+    platform: Platform
   }) => {
     const shouldBeEnabled = ['available', 'experimental'].includes(
       itemConfig.status
@@ -604,7 +880,9 @@ const ToolbarItemTooltipRichContent = memo(
             {itemConfig.title}
           </div>
           {shouldBeEnabled && itemConfig.hotkey ? (
-            <kbd className="flex-none hotkey">{itemConfig.hotkey}</kbd>
+            <kbd className="flex-none hotkey">
+              {hotkeyDisplay(filterEscHotkey(itemConfig.hotkey)[0], platform)}
+            </kbd>
           ) : itemConfig.status === 'kcl-only' ? (
             <>
               <span className="text-wrap font-sans flex-0 text-chalkboard-70 dark:text-chalkboard-40">
@@ -703,4 +981,19 @@ function isToolbarDropdown(
   item: ToolbarItem | ToolbarDropdown
 ): item is ToolbarDropdown {
   return 'array' in item
+}
+
+function isSketchSolveSnapshot(
+  snapshot: unknown
+): snapshot is SnapshotFrom<typeof sketchSolveMachine> {
+  return !!(
+    snapshot &&
+    typeof snapshot === 'object' &&
+    'context' in snapshot &&
+    snapshot.context &&
+    typeof snapshot.context === 'object' &&
+    'selectedIds' in snapshot.context &&
+    isArray(snapshot.context.selectedIds) &&
+    'sketchSolveToolName' in snapshot.context
+  )
 }

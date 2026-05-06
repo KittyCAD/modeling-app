@@ -25,7 +25,8 @@ import type {
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
   type SnapTarget,
-  getConstraintForSnapTarget,
+  applyConstraintsForSnapTarget,
+  getCoincidentSegmentsForSnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import {
   type CONFIRMING_DIMENSIONS,
@@ -84,6 +85,7 @@ export const machine = setup({
         | {
             kclSource: SourceDelta
             sceneGraphDelta: SceneGraphDelta
+            checkpointId?: number | null
             newlyAddedEntities?: {
               segmentIds: Array<number>
               constraintIds: Array<number>
@@ -140,21 +142,17 @@ export const machine = setup({
             }
           }
 
-          const snapConstraint = getConstraintForSnapTarget(
-            startPointId,
-            snapTarget,
-            units
-          )
-          if (snapConstraint === null) {
+          const snapResult = await applyConstraintsForSnapTarget({
+            segmentId: startPointId,
+            target: snapTarget,
+            rustContext,
+            sketchId,
+            settings,
+          })
+          if (snapResult.result === null) {
             return result
           }
-
-          const snapResult = await rustContext.addConstraint(
-            0,
-            sketchId,
-            snapConstraint,
-            settings
-          )
+          const appliedSnapResult = snapResult.result
 
           const segmentIds = result.sceneGraphDelta.new_objects.filter(
             (objId) => {
@@ -162,20 +160,19 @@ export const machine = setup({
               return obj?.kind.type === 'Segment'
             }
           )
-          const constraintIds = snapResult.sceneGraphDelta.new_objects.filter(
-            (objId) => {
-              const obj = snapResult.sceneGraphDelta.new_graph.objects[objId]
-              return obj?.kind.type === 'Constraint'
-            }
-          )
+          const constraintIds = snapResult.newObjectIds.filter((objId) => {
+            const obj =
+              appliedSnapResult.sceneGraphDelta.new_graph.objects[objId]
+            return obj?.kind.type === 'Constraint'
+          })
 
           return {
-            kclSource: snapResult.kclSource,
+            kclSource: appliedSnapResult.kclSource,
             sceneGraphDelta: {
-              ...snapResult.sceneGraphDelta,
+              ...appliedSnapResult.sceneGraphDelta,
               new_objects: [
                 ...result.sceneGraphDelta.new_objects,
-                ...snapResult.sceneGraphDelta.new_objects,
+                ...snapResult.newObjectIds,
               ],
             },
             newlyAddedEntities: {
@@ -208,6 +205,7 @@ export const machine = setup({
         | {
             kclSource: SourceDelta
             sceneGraphDelta: SceneGraphDelta
+            checkpointId?: number | null
             lastPointId?: number
           }
         | {
@@ -238,6 +236,10 @@ export const machine = setup({
               y: { type: 'Var', value: roundOff(y), units },
             },
           }
+          const coincidentSegments = getCoincidentSegmentsForSnapTarget(
+            id,
+            snapTarget
+          )
 
           // Call the editSegments method to update the point position
           const result = await rustContext.editSegments(
@@ -249,28 +251,28 @@ export const machine = setup({
                 ctor: segmentCtor,
               },
             ],
-            settings
+            settings,
+            coincidentSegments === null
           )
 
           let latestKclSource = result.kclSource
           let latestSceneGraphDelta = result.sceneGraphDelta
+          let latestCheckpointId = result.checkpointId
           let snapConstraintNewObjects: Array<number> = []
 
-          const snapConstraint = getConstraintForSnapTarget(
-            id,
-            snapTarget,
-            units
-          )
-          if (snapConstraint !== null) {
-            const snapResult = await rustContext.addConstraint(
-              0,
-              sketchId,
-              snapConstraint,
-              settings
-            )
-            latestKclSource = snapResult.kclSource
-            latestSceneGraphDelta = snapResult.sceneGraphDelta
-            snapConstraintNewObjects = snapResult.sceneGraphDelta.new_objects
+          const snapResult = await applyConstraintsForSnapTarget({
+            segmentId: id,
+            target: snapTarget,
+            rustContext,
+            sketchId,
+            settings,
+            createCheckpoint: true,
+          })
+          if (snapResult.result !== null) {
+            latestKclSource = snapResult.result.kclSource
+            latestSceneGraphDelta = snapResult.result.sceneGraphDelta
+            latestCheckpointId = snapResult.result.checkpointId
+            snapConstraintNewObjects = snapResult.newObjectIds
           }
 
           return {
@@ -282,8 +284,9 @@ export const machine = setup({
                 ...snapConstraintNewObjects,
               ],
             },
+            checkpointId: latestCheckpointId,
             lastPointId:
-              snapConstraint === null && isDoubleClick !== true
+              snapConstraintNewObjects.length === 0 && isDoubleClick !== true
                 ? id
                 : undefined,
           }

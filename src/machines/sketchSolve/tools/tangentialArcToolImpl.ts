@@ -40,7 +40,7 @@ import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/int
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import {
-  getCoincidentSegmentsForSnapTarget,
+  applyConstraintsForSnapTarget,
   type SnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import {
@@ -82,6 +82,7 @@ export type ToolEvents =
       output: {
         kclSource: SourceDelta
         sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
       }
     }
 
@@ -423,7 +424,7 @@ export function addFirstPointListener({ self, context }: ToolActionArgs) {
       sendHoveredSnappingCandidate(self, {
         target: {
           type: 'point',
-          pointId: tangentTarget.apiObject.id,
+          id: tangentTarget.apiObject.id,
         },
         distance: 0,
         position: pointToCoords2d(tangentTarget.apiObject),
@@ -433,7 +434,7 @@ export function addFirstPointListener({ self, context }: ToolActionArgs) {
         target: {
           target: {
             type: 'point',
-            pointId: tangentTarget.apiObject.id,
+            id: tangentTarget.apiObject.id,
           },
           distance: 0,
           position: tangentTarget.tangentInfo.tangentStart.position,
@@ -630,6 +631,7 @@ export function sendResultToParent({ event, self }: ToolActionArgs) {
   const output = event.output as {
     kclSource?: SourceDelta
     sceneGraphDelta?: SceneGraphDelta
+    checkpointId?: number | null
     error?: string
   }
 
@@ -642,6 +644,8 @@ export function sendResultToParent({ event, self }: ToolActionArgs) {
     data: {
       sourceDelta: output.kclSource,
       sceneGraphDelta: output.sceneGraphDelta,
+      checkpointId: output.checkpointId ?? null,
+      ...(event.type !== FINALIZING_ARC ? { writeToDisk: false } : {}),
     },
   }
   self._parent?.send(sendData)
@@ -808,6 +812,7 @@ export async function finalizeArcActor({
   | {
       kclSource: SourceDelta
       sceneGraphDelta: SceneGraphDelta
+      checkpointId?: number | null
     }
   | {
       error: string
@@ -910,21 +915,15 @@ export async function finalizeArcActor({
 
     const newObjects = [...arcEditResult.sceneGraphDelta.new_objects]
 
-    const freePointCoincidentSegments = getCoincidentSegmentsForSnapTarget(
-      freeArcPointId,
-      endSnapTarget
-    )
-    if (freePointCoincidentSegments !== null) {
-      const snapResult = await rustContext.addConstraint(
-        0,
-        sketchId,
-        {
-          type: 'Coincident',
-          segments: freePointCoincidentSegments,
-        },
-        settings
-      )
-      newObjects.push(...snapResult.sceneGraphDelta.new_objects)
+    const freePointSnapResult = await applyConstraintsForSnapTarget({
+      segmentId: freeArcPointId,
+      target: endSnapTarget,
+      rustContext,
+      sketchId,
+      settings,
+    })
+    if (freePointSnapResult.result !== null) {
+      newObjects.push(...freePointSnapResult.newObjectIds)
     }
 
     const tangentCoincidentResult = await rustContext.addConstraint(
@@ -945,7 +944,8 @@ export async function finalizeArcActor({
         type: 'Tangent',
         input: [tangentSegmentId, arcId],
       },
-      settings
+      settings,
+      true
     )
 
     return {
@@ -957,6 +957,7 @@ export async function finalizeArcActor({
           ...tangentResult.sceneGraphDelta.new_objects,
         ],
       },
+      checkpointId: tangentResult.checkpointId ?? null,
     }
   } catch (error) {
     console.error('Failed to finalize tangential arc:', error)

@@ -482,16 +482,19 @@ impl EngineManager for EngineConnection {
         // Wait for the request to be sent.
         rx.await
             .map_err(|e| {
-                KclError::new_engine(KclErrorDetails::new(
-                    format!("could not send request to the engine actor: {e}"),
-                    vec![source_range],
-                ))
+                KclError::new_engine_hangup(
+                    KclErrorDetails::new(
+                        format!("could not send request to the engine actor: {e}"),
+                        vec![source_range],
+                    ),
+                    None,
+                )
             })?
             .map_err(|e| {
-                KclError::new_engine(KclErrorDetails::new(
-                    format!("could not send request to the engine: {e}"),
-                    vec![source_range],
-                ))
+                KclError::new_engine_hangup(
+                    KclErrorDetails::new(format!("could not send request to the engine: {e}"), vec![source_range]),
+                    None,
+                )
             })?;
 
         Ok(())
@@ -513,18 +516,30 @@ impl EngineManager for EngineConnection {
         while current_time.elapsed().as_secs() < response_timeout {
             let guard = self.socket_health.read().await;
             if *guard == SocketHealth::Inactive {
+                // Get the API call ID from session data if available
+                let session_data = self.session_data.read().await;
+                let api_call_id = session_data.as_ref().map(|session| session.api_call_id.to_string());
+                let api_call_id_msg = if let Some(ref id) = api_call_id {
+                    format!(" (API call ID: {})", id)
+                } else {
+                    String::new()
+                };
+
                 // Check if we have any pending errors.
                 let pe = self.pending_errors.read().await;
                 if !pe.is_empty() {
                     return Err(KclError::new_engine(KclErrorDetails::new(
-                        pe.join(", "),
+                        format!("{}{}", pe.join(", "), api_call_id_msg),
                         vec![source_range],
                     )));
                 } else {
-                    return Err(KclError::new_engine_hangup(KclErrorDetails::new(
-                        "Modeling command failed: websocket closed early".to_string(),
-                        vec![source_range],
-                    )));
+                    return Err(KclError::new_engine_hangup(
+                        KclErrorDetails::new(
+                            format!("Modeling command failed: websocket closed early{}", api_call_id_msg),
+                            vec![source_range],
+                        ),
+                        api_call_id,
+                    ));
                 }
             }
 
@@ -543,8 +558,16 @@ impl EngineManager for EngineConnection {
             }
         }
 
+        // Get the API call ID from session data if available for timeout error
+        let session_data = self.session_data.read().await;
+        let api_call_id_msg = if let Some(session) = session_data.as_ref() {
+            format!(" (API call ID: {})", session.api_call_id)
+        } else {
+            String::new()
+        };
+
         Err(KclError::new_engine(KclErrorDetails::new(
-            format!("Modeling command timed out `{id}`"),
+            format!("Modeling command timed out `{id}`{}", api_call_id_msg),
             vec![source_range],
         )))
     }

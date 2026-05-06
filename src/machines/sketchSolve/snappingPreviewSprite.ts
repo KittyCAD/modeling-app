@@ -188,9 +188,11 @@ function getBadgeTypeForSnappingTarget(
 ): ConstraintIconName {
   switch (target?.type) {
     case X_AXIS_TARGET:
-      return 'VerticalDistance'
+      return 'Horizontal'
     case Y_AXIS_TARGET:
-      return 'HorizontalDistance'
+      return 'Vertical'
+    case 'midpoint':
+      return 'Midpoint'
     default:
       return 'Coincident'
   }

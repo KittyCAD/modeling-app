@@ -120,7 +120,6 @@ use crate::lsp::kcl::hover::HoverOpts;
 use crate::lsp::util::IntoDiagnostic;
 use crate::parsing::PIPE_OPERATOR;
 use crate::parsing::ast::types::Expr;
-use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::VariableKind;
 use crate::parsing::token::RESERVED_WORDS;
 use crate::parsing::token::TokenStream;
@@ -234,7 +233,7 @@ impl Backend {
         fs: crate::fs::FileManager,
         zoo_client: kittycad::Client,
     ) -> Result<Self, String> {
-        let kcl_std = crate::docs::kcl_doc::walk_prelude();
+        let kcl_std = crate::docs::kcl_doc::walk_stdlib();
         let stdlib_completions = get_completions_from_stdlib(&kcl_std).map_err(|e| e.to_string())?;
         let sketch_block_stdlib_completions =
             get_completions_from_stdlib_for_sketch_block(&kcl_std).map_err(|e| e.to_string())?;
@@ -327,11 +326,11 @@ impl Backend {
 
     fn try_arg_completions(
         &self,
-        ast: &Node<crate::parsing::ast::types::Program>,
+        program: &crate::Program,
         position: usize,
         current_code: &str,
     ) -> Option<impl Iterator<Item = CompletionItem>> {
-        let curr_expr = ast.get_expr_for_position(position)?;
+        let curr_expr = program.ast.get_expr_for_position(position)?;
         let hover =
             curr_expr.get_hover_value_for_position(position, current_code, &HoverOpts::default_for_signature_help())?;
 
@@ -353,7 +352,8 @@ impl Backend {
             } => Some(callee_name),
             Hover::Type { .. } => None,
         };
-        let callee_args = maybe_callee.and_then(|fn_name| self.stdlib_args.get(&fn_name))?;
+        let stdlib_args = self.stdlib_args_for_position(program, position);
+        let callee_args = maybe_callee.and_then(|fn_name| stdlib_args.get(&fn_name))?;
 
         let arg_label_completions = callee_args
             .iter()
@@ -1139,7 +1139,7 @@ impl LanguageServer for Backend {
                 let (sig, docs) = if let Some(Some(result)) = with_cached_var(&name, |value| {
                     match value {
                         // User-defined function
-                        KclValue::Function { value, .. } if !value.is_std => {
+                        KclValue::Function { value, .. } if !value.is_std() => {
                             // TODO get docs from comments
                             Some((value.ast.signature(), ""))
                         }
@@ -1362,7 +1362,7 @@ impl LanguageServer for Backend {
         // If we're inside a CallExpression or something where a function parameter label could be completed,
         // then complete it.
         // Let's find the AST node that the user's cursor is in.
-        if let Some(arg_label_completions) = self.try_arg_completions(&ast.ast, position, current_code) {
+        if let Some(arg_label_completions) = self.try_arg_completions(&ast, position, current_code) {
             completions.extend(arg_label_completions);
         }
 
@@ -1790,13 +1790,9 @@ fn should_skip_stdlib_doc(
     has_existing: bool,
     context: StdlibCompletionContext,
 ) -> bool {
-    if !has_existing {
-        return false;
-    }
-
     match context {
-        StdlibCompletionContext::Default => doc.is_experimental(),
-        StdlibCompletionContext::SketchBlock => doc.is_experimental() && !is_sketch2_doc(doc),
+        StdlibCompletionContext::Default => is_sketch2_doc(doc) || (has_existing && doc.is_experimental()),
+        StdlibCompletionContext::SketchBlock => has_existing && doc.is_experimental() && !is_sketch2_doc(doc),
     }
 }
 
@@ -1817,14 +1813,17 @@ fn get_completions_from_stdlib_in_context(
 
     for d in kcl_std.all_docs() {
         if let Some(mut ci) = d.to_completion_item() {
-            let name = d.name();
-            if should_skip_stdlib_doc(d, completions.contains_key(name), context) {
+            let preferred = d.preferred_name();
+            if should_skip_stdlib_doc(d, completions.contains_key(preferred), context) {
                 continue;
             }
-            if context == StdlibCompletionContext::SketchBlock && is_sketch2_doc(d) {
+            let key = if context == StdlibCompletionContext::SketchBlock && is_sketch2_doc(d) {
                 ci = rewrite_completion_for_sketch_block(ci);
-            }
-            completions.insert(name.to_owned(), ci);
+                strip_sketch2_prefix(preferred)
+            } else {
+                preferred.to_owned()
+            };
+            completions.insert(key, ci);
         }
     }
 
@@ -1853,14 +1852,17 @@ fn get_signatures_from_stdlib_in_context(
 
     for d in kcl_std.all_docs() {
         if let Some(mut sig) = d.to_signature_help() {
-            let name = d.name();
-            if should_skip_stdlib_doc(d, signatures.contains_key(name), context) {
+            let preferred = d.preferred_name();
+            if should_skip_stdlib_doc(d, signatures.contains_key(preferred), context) {
                 continue;
             }
-            if context == StdlibCompletionContext::SketchBlock && is_sketch2_doc(d) {
+            let key = if context == StdlibCompletionContext::SketchBlock && is_sketch2_doc(d) {
                 sig = rewrite_signature_for_sketch_block(sig);
-            }
-            signatures.insert(name.to_owned(), sig);
+                strip_sketch2_prefix(preferred)
+            } else {
+                preferred.to_owned()
+            };
+            signatures.insert(key, sig);
         }
     }
 
@@ -1942,10 +1944,15 @@ fn get_arg_maps_from_stdlib_in_context(
             })
             .collect();
         if !arg_map.is_empty() {
-            if should_skip_stdlib_doc(d, result.contains_key(&f.name), context) {
+            let key = if context == StdlibCompletionContext::SketchBlock && is_sketch2_doc(d) {
+                strip_sketch2_prefix(&f.preferred_name)
+            } else {
+                f.preferred_name.clone()
+            };
+            if should_skip_stdlib_doc(d, result.contains_key(&key), context) {
                 continue;
             }
-            result.insert(f.name.clone(), arg_map);
+            result.insert(key, arg_map);
         }
     }
 
@@ -2026,5 +2033,128 @@ return 42"#;
         let position = Position::new(0, 0);
         let index = position_to_char_index(position, code);
         assert_eq!(index, 0);
+    }
+
+    #[test]
+    fn stdlib_completions_keyed_by_preferred_name() {
+        let stdlib = crate::docs::kcl_doc::walk_stdlib();
+        let completions = get_completions_from_stdlib(&stdlib).unwrap();
+
+        assert!(
+            completions.contains_key("clone"),
+            "prelude fn should be keyed by short name"
+        );
+        assert!(
+            completions.contains_key("units::toRadians"),
+            "module fn should be keyed by preferred name with module prefix"
+        );
+        assert!(
+            !completions.contains_key("toRadians"),
+            "module fn should NOT be keyed by bare short name"
+        );
+    }
+
+    #[test]
+    fn stdlib_signatures_keyed_by_preferred_name() {
+        let stdlib = crate::docs::kcl_doc::walk_stdlib();
+        let signatures = get_signatures_from_stdlib(&stdlib);
+
+        assert!(
+            signatures.contains_key("clone"),
+            "prelude fn should be keyed by short name"
+        );
+        assert!(
+            signatures.contains_key("units::toRadians"),
+            "module fn should be keyed by preferred name with module prefix"
+        );
+        assert!(
+            !signatures.contains_key("toRadians"),
+            "module fn should NOT be keyed by bare short name"
+        );
+    }
+
+    #[test]
+    fn stdlib_args_keyed_by_preferred_name() {
+        let stdlib = crate::docs::kcl_doc::walk_stdlib();
+        let args = get_arg_maps_from_stdlib(&stdlib);
+
+        assert!(args.contains_key("clone"), "prelude fn should be keyed by short name");
+        assert!(
+            args.contains_key("units::toRadians"),
+            "module fn should be keyed by preferred name with module prefix"
+        );
+        assert!(
+            !args.contains_key("toRadians"),
+            "module fn should NOT be keyed by bare short name"
+        );
+    }
+
+    #[test]
+    fn default_completions_exclude_solver() {
+        let stdlib = crate::docs::kcl_doc::walk_stdlib();
+        let completions = get_completions_from_stdlib(&stdlib).unwrap();
+
+        assert!(
+            completions.contains_key("line"),
+            "prelude line should be present in default context"
+        );
+        assert!(
+            !completions.contains_key("solver::line"),
+            "solver::line should NOT appear in default context"
+        );
+        assert!(
+            !completions.contains_key("solver::coincident"),
+            "solver-only functions should NOT appear in default context"
+        );
+    }
+
+    #[test]
+    fn sketch1_block_completions_exclude_solver() {
+        // Sketch v1 (startSketchOn()) blocks use the Default completions map (is_in_sketch_block
+        // returns false for sketch v1 syntax);  solver functions must be absent.
+        let stdlib = crate::docs::kcl_doc::walk_stdlib();
+        let completions = get_completions_from_stdlib(&stdlib).unwrap();
+
+        assert!(
+            completions.contains_key("line"),
+            "prelude line should be present for old sketch blocks"
+        );
+        assert!(
+            !completions.contains_key("solver::line"),
+            "solver::line should NOT appear for old sketch blocks"
+        );
+        assert!(
+            !completions.contains_key("solver::coincident"),
+            "solver-only functions should NOT appear for old sketch blocks"
+        );
+    }
+
+    #[test]
+    fn sketch2_completions_include_solver() {
+        let stdlib = crate::docs::kcl_doc::walk_stdlib();
+        let completions = get_completions_from_stdlib_for_sketch_block(&stdlib).unwrap();
+
+        // Solver functions should shadow prelude functions under their bare name
+        assert!(
+            completions.contains_key("line"),
+            "solver line should be present under bare name in sketch2 context"
+        );
+        let line = &completions["line"];
+        assert!(
+            line.insert_text
+                .as_ref()
+                .is_some_and(|t| t.starts_with("line(start = ")),
+            "sketch2 line should use solver signature (start =), not prelude signature"
+        );
+
+        // Solver-only functions should also be present under bare name
+        assert!(
+            completions.contains_key("coincident"),
+            "solver-only functions should be present under bare name in sketch2 context"
+        );
+        assert!(
+            !completions.contains_key("solver::coincident"),
+            "solver functions should NOT keep solver:: prefix in sketch2 context"
+        );
     }
 }

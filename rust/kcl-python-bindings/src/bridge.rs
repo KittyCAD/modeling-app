@@ -7,6 +7,7 @@ use serde::Serialize;
 
 pub mod bounding_box;
 pub mod physical_properties;
+pub mod sketch_constraints;
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone, Copy)]
 #[pyo3_stub_gen::derive::gen_stub_pyclass]

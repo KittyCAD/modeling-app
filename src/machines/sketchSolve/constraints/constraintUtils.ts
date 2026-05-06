@@ -3,9 +3,8 @@ import type {
   FixedPoint,
   ApiObject,
   Coincident,
-  ConstraintSegment,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import { roundOff } from '@src/lib/utils'
+import { isArray, roundOff } from '@src/lib/utils'
 import { getSignedAngleBetweenVec, length2d, subVec } from '@src/lib/utils2d'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { SnapshotFrom, StateFrom } from 'xstate'
@@ -16,6 +15,7 @@ import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { Coords2d } from '@src/lang/util'
 import { getObjectSelectionIds } from '@src/machines/sketchSolve/sketchSolveSelection'
+import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 
 export const CONSTRAINT_TYPE = 'CONSTRAINT'
 
@@ -241,6 +241,237 @@ export function buildTangentConstraintInput(
   return null
 }
 
+type SymmetricConstraintInput = Extract<ApiConstraint, { type: 'Symmetric' }>
+
+function buildSymmetricConstraintInputFromPair({
+  input,
+  axis,
+}: {
+  input: [number, number]
+  axis: number
+}): SymmetricConstraintInput {
+  return {
+    type: 'Symmetric',
+    input,
+    axis,
+  }
+}
+
+export function buildSymmetricConstraintInput(
+  selectedIds: number[],
+  objects: ApiObject[]
+) {
+  if (selectedIds.length !== 3) {
+    return null
+  }
+
+  const selectedObjects = selectedIds.map((id) => objects[id])
+  if (selectedObjects.some((object) => !object)) {
+    return null
+  }
+
+  const selectedLines = selectedObjects.filter(isLineSegment)
+  const selectedPoints = selectedObjects.filter(isPointSegment)
+  const selectedArcLikes = selectedObjects.filter(isArcLikeSegment)
+
+  if (selectedPoints.length === 2 && selectedLines.length === 1) {
+    return buildSymmetricConstraintInputFromPair({
+      input: [selectedPoints[0].id, selectedPoints[1].id],
+      axis: selectedLines[0].id,
+    })
+  }
+
+  if (selectedArcLikes.length === 2 && selectedLines.length === 1) {
+    return buildSymmetricConstraintInputFromPair({
+      input: [selectedArcLikes[0].id, selectedArcLikes[1].id],
+      axis: selectedLines[0].id,
+    })
+  }
+
+  return null
+}
+
+export function buildSymmetricConstraintInputWithExplicitAxis({
+  selectedIds,
+  axisId,
+  objects,
+}: {
+  selectedIds: number[]
+  axisId: number
+  objects: ApiObject[]
+}) {
+  const axis = objects[axisId]
+  if (!isLineSegment(axis)) {
+    return null
+  }
+
+  const selectedWithoutAxis = selectedIds
+    .filter((id) => id !== axisId)
+    .map((id) => objects[id])
+
+  if (
+    selectedWithoutAxis.length !== 2 ||
+    selectedWithoutAxis.some((object) => !object)
+  ) {
+    return null
+  }
+
+  const selectedPoints = selectedWithoutAxis.filter(isPointSegment)
+  if (selectedPoints.length === 2) {
+    return buildSymmetricConstraintInputFromPair({
+      input: [selectedPoints[0].id, selectedPoints[1].id],
+      axis: axisId,
+    })
+  }
+
+  const selectedArcLikes = selectedWithoutAxis.filter(isArcLikeSegment)
+  if (selectedArcLikes.length === 2) {
+    return buildSymmetricConstraintInputFromPair({
+      input: [selectedArcLikes[0].id, selectedArcLikes[1].id],
+      axis: axisId,
+    })
+  }
+
+  const selectedLines = selectedWithoutAxis.filter(isLineSegment)
+  if (selectedLines.length === 2) {
+    // Current Symmetric tool policy: never infer the axis from a three-line
+    // candidate set. The line the user explicitly clicks is the axis.
+    //
+    // If the team later wants to auto-pick an axis heuristically instead,
+    // this is the single policy point to replace with logic such as:
+    // - preferring a construction line
+    // - picking the spatially middle line
+    // - using first- or last-selected line ordering
+    return buildSymmetricConstraintInputFromPair({
+      input: [selectedLines[0].id, selectedLines[1].id],
+      axis: axisId,
+    })
+  }
+
+  return null
+}
+
+export type SymmetricToolSelectionStep = 'select-pair' | 'select-axis'
+
+export function getSymmetricToolSelectionStep(
+  selectedIds: number[],
+  objects: ApiObject[]
+): SymmetricToolSelectionStep | null {
+  if (selectedIds.length <= 1) {
+    return 'select-pair'
+  }
+
+  const selectedObjects = selectedIds.map((id) => objects[id])
+  if (selectedObjects.some((object) => !object)) {
+    return null
+  }
+
+  const selectedLines = selectedObjects.filter(isLineSegment)
+  const selectedPoints = selectedObjects.filter(isPointSegment)
+  const selectedArcLikes = selectedObjects.filter(isArcLikeSegment)
+
+  if (
+    selectedIds.length === 2 &&
+    (selectedPoints.length === 2 ||
+      selectedArcLikes.length === 2 ||
+      selectedLines.length === 2)
+  ) {
+    return 'select-axis'
+  }
+
+  if (
+    selectedIds.length === 3 &&
+    ((selectedPoints.length === 2 && selectedLines.length === 1) ||
+      (selectedArcLikes.length === 2 && selectedLines.length === 1) ||
+      selectedLines.length === 3)
+  ) {
+    return 'select-axis'
+  }
+
+  return null
+}
+
+type EqualLengthConstraintInput =
+  | Extract<ApiConstraint, { type: 'LinesEqualLength' }>
+  | Extract<ApiConstraint, { type: 'EqualRadius' }>
+
+type ArcSizeDimensionConstraintInput =
+  | Extract<ApiConstraint, { type: 'Radius' }>
+  | Extract<ApiConstraint, { type: 'Diameter' }>
+
+type ArcSizeDimensionUnit = Extract<
+  ApiConstraint,
+  { type: 'Radius' }
+>['radius']['units']
+
+export function buildCircularSizeDimensionConstraintInput({
+  segment,
+  radius,
+  units,
+}: {
+  segment: ApiObject | undefined
+  radius: number
+  units: ArcSizeDimensionUnit
+}): ArcSizeDimensionConstraintInput | null {
+  if (isArcSegment(segment)) {
+    const source = {
+      expr: radius.toString(),
+      is_literal: true,
+    }
+
+    return {
+      type: 'Radius',
+      radius: { value: radius, units },
+      arc: segment.id,
+      source,
+    }
+  }
+
+  if (isCircleSegment(segment)) {
+    const diameter = roundOff(radius * 2)
+    const source = {
+      expr: diameter.toString(),
+      is_literal: true,
+    }
+
+    return {
+      type: 'Diameter',
+      diameter: { value: diameter, units },
+      arc: segment.id,
+      source,
+    }
+  }
+
+  return null
+}
+
+export function buildEqualLengthConstraintInput(
+  selectedIds: number[],
+  objects: ApiObject[]
+): EqualLengthConstraintInput | null {
+  if (selectedIds.length < 2) {
+    return null
+  }
+
+  const selectedObjects = selectedIds.map((id) => objects[id])
+
+  if (selectedObjects.every(isLineSegment)) {
+    return {
+      type: 'LinesEqualLength',
+      lines: selectedIds,
+    }
+  }
+
+  if (selectedObjects.every(isArcLikeSegment)) {
+    return {
+      type: 'EqualRadius',
+      input: selectedIds,
+    }
+  }
+
+  return null
+}
+
 export function buildFixedConstraintInput(
   selectedIds: number[],
   objects: ApiObject[]
@@ -269,9 +500,14 @@ type DistanceConstraintTypes =
   | 'Distance'
   | 'HorizontalDistance'
   | 'VerticalDistance'
+type AxisConstraintTypes = 'Horizontal' | 'Vertical'
 
 export type ConstraintObject = ApiObject & {
   kind: { type: 'Constraint' }
+}
+
+export type AxisConstraintObject = ApiObject & {
+  kind: { type: 'Constraint'; constraint: { type: AxisConstraintTypes } }
 }
 
 /**
@@ -324,16 +560,18 @@ export type CoincidentConstraint = ApiObject & {
   kind: { type: 'Constraint'; constraint: { type: 'Coincident' } }
 }
 
-export function isCoincidentSegmentId(
+export function isConstraintSegmentId(
   segment: ConstraintSegment
 ): segment is number {
   return typeof segment === 'number'
 }
 
+export const isCoincidentSegmentId = isConstraintSegmentId
+
 export function getCoincidentSegmentIds(
   coincident: Pick<Coincident, 'segments'>
 ): number[] {
-  return coincident.segments.filter(isCoincidentSegmentId)
+  return coincident.segments.filter(isConstraintSegmentId)
 }
 
 export function coincidentContainsSegment(
@@ -341,6 +579,46 @@ export function coincidentContainsSegment(
   segmentId: number
 ) {
   return getCoincidentSegmentIds(coincident).includes(segmentId)
+}
+
+type AxisConstraint = Extract<ApiConstraint, { type: AxisConstraintTypes }>
+
+export function getAxisConstraintPoints(
+  constraint: AxisConstraint
+): ConstraintSegment[] | null {
+  const direct = constraint as Partial<{ points: ConstraintSegment[] }>
+  if (isArray(direct.points)) {
+    return direct.points
+  }
+
+  const nested = constraint as Partial<{
+    Points: { points: ConstraintSegment[] }
+  }>
+  return isArray(nested.Points?.points) ? nested.Points.points : null
+}
+
+export function getAxisConstraintPointIds(
+  constraint: AxisConstraint
+): number[] {
+  return (getAxisConstraintPoints(constraint) ?? []).filter(
+    isConstraintSegmentId
+  )
+}
+
+export function getAxisConstraintLineId(constraint: AxisConstraint) {
+  const direct = constraint as Partial<{ line: number }>
+  if (typeof direct.line === 'number') {
+    return direct.line
+  }
+
+  const nested = constraint as Partial<{
+    Line: { line_id: number }
+  }>
+  return typeof nested.Line?.line_id === 'number' ? nested.Line.line_id : null
+}
+
+export function axisConstraintIncludesOrigin(constraint: AxisConstraint) {
+  return (getAxisConstraintPoints(constraint) ?? []).includes('ORIGIN')
 }
 
 export function isRadiusConstraint(obj: ApiObject): obj is RadiusConstraint {
@@ -436,6 +714,34 @@ export function getSelectedTangentConstraintInput(
     snapshot?.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
 
   return buildTangentConstraintInput(
+    getObjectSelectionIds(selectedIds),
+    objects
+  )
+}
+
+export function getSelectedSymmetricConstraintInput(
+  modelingState: StateFrom<typeof modelingMachine>
+) {
+  const snapshot = getSketchSolveSnapshot(modelingState)
+  const selectedIds = snapshot?.context.selectedIds || []
+  const objects =
+    snapshot?.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+
+  return buildSymmetricConstraintInput(
+    getObjectSelectionIds(selectedIds),
+    objects
+  )
+}
+
+export function getSelectedEqualLengthConstraintInput(
+  modelingState: StateFrom<typeof modelingMachine>
+) {
+  const snapshot = getSketchSolveSnapshot(modelingState)
+  const selectedIds = snapshot?.context.selectedIds || []
+  const objects =
+    snapshot?.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+
+  return buildEqualLengthConstraintInput(
     getObjectSelectionIds(selectedIds),
     objects
   )

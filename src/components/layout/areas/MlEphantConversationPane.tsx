@@ -11,6 +11,7 @@ import {
   MlEphantConversation,
   type QueuedMessage,
 } from '@src/components/MlEphantConversation'
+import { MlEphantConversationWelcome } from '@src/components/MlEphantConversationWelcome'
 import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
   MlEphantManagerStates,
@@ -48,6 +49,7 @@ export const MlEphantConversationPane = (props: {
   loaderFile: FileEntry | undefined
   settings: SettingsType
   user?: MlEphantConversationPaneUser
+  showMakeathonAnnouncement?: boolean
   onMlCopilotModeChange?: (mode: MlCopilotMode) => void
 }) => {
   const [defaultPrompt, setDefaultPrompt] = useState('')
@@ -117,7 +119,6 @@ export const MlEphantConversationPane = (props: {
       selections: props.contextModeling.selectionRanges,
       artifactGraph: props.kclManager.artifactGraph,
       mode,
-      sketch_solve: props.settings.modeling.useSketchSolveMode?.current,
       additionalFiles: attachments,
     })
 
@@ -366,7 +367,7 @@ export const MlEphantConversationPane = (props: {
       subscriptionMlEphantManagerActor.unsubscribe()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [props.settings.meta.id.current])
+  }, [props.settings.meta.id.current, props.theProject?.path])
 
   // We watch the URL for a query parameter to set the defaultPrompt
   // for the conversation.
@@ -391,6 +392,11 @@ export const MlEphantConversationPane = (props: {
         { type: 'selections', data: props.contextModeling.selectionRanges },
       ]}
       conversation={conversation}
+      welcomeMessage={
+        // Replace this local component with a remote-authored content source
+        // later. `MlEphantConversation` already handles placement and ordering.
+        <MlEphantConversationWelcome />
+      }
       onProcess={(
         request: string,
         mode: MlCopilotMode,
@@ -409,6 +415,7 @@ export const MlEphantConversationPane = (props: {
       onRemoveFromQueue={onRemoveFromQueue}
       onSteer={onSteer}
       userAvatarSrc={props.user?.image}
+      showMakeathonAnnouncement={props.showMakeathonAnnouncement}
       blockedReason={userBlockedOnPaymentReason}
       defaultPrompt={defaultPrompt}
       initialMlCopilotMode={props.settings.app.zookeeperMode.current}

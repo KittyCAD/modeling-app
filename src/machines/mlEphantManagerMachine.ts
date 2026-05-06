@@ -102,7 +102,6 @@ export type MlEphantManagerEvents =
       artifactGraph: ArtifactGraph
       mode: MlCopilotMode
       additionalFiles?: File[]
-      sketch_solve?: boolean // allow Zookeeper to reference experimental docs
     }
   | {
       type: MlEphantManagerStates.ContinueCheck
@@ -434,8 +433,13 @@ export const mlEphantManagerMachine = setup({
         args.input.context?.conversationId
       const theRefParentSend = args.input.context?.cachedSetup?.refParentSend
 
-      const querystring = maybeConversationId
-        ? `?conversation_id=${maybeConversationId}&replay=true`
+      const queryParams = new URLSearchParams()
+      if (maybeConversationId) {
+        queryParams.set('conversation_id', maybeConversationId)
+        queryParams.set('replay', 'true')
+      }
+      const querystring = queryParams.toString()
+        ? `?${queryParams.toString()}`
         : ''
       const url = withMlephantWebSocketURL(querystring)
 
@@ -662,7 +666,6 @@ export const mlEphantManagerMachine = setup({
         source_ranges: requestData.body.source_ranges,
         current_files: filesAsByteArrays,
         mode: event.mode,
-        sketch_solve: event.sketch_solve ?? false,
         ...(additionalFiles ? { additional_files: additionalFiles } : {}),
       }
 

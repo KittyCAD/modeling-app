@@ -5,6 +5,8 @@ excerpt: "Start a new 2-dimensional sketch on a specific plane or face."
 layout: manual
 ---
 
+**WARNING:** This function is deprecated as of KCL 2.0.
+
 Start a new 2-dimensional sketch on a specific plane or face.
 
 ```kcl
@@ -16,6 +18,9 @@ startSketchOn(
   normalOffset?: number(Length),
 ): Plane | Face
 ```
+
+This is part of sketch v1 and is deprecated in favor of
+[sketch-solve](/docs/kcl-std/modules/std-solver).
 
 ### Sketch on Face Behavior
 
@@ -314,11 +319,11 @@ example002 = extrude(exampleSketch002, length = 5)
 
 ```kcl
 a1 = startSketchOn({
-       origin = { x = 0, y = 0, z = 0 },
-       xAxis = { x = 1, y = 0, z = 0 },
-       yAxis = { x = 0, y = 1, z = 0 },
-       zAxis = { x = 0, y = 0, z = 1 }
-     })
+  origin = { x = 0, y = 0, z = 0 },
+  xAxis = { x = 1, y = 0, z = 0 },
+  yAxis = { x = 0, y = 1, z = 0 },
+  zAxis = { x = 0, y = 0, z = 1 }
+})
   |> startProfile(at = [0, 0])
   |> line(end = [100.0, 0])
   |> yLine(length = -100.0)
@@ -377,8 +382,6 @@ subtract(cube001, tools = cube002)
 </model-viewer>
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 baseProfile = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
   line2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])

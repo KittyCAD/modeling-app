@@ -495,6 +495,44 @@ description: Operations executed sketch_block_region_triangle.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "region",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "segments": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Segment",
+                "artifact_id": "[uuid]"
+              },
+              {
+                "type": "Segment",
+                "artifact_id": "[uuid]"
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
     }
   ],
   "std::math": [

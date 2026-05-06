@@ -22,7 +22,14 @@ import type {
   Program,
   VariableMap,
 } from '@src/lang/wasm'
-import { emptyExecState, getKclVersion, parse, recast } from '@src/lang/wasm'
+import {
+  emptyExecState,
+  execStateFromRust,
+  getKclVersion,
+  getSketchCheckpointLimit,
+  parse,
+  recast,
+} from '@src/lang/wasm'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
@@ -56,16 +63,27 @@ import type {
   Selections,
 } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
+import {
+  createHistoryExtension,
+  FALLBACK_SKETCH_CHECKPOINT_LIMIT,
+} from '@src/editor/historyConfig'
 
-import { history, redoDepth, undoDepth } from '@codemirror/commands'
+import {
+  invertedEffects,
+  isolateHistory,
+  redoDepth,
+  undoDepth,
+} from '@codemirror/commands'
 import { syntaxTree } from '@codemirror/language'
 import type { Diagnostic } from '@codemirror/lint'
 import { forEachDiagnostic, setDiagnosticsEffect } from '@codemirror/lint'
 import {
   Annotation,
+  ChangeSet,
   Compartment,
   EditorSelection,
   EditorState,
+  StateEffect,
   Transaction,
   type TransactionSpec,
 } from '@codemirror/state'
@@ -124,6 +142,7 @@ import { requestWriteToFile } from '@src/editor/plugins/write'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
 import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
+import { sketchCheckpointHistoryEffect } from '@src/editor/plugins/sketchCheckpoints'
 import { bracket } from '@src/lib/exampleKcl'
 import { setKclVersion } from '@src/lib/kclVersion'
 import { getStringAfterLastSeparator } from '@src/lib/paths'
@@ -154,6 +173,89 @@ type UpdateCodeEditorOptions = {
   /** Only has an effect if `shouldExecute` is also `true`. */
   shouldResetCamera: boolean
 }
+
+type UpdateCodeEditorAdditionalSpec = {
+  annotations?: Annotation<unknown>[]
+  effects?: StateEffect<unknown>[]
+  sketchCheckpointId?: number | null
+}
+
+type SyntheticHistoryCommit = {
+  undoCode: string
+  redoCode: string
+  undoCheckpointId: number | null
+  redoCheckpointId: number | null
+  options: Pick<
+    UpdateCodeEditorOptions,
+    'shouldExecute' | 'shouldResetCamera' | 'shouldWriteToDisk'
+  >
+  undoAdditionalSpec?: UpdateCodeEditorAdditionalSpec
+  redoAdditionalSpec?: UpdateCodeEditorAdditionalSpec
+}
+
+type DirectSketchHistoryMarker = {
+  entryId: number
+}
+
+type MinimalDocumentChange = {
+  from: number
+  to: number
+  insert: string
+}
+
+/**
+ * Computes the smallest single replacement that turns `currentCode` into
+ * `nextCode` by preserving the longest shared prefix and suffix.
+ *
+ * We use this when dispatching CodeMirror updates so history, selection
+ * mapping, and plugin updates operate on the narrowest possible text change
+ * instead of a full-document replace on every sketch/code sync.
+ *
+ * If there are multiple disjoint edits, this still collapses them into a single
+ * replacement range, so the text between those edits is included in the change.
+ * That is less minimal than a true diff, but keeps the update logic simple and
+ * avoids tracking multiple document changes for one editor transaction.
+ */
+function buildMinimalDocumentChange(
+  currentCode: string,
+  nextCode: string
+): MinimalDocumentChange | null {
+  if (currentCode === nextCode) {
+    return null
+  }
+
+  let prefixLength = 0
+  const maxPrefixLength = Math.min(currentCode.length, nextCode.length)
+  while (
+    prefixLength < maxPrefixLength &&
+    currentCode.charCodeAt(prefixLength) === nextCode.charCodeAt(prefixLength)
+  ) {
+    prefixLength++
+  }
+
+  let currentSuffixStart = currentCode.length
+  let nextSuffixStart = nextCode.length
+  while (
+    currentSuffixStart > prefixLength &&
+    nextSuffixStart > prefixLength &&
+    currentCode.charCodeAt(currentSuffixStart - 1) ===
+      nextCode.charCodeAt(nextSuffixStart - 1)
+  ) {
+    currentSuffixStart--
+    nextSuffixStart--
+  }
+
+  return {
+    from: prefixLength,
+    to: currentSuffixStart,
+    insert: nextCode.slice(prefixLength, nextSuffixStart),
+  }
+}
+
+const syntheticHistoryCommitEffect =
+  StateEffect.define<SyntheticHistoryCommit>()
+const directSketchHistoryMarkerEffect =
+  StateEffect.define<DirectSketchHistoryMarker>()
 
 // Each of our singletons has dependencies on _other_ singletons, so importing
 // can easily become cyclic. Each will have its own Singletons type.
@@ -448,6 +550,8 @@ export class ZDSProject {
 }
 
 const PERSIST_CODE_KEY = 'persistCode'
+const RECOVERY_SNAPSHOT_VERSION = 1
+const RECOVERY_SNAPSHOT_DEBOUNCE_MS = 300
 
 const keymapCompartment = new Compartment()
 
@@ -467,7 +571,7 @@ export class File extends EventTarget {
   private pathSignal: Signal<string>
   private fileWatcherKey = uuidv4()
   public watching: boolean = false
-  /** Array of listeners. TODO: Make this a CodeMirror-like Facet */
+  /** Array of listeners. TODO: Make this a CodeMirror-style extension point */
   public onWatchEvent: ((eventType: string, path: string) => void)[] = [
     () => ({}),
   ]
@@ -585,9 +689,33 @@ export class KclManager extends File {
    * all other state should be derived from the code or selection in some way.
    */
   private _code = signal(bracket)
+  private _documentVersion = 0
+  private _userDocumentVersion = 0
+  private lastCommittedCode = ''
+  private lastCommittedAdditionalSpec:
+    | UpdateCodeEditorAdditionalSpec
+    | undefined
+  private lastCommittedSketchCheckpointId: number | null = null
+  private readonly directSketchHistoryCheckpointsByEntryId = new Map<
+    number,
+    {
+      undoCheckpointId: number | null
+      redoCheckpointId: number | null
+    }
+  >()
+  private pendingDirectSketchHistoryEntries: Array<{
+    entryId: number
+    undoCheckpointId: number | null
+  }> = []
+  private nextDirectSketchHistoryEntryId = 0
+  private lastSketchCheckpointRestoreRequestId = 0
+  private sketchCheckpointLimit = FALLBACK_SKETCH_CHECKPOINT_LIMIT
   lastSuccessfulCode: string = ''
   get code(): string {
     return this.editorView.state.doc.toString()
+  }
+  get currentSketchCheckpointId(): number | null {
+    return this.lastCommittedSketchCheckpointId
   }
   get codeSignal() {
     return this._code
@@ -607,6 +735,9 @@ export class KclManager extends File {
   }
   get astSignal() {
     return this._ast
+  }
+  get lastGoodAst() {
+    return this._lastAst
   }
   set ast(ast) {
     if (this._ast.value.body.length !== 0) {
@@ -643,10 +774,13 @@ export class KclManager extends File {
   undoDepth = signal(0)
   redoDepth = signal(0)
   undoListenerEffect = EditorView.updateListener.of((vu) => {
-    this.undoDepth.value =
-      undoDepth(vu.state) + undoDepth(this._globalHistoryView.state)
-    this.redoDepth.value =
-      redoDepth(vu.state) + redoDepth(this._globalHistoryView.state)
+    const localUndo = undoDepth(vu.state)
+    const localRedo = redoDepth(vu.state)
+    const globalUndo = undoDepth(this._globalHistoryView.state)
+    const globalRedo = redoDepth(this._globalHistoryView.state)
+
+    this.undoDepth.value = localUndo + globalUndo
+    this.redoDepth.value = localRedo + globalRedo
   })
   get operations() {
     return this._editorView.state.field(operationsStateField)
@@ -682,12 +816,31 @@ export class KclManager extends File {
     }
     // Your current file is changed, read it from disk and write it into the code manager and execute the AST,
     // unless the change was initiated by us (the currently running instance).
+    const requestedDocumentVersion = this._documentVersion
     File.ioImplementations
       .read(path)
       .then((code) => {
+        if (requestedDocumentVersion !== this._documentVersion) {
+          return
+        }
         const isInSketchMode =
           this.modelingState?.matches('Sketch') ||
           this.modelingState?.matches('sketchSolveMode')
+
+        if (isCodeTheSame(code, this.code)) {
+          this.markFileCodeAsSynced(code)
+          return
+        }
+
+        if (this.hasUnsavedLocalChanges()) {
+          console.warn(
+            'External file change detected while local edits are unsaved. Skipping automatic reload to avoid overwriting the editor buffer.'
+          )
+          toast.error(
+            'File changed on disk while this editor has unsaved changes. Reload was skipped to protect your work.'
+          )
+          return
+        }
 
         if (!isCodeTheSame(code, this.code)) {
           // Nothing written out yet by ourselves, or it's not the same as the current file content
@@ -699,6 +852,7 @@ export class KclManager extends File {
             // the file system and not the editor.
             shouldWriteToDisk: false,
           })
+          this.markFileCodeAsSynced(code)
 
           toast('Reloading file from disk.', { icon: '📁' })
         }
@@ -724,8 +878,16 @@ export class KclManager extends File {
   private _kclVersion: string = ''
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
   private timeoutRewatch: ReturnType<typeof setTimeout> | undefined = undefined
+  private timeoutRecoverySnapshot: ReturnType<typeof setTimeout> | undefined =
+    undefined
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
+  private _lastKnownFileCode = ''
+  private pendingRecoverySnapshot: {
+    path: string
+    code: string
+    diskCode: string
+  } | null = null
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
   public mlEphantManagerMachineBulkManipulatingFileSystem = false
   /**
@@ -742,12 +904,7 @@ export class KclManager extends File {
 
   /** In the future this could be a setting. */
   public longExecutionTimeMs = 1000 * 60 * 5
-  private _hotkeys: { [key: string]: () => void } = {
-    ['Ctrl-Shift-c']: () => this.convertToVariable(),
-    ['Alt-Shift-f']: () => {
-      void this.format().catch(reportRejection)
-    },
-  }
+  private _hotkeys: { [key: string]: () => void } = {}
 
   set switchedFiles(switchedFiles: boolean) {
     this._switchedFiles = switchedFiles
@@ -844,6 +1001,17 @@ export class KclManager extends File {
     this.setDiagnosticsForCurrentErrors()
   }
 
+  syncSketchSolveOutcome(code: string, sceneGraphDelta: SceneGraphDelta): void {
+    const execState = execStateFromRust(sceneGraphDelta.exec_outcome)
+
+    this.execState = execState
+    this.lastSuccessfulVariables = execState.variables
+    this.lastSuccessfulOperations = execState.operations
+    this.lastSuccessfulCode = code
+    this.dispatchUpdateOperations(execState.operations)
+    void this.updateArtifactGraph(execState.artifactGraph)
+  }
+
   hasErrors(): boolean {
     return this._astParseFailed || this.errors.length > 0
   }
@@ -853,7 +1021,10 @@ export class KclManager extends File {
   }
 
   setDiagnosticsForCurrentErrors() {
-    this.setDiagnostics(this.diagnostics)
+    this.setDiagnostics([
+      ...this._diagnostics.value,
+      ...this._sketchSolveDiagnostics.value,
+    ])
   }
 
   set isExecuting(isExecuting) {
@@ -914,7 +1085,20 @@ export class KclManager extends File {
   private syncCodeSignalToDoc = EditorView.updateListener.of((update) => {
     if (update.docChanged) {
       const newCode = update.view.state.doc.toString()
+      this._documentVersion += 1
+      const isProgrammaticUpdate = update.transactions.some((tr) => {
+        const ignoredEvents = [
+          tr.annotation(updateOutsideEditorEvent.type),
+          tr.annotation(hotkeyRegisteredAnnotation),
+        ]
+
+        return ignoredEvents.some((value) => Boolean(value))
+      })
+      if (!isProgrammaticUpdate) {
+        this._userDocumentVersion += 1
+      }
       this._code.value = newCode
+      this.persistRecoverySnapshot()
       this.rustContext.sendUpdateFile(this.id, newCode).catch(reportRejection)
     }
   })
@@ -954,9 +1138,32 @@ export class KclManager extends File {
       const hasSkipExecutionAnnotation = update.transactions.some((tr) =>
         tr.effects.some((e) => e.is(requestSkipExecution) && e.value)
       )
-      if (!hasSkipExecutionAnnotation) {
-        this.deferredExecution({ newCode, shouldResetCamera })
-      }
+      const isUndoRedoHistoryReplay = update.transactions.some(
+        (tr) => tr.isUserEvent('undo') || tr.isUserEvent('redo')
+      )
+      const isSketchSolveMode = this.modelingState?.matches('sketchSolveMode')
+      const isDirectSketchHistoryReplay =
+        isSketchSolveMode &&
+        update.transactions.some(
+          (tr) =>
+            (tr.isUserEvent('undo') || tr.isUserEvent('redo')) &&
+            tr.effects.some(
+              (effect) =>
+                effect.is(directSketchHistoryMarkerEffect) &&
+                this.directSketchHistoryCheckpointsByEntryId.has(
+                  effect.value.entryId
+                )
+            )
+        )
+      const isNonSketchHistoryReplay =
+        isUndoRedoHistoryReplay && !isSketchSolveMode
+      const shouldSkipExecutionForAnnotation =
+        hasSkipExecutionAnnotation && !isNonSketchHistoryReplay
+
+      if (isDirectSketchHistoryReplay) return
+      if (shouldSkipExecutionForAnnotation) return
+
+      this.deferredExecution({ newCode, shouldResetCamera })
     }
   })
 
@@ -964,7 +1171,10 @@ export class KclManager extends File {
     async ({
       newCode,
       shouldResetCamera,
-    }: { newCode: string; shouldResetCamera: boolean }) => {
+    }: {
+      newCode: string
+      shouldResetCamera: boolean
+    }) => {
       // If we're in sketchSolveMode, update Rust state with the latest AST
       // This handles the case where the user directly edits in the CodeMirror editor
       // these are short term hacks while in rapid development for sketch revamp
@@ -991,12 +1201,43 @@ export class KclManager extends File {
               text: newCode,
             }
 
+            const directEditCheckpointId =
+              setProgramOutcome.checkpointId ?? null
+            if (
+              directEditCheckpointId != null &&
+              this.pendingDirectSketchHistoryEntries.length
+            ) {
+              for (const pendingEntry of this
+                .pendingDirectSketchHistoryEntries) {
+                this.directSketchHistoryCheckpointsByEntryId.set(
+                  pendingEntry.entryId,
+                  {
+                    undoCheckpointId: pendingEntry.undoCheckpointId,
+                    redoCheckpointId: directEditCheckpointId,
+                  }
+                )
+              }
+              this.pruneDirectSketchHistoryCheckpoints()
+            }
+            this.pendingDirectSketchHistoryEntries = []
+
+            this.lastCommittedCode = newCode
+            this.lastCommittedAdditionalSpec =
+              directEditCheckpointId != null
+                ? {
+                    sketchCheckpointId: directEditCheckpointId,
+                  }
+                : undefined
+            this.lastCommittedSketchCheckpointId = directEditCheckpointId
+
             // Send event to sketch solve machine via modeling machine
             this.sendModelingEvent({
               type: 'update sketch outcome',
               data: {
                 sourceDelta: kclSource,
                 sceneGraphDelta,
+                addToHistory: false,
+                checkpointId: directEditCheckpointId,
               },
             })
           } else {
@@ -1026,6 +1267,9 @@ export class KclManager extends File {
     const hasWriteToFileEffect = update.transactions.some((tr) =>
       tr.effects.some((e) => e.is(requestWriteToFile) && e.value)
     )
+    const isProgrammaticWrite = update.transactions.some((tr) =>
+      Boolean(tr.annotation(updateOutsideEditorEvent.type))
+    )
     const notIgnoredUpdate =
       this.engineCommandManager.started &&
       update.docChanged &&
@@ -1042,9 +1286,206 @@ export class KclManager extends File {
 
     if (shouldWriteToFile) {
       // We don't want to block on writing to file
-      void this.writeToFile(update.state.doc.toString())
+      void this.writeToFile(update.state.doc.toString(), undefined, {
+        suppressConflictToast: isProgrammaticWrite,
+      })
     }
   })
+
+  /**
+   * Adds history bookkeeping for direct text edits made while sketch solve mode
+   * is active.
+   *
+   * This is separate from `executeKclEffect`: execution decides when a document
+   * change should run, while this extension gives a direct editor transaction a
+   * stable history identity so undo/redo can restore the matching Rust sketch
+   * checkpoint for that edit.
+   */
+  private sketchModeDirectEditHistoryExtension = (() => {
+    const markDirectSketchEdits = EditorState.transactionExtender.of((tr) => {
+      if (!this.modelingState?.matches('sketchSolveMode')) {
+        return null
+      }
+      if (!tr.docChanged) {
+        return null
+      }
+      if (tr.annotation(updateOutsideEditorEvent.type)) {
+        return null
+      }
+      if (tr.annotation(hotkeyRegisteredAnnotation)) {
+        return null
+      }
+      if (
+        tr.effects.some((e) => e.is(requestSkipExecution) && e.value) ||
+        tr.effects.some((e) => e.is(syntheticHistoryCommitEffect)) ||
+        tr.effects.some((e) => e.is(sketchCheckpointHistoryEffect))
+      ) {
+        return null
+      }
+
+      const entryId = ++this.nextDirectSketchHistoryEntryId
+      this.pendingDirectSketchHistoryEntries = [
+        {
+          entryId,
+          undoCheckpointId: this.lastCommittedSketchCheckpointId,
+        },
+      ]
+
+      return {
+        effects: [directSketchHistoryMarkerEffect.of({ entryId })],
+      }
+    })
+
+    const applyDirectSketchHistory = EditorView.updateListener.of((vu) => {
+      for (const tr of vu.transactions) {
+        if (!tr.isUserEvent('undo') && !tr.isUserEvent('redo')) continue
+
+        const directHistoryEffects = tr.effects.filter((effect) =>
+          effect.is(directSketchHistoryMarkerEffect)
+        )
+        if (!directHistoryEffects.length) continue
+
+        const lastMappedMarker = [...directHistoryEffects]
+          .reverse()
+          .find((effect) =>
+            this.directSketchHistoryCheckpointsByEntryId.has(
+              effect.value.entryId
+            )
+          )
+        if (!lastMappedMarker) continue
+
+        const checkpointPair = this.directSketchHistoryCheckpointsByEntryId.get(
+          lastMappedMarker.value.entryId
+        )
+        if (!checkpointPair) continue
+
+        const checkpointId = tr.isUserEvent('undo')
+          ? checkpointPair.undoCheckpointId
+          : checkpointPair.redoCheckpointId
+
+        void this.restoreSketchCheckpointForHistory(checkpointId)
+      }
+    })
+
+    const undoableDirectSketchHistory = invertedEffects.of((tr) => {
+      const found: StateEffect<unknown>[] = []
+      for (const effect of tr.effects) {
+        if (!effect.is(directSketchHistoryMarkerEffect)) continue
+        found.push(directSketchHistoryMarkerEffect.of(effect.value))
+      }
+      return found
+    })
+
+    return [
+      markDirectSketchEdits,
+      applyDirectSketchHistory,
+      undoableDirectSketchHistory,
+    ]
+  })()
+
+  private syntheticHistoryCommitExtension = (() => {
+    const applySyntheticHistoryCommit = EditorView.updateListener.of((vu) => {
+      for (const tr of vu.transactions) {
+        for (const effect of tr.effects) {
+          if (!effect.is(syntheticHistoryCommitEffect)) continue
+          const isHistoryReplay =
+            tr.isUserEvent('undo') || tr.isUserEvent('redo')
+          const isSketchSolveMode =
+            this.modelingState?.matches('sketchSolveMode')
+          const isNonSketchHistoryReplay = isHistoryReplay && !isSketchSolveMode
+          const checkpointId =
+            effect.value.redoAdditionalSpec?.sketchCheckpointId ??
+            effect.value.redoCheckpointId
+          const replayAdditionalSpec =
+            isHistoryReplay && checkpointId != null
+              ? {
+                  annotations: effect.value.redoAdditionalSpec?.annotations,
+                  sketchCheckpointId: checkpointId,
+                }
+              : effect.value.redoAdditionalSpec
+          const docAlreadyMatchesReplay =
+            vu.state.doc.toString() === effect.value.redoCode
+          if (!docAlreadyMatchesReplay) {
+            this.updateCodeEditor(
+              effect.value.redoCode,
+              {
+                shouldAddToHistory: false,
+                shouldClearHistory: false,
+                shouldExecute: isNonSketchHistoryReplay
+                  ? true
+                  : effect.value.options.shouldExecute,
+                shouldResetCamera: effect.value.options.shouldResetCamera,
+                shouldWriteToDisk: effect.value.options.shouldWriteToDisk,
+              },
+              replayAdditionalSpec
+            )
+          } else if (isNonSketchHistoryReplay) {
+            this.deferredExecution({
+              newCode: effect.value.redoCode,
+              shouldResetCamera: effect.value.options.shouldResetCamera,
+            })
+          }
+
+          if (isHistoryReplay && isSketchSolveMode) {
+            void this.restoreSketchCheckpointForHistory(checkpointId)
+          }
+        }
+      }
+    })
+
+    const undoableSyntheticHistoryCommit = invertedEffects.of((tr) => {
+      const found: StateEffect<unknown>[] = []
+      for (const effect of tr.effects) {
+        if (!effect.is(syntheticHistoryCommitEffect)) continue
+
+        found.push(
+          syntheticHistoryCommitEffect.of({
+            undoCode: effect.value.redoCode,
+            redoCode: effect.value.undoCode,
+            undoCheckpointId: effect.value.redoCheckpointId,
+            redoCheckpointId: effect.value.undoCheckpointId,
+            options: effect.value.options,
+            undoAdditionalSpec: effect.value.redoAdditionalSpec,
+            redoAdditionalSpec: effect.value.undoAdditionalSpec,
+          })
+        )
+      }
+      return found
+    })
+
+    return [applySyntheticHistoryCommit, undoableSyntheticHistoryCommit]
+  })()
+
+  private sketchCheckpointHistoryExtension = (() => {
+    const applySketchCheckpointHistory = EditorView.updateListener.of((vu) => {
+      for (const tr of vu.transactions) {
+        if (!tr.isUserEvent('undo') && !tr.isUserEvent('redo')) continue
+
+        for (const effect of tr.effects) {
+          if (!effect.is(sketchCheckpointHistoryEffect)) continue
+          void this.restoreSketchCheckpointForHistory(
+            effect.value.redoCheckpointId
+          )
+        }
+      }
+    })
+
+    const undoableSketchCheckpointHistory = invertedEffects.of((tr) => {
+      const found: StateEffect<unknown>[] = []
+      for (const effect of tr.effects) {
+        if (!effect.is(sketchCheckpointHistoryEffect)) continue
+        found.push(
+          sketchCheckpointHistoryEffect.of({
+            undoCheckpointId: effect.value.redoCheckpointId,
+            redoCheckpointId: effect.value.undoCheckpointId,
+          })
+        )
+      }
+      return found
+    })
+
+    return [applySketchCheckpointHistory, undoableSketchCheckpointHistory]
+  })()
 
   private createEditorExtensions() {
     return [
@@ -1055,6 +1496,9 @@ export class KclManager extends File {
       this.syncCodeSignalToDoc,
       this.executeKclEffect,
       this.writeToFileListener,
+      this.sketchModeDirectEditHistoryExtension,
+      this.syntheticHistoryCommitExtension,
+      this.sketchCheckpointHistoryExtension,
       this.clearSelectionsOnEmptyDoc,
     ]
   }
@@ -1077,15 +1521,23 @@ export class KclManager extends File {
     providedEditor?: KclManager,
     providedCode?: string
   ) {
-    const initialCode = normalizeLineEndings(
-      providedCode || (await file.read())
-    )
+    const diskCode = normalizeLineEndings(providedCode || (await file.read()))
+    const recoverySnapshot = readRecoverySnapshot(file.path)
+    const initialCode =
+      recoverySnapshot && !isCodeTheSame(recoverySnapshot.code, diskCode)
+        ? normalizeLineEndings(recoverySnapshot.code)
+        : diskCode
 
     if (!providedEditor) {
-      return new KclManager(file.path, initialCode, systemDeps, file.id)
+      const editor = new KclManager(file.path, initialCode, systemDeps, file.id)
+      if (!isCodeTheSame(initialCode, diskCode)) {
+        editor.markFileCodeAsSynced(diskCode)
+      }
+      return editor
     }
 
     // TODO: remove all this once the app can handle an undefined currently-executing editor
+    providedEditor.flushRecoverySnapshot()
     providedEditor.path = file.path
     providedEditor.id = file.id
     providedEditor.codeSignal.value = initialCode
@@ -1098,6 +1550,7 @@ export class KclManager extends File {
       // the file system and not the editor.
       shouldWriteToDisk: false,
     })
+    providedEditor.markFileCodeAsSynced(diskCode)
     return providedEditor
   }
 
@@ -1133,6 +1586,7 @@ export class KclManager extends File {
     this._editorView = this.createEditorView(initialCode)
     // TODO: Delete this._code, only derive from the editorView's doc
     this._code.value = initialCode
+    this.markFileCodeAsSynced(initialCode)
     this._globalHistoryView.registerLocalHistoryTarget(this._editorView)
 
     this.systemDeps.wasmInstancePromise
@@ -1141,6 +1595,7 @@ export class KclManager extends File {
         if (typeof wasmInstance === 'string') {
           this.wasmInitFailed = true
         } else {
+          this.reconfigureHistoryLimit(getSketchCheckpointLimit(wasmInstance))
           await this.safeParse(this.code, wasmInstance).then((ast) => {
             if (ast) {
               this.ast = ast
@@ -1160,7 +1615,53 @@ export class KclManager extends File {
   public close() {
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
+    this.flushRecoverySnapshot()
     this.unwatch()
+  }
+
+  private markFileCodeAsSynced(code: string) {
+    this._lastKnownFileCode = normalizeLineEndings(code)
+    this.persistRecoverySnapshot()
+  }
+
+  private hasUnsavedLocalChanges() {
+    return !isCodeTheSame(this.code, this._lastKnownFileCode)
+  }
+
+  private persistRecoverySnapshot() {
+    if (!this.path) {
+      return
+    }
+
+    if (isCodeTheSame(this.code, this._lastKnownFileCode)) {
+      this.pendingRecoverySnapshot = null
+      clearTimeout(this.timeoutRecoverySnapshot)
+      this.timeoutRecoverySnapshot = undefined
+      clearRecoverySnapshot(this.path)
+      return
+    }
+
+    this.pendingRecoverySnapshot = {
+      path: this.path,
+      code: this.code,
+      diskCode: this._lastKnownFileCode,
+    }
+    clearTimeout(this.timeoutRecoverySnapshot)
+    this.timeoutRecoverySnapshot = setTimeout(() => {
+      this.flushRecoverySnapshot()
+    }, RECOVERY_SNAPSHOT_DEBOUNCE_MS)
+  }
+
+  private flushRecoverySnapshot() {
+    clearTimeout(this.timeoutRecoverySnapshot)
+    this.timeoutRecoverySnapshot = undefined
+
+    if (!this.pendingRecoverySnapshot) {
+      return
+    }
+
+    writeRecoverySnapshot(this.pendingRecoverySnapshot)
+    this.pendingRecoverySnapshot = null
   }
 
   clearAst() {
@@ -1526,7 +2027,7 @@ export class KclManager extends File {
       this.dispatchEvent(new CustomEvent(KclManagerEvents.LongExecution, {}))
     }, this.longExecutionTimeMs)
 
-    return this.executeAst({ ast })
+    await this.executeAst({ ast })
   }
 
   async format() {
@@ -2020,6 +2521,8 @@ export class KclManager extends File {
     this._globalHistoryView.redo(this._editorView)
   }
   clearLocalHistory() {
+    this.directSketchHistoryCheckpointsByEntryId.clear()
+    this.pendingDirectSketchHistoryEntries = []
     // Clear history
     this.editorView.dispatch({
       effects: [historyCompartment.reconfigure([])],
@@ -2027,7 +2530,11 @@ export class KclManager extends File {
 
     // Add history back
     this.editorView.dispatch({
-      effects: [historyCompartment.reconfigure([history()])],
+      effects: [
+        historyCompartment.reconfigure([
+          createHistoryExtension(this.sketchCheckpointLimit),
+        ]),
+      ],
     })
   }
   clearGlobalHistory() {
@@ -2042,7 +2549,35 @@ export class KclManager extends File {
     this._globalHistoryView.dispatch(
       {
         effects: [
-          this._globalHistoryView.historyCompartment.reconfigure([history()]),
+          this._globalHistoryView.historyCompartment.reconfigure([
+            createHistoryExtension(this.sketchCheckpointLimit),
+          ]),
+        ],
+      },
+      { shouldForwardToLocalHistory: false }
+    )
+  }
+
+  private reconfigureHistoryLimit(checkpointLimit: number) {
+    if (this.sketchCheckpointLimit === checkpointLimit) return
+    this.sketchCheckpointLimit = checkpointLimit
+    this.pruneDirectSketchHistoryCheckpoints()
+
+    this.editorView.dispatch({
+      effects: [
+        historyCompartment.reconfigure([
+          createHistoryExtension(this.sketchCheckpointLimit),
+        ]),
+      ],
+      annotations: [Transaction.addToHistory.of(false)],
+    })
+
+    this._globalHistoryView.dispatch(
+      {
+        effects: [
+          this._globalHistoryView.historyCompartment.reconfigure([
+            createHistoryExtension(this.sketchCheckpointLimit),
+          ]),
         ],
       },
       { shouldForwardToLocalHistory: false }
@@ -2192,7 +2727,7 @@ export class KclManager extends File {
       key,
       run: () => {
         this._hotkeys[key]()
-        return false
+        return true
       },
       preventDefault: true,
     }))
@@ -2208,18 +2743,147 @@ export class KclManager extends File {
     shouldClearHistory: false,
     shouldAddToHistory: true,
   }
+  private getCheckpointHistoryEffect(
+    resolvedOptions: UpdateCodeEditorOptions,
+    additionalSpec?: UpdateCodeEditorAdditionalSpec
+  ): StateEffect<unknown>[] {
+    if (
+      resolvedOptions.shouldClearHistory ||
+      !resolvedOptions.shouldAddToHistory ||
+      additionalSpec?.sketchCheckpointId == null
+    ) {
+      return []
+    }
+
+    return [
+      sketchCheckpointHistoryEffect.of({
+        undoCheckpointId: this.lastCommittedSketchCheckpointId,
+        redoCheckpointId: additionalSpec.sketchCheckpointId,
+      }),
+    ]
+  }
+
+  private updateLastCommittedSketchCheckpoint(
+    resolvedOptions: UpdateCodeEditorOptions,
+    additionalSpec?: UpdateCodeEditorAdditionalSpec
+  ) {
+    if (resolvedOptions.shouldClearHistory) {
+      this.lastCommittedSketchCheckpointId =
+        additionalSpec?.sketchCheckpointId ?? null
+      return
+    }
+
+    if (additionalSpec?.sketchCheckpointId !== undefined) {
+      if (
+        additionalSpec.sketchCheckpointId != null ||
+        resolvedOptions.shouldWriteToDisk
+      ) {
+        this.lastCommittedSketchCheckpointId = additionalSpec.sketchCheckpointId
+      }
+      return
+    }
+
+    if (resolvedOptions.shouldWriteToDisk) {
+      this.lastCommittedSketchCheckpointId = null
+    }
+  }
+
+  private async restoreSketchCheckpointForHistory(
+    checkpointId: number | null
+  ): Promise<void> {
+    if (
+      checkpointId == null ||
+      !this.modelingState?.matches('sketchSolveMode')
+    ) {
+      return
+    }
+
+    const requestId = ++this.lastSketchCheckpointRestoreRequestId
+    const requestedDocumentVersion = this._documentVersion
+    try {
+      const result =
+        await this.rustContext.restoreSketchCheckpoint(checkpointId)
+      if (requestId !== this.lastSketchCheckpointRestoreRequestId) return
+      if (requestedDocumentVersion !== this._documentVersion) return
+
+      this.sendModelingEvent({
+        type: 'update sketch outcome',
+        data: {
+          sourceDelta: result.kclSource,
+          sceneGraphDelta: result.sceneGraphDelta,
+          writeToDisk: false,
+          addToHistory: false,
+          checkpointId,
+        },
+      })
+    } catch (error) {
+      if (requestId !== this.lastSketchCheckpointRestoreRequestId) return
+
+      console.warn('Failed to restore sketch checkpoint, falling back', error)
+
+      try {
+        const currentCode = this.editorState.doc.toString()
+        await this.executeCode(currentCode)
+        const setProgramOutcome = await this.rustContext.hackSetProgram(
+          this.ast,
+          jsAppSettings(this.systemDeps.settings)
+        )
+
+        if (requestId !== this.lastSketchCheckpointRestoreRequestId) return
+        if (requestedDocumentVersion !== this._documentVersion) return
+        if (setProgramOutcome.type !== 'Success') return
+
+        this.sendModelingEvent({
+          type: 'update sketch outcome',
+          data: {
+            sourceDelta: { text: currentCode },
+            sceneGraphDelta: {
+              new_graph: setProgramOutcome.sceneGraph,
+              new_objects: [],
+              invalidates_ids: true,
+              exec_outcome: setProgramOutcome.execOutcome,
+            },
+            writeToDisk: false,
+            addToHistory: false,
+            checkpointId: null,
+          },
+        })
+      } catch (fallbackError) {
+        console.error(
+          'Failed to resync sketch state after checkpoint restore failure',
+          fallbackError
+        )
+      }
+    }
+  }
+
+  private pruneDirectSketchHistoryCheckpoints() {
+    while (
+      this.directSketchHistoryCheckpointsByEntryId.size >
+      this.sketchCheckpointLimit
+    ) {
+      const oldestKey = this.directSketchHistoryCheckpointsByEntryId
+        .keys()
+        .next().value
+      if (oldestKey === undefined) return
+      this.directSketchHistoryCheckpointsByEntryId.delete(oldestKey)
+    }
+  }
+
   /**
    * Update the code in the editor.
    * This is invoked when a segment is being dragged on the canvas, among other things.
    */
   updateCodeEditor(
     code: string,
-    options: Partial<UpdateCodeEditorOptions> = KclManager.defaultUpdateCodeEditorOptions
+    options: Partial<UpdateCodeEditorOptions> = KclManager.defaultUpdateCodeEditorOptions,
+    additionalSpec?: UpdateCodeEditorAdditionalSpec
   ): void {
     const resolvedOptions: UpdateCodeEditorOptions = Object.assign(
       structuredClone(KclManager.defaultUpdateCodeEditorOptions),
       options
     )
+
     // If the code hasn't changed, skip the full update to preserve cursor position
     const currentCode = this.editorState.doc.toString()
     if (currentCode === code) {
@@ -2228,61 +2892,110 @@ export class KclManager extends File {
         // Code is the same but we need to clear history (e.g., opening a new file with same content)
         this.clearLocalHistory()
       }
-      // And we still want to honor the caller's request to write to disk.
-      this.editorView.dispatch({
-        annotations: [Transaction.addToHistory.of(false)],
-        effects: [requestWriteToFile.of(resolvedOptions.shouldWriteToDisk)],
-      })
+      const shouldCreateCheckpointOnlyHistoryCommit =
+        resolvedOptions.shouldAddToHistory &&
+        !resolvedOptions.shouldClearHistory &&
+        this.lastCommittedCode !== code &&
+        additionalSpec?.sketchCheckpointId != null
+
+      if (shouldCreateCheckpointOnlyHistoryCommit) {
+        this.editorView.dispatch({
+          annotations: [
+            updateOutsideEditorEvent,
+            Transaction.addToHistory.of(true),
+            isolateHistory.of('full'),
+            ...(additionalSpec?.annotations || []),
+          ],
+          effects: [
+            syntheticHistoryCommitEffect.of({
+              undoCode: this.lastCommittedCode,
+              redoCode: code,
+              undoCheckpointId: this.lastCommittedSketchCheckpointId,
+              redoCheckpointId: additionalSpec?.sketchCheckpointId ?? null,
+              options: {
+                shouldExecute: resolvedOptions.shouldExecute,
+                shouldResetCamera: resolvedOptions.shouldResetCamera,
+                shouldWriteToDisk: resolvedOptions.shouldWriteToDisk,
+              },
+              undoAdditionalSpec: this.lastCommittedAdditionalSpec,
+              redoAdditionalSpec: {
+                annotations: additionalSpec?.annotations,
+                sketchCheckpointId: additionalSpec?.sketchCheckpointId,
+              },
+            }),
+            requestWriteToFile.of(resolvedOptions.shouldWriteToDisk),
+          ],
+        })
+      } else {
+        this.editorView.dispatch({
+          annotations: [
+            updateOutsideEditorEvent,
+            Transaction.addToHistory.of(false),
+            ...(additionalSpec?.annotations || []),
+          ],
+          effects: [
+            requestWriteToFile.of(resolvedOptions.shouldWriteToDisk),
+            ...(additionalSpec?.effects || []),
+          ],
+        })
+      }
+
+      if (resolvedOptions.shouldWriteToDisk) {
+        this.lastCommittedCode = code
+        this.lastCommittedAdditionalSpec = additionalSpec
+      }
+      this.updateLastCommittedSketchCheckpoint(resolvedOptions, additionalSpec)
       this.setDiagnosticsForCurrentErrors()
       return
     }
 
-    // Preserve the current selection/cursor position
     const currentSelection = this.editorState.selection
-    const newDocLength = code.length
+    const changes = buildMinimalDocumentChange(currentCode, code)
 
-    // Map each selection range through the document change
-    // Since we're replacing the entire document, we need to clamp positions
-    // to the new document length if they exceed it
-    const preservedRanges = currentSelection.ranges.map((range) => {
-      const from = Math.min(range.from, newDocLength)
-      const to = Math.min(range.to, newDocLength)
-      // Ensure from <= to
-      if (from === to) {
-        return EditorSelection.cursor(from)
-      }
-      return EditorSelection.range(from, to)
-    })
+    if (!changes) {
+      return
+    }
+
+    const mappedSelection = currentSelection.map(
+      ChangeSet.of(changes, this.editorState.doc.length)
+    )
 
     if (resolvedOptions.shouldClearHistory) {
       this.clearLocalHistory()
     }
 
     this.editorView.dispatch({
-      changes: {
-        from: 0,
-        to: this.editorState.doc.length || 0,
-        insert: code,
-      },
-      selection: EditorSelection.create(
-        preservedRanges,
-        currentSelection.mainIndex
-      ),
+      changes,
+      selection: mappedSelection,
       annotations: [
+        updateOutsideEditorEvent,
         Transaction.addToHistory.of(
           resolvedOptions.shouldAddToHistory &&
             !resolvedOptions.shouldClearHistory
         ),
+        ...(additionalSpec?.annotations || []),
       ],
       effects: [
         requestSkipExecution.of(!resolvedOptions.shouldExecute),
         requestCameraReset.of(resolvedOptions.shouldResetCamera),
         requestWriteToFile.of(resolvedOptions.shouldWriteToDisk),
+        ...this.getCheckpointHistoryEffect(resolvedOptions, additionalSpec),
+        ...(additionalSpec?.effects || []),
       ],
     })
+
+    if (resolvedOptions.shouldWriteToDisk) {
+      this.lastCommittedCode = code
+      this.lastCommittedAdditionalSpec = additionalSpec
+    }
+    this.updateLastCommittedSketchCheckpoint(resolvedOptions, additionalSpec)
     this.setDiagnosticsForCurrentErrors()
   }
-  async writeToFile(newCode = this.codeSignal.value) {
+  async writeToFile(
+    newCode = this.codeSignal.value,
+    requestedDocumentVersion = this._documentVersion,
+    options: { suppressConflictToast?: boolean } = {}
+  ) {
     if (this.path !== '') {
       // Only write our buffer contents to file once per second. Any faster
       // and file-system watchers which read, will receive empty data during
@@ -2291,47 +3004,129 @@ export class KclManager extends File {
       clearTimeout(this.timeoutRewatch)
       return new Promise((resolve, reject) => {
         this.timeoutWriter = setTimeout(() => {
-          if (!this.path) {
-            return reject(new Error('currentFilePath not set'))
-          }
-          // Wait one event loop to give a chance for params to be set
-          // Save the file to disk
-          this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
-          this.unwatch()
-          this.write(newCode)
-            .then(resolve)
-            .then(() => {
-              // After a cooldown, start watching this file again on disk.
-              this.timeoutRewatch = setTimeout(() => {
-                this.watch()
-                this.timeoutRewatch = undefined
-              }, 1_000)
-            })
-            .catch((err: Error) => {
-              // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
-              console.warn('error saving file', err)
-              toast.error('Error saving file, please check file permissions.')
-              reject(err)
-            })
+          this.performDelayedWriteToFile({
+            newCode,
+            requestedDocumentVersion,
+            options,
+          }).then(resolve, reject)
         }, 1000)
-      }).catch((err: Error) => {
-        if (err.cause === 'ENOENT') {
+      }).catch((err: unknown) => {
+        if (
+          typeof err === 'object' &&
+          err !== null &&
+          'cause' in err &&
+          err.cause === 'ENOENT'
+        ) {
           return
         }
         return err
       })
     }
   }
+
+  /**
+   * Performs the debounced disk-sync work after `writeToFile()` schedules it.
+   * This keeps the timeout callback synchronous while preserving the existing
+   * version checks, conflict detection, and watcher re-arm behavior.
+   */
+  private async performDelayedWriteToFile({
+    newCode,
+    requestedDocumentVersion,
+    options,
+  }: {
+    newCode: string
+    requestedDocumentVersion: number
+    options: { suppressConflictToast?: boolean }
+  }) {
+    if (!this.path) {
+      return Promise.reject(new Error('currentFilePath not set'))
+    }
+    if (requestedDocumentVersion !== this._documentVersion) {
+      return
+    }
+
+    let currentDiskCode: string | null = null
+    try {
+      currentDiskCode = normalizeLineEndings(
+        await File.ioImplementations.read(this.path)
+      )
+    } catch (err: unknown) {
+      if (isEnoentError(err)) {
+        currentDiskCode = null
+      } else {
+        return Promise.reject(err)
+      }
+    }
+
+    if (requestedDocumentVersion !== this._documentVersion) {
+      return
+    }
+    if (currentDiskCode !== null && isCodeTheSame(currentDiskCode, newCode)) {
+      this.markFileCodeAsSynced(currentDiskCode)
+      return
+    }
+
+    const diskChangedSinceLastSync =
+      currentDiskCode !== null
+        ? !isCodeTheSame(currentDiskCode, this._lastKnownFileCode)
+        : this._lastKnownFileCode.length > 0
+    if (diskChangedSinceLastSync) {
+      console.warn(
+        'File changed on disk since last sync. Skipping save to avoid overwriting newer contents.'
+      )
+      if (!options.suppressConflictToast) {
+        toast.error(
+          'File changed on disk since this editor last synced. Save was skipped to avoid overwriting newer contents.'
+        )
+      }
+      return
+    }
+
+    this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
+    this.unwatch()
+
+    try {
+      await this.write(newCode)
+      this.markFileCodeAsSynced(newCode)
+
+      // After a cooldown, start watching this file again on disk.
+      this.timeoutRewatch = setTimeout(() => {
+        this.watch()
+        this.timeoutRewatch = undefined
+      }, 1_000)
+    } catch (err: unknown) {
+      // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
+      console.warn('error saving file', err)
+      toast.error('Error saving file, please check file permissions.')
+      return Promise.reject(err)
+    }
+  }
+
   async updateEditorWithAstAndWriteToFile(
     ast: Program,
-    options?: Partial<{ isDeleting: boolean } & UpdateCodeEditorOptions>
+    options?: Partial<
+      {
+        isDeleting: boolean
+        allowProgrammaticDocumentChanges: boolean
+      } & UpdateCodeEditorOptions
+    >
   ) {
+    const requestedDocumentVersion = this._documentVersion
+    const requestedUserDocumentVersion = this._userDocumentVersion
     const resolvedOptions: NonNullable<typeof options> = Object.assign(
-      { shouldExecute: false },
+      {
+        shouldExecute: false,
+        allowProgrammaticDocumentChanges: false,
+      },
       options ?? {},
       { shouldWriteToDisk: true }
     )
+    const hasStaleVersion = () =>
+      resolvedOptions.allowProgrammaticDocumentChanges
+        ? requestedUserDocumentVersion !== this._userDocumentVersion
+        : requestedDocumentVersion !== this._documentVersion
     const wasmInstance = await this.wasmInstancePromise
+    if (hasStaleVersion()) return
 
     // We clear the AST when it cannot be parsed. If we are trying to write an
     // empty AST, it's probably because of an earlier error. That's a bad state
@@ -2341,6 +3136,7 @@ export class KclManager extends File {
     if (ast.body.length === 0 && !resolvedOptions.isDeleting) return
     const newCode = recast(ast, wasmInstance)
     if (err(newCode)) return
+    if (hasStaleVersion()) return
     // Test to see if we can parse the recast code, and never update the editor with bad code.
     // This should never happen ideally and should mean there is a bug in recast.
     const result = parse(newCode, wasmInstance)
@@ -2348,6 +3144,7 @@ export class KclManager extends File {
       console.log('Recast code could not be parsed:', result, ast)
       return
     }
+    if (hasStaleVersion()) return
     this.updateCodeEditor(newCode, resolvedOptions)
   }
 }
@@ -2355,4 +3152,87 @@ export class KclManager extends File {
 function safeLSGetItem(key: string) {
   if (typeof window === 'undefined') return
   return localStorage?.getItem(key)
+}
+
+function safeLSSetItem(key: string, value: string) {
+  if (typeof window === 'undefined') return
+  localStorage?.setItem(key, value)
+}
+
+function safeLSRemoveItem(key: string) {
+  if (typeof window === 'undefined') return
+  localStorage?.removeItem(key)
+}
+
+type RecoverySnapshot = {
+  version: typeof RECOVERY_SNAPSHOT_VERSION
+  path: string
+  code: string
+  diskCode: string
+  savedAt: string
+}
+
+function getRecoverySnapshotKey(path: string) {
+  return `kclRecovery:${path || '__untitled__'}`
+}
+
+function readRecoverySnapshot(path: string): RecoverySnapshot | null {
+  const persisted = safeLSGetItem(getRecoverySnapshotKey(path))
+  if (!persisted) return null
+
+  try {
+    const parsed = JSON.parse(persisted) as Partial<RecoverySnapshot>
+    if (
+      parsed.version !== RECOVERY_SNAPSHOT_VERSION ||
+      typeof parsed.code !== 'string' ||
+      typeof parsed.diskCode !== 'string' ||
+      typeof parsed.path !== 'string'
+    ) {
+      return null
+    }
+
+    return {
+      version: RECOVERY_SNAPSHOT_VERSION,
+      path: parsed.path,
+      code: parsed.code,
+      diskCode: parsed.diskCode,
+      savedAt: typeof parsed.savedAt === 'string' ? parsed.savedAt : '',
+    }
+  } catch {
+    return null
+  }
+}
+
+function writeRecoverySnapshot({
+  path,
+  code,
+  diskCode,
+}: {
+  path: string
+  code: string
+  diskCode: string
+}) {
+  safeLSSetItem(
+    getRecoverySnapshotKey(path),
+    JSON.stringify({
+      version: RECOVERY_SNAPSHOT_VERSION,
+      path,
+      code,
+      diskCode,
+      savedAt: new Date().toISOString(),
+    } satisfies RecoverySnapshot)
+  )
+}
+
+function clearRecoverySnapshot(path: string) {
+  safeLSRemoveItem(getRecoverySnapshotKey(path))
+}
+
+function isEnoentError(err: unknown) {
+  return (
+    typeof err === 'object' &&
+    err !== null &&
+    'cause' in err &&
+    err.cause === 'ENOENT'
+  )
 }

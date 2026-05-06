@@ -19,6 +19,7 @@ import {
   ProjectSearchBar,
   useProjectSearch,
 } from '@src/components/ProjectSearchBar'
+import { SketchSolveAnnouncement } from '@src/components/SketchSolveAnnouncements'
 import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import {
   defaultGlobalStatusBarItems,
@@ -27,6 +28,10 @@ import {
 import Tooltip from '@src/components/Tooltip'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
+import {
+  autoUpdateDownloadProgressSignal,
+  autoUpdateReadySignal,
+} from '@src/lib/autoUpdate'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
@@ -61,6 +66,7 @@ import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { ActorRefFrom } from 'xstate'
 import { waitFor } from 'xstate'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
+import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -70,7 +76,8 @@ type ReadWriteProjectState = {
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
-  const { auth, billing, commands, settings, systemIOActor } = useApp()
+  const { auth, billing, commands, settings, systemIOActor, registry } =
+    useApp()
   const { kclManager } = useSingletons()
   const executingPath = useAbsoluteFilePath()
   const settingsActor = settings.actor
@@ -105,6 +112,8 @@ const Home = () => {
   }, [])
 
   const location = useLocation()
+  const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
+  const autoUpdateReady = autoUpdateReadySignal.value
   const settingsValues = settings.useSettings()
   const machineApiEnabled = settingsValues.app.machineApi.current
   const onboardingStatus = settingsValues.app.onboardingStatus.current
@@ -356,6 +365,11 @@ const Home = () => {
                 </div>
               </li>
             )}
+            {settingsValues.modeling.useSketchSolveMode.current && (
+              <li className="contents">
+                <SketchSolveAnnouncement />
+              </li>
+            )}
             <li className="contents">
               <ActionButton
                 Element="externalLink"
@@ -402,7 +416,14 @@ const Home = () => {
       <StatusBar
         globalItems={[
           ...(isDesktop() && machineApiEnabled ? [networkMachineStatus] : []),
-          ...defaultGlobalStatusBarItems({ location, filePath: undefined }),
+          ...defaultGlobalStatusBarItems({
+            autoUpdateDownloadProgress,
+            autoUpdateReady,
+            onRestartToUpdate: () => {
+              window.electron?.appRestart()
+            },
+          }),
+          ...registry.signal(statusBarGlobalItemsValueSpec).value,
         ]}
         localItems={defaultLocalStatusBarItems}
       />

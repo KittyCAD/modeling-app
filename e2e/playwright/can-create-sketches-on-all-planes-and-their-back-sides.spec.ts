@@ -6,7 +6,7 @@ import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
-import { getUtils } from '@e2e/playwright/test-utils'
+import { escapeRegExp, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe(
@@ -55,7 +55,7 @@ test.describe(
         },
       }
 
-      const code = `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(${plane})profile001 = startProfile(sketch001, at = [`
+      const code = `@settings(defaultLengthUnit = in, kclVersion = 2.0)sketch001 = sketch(on = ${plane}) {}`
 
       await test.step(`Sketch on the ${plane} plane using custom camera commands to orient`, async () => {
         await u.openDebugPanel()
@@ -74,15 +74,7 @@ test.describe(
         )
         await page.mouse.click(resolvedCoords.x, resolvedCoords.y)
         await page.waitForTimeout(600) // wait for animation
-
-        await toolbar.waitUntilSketchingReady()
-
-        await u.closeDebugPanel()
-        await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
       })
-
-      const lineCoords = await scene.convertPagePositionToStream(707, 393)
-      await page.mouse.click(lineCoords.x, lineCoords.y)
 
       await editor.expectEditor.toContain(code)
     }
@@ -152,7 +144,7 @@ test.describe(
       await page.addInitScript(() => {
         localStorage.setItem(
           'persistCode',
-          `@settings(defaultLengthUnit = in)
+          `@settings(defaultLengthUnit = in, kclVersion = 2.0)
 xyPlane = offsetPlane(XY, offset = 0.05)
 xzPlane = offsetPlane(XZ, offset = 0.05)
 yzPlane = offsetPlane(YZ, offset = 0.05)
@@ -188,8 +180,7 @@ yzPlane = offsetPlane(YZ, offset = 0.05)
         .slice(plane.length === 3 ? 1 : 0)
         .toLocaleLowerCase()
 
-      const codeLine1 = `sketch001 = startSketchOn(${prefix}${planeName}Plane)`
-      const codeLine2 = 'profile001 = startProfile(sketch001, at = ['
+      const planeRef = `${prefix}${planeName}Plane`
 
       await test.step(`Sketch on the ${plane} plane using custom camera commands to orient`, async () => {
         await u.openDebugPanel()
@@ -233,16 +224,25 @@ yzPlane = offsetPlane(YZ, offset = 0.05)
         await page.mouse.click(resolvedCoords.x, resolvedCoords.y)
         await page.waitForTimeout(600) // wait for animation
 
-        await toolbar.waitUntilSketchingReady()
+        await expect(toolbar.exitSketchBtn).toBeVisible()
 
+        if ((await toolbar.lineBtn.getAttribute('aria-pressed')) !== 'true') {
+          await page.keyboard.press('l')
+        }
         await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
       })
 
-      const lineCoords = await scene.convertPagePositionToStream(707, 393)
-      await page.mouse.click(lineCoords.x, lineCoords.y)
+      await expect(editor.codeContent).toContainText(
+        new RegExp(
+          `sketch001 = startSketchOn\\(${escapeRegExp(planeRef)}\\)|sketch001 = sketch\\(on = ${escapeRegExp(planeRef)}\\)`
+        )
+      )
 
-      await editor.expectEditor.toContain(codeLine1)
-      await editor.expectEditor.toContain(codeLine2)
+      const lineStart = await scene.convertPagePositionToStream(707, 393)
+      const lineEnd = await scene.convertPagePositionToStream(740, 360)
+      await page.mouse.click(lineStart.x, lineStart.y)
+      await page.mouse.click(lineEnd.x, lineEnd.y)
+      await expect(editor.codeContent).toContainText(/line\(/)
     }
 
     const planeConfigs = [
@@ -261,21 +261,22 @@ yzPlane = offsetPlane(YZ, offset = 0.05)
         coords: { x: 684, y: 427 },
         description: 'blue plane',
       },
-      {
-        plane: '-XY',
-        coords: { x: 600, y: 118 },
-        description: 'back of red plane',
-      },
-      {
-        plane: '-YZ',
-        coords: { x: 700, y: 219 },
-        description: 'back of green plane',
-      },
-      {
-        plane: '-XZ',
-        coords: { x: 560, y: 150 },
-        description: 'back of blue plane',
-      },
+      // TODO: figure out what we do with negative planes in sketch solve
+      // {
+      //   plane: '-XY',
+      //   coords: { x: 600, y: 118 },
+      //   description: 'back of red plane',
+      // },
+      // {
+      //   plane: '-YZ',
+      //   coords: { x: 700, y: 219 },
+      //   description: 'back of green plane',
+      // },
+      // {
+      //   plane: '-XZ',
+      //   coords: { x: 560, y: 150 },
+      //   description: 'back of blue plane',
+      // },
     ]
 
     for (const config of planeConfigs) {

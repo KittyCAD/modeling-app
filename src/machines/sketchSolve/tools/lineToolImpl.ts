@@ -45,6 +45,7 @@ export type ToolEvents =
       output: {
         kclSource: SourceDelta
         sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
       }
     }
 
@@ -53,6 +54,7 @@ export type ToolContext = {
   pendingSketchOutcome?: {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
+    checkpointId?: number | null
     // If present, the next draft line should chain from this committed point.
     // When double-clicking or snapping to a target it becomes undefined to stop chaining.
     lastPointId?: number
@@ -202,7 +204,6 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
           ),
         })
         const [x, y] = snappingCandidate?.position ?? mousePosition
-        console.log('line tool snap target', snappingCandidate?.target ?? null)
         self.send({
           type: 'add point',
           data: [x, y],
@@ -237,7 +238,6 @@ export function addPointListener({ self, context }: ToolActionArgs) {
             ),
         })
         const [x, y] = snappingCandidate?.position ?? mousePosition
-        console.log('line tool snap target', snappingCandidate?.target ?? null)
         self.send({
           type: 'add point',
           data: [x, y],
@@ -320,6 +320,7 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
   const output = event.output as {
     kclSource?: SourceDelta
     sceneGraphDelta?: SceneGraphDelta
+    checkpointId?: number | null
     newLineEndPointId?: number
     newlyAddedEntities?: {
       segmentIds: Array<number>
@@ -339,6 +340,8 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
       data: {
         sourceDelta: output.kclSource,
         sceneGraphDelta: output.sceneGraphDelta,
+        writeToDisk: false,
+        checkpointId: output.checkpointId ?? null,
       },
     }
     self._parent?.send(sendData)
@@ -413,6 +416,7 @@ export function storePendingSketchOutcome({
   event: DoneActorEvent<{
     kclSource?: SourceDelta
     sceneGraphDelta?: SceneGraphDelta
+    checkpointId?: number | null
     lastPointId?: number
     error?: string
   }>
@@ -425,6 +429,7 @@ export function storePendingSketchOutcome({
     result.pendingSketchOutcome = {
       kclSource: output.kclSource,
       sceneGraphDelta: output.sceneGraphDelta,
+      checkpointId: output.checkpointId ?? null,
       lastPointId: output.lastPointId,
     }
   }
@@ -440,6 +445,7 @@ export function sendStoredResultToParent({ context, self }: ToolActionArgs) {
         sourceDelta: context.pendingSketchOutcome.kclSource,
         sceneGraphDelta: context.pendingSketchOutcome.sceneGraphDelta,
         writeToDisk: true,
+        checkpointId: context.pendingSketchOutcome.checkpointId ?? null,
       },
     }
     self._parent?.send(sendData)

@@ -5,28 +5,24 @@ excerpt: "Constrain lines to be parallel."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Constrain lines to be parallel.
 
 ```kcl
 solver::parallel(@input: [Segment; 2+])
 ```
 
-Currently limited to two lines.
+
 
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `input` | [[`Segment`](/docs/kcl-std/types/std-types-Segment); 2+] | The line segments that should remain parallel. Currently limited to two lines. | Yes |
+| `input` | [[`Segment`](/docs/kcl-std/types/std-types-Segment); 2+] | The line segments that should remain parallel. | Yes |
 
 
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = XY) {
   base = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
   right = line(start = [var 5mm, var 0mm], end = [var 4mm, var 3mm])

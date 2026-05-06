@@ -7,7 +7,8 @@ layout: manual
 
 Sketching is the foundational activity for most KCL programs. A sketch is a two-dimensional drawing made from paths or shapes. A sketch is always drawn on a surface (either an abstract plane of a face of a solid). A sketch can be made into a solid by extruding it (or revolving, etc.). 
 
-This module contains functions for creating and manipulating sketches, and making them into solids. 
+This module contains functions for creating and manipulating sketches, and making them into solids.
+
 
 
 ## Functions and constants

@@ -42,6 +42,7 @@ export function addUnion({
     mNodeToEdit,
     {
       lastChildLookup: true,
+      artifactTypeFilter: ['compositeSolid', 'sweep'],
     }
   )
   if (err(vars)) {
@@ -97,6 +98,7 @@ export function addIntersect({
     mNodeToEdit,
     {
       lastChildLookup: true,
+      artifactTypeFilter: ['compositeSolid', 'sweep'],
     }
   )
   if (err(vars)) {

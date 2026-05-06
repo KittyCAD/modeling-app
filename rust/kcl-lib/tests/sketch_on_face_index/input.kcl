@@ -1,5 +1,3 @@
-@settings(experimentalFeatures = allow)
-
 mySolid = startSketchOn(XY)
   |> circle(radius = 1)
   |> extrude(length = 1)

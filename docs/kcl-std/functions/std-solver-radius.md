@@ -5,12 +5,13 @@ excerpt: "Constrain the radius of an arc segment. Accepts a single arc segment a
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Constrain the radius of an arc segment. Accepts a single arc segment and constrains the distance from its center to its start point.
 
 ```kcl
-solver::radius(@points: Segment)
+solver::radius(
+  @points: Segment,
+  labelPosition?: Point2d,
+)
 ```
 
 
@@ -20,13 +21,12 @@ solver::radius(@points: Segment)
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `points` | [`Segment`](/docs/kcl-std/types/std-types-Segment) | The arc segment whose radius should match the value set with `==`. | Yes |
+| `labelPosition` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Optional position for the displayed constraint label in the sketch's local 2D coordinate system. | No |
 
 
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = XY) {
   base = line(start = [var -4mm, var 0mm], end = [var 4mm, var 0mm])
   arch = arc(start = [var 4mm, var 0mm], end = [var -4mm, var 0mm], center = [var 0mm, var 0mm])

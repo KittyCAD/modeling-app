@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 import os
 
+import pytest
+from flaky import flaky
+
 import kcl
 from kcl import Point3d
-from flaky import flaky
-import pytest
 
 # Get the path to this script's parent directory.
 files_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "files")
@@ -20,14 +21,14 @@ engine_error_file = os.path.join(
 cube_step_file = os.path.join(
     os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "files", "cube.step"
 )
-car_wheel_dir = os.path.join(
+axial_fan = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
     "..",
     "..",
     "..",
     "public",
     "kcl-samples",
-    "car-wheel-assembly",
+    "axial-fan",
 )
 
 box_code = """
@@ -220,14 +221,16 @@ async def test_kcl_execute_code_and_export():
 @pytest.mark.asyncio
 async def test_kcl_execute_dir_assembly():
     # Read from a file.
-    await kcl.execute(car_wheel_dir)
+    await kcl.execute(axial_fan)
 
 
 @requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_and_snapshot():
     # Read from a file.
-    image_bytes = await kcl.execute_and_snapshot(lego_file, kcl.ImageFormat.Jpeg)
+    image_bytes = await kcl.execute_and_snapshot(
+        lego_file, kcl.ImageFormat.Jpeg, zoom=False
+    )
     assert image_bytes is not None
     assert len(image_bytes) > 0
 
@@ -306,7 +309,7 @@ async def test_import_and_snapshots_single():
 @pytest.mark.asyncio
 async def test_kcl_execute_and_snapshot_dir():
     # Read from a file.
-    image_bytes = await kcl.execute_and_snapshot(car_wheel_dir, kcl.ImageFormat.Jpeg)
+    image_bytes = await kcl.execute_and_snapshot(axial_fan, kcl.ImageFormat.Jpeg)
     assert image_bytes is not None
     assert len(image_bytes) > 0
 
@@ -446,7 +449,7 @@ def test_kcl_format():
 
 @pytest.mark.asyncio
 async def test_kcl_format_dir():
-    await kcl.format_dir(car_wheel_dir)
+    await kcl.format_dir(axial_fan)
 
 
 def test_kcl_lint():
@@ -538,3 +541,135 @@ def test_relevant_file_extensions():
     assert all(isinstance(x, str) and len(x) > 0 for x in exts)
     # kcl should always be included in the set
     assert "kcl" in exts
+
+
+fully_constrained_sketch_code = """
+@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+}
+"""
+
+under_constrained_sketch_code = """
+@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = line(start = [var 1.32mm, var -1.93mm], end = [var 6.08mm, var 2.51mm])
+}
+"""
+
+mixed_sketches_code = """
+@settings(experimentalFeatures = allow)
+
+s1 = sketch(on = YZ) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+}
+
+s2 = sketch(on = XZ) {
+  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+}
+"""
+
+execution_error_after_sketch_code = """
+@settings(experimentalFeatures = allow)
+
+s1 = sketch(on = YZ) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+}
+
+extrude(missing_sketch, length = 5mm)
+"""
+
+parse_error_sketch_code = """
+@settings(experimentalFeatures = allow)
+
+s1 = sketch(on = YZ) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+"""
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_sketch_constraint_status_fully_constrained():
+    report = await kcl.get_sketch_constraint_status_code(fully_constrained_sketch_code)
+    assert len(report.fully_constrained) == 1
+    assert len(report.under_constrained) == 0
+    assert len(report.over_constrained) == 0
+    assert len(report.errors) == 0
+    assert report.is_complete is True
+    assert report.kcl_error is None
+    assert report.fully_constrained[0].status == kcl.ConstraintKind.FullyConstrained
+    assert report.total_sketches() == 1
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_sketch_constraint_status_under_constrained():
+    report = await kcl.get_sketch_constraint_status_code(under_constrained_sketch_code)
+    assert len(report.fully_constrained) == 0
+    assert len(report.under_constrained) == 1
+    assert len(report.over_constrained) == 0
+    assert len(report.errors) == 0
+    assert report.under_constrained[0].status == kcl.ConstraintKind.UnderConstrained
+    assert report.under_constrained[0].free_count > 0
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_sketch_constraint_status_mixed():
+    report = await kcl.get_sketch_constraint_status_code(mixed_sketches_code)
+    assert report.total_sketches() == 2
+    assert len(report.fully_constrained) == 1
+    assert len(report.under_constrained) == 1
+    assert len(report.errors) == 0
+    assert report.is_complete is True
+    assert report.kcl_error is None
+
+
+@pytest.mark.asyncio
+async def test_sketch_constraint_status_parse_error_returns_report():
+    report = await kcl.get_sketch_constraint_status_code(parse_error_sketch_code)
+    assert report.total_sketches() == 0
+    assert len(report.fully_constrained) == 0
+    assert len(report.under_constrained) == 0
+    assert len(report.over_constrained) == 0
+    assert len(report.errors) == 0
+    assert report.is_complete is False
+    assert report.kcl_error is not None
+    assert report.kcl_error.phase == "parse"
+    assert "KCL Syntax error" in report.kcl_error.text
+    assert "Unexpected token" in report.kcl_error.text
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_sketch_constraint_status_execution_error_returns_partial_report():
+    report = await kcl.get_sketch_constraint_status_code(
+        execution_error_after_sketch_code
+    )
+    assert report.total_sketches() == 1
+    assert len(report.fully_constrained) == 1
+    assert len(report.under_constrained) == 0
+    assert len(report.over_constrained) == 0
+    assert len(report.errors) == 0
+    assert report.is_complete is False
+    assert report.kcl_error is not None
+    assert report.kcl_error.phase == "execution"
+    assert "missing_sketch" in report.kcl_error.text

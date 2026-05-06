@@ -5,8 +5,6 @@ excerpt: "Create a point in a sketch."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Create a point in a sketch.
 
 ```kcl
@@ -29,8 +27,6 @@ solver::point(at: Point2d): Segment
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   edge2 = line(start = [var 4mm, var 0mm], end = [var 4mm, var 3mm])

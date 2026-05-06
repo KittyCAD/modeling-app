@@ -5,8 +5,6 @@ excerpt: "Create a circular arc. The arc segment always sweeps counterclockwise 
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Create a circular arc. The arc segment always sweeps counterclockwise from start to end. To change direction, swap the start and end points.
 
 ```kcl
@@ -37,8 +35,6 @@ solver::arc(
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = XY) {
   base = line(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm])
   top = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var 5mm])
@@ -58,6 +54,28 @@ solid = extrude(region(point = [0mm, 2mm], sketch = profile), length = 2)
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solver-arc0.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+height = 2
+profile = sketch(on = XY) {
+  arc1 = arc(start = [0, 0], end = [0, height], center = [0, height / 2])
+}
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the solver::arc function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-arc1_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solver-arc1.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

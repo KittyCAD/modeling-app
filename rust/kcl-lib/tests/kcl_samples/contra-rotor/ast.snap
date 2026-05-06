@@ -11,7 +11,7 @@ description: Result of parsing contra-rotor.kcl
         "moduleId": 0,
         "path": {
           "type": "Kcl",
-          "filename": "contra.kcl"
+          "filename": "primary-assembly.kcl"
         },
         "preComments": [
           "// Import Subassemblies"
@@ -22,7 +22,7 @@ description: Result of parsing contra-rotor.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "contra",
+            "name": "primaryAssembly",
             "start": 0,
             "type": "Identifier"
           }
@@ -37,7 +37,7 @@ description: Result of parsing contra-rotor.kcl
         "moduleId": 0,
         "path": {
           "type": "Kcl",
-          "filename": "primary.kcl"
+          "filename": "contra-assembly.kcl"
         },
         "selector": {
           "type": "None",
@@ -45,7 +45,7 @@ description: Result of parsing contra-rotor.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "primary",
+            "name": "contraAssembly",
             "start": 0,
             "type": "Identifier"
           }
@@ -60,7 +60,7 @@ description: Result of parsing contra-rotor.kcl
         "moduleId": 0,
         "path": {
           "type": "Kcl",
-          "filename": "secondary.kcl"
+          "filename": "secondary-assembly.kcl"
         },
         "selector": {
           "type": "None",
@@ -68,7 +68,7 @@ description: Result of parsing contra-rotor.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "secondary",
+            "name": "secondaryAssembly",
             "start": 0,
             "type": "Identifier"
           }
@@ -164,21 +164,6 @@ description: Result of parsing contra-rotor.kcl
       }
     ],
     "moduleId": 0,
-    "nonCodeMeta": {
-      "nonCodeNodes": {},
-      "startNodes": [
-        {
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "newLine"
-          }
-        }
-      ]
-    },
     "start": 0
   }
 }

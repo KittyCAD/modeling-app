@@ -1366,12 +1366,14 @@ export class ConnectionManager extends EventTarget {
   }
 
   /**
-   * When an execution takes place we want to wait until we've got replies for all of the commands
-   * When this is done when we build the artifact map synchronously.
+   * Wait for all modeling commands. Do not wait for scene commands.
    */
-  waitForAllCommands() {
+  waitForAllModelingCommands() {
+    const modelingPendingCommands = Object.values(this.pendingCommands).filter(
+      (pending) => !pending.isSceneCommand
+    )
     return Promise.all(
-      Object.values(this.pendingCommands).map((a) => a.promise)
+      modelingPendingCommands.map((pending) => pending.promise)
     )
   }
 

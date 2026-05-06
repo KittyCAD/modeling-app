@@ -5,8 +5,6 @@ excerpt: "Create a circle in a sketch. The circle segment always has a starting 
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Create a circle in a sketch. The circle segment always has a starting point and sweeps counterclockwise from it.
 
 ```kcl
@@ -35,8 +33,6 @@ solver::circle(
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = XY) {
   circle1 = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm], construction = true)
   edge1 = line(start = [var -3mm, var -2mm], end = [var 3mm, var -2mm])

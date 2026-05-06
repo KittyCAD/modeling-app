@@ -5,8 +5,6 @@ excerpt: "The origin point in a sketch."
 layout: manual
 ---
 
-**WARNING:** This constant is experimental and may change or be removed.
-
 The origin point in a sketch.
 
 ```kcl

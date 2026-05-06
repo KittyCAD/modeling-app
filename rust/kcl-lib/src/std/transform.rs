@@ -780,9 +780,7 @@ hide(helixPath)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_hide_sketch_block() {
-        let ast = r#"@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XY) {
+        let ast = r#"sketch001 = sketch(on = XY) {
   circle001 = circle(start = [var 1.16mm, var 4.24mm], center = [var -1.81mm, var -0.5mm])
 }
 

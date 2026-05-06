@@ -5,8 +5,6 @@ excerpt: "Constrain lines to have equal length."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Constrain lines to have equal length.
 
 ```kcl
@@ -25,8 +23,6 @@ solver::equalLength(@lines: [Segment; 2+])
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 profile = sketch(on = XY) {
   base = line(start = [var -3mm, var 0mm], end = [var 3mm, var 0mm])
   side1 = line(start = [var 3mm, var 0mm], end = [var 0mm, var 4mm])

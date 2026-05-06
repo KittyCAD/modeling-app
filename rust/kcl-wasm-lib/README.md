@@ -1,0 +1,9 @@
+# kcl-wasm-lib
+
+WASM build of the `kcl-lib` crate.
+
+## WARNING!
+
+*WE OFFER THIS WITH NO BACKWARDS COMPATIBILITY GUARANTEES.*
+
+*USE IT AT YOUR OWN RISK.*

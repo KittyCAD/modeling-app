@@ -77,7 +77,7 @@ export async function executeAst({
   try {
     const settings = jsAppSettings(rustContext.settingsActor)
     const execState = await rustContext.execute(ast, settings, path)
-    await rustContext.waitForAllEngineCommands()
+    await rustContext.waitForAllEngineModelingCommands()
     return {
       logs: [],
       errors: [],
@@ -109,7 +109,7 @@ export async function executeAstMock({
       usePrevMemory
     )
 
-    await rustContext.waitForAllEngineCommands()
+    await rustContext.waitForAllEngineModelingCommands()
     return {
       logs: [],
       errors: [],

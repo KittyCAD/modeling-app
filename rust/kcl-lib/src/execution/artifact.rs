@@ -17,6 +17,7 @@ use crate::KclError;
 use crate::ModuleId;
 use crate::NodePath;
 use crate::SourceRange;
+use crate::engine::PlaneName;
 use crate::errors::KclErrorDetails;
 use crate::execution::ArtifactId;
 use crate::execution::state::ModuleInfoMap;
@@ -101,6 +102,10 @@ pub struct CompositeSolid {
     /// Whether this artifact has been used in a subsequent operation
     pub consumed: bool,
     pub sub_type: CompositeSolidSubType,
+    /// Index of this output in the expression result, for operations that
+    /// return multiple selectable bodies from one KCL variable.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub output_index: Option<usize>,
     /// Constituent solids of the composite solid.
     pub solid_ids: Vec<ArtifactId>,
     /// Tool solids used for asymmetric operations like subtract.
@@ -110,6 +115,9 @@ pub struct CompositeSolid {
     /// composite solid can be used as input for another composite solid.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub composite_solid_id: Option<ArtifactId>,
+    /// Pattern operations that use this composite solid as their source.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub pattern_ids: Vec<ArtifactId>,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
@@ -118,6 +126,7 @@ pub struct CompositeSolid {
 pub enum CompositeSolidSubType {
     Intersect,
     Subtract,
+    Split,
     Union,
 }
 
@@ -135,6 +144,7 @@ pub struct Plane {
 #[serde(rename_all = "camelCase")]
 pub struct Path {
     pub id: ArtifactId,
+    pub sub_type: PathSubType,
     pub plane_id: ArtifactId,
     pub seg_ids: Vec<ArtifactId>,
     /// Whether this artifact has been used in a subsequent operation
@@ -152,6 +162,14 @@ pub struct Path {
     /// this can be used as input for another composite solid.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub composite_solid_id: Option<ArtifactId>,
+    /// For sketch paths, the ID of the sketch block this path was created
+    /// from. `None` for region paths and paths created in other ways.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sketch_block_id: Option<ArtifactId>,
+    /// For region paths, the ID of the sketch path this region was created
+    /// from. `None` for sketch paths.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub origin_path_id: Option<ArtifactId>,
     /// The hole, if any, from a subtract2d() call.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub inner_path_id: Option<ArtifactId>,
@@ -159,6 +177,17 @@ pub struct Path {
     /// `inner_path_id`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub outer_path_id: Option<ArtifactId>,
+    /// Pattern operations that use this path as their source.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub pattern_ids: Vec<ArtifactId>,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub enum PathSubType {
+    Sketch,
+    Region,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -198,6 +227,9 @@ pub struct Sweep {
     pub method: kittycad_modeling_cmds::shared::ExtrudeMethod,
     /// Whether this artifact has been used in a subsequent operation
     pub consumed: bool,
+    /// Pattern operations that use this sweep as their source.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub pattern_ids: Vec<ArtifactId>,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
@@ -271,9 +303,17 @@ pub struct StartSketchOnPlane {
 #[serde(rename_all = "camelCase")]
 pub struct SketchBlock {
     pub id: ArtifactId,
-    /// The plane ID if the sketch block is on a specific plane, None if it's on a default plane.
+    /// The semantic standard plane name when the sketch block is on a standard plane.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub standard_plane: Option<PlaneName>,
+    /// The concrete plane artifact ID backing the sketch block, when one is available.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub plane_id: Option<ArtifactId>,
+    /// The path artifact ID created from the sketch block, if there is one.
+    /// There are edge cases when a path isn't created, like when there are no
+    /// segments.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub path_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
     /// The sketch ID (ObjectId) for the sketch scene object.
     pub sketch_id: ObjectId,
@@ -287,14 +327,17 @@ pub enum SketchBlockConstraintType {
     Coincident,
     Distance,
     Diameter,
+    EqualRadius,
     Fixed,
     HorizontalDistance,
     VerticalDistance,
     Horizontal,
     LinesEqualLength,
+    Midpoint,
     Parallel,
     Perpendicular,
     Radius,
+    Symmetric,
     Tangent,
     Vertical,
 }
@@ -305,14 +348,17 @@ impl From<&Constraint> for SketchBlockConstraintType {
             Constraint::Coincident { .. } => SketchBlockConstraintType::Coincident,
             Constraint::Distance { .. } => SketchBlockConstraintType::Distance,
             Constraint::Diameter { .. } => SketchBlockConstraintType::Diameter,
+            Constraint::EqualRadius { .. } => SketchBlockConstraintType::EqualRadius,
             Constraint::Fixed { .. } => SketchBlockConstraintType::Fixed,
             Constraint::HorizontalDistance { .. } => SketchBlockConstraintType::HorizontalDistance,
             Constraint::VerticalDistance { .. } => SketchBlockConstraintType::VerticalDistance,
             Constraint::Horizontal { .. } => SketchBlockConstraintType::Horizontal,
             Constraint::LinesEqualLength { .. } => SketchBlockConstraintType::LinesEqualLength,
+            Constraint::Midpoint(..) => SketchBlockConstraintType::Midpoint,
             Constraint::Parallel { .. } => SketchBlockConstraintType::Parallel,
             Constraint::Perpendicular { .. } => SketchBlockConstraintType::Perpendicular,
             Constraint::Radius { .. } => SketchBlockConstraintType::Radius,
+            Constraint::Symmetric { .. } => SketchBlockConstraintType::Symmetric,
             Constraint::Tangent { .. } => SketchBlockConstraintType::Tangent,
             Constraint::Vertical { .. } => SketchBlockConstraintType::Vertical,
             Constraint::Angle(..) => SketchBlockConstraintType::Angle,
@@ -465,7 +511,34 @@ pub struct Helix {
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct Pattern {
+    pub id: ArtifactId,
+    pub sub_type: PatternSubType,
+    /// Geometry artifact that was the source of the pattern operation.
+    pub source_id: ArtifactId,
+    /// IDs of copied top-level objects created by the pattern operation.
+    pub copy_ids: Vec<ArtifactId>,
+    /// IDs of copied faces created by the pattern operation.
+    pub copy_face_ids: Vec<ArtifactId>,
+    /// IDs of copied edges created by the pattern operation.
+    pub copy_edge_ids: Vec<ArtifactId>,
+    pub code_ref: CodeRef,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub enum PatternSubType {
+    Circular,
+    Linear,
+    Transform,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
 #[serde(tag = "type", rename_all = "camelCase")]
+#[expect(clippy::large_enum_variant)]
 pub enum Artifact {
     CompositeSolid(CompositeSolid),
     Plane(Plane),
@@ -486,6 +559,7 @@ pub enum Artifact {
     EdgeCut(EdgeCut),
     EdgeCutEdge(EdgeCutEdge),
     Helix(Helix),
+    Pattern(Pattern),
 }
 
 impl Artifact {
@@ -510,6 +584,7 @@ impl Artifact {
             Artifact::EdgeCut(a) => a.id,
             Artifact::EdgeCutEdge(a) => a.id,
             Artifact::Helix(a) => a.id,
+            Artifact::Pattern(a) => a.id,
         }
     }
 
@@ -536,6 +611,7 @@ impl Artifact {
             Artifact::EdgeCut(a) => Some(&a.code_ref),
             Artifact::EdgeCutEdge(_) => None,
             Artifact::Helix(a) => Some(&a.code_ref),
+            Artifact::Pattern(a) => Some(&a.code_ref),
         }
     }
 
@@ -558,7 +634,11 @@ impl Artifact {
             Artifact::PrimitiveFace(a) => Some(&a.code_ref),
             Artifact::Wall(a) => Some(&a.face_code_ref),
             Artifact::Cap(a) => Some(&a.face_code_ref),
-            Artifact::SweepEdge(_) | Artifact::EdgeCut(_) | Artifact::EdgeCutEdge(_) | Artifact::Helix(_) => None,
+            Artifact::SweepEdge(_)
+            | Artifact::EdgeCut(_)
+            | Artifact::EdgeCutEdge(_)
+            | Artifact::Helix(_)
+            | Artifact::Pattern(_) => None,
         }
     }
 
@@ -585,6 +665,7 @@ impl Artifact {
             Artifact::EdgeCut(a) => a.merge(new),
             Artifact::EdgeCutEdge(_) => Some(new),
             Artifact::Helix(a) => a.merge(new),
+            Artifact::Pattern(a) => a.merge(new),
         }
     }
 }
@@ -597,6 +678,8 @@ impl CompositeSolid {
         merge_ids(&mut self.solid_ids, new.solid_ids);
         merge_ids(&mut self.tool_ids, new.tool_ids);
         merge_opt_id(&mut self.composite_solid_id, new.composite_solid_id);
+        merge_ids(&mut self.pattern_ids, new.pattern_ids);
+        self.output_index = new.output_index;
         self.consumed = new.consumed;
 
         None
@@ -624,8 +707,11 @@ impl Path {
         merge_ids(&mut self.seg_ids, new.seg_ids);
         merge_opt_id(&mut self.solid2d_id, new.solid2d_id);
         merge_opt_id(&mut self.composite_solid_id, new.composite_solid_id);
+        merge_opt_id(&mut self.sketch_block_id, new.sketch_block_id);
+        merge_opt_id(&mut self.origin_path_id, new.origin_path_id);
         merge_opt_id(&mut self.inner_path_id, new.inner_path_id);
         merge_opt_id(&mut self.outer_path_id, new.outer_path_id);
+        merge_ids(&mut self.pattern_ids, new.pattern_ids);
         self.consumed = new.consumed;
 
         None
@@ -655,6 +741,7 @@ impl Sweep {
         merge_ids(&mut self.surface_ids, new.surface_ids);
         merge_ids(&mut self.edge_ids, new.edge_ids);
         merge_opt_id(&mut self.trajectory_id, new.trajectory_id);
+        merge_ids(&mut self.pattern_ids, new.pattern_ids);
         self.consumed = new.consumed;
 
         None
@@ -705,6 +792,19 @@ impl Helix {
         merge_opt_id(&mut self.axis_id, new.axis_id);
         merge_opt_id(&mut self.trajectory_sweep_id, new.trajectory_sweep_id);
         self.consumed = new.consumed;
+
+        None
+    }
+}
+
+impl Pattern {
+    fn merge(&mut self, new: Artifact) -> Option<Artifact> {
+        let Artifact::Pattern(new) = new else {
+            return Some(new);
+        };
+        merge_ids(&mut self.copy_ids, new.copy_ids);
+        merge_ids(&mut self.copy_face_ids, new.copy_face_ids);
+        merge_ids(&mut self.copy_edge_ids, new.copy_edge_ids);
 
         None
     }
@@ -897,35 +997,27 @@ fn fill_in_node_paths(
     import_code_refs: &FnvHashMap<ModuleId, ImportCodeRef>,
 ) {
     match artifact {
-        Artifact::StartSketchOnFace(face) => {
-            if face.code_ref.node_path.is_empty() {
-                let (range, node_path) =
-                    code_ref_for_range(programs, cached_body_items, face.code_ref.range, import_code_refs);
-                face.code_ref.range = range;
-                face.code_ref.node_path = node_path;
-            }
+        Artifact::StartSketchOnFace(face) if face.code_ref.node_path.is_empty() => {
+            let (range, node_path) =
+                code_ref_for_range(programs, cached_body_items, face.code_ref.range, import_code_refs);
+            face.code_ref.range = range;
+            face.code_ref.node_path = node_path;
         }
-        Artifact::StartSketchOnPlane(plane) => {
-            if plane.code_ref.node_path.is_empty() {
-                let (range, node_path) =
-                    code_ref_for_range(programs, cached_body_items, plane.code_ref.range, import_code_refs);
-                plane.code_ref.range = range;
-                plane.code_ref.node_path = node_path;
-            }
+        Artifact::StartSketchOnPlane(plane) if plane.code_ref.node_path.is_empty() => {
+            let (range, node_path) =
+                code_ref_for_range(programs, cached_body_items, plane.code_ref.range, import_code_refs);
+            plane.code_ref.range = range;
+            plane.code_ref.node_path = node_path;
         }
-        Artifact::SketchBlock(block) => {
-            if block.code_ref.node_path.is_empty() {
-                let (range, node_path) =
-                    code_ref_for_range(programs, cached_body_items, block.code_ref.range, import_code_refs);
-                block.code_ref.range = range;
-                block.code_ref.node_path = node_path;
-            }
+        Artifact::SketchBlock(block) if block.code_ref.node_path.is_empty() => {
+            let (range, node_path) =
+                code_ref_for_range(programs, cached_body_items, block.code_ref.range, import_code_refs);
+            block.code_ref.range = range;
+            block.code_ref.node_path = node_path;
         }
-        Artifact::SketchBlockConstraint(constraint) => {
-            if constraint.code_ref.node_path.is_empty() {
-                constraint.code_ref.node_path =
-                    NodePath::from_range(programs, cached_body_items, constraint.code_ref.range).unwrap_or_default();
-            }
+        Artifact::SketchBlockConstraint(constraint) if constraint.code_ref.node_path.is_empty() => {
+            constraint.code_ref.node_path =
+                NodePath::from_range(programs, cached_body_items, constraint.code_ref.range).unwrap_or_default();
         }
         _ => {}
     }
@@ -1018,6 +1110,94 @@ fn merge_ids(base: &mut Vec<ArtifactId>, new: Vec<ArtifactId>) {
 fn merge_opt_id(base: &mut Option<ArtifactId>, new: Option<ArtifactId>) {
     // Always use the new one, even if it clears it.
     *base = new;
+}
+
+fn pattern_source_ids(artifacts: &IndexMap<ArtifactId, Artifact>, source_id: ArtifactId) -> Vec<ArtifactId> {
+    let mut source_ids = vec![source_id];
+
+    if let Some(Artifact::Path(path)) = artifacts.get(&source_id) {
+        if let Some(sweep_id) = path.sweep_id {
+            source_ids.push(sweep_id);
+        }
+        if let Some(composite_solid_id) = path.composite_solid_id {
+            source_ids.push(composite_solid_id);
+        }
+    }
+
+    for artifact in artifacts.values() {
+        match artifact {
+            Artifact::Sweep(sweep) if sweep.path_id == source_id => source_ids.push(sweep.id),
+            Artifact::CompositeSolid(composite)
+                if composite.solid_ids.contains(&source_id) || composite.tool_ids.contains(&source_id) =>
+            {
+                source_ids.push(composite.id)
+            }
+            _ => {}
+        }
+    }
+
+    let mut unique = Vec::new();
+    merge_ids(&mut unique, source_ids);
+    unique
+}
+
+fn pattern_artifact_updates(
+    artifacts: &IndexMap<ArtifactId, Artifact>,
+    pattern_id: ArtifactId,
+    sub_type: PatternSubType,
+    source_id: ArtifactId,
+    face_edge_infos: &[kcmc::output::FaceEdgeInfo],
+    code_ref: CodeRef,
+) -> Vec<Artifact> {
+    let copy_ids = face_edge_infos
+        .iter()
+        .map(|info| ArtifactId::new(info.object_id))
+        .collect::<Vec<_>>();
+    let copy_face_ids = face_edge_infos
+        .iter()
+        .flat_map(|info| info.faces.iter().copied().map(ArtifactId::new))
+        .collect::<Vec<_>>();
+    let copy_edge_ids = face_edge_infos
+        .iter()
+        .flat_map(|info| info.edges.iter().copied().map(ArtifactId::new))
+        .collect::<Vec<_>>();
+
+    let source_ids = pattern_source_ids(artifacts, source_id);
+    let mut return_arr = vec![Artifact::Pattern(Pattern {
+        id: pattern_id,
+        sub_type,
+        source_id,
+        copy_ids,
+        copy_face_ids,
+        copy_edge_ids,
+        code_ref,
+    })];
+
+    for source_id in source_ids {
+        let Some(artifact) = artifacts.get(&source_id) else {
+            continue;
+        };
+        match artifact {
+            Artifact::Path(path) => {
+                let mut new_path = path.clone();
+                new_path.pattern_ids = vec![pattern_id];
+                return_arr.push(Artifact::Path(new_path));
+            }
+            Artifact::Sweep(sweep) => {
+                let mut new_sweep = sweep.clone();
+                new_sweep.pattern_ids = vec![pattern_id];
+                return_arr.push(Artifact::Sweep(new_sweep));
+            }
+            Artifact::CompositeSolid(composite) => {
+                let mut new_composite = composite.clone();
+                new_composite.pattern_ids = vec![pattern_id];
+                return_arr.push(Artifact::CompositeSolid(new_composite));
+            }
+            _ => {}
+        }
+    }
+
+    return_arr
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -1117,8 +1297,23 @@ fn artifacts_to_update(
                     vec![range],
                 ))
             })?;
+            let sketch_block_id = exec_artifacts
+                .values()
+                .find(|a| {
+                    if let Artifact::SketchBlock(s) = a {
+                        if let Some(path_id) = s.path_id {
+                            path_id == id
+                        } else {
+                            false
+                        }
+                    } else {
+                        false
+                    }
+                })
+                .map(|a| a.id());
             return_arr.push(Artifact::Path(Path {
                 id,
+                sub_type: PathSubType::Sketch,
                 plane_id: (*current_plane_id).into(),
                 seg_ids: Vec::new(),
                 sweep_id: None,
@@ -1126,8 +1321,11 @@ fn artifacts_to_update(
                 solid2d_id: None,
                 code_ref,
                 composite_solid_id: None,
+                sketch_block_id,
+                origin_path_id: None,
                 inner_path_id: None,
                 outer_path_id: None,
+                pattern_ids: Vec::new(),
                 consumed: false,
             }));
             let plane = artifacts.get(&ArtifactId::new(*current_plane_id));
@@ -1221,6 +1419,7 @@ fn artifacts_to_update(
             // Create the path representing the region.
             return_arr.push(Artifact::Path(Path {
                 id,
+                sub_type: PathSubType::Region,
                 plane_id: path.plane_id,
                 seg_ids: Vec::new(),
                 consumed: false,
@@ -1229,8 +1428,11 @@ fn artifacts_to_update(
                 solid2d_id: None,
                 code_ref: code_ref.clone(),
                 composite_solid_id: None,
+                sketch_block_id: None,
+                origin_path_id: Some(ArtifactId::new(*origin_path_id)),
                 inner_path_id: None,
                 outer_path_id: None,
+                pattern_ids: Vec::new(),
             }));
             // If we have a response, we can also create the segments in the
             // region.
@@ -1286,6 +1488,48 @@ fn artifacts_to_update(
                 code_ref,
             })]);
         }
+        ModelingCmd::EntityLinearPatternTransform(pattern_cmd) => {
+            let face_edge_infos = match response {
+                Some(OkModelingCmdResponse::EntityLinearPatternTransform(resp)) => resp.entity_face_edge_ids.as_slice(),
+                _ => &[],
+            };
+            return Ok(pattern_artifact_updates(
+                artifacts,
+                id,
+                PatternSubType::Transform,
+                ArtifactId::new(pattern_cmd.entity_id),
+                face_edge_infos,
+                code_ref,
+            ));
+        }
+        ModelingCmd::EntityLinearPattern(pattern_cmd) => {
+            let face_edge_infos = match response {
+                Some(OkModelingCmdResponse::EntityLinearPattern(resp)) => resp.entity_face_edge_ids.as_slice(),
+                _ => &[],
+            };
+            return Ok(pattern_artifact_updates(
+                artifacts,
+                id,
+                PatternSubType::Linear,
+                ArtifactId::new(pattern_cmd.entity_id),
+                face_edge_infos,
+                code_ref,
+            ));
+        }
+        ModelingCmd::EntityCircularPattern(pattern_cmd) => {
+            let face_edge_infos = match response {
+                Some(OkModelingCmdResponse::EntityCircularPattern(resp)) => resp.entity_face_edge_ids.as_slice(),
+                _ => &[],
+            };
+            return Ok(pattern_artifact_updates(
+                artifacts,
+                id,
+                PatternSubType::Circular,
+                ArtifactId::new(pattern_cmd.entity_id),
+                face_edge_infos,
+                code_ref,
+            ));
+        }
         ModelingCmd::EntityMirror(kcmc::EntityMirror {
             ids: original_path_ids, ..
         })
@@ -1327,6 +1571,7 @@ fn artifacts_to_update(
                     };
                     Path {
                         id: path_id,
+                        sub_type: original_path.sub_type,
                         plane_id: original_path.plane_id,
                         seg_ids: Vec::new(),
                         sweep_id: None,
@@ -1334,8 +1579,11 @@ fn artifacts_to_update(
                         solid2d_id: None,
                         code_ref: code_ref.clone(),
                         composite_solid_id: None,
+                        sketch_block_id: None,
+                        origin_path_id: original_path.origin_path_id,
                         inner_path_id: None,
                         outer_path_id: None,
+                        pattern_ids: Vec::new(),
                         consumed: false,
                     }
                 };
@@ -1399,6 +1647,7 @@ fn artifacts_to_update(
                 trajectory_id: None,
                 method,
                 consumed: false,
+                pattern_ids: Vec::new(),
             }));
             let path = artifacts.get(&target);
             if let Some(Artifact::Path(path)) = path {
@@ -1434,6 +1683,7 @@ fn artifacts_to_update(
                 trajectory_id: Some(trajectory),
                 method,
                 consumed: false,
+                pattern_ids: Vec::new(),
             }));
             let path = artifacts.get(&target);
             if let Some(Artifact::Path(path)) = path {
@@ -1506,6 +1756,7 @@ fn artifacts_to_update(
                 trajectory_id,
                 method: kittycad_modeling_cmds::shared::ExtrudeMethod::New,
                 consumed: false,
+                pattern_ids: Vec::new(),
             })];
             return Ok(return_arr);
         }
@@ -1531,6 +1782,7 @@ fn artifacts_to_update(
                 trajectory_id: None,
                 method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
                 consumed: false,
+                pattern_ids: Vec::new(),
             }));
             for section_id in &loft_cmd.section_ids {
                 let path = artifacts.get(&ArtifactId::new(*section_id));
@@ -1773,10 +2025,12 @@ fn artifacts_to_update(
                 id,
                 consumed: false,
                 sub_type: CompositeSolidSubType::Union,
+                output_index: None,
                 solid_ids: cmd.object_ids.iter().map(|id| id.into()).collect(),
                 tool_ids: vec![],
                 code_ref,
                 composite_solid_id: None,
+                pattern_ids: Vec::new(),
             }));
 
             let solid_ids = cmd.object_ids.iter().copied().map(ArtifactId::new).collect::<Vec<_>>();
@@ -1871,10 +2125,9 @@ fn artifacts_to_update(
             return Ok(return_arr);
         }
         ModelingCmd::EntityMakeHelixFromEdge(helix) => {
-            let edge_id = ArtifactId::new(helix.edge_id);
             let return_arr = vec![Artifact::Helix(Helix {
                 id,
-                axis_id: Some(edge_id),
+                axis_id: helix.edge_id.map(ArtifactId::new),
                 code_ref,
                 trajectory_sweep_id: None,
                 consumed: false,
@@ -1978,10 +2231,12 @@ fn artifacts_to_update(
                     id: *solid_id,
                     consumed: false,
                     sub_type,
+                    output_index: None,
                     solid_ids: solid_ids.clone(),
                     tool_ids: tool_ids.clone(),
                     code_ref: code_ref.clone(),
                     composite_solid_id: None,
+                    pattern_ids: Vec::new(),
                 }));
 
                 // Update the artifacts that were used as input for this composite solid
@@ -2031,6 +2286,77 @@ fn artifacts_to_update(
 
                                 // We want to mark any sweeps of the path used in this operation
                                 // as consumed. The path itself is already consumed by sweeping
+                                if let Some(sweep_id) = new_path.sweep_id
+                                    && let Some(Artifact::Sweep(sweep)) = artifacts.get(&sweep_id)
+                                {
+                                    let mut new_sweep = sweep.clone();
+                                    new_sweep.consumed = true;
+                                    return_arr.push(Artifact::Sweep(new_sweep));
+                                }
+
+                                return_arr.push(Artifact::Path(new_path));
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+            }
+
+            return Ok(return_arr);
+        }
+        ModelingCmd::BooleanImprint(imprint) => {
+            let solid_ids = imprint
+                .body_ids
+                .iter()
+                .copied()
+                .map(ArtifactId::new)
+                .collect::<Vec<_>>();
+            let tool_ids = imprint
+                .tool_ids
+                .as_ref()
+                .map(|ids| ids.iter().copied().map(ArtifactId::new).collect::<Vec<_>>())
+                .unwrap_or_default();
+
+            let mut new_solid_ids = vec![id];
+            let not_cmd_id = move |solid_id: &ArtifactId| *solid_id != id;
+            if let Some(OkModelingCmdResponse::BooleanImprint(imprint)) = response {
+                imprint
+                    .extra_solid_ids
+                    .iter()
+                    .copied()
+                    .map(ArtifactId::new)
+                    .filter(not_cmd_id)
+                    .for_each(|id| new_solid_ids.push(id));
+            }
+
+            let mut return_arr = Vec::new();
+
+            for (output_index, solid_id) in new_solid_ids.iter().enumerate() {
+                return_arr.push(Artifact::CompositeSolid(CompositeSolid {
+                    id: *solid_id,
+                    consumed: false,
+                    sub_type: CompositeSolidSubType::Split,
+                    output_index: Some(output_index),
+                    solid_ids: solid_ids.clone(),
+                    tool_ids: tool_ids.clone(),
+                    code_ref: code_ref.clone(),
+                    composite_solid_id: None,
+                    pattern_ids: Vec::new(),
+                }));
+
+                for input_id in solid_ids.iter().chain(tool_ids.iter()) {
+                    if let Some(artifact) = artifacts.get(input_id) {
+                        match artifact {
+                            Artifact::CompositeSolid(comp) => {
+                                let mut new_comp = comp.clone();
+                                new_comp.composite_solid_id = Some(*solid_id);
+                                new_comp.consumed = true;
+                                return_arr.push(Artifact::CompositeSolid(new_comp));
+                            }
+                            Artifact::Path(path) => {
+                                let mut new_path = path.clone();
+                                new_path.composite_solid_id = Some(*solid_id);
+
                                 if let Some(sweep_id) = new_path.sweep_id
                                     && let Some(Artifact::Sweep(sweep)) = artifacts.get(&sweep_id)
                                 {

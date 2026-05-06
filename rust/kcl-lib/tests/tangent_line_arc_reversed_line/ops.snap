@@ -206,6 +206,134 @@ description: Operations executed tangent_line_arc_reversed_line.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "fixed",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": 10.0,
+                  "ty": {
+                    "mm": null,
+                    "type": "Known",
+                    "type": "Length"
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "mm": null,
+                    "type": "Known",
+                    "type": "Length"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 2
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "fixed",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": -10.0,
+                  "ty": {
+                    "mm": null,
+                    "type": "Known",
+                    "type": "Length"
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "mm": null,
+                    "type": "Known",
+                    "type": "Length"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 3
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "radius",
       "unlabeledArg": {
         "value": {
@@ -231,7 +359,7 @@ description: Operations executed tangent_line_arc_reversed_line.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 6
+            "index": 4
           },
           {
             "type": "ExpressionStatementExpr"
@@ -278,7 +406,7 @@ description: Operations executed tangent_line_arc_reversed_line.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 8
+            "index": 6
           },
           {
             "type": "ExpressionStatementExpr"

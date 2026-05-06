@@ -5,6 +5,7 @@ use std::f64;
 
 use anyhow::Result;
 use indexmap::IndexMap;
+use itertools::Itertools;
 use kcl_error::SourceRange;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
@@ -15,6 +16,7 @@ use kcmc::shared::Point3d as KPoint3d; // Point3d is already defined in this pkg
 use kcmc::websocket::ModelingCmdReq;
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::shared::PathSegment;
+use kittycad_modeling_cmds::shared::RegionVersion;
 use kittycad_modeling_cmds::units::UnitLength;
 use parse_display::Display;
 use parse_display::FromStr;
@@ -41,6 +43,7 @@ use crate::execution::ExecState;
 use crate::execution::GeoMeta;
 use crate::execution::Geometry;
 use crate::execution::KclValue;
+use crate::execution::KclVersion;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Path;
 use crate::execution::Plane;
@@ -1165,6 +1168,17 @@ pub async fn ensure_sketch_plane_in_engine(
         }
     }
 
+    // Regenerate the plane's UUID using the current module's IdGenerator so
+    // that each module gets its own engine entity. The prelude defines standard
+    // planes (XY, XZ, YZ) once with a single UUID; without this, every module
+    // that imports one of those planes would send the same UUID to the engine,
+    // causing a duplicate-ID error when execution caching keeps the scene alive
+    // across incremental runs. Modules execute concurrently, so they cannot
+    // generally share information.
+    let id = exec_state.next_uuid();
+    plane.id = id;
+    plane.artifact_id = id.into();
+
     let clobber = false;
     let size = LengthUnit(60.0);
     let hide = Some(true);
@@ -1258,9 +1272,9 @@ pub(crate) async fn create_sketch(
             // Flush the batch for our fillets/chamfers if there are any.
             // If we do not do these for sketch on face, things will fail with face does not exist.
             exec_state
-                .flush_batch_for_solids(
+                .flush_batch_for_face_parent_solids(
                     ModelingCmdMeta::new(exec_state, ctx, source_range),
-                    &[(*face.solid).clone()],
+                    std::slice::from_ref(&face.parent_solid),
                 )
                 .await?;
         }
@@ -1349,6 +1363,7 @@ pub(crate) async fn create_sketch(
         id: path_id,
         original_id: path_id,
         artifact_id: path_id.into(),
+        origin_sketch_id: None,
         on: sketch_surface,
         paths: vec![],
         inner_paths: vec![],
@@ -2966,6 +2981,11 @@ async fn inner_region(
     args: Args,
 ) -> Result<KclValue, KclError> {
     let region_id = exec_state.next_uuid();
+    let kcl_version = exec_state.kcl_version();
+    let region_version = match kcl_version {
+        KclVersion::V1 => RegionVersion::V0,
+        KclVersion::V2 => RegionVersion::V1,
+    };
 
     let (sketch_or_segment, region_mapping) = match (point, segments) {
         (Some(point), None) => {
@@ -2979,6 +2999,7 @@ async fn inner_region(
                         mcmd::CreateRegionFromQueryPoint::builder()
                             .object_id(sketch.sketch()?.id)
                             .query_point(KPoint2d::from(point_to_mm(pt.clone())).map(LengthUnit))
+                            .version(region_version)
                             .build(),
                     ),
                 )
@@ -3044,6 +3065,7 @@ async fn inner_region(
                             .intersection_segment(seg1.id)
                             .intersection_index(intersection_index)
                             .curve_clockwise(direction.is_clockwise())
+                            .version(region_version)
                             .build(),
                     ),
                 )
@@ -3111,6 +3133,7 @@ async fn inner_region(
                     id: region_id,
                     original_id: region_id,
                     artifact_id: region_id.into(),
+                    origin_sketch_id: None,
                     on: segment.surface.clone(),
                     paths: vec![first_path],
                     inner_paths: vec![],
@@ -3126,6 +3149,7 @@ async fn inner_region(
             }
         }
     };
+    sketch.origin_sketch_id = Some(sketch.id);
     sketch.id = region_id;
     sketch.original_id = region_id;
     sketch.artifact_id = region_id.into();
@@ -3153,6 +3177,33 @@ async fn inner_region(
                 }
             }
         }
+
+        // After mirror2d, sketch.paths still has the original (pre-mirror)
+        // segment IDs. The region_mapping values are mirrored entity edge
+        // IDs which don't match, so the remapping above produces no paths.
+        // Fall back to creating paths from the region_mapping keys directly.
+        if new_paths.is_empty() && !region_mapping.is_empty() {
+            // Sort because the input order is undefined. We need to be
+            // deterministic.
+            for region_edge_id in region_mapping.keys().sorted_unstable() {
+                // We don't know what the actual values are. We just need
+                // something so that `do_post_extrude()` has the correct segment
+                // IDs.
+                new_paths.push(Path::ToPoint {
+                    base: BasePath {
+                        from: [0.0, 0.0],
+                        to: [0.0, 0.0],
+                        units,
+                        tag: None,
+                        geo_meta: GeoMeta {
+                            id: *region_edge_id,
+                            metadata: args.source_range.into(),
+                        },
+                    },
+                });
+            }
+        }
+
         sketch.paths = new_paths;
 
         for (_tag_name, tag) in &mut sketch.tags {
@@ -3175,6 +3226,13 @@ async fn inner_region(
                 }
             }
         }
+    }
+
+    // After mirror2d, sketch.mirror holds an edge from the mirrored entity
+    // which is not valid on the region. Update it to a region edge so that
+    // do_post_extrude can use it for Solid3dGetExtrusionFaceInfo.
+    if sketch.mirror.is_some() {
+        sketch.mirror = sketch.paths.first().map(|p| p.get_id());
     }
 
     sketch.meta.push(args.source_range.into());

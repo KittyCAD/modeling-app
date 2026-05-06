@@ -495,6 +495,85 @@ description: Operations executed sketch_block_region_from_point2d_in_triangle.kc
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "region",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "point": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Number",
+                "value": 3.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "Number",
+                "value": 0.1,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "sketch": {
+          "value": {
+            "type": "Object",
+            "value": {
+              "line1": {
+                "type": "Segment",
+                "artifact_id": "[uuid]"
+              },
+              "line2": {
+                "type": "Segment",
+                "artifact_id": "[uuid]"
+              },
+              "line3": {
+                "type": "Segment",
+                "artifact_id": "[uuid]"
+              },
+              "meta": {
+                "type": "Object",
+                "value": {
+                  "sketch": {
+                    "type": "Sketch",
+                    "value": {
+                      "artifactId": "[uuid]"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
     }
   ],
   "std::math": [

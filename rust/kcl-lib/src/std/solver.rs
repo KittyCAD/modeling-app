@@ -279,7 +279,7 @@ pub(crate) async fn create_segments_in_engine(
                 let units = center_ty.as_length().unwrap_or(UnitLength::Millimeters);
                 let from = start_in_center_unit;
 
-                let id = exec_state.next_uuid();
+                let id = segment.id;
 
                 exec_state
                     .batch_modeling_cmd(

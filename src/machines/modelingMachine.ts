@@ -30,6 +30,7 @@ import {
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type {
+  ApiObject,
   SceneGraphDelta,
   SketchCtor,
 } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -102,6 +103,7 @@ import {
   startSketchOnDefault,
   splitPipedProfile,
 } from '@src/lang/modifyAst'
+import { sketchBlockOnExtrudedFace } from '@src/lang/modifyAst/legacySketchFace'
 import {
   addIntersect,
   addSplit,
@@ -119,6 +121,12 @@ import {
   addHole,
 } from '@src/lang/modifyAst/faces'
 import { addHelix } from '@src/lang/modifyAst/geometry'
+import {
+  addHelicalGear,
+  addHerringboneGear,
+  addRingGear,
+  addSpurGear,
+} from '@src/lang/modifyAst/gears'
 import {
   addExtrude,
   addLoft,
@@ -154,6 +162,8 @@ import {
   getPathsFromArtifact,
   getPathsFromPlaneArtifact,
   getPlaneFromArtifact,
+  isFaceFromLegacySketch,
+  getSketchBlockArtifactForPathToNode,
 } from '@src/lang/std/artifactGraph'
 import {
   crossProduct,
@@ -217,6 +227,190 @@ import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import { toPlaneName } from '@src/lib/planes'
 
+function sourceRangesEqual(
+  a: [number, number, number],
+  b: [number, number, number]
+) {
+  return a[0] === b[0] && a[1] === b[1] && a[2] === b[2]
+}
+
+function sourceRangeForPath(
+  ast: Node<Program>,
+  pathToNode: PathToNode,
+  wasmInstance: ModuleType
+): [number, number, number] | Error {
+  const nodeResult = getNodeFromPath<any>(ast, pathToNode, wasmInstance)
+  if (err(nodeResult)) return nodeResult
+  const { node } = nodeResult
+  return [node.start, node.end, node.moduleId]
+}
+
+function findSceneObjectForPlaneSelection(
+  sceneGraphObjects: ApiObject[],
+  plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane,
+  program: Node<Program>,
+  wasmInstance: ModuleType
+): ApiObject | undefined {
+  const selectedArtifactId =
+    plane.type === 'extrudeFace' ? plane.faceId : plane.planeId
+  const selectedByArtifactId = sceneGraphObjects.find(
+    (object) => object.artifact_id === selectedArtifactId
+  )
+  if (selectedByArtifactId) return selectedByArtifactId
+
+  if (plane.type !== 'extrudeFace') return undefined
+
+  const sweepRange = sourceRangeForPath(
+    program,
+    plane.extrudePathToNode,
+    wasmInstance
+  )
+  if (err(sweepRange)) return undefined
+
+  if (plane.faceInfo.type === 'cap') {
+    const capKind = plane.faceInfo.subType
+    return sceneGraphObjects.find(
+      (object) =>
+        object.kind.type === 'Cap' &&
+        object.kind.kind === capKind &&
+        object.source.type === 'BackTrace' &&
+        object.source.ranges.length === 1 &&
+        sourceRangesEqual(object.source.ranges[0][0], sweepRange)
+    )
+  }
+
+  const segmentRange = sourceRangeForPath(
+    program,
+    plane.sketchPathToNode,
+    wasmInstance
+  )
+  if (err(segmentRange)) return undefined
+
+  return sceneGraphObjects.find(
+    (object) =>
+      object.kind.type === 'Wall' &&
+      object.source.type === 'BackTrace' &&
+      object.source.ranges.length === 2 &&
+      sourceRangesEqual(object.source.ranges[0][0], sweepRange) &&
+      sourceRangesEqual(object.source.ranges[1][0], segmentRange)
+  )
+}
+
+async function enterSketchSolveFromSketchBlockArtifact({
+  sketchBlockArtifact,
+  kclManager,
+  rustContext,
+  engineCommandManager,
+  defaultUnit,
+  projectRef,
+  wasmInstance,
+}: {
+  sketchBlockArtifact: Extract<Artifact, { type: 'sketchBlock' }>
+  kclManager: KclManager
+  rustContext: RustContext
+  engineCommandManager: ConnectionManager
+  defaultUnit?: ModelingMachineContext['store']['defaultUnit']
+  projectRef?: { current: Project | undefined }
+  wasmInstance: ModuleType
+}): Promise<{
+  plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane
+  sketchSolveId: number
+  initialSceneGraphDelta: SceneGraphDelta
+}> {
+  if (typeof sketchBlockArtifact.sketchId !== 'number') {
+    const errorMessage = 'SketchBlock does not have a sketchId'
+    toast.error(errorMessage)
+    return reject(new Error(errorMessage))
+  }
+
+  const systemDeps = {
+    sceneInfra: kclManager.sceneInfra,
+    rustContext,
+    sceneEntitiesManager: kclManager.sceneEntitiesManager,
+    ast: kclManager.ast,
+    execState: kclManager.execState,
+    wasmInstance,
+  }
+
+  const planeData = await getPlaneDataFromSketchBlock(
+    sketchBlockArtifact,
+    kclManager.artifactGraph,
+    systemDeps
+  )
+  if (!planeData) {
+    const errorMessage = 'Could not determine plane/face information'
+    toast.error(errorMessage)
+    return reject(new Error(errorMessage))
+  }
+
+  const id =
+    planeData.type === 'extrudeFace' ? planeData.faceId : planeData.planeId
+  await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+  kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
+
+  const project = projectRef?.current
+  if (!project) {
+    console.warn('No project available for editSketch call')
+  }
+
+  let editSketchResult:
+    | {
+        sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
+      }
+    | undefined
+  try {
+    await rustContext.clearSketchCheckpoints()
+    await rustContext.hackSetProgram(
+      kclManager.ast,
+      jsAppSettings(rustContext.settingsActor)
+    )
+    editSketchResult = await rustContext.editSketch(
+      0,
+      0,
+      0,
+      sketchBlockArtifact.sketchId,
+      {
+        settings: {
+          modeling: { base_unit: defaultUnit?.current ?? 'mm' },
+        },
+      }
+    )
+    if (!editSketchResult) {
+      const errorMessage = 'Failed to edit sketch'
+      toast.error(errorMessage)
+      return reject(new Error(errorMessage))
+    }
+    kclManager.updateCodeEditor(
+      kclManager.code,
+      {
+        shouldAddToHistory: false,
+        shouldWriteToDisk: false,
+      },
+      {
+        sketchCheckpointId: editSketchResult.checkpointId ?? null,
+      }
+    )
+  } catch (error) {
+    console.error('Error calling editSketch:', error)
+    return reject(
+      error instanceof Error ? error : new Error('Failed to edit sketch')
+    )
+  }
+
+  if (!editSketchResult) {
+    const errorMessage = 'Failed to edit sketch'
+    toast.error(errorMessage)
+    return reject(new Error(errorMessage))
+  }
+
+  return {
+    plane: planeData,
+    sketchSolveId: sketchBlockArtifact.sketchId,
+    initialSceneGraphDelta: editSketchResult.sceneGraphDelta,
+  }
+}
+
 export type ModelingMachineEvent =
   | {
       type: 'Enter sketch'
@@ -233,6 +427,10 @@ export type ModelingMachineEvent =
   | {
       type: 'Select sketch solve plane'
       data: ArtifactId
+    }
+  | {
+      type: 'Edit sketch solve'
+      data: { artifactId: ArtifactId }
     }
   | {
       type: 'Set selection'
@@ -309,6 +507,13 @@ export type ModelingMachineEvent =
   | { type: 'Blend'; data?: ModelingCommandSchema['Blend'] }
   | { type: 'Offset plane'; data: ModelingCommandSchema['Offset plane'] }
   | { type: 'Helix'; data: ModelingCommandSchema['Helix'] }
+  | { type: 'Helical Gear'; data?: ModelingCommandSchema['Helical Gear'] }
+  | {
+      type: 'Herringbone Gear'
+      data?: ModelingCommandSchema['Herringbone Gear']
+    }
+  | { type: 'Spur Gear'; data?: ModelingCommandSchema['Spur Gear'] }
+  | { type: 'Ring Gear'; data?: ModelingCommandSchema['Ring Gear'] }
   | { type: 'Text-to-CAD' }
   | { type: 'Prompt-to-edit'; data: ModelingCommandSchema['Prompt-to-edit'] }
   | {
@@ -427,21 +632,15 @@ export type ModelingMachineEvent =
   | {
       type: 'equip tool'
       data: { tool: EquipTool }
+      keepSelection?: boolean
     }
   | {
       type:
-        | 'coincident'
-        | 'Fixed'
-        | 'Tangent'
-        | 'LinesEqualLength'
-        | 'Vertical'
-        | 'Horizontal'
-        | 'Parallel'
-        | 'Perpendicular'
         | 'Dimension'
         | 'HorizontalDistance'
         | 'VerticalDistance'
         | 'construction'
+      keepSelection?: boolean
     }
   | { type: 'unequip tool' }
   | UpdateSketchOutcomeEvent
@@ -842,22 +1041,15 @@ export const modelingMachine = setup({
         if (event.type !== 'Add start point') return {}
 
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        kclManager.sceneEntitiesManager
-          .setupDraftSegment(
-            event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
-            event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
-            sketchDetails.planeNodePath,
-            sketchDetails.zAxis,
-            sketchDetails.yAxis,
-            sketchDetails.origin,
-            'line'
-          )
-          .then(() => {
-            return kclManager.updateEditorWithAstAndWriteToFile(
-              kclManager.ast,
-              { shouldAddToHistory: false }
-            )
-          })
+        kclManager.sceneEntitiesManager.setupDraftSegment(
+          event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
+          event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin,
+          'line'
+        )
         return {
           sketchDetails: {
             ...sketchDetails,
@@ -873,22 +1065,15 @@ export const modelingMachine = setup({
         if (event.type !== 'Continue existing profile') return {}
 
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        kclManager.sceneEntitiesManager
-          .setupDraftSegment(
-            event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
-            event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
-            sketchDetails.planeNodePath,
-            sketchDetails.zAxis,
-            sketchDetails.yAxis,
-            sketchDetails.origin,
-            'tangentialArc'
-          )
-          .then(() => {
-            return kclManager.updateEditorWithAstAndWriteToFile(
-              kclManager.ast,
-              { shouldAddToHistory: false }
-            )
-          })
+        kclManager.sceneEntitiesManager.setupDraftSegment(
+          event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
+          event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin,
+          'tangentialArc'
+        )
         return {
           sketchDetails: {
             ...sketchDetails,
@@ -1276,6 +1461,7 @@ export const modelingMachine = setup({
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
         shouldAddToHistory: false,
+        shouldWriteToDisk: false,
       })
     },
     'reset client scene mouse handlers': ({ context }) => {
@@ -1291,6 +1477,13 @@ export const modelingMachine = setup({
     },
     'clientToEngine cam sync direction': ({ context }) => {
       context.kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
+    },
+    'disable rotate for sketch solve mode': ({ context }) => {
+      // Sketch solve currently has sync issues with engine and trouble translating world space to sketch space,
+      // so block orbit input until those controls are synchronized.
+      // When that is the case, the hidden setting "allow orbit in sketch mode" will be shown to users.
+      context.kclManager.sceneInfra.camControls.enableRotate =
+        context.kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode
     },
     /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to faces only': ({ context }) => {
@@ -1577,12 +1770,13 @@ export const modelingMachine = setup({
           // If there are engine commands that need sent off, send them
           // TODO: This should be handled outside of an action as its own
           // actor, so that the system state is more controlled.
-          engineEvents &&
+          if (engineEvents) {
             engineEvents.forEach((event) => {
               engineCommandManager
                 .sendSceneCommand(event)
                 .catch(reportRejection)
             })
+          }
           updateSceneObjectColors()
 
           return {
@@ -2955,6 +3149,7 @@ export const modelingMachine = setup({
       }): Promise<{
         plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane
         sketchSolveId: number
+        initialSceneGraphDelta: SceneGraphDelta
       }> => {
         if (!input || !input.artifactOrPlaneId) {
           return reject(new Error('No artifact or plane ID provided.'))
@@ -3015,6 +3210,74 @@ export const modelingMachine = setup({
           return reject(new Error('Please select a valid sketch plane.'))
         }
 
+        const legacyExtrudeFaceTemporaryCompat: ExtrudeFacePlane | null =
+          result.type === 'extrudeFace' &&
+          result.faceInfo.type === 'wall' &&
+          isFaceFromLegacySketch(result.faceId, kclManager.artifactGraph)
+            ? result
+            : null
+
+        if (legacyExtrudeFaceTemporaryCompat) {
+          // Temporary compatibility branch for legacy sketch V1.
+          // Remove this once sketch-on-face always originates from sketch
+          // blocks and no longer needs a JS-side code mod before sketch solve.
+          const legacyFaceArtifact = kclManager.artifactGraph.get(
+            legacyExtrudeFaceTemporaryCompat.faceId
+          )
+          const legacyFaceCodeRef = legacyFaceArtifact
+            ? getFaceCodeRef(legacyFaceArtifact)
+            : null
+          if (!legacyFaceArtifact || !legacyFaceCodeRef) {
+            return reject(
+              new Error('Could not resolve the selected legacy face.')
+            )
+          }
+
+          const legacySketchBlock = sketchBlockOnExtrudedFace(
+            kclManager.ast,
+            {
+              artifact: legacyFaceArtifact,
+              codeRef: legacyFaceCodeRef,
+            },
+            legacyExtrudeFaceTemporaryCompat.sketchPathToNode,
+            legacyExtrudeFaceTemporaryCompat.extrudePathToNode,
+            kclManager.artifactGraph,
+            wasmInstance
+          )
+          if (err(legacySketchBlock)) {
+            return reject(new Error('Incompatible face, please try another'))
+          }
+
+          await updateModelingState(
+            legacySketchBlock.modifiedAst,
+            EXECUTION_TYPE_REAL,
+            kclManager,
+            {
+              focusPath: [legacySketchBlock.pathToNode],
+            }
+          )
+
+          const sketchBlockArtifact = getSketchBlockArtifactForPathToNode(
+            legacySketchBlock.pathToNode,
+            kclManager.artifactGraph
+          )
+          if (!sketchBlockArtifact) {
+            return reject(
+              new Error('Could not find the generated sketch block artifact.')
+            )
+          }
+
+          return enterSketchSolveFromSketchBlockArtifact({
+            sketchBlockArtifact,
+            kclManager,
+            rustContext,
+            engineCommandManager,
+            defaultUnit,
+            projectRef,
+            wasmInstance,
+          })
+        }
+
         // Call newSketch API
         const project = projectRef?.current
         if (!project) {
@@ -3038,13 +3301,16 @@ export const modelingMachine = setup({
             )
           }
 
-          const selectedArtifactId =
-            result.type === 'extrudeFace' ? result.faceId : result.planeId
-          const selectedSceneObject = setProgramOutcome.sceneGraph.objects.find(
-            (object) => object.artifact_id === selectedArtifactId
+          const selectedSceneObject = findSceneObjectForPlaneSelection(
+            setProgramOutcome.sceneGraph.objects,
+            result,
+            kclManager.ast,
+            wasmInstance
           )
 
           if (!selectedSceneObject) {
+            const selectedArtifactId =
+              result.type === 'extrudeFace' ? result.faceId : result.planeId
             return reject(
               new Error(
                 `Could not find SceneGraph object for artifact ${selectedArtifactId}.`
@@ -3057,30 +3323,51 @@ export const modelingMachine = setup({
           }
         }
 
-        const newSketchResult = await rustContext.newSketch(
-          0, // projectId - using 0 as placeholder
-          0, // fileId - using 0 as placeholder
-          0, // version - using 0 as placeholder
-          sketchArgs,
-          {
-            settings: {
-              modeling: { base_unit: defaultUnit?.current ?? 'mm' },
-            },
-          }
-        )
+        let newSketchResult
+        try {
+          await rustContext.clearSketchCheckpoints()
+          newSketchResult = await rustContext.newSketch(
+            0, // projectId - using 0 as placeholder
+            0, // fileId - using 0 as placeholder
+            0, // version - using 0 as placeholder
+            sketchArgs,
+            {
+              settings: {
+                modeling: { base_unit: defaultUnit?.current ?? 'mm' },
+              },
+            }
+          )
+        } catch (error) {
+          await rustContext.hackSetProgram(
+            kclManager.ast,
+            jsAppSettings(rustContext.settingsActor)
+          )
+          return reject(
+            error instanceof Error
+              ? error
+              : new Error('Failed to create sketch')
+          )
+        }
 
         const id =
           result.type === 'extrudeFace' ? result.faceId : result.planeId
         await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
 
         kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
-        kclManager.updateCodeEditor(newSketchResult.kclSource.text, {
-          shouldAddToHistory: false,
-        })
+        kclManager.updateCodeEditor(
+          newSketchResult.kclSource.text,
+          {
+            shouldAddToHistory: true,
+          },
+          {
+            sketchCheckpointId: newSketchResult.checkpointId ?? null,
+          }
+        )
 
         return {
           plane: result,
           sketchSolveId: newSketchResult.sketchId,
+          initialSceneGraphDelta: newSketchResult.sceneGraphDelta,
         }
       }
     ),
@@ -3116,15 +3403,7 @@ export const modelingMachine = setup({
           defaultUnit,
           projectRef,
         } = input
-
-        const systemDeps = {
-          sceneInfra: kclManager.sceneInfra,
-          rustContext,
-          sceneEntitiesManager: kclManager.sceneEntitiesManager,
-          ast: kclManager.ast,
-          execState: kclManager.execState,
-          wasmInstance: await kclManager.wasmInstancePromise,
-        }
+        const wasmInstance = await kclManager.wasmInstancePromise
 
         // Get the sketchBlock artifact from the artifact graph
         const artifact = kclManager.artifactGraph.get(artifactId)
@@ -3134,74 +3413,15 @@ export const modelingMachine = setup({
           return reject(new Error(errorMessage))
         }
 
-        if (typeof artifact.sketchId !== 'number') {
-          const errorMessage = 'SketchBlock does not have a sketchId'
-          toast.error(errorMessage)
-          return reject(new Error(errorMessage))
-        }
-
-        // Get plane/face data from the sketchBlock
-        const planeData = await getPlaneDataFromSketchBlock(
-          artifact,
-          kclManager.artifactGraph,
-          systemDeps
-        )
-        if (!planeData) {
-          const errorMessage = 'Could not determine plane/face information'
-          toast.error(errorMessage)
-          return reject(new Error(errorMessage))
-        }
-
-        const sketchId = artifact.sketchId
-
-        const id =
-          planeData.type === 'extrudeFace'
-            ? planeData.faceId
-            : planeData.planeId
-        await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
-        kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
-
-        // Call editSketch API
-        let editSketchSceneGraph: SceneGraphDelta | undefined
-        try {
-          const project = projectRef?.current
-          if (!project) {
-            console.warn('No project available for editSketch call')
-          } else {
-            await rustContext.hackSetProgram(
-              kclManager.ast,
-              jsAppSettings(rustContext.settingsActor)
-            )
-            editSketchSceneGraph = await rustContext.editSketch(
-              0, // projectId
-              0, // fileId
-              0, // version
-              sketchId,
-              {
-                settings: {
-                  modeling: { base_unit: defaultUnit?.current ?? 'mm' },
-                },
-              }
-            )
-            // Note: editSketch doesn't return kclSource, so we don't update the editor
-          }
-          if (!editSketchSceneGraph) {
-            const errorMessage = 'Failed to edit sketch'
-            toast.error(errorMessage)
-            return reject(new Error(errorMessage))
-          }
-        } catch (error) {
-          console.error('Error calling editSketch:', error)
-          return reject(
-            error instanceof Error ? error : new Error('Failed to edit sketch')
-          )
-        }
-
-        return {
-          plane: planeData,
-          sketchSolveId: sketchId,
-          initialSceneGraphDelta: editSketchSceneGraph,
-        }
+        return enterSketchSolveFromSketchBlockArtifact({
+          sketchBlockArtifact: artifact,
+          kclManager,
+          rustContext,
+          engineCommandManager,
+          defaultUnit,
+          projectRef,
+          wasmInstance,
+        })
       }
     ),
     'Get horizontal info': fromPromise(
@@ -3687,9 +3907,6 @@ export const modelingMachine = setup({
           data
         )
         if (err(result)) return reject(result)
-        await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
-          shouldAddToHistory: false,
-        })
 
         return result
       }
@@ -3715,9 +3932,6 @@ export const modelingMachine = setup({
             data.p2
           )
         if (err(result)) return reject(result)
-        await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
-          shouldAddToHistory: false,
-        })
 
         return result
       }
@@ -3742,9 +3956,6 @@ export const modelingMachine = setup({
             data
           )
         if (err(result)) return reject(result)
-        await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
-          shouldAddToHistory: false,
-        })
 
         return result
       }
@@ -3768,9 +3979,6 @@ export const modelingMachine = setup({
             data
           )
         if (err(result)) return reject(result)
-        await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
-          shouldAddToHistory: false,
-        })
 
         return result
       }
@@ -3793,9 +4001,6 @@ export const modelingMachine = setup({
           data
         )
         if (err(result)) return reject(result)
-        await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
-          shouldAddToHistory: false,
-        })
 
         return result
       }
@@ -3819,9 +4024,6 @@ export const modelingMachine = setup({
             data
           )
         if (err(result)) return reject(result)
-        await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
-          shouldAddToHistory: false,
-        })
 
         return result
       }
@@ -4156,6 +4358,222 @@ export const modelingMachine = setup({
           ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
+        }
+
+        const { modifiedAst, pathToNode } = astResult
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [pathToNode],
+          }
+        )
+      }
+    ),
+    helicalGearAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Helical Gear'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        let astWithNewSetting: Node<Program> | undefined
+        if (
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const ast = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            await input.kclManager.wasmInstancePromise
+          )
+          if (err(ast)) {
+            return Promise.reject(ast)
+          }
+
+          astWithNewSetting = ast
+        }
+
+        const astResult = addHelicalGear({
+          ...input.data,
+          ast: astWithNewSetting ?? input.kclManager.ast,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
+        }
+
+        const { modifiedAst, pathToNode } = astResult
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [pathToNode],
+          }
+        )
+      }
+    ),
+    herringboneGearAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Herringbone Gear'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        let astWithNewSetting: Node<Program> | undefined
+        if (
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const ast = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            await input.kclManager.wasmInstancePromise
+          )
+          if (err(ast)) {
+            return Promise.reject(ast)
+          }
+
+          astWithNewSetting = ast
+        }
+
+        const astResult = addHerringboneGear({
+          ...input.data,
+          ast: astWithNewSetting ?? input.kclManager.ast,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
+        }
+
+        const { modifiedAst, pathToNode } = astResult
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [pathToNode],
+          }
+        )
+      }
+    ),
+    spurGearAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Spur Gear'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        let astWithNewSetting: Node<Program> | undefined
+        if (
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const ast = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            await input.kclManager.wasmInstancePromise
+          )
+          if (err(ast)) {
+            return Promise.reject(ast)
+          }
+
+          astWithNewSetting = ast
+        }
+
+        const astResult = addSpurGear({
+          ...input.data,
+          ast: astWithNewSetting ?? input.kclManager.ast,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
+        }
+
+        const { modifiedAst, pathToNode } = astResult
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [pathToNode],
+          }
+        )
+      }
+    ),
+    ringGearAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Ring Gear'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        let astWithNewSetting: Node<Program> | undefined
+        if (
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const ast = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            await input.kclManager.wasmInstancePromise
+          )
+          if (err(ast)) {
+            return Promise.reject(ast)
+          }
+
+          astWithNewSetting = ast
+        }
+
+        const astResult = addRingGear({
+          ...input.data,
+          ast: astWithNewSetting ?? input.kclManager.ast,
           wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(astResult)) {
@@ -5363,6 +5781,14 @@ export const modelingMachine = setup({
   states: {
     idle: {
       on: {
+        'Edit sketch solve': {
+          target: 'animating to existing sketch solve',
+          actions: [
+            ({ context }) => {
+              context.kclManager.sceneInfra.animate()
+            },
+          ],
+        },
         'Enter sketch': [
           {
             target: 'animating to existing sketch solve',
@@ -5416,6 +5842,22 @@ export const modelingMachine = setup({
 
         Helix: {
           target: 'Applying helix',
+        },
+
+        'Helical Gear': {
+          target: 'Applying helical gear',
+        },
+
+        'Herringbone Gear': {
+          target: 'Applying herringbone gear',
+        },
+
+        'Spur Gear': {
+          target: 'Applying spur gear',
+        },
+
+        'Ring Gear': {
+          target: 'Applying ring gear',
         },
 
         Shell: {
@@ -6919,7 +7361,10 @@ export const modelingMachine = setup({
 
     sketchSolveMode: {
       id: 'sketchSolveMode',
-      entry: ['clientToEngine cam sync direction'],
+      entry: [
+        'clientToEngine cam sync direction',
+        'disable rotate for sketch solve mode',
+      ],
       initial: 'active',
       states: {
         active: {
@@ -6939,30 +7384,6 @@ export const modelingMachine = setup({
               actions: ['forward event to sketch solve if active'],
             },
             'unequip tool': {
-              actions: ['forward event to sketch solve if active'],
-            },
-            coincident: {
-              actions: ['forward event to sketch solve if active'],
-            },
-            Fixed: {
-              actions: ['forward event to sketch solve if active'],
-            },
-            Tangent: {
-              actions: ['forward event to sketch solve if active'],
-            },
-            Parallel: {
-              actions: ['forward event to sketch solve if active'],
-            },
-            Perpendicular: {
-              actions: ['forward event to sketch solve if active'],
-            },
-            LinesEqualLength: {
-              actions: ['forward event to sketch solve if active'],
-            },
-            Vertical: {
-              actions: ['forward event to sketch solve if active'],
-            },
-            Horizontal: {
               actions: ['forward event to sketch solve if active'],
             },
             Dimension: {
@@ -7008,10 +7429,7 @@ export const modelingMachine = setup({
           invoke: {
             id: 'sketchExit',
             src: 'sketchExit',
-            input: ({ context }) => {
-              console.log('sketchExit actor input prepared')
-              return { context }
-            },
+            input: ({ context }) => ({ context }),
             onDone: {
               target: '#Modeling.idle',
               actions: ['reset sketch metadata'],
@@ -7132,6 +7550,86 @@ export const modelingMachine = setup({
         id: 'helixAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'Helix') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying helical gear': {
+      invoke: {
+        src: 'helicalGearAstMod',
+        id: 'helicalGearAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Helical Gear') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying herringbone gear': {
+      invoke: {
+        src: 'herringboneGearAstMod',
+        id: 'herringboneGearAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Herringbone Gear') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying spur gear': {
+      invoke: {
+        src: 'spurGearAstMod',
+        id: 'spurGearAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Spur Gear') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying ring gear': {
+      invoke: {
+        src: 'ringGearAstMod',
+        id: 'ringGearAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Ring Gear') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,
@@ -7695,6 +8193,8 @@ export const modelingMachine = setup({
               // Pipe the plane/face data from the actor into context
               sketchSolveInit: output?.plane ?? null,
               sketchSolveId: output?.sketchSolveId ?? undefined,
+              initialSceneGraphDelta:
+                output?.initialSceneGraphDelta ?? dummyInitSketchGraphDelta,
             }
           }),
         },
@@ -7721,6 +8221,16 @@ export const modelingMachine = setup({
       invoke: {
         src: 'animate-to-existing-sketch-solve',
         input: ({ event, context }) => {
+          if (event.type === 'Edit sketch solve') {
+            return {
+              artifactId: event.data.artifactId,
+              kclManager: context.kclManager,
+              rustContext: context.rustContext,
+              engineCommandManager: context.engineCommandManager,
+              defaultUnit: context.store.defaultUnit,
+              projectRef: context.projectRef,
+            }
+          }
           if (event.type === 'Enter sketch') {
             // Get artifact ID from selection
             const artifact =
@@ -7804,7 +8314,6 @@ export const modelingMachine = setup({
     'sketch solve tool changed': {
       reenter: false,
       actions: assign(({ event }) => {
-        console.log('sketch solve tool changed', event)
         if (event.type !== 'sketch solve tool changed') return {}
         return {
           sketchSolveToolName: event.data.tool,

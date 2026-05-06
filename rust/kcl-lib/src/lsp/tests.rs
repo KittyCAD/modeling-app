@@ -751,9 +751,7 @@ async fn test_sketch_block_completion_unqualifies_sketch2_function() {
                 uri: "file:///test.kcl".try_into().unwrap(),
                 language_id: "kcl".to_string(),
                 version: 1,
-                text: r#"@settings(experimentalFeatures = allow)
-
-profile = sketch(on = XY) {
+                text: r#"profile = sketch(on = XY) {
   co
 }"#
                 .to_string(),
