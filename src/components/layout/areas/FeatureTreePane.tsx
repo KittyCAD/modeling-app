@@ -53,6 +53,10 @@ import {
   sendDeleteCommand,
   sendSelectionEvent,
 } from '@src/lib/featureTree'
+import {
+  getUnrenderedChangesDisabledReason,
+  shouldDisableModelingForUnrenderedChanges,
+} from '@src/lib/automaticRendering'
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
@@ -111,7 +115,8 @@ function openCodePane(layout: Layout, setLayout: (l: Layout) => void) {
 
 export const FeatureTreePaneContents = memo(() => {
   useSignals()
-  const { layout, commands } = useApp()
+  const { layout, commands, settings } = useApp()
+  const settingsValues = settings.useSettings()
   const { kclManager } = useSingletons()
   const { engineCommandManager, rustContext } = kclManager
   const {
@@ -143,6 +148,12 @@ export const FeatureTreePaneContents = memo(() => {
 
   const sketchNoFace = modelingState.matches('Sketch no face')
   const hasParseErrors = kclManager.hasParseErrors()
+  const disableModelingForUnrenderedChanges =
+    shouldDisableModelingForUnrenderedChanges({
+      settings: settingsValues,
+      hasEditsSinceLastExecution:
+        kclManager.hasEditsSinceLastExecutionSignal.value,
+    })
   const diagnostics = kclManager.diagnosticsSignal.value
   const parseDiagnostics = hasParseErrors
     ? diagnostics.filter((diagnostic) => diagnostic.severity === 'error')
@@ -168,7 +179,11 @@ export const FeatureTreePaneContents = memo(() => {
   // editor.
   const operationsCode = hasParseErrors
     ? kclManager.lastSuccessfulCode || kclManager.codeSignal.value
-    : kclManager.codeSignal.value
+    : disableModelingForUnrenderedChanges
+      ? kclManager.lastSuccessfulCode || kclManager.codeSignal.value
+      : kclManager.codeSignal.value
+  const isReadOnlyFeatureTree =
+    hasParseErrors || disableModelingForUnrenderedChanges
 
   // We filter out operations that are not useful to show in the feature tree
   const operationList = groupSketchBlockOperations(
@@ -208,7 +223,20 @@ export const FeatureTreePaneContents = memo(() => {
         ) : (
           <>
             {!modelingState.matches('Sketch') && (
-              <DefaultPlanes systemDeps={systemDeps} />
+              <DefaultPlanes
+                systemDeps={systemDeps}
+                disabled={disableModelingForUnrenderedChanges}
+              />
+            )}
+            {disableModelingForUnrenderedChanges && !hasParseErrors && (
+              <div className="text-sm bg-warn-80 text-chalkboard-10 py-2 px-2 rounded flex flex-col gap-2 flex-none mb-2">
+                <p className="font-medium">
+                  Feature tree actions are disabled.
+                </p>
+                <p className="text-xs text-chalkboard-20">
+                  {getUnrenderedChangesDisabledReason()}
+                </p>
+              </div>
             )}
             {hasParseErrors && (
               <div className="text-sm bg-destroy-80 text-chalkboard-10 py-2 px-2 rounded flex flex-col gap-2 flex-none mb-2">
@@ -266,7 +294,7 @@ export const FeatureTreePaneContents = memo(() => {
                     key={sketchGroupKey}
                     items={opOrList}
                     code={operationsCode}
-                    isStaleReference={hasParseErrors}
+                    isStaleReference={isReadOnlyFeatureTree}
                     sketchNoFace={sketchNoFace}
                     systemDeps={systemDeps}
                     modelingActor={modelingActor}
@@ -281,7 +309,7 @@ export const FeatureTreePaneContents = memo(() => {
                   key={key}
                   items={opOrList}
                   code={operationsCode}
-                  isStaleReference={hasParseErrors}
+                  isStaleReference={isReadOnlyFeatureTree}
                   sketchNoFace={sketchNoFace}
                   systemDeps={systemDeps}
                   modelingActor={modelingActor}
@@ -293,7 +321,7 @@ export const FeatureTreePaneContents = memo(() => {
                   key={key}
                   item={opOrList}
                   code={operationsCode}
-                  isStaleReference={hasParseErrors}
+                  isStaleReference={isReadOnlyFeatureTree}
                   sketchNoFace={sketchNoFace}
                   systemDeps={systemDeps}
                   modelingActor={modelingActor}
@@ -1075,7 +1103,13 @@ const OperationItem = ({
   )
 }
 
-const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
+const DefaultPlanes = ({
+  systemDeps,
+  disabled = false,
+}: {
+  systemDeps: SystemDeps
+  disabled?: boolean
+}) => {
   const { rustContext, sceneInfra, kclManager } = systemDeps
   const { state: modelingState, send } = useModelingContext()
   const sketchNoFace = modelingState.matches('Sketch no face')
@@ -1164,24 +1198,34 @@ const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
           customSuffix={plane.customSuffix}
           icon={'plane'}
           name={plane.name}
-          onClick={() => onClickPlane(plane.id)}
-          menuItems={[
-            <ContextMenuItem
-              onClick={() => startSketchOnDefaultPlane(plane.id)}
-            >
-              Start Sketch
-            </ContextMenuItem>,
-          ]}
-          visibilityToggle={{
-            visible: modelingState.context.defaultPlaneVisibility[plane.key],
-            onVisibilityChange: () => {
-              send({
-                type: 'Toggle default plane visibility',
-                planeId: plane.id,
-                planeKey: plane.key,
-              })
-            },
-          }}
+          disabled={disabled}
+          onClick={disabled ? undefined : () => onClickPlane(plane.id)}
+          menuItems={
+            disabled
+              ? undefined
+              : [
+                  <ContextMenuItem
+                    onClick={() => startSketchOnDefaultPlane(plane.id)}
+                  >
+                    Start Sketch
+                  </ContextMenuItem>,
+                ]
+          }
+          visibilityToggle={
+            disabled
+              ? undefined
+              : {
+                  visible:
+                    modelingState.context.defaultPlaneVisibility[plane.key],
+                  onVisibilityChange: () => {
+                    send({
+                      type: 'Toggle default plane visibility',
+                      planeId: plane.id,
+                      planeKey: plane.key,
+                    })
+                  },
+                }
+          }
         />
       ))}
       <div className="h-px bg-chalkboard-50/20 my-2" />

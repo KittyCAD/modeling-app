@@ -140,6 +140,7 @@ import {
 } from '@src/editor/plugins/theme'
 import { requestWriteToFile } from '@src/editor/plugins/write'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
+import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
 import type { App } from '@src/lib/app'
 import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
@@ -1149,11 +1150,9 @@ export class KclManager extends File {
   })
 
   private getAutomaticallyRenderSetting() {
-    const textEditorSettings = getSettingsFromActorContext(
-      this.systemDeps.settings
-    ).textEditor as Record<string, { current?: unknown }> | undefined
-
-    return textEditorSettings?.automaticallyRender?.current !== false
+    return getAutomaticallyRenderEnabledFromSettings(
+      getSettingsFromActorContext(this.systemDeps.settings)
+    )
   }
 
   private getExecutionExtension(

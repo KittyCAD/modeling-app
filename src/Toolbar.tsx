@@ -8,6 +8,10 @@ import { ActionButtonRecentDropdown } from '@src/components/ActionButtonRecentDr
 import { CustomIcon } from '@src/components/CustomIcon'
 import { LegacySketchModeBanner } from '@src/components/SketchSolveAnnouncements'
 import Tooltip from '@src/components/Tooltip'
+import {
+  getUnrenderedChangesDisabledReason,
+  shouldDisableModelingForUnrenderedChanges,
+} from '@src/lib/automaticRendering'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
@@ -51,10 +55,10 @@ import { isArray, type Platform } from '@src/lib/utils'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import usePlatform from '@src/hooks/usePlatform'
 
-type ToolbarProps = { isExecuting: boolean } & Omit<
-  ReturnType<typeof useModelingContext>,
-  'theProject'
-> &
+type ToolbarProps = {
+  isExecuting: boolean
+  disableModelingForUnrenderedChanges: boolean
+} & Omit<ReturnType<typeof useModelingContext>, 'theProject'> &
   Pick<
     ReturnType<typeof useNetworkContext>,
     'overallState' | 'immediateState'
@@ -101,6 +105,7 @@ const Toolbar_ = memo(
       (props.overallState !== NetworkHealthState.Ok &&
         props.overallState !== NetworkHealthState.Weak) ||
       props.isExecuting ||
+      props.disableModelingForUnrenderedChanges ||
       props.immediateState.type !==
         EngineConnectionStateType.ConnectionEstablished ||
       !props.isStreamReady ||
@@ -291,9 +296,11 @@ const Toolbar_ = memo(
               : maybeIconConfig.hotkey?.(props.state),
           disabled: isDisabled,
           disabledReason:
-            typeof maybeIconConfig.disabledReason === 'function'
-              ? maybeIconConfig.disabledReason(props.state)
-              : maybeIconConfig.disabledReason,
+            props.disableModelingForUnrenderedChanges && isDisabled
+              ? getUnrenderedChangesDisabledReason()
+              : typeof maybeIconConfig.disabledReason === 'function'
+                ? maybeIconConfig.disabledReason(props.state)
+                : maybeIconConfig.disabledReason,
           disableHotkey: maybeIconConfig.disableHotkey?.(props.state),
           status: maybeIconConfig.status,
           // Store the item-specific callback props for use in onClick handlers
@@ -980,10 +987,18 @@ const ToolbarItemTooltipRichContent = memo(
 // inside that causes a render anyway. Instead we memo the inner.
 export function Toolbar() {
   const { kclManager } = useSingletons()
+  const { settings } = useApp()
+  const settingsValues = settings.useSettings()
   const { state, send, context, actor } = useModelingContext()
   const { overallState, immediateState } = useNetworkContext()
   const { isStreamReady, isStreamAcceptingInput } = useAppState()
   useSignals()
+  const disableModelingForUnrenderedChanges =
+    shouldDisableModelingForUnrenderedChanges({
+      settings: settingsValues,
+      hasEditsSinceLastExecution:
+        kclManager.hasEditsSinceLastExecutionSignal.value,
+    })
 
   return (
     <Toolbar_
@@ -996,6 +1011,7 @@ export function Toolbar() {
       actor={actor}
       isStreamAcceptingInput={isStreamAcceptingInput}
       isExecuting={kclManager.isExecutingSignal.value}
+      disableModelingForUnrenderedChanges={disableModelingForUnrenderedChanges}
     />
   )
 }
