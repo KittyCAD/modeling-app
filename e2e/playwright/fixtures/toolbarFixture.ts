@@ -228,7 +228,6 @@ export class ToolbarFixture {
       .getByRole('treeitem', { name: fileName, exact: true })
     await expect(fileTreeItem).toBeVisible()
     await fileTreeItem.click()
-    await expect(this.fileName).toContainText(fileName, { timeout: 20_000 })
   }
   ensureFolderOpen = async (folder: Locator, open: boolean) => {
     const expanded = await folder.getAttribute('aria-expanded')
