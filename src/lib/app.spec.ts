@@ -4,7 +4,7 @@ import { App } from '@src/lib/app'
 import { File } from '@src/lang/KclManager'
 import type { Project } from '@src/lib/project'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
-import { codeEditorHeaderItemsValueSpec } from '@src/registry/contracts/codeEditor'
+import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { loadWasm } from '@src/unitTestUtils'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
@@ -139,10 +139,15 @@ describe('project system', () => {
         .find((plugin) => plugin.id === 'code-editor')
       expect(codeEditorPlugin).toBeDefined()
       expect(
-        app.registry
-          .get(codeEditorHeaderItemsValueSpec)
-          .some((item) => item.id === 'code-editor.render')
-      ).toBe(true)
+        app.registry.get(appHeaderItemsValueSpec).map((item) => item.id)
+      ).toEqual(
+        expect.arrayContaining([
+          'command-bar.open',
+          'code-editor.render',
+          'share.open',
+          'publish.open',
+        ])
+      )
       expect(
         app.registry.get(executingEditorService).hasEditsSinceLastExecution
           .value

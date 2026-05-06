@@ -1,17 +1,17 @@
 import { Registry, defineRegistryItem, provide } from '@kittycad/registry'
-import { codeEditorHeaderItemsValueSpec } from '@src/registry/contracts/codeEditor'
+import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import { describe, expect, it } from 'vitest'
 
 const FirstItem = () => null
 const SecondItem = () => null
 
-describe('code editor registry contract', () => {
+describe('app header registry contract', () => {
   it('allows extensions to contribute ordered header items', () => {
     const registry = new Registry()
     registry.configure([
       defineRegistryItem({
         provides: [
-          provide(codeEditorHeaderItemsValueSpec, {
+          provide(appHeaderItemsValueSpec, {
             id: 'second',
             order: 20,
             Component: SecondItem,
@@ -20,7 +20,7 @@ describe('code editor registry contract', () => {
       }),
       defineRegistryItem({
         provides: [
-          provide(codeEditorHeaderItemsValueSpec, {
+          provide(appHeaderItemsValueSpec, {
             id: 'first',
             order: 10,
             Component: FirstItem,
@@ -30,7 +30,7 @@ describe('code editor registry contract', () => {
     ])
 
     expect(
-      registry.get(codeEditorHeaderItemsValueSpec).map((item) => item.id)
+      registry.get(appHeaderItemsValueSpec).map((item) => item.id)
     ).toEqual(['first', 'second'])
   })
 })

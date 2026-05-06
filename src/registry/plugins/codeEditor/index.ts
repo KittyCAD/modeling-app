@@ -8,8 +8,8 @@ import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
-import type { CodeEditorHeaderItemProps } from '@src/registry/contracts/codeEditor'
-import { codeEditorHeaderItemsValueSpec } from '@src/registry/contracts/codeEditor'
+import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
+import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { reportRejection } from '@src/lib/trap'
@@ -21,9 +21,10 @@ type BooleanSettingSnapshot = {
 
 const RENDER_HOTKEY = 'mod+enter'
 
-function RenderHeaderItem({ app, className }: CodeEditorHeaderItemProps) {
+function RenderHeaderItem({ app, className }: AppHeaderItemProps) {
   useSignals()
   const platform = usePlatform()
+  const currentProject = app.projectSignal.value
   const enabled = useSelector(app.settings.actor, (state) => {
     const textEditorSettings = state.context.textEditor as Record<
       string,
@@ -55,7 +56,7 @@ function RenderHeaderItem({ app, className }: CodeEditorHeaderItemProps) {
     [executionService, hasEditsSinceLastExecution]
   )
 
-  if (enabled || !executionService) {
+  if (!currentProject || enabled || !executionService) {
     return null
   }
 
@@ -128,9 +129,9 @@ const codeEditorSettingsItem = defineRegistryItem({
   ],
 })
 
-const codeEditorHeaderItem = defineRegistryItem({
+const renderHeaderItem = defineRegistryItem({
   provides: [
-    provide(codeEditorHeaderItemsValueSpec, {
+    provide(appHeaderItemsValueSpec, {
       id: 'code-editor.render',
       order: 20,
       Component: RenderHeaderItem,
@@ -142,7 +143,7 @@ const codeEditor = createZdsPlugin({
   id: 'code-editor',
   title: 'Code editor',
   description: 'Code editor settings and behavior.',
-  items: [codeEditorSettingsItem, codeEditorHeaderItem],
+  items: [codeEditorSettingsItem, renderHeaderItem],
   defaultSetting: 'core',
 })
 

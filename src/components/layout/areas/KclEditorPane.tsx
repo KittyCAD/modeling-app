@@ -13,8 +13,6 @@ import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import usePlatform from '@src/hooks/usePlatform'
-import { codeEditorHeaderItemsValueSpec } from '@src/registry/contracts/codeEditor'
-import { useSignals } from '@preact/signals-react/runtime'
 
 type Singletons = ReturnType<typeof useSingletons>
 
@@ -38,7 +36,7 @@ export const KclEditorPane = (props: AreaTypeComponentProps) => {
         id={props.layout.id}
         icon="code"
         title={props.layout.label}
-        Menu={KclEditorHeaderControls}
+        Menu={KclEditorMenu}
         onClose={props.onClose}
       />
       <KclEditorPaneContents />
@@ -190,22 +188,5 @@ export const KclEditorMenu = () => {
         </a>
       </Menu.Item>
     </HeaderMenu>
-  )
-}
-
-export const KclEditorHeaderControls = () => {
-  useSignals()
-  const app = useApp()
-  const codeEditorHeaderItems = app.registry.signal(
-    codeEditorHeaderItemsValueSpec
-  ).value
-
-  return (
-    <>
-      {codeEditorHeaderItems.map(({ id, Component }) => (
-        <Component key={id} app={app} className={styles.headerItem} />
-      ))}
-      <KclEditorMenu />
-    </>
   )
 }
