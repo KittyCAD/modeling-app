@@ -83,6 +83,7 @@ import {
   Compartment,
   EditorSelection,
   EditorState,
+  type Extension,
   StateEffect,
   Transaction,
   type TransactionSpec,
@@ -1157,24 +1158,9 @@ export class KclManager extends File {
 
   private getExecutionExtension(
     shouldAutomaticallyRender = this.getAutomaticallyRenderSetting()
-  ) {
-    return shouldAutomaticallyRender
-      ? this.executeKclEffect
-      : this.manualRenderHotkeyEffect
+  ): Extension {
+    return shouldAutomaticallyRender ? this.executeKclEffect : []
   }
-
-  private manualRenderHotkeyEffect = keymap.of([
-    {
-      key: 'Mod-s',
-      run: () => {
-        if (this._hasEditsSinceLastExecution.value) {
-          this.executeCode().catch(reportRejection)
-        }
-        return true
-      },
-      preventDefault: true,
-    },
-  ])
 
   setEditorAutomaticallyRender(shouldAutomaticallyRender: boolean) {
     if (this._automaticallyRenderEnabled === shouldAutomaticallyRender) {

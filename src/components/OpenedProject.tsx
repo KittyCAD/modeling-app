@@ -222,14 +222,6 @@ export function OpenedProject() {
   )
 
   useHotkeyWrapper(
-    ['mod + s'],
-    () => {
-      toast.success('Your work is auto-saved in real-time.')
-    },
-    kclManager
-  )
-
-  useHotkeyWrapper(
     ['alt + shift + f'],
     () => {
       void kclManager.format()

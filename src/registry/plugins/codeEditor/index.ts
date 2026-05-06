@@ -1,11 +1,11 @@
 import { defineRegistryItem, provide } from '@kittycad/registry'
 import { createElement } from 'react'
 import { useSignals } from '@preact/signals-react/runtime'
-import { useHotkeys } from 'react-hotkeys-hook'
 import { useSelector } from '@xstate/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
+import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
@@ -14,6 +14,7 @@ import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { reportRejection } from '@src/lib/trap'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
+import toast from 'react-hot-toast'
 
 type BooleanSettingSnapshot = {
   current: boolean
@@ -25,35 +26,43 @@ function RenderHeaderItem({ app, className }: AppHeaderItemProps) {
   useSignals()
   const platform = usePlatform()
   const currentProject = app.projectSignal.value
-  const enabled = useSelector(app.settings.actor, (state) => {
-    const textEditorSettings = state.context.textEditor as Record<
-      string,
-      BooleanSettingSnapshot
-    >
-    return textEditorSettings.automaticallyRender.current
-  })
+  const automaticallyRenderEnabled = useSelector(
+    app.settings.actor,
+    (state) => {
+      const textEditorSettings = state.context.textEditor as Record<
+        string,
+        BooleanSettingSnapshot
+      >
+      return textEditorSettings.automaticallyRender.current
+    }
+  )
   const executionService = app.registry.signal(executingEditorService).value
   const hasEditsSinceLastExecution =
     executionService?.hasEditsSinceLastExecution.value ?? false
   const renderHotkeyLabel = hotkeyDisplay(RENDER_HOTKEY, platform)
 
-  useHotkeys(
-    RENDER_HOTKEY,
-    (event) => {
-      event.preventDefault()
-      if (!hasEditsSinceLastExecution) {
+  useHotkeyWrapper(
+    [RENDER_HOTKEY],
+    () => {
+      if (
+        !automaticallyRenderEnabled &&
+        hasEditsSinceLastExecution &&
+        executionService
+      ) {
+        executionService.executeCode().catch(reportRejection)
         return
       }
-      executionService?.executeCode().catch(reportRejection)
+
+      toast.success('Your work is auto-saved in real-time.')
     },
+    app.singletons.kclManager,
     {
-      enabled: !enabled && !!executionService,
-      preventDefault: true,
-    },
-    [executionService, hasEditsSinceLastExecution]
+      enabled: !!currentProject,
+      registerToCodeMirror: !!currentProject,
+    }
   )
 
-  if (!currentProject || enabled || !executionService) {
+  if (!currentProject || automaticallyRenderEnabled || !executionService) {
     return null
   }
 
