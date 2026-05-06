@@ -62,6 +62,7 @@ pub(crate) use state::ConstraintState;
 pub(crate) use state::ConsumedSolidInfo;
 pub(crate) use state::ConsumedSolidOperation;
 pub use state::ExecState;
+pub(crate) use state::KclVersion;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
 pub(crate) use state::TangencyMode;
@@ -3761,5 +3762,25 @@ s2 = sketch(on = XZ) {
         );
         assert_eq!(report.fully_constrained.len(), 1);
         assert_eq!(report.under_constrained.len(), 1);
+    }
+
+    #[cfg(not(feature = "artifact-graph"))]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_sketch_solve_works_without_artifact_graph_feature() {
+        let code = r#"
+sketch001 = sketch(on = XY) {
+    line1 = line(start = [var -3.38mm, var 3.71mm], end = [var 4.29mm, var 3.59mm])
+    line2 = line(start = [var 4.29mm, var 3.59mm], end = [var 4.31mm, var -3.13mm])
+    coincident([line1.end, line2.start])
+    line3 = line(start = [var 4.31mm, var -3.13mm], end = [var -3.61mm, var -3.18mm])
+    coincident([line2.end, line3.start])
+    line4 = line(start = [var -3.61mm, var -3.18mm], end = [var -3.38mm, var 3.71mm])
+    coincident([line3.end, line4.start])
+    coincident([line4.end, line1.start])
+    circle1 = circle(start = [var -5.73mm, var 1.42mm], center = [var -7.07mm, var 1.47mm])
+    tangent([line4, circle1])
+}
+"#;
+        parse_execute(code).await.unwrap();
     }
 }

@@ -210,18 +210,18 @@ pub(super) struct ModuleState {
     pub(super) denied_warnings: Vec<&'static str>,
 
     /// Map from consumed solid UUIDs to information about the operation that
-    /// consumed them. Populated by CSG boolean operations (`subtract`, `union`,
-    /// `intersect`, `split`) so that subsequent attempts to use a consumed
-    /// solid produce a clear KCL-level error rather than a cryptic engine error.
+    /// consumed them. Populated by operations that destroy their inputs so that
+    /// subsequent attempts to use a consumed solid produce a clear KCL-level
+    /// error rather than a cryptic engine error.
     pub(super) consumed_solids: AHashMap<Uuid, ConsumedSolidInfo>,
 }
 
-/// Information about a solid that was consumed by a CSG boolean operation.
+/// Information about a solid that was consumed by an operation.
 /// Stored in `ModuleState.consumed_solids` so subsequent attempts to use the
 /// solid produce a clear error pointing at the operation that consumed it.
 #[derive(Debug, Clone)]
 pub(crate) struct ConsumedSolidInfo {
-    /// The CSG operation that consumed the solid.
+    /// The operation that consumed the solid.
     pub operation: ConsumedSolidOperation,
     /// The UUID of the result solid produced by that operation, when this
     /// consumed solid has a direct replacement. Used to suggest a replacement
@@ -235,13 +235,14 @@ pub(crate) enum ConsumedSolidOperation {
     Intersect,
     Subtract,
     Split,
+    JoinSurfaces,
 }
 
 impl ConsumedSolidOperation {
     pub(crate) fn indefinite_article(self) -> &'static str {
         match self {
             Self::Intersect => "an",
-            Self::Union | Self::Subtract | Self::Split => "a",
+            Self::Union | Self::Subtract | Self::Split | Self::JoinSurfaces => "a",
         }
     }
 }
@@ -253,6 +254,7 @@ impl std::fmt::Display for ConsumedSolidOperation {
             Self::Intersect => f.write_str("intersect"),
             Self::Subtract => f.write_str("subtract"),
             Self::Split => f.write_str("split"),
+            Self::JoinSurfaces => f.write_str("joinSurfaces"),
         }
     }
 }
@@ -833,6 +835,33 @@ impl ExecState {
         _program: NodeRef<'_, crate::parsing::ast::types::Program>,
     ) -> Result<(), KclError> {
         Ok(())
+    }
+
+    pub(crate) fn kcl_version(&self) -> KclVersion {
+        self.mod_local.settings.kcl_version.parse().unwrap_or_default()
+    }
+}
+
+#[derive(Default)]
+pub enum KclVersion {
+    #[default]
+    V1,
+    V2,
+}
+
+impl FromStr for KclVersion {
+    type Err = KclError;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        match s {
+            "1" | "1.0" | "1.0.0" => Ok(Self::V1),
+            "2" | "2.0" | "2.0.0" => Ok(Self::V2),
+            other => Err(KclError::new_semantic(KclErrorDetails {
+                source_ranges: Default::default(),
+                backtrace: Default::default(),
+                message: format!("Unrecognized version {other}. Valid versions are 1.0 and 2.0"),
+            })),
+        }
     }
 }
 

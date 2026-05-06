@@ -16,6 +16,7 @@ use kcmc::shared::Point3d as KPoint3d; // Point3d is already defined in this pkg
 use kcmc::websocket::ModelingCmdReq;
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::shared::PathSegment;
+use kittycad_modeling_cmds::shared::RegionVersion;
 use kittycad_modeling_cmds::units::UnitLength;
 use parse_display::Display;
 use parse_display::FromStr;
@@ -42,6 +43,7 @@ use crate::execution::ExecState;
 use crate::execution::GeoMeta;
 use crate::execution::Geometry;
 use crate::execution::KclValue;
+use crate::execution::KclVersion;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Path;
 use crate::execution::Plane;
@@ -2979,6 +2981,11 @@ async fn inner_region(
     args: Args,
 ) -> Result<KclValue, KclError> {
     let region_id = exec_state.next_uuid();
+    let kcl_version = exec_state.kcl_version();
+    let region_version = match kcl_version {
+        KclVersion::V1 => RegionVersion::V0,
+        KclVersion::V2 => RegionVersion::V1,
+    };
 
     let (sketch_or_segment, region_mapping) = match (point, segments) {
         (Some(point), None) => {
@@ -2992,6 +2999,7 @@ async fn inner_region(
                         mcmd::CreateRegionFromQueryPoint::builder()
                             .object_id(sketch.sketch()?.id)
                             .query_point(KPoint2d::from(point_to_mm(pt.clone())).map(LengthUnit))
+                            .version(region_version)
                             .build(),
                     ),
                 )
@@ -3057,6 +3065,7 @@ async fn inner_region(
                             .intersection_segment(seg1.id)
                             .intersection_index(intersection_index)
                             .curve_clockwise(direction.is_clockwise())
+                            .version(region_version)
                             .build(),
                     ),
                 )

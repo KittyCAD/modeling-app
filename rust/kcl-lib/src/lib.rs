@@ -316,6 +316,13 @@ impl Program {
         })
     }
 
+    pub fn change_kcl_version(&self, kcl_version: Option<String>) -> Result<Self, KclError> {
+        Ok(Self {
+            ast: self.ast.change_kcl_version(kcl_version)?,
+            original_file_contents: self.original_file_contents.clone(),
+        })
+    }
+
     pub fn change_experimental_features(&self, warning_level: Option<WarningLevel>) -> Result<Self, KclError> {
         Ok(Self {
             ast: self.ast.change_experimental_features(warning_level)?,

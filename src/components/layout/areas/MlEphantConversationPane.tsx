@@ -119,7 +119,6 @@ export const MlEphantConversationPane = (props: {
       selections: props.contextModeling.selectionRanges,
       artifactGraph: props.kclManager.artifactGraph,
       mode,
-      sketch_solve: props.settings.modeling.useSketchSolveMode?.current,
       additionalFiles: attachments,
     })
 
@@ -134,7 +133,6 @@ export const MlEphantConversationPane = (props: {
       refParentSend: props.mlEphantManagerActor.send,
       conversationId:
         props.mlEphantManagerActor.getSnapshot().context.conversationId,
-      sketch_solve: props.settings.modeling.useSketchSolveMode?.current,
     })
   }
 
@@ -246,7 +244,6 @@ export const MlEphantConversationPane = (props: {
         type: MlEphantManagerTransitions.CacheSetupAndConnect,
         refParentSend: props.mlEphantManagerActor.send,
         conversationId: undefined,
-        sketch_solve: props.settings.modeling.useSketchSolveMode?.current,
       })
       sub.unsubscribe()
     })
@@ -282,7 +279,6 @@ export const MlEphantConversationPane = (props: {
         type: MlEphantManagerTransitions.CacheSetupAndConnect,
         refParentSend: props.mlEphantManagerActor.send,
         conversationId,
-        sketch_solve: props.settings.modeling.useSketchSolveMode?.current,
       })
     }
   }
