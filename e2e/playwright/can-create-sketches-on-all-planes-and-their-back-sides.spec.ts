@@ -227,7 +227,7 @@ yzPlane = offsetPlane(YZ, offset = 0.05)
         await expect(toolbar.exitSketchBtn).toBeVisible()
 
         if ((await toolbar.lineBtn.getAttribute('aria-pressed')) !== 'true') {
-          await page.keyboard.press('l')
+          await toolbar.lineBtn.click()
         }
         await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
       })
