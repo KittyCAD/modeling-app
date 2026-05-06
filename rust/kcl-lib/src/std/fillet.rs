@@ -154,23 +154,23 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
             let edge_refs_parsed = parse_edge_refs_to_references(edge_refs, solid.id, exec_state, &args).await?;
             let mut all_refs = tags_as_refs;
             all_refs.extend(edge_refs_parsed);
-            let value =
-                inner_fillet_with_engine_refs(solid, radius, all_refs, tolerance, csg_algorithm, tag, exec_state, args)
-                    .await?;
-            Ok(KclValue::Solid { value })
-        }
-        (Some(edge_refs), Err(_)) => {
-            let value = inner_fillet_with_edge_refs(
-                solid,
+            let params = FilletEdgeRefParams {
                 radius,
-                edge_refs,
                 tolerance,
                 csg_algorithm,
                 tag,
-                exec_state,
-                args,
-            )
-            .await?;
+            };
+            let value = inner_fillet_with_engine_refs(solid, all_refs, params, exec_state, args).await?;
+            Ok(KclValue::Solid { value })
+        }
+        (Some(edge_refs), Err(_)) => {
+            let params = FilletEdgeRefParams {
+                radius,
+                tolerance,
+                csg_algorithm,
+                tag,
+            };
+            let value = inner_fillet_with_edge_refs(solid, edge_refs, params, exec_state, args).await?;
             Ok(KclValue::Solid { value })
         }
         (None, Ok(tags_with_source)) => {
@@ -339,13 +339,17 @@ pub(super) async fn resolve_face_id(
     }
 }
 
-async fn inner_fillet_with_edge_refs(
-    solid: Box<Solid>,
+struct FilletEdgeRefParams {
     radius: TyF64,
-    edge_refs: Vec<KclValue>,
     tolerance: Option<TyF64>,
     csg_algorithm: CsgAlgorithm,
     tag: Option<TagNode>,
+}
+
+async fn inner_fillet_with_edge_refs(
+    solid: Box<Solid>,
+    edge_refs: Vec<KclValue>,
+    params: FilletEdgeRefParams,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
@@ -357,7 +361,7 @@ async fn inner_fillet_with_edge_refs(
         }));
     }
 
-    if tag.is_some() && edge_refs.len() > 1 {
+    if params.tag.is_some() && edge_refs.len() > 1 {
         return Err(KclError::new_type(KclErrorDetails {
             message: "You can only tag one edge at a time with a tagged fillet. Either delete the tag for the fillet fn if you don't need it OR separate into individual fillet functions for each edge.".to_string(),
             source_ranges: vec![args.source_range],
@@ -366,26 +370,13 @@ async fn inner_fillet_with_edge_refs(
     }
 
     let edge_references = parse_edge_refs_to_references(edge_refs, solid.id, exec_state, &args).await?;
-    inner_fillet_with_engine_refs(
-        solid,
-        radius,
-        edge_references,
-        tolerance,
-        csg_algorithm,
-        tag,
-        exec_state,
-        args,
-    )
-    .await
+    inner_fillet_with_engine_refs(solid, edge_references, params, exec_state, args).await
 }
 
 async fn inner_fillet_with_engine_refs(
     solid: Box<Solid>,
-    radius: TyF64,
     edge_references: Vec<kcmc::shared::EdgeSpecifier>,
-    tolerance: Option<TyF64>,
-    csg_algorithm: CsgAlgorithm,
-    tag: Option<TagNode>,
+    params: FilletEdgeRefParams,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
@@ -397,7 +388,7 @@ async fn inner_fillet_with_engine_refs(
         }));
     }
 
-    if tag.is_some() && edge_references.len() > 1 {
+    if params.tag.is_some() && edge_references.len() > 1 {
         return Err(KclError::new_type(KclErrorDetails {
             message: "You can only tag one edge at a time with a tagged fillet. Either delete the tag for the fillet fn if you don't need it OR separate into individual fillet functions for each edge.".to_string(),
             source_ranges: vec![args.source_range],
@@ -421,18 +412,24 @@ async fn inner_fillet_with_engine_refs(
                 object_id: solid.id,
                 edges_references: edge_references.clone(),
                 cut_type: CutTypeV2::Fillet {
-                    radius: LengthUnit(radius.to_mm()),
+                    radius: LengthUnit(params.radius.to_mm()),
                     second_length: None,
                 },
-                tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
+                tolerance: LengthUnit(
+                    params
+                        .tolerance
+                        .as_ref()
+                        .map(|t| t.to_mm())
+                        .unwrap_or(DEFAULT_TOLERANCE_MM),
+                ),
                 strategy: Default::default(),
                 extra_face_ids,
-                use_legacy: csg_algorithm.is_legacy(),
+                use_legacy: params.csg_algorithm.is_legacy(),
             }),
         )
         .await?;
 
-    if let Some(ref tag) = tag {
+    if let Some(ref tag) = params.tag {
         solid.value.push(ExtrudeSurface::Fillet(FilletSurface {
             face_id: id,
             tag: Some(tag.clone()),
