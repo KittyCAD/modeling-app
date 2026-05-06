@@ -535,7 +535,12 @@ export const mlEphantManagerMachine = setup({
       const maybeConversationId =
         args.input.context?.cachedSetup?.conversationId ??
         args.input.context?.conversationId
-      const theRefParentSend = args.input.context?.cachedSetup?.refParentSend
+      // Always read refParentSend from the input event — the parent's invoke
+      // input function sets it to `args.self.send` on every (re)entry, so it
+      // is reliable. cachedSetup.refParentSend is cleared after the first
+      // successful setup (clearCacheSetup), which would otherwise leave the
+      // message handler unable to dispatch on reconnects.
+      const theRefParentSend = args.input.event.refParentSend
 
       const queryParams = new URLSearchParams()
       if (maybeConversationId) {
