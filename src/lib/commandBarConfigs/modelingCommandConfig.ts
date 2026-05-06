@@ -264,6 +264,7 @@ export type ModelingCommandSchema = {
     counterboreDiameter?: KclCommandValue
     countersinkAngle?: KclCommandValue
     countersinkDiameter?: KclCommandValue
+    countersinkHeadClearance?: KclCommandValue
     holeBottom: HoleBottom
     drillPointAngle?: KclCommandValue
   }
@@ -1242,6 +1243,15 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             context.argumentsToSubmit.holeType as string
           ),
         defaultValue: '2',
+      },
+      countersinkHeadClearance: {
+        inputType: 'kcl',
+        required: false,
+        hidden: (context) =>
+          !['countersink'].includes(
+            context.argumentsToSubmit.holeType as string
+          ),
+        defaultValue: '0',
       },
       holeBottom: {
         inputType: 'options',

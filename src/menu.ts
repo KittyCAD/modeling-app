@@ -1,6 +1,11 @@
 import { modelingDesignRole } from '@src/menu/designRole'
 import { modelingEditRole, projectEditRole } from '@src/menu/editRole'
-import { modelingFileRole, projectFileRole } from '@src/menu/fileRole'
+import {
+  type FileMenuActions,
+  modelingFileRole,
+  newWindowMenuItem,
+  projectFileRole,
+} from '@src/menu/fileRole'
 import { helpRole } from '@src/menu/helpRole'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
 import { modelingViewRole, projectViewRole } from '@src/menu/viewRole'
@@ -22,12 +27,14 @@ function zooSetApplicationMenu(menu: Electron.Menu) {
 
 // Menu for unauthenticated users
 function fallbackFileRole(
-  mainWindow: BrowserWindow
+  actions: FileMenuActions
 ): ZooMenuItemConstructorOptions {
   return {
     label: 'File',
     submenu: [
       // No project or settings items
+      newWindowMenuItem(actions),
+      { type: 'separator' },
       isMac ? { role: 'close' } : { role: 'quit' },
     ],
   }
@@ -69,13 +76,16 @@ function fallbackEditRole(
 }
 
 // Menu for authenticated users
-export function buildAndSetMenuForFallback(mainWindow: BrowserWindow) {
+export function buildAndSetMenuForFallback(
+  mainWindow: BrowserWindow,
+  actions: FileMenuActions
+) {
   // Use the same structure as the project page menu for consistency
   // but remove items that require authentication
   const template = [
     // Expand empty elements for environments that are not Mac
     ...appMenuMacOnly(),
-    fallbackFileRole(mainWindow),
+    fallbackFileRole(actions),
     fallbackEditRole(mainWindow),
     projectViewRole(mainWindow),
     // Help role is the same for all pages
@@ -111,11 +121,14 @@ function appMenuMacOnly() {
 
 // This will generate a new menu from the initial state
 // All state management from the previous menu is going to be lost.
-export function buildAndSetMenuForModelingPage(mainWindow: BrowserWindow) {
+export function buildAndSetMenuForModelingPage(
+  mainWindow: BrowserWindow,
+  actions: FileMenuActions
+) {
   const template = [
     // Expand empty elements for environments that are not Mac
     ...appMenuMacOnly(),
-    modelingFileRole(mainWindow),
+    modelingFileRole(mainWindow, actions),
     modelingEditRole(mainWindow),
     modelingViewRole(mainWindow),
     modelingDesignRole(mainWindow),
@@ -128,11 +141,14 @@ export function buildAndSetMenuForModelingPage(mainWindow: BrowserWindow) {
 
 // This will generate a new menu from the initial state
 // All state management from the previous menu is going to be lost.
-export function buildAndSetMenuForProjectPage(mainWindow: BrowserWindow) {
+export function buildAndSetMenuForProjectPage(
+  mainWindow: BrowserWindow,
+  actions: FileMenuActions
+) {
   const template = [
     // Expand empty elements for environments that are not Mac
     ...appMenuMacOnly(),
-    projectFileRole(mainWindow),
+    projectFileRole(mainWindow, actions),
     projectEditRole(mainWindow),
     projectViewRole(mainWindow),
     // Help role is the same for all pages

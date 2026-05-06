@@ -15,7 +15,12 @@ test.describe('Hot path', { tag: '@desktop' }, () => {
     editor,
     toolbar,
     cmdBar,
+    context,
   }) => {
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, 'sketch001 = startSketchOn(XZ)')
+
     // Open an empty project
     await page.setBodyDimensions({ width: 1500, height: 1000 })
     await homePage.goToModelingScene()
@@ -36,11 +41,11 @@ test.describe('Hot path', { tag: '@desktop' }, () => {
     // Default step timeout
     const timeout = 500
 
-    await test.step('Start sketch', async () => {
-      await toolbar.startSketchBtn.click()
-      await page.waitForTimeout(timeout)
-      await clickABitOffCenter()
-      await page.waitForTimeout(timeout)
+    await test.step('Enter sketch', async () => {
+      const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
+      await op.dblclick()
+      await toolbar.waitUntilSketchingReady()
+      await toolbar.closeFeatureTreePane()
     })
 
     await test.step('Draw circle', async () => {

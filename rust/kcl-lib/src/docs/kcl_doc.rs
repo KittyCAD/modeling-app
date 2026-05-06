@@ -17,6 +17,7 @@ use tower_lsp::lsp_types::SignatureInformation;
 
 use crate::ModuleId;
 use crate::execution::annotations;
+use crate::execution::annotations::VersionConstraint;
 use crate::parsing::ast::types::Annotation;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::ImportSelector;
@@ -202,6 +203,7 @@ pub enum DocData {
 }
 
 impl DocData {
+    #[cfg(test)]
     pub fn name(&self) -> &str {
         match self {
             DocData::Fn(f) => &f.name,
@@ -211,7 +213,6 @@ impl DocData {
         }
     }
 
-    #[cfg(test)]
     pub fn preferred_name(&self) -> &str {
         match self {
             DocData::Fn(f) => &f.preferred_name,
@@ -362,6 +363,9 @@ impl DocData {
 
 #[derive(Debug, Clone)]
 pub struct ConstData {
+    // TODO (#11345) Only read via DocData::name() in test code; removing requires updating ~30 test call sites.
+    // Also uses of name (like PI) will need special treatment
+    #[allow(dead_code)]
     pub name: String,
     /// How the const is indexed, etc.
     pub preferred_name: String,
@@ -422,6 +426,7 @@ impl ConstData {
             properties: Properties {
                 exported: !var.visibility.is_default(),
                 deprecated: false,
+                deprecated_since: None,
                 experimental: false,
                 doc_hidden: false,
                 impl_kind: annotations::Impl::Kcl,
@@ -519,6 +524,7 @@ impl ModData {
             properties: Properties {
                 exported: false,
                 deprecated: false,
+                deprecated_since: None,
                 experimental: false,
                 doc_hidden: false,
                 impl_kind: Default::default(),
@@ -609,6 +615,7 @@ impl FnData {
             properties: Properties {
                 exported: !var.visibility.is_default(),
                 deprecated: false,
+                deprecated_since: None,
                 experimental: false,
                 doc_hidden: false,
                 impl_kind: annotations::Impl::Kcl,
@@ -798,6 +805,9 @@ impl DocCategory {
 #[derive(Debug, Clone)]
 pub struct Properties {
     pub deprecated: bool,
+    /// Constraint on the KCL version at or after which this item is deprecated,
+    /// e.g. "2.0".
+    pub deprecated_since: Option<VersionConstraint>,
     pub experimental: bool,
     pub doc_hidden: bool,
     #[allow(dead_code)]
@@ -860,6 +870,8 @@ pub struct ArgData {
     pub docs: Option<String>,
     /// If given, LSP should use these as completion items.
     pub snippet_array: Option<Vec<String>>,
+    /// Constraint on the KCL version at or after which this argument is deprecated.
+    pub deprecated_since: Option<VersionConstraint>,
 }
 
 impl fmt::Display for ArgData {
@@ -897,6 +909,7 @@ impl ArgData {
             } else {
                 ArgKind::Special
             },
+            deprecated_since: arg.deprecated_since.clone(),
         };
 
         for attr in &arg.identifier.outer_attrs {
@@ -1087,6 +1100,7 @@ impl TyData {
             properties: Properties {
                 exported: !ty.visibility.is_default(),
                 deprecated: false,
+                deprecated_since: None,
                 experimental: false,
                 doc_hidden: false,
                 impl_kind: annotations::Impl::Kcl,
@@ -1165,6 +1179,7 @@ trait ApplyMeta {
         examples: Vec<(String, ExampleProperties)>,
     );
     fn deprecated(&mut self, deprecated: bool);
+    fn deprecated_since(&mut self, deprecated_since: Option<VersionConstraint>);
     fn experimental(&mut self, experimental: bool);
     fn doc_hidden(&mut self, doc_hidden: bool);
     fn impl_kind(&mut self, impl_kind: annotations::Impl);
@@ -1308,6 +1323,13 @@ trait ApplyMeta {
                                 self.deprecated(b);
                             }
                         }
+                        annotations::DEPRECATED_SINCE => {
+                            if let Some(s) = p.value.literal_str()
+                                && let Some(v) = VersionConstraint::parse(s)
+                            {
+                                self.deprecated_since(Some(v));
+                            }
+                        }
                         annotations::EXPERIMENTAL => {
                             if let Some(b) = p.value.literal_bool() {
                                 self.experimental(b);
@@ -1349,6 +1371,10 @@ impl ApplyMeta for ConstData {
         self.properties.deprecated = deprecated;
     }
 
+    fn deprecated_since(&mut self, deprecated_since: Option<VersionConstraint>) {
+        self.properties.deprecated_since = deprecated_since;
+    }
+
     fn experimental(&mut self, experimental: bool) {
         self.properties.experimental = experimental;
     }
@@ -1378,6 +1404,10 @@ impl ApplyMeta for FnData {
 
     fn deprecated(&mut self, deprecated: bool) {
         self.properties.deprecated = deprecated;
+    }
+
+    fn deprecated_since(&mut self, deprecated_since: Option<VersionConstraint>) {
+        self.properties.deprecated_since = deprecated_since;
     }
 
     fn experimental(&mut self, experimental: bool) {
@@ -1413,6 +1443,10 @@ impl ApplyMeta for ModData {
         assert!(!deprecated);
     }
 
+    fn deprecated_since(&mut self, deprecated_since: Option<VersionConstraint>) {
+        assert!(deprecated_since.is_none());
+    }
+
     fn experimental(&mut self, experimental: bool) {
         self.properties.experimental = experimental;
     }
@@ -1442,6 +1476,10 @@ impl ApplyMeta for TyData {
 
     fn deprecated(&mut self, deprecated: bool) {
         self.properties.deprecated = deprecated;
+    }
+
+    fn deprecated_since(&mut self, deprecated_since: Option<VersionConstraint>) {
+        self.properties.deprecated_since = deprecated_since;
     }
 
     fn experimental(&mut self, experimental: bool) {
@@ -1480,6 +1518,10 @@ impl ApplyMeta for ArgData {
     }
 
     fn deprecated(&mut self, _deprecated: bool) {
+        unreachable!();
+    }
+
+    fn deprecated_since(&mut self, _deprecated_since: Option<VersionConstraint>) {
         unreachable!();
     }
 

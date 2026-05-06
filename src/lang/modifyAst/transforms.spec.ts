@@ -10,6 +10,8 @@ import {
 } from '@src/lang/modifyAst/transforms'
 import { err } from '@src/lib/trap'
 import {
+  createSelectionFromArtifacts,
+  getAstAndArtifactGraph,
   getAstAndSketchSelections,
   getKclCommandValue,
   runNewAstAndCheckForSweep,
@@ -44,7 +46,7 @@ beforeEach(async () => {
   rustContextInThisFile = rustContext
 })
 afterAll(() => {
-  engineCommandManagerInThisFile.tearDown()
+  engineCommandManagerInThisFile?.tearDown()
 })
 
 describe('transforms.test.ts', () => {
@@ -112,6 +114,75 @@ extrude001 = extrude(profile001, length = 1)`
         rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
+    })
+
+    it('uses indexed split output expressions for selections', async () => {
+      const code = `sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 7.11mm, var 0mm])
+  line2 = line(start = [var 7.11mm, var 0mm], end = [var 7.11mm, var 6.11mm])
+  line3 = line(start = [var 7.11mm, var 6.11mm], end = [var 0mm, var 6.11mm])
+  line4 = line(start = [var 0mm, var 6.11mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  coincident([line1.start, ORIGIN])
+}
+hidden001 = hide(sketch001)
+region001 = region(point = [3.555mm, 0.0025mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 5)
+sketch002 = sketch(on = XY) {
+  line1 = line(start = [var -5.19mm, var -7.27mm], end = [var 6.6mm, var 10.62mm])
+}
+hidden002 = hide(sketch002)
+extrude002 = extrude(
+  sketch002.line1,
+  length = 10,
+  symmetric = true,
+  bodyType = SURFACE,
+)
+split001 = split(extrude001, tools = extrude002)`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const splitOutput = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'compositeSolid' &&
+          artifact.subType === 'split' &&
+          artifact.outputIndex === 1
+      )
+      if (!splitOutput) {
+        throw new Error('Expected split output 1 in the artifact graph')
+      }
+      const objects = createSelectionFromArtifacts([splitOutput], artifactGraph)
+
+      const result = addTranslate({
+        ast,
+        artifactGraph,
+        objects,
+        x: await getKclCommandValue(
+          '1',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+      expect(newCode).toContain(`${code}\ntranslate(split001[1], x = 1)`)
     })
 
     async function runEditTranslateTest(

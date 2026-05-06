@@ -1,0 +1,51 @@
+targetSketch = sketch(on = XY) {
+  bottom = line(start = [var -10, var -10], end = [var 10, var -10])
+  right = line(start = [var 10, var -10], end = [var 10, var 10])
+  top = line(start = [var 10, var 10], end = [var -10, var 10])
+  left = line(start = [var -10, var 10], end = [var -10, var -10])
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
+  parallel([bottom, top])
+  parallel([left, right])
+  perpendicular([bottom, right])
+}
+
+target = extrude(region(point = [0, 0], sketch = targetSketch), length = 10)
+
+cutterSketch = sketch(on = XY) {
+  bottom = line(start = [var -1, var -12], end = [var 1, var -12])
+  right = line(start = [var 1, var -12], end = [var 1, var 12])
+  top = line(start = [var 1, var 12], end = [var -1, var 12])
+  left = line(start = [var -1, var 12], end = [var -1, var -12])
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
+  parallel([bottom, top])
+  parallel([left, right])
+  perpendicular([bottom, right])
+}
+
+cutter = extrude(region(point = [0, 0], sketch = cutterSketch), length = 10)
+
+pieces = split([target], tools = [cutter], keepTools = true)
+joined = joinSurfaces(pieces)
+
+toolSketch = sketch(on = XY) {
+  bottom = line(start = [var 12, var 12], end = [var 14, var 12])
+  right = line(start = [var 14, var 12], end = [var 14, var 14])
+  top = line(start = [var 14, var 14], end = [var 12, var 14])
+  left = line(start = [var 12, var 14], end = [var 12, var 12])
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
+  parallel([bottom, top])
+  parallel([left, right])
+  perpendicular([bottom, right])
+}
+
+tool = extrude(region(point = [13, 13], sketch = toolSketch), length = 2)
+second = subtract(pieces[0], tools = [tool])
