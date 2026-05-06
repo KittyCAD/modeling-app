@@ -37,6 +37,15 @@ export const projectFileRole = (
         },
       },
       {
+        label: 'Duplicate Project',
+        id: 'File.Duplicate project',
+        click: () => {
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+            menuLabel: 'File.Duplicate project',
+          })
+        },
+      },
+      {
         label: 'Open Project',
         id: 'File.Open project',
         accelerator: 'CommandOrControl+P',
@@ -149,6 +158,15 @@ export const modelingFileRole = (
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'File.Create project',
+          })
+        },
+      },
+      {
+        label: 'Duplicate Project',
+        id: 'File.Duplicate project',
+        click: () => {
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+            menuLabel: 'File.Duplicate project',
           })
         },
       },

@@ -1,5 +1,10 @@
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
 import path from 'node:path'
+import { App } from '@src/lib/app'
 import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
+import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
@@ -8,11 +13,9 @@ import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
-import { createActor, fromPromise, waitFor } from 'xstate'
-import { expect, describe, it, beforeEach } from 'vitest'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { App } from '@src/lib/app'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { createActor, fromPromise, waitFor } from 'xstate'
 
 let appInstanceInThisFile: App = null!
 let instanceInThisFile: ModuleType = null!
@@ -218,6 +221,98 @@ describe('systemIOMachine - XState', () => {
         })
         let context = actor.getSnapshot().context
         expect(context.defaultProjectFolderName).toBe(expected)
+      })
+    })
+    describe('when duplicating projects', () => {
+      it('copies the project to a deconflicted name and resets project metadata', async () => {
+        await moduleFsViaModuleImport({
+          type: StorageName.NodeFS,
+          options: {},
+        })
+        const tempProjectDirectory = await mkdtemp(
+          path.join(tmpdir(), 'zds-duplicate-project-')
+        )
+        const sourceProject = path.join(tempProjectDirectory, 'bracket')
+        const existingDuplicate = path.join(tempProjectDirectory, 'bracket-1')
+        const sourceLocalProjectId = '11111111-1111-4111-8111-111111111111'
+        const sourceCloudProjectId = '22222222-2222-4222-8222-222222222222'
+        const actor = createActor(systemIOMachineImpl, {
+          input: {
+            wasmInstancePromise: Promise.resolve(instanceInThisFile),
+            app: appInstanceInThisFile,
+          },
+        }).start()
+
+        try {
+          await mkdir(path.join(sourceProject, 'nested'), { recursive: true })
+          await writeFile(path.join(sourceProject, 'main.kcl'), 'main')
+          await writeFile(
+            path.join(sourceProject, 'nested', 'part.kcl'),
+            'nested'
+          )
+          await writeFile(
+            path.join(sourceProject, 'project.toml'),
+            `[settings.meta]
+id = "${sourceLocalProjectId}"
+
+[cloud."zoo.dev"]
+project_id = "${sourceCloudProjectId}"
+`
+          )
+          await mkdir(existingDuplicate, { recursive: true })
+          await writeFile(path.join(existingDuplicate, 'main.kcl'), 'existing')
+
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: {
+              requestedProjectDirectoryPath: tempProjectDirectory,
+            },
+          })
+          await waitFor(actor, (state) =>
+            Boolean(
+              state.context.folders?.some((folder) => folder.name === 'bracket')
+            )
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.duplicateProject,
+            data: {
+              projectName: 'bracket',
+            },
+          })
+          await waitFor(
+            actor,
+            (state) =>
+              state.matches(SystemIOMachineStates.idle) &&
+              state.context.requestedProjectName.name === 'bracket-2'
+          )
+
+          await expect(
+            readFile(
+              path.join(
+                tempProjectDirectory,
+                'bracket-2',
+                'nested',
+                'part.kcl'
+              ),
+              'utf-8'
+            )
+          ).resolves.toBe('nested')
+          const duplicatedProjectToml = await readFile(
+            path.join(tempProjectDirectory, 'bracket-2', 'project.toml'),
+            'utf-8'
+          )
+          expect(duplicatedProjectToml).not.toContain(sourceLocalProjectId)
+          expect(duplicatedProjectToml).not.toContain(sourceCloudProjectId)
+          expect(duplicatedProjectToml).not.toContain('[cloud.')
+        } finally {
+          actor.stop()
+          await rm(tempProjectDirectory, { recursive: true, force: true })
+          await moduleFsViaModuleImport({
+            type: StorageName.NoopFS,
+            options: {},
+          })
+        }
       })
     })
   })

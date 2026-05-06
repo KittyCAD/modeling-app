@@ -1,18 +1,23 @@
-import fsZds from '@src/lib/fs-zds'
-import { fsZdsConstants } from '@src/lib/fs-zds/constants'
+import { newKclFile } from '@src/lang/project'
+import { serializeProjectConfiguration } from '@src/lang/wasm'
 import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  FILE_EXT,
+  MAX_PROJECT_NAME_LENGTH,
+} from '@src/lib/constants'
+import {
+  canReadWriteDirectory,
   createNewProjectDirectory,
   ensureProjectDirectoryExists,
   getAppSettingsFilePath,
   getProjectInfo,
   mkdirOrNOOP,
   readAppSettingsFile,
+  readProjectSettingsFile,
   renameProjectDirectory,
-  canReadWriteDirectory,
   statIsDirectory,
+  writeProjectSettingsFile,
 } from '@src/lib/desktop'
-import { newKclFile } from '@src/lang/project'
-import { DEFAULT_DEFAULT_LENGTH_UNIT, FILE_EXT } from '@src/lib/constants'
 import {
   doesProjectNameNeedInterpolated,
   getNextFileName,
@@ -20,12 +25,15 @@ import {
   getUniqueProjectName,
   interpolateProjectNameWithIndex,
 } from '@src/lib/desktopFS'
+import fsZds from '@src/lib/fs-zds'
+import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import {
   getProjectDirectoryFromKCLFilePath,
   getStringAfterLastSeparator,
   parentPathRelativeToProject,
 } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
+import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type {
@@ -36,12 +44,12 @@ import type {
 import {
   NO_PROJECT_DIRECTORY,
   SystemIOMachineActors,
+  collectProjectFiles,
   jsonToMlConversations,
   mlConversationsToJson,
-  collectProjectFiles,
 } from '@src/machines/systemIO/utils'
+import { v4 } from 'uuid'
 import { fromPromise } from 'xstate'
-import { err, isErr } from '@src/lib/trap'
 
 const ML_CONVERSATIONS_FILE_NAME = 'ml-conversations.json'
 
@@ -277,6 +285,37 @@ const sharedBulkDeleteWorkflow = async ({
   return filesToDelete.length
 }
 
+const resetDuplicatedProjectSettings = async (
+  projectPath: string,
+  wasmInstance: ModuleType
+) => {
+  const projectSettings = await readProjectSettingsFile(
+    projectPath,
+    wasmInstance
+  )
+  const duplicatedProjectSettings = {
+    ...projectSettings,
+    cloud: {},
+    settings: {
+      ...projectSettings.settings,
+      meta: {
+        ...projectSettings.settings?.meta,
+        id: v4(),
+      },
+    },
+  } as Parameters<typeof serializeProjectConfiguration>[0]
+
+  const serialized = serializeProjectConfiguration(
+    duplicatedProjectSettings,
+    wasmInstance
+  )
+  if (err(serialized)) {
+    return Promise.reject(serialized)
+  }
+
+  await writeProjectSettingsFile(projectPath, serialized)
+}
+
 export const systemIOMachineImpl = systemIOMachine.provide({
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
@@ -341,6 +380,79 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         return {
           message: `Successfully created "${uniqueName}"`,
           name: uniqueName,
+        }
+      }
+    ),
+    [SystemIOMachineActors.duplicateProject]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: { context: SystemIOContext; projectName: string }
+      }) => {
+        const folders = input.context.folders
+        if (!folders) {
+          return Promise.reject(new Error('no folders'))
+        }
+        if (input.context.projectDirectoryPath === NO_PROJECT_DIRECTORY) {
+          return Promise.reject(
+            new Error('Unable to determine the project directory.')
+          )
+        }
+
+        const project = folders.find(
+          (folder) => folder.name === input.projectName
+        )
+        if (!project) {
+          return Promise.reject(
+            new Error(`Project "${input.projectName}" does not exist`)
+          )
+        }
+        if (!project.readWriteAccess) {
+          return Promise.reject(
+            new Error(`Project "${input.projectName}" cannot be read`)
+          )
+        }
+
+        const duplicateName = getUniqueProjectName(input.projectName, folders)
+        if (duplicateName.length > MAX_PROJECT_NAME_LENGTH) {
+          return Promise.reject(
+            new Error(
+              `Project name "${duplicateName}" is too long, must be less than or equal to ${MAX_PROJECT_NAME_LENGTH} characters.`
+            )
+          )
+        }
+
+        const sourcePath =
+          project.path ||
+          fsZds.join(input.context.projectDirectoryPath, input.projectName)
+        const targetPath = fsZds.join(
+          input.context.projectDirectoryPath,
+          duplicateName
+        )
+        let copiedTarget = false
+
+        try {
+          await fsZds.cp(sourcePath, targetPath, {
+            recursive: true,
+            force: false,
+          })
+          copiedTarget = true
+          await resetDuplicatedProjectSettings(
+            targetPath,
+            await input.context.wasmInstancePromise
+          )
+        } catch (error) {
+          if (copiedTarget) {
+            await fsZds.rm(targetPath, { recursive: true }).catch((e) => {
+              console.error('Failed to clean up duplicated project', e)
+            })
+          }
+          return Promise.reject(error)
+        }
+
+        return {
+          message: `Successfully duplicated "${input.projectName}" as "${duplicateName}"`,
+          name: duplicateName,
         }
       }
     ),

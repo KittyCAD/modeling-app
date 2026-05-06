@@ -2,11 +2,14 @@ import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteW
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type { ActorRefFrom, ContextFrom } from 'xstate'
-import type { commandBarMachine } from '@src/machines/commandBarMachine'
 export type ProjectsCommandSchema = {
+  'Duplicate project': {
+    name: string
+  }
   'Import file from URL': {
     name: string
     code?: string
@@ -34,6 +37,11 @@ export function createProjectCommands({
   const defaultProjectFolderNameSnapshot = () => {
     const { defaultProjectFolderName } = systemIOActor.getSnapshot().context
     return defaultProjectFolderName
+  }
+
+  const requestedProjectNameSnapshot = () => {
+    const { requestedProjectName } = systemIOActor.getSnapshot().context
+    return requestedProjectName.name
   }
 
   const openProjectCommand: Command = {
@@ -93,6 +101,46 @@ export function createProjectCommands({
         required: true,
         inputType: 'string',
         defaultValue: defaultProjectFolderNameSnapshot,
+      },
+    },
+  }
+
+  const duplicateProjectCommand: Command = {
+    icon: 'folder',
+    name: 'Duplicate project',
+    displayName: 'Duplicate project',
+    description: 'Duplicate a project',
+    groupId: 'projects',
+    needsReview: false,
+    onSubmit: (record) => {
+      if (record) {
+        systemIOActor.send({
+          type: SystemIOMachineEvents.duplicateProject,
+          data: { projectName: record.name },
+        })
+      }
+    },
+    args: {
+      name: {
+        inputType: 'options',
+        required: true,
+        options: () => {
+          const folders = folderSnapshot()
+          const options: CommandArgumentOption<string>[] = []
+          if (!folders) {
+            return options
+          }
+
+          const requestedProjectName = requestedProjectNameSnapshot()
+          for (const folder of folders) {
+            options.push({
+              name: folder.name,
+              value: folder.name,
+              isCurrent: folder.name === requestedProjectName,
+            })
+          }
+          return options
+        },
       },
     },
   }
@@ -292,6 +340,7 @@ export function createProjectCommands({
     ? [
         openProjectCommand,
         createProjectCommand,
+        duplicateProjectCommand,
         deleteProjectCommand,
         renameProjectCommand,
         importFileFromURL,

@@ -76,6 +76,10 @@ export const systemIOMachine = setup({
           data: { requestedProjectName: string }
         }
       | {
+          type: SystemIOMachineEvents.duplicateProject
+          data: { projectName: string }
+        }
+      | {
           type: SystemIOMachineEvents.renameProject
           data: {
             requestedProjectName: string
@@ -437,6 +441,15 @@ export const systemIOMachine = setup({
         input: { context, requestedProjectName },
       }: {
         input: { context: SystemIOContext; requestedProjectName: string }
+      }) => {
+        return { message: '', name: '' }
+      }
+    ),
+    [SystemIOMachineActors.duplicateProject]: fromPromise(
+      async ({
+        input: { context, projectName },
+      }: {
+        input: { context: SystemIOContext; projectName: string }
       }) => {
         return { message: '', name: '' }
       }
@@ -819,6 +832,9 @@ export const systemIOMachine = setup({
             actions: [SystemIOMachineActions.toastProjectNameTooLong],
           },
         ],
+        [SystemIOMachineEvents.duplicateProject]: {
+          target: SystemIOMachineStates.duplicatingProject,
+        },
         [SystemIOMachineEvents.renameProject]: [
           {
             target: SystemIOMachineStates.renamingProject,
@@ -957,6 +973,37 @@ export const systemIOMachine = setup({
           actions: [
             assign({
               lastOperation: SystemIOMachineStates.creatingProject,
+              requestedProjectName: ({ event }) => {
+                return {
+                  name: (event as { output: { name: string } }).output.name,
+                }
+              },
+            }),
+            SystemIOMachineActions.toastSuccess,
+          ],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.duplicatingProject]: {
+      invoke: {
+        id: SystemIOMachineActors.duplicateProject,
+        src: SystemIOMachineActors.duplicateProject,
+        input: ({ context, event }) => {
+          assertEvent(event, SystemIOMachineEvents.duplicateProject)
+          return {
+            context,
+            projectName: event.data.projectName,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [
+            assign({
+              lastOperation: SystemIOMachineStates.duplicatingProject,
               requestedProjectName: ({ event }) => {
                 return {
                   name: (event as { output: { name: string } }).output.name,
