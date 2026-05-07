@@ -43,8 +43,7 @@ import {
   buildAndSetMenuForFallback,
   buildAndSetMenuForModelingPage,
   buildAndSetMenuForProjectPage,
-  disableMenu,
-  enableMenu,
+  setMenuItemEnabled,
 } from '@src/menu'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { configureSystemCertificates } from '@src/systemCertificates'
@@ -86,6 +85,7 @@ const args = parseCLIArgs(process.argv)
 let startupMacOpenFiles: string[] = []
 let startupOpenUrls: string[] = []
 const windowMenuPages = new WeakMap<BrowserWindow, AppMenuPage>()
+const disabledWindowMenuIds = new WeakMap<BrowserWindow, Set<string>>()
 
 // @ts-ignore: TS1343
 const viteEnv = import.meta.env
@@ -237,6 +237,7 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
   })
   newWindow.on('closed', () => {
     windowMenuPages.delete(newWindow)
+    disabledWindowMenuIds.delete(newWindow)
     if (mainWindow !== newWindow) return
     const nextMainWindow = BrowserWindow.getAllWindows().find(
       (browserWindow) => !browserWindow.isDestroyed()
@@ -345,7 +346,46 @@ function buildAndSetMenuForWindow(
     buildAndSetMenuForFallback(targetWindow, menuActions)
   }
 
+  applyMenuStateForWindow(targetWindow)
   scheduleMenuGC()
+}
+
+function applyMenuStateForWindow(targetWindow: BrowserWindow) {
+  const disabledMenuIds = disabledWindowMenuIds.get(targetWindow)
+  if (!disabledMenuIds) return
+
+  for (const menuId of disabledMenuIds) {
+    setMenuItemEnabled(menuId, false)
+  }
+}
+
+function updateMenuStateForWindow(
+  targetWindow: BrowserWindow,
+  menuId: string,
+  enabled: boolean
+) {
+  let disabledMenuIds = disabledWindowMenuIds.get(targetWindow)
+  if (!disabledMenuIds) {
+    disabledMenuIds = new Set<string>()
+    disabledWindowMenuIds.set(targetWindow, disabledMenuIds)
+  }
+
+  if (enabled) {
+    disabledMenuIds.delete(menuId)
+  } else {
+    disabledMenuIds.add(menuId)
+  }
+
+  if (BrowserWindow.getFocusedWindow() === targetWindow) {
+    setMenuItemEnabled(menuId, enabled)
+  }
+}
+
+function sendToAllWindows(channel: string, ...args: unknown[]) {
+  for (const browserWindow of BrowserWindow.getAllWindows()) {
+    if (browserWindow.isDestroyed()) continue
+    browserWindow.webContents.send(channel, ...args)
+  }
 }
 
 interface LocalDeviceState {
@@ -625,12 +665,18 @@ ipcMain.handle('create-menu', (event, data) => {
 
 ipcMain.handle('enable-menu', (event, data) => {
   const menuId = data.menuId
-  enableMenu(menuId)
+  const targetWindow = BrowserWindow.fromWebContents(event.sender)
+  if (targetWindow) {
+    updateMenuStateForWindow(targetWindow, menuId, true)
+  }
 })
 
 ipcMain.handle('disable-menu', (event, data) => {
   const menuId = data.menuId
-  disableMenu(menuId)
+  const targetWindow = BrowserWindow.fromWebContents(event.sender)
+  if (targetWindow) {
+    updateMenuStateForWindow(targetWindow, menuId, false)
+  }
 })
 
 ipcMain.handle('get-path-userdata', () => app.getPath('userData'))
@@ -665,20 +711,20 @@ app.on('ready', () => {
   appUpdater.on('checking-for-update', () => {
     console.log('checking-for-update')
     if (!backgroundCheckingForUpdates) {
-      mainWindow?.webContents.send('update-checking')
+      sendToAllWindows('update-checking')
     }
   })
 
   appUpdater.on('update-not-available', (info) => {
     console.log('update-not-available', info)
     if (!backgroundCheckingForUpdates) {
-      mainWindow?.webContents.send('update-not-available')
+      sendToAllWindows('update-not-available')
     }
   })
 
   appUpdater.on('error', (error) => {
     console.error('update-error', error)
-    mainWindow?.webContents.send('update-error', error)
+    sendToAllWindows('update-error', error)
   })
 
   appUpdater.on('update-available', (info) => {
@@ -689,18 +735,18 @@ app.on('ready', () => {
     'download-progress',
     (progress: AutoUpdateDownloadProgress) => {
       console.log('update-download-start', progress)
-      mainWindow?.webContents.send('update-download-start', progress)
+      sendToAllWindows('update-download-start', progress)
     }
   )
 
   appUpdater.on('download-progress', (progress: AutoUpdateDownloadProgress) => {
     console.log('download-progress', progress)
-    mainWindow?.webContents.send('update-download-progress', progress)
+    sendToAllWindows('update-download-progress', progress)
   })
 
   appUpdater.on('update-downloaded', (info) => {
     console.log('update-downloaded', info)
-    mainWindow?.webContents.send('update-downloaded', {
+    sendToAllWindows('update-downloaded', {
       version: info.version,
       releaseNotes: info.releaseNotes,
     })

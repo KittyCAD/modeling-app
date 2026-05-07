@@ -160,20 +160,20 @@ export function buildAndSetMenuForProjectPage(
 
 // Try to enable the menu based on the application menu
 // It will not do anything if that menu cannot be found.
-export function enableMenu(menuId: string) {
+export function setMenuItemEnabled(menuId: string, enabled: boolean) {
   const applicationMenu = Menu.getApplicationMenu()
   const menuItem = applicationMenu?.getMenuItemById(menuId)
   if (menuItem) {
-    menuItem.enabled = true
+    menuItem.enabled = enabled
   }
+}
+
+export function enableMenu(menuId: string) {
+  setMenuItemEnabled(menuId, true)
 }
 
 // Try to disable the menu based on the application menu
 // It will not do anything if that menu cannot be found.
 export function disableMenu(menuId: string) {
-  const applicationMenu = Menu.getApplicationMenu()
-  const menuItem = applicationMenu?.getMenuItemById(menuId)
-  if (menuItem) {
-    menuItem.enabled = false
-  }
+  setMenuItemEnabled(menuId, false)
 }
