@@ -62,8 +62,8 @@ profileEdge = getCommonEdge(faces = [side1, top])
 
 gdt::profile(
   edges = [profileEdge],
-  datums = ["A"],
   tolerance = 0.1mm,
+  datums = ["A"],
   framePosition = [10mm, 20mm],
   framePlane = XZ,
 )
