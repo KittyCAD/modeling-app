@@ -2,6 +2,8 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing face_api_fillet_edge_refs_variant_5.kcl
 ---
+@settings(experimentalFeatures = allow)
+
 // Test variant 5: fillet top edge using disambiguator (myDisambigutator)
 // Shape has an edge split into two edges that share the same two faces.
 

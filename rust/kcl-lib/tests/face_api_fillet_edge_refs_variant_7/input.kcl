@@ -1,3 +1,5 @@
+@settings(experimentalFeatures = allow)
+
 // Test variant 7: fillet top edge using index 1
 // Shape has an edge split into two edges that share the same two faces.
 
