@@ -14,4 +14,4 @@ Functions for working with geometric dimensioning and tolerancing (GD&T). This c
 
 * [`gdt::datum`](/docs/kcl-std-sketch-solve/functions/std-gdt-datum)
 * [`gdt::flatness`](/docs/kcl-std-sketch-solve/functions/std-gdt-flatness)
-
+* [`gdt::profile`](/docs/kcl-std-sketch-solve/functions/std-gdt-profile)
