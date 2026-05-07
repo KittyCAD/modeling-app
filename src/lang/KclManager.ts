@@ -1225,7 +1225,11 @@ export class KclManager extends File {
       if (isDirectSketchHistoryReplay) return
       if (shouldSkipExecutionForAnnotation) return
 
-      this.deferredExecution({ newCode, shouldResetCamera })
+      this.deferredExecution({
+        newCode,
+        shouldResetCamera,
+        requestedUserDocumentVersion: this._userDocumentVersion,
+      })
     }
   })
 
@@ -1233,9 +1237,11 @@ export class KclManager extends File {
     async ({
       newCode,
       shouldResetCamera,
+      requestedUserDocumentVersion,
     }: {
       newCode: string
       shouldResetCamera: boolean
+      requestedUserDocumentVersion: number
     }) => {
       if (!this._automaticallyRenderEnabled) {
         return
@@ -1247,11 +1253,28 @@ export class KclManager extends File {
       // should be clean up.
       try {
         if (this.modelingState?.matches('sketchSolveMode')) {
+          const isCurrentDirectEditorExecution = () =>
+            requestedUserDocumentVersion === this._userDocumentVersion &&
+            this.code === newCode
+
+          /*
+           * Direct CodeMirror edits are already present in the editor before this
+           * async work starts. `newCode` is the snapshot we executed, not an
+           * authoritative edit we can replay later. If the user keeps typing while
+           * executeCode or hackSetProgram awaits, the finished result belongs to an
+           * older document and must not update scene checkpoints or be forwarded to
+           * updateSketchOutcome. That event is also used by sketch tools, where
+           * sourceDelta is real generated KCL; letting this stale editor snapshot
+           * take that path is what overwrote freshly typed sketch lines.
+           */
           await this.executeCode(newCode)
+          if (!isCurrentDirectEditorExecution()) return
+
           const setProgramOutcome = await this.rustContext.hackSetProgram(
             this.ast,
             jsAppSettings(this.systemDeps.settings)
           )
+          if (!isCurrentDirectEditorExecution()) return
 
           if (setProgramOutcome.type === 'Success') {
             // Convert SceneGraph to SceneGraphDelta and send to sketch solve machine
@@ -1302,6 +1325,8 @@ export class KclManager extends File {
               data: {
                 sourceDelta: kclSource,
                 sceneGraphDelta,
+                updateEditor: false,
+                writeToDisk: false,
                 addToHistory: false,
                 checkpointId: directEditCheckpointId,
               },
@@ -1489,6 +1514,7 @@ export class KclManager extends File {
             this.deferredExecution({
               newCode: effect.value.redoCode,
               shouldResetCamera: effect.value.options.shouldResetCamera,
+              requestedUserDocumentVersion: this._userDocumentVersion,
             })
           }
 

@@ -723,6 +723,164 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
   })
 
+  test('keeps newer copied sketch block edits when stale execution finishes', async ({
+    page,
+    context,
+    homePage,
+    scene,
+    cmdBar,
+    editor,
+    toolbar,
+  }) => {
+    const INITIAL_CODE = `sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+}
+`
+    const copiedLine =
+      '  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 5mm])'
+    const editedLine =
+      '  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 8mm])'
+    const getWriteToFileCalls = async () =>
+      page.evaluate(() => {
+        const calls = Reflect.get(window, 'kclWriteToFileCallsForTest')
+        if (!Array.isArray(calls)) return []
+        return calls.filter((call): call is string => typeof call === 'string')
+      })
+
+    await test.step('Set up a sketch and enter sketch edit mode', async () => {
+      await context.addInitScript(
+        async ({ code }) => {
+          localStorage.setItem('persistCode', code)
+        },
+        {
+          code: INITIAL_CODE,
+        }
+      )
+
+      await page.setBodyDimensions({ width: 1200, height: 600 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+      await editor.expectEditor.toContain('sketch001 = sketch(on = XY) {')
+
+      await toolbar.openFeatureTreePane()
+      await expect(page.getByText('Building feature tree')).not.toBeVisible({
+        timeout: 10000,
+      })
+      const sketchOperation = await toolbar.getFeatureTreeOperation(
+        'sketch001',
+        0
+      )
+      await sketchOperation.dblclick()
+      await page.waitForTimeout(600)
+      await expect(toolbar.exitSketchBtn).toBeEnabled()
+    })
+
+    await test.step('Delay the next sketch execution and observe editor saves', async () => {
+      await page.evaluate(() => {
+        const writeToFileCalls: string[] = []
+        const originalWriteToFile = window.kclManager.writeToFile.bind(
+          window.kclManager
+        )
+        /*
+         * This is only a spy on the save path. The test still edits through
+         * CodeMirror with editor.replaceCodeByTyping, so CodeMirror decides when
+         * to write. Recording writeToFile calls here proves raw typing still
+         * reaches the normal save listener, and that the delayed execution does
+         * not add a stale out-of-band save afterward.
+         */
+        window.kclManager.writeToFile = (async (
+          ...args: Parameters<typeof window.kclManager.writeToFile>
+        ) => {
+          const [newCode = window.kclManager.code] = args
+          writeToFileCalls.push(newCode)
+          return originalWriteToFile(...args)
+        }) satisfies typeof window.kclManager.writeToFile
+        Reflect.set(window, 'kclWriteToFileCallsForTest', writeToFileCalls)
+
+        const originalHackSetProgram = window.rustContext.hackSetProgram.bind(
+          window.rustContext
+        )
+        let shouldDelayNextHackSetProgram = true
+        let releaseDelayedHackSetProgram: (() => void) | undefined
+
+        window.addEventListener('release-delayed-sketch-execution', () => {
+          releaseDelayedHackSetProgram?.()
+        })
+
+        const delayedHackSetProgram: typeof window.rustContext.hackSetProgram =
+          async (...args) => {
+            if (shouldDelayNextHackSetProgram) {
+              shouldDelayNextHackSetProgram = false
+              window.dispatchEvent(
+                new Event('delayed-sketch-execution-started')
+              )
+              await new Promise<void>((resolve) => {
+                releaseDelayedHackSetProgram = resolve
+              })
+            }
+
+            return originalHackSetProgram(...args)
+          }
+
+        window.rustContext.hackSetProgram = delayedHackSetProgram
+      })
+    })
+
+    await test.step('Copy a sketch line, then edit its endpoint before execution returns', async () => {
+      const delayedExecutionStarted = page.evaluate(
+        () =>
+          new Promise<void>((resolve) => {
+            window.addEventListener(
+              'delayed-sketch-execution-started',
+              () => resolve(),
+              { once: true }
+            )
+          })
+      )
+
+      await editor.replaceCodeByTyping('\n}', `\n${copiedLine}\n}`)
+      await delayedExecutionStarted
+      await editor.expectEditor.toContain(copiedLine)
+
+      await editor.replaceCodeByTyping(
+        'end = [var 10mm, var 5mm]',
+        'end = [var 10mm, var 8mm]'
+      )
+      await editor.expectEditor.toContain(editedLine)
+
+      await expect
+        .poll(async () => {
+          const writeToFileCalls = await getWriteToFileCalls()
+          return writeToFileCalls.at(-1) ?? ''
+        })
+        .toContain(editedLine)
+      const writeToFileCountBeforeStaleExecutionReturns = (
+        await getWriteToFileCalls()
+      ).length
+
+      await page.evaluate(() => {
+        window.dispatchEvent(new Event('release-delayed-sketch-execution'))
+      })
+      await page.waitForTimeout(100)
+
+      const writeToFileCallsAfterStaleExecutionReturns =
+        await getWriteToFileCalls()
+      expect(writeToFileCallsAfterStaleExecutionReturns).toHaveLength(
+        writeToFileCountBeforeStaleExecutionReturns
+      )
+      expect(writeToFileCallsAfterStaleExecutionReturns.at(-1)).toContain(
+        editedLine
+      )
+    })
+
+    await test.step('The newer endpoint value should still be in the editor', async () => {
+      const currentCode = await editor.getCurrentCode()
+
+      expect(currentCode).toContain(editedLine)
+      expect(currentCode).not.toContain(copiedLine)
+    })
+  })
+
   test('undoing center arcs removes one arc at a time in sketch solve mode', async ({
     page,
     context,
