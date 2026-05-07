@@ -21,6 +21,17 @@ pub enum Axis2dOrEdgeReference {
     Edge(EdgeReference),
 }
 
+/// A 2D axis or tagged edge.
+#[derive(Debug, Clone, PartialEq)]
+pub enum MirrorAcross3d {
+    /// 2D axis and origin.
+    Axis { direction: [TyF64; 2], origin: [TyF64; 2] },
+    /// Tagged edge.
+    Edge(EdgeReference),
+    /// A plane
+    Plane(Plane),
+}
+
 impl Axis2dOrEdgeReference {
     /// Use a sketch-solve segment by finding its engine ID.
     pub fn from_segment(segment: &Segment) -> Result<Self, KclError> {
