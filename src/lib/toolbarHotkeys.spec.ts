@@ -5,7 +5,11 @@ import type {
   ToolbarItemResolved,
   ToolbarItemResolvedDropdown,
 } from '@src/lib/toolbar'
-import { collectToolbarHotkeyActions } from '@src/lib/toolbarHotkeys'
+import {
+  collectToolbarHotkeyActions,
+  getToolbarEventHotkey,
+  normalizeToolbarHotkey,
+} from '@src/lib/toolbarHotkeys'
 
 function makeResolvedItem(
   overrides: Partial<ToolbarItemResolved> = {}
@@ -146,5 +150,46 @@ describe('collectToolbarHotkeyActions', () => {
     ])
 
     expect(hotkeyActions.map((action) => action.hotkey)).toEqual(['E'])
+  })
+
+  it('normalizes toolbar hotkeys by typed key, not physical key position', () => {
+    expect(normalizeToolbarHotkey('.')).toBe('.')
+    expect(
+      getToolbarEventHotkey(
+        new KeyboardEvent('keydown', {
+          key: '.',
+          code: 'KeyE',
+        })
+      )
+    ).toBe('.')
+    expect(
+      getToolbarEventHotkey(
+        new KeyboardEvent('keydown', {
+          key: 'v',
+          code: 'KeyK',
+        })
+      )
+    ).toBe('v')
+  })
+
+  it('preserves modifier-based toolbar hotkeys', () => {
+    expect(normalizeToolbarHotkey('Shift+B')).toBe('shift+b')
+    expect(normalizeToolbarHotkey('Meta+Esc')).toBe('meta+esc')
+    expect(
+      getToolbarEventHotkey(
+        new KeyboardEvent('keydown', {
+          key: 'B',
+          shiftKey: true,
+        })
+      )
+    ).toBe('shift+b')
+    expect(
+      getToolbarEventHotkey(
+        new KeyboardEvent('keydown', {
+          key: 'Escape',
+          metaKey: true,
+        })
+      )
+    ).toBe('meta+esc')
   })
 })

@@ -68,10 +68,10 @@ description: Variables in memory after executing face_api_fillet_chamfer_tags_an
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 274,
-            "end": 277,
+            "commentStart": 315,
+            "end": 318,
             "moduleId": 0,
-            "start": 274,
+            "start": 315,
             "type": "TagDeclarator",
             "value": "e1"
           },
@@ -103,10 +103,10 @@ description: Variables in memory after executing face_api_fillet_chamfer_tags_an
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 425,
-            "end": 435,
+            "commentStart": 466,
+            "end": 476,
             "moduleId": 0,
-            "start": 425,
+            "start": 466,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -128,10 +128,10 @@ description: Variables in memory after executing face_api_fillet_chamfer_tags_an
               0.0
             ],
             "tag": {
-              "commentStart": 274,
-              "end": 277,
+              "commentStart": 315,
+              "end": 318,
               "moduleId": 0,
-              "start": 274,
+              "start": 315,
               "type": "TagDeclarator",
               "value": "e1"
             },
@@ -273,10 +273,10 @@ description: Variables in memory after executing face_api_fillet_chamfer_tags_an
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 595,
-            "end": 598,
+            "commentStart": 636,
+            "end": 639,
             "moduleId": 0,
-            "start": 595,
+            "start": 636,
             "type": "TagDeclarator",
             "value": "e2"
           },
@@ -308,10 +308,10 @@ description: Variables in memory after executing face_api_fillet_chamfer_tags_an
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 748,
-            "end": 758,
+            "commentStart": 789,
+            "end": 799,
             "moduleId": 0,
-            "start": 748,
+            "start": 789,
             "type": "TagDeclarator",
             "value": "capEnd002"
           },
@@ -333,10 +333,10 @@ description: Variables in memory after executing face_api_fillet_chamfer_tags_an
               0.0
             ],
             "tag": {
-              "commentStart": 595,
-              "end": 598,
+              "commentStart": 636,
+              "end": 639,
               "moduleId": 0,
-              "start": 595,
+              "start": 636,
               "type": "TagDeclarator",
               "value": "e2"
             },

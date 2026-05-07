@@ -2098,12 +2098,12 @@ description: Result of parsing blend_with_edge_specifier_objects.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "1",
+                        "raw": "0",
                         "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
-                          "value": 1.0,
+                          "value": 0.0,
                           "suffix": "None"
                         }
                       }

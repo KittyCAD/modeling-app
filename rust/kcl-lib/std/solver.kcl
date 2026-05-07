@@ -220,6 +220,8 @@ export fn distance(
 export fn radius(
   /// The arc segment whose radius should match the value set with `==`.
   @points: Segment,
+  /// Optional position for the displayed constraint label in the sketch's local 2D coordinate system.
+  labelPosition?: Point2d,
 ) {}
 
 /// Constrain the diameter of an arc or circle segment.
@@ -247,6 +249,8 @@ export fn radius(
 export fn diameter(
   /// The arc or circle segment whose diameter should match the value set with `==`.
   @points: Segment,
+  /// Optional position for the displayed constraint label in the sketch's local 2D coordinate system.
+  labelPosition?: Point2d,
 ) {}
 
 /// Constrain the horizontal distance between two points.

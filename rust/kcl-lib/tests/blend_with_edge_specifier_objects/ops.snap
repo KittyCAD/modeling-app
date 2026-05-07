@@ -222,7 +222,7 @@ description: Operations executed blend_with_edge_specifier_objects.kcl
                 },
                 "index": {
                   "type": "Number",
-                  "value": 1.0,
+                  "value": 0.0,
                   "ty": {
                     "type": "Default",
                     "len": "mm",

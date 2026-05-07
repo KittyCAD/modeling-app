@@ -55,7 +55,7 @@ test.describe(
         },
       }
 
-      const code = `@settings(defaultLengthUnit = in)sketch001 = sketch(on = ${plane}) {}`
+      const code = `@settings(defaultLengthUnit = in, kclVersion = 2.0)sketch001 = sketch(on = ${plane}) {}`
 
       await test.step(`Sketch on the ${plane} plane using custom camera commands to orient`, async () => {
         await u.openDebugPanel()
@@ -144,7 +144,7 @@ test.describe(
       await page.addInitScript(() => {
         localStorage.setItem(
           'persistCode',
-          `@settings(defaultLengthUnit = in)
+          `@settings(defaultLengthUnit = in, kclVersion = 2.0)
 xyPlane = offsetPlane(XY, offset = 0.05)
 xzPlane = offsetPlane(XZ, offset = 0.05)
 yzPlane = offsetPlane(YZ, offset = 0.05)
@@ -227,7 +227,7 @@ yzPlane = offsetPlane(YZ, offset = 0.05)
         await expect(toolbar.exitSketchBtn).toBeVisible()
 
         if ((await toolbar.lineBtn.getAttribute('aria-pressed')) !== 'true') {
-          await page.keyboard.press('l')
+          await toolbar.lineBtn.click()
         }
         await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
       })

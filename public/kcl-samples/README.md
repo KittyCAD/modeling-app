@@ -138,6 +138,8 @@ ex. `just overwrite-sim-test-sample angle-gauge`
 [![lego](screenshots/lego.png)](lego/main.kcl)
 #### [linear-shelf-system](linear-shelf-system/main.kcl) ([screenshot](screenshots/linear-shelf-system.png))
 [![linear-shelf-system](screenshots/linear-shelf-system.png)](linear-shelf-system/main.kcl)
+#### [liquid-impeller](liquid-impeller/main.kcl) ([screenshot](screenshots/liquid-impeller.png))
+[![liquid-impeller](screenshots/liquid-impeller.png)](liquid-impeller/main.kcl)
 #### [m4-hex-socket-countersunk-head-screw](m4-hex-socket-countersunk-head-screw/main.kcl) ([screenshot](screenshots/m4-hex-socket-countersunk-head-screw.png))
 [![m4-hex-socket-countersunk-head-screw](screenshots/m4-hex-socket-countersunk-head-screw.png)](m4-hex-socket-countersunk-head-screw/main.kcl)
 #### [m4-insert](m4-insert/main.kcl) ([screenshot](screenshots/m4-insert.png))

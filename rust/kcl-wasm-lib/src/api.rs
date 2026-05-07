@@ -600,7 +600,7 @@ impl Context {
             .map_err(|e| format!("Could not serialize edit constraint result. {TRUE_BUG} Details: {e}"))?)
     }
 
-    /// Edit a distance constraint label position in a sketch.
+    /// Edit a constraint label position in a sketch.
     #[wasm_bindgen]
     pub async fn edit_distance_constraint_label_position(
         &self,
@@ -626,7 +626,7 @@ impl Context {
             .map_err(|e| format!("Could not deserialize anchor segment ids: {e}"))?;
 
         let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
-            format!("Could not create KCL executor context for edit distance constraint label. {TRUE_BUG} Details: {e}")
+            format!("Could not create KCL executor context for edit constraint label. {TRUE_BUG} Details: {e}")
         })?;
 
         let frontend = Arc::clone(&self.frontend);
@@ -658,9 +658,8 @@ impl Context {
             checkpoint_id,
         };
 
-        Ok(JsValue::from_serde(&result).map_err(|e| {
-            format!("Could not serialize edit distance constraint label result. {TRUE_BUG} Details: {e}")
-        })?)
+        Ok(JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize edit constraint label result. {TRUE_BUG} Details: {e}"))?)
     }
 
     /// Execute trim operations on a sketch.

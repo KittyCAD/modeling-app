@@ -27,7 +27,7 @@ helix(
 |----------|------|-------------|----------|
 | `revolutions` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Number of revolutions. | Yes |
 | `angleStart` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | Start angle. | Yes |
-| `axis` | [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d) or [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`Segment`](/docs/kcl-std/types/std-types-Segment) or [`any`](/docs/kcl-std/types/std-types-any) | Axis to use for the helix. Can be an Axis3d, an Edge, or an edge reference object (e.g. `{ sideFaces = [faceTag1, faceTag2] }`) when not using a cylinder. | No |
+| `axis` | [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d) or [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`Segment`](/docs/kcl-std/types/std-types-Segment) or [`any`](/docs/kcl-std/types/std-types-any) | Axis to use for the helix. Can be an Axis3d, an Edge, or a Segment when not using a cylinder. Experimental face API: edge reference objects (e.g. `{ sideFaces = [faceTag1, faceTag2] }`) are not ready for generated or user-facing KCL yet; prefer Axis3d, Edge, or Segment until point-and-click and migration support ships. | No |
 | `ccw` | [`bool`](/docs/kcl-std/types/std-types-bool) | Is the helix rotation counter clockwise? The default is `false`. | No |
 | `radius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Radius of the helix. | No |
 | `length` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used. | No |

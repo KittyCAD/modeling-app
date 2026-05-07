@@ -27,7 +27,7 @@ helix(
 |----------|------|-------------|----------|
 | `revolutions` | `number(_)` | Number of revolutions. | Yes |
 | `angleStart` | `number(Angle)` | Start angle. | Yes |
-| `axis` | `Axis3d | Edge | Segment | any` | Axis to use for the helix. Can be an Axis3d, an Edge, or an edge reference object (e.g. `{ sideFaces = [faceTag1, faceTag2] }`) when not using a cylinder. | No |
+| `axis` | `Axis3d | Edge | Segment | any` | Axis to use for the helix. Can be an Axis3d, an Edge, or a Segment when not using a cylinder. Experimental face API: edge reference objects (e.g. `{ sideFaces = [faceTag1, faceTag2] }`) are not ready for generated or user-facing KCL yet; prefer Axis3d, Edge, or Segment until point-and-click and migration support ships. | No |
 | `ccw` | `bool` | Is the helix rotation counter clockwise? The default is `false`. | No |
 | `radius` | `number(Length)` | Radius of the helix. | No |
 | `length` | `number(Length)` | Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used. | No |

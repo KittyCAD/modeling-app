@@ -132,6 +132,8 @@ export type LayoutWithMetadata = {
   layout: Layout
 }
 
+export type LayoutsWithMetadata = Record<string, LayoutWithMetadata>
+
 export type LayoutMigrationMap = Map<string, LayoutMigration>
 
 export type LayoutMigration = {
