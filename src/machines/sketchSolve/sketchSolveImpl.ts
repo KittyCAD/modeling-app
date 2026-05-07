@@ -1,7 +1,6 @@
 import type {
   ApiObject,
   Expr,
-  Freedom,
   SceneGraphDelta,
   SegmentCtor,
   SourceDelta,
