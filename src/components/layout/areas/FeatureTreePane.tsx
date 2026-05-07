@@ -65,6 +65,7 @@ import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
 import type { ConnectionManager } from '@src/network/connectionManager'
+import { executingEditorService } from '@src/registry/contracts/executingEditor'
 
 type Singletons = ReturnType<typeof useSingletons>
 type SystemDeps = Pick<Singletons, 'kclManager'> & {
@@ -115,9 +116,11 @@ function openCodePane(layout: Layout, setLayout: (l: Layout) => void) {
 
 export const FeatureTreePaneContents = memo(() => {
   useSignals()
-  const { layout, commands, settings } = useApp()
+  const app = useApp()
+  const { layout, commands, settings } = app
   const settingsValues = settings.useSettings()
   const { kclManager } = useSingletons()
+  const executionService = app.registry.signal(executingEditorService).value
   const { engineCommandManager, rustContext } = kclManager
   const {
     send: modelingSend,
@@ -236,6 +239,18 @@ export const FeatureTreePaneContents = memo(() => {
                 <p className="text-xs text-chalkboard-20">
                   {getUnrenderedChangesDisabledReason()}
                 </p>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      executionService?.executeCode().catch(reportRejection)
+                    }}
+                    disabled={kclManager.isExecuting || !executionService}
+                    className="bg-chalkboard-10 text-warn-80 p-1 rounded-sm flex-none hover:bg-chalkboard-10 hover:border-warn-70 hover:text-warn-80 border-transparent disabled:cursor-wait disabled:opacity-70"
+                  >
+                    Execute
+                  </button>
+                </div>
               </div>
             )}
             {hasParseErrors && (

@@ -54,6 +54,8 @@ import type { SnapshotFrom } from 'xstate'
 import { isArray, type Platform } from '@src/lib/utils'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import usePlatform from '@src/hooks/usePlatform'
+import { executingEditorService } from '@src/registry/contracts/executingEditor'
+import { reportRejection } from '@src/lib/trap'
 
 type ToolbarProps = {
   isExecuting: boolean
@@ -70,9 +72,11 @@ type ToolbarProps = {
 
 const Toolbar_ = memo(
   (props: ToolbarProps) => {
-    const { commands } = useApp()
+    const app = useApp()
+    const { commands } = app
     const { kclManager } = useSingletons()
     const platform = usePlatform()
+    const executionService = app.registry.signal(executingEditorService).value
     const toolbarConfig = useToolbarConfig()
     const wasmInstance = use(kclManager.wasmInstancePromise)
     const iconClassName =
@@ -766,6 +770,23 @@ const Toolbar_ = memo(
           })}
         </ul>
         <div className="flex flex-col items-center absolute top-full left-1/2 -translate-x-1/2">
+          {props.disableModelingForUnrenderedChanges && (
+            <div className="mt-2 py-1 px-2 bg-warn-80 text-chalkboard-10 border border-warn-70 rounded shadow-lg flex items-center gap-2">
+              <p className="text-xs m-0">
+                {getUnrenderedChangesDisabledReason()}
+              </p>
+              <button
+                type="button"
+                className="bg-chalkboard-10 text-warn-80 px-1.5 py-0.5 rounded-sm flex-none hover:bg-chalkboard-10 hover:border-warn-70 hover:text-warn-80 border-transparent disabled:cursor-wait disabled:opacity-70"
+                disabled={props.isExecuting || !executionService}
+                onClick={() => {
+                  executionService?.executeCode().catch(reportRejection)
+                }}
+              >
+                Execute
+              </button>
+            </div>
+          )}
           {props.state.matches('Sketch no face') && (
             <div className="mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg">
               <p className="text-xs">
