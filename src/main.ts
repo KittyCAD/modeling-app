@@ -36,6 +36,7 @@ import { getAppFolderNameFromBuild } from '@src/lib/appFolderName'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { discoverMachineApi } from '@src/lib/discoverMachineApi'
 import { registerFileProtocolCsp } from '@src/lib/csp'
+import { DeviceFlowSessionStore } from '@src/lib/deviceFlowSessions'
 import { reportRejection } from '@src/lib/trap'
 import {
   buildAndSetMenuForFallback,
@@ -77,10 +78,6 @@ const scheduleMenuGC = () => {
 
 type MachineApiSignal = 'on' | 'off'
 type AppMenuPage = 'project' | 'modeling' | 'fallback'
-type DeviceFlowSession = {
-  handle: DeviceFlowHandle
-  verificationUri: string
-}
 
 // Check the command line arguments for a project path
 const args = parseCLIArgs(process.argv)
@@ -88,7 +85,10 @@ let startupMacOpenFiles: string[] = []
 let startupOpenUrls: string[] = []
 const windowMenuPages = new WeakMap<BrowserWindow, AppMenuPage>()
 const disabledWindowMenuIds = new WeakMap<BrowserWindow, Set<string>>()
-const deviceFlowSessions = new WeakMap<BrowserWindow, DeviceFlowSession>()
+const deviceFlowSessions = new DeviceFlowSessionStore<
+  BrowserWindow,
+  DeviceFlowHandle
+>()
 
 // @ts-ignore: TS1343
 const viteEnv = import.meta.env
@@ -241,8 +241,7 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
   newWindow.on('closed', () => {
     windowMenuPages.delete(newWindow)
     disabledWindowMenuIds.delete(newWindow)
-    deviceFlowSessions.get(newWindow)?.handle.abort()
-    deviceFlowSessions.delete(newWindow)
+    deviceFlowSessions.abort(newWindow)
     if (mainWindow !== newWindow) return
     const nextMainWindow = BrowserWindow.getAllWindows().find(
       (browserWindow) => !browserWindow.isDestroyed()
@@ -577,7 +576,6 @@ ipcMain.handle('startDeviceFlow', async (event, host: string) => {
     return Promise.reject(new Error('No verification URI received'))
   }
 
-  deviceFlowSessions.get(targetWindow)?.handle.abort()
   deviceFlowSessions.set(targetWindow, {
     handle,
     verificationUri,
@@ -614,7 +612,7 @@ ipcMain.handle('loginWithDeviceFlow', async (event) => {
   } catch (e) {
     console.log(e)
   } finally {
-    deviceFlowSessions.delete(targetWindow)
+    deviceFlowSessions.deleteIfCurrent(targetWindow, deviceFlowSession)
   }
 
   return Promise.reject(new Error('No access token received'))
