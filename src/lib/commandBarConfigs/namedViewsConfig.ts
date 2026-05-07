@@ -235,6 +235,9 @@ export function createNamedViewsCommand(
     args: {
       name: {
         required: true,
+        hidden: (commandBarContext: {
+          argumentsToSubmit: Record<string, unknown>
+        }) => commandBarContext.argumentsToSubmit.name !== undefined,
         inputType: 'options',
         options: (_commandBar, _machineContext) => {
           const settings = getSettings()
@@ -252,6 +255,118 @@ export function createNamedViewsCommand(
             }
           })
           return options
+        },
+      },
+    },
+  }
+
+  const editNamedViewCommand: Command = {
+    name: 'Edit named view',
+    displayName: `Edit named view`,
+    description: 'Edits a saved named view',
+    groupId: 'namedViews',
+    icon: 'settings',
+    needsReview: false,
+    onSubmit: (data) => {
+      if (!data) {
+        return toast.error('Unable to edit named view, missing data.')
+      }
+
+      const idToEdit = data.name
+      const nextName = data.newName
+      const showAnnotations = data.show_annotations
+
+      if (
+        typeof idToEdit !== 'string' ||
+        typeof nextName !== 'string' ||
+        typeof showAnnotations !== 'boolean'
+      ) {
+        return toast.error('Unable to edit named view, invalid data.')
+      }
+
+      const namedViews = {
+        ...settingsActor.getSnapshot().context.app.namedViews.current,
+      }
+      const viewToEdit = namedViews[idToEdit]
+
+      if (!viewToEdit) {
+        return toast.error(`Unable to edit, could not find the named view.`)
+      }
+
+      settingsActor.send({
+        type: `set.app.namedViews`,
+        data: {
+          level: 'project',
+          value: {
+            ...namedViews,
+            [idToEdit]: {
+              ...viewToEdit,
+              name: nextName,
+              show_annotations: showAnnotations,
+            },
+          },
+          toastCallback: () => {
+            toast.success(`Named view ${nextName} updated.`)
+          },
+        },
+      })
+    },
+    args: {
+      name: {
+        required: true,
+        hidden: (commandBarContext: {
+          argumentsToSubmit: Record<string, unknown>
+        }) => commandBarContext.argumentsToSubmit.name !== undefined,
+        inputType: 'options',
+        options: () => {
+          const settings = getSettings()
+          const namedViews = {
+            ...settings.app.namedViews.current,
+          }
+          const options: CommandArgumentOption<any>[] = []
+          Object.entries(namedViews).forEach(([key, view]) => {
+            if (view) {
+              options.push({
+                name: view.name,
+                isCurrent: false,
+                value: key,
+              })
+            }
+          })
+          return options
+        },
+      },
+      newName: {
+        displayName: 'Name',
+        required: true,
+        inputType: 'string',
+        defaultValue: (commandBarContext: {
+          argumentsToSubmit: Record<string, unknown>
+        }) => {
+          const id = commandBarContext.argumentsToSubmit.name
+          return typeof id === 'string'
+            ? settingsActor.getSnapshot().context.app.namedViews.current[id]
+                ?.name
+            : ''
+        },
+      },
+      show_annotations: {
+        displayName: 'Show annotations',
+        required: true,
+        inputType: 'options',
+        options: (commandBarContext: {
+          argumentsToSubmit: Record<string, unknown>
+        }) => {
+          const id = commandBarContext.argumentsToSubmit.name
+          const view =
+            typeof id === 'string'
+              ? settingsActor.getSnapshot().context.app.namedViews.current[id]
+              : undefined
+          const isCurrent = view?.show_annotations ?? true
+          return [
+            { name: 'On', value: true, isCurrent },
+            { name: 'Off', value: false, isCurrent: !isCurrent },
+          ]
         },
       },
     },
@@ -362,6 +477,9 @@ export function createNamedViewsCommand(
     args: {
       name: {
         required: true,
+        hidden: (commandBarContext: {
+          argumentsToSubmit: Record<string, unknown>
+        }) => commandBarContext.argumentsToSubmit.name !== undefined,
         inputType: 'options',
         options: () => {
           const settings = getSettings()
@@ -387,6 +505,7 @@ export function createNamedViewsCommand(
   return {
     createNamedViewCommand,
     deleteNamedViewCommand,
+    editNamedViewCommand,
     loadNamedViewCommand,
   }
 }

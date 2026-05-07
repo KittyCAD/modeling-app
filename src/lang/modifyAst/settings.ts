@@ -35,9 +35,13 @@ function isShowAnnotationsDeclaration(item: BodyItem): boolean {
 }
 
 function parseShowAnnotationsDeclaration(
+  showAnnotations: boolean,
   instance: ModuleType
 ): BodyItem | Error {
-  const result = parse('showAnnotations = false\n', instance)
+  const result = parse(
+    `showAnnotations = ${showAnnotations ? 'true' : 'false'}\n`,
+    instance
+  )
   if (err(result)) {
     return result
   }
@@ -69,13 +73,11 @@ export function setShowAnnotations(
     (item) => !isShowAnnotationsDeclaration(item)
   )
 
-  if (!showAnnotations) {
-    const declaration = parseShowAnnotationsDeclaration(instance)
-    if (err(declaration)) {
-      return declaration
-    }
-    program.body.unshift(declaration)
+  const declaration = parseShowAnnotationsDeclaration(showAnnotations, instance)
+  if (err(declaration)) {
+    return declaration
   }
+  program.body.unshift(declaration)
 
   return program
 }

@@ -47,7 +47,7 @@ describe('settings.spec.ts', () => {
       expect(newCode).toBe(`showAnnotations = false\nx = 1\n`)
     })
 
-    it('should remove showAnnotations when annotations should be shown', async () => {
+    it('should set showAnnotations to true when annotations should be shown', async () => {
       const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
       const code = `showAnnotations = false\nx = 1\n`
       const newAst = setShowAnnotations(code, true, instance)
@@ -56,7 +56,7 @@ describe('settings.spec.ts', () => {
       }
 
       const newCode = recast(newAst, instance)
-      expect(newCode).toBe(`x = 1\n`)
+      expect(newCode).toBe(`showAnnotations = true\nx = 1\n`)
     })
   })
 })
