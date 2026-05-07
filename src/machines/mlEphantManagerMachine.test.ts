@@ -1,16 +1,18 @@
-import { expect, describe, it, vi } from 'vitest'
-import { createActor, fromPromise, waitFor } from 'xstate'
+import type { FileMeta } from '@src/lib/types'
 import {
+  type Conversation,
+  type MlCopilotModeOption,
   MlEphantConversationToMarkdown,
+  type MlEphantManagerContext,
   type MlEphantManagerEvents,
   MlEphantManagerStates,
   MlEphantManagerTransitions,
-  type Conversation,
-  type MlEphantManagerContext,
   mlEphantManagerMachine,
+  parseMlCopilotModesResult,
 } from '@src/machines/mlEphantManagerMachine'
 import { S } from '@src/machines/utils'
-import type { FileMeta } from '@src/lib/types'
+import { describe, expect, it, vi } from 'vitest'
+import { createActor, fromPromise, waitFor } from 'xstate'
 
 class TestSocket extends EventTarget {
   sentPayloads: string[] = []
@@ -49,6 +51,103 @@ const completedConversation: Conversation = {
 }
 
 describe('mlEphantManagerMachine', () => {
+  describe('parseMlCopilotModesResult', () => {
+    const modes = [
+      {
+        id: 'standard',
+        label: 'Standard',
+        description: 'Faster reasoning. Best for quick edits and simple tasks.',
+        icon: 'stopwatch',
+      },
+      {
+        id: 'deep',
+        label: 'Deep',
+        description: 'More thorough reasoning. Best for complex designs.',
+        icon: 'brain',
+      },
+    ]
+
+    it('parses the modes_response envelope from the API', () => {
+      expect(
+        parseMlCopilotModesResult({
+          modes_response: { default_mode: 'standard', modes },
+        })
+      ).toStrictEqual({ defaultMode: 'standard', modeOptions: modes })
+    })
+
+    it('returns null for unrelated payloads', () => {
+      expect(parseMlCopilotModesResult({ something_else: true })).toBeNull()
+    })
+
+    it('keeps the response but exposes no options when every mode entry fails validation', () => {
+      expect(
+        parseMlCopilotModesResult({
+          modes_response: {
+            default_mode: 'standard',
+            modes: [
+              {
+                id: 'standard',
+                label: 'Standard',
+                description: 'Faster reasoning.',
+                icon: 'not-a-real-icon',
+              },
+            ],
+          },
+        })
+      ).toStrictEqual({ defaultMode: 'standard', modeOptions: [] })
+    })
+  })
+
+  describe('ModesReceive', () => {
+    it('updates mode metadata before the machine reaches ready', async () => {
+      const ws: TestWebSocket = new TestSocket() as TestWebSocket
+      const modeOptions: MlCopilotModeOption[] = [
+        {
+          id: 'standard',
+          label: 'Standard',
+          description: 'Faster reasoning.',
+          icon: 'stopwatch',
+        },
+      ]
+      const machine = mlEphantManagerMachine.provide({
+        actors: {
+          [MlEphantManagerStates.Setup]: fromPromise<
+            Partial<MlEphantManagerContext>,
+            SetupActorInput
+          >(async () => ({
+            ws,
+            conversation: { exchanges: [] },
+          })),
+        },
+      })
+      const actor = createActor(machine, {
+        input: {
+          apiToken: '',
+        },
+      }).start()
+
+      actor.send({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+      })
+
+      await waitFor(actor, (state) =>
+        state.matches(MlEphantManagerStates.WaitForContinueCheck)
+      )
+
+      actor.send({
+        type: MlEphantManagerTransitions.ModesReceive,
+        defaultMode: 'standard',
+        modeOptions,
+      })
+
+      expect(actor.getSnapshot().context.defaultMode).toBe('standard')
+      expect(actor.getSnapshot().context.modeOptions).toStrictEqual(modeOptions)
+
+      actor.stop()
+    })
+  })
+
   describe('ContinueCheck', () => {
     it('sends continue requests when the last exchange was interrupted', async () => {
       const ws: TestWebSocket = new TestSocket() as TestWebSocket
