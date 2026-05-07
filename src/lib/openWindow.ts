@@ -41,14 +41,13 @@ export async function getExternalURLWithDocsFallback(
     return url
   }
 
-  // Don't bother with fetch check if they're the same.
-  if (parsedURL.href === docsFallbackURL) {
+  if (parsedURL.href === docsFallbackURL || parsedURL.pathname !== '/docs') {
     return url
   }
 
   try {
-    await fetch(url, { method: 'HEAD', mode: 'no-cors' })
-    return url
+    const response = await fetch(url, { method: 'HEAD' })
+    return response.ok ? url : docsFallbackURL
   } catch {
     return docsFallbackURL
   }

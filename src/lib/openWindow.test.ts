@@ -16,8 +16,17 @@ describe('getExternalURLWithDocsFallback', () => {
     ).resolves.toBe('https://dev.zoo.dev/docs')
     expect(fetchMock).toHaveBeenCalledWith('https://dev.zoo.dev/docs', {
       method: 'HEAD',
-      mode: 'no-cors',
     })
+  })
+
+  it('falls back to production docs when the configured docs URL returns an error status', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(null, { status: 404 })
+    )
+
+    await expect(
+      getExternalURLWithDocsFallback('https://dev.zoo.dev/docs')
+    ).resolves.toBe('https://zoo.dev/docs')
   })
 
   it('falls back to production docs when the configured docs URL fails to fetch', async () => {
