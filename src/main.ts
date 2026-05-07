@@ -79,11 +79,13 @@ const scheduleMenuGC = () => {
 }
 
 type MachineApiSignal = 'on' | 'off'
+type AppMenuPage = 'project' | 'modeling' | 'fallback'
 
 // Check the command line arguments for a project path
 const args = parseCLIArgs(process.argv)
 let startupMacOpenFiles: string[] = []
 let startupOpenUrls: string[] = []
+const windowMenuPages = new WeakMap<BrowserWindow, AppMenuPage>()
 
 // @ts-ignore: TS1343
 const viteEnv = import.meta.env
@@ -233,6 +235,18 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
       windowBounds: bounds,
     })
   })
+  newWindow.on('closed', () => {
+    windowMenuPages.delete(newWindow)
+    if (mainWindow !== newWindow) return
+    const nextMainWindow = BrowserWindow.getAllWindows().find(
+      (browserWindow) => !browserWindow.isDestroyed()
+    )
+    mainWindow = nextMainWindow ?? null
+  })
+  newWindow.on('focus', () => {
+    const page = windowMenuPages.get(newWindow)
+    if (page) buildAndSetMenuForWindow(newWindow, page)
+  })
 
   const pathIsCustomProtocolLink =
     pathToOpen?.startsWith(ZOO_STUDIO_PROTOCOL) ?? false
@@ -308,6 +322,30 @@ const menuActions = {
   openNewWindow: () => {
     createWindow()
   },
+}
+
+function isAppMenuPage(page: unknown): page is AppMenuPage {
+  return page === 'project' || page === 'modeling' || page === 'fallback'
+}
+
+function buildAndSetMenuForWindow(
+  targetWindow: BrowserWindow,
+  page: AppMenuPage
+) {
+  const oldMenu = Menu.getApplicationMenu()
+  if (oldMenu) {
+    oldMenus.push(oldMenu)
+  }
+
+  if (page === 'project') {
+    buildAndSetMenuForProjectPage(targetWindow, menuActions)
+  } else if (page === 'modeling') {
+    buildAndSetMenuForModelingPage(targetWindow, menuActions)
+  } else {
+    buildAndSetMenuForFallback(targetWindow, menuActions)
+  }
+
+  scheduleMenuGC()
 }
 
 interface LocalDeviceState {
@@ -427,7 +465,8 @@ ipcMain.handle('machine-api.set-state', (_event, signal: MachineApiSignal) => {
 })
 
 ipcMain.handle('app.resizeWindow', (event, data) => {
-  return mainWindow?.setSize(data[0], data[1])
+  const targetWindow = BrowserWindow.fromWebContents(event.sender)
+  return targetWindow?.setSize(data[0], data[1])
 })
 
 ipcMain.handle('app.getPath', (event, data) => {
@@ -571,25 +610,17 @@ ipcMain.handle('find_machine_api', () => {
 ipcMain.handle('create-menu', (event, data) => {
   const page = data.page
 
-  if (!(page === 'project' || page === 'modeling' || page === 'fallback')) {
+  if (!isAppMenuPage(page)) {
     return
   }
 
-  // Store old menu in our array to avoid GC to collect the menu and crash
-  const oldMenu = Menu.getApplicationMenu()
-  if (oldMenu) {
-    oldMenus.push(oldMenu)
+  const targetWindow = BrowserWindow.fromWebContents(event.sender)
+  if (!targetWindow) {
+    return
   }
 
-  if (page === 'project' && mainWindow) {
-    buildAndSetMenuForProjectPage(mainWindow, menuActions)
-  } else if (page === 'modeling' && mainWindow) {
-    buildAndSetMenuForModelingPage(mainWindow, menuActions)
-  } else if (page === 'fallback' && mainWindow) {
-    buildAndSetMenuForFallback(mainWindow, menuActions)
-  }
-
-  scheduleMenuGC()
+  windowMenuPages.set(targetWindow, page)
+  buildAndSetMenuForWindow(targetWindow, page)
 })
 
 ipcMain.handle('enable-menu', (event, data) => {

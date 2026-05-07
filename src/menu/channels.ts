@@ -1,4 +1,4 @@
-import type { BrowserWindow } from 'electron'
+import { BrowserWindow } from 'electron'
 
 import type { Channel } from '@src/channels'
 
@@ -69,14 +69,24 @@ export type WebContentSendPayload = {
   menuLabel: MenuLabels
 }
 
+type WebContentsSender = {
+  send: (channel: Channel, payload: WebContentSendPayload) => void
+}
+
+type MenuTargetWindow = {
+  webContents: WebContentsSender
+}
+
 // Unable to use declare module 'electron' with the interface of WebContents
 // to update the send function. It did not work.
 // Need to use a custom wrapper function for this.
 // BrowserWindow.webContents instance is different from the WebContents and webContents...?
 export const typeSafeWebContentsSend = (
-  mainWindow: BrowserWindow,
+  fallbackWindow: MenuTargetWindow,
   channel: Channel,
   payload: WebContentSendPayload
 ) => {
-  mainWindow.webContents.send(channel, payload)
+  const focusedWindow = BrowserWindow.getFocusedWindow()
+  const targetWindow = focusedWindow ?? fallbackWindow
+  targetWindow.webContents.send(channel, payload)
 }
