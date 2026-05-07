@@ -1651,16 +1651,14 @@ impl Node<SketchBlock> {
                 if let Some(status) = status
                     && status.status == ConstraintKind::OverConstrained
                 {
-                    let segments_word = if status.conflict_count == 1 {
-                        "segment"
+                    let description = if status.conflict_count == 1 {
+                        "segment has"
                     } else {
-                        "segments"
+                        "segments have"
                     };
                     let message = format!(
-                        "Sketch is over-constrained: {} {} {} conflicting constraints",
+                        "Sketch is over-constrained: {} {description} conflicting constraints",
                         status.conflict_count,
-                        segments_word,
-                        if status.conflict_count == 1 { "has" } else { "have" },
                     );
                     exec_state.warn(
                         CompilationIssue::err(range, message),
