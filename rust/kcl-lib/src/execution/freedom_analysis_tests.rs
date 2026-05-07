@@ -14,6 +14,7 @@ async fn run_with_freedom_analysis(kcl: &str) -> Vec<(ObjectId, Freedom)> {
 
     let exec_ctxt = ExecutorContext {
         engine: Arc::new(Box::new(EngineConnection::new().unwrap())),
+        engine_batch: crate::engine::EngineBatchContext::default(),
         fs: Arc::new(crate::fs::FileManager::new()),
         settings: ExecutorSettings::default(),
         context_type: ContextType::Mock,

@@ -4678,6 +4678,7 @@ d = b + c
                     })
                     .unwrap(),
             )),
+            engine_batch: crate::engine::EngineBatchContext::default(),
             fs: Arc::new(crate::fs::FileManager::new()),
             settings: ExecutorSettings {
                 project_directory: Some(crate::TypedPath(tmpdir.path().into())),

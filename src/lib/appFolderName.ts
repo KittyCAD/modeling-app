@@ -6,6 +6,18 @@ type AppFolderNameOptions = {
   appIdBase?: string
 }
 
+type AppFolderNameFromBuildOptions = {
+  packageName: string
+  packageVersion: string
+  platform: string
+  appIdBase?: string
+}
+
+type AppBuildOptions = Pick<
+  AppFolderNameFromBuildOptions,
+  'packageName' | 'packageVersion'
+>
+
 export const getAppFolderName = ({
   packageName,
   platform,
@@ -20,4 +32,36 @@ export const getAppFolderName = ({
       : appIdBase
 
   return platform === 'linux' ? packageName : appId
+}
+
+export const isStagingOrDebugAppBuild = ({
+  packageName,
+  packageVersion,
+}: AppBuildOptions) => {
+  return (
+    packageName.includes('-staging') ||
+    packageVersion === '0.0.0' ||
+    packageVersion === 'dev'
+  )
+}
+
+export const getAppFolderNameFromBuild = ({
+  packageName,
+  packageVersion,
+  platform,
+  appIdBase,
+}: AppFolderNameFromBuildOptions) => {
+  const isStaging = packageName.includes('-staging')
+  const isStagingOrDebug = isStagingOrDebugAppBuild({
+    packageName,
+    packageVersion,
+  })
+
+  return getAppFolderName({
+    packageName,
+    platform,
+    isStaging,
+    isStagingOrDebug,
+    appIdBase,
+  })
 }
