@@ -11,16 +11,14 @@ import {
   Menu,
   app,
   autoUpdater,
-  desktopCapturer,
   dialog,
   ipcMain,
   nativeTheme,
   screen,
   shell,
-  systemPreferences,
 } from 'electron'
 import { autoUpdater as appUpdater } from 'electron-updater'
-import { Issuer } from 'openid-client'
+import { Issuer, type DeviceFlowHandle } from 'openid-client'
 
 import fs from 'fs'
 import {
@@ -79,6 +77,10 @@ const scheduleMenuGC = () => {
 
 type MachineApiSignal = 'on' | 'off'
 type AppMenuPage = 'project' | 'modeling' | 'fallback'
+type DeviceFlowSession = {
+  handle: DeviceFlowHandle
+  verificationUri: string
+}
 
 // Check the command line arguments for a project path
 const args = parseCLIArgs(process.argv)
@@ -86,6 +88,7 @@ let startupMacOpenFiles: string[] = []
 let startupOpenUrls: string[] = []
 const windowMenuPages = new WeakMap<BrowserWindow, AppMenuPage>()
 const disabledWindowMenuIds = new WeakMap<BrowserWindow, Set<string>>()
+const deviceFlowSessions = new WeakMap<BrowserWindow, DeviceFlowSession>()
 
 // @ts-ignore: TS1343
 const viteEnv = import.meta.env
@@ -238,6 +241,8 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
   newWindow.on('closed', () => {
     windowMenuPages.delete(newWindow)
     disabledWindowMenuIds.delete(newWindow)
+    deviceFlowSessions.get(newWindow)?.handle.abort()
+    deviceFlowSessions.delete(newWindow)
     if (mainWindow !== newWindow) return
     const nextMainWindow = BrowserWindow.getAllWindows().find(
       (browserWindow) => !browserWindow.isDestroyed()
@@ -528,34 +533,10 @@ ipcMain.handle('openInNewWindow', (event, data) => {
 ipcMain.handle(
   'take.screenshot',
   async (event, data: { width: number; height: number }) => {
-    /**
-     * Operation system access to getting screen sources, even though we are only use application windows
-     * Linux: Yes!
-     * Mac OS: This user consent was not required on macOS 10.13 High Sierra so this method will always return granted. macOS 10.14 Mojave or higher requires consent for microphone and camera access. macOS 10.15 Catalina or higher requires consent for screen access.
-     * Windows 10: has a global setting controlling microphone and camera access for all win32 applications. It will always return granted for screen and for all media types on older versions of Windows.
-     */
-    let accessToScreenSources = true
-
-    // Can we check for access and if so, is it granted
-    // Linux does not even have access to the function getMediaAccessStatus, not going to polyfill
-    if (systemPreferences && systemPreferences.getMediaAccessStatus) {
-      const accessString = systemPreferences.getMediaAccessStatus('screen')
-      accessToScreenSources = accessString === 'granted' ? true : false
-    }
-
-    if (accessToScreenSources) {
-      const sources = await desktopCapturer.getSources({
-        types: ['window'],
-        thumbnailSize: { width: data.width, height: data.height },
-      })
-
-      for (const source of sources) {
-        // electron-builder uses the value of productName in package.json for the title of the application
-        if (source.name === packageJSON.productName) {
-          // @ts-ignore image/png is real.
-          return source.thumbnail.toDataURL('image/png') // The image to display the screenshot
-        }
-      }
+    const targetWindow = BrowserWindow.fromWebContents(event.sender)
+    if (targetWindow && !targetWindow.isDestroyed()) {
+      const image = await targetWindow.capturePage()
+      return image.resize(data).toDataURL()
     }
 
     // Cannot take a native desktop screenshot, unable to access screens
@@ -567,7 +548,12 @@ ipcMain.handle('argv.parser', (event, data) => {
   return argvFromYargs
 })
 
-ipcMain.handle('startDeviceFlow', async (_, host: string) => {
+ipcMain.handle('startDeviceFlow', async (event, host: string) => {
+  const targetWindow = BrowserWindow.fromWebContents(event.sender)
+  if (!targetWindow) {
+    return Promise.reject(new Error('No window available for device flow'))
+  }
+
   // Do an OAuth 2.0 Device Authorization Grant dance to get a token.
   // We quiet ts because we are not using this in the standard way.
   // @ts-ignore
@@ -591,35 +577,47 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
     return Promise.reject(new Error('No verification URI received'))
   }
 
-  // Register this handle to be used later.
-  ipcMain.handleOnce('loginWithDeviceFlow', async () => {
-    if (!handle) {
-      return Promise.reject(
-        new Error(
-          'No handle available. Did you call startDeviceFlow before calling this?'
-        )
-      )
-    }
-    shell.openExternal(verificationUri).catch(reportRejection)
-
-    // Wait for the user to login.
-    try {
-      console.log('Polling for token')
-      const tokenSet = await handle.poll()
-      console.log('Received token set')
-      console.log(tokenSet)
-      return tokenSet.access_token
-    } catch (e) {
-      console.log(e)
-    }
-
-    return Promise.reject(new Error('No access token received'))
+  deviceFlowSessions.get(targetWindow)?.handle.abort()
+  deviceFlowSessions.set(targetWindow, {
+    handle,
+    verificationUri,
   })
 
   return {
     userCode: handle.user_code,
     verificationUri,
   }
+})
+
+ipcMain.handle('loginWithDeviceFlow', async (event) => {
+  const targetWindow = BrowserWindow.fromWebContents(event.sender)
+  const deviceFlowSession = targetWindow
+    ? deviceFlowSessions.get(targetWindow)
+    : undefined
+  if (!targetWindow || !deviceFlowSession) {
+    return Promise.reject(
+      new Error(
+        'No handle available. Did you call startDeviceFlow before calling this?'
+      )
+    )
+  }
+
+  shell.openExternal(deviceFlowSession.verificationUri).catch(reportRejection)
+
+  // Wait for the user to login.
+  try {
+    console.log('Polling for token')
+    const tokenSet = await deviceFlowSession.handle.poll()
+    console.log('Received token set')
+    console.log(tokenSet)
+    return tokenSet.access_token
+  } catch (e) {
+    console.log(e)
+  } finally {
+    deviceFlowSessions.delete(targetWindow)
+  }
+
+  return Promise.reject(new Error('No access token received'))
 })
 
 // Used to find other devices on the local network, e.g. 3D printers, CNC machines, etc.
