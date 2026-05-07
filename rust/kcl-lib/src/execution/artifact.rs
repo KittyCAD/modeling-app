@@ -1,4 +1,5 @@
-use fnv::{FnvHashMap, FnvHashSet};
+use fnv::FnvHashMap;
+use fnv::FnvHashSet;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds::EnableSketchMode;
 use kittycad_modeling_cmds::FaceIsPlanar;
