@@ -3364,6 +3364,7 @@ pub(crate) fn build_trim_plan(
                         start: new_point,
                         end: arc_ctor.end.clone(),
                         center: arc_ctor.center.clone(),
+                        direction: arc_ctor.direction.clone(),
                         construction: arc_ctor.construction,
                     })
                 } else {
@@ -3371,6 +3372,7 @@ pub(crate) fn build_trim_plan(
                         start: arc_ctor.start.clone(),
                         end: new_point,
                         center: arc_ctor.center.clone(),
+                        direction: arc_ctor.direction.clone(),
                         construction: arc_ctor.construction,
                     })
                 }
@@ -4502,6 +4504,7 @@ pub(crate) async fn execute_trim_operations_simple(
                     start: coords_to_point_expr(*arc_start_coords),
                     end: coords_to_point_expr(*arc_end_coords),
                     center: circle_ctor.center.clone(),
+                    direction: None,
                     construction: circle_ctor.construction,
                 });
 
@@ -4834,6 +4837,7 @@ pub(crate) async fn execute_trim_operations_simple(
                         start: point_to_expr(coords_to_point(*right_trim_coords)),
                         end: point_to_expr(coords_to_point(*original_end_coords)),
                         center: arc_ctor.center.clone(),
+                        direction: arc_ctor.direction.clone(),
                         construction: arc_ctor.construction,
                     }),
                     _ => {
@@ -4896,6 +4900,7 @@ pub(crate) async fn execute_trim_operations_simple(
                         start: arc_ctor.start.clone(),
                         end: point_to_expr(coords_to_point(*left_trim_coords)),
                         center: arc_ctor.center.clone(),
+                        direction: arc_ctor.direction.clone(),
                         construction: arc_ctor.construction,
                     }),
                     _ => {

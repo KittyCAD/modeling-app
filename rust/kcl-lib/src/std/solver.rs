@@ -41,6 +41,10 @@ use crate::std_utils::untyped_point_to_unit;
 
 pub const SOLVER_CONVERGENCE_TOLERANCE: f64 = 1e-8;
 
+fn is_clockwise_arc_direction(direction: Option<&str>) -> bool {
+    direction.is_some_and(|direction| direction.eq_ignore_ascii_case("cw"))
+}
+
 /// Create the Sketch and send to the engine. Return will be None if there are
 /// no segments.
 pub(crate) async fn create_segments_in_engine(
@@ -73,7 +77,13 @@ pub(crate) async fn create_segments_in_engine(
                 continue;
             }
             SegmentKind::Line { start, .. } => start.clone(),
-            SegmentKind::Arc { start, .. } => start.clone(),
+            SegmentKind::Arc { start, end, ctor, .. } => {
+                if is_clockwise_arc_direction(ctor.direction.as_deref()) {
+                    end.clone()
+                } else {
+                    start.clone()
+                }
+            }
             SegmentKind::Circle { start, .. } => start.clone(),
         };
 
@@ -91,13 +101,29 @@ pub(crate) async fn create_segments_in_engine(
             let current_pen_mm = untyped_point_to_mm([current_pen.x, current_pen.y], current_pen.units);
 
             let entry_point = match &segment.kind {
-                SegmentKind::Line { end, .. } | SegmentKind::Arc { end, .. } => {
+                SegmentKind::Line { end, .. } => {
                     let reverse_start_mm = point_to_mm(end.clone());
                     if distance(forward_start_mm, current_pen_mm) <= SOLVER_CONVERGENCE_TOLERANCE {
                         forward_start.clone()
                     } else if distance(reverse_start_mm, current_pen_mm) <= SOLVER_CONVERGENCE_TOLERANCE {
                         traversal = SegmentTraversal::Reverse;
                         end.clone()
+                    } else {
+                        forward_start.clone()
+                    }
+                }
+                SegmentKind::Arc { start, end, ctor, .. } => {
+                    let reverse_start = if is_clockwise_arc_direction(ctor.direction.as_deref()) {
+                        start
+                    } else {
+                        end
+                    };
+                    let reverse_start_mm = point_to_mm(reverse_start.clone());
+                    if distance(forward_start_mm, current_pen_mm) <= SOLVER_CONVERGENCE_TOLERANCE {
+                        forward_start.clone()
+                    } else if distance(reverse_start_mm, current_pen_mm) <= SOLVER_CONVERGENCE_TOLERANCE {
+                        traversal = SegmentTraversal::Reverse;
+                        reverse_start.clone()
                     } else {
                         forward_start.clone()
                     }
@@ -195,7 +221,18 @@ pub(crate) async fn create_segments_in_engine(
                 .await?;
                 outer_sketch = Some(sketch);
             }
-            SegmentKind::Arc { start, end, center, .. } => {
+            SegmentKind::Arc {
+                start,
+                end,
+                center,
+                ctor,
+                ..
+            } => {
+                let (start, end) = if is_clockwise_arc_direction(ctor.direction.as_deref()) {
+                    (end, start)
+                } else {
+                    (start, end)
+                };
                 let (start, start_ty) = untype_point(start.clone());
                 let Some(start_unit) = start_ty.as_length() else {
                     return Err(KclError::new_semantic(KclErrorDetails::new(

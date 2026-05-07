@@ -666,6 +666,13 @@ pub(crate) enum CircularDirection {
 }
 
 impl CircularDirection {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            CircularDirection::Counterclockwise => "ccw",
+            CircularDirection::Clockwise => "cw",
+        }
+    }
+
     pub fn is_clockwise(self) -> bool {
         match self {
             CircularDirection::Counterclockwise => false,

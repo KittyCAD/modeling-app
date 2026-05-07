@@ -119,6 +119,8 @@ export fn arc(
   end: Point2d,
   /// The center of the circle the arc lies on.
   center: Point2d,
+  /// `CCW` for counterclockwise, `CW` for clockwise. Default is `CCW`.
+  direction?: string = "ccw",
   /// Whether this segment is construction geometry rather than part of the modeled profile.
   construction?: bool,
 ): Segment {}

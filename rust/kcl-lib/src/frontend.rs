@@ -127,6 +127,7 @@ const ARC_VARIABLE: &str = "arc";
 const ARC_START_PARAM: &str = "start";
 const ARC_END_PARAM: &str = "end";
 const ARC_CENTER_PARAM: &str = "center";
+const ARC_DIRECTION_PARAM: &str = "direction";
 const CIRCLE_FN: &str = "circle";
 const CIRCLE_VARIABLE: &str = "circle";
 const CIRCLE_START_PARAM: &str = "start";
@@ -1937,6 +1938,12 @@ impl FrontendState {
                 arg: center_ast,
             },
         ];
+        if let Some(direction) = &ctor.direction {
+            arguments.push(ast::LabeledArg {
+                label: Some(ast::Identifier::new(ARC_DIRECTION_PARAM)),
+                arg: ast_arc_direction(direction),
+            });
+        }
         // Add construction kwarg if construction is Some(true)
         if ctor.construction == Some(true) {
             arguments.push(ast::LabeledArg {
@@ -2429,6 +2436,7 @@ impl FrontendState {
                 start: new_start_ast,
                 end: new_end_ast,
                 center: new_center_ast,
+                direction: ctor.direction,
                 construction: ctor.construction,
             },
         )?;
@@ -4921,6 +4929,7 @@ enum AstMutateCommand {
         start: ast::Expr,
         end: ast::Expr,
         center: ast::Expr,
+        direction: Option<String>,
         construction: Option<bool>,
     },
     EditCircle {
@@ -5280,6 +5289,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
             start,
             end,
             center,
+            direction,
             construction,
         } => {
             if let NodeMut::CallExpressionKw(call) = node {
@@ -5297,6 +5307,25 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                     if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(ARC_CENTER_PARAM) {
                         labeled_arg.arg = center.clone();
                     }
+                }
+                if let Some(direction) = direction {
+                    let direction_arg = ast_arc_direction(direction);
+                    let mut direction_exists = false;
+                    for labeled_arg in &mut call.arguments {
+                        if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(ARC_DIRECTION_PARAM) {
+                            labeled_arg.arg = direction_arg.clone();
+                            direction_exists = true;
+                        }
+                    }
+                    if !direction_exists {
+                        call.arguments.push(ast::LabeledArg {
+                            label: Some(ast::Identifier::new(ARC_DIRECTION_PARAM)),
+                            arg: direction_arg,
+                        });
+                    }
+                } else {
+                    call.arguments
+                        .retain(|arg| arg.label.as_ref().map(|id| id.name.as_str()) != Some(ARC_DIRECTION_PARAM));
                 }
                 // Handle construction kwarg
                 if let Some(construction_value) = construction {
@@ -5687,6 +5716,18 @@ fn to_source_number(number: Number) -> anyhow::Result<ast::NumericLiteral> {
 
 pub(crate) fn ast_name_expr(name: String) -> ast::Expr {
     ast::Expr::Name(Box::new(ast_name(name)))
+}
+
+fn ast_arc_direction(direction: &str) -> ast::Expr {
+    match direction.to_ascii_lowercase().as_str() {
+        "ccw" => ast_name_expr("CCW".to_owned()),
+        "cw" => ast_name_expr("CW".to_owned()),
+        _ => ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+            value: ast::LiteralValue::String(direction.to_owned()),
+            raw: format!("\"{direction}\""),
+            digest: None,
+        }))),
+    }
 }
 
 fn ast_name(name: String) -> ast::Node<ast::Name> {
@@ -6714,6 +6755,7 @@ bad = missing_name
                     units: NumericSuffix::Mm,
                 }),
             },
+            direction: None,
             construction: None,
         };
         let segment = SegmentCtor::Arc(arc_ctor);
@@ -6771,6 +6813,7 @@ bad = missing_name
                     units: NumericSuffix::Mm,
                 }),
             },
+            direction: Some("cw".to_owned()),
             construction: None,
         };
         let segments = vec![ExistingSegmentCtor {
@@ -6784,7 +6827,7 @@ bad = missing_name
         assert_eq!(
             src_delta.text.as_str(),
             "sketch001 = sketch(on = XY) {
-  arc(start = [var 1mm, var 2mm], end = [var 13mm, var 14mm], center = [var 13mm, var 2mm])
+  arc(start = [var 1mm, var 2mm], end = [var 13mm, var 14mm], center = [var 13mm, var 2mm], direction = CW)
 }
 "
         );
@@ -8969,6 +9012,7 @@ sketch(on = XY) {
                     units: NumericSuffix::Mm,
                 }),
             },
+            direction: None,
             construction: None,
         };
         let (_src_delta, scene_delta) = frontend
@@ -12184,6 +12228,7 @@ sketch001 = sketch(on = XY) {
                     units: NumericSuffix::Mm,
                 }),
             },
+            direction: None,
             construction: None,
         };
         let segment = SegmentCtor::Arc(arc_ctor);

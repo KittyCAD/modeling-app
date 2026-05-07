@@ -78,6 +78,7 @@ use crate::front::Vertical;
 #[cfg(feature = "artifact-graph")]
 use crate::frontend::sketch::ConstraintSegment;
 use crate::std::Args;
+use crate::std::CircularDirection;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
 
@@ -581,6 +582,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let end: Vec<KclValue> = args.get_kw_arg("end", &RuntimeType::point2d(), exec_state)?;
     // TODO: make this optional and add interior.
     let center: Vec<KclValue> = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
+    let direction: Option<CircularDirection> = args.get_kw_arg_opt("direction", &RuntimeType::string(), exec_state)?;
     let construction_opt = args.get_kw_arg_opt("construction", &RuntimeType::bool(), exec_state)?;
     let construction: bool = construction_opt.unwrap_or(false);
     let construction_ctor = construction_opt;
@@ -666,6 +668,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
                 ))
             })?,
         },
+        direction: direction.map(|direction| direction.as_str().to_owned()),
         construction: construction_ctor,
     };
 

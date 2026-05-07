@@ -133,6 +133,7 @@ mod sync {
                 x: make_expr_mm(center.x),
                 y: make_expr_mm(center.y),
             },
+            direction: None,
             construction: None,
         });
 
