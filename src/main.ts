@@ -18,7 +18,7 @@ import {
   shell,
 } from 'electron'
 import { autoUpdater as appUpdater } from 'electron-updater'
-import { Issuer, type DeviceFlowHandle } from 'openid-client'
+import { type DeviceFlowHandle, Issuer } from 'openid-client'
 
 import fs from 'fs'
 import {
@@ -27,25 +27,19 @@ import {
   parseCLIArgs,
 } from '@src/commandLineArgs'
 import { initialiseWasmNode } from '@src/lang/wasmUtilsNode'
+import { getAppFolderNameFromBuild } from '@src/lib/appFolderName'
+import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
 import {
   OAUTH2_DEVICE_CLIENT_ID,
   ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
-import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
-import { getAppFolderNameFromBuild } from '@src/lib/appFolderName'
-import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
-import { discoverMachineApi } from '@src/lib/discoverMachineApi'
 import { registerFileProtocolCsp } from '@src/lib/csp'
 import { DeviceFlowSessionStore } from '@src/lib/deviceFlowSessions'
+import { discoverMachineApi } from '@src/lib/discoverMachineApi'
+import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { reportRejection } from '@src/lib/trap'
-import {
-  buildAndSetMenuForFallback,
-  buildAndSetMenuForModelingPage,
-  buildAndSetMenuForProjectPage,
-  setMenuItemEnabled,
-} from '@src/menu'
-import { isMac } from '@src/menu/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { WindowMenuManager, isAppMenuPage } from '@src/menu/windowMenus'
 import { configureSystemCertificates } from '@src/systemCertificates'
 
 // Linux hack for electron >= 38, here we're forcing XWayland due to issues we've experienced
@@ -68,25 +62,12 @@ let isInstallingUpdate = false
 /** All Electron windows will share this WASM module */
 const initPromise = initialiseWasmNode()
 
-// Preemptive code, GC may delete a menu while a user is using it as seen in VSCode
-// as seen on https://github.com/microsoft/vscode/issues/55347
-let oldMenus: Menu[] = []
-const scheduleMenuGC = () => {
-  setTimeout(() => {
-    oldMenus = []
-  }, 10000)
-}
-
 type MachineApiSignal = 'on' | 'off'
-type AppMenuPage = 'project' | 'modeling' | 'fallback'
 
 // Check the command line arguments for a project path
 const args = parseCLIArgs(process.argv)
 let startupMacOpenFiles: string[] = []
 let startupOpenUrls: string[] = []
-const windowMenuPages = new WeakMap<BrowserWindow, AppMenuPage>()
-const disabledWindowMenuIds = new WeakMap<BrowserWindow, Set<string>>()
-const windowMenus = new Map<number, Menu>()
 const deviceFlowSessions = new DeviceFlowSessionStore<
   BrowserWindow,
   DeviceFlowHandle
@@ -109,6 +90,8 @@ process.env.VITE_ZOO_BASE_DOMAIN ??= viteEnv.VITE_ZOO_BASE_DOMAIN
 console.log('Environment vars', process.env)
 console.log('Parsed CLI args', args)
 
+// Set Electron's profile paths before app.ready. Chromium session/cache state is
+// initialized lazily, so doing this late lets different builds share app storage.
 const appProfilePath = path.join(
   app.getPath('appData'),
   getAppFolderNameFromBuild({
@@ -241,9 +224,7 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
     })
   })
   newWindow.on('closed', () => {
-    windowMenuPages.delete(newWindow)
-    disabledWindowMenuIds.delete(newWindow)
-    windowMenus.delete(newWindow.id)
+    windowMenuManager.clearWindow(newWindow)
     deviceFlowSessions.abort(newWindow)
     if (mainWindow !== newWindow) return
     const nextMainWindow = BrowserWindow.getAllWindows().find(
@@ -252,8 +233,7 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
     mainWindow = nextMainWindow ?? null
   })
   newWindow.on('focus', () => {
-    const page = windowMenuPages.get(newWindow)
-    if (page) buildAndSetMenuForWindow(newWindow, page)
+    windowMenuManager.rebuildWindowMenu(newWindow)
   })
 
   const pathIsCustomProtocolLink =
@@ -331,72 +311,7 @@ const menuActions = {
     createWindow()
   },
 }
-
-function isAppMenuPage(page: unknown): page is AppMenuPage {
-  return page === 'project' || page === 'modeling' || page === 'fallback'
-}
-
-function buildAndSetMenuForWindow(
-  targetWindow: BrowserWindow,
-  page: AppMenuPage
-) {
-  const oldMenu = getMenuForWindow(targetWindow)
-  if (oldMenu) {
-    oldMenus.push(oldMenu)
-  }
-
-  let menu: Menu
-  if (page === 'project') {
-    menu = buildAndSetMenuForProjectPage(targetWindow, menuActions)
-  } else if (page === 'modeling') {
-    menu = buildAndSetMenuForModelingPage(targetWindow, menuActions)
-  } else {
-    menu = buildAndSetMenuForFallback(targetWindow, menuActions)
-  }
-
-  windowMenus.set(targetWindow.id, menu)
-  applyMenuStateForWindow(targetWindow)
-  scheduleMenuGC()
-}
-
-function getMenuForWindow(targetWindow: BrowserWindow) {
-  if (isMac) {
-    return Menu.getApplicationMenu()
-  }
-
-  return windowMenus.get(targetWindow.id)
-}
-
-function applyMenuStateForWindow(targetWindow: BrowserWindow) {
-  const disabledMenuIds = disabledWindowMenuIds.get(targetWindow)
-  if (!disabledMenuIds) return
-
-  for (const menuId of disabledMenuIds) {
-    setMenuItemEnabled(getMenuForWindow(targetWindow), menuId, false)
-  }
-}
-
-function updateMenuStateForWindow(
-  targetWindow: BrowserWindow,
-  menuId: string,
-  enabled: boolean
-) {
-  let disabledMenuIds = disabledWindowMenuIds.get(targetWindow)
-  if (!disabledMenuIds) {
-    disabledMenuIds = new Set<string>()
-    disabledWindowMenuIds.set(targetWindow, disabledMenuIds)
-  }
-
-  if (enabled) {
-    disabledMenuIds.delete(menuId)
-  } else {
-    disabledMenuIds.add(menuId)
-  }
-
-  if (!isMac || BrowserWindow.getFocusedWindow() === targetWindow) {
-    setMenuItemEnabled(getMenuForWindow(targetWindow), menuId, enabled)
-  }
-}
+const windowMenuManager = new WindowMenuManager(menuActions)
 
 function sendToAllWindows(channel: string, ...args: unknown[]) {
   for (const browserWindow of BrowserWindow.getAllWindows()) {
@@ -489,7 +404,8 @@ app.on('ready', (event, data) => {
 const appTestProperties: Record<string, unknown> = {}
 Reflect.set(app, 'testProperty', appTestProperties)
 if (NODE_ENV === 'test') {
-  appTestProperties.nativeWindowMenus = windowMenus
+  appTestProperties.nativeWindowMenus =
+    windowMenuManager.nativeWindowMenusForTests
 }
 // @ts-ignore can't declaration merge with App
 app.machineApiState = 'off' as MachineApiSignal
@@ -673,15 +589,14 @@ ipcMain.handle('create-menu', (event, data) => {
     return
   }
 
-  windowMenuPages.set(targetWindow, page)
-  buildAndSetMenuForWindow(targetWindow, page)
+  windowMenuManager.setWindowMenuPage(targetWindow, page)
 })
 
 ipcMain.handle('enable-menu', (event, data) => {
   const menuId = data.menuId
   const targetWindow = BrowserWindow.fromWebContents(event.sender)
   if (targetWindow) {
-    updateMenuStateForWindow(targetWindow, menuId, true)
+    windowMenuManager.updateMenuStateForWindow(targetWindow, menuId, true)
   }
 })
 
@@ -689,7 +604,7 @@ ipcMain.handle('disable-menu', (event, data) => {
   const menuId = data.menuId
   const targetWindow = BrowserWindow.fromWebContents(event.sender)
   if (targetWindow) {
-    updateMenuStateForWindow(targetWindow, menuId, false)
+    windowMenuManager.updateMenuStateForWindow(targetWindow, menuId, false)
   }
 })
 
