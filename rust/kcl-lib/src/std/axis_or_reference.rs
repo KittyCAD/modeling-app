@@ -21,14 +21,14 @@ pub enum Axis2dOrEdgeReference {
     Edge(EdgeReference),
 }
 
-/// A 2D axis or tagged edge.
+/// A 3D mirror target.
 #[derive(Debug, Clone, PartialEq)]
 pub enum MirrorAcross3d {
-    /// 2D axis and origin.
-    Axis { direction: [TyF64; 2], origin: [TyF64; 2] },
+    /// 3D axis and origin.
+    Axis { direction: [TyF64; 3], origin: [TyF64; 3] },
     /// Tagged edge.
     Edge(EdgeReference),
-    /// A plane
+    /// A plane.
     Plane(Plane),
 }
 
