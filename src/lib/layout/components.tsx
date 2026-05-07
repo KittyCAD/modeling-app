@@ -45,7 +45,6 @@ import {
   sideToOrientation,
   orientationToDirection,
   togglePaneLayoutNode,
-  saveLayout,
   shouldDisableFlex,
   defaultLayout,
   isCollapsedPaneLayout,
@@ -134,13 +133,9 @@ export const LayoutRootNode = memo(
     getLayout,
     setLayout,
     showDebugPanel,
-    layoutName = 'default',
     enableContextMenus = false,
   }: LayoutRootNodeProps) {
     const getLayoutWithFallback = () => getLayout() || defaultLayout
-    useEffect(() => {
-      saveLayout({ layout, layoutName })
-    }, [layout, layoutName])
 
     function updateSplitSizes(props: WithoutRootLayout<IUpdateNodeSizes>) {
       const rootLayout = getLayoutWithFallback()
