@@ -150,6 +150,7 @@ pub trait SketchApi {
 
     /// Batch operations for tail-cut trim: edit a segment, add coincident constraints,
     /// delete constraints, and execute once.
+    #[allow(clippy::too_many_arguments)]
     async fn batch_tail_cut_operations(
         &mut self,
         ctx: &ExecutorContext,
