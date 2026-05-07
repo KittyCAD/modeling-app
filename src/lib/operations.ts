@@ -203,6 +203,23 @@ function extractStringArgument(
     : undefined
 }
 
+function extractStringArrayArgument(
+  code: string,
+  operation: StdLibCallOp,
+  argName: string
+): string | undefined {
+  const raw = extractStringArgument(code, operation, argName)
+  if (!raw) return undefined
+
+  return raw
+    .replace(/^\s*\[/, '')
+    .replace(/\]\s*$/, '')
+    .split(',')
+    .map((value) => stripQuotes(value.trim()))
+    .filter(Boolean)
+    .join(', ')
+}
+
 /**
  * Gather up the a Parameter operation's data
  * to be used in the command bar edit flow.
@@ -1921,6 +1938,69 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({
   }
 }
 
+const prepareToEditGdtProfile: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  artifactGraph,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'GDT Profile',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const edgesArg = operation.labeledArgs?.['edges']
+  if (!edgesArg || !edgesArg.sourceRange) {
+    return { reason: 'Missing or invalid edges argument' }
+  }
+
+  const edges = retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+  const tolerance = await extractKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if ('error' in tolerance) {
+    return { reason: tolerance.error }
+  }
+
+  const optionalArgs = await Promise.all([
+    extractKclArgument(code, operation, 'precision', rustContext),
+    extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
+    extractKclArgument(code, operation, 'fontPointSize', rustContext),
+    extractKclArgument(code, operation, 'fontScale', rustContext),
+  ])
+
+  const [precision, framePosition, leaderScale, fontPointSize, fontScale] =
+    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
+
+  const framePlane = extractStringArgument(code, operation, 'framePlane')
+  const datums = extractStringArrayArgument(code, operation, 'datums')
+
+  const argDefaultValues: ModelingCommandSchema['GDT Profile'] = {
+    edges,
+    datums,
+    tolerance,
+    precision,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontPointSize,
+    fontScale,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
 const prepareToEditSplit: PrepareToEditCallback = async ({
   operation,
   artifactGraph,
@@ -2051,6 +2131,11 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Flatness',
     icon: 'gdtFlatness',
     prepareToEdit: prepareToEditGdtFlatness,
+  },
+  'gdt::profile': {
+    label: 'Profile',
+    icon: 'gdtProfile',
+    prepareToEdit: prepareToEditGdtProfile,
   },
   'gear::helical': {
     label: 'Helical Gear',

@@ -81,6 +81,8 @@ pub const TEST_NAMES: &[&str] = &[
     "std-gdt-flatness-1",
     "std-gdt-flatness-2",
     "std-gdt-flatness-3",
+    "std-gdt-profile-0",
+    "std-gdt-profile-1",
     "std-helix-0",
     "std-helix-1",
     "std-helix-2",
