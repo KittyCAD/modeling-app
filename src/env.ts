@@ -26,6 +26,13 @@ export type EnvironmentVariables = {
 /** Store the environment in memory to be accessed during runtime */
 let ENVIRONMENT: EnvironmentConfigurationRuntime | null = null
 
+function generateApiUrlFromSubdomain(
+  apiSubdomain: string,
+  baseDomain: string | undefined
+) {
+  return `https://${apiSubdomain}.${baseDomain ?? ''}`
+}
+
 /** Update the runtime environment */
 export const updateEnvironment = (environment: string | null) => {
   if (environment === '') {
@@ -57,6 +64,16 @@ export const updateEnvironmentKittycadWebSocketUrl = (
   }
 }
 
+export const updateEnvironmentApiSubdomain = (
+  environmentName: string,
+  apiSubdomain: string
+) => {
+  if (!ENVIRONMENT) return
+  if (ENVIRONMENT.domain === environmentName) {
+    ENVIRONMENT.apiSubdomain = apiSubdomain
+  }
+}
+
 export const updateEnvironmentMlephantWebSocketUrl = (
   environmentName: string,
   mlephantWebSocketUrl: string
@@ -72,6 +89,7 @@ const getEnvironmentFromThisFile = (baseDomain: string | undefined) => {
   return (
     ENVIRONMENT || {
       domain: baseDomain ?? '',
+      apiSubdomain: undefined,
       kittycadWebSocketUrl: undefined,
       mlephantWebSocketUrl: undefined,
     }
@@ -170,6 +188,13 @@ export default (): EnvironmentVariables => {
     env.VITE_MLEPHANT_WEBSOCKET_URL !== 'undefined'
   ) {
     MLEPHANT_WEBSOCKET_URL = env.VITE_MLEPHANT_WEBSOCKET_URL
+  }
+
+  if (environment.apiSubdomain) {
+    API_URL = generateApiUrlFromSubdomain(
+      environment.apiSubdomain,
+      environment.domain || BASE_DOMAIN
+    )
   }
 
   // Allow the in-app settings to override local WebSocket URLs

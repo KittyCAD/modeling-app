@@ -2,6 +2,8 @@ import env from '@src/env'
 import {
   generateDomainsFromBaseDomain,
   processEnv,
+  updateEnvironment,
+  updateEnvironmentApiSubdomain,
   viteEnv,
   windowElectronProcessEnv,
 } from '@src/env'
@@ -130,6 +132,31 @@ describe('@src/env', () => {
       }
       const actual = generateDomainsFromBaseDomain('dev.zoo.dev')
       expect(actual).toStrictEqual(expected)
+    })
+  })
+
+  describe('runtime API overrides', () => {
+    it('should override the API URL while keeping the selected base domain', () => {
+      const windowWithElectron = window as typeof window & {
+        electron?: unknown
+      }
+      const originalElectron = windowWithElectron.electron
+      windowWithElectron.electron = {} as typeof window.electron
+
+      updateEnvironment('dev.zoo.dev')
+      updateEnvironmentApiSubdomain('dev.zoo.dev', 'api-pr-3072')
+
+      const actual = env()
+
+      expect(actual.VITE_ZOO_BASE_DOMAIN).toBe('dev.zoo.dev')
+      expect(actual.VITE_ZOO_API_BASE_URL).toBe(
+        'https://api-pr-3072.dev.zoo.dev'
+      )
+      expect(actual.VITE_ZOO_SITE_BASE_URL).toBe('https://dev.zoo.dev')
+      expect(actual.VITE_ZOO_SITE_APP_URL).toBe('https://app.dev.zoo.dev')
+
+      updateEnvironment(null)
+      windowWithElectron.electron = originalElectron
     })
   })
 })

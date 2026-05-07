@@ -8,6 +8,7 @@ import {
   getEnvironmentConfigurationPath,
   getEnvironmentFilePath,
   listProjects,
+  readEnvironmentConfigurationApiSubdomain,
   readEnvironmentConfigurationFile,
   readEnvironmentConfigurationToken,
   readEnvironmentFile,
@@ -356,6 +357,31 @@ describe('desktop utilities', () => {
       // mock clean up
       mockElectron.packageJson.name = ''
       expect(actual).toBe(expected)
+    })
+  })
+
+  describe('readEnvironmentConfigurationApiSubdomain', () => {
+    it('should return the empty string when no API override is set', async () => {
+      const expected = ''
+      const actual =
+        await readEnvironmentConfigurationApiSubdomain('dev.zoo.dev')
+      expect(actual).toBe(expected)
+    })
+
+    it('should return the stored API subdomain override', async () => {
+      mockElectron.exists.mockImplementation(() => true)
+      mockElectron.readFile.mockImplementation(() => {
+        return JSON.stringify({
+          token: '',
+          domain: 'dev.zoo.dev',
+          apiSubdomain: 'api-pr-3072',
+        })
+      })
+      mockElectron.packageJson.name = 'zoo-modeling-app'
+      const actual =
+        await readEnvironmentConfigurationApiSubdomain('dev.zoo.dev')
+      mockElectron.packageJson.name = ''
+      expect(actual).toBe('api-pr-3072')
     })
   })
 })
