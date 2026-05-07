@@ -305,7 +305,7 @@ const createAxis = (
 }
 
 const createAxisHead = (name: AxisNames, color: ColorRepresentation): Mesh => {
-  const geometry = new SphereGeometry(AXIS_HEAD_RADIUS, 16, 8)
+  const geometry = new SphereGeometry(AXIS_HEAD_RADIUS, 48, 24)
   const material = new MeshBasicMaterial({ color: new Color(color) })
   const mesh = new Mesh(geometry, material)
   const position = AXIS_HEAD_POSITIONS[name]
