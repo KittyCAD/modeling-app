@@ -965,6 +965,23 @@ export function changeDefaultUnits(
 }
 
 /**
+ * Change the KCL version setting for the kcl file.
+ * @returns the new kcl string with the updated settings.
+ */
+export function changeKclVersion(
+  kcl: string,
+  version: string | null,
+  wasmInstance: ModuleType
+): string | Error {
+  try {
+    return wasmInstance.change_kcl_version(kcl, JSON.stringify(version))
+  } catch (e) {
+    console.error('Caught error changing kcl settings', e)
+    return new Error('Caught error changing kcl settings', { cause: e })
+  }
+}
+
+/**
  * Change the meta settings for the kcl file.
  * @returns the new kcl string with the updated settings.
  */

@@ -37,6 +37,23 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
+function FreeformPreview() {
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  return (
+    <div ref={containerRef} style={containerStyle}>
+      <Draggable containerRef={containerRef} style={cardStyle}>
+        <div style={{ padding: 18 }}>
+          <strong>Drag anywhere</strong>
+          <p style={{ marginBottom: 0 }}>
+            This version uses the whole surface as the handle.
+          </p>
+        </div>
+      </Draggable>
+    </div>
+  )
+}
+
 function BoundedWithCustomHandlePreview() {
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -111,18 +128,7 @@ function RightDockHandlePreview() {
 }
 
 export const Freeform: Story = {
-  render: () => (
-    <div style={containerStyle}>
-      <Draggable style={cardStyle}>
-        <div style={{ padding: 18 }}>
-          <strong>Drag anywhere</strong>
-          <p style={{ marginBottom: 0 }}>
-            This version uses the whole surface as the handle.
-          </p>
-        </div>
-      </Draggable>
-    </div>
-  ),
+  render: () => <FreeformPreview />,
 }
 
 export const BoundedWithCustomHandle: Story = {

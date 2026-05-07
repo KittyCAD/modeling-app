@@ -1,6 +1,15 @@
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
-import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { CustomIconName } from '@src/components/CustomIcon'
+import type { KclManager } from '@src/lang/KclManager'
+import { toUtf16 } from '@src/lang/errors'
+import { updateModelingState } from '@src/lang/modelingWorkflows'
+import {
+  deleteTermFromUnlabeledArgumentArray,
+  deleteTopLevelStatement,
+} from '@src/lang/modifyAst'
+import { retrieveEdgeSelectionsFromOpArgs } from '@src/lang/modifyAst/edges'
 import {
   retrieveFaceSelectionsFromOpArgs,
   retrieveHoleBodyArgs,
@@ -9,12 +18,12 @@ import {
   retrieveNonDefaultPlaneSelectionFromOpArg,
 } from '@src/lang/modifyAst/faces'
 import {
-  retrieveAxisOrEdgeSelectionsFromOpArg,
-  retrieveBodyTypeFromOpArg,
-  retrieveTagDeclaratorFromOpArg,
   SWEEP_CONSTANTS,
   SWEEP_MODULE,
   type SweepRelativeTo,
+  retrieveAxisOrEdgeSelectionsFromOpArg,
+  retrieveBodyTypeFromOpArg,
+  retrieveTagDeclaratorFromOpArg,
 } from '@src/lang/modifyAst/sweeps'
 import {
   getNodeFromPath,
@@ -28,8 +37,9 @@ import {
   getCodeRefsByArtifactId,
 } from '@src/lang/std/artifactGraph'
 import {
-  type Program,
   type ArtifactGraph,
+  type CallExpressionKw,
+  type Program,
   pathToNodeFromRustNodePath,
 } from '@src/lang/wasm'
 import type {
@@ -37,32 +47,23 @@ import type {
   ModelingCommandSchema,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
-import { getStringValue, stringToKclExpression } from '@src/lib/kclHelpers'
-import { isDefaultPlaneStr } from '@src/lib/planes'
-import { isArray, isNonNullable, stripQuotes } from '@src/lib/utils'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
-import type RustContext from '@src/lib/rustContext'
-import { err } from '@src/lib/trap'
-import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
-import { retrieveEdgeSelectionsFromOpArgs } from '@src/lang/modifyAst/edges'
 import {
-  type KclPreludeBodyType,
+  EXECUTION_TYPE_REAL,
   KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
   KCL_PRELUDE_EXTRUDE_METHOD_NEW,
+  type KclPreludeBodyType,
   type KclPreludeExtrudeMethod,
-  EXECUTION_TYPE_REAL,
 } from '@src/lib/constants'
-import { toUtf16 } from '@src/lang/errors'
+import { getStringValue, stringToKclExpression } from '@src/lib/kclHelpers'
+import { isDefaultPlaneStr } from '@src/lib/planes'
+import type RustContext from '@src/lib/rustContext'
+import { err } from '@src/lib/trap'
+import { isArray, isNonNullable, stripQuotes } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
 import type { modelingMachine } from '@src/machines/modelingMachine'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import type { ActorRefFrom } from 'xstate'
-import {
-  deleteTermFromUnlabeledArgumentArray,
-  deleteTopLevelStatement,
-} from '@src/lang/modifyAst'
-import type { KclManager } from '@src/lang/KclManager'
-import { updateModelingState } from '@src/lang/modelingWorkflows'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -2269,7 +2270,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   },
   symmetric: {
     label: 'Symmetric Constraint',
-    icon: 'symmetry',
+    icon: 'symmetric',
   },
   tangent: {
     label: 'Tangent Constraint',
@@ -3232,8 +3233,10 @@ export function onHide(props: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   modelingActor: ActorRefFrom<typeof modelingMachine>
+  objects?: Selections
 }) {
-  const selection = props.modelingActor.getSnapshot().context.selectionRanges
+  const selection =
+    props.objects ?? props.modelingActor.getSnapshot().context.selectionRanges
 
   props.modelingActor.send({
     type: 'Hide',
@@ -3253,12 +3256,21 @@ export async function onUnhide(props: {
   }
   let modifiedAst = structuredClone(props.kclManager.ast)
   const pathToNode = pathToNodeFromRustNodePath(props.hideOperation.nodePath)
+  const wasmInstance = await props.kclManager.rustContext.wasmInstancePromise
+  const hideCall = getNodeFromPath<Node<CallExpressionKw>>(
+    modifiedAst,
+    pathToNode,
+    wasmInstance,
+    'CallExpressionKw'
+  )
+  const hideArgIsSyntacticArray =
+    !err(hideCall) && hideCall.node.unlabeled?.type === 'ArrayExpression'
 
   if (
     props.hideOperation.unlabeledArg.value.type === 'Array' &&
+    hideArgIsSyntacticArray &&
     'codeRef' in props.targetArtifact
   ) {
-    const wasmInstance = await props.kclManager.rustContext.wasmInstancePromise
     // Multi-item case: remove that target artifact's name
     const termToDelete = getVariableNameFromNodePath(
       pathToNodeFromRustNodePath(props.targetArtifact.codeRef.nodePath),

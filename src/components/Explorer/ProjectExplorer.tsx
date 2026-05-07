@@ -164,6 +164,7 @@ export const ProjectExplorer = ({
   refreshExplorerPressed,
   collapsePressed,
   onRowClicked,
+  onRowDoubleClicked,
   onRowEnter,
   readOnly,
   canNavigate,
@@ -177,6 +178,7 @@ export const ProjectExplorer = ({
   refreshExplorerPressed: number
   collapsePressed: number
   onRowClicked: (row: FileExplorerEntry, domIndex: number) => void
+  onRowDoubleClicked?: (row: FileExplorerEntry, domIndex: number) => void
   onRowEnter: (row: FileExplorerEntry, domIndex: number) => void
   readOnly: boolean
   canNavigate: boolean
@@ -542,6 +544,11 @@ export const ProjectExplorer = ({
             onRowClickCallback(child, domIndex)
             onRowClicked(child, domIndex)
           },
+          onDoubleClick: onRowDoubleClicked
+            ? (domIndex: number) => {
+                onRowDoubleClicked(child, domIndex)
+              }
+            : undefined,
           onOpen: () => {
             const newOpenedRows = { ...openedRowsRef.current }
             const key = child.key

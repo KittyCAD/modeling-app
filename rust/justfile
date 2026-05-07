@@ -4,9 +4,12 @@ kcl_lib_flags := "-p kcl-lib --features artifact-graph"
 
 # Run the same lint checks we run in CI.
 lint:
+    # All features.
     cargo clippy --workspace --all-targets --all-features -- -D warnings
-    # Ensure we can build without extra feature flags.
+    # Default features.
     cargo clippy -p kcl-lib --all-targets -- -D warnings
+    # Minimal features that actually still build.
+    cargo clippy -p kcl-lib --all-targets --no-default-features --features engine,cli -- -D warnings
 
 lint-fix:
     cargo clippy --workspace --all-targets --all-features --fix

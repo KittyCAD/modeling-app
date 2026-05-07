@@ -232,8 +232,8 @@ export function Draggable({
 
       document.addEventListener('mouseup', closeDragElement)
       offsetRef.current = {
-        top: e.nativeEvent.offsetY,
-        left: e.nativeEvent.offsetX,
+        top: e.clientY - top,
+        left: e.clientX - left,
         margin,
       }
 

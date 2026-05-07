@@ -105,6 +105,68 @@ describe('Draggable', () => {
     expect(draggable.style.left).toBe('114px')
   })
 
+  test('uses the draggable bounds for drag-anywhere child offsets', () => {
+    mockComputedStyle()
+    vi.spyOn(document.body, 'getBoundingClientRect').mockReturnValue(
+      createRect({ top: 0, left: 0, width: 300, height: 300 })
+    )
+
+    render(
+      <Draggable data-testid="draggable">
+        <div data-testid="child">Nested content</div>
+      </Draggable>
+    )
+
+    const draggable = screen.getByTestId('draggable')
+    vi.spyOn(draggable, 'getBoundingClientRect').mockReturnValue(
+      createRect({ top: 50, left: 60, width: 80, height: 60 })
+    )
+
+    fireEvent.mouseDown(screen.getByTestId('child'), {
+      clientX: 70,
+      clientY: 70,
+      offsetX: 0,
+      offsetY: 0,
+    })
+    fireEvent.mouseMove(document, { clientX: 70, clientY: 70 })
+
+    expect(draggable.style.top).toBe('50px')
+    expect(draggable.style.left).toBe('60px')
+  })
+
+  test('uses the draggable bounds for right-side handle offsets', () => {
+    mockComputedStyle()
+    vi.spyOn(document.body, 'getBoundingClientRect').mockReturnValue(
+      createRect({ top: 0, left: 0, width: 300, height: 300 })
+    )
+
+    render(
+      <Draggable
+        data-testid="draggable"
+        Handle={<button type="button">Drag handle</button>}
+        side="right"
+      >
+        Drag me
+      </Draggable>
+    )
+
+    const draggable = screen.getByTestId('draggable')
+    vi.spyOn(draggable, 'getBoundingClientRect').mockReturnValue(
+      createRect({ top: 20, left: 20, width: 100, height: 40 })
+    )
+
+    fireEvent.mouseDown(screen.getByRole('button', { name: 'Drag handle' }), {
+      clientX: 110,
+      clientY: 40,
+      offsetX: 10,
+      offsetY: 20,
+    })
+    fireEvent.mouseMove(document, { clientX: 110, clientY: 40 })
+
+    expect(draggable.style.top).toBe('20px')
+    expect(draggable.style.left).toBe('20px')
+  })
+
   test('only starts dragging from the custom handle', () => {
     mockComputedStyle()
     vi.spyOn(document.body, 'getBoundingClientRect').mockReturnValue(

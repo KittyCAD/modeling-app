@@ -8,6 +8,7 @@ export default defineConfig({
     alias: {
       '@kittycad/ui-components': resolve(__dirname, 'src/index.ts'),
     },
+    dedupe: ['react', 'react-dom'],
   },
   build: {
     cssCodeSplit: false,

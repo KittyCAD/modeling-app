@@ -1,9 +1,12 @@
 /// Functions for working with geometric dimensioning and tolerancing (GD&T).
+/// This can be used for model-based definition (MBD).
 
 @no_std
 @settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
 /// GD&T datum feature.
+///
+/// This is part of model-based definition (MBD).
 ///
 /// ```kcl,no3d,legacySketch
 /// @settings(experimentalFeatures = allow, defaultLengthUnit = in)
@@ -77,6 +80,8 @@ export fn datum(
 ): GdtAnnotation {}
 
 /// GD&T annotation specifying how flat faces should be.
+///
+/// This is part of model-based definition (MBD).
 ///
 /// ```kcl,no3d,legacySketch
 /// @settings(experimentalFeatures = allow)
