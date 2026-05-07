@@ -306,6 +306,8 @@ export function addProfileGdt({
       createLabeledArg('edges', createArrayExpression([edgeExpr])),
     ]
 
+    labeledArgs.push(createLabeledArg('tolerance', valueOrVariable(tolerance)))
+
     const datumNames = parseDatumNames(datums)
     if (datumNames.length > 0) {
       labeledArgs.push(
@@ -317,8 +319,6 @@ export function addProfileGdt({
         )
       )
     }
-
-    labeledArgs.push(createLabeledArg('tolerance', valueOrVariable(tolerance)))
 
     if (precision !== undefined) {
       labeledArgs.push(

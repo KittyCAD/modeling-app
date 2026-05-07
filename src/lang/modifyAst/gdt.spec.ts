@@ -598,7 +598,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       }
 
       expect(newCode).toContain('gdt::profile(')
-      expect(newCode).toContain('edges = [getCommonEdge(faces = [')
+      expect(newCode).toMatch(
+        /edges = \[\s*getCommonEdge\(faces = \[[^\]]+\]\)\s*\]/
+      )
       expect(newCode).toContain('datums = ["A", "B"]')
       expect(newCode).toContain('tolerance = 0.1mm')
 
