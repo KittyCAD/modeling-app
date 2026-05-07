@@ -1,10 +1,11 @@
 import type { EventFrom, StateFrom } from 'xstate'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
 import { isDesktop } from '@src/lib/isDesktop'
 import { useApp } from '@src/lib/boot'
+import { userHasFeature } from '@src/lib/settings/settingsUtils'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
@@ -13,8 +14,9 @@ import {
 } from '@src/machines/modelingMachine'
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { ConstraintToolName } from '@src/machines/sketchSolve/tools/constraintToolModel'
-import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+
+const SKETCH_EXPERIMENTAL_FEATURES_FLAG = 'sketch_experimental_features'
 
 export type ToolbarModeName =
   | 'modeling'
@@ -428,7 +430,12 @@ const sketchSolveConstraintItems: ToolbarItem[] = [
 type ToolbarCommands = Pick<ReturnType<typeof useApp>['commands'], 'send'>
 
 export function buildToolbarConfig(
-  commands: ToolbarCommands
+  commands: ToolbarCommands,
+  {
+    showSplineTool = false,
+  }: {
+    showSplineTool?: boolean
+  } = {}
 ): Record<ToolbarModeName, ToolbarMode> {
   const splineToolbarItem: ToolbarItem = {
     id: 'spline',
@@ -1911,7 +1918,7 @@ export function buildToolbarConfig(
             state.matches('sketchSolveMode') &&
             state.context.sketchSolveToolName === 'pointTool',
         },
-        ...(IS_STAGING_OR_DEBUG ? [splineToolbarItem] : []),
+        ...(showSplineTool ? [splineToolbarItem] : []),
         {
           id: 'circle-center',
           onClick: ({ modelingSend, isActive }) =>
@@ -2168,9 +2175,27 @@ export function buildToolbarConfig(
 
 export const useToolbarConfig = () => {
   const { commands } = useApp()
+  const [showSplineTool, setShowSplineTool] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+
+    void userHasFeature(SKETCH_EXPERIMENTAL_FEATURES_FLAG, false).then(
+      (enabled) => {
+        if (!cancelled) {
+          setShowSplineTool(enabled)
+        }
+      }
+    )
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   return useMemo<Record<ToolbarModeName, ToolbarMode>>(
-    () => buildToolbarConfig(commands),
-    [commands]
+    () => buildToolbarConfig(commands, { showSplineTool }),
+    [commands, showSplineTool]
   )
 }
 
