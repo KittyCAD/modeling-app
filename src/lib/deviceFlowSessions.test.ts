@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 import {
   DeviceFlowSessionStore,
@@ -7,6 +7,7 @@ import {
 
 type TestHandle = {
   abort: () => void
+  abortCount: number
 }
 
 type TestWindow = {
@@ -17,7 +18,10 @@ const createWindow = (id: string): TestWindow => ({ id })
 
 const createSession = (): DeviceFlowSession<TestHandle> => ({
   handle: {
-    abort: vi.fn(),
+    abortCount: 0,
+    abort() {
+      this.abortCount += 1
+    },
   },
   verificationUri: 'https://zoo.dev/device',
 })
@@ -46,8 +50,8 @@ describe('DeviceFlowSessionStore', () => {
     store.set(window, oldSession)
     store.set(window, newSession)
 
-    expect(oldSession.handle.abort).toHaveBeenCalledOnce()
-    expect(newSession.handle.abort).not.toHaveBeenCalled()
+    expect(oldSession.handle.abortCount).toBe(1)
+    expect(newSession.handle.abortCount).toBe(0)
     expect(store.get(window)).toBe(newSession)
   })
 
@@ -62,8 +66,8 @@ describe('DeviceFlowSessionStore', () => {
     store.set(stillOpenWindow, stillOpenSession)
     store.abort(closedWindow)
 
-    expect(closedSession.handle.abort).toHaveBeenCalledOnce()
-    expect(stillOpenSession.handle.abort).not.toHaveBeenCalled()
+    expect(closedSession.handle.abortCount).toBe(1)
+    expect(stillOpenSession.handle.abortCount).toBe(0)
     expect(store.get(closedWindow)).toBeUndefined()
     expect(store.get(stillOpenWindow)).toBe(stillOpenSession)
   })
