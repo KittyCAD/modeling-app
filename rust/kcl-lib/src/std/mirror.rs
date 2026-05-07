@@ -33,6 +33,7 @@ pub async fn mirror_3d(exec_state: &mut ExecState, args: Args) -> Result<KclValu
             RuntimeType::Primitive(PrimitiveType::Edge),
             RuntimeType::Primitive(PrimitiveType::Axis3d),
             RuntimeType::Primitive(PrimitiveType::Plane),
+            RuntimeType::segment(),
         ]),
         exec_state,
     )?;

@@ -115,7 +115,7 @@ export fn mirror3d(
   /// The body or bodies to be reflected.
   @bodies: [Solid; 1+],
   /// The axis (or other geometry) to reflect across.
-  across: Edge | Plane | Axis3d,
+  across: Edge | Plane | Axis3d | Segment,
 ): [Solid; 1+] {}
 
 /// Move a solid or a sketch.

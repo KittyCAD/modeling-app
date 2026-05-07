@@ -21,7 +21,7 @@ mirror3d(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `bodies` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] | The body or bodies to be reflected. | Yes |
-| `across` | [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`Plane`](/docs/kcl-std/types/std-types-Plane) or [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d) | The axis (or other geometry) to reflect across. | Yes |
+| `across` | [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`Plane`](/docs/kcl-std/types/std-types-Plane) or [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d) or [`Segment`](/docs/kcl-std/types/std-types-Segment) | The axis (or other geometry) to reflect across. | Yes |
 
 ### Returns
 
