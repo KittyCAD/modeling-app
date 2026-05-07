@@ -25,9 +25,9 @@ describe('setMenuItemEnabled', () => {
   it('updates the enabled state for an existing menu item', () => {
     const menuItem = { enabled: true }
     const getMenuItemById = vi.fn(() => menuItem)
-    getApplicationMenu.mockReturnValue({ getMenuItemById })
+    const menu = { getMenuItemById }
 
-    setMenuItemEnabled('View.Standard views.Reset view', false)
+    setMenuItemEnabled(menu, 'View.Standard views.Reset view', false)
 
     expect(getMenuItemById).toHaveBeenCalledWith(
       'View.Standard views.Reset view'
@@ -37,9 +37,11 @@ describe('setMenuItemEnabled', () => {
 
   it('does nothing when the menu item is not in the current menu', () => {
     const getMenuItemById = vi.fn(() => undefined)
-    getApplicationMenu.mockReturnValue({ getMenuItemById })
+    const menu = { getMenuItemById }
 
-    expect(() => setMenuItemEnabled('missing-menu-id', false)).not.toThrow()
+    expect(() =>
+      setMenuItemEnabled(menu, 'missing-menu-id', false)
+    ).not.toThrow()
     expect(getMenuItemById).toHaveBeenCalledWith('missing-menu-id')
   })
 })

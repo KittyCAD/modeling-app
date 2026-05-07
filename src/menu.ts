@@ -8,10 +8,14 @@ import {
 } from '@src/menu/fileRole'
 import { helpRole } from '@src/menu/helpRole'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
+import { isMac } from '@src/menu/utils'
 import { modelingViewRole, projectViewRole } from '@src/menu/viewRole'
 import type { BrowserWindow } from 'electron'
 import { Menu, app } from 'electron'
-import { isMac } from '@src/menu/utils'
+
+type MenuWithMenuItemLookup = {
+  getMenuItemById: (menuId: string) => { enabled: boolean } | null | undefined
+}
 
 /**
  * Gotcha
@@ -21,8 +25,15 @@ import { isMac } from '@src/menu/utils'
  * If you do not do this, <file> will not show up as file. It will be the <ApplicationName> and it contents live under that Menu
  * The .setApplicationMenu does not tell you that the 0th index forces it to <ApplicationName> on Mac.
  */
-function zooSetApplicationMenu(menu: Electron.Menu) {
-  Menu.setApplicationMenu(menu)
+function setNativeMenuForWindow(
+  mainWindow: BrowserWindow,
+  menu: Electron.Menu
+) {
+  if (isMac) {
+    Menu.setApplicationMenu(menu)
+  } else {
+    mainWindow.setMenu(menu)
+  }
 }
 
 // Menu for unauthenticated users
@@ -40,9 +51,7 @@ function fallbackFileRole(
   }
 }
 
-function fallbackEditRole(
-  mainWindow: BrowserWindow
-): ZooMenuItemConstructorOptions {
+function fallbackEditRole(): ZooMenuItemConstructorOptions {
   let extraBits: ZooMenuItemConstructorOptions[] = [
     { role: 'delete' },
     { type: 'separator' },
@@ -79,20 +88,21 @@ function fallbackEditRole(
 export function buildAndSetMenuForFallback(
   mainWindow: BrowserWindow,
   actions: FileMenuActions
-) {
+): Electron.Menu {
   // Use the same structure as the project page menu for consistency
   // but remove items that require authentication
   const template = [
     // Expand empty elements for environments that are not Mac
     ...appMenuMacOnly(),
     fallbackFileRole(actions),
-    fallbackEditRole(mainWindow),
+    fallbackEditRole(),
     projectViewRole(mainWindow),
     // Help role is the same for all pages
     helpRole(mainWindow),
   ]
   const menu = Menu.buildFromTemplate(template)
-  zooSetApplicationMenu(menu)
+  setNativeMenuForWindow(mainWindow, menu)
+  return menu
 }
 
 function appMenuMacOnly() {
@@ -124,7 +134,7 @@ function appMenuMacOnly() {
 export function buildAndSetMenuForModelingPage(
   mainWindow: BrowserWindow,
   actions: FileMenuActions
-) {
+): Electron.Menu {
   const template = [
     // Expand empty elements for environments that are not Mac
     ...appMenuMacOnly(),
@@ -136,7 +146,8 @@ export function buildAndSetMenuForModelingPage(
     helpRole(mainWindow),
   ]
   const menu = Menu.buildFromTemplate(template)
-  zooSetApplicationMenu(menu)
+  setNativeMenuForWindow(mainWindow, menu)
+  return menu
 }
 
 // This will generate a new menu from the initial state
@@ -144,7 +155,7 @@ export function buildAndSetMenuForModelingPage(
 export function buildAndSetMenuForProjectPage(
   mainWindow: BrowserWindow,
   actions: FileMenuActions
-) {
+): Electron.Menu {
   const template = [
     // Expand empty elements for environments that are not Mac
     ...appMenuMacOnly(),
@@ -155,25 +166,19 @@ export function buildAndSetMenuForProjectPage(
     helpRole(mainWindow),
   ]
   const menu = Menu.buildFromTemplate(template)
-  zooSetApplicationMenu(menu)
+  setNativeMenuForWindow(mainWindow, menu)
+  return menu
 }
 
-// Try to enable the menu based on the application menu
+// Try to enable the menu item on the provided native menu.
 // It will not do anything if that menu cannot be found.
-export function setMenuItemEnabled(menuId: string, enabled: boolean) {
-  const applicationMenu = Menu.getApplicationMenu()
-  const menuItem = applicationMenu?.getMenuItemById(menuId)
+export function setMenuItemEnabled(
+  menu: MenuWithMenuItemLookup | null | undefined,
+  menuId: string,
+  enabled: boolean
+) {
+  const menuItem = menu?.getMenuItemById(menuId)
   if (menuItem) {
     menuItem.enabled = enabled
   }
-}
-
-export function enableMenu(menuId: string) {
-  setMenuItemEnabled(menuId, true)
-}
-
-// Try to disable the menu based on the application menu
-// It will not do anything if that menu cannot be found.
-export function disableMenu(menuId: string) {
-  setMenuItemEnabled(menuId, false)
 }

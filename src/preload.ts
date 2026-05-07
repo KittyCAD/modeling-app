@@ -254,14 +254,14 @@ const createFallbackMenu = async (): Promise<any> => {
   return ipcRenderer.invoke('create-menu', { page: 'fallback' })
 }
 
-// Given the application menu, try to enable the menu
+// Given the active native menu, try to enable the menu item.
 const enableMenu = async (menuId: string): Promise<any> => {
   return ipcRenderer.invoke('enable-menu', {
     menuId,
   })
 }
 
-// Given the application menu, try to disable the menu
+// Given the active native menu, try to disable the menu item.
 const disableMenu = async (menuId: string): Promise<any> => {
   return ipcRenderer.invoke('disable-menu', {
     menuId,

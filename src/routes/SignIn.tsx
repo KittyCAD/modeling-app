@@ -9,6 +9,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
 import { updateEnvironment } from '@src/env'
 import env from '@src/env'
+import { useApp } from '@src/lib/boot'
 import { APP_NAME } from '@src/lib/constants'
 import { readEnvironmentFile, writeEnvironmentFile } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -19,7 +20,6 @@ import { returnSelfOrGetHostNameFromURL, toSync } from '@src/lib/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
 import { AdvancedSignInOptions } from '@src/routes/AdvancedSignInOptions'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
-import { useApp } from '@src/lib/boot'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -29,15 +29,6 @@ let didReadFromDiskCacheForEnvironment = false
 
 const SignIn = () => {
   const { auth, settings } = useApp()
-  // Only create the native file menus on desktop
-  if (window.electron) {
-    window.electron.createFallbackMenu().catch(reportRejection)
-    // Disable these since they cannot be accessed within the sign in page.
-    window.electron
-      .disableMenu('Help.Replay onboarding tutorial')
-      .catch(reportRejection)
-    window.electron.disableMenu('Help.Show all commands').catch(reportRejection)
-  }
   const [userCode, setUserCode] = useState('')
   const [verificationUri, setVerificationUri] = useState('')
 
@@ -71,6 +62,20 @@ const SignIn = () => {
       window.location.reload()
     })()
   }
+
+  useEffect(() => {
+    const electron = window.electron
+    if (!electron) {
+      return
+    }
+
+    electron.createFallbackMenu().catch(reportRejection)
+    // Disable these since they cannot be accessed within the sign in page.
+    electron
+      .disableMenu('Help.Replay onboarding tutorial')
+      .catch(reportRejection)
+    electron.disableMenu('Help.Show all commands').catch(reportRejection)
+  }, [])
 
   useEffect(() => {
     if (!didReadFromDiskCacheForEnvironment) {

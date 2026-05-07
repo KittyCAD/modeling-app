@@ -1,6 +1,5 @@
-import { BrowserWindow } from 'electron'
-
 import type { Channel } from '@src/channels'
+import type { MenuItemConstructorOptions } from 'electron'
 
 // types for knowing what menu sends what webContent payload
 export type MenuLabels =
@@ -77,6 +76,23 @@ type MenuTargetWindow = {
   webContents: WebContentsSender
 }
 
+function isObject(value: unknown): value is Record<PropertyKey, unknown> {
+  return typeof value === 'object' && value !== null
+}
+
+function isMenuTargetWindow(value: unknown): value is MenuTargetWindow {
+  if (!isObject(value)) {
+    return false
+  }
+
+  const webContents = value.webContents
+  if (!isObject(webContents)) {
+    return false
+  }
+
+  return typeof webContents.send === 'function'
+}
+
 // Unable to use declare module 'electron' with the interface of WebContents
 // to update the send function. It did not work.
 // Need to use a custom wrapper function for this.
@@ -84,9 +100,25 @@ type MenuTargetWindow = {
 export const typeSafeWebContentsSend = (
   fallbackWindow: MenuTargetWindow,
   channel: Channel,
-  payload: WebContentSendPayload
+  payload: WebContentSendPayload,
+  clickedWindow?: unknown
 ) => {
-  const focusedWindow = BrowserWindow.getFocusedWindow()
-  const targetWindow = focusedWindow ?? fallbackWindow
+  const targetWindow = isMenuTargetWindow(clickedWindow)
+    ? clickedWindow
+    : fallbackWindow
   targetWindow.webContents.send(channel, payload)
+}
+
+export function sendMenuAction(
+  fallbackWindow: MenuTargetWindow,
+  menuLabel: MenuLabels
+): NonNullable<MenuItemConstructorOptions['click']> {
+  return (_menuItem, clickedWindow) => {
+    typeSafeWebContentsSend(
+      fallbackWindow,
+      'menu-action-clicked',
+      { menuLabel },
+      clickedWindow
+    )
+  }
 }

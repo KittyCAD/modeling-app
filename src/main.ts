@@ -44,6 +44,7 @@ import {
   buildAndSetMenuForProjectPage,
   setMenuItemEnabled,
 } from '@src/menu'
+import { isMac } from '@src/menu/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { configureSystemCertificates } from '@src/systemCertificates'
 
@@ -85,6 +86,7 @@ let startupMacOpenFiles: string[] = []
 let startupOpenUrls: string[] = []
 const windowMenuPages = new WeakMap<BrowserWindow, AppMenuPage>()
 const disabledWindowMenuIds = new WeakMap<BrowserWindow, Set<string>>()
+const windowMenus = new Map<number, Menu>()
 const deviceFlowSessions = new DeviceFlowSessionStore<
   BrowserWindow,
   DeviceFlowHandle
@@ -241,6 +243,7 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
   newWindow.on('closed', () => {
     windowMenuPages.delete(newWindow)
     disabledWindowMenuIds.delete(newWindow)
+    windowMenus.delete(newWindow.id)
     deviceFlowSessions.abort(newWindow)
     if (mainWindow !== newWindow) return
     const nextMainWindow = BrowserWindow.getAllWindows().find(
@@ -337,21 +340,31 @@ function buildAndSetMenuForWindow(
   targetWindow: BrowserWindow,
   page: AppMenuPage
 ) {
-  const oldMenu = Menu.getApplicationMenu()
+  const oldMenu = getMenuForWindow(targetWindow)
   if (oldMenu) {
     oldMenus.push(oldMenu)
   }
 
+  let menu: Menu
   if (page === 'project') {
-    buildAndSetMenuForProjectPage(targetWindow, menuActions)
+    menu = buildAndSetMenuForProjectPage(targetWindow, menuActions)
   } else if (page === 'modeling') {
-    buildAndSetMenuForModelingPage(targetWindow, menuActions)
+    menu = buildAndSetMenuForModelingPage(targetWindow, menuActions)
   } else {
-    buildAndSetMenuForFallback(targetWindow, menuActions)
+    menu = buildAndSetMenuForFallback(targetWindow, menuActions)
   }
 
+  windowMenus.set(targetWindow.id, menu)
   applyMenuStateForWindow(targetWindow)
   scheduleMenuGC()
+}
+
+function getMenuForWindow(targetWindow: BrowserWindow) {
+  if (isMac) {
+    return Menu.getApplicationMenu()
+  }
+
+  return windowMenus.get(targetWindow.id)
 }
 
 function applyMenuStateForWindow(targetWindow: BrowserWindow) {
@@ -359,7 +372,7 @@ function applyMenuStateForWindow(targetWindow: BrowserWindow) {
   if (!disabledMenuIds) return
 
   for (const menuId of disabledMenuIds) {
-    setMenuItemEnabled(menuId, false)
+    setMenuItemEnabled(getMenuForWindow(targetWindow), menuId, false)
   }
 }
 
@@ -380,8 +393,8 @@ function updateMenuStateForWindow(
     disabledMenuIds.add(menuId)
   }
 
-  if (BrowserWindow.getFocusedWindow() === targetWindow) {
-    setMenuItemEnabled(menuId, enabled)
+  if (!isMac || BrowserWindow.getFocusedWindow() === targetWindow) {
+    setMenuItemEnabled(getMenuForWindow(targetWindow), menuId, enabled)
   }
 }
 
@@ -473,8 +486,11 @@ app.on('ready', (event, data) => {
 // There is just not enough code to warrant it and further abstracts everything
 // which is already quite abstracted
 
-// @ts-ignore can't declaration merge with App
-app.testProperty = {}
+const appTestProperties: Record<string, unknown> = {}
+Reflect.set(app, 'testProperty', appTestProperties)
+if (NODE_ENV === 'test') {
+  appTestProperties.nativeWindowMenus = windowMenus
+}
 // @ts-ignore can't declaration merge with App
 app.machineApiState = 'off' as MachineApiSignal
 
@@ -487,9 +503,8 @@ const setMachineApiState = (signal: MachineApiSignal) => {
   app.machineApiState = signal
 }
 
-ipcMain.handle('app.testProperty', (event, propertyName) => {
-  // @ts-ignore can't declaration merge with App
-  return app.testProperty[propertyName]
+ipcMain.handle('app.testProperty', (_event, propertyName: string) => {
+  return appTestProperties[propertyName]
 })
 
 ipcMain.handle('machine-api.get-state', () => {

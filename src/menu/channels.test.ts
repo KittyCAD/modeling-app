@@ -1,63 +1,87 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 import type { Channel } from '@src/channels'
 import {
   type WebContentSendPayload,
+  sendMenuAction,
   typeSafeWebContentsSend,
 } from '@src/menu/channels'
-
-const { getFocusedWindow } = vi.hoisted(() => ({
-  getFocusedWindow: vi.fn(),
-}))
-
-vi.mock('electron', () => ({
-  BrowserWindow: {
-    getFocusedWindow,
-  },
-}))
 
 const payload: WebContentSendPayload = {
   menuLabel: 'View.Standard views.Reset view',
 }
 
 function createTargetWindow() {
+  const sentMessages: Array<{
+    channel: Channel
+    payload: WebContentSendPayload
+  }> = []
+
   return {
+    sentMessages,
     webContents: {
-      send: vi.fn((channel: Channel, payload: WebContentSendPayload) => {
-        return { channel, payload }
-      }),
+      send: (channel: Channel, payload: WebContentSendPayload) => {
+        sentMessages.push({ channel, payload })
+      },
     },
   }
 }
 
 describe('typeSafeWebContentsSend', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
-  it('sends menu actions to the focused window', () => {
+  it('sends menu actions to the clicked window when Electron provides one', () => {
     const fallbackWindow = createTargetWindow()
-    const focusedWindow = createTargetWindow()
-    getFocusedWindow.mockReturnValue(focusedWindow)
+    const clickedWindow = createTargetWindow()
 
-    typeSafeWebContentsSend(fallbackWindow, 'menu-action-clicked', payload)
-
-    expect(focusedWindow.webContents.send).toHaveBeenCalledWith(
+    typeSafeWebContentsSend(
+      fallbackWindow,
       'menu-action-clicked',
-      payload
+      payload,
+      clickedWindow
     )
-    expect(fallbackWindow.webContents.send).not.toHaveBeenCalled()
+
+    expect(clickedWindow.sentMessages).toStrictEqual([
+      { channel: 'menu-action-clicked', payload },
+    ])
+    expect(fallbackWindow.sentMessages).toStrictEqual([])
   })
 
   it('falls back to the window captured by the menu builder', () => {
     const fallbackWindow = createTargetWindow()
-    getFocusedWindow.mockReturnValue(null)
 
     typeSafeWebContentsSend(fallbackWindow, 'menu-action-clicked', payload)
 
-    expect(fallbackWindow.webContents.send).toHaveBeenCalledWith(
-      'menu-action-clicked',
-      payload
-    )
+    expect(fallbackWindow.sentMessages).toStrictEqual([
+      { channel: 'menu-action-clicked', payload },
+    ])
+  })
+
+  it('ignores non-window click targets and falls back safely', () => {
+    const fallbackWindow = createTargetWindow()
+
+    typeSafeWebContentsSend(fallbackWindow, 'menu-action-clicked', payload, {
+      webContents: {},
+    })
+
+    expect(fallbackWindow.sentMessages).toStrictEqual([
+      { channel: 'menu-action-clicked', payload },
+    ])
+  })
+})
+
+describe('sendMenuAction', () => {
+  it('builds an Electron menu click handler scoped to the clicked window', () => {
+    const fallbackWindow = createTargetWindow()
+    const clickedWindow = createTargetWindow()
+    const click = sendMenuAction(fallbackWindow, 'Design.Start sketch')
+
+    Reflect.apply(click, undefined, [undefined, clickedWindow, undefined])
+
+    expect(clickedWindow.sentMessages).toStrictEqual([
+      {
+        channel: 'menu-action-clicked',
+        payload: { menuLabel: 'Design.Start sketch' },
+      },
+    ])
+    expect(fallbackWindow.sentMessages).toStrictEqual([])
   })
 })
