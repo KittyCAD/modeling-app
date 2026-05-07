@@ -1214,7 +1214,7 @@ export function buildToolbarConfig(
                 }),
               status: 'experimental',
               title: 'Profile',
-              icon: 'gdtFlatness',
+              icon: 'gdtProfile',
               description:
                 'Specifies how much a surface or edge can deviate from its ideal shape.',
               links: [
