@@ -1202,6 +1202,13 @@ fn remap_ids_for_clone(ids: &[ArtifactId], entity_id_map: &FnvHashMap<ArtifactId
         .collect()
 }
 
+fn remap_mapped_ids_for_clone(
+    ids: &[ArtifactId],
+    entity_id_map: &FnvHashMap<ArtifactId, ArtifactId>,
+) -> Vec<ArtifactId> {
+    ids.iter().filter_map(|id| entity_id_map.get(id).copied()).collect()
+}
+
 fn remap_artifact_for_clone(
     artifact: &Artifact,
     entity_id_map: &FnvHashMap<ArtifactId, ArtifactId>,
@@ -1221,7 +1228,7 @@ fn remap_artifact_for_clone(
             output_index: source.output_index,
             solid_ids: remap_ids_for_clone(&source.solid_ids, entity_id_map),
             tool_ids: remap_ids_for_clone(&source.tool_ids, entity_id_map),
-            pattern_ids: remap_ids_for_clone(&source.pattern_ids, entity_id_map),
+            pattern_ids: remap_mapped_ids_for_clone(&source.pattern_ids, entity_id_map),
             code_ref: clone_code_ref.clone(),
             composite_solid_id: remap_opt_id_for_clone(source.composite_solid_id, entity_id_map),
         }),
@@ -1249,7 +1256,7 @@ fn remap_artifact_for_clone(
             origin_path_id: remap_opt_id_for_clone(source.origin_path_id, entity_id_map),
             inner_path_id: remap_opt_id_for_clone(source.inner_path_id, entity_id_map),
             outer_path_id: remap_opt_id_for_clone(source.outer_path_id, entity_id_map),
-            pattern_ids: remap_ids_for_clone(&source.pattern_ids, entity_id_map),
+            pattern_ids: remap_mapped_ids_for_clone(&source.pattern_ids, entity_id_map),
         }),
         Artifact::Segment(source) => Artifact::Segment(Segment {
             id: remap_id_for_clone(source.id, entity_id_map),
@@ -1319,7 +1326,7 @@ fn remap_artifact_for_clone(
             } else {
                 source.consumed
             },
-            pattern_ids: remap_ids_for_clone(&source.pattern_ids, entity_id_map),
+            pattern_ids: remap_mapped_ids_for_clone(&source.pattern_ids, entity_id_map),
         }),
         Artifact::Wall(source) => Artifact::Wall(Wall {
             id: remap_id_for_clone(source.id, entity_id_map),

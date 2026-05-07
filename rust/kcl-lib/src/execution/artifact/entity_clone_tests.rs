@@ -250,6 +250,65 @@ fn entity_clone_remaps_composite_solid_ids() {
 }
 
 #[test]
+fn entity_clone_does_not_preserve_unmapped_pattern_links() {
+    let source_id = ArtifactId::new(Uuid::new_v4());
+    let pattern_id = ArtifactId::new(Uuid::new_v4());
+    let cmd_id = Uuid::new_v4();
+    let mut artifacts = IndexMap::new();
+    artifacts.insert(
+        source_id,
+        Artifact::Path(Path {
+            id: source_id,
+            sub_type: PathSubType::Sketch,
+            plane_id: ArtifactId::new(Uuid::new_v4()),
+            sketch_block_id: None,
+            seg_ids: Vec::new(),
+            consumed: true,
+            sweep_id: None,
+            trajectory_sweep_id: None,
+            solid2d_id: None,
+            code_ref: CodeRef::placeholder(SourceRange::synthetic()),
+            composite_solid_id: None,
+            origin_path_id: None,
+            pattern_ids: vec![pattern_id],
+            inner_path_id: None,
+            outer_path_id: None,
+        }),
+    );
+
+    let command = ModelingCmd::from(
+        kcmc::each_cmd::EntityClone::builder()
+            .entity_id(Uuid::from(source_id))
+            .build(),
+    );
+    let artifact_command = ArtifactCommand {
+        cmd_id,
+        range: SourceRange::synthetic(),
+        command,
+    };
+    let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+
+    let updated = artifacts_to_update(
+        &artifacts,
+        &artifact_command,
+        &FnvHashMap::default(),
+        &FnvHashMap::default(),
+        &FnvHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &FnvHashMap::default(),
+    )
+    .unwrap();
+
+    let Artifact::Path(clone_path) = &updated[0] else {
+        panic!("Expected EntityClone to preserve path type, got: {updated:?}");
+    };
+    assert!(clone_path.pattern_ids.is_empty());
+}
+
+#[test]
 fn entity_clone_clones_mapped_child_artifacts() {
     let source_path_id = ArtifactId::new(Uuid::new_v4());
     let source_seg_id = ArtifactId::new(Uuid::new_v4());
