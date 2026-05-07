@@ -3276,42 +3276,81 @@ async function prepareToEditAppearance({
 }
 
 export type HideOperation = Operation & { type: 'StdLibCall'; name: 'hide' }
+
+function getHideOperationArtifactIds(op: Operation): string[] {
+  if (!(op.type === 'StdLibCall' && op.name === 'hide')) {
+    return []
+  }
+
+  const value = op.unlabeledArg?.value
+  if (!value) {
+    return []
+  }
+
+  const values = value.type === 'Array' ? value.value : [value]
+  return values.flatMap((value) =>
+    'value' in value &&
+    typeof value.value === 'object' &&
+    value.value !== null &&
+    'artifactId' in value.value &&
+    typeof value.value.artifactId === 'string'
+      ? [value.value.artifactId]
+      : []
+  )
+}
+
 export function getHideOpByArtifactId(
   ops: Operation[],
   searchId: string
 ): HideOperation | undefined {
-  const found = ops.find((op) => {
-    if (!(op.type === 'StdLibCall' && op.name === 'hide')) {
-      return undefined
-    }
-    if (op.unlabeledArg?.value.type === 'Array') {
-      const found = op.unlabeledArg.value.value.find(
-        (a) =>
-          'value' in a &&
-          typeof a.value === 'object' &&
-          'artifactId' in a.value &&
-          typeof a.value?.artifactId === 'string' &&
-          a.value.artifactId === searchId
-      )
-
-      return found ? op : undefined
-    } else if (
-      op.unlabeledArg?.value &&
-      'value' in op.unlabeledArg.value &&
-      op.unlabeledArg.value.value &&
-      typeof op.unlabeledArg.value.value === 'object' &&
-      'artifactId' in op.unlabeledArg.value.value &&
-      typeof op.unlabeledArg.value.value.artifactId === 'string' &&
-      op.unlabeledArg.value.value.artifactId
-    ) {
-      return op.unlabeledArg.value.value.artifactId === searchId
-        ? op
-        : undefined
-    }
-    return undefined
-  })
+  const found = ops.find((op) =>
+    getHideOperationArtifactIds(op).includes(searchId)
+  )
 
   return found as HideOperation | undefined
+}
+
+type ArtifactCodeRef = Extract<Artifact, { codeRef: unknown }>['codeRef']
+
+function codeRefsMatch(left: ArtifactCodeRef, right: ArtifactCodeRef) {
+  return (
+    left.range.length === right.range.length &&
+    left.range.every((value, index) => value === right.range[index]) &&
+    JSON.stringify(left.nodePath) === JSON.stringify(right.nodePath)
+  )
+}
+
+export function getHideOpForArtifact(input: {
+  operations: Operation[]
+  artifact: Artifact
+  artifactGraph: ArtifactGraph
+}): HideOperation | undefined {
+  const { operations, artifact, artifactGraph } = input
+  const directHideOperation = getHideOpByArtifactId(operations, artifact.id)
+  if (directHideOperation) {
+    return directHideOperation
+  }
+
+  if (!('codeRef' in artifact)) {
+    return undefined
+  }
+
+  const equivalentArtifactIds = new Set(
+    [...artifactGraph.values()].flatMap((candidate) => {
+      if (
+        !('codeRef' in candidate) ||
+        !codeRefsMatch(candidate.codeRef, artifact.codeRef)
+      ) {
+        return []
+      }
+
+      return [candidate.id]
+    })
+  )
+
+  return operations.find((op) =>
+    getHideOperationArtifactIds(op).some((id) => equivalentArtifactIds.has(id))
+  ) as HideOperation | undefined
 }
 
 export function onHide(props: {
