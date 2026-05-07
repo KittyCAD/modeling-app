@@ -20,20 +20,13 @@ import {
   isDefaultLayoutPaneID,
 } from '@src/lib/layout/configs/default'
 import { isErr } from '@src/lib/trap'
-import {
-  parseLayoutFromJsonString,
-  parseLayoutInner,
-} from '@src/lib/layout/parse'
+import { parseLayoutInner } from '@src/lib/layout/parse'
 import { LAYOUT_SAVE_THROTTLE } from '@src/lib/constants'
 
 /** Most recent layout system version */
 export const LATEST_LAYOUT_VERSION: LayoutWithMetadata['version'] = 'v2'
 
-// Attempt to load a persisted layout
-const defaultLayoutLoadResult = loadLayout('default')
-export const defaultLayout = isErr(defaultLayoutLoadResult)
-  ? defaultLayoutConfig
-  : defaultLayoutLoadResult
+export const defaultLayout = defaultLayoutConfig
 
 export function getOppositeSide(side: Side): Side {
   switch (side) {
@@ -259,13 +252,62 @@ export function findAndUpdateSplitSizes({
   return rootLayout
 }
 
-/** prefix for localStorage persisted layout data */
+/** Legacy prefix for localStorage persisted layout data */
 export function getLayoutPersistKey(id = 'default') {
   return `layout-${id}`
 }
 
+export function createLayoutWithMetadata(layout: Layout): LayoutWithMetadata {
+  return {
+    version: LATEST_LAYOUT_VERSION,
+    layout,
+  }
+}
+
+export function parseLayoutWithMigrations(
+  layoutWithMetadata: unknown
+): LayoutWithMetadata | Error {
+  if (
+    !layoutWithMetadata ||
+    typeof layoutWithMetadata !== 'object' ||
+    !('version' in layoutWithMetadata) ||
+    !('layout' in layoutWithMetadata) ||
+    typeof layoutWithMetadata.version !== 'string' ||
+    !layoutWithMetadata.layout
+  ) {
+    return new Error('Invalid layout persistence metadata')
+  }
+
+  const migrationResult = applyLayoutMigrationMap(
+    layoutWithMetadata as LayoutWithMetadata,
+    getLayoutMigrations()
+  )
+  const parseResult = parseLayoutInner(migrationResult.layout)
+
+  if (isErr(parseResult)) {
+    return parseResult
+  }
+
+  return {
+    ...migrationResult,
+    layout: parseResult,
+  }
+}
+
+export function parseLayoutJsonWithMigrations(
+  layoutString: string
+): LayoutWithMetadata | Error {
+  try {
+    return parseLayoutWithMigrations(JSON.parse(layoutString))
+  } catch (e) {
+    return new Error(`Failed to parse layout from disk ${String(e)}`)
+  }
+}
+
 /**
- * Load in a layout's persisted JSON and parse and validate it
+ * Load a layout's legacy localStorage persisted JSON and parse and validate it.
+ * User layout persistence now lives in the hidden `layout.configs` user setting;
+ * this remains for migration from pre-settings layout storage.
  */
 export function loadLayout(id: string): Layout | Error {
   if (!globalThis.localStorage) {
@@ -275,36 +317,35 @@ export function loadLayout(id: string): Layout | Error {
   if (!layoutString) {
     return new Error('No persisted layout found')
   }
-  const parsedLayout = parseLayoutFromJsonString(layoutString, (l) =>
-    applyLayoutMigrationMap(l, getLayoutMigrations())
-  )
-  if (!isErr(parsedLayout)) {
-    saveLayoutInner({ layout: parsedLayout, layoutName: id })
-  }
-  return parsedLayout
+  const parsedLayout = parseLayoutJsonWithMigrations(layoutString)
+  return isErr(parsedLayout) ? parsedLayout : parsedLayout.layout
 }
 
 interface ISaveLayout {
   layout: Layout
   layoutName?: string
-  saveFn?: (key: string, value: string) => void | Promise<void>
+}
+
+type LayoutSaveHandler = (
+  props: ISaveLayout & { value: LayoutWithMetadata }
+) => void
+
+let layoutSaveHandler: LayoutSaveHandler | undefined
+
+export function setLayoutSaveHandler(handler: LayoutSaveHandler | undefined) {
+  layoutSaveHandler = handler
 }
 
 /**
- * Wrap the layout data in a versioned object
- * and save it to persisted storage.
+ * Wrap the layout data in a versioned object and hand it to the app-provided
+ * persistence handler.
  */
 function saveLayoutInner({ layout, layoutName = 'default' }: ISaveLayout) {
-  if (!globalThis.localStorage) {
-    return
-  }
-  globalThis.localStorage.setItem(
-    getLayoutPersistKey(layoutName),
-    globalThis.JSON?.stringify({
-      version: LATEST_LAYOUT_VERSION,
-      layout,
-    } satisfies LayoutWithMetadata)
-  )
+  layoutSaveHandler?.({
+    layout,
+    layoutName,
+    value: createLayoutWithMetadata(layout),
+  })
 }
 export const saveLayout = throttle(saveLayoutInner, LAYOUT_SAVE_THROTTLE)
 

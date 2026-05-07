@@ -21,7 +21,7 @@ gdt::datum(
 ): GdtAnnotation
 ```
 
-
+This is part of model-based definition (MBD).
 
 ### Arguments
 
