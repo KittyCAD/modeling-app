@@ -9,6 +9,7 @@ import { stringToKclExpression } from '@src/lib/kclHelpers'
 import {
   addFlatnessGdt,
   addDatumGdt,
+  addPositionGdt,
   addProfileGdt,
   getUsedDatumNames,
   getNextAvailableDatumName,
@@ -603,6 +604,43 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
       expect(newCode).toContain('datums = ["A", "B"]')
       expect(newCode).toContain('tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+  })
+
+  describe('Testing addPositionGdt', () => {
+    it('should add a position annotation to a selected face', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        cylinder,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const faces = getCapFromCylinder(artifactGraph)
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addPositionGdt({
+        ast,
+        artifactGraph,
+        faces,
+        datums: 'A, B',
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      expect(newCode).toContain('tagEnd = $capEnd001')
+      expect(newCode).toContain('gdt::position(')
+      expect(newCode).toContain('faces = [capEnd001]')
+      expect(newCode).toContain('tolerance = 0.1mm')
+      expect(newCode).toContain('datums = ["A", "B"]')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })

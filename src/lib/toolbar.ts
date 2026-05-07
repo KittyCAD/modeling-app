@@ -1228,12 +1228,24 @@ export function buildToolbarConfig(
             },
             {
               id: 'gdt-position',
-              onClick: () => {},
-              status: 'unavailable',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'GDT Position', groupId: 'modeling' },
+                }),
+              status: 'experimental',
               title: 'Position',
+              icon: 'gdtPosition',
               description:
                 'Controls location tolerance of holes, pins, and other features.',
-              links: [],
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-position'
+                  ),
+                },
+              ],
             },
             {
               id: 'gdt-perpendicularity',

@@ -210,6 +210,154 @@ export function addFlatnessGdt({
   }
 }
 
+export function addPositionGdt({
+  ast,
+  artifactGraph,
+  faces,
+  datums,
+  tolerance,
+  wasmInstance,
+  precision,
+  framePosition,
+  framePlane,
+  leaderScale,
+  fontPointSize,
+  fontScale,
+  nodeToEdit,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  faces: Selections
+  datums?: string
+  tolerance: KclCommandValue
+  wasmInstance: ModuleType
+  precision?: KclCommandValue
+  framePosition?: KclCommandValue
+  framePlane?: KclCommandValue | string
+  leaderScale?: KclCommandValue
+  fontPointSize?: KclCommandValue
+  fontScale?: KclCommandValue
+  nodeToEdit?: PathToNode
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  let modifiedAst = structuredClone(ast)
+
+  const faceSelections = faces.graphSelections.filter((selection) =>
+    isFaceArtifact(selection.artifact)
+  )
+
+  if (faceSelections.length === 0) {
+    return new Error(
+      'No valid face selections found. Please select faces (caps, walls, or edge cuts).'
+    )
+  }
+
+  const facesExprs: Expr[] = []
+  for (const faceSelection of faceSelections) {
+    const tagResult = modifyAstWithTagsForSelection(
+      modifiedAst,
+      faceSelection,
+      artifactGraph,
+      wasmInstance
+    )
+    if (err(tagResult)) {
+      console.warn('Failed to add tag for face selection', tagResult)
+      continue
+    }
+
+    modifiedAst = tagResult.modifiedAst
+    facesExprs.push(tagResult.exprs[0])
+  }
+
+  if (facesExprs.length === 0) {
+    return new Error(
+      'No valid face expressions could be generated from selection'
+    )
+  }
+
+  const uniqueFacesExprs = deduplicateFaceExprs(facesExprs)
+
+  if (uniqueFacesExprs.length === 0) {
+    return new Error('No unique faces found after deduplication')
+  }
+
+  if ('variableName' in tolerance && tolerance.variableName) {
+    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, nodeToEdit)
+  }
+  if (precision && 'variableName' in precision && precision.variableName) {
+    insertVariableAndOffsetPathToNode(precision, modifiedAst, nodeToEdit)
+  }
+
+  const styleResult = processGdtStyleParameters({
+    modifiedAst,
+    nodeToEdit,
+    wasmInstance,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontPointSize,
+    fontScale,
+  })
+  if (err(styleResult)) return styleResult
+
+  let lastPathToNode: PathToNode | undefined
+  for (const faceExpr of uniqueFacesExprs) {
+    const labeledArgs = [
+      createLabeledArg('faces', createArrayExpression([faceExpr])),
+      createLabeledArg('tolerance', valueOrVariable(tolerance)),
+    ]
+
+    const datumNames = parseDatumNames(datums)
+    if (datumNames.length > 0) {
+      labeledArgs.push(
+        createLabeledArg(
+          'datums',
+          createArrayExpression(
+            datumNames.map((datum) => createLiteral(datum, wasmInstance))
+          )
+        )
+      )
+    }
+
+    if (precision !== undefined) {
+      labeledArgs.push(
+        createLabeledArg('precision', valueOrVariable(precision))
+      )
+    }
+
+    labeledArgs.push(...styleResult.labeledArgs)
+
+    const call = createCallExpressionStdLibKw(
+      'position',
+      null,
+      labeledArgs,
+      undefined,
+      [createIdentifier('gdt')]
+    )
+
+    const pathToNode = setCallInAst({
+      ast: modifiedAst,
+      call,
+      pathToEdit: nodeToEdit,
+      pathIfNewPipe: undefined,
+      variableIfNewDecl: undefined,
+      wasmInstance,
+    })
+    if (err(pathToNode)) {
+      return pathToNode
+    }
+    lastPathToNode = pathToNode
+  }
+
+  if (!lastPathToNode) {
+    return new Error('Failed to create any gdt::position calls')
+  }
+
+  return {
+    modifiedAst,
+    pathToNode: lastPathToNode,
+  }
+}
+
 export function addProfileGdt({
   ast,
   artifactGraph,

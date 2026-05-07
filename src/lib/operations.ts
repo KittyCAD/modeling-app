@@ -1938,6 +1938,75 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({
   }
 }
 
+const prepareToEditGdtPosition: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  artifactGraph,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'GDT Position',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const facesArg = operation.labeledArgs?.['faces']
+  if (!facesArg || !facesArg.sourceRange) {
+    return { reason: 'Missing or invalid faces argument' }
+  }
+
+  const graphSelections = extractFaceSelections(artifactGraph, facesArg)
+  if ('error' in graphSelections) {
+    return { reason: graphSelections.error }
+  }
+
+  const faces = { graphSelections, otherSelections: [] }
+
+  const tolerance = await extractKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if ('error' in tolerance) {
+    return { reason: tolerance.error }
+  }
+
+  const optionalArgs = await Promise.all([
+    extractKclArgument(code, operation, 'precision', rustContext),
+    extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
+    extractKclArgument(code, operation, 'fontPointSize', rustContext),
+    extractKclArgument(code, operation, 'fontScale', rustContext),
+  ])
+
+  const [precision, framePosition, leaderScale, fontPointSize, fontScale] =
+    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
+
+  const framePlane = extractStringArgument(code, operation, 'framePlane')
+  const datums = extractStringArrayArgument(code, operation, 'datums')
+
+  const argDefaultValues: ModelingCommandSchema['GDT Position'] = {
+    faces,
+    datums,
+    tolerance,
+    precision,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontPointSize,
+    fontScale,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
 const prepareToEditGdtProfile: PrepareToEditCallback = async ({
   operation,
   rustContext,
@@ -2131,6 +2200,11 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Flatness',
     icon: 'gdtFlatness',
     prepareToEdit: prepareToEditGdtFlatness,
+  },
+  'gdt::position': {
+    label: 'Position',
+    icon: 'gdtPosition',
+    prepareToEdit: prepareToEditGdtPosition,
   },
   'gdt::profile': {
     label: 'Profile',
