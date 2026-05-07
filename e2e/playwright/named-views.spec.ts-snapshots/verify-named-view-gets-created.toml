@@ -12,3 +12,4 @@ pivot_position = [ 0, 0, 0 ]
 pivot_rotation = [ 0.4247082, 0.1759199, 0.33985114, 0.8204732 ]
 world_coord_system = "right_handed_up_z"
 version = 1
+show_annotations = true

@@ -11,9 +11,11 @@ import toast from 'react-hot-toast'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
+import { setShowAnnotations } from '@src/lang/modifyAst/settings'
+import { recast } from '@src/lang/wasm'
+import type { KclManager } from '@src/lang/KclManager'
 import { err, reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
-import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 
@@ -87,6 +89,7 @@ function cameraViewStateToNamedView(
     is_ortho: cameraViewState.is_ortho,
     pivot_position,
     pivot_rotation,
+    show_annotations: true,
     // TS side knows about the version for the time being the version is not used for anything for now.
     // Can be detected and cleaned up later if we have new version.
     version: 1.0,
@@ -96,7 +99,7 @@ function cameraViewStateToNamedView(
 }
 
 export function createNamedViewsCommand(
-  engineCommandManager: ConnectionManager,
+  kclManager: KclManager,
   settingsActor: SettingsActorType
 ) {
   const getSettings = (): SettingsType => {
@@ -124,7 +127,7 @@ export function createNamedViewsCommand(
 
         // Retrieve camera view state from the engine
         const cameraGetViewResponse =
-          await engineCommandManager.sendSceneCommand({
+          await kclManager.engineCommandManager.sendSceneCommand({
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
             cmd: { type: 'default_camera_get_view' },
@@ -276,8 +279,7 @@ export function createNamedViewsCommand(
         const idToLoad = data.name
         const viewToLoad = namedViews[idToLoad]
         if (viewToLoad) {
-          // Split into the name and the engine data
-          const { name, version, ...engineViewData } = viewToLoad
+          const { name } = viewToLoad
           const cameraViewState = namedViewToCameraViewState(viewToLoad)
 
           if (err(cameraViewState)) {
@@ -287,7 +289,7 @@ export function createNamedViewsCommand(
 
           // Only send the specific camera information, the NamedView itself
           // is not directly compatible with the engine API
-          await engineCommandManager.sendSceneCommand({
+          await kclManager.engineCommandManager.sendSceneCommand({
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
             cmd: {
@@ -298,7 +300,7 @@ export function createNamedViewsCommand(
             },
           })
 
-          const isPerspective = !engineViewData.is_ortho
+          const isPerspective = !viewToLoad.is_ortho
 
           // Update the GUI for orthographic and projection
           settingsActor.send({
@@ -312,12 +314,41 @@ export function createNamedViewsCommand(
           // Update the camera by triggering the callback workflow to get the camera settings
           // Setting the view won't update the client side camera.
           // Asking for the default camera settings after setting the view will internally sync the camera
-          await engineCommandManager.sendSceneCommand({
+          await kclManager.engineCommandManager.sendSceneCommand({
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
             cmd: {
               type: 'default_camera_get_settings',
             },
+          })
+
+          const updatedAst = setShowAnnotations(
+            kclManager.code,
+            viewToLoad.show_annotations ?? true,
+            await kclManager.wasmInstancePromise
+          )
+          if (err(updatedAst)) {
+            toast.error(
+              `Named view ${name} loaded, but annotations were not updated.`
+            )
+            return
+          }
+
+          const updatedCode = recast(
+            updatedAst,
+            await kclManager.wasmInstancePromise
+          )
+          if (err(updatedCode)) {
+            toast.error(
+              `Named view ${name} loaded, but annotations were not updated.`
+            )
+            return
+          }
+
+          kclManager.updateCodeEditor(updatedCode, {
+            shouldExecute: true,
+            shouldWriteToDisk: true,
+            shouldAddToHistory: true,
           })
 
           // We do not have the promise of the engine command for ensuring the camera projection has been completed.

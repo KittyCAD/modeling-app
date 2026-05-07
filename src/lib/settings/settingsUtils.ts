@@ -785,7 +785,7 @@ export function isNamedView(
 }
 
 function deepPartialNamedViewsToNamedViews(
-  maybeViews: { [key: string]: NamedView | undefined } | undefined
+  maybeViews: { [key: string]: DeepPartial<NamedView> | undefined } | undefined
 ): { [key: string]: NamedView } {
   const namedViews: { [key: string]: NamedView } = {}
 
@@ -795,7 +795,10 @@ function deepPartialNamedViewsToNamedViews(
 
   for (const [key, maybeView] of Object.entries(maybeViews)) {
     if (isNamedView(maybeView)) {
-      namedViews[key] = maybeView
+      namedViews[key] = {
+        ...maybeView,
+        show_annotations: maybeView.show_annotations ?? true,
+      }
     }
   }
   return namedViews

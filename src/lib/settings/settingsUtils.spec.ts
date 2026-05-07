@@ -503,6 +503,56 @@ describe('project settings serialization regression', () => {
     expect(parsedProjectPayload.textEditor?.blinkingCursor).toBe(true)
   })
 
+  it('preserves named view show_annotations through wasm round-trip', async () => {
+    const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+    const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
+
+    const serializedToml = serializeProjectConfiguration(
+      settingsPayloadToProjectConfiguration({
+        app: {
+          namedViews: {
+            '0656fb1a-9640-473e-b334-591dc70c0138': {
+              name: 'uuid1',
+              eye_offset: 1,
+              fov_y: 45,
+              ortho_scale_enabled: false,
+              ortho_scale_factor: 1,
+              pivot_position: [0, 0, 0],
+              pivot_rotation: [0, 0, 0, 1],
+              world_coord_system: 'right_handed_up_z',
+              is_ortho: false,
+              version: 1,
+              show_annotations: false,
+            },
+          },
+        },
+      }),
+      wasmInstance
+    )
+    if (serializedToml instanceof Error) {
+      throw serializedToml
+    }
+
+    expect(serializedToml).toContain('show_annotations = false')
+
+    const parsedProjectConfiguration = parseProjectSettings(
+      serializedToml,
+      wasmInstance
+    )
+    if (parsedProjectConfiguration instanceof Error) {
+      throw parsedProjectConfiguration
+    }
+
+    const parsedProjectPayload = projectConfigurationToSettingsPayload(
+      parsedProjectConfiguration
+    )
+    expect(
+      parsedProjectPayload.app?.namedViews?.[
+        '0656fb1a-9640-473e-b334-591dc70c0138'
+      ]?.show_annotations
+    ).toBe(false)
+  })
+
   it('drops cleared project settings while preserving project metadata', async () => {
     const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
     const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
@@ -528,6 +578,7 @@ describe('project settings serialization regression', () => {
               world_coord_system: 'right_handed_up_z',
               is_ortho: false,
               version: 1,
+              show_annotations: true,
             },
           },
         },

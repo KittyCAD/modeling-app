@@ -44,7 +44,7 @@ export const ModelingPageProvider = ({
       createNamedViewCommand,
       deleteNamedViewCommand,
       loadNamedViewCommand,
-    } = createNamedViewsCommand(kclManager.engineCommandManager, settingsActor)
+    } = createNamedViewsCommand(kclManager, settingsActor)
 
     const {
       topViewCommand,

@@ -148,6 +148,10 @@ fn named_view_point_version_one() -> f64 {
     1.0
 }
 
+fn default_show_annotations() -> bool {
+    true
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
@@ -182,6 +186,9 @@ pub struct NamedView {
     /// Version number of the view point if the engine camera API changes
     #[serde(default = "named_view_point_version_one")]
     pub version: f64,
+    /// Whether to show body annotations when the named view is loaded.
+    #[serde(default = "default_show_annotations")]
+    pub show_annotations: bool,
 }
 
 #[cfg(test)]
@@ -245,6 +252,7 @@ mod tests {
         let named_views: Vec<NamedView> = serde_json::from_str(json).unwrap();
         let version = named_views[0].version;
         assert_eq!(version, 1.0);
+        assert!(named_views[0].show_annotations);
     }
 
     #[test]
@@ -295,6 +303,7 @@ mod tests {
                                 pivot_rotation: [-0.16391756, 0.9862819, -0.01956843, 0.0032552152],
                                 world_coord_system: String::from("RightHandedUpZ"),
                                 version: 1.0,
+                                show_annotations: true,
                             },
                         ),
                         (
@@ -310,6 +319,7 @@ mod tests {
                                 pivot_rotation: [-0.16391756, 0.9862819, -0.01956843, 0.0032552152],
                                 world_coord_system: String::from("RightHandedUpZ"),
                                 version: 1.0,
+                                show_annotations: true,
                             },
                         ),
                     ]),

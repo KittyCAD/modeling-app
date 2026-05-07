@@ -2,7 +2,10 @@ import { recast } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 import { join } from 'path'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
-import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
+import {
+  setExperimentalFeatures,
+  setShowAnnotations,
+} from '@src/lang/modifyAst/settings'
 import { expect, describe, it } from 'vitest'
 const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
 
@@ -29,6 +32,31 @@ describe('settings.spec.ts', () => {
 
       const newCode = recast(newAst, instance)
       expect(newCode).toBe(`@settings(experimentalFeatures = deny)\n`)
+    })
+  })
+
+  describe('Testing setShowAnnotations', () => {
+    it('should add showAnnotations = false at the top of the body', async () => {
+      const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
+      const newAst = setShowAnnotations('x = 1\n', false, instance)
+      if (err(newAst)) {
+        throw newAst
+      }
+
+      const newCode = recast(newAst, instance)
+      expect(newCode).toBe(`showAnnotations = false\nx = 1\n`)
+    })
+
+    it('should remove showAnnotations when annotations should be shown', async () => {
+      const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
+      const code = `showAnnotations = false\nx = 1\n`
+      const newAst = setShowAnnotations(code, true, instance)
+      if (err(newAst)) {
+        throw newAst
+      }
+
+      const newCode = recast(newAst, instance)
+      expect(newCode).toBe(`x = 1\n`)
     })
   })
 })
