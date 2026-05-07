@@ -419,7 +419,10 @@ class StlImportOptions:
     r"""
     Options for importing STL.
     """
-    ...
+    def __new__(cls) -> StlImportOptions:
+        r"""
+        Set the options to their defaults.
+        """
 
 class System:
     r"""

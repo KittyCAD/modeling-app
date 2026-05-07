@@ -11,6 +11,8 @@ import {
   canReadWriteDirectory,
   statIsDirectory,
 } from '@src/lib/desktop'
+import { newKclFile } from '@src/lang/project'
+import { DEFAULT_DEFAULT_LENGTH_UNIT, FILE_EXT } from '@src/lib/constants'
 import {
   doesProjectNameNeedInterpolated,
   getNextFileName,
@@ -39,7 +41,7 @@ import {
   collectProjectFiles,
 } from '@src/machines/systemIO/utils'
 import { fromPromise } from 'xstate'
-import { isErr } from '@src/lib/trap'
+import { err, isErr } from '@src/lib/trap'
 
 const ML_CONVERSATIONS_FILE_NAME = 'ml-conversations.json'
 
@@ -815,7 +817,25 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         } catch (e) {
           console.error(e)
         }
-        await fsZds.writeFile(input.requestedAbsolutePath, new Uint8Array())
+        let fileContents = new Uint8Array()
+        if (fsZds.extname(input.requestedAbsolutePath) === FILE_EXT) {
+          const wasmInstance = await input.context.wasmInstancePromise
+          const configuration = await readAppSettingsFile(wasmInstance)
+          if (err(configuration)) {
+            return Promise.reject(configuration)
+          }
+          const codeToWrite = newKclFile(
+            undefined,
+            configuration?.settings?.modeling?.base_unit ??
+              DEFAULT_DEFAULT_LENGTH_UNIT,
+            wasmInstance
+          )
+          if (err(codeToWrite)) {
+            return Promise.reject(codeToWrite)
+          }
+          fileContents = new TextEncoder().encode(codeToWrite)
+        }
+        await fsZds.writeFile(input.requestedAbsolutePath, fileContents)
         return {
           message: `File ${fileNameWithExtension} written successfully`,
           requestedAbsolutePath: input.requestedAbsolutePath,

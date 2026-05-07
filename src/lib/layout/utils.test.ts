@@ -5,7 +5,7 @@ import type {
   LayoutWithMetadata,
 } from '@src/lib/layout/types'
 import {
-  addPaneActionContributions,
+  applyLayoutContribution,
   applyLayoutMigrationMap,
   closeAllPanes,
   setOpenPanes,
@@ -188,101 +188,121 @@ describe('Layout utils', () => {
     })
   })
 
-  describe('pane action contributions', () => {
-    it('adds extension actions to a matching pane without mutating the source layout', () => {
+  describe('layout contributions', () => {
+    it('inserts missing contributed areas into a target pane layout', () => {
       const layout: Layout = {
         id: 'root',
         label: 'Root',
-        type: LayoutType.Splits,
-        orientation: 'inline',
-        sizes: [50, 50],
+        type: LayoutType.Panes,
+        side: 'inline-start',
+        activeIndices: [0],
+        sizes: [100],
+        splitOrientation: 'block',
         children: [
           {
-            id: DefaultLayoutToolbarID.Left,
-            label: 'Left',
-            type: LayoutType.Panes,
-            side: 'inline-start',
-            activeIndices: [0],
-            sizes: [100],
-            splitOrientation: 'block',
-            children: [
-              {
-                id: DefaultLayoutPaneID.FeatureTree,
-                label: 'Feature Tree',
-                type: LayoutType.Simple,
-                areaType: AreaType.FeatureTree,
-                icon: 'model',
-              },
-            ],
-            actions: [
-              {
-                id: 'export',
-                label: 'Export part',
-                icon: 'floppyDiskArrow',
-                actionType: 'export',
-              },
-            ],
-          },
-          {
-            id: DefaultLayoutToolbarID.Right,
-            label: 'Right',
-            type: LayoutType.Panes,
-            side: 'inline-end',
-            activeIndices: [0],
-            sizes: [100],
-            splitOrientation: 'block',
-            children: [
-              {
-                id: DefaultLayoutPaneID.TTC,
-                label: 'Zookeeper',
-                type: LayoutType.Simple,
-                areaType: AreaType.TTC,
-                icon: 'sparkles',
-              },
-            ],
-            actions: [],
+            id: 'existing-pane',
+            label: 'Existing',
+            type: LayoutType.Simple,
+            areaType: AreaType.Code,
+            icon: 'code',
           },
         ],
       }
 
-      const result = addPaneActionContributions({
+      const result = applyLayoutContribution({
         rootLayout: layout,
-        contributions: [
-          {
-            paneId: DefaultLayoutToolbarID.Left,
-            action: {
-              id: 'extension-action',
-              label: 'Extension action',
-              icon: 'printer3d',
-              actionType: 'extensionAction',
-            },
+        contribution: {
+          id: 'plugin-area-default',
+          kind: 'area',
+          pane: {
+            id: 'plugin-pane',
+            label: 'Plugin',
+            type: LayoutType.Simple,
+            areaType: 'plugin.area',
+            icon: 'stopwatch',
           },
-        ],
+          placement: {
+            targetPaneId: 'root',
+            afterId: 'existing-pane',
+          },
+          initiallyOpen: true,
+        },
       })
 
-      expect(layout).toHaveProperty('children[0].actions', [
-        {
-          id: 'export',
-          label: 'Export part',
-          icon: 'floppyDiskArrow',
-          actionType: 'export',
+      expect(result).toStrictEqual({ applied: true, reason: 'applied' })
+      expect(layout).toHaveProperty('children[1].id', 'plugin-pane')
+      expect(layout).toHaveProperty('activeIndices', [0, 1])
+      expect(layout).toHaveProperty('sizes', [50, 50])
+    })
+
+    it('does not duplicate contributed areas already present anywhere in the layout', () => {
+      const layout = structuredClone(basicSplitLayout)
+
+      const result = applyLayoutContribution({
+        rootLayout: layout,
+        contribution: {
+          id: 'plugin-area-default',
+          kind: 'area',
+          pane: {
+            id: 'ttc',
+            label: 'Plugin',
+            type: LayoutType.Simple,
+            areaType: 'plugin.area',
+            icon: 'stopwatch',
+          },
+          placement: {
+            targetPaneId: 'root',
+          },
         },
-      ])
-      expect(result).toHaveProperty('children[0].actions', [
-        {
-          id: 'export',
-          label: 'Export part',
-          icon: 'floppyDiskArrow',
-          actionType: 'export',
+      })
+
+      expect(result).toStrictEqual({
+        applied: false,
+        reason: 'already-present',
+      })
+    })
+
+    it('inserts missing contributed actions into a target pane layout', () => {
+      const layout: Layout = {
+        id: 'root',
+        label: 'Root',
+        type: LayoutType.Panes,
+        side: 'inline-start',
+        activeIndices: [],
+        sizes: [],
+        splitOrientation: 'block',
+        children: [],
+        actions: [
+          {
+            id: 'existing-action',
+            label: 'Existing',
+            icon: 'command',
+            actionType: 'existing.action',
+          },
+        ],
+      }
+
+      const result = applyLayoutContribution({
+        rootLayout: layout,
+        contribution: {
+          id: 'plugin-action-default',
+          kind: 'action',
+          action: {
+            id: 'plugin-action',
+            label: 'Plugin action',
+            icon: 'stopwatch',
+            actionType: 'plugin.action',
+          },
+          placement: {
+            targetPaneId: 'root',
+            beforeId: 'existing-action',
+          },
         },
-        {
-          id: 'extension-action',
-          label: 'Extension action',
-          icon: 'printer3d',
-          actionType: 'extensionAction',
-        },
-      ])
-      expect(result).toHaveProperty('children[1].actions', [])
+      })
+
+      expect(result).toStrictEqual({ applied: true, reason: 'applied' })
+      expect(layout).toHaveProperty('actions[0].id', 'plugin-action')
+      expect(layout).toHaveProperty('actions[1].id', 'existing-action')
     })
   })
 

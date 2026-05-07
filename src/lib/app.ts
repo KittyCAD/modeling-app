@@ -37,19 +37,26 @@ import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import { initialiseWasm } from '@src/lang/wasmUtils'
 import {
+  createLayoutWithMetadata,
   defaultLayout,
-  defaultLayoutConfig,
+  loadLayout,
   saveLayout,
+  setLayoutSaveHandler,
+  createLayoutService,
+  createLayoutServiceRegistryItem,
   type Layout,
+  type LayoutService,
 } from '@src/lib/layout'
+import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { type Signal, signal, effect } from '@preact/signals-core'
 import {
   getAllCurrentSettings,
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
+import { isPlaywright } from '@src/lib/isPlaywright'
 import { MachineManager } from '@src/lib/MachineManager'
-import { reportRejection } from '@src/lib/trap'
+import { err, reportRejection } from '@src/lib/trap'
 import type { Project } from '@src/lib/project'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { Registry, pluginsValueSpec } from '@kittycad/registry'
@@ -57,6 +64,14 @@ import type { UserResponse } from '@kittycad/lib/dist/types/src'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
 import { coreRegistryItems } from '@src/registry/registry'
+import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
+
+const DEFAULT_LAYOUT_CONFIG_NAME = 'default'
+const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
+
+function isPlaywrightRuntime() {
+  return typeof window !== 'undefined' && isPlaywright()
+}
 
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
@@ -101,6 +116,7 @@ export type AppLayoutSystem = {
   get: () => Layout
   set: (l: Layout) => void
   reset: () => void
+  service: LayoutService
   saveEffectUnsubscribeFn: ReturnType<typeof effect>
 }
 
@@ -284,7 +300,15 @@ export class App implements AppSubsystems {
       useContext: () => useSelector(billingActor, ({ context }) => context),
     }
 
-    const layoutSignal = signal<Layout>(defaultLayout)
+    const usePlaywrightLayout = isPlaywrightRuntime()
+    const layoutConfigName = usePlaywrightLayout
+      ? PLAYWRIGHT_LAYOUT_CONFIG_NAME
+      : DEFAULT_LAYOUT_CONFIG_NAME
+    const runtimeDefaultLayout = usePlaywrightLayout
+      ? playwrightLayoutConfig
+      : defaultLayout
+    const layoutSignal = signal<Layout>(runtimeDefaultLayout)
+    const layoutService = createLayoutService(layoutSignal)
     const layout: AppLayoutSystem = {
       signal: layoutSignal,
       get: () => layoutSignal.value,
@@ -292,12 +316,78 @@ export class App implements AppSubsystems {
         layoutSignal.value = structuredClone(l)
       },
       reset: () => {
-        layoutSignal.value = structuredClone(defaultLayoutConfig)
+        layoutSignal.value = structuredClone(runtimeDefaultLayout)
       },
+      service: layoutService,
       saveEffectUnsubscribeFn: effect(() =>
-        saveLayout({ layout: layoutSignal.value })
+        saveLayout({ layout: layoutSignal.value, layoutName: layoutConfigName })
       ),
     }
+    appRegistry.configure([
+      ...coreRegistryItems,
+      createLayoutServiceRegistryItem(layoutService),
+    ])
+
+    let hasHydratedLayout = false
+    const applyRegistryLayoutContributions = () =>
+      layoutService.applyContributions(
+        appRegistry.get(layoutContributionsValueSpec)
+      )
+    const hydrateLayoutFromSettings = (
+      snapshot: SnapshotFrom<typeof settingsActor>
+    ) => {
+      if (hasHydratedLayout || snapshot.value !== 'idle') {
+        return
+      }
+
+      setLayoutSaveHandler(({ layout, layoutName }) => {
+        const currentLayouts = getOnlySettingsFromContext(
+          settingsActor.getSnapshot().context
+        ).layout.configs.current
+
+        settingsActor.send({
+          type: 'set.layout.configs',
+          data: {
+            level: 'user',
+            value: {
+              ...currentLayouts,
+              [layoutName ?? 'default']: createLayoutWithMetadata(layout),
+            },
+          },
+        })
+      })
+
+      const settingsSnapshot = getOnlySettingsFromContext(snapshot.context)
+      const settingsLayout =
+        settingsSnapshot.layout.configs.current[layoutConfigName] ??
+        settingsSnapshot.layout.configs.current.default
+      if (settingsLayout) {
+        layoutSignal.value = structuredClone(settingsLayout.layout)
+      } else {
+        const legacyLayout = loadLayout(layoutConfigName)
+        const fallbackLegacyLayout =
+          err(legacyLayout) && layoutConfigName !== DEFAULT_LAYOUT_CONFIG_NAME
+            ? loadLayout(DEFAULT_LAYOUT_CONFIG_NAME)
+            : legacyLayout
+        if (!err(fallbackLegacyLayout)) {
+          layoutSignal.value = structuredClone(fallbackLegacyLayout)
+        }
+      }
+
+      hasHydratedLayout = true
+      applyRegistryLayoutContributions()
+    }
+    settingsActor.subscribe(hydrateLayoutFromSettings)
+    hydrateLayoutFromSettings(settingsActor.getSnapshot())
+    effect(() => {
+      const contributions = appRegistry.signal(
+        layoutContributionsValueSpec
+      ).value
+      if (hasHydratedLayout) {
+        layoutService.applyContributions(contributions)
+      }
+    })
+
     return {
       wasmPromise,
       auth,

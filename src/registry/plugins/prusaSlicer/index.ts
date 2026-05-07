@@ -7,9 +7,9 @@ import { DefaultLayoutToolbarID } from '@src/lib/layout/configs/default'
 import { EngineConnectionStateType } from '@src/network/utils'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import {
-  layoutActionDefinitionsValueSpec,
-  layoutPaneActionsValueSpec,
-} from '@src/valueSpecs'
+  layoutActionLibraryValueSpec,
+  layoutContributionsValueSpec,
+} from '@src/registry/contracts/layout'
 import { exportCurrentPartToPrusaSlicer } from '@src/registry/plugins/prusaSlicer/exportToPrusaSlicer'
 
 const exportToPrusaSlicerActionType = 'exportToPrusaSlicer'
@@ -33,7 +33,7 @@ function useExportToPrusaSlicerDisabled() {
 
 const exportToPrusaSlicerSidebarItem = defineRegistryItem({
   provides: [
-    provide(layoutActionDefinitionsValueSpec, {
+    provide(layoutActionLibraryValueSpec, {
       [exportToPrusaSlicerActionType]: {
         useHidden: () => !isDesktop(),
         useDisabled: useExportToPrusaSlicerDisabled,
@@ -42,14 +42,18 @@ const exportToPrusaSlicerSidebarItem = defineRegistryItem({
         },
       },
     }),
-    provide(layoutPaneActionsValueSpec, {
-      paneId: DefaultLayoutToolbarID.Left,
-      order: 30,
+    provide(layoutContributionsValueSpec, {
+      id: 'prusa-slicer.left-toolbar.action',
+      kind: 'action',
       action: {
         id: 'export-to-prusaslicer',
         label: 'Export to PrusaSlicer',
         icon: 'printer3d',
         actionType: exportToPrusaSlicerActionType,
+      },
+      placement: {
+        targetPaneId: DefaultLayoutToolbarID.Left,
+        position: 'end',
       },
     }),
   ],

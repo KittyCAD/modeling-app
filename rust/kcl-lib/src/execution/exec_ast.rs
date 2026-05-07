@@ -40,6 +40,7 @@ use crate::execution::UnsolvedExpr;
 use crate::execution::UnsolvedSegment;
 use crate::execution::UnsolvedSegmentKind;
 use crate::execution::annotations;
+use crate::execution::annotations::FnAttrs;
 use crate::execution::cad_op::OpKclValue;
 use crate::execution::control_continue;
 use crate::execution::early_return;
@@ -1056,10 +1057,18 @@ impl ExecutorContext {
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
             Expr::FunctionExpression(function_expression) => {
                 let attrs = annotations::get_fn_attrs(annotations, metadata.source_range)?;
-                let experimental = attrs.map(|a| a.experimental).unwrap_or_default();
+                let experimental = attrs
+                    .as_ref()
+                    .map(|a| a.experimental)
+                    // Use the default for the field, not the bool type.
+                    .unwrap_or_else(|| FnAttrs::default().experimental);
 
                 // Check the KCL @(feature_tree = ) annotation.
-                let include_in_feature_tree = attrs.unwrap_or_default().include_in_feature_tree;
+                let include_in_feature_tree = attrs
+                    .as_ref()
+                    .map(|a| a.include_in_feature_tree)
+                    // Use the default for the field, not the bool type.
+                    .unwrap_or_else(|| FnAttrs::default().include_in_feature_tree);
                 let (mut closure, placeholder_env_ref) = if let Some(attrs) = attrs
                     && (attrs.impl_ == annotations::Impl::Rust
                         || attrs.impl_ == annotations::Impl::RustConstrainable
@@ -3300,7 +3309,7 @@ impl Node<BinaryExpression> {
                                 );
                             }
                         }
-                        SketchConstraintKind::Radius { points } | SketchConstraintKind::Diameter { points } => {
+                        SketchConstraintKind::Radius { .. } | SketchConstraintKind::Diameter { .. } => {
                             #[derive(Clone, Copy)]
                             enum CircularSegmentConstraintTarget {
                                 Arc {
@@ -3341,6 +3350,17 @@ impl Node<BinaryExpression> {
                                     })
                             }
 
+                            let (points, label_position) = match &constraint.kind {
+                                SketchConstraintKind::Radius { points, label_position } => {
+                                    (points, label_position.clone())
+                                }
+                                SketchConstraintKind::Diameter { points, label_position } => {
+                                    (points, label_position.clone())
+                                }
+                                _ => unreachable!(),
+                            };
+                            #[cfg(not(feature = "artifact-graph"))]
+                            let _ = &label_position;
                             let range = self.as_source_range();
                             let center = &points[0];
                             let start = &points[1];
@@ -3492,6 +3512,7 @@ impl Node<BinaryExpression> {
                                         diameter: n.try_into().map_err(|_| {
                                             internal_err("Failed to convert diameter units numeric suffix:", range)
                                         })?,
+                                        label_position,
                                         source,
                                     })
                                 } else {
@@ -3501,6 +3522,7 @@ impl Node<BinaryExpression> {
                                         radius: n.try_into().map_err(|_| {
                                             internal_err("Failed to convert radius units numeric suffix:", range)
                                         })?,
+                                        label_position,
                                         source,
                                     })
                                 };

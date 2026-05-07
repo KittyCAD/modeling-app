@@ -306,8 +306,8 @@ impl<'a> Stream for TokenSlice<'a> {
         self.end = checkpoint.1;
     }
 
-    fn raw(&self) -> &dyn fmt::Debug {
-        self
+    fn trace(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{self:?}")
     }
 }
 
