@@ -165,8 +165,6 @@ test.describe(
         await homePage.projectsLoaded()
         await homePage.isNativeFileMenuCreated()
         await clickElectronNativeMenuById(tronApp, 'Help.Report a bug')
-        // Core dump and refresh magic number timeout
-        await page.waitForTimeout(7000)
         await homePage.projectsLoaded()
       })
       await test.step('Home.Help.Replay onboarding tutorial', async () => {
