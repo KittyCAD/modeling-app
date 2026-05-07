@@ -4,7 +4,6 @@ import { withMlephantWebSocketURL } from '@src/lib/withBaseURL'
 import type {
   MlCopilotClientMessage,
   MlCopilotServerMessage,
-  MlCopilotMode,
   MlCopilotFile,
 } from '@kittycad/lib'
 import { assertEvent, assign, setup, fromPromise } from 'xstate'
@@ -12,6 +11,13 @@ import { createActorContext } from '@xstate/react'
 import type { ActorRefFrom } from 'xstate'
 import type { KittyCadLibFile } from '@src/lib/promptToEditTypes'
 import type { KclFileMetaMap } from '@src/lib/promptToEditTypes'
+
+import {
+  isCustomIconName,
+  type CustomIconName,
+} from '@src/components/CustomIcon'
+
+import { isArray } from '@src/lib/utils'
 
 import { S, transitions } from '@src/machines/utils'
 import { getKclVersion } from '@src/lib/kclVersion'
@@ -38,11 +44,109 @@ export enum MlEphantSetupErrors {
 
 type TypeVariant<T, U = T> = U extends T ? keyof U : never
 
-type MlCopilotClientMessageUser<T = MlCopilotClientMessage> = T extends {
-  type: 'user'
+type MlCopilotListModesRequest = { type: 'list_modes' }
+export type MlCopilotModeId = string
+
+type MlCopilotUserRequest = Omit<
+  Extract<MlCopilotClientMessage, { type: 'user' }>,
+  'mode'
+> & {
+  // The generated client still narrows this to the initially-known mode ids,
+  // but mode discovery intentionally treats the backend-provided id as opaque.
+  mode?: MlCopilotModeId
 }
-  ? T
-  : never
+
+type MlCopilotClientMessageWithDiscoveredMode =
+  | Exclude<MlCopilotClientMessage, { type: 'user' }>
+  | MlCopilotUserRequest
+
+type MlCopilotClientMessageUser<T = MlCopilotClientMessageWithDiscoveredMode> =
+  T extends {
+    type: 'user'
+  }
+    ? T
+    : never
+
+export interface MlCopilotModeOption {
+  id: MlCopilotModeId
+  label: string
+  description: string
+  icon: CustomIconName
+}
+
+type MlCopilotModesResult = {
+  defaultMode?: MlCopilotModeId
+  modeOptions: MlCopilotModeOption[]
+}
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === 'string' && value.length > 0
+}
+
+function toMlCopilotModeOption(value: unknown): MlCopilotModeOption | null {
+  if (typeof value !== 'object' || value === null) return null
+
+  const candidate = value as {
+    id?: unknown
+    label?: unknown
+    description?: unknown
+    icon?: unknown
+  }
+
+  if (
+    !isNonEmptyString(candidate.id) ||
+    typeof candidate.label !== 'string' ||
+    typeof candidate.description !== 'string'
+  )
+    return null
+
+  if (!isCustomIconName(candidate.icon)) {
+    console.warn(
+      `Discarding ml copilot mode option with unrecognized icon: ${String(candidate.icon)}`
+    )
+    return null
+  }
+
+  return {
+    id: candidate.id,
+    label: candidate.label,
+    description: candidate.description,
+    icon: candidate.icon,
+  }
+}
+
+export function parseMlCopilotModesResult(
+  response: unknown
+): MlCopilotModesResult | null {
+  if (typeof response !== 'object' || response === null) return null
+
+  const envelope = response as { modes_response?: unknown }
+  const modesResponse = envelope.modes_response
+  if (typeof modesResponse !== 'object' || modesResponse === null) return null
+
+  const candidate = modesResponse as {
+    default_mode?: unknown
+    modes?: unknown
+  }
+  if (!isArray(candidate.modes)) return null
+
+  const modeOptions = candidate.modes
+    .map(toMlCopilotModeOption)
+    .filter((option): option is MlCopilotModeOption => option !== null)
+
+  if (modeOptions.length === 0) {
+    console.warn(
+      'modes_response contained no usable mode options; no mode selector will be shown'
+    )
+  }
+
+  return {
+    defaultMode: isNonEmptyString(candidate.default_mode)
+      ? candidate.default_mode
+      : undefined,
+    modeOptions,
+  }
+}
 
 export function isMlCopilotUserRequest(
   x: unknown
@@ -62,6 +166,7 @@ export enum MlEphantManagerStates {
 export enum MlEphantManagerTransitions {
   MessageSend = 'message-send',
   ResponseReceive = 'response-receive',
+  ModesReceive = 'modes-receive',
   ConversationClose = 'conversation-close',
   Cancel = 'cancel',
   Interrupt = 'interrupt',
@@ -100,7 +205,7 @@ export type MlEphantManagerEvents =
       projectFiles: FileMeta[]
       selections: Selections
       artifactGraph: ArtifactGraph
-      mode: MlCopilotMode
+      mode?: MlCopilotModeId
       additionalFiles?: File[]
     }
   | {
@@ -111,6 +216,11 @@ export type MlEphantManagerEvents =
   | {
       type: MlEphantManagerTransitions.ResponseReceive
       response: MlCopilotServerMessage
+    }
+  | {
+      type: MlEphantManagerTransitions.ModesReceive
+      defaultMode?: MlCopilotModeId
+      modeOptions: MlCopilotModeOption[]
     }
   | {
       type: MlEphantManagerTransitions.ConversationClose
@@ -132,7 +242,7 @@ export type MlEphantManagerEvents =
 export interface Exchange {
   // Technically the WebSocket could send us a response at any time, without
   // ever having requested anything - such as on WebSocket 'open'.
-  request?: MlCopilotClientMessage
+  request?: MlCopilotClientMessageWithDiscoveredMode
 
   // A response may not necessarily ever come back! (Thus list remains empty.)
   // It's possible a request triggers multiple responses, such as reasoning,
@@ -163,6 +273,8 @@ export interface MlEphantManagerContext {
   projectNameCurrentlyOpened?: string
   awaitingResponse: boolean
   pendingBackendShutdown: boolean
+  defaultMode?: MlCopilotModeId
+  modeOptions?: MlCopilotModeOption[]
   cachedSetup?: {
     refParentSend?: (event: MlEphantManagerEvents) => void
     conversationId?: string
@@ -186,6 +298,8 @@ export const mlEphantDefaultContext = (args: {
   projectNameCurrentlyOpened: undefined,
   awaitingResponse: false,
   pendingBackendShutdown: false,
+  defaultMode: undefined,
+  modeOptions: undefined,
 })
 
 const ZOOKEEPER_DISCONNECT_LOG_PREFIX = '[zookeeper-disconnect]'
@@ -424,6 +538,13 @@ export const mlEphantManagerMachine = setup({
       }
       return {}
     }),
+    assignModeOptions: assign(({ context, event }) => {
+      assertEvent(event, MlEphantManagerTransitions.ModesReceive)
+      return {
+        defaultMode: event.defaultMode ?? context.defaultMode,
+        modeOptions: event.modeOptions,
+      }
+    }),
     disconnectIfIdle: ({ context }) => {
       if (!context.awaitingResponse) {
         logZookeeperDisconnect(
@@ -488,7 +609,12 @@ export const mlEphantManagerMachine = setup({
       const maybeConversationId =
         args.input.context?.cachedSetup?.conversationId ??
         args.input.context?.conversationId
-      const theRefParentSend = args.input.context?.cachedSetup?.refParentSend
+      // Always read refParentSend from the input event — the parent's invoke
+      // input function sets it to `args.self.send` on every (re)entry, so it
+      // is reliable. cachedSetup.refParentSend is cleared after the first
+      // successful setup (clearCacheSetup), which would otherwise leave the
+      // message handler unable to dispatch on reconnects.
+      const theRefParentSend = args.input.event.refParentSend
 
       const queryParams = new URLSearchParams()
       if (maybeConversationId) {
@@ -514,6 +640,9 @@ export const mlEphantManagerMachine = setup({
       })
 
       let maybeReplayedExchanges: Exchange[] = []
+      let maybeModeOptions: MlCopilotModeOption[] | undefined
+      let maybeDefaultMode: MlCopilotModeId | undefined
+      let setupResolved = false
 
       return await new Promise<Partial<MlEphantManagerContext>>(
         (onFulfilled, onRejected) => {
@@ -553,6 +682,20 @@ export const mlEphantManagerMachine = setup({
               } catch (e: unknown) {
                 return console.error(e)
               }
+            }
+
+            const modesResult = parseMlCopilotModesResult(response)
+            if (modesResult !== null) {
+              maybeModeOptions = modesResult.modeOptions
+              maybeDefaultMode = modesResult.defaultMode
+              if (setupResolved && theRefParentSend) {
+                theRefParentSend({
+                  type: MlEphantManagerTransitions.ModesReceive,
+                  defaultMode: maybeDefaultMode,
+                  modeOptions: maybeModeOptions,
+                })
+              }
+              return
             }
 
             if (isBackendShutdownMessage(response)) {
@@ -673,6 +816,7 @@ export const mlEphantManagerMachine = setup({
             // We're only considered setup when a conversation_id is assigned
             // to us. That means data is being stored and the system is ready.
             if ('conversation_id' in response) {
+              setupResolved = true
               onFulfilled({
                 abruptlyClosed: false,
                 lastMessageId: undefined,
@@ -682,6 +826,8 @@ export const mlEphantManagerMachine = setup({
                   exchanges: maybeReplayedExchanges,
                 },
                 conversationId: response.conversation_id.conversation_id,
+                defaultMode: maybeDefaultMode,
+                modeOptions: maybeModeOptions,
                 ws,
               })
 
@@ -697,6 +843,11 @@ export const mlEphantManagerMachine = setup({
               onRejected(MlEphantSetupErrors.NoRefParentSend)
             }
           })
+
+          const listModesRequest: MlCopilotListModesRequest = {
+            type: 'list_modes',
+          }
+          ws.send(JSON.stringify(listModesRequest))
 
           ws.addEventListener('close', function (event: CloseEvent) {
             clearInterval(pingIntervalId)
@@ -771,13 +922,13 @@ export const mlEphantManagerMachine = setup({
           ? await Promise.all(event.additionalFiles.map(toMlCopilotFile))
           : undefined
 
-      const request: Extract<MlCopilotClientMessage, { type: 'user' }> = {
+      const request: MlCopilotUserRequest = {
         type: 'user',
         content: requestData.body.prompt ?? '',
         project_name: requestData.body.project_name,
         source_ranges: requestData.body.source_ranges,
         current_files: filesAsByteArrays,
-        mode: event.mode,
+        ...(event.mode ? { mode: event.mode } : {}),
         ...(additionalFiles ? { additional_files: additionalFiles } : {}),
       }
 
@@ -906,6 +1057,11 @@ export const mlEphantManagerMachine = setup({
     // Make sure the connection is closed.
     closeMlEphantWebSocket(args.context?.ws)
   },
+  on: {
+    [MlEphantManagerTransitions.ModesReceive]: {
+      actions: ['assignModeOptions'],
+    },
+  },
   states: {
     [S.Await]: {
       on: {
@@ -918,6 +1074,8 @@ export const mlEphantManagerMachine = setup({
               lastMessageType: undefined,
               conversation: undefined,
               conversationId: undefined,
+              defaultMode: undefined,
+              modeOptions: undefined,
               awaitingResponse: false,
               pendingBackendShutdown: false,
             }),
@@ -950,8 +1108,10 @@ export const mlEphantManagerMachine = setup({
         onDone: {
           target: MlEphantManagerStates.WaitForContinueCheck,
           actions: [
-            assign(({ event }) => ({
+            assign(({ event, context }) => ({
               ...event.output,
+              defaultMode: event.output.defaultMode ?? context.defaultMode,
+              modeOptions: event.output.modeOptions ?? context.modeOptions,
               awaitingResponse: false,
               pendingBackendShutdown: false,
             })),

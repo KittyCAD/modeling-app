@@ -1,17 +1,17 @@
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import Loading from '@src/components/Loading'
 import { type Selections } from '@src/machines/modelingSharedTypes'
-import type { MlCopilotMode } from '@kittycad/lib'
 import { Popover } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
 import type {
   Conversation,
   Exchange,
+  MlCopilotModeId,
+  MlCopilotModeOption,
 } from '@src/machines/mlEphantManagerMachine'
 import type { ChangeEvent, ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
-import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
 import { useSingletons } from '@src/lib/boot'
 import Tooltip from '@src/components/Tooltip'
 import { isExternalFileDrag } from '@src/components/Explorer/utils'
@@ -26,7 +26,7 @@ export const SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN = true
 export interface QueuedMessage {
   id: string
   text: string
-  mode: MlCopilotMode
+  mode?: MlCopilotModeId
   attachments: File[]
 }
 
@@ -37,7 +37,11 @@ export interface MlEphantConversationProps {
   // Callers can provide a local component today, then swap to a remotely
   // authored source later without changing the conversation layout below.
   welcomeMessage?: ReactNode
-  onProcess: (request: string, mode: MlCopilotMode, attachments: File[]) => void
+  onProcess: (
+    request: string,
+    mode: MlCopilotModeId | undefined,
+    attachments: File[]
+  ) => void
   onCancel: () => void
   onClickClearChat: () => void
   onReconnect: () => void
@@ -48,40 +52,27 @@ export interface MlEphantConversationProps {
   showMakeathonAnnouncement?: boolean
   blockedReason?: string
   defaultPrompt?: string
-  initialMlCopilotMode?: MlCopilotMode // resolved from project settings
-  onMlCopilotModeChange?: (mode: MlCopilotMode) => void
+  initialMlCopilotMode?: MlCopilotModeId // resolved from settings/server metadata
+  onMlCopilotModeChange?: (mode: MlCopilotModeId | undefined) => void
   isProcessing: boolean
   queue: QueuedMessage[]
   onRemoveFromQueue: (id: string) => void
   onSteer: (id: string) => void
+  modeOptions?: MlCopilotModeOption[]
+  modeScopeKey?: string
 }
 
-const ML_COPILOT_MODE_META = Object.freeze({
-  fast: {
-    pretty: 'Standard',
-    description: 'Faster reasoning. Best for quick edits and simple tasks.',
-    icon: (props: { className: string }) => (
-      <CustomIcon name="stopwatch" className={props.className} />
-    ),
-  },
-  thoughtful: {
-    pretty: 'Thoughtful',
-    description: 'More thorough reasoning. Best for complex designs.',
-    icon: (props: { className: string }) => (
-      <CustomIcon name="brain" className={props.className} />
-    ),
-  },
-} as const)
-
-const ML_COPILOT_MODE: Readonly<MlCopilotMode[]> = Object.freeze([
-  'fast',
-  'thoughtful',
-])
+const getModeOption = (
+  mode: MlCopilotModeId | undefined,
+  modeOptions?: MlCopilotModeOption[]
+): MlCopilotModeOption | undefined =>
+  modeOptions?.find((option) => option.id === mode)
 
 export interface MlCopilotModesProps {
-  onClick: (mode: MlCopilotMode) => void
+  onClick: (mode: MlCopilotModeId) => void
   children: ReactNode
-  current: MlCopilotMode
+  current?: MlCopilotModeId
+  modeOptions: MlCopilotModeOption[]
 }
 
 const MlCopilotModes = (props: MlCopilotModesProps) => {
@@ -99,27 +90,26 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
         <Popover.Panel className="absolute bottom-full left-0 z-20 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md min-w-[240px]">
           {({ close }) => (
             <>
-              {ML_COPILOT_MODE.map((mode) => (
+              {props.modeOptions.map((mode) => (
                 <div
                   tabIndex={0}
                   role="button"
-                  key={mode}
+                  key={mode.id}
                   onClick={() => {
                     close()
-                    props.onClick(mode)
+                    props.onClick(mode.id)
                   }}
-                  className={`flex flex-row items-start gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === mode ? 'border-primary' : ''}`}
-                  data-testid={`ml-copilot-effort-button-${mode}`}
+                  className={`flex flex-row items-start gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === mode.id ? 'border-primary' : ''}`}
+                  data-testid={`ml-copilot-effort-button-${mode.id}`}
                 >
-                  {ML_COPILOT_MODE_META[mode].icon({
-                    className: 'w-5 h-5 shrink-0 mt-0.5',
-                  })}
+                  <CustomIcon
+                    name={mode.icon}
+                    className="w-5 h-5 shrink-0 mt-0.5"
+                  />
                   <div className="flex flex-col gap-0.5 min-w-0">
-                    <span className="font-medium">
-                      {ML_COPILOT_MODE_META[mode].pretty}
-                    </span>
+                    <span className="font-medium">{mode.label}</span>
                     <span className="text-chalkboard-70 text-[11px] leading-tight">
-                      {ML_COPILOT_MODE_META[mode].description}
+                      {mode.description}
                     </span>
                   </div>
                 </div>
@@ -135,14 +125,18 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
 export interface MlEphantExtraInputsProps {
   // TODO: Expand to a list with no type restriction
   context?: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
-  mode: MlCopilotMode
-  onSetMode: (mode: MlCopilotMode) => void
+  mode?: MlCopilotModeId
+  onSetMode: (mode: MlCopilotModeId) => void
   onAttachFiles: () => void
   onCaptureScreenshot: () => void
   attachmentsDisabled?: boolean
+  modeOptions?: MlCopilotModeOption[]
 }
 
 export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
+  const currentMode = getModeOption(props.mode, props.modeOptions)
+  const modeOptions = props.modeOptions ?? []
+
   return (
     <div className="flex-1 flex min-w-0 items-end">
       <div className="flex flex-row w-fit-content items-end gap-1">
@@ -150,12 +144,14 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
         {props.context && (
           <MlCopilotSelectionsContext selections={props.context} />
         )}
-        {SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN && (
-          <MlCopilotModes onClick={props.onSetMode} current={props.mode}>
-            {ML_COPILOT_MODE_META[props.mode].icon({
-              className: 'w-5 h-5',
-            })}
-            {ML_COPILOT_MODE_META[props.mode].pretty}
+        {SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN && currentMode && (
+          <MlCopilotModes
+            onClick={props.onSetMode}
+            current={props.mode}
+            modeOptions={modeOptions}
+          >
+            <CustomIcon name={currentMode.icon} className="w-5 h-5" />
+            {currentMode.label}
           </MlCopilotModes>
         )}
         <button
@@ -231,11 +227,13 @@ interface MlEphantConversationInputProps {
   needsReconnect: boolean
   defaultPrompt?: string
   hasAlreadySentPrompts: boolean
-  initialMlCopilotMode?: MlCopilotMode
-  onMlCopilotModeChange?: (mode: MlCopilotMode) => void
+  initialMlCopilotMode?: MlCopilotModeId
+  onMlCopilotModeChange?: (mode: MlCopilotModeId | undefined) => void
   isProcessing: boolean
   queue: QueuedMessage[]
   onRemoveFromQueue: (id: string) => void
+  modeOptions?: MlCopilotModeOption[]
+  modeScopeKey?: string
 }
 
 export const MlEphantConversationInput = (
@@ -244,19 +242,49 @@ export const MlEphantConversationInput = (
   const refDiv = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [value, setValue] = useState<string>('')
-  const [mode, setMode] = useState<MlCopilotMode>(
-    props.initialMlCopilotMode ?? DEFAULT_ML_COPILOT_MODE
+  const [mode, setMode] = useState<MlCopilotModeId | undefined>(
+    props.initialMlCopilotMode
   )
+  const userHasPickedMode = useRef(false)
+  const lastModeScopeKey = useRef(props.modeScopeKey)
   const [attachments, setAttachments] = useState<File[]>([])
   const [isDraggingOver, setIsDraggingOver] = useState(false)
 
   // Without this the cursor ends up at the start of the text
   useEffect(() => setValue(props.defaultPrompt || ''), [props.defaultPrompt])
 
+  // A user pick is local to the current project/chat scope. When that scope
+  // changes, resume following the resolved setting/server default.
   useEffect(() => {
-    const next = props.initialMlCopilotMode ?? DEFAULT_ML_COPILOT_MODE
-    setMode(next)
+    if (lastModeScopeKey.current === props.modeScopeKey) return
+    lastModeScopeKey.current = props.modeScopeKey
+    userHasPickedMode.current = false
+    setMode(props.initialMlCopilotMode)
+  }, [props.modeScopeKey, props.initialMlCopilotMode])
+
+  // Follow updates to the resolved initial mode (server defaultMode arriving)
+  // until the user picks a mode themselves. After that,
+  // preserve their choice across reconnects rather than clobbering it.
+  useEffect(() => {
+    if (userHasPickedMode.current) return
+    setMode(props.initialMlCopilotMode)
   }, [props.initialMlCopilotMode])
+
+  // Reconcile if the server's options change such that the current selection
+  // is no longer offered — otherwise the dropdown would display one mode
+  // while submission still sends another.
+  const { modeOptions, onMlCopilotModeChange } = props
+  useEffect(() => {
+    if (!modeOptions || modeOptions.length === 0) return
+    if (
+      mode !== undefined &&
+      !modeOptions.some((option) => option.id === mode)
+    ) {
+      userHasPickedMode.current = false
+      setMode(undefined)
+      onMlCopilotModeChange?.(undefined)
+    }
+  }, [modeOptions, mode, onMlCopilotModeChange])
 
   const onClick = () => {
     if (props.disabled) return
@@ -264,7 +292,7 @@ export const MlEphantConversationInput = (
     if (!value && attachments.length === 0) return
     if (!refDiv.current) return
 
-    props.onProcess(value, mode, attachments)
+    props.onProcess(value, getModeOption(mode, modeOptions)?.id, attachments)
     setValue('')
     setAttachments([])
   }
@@ -475,12 +503,14 @@ export const MlEphantConversationInput = (
             context={selectionsContext}
             mode={mode}
             onSetMode={(m) => {
+              userHasPickedMode.current = true
               setMode(m)
               props.onMlCopilotModeChange?.(m)
             }}
             onAttachFiles={onAttachFiles}
             onCaptureScreenshot={onCaptureScreenshot}
             attachmentsDisabled={props.disabled}
+            modeOptions={props.modeOptions}
           />
           <div className="flex flex-row gap-1">
             {!props.disabled && props.needsReconnect && (
@@ -647,9 +677,11 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
                       {msg.attachments.length}
                     </span>
                   )}
-                  <span className="text-3 shrink-0">
-                    {ML_COPILOT_MODE_META[msg.mode].pretty}
-                  </span>
+                  {getModeOption(msg.mode, props.modeOptions) ? (
+                    <span className="text-3 shrink-0">
+                      {getModeOption(msg.mode, props.modeOptions)?.label}
+                    </span>
+                  ) : null}
                   <button
                     type="button"
                     onClick={() => props.onSteer(msg.id)}
@@ -694,6 +726,8 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
               isProcessing={props.isProcessing}
               queue={props.queue}
               onRemoveFromQueue={props.onRemoveFromQueue}
+              modeOptions={props.modeOptions}
+              modeScopeKey={props.modeScopeKey}
             />
           </div>
         </div>

@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { expect, vi, describe, test } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { NIL as uuidNIL } from 'uuid'
+import { describe, expect, test, vi } from 'vitest'
 
 vi.mock('@src/routes/utils', () => ({
   getAppVersion: () => 'test',
@@ -24,7 +24,11 @@ vi.mock('@src/lib/boot', () => ({
 }))
 
 import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
-import type { Conversation } from '@src/machines/mlEphantManagerMachine'
+import type {
+  Conversation,
+  MlCopilotModeId,
+  MlCopilotModeOption,
+} from '@src/machines/mlEphantManagerMachine'
 import { MlEphantManagerTransitions } from '@src/machines/mlEphantManagerMachine'
 
 const completedConversation: Conversation = {
@@ -48,9 +52,13 @@ const completedConversation: Conversation = {
 
 const createFakeActor = ({
   conversation = completedConversation,
+  defaultMode = undefined,
+  modeOptions = undefined,
   value = 'ready',
 }: {
   conversation?: Conversation
+  defaultMode?: MlCopilotModeId
+  modeOptions?: MlCopilotModeOption[]
   value?: string
 } = {}) => {
   const snapshot = {
@@ -60,6 +68,8 @@ const createFakeActor = ({
       awaitingResponse: true,
       conversation,
       conversationId: 'conversation-id',
+      defaultMode,
+      modeOptions,
     },
     matches: (state: string) => state === value,
   }
@@ -95,11 +105,17 @@ const renderPane = ({
   systemIOActor = createFakeSystemIOActor(),
   theProject = undefined,
   settingsMetaId = uuidNIL,
+  zookeeperMode = {},
 }: {
   mlEphantManagerActor?: ReturnType<typeof createFakeActor>
   systemIOActor?: ReturnType<typeof createFakeSystemIOActor>
   theProject?: any
   settingsMetaId?: string
+  zookeeperMode?: {
+    current?: MlCopilotModeId
+    project?: MlCopilotModeId
+    user?: MlCopilotModeId
+  }
 } = {}) => {
   return render(
     <MemoryRouter>
@@ -139,7 +155,9 @@ const renderPane = ({
                 current: '',
               },
               zookeeperMode: {
-                current: 'fast',
+                current: zookeeperMode.current,
+                project: zookeeperMode.project,
+                user: zookeeperMode.user,
               },
             },
             modeling: {
@@ -179,6 +197,59 @@ describe('MlEphantConversationPane', () => {
     } finally {
       warnSpy.mockRestore()
     }
+  })
+
+  test('uses the server default mode when no project setting is set', () => {
+    renderPane({
+      mlEphantManagerActor: createFakeActor({
+        defaultMode: 'deep',
+        modeOptions: [
+          {
+            id: 'standard',
+            label: 'Standard',
+            description: 'Faster reasoning.',
+            icon: 'stopwatch',
+          },
+          {
+            id: 'deep',
+            label: 'Deep',
+            description: 'More thorough reasoning.',
+            icon: 'brain',
+          },
+        ],
+      }),
+    })
+
+    expect(screen.getByTestId('ml-copilot-efforts-button')).toHaveTextContent(
+      'Deep'
+    )
+  })
+
+  test('uses a stored project mode over the server default', () => {
+    renderPane({
+      zookeeperMode: { project: 'standard' },
+      mlEphantManagerActor: createFakeActor({
+        defaultMode: 'deep',
+        modeOptions: [
+          {
+            id: 'standard',
+            label: 'Standard',
+            description: 'Faster reasoning.',
+            icon: 'stopwatch',
+          },
+          {
+            id: 'deep',
+            label: 'Deep',
+            description: 'More thorough reasoning.',
+            icon: 'brain',
+          },
+        ],
+      }),
+    })
+
+    expect(screen.getByTestId('ml-copilot-efforts-button')).toHaveTextContent(
+      'Standard'
+    )
   })
 
   test('retries cache setup when the project becomes available after settings load', () => {
@@ -246,7 +317,9 @@ describe('MlEphantConversationPane', () => {
                   current: '',
                 },
                 zookeeperMode: {
-                  current: 'fast',
+                  current: undefined,
+                  project: undefined,
+                  user: undefined,
                 },
               },
               modeling: {
