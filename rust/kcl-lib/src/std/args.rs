@@ -1157,13 +1157,16 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::MirrorAcross3d {
             let obj = arg.as_object()?;
             let_field_of!(obj, direction);
             let_field_of!(obj, origin);
-            Some(Self::Axis { direction, origin })
+            Some(Self::Axis {
+                direction: Box::new(direction),
+                origin: Box::new(origin),
+            })
         };
         let case3 = super::fillet::EdgeReference::from_kcl_val;
         case1(arg)
-            .map(Self::Plane)
+            .map(|p| Self::Plane(Box::new(p)))
             .or_else(|| case2(arg))
-            .or_else(|| case3(arg).map(Self::Edge))
+            .or_else(|| case3(arg).map(|e| Self::Edge(Box::new(e))))
     }
 }
 
