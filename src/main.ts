@@ -34,6 +34,7 @@ import {
   ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
 import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
+import { getAppFolderNameFromBuild } from '@src/lib/appFolderName'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { discoverMachineApi } from '@src/lib/discoverMachineApi'
 import { registerFileProtocolCsp } from '@src/lib/csp'
@@ -100,6 +101,18 @@ process.env.VITE_ZOO_BASE_DOMAIN ??= viteEnv.VITE_ZOO_BASE_DOMAIN
 // Likely convenient to keep for debugging
 console.log('Environment vars', process.env)
 console.log('Parsed CLI args', args)
+
+const appProfilePath = path.join(
+  app.getPath('appData'),
+  getAppFolderNameFromBuild({
+    packageName: packageJSON.name,
+    packageVersion: packageJSON.version,
+    platform: os.platform(),
+  })
+)
+fs.mkdirSync(appProfilePath, { recursive: true })
+app.setPath('userData', appProfilePath)
+app.setPath('sessionData', appProfilePath)
 
 /// Register our application to handle all "zoo-studio:" protocols.
 const singleInstanceLock = app.requestSingleInstanceLock()
