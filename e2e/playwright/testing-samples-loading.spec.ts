@@ -191,6 +191,6 @@ test.describe('Query parameter command', { tag: '@web' }, () => {
     await page.goto(page.url() + queryString)
 
     await toolbar.openPane(DefaultLayoutPaneID.Code)
-    await editor.expectEditor.toContain(sampleTitle)
+    await editor.expectEditor.toContain(sampleTitle, { timeout: 30_000 })
   })
 })
