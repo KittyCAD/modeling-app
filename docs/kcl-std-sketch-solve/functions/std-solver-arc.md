@@ -12,6 +12,7 @@ solver::arc(
   start: Point2d,
   end: Point2d,
   center: Point2d,
+  direction?: string,
   construction?: bool,
 ): Segment
 ```
@@ -25,6 +26,7 @@ solver::arc(
 | `start` | `Point2d` | The point where the arc begins. | Yes |
 | `end` | `Point2d` | The point where the arc ends. | Yes |
 | `center` | `Point2d` | The center of the circle the arc lies on. | Yes |
+| `direction` | `string` | `CCW` for counterclockwise, `CW` for clockwise. Default is `CCW`. | No |
 | `construction` | `bool` | Whether this segment is construction geometry rather than part of the modeled profile. | No |
 
 ### Returns
