@@ -4475,6 +4475,7 @@ pub async fn angle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
         exec_state,
     )?;
+    let label_position = get_constraint_label_position(exec_state, &args, "angle")?;
     let [line0, line1]: [KclValue; 2] = lines.try_into().map_err(|_| {
         KclError::new_semantic(KclErrorDetails::new(
             "must have two input lines".to_owned(),
@@ -4605,6 +4606,7 @@ pub async fn angle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
                     },
                 ],
             },
+            label_position,
         },
         meta: vec![args.source_range.into()],
     };

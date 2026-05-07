@@ -411,6 +411,8 @@ export fn perpendicular(
 export fn angle(
   /// The two line segments whose relative angle should match the value set with `==`.
   @input: [Segment; 2],
+  /// Optional position for the displayed constraint label in the sketch's local 2D coordinate system.
+  labelPosition?: Point2d,
 ) {}
 
 /// Constrain two segments to be tangent.

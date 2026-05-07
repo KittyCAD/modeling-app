@@ -3057,7 +3057,13 @@ impl Node<BinaryExpression> {
                     };
 
                     match &constraint.kind {
-                        SketchConstraintKind::Angle { line0, line1 } => {
+                        SketchConstraintKind::Angle {
+                            line0,
+                            line1,
+                            label_position,
+                        } => {
+                            #[cfg(not(feature = "artifact-graph"))]
+                            let _ = label_position;
                             let range = self.as_source_range();
                             // Line 0 is points A and B.
                             // Line 1 is points C and D.
@@ -3132,6 +3138,7 @@ impl Node<BinaryExpression> {
                                     angle: n.try_into().map_err(|_| {
                                         internal_err("Failed to convert angle units numeric suffix:", range)
                                     })?,
+                                    label_position: label_position.clone(),
                                     source,
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);

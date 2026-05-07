@@ -2306,6 +2306,11 @@ pub enum SketchConstraintKind {
     Angle {
         line0: ConstrainableLine2d,
         line1: ConstrainableLine2d,
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
     },
     Distance {
         points: [ConstrainablePoint2dOrOrigin; 2],
