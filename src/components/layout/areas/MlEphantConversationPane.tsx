@@ -431,6 +431,7 @@ export const MlEphantConversationPane = (props: {
       initialMlCopilotMode={initialMlCopilotMode}
       onMlCopilotModeChange={props.onMlCopilotModeChange}
       modeOptions={modeOptions}
+      modeScopeKey={props.theProject?.path}
     />
   )
 }

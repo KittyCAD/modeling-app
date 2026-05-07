@@ -209,6 +209,53 @@ describe('MlEphantConversation', () => {
     expect(handleProcess).toHaveBeenCalledWith('Generate a cube', undefined, [])
   })
 
+  test('resets a local mode pick when the mode scope changes', () => {
+    const handleProcess = vi.fn()
+    const renderConversation = (modeScopeKey: string) => (
+      <MlEphantConversation
+        isLoading={false}
+        conversation={{ exchanges: [] }}
+        onProcess={handleProcess}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        initialMlCopilotMode="deep"
+        modeOptions={SERVER_MODE_OPTIONS}
+        modeScopeKey={modeScopeKey}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    const { rerender } = render(renderConversation('project-a'))
+
+    fireEvent.click(screen.getByTestId('ml-copilot-efforts-button'))
+    fireEvent.click(screen.getByTestId('ml-copilot-effort-button-standard'))
+
+    expect(screen.getByTestId('ml-copilot-efforts-button')).toHaveTextContent(
+      'Standard'
+    )
+
+    rerender(renderConversation('project-b'))
+
+    expect(screen.getByTestId('ml-copilot-efforts-button')).toHaveTextContent(
+      'Deep'
+    )
+
+    fireEvent.change(screen.getByTestId('ml-ephant-conversation-input'), {
+      target: { value: 'Generate a cube' },
+    })
+    fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
+
+    expect(handleProcess).toHaveBeenCalledWith('Generate a cube', 'deep', [])
+  })
+
   test('does not render unknown response types', () => {
     const unknownResponseText = 'this should never be visible'
 

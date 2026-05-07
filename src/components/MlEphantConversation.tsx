@@ -59,6 +59,7 @@ export interface MlEphantConversationProps {
   onRemoveFromQueue: (id: string) => void
   onSteer: (id: string) => void
   modeOptions?: MlCopilotModeOption[]
+  modeScopeKey?: string
 }
 
 const getModeOption = (
@@ -232,6 +233,7 @@ interface MlEphantConversationInputProps {
   queue: QueuedMessage[]
   onRemoveFromQueue: (id: string) => void
   modeOptions?: MlCopilotModeOption[]
+  modeScopeKey?: string
 }
 
 export const MlEphantConversationInput = (
@@ -244,11 +246,21 @@ export const MlEphantConversationInput = (
     props.initialMlCopilotMode
   )
   const userHasPickedMode = useRef(false)
+  const lastModeScopeKey = useRef(props.modeScopeKey)
   const [attachments, setAttachments] = useState<File[]>([])
   const [isDraggingOver, setIsDraggingOver] = useState(false)
 
   // Without this the cursor ends up at the start of the text
   useEffect(() => setValue(props.defaultPrompt || ''), [props.defaultPrompt])
+
+  // A user pick is local to the current project/chat scope. When that scope
+  // changes, resume following the resolved setting/server default.
+  useEffect(() => {
+    if (lastModeScopeKey.current === props.modeScopeKey) return
+    lastModeScopeKey.current = props.modeScopeKey
+    userHasPickedMode.current = false
+    setMode(props.initialMlCopilotMode)
+  }, [props.modeScopeKey, props.initialMlCopilotMode])
 
   // Follow updates to the resolved initial mode (server defaultMode arriving)
   // until the user picks a mode themselves. After that,
@@ -715,6 +727,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
               queue={props.queue}
               onRemoveFromQueue={props.onRemoveFromQueue}
               modeOptions={props.modeOptions}
+              modeScopeKey={props.modeScopeKey}
             />
           </div>
         </div>

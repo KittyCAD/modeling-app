@@ -10,12 +10,13 @@ import {
   mlEphantManagerMachine,
   parseMlCopilotModesResult,
 } from '@src/machines/mlEphantManagerMachine'
+import { S } from '@src/machines/utils'
 import { describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
 
 class TestSocket extends EventTarget {
   sentPayloads: string[] = []
-  readyState = WebSocket.CLOSED
+  readyState: number = WebSocket.CLOSED
 
   send(payload: string) {
     this.sentPayloads.push(payload)
@@ -28,6 +29,25 @@ type TestWebSocket = Pick<MlEphantManagerContext, 'ws'>['ws'] & TestSocket
 type SetupActorInput = {
   event: Extract<MlEphantManagerEvents, { type: MlEphantManagerStates.Setup }>
   context: MlEphantManagerContext
+}
+
+const completedConversation: Conversation = {
+  exchanges: [
+    {
+      deltasAggregated: '',
+      request: {
+        type: 'user',
+        content: 'make me a sandwich',
+      },
+      responses: [
+        {
+          end_of_stream: {
+            whole_response: 'sandwich complete',
+          },
+        },
+      ],
+    },
+  ],
 }
 
 describe('mlEphantManagerMachine', () => {
@@ -215,6 +235,117 @@ describe('mlEphantManagerMachine', () => {
           },
         }),
       ])
+
+      actor.stop()
+    })
+  })
+
+  describe('ConversationClose', () => {
+    it('clears conversation state on an intentional close', async () => {
+      const ws: TestWebSocket = new TestSocket() as TestWebSocket
+      ws.readyState = WebSocket.OPEN
+      const machine = mlEphantManagerMachine.provide({
+        actors: {
+          [MlEphantManagerStates.Setup]: fromPromise<
+            Partial<MlEphantManagerContext>,
+            SetupActorInput
+          >(async () => ({
+            ws,
+            conversation: completedConversation,
+            conversationId: 'conversation-id',
+          })),
+        },
+      })
+      const actor = createActor(machine, {
+        input: {
+          apiToken: '',
+        },
+      }).start()
+
+      actor.send({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+      })
+
+      await waitFor(actor, (state) =>
+        state.matches(MlEphantManagerStates.WaitForContinueCheck)
+      )
+
+      actor.send({
+        type: MlEphantManagerStates.ContinueCheck,
+        projectName: 'zoo-project',
+        projectFiles: [],
+      })
+
+      await waitFor(actor, (state) =>
+        state.matches(MlEphantManagerStates.Ready)
+      )
+
+      actor.send({
+        type: MlEphantManagerTransitions.ConversationClose,
+      })
+
+      await waitFor(actor, (state) => state.matches(S.Await))
+
+      expect(ws.close).toHaveBeenCalled()
+      expect(actor.getSnapshot().context.conversation).toBeUndefined()
+      expect(actor.getSnapshot().context.conversationId).toBeUndefined()
+      expect(actor.getSnapshot().context.ws).toBeUndefined()
+      expect(actor.getSnapshot().context.abruptlyClosed).toBe(false)
+
+      actor.stop()
+    })
+
+    it('keeps recoverable context after an abrupt close', async () => {
+      const ws: TestWebSocket = new TestSocket() as TestWebSocket
+      const machine = mlEphantManagerMachine.provide({
+        actors: {
+          [MlEphantManagerStates.Setup]: fromPromise<
+            Partial<MlEphantManagerContext>,
+            SetupActorInput
+          >(async () => ({
+            ws,
+            conversation: completedConversation,
+            conversationId: 'conversation-id',
+          })),
+        },
+      })
+      const actor = createActor(machine, {
+        input: {
+          apiToken: '',
+        },
+      }).start()
+
+      actor.send({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+      })
+
+      await waitFor(actor, (state) =>
+        state.matches(MlEphantManagerStates.WaitForContinueCheck)
+      )
+
+      actor.send({
+        type: MlEphantManagerStates.ContinueCheck,
+        projectName: 'zoo-project',
+        projectFiles: [],
+      })
+
+      await waitFor(actor, (state) =>
+        state.matches(MlEphantManagerStates.Ready)
+      )
+
+      actor.send({
+        type: MlEphantManagerTransitions.AbruptClose,
+      })
+
+      await waitFor(actor, (state) => state.matches(S.Await))
+
+      expect(actor.getSnapshot().context.conversation).toBe(
+        completedConversation
+      )
+      expect(actor.getSnapshot().context.conversationId).toBe('conversation-id')
+      expect(actor.getSnapshot().context.abruptlyClosed).toBe(true)
 
       actor.stop()
     })
