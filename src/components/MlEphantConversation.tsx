@@ -290,14 +290,15 @@ export const MlEphantConversationInput = (
   // Reconcile if the server's options change such that the current selection
   // is no longer offered — otherwise the dropdown would display one mode
   // while submission still sends another.
+  const { modeOptions, onMlCopilotModeChange } = props
   useEffect(() => {
-    if (!props.modeOptions || props.modeOptions.length === 0) return
-    if (!props.modeOptions.some((option) => option.id === mode)) {
-      const nextMode = props.modeOptions[0].id
+    if (!modeOptions || modeOptions.length === 0) return
+    if (!modeOptions.some((option) => option.id === mode)) {
+      const nextMode = modeOptions[0].id
       setMode(nextMode)
-      props.onMlCopilotModeChange?.(nextMode)
+      onMlCopilotModeChange?.(nextMode)
     }
-  }, [props.modeOptions, mode, props.onMlCopilotModeChange])
+  }, [modeOptions, mode, onMlCopilotModeChange])
 
   const onClick = () => {
     if (props.disabled) return
