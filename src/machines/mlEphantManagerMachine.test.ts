@@ -59,7 +59,7 @@ describe('mlEphantManagerMachine', () => {
       expect(parseMlCopilotModesResult({ something_else: true })).toBeNull()
     })
 
-    it('returns null when every mode entry fails validation', () => {
+    it('keeps the response but exposes no options when every mode entry fails validation', () => {
       expect(
         parseMlCopilotModesResult({
           modes_response: {
@@ -74,7 +74,7 @@ describe('mlEphantManagerMachine', () => {
             ],
           },
         })
-      ).toBeNull()
+      ).toStrictEqual({ defaultMode: 'fast', modeOptions: [] })
     })
   })
 

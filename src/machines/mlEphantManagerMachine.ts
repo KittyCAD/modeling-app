@@ -120,14 +120,10 @@ export function parseMlCopilotModesResult(
     .map(toMlCopilotModeOption)
     .filter((option): option is MlCopilotModeOption => option !== null)
 
-  // If every option failed validation, treat as no usable response so the UI
-  // falls back to client defaults instead of stranding a defaultMode with no
-  // matching label/icon to display.
   if (modeOptions.length === 0) {
     console.warn(
-      'modes_response contained no usable mode options; falling back to client defaults'
+      'modes_response contained no usable mode options; no mode selector will be shown'
     )
-    return null
   }
 
   return {
@@ -195,7 +191,7 @@ export type MlEphantManagerEvents =
       projectFiles: FileMeta[]
       selections: Selections
       artifactGraph: ArtifactGraph
-      mode: MlCopilotMode
+      mode?: MlCopilotMode
       additionalFiles?: File[]
     }
   | {
@@ -903,7 +899,7 @@ export const mlEphantManagerMachine = setup({
         project_name: requestData.body.project_name,
         source_ranges: requestData.body.source_ranges,
         current_files: filesAsByteArrays,
-        mode: event.mode,
+        ...(event.mode ? { mode: event.mode } : {}),
         ...(additionalFiles ? { additional_files: additionalFiles } : {}),
       }
 

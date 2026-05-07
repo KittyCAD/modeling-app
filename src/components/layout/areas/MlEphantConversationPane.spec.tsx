@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { expect, vi, describe, test } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { NIL as uuidNIL } from 'uuid'
+import { describe, expect, test, vi } from 'vitest'
 
 vi.mock('@src/routes/utils', () => ({
   getAppVersion: () => 'test',
