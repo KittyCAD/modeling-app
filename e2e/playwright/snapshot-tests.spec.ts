@@ -1,6 +1,10 @@
 import type { Page } from '@playwright/test'
 import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
-import { lowerRightMasks, settingsToToml } from '@e2e/playwright/test-utils'
+import {
+  lowerRightMasks,
+  PLAYWRIGHT_LAYOUT_SETTINGS,
+  settingsToToml,
+} from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { Themes } from '@src/lib/theme'
 
@@ -56,6 +60,7 @@ function runTestForTheme(mode: Themes) {
   }: SnapshotTestContext) => {
     const tomlStr = settingsToToml({
       settings: {
+        ...PLAYWRIGHT_LAYOUT_SETTINGS,
         app: {
           onboarding_status: 'dismissed',
           appearance: {

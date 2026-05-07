@@ -10,6 +10,7 @@ import {
   TOKEN_PERSIST_KEY,
   VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM,
   COOKIE_NAME_PREFIX,
+  SIDEBAR_BUTTON_SUFFIX,
 } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
@@ -35,12 +36,20 @@ import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
-import {
-  type LayoutWithMetadata,
-  setOpenPanes,
-  getLayoutPersistKey,
-} from '@src/lib/layout'
+import { createLayoutWithMetadata } from '@src/lib/layout'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
+
+export const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
+
+export const PLAYWRIGHT_LAYOUT_SETTINGS = {
+  layout: {
+    configs: {
+      [PLAYWRIGHT_LAYOUT_CONFIG_NAME]: JSON.stringify(
+        createLayoutWithMetadata(playwrightLayoutConfig)
+      ),
+    },
+  },
+} as const
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
@@ -695,33 +704,11 @@ export async function getUtils(page: Page, test_?: typeof test) {
         .filter({ hasText: name })
     },
 
-    /**
-     * @deprecated Sorry I don't have time to fix this right now, but runs like
-     * the one linked below show me that setting the open panes in this manner is not reliable.
-     * You can either set `openPanes` as a part of the same initScript we run in setupElectron/setup,
-     * or you can imperatively open the panes with functions like {openKclCodePanel}
-     * (or we can make a general openPane function that takes a paneId).,
-     * but having a separate initScript does not seem to work reliably.
-     * @link https://github.com/KittyCAD/modeling-app/actions/runs/10731890169/job/29762700806?pr=3807#step:20:19553
-     */
     panesOpen: async (paneIds: string[]) => {
       return test?.step(`Setting ${paneIds} panes to be open`, async () => {
-        await page.addInitScript(
-          ({ layoutName, layoutPayload }) => {
-            localStorage.setItem(layoutName, layoutPayload)
-          },
-          {
-            layoutName: getLayoutPersistKey(),
-            layoutPayload: JSON.stringify({
-              version: 'v1',
-              layout: setOpenPanes(
-                structuredClone(playwrightLayoutConfig),
-                paneIds
-              ),
-            } satisfies LayoutWithMetadata),
-          }
-        )
-        await page.reload()
+        for (const paneId of paneIds) {
+          await openPane(page, paneId + SIDEBAR_BUTTON_SUFFIX)
+        }
       })
     },
   }
@@ -972,24 +959,14 @@ export async function setup(
       settings,
       IS_PLAYWRIGHT_KEY,
       TOKEN_PERSIST_KEY,
-      layoutName,
-      layoutPayload,
     }) => {
       localStorage.clear()
       localStorage.setItem(TOKEN_PERSIST_KEY, token)
       localStorage.setItem('persistCode', ``)
-      localStorage.setItem(
-        layoutName,
-        JSON.stringify({
-          version: 'v1',
-          layout: layoutPayload,
-        } satisfies LayoutWithMetadata)
-      )
       localStorage.setItem(settingsKey, settings)
       localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
       window.addEventListener('beforeunload', () => {
         localStorage.removeItem(IS_PLAYWRIGHT_KEY)
-        localStorage.removeItem(layoutName)
       })
     },
     {
@@ -998,6 +975,7 @@ export async function setup(
       settings: settingsToToml({
         settings: {
           ...TEST_SETTINGS,
+          ...PLAYWRIGHT_LAYOUT_SETTINGS,
           app: {
             appearance: {
               ...TEST_SETTINGS.app?.appearance,
@@ -1015,8 +993,6 @@ export async function setup(
       }),
       IS_PLAYWRIGHT_KEY,
       TOKEN_PERSIST_KEY,
-      layoutName: getLayoutPersistKey(),
-      layoutPayload: playwrightLayoutConfig,
     }
   )
 
