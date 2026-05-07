@@ -15,10 +15,40 @@ use crate::execution::ExecState;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Sketch;
+use crate::execution::Solid;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::std::Args;
 use crate::std::axis_or_reference::Axis2dOrEdgeReference;
+use crate::std::axis_or_reference::MirrorAcross3d;
+
+/// Mirror a solid.
+pub async fn mirror_3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let bodies = args.get_unlabeled_kw_arg("bodies", &RuntimeType::solids(), exec_state)?;
+    let across = args.get_kw_arg(
+        "across",
+        &RuntimeType::Union(vec![
+            RuntimeType::Primitive(PrimitiveType::Edge),
+            RuntimeType::Primitive(PrimitiveType::Axis3d),
+            RuntimeType::Primitive(PrimitiveType::Plane),
+            RuntimeType::segment(),
+        ]),
+        exec_state,
+    )?;
+
+    let sketches = inner_mirror_3d(bodies, across, exec_state, args).await?;
+    Ok(sketches.into())
+}
+
+/// Mirror a sketch.
+async fn inner_mirror_3d(
+    bodies: Vec<Solid>,
+    across: MirrorAcross3d,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Vec<Solid>, KclError> {
+    todo!()
+}
 
 /// Mirror a sketch.
 pub async fn mirror_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
