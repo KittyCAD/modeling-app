@@ -357,10 +357,25 @@ pub struct SketchConstraintReport {
     pub errors: Vec<SketchConstraintStatus>,
 }
 
+/// Compute the constraint status for a single sketch object.
+///
+/// Returns `None` if `sketch_obj` is not a sketch.
+///
+/// Note: a sketch with no countable segments (`total_count == 0`) is reported
+/// as [`ConstraintKind::FullyConstrained`]. This is vacuously true — there are
+/// no free or conflicting segments. Callers can check `total_count == 0` to
+/// distinguish this from a genuinely constrained sketch.
 #[cfg(feature = "artifact-graph")]
-pub(crate) fn sketch_constraint_report_from_scene_objects(scene_objects: &[Object]) -> SketchConstraintReport {
+pub(crate) fn sketch_constraint_status_for_sketch(
+    scene_objects: &[Object],
+    sketch_obj: &Object,
+) -> Option<SketchConstraintStatus> {
     use crate::front::ObjectKind;
     use crate::front::Segment;
+
+    let ObjectKind::Sketch(sketch) = &sketch_obj.kind else {
+        return None;
+    };
 
     // Closure to look up a point's freedom by ObjectId.
     let lookup = |id: ObjectId| -> Option<crate::front::Freedom> {
@@ -375,72 +390,69 @@ pub(crate) fn sketch_constraint_report_from_scene_objects(scene_objects: &[Objec
         }
     };
 
+    let mut free_count: usize = 0;
+    let mut conflict_count: usize = 0;
+    let mut error_count: usize = 0;
+    let mut total_count: usize = 0;
+
+    for &seg_id in &sketch.segments {
+        let Some(seg_obj) = scene_objects.get(seg_id.0) else {
+            continue;
+        };
+        let ObjectKind::Segment { segment } = &seg_obj.kind else {
+            continue;
+        };
+        // Skip owned points — their freedom is already captured by
+        // the parent geometry (Line/Arc/Circle) that looks them up.
+        if let Segment::Point(p) = segment
+            && p.owner.is_some()
+        {
+            continue;
+        }
+        let freedom = segment
+            .freedom(lookup)
+            .map(SegmentFreedom::from)
+            .unwrap_or(SegmentFreedom::Error);
+        total_count += 1;
+        match freedom {
+            SegmentFreedom::Free => free_count += 1,
+            SegmentFreedom::Conflict => conflict_count += 1,
+            SegmentFreedom::Error => error_count += 1,
+            SegmentFreedom::Fixed => {}
+        }
+    }
+
+    let status = if error_count > 0 {
+        ConstraintKind::Error
+    } else if conflict_count > 0 {
+        ConstraintKind::OverConstrained
+    } else if free_count > 0 {
+        ConstraintKind::UnderConstrained
+    } else {
+        ConstraintKind::FullyConstrained
+    };
+
+    Some(SketchConstraintStatus {
+        name: sketch_obj.label.clone(),
+        status,
+        free_count,
+        conflict_count,
+        total_count,
+    })
+}
+
+#[cfg(feature = "artifact-graph")]
+pub(crate) fn sketch_constraint_report_from_scene_objects(scene_objects: &[Object]) -> SketchConstraintReport {
     let mut fully_constrained = Vec::new();
     let mut under_constrained = Vec::new();
     let mut over_constrained = Vec::new();
     let mut errors = Vec::new();
 
     for obj in scene_objects {
-        let ObjectKind::Sketch(sketch) = &obj.kind else {
+        let Some(entry) = sketch_constraint_status_for_sketch(scene_objects, obj) else {
             continue;
         };
-
-        let mut free_count: usize = 0;
-        let mut conflict_count: usize = 0;
-        let mut error_count: usize = 0;
-        let mut total_count: usize = 0;
-
-        for &seg_id in &sketch.segments {
-            let Some(seg_obj) = scene_objects.get(seg_id.0) else {
-                continue;
-            };
-            let ObjectKind::Segment { segment } = &seg_obj.kind else {
-                continue;
-            };
-            // Skip owned points — their freedom is already captured by
-            // the parent geometry (Line/Arc/Circle) that looks them up.
-            if let Segment::Point(p) = segment
-                && p.owner.is_some()
-            {
-                continue;
-            }
-            let freedom = segment
-                .freedom(lookup)
-                .map(SegmentFreedom::from)
-                .unwrap_or(SegmentFreedom::Error);
-            total_count += 1;
-            match freedom {
-                SegmentFreedom::Free => free_count += 1,
-                SegmentFreedom::Conflict => conflict_count += 1,
-                SegmentFreedom::Error => error_count += 1,
-                SegmentFreedom::Fixed => {}
-            }
-        }
-
-        // Note: a sketch with no countable segments (total_count == 0)
-        // is reported as FullyConstrained. This is vacuously true — there
-        // are no free or conflicting segments, so it satisfies the
-        // definition. Callers can check total_count == 0 to distinguish
-        // this from a genuinely constrained sketch.
-        let status = if error_count > 0 {
-            ConstraintKind::Error
-        } else if conflict_count > 0 {
-            ConstraintKind::OverConstrained
-        } else if free_count > 0 {
-            ConstraintKind::UnderConstrained
-        } else {
-            ConstraintKind::FullyConstrained
-        };
-
-        let entry = SketchConstraintStatus {
-            name: obj.label.clone(),
-            status,
-            free_count,
-            conflict_count,
-            total_count,
-        };
-
-        match status {
+        match entry.status {
             ConstraintKind::FullyConstrained => fully_constrained.push(entry),
             ConstraintKind::UnderConstrained => under_constrained.push(entry),
             ConstraintKind::OverConstrained => over_constrained.push(entry),
@@ -3666,6 +3678,41 @@ fillet(solid001, radius = 0.1, tags = yoyo)
         let report = outcome.sketch_constraint_report();
         ctx.close().await;
         report
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn warn_when_sketch_is_over_constrained() {
+        let code = r#"
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -10.64mm, var 26.44mm], end = [var 13.05mm, var 5.52mm])
+  fixed([line1.start, ORIGIN])
+  fixed([line1.start, [20, 20]])
+}
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let issues = result.exec_state.issues();
+        let Some(warning) = issues.iter().find(|issue| issue.message.contains("over-constrained")) else {
+            panic!("expected over-constrained warning; found {issues:#?}");
+        };
+        assert_eq!(warning.severity, Severity::Warning);
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn no_warning_when_sketch_is_not_over_constrained() {
+        // Under-constrained sketch should not emit the over-constrained warning.
+        let code = r#"
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+}
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let issues = result.exec_state.issues();
+        assert!(
+            !issues.iter().any(|issue| issue.message.contains("over-constrained")),
+            "did not expect over-constrained warning; found {issues:#?}"
+        );
     }
 
     #[cfg(feature = "artifact-graph")]
