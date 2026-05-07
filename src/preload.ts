@@ -1,6 +1,6 @@
-import path from 'path'
 import fs from 'node:fs/promises'
 import os from 'node:os'
+import path from 'path'
 import type { DeviceFlowAuthorization } from '@root/interface'
 import packageJson from '@root/package.json'
 import type { MachinesListing } from '@src/lib/MachineManager'
@@ -23,13 +23,6 @@ const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
 const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
 const openExternal = (url: any) => ipcRenderer.invoke('shell.openExternal', url)
 const openInNewWindow = (url: any) => ipcRenderer.invoke('openInNewWindow', url)
-const takeElectronWindowScreenshot = ({
-  width,
-  height,
-}: {
-  width: number
-  height: number
-}) => ipcRenderer.invoke('take.screenshot', { width, height })
 const showInFolder = (path: string) =>
   ipcRenderer.invoke('shell.showItemInFolder', path)
 const startDeviceFlow = (host: string): Promise<DeviceFlowAuthorization> =>
@@ -319,7 +312,6 @@ contextBridge.exposeInMainWorld('electron', {
   platform: process.platform,
   version: process.version,
   path: path,
-  takeElectronWindowScreenshot,
   os: {
     isMac,
     isWindows,

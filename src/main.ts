@@ -470,20 +470,6 @@ ipcMain.handle('openInNewWindow', (event, data) => {
   return createWindow(data)
 })
 
-ipcMain.handle(
-  'take.screenshot',
-  async (event, data: { width: number; height: number }) => {
-    const targetWindow = BrowserWindow.fromWebContents(event.sender)
-    if (targetWindow && !targetWindow.isDestroyed()) {
-      const image = await targetWindow.capturePage()
-      return image.resize(data).toDataURL()
-    }
-
-    // Cannot take a native desktop screenshot, unable to access screens
-    return ''
-  }
-)
-
 ipcMain.handle('argv.parser', (event, data) => {
   return argvFromYargs
 })
