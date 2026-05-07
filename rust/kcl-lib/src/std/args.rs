@@ -983,6 +983,7 @@ impl_from_kcl_for_vec!(Solid);
 impl_from_kcl_for_vec!(Sketch);
 impl_from_kcl_for_vec!(crate::execution::GeometryWithImportedGeometry);
 impl_from_kcl_for_vec!(crate::execution::BoundedEdge);
+impl_from_kcl_for_vec!(String);
 
 impl<'a> FromKclValue<'a> for SourceRange {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
