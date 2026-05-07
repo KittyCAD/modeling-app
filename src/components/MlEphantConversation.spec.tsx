@@ -307,6 +307,141 @@ describe('MlEphantConversation', () => {
     ).toBeInTheDocument()
   })
 
+  test('renders user message additional files as attachments under the prompt', () => {
+    const conversation: Conversation = {
+      exchanges: [
+        {
+          request: {
+            type: 'user',
+            content: 'Use these reference files',
+            additional_files: [
+              {
+                name: 'front-view.png',
+                mimetype: 'image/png',
+                data: [1, 2, 3],
+              },
+              {
+                name: 'requirements.pdf',
+                mimetype: 'application/pdf',
+                data: [4, 5, 6],
+              },
+            ],
+          },
+          responses: [],
+          deltasAggregated: '',
+        },
+      ],
+    }
+
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        conversation={conversation}
+        onProcess={vi.fn()}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    const requestBubble = screen.getByTestId('ml-request-chat-bubble')
+    const attachments = screen.getByTestId('ml-request-chat-bubble-attachments')
+
+    expect(
+      within(requestBubble).getByText('Use these reference files')
+    ).toBeInTheDocument()
+    expect(
+      within(requestBubble).queryByText('Attachments')
+    ).not.toBeInTheDocument()
+    expect(within(attachments).getByText('Attachments')).toBeInTheDocument()
+    expect(within(attachments).getByText('front-view.png')).toBeInTheDocument()
+    expect(
+      within(attachments).getByText('requirements.pdf')
+    ).toBeInTheDocument()
+    expect(within(attachments).queryByText('+ more')).not.toBeInTheDocument()
+  })
+
+  test('expands and collapses user message attachments when there are more than two', () => {
+    const conversation: Conversation = {
+      exchanges: [
+        {
+          request: {
+            type: 'user',
+            content: 'Use these reference files',
+            additional_files: [
+              {
+                name: 'front-view.png',
+                mimetype: 'image/png',
+                data: [1, 2, 3],
+              },
+              {
+                name: 'requirements.pdf',
+                mimetype: 'application/pdf',
+                data: [4, 5, 6],
+              },
+              {
+                name: 'side-view.jpg',
+                mimetype: 'image/jpeg',
+                data: [7, 8, 9],
+              },
+            ],
+          },
+          responses: [],
+          deltasAggregated: '',
+        },
+      ],
+    }
+
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        conversation={conversation}
+        onProcess={vi.fn()}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    const attachments = screen.getByTestId('ml-request-chat-bubble-attachments')
+
+    expect(within(attachments).getByText('front-view.png')).toBeInTheDocument()
+    expect(
+      within(attachments).getByText('requirements.pdf')
+    ).toBeInTheDocument()
+    expect(
+      within(attachments).queryByText('side-view.jpg')
+    ).not.toBeInTheDocument()
+
+    fireEvent.click(within(attachments).getByText('+ more'))
+
+    expect(within(attachments).getByText('side-view.jpg')).toBeInTheDocument()
+    expect(within(attachments).getByText('- collapse')).toBeInTheDocument()
+
+    fireEvent.click(within(attachments).getByText('- collapse'))
+
+    expect(
+      within(attachments).queryByText('side-view.jpg')
+    ).not.toBeInTheDocument()
+    expect(within(attachments).getByText('+ more')).toBeInTheDocument()
+  })
+
   test('renders the blocked reason from the API response without extra copy', () => {
     const blockedReason = `You need a payment method to keep using Zookeeper. Go to your [account](${withSiteBaseURL('/account')}) to fix this.`
 
