@@ -88,7 +88,7 @@ export default function AxisGizmo() {
         setAxisHeadScale(object)
       }
       raycasterIntersect.current = null
-      renderGizmoScene(gizmoAxisPairs, renderer, scene, camera)
+      renderer.render(scene, camera)
     }
     const doRayCast = (mouse: Vector2) => {
       // If orbits are disabled, skip click logic
@@ -100,8 +100,7 @@ export default function AxisGizmo() {
           camera,
           raycasterIntersect,
           renderer,
-          scene,
-          gizmoAxisPairs
+          scene
         )
       } else {
         resetRayCast()
@@ -170,7 +169,7 @@ export default function AxisGizmo() {
       if (isPointerOverRef.current && !isHoverRefreshPausedRef.current) {
         doRayCast(mouse)
       } else {
-        renderGizmoScene(gizmoAxisPairs, renderer, scene, camera)
+        renderer.render(scene, camera)
       }
     }
     kclManager.sceneInfra.camControls.cameraChange.add(animate)
@@ -179,7 +178,7 @@ export default function AxisGizmo() {
     const q = kclManager.sceneInfra.camControls.camera.quaternion
     camera.position.set(0, 0, 1).applyQuaternion(q)
     camera.quaternion.copy(q)
-    renderGizmoScene(gizmoAxisPairs, renderer, scene, camera)
+    renderer.render(scene, camera)
 
     return () => {
       isDisposed = true
@@ -230,10 +229,6 @@ enum AxisColors {
 type AxisLabel = 'X' | 'Y' | 'Z'
 type PositiveAxisName = AxisNames.X | AxisNames.Y | AxisNames.Z
 type AxisRotation = 'x' | 'y' | 'z'
-type GizmoAxisPair = {
-  axis: Mesh
-  head: Sprite
-}
 const POSITIVE_AXIS_NAMES = [AxisNames.X, AxisNames.Y, AxisNames.Z] as const
 const AXIS_LABELS: Record<PositiveAxisName, AxisLabel> = {
   [AxisNames.X]: 'X',
@@ -323,9 +318,6 @@ const createAxis = (
   geometry.translate(length / 2, 0, 0)
   const material = new MeshBasicMaterial({
     color: new Color(color),
-    transparent: true,
-    depthTest: false,
-    depthWrite: false,
   })
   const mesh = new Mesh(geometry, material)
   mesh.rotation[axis] = rotation
@@ -340,8 +332,8 @@ const createAxisHead = (
   const material = new SpriteMaterial({
     map: texture,
     transparent: true,
-    depthTest: false,
-    depthWrite: false,
+    depthTest: true,
+    depthWrite: true,
   })
   const sprite = new Sprite(material)
   const position = AXIS_HEAD_POSITIONS[name]
@@ -402,33 +394,6 @@ const createAxisHeadTexture = (
 const setAxisHeadScale = (axisHead: Sprite, scale = 1) => {
   const size = AXIS_HEAD_WORLD_SIZE * scale
   axisHead.scale.set(size, size, 1)
-}
-
-const renderGizmoScene = (
-  axisPairs: GizmoAxisPair[],
-  renderer: WebGLRenderer,
-  scene: Scene,
-  camera: OrthographicCamera
-) => {
-  updateAxisPairRenderOrder(axisPairs, camera)
-  renderer.render(scene, camera)
-}
-
-const updateAxisPairRenderOrder = (
-  axisPairs: GizmoAxisPair[],
-  camera: OrthographicCamera
-) => {
-  axisPairs.sort(
-    (a, b) =>
-      a.head.position.dot(camera.position) -
-      b.head.position.dot(camera.position)
-  )
-
-  axisPairs.forEach(({ axis, head }, index) => {
-    const renderOrder = index * 2
-    axis.renderOrder = renderOrder
-    head.renderOrder = renderOrder + 1
-  })
 }
 
 const updateCameraOrientation = (
@@ -518,8 +483,7 @@ const updateRayCaster = (
   camera: OrthographicCamera,
   raycasterIntersect: MutableRefObject<Intersection | null>,
   renderer: WebGLRenderer,
-  scene: Scene,
-  axisPairs: GizmoAxisPair[]
+  scene: Scene
 ) => {
   raycaster.setFromCamera(mouse, camera)
   const intersects = raycaster.intersectObjects(objects)
@@ -534,5 +498,5 @@ const updateRayCaster = (
     raycasterIntersect.current = null
   }
 
-  renderGizmoScene(axisPairs, renderer, scene, camera)
+  renderer.render(scene, camera)
 }
