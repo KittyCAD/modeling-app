@@ -1,6 +1,13 @@
 import { Popover, Transition } from '@headlessui/react'
 import { useSelector } from '@xstate/react'
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import type { SnapshotFrom } from 'xstate'
 
@@ -12,14 +19,15 @@ import { useLspContext } from '@src/components/LspProvider'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import usePlatform from '@src/hooks/usePlatform'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { APP_NAME } from '@src/lib/constants'
+import { hasWebAppFileBrowserFeatureEnabled } from '@src/lib/fs-zds/opfsCloud'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS, getProjectRelativeFilePath } from '@src/lib/paths'
-import { useApp, useSingletons } from '@src/lib/boot'
-import type { IndexLoaderData } from '@src/lib/types'
-import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
-import { hotkeyDisplay } from '@src/lib/hotkeys'
 import type { FileEntry, Project } from '@src/lib/project'
+import type { IndexLoaderData } from '@src/lib/types'
 
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   enableMenu?: boolean
@@ -35,13 +43,14 @@ const ProjectSidebarMenu = ({
 }: ProjectSidebarMenuProps) => {
   // Make room for traffic lights on desktop left side.
   // TODO: make sure this doesn't look like shit on Linux or Windows
-  const trafficLightsOffset =
-    window.electron && window.electron.os.isMac ? 'ml-20' : ''
+  const trafficLightsOffset = window.electron?.os.isMac ? 'ml-20' : ''
   return (
-    <div className={'!no-underline flex min-w-0 gap-2 ' + trafficLightsOffset}>
+    <div className={`!no-underline flex min-w-0 gap-2 ${trafficLightsOffset}`}>
       <div className="relative group/home">
         <AppLogoLink project={project} file={file} />
-        {isDesktop() && <Tooltip position="bottom-left">Go home</Tooltip>}
+        {(isDesktop() || hasWebAppFileBrowserFeatureEnabled()) && (
+          <Tooltip position="bottom-left">Go home</Tooltip>
+        )}
       </div>
       {enableMenu ? (
         <ProjectMenuPopover project={project} file={file} />
@@ -70,8 +79,10 @@ function AppLogoLink({
   const wrapperClassName =
     "cursor-pointer relative group-hover/home:before:outline h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm"
   const logoClassName = 'w-auto h-4 text-chalkboard-10'
+  const canNavigateHome =
+    window.electron || hasWebAppFileBrowserFeatureEnabled()
 
-  if (!window.electron) {
+  if (!canNavigateHome) {
     return (
       <div
         data-testid="app-logo"
@@ -91,7 +102,7 @@ function AppLogoLink({
         kclManager.switchedFiles = true
       }}
       to={PATHS.HOME}
-      className={wrapperClassName + ' hover:before:brightness-110'}
+      className={`${wrapperClassName} hover:before:brightness-110`}
     >
       <Logo data-onboarding-id="app-logo" className={logoClassName} />
       <span className="sr-only">{APP_NAME}</span>
@@ -119,13 +130,19 @@ function ProjectMenuPopover({
   const { onProjectClose } = useLspContext()
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
   const makeCommandInfo = { name: 'Make', groupId: 'modeling' }
-  const findCommand = (obj: { name: string; groupId: string }) =>
-    Boolean(
-      commandList.find((c) => c.name === obj.name && c.groupId === obj.groupId)
-    )
+  const findCommand = useCallback(
+    (obj: { name: string; groupId: string }) =>
+      Boolean(
+        commandList.find(
+          (c) => c.name === obj.name && c.groupId === obj.groupId
+        )
+      ),
+    [commandList]
+  )
   const machineCount = machineManager.machines.length
 
   // We filter this memoized list so that no orphan "break" elements are rendered.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Existing menu memo intentionally uses selected stable actor references.
   const projectMenuItems = useMemo<(ActionButtonProps | 'break')[]>(
     () =>
       [
@@ -263,6 +280,7 @@ function ProjectMenuPopover({
   const filePathRef = useRef<HTMLSpanElement>(null)
   const [isBreadCrumbTruncated, setIsBreadCrumbTruncated] = useState(false)
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Existing breadcrumb truncation effect intentionally recalculates on breadcrumb text changes.
   useEffect(() => {
     const isTruncated = (element: HTMLElement | null) =>
       Boolean(element && element.scrollWidth > element.clientWidth)
@@ -355,6 +373,7 @@ function ProjectMenuPopover({
               {projectMenuItems.map((props, index) => {
                 if (props === 'break') {
                   return index !== projectMenuItems.length - 1 ? (
+                    // biome-ignore lint/suspicious/noArrayIndexKey: Existing separator entries do not have stable ids.
                     <li key={`break-${index}`} className="contents">
                       <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
                     </li>
@@ -366,10 +385,7 @@ function ProjectMenuPopover({
                   <li key={id} className="contents">
                     <ActionButton
                       {...rest}
-                      className={
-                        'relative !font-sans flex items-center gap-2 rounded-sm py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left ' +
-                        className
-                      }
+                      className={`relative !font-sans flex items-center gap-2 rounded-sm py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left ${className}`}
                       onMouseUp={() => {
                         close()
                       }}

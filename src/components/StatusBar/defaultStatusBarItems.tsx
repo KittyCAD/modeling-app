@@ -12,6 +12,7 @@ import type {
   AutoUpdateDownloadProgress,
   AutoUpdateReady,
 } from '@src/lib/autoUpdate'
+import { hasWebAppFileBrowserFeatureEnabled } from '@src/lib/fs-zds/opfsCloud'
 import { isDesktop } from '@src/lib/isDesktop'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 
@@ -24,7 +25,7 @@ export const defaultGlobalStatusBarItems = ({
   autoUpdateReady?: AutoUpdateReady | null
   onRestartToUpdate?: () => void
 }): StatusBarItemType[] => [
-  isDesktop()
+  isDesktop() || hasWebAppFileBrowserFeatureEnabled()
     ? {
         id: 'version',
         element: 'externalLink',

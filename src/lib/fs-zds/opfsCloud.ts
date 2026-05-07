@@ -67,6 +67,7 @@ const local = opfs.impl
 const projectHydratedAt = new Map<string, number>()
 const pendingProjectWrites = new Map<string, ReturnType<typeof setTimeout>>()
 const dirtyProjects = new Set<string>()
+const deletedProjects = new Set<string>()
 let webAppFileBrowserFeatureEnabled = false
 let projectsListCache:
   | {
@@ -74,6 +75,7 @@ let projectsListCache:
       projects: ProjectSummaryResponse[]
     }
   | undefined
+let projectRootHydrationPromise: Promise<void> | undefined
 
 export async function userHasWebAppFileBrowserFeature(): Promise<boolean> {
   const token = getTokenFromEnvOrCookie()
@@ -322,10 +324,39 @@ async function findRemoteProjectByPath(projectPath: string) {
   return remoteProjects.find(({ title }) => title === projectName)
 }
 
+export function hydrateProjectRootFromCloud(): Promise<void> {
+  if (projectRootHydrationPromise) {
+    return projectRootHydrationPromise
+  }
+
+  projectRootHydrationPromise = hydrateProjectRootFromCloudNow().finally(() => {
+    projectRootHydrationPromise = undefined
+  })
+  return projectRootHydrationPromise
+}
+
+async function hydrateProjectRootFromCloudNow() {
+  const remoteProjects = await hydrateProjectListFromCloud()
+  if (!remoteProjects) {
+    return
+  }
+
+  const projectRootDirectory = await getProjectRootDirectory()
+  await Promise.all(
+    remoteProjects.map(async (remoteProject) => {
+      const projectPath = path.join(projectRootDirectory, remoteProject.title)
+      if (dirtyProjects.has(projectPath) || deletedProjects.has(projectPath)) {
+        return
+      }
+      await hydrateProjectFromCloud(projectPath, remoteProject)
+    })
+  )
+}
+
 async function hydrateProjectListFromCloud() {
   const remoteProjects = await listRemoteProjects()
   if (!remoteProjects) {
-    return
+    return undefined
   }
 
   const projectRootDirectory = await getProjectRootDirectory()
@@ -333,14 +364,19 @@ async function hydrateProjectListFromCloud() {
 
   for (const remoteProject of remoteProjects) {
     const projectPath = path.join(projectRootDirectory, remoteProject.title)
+    if (deletedProjects.has(projectPath)) {
+      continue
+    }
     await ensureLocalDirectory(projectPath)
     recordCloudSuccess(projectPath, remoteProject)
   }
+
+  return remoteProjects
 }
 
 async function hydratePathFromCloud(targetPath: string) {
   if (await isProjectRootDirectory(targetPath)) {
-    await hydrateProjectListFromCloud()
+    await hydrateProjectRootFromCloud()
     return
   }
 
@@ -357,8 +393,12 @@ async function hydratePathFromCloud(targetPath: string) {
   await hydrateProjectFromCloud(projectPath)
 }
 
-async function hydrateProjectFromCloud(projectPath: string) {
-  const remoteProject = await findRemoteProjectByPath(projectPath)
+async function hydrateProjectFromCloud(
+  projectPath: string,
+  knownRemoteProject?: ProjectSummaryResponse
+) {
+  const remoteProject =
+    knownRemoteProject ?? (await findRemoteProjectByPath(projectPath))
   if (!remoteProject) {
     return
   }
@@ -576,6 +616,7 @@ function scheduleCloudWriteForPath(targetPath: string) {
     }
 
     dirtyProjects.add(projectPath)
+    deletedProjects.delete(projectPath)
     const pending = pendingProjectWrites.get(projectPath)
     if (pending) {
       clearTimeout(pending)
@@ -600,12 +641,22 @@ function scheduleCloudDeleteForPath(targetPath: string) {
 
     clearPendingCloudWrite(projectPath)
     dirtyProjects.delete(projectPath)
+    deletedProjects.add(projectPath)
 
     const metadata = getCloudSyncMetadata().projects[projectPath]
-    if (!metadata?.projectId) {
+    const remoteProject = metadata?.projectId
+      ? ({
+          id: metadata.projectId,
+          title: metadata.title ?? path.basename(projectPath),
+        } as Pick<ProjectSummaryResponse, 'id' | 'title'>)
+      : await findRemoteProjectByPath(projectPath)
+
+    updateProjectMetadata(projectPath, () => undefined)
+    projectsListCache = undefined
+
+    if (!remoteProject?.id) {
       return
     }
-    const projectId = metadata.projectId
 
     const client = getClient()
     if (!client) {
@@ -613,15 +664,12 @@ function scheduleCloudDeleteForPath(targetPath: string) {
     }
 
     const result = await kcCall(() =>
-      projects.delete_project({ client, id: projectId })
+      projects.delete_project({ client, id: remoteProject.id })
     )
     if (err(result)) {
       recordCloudFailure(projectPath, result)
       return
     }
-
-    updateProjectMetadata(projectPath, () => undefined)
-    projectsListCache = undefined
   })
 }
 
@@ -632,14 +680,20 @@ function scheduleCloudRenameForPath(sourcePath: string, targetPath: string) {
     getProjectPathForPath(sourcePath),
     getProjectPathForPath(targetPath),
   ]).then(
-    ([sourceIsProject, targetIsProject, sourceProject, targetProject]) => {
+    async ([
+      sourceIsProject,
+      targetIsProject,
+      sourceProject,
+      targetProject,
+    ]) => {
       if (
         sourceIsProject &&
         targetIsProject &&
         sourceProject &&
         targetProject
       ) {
-        moveProjectMetadata(sourceProject, targetProject)
+        const remoteProject = await findRemoteProjectByPath(sourceProject)
+        moveProjectMetadata(sourceProject, targetProject, remoteProject)
         clearPendingCloudWrite(sourceProject)
         dirtyProjects.delete(sourceProject)
         scheduleCloudWriteForPath(targetProject)
@@ -662,16 +716,20 @@ function clearPendingCloudWrite(projectPath: string) {
 
 function moveProjectMetadata(
   sourceProjectPath: string,
-  targetProjectPath: string
+  targetProjectPath: string,
+  remoteProject?: Pick<ProjectSummaryResponse, 'id' | 'title'>
 ) {
   const metadata = getCloudSyncMetadata()
   const sourceMetadata = metadata.projects[sourceProjectPath]
-  if (!sourceMetadata) {
+  if (!sourceMetadata && !remoteProject) {
     return
   }
 
+  deletedProjects.add(sourceProjectPath)
+  deletedProjects.delete(targetProjectPath)
   metadata.projects[targetProjectPath] = {
-    ...sourceMetadata,
+    ...(sourceMetadata ?? {}),
+    ...(remoteProject ? { projectId: remoteProject.id } : {}),
     title: path.basename(targetProjectPath),
   }
   delete metadata.projects[sourceProjectPath]
@@ -878,6 +936,19 @@ const readdir: IZooDesignStudioFS['readdir'] = async (
   targetPath: string,
   options?: Parameters<IZooDesignStudioFS['readdir']>[1]
 ) => {
+  if (await isProjectRootDirectory(targetPath)) {
+    void hydrateProjectRootFromCloud()
+    try {
+      return await local.readdir(targetPath, options)
+    } catch (error) {
+      if (error === 'ENOENT') {
+        await ensureLocalDirectory(targetPath)
+        return []
+      }
+      throw error
+    }
+  }
+
   try {
     await hydratePathFromCloud(targetPath)
   } catch (error) {
@@ -894,10 +965,20 @@ const stat: IZooDesignStudioFS['stat'] = async (
   targetPath: string,
   options?: Parameters<IZooDesignStudioFS['stat']>[1]
 ) => {
+  if (await isProjectRootDirectory(targetPath)) {
+    void hydrateProjectRootFromCloud()
+    return local.stat(targetPath, options)
+  }
+
+  const projectPath = await getProjectPathForPath(targetPath)
+  if (projectPath && (await isProjectDirectory(targetPath))) {
+    void hydrateProjectFromCloud(projectPath)
+    return local.stat(targetPath, options)
+  }
+
   try {
     await hydratePathFromCloud(targetPath)
   } catch (error) {
-    const projectPath = await getProjectPathForPath(targetPath)
     if (projectPath) {
       recordCloudFailure(projectPath, error)
     }
@@ -972,6 +1053,7 @@ const impl: IZooDesignStudioFS = {
     }
     pendingProjectWrites.clear()
     dirtyProjects.clear()
+    deletedProjects.clear()
     projectHydratedAt.clear()
     projectsListCache = undefined
     await local.detach()

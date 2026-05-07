@@ -9,9 +9,9 @@ import {
   useSearchParams,
 } from 'react-router-dom'
 
+import { BillingDialog } from '@kittycad/react-shared'
 import { ActionButton } from '@src/components/ActionButton'
 import { AppHeader } from '@src/components/AppHeader'
-import { BillingDialog } from '@kittycad/react-shared'
 import Loading from '@src/components/Loading'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import ProjectCard from '@src/components/ProjectCard/ProjectCard'
@@ -26,17 +26,24 @@ import {
   defaultLocalStatusBarItems,
 } from '@src/components/StatusBar/defaultStatusBarItems'
 import Tooltip from '@src/components/Tooltip'
+import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import {
   autoUpdateDownloadProgressSignal,
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
+import { useApp, useSingletons } from '@src/lib/boot'
+import {
+  hasWebAppFileBrowserFeatureEnabled,
+  hydrateProjectRootFromCloud,
+} from '@src/lib/fs-zds/opfsCloud'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
 import {
   getNextSearchParams,
   getSortFunction,
@@ -50,23 +57,20 @@ import {
   useFolders,
   useState as useSystemIOState,
 } from '@src/machines/systemIO/hooks'
+import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
+import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import {
   acceptOnboarding,
   needsToOnboard,
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
-import { useApp, useSingletons } from '@src/lib/boot'
-import type { SettingsType } from '@src/lib/settings/initialSettings'
-import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { ActorRefFrom } from 'xstate'
 import { waitFor } from 'xstate'
-import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -88,7 +92,8 @@ const Home = () => {
   const apiToken = auth.useToken()
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = billing.useContext()
-  const hasUnlimitedCredits = billingContext.balance === Infinity
+  const hasUnlimitedCredits =
+    billingContext.balance === Number.POSITIVE_INFINITY
 
   const projects = useFolders()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -97,7 +102,30 @@ const Home = () => {
   const sidebarButtonClasses =
     'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
 
+  useEffect(() => {
+    if (!hasWebAppFileBrowserFeatureEnabled()) {
+      return
+    }
+
+    let cancelled = false
+    void hydrateProjectRootFromCloud()
+      .then(() => {
+        if (cancelled) {
+          return
+        }
+        systemIOActor.send({
+          type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+        })
+      })
+      .catch(reportRejection)
+
+    return () => {
+      cancelled = true
+    }
+  }, [systemIOActor])
+
   // Only create the native file menus on desktop
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Existing mount-only setup intentionally uses the initial actor/token values.
   useEffect(() => {
     if (window.electron) {
       window.electron
@@ -118,6 +146,7 @@ const Home = () => {
   const machineApiEnabled = settingsValues.app.machineApi.current
   const onboardingStatus = settingsValues.app.onboardingStatus.current
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Existing project-directory sync intentionally follows only the configured path.
   useEffect(() => {
     systemIOActor.send({
       type: SystemIOMachineEvents.setProjectDirectoryPath,
@@ -607,7 +636,7 @@ function errorMessage(error: unknown): string {
 function handleRenameProject(
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
 ) {
-  return async function (e: FormEvent<HTMLFormElement>, project: Project) {
+  return async (e: FormEvent<HTMLFormElement>, project: Project) => {
     const { newProjectName } = Object.fromEntries(
       new FormData(e.target as HTMLFormElement)
     )
@@ -633,7 +662,7 @@ function handleRenameProject(
 function handleDeleteProject(
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
 ) {
-  return async function (project: Project) {
+  return async (project: Project) => {
     systemIOActor.send({
       type: SystemIOMachineEvents.deleteProject,
       data: {
