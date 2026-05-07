@@ -6,6 +6,9 @@ import type {
   LayoutMigrationMap,
   LayoutTransformation,
   LayoutWithMetadata,
+  LayoutContribution,
+  LayoutContributionPlacement,
+  LayoutContributionResult,
   Orientation,
   PaneChild,
   Side,
@@ -250,6 +253,177 @@ export function findAndUpdateSplitSizes({
   }
 
   return rootLayout
+}
+
+function getInsertionIndex(
+  ids: readonly string[],
+  placement: LayoutContributionPlacement
+) {
+  if (
+    typeof placement.index === 'number' &&
+    Number.isInteger(placement.index)
+  ) {
+    return Math.min(Math.max(placement.index, 0), ids.length)
+  }
+
+  if (placement.beforeId) {
+    const beforeIndex = ids.indexOf(placement.beforeId)
+    if (beforeIndex >= 0) {
+      return beforeIndex
+    }
+  }
+
+  if (placement.afterId) {
+    const afterIndex = ids.indexOf(placement.afterId)
+    if (afterIndex >= 0) {
+      return afterIndex + 1
+    }
+  }
+
+  return placement.position === 'start' ? 0 : ids.length
+}
+
+function actionExists(rootLayout: Layout, actionId: string): boolean {
+  if (
+    rootLayout.type === LayoutType.Panes &&
+    rootLayout.actions?.some((action) => action.id === actionId)
+  ) {
+    return true
+  }
+
+  if ('children' in rootLayout && rootLayout.children) {
+    return rootLayout.children.some((child) => actionExists(child, actionId))
+  }
+
+  return false
+}
+
+function recomputePaneActiveState({
+  paneLayout,
+  activePaneIds,
+  sizeByPaneId,
+  insertedPaneId,
+  initiallyOpen,
+}: {
+  paneLayout: Extract<Layout, { type: LayoutType.Panes }>
+  activePaneIds: string[]
+  sizeByPaneId: Map<string, number>
+  insertedPaneId: string
+  initiallyOpen: boolean
+}) {
+  const nextActivePaneIds =
+    initiallyOpen && !activePaneIds.includes(insertedPaneId)
+      ? [...activePaneIds, insertedPaneId]
+      : activePaneIds
+
+  paneLayout.activeIndices = nextActivePaneIds
+    .map((id) => paneLayout.children.findIndex((child) => child.id === id))
+    .filter((index) => index >= 0)
+    .sort((a, b) => a - b)
+
+  if (!initiallyOpen) {
+    paneLayout.sizes = paneLayout.activeIndices.map((activeIndex) => {
+      const paneId = paneLayout.children[activeIndex]?.id
+      return paneId ? (sizeByPaneId.get(paneId) ?? 0) : 0
+    })
+    return
+  }
+
+  const openPaneCount = paneLayout.activeIndices.length
+  paneLayout.sizes = openPaneCount
+    ? new Array(openPaneCount).fill(100 / openPaneCount)
+    : []
+}
+
+export function applyLayoutContribution({
+  rootLayout,
+  contribution,
+}: {
+  rootLayout: Layout
+  contribution: LayoutContribution
+}): LayoutContributionResult {
+  if (contribution.kind === 'area') {
+    if (
+      findLayoutChildNode({ rootLayout, targetNodeId: contribution.pane.id })
+    ) {
+      return { applied: false, reason: 'already-present' }
+    }
+
+    const target = findLayoutChildNode({
+      rootLayout,
+      targetNodeId: contribution.placement.targetPaneId,
+    })
+
+    if (!target) {
+      return { applied: false, reason: 'target-not-found' }
+    }
+
+    if (target.type !== LayoutType.Panes) {
+      return { applied: false, reason: 'invalid-target' }
+    }
+
+    const activePaneIds = target.activeIndices
+      .map((activeIndex) => target.children[activeIndex]?.id)
+      .filter((id) => id !== undefined)
+    const sizeByPaneId = new Map(
+      target.activeIndices.map((activeIndex, sizeIndex) => [
+        target.children[activeIndex]?.id,
+        target.sizes[sizeIndex],
+      ])
+    )
+    const insertionIndex = getInsertionIndex(
+      target.children.map((child) => child.id),
+      contribution.placement
+    )
+
+    target.children.splice(
+      insertionIndex,
+      0,
+      structuredClone(contribution.pane)
+    )
+    recomputePaneActiveState({
+      paneLayout: target,
+      activePaneIds,
+      sizeByPaneId: new Map(
+        Array.from(sizeByPaneId.entries()).filter(
+          (entry): entry is [string, number] =>
+            entry[0] !== undefined && entry[1] !== undefined
+        )
+      ),
+      insertedPaneId: contribution.pane.id,
+      initiallyOpen: contribution.initiallyOpen ?? false,
+    })
+
+    return { applied: true, reason: 'applied' }
+  }
+
+  if (actionExists(rootLayout, contribution.action.id)) {
+    return { applied: false, reason: 'already-present' }
+  }
+
+  const target = findLayoutChildNode({
+    rootLayout,
+    targetNodeId: contribution.placement.targetPaneId,
+  })
+
+  if (!target) {
+    return { applied: false, reason: 'target-not-found' }
+  }
+
+  if (target.type !== LayoutType.Panes) {
+    return { applied: false, reason: 'invalid-target' }
+  }
+
+  const actions = target.actions ?? []
+  const insertionIndex = getInsertionIndex(
+    actions.map((action) => action.id),
+    contribution.placement
+  )
+
+  target.actions = [...actions]
+  target.actions.splice(insertionIndex, 0, structuredClone(contribution.action))
+
+  return { applied: true, reason: 'applied' }
 }
 
 /** Legacy prefix for localStorage persisted layout data */
