@@ -1,8 +1,8 @@
-import { expect, describe, it } from 'vitest'
 import { prepareMlEphantNewFileRequest } from '@src/machines/systemIO/utils'
+import { describe, expect, it } from 'vitest'
 
 describe('System IO Utils', () => {
-  it(`Properly reconstructs paths from Zookeeper new file requests`, () => {
+  it('Properly reconstructs paths from Zookeeper new file requests', () => {
     const preparedPayload = prepareMlEphantNewFileRequest({
       projectNameCurrentlyOpened: 'some-project',
       fileFocusedOnInEditor: {
@@ -99,6 +99,58 @@ describe('System IO Utils', () => {
           '@settings(defaultLengthUnit = mm)\n\nlength = 10\nwidth = 10\nheight = 10\n\nsketch = startSketchOn(XY)\n\nprofile = startProfile(sketch, at = [-length / 2, -width / 2])\n  |> xLine(length = length)\n  |> yLine(length = width)\n  |> xLine(length = -length)\n  |> close()\n\nbox = extrude(profile, length = height)\n',
         requestedProjectName: 'some-project',
       },
+    ])
+  })
+
+  it('preserves files by default when preparing Zookeeper edit requests', () => {
+    const preparedPayload = prepareMlEphantNewFileRequest({
+      projectNameCurrentlyOpened: 'some-project',
+      fileFocusedOnInEditor: {
+        name: 'main.kcl',
+        path: '/some-project/main.kcl',
+        children: null,
+      },
+      toolOutput: {
+        status_code: 200,
+        type: 'edit_kcl_code',
+        project_name: 'some-project',
+        outputs: {
+          'main.kcl': 'cube = 1',
+        },
+      },
+    })
+
+    expect(preparedPayload?.files).toEqual([
+      {
+        requestedFileName: 'main.kcl',
+        requestedCode: 'cube = 1',
+        requestedProjectName: 'some-project',
+      },
+    ])
+    expect(preparedPayload?.filesToDelete).toEqual([])
+  })
+
+  it('carries only explicit Zookeeper delete signals into edit requests', () => {
+    const preparedPayload = prepareMlEphantNewFileRequest({
+      projectNameCurrentlyOpened: 'some-project',
+      fileFocusedOnInEditor: {
+        name: 'main.kcl',
+        path: '/some-project/main.kcl',
+        children: null,
+      },
+      filesToDelete: [{ requestedFileName: 'old.kcl' }],
+      toolOutput: {
+        status_code: 200,
+        type: 'edit_kcl_code',
+        project_name: 'some-project',
+        outputs: {
+          'main.kcl': 'cube = 1',
+        },
+      },
+    })
+
+    expect(preparedPayload?.filesToDelete).toEqual([
+      { requestedFileName: 'old.kcl' },
     ])
   })
 })
