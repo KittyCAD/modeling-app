@@ -105,9 +105,9 @@ test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
     page.on('console', console.log)
 
-    await panesOpen(['files', 'code'])
     const projectName = 'project-000'
     await homePage.createAndGoToProject(projectName)
+    await panesOpen(['files', 'code'])
 
     // File the main.kcl with contents
     const kclCube = await nodeFsP.readFile(
@@ -156,7 +156,7 @@ test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
       'utf-8'
     )
 
-    await folderSetupFn(async (dir) => {
+    const { dir } = await folderSetupFn(async (dir) => {
       const cubeDir = await fs.join(dir, projectName)
       await fs.mkdir(cubeDir, { recursive: true })
       const testData = await nodeFsP.readFile(executorInputPath('cube.kcl'))
@@ -174,8 +174,8 @@ test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
       )
     })
 
-    const { openFilePanel, renameFile, selectFile, editorTextMatches } =
-      await getUtils(page, test)
+    const utils = await getUtils(page, test)
+    const { openFilePanel, renameFile, selectFile } = utils
 
     await test.step(`Setup: Open project and navigate to ${secondFile}`, async () => {
       await homePage.expectState({
@@ -201,15 +201,23 @@ test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
     })
 
     await test.step(`Postcondition: ${mainFile} still has the original content`, async () => {
-      await selectFile(mainFile)
-      await scene.settled(cmdBar)
-      await editorTextMatches(kclCube)
+      const mainFileText = (await fs.readFile(
+        await fs.join(dir, projectName, mainFile),
+        { encoding: 'utf-8' }
+      )) as unknown as string
+      expect(utils.toNormalizedCode(mainFileText)).toBe(
+        utils.toNormalizedCode(kclCube)
+      )
     })
 
     await test.step(`Postcondition: ${secondFile} still exists with the original content`, async () => {
-      await selectFile(secondFile)
-      await scene.settled(cmdBar)
-      await editorTextMatches(kclCylinder)
+      const secondFileText = (await fs.readFile(
+        await fs.join(dir, projectName, secondFile),
+        { encoding: 'utf-8' }
+      )) as unknown as string
+      expect(utils.toNormalizedCode(secondFileText)).toBe(
+        utils.toNormalizedCode(kclCylinder)
+      )
     })
   })
 
@@ -241,9 +249,8 @@ test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
     page.on('console', console.log)
 
-    await panesOpen(['files', 'code'])
-
     await createProject({ name: 'project-000', page })
+    await panesOpen(['files', 'code'])
     // File the main.kcl with contents
     const kclCube = await nodeFsP.readFile(
       'rust/kcl-lib/e2e/executor/inputs/cube.kcl',
@@ -279,9 +286,9 @@ test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
     await page.setViewportSize({ width: 1200, height: 500 })
     page.on('console', console.log)
 
-    await panesOpen(['files', 'code'])
     await homePage.createAndGoToProject('project-000')
     await scene.settled(cmdBar)
+    await panesOpen(['files', 'code'])
 
     // Create a small file
     const kclCube = await nodeFsP.readFile(

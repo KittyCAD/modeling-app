@@ -31,6 +31,7 @@ use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::CallExpressionKw;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Type;
+use crate::std::solid_consumption::validate_value_not_consumed;
 
 #[derive(Debug, Clone)]
 pub struct Args<Status: ArgsStatus = Desugared> {
@@ -288,6 +289,22 @@ impl FunctionSource {
                 ),
                 annotations::WARN_DEPRECATED,
             );
+        } else if let Some(since) = &self.deprecated_since
+            && annotations::version_ge(&exec_state.mod_local.settings.kcl_version, since)
+        {
+            exec_state.warn(
+                CompilationIssue::err(
+                    callsite,
+                    format!(
+                        "{} is deprecated as of KCL {since}. See the docs for a recommended replacement.",
+                        match &fn_name {
+                            Some(n) => format!("`{n}`"),
+                            None => "This function".to_owned(),
+                        }
+                    ),
+                ),
+                annotations::WARN_DEPRECATED,
+            );
         }
         if self.experimental {
             exec_state.warn_experimental(
@@ -301,17 +318,35 @@ impl FunctionSource {
 
         let args = type_check_params_kw(fn_name.as_deref(), self, args, exec_state)?;
 
-        // Warn if experimental arguments are used after desugaring.
+        // Warn if experimental or deprecated arguments are used after desugaring.
         for (label, arg) in &args.labeled {
-            if let Some(param) = self.named_args.get(label.as_str())
-                && param.experimental
-            {
+            let Some(param) = self.named_args.get(label.as_str()) else {
+                continue;
+            };
+            if param.experimental {
                 exec_state.warn_experimental(
                     &match &fn_name {
                         Some(f) => format!("`{f}({label})`"),
                         None => label.to_owned(),
                     },
                     arg.source_range,
+                );
+            }
+            if let Some(since) = &param.deprecated_since
+                && annotations::version_ge(&exec_state.mod_local.settings.kcl_version, since)
+            {
+                let qualified = match &fn_name {
+                    Some(f) => format!("`{f}({label})`"),
+                    None => format!("`{label}`"),
+                };
+                exec_state.warn(
+                    CompilationIssue::err(
+                        arg.source_range,
+                        format!(
+                            "{qualified} is deprecated as of KCL {since}. See the docs for a recommended replacement."
+                        ),
+                    ),
+                    annotations::WARN_DEPRECATED,
                 );
             }
         }
@@ -525,7 +560,9 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
             for (name, tag) in value.tags.iter() {
                 if exec_state.stack().cur_frame_contains(name) {
                     exec_state.mut_stack().update(name, |v, _| {
-                        v.as_mut_tag().unwrap().merge_info(tag);
+                        if let Some(existing_tag) = v.as_mut_tag() {
+                            existing_tag.merge_info(tag);
+                        }
                     });
                 } else {
                     exec_state
@@ -602,7 +639,9 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
 
                     if exec_state.stack().cur_frame_contains(&tag.name) {
                         exec_state.mut_stack().update(&tag.name, |v, _| {
-                            v.as_mut_tag().unwrap().merge_info(&tag_id);
+                            if let Some(existing_tag) = v.as_mut_tag() {
+                                existing_tag.merge_info(&tag_id);
+                            }
                         });
                     } else if !is_sketch_block || !is_part_of_sketch {
                         // The above condition is saying that we add a tag to
@@ -871,6 +910,7 @@ fn type_check_params_kw(
         match fn_def.named_args.get(&label) {
             Some(NamedParam {
                 experimental: _,
+                deprecated_since: _,
                 default_value: def,
                 ty,
             }) => {
@@ -920,6 +960,13 @@ fn type_check_params_kw(
             }
         }
     }
+
+    result
+        .unlabeled
+        .iter()
+        .map(|(_, arg)| arg)
+        .chain(result.labeled.values())
+        .try_for_each(|arg| validate_value_not_consumed(&arg.value, exec_state, arg.source_range))?;
 
     Ok(result)
 }
@@ -1042,6 +1089,7 @@ mod test {
         fn opt_param(s: &'static str) -> Parameter {
             Parameter {
                 experimental: false,
+                deprecated_since: None,
                 identifier: ident(s),
                 param_type: None,
                 default_value: Some(DefaultParamVal::none()),
@@ -1052,6 +1100,7 @@ mod test {
         fn req_param(s: &'static str) -> Parameter {
             Parameter {
                 experimental: false,
+                deprecated_since: None,
                 identifier: ident(s),
                 param_type: None,
                 default_value: None,

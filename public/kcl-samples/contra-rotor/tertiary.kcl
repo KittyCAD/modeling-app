@@ -1,0 +1,60 @@
+// Tertiary Shaft Module
+// Short offset shaft with small gear
+// Categories: Aerospace
+
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+
+// Model the side shaft
+shaftSketch = sketch(on = YZ) {
+  line1 = line(start = [var -331.26mm, var -4.72mm], end = [var -62.82mm, var -121.2mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var -0.69mm, var -52.19mm])
+  line3 = line(start = [var -100mm, var -261mm], end = [var -400mm, var -261mm])
+  line4 = line(start = [var -400mm, var -261mm], end = [var -400mm, var -211mm])
+
+  coincident([line2.start, ORIGIN])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line1.start, line4.end])
+
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+
+  horizontalDistance([line3.end, line3.start]) == 300
+  verticalDistance([line4.start, line4.end]) == 50
+}
+shaftRegion = region(segments = [shaftSketch.line1])
+shaftBody = revolve(shaftRegion, angle = 360deg, axis = X)
+  |> translate(x = 279, y = -100, z = -211)
+hidden001 = hide(shaftSketch)
+
+// Insert a gear on the shaft
+helicaGear = gear::helical(
+  nTeeth = 14,
+  module = 16,
+  pressureAngle = 20deg,
+  helixAngle = 25deg,
+  gearHeight = 100,
+)
+
+gearHoleSketch = sketch(on = XY) {
+  circle1 = circle(start = [var 100mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  diameter(circle1) == 100.1 // 0.1 tolerance
+}
+gearHoleRegion = region(point = [0mm, 0mm], sketch = gearHoleSketch)
+gearHoleTool = extrude(gearHoleRegion, length = 500, symmetric = true)
+hide(gearHoleSketch)
+gearWitHole = subtract(helicaGear, tools = gearHoleTool)
+
+gearPlaced = gearWitHole
+  |> rotate(axis = X, angle = 90deg)
+  |> rotate(axis = Y, angle = -3, global = true)
+  |> translate(
+       x = 279,
+       y = -200,
+       z = -211,
+       global = true,
+     )

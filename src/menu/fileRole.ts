@@ -4,12 +4,28 @@ import { typeSafeWebContentsSend } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
 import { isMac } from '@src/menu/utils'
 
+export type FileMenuActions = {
+  openNewWindow: () => void
+}
+
+export const newWindowMenuItem = ({
+  openNewWindow,
+}: FileMenuActions): ZooMenuItemConstructorOptions => ({
+  label: 'New Window',
+  id: 'File.New window',
+  accelerator: 'CommandOrControl+Shift+N',
+  click: openNewWindow,
+})
+
 export const projectFileRole = (
-  mainWindow: BrowserWindow
+  mainWindow: BrowserWindow,
+  actions: FileMenuActions
 ): ZooMenuItemConstructorOptions => {
   return {
     label: 'File',
     submenu: [
+      newWindowMenuItem(actions),
+      { type: 'separator' },
       {
         label: 'Create Project',
         id: 'File.Create project',
@@ -101,11 +117,14 @@ export const projectFileRole = (
 }
 
 export const modelingFileRole = (
-  mainWindow: BrowserWindow
+  mainWindow: BrowserWindow,
+  actions: FileMenuActions
 ): ZooMenuItemConstructorOptions => {
   return {
     label: 'File',
     submenu: [
+      newWindowMenuItem(actions),
+      { type: 'separator' },
       // TODO: Once a safe command bar create new file and folder is implemented we can turn these on
       // {
       //   label: 'Create New File',

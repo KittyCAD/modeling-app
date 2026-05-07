@@ -80,6 +80,7 @@ export default defineConfig(({ command, mode }) => {
     },
     resolve: {
       alias: {
+        '@kittycad/registry': '/packages/registry/src',
         '@kittycad/codemirror-lsp-client':
           '/packages/codemirror-lsp-client/src',
         '@kittycad/codemirror-lang-kcl': '/packages/codemirror-lang-kcl/src',

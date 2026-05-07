@@ -1,0 +1,60 @@
+// Secondary Shaft Module
+// Offset shaft with gear placements
+// Categories: Aerospace
+
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+
+// Import gear and propeller
+import "secondary-shaft.kcl" as secondaryShaft
+
+position = 392
+
+// Move the secondary shaft
+translate(secondaryShaft, x = position)
+
+// Build helical gears
+gear1 = gear::helical(
+  nTeeth = 16,
+  module = 16,
+  pressureAngle = 20deg,
+  helixAngle = -25,
+  gearHeight = 100,
+)
+
+gear1HoleSketch = sketch(on = XY) {
+  circle1 = circle(start = [var 160mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  diameter(circle1) == 160.1 // 0.1 tolerance
+}
+gear1HoleRegion = region(point = [0mm, 0mm], sketch = gear1HoleSketch)
+gear1HoleTool = extrude(gear1HoleRegion, length = 500, symmetric = true)
+hide(gear1HoleSketch)
+gear1WitHole = subtract(gear1, tools = gear1HoleTool)
+
+gear1Placed = gear1WitHole
+  |> rotate(axis = X, angle = 90deg)
+  |> rotate(axis = Y, angle = 3, global = true)
+  |> translate(x = position, global = true)
+
+gear2 = gear::helical(
+  nTeeth = 14,
+  module = 16,
+  pressureAngle = 20deg,
+  helixAngle = -25,
+  gearHeight = 100,
+)
+
+gear2HoleSketch = sketch(on = XY) {
+  circle1 = circle(start = [var 160mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  diameter(circle1) == 160.1 // 0.1 tolerance
+}
+gear2HoleRegion = region(point = [0mm, 0mm], sketch = gear2HoleSketch)
+gear2HoleTool = extrude(gear2HoleRegion, length = 500, symmetric = true)
+hide(gear2HoleSketch)
+gear2WitHole = subtract(gear2, tools = gear2HoleTool)
+
+gear2Placed = gear2WitHole
+  |> rotate(axis = X, angle = 90deg, global = true)
+  |> rotate(axis = Y, angle = 13, global = true)
+  |> translate(y = -200, x = position, global = true)

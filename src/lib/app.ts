@@ -37,23 +37,37 @@ import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import { initialiseWasm } from '@src/lang/wasmUtils'
 import {
+  createLayoutWithMetadata,
   defaultLayout,
-  defaultLayoutConfig,
+  loadLayout,
   saveLayout,
+  setLayoutSaveHandler,
   type Layout,
 } from '@src/lib/layout'
+import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { type Signal, signal, effect } from '@preact/signals-core'
 import {
   getAllCurrentSettings,
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
+import { isPlaywright } from '@src/lib/isPlaywright'
 import { MachineManager } from '@src/lib/MachineManager'
-import { reportRejection } from '@src/lib/trap'
+import { err, reportRejection } from '@src/lib/trap'
 import type { Project } from '@src/lib/project'
+import { settingsValueSpec } from '@src/registry/contracts/settings'
+import { Registry, pluginsValueSpec } from '@kittycad/registry'
 import type { UserResponse } from '@kittycad/lib/dist/types/src'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
+import { coreRegistryItems } from '@src/registry/registry'
+
+const DEFAULT_LAYOUT_CONFIG_NAME = 'default'
+const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
+
+function isPlaywrightRuntime() {
+  return typeof window !== 'undefined' && isPlaywright()
+}
 
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
@@ -101,6 +115,8 @@ export type AppLayoutSystem = {
   saveEffectUnsubscribeFn: ReturnType<typeof effect>
 }
 
+export type AppRegistrySystem = Registry
+
 /** All of the subsystems needed to run the ZDS app */
 export interface AppSubsystems {
   wasmPromise: Promise<ModuleType>
@@ -112,6 +128,7 @@ export interface AppSubsystems {
   settings: AppSettingsSystem
   billing: AppBillingSystem
   layout: AppLayoutSystem
+  registry: AppRegistrySystem
 }
 
 export class App implements AppSubsystems {
@@ -147,6 +164,8 @@ export class App implements AppSubsystems {
   billing: AppBillingSystem
   /** The layout system for the application */
   layout: AppLayoutSystem
+  /** The registry system for the application */
+  registry: AppRegistrySystem
   /**
    * The interface to reading/writing to IO.
    * TODO: We have agreed to move away from this XState approach, towards a class + signals approach.
@@ -155,6 +174,7 @@ export class App implements AppSubsystems {
 
   // TODO: refactor this to not require keeping around the last settings to compare to
   private lastSettings: SaveSettingsPayload
+  private pluginSettingsSubscription: Subscription
 
   constructor(subsystems: AppSubsystems) {
     this.wasmPromise = subsystems.wasmPromise
@@ -166,6 +186,7 @@ export class App implements AppSubsystems {
     this.commands = subsystems.commands
     this.settings = subsystems.settings
     this.layout = subsystems.layout
+    this.registry = subsystems.registry
     this.systemIOActor = createActor(systemIOMachineImpl, {
       input: {
         wasmInstancePromise: this.wasmPromise,
@@ -188,6 +209,10 @@ export class App implements AppSubsystems {
     this.lastSettings = getAllCurrentSettings(
       getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
     )
+    this.pluginSettingsSubscription = this.settings.actor.subscribe(
+      this.syncPluginSettings
+    )
+    this.syncPluginSettings(this.settings.actor.getSnapshot())
   }
 
   /**
@@ -226,10 +251,15 @@ export class App implements AppSubsystems {
       useState: () => useSelector(commandBarActor, (state) => state),
     }
 
+    const appRegistry = new Registry()
+    appRegistry.configure(coreRegistryItems)
+    const extensionSettings = appRegistry.get(settingsValueSpec)
+
     const settingsActor = createActor(settingsMachine, {
       input: {
-        ...createSettings(),
+        ...createSettings(extensionSettings),
         commandBarActor: commandBarActor,
+        extensionSettings,
         wasmInstancePromise: wasmPromise,
       },
     }).start()
@@ -265,7 +295,14 @@ export class App implements AppSubsystems {
       useContext: () => useSelector(billingActor, ({ context }) => context),
     }
 
-    const layoutSignal = signal<Layout>(defaultLayout)
+    const usePlaywrightLayout = isPlaywrightRuntime()
+    const layoutConfigName = usePlaywrightLayout
+      ? PLAYWRIGHT_LAYOUT_CONFIG_NAME
+      : DEFAULT_LAYOUT_CONFIG_NAME
+    const runtimeDefaultLayout = usePlaywrightLayout
+      ? playwrightLayoutConfig
+      : defaultLayout
+    const layoutSignal = signal<Layout>(runtimeDefaultLayout)
     const layout: AppLayoutSystem = {
       signal: layoutSignal,
       get: () => layoutSignal.value,
@@ -273,12 +310,59 @@ export class App implements AppSubsystems {
         layoutSignal.value = structuredClone(l)
       },
       reset: () => {
-        layoutSignal.value = structuredClone(defaultLayoutConfig)
+        layoutSignal.value = structuredClone(runtimeDefaultLayout)
       },
       saveEffectUnsubscribeFn: effect(() =>
-        saveLayout({ layout: layoutSignal.value })
+        saveLayout({ layout: layoutSignal.value, layoutName: layoutConfigName })
       ),
     }
+
+    let hasHydratedLayout = false
+    const hydrateLayoutFromSettings = (
+      snapshot: SnapshotFrom<typeof settingsActor>
+    ) => {
+      if (hasHydratedLayout || snapshot.value !== 'idle') {
+        return
+      }
+
+      setLayoutSaveHandler(({ layout, layoutName }) => {
+        const currentLayouts = getOnlySettingsFromContext(
+          settingsActor.getSnapshot().context
+        ).layout.configs.current
+
+        settingsActor.send({
+          type: 'set.layout.configs',
+          data: {
+            level: 'user',
+            value: {
+              ...currentLayouts,
+              [layoutName ?? 'default']: createLayoutWithMetadata(layout),
+            },
+          },
+        })
+      })
+
+      const settingsSnapshot = getOnlySettingsFromContext(snapshot.context)
+      const settingsLayout =
+        settingsSnapshot.layout.configs.current[layoutConfigName] ??
+        settingsSnapshot.layout.configs.current.default
+      if (settingsLayout) {
+        layoutSignal.value = structuredClone(settingsLayout.layout)
+      } else {
+        const legacyLayout = loadLayout(layoutConfigName)
+        const fallbackLegacyLayout =
+          err(legacyLayout) && layoutConfigName !== DEFAULT_LAYOUT_CONFIG_NAME
+            ? loadLayout(DEFAULT_LAYOUT_CONFIG_NAME)
+            : legacyLayout
+        if (!err(fallbackLegacyLayout)) {
+          layoutSignal.value = structuredClone(fallbackLegacyLayout)
+        }
+      }
+
+      hasHydratedLayout = true
+    }
+    settingsActor.subscribe(hydrateLayoutFromSettings)
+    hydrateLayoutFromSettings(settingsActor.getSnapshot())
 
     return {
       wasmPromise,
@@ -290,6 +374,7 @@ export class App implements AppSubsystems {
       settings,
       billing,
       layout,
+      registry: appRegistry,
     }
   }
 
@@ -351,6 +436,42 @@ export class App implements AppSubsystems {
     this.unsubscribeFromSettings?.unsubscribe()
     this.project?.close()
     this.project = undefined
+  }
+
+  /**
+   * Keep plugin runtime state aligned with the persisted settings model.
+   *
+   * For now the settings actor is the source of truth and plugin toggle
+   * services are an imperative projection of that state. A narrower follow-up
+   * can invert this by deriving both the UI and persistence model directly from
+   * extension-owned settings state.
+   */
+  syncPluginSettings = (snapshot: SnapshotFrom<typeof this.settings.actor>) => {
+    const pluginSettings = snapshot.context.plugins as
+      | Record<string, { current: boolean }>
+      | undefined
+    if (!pluginSettings) {
+      return
+    }
+
+    this.registry.get(pluginsValueSpec).forEach((plugin) => {
+      const desiredActive = pluginSettings[plugin.id]?.current
+      if (typeof desiredActive !== 'boolean') {
+        return
+      }
+
+      const toggle = this.registry.get(plugin.service)
+      if (toggle.active.value === desiredActive) {
+        return
+      }
+
+      if (desiredActive) {
+        toggle.enable()
+        return
+      }
+
+      toggle.disable()
+    })
   }
 
   /**
