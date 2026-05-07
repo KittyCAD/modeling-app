@@ -66,6 +66,8 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
+import usePlatform from '@src/hooks/usePlatform'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
 
 type Singletons = ReturnType<typeof useSingletons>
 type SystemDeps = Pick<Singletons, 'kclManager'> & {
@@ -74,6 +76,8 @@ type SystemDeps = Pick<Singletons, 'kclManager'> & {
   sceneEntitiesManager: SceneEntities
   rustContext: RustContext
 }
+
+const UNRENDERED_EXECUTE_HOTKEY = 'mod+s'
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
   return (
@@ -119,6 +123,11 @@ export const FeatureTreePaneContents = memo(() => {
   const app = useApp()
   const { layout, commands, settings } = app
   const settingsValues = settings.useSettings()
+  const platform = usePlatform()
+  const unrenderedExecuteHotkeyLabel = hotkeyDisplay(
+    UNRENDERED_EXECUTE_HOTKEY,
+    platform
+  )
   const { kclManager } = useSingletons()
   const executionService = app.registry.signal(executingEditorService).value
   const { engineCommandManager, rustContext } = kclManager
@@ -232,11 +241,11 @@ export const FeatureTreePaneContents = memo(() => {
               />
             )}
             {disableModelingForUnrenderedChanges && !hasParseErrors && (
-              <div className="text-sm bg-warn-80 text-chalkboard-10 py-2 px-2 rounded flex flex-col gap-2 flex-none mb-2">
+              <div className="text-sm bg-2 text-2 py-2 px-2 rounded flex flex-col gap-2 flex-none mb-2 border border-chalkboard-20 dark:border-chalkboard-80">
                 <p className="font-medium">
                   Feature tree actions are disabled.
                 </p>
-                <p className="text-xs text-chalkboard-20">
+                <p className="text-xs opacity-80">
                   {getUnrenderedChangesDisabledReason()}
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -246,9 +255,15 @@ export const FeatureTreePaneContents = memo(() => {
                       executionService?.executeCode().catch(reportRejection)
                     }}
                     disabled={kclManager.isExecuting || !executionService}
-                    className="bg-chalkboard-10 text-warn-80 p-1 rounded-sm flex-none hover:bg-chalkboard-10 hover:border-warn-70 hover:text-warn-80 border-transparent disabled:cursor-wait disabled:opacity-70"
+                    className="flex gap-1 items-center py-0 pl-0.5 pr-1 m-0 flex-none text-primary dark:text-primary border border-solid border-primary bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 hover:border-primary active:border-primary disabled:cursor-wait disabled:opacity-70"
                   >
-                    Execute
+                    <CustomIcon name="play" className="w-5 h-5" />
+                    <span>Execute</span>
+                    {unrenderedExecuteHotkeyLabel && (
+                      <kbd className="hotkey text-xs">
+                        {unrenderedExecuteHotkeyLabel}
+                      </kbd>
+                    )}
                   </button>
                 </div>
               </div>

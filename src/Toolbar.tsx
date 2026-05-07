@@ -70,6 +70,8 @@ type ToolbarProps = {
     'isStreamReady' | 'isStreamAcceptingInput'
   >
 
+const UNRENDERED_EXECUTE_HOTKEY = 'mod+s'
+
 const Toolbar_ = memo(
   (props: ToolbarProps) => {
     const app = useApp()
@@ -77,6 +79,10 @@ const Toolbar_ = memo(
     const { kclManager } = useSingletons()
     const platform = usePlatform()
     const executionService = app.registry.signal(executingEditorService).value
+    const unrenderedExecuteHotkeyLabel = hotkeyDisplay(
+      UNRENDERED_EXECUTE_HOTKEY,
+      platform
+    )
     const toolbarConfig = useToolbarConfig()
     const wasmInstance = use(kclManager.wasmInstancePromise)
     const iconClassName =
@@ -771,19 +777,25 @@ const Toolbar_ = memo(
         </ul>
         <div className="flex flex-col items-center absolute top-full left-1/2 -translate-x-1/2">
           {props.disableModelingForUnrenderedChanges && (
-            <div className="mt-2 py-1 px-2 bg-warn-80 text-chalkboard-10 border border-warn-70 rounded shadow-lg flex items-center gap-2">
+            <div className="mt-2 py-1 px-2 bg-2 text-2 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg flex items-center gap-2">
               <p className="text-xs m-0">
                 {getUnrenderedChangesDisabledReason()}
               </p>
               <button
                 type="button"
-                className="bg-chalkboard-10 text-warn-80 px-1.5 py-0.5 rounded-sm flex-none hover:bg-chalkboard-10 hover:border-warn-70 hover:text-warn-80 border-transparent disabled:cursor-wait disabled:opacity-70"
+                className="flex gap-1 items-center py-0 pl-0.5 pr-1 m-0 flex-none text-primary dark:text-primary border border-solid border-primary bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 hover:border-primary active:border-primary disabled:cursor-wait disabled:opacity-70"
                 disabled={props.isExecuting || !executionService}
                 onClick={() => {
                   executionService?.executeCode().catch(reportRejection)
                 }}
               >
-                Execute
+                <CustomIcon name="play" className="w-5 h-5" />
+                <span>Execute</span>
+                {unrenderedExecuteHotkeyLabel && (
+                  <kbd className="hotkey text-xs">
+                    {unrenderedExecuteHotkeyLabel}
+                  </kbd>
+                )}
               </button>
             </div>
           )}
