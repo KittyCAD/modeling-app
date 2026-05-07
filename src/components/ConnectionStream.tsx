@@ -1,5 +1,5 @@
 import type { MouseEventHandler } from 'react'
-import { use, useCallback, useMemo, useRef, useState } from 'react'
+import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
@@ -283,16 +283,49 @@ export const ConnectionStream = (props: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnecting, numberOfConnectionAttempts, props.authToken, settings])
 
+  const disconnectForIdle = useCallback(
+    async (reason: 'idle-timer' | 'manual-debug-button') => {
+      if (engineCommandManager.started) {
+        try {
+          await sceneInfra.camControls.saveRemoteCameraState()
+        } catch (e) {
+          console.warn('unable to save old camera state on idle', e)
+          sceneInfra.camControls.clearOldCameraState()
+        }
+      }
+
+      console.log(sceneInfra.camControls.oldCameraState)
+      console.warn(`${reason}: tearing down connection through idle path.`)
+      EngineDebugger.addLog({
+        label: 'ConnectionStream.tsx',
+        message: 'disconnectForIdle',
+        metadata: { reason },
+      })
+
+      isIdle.current = true
+      engineCommandManager.tearDown()
+    },
+    [engineCommandManager, sceneInfra.camControls]
+  )
+
   const onPageIdleParams = useMemo(
     () => ({
       startCallback: onPageIdleStartCb,
-      idleCallback: () => {
-        isIdle.current = true
-      },
+      idleCallback: () => disconnectForIdle('idle-timer'),
     }),
-    [onPageIdleStartCb]
+    [disconnectForIdle, onPageIdleStartCb]
   )
   useOnPageIdle(onPageIdleParams)
+
+  useEffect(() => {
+    engineCommandManager.registerManualIdleDisconnectCallback(() =>
+      disconnectForIdle('manual-debug-button')
+    )
+
+    return () => {
+      engineCommandManager.registerManualIdleDisconnectCallback(null)
+    }
+  }, [disconnectForIdle, engineCommandManager])
 
   const onWebSocketCloseParams = useMemo(
     () => ({

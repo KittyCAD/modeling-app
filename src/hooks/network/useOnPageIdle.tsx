@@ -8,7 +8,7 @@ export const useOnPageIdle = ({
   idleCallback,
 }: {
   startCallback: () => void
-  idleCallback: () => void
+  idleCallback: () => Promise<void> | void
 }) => {
   const { settings } = useApp()
   const { kclManager } = useSingletons()
@@ -86,21 +86,11 @@ export const useOnPageIdle = ({
           const elapsed = Date.now() - timeoutStart.current
           if (elapsed >= idleTimeMs) {
             timeoutStart.current = null
-            try {
-              await kclManager.sceneInfra.camControls.saveRemoteCameraState()
-            } catch (e) {
-              console.warn('unable to save old camera state on idle', e)
-              kclManager.sceneInfra.camControls.clearOldCameraState()
-            }
-            console.log(kclManager.sceneInfra.camControls.oldCameraState)
-            console.warn('detected idle, tearing down connection.')
             EngineDebugger.addLog({
               label: 'useOnPageIdle',
-              message: 'Calling tearDown()',
+              message: 'idle threshold reached',
             })
-            // We do a full tear down at the moment.
-            kclManager.engineCommandManager.tearDown()
-            idleCallbackRef.current()
+            await idleCallbackRef.current()
           }
         }
       })()

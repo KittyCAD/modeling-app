@@ -161,6 +161,12 @@ export const commandBarMachine = setup({
     'Execute command': ({ context, event }) => {
       const { selectedCommand } = context
       if (!selectedCommand) return
+      if (selectedCommand.disabled) {
+        toast.error(
+          `Command unavailable: ${selectedCommand.displayName ?? selectedCommand.name}`
+        )
+        return
+      }
       if (
         (selectedCommand?.args && event.type === 'Submit command') ||
         event.type === 'xstate.done.actor.validateArguments'

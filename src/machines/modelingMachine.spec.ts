@@ -43,6 +43,16 @@ let rustContextInThisFile: RustContext = null!
 let commandBarActorInThisFile: CommandBarActorType = null!
 let machineManagerInThisFile: MachineManager = null!
 
+function markEngineReadyForSketchEntry(
+  engineCommandManager: ConnectionManager
+) {
+  engineCommandManager.started = true
+  engineCommandManager.connection = {
+    websocket: { readyState: WebSocket.OPEN },
+    isUsingUnitTestingConnection: true,
+  } as any
+}
+
 /**
  * Every it test could build the world and connect to the engine but this is too resource intensive and will
  * spam engine connections.
@@ -1470,6 +1480,8 @@ sketch001 = sketch(on = YZ) {
           machineManager,
         } = await buildTheWorldAndNoEngineConnection()
 
+        markEngineReadyForSketchEntry(engineCommandManager)
+
         kclManager.updateCodeEditor(invalidCode)
         const parseResult = await kclManager.safeParse(invalidCode)
 
@@ -1510,6 +1522,42 @@ sketch001 = sketch(on = YZ) {
           'Unable to enter sketch while KCL has parse errors.'
         )
       })
+
+      it('blocks sketch entry while the engine is disconnected', async () => {
+        toastErrorSpy.mockClear()
+        const {
+          instance,
+          kclManager,
+          rustContext,
+          engineCommandManager,
+          commandBarActor,
+          machineManager,
+        } = await buildTheWorldAndNoEngineConnection()
+
+        const animateSpy = vi.spyOn(kclManager.sceneInfra, 'animate')
+
+        const context = generateModelingMachineDefaultContext({
+          kclManager,
+          rustContext,
+          wasmInstance: instance,
+          engineCommandManager,
+          commandBarActor,
+          machineManager,
+        })
+        context.store.defaultUnit = { current: 'mm' } as any
+        context.projectRef = { current: {} as any }
+
+        const actor = createActor(modelingMachine, { input: context }).start()
+
+        actor.send({ type: 'Enter sketch' })
+
+        expect(actor.getSnapshot().value).toEqual({ idle: 'hidePlanes' })
+        expect(animateSpy).not.toHaveBeenCalled()
+        expect(toastErrorSpy).toHaveBeenCalledWith(
+          'Waiting for engine reconnection before entering sketch.',
+          { id: 'sketch-entry-reconnect-required' }
+        )
+      })
     })
 
     it('restores camera orbit controls when sketch exit errors', async () => {
@@ -1521,6 +1569,8 @@ sketch001 = sketch(on = YZ) {
         commandBarActor,
         machineManager,
       } = await buildTheWorldAndNoEngineConnection()
+
+      markEngineReadyForSketchEntry(engineCommandManager)
 
       const sendSceneCommandSpy = vi
         .spyOn(engineCommandManager, 'sendSceneCommand')
@@ -1601,6 +1651,8 @@ sketch001 = sketch(on = YZ) {
         commandBarActor,
         machineManager,
       } = await buildTheWorldAndNoEngineConnection()
+
+      markEngineReadyForSketchEntry(engineCommandManager)
 
       const context = generateModelingMachineDefaultContext({
         kclManager,

@@ -225,6 +225,56 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
   )
 
   test(
+    'Feature tree sketch edit waits for reconnection after idle disconnect',
+    { tag: '@skipLocalEngine' },
+    async ({ page, homePage, toolbar, scene, cmdBar, editor }) => {
+      const sketchCode = `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> line(end = [10, 0])
+  |> line(end = [0, 10])
+  |> close()`
+      const u = await getUtils(page)
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+      await u.waitForPageLoad()
+      await editor.replaceCode('', sketchCode)
+      await editor.expectEditor.toContain('sketch001 = startSketchOn(XZ)')
+      await expect(toolbar.startSketchBtn).not.toBeDisabled({
+        timeout: 15_000,
+      })
+      await toolbar.waitForFeatureTreeToBeBuilt()
+      await u.openDebugPanel()
+      await toolbar.openFeatureTreePane()
+
+      const sketchOperation = toolbar.featureTreePane
+        .getByRole('button', { name: /sketch001|Sketch/i })
+        .first()
+      await expect(sketchOperation).toBeVisible()
+
+      await page.getByTestId('simulate-idle-disconnect').click()
+      await sketchOperation.dblclick()
+
+      await expect(
+        page.getByRole('button', { name: 'Exit Sketch' })
+      ).not.toBeVisible({ timeout: 5_000 })
+      await expect(toolbar.startSketchBtn).toBeVisible({ timeout: 5_000 })
+      await expect(toolbar.startSketchBtn).not.toBeDisabled({
+        timeout: 15_000,
+      })
+
+      await toolbar.featureTreePane
+        .getByRole('button', { name: /sketch001|Sketch/i })
+        .first()
+        .dblclick()
+      await expect(
+        page.getByRole('button', { name: 'Exit Sketch' })
+      ).toBeVisible({ timeout: 10_000 })
+    }
+  )
+
+  test(
     'Paused stream freezes view frame, unpause reconnect is seamless to user',
     { tag: '@skipLocalEngine' },
     async ({ page, homePage, scene, cmdBar, toolbar, tronApp }) => {
