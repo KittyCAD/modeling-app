@@ -6,7 +6,7 @@ import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { AxisNames } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
-import type { ColorRepresentation, Intersection } from 'three'
+import type { ColorRepresentation, Intersection, Object3D } from 'three'
 import {
   BoxGeometry,
   CanvasTexture,
@@ -17,8 +17,8 @@ import {
   OrthographicCamera,
   Quaternion,
   Raycaster,
-  SRGBColorSpace,
   Scene,
+  SphereGeometry,
   Sprite,
   SpriteMaterial,
   Vector2,
@@ -78,17 +78,19 @@ export default function AxisGizmo() {
 
     const scene = new Scene()
     const camera = createCamera()
-    const { gizmoAxisPairs } = createGizmo()
-    scene.add(...gizmoAxisPairs.flatMap(({ axis, head }) => [axis, head]))
+    const { gizmoAxes, gizmoAxisHeads, gizmoAxisLabels, axisLabelObjects } =
+      createGizmo()
+    scene.add(...gizmoAxes, ...gizmoAxisHeads, ...gizmoAxisLabels)
 
     const raycaster = new Raycaster()
-    const raycasterObjects = gizmoAxisPairs.map(({ head }) => head)
+    const raycasterObjects = [...gizmoAxisHeads]
     const resetRayCast = () => {
       for (const object of raycasterObjects) {
-        setAxisHeadScale(object)
+        object.scale.setScalar(1)
       }
+      updateAxisLabelHover(axisLabelObjects)
       raycasterIntersect.current = null
-      renderGizmoScene(gizmoAxisPairs, renderer, scene, camera)
+      renderer.render(scene, camera)
     }
     const doRayCast = (mouse: Vector2) => {
       // If orbits are disabled, skip click logic
@@ -101,7 +103,7 @@ export default function AxisGizmo() {
           raycasterIntersect,
           renderer,
           scene,
-          gizmoAxisPairs
+          axisLabelObjects
         )
       } else {
         resetRayCast()
@@ -170,7 +172,7 @@ export default function AxisGizmo() {
       if (isPointerOverRef.current && !isHoverRefreshPausedRef.current) {
         doRayCast(mouse)
       } else {
-        renderGizmoScene(gizmoAxisPairs, renderer, scene, camera)
+        renderer.render(scene, camera)
       }
     }
     kclManager.sceneInfra.camControls.cameraChange.add(animate)
@@ -179,7 +181,7 @@ export default function AxisGizmo() {
     const q = kclManager.sceneInfra.camControls.camera.quaternion
     camera.position.set(0, 0, 1).applyQuaternion(q)
     camera.quaternion.copy(q)
-    renderGizmoScene(gizmoAxisPairs, renderer, scene, camera)
+    renderer.render(scene, camera)
 
     return () => {
       isDisposed = true
@@ -210,17 +212,15 @@ const FRUSTUM_SIZE = 0.5
 const AXIS_LENGTH = 0.35
 const AXIS_WIDTH = 0.02
 const AXIS_HEAD_RADIUS = 0.085
-const AXIS_STEM_LENGTH = AXIS_LENGTH - AXIS_HEAD_RADIUS * 0.9
 const AXIS_HOVER_SCALE = 1.5
-const AXIS_HEAD_WORLD_SIZE = AXIS_HEAD_RADIUS * 2
-const AXIS_HEAD_TEXTURE_SIZE = 64
-const AXIS_HEAD_VIEWBOX_SIZE = 16
-const AXIS_HEAD_CENTER = AXIS_HEAD_VIEWBOX_SIZE / 2
-const AXIS_HEAD_CIRCLE_RADIUS = 7.5
 const AXIS_LABEL_FONT_SIZE = 9
 const AXIS_LABEL_CONTOUR_WIDTH = 1.2
 const AXIS_LABEL_FILL_COLOR = '#fcfcfc'
+const AXIS_LABEL_CENTER = 8
 const AXIS_LABEL_CENTER_Y = 8.5
+const AXIS_LABEL_VIEWBOX_SIZE = 16
+const AXIS_LABEL_TEXTURE_SIZE = 64
+const AXIS_LABEL_WORLD_SIZE = AXIS_LABEL_VIEWBOX_SIZE / CANVAS_SIZE
 enum AxisColors {
   X = '#fa6668',
   Y = '#11eb6b',
@@ -229,11 +229,7 @@ enum AxisColors {
 }
 type AxisLabel = 'X' | 'Y' | 'Z'
 type PositiveAxisName = AxisNames.X | AxisNames.Y | AxisNames.Z
-type AxisRotation = 'x' | 'y' | 'z'
-type GizmoAxisPair = {
-  axis: Mesh
-  head: Sprite
-}
+type AxisLabelObjects = Partial<Record<PositiveAxisName, Sprite>>
 const POSITIVE_AXIS_NAMES = [AxisNames.X, AxisNames.Y, AxisNames.Z] as const
 const AXIS_LABELS: Record<PositiveAxisName, AxisLabel> = {
   [AxisNames.X]: 'X',
@@ -245,10 +241,6 @@ const AXIS_LABEL_CONTOUR_COLORS: Record<PositiveAxisName, string> = {
   [AxisNames.Y]: '#0bb858',
   [AxisNames.Z]: '#4d68c0',
 }
-const isPositiveAxisName = (
-  axisName: AxisNames
-): axisName is PositiveAxisName =>
-  POSITIVE_AXIS_NAMES.includes(axisName as PositiveAxisName)
 const AXIS_HEAD_POSITIONS: Record<AxisNames, [number, number, number]> = {
   [AxisNames.X]: [AXIS_LENGTH, 0, 0],
   [AxisNames.Y]: [0, AXIS_LENGTH, 0],
@@ -257,39 +249,6 @@ const AXIS_HEAD_POSITIONS: Record<AxisNames, [number, number, number]> = {
   [AxisNames.NEG_Y]: [0, -AXIS_LENGTH, 0],
   [AxisNames.NEG_Z]: [0, 0, -AXIS_LENGTH],
 }
-const GIZMO_AXIS_DEFINITIONS: {
-  name: AxisNames
-  color: AxisColors
-  rotation: number
-  axis: AxisRotation
-}[] = [
-  { name: AxisNames.X, color: AxisColors.X, rotation: 0, axis: 'z' },
-  { name: AxisNames.Y, color: AxisColors.Y, rotation: Math.PI / 2, axis: 'z' },
-  {
-    name: AxisNames.Z,
-    color: AxisColors.Z,
-    rotation: -Math.PI / 2,
-    axis: 'y',
-  },
-  {
-    name: AxisNames.NEG_X,
-    color: AxisColors.Gray,
-    rotation: Math.PI,
-    axis: 'z',
-  },
-  {
-    name: AxisNames.NEG_Y,
-    color: AxisColors.Gray,
-    rotation: -Math.PI / 2,
-    axis: 'z',
-  },
-  {
-    name: AxisNames.NEG_Z,
-    color: AxisColors.Gray,
-    rotation: Math.PI / 2,
-    axis: 'y',
-  },
-]
 const createCamera = (): OrthographicCamera => {
   return new OrthographicCamera(
     -FRUSTUM_SIZE,
@@ -302,14 +261,32 @@ const createCamera = (): OrthographicCamera => {
 }
 
 const createGizmo = () => {
-  const gizmoAxisPairs = GIZMO_AXIS_DEFINITIONS.map(
-    ({ name, color, rotation, axis }) => ({
-      axis: createAxis(AXIS_STEM_LENGTH, AXIS_WIDTH, color, rotation, axis),
-      head: createAxisHead(name, color),
-    })
-  )
+  const gizmoAxes = [
+    createAxis(AXIS_LENGTH, AXIS_WIDTH, AxisColors.X, 0, 'z'),
+    createAxis(AXIS_LENGTH, AXIS_WIDTH, AxisColors.Y, Math.PI / 2, 'z'),
+    createAxis(AXIS_LENGTH, AXIS_WIDTH, AxisColors.Z, -Math.PI / 2, 'y'),
+    createAxis(AXIS_LENGTH, AXIS_WIDTH, AxisColors.Gray, Math.PI, 'z'),
+    createAxis(AXIS_LENGTH, AXIS_WIDTH, AxisColors.Gray, -Math.PI / 2, 'z'),
+    createAxis(AXIS_LENGTH, AXIS_WIDTH, AxisColors.Gray, Math.PI / 2, 'y'),
+  ]
 
-  return { gizmoAxisPairs }
+  const gizmoAxisHeads = [
+    createAxisHead(AxisNames.X, AxisColors.X),
+    createAxisHead(AxisNames.Y, AxisColors.Y),
+    createAxisHead(AxisNames.Z, AxisColors.Z),
+    createAxisHead(AxisNames.NEG_X, AxisColors.Gray),
+    createAxisHead(AxisNames.NEG_Y, AxisColors.Gray),
+    createAxisHead(AxisNames.NEG_Z, AxisColors.Gray),
+  ]
+
+  const axisLabelObjects: AxisLabelObjects = {}
+  const gizmoAxisLabels = POSITIVE_AXIS_NAMES.map((axisName) => {
+    const labelObject = createAxisLabel(axisName)
+    axisLabelObjects[axisName] = labelObject
+    return labelObject
+  })
+
+  return { gizmoAxes, gizmoAxisHeads, gizmoAxisLabels, axisLabelObjects }
 }
 
 const createAxis = (
@@ -317,118 +294,87 @@ const createAxis = (
   width: number,
   color: ColorRepresentation,
   rotation = 0,
-  axis: AxisRotation = 'x'
+  axis = 'x'
 ): Mesh => {
   const geometry = new BoxGeometry(length, width, width)
   geometry.translate(length / 2, 0, 0)
-  const material = new MeshBasicMaterial({
-    color: new Color(color),
-    transparent: true,
-    depthTest: false,
-    depthWrite: false,
-  })
+  const material = new MeshBasicMaterial({ color: new Color(color) })
   const mesh = new Mesh(geometry, material)
-  mesh.rotation[axis] = rotation
+  mesh.rotation[axis as 'x' | 'y' | 'z'] = rotation
   return mesh
 }
 
-const createAxisHead = (
-  name: AxisNames,
-  color: ColorRepresentation
-): Sprite => {
-  const texture = createAxisHeadTexture(name, color)
-  const material = new SpriteMaterial({
-    map: texture,
-    transparent: true,
-    depthTest: false,
-    depthWrite: false,
-  })
-  const sprite = new Sprite(material)
+const createAxisHead = (name: AxisNames, color: ColorRepresentation): Mesh => {
+  const geometry = new SphereGeometry(AXIS_HEAD_RADIUS, 48, 24)
+  const material = new MeshBasicMaterial({ color: new Color(color) })
+  const mesh = new Mesh(geometry, material)
   const position = AXIS_HEAD_POSITIONS[name]
 
-  sprite.position.set(position[0], position[1], position[2])
-  setAxisHeadScale(sprite)
-  sprite.name = name
-  return sprite
+  mesh.position.set(position[0], position[1], position[2])
+  mesh.updateMatrixWorld()
+  mesh.name = name
+  return mesh
 }
 
-const createAxisHeadTexture = (
-  axisName: AxisNames,
-  color: ColorRepresentation
-) => {
+const createAxisLabel = (axisName: PositiveAxisName): Sprite => {
+  const labelCenterY =
+    axisName === AxisNames.Y ? AXIS_LABEL_CENTER_Y + 0.25 : AXIS_LABEL_CENTER_Y
   const canvas = document.createElement('canvas')
-  canvas.width = AXIS_HEAD_TEXTURE_SIZE
-  canvas.height = AXIS_HEAD_TEXTURE_SIZE
+  canvas.width = AXIS_LABEL_TEXTURE_SIZE
+  canvas.height = AXIS_LABEL_TEXTURE_SIZE
 
   const context = canvas.getContext('2d')
   if (context) {
-    const textureScale = AXIS_HEAD_TEXTURE_SIZE / AXIS_HEAD_VIEWBOX_SIZE
+    const textureScale = AXIS_LABEL_TEXTURE_SIZE / AXIS_LABEL_VIEWBOX_SIZE
     context.scale(textureScale, textureScale)
-
-    context.fillStyle = new Color(color).getStyle()
-    context.beginPath()
-    context.arc(
-      AXIS_HEAD_CENTER,
-      AXIS_HEAD_CENTER,
-      AXIS_HEAD_CIRCLE_RADIUS,
-      0,
-      Math.PI * 2
-    )
-    context.fill()
-
-    if (isPositiveAxisName(axisName)) {
-      const labelCenterY =
-        axisName === AxisNames.Y
-          ? AXIS_LABEL_CENTER_Y + 0.25
-          : AXIS_LABEL_CENTER_Y
-
-      context.font = `800 ${AXIS_LABEL_FONT_SIZE}px Inter, system-ui, sans-serif`
-      context.textAlign = 'center'
-      context.textBaseline = 'middle'
-      context.lineJoin = 'round'
-      context.lineWidth = AXIS_LABEL_CONTOUR_WIDTH
-      context.strokeStyle = AXIS_LABEL_CONTOUR_COLORS[axisName]
-      context.fillStyle = AXIS_LABEL_FILL_COLOR
-      context.strokeText(AXIS_LABELS[axisName], AXIS_HEAD_CENTER, labelCenterY)
-      context.fillText(AXIS_LABELS[axisName], AXIS_HEAD_CENTER, labelCenterY)
-    }
+    context.font = `800 ${AXIS_LABEL_FONT_SIZE}px Inter, system-ui, sans-serif`
+    context.textAlign = 'center'
+    context.textBaseline = 'middle'
+    context.lineJoin = 'round'
+    context.lineWidth = AXIS_LABEL_CONTOUR_WIDTH
+    context.strokeStyle = AXIS_LABEL_CONTOUR_COLORS[axisName]
+    context.fillStyle = AXIS_LABEL_FILL_COLOR
+    context.strokeText(AXIS_LABELS[axisName], AXIS_LABEL_CENTER, labelCenterY)
+    context.fillText(AXIS_LABELS[axisName], AXIS_LABEL_CENTER, labelCenterY)
   }
 
   const texture = new CanvasTexture(canvas)
-  texture.colorSpace = SRGBColorSpace
-  return texture
-}
-
-const setAxisHeadScale = (axisHead: Sprite, scale = 1) => {
-  const size = AXIS_HEAD_WORLD_SIZE * scale
-  axisHead.scale.set(size, size, 1)
-}
-
-const renderGizmoScene = (
-  axisPairs: GizmoAxisPair[],
-  renderer: WebGLRenderer,
-  scene: Scene,
-  camera: OrthographicCamera
-) => {
-  updateAxisPairRenderOrder(axisPairs, camera)
-  renderer.render(scene, camera)
-}
-
-const updateAxisPairRenderOrder = (
-  axisPairs: GizmoAxisPair[],
-  camera: OrthographicCamera
-) => {
-  axisPairs.sort(
-    (a, b) =>
-      a.head.position.dot(camera.position) -
-      b.head.position.dot(camera.position)
+  const labelObject = new Sprite(
+    new SpriteMaterial({
+      map: texture,
+      transparent: true,
+      depthTest: false,
+      depthWrite: false,
+    })
   )
+  const [x, y, z] = AXIS_HEAD_POSITIONS[axisName]
+  labelObject.position.set(x, y, z)
+  setAxisLabelScale(labelObject)
+  labelObject.renderOrder = 1
 
-  axisPairs.forEach(({ axis, head }, index) => {
-    const renderOrder = index * 2
-    axis.renderOrder = renderOrder
-    head.renderOrder = renderOrder + 1
-  })
+  return labelObject
+}
+
+const updateAxisLabelHover = (
+  axisLabelObjects: AxisLabelObjects,
+  hoveredAxisName?: AxisNames
+) => {
+  for (const axisName of POSITIVE_AXIS_NAMES) {
+    const labelObject = axisLabelObjects[axisName]
+    if (!labelObject) {
+      continue
+    }
+
+    setAxisLabelScale(
+      labelObject,
+      hoveredAxisName === axisName ? AXIS_HOVER_SCALE : 1
+    )
+  }
+}
+
+const setAxisLabelScale = (labelObject: Sprite, scale = 1) => {
+  const size = AXIS_LABEL_WORLD_SIZE * scale
+  labelObject.scale.set(size, size, 1)
 }
 
 const updateCameraOrientation = (
@@ -512,27 +458,30 @@ const initializeMouseEvents = (
 }
 
 const updateRayCaster = (
-  objects: Sprite[],
+  objects: Object3D[],
   raycaster: Raycaster,
   mouse: Vector2,
   camera: OrthographicCamera,
   raycasterIntersect: MutableRefObject<Intersection | null>,
   renderer: WebGLRenderer,
   scene: Scene,
-  axisPairs: GizmoAxisPair[]
+  axisLabelObjects: AxisLabelObjects
 ) => {
   raycaster.setFromCamera(mouse, camera)
   const intersects = raycaster.intersectObjects(objects)
   const hoveredObject = intersects[0]?.object
 
   for (const object of objects) {
-    setAxisHeadScale(object, object === hoveredObject ? AXIS_HOVER_SCALE : 1)
+    object.scale.setScalar(object === hoveredObject ? AXIS_HOVER_SCALE : 1)
   }
   if (intersects.length) {
+    const axisName = intersects[0].object.name as AxisNames
+    updateAxisLabelHover(axisLabelObjects, axisName)
     raycasterIntersect.current = intersects[0] // filter first object
   } else {
+    updateAxisLabelHover(axisLabelObjects)
     raycasterIntersect.current = null
   }
 
-  renderGizmoScene(axisPairs, renderer, scene, camera)
+  renderer.render(scene, camera)
 }
