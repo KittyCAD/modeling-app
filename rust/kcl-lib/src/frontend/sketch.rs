@@ -158,6 +158,7 @@ pub trait SketchApi {
         edit_segments: Vec<ExistingSegmentCtor>,
         add_constraints: Vec<Constraint>,
         delete_constraint_ids: Vec<ObjectId>,
+        additional_edited_segment_ids: Vec<ObjectId>,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 }
 

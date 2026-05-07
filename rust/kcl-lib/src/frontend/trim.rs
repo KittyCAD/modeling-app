@@ -193,6 +193,7 @@ pub enum TrimPlan {
         segment_or_point_to_make_coincident_to: ObjectId,
         intersecting_endpoint_point_id: Option<ObjectId>,
         constraint_ids_to_delete: Vec<ObjectId>,
+        additional_edited_segment_ids: Vec<ObjectId>,
     },
     ReplaceCircleWithArc {
         circle_id: ObjectId,
@@ -227,12 +228,14 @@ fn lower_trim_plan(plan: &TrimPlan) -> Vec<TrimOperation> {
             segment_or_point_to_make_coincident_to,
             intersecting_endpoint_point_id,
             constraint_ids_to_delete,
+            additional_edited_segment_ids,
         } => {
             let mut ops = vec![
                 TrimOperation::EditSegment {
                     segment_id: *segment_id,
                     ctor: ctor.clone(),
                     endpoint_changed: *endpoint_changed,
+                    additional_edited_segment_ids: additional_edited_segment_ids.clone(),
                 },
                 TrimOperation::AddCoincidentConstraint {
                     segment_id: *segment_id,
@@ -472,6 +475,55 @@ fn point_axis_constraint_references_point(constraint: &Constraint, point_id: Obj
     }
 }
 
+fn owner_or_segment_id(objects: &[Object], segment_id: ObjectId) -> ObjectId {
+    if let Some(segment_object) = objects.iter().find(|obj| obj.id == segment_id)
+        && let ObjectKind::Segment {
+            segment: Segment::Point(point),
+        } = &segment_object.kind
+        && let Some(owner_id) = point.owner
+    {
+        owner_id
+    } else {
+        segment_id
+    }
+}
+
+fn segment_id_is_or_is_owned_by_curve(objects: &[Object], segment_id: ObjectId) -> bool {
+    objects.iter().find(|obj| obj.id == segment_id).is_some_and(|object| {
+        let ObjectKind::Segment { segment } = &object.kind else {
+            return false;
+        };
+
+        match segment {
+            Segment::Arc(_) | Segment::Circle(_) => true,
+            Segment::Point(point) => point.owner.is_some_and(|owner_id| {
+                objects.iter().find(|obj| obj.id == owner_id).is_some_and(|owner| {
+                    matches!(
+                        owner.kind,
+                        ObjectKind::Segment {
+                            segment: Segment::Arc(_) | Segment::Circle(_)
+                        }
+                    )
+                })
+            }),
+            _ => false,
+        }
+    })
+}
+
+fn sketch_segment_ids_for_segment(objects: &[Object], segment_id: ObjectId) -> Vec<ObjectId> {
+    objects
+        .iter()
+        .find_map(|obj| {
+            let ObjectKind::Sketch(sketch) = &obj.kind else {
+                return None;
+            };
+
+            sketch.segments.contains(&segment_id).then(|| sketch.segments.clone())
+        })
+        .unwrap_or_default()
+}
+
 #[derive(Debug, Clone)]
 #[allow(clippy::large_enum_variant)]
 pub enum TrimOperation {
@@ -482,6 +534,7 @@ pub enum TrimOperation {
         segment_id: ObjectId,
         ctor: SegmentCtor,
         endpoint_changed: EndpointChanged,
+        additional_edited_segment_ids: Vec<ObjectId>,
     },
     AddCoincidentConstraint {
         segment_id: ObjectId,
@@ -3443,6 +3496,51 @@ pub(crate) fn build_trim_plan(
         let distance_constraint_ids = find_distance_constraints_for_segment(trim_spawn_id);
         all_constraint_ids_to_delete.extend(distance_constraint_ids);
 
+        let coincident_target_id = coincident_data
+            .intersecting_endpoint_point_id
+            .unwrap_or(intersecting_seg_id);
+        let adds_curved_segment_coincident = endpoint_point_id
+            .is_some_and(|point_id| segment_id_is_or_is_owned_by_curve(objects, point_id))
+            || segment_id_is_or_is_owned_by_curve(objects, coincident_target_id);
+        let has_midpoint_deletions = all_constraint_ids_to_delete.iter().any(|constraint_id| {
+            objects
+                .iter()
+                .find(|obj| obj.id == *constraint_id)
+                .is_some_and(|object| {
+                    matches!(
+                        object.kind,
+                        ObjectKind::Constraint {
+                            constraint: Constraint::Midpoint(_)
+                        }
+                    )
+                })
+        });
+
+        let mut additional_edited_segment_ids = IndexSet::new();
+        if has_midpoint_deletions || (adds_curved_segment_coincident && all_constraint_ids_to_delete.is_empty()) {
+            additional_edited_segment_ids.extend(sketch_segment_ids_for_segment(objects, trim_spawn_id));
+        }
+
+        if adds_curved_segment_coincident {
+            for constraint_id in &all_constraint_ids_to_delete {
+                let Some(constraint_object) = objects.iter().find(|obj| obj.id == *constraint_id) else {
+                    continue;
+                };
+                let ObjectKind::Constraint {
+                    constraint: Constraint::Coincident(coincident),
+                } = &constraint_object.kind
+                else {
+                    continue;
+                };
+
+                additional_edited_segment_ids.extend(
+                    coincident
+                        .segment_ids()
+                        .map(|segment_id| owner_or_segment_id(objects, segment_id)),
+                );
+            }
+        }
+
         return Ok(TrimPlan::TailCut {
             segment_id: trim_spawn_id,
             endpoint_changed: endpoint_to_change,
@@ -3450,6 +3548,7 @@ pub(crate) fn build_trim_plan(
             segment_or_point_to_make_coincident_to: intersecting_seg_id,
             intersecting_endpoint_point_id: coincident_data.intersecting_endpoint_point_id,
             constraint_ids_to_delete: all_constraint_ids_to_delete,
+            additional_edited_segment_ids: additional_edited_segment_ids.into_iter().collect(),
         });
     }
 
@@ -4331,6 +4430,7 @@ pub(crate) async fn execute_trim_operations_simple(
                 segment_id,
                 ctor,
                 endpoint_changed,
+                additional_edited_segment_ids,
             } => {
                 // Try to batch tail-cut sequence: EditSegment + AddCoincidentConstraint (+ DeleteConstraints)
                 // This matches the batching logic in kcl-wasm-lib/src/api.rs
@@ -4418,6 +4518,7 @@ pub(crate) async fn execute_trim_operations_simple(
                                     vec![segment_to_edit],
                                     vec![constraint],
                                     delete_constraint_ids,
+                                    additional_edited_segment_ids.clone(),
                                 )
                                 .await
                                 .map_err(|e| format!("Failed to batch tail-cut operations: {}", e.error.message()))
