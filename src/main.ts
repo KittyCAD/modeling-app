@@ -406,6 +406,10 @@ Reflect.set(app, 'testProperty', appTestProperties)
 if (NODE_ENV === 'test') {
   appTestProperties.nativeWindowMenus =
     windowMenuManager.nativeWindowMenusForTests
+  Reflect.set(app, 'resizeWindow', (width: number, height: number) => {
+    const targetWindow = BrowserWindow.getFocusedWindow() ?? mainWindow
+    return targetWindow?.setSize(width, height)
+  })
 }
 // @ts-ignore can't declaration merge with App
 app.machineApiState = 'off' as MachineApiSignal
