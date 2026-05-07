@@ -10,7 +10,7 @@ Create a mirror image of a 3D solid/surface/body, across some specified mirror a
 ```kcl
 mirror3d(
   @bodies: [Solid; 1+],
-  across: Edge | Plane | Axis3d,
+  across: Edge | Plane | Axis3d | Segment,
 ): [Solid; 1+]
 ```
 
