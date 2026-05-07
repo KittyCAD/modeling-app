@@ -225,12 +225,12 @@ export fn profile(
   /// The edges to be annotated.
   @(includeInSnippet = true)
   edges: [Edge; 1+],
-  /// The datum references to display in the feature control frame. Supports up to primary, secondary, and tertiary datums.
-  @(includeInSnippet = true)
-  datums?: [string; 1+],
   /// The amount of deviation from an ideal profile that is acceptable.
   @(includeInSnippet = true)
   tolerance: number(Length),
+  /// The datum references to display in the feature control frame. Supports up to primary, secondary, and tertiary datums.
+  @(includeInSnippet = true)
+  datums?: [string; 1+],
   /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.
   @(includeInSnippet = true)
   precision?: number(Count),
