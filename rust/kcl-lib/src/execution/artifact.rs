@@ -32,6 +32,8 @@ use crate::parsing::ast::types::Program;
 use crate::std::sketch::build_reverse_region_mapping;
 
 #[cfg(test)]
+mod entity_clone_tests;
+#[cfg(test)]
 mod mermaid_tests;
 
 macro_rules! internal_error {
