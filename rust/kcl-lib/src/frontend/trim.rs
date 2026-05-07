@@ -343,6 +343,9 @@ fn rewrite_constraint_with_map(
     constraint: &Constraint,
     rewrite_map: &std::collections::HashMap<ObjectId, ObjectId>,
 ) -> Option<Constraint> {
+    // Keep trim constraint matches exhaustive. New constraints can break trim in
+    // unexpected ways; try trimming sketches that use the new constraint and ask
+    // Kurt, Max, or a mechanical engineer when the expected behavior is unclear.
     match constraint {
         Constraint::Coincident(coincident) => Some(Constraint::Coincident(crate::frontend::sketch::Coincident {
             segments: rewrite_constraint_segments(&coincident.segments, rewrite_map),
@@ -468,6 +471,8 @@ fn rewrite_constraint_with_map(
 }
 
 fn point_axis_constraint_references_point(constraint: &Constraint, point_id: ObjectId) -> bool {
+    // Keep trim constraint matches exhaustive. New constraints should make an
+    // explicit preserve/delete/migrate decision rather than falling through.
     match constraint {
         Constraint::Horizontal(Horizontal::Points { points }) => points.contains(&ConstraintSegment::from(point_id)),
         Constraint::Vertical(Vertical::Points { points }) => points.contains(&ConstraintSegment::from(point_id)),
@@ -4794,6 +4799,8 @@ pub(crate) async fn execute_trim_operations_simple(
                         continue;
                     };
 
+                    // Keep this exhaustive so new constraints must declare how
+                    // circle-to-arc trim should migrate or ignore them.
                     match constraint {
                         Constraint::Coincident(coincident) => {
                             if !constraint_segments_reference_any(&coincident.segments, &rewrite_ids) {
@@ -5398,6 +5405,8 @@ pub(crate) async fn execute_trim_operations_simple(
                         continue;
                     };
 
+                    // Keep this exhaustive so new constraints must declare
+                    // whether split trim should migrate them to the new segment.
                     let should_migrate = match constraint {
                         Constraint::Parallel(parallel) => parallel.lines.contains(segment_id),
                         Constraint::Perpendicular(perpendicular) => perpendicular.lines.contains(segment_id),
