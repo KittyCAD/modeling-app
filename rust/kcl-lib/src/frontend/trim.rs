@@ -463,7 +463,7 @@ fn rewrite_constraint_with_map(
                     .collect(),
             })),
         },
-        _ => None,
+        Constraint::Angle(_) | Constraint::Fixed(_) | Constraint::LinesEqualLength(_) => None,
     }
 }
 
@@ -471,7 +471,23 @@ fn point_axis_constraint_references_point(constraint: &Constraint, point_id: Obj
     match constraint {
         Constraint::Horizontal(Horizontal::Points { points }) => points.contains(&ConstraintSegment::from(point_id)),
         Constraint::Vertical(Vertical::Points { points }) => points.contains(&ConstraintSegment::from(point_id)),
-        _ => false,
+        Constraint::Angle(_)
+        | Constraint::Coincident(_)
+        | Constraint::Diameter(_)
+        | Constraint::Distance(_)
+        | Constraint::EqualRadius(_)
+        | Constraint::Fixed(_)
+        | Constraint::Horizontal(Horizontal::Line { .. })
+        | Constraint::HorizontalDistance(_)
+        | Constraint::LinesEqualLength(_)
+        | Constraint::Midpoint(_)
+        | Constraint::Parallel(_)
+        | Constraint::Perpendicular(_)
+        | Constraint::Radius(_)
+        | Constraint::Symmetric(_)
+        | Constraint::Tangent(_)
+        | Constraint::Vertical(Vertical::Line { .. })
+        | Constraint::VerticalDistance(_) => false,
     }
 }
 
@@ -4873,7 +4889,15 @@ pub(crate) async fn execute_trim_operations_simple(
                                 migrated_constraints.push(migrated);
                             }
                         }
-                        _ => {}
+                        Constraint::Angle(_)
+                        | Constraint::Fixed(_)
+                        | Constraint::Horizontal(_)
+                        | Constraint::LinesEqualLength(_)
+                        | Constraint::Midpoint(_)
+                        | Constraint::Parallel(_)
+                        | Constraint::Perpendicular(_)
+                        | Constraint::Symmetric(_)
+                        | Constraint::Vertical(_) => {}
                     }
                 }
 
@@ -5383,7 +5407,19 @@ pub(crate) async fn execute_trim_operations_simple(
                         Constraint::Vertical(Vertical::Line { line }) => line == segment_id,
                         Constraint::Vertical(Vertical::Points { points }) => original_segment_end_point_id
                             .is_some_and(|end_id| points.contains(&ConstraintSegment::from(end_id))),
-                        _ => false,
+                        Constraint::Angle(_)
+                        | Constraint::Coincident(_)
+                        | Constraint::Diameter(_)
+                        | Constraint::Distance(_)
+                        | Constraint::EqualRadius(_)
+                        | Constraint::Fixed(_)
+                        | Constraint::HorizontalDistance(_)
+                        | Constraint::LinesEqualLength(_)
+                        | Constraint::Midpoint(_)
+                        | Constraint::Radius(_)
+                        | Constraint::Symmetric(_)
+                        | Constraint::Tangent(_)
+                        | Constraint::VerticalDistance(_) => false,
                     };
 
                     if should_migrate
