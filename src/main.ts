@@ -511,9 +511,19 @@ ipcMain.handle('app.getPath', (event, data) => {
 })
 
 ipcMain.handle('dialog.showOpenDialog', (event, data) => {
+  const targetWindow = BrowserWindow.fromWebContents(event.sender)
+  if (targetWindow && !targetWindow.isDestroyed()) {
+    return dialog.showOpenDialog(targetWindow, data)
+  }
+
   return dialog.showOpenDialog(data)
 })
 ipcMain.handle('dialog.showSaveDialog', (event, data) => {
+  const targetWindow = BrowserWindow.fromWebContents(event.sender)
+  if (targetWindow && !targetWindow.isDestroyed()) {
+    return dialog.showSaveDialog(targetWindow, data)
+  }
+
   return dialog.showSaveDialog(data)
 })
 
