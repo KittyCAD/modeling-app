@@ -30,6 +30,7 @@ layout: manual
 * [**std::gdt**](/docs/kcl-std/modules/std-gdt)
   * [`gdt::datum`](/docs/kcl-std-legacy/functions/std-gdt-datum)
   * [`gdt::flatness`](/docs/kcl-std-legacy/functions/std-gdt-flatness)
+  * [`gdt::position`](/docs/kcl-std-legacy/functions/std-gdt-position)
   * [`gdt::profile`](/docs/kcl-std-legacy/functions/std-gdt-profile)
 * [**std::gear**](/docs/kcl-std/modules/std-gear)
   * [`gear::helical`](/docs/kcl-std-legacy/functions/std-gear-helical)
