@@ -1467,6 +1467,90 @@ impl SketchApi for FrontendState {
             }
         }
 
+        let segment_id_is_or_is_owned_by_curve = |segment_id: ObjectId| {
+            self.scene_graph.objects.get(segment_id.0).is_some_and(|object| {
+                let ObjectKind::Segment { segment } = &object.kind else {
+                    return false;
+                };
+
+                match segment {
+                    Segment::Arc(_) | Segment::Circle(_) => true,
+                    Segment::Point(point) => point.owner.is_some_and(|owner_id| {
+                        self.scene_graph.objects.get(owner_id.0).is_some_and(|owner| {
+                            matches!(
+                                owner.kind,
+                                ObjectKind::Segment {
+                                    segment: Segment::Arc(_) | Segment::Circle(_)
+                                }
+                            )
+                        })
+                    }),
+                    _ => false,
+                }
+            })
+        };
+
+        let adds_curved_segment_coincident = add_constraints.iter().any(|constraint| {
+            let Constraint::Coincident(coincident) = constraint else {
+                return false;
+            };
+
+            coincident.segment_ids().any(segment_id_is_or_is_owned_by_curve)
+        });
+
+        let has_midpoint_deletions = delete_constraint_ids.iter().any(|constraint_id| {
+            self.scene_graph.objects.get(constraint_id.0).is_some_and(|object| {
+                matches!(
+                    object.kind,
+                    ObjectKind::Constraint {
+                        constraint: Constraint::Midpoint(_)
+                    }
+                )
+            })
+        });
+
+        if has_midpoint_deletions || (adds_curved_segment_coincident && delete_constraint_ids.is_empty()) {
+            // These tail cuts can otherwise let unrelated free vars drift when
+            // the mock solve feeds solutions back.
+            if let Some(sketch_object) = self.scene_graph.objects.get(sketch.0)
+                && let ObjectKind::Sketch(sketch_data) = &sketch_object.kind
+            {
+                for segment_id in &sketch_data.segments {
+                    segment_ids_edited.insert(*segment_id);
+                }
+            }
+        }
+
+        let owner_or_segment_id = |segment_id: ObjectId| {
+            if let Some(segment_object) = self.scene_graph.objects.get(segment_id.0)
+                && let ObjectKind::Segment { segment } = &segment_object.kind
+                && let Segment::Point(point) = segment
+                && let Some(owner_id) = point.owner
+            {
+                owner_id
+            } else {
+                segment_id
+            }
+        };
+
+        if adds_curved_segment_coincident {
+            for constraint_id in &delete_constraint_ids {
+                let Some(constraint_object) = self.scene_graph.objects.get(constraint_id.0) else {
+                    continue;
+                };
+                let ObjectKind::Constraint {
+                    constraint: Constraint::Coincident(coincident),
+                } = &constraint_object.kind
+                else {
+                    continue;
+                };
+
+                for segment_id in coincident.segment_ids() {
+                    segment_ids_edited.insert(owner_or_segment_id(segment_id));
+                }
+            }
+        }
+
         // Step 2: Add coincident constraints
         for constraint in add_constraints {
             match constraint {

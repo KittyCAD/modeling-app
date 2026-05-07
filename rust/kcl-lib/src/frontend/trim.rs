@@ -22,6 +22,7 @@ mod tests;
 // Epsilon constants for geometric calculations
 const EPSILON_PARALLEL: f64 = 1e-10;
 const EPSILON_POINT_ON_SEGMENT: f64 = 1e-6;
+const EPSILON_COINCIDENT_TERMINATION_SNAP: f64 = 5e-2;
 
 /// Length unit for a numeric suffix (length variants only). Non-length suffixes default to millimeters.
 fn suffix_to_unit(suffix: NumericSuffix) -> UnitLength {
@@ -723,17 +724,17 @@ pub fn is_point_on_arc(point: Coords2d, center: Coords2d, start: Coords2d, end: 
     }
 }
 
-/// Helper to calculate intersection between a line segment and an arc
+/// Helper to calculate intersections between a line segment and an arc.
 ///
-/// Returns the intersection point if found, None otherwise.
-pub fn line_arc_intersection(
+/// Returns intersections sorted by the line segment parametric position.
+pub fn line_arc_intersections(
     line_start: Coords2d,
     line_end: Coords2d,
     arc_center: Coords2d,
     arc_start: Coords2d,
     arc_end: Coords2d,
     epsilon: f64,
-) -> Option<Coords2d> {
+) -> Vec<(f64, Coords2d)> {
     // Calculate radius
     let radius = ((arc_start.x - arc_center.x) * (arc_start.x - arc_center.x)
         + (arc_start.y - arc_center.y) * (arc_start.y - arc_center.y))
@@ -768,7 +769,7 @@ pub fn line_arc_intersection(
 
     if discriminant < 0.0 {
         // No intersection
-        return None;
+        return Vec::new();
     }
 
     if a.abs() < EPSILON_PARALLEL {
@@ -780,10 +781,10 @@ pub fn line_arc_intersection(
             // Point is on circle, check if it's on the arc
             let point = line_start;
             if is_point_on_arc(point, arc_center, arc_start, arc_end, epsilon) {
-                return Some(point);
+                return vec![(0.0, point)];
             }
         }
-        return None;
+        return Vec::new();
     }
 
     let sqrt_discriminant = discriminant.sqrt();
@@ -807,14 +808,26 @@ pub fn line_arc_intersection(
         candidates.push((t2, point));
     }
 
-    // Check which candidates are on the arc
-    for (_t, point) in candidates {
-        if is_point_on_arc(point, arc_center, arc_start, arc_end, epsilon) {
-            return Some(point);
-        }
-    }
+    candidates.retain(|(_, point)| is_point_on_arc(*point, arc_center, arc_start, arc_end, epsilon));
+    candidates.sort_by(|(a_t, _), (b_t, _)| a_t.partial_cmp(b_t).unwrap_or(std::cmp::Ordering::Equal));
+    candidates
+}
 
-    None
+/// Helper to calculate intersection between a line segment and an arc.
+///
+/// Returns the first intersection point if found, None otherwise.
+pub fn line_arc_intersection(
+    line_start: Coords2d,
+    line_end: Coords2d,
+    arc_center: Coords2d,
+    arc_start: Coords2d,
+    arc_end: Coords2d,
+    epsilon: f64,
+) -> Option<Coords2d> {
+    line_arc_intersections(line_start, line_end, arc_center, arc_start, arc_end, epsilon)
+        .into_iter()
+        .map(|(_, point)| point)
+        .next()
 }
 
 /// Helper to calculate intersection points between a line segment and a circle.
@@ -1523,15 +1536,8 @@ fn curve_line_segment_intersections(
         }
         (CurveKind::Circular, CurveDomain::Open) => curve
             .center
-            .and_then(|center| line_arc_intersection(line_start, line_end, center, curve.start, curve.end, epsilon))
-            .map(|intersection| {
-                (
-                    project_point_onto_segment(intersection, line_start, line_end),
-                    intersection,
-                )
-            })
-            .into_iter()
-            .collect(),
+            .map(|center| line_arc_intersections(line_start, line_end, center, curve.start, curve.end, epsilon))
+            .unwrap_or_default(),
         (CurveKind::Circular, CurveDomain::Closed) => {
             let Some(center) = curve.center else {
                 return Vec::new();
@@ -1568,11 +1574,13 @@ fn curve_curve_intersections(curve: CurveHandle, other: CurveHandle, epsilon: f6
         }
         (CurveKind::Line, CurveDomain::Open, CurveKind::Circular, CurveDomain::Open) => other
             .center
-            .and_then(|other_center| {
-                line_arc_intersection(curve.start, curve.end, other_center, other.start, other.end, epsilon)
+            .map(|other_center| {
+                line_arc_intersections(curve.start, curve.end, other_center, other.start, other.end, epsilon)
+                    .into_iter()
+                    .map(|(_, point)| point)
+                    .collect()
             })
-            .into_iter()
-            .collect(),
+            .unwrap_or_default(),
         (CurveKind::Line, CurveDomain::Open, CurveKind::Circular, CurveDomain::Closed) => {
             let Some(other_center) = other.center else {
                 return Vec::new();
@@ -1587,11 +1595,13 @@ fn curve_curve_intersections(curve: CurveHandle, other: CurveHandle, epsilon: f6
         }
         (CurveKind::Circular, CurveDomain::Open, CurveKind::Line, CurveDomain::Open) => curve
             .center
-            .and_then(|curve_center| {
-                line_arc_intersection(other.start, other.end, curve_center, curve.start, curve.end, epsilon)
+            .map(|curve_center| {
+                line_arc_intersections(other.start, other.end, curve_center, curve.start, curve.end, epsilon)
+                    .into_iter()
+                    .map(|(_, point)| point)
+                    .collect()
             })
-            .into_iter()
-            .collect(),
+            .unwrap_or_default(),
         (CurveKind::Circular, CurveDomain::Open, CurveKind::Circular, CurveDomain::Open) => {
             let (Some(curve_center), Some(other_center)) = (curve.center, other.center) else {
                 return Vec::new();
@@ -2109,14 +2119,19 @@ fn find_termination_in_direction(
         })
         .collect();
 
-    // Sort candidates by distance from intersection (closest first)
-    // When distances are equal, prioritize: coincident > intersection > endpoint
+    // Sort candidates by distance from intersection (closest first).
+    // When distances are equal, prioritize: coincident > intersection > endpoint.
+    // Also allow constrained coincident endpoints to win over nearby geometric
+    // intersections so arc endpoints coincident with line segments terminate at
+    // the authored endpoint instead of a tiny adjacent arc-body intersection.
     let mut sorted_candidates = filtered_candidates;
     sorted_candidates.sort_by(|a, b| {
         let dist_a = direction_distance(a.t);
         let dist_b = direction_distance(b.t);
         let dist_diff = dist_a - dist_b;
-        if dist_diff.abs() > EPSILON_POINT_ON_SEGMENT {
+        let coincident_snap_applies = dist_diff.abs() <= EPSILON_COINCIDENT_TERMINATION_SNAP
+            && (a.candidate_type == CandidateType::Coincident || b.candidate_type == CandidateType::Coincident);
+        if dist_diff.abs() > EPSILON_POINT_ON_SEGMENT && !coincident_snap_applies {
             dist_diff.partial_cmp(&0.0).unwrap_or(std::cmp::Ordering::Equal)
         } else {
             // Distances are effectively equal - prioritize by type
@@ -3201,6 +3216,23 @@ pub(crate) fn build_trim_plan(
         constraint_ids
     };
 
+    let find_midpoint_constraints_for_segment = |segment_id: ObjectId| -> Vec<ObjectId> {
+        objects
+            .iter()
+            .filter_map(|obj| {
+                let ObjectKind::Constraint { constraint } = &obj.kind else {
+                    return None;
+                };
+
+                let Constraint::Midpoint(midpoint) = constraint else {
+                    return None;
+                };
+
+                (midpoint.segment == segment_id).then_some(obj.id)
+            })
+            .collect()
+    };
+
     // Cut tail: one side intersects, one is endpoint
     if left_side_needs_tail_cut || right_side_needs_tail_cut {
         let side = if left_side_needs_tail_cut {
@@ -3257,6 +3289,23 @@ pub(crate) fn build_trim_plan(
         } else {
             find_existing_point_segment_coincident(trim_spawn_id, intersecting_seg_id)
         };
+
+        if matches!(side, TrimTermination::Intersection { .. })
+            && let Some(point_id) = coincident_data.intersecting_endpoint_point_id
+        {
+            let endpoint_is_at_intersection = get_point_coords_from_native(objects, point_id, default_unit)
+                .is_some_and(|point_coords| {
+                    ((point_coords.x - intersection_coords.x).powi(2)
+                        + (point_coords.y - intersection_coords.y).powi(2))
+                    .sqrt()
+                        <= EPSILON_POINT_ON_SEGMENT * 1000.0
+                });
+
+            if !endpoint_is_at_intersection {
+                coincident_data.existing_point_segment_constraint_id = None;
+                coincident_data.intersecting_endpoint_point_id = None;
+            }
+        }
 
         // Find the endpoint that will be trimmed using native types
         let trim_seg = objects.iter().find(|obj| obj.id == trim_spawn_id);
@@ -3387,6 +3436,7 @@ pub(crate) fn build_trim_plan(
         }
         all_constraint_ids_to_delete.extend(coincident_end_constraint_to_delete_ids);
         all_constraint_ids_to_delete.extend(point_axis_constraint_ids_to_delete);
+        all_constraint_ids_to_delete.extend(find_midpoint_constraints_for_segment(trim_spawn_id));
 
         // Delete distance constraints that reference this segment
         // When trimming an endpoint, the distance constraint no longer makes sense
@@ -4042,6 +4092,26 @@ pub(crate) fn build_trim_plan(
             }
 
             constraints_to_delete_set.insert(constraint_id);
+        }
+
+        // Midpoint constraints become stale after trim changes the owning
+        // segment's extent, so delete them instead of migrating them.
+        for obj in objects {
+            let ObjectKind::Constraint { constraint } = &obj.kind else {
+                continue;
+            };
+
+            let Constraint::Midpoint(midpoint) = constraint else {
+                continue;
+            };
+
+            let references_trimmed_segment = midpoint.segment == trim_spawn_id;
+            let references_trimmed_endpoint = original_start_point_id.is_some_and(|id| midpoint.point == id)
+                || original_end_point_id.is_some_and(|id| midpoint.point == id);
+
+            if references_trimmed_segment || references_trimmed_endpoint {
+                constraints_to_delete_set.insert(obj.id);
+            }
         }
 
         // Find angle constraints (Parallel, Perpendicular, Horizontal, Vertical) that reference the segment being split
@@ -5206,10 +5276,6 @@ pub(crate) async fn execute_trim_operations_simple(
                     let should_migrate = match constraint {
                         Constraint::Parallel(parallel) => parallel.lines.contains(segment_id),
                         Constraint::Perpendicular(perpendicular) => perpendicular.lines.contains(segment_id),
-                        Constraint::Midpoint(midpoint) => {
-                            midpoint.segment == *segment_id
-                                || original_segment_end_point_id.is_some_and(|end_id| midpoint.point == end_id)
-                        }
                         Constraint::Horizontal(Horizontal::Line { line }) => line == segment_id,
                         Constraint::Horizontal(Horizontal::Points { points }) => original_segment_end_point_id
                             .is_some_and(|end_id| points.contains(&ConstraintSegment::from(end_id))),
@@ -5223,8 +5289,7 @@ pub(crate) async fn execute_trim_operations_simple(
                         && let Some(migrated_constraint) = rewrite_constraint_with_map(constraint, &angle_rewrite_map)
                         && matches!(
                             migrated_constraint,
-                            Constraint::Midpoint(_)
-                                | Constraint::Parallel(_)
+                            Constraint::Parallel(_)
                                 | Constraint::Perpendicular(_)
                                 | Constraint::Horizontal(_)
                                 | Constraint::Vertical(_)
