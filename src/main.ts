@@ -518,6 +518,13 @@ ipcMain.handle('startDeviceFlow', async (event, host: string) => {
   }
 })
 
+ipcMain.handle('cancelDeviceFlow', (event) => {
+  const targetWindow = BrowserWindow.fromWebContents(event.sender)
+  if (targetWindow) {
+    deviceFlowSessions.abort(targetWindow)
+  }
+})
+
 ipcMain.handle('loginWithDeviceFlow', async (event) => {
   const targetWindow = BrowserWindow.fromWebContents(event.sender)
   const deviceFlowSession = targetWindow
@@ -531,7 +538,9 @@ ipcMain.handle('loginWithDeviceFlow', async (event) => {
     )
   }
 
-  shell.openExternal(deviceFlowSession.verificationUri).catch(reportRejection)
+  if (NODE_ENV !== 'test') {
+    shell.openExternal(deviceFlowSession.verificationUri).catch(reportRejection)
+  }
 
   // Wait for the user to login.
   try {

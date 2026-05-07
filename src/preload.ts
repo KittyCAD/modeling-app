@@ -29,6 +29,8 @@ const startDeviceFlow = (host: string): Promise<DeviceFlowAuthorization> =>
   ipcRenderer.invoke('startDeviceFlow', host)
 const loginWithDeviceFlow = (): Promise<string> =>
   ipcRenderer.invoke('loginWithDeviceFlow')
+const cancelDeviceFlow = (): Promise<void> =>
+  ipcRenderer.invoke('cancelDeviceFlow')
 const onUpdateDownloaded = (
   callback: (value: { version: string; releaseNotes: string }) => void
 ) =>
@@ -284,6 +286,7 @@ const menuOn = (callback: (payload: WebContentSendPayload) => void) => {
 contextBridge.exposeInMainWorld('electron', {
   startDeviceFlow,
   loginWithDeviceFlow,
+  cancelDeviceFlow,
   // Passing fs directly is not recommended since it gives a lot of power
   // to the browser side / potential malicious code. We restrict what is
   // exported.

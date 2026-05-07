@@ -33,6 +33,7 @@ export interface IElectronAPI {
   startDeviceFlow: (host: string) => Promise<DeviceFlowAuthorization>
   /** Registered by first calling {@link startDeviceFlow}, which sets up the device flow handle */
   loginWithDeviceFlow: () => Promise<string>
+  cancelDeviceFlow: () => Promise<void>
   platform: typeof process.env.platform
   arch: typeof process.env.arch
   version: typeof process.env.version
