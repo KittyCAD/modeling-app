@@ -22,11 +22,11 @@ import { S } from '@src/machines/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import type { FileEntry, Project } from '@src/lib/project'
 import { useSelector } from '@xstate/react'
-import type { MlCopilotMode } from '@kittycad/lib'
 import { useSearchParams } from 'react-router-dom'
 import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { SnapshotFrom } from 'xstate'
+import type { MlCopilotModeId } from '@src/machines/mlEphantManagerMachine'
 
 type MlEphantConversationPaneUser = {
   block_message?: string
@@ -50,6 +50,7 @@ export const MlEphantConversationPane = (props: {
   settings: SettingsType
   user?: MlEphantConversationPaneUser
   showMakeathonAnnouncement?: boolean
+  onMlCopilotModeChange?: (mode: MlCopilotModeId | undefined) => void
 }) => {
   const [defaultPrompt, setDefaultPrompt] = useState('')
   const [searchParams, setSearchParams] = useSearchParams()
@@ -78,7 +79,10 @@ export const MlEphantConversationPane = (props: {
   const defaultMode = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.defaultMode
   })
-  const initialMlCopilotMode = defaultMode
+  const initialMlCopilotMode =
+    props.settings.app.zookeeperMode.project ??
+    props.settings.app.zookeeperMode.user ??
+    defaultMode
 
   if (
     props.mlEphantManagerActor.getSnapshot().matches(S.Await) &&
@@ -89,7 +93,7 @@ export const MlEphantConversationPane = (props: {
 
   const onProcess = async (
     request: string,
-    mode: MlCopilotMode | undefined,
+    mode: MlCopilotModeId | undefined,
     attachments: File[]
   ) => {
     if (props.theProject === undefined) {
@@ -151,7 +155,7 @@ export const MlEphantConversationPane = (props: {
 
   const onProcessOrQueue = (
     request: string,
-    mode: MlCopilotMode | undefined,
+    mode: MlCopilotModeId | undefined,
     attachments: File[]
   ) => {
     if (isPromptRunning || isSubmittingFromQueue.current) {
@@ -405,7 +409,7 @@ export const MlEphantConversationPane = (props: {
       }
       onProcess={(
         request: string,
-        mode: MlCopilotMode | undefined,
+        mode: MlCopilotModeId | undefined,
         attachments: File[]
       ) => {
         onProcessOrQueue(request, mode, attachments)
@@ -425,6 +429,7 @@ export const MlEphantConversationPane = (props: {
       blockedReason={userBlockedOnPaymentReason}
       defaultPrompt={defaultPrompt}
       initialMlCopilotMode={initialMlCopilotMode}
+      onMlCopilotModeChange={props.onMlCopilotModeChange}
       modeOptions={modeOptions}
     />
   )

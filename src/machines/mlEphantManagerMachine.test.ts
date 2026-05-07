@@ -34,14 +34,14 @@ describe('mlEphantManagerMachine', () => {
   describe('parseMlCopilotModesResult', () => {
     const modes = [
       {
-        id: 'fast',
+        id: 'standard',
         label: 'Standard',
         description: 'Faster reasoning. Best for quick edits and simple tasks.',
         icon: 'stopwatch',
       },
       {
-        id: 'thoughtful',
-        label: 'Thoughtful',
+        id: 'deep',
+        label: 'Deep',
         description: 'More thorough reasoning. Best for complex designs.',
         icon: 'brain',
       },
@@ -50,9 +50,9 @@ describe('mlEphantManagerMachine', () => {
     it('parses the modes_response envelope from the API', () => {
       expect(
         parseMlCopilotModesResult({
-          modes_response: { default_mode: 'fast', modes },
+          modes_response: { default_mode: 'standard', modes },
         })
-      ).toStrictEqual({ defaultMode: 'fast', modeOptions: modes })
+      ).toStrictEqual({ defaultMode: 'standard', modeOptions: modes })
     })
 
     it('returns null for unrelated payloads', () => {
@@ -63,10 +63,10 @@ describe('mlEphantManagerMachine', () => {
       expect(
         parseMlCopilotModesResult({
           modes_response: {
-            default_mode: 'fast',
+            default_mode: 'standard',
             modes: [
               {
-                id: 'fast',
+                id: 'standard',
                 label: 'Standard',
                 description: 'Faster reasoning.',
                 icon: 'not-a-real-icon',
@@ -74,7 +74,7 @@ describe('mlEphantManagerMachine', () => {
             ],
           },
         })
-      ).toStrictEqual({ defaultMode: 'fast', modeOptions: [] })
+      ).toStrictEqual({ defaultMode: 'standard', modeOptions: [] })
     })
   })
 
@@ -83,7 +83,7 @@ describe('mlEphantManagerMachine', () => {
       const ws: TestWebSocket = new TestSocket() as TestWebSocket
       const modeOptions: MlCopilotModeOption[] = [
         {
-          id: 'fast',
+          id: 'standard',
           label: 'Standard',
           description: 'Faster reasoning.',
           icon: 'stopwatch',
@@ -117,11 +117,11 @@ describe('mlEphantManagerMachine', () => {
 
       actor.send({
         type: MlEphantManagerTransitions.ModesReceive,
-        defaultMode: 'fast',
+        defaultMode: 'standard',
         modeOptions,
       })
 
-      expect(actor.getSnapshot().context.defaultMode).toBe('fast')
+      expect(actor.getSnapshot().context.defaultMode).toBe('standard')
       expect(actor.getSnapshot().context.modeOptions).toStrictEqual(modeOptions)
 
       actor.stop()

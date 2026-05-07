@@ -26,6 +26,7 @@ vi.mock('@src/lib/boot', () => ({
 import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
 import type {
   Conversation,
+  MlCopilotModeId,
   MlCopilotModeOption,
 } from '@src/machines/mlEphantManagerMachine'
 import { MlEphantManagerTransitions } from '@src/machines/mlEphantManagerMachine'
@@ -56,7 +57,7 @@ const createFakeActor = ({
   value = 'ready',
 }: {
   conversation?: Conversation
-  defaultMode?: 'fast' | 'thoughtful'
+  defaultMode?: MlCopilotModeId
   modeOptions?: MlCopilotModeOption[]
   value?: string
 } = {}) => {
@@ -104,11 +105,17 @@ const renderPane = ({
   systemIOActor = createFakeSystemIOActor(),
   theProject = undefined,
   settingsMetaId = uuidNIL,
+  zookeeperMode = {},
 }: {
   mlEphantManagerActor?: ReturnType<typeof createFakeActor>
   systemIOActor?: ReturnType<typeof createFakeSystemIOActor>
   theProject?: any
   settingsMetaId?: string
+  zookeeperMode?: {
+    current?: MlCopilotModeId
+    project?: MlCopilotModeId
+    user?: MlCopilotModeId
+  }
 } = {}) => {
   return render(
     <MemoryRouter>
@@ -148,7 +155,9 @@ const renderPane = ({
                 current: '',
               },
               zookeeperMode: {
-                current: 'fast',
+                current: zookeeperMode.current,
+                project: zookeeperMode.project,
+                user: zookeeperMode.user,
               },
             },
             modeling: {
@@ -193,17 +202,17 @@ describe('MlEphantConversationPane', () => {
   test('uses the server default mode when no project setting is set', () => {
     renderPane({
       mlEphantManagerActor: createFakeActor({
-        defaultMode: 'thoughtful',
+        defaultMode: 'deep',
         modeOptions: [
           {
-            id: 'fast',
+            id: 'standard',
             label: 'Standard',
             description: 'Faster reasoning.',
             icon: 'stopwatch',
           },
           {
-            id: 'thoughtful',
-            label: 'Thoughtful',
+            id: 'deep',
+            label: 'Deep',
             description: 'More thorough reasoning.',
             icon: 'brain',
           },
@@ -212,7 +221,34 @@ describe('MlEphantConversationPane', () => {
     })
 
     expect(screen.getByTestId('ml-copilot-efforts-button')).toHaveTextContent(
-      'Thoughtful'
+      'Deep'
+    )
+  })
+
+  test('uses a stored project mode over the server default', () => {
+    renderPane({
+      zookeeperMode: { project: 'standard' },
+      mlEphantManagerActor: createFakeActor({
+        defaultMode: 'deep',
+        modeOptions: [
+          {
+            id: 'standard',
+            label: 'Standard',
+            description: 'Faster reasoning.',
+            icon: 'stopwatch',
+          },
+          {
+            id: 'deep',
+            label: 'Deep',
+            description: 'More thorough reasoning.',
+            icon: 'brain',
+          },
+        ],
+      }),
+    })
+
+    expect(screen.getByTestId('ml-copilot-efforts-button')).toHaveTextContent(
+      'Standard'
     )
   })
 
@@ -281,7 +317,9 @@ describe('MlEphantConversationPane', () => {
                   current: '',
                 },
                 zookeeperMode: {
-                  current: 'fast',
+                  current: undefined,
+                  project: undefined,
+                  user: undefined,
                 },
               },
               modeling: {

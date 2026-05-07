@@ -26,22 +26,22 @@ vi.mock('@src/lib/boot', () => ({
 import { MlEphantConversation } from '@src/components/MlEphantConversation'
 import type {
   Conversation,
+  MlCopilotModeId,
   MlCopilotModeOption,
 } from '@src/machines/mlEphantManagerMachine'
-import type { MlCopilotMode } from '@kittycad/lib'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY } from '@src/components/MakeathonAnnouncement'
 
 const SERVER_MODE_OPTIONS: MlCopilotModeOption[] = [
   {
-    id: 'fast',
+    id: 'standard',
     label: 'Standard',
     description: 'Faster reasoning.',
     icon: 'stopwatch',
   },
   {
-    id: 'thoughtful',
-    label: 'Thoughtful',
+    id: 'deep',
+    label: 'Deep',
     description: 'More thorough reasoning.',
     icon: 'brain',
   },
@@ -53,14 +53,14 @@ describe('MlEphantConversation', () => {
   })
 
   function rendersRequestBubbleThenDisplayResponse(
-    mode: MlCopilotMode = 'thoughtful'
+    mode: MlCopilotModeId = 'deep'
   ) {
     vi.useFakeTimers()
 
     let latestConversation: Conversation | undefined = { exchanges: [] }
 
     const handleProcess = vi.fn(
-      (prompt: string, _mode: MlCopilotMode | undefined, _files: File[]) => {
+      (prompt: string, _mode: MlCopilotModeId | undefined, _files: File[]) => {
         latestConversation = {
           exchanges: [
             {
@@ -96,7 +96,7 @@ describe('MlEphantConversation', () => {
           queue={[]}
           onRemoveFromQueue={() => {}}
           onSteer={() => {}}
-          initialMlCopilotMode="thoughtful"
+          initialMlCopilotMode="deep"
           modeOptions={SERVER_MODE_OPTIONS}
         />
       )
@@ -107,7 +107,7 @@ describe('MlEphantConversation', () => {
     try {
       const promptText = 'Generate a cube with rounded edges'
 
-      if (mode !== 'thoughtful') {
+      if (mode !== 'deep') {
         fireEvent.click(screen.getByTestId('ml-copilot-efforts-button'))
         fireEvent.click(screen.getByTestId(`ml-copilot-effort-button-${mode}`))
       }
@@ -172,7 +172,7 @@ describe('MlEphantConversation', () => {
   })
 
   test('renders request bubble, shows thinking state, then displays response text after completion (non-default reasoning effort)', () => {
-    rendersRequestBubbleThenDisplayResponse('fast')
+    rendersRequestBubbleThenDisplayResponse('standard')
   })
 
   test('omits mode while server mode metadata is unavailable', () => {
@@ -189,7 +189,7 @@ describe('MlEphantConversation', () => {
         disabled={false}
         hasPromptCompleted={true}
         contexts={[]}
-        initialMlCopilotMode="fast"
+        initialMlCopilotMode="standard"
         isProcessing={false}
         queue={[]}
         onRemoveFromQueue={() => {}}

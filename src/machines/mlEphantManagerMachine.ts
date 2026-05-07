@@ -4,7 +4,6 @@ import { withMlephantWebSocketURL } from '@src/lib/withBaseURL'
 import type {
   MlCopilotClientMessage,
   MlCopilotServerMessage,
-  MlCopilotMode,
   MlCopilotFile,
 } from '@kittycad/lib'
 import { assertEvent, assign, setup, fromPromise } from 'xstate'
@@ -45,28 +44,43 @@ export enum MlEphantSetupErrors {
 
 type TypeVariant<T, U = T> = U extends T ? keyof U : never
 
-type MlCopilotClientMessageUser<T = MlCopilotClientMessage> = T extends {
-  type: 'user'
-}
-  ? T
-  : never
-
 type MlCopilotListModesRequest = { type: 'list_modes' }
+export type MlCopilotModeId = string
+
+type MlCopilotUserRequest = Omit<
+  Extract<MlCopilotClientMessage, { type: 'user' }>,
+  'mode'
+> & {
+  // The generated client still narrows this to the initially-known mode ids,
+  // but mode discovery intentionally treats the backend-provided id as opaque.
+  mode?: MlCopilotModeId
+}
+
+type MlCopilotClientMessageWithDiscoveredMode =
+  | Exclude<MlCopilotClientMessage, { type: 'user' }>
+  | MlCopilotUserRequest
+
+type MlCopilotClientMessageUser<T = MlCopilotClientMessageWithDiscoveredMode> =
+  T extends {
+    type: 'user'
+  }
+    ? T
+    : never
 
 export interface MlCopilotModeOption {
-  id: MlCopilotMode
+  id: MlCopilotModeId
   label: string
   description: string
   icon: CustomIconName
 }
 
 type MlCopilotModesResult = {
-  defaultMode?: MlCopilotMode
+  defaultMode?: MlCopilotModeId
   modeOptions: MlCopilotModeOption[]
 }
 
-function isMlCopilotMode(value: unknown): value is MlCopilotMode {
-  return value === 'fast' || value === 'thoughtful'
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === 'string' && value.length > 0
 }
 
 function toMlCopilotModeOption(value: unknown): MlCopilotModeOption | null {
@@ -80,7 +94,7 @@ function toMlCopilotModeOption(value: unknown): MlCopilotModeOption | null {
   }
 
   if (
-    !isMlCopilotMode(candidate.id) ||
+    !isNonEmptyString(candidate.id) ||
     typeof candidate.label !== 'string' ||
     typeof candidate.description !== 'string'
   )
@@ -127,7 +141,7 @@ export function parseMlCopilotModesResult(
   }
 
   return {
-    defaultMode: isMlCopilotMode(candidate.default_mode)
+    defaultMode: isNonEmptyString(candidate.default_mode)
       ? candidate.default_mode
       : undefined,
     modeOptions,
@@ -191,7 +205,7 @@ export type MlEphantManagerEvents =
       projectFiles: FileMeta[]
       selections: Selections
       artifactGraph: ArtifactGraph
-      mode?: MlCopilotMode
+      mode?: MlCopilotModeId
       additionalFiles?: File[]
     }
   | {
@@ -205,7 +219,7 @@ export type MlEphantManagerEvents =
     }
   | {
       type: MlEphantManagerTransitions.ModesReceive
-      defaultMode?: MlCopilotMode
+      defaultMode?: MlCopilotModeId
       modeOptions: MlCopilotModeOption[]
     }
   | {
@@ -228,7 +242,7 @@ export type MlEphantManagerEvents =
 export interface Exchange {
   // Technically the WebSocket could send us a response at any time, without
   // ever having requested anything - such as on WebSocket 'open'.
-  request?: MlCopilotClientMessage
+  request?: MlCopilotClientMessageWithDiscoveredMode
 
   // A response may not necessarily ever come back! (Thus list remains empty.)
   // It's possible a request triggers multiple responses, such as reasoning,
@@ -259,7 +273,7 @@ export interface MlEphantManagerContext {
   projectNameCurrentlyOpened?: string
   awaitingResponse: boolean
   pendingBackendShutdown: boolean
-  defaultMode?: MlCopilotMode
+  defaultMode?: MlCopilotModeId
   modeOptions?: MlCopilotModeOption[]
   cachedSetup?: {
     refParentSend?: (event: MlEphantManagerEvents) => void
@@ -621,7 +635,7 @@ export const mlEphantManagerMachine = setup({
 
       let maybeReplayedExchanges: Exchange[] = []
       let maybeModeOptions: MlCopilotModeOption[] | undefined
-      let maybeDefaultMode: MlCopilotMode | undefined
+      let maybeDefaultMode: MlCopilotModeId | undefined
       let setupResolved = false
 
       return await new Promise<Partial<MlEphantManagerContext>>(
@@ -893,7 +907,7 @@ export const mlEphantManagerMachine = setup({
           ? await Promise.all(event.additionalFiles.map(toMlCopilotFile))
           : undefined
 
-      const request: Extract<MlCopilotClientMessage, { type: 'user' }> = {
+      const request: MlCopilotUserRequest = {
         type: 'user',
         content: requestData.body.prompt ?? '',
         project_name: requestData.body.project_name,

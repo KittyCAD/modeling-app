@@ -70,6 +70,12 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
           settings: settingsValues,
           user,
           showMakeathonAnnouncement,
+          onMlCopilotModeChange: (mode) => {
+            settings.actor.send({
+              type: 'set.app.zookeeperMode',
+              data: { level: 'project', value: mode },
+            })
+          },
         }}
       />
     </LayoutPanel>
