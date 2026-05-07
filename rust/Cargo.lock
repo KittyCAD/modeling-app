@@ -1909,6 +1909,7 @@ dependencies = [
  "hyper 1.8.1",
  "hyper-util",
  "rustls",
+ "rustls-native-certs",
  "rustls-pki-types",
  "tokio",
  "tokio-rustls",
@@ -2303,7 +2304,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.150"
+version = "0.1.151"
 dependencies = [
  "anyhow",
  "clap",
@@ -2314,7 +2315,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.2.150"
+version = "0.2.151"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2323,7 +2324,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.150"
+version = "0.1.151"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -2333,7 +2334,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-error"
-version = "0.2.150"
+version = "0.2.151"
 dependencies = [
  "miette",
  "serde",
@@ -2343,7 +2344,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.150"
+version = "0.2.151"
 dependencies = [
  "anyhow",
  "clap",
@@ -2364,7 +2365,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.150"
+version = "0.1.151"
 dependencies = [
  "anyhow",
  "clap",
@@ -2384,7 +2385,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.150"
+version = "0.2.151"
 dependencies = [
  "ahash",
  "anyhow",
@@ -2469,7 +2470,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.150"
+version = "0.3.151"
 dependencies = [
  "anyhow",
  "kcl-lib",
@@ -2485,7 +2486,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.2.150"
+version = "0.2.151"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -2498,7 +2499,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-to-core"
-version = "0.1.150"
+version = "0.1.151"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2512,7 +2513,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.150"
+version = "0.1.151"
 dependencies = [
  "anyhow",
  "console_error_panic_hook",
@@ -4026,6 +4027,7 @@ dependencies = [
  "pin-project-lite",
  "quinn",
  "rustls",
+ "rustls-native-certs",
  "rustls-pki-types",
  "serde",
  "serde_json",

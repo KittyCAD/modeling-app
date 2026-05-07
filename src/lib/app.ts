@@ -19,6 +19,9 @@ import { EngineDebugger } from '@src/lib/debugger'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import {
   type Layout,
+  type LayoutService,
+  createLayoutService,
+  createLayoutServiceRegistryItem,
   createLayoutWithMetadata,
   defaultLayout,
   loadLayout,
@@ -59,6 +62,7 @@ import {
   commandSystemService,
   provideCommand,
 } from '@src/registry/contracts/commands'
+import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
@@ -140,6 +144,7 @@ export type AppLayoutSystem = {
   get: () => Layout
   set: (l: Layout) => void
   reset: () => void
+  service: LayoutService
   saveEffectUnsubscribeFn: ReturnType<typeof effect>
 }
 
@@ -285,7 +290,7 @@ export class App implements AppSubsystems {
     }).start()
     const settings: AppSettingsSystem = {
       actor: settingsActor,
-      send: settingsActor.send.bind(this),
+      send: settingsActor.send.bind(App),
       get: () =>
         getOnlySettingsFromContext(settingsActor.getSnapshot().context),
       useSettings: () =>
@@ -311,7 +316,7 @@ export class App implements AppSubsystems {
     }).start()
     const billing: AppBillingSystem = {
       actor: billingActor,
-      send: billingActor.send.bind(this),
+      send: billingActor.send.bind(App),
       useContext: () => useSelector(billingActor, ({ context }) => context),
     }
 
@@ -323,6 +328,7 @@ export class App implements AppSubsystems {
       ? playwrightLayoutConfig
       : defaultLayout
     const layoutSignal = signal<Layout>(runtimeDefaultLayout)
+    const layoutService = createLayoutService(layoutSignal)
     const layout: AppLayoutSystem = {
       signal: layoutSignal,
       get: () => layoutSignal.value,
@@ -332,12 +338,21 @@ export class App implements AppSubsystems {
       reset: () => {
         layoutSignal.value = structuredClone(runtimeDefaultLayout)
       },
+      service: layoutService,
       saveEffectUnsubscribeFn: effect(() =>
         saveLayout({ layout: layoutSignal.value, layoutName: layoutConfigName })
       ),
     }
+    appRegistry.configure([
+      ...createAppRegistryItems({ wasmPromise, machineManager }),
+      createLayoutServiceRegistryItem(layoutService),
+    ])
 
     let hasHydratedLayout = false
+    const applyRegistryLayoutContributions = () =>
+      layoutService.applyContributions(
+        appRegistry.get(layoutContributionsValueSpec)
+      )
     const hydrateLayoutFromSettings = (
       snapshot: SnapshotFrom<typeof settingsActor>
     ) => {
@@ -380,9 +395,18 @@ export class App implements AppSubsystems {
       }
 
       hasHydratedLayout = true
+      applyRegistryLayoutContributions()
     }
     settingsActor.subscribe(hydrateLayoutFromSettings)
     hydrateLayoutFromSettings(settingsActor.getSnapshot())
+    effect(() => {
+      const contributions = appRegistry.signal(
+        layoutContributionsValueSpec
+      ).value
+      if (hasHydratedLayout) {
+        layoutService.applyContributions(contributions)
+      }
+    })
 
     return {
       wasmPromise,
@@ -424,7 +448,7 @@ export class App implements AppSubsystems {
 
     // This extension makes it possible to mark FS operations as un/redoable
     effect(() => {
-      if (!!this.project?.executingEditor.value) {
+      if (this.project?.executingEditor.value) {
         buildFSHistoryExtension(
           this.systemIOActor,
           this.project.executingEditor.value
@@ -474,24 +498,24 @@ export class App implements AppSubsystems {
       return
     }
 
-    this.registry.get(pluginsValueSpec).forEach((plugin) => {
+    for (const plugin of this.registry.get(pluginsValueSpec)) {
       const desiredActive = pluginSettings[plugin.id]?.current
       if (typeof desiredActive !== 'boolean') {
-        return
+        continue
       }
 
       const toggle = this.registry.get(plugin.service)
       if (toggle.active.value === desiredActive) {
-        return
+        continue
       }
 
       if (desiredActive) {
         toggle.enable()
-        return
+        continue
       }
 
       toggle.disable()
-    })
+    }
   }
 
   /**
@@ -571,7 +595,7 @@ export class App implements AppSubsystems {
     // Update cursor blinking
     const newBlinking = context.textEditor.blinkingCursor.current
     document.documentElement.style.setProperty(
-      `--cursor-color`,
+      '--cursor-color',
       newBlinking ? 'auto' : 'transparent'
     )
     this.singletons.kclManager.setCursorBlinking(newBlinking)

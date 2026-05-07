@@ -17,8 +17,6 @@ import { useSelector } from '@xstate/react'
 import { createActor } from 'xstate'
 
 const commandsExtension = defineRegistryItemFactory((ctx) => {
-  const machineManagerSignal = ctx.services.signal(machineManagerService)
-  const wasmPromiseSignal = ctx.valueSpecs.signal(wasmPromiseValueSpec)
   const commandsSignal = ctx.valueSpecs.signal(commandsValueSpec)
 
   let commandBarActor: CommandSystemService['actor'] | undefined
@@ -30,15 +28,10 @@ const commandsExtension = defineRegistryItemFactory((ctx) => {
       return commandBarActor
     }
 
-    const machineManager = machineManagerSignal.value
-    if (!machineManager) {
-      throw new Error('Missing machine manager service.')
-    }
-
-    const wasmPromise = wasmPromiseSignal.value
-    if (!wasmPromise) {
-      throw new Error('Missing WASM promise registry value.')
-    }
+    const machineManager = ctx.services.get(machineManagerService)
+    const wasmPromise =
+      ctx.valueSpecs.get(wasmPromiseValueSpec) ??
+      Promise.reject(new Error('Missing WASM promise registry value.'))
 
     commandBarActor = createActor(commandBarMachine, {
       input: {
