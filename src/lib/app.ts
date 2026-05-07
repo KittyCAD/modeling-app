@@ -42,7 +42,10 @@ import {
   loadLayout,
   saveLayout,
   setLayoutSaveHandler,
+  createLayoutService,
+  createLayoutServiceRegistryItem,
   type Layout,
+  type LayoutService,
 } from '@src/lib/layout'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
@@ -61,6 +64,7 @@ import type { UserResponse } from '@kittycad/lib/dist/types/src'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
 import { coreRegistryItems } from '@src/registry/registry'
+import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
 
 const DEFAULT_LAYOUT_CONFIG_NAME = 'default'
 const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
@@ -112,6 +116,7 @@ export type AppLayoutSystem = {
   get: () => Layout
   set: (l: Layout) => void
   reset: () => void
+  service: LayoutService
   saveEffectUnsubscribeFn: ReturnType<typeof effect>
 }
 
@@ -303,6 +308,7 @@ export class App implements AppSubsystems {
       ? playwrightLayoutConfig
       : defaultLayout
     const layoutSignal = signal<Layout>(runtimeDefaultLayout)
+    const layoutService = createLayoutService(layoutSignal)
     const layout: AppLayoutSystem = {
       signal: layoutSignal,
       get: () => layoutSignal.value,
@@ -312,12 +318,21 @@ export class App implements AppSubsystems {
       reset: () => {
         layoutSignal.value = structuredClone(runtimeDefaultLayout)
       },
+      service: layoutService,
       saveEffectUnsubscribeFn: effect(() =>
         saveLayout({ layout: layoutSignal.value, layoutName: layoutConfigName })
       ),
     }
+    appRegistry.configure([
+      ...coreRegistryItems,
+      createLayoutServiceRegistryItem(layoutService),
+    ])
 
     let hasHydratedLayout = false
+    const applyRegistryLayoutContributions = () =>
+      layoutService.applyContributions(
+        appRegistry.get(layoutContributionsValueSpec)
+      )
     const hydrateLayoutFromSettings = (
       snapshot: SnapshotFrom<typeof settingsActor>
     ) => {
@@ -360,9 +375,18 @@ export class App implements AppSubsystems {
       }
 
       hasHydratedLayout = true
+      applyRegistryLayoutContributions()
     }
     settingsActor.subscribe(hydrateLayoutFromSettings)
     hydrateLayoutFromSettings(settingsActor.getSnapshot())
+    effect(() => {
+      const contributions = appRegistry.signal(
+        layoutContributionsValueSpec
+      ).value
+      if (hasHydratedLayout) {
+        layoutService.applyContributions(contributions)
+      }
+    })
 
     return {
       wasmPromise,

@@ -1619,6 +1619,7 @@ impl SketchApi for FrontendState {
         edit_segments: Vec<ExistingSegmentCtor>,
         add_constraints: Vec<Constraint>,
         delete_constraint_ids: Vec<ObjectId>,
+        additional_edited_segment_ids: Vec<ObjectId>,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
         let sketch_block_ref =
             sketch_block_ref_from_id(&self.scene_graph, sketch).map_err(KclErrorWithOutputs::no_outputs)?;
@@ -1647,6 +1648,8 @@ impl SketchApi for FrontendState {
                     .map_err(KclErrorWithOutputs::no_outputs)?,
             }
         }
+
+        segment_ids_edited.extend(additional_edited_segment_ids);
 
         // Step 2: Add coincident constraints
         for constraint in add_constraints {
