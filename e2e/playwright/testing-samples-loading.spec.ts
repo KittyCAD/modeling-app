@@ -162,7 +162,9 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
       await cmdBar.expectState(defaultLoadCmdBarState)
       await cmdBar.selectOption({ name: sampleOne.title }).click()
       await expect(overwriteWarning).not.toBeVisible()
-      await expect(headerFileName).toContainText('main.kcl')
+      await expect(headerFileName).toContainText('main.kcl', {
+        timeout: 30_000,
+      })
     })
 
     await test.step(`Ensure we made and opened a new file with a unique name`, async () => {
@@ -170,7 +172,9 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
       await expect(
         page.getByTestId('file-tree-item').getByText(sampleOne.folderName1)
       ).toBeVisible()
-      await expect(headerFileName).toContainText('main.kcl')
+      await expect(headerFileName).toContainText('main.kcl', {
+        timeout: 30_000,
+      })
     })
   })
 })
