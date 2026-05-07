@@ -120,7 +120,7 @@ export function clamp(value: number, min: number, max: number): number {
 
 /**
  * Calculates the angle in degrees between two vectors in 2D.
- * The angle is normalized to the range [-180, 180].
+ * The angle is normalized to the range (-180, 180].
  *
  * @param a The first vector as a tuple [x, y].
  * @param b The second vector as a tuple [x, y].
@@ -129,6 +129,9 @@ export function clamp(value: number, min: number, max: number): number {
 export function getAngle(a: [number, number], b: [number, number]): number {
   const x = b[0] - a[0]
   const y = b[1] - a[1]
+  // Note that this normalization is only meaningful in edge-cases and could
+  // potentially be removed.
+  // It turns -180 into 180, so makes the output [-180, 180] -> (-180, 180].
   return normaliseAngle((Math.atan2(y, x) * 180) / Math.PI)
 }
 

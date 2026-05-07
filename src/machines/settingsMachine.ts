@@ -237,6 +237,12 @@ export const settingsMachine = setup({
       }
       const settingPath =
         event.type === '*' ? event.data.path : event.type.replace(/^set\./, '')
+      if (
+        settingPath === 'layout.configs' ||
+        settingPath.startsWith('layout.configs.')
+      ) {
+        return
+      }
       const eventParts = settingPath.split('.') as [keyof SettingsType, string]
       const truncatedNewValue = event.data.value?.toString().slice(0, 28)
       const message =
@@ -410,6 +416,12 @@ export const settingsMachine = setup({
           actions: ['setSettingAtLevel'],
         },
 
+        'set.layout.configs': {
+          target: 'persisting settings',
+
+          actions: ['setSettingAtLevel'],
+        },
+
         'set.app.streamIdleMode': {
           target: 'persisting settings',
 
@@ -504,6 +516,13 @@ export const settingsMachine = setup({
     },
 
     'persisting settings': {
+      on: {
+        'set.layout.configs': {
+          target: 'persisting settings',
+          reenter: true,
+          actions: ['setSettingAtLevel'],
+        },
+      },
       invoke: {
         src: 'persistSettings',
         onDone: {

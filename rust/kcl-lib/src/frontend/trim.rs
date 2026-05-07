@@ -415,11 +415,13 @@ fn rewrite_constraint_with_map(
         Constraint::Radius(radius) => Some(Constraint::Radius(crate::frontend::sketch::Radius {
             arc: rewrite_object_id(radius.arc, rewrite_map),
             radius: radius.radius,
+            label_position: radius.label_position.clone(),
             source: radius.source.clone(),
         })),
         Constraint::Diameter(diameter) => Some(Constraint::Diameter(crate::frontend::sketch::Diameter {
             arc: rewrite_object_id(diameter.arc, rewrite_map),
             diameter: diameter.diameter,
+            label_position: diameter.label_position.clone(),
             source: diameter.source.clone(),
         })),
         Constraint::EqualRadius(equal_radius) => Some(Constraint::EqualRadius(crate::frontend::sketch::EqualRadius {
