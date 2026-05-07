@@ -108,6 +108,17 @@ export fn mirror2d(
   axis: Axis2d | Edge | Segment,
 ): Sketch {}
 
+/// Create a mirror image of a 3D solid/surface/body,
+/// across some specified mirror axis.
+@(impl = std_rust, feature_tree = true)
+export fn mirror3d(
+mirror3d(
+  /// The body or bodies to be reflected.
+  @bodies: [Solid; 1+],
+  /// The axis (or other geometry) to reflect across.
+  across: Edge | Plane | Axis3d,
+): [Solid; 1+]
+
 /// Move a solid or a sketch.
 ///
 /// This is really useful for assembling parts together. You can create a part
