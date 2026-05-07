@@ -26,6 +26,7 @@ use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types as ast;
 use crate::std::Args;
 use crate::std::args::TyF64;
+use crate::std::fillet::EdgeReference;
 use crate::std::sketch::ensure_sketch_plane_in_engine;
 
 /// Bundle of common GD&T annotation style arguments.
@@ -176,6 +177,121 @@ pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     Ok(annotations.into())
 }
 
+pub async fn profile(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let edges: Vec<EdgeReference> = args.get_kw_arg(
+        "edges",
+        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let datums: Option<Vec<String>> = args.get_kw_arg_opt(
+        "datums",
+        &RuntimeType::Array(Box::new(RuntimeType::string()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
+    let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
+    let frame_position: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
+    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
+    let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
+    let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
+    let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
+
+    let annotations = inner_profile(
+        edges,
+        datums,
+        tolerance,
+        precision,
+        frame_position,
+        frame_plane,
+        leader_scale,
+        AnnotationStyle {
+            font_point_size,
+            font_scale,
+        },
+        exec_state,
+        &args,
+    )
+    .await?;
+    Ok(annotations.into())
+}
+
+#[allow(clippy::too_many_arguments)]
+async fn inner_profile(
+    edges: Vec<EdgeReference>,
+    datums: Option<Vec<String>>,
+    tolerance: TyF64,
+    precision: Option<TyF64>,
+    frame_position: Option<[TyF64; 2]>,
+    frame_plane: Option<Plane>,
+    leader_scale: Option<TyF64>,
+    style: AnnotationStyle,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<GdtAnnotation>, KclError> {
+    let precision = resolve_precision(precision, args)?;
+    let datums = resolve_datums(datums, args)?;
+    let mut frame_plane = if let Some(plane) = frame_plane {
+        plane
+    } else {
+        xy_plane(exec_state, args).await?
+    };
+    ensure_sketch_plane_in_engine(
+        &mut frame_plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
+
+    let mut annotations = Vec::with_capacity(edges.len());
+    for edge in &edges {
+        let edge_id = edge.get_engine_id(exec_state, args)?;
+        let meta = vec![Metadata::from(args.source_range)];
+        let annotation_id = exec_state.next_uuid();
+        let control_frame = profile_control_frame(tolerance.to_mm(), &datums);
+        let feature_control = AnnotationFeatureControl::builder()
+            .entity_id(edge_id)
+            // Point to the center of the edge.
+            .entity_pos(KPoint2d { x: 0.5, y: 0.5 })
+            .leader_type(AnnotationLineEnd::Dot)
+            .control_frame(control_frame)
+            .plane_id(frame_plane.id)
+            .offset(if let Some(offset) = &frame_position {
+                KPoint2d {
+                    x: offset[0].to_mm(),
+                    y: offset[1].to_mm(),
+                }
+            } else {
+                KPoint2d { x: 100.0, y: 100.0 }
+            })
+            .precision(precision)
+            .font_scale(style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
+            .font_point_size(style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
+            .leader_scale(leader_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
+            .build();
+        let options = AnnotationOptions::builder().feature_control(feature_control).build();
+        exec_state
+            .batch_modeling_cmd(
+                ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
+                ModelingCmd::from(
+                    mcmd::NewAnnotation::builder()
+                        .options(options)
+                        .clobber(false)
+                        .annotation_type(AnnotationType::T3D)
+                        .build(),
+                ),
+            )
+            .await?;
+        annotations.push(GdtAnnotation {
+            id: annotation_id,
+            meta,
+        });
+    }
+    Ok(annotations)
+}
+
 #[allow(clippy::too_many_arguments)]
 async fn inner_flatness(
     faces: Vec<TagIdentifier>,
@@ -188,19 +304,7 @@ async fn inner_flatness(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<GdtAnnotation>, KclError> {
-    let precision = if let Some(precision) = precision {
-        let rounded = precision.n.round();
-        if !(0.0..=9.0).contains(&rounded) {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                "Precision must be between 0 and 9".to_owned(),
-                vec![args.source_range],
-            )));
-        }
-        rounded as u32
-    } else {
-        // The default precision.
-        3
-    };
+    let precision = resolve_precision(precision, args)?;
     let mut frame_plane = if let Some(plane) = frame_plane {
         plane
     } else {
@@ -264,6 +368,79 @@ async fn inner_flatness(
         });
     }
     Ok(annotations)
+}
+
+fn resolve_precision(precision: Option<TyF64>, args: &Args) -> Result<u32, KclError> {
+    if let Some(precision) = precision {
+        let rounded = precision.n.round();
+        if !(0.0..=9.0).contains(&rounded) {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Precision must be between 0 and 9".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        Ok(rounded as u32)
+    } else {
+        Ok(3)
+    }
+}
+
+fn profile_control_frame(tolerance: f64, datums: &[char]) -> AnnotationMbdControlFrame {
+    match datums {
+        [] => AnnotationMbdControlFrame::builder()
+            .symbol(MbdSymbol::ProfileOfLine)
+            .tolerance(tolerance)
+            .build(),
+        [primary] => AnnotationMbdControlFrame::builder()
+            .symbol(MbdSymbol::ProfileOfLine)
+            .tolerance(tolerance)
+            .primary_datum(*primary)
+            .build(),
+        [primary, secondary] => AnnotationMbdControlFrame::builder()
+            .symbol(MbdSymbol::ProfileOfLine)
+            .tolerance(tolerance)
+            .primary_datum(*primary)
+            .secondary_datum(*secondary)
+            .build(),
+        [primary, secondary, tertiary] => AnnotationMbdControlFrame::builder()
+            .symbol(MbdSymbol::ProfileOfLine)
+            .tolerance(tolerance)
+            .primary_datum(*primary)
+            .secondary_datum(*secondary)
+            .tertiary_datum(*tertiary)
+            .build(),
+        _ => unreachable!("resolve_datums rejects more than three datums"),
+    }
+}
+
+fn resolve_datums(datums: Option<Vec<String>>, args: &Args) -> Result<Vec<char>, KclError> {
+    let datums = datums.unwrap_or_default();
+    if datums.len() > 3 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Profile datums must include at most three names.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    let mut resolved = Vec::with_capacity(datums.len());
+    for datum in &datums {
+        let mut chars = datum.chars();
+        let Some(name) = chars.next() else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Profile datum names must be a single character.".to_owned(),
+                vec![args.source_range],
+            )));
+        };
+        if chars.next().is_some() {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Profile datum names must be a single character.".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        resolved.push(name);
+    }
+
+    Ok(resolved)
 }
 
 /// Get the XY plane by evaluating the `XY` expression so that it's the same as

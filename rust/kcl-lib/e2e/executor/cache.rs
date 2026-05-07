@@ -491,8 +491,7 @@ async fn kcl_test_cache_empty_file_pop_cache_empty_file_planes_work() {
     let outcome = ctx.run_with_caching(program).await.unwrap();
 
     // Ensure nothing is left in the batch
-    assert!(ctx.engine.batch().read().await.is_empty());
-    assert!(ctx.engine.batch_end().read().await.is_empty());
+    assert!(ctx.engine_batch.is_empty().await);
 
     // Ensure the planes work, and we can show or hide them.
     // Hide/show the grid.
@@ -503,6 +502,7 @@ async fn kcl_test_cache_empty_file_pop_cache_empty_file_planes_work() {
 
     ctx.engine
         .send_modeling_cmd(
+            &ctx.engine_batch,
             uuid::Uuid::new_v4(),
             Default::default(),
             &ModelingCmd::from(
@@ -519,6 +519,7 @@ async fn kcl_test_cache_empty_file_pop_cache_empty_file_planes_work() {
     // Raw dog clear the scene entirely.
     ctx.engine
         .send_modeling_cmd(
+            &ctx.engine_batch,
             uuid::Uuid::new_v4(),
             Default::default(),
             &ModelingCmd::from(mcmd::SceneClearAll::builder().build()),
@@ -536,6 +537,7 @@ async fn kcl_test_cache_empty_file_pop_cache_empty_file_planes_work() {
     // Ensure we can show a plane.
     ctx.engine
         .send_modeling_cmd(
+            &ctx.engine_batch,
             uuid::Uuid::new_v4(),
             Default::default(),
             &ModelingCmd::from(
