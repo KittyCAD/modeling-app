@@ -25,11 +25,14 @@ pub enum Axis2dOrEdgeReference {
 #[derive(Debug, Clone, PartialEq)]
 pub enum MirrorAcross3d {
     /// 3D axis and origin.
-    Axis { direction: [TyF64; 3], origin: [TyF64; 3] },
+    Axis {
+        direction: Box<[TyF64; 3]>,
+        origin: Box<[TyF64; 3]>,
+    },
     /// Tagged edge.
-    Edge(EdgeReference),
+    Edge(Box<EdgeReference>),
     /// A plane.
-    Plane(Plane),
+    Plane(Box<Plane>),
 }
 
 impl Axis2dOrEdgeReference {
