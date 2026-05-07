@@ -69,29 +69,6 @@ export function takeViewportScreenshot(): string {
   return compositeCanvas.toDataURL('image/png')
 }
 
-export default async function screenshot(): Promise<string> {
-  if (typeof window === 'undefined') {
-    return Promise.reject(
-      new Error(
-        "element isn't defined because there's no window, are you running in Node?"
-      )
-    )
-  }
-
-  if (window.electron) {
-    const canvas = document.querySelector('[data-engine]')
-    if (canvas instanceof HTMLCanvasElement) {
-      const url = await window.electron.takeElectronWindowScreenshot({
-        width: canvas?.width || 500,
-        height: canvas?.height || 500,
-      })
-      return url !== '' ? url : takeScreenshotOfVideoStreamCanvas()
-    }
-  }
-
-  return takeScreenshotOfVideoStreamCanvas()
-}
-
 export function createThumbnailPNGOnDesktop({
   projectDirectoryWithoutEndingSlash,
 }: {

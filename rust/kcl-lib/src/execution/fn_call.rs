@@ -1195,6 +1195,7 @@ mod test {
                 .collect::<IndexMap<_, _>>();
             let exec_ctxt = ExecutorContext {
                 engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+                engine_batch: crate::engine::EngineBatchContext::default(),
                 fs: Arc::new(crate::fs::FileManager::new()),
                 settings: Default::default(),
                 context_type: ContextType::Mock,
