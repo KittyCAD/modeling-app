@@ -2134,7 +2134,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   },
   'gdt::profile': {
     label: 'Profile',
-    icon: 'gdtFlatness',
+    icon: 'gdtProfile',
     prepareToEdit: prepareToEditGdtProfile,
   },
   'gear::helical': {
