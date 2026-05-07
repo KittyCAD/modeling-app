@@ -34,6 +34,17 @@ function createLeftMouseEvent(detail = 1): MouseEvent {
   return event
 }
 
+function createPrimarySnappingMouseEvent(detail = 1): MouseEvent {
+  const event = new MouseEvent('click', {
+    bubbles: true,
+    cancelable: true,
+    detail,
+    shiftKey: false,
+  })
+  Object.defineProperty(event, 'which', { value: 1 })
+  return event
+}
+
 function createSketchApiObject(id: number) {
   return {
     id,
@@ -51,7 +62,10 @@ function createSketchApiObject(id: number) {
   }
 }
 
-function createToolHarness(toolMachine = splineTool) {
+function createToolHarness(
+  toolMachine = splineTool,
+  options?: { rustContext?: any }
+) {
   const scene = new Group()
   const sketchSolveGroup = new Group()
   sketchSolveGroup.name = SKETCH_SOLVE_GROUP
@@ -104,7 +118,7 @@ function createToolHarness(toolMachine = splineTool) {
       src: toolMachine,
       input: {
         sceneInfra,
-        rustContext: createMockRustContext(),
+        rustContext: options?.rustContext ?? createMockRustContext(),
         kclManager: createMockKclManager(),
         sketchId: 0,
       },
@@ -151,6 +165,32 @@ function createSplineSceneGraphDelta({
 }) {
   const points = pointIds.map((id, index) =>
     createPointApiObject({ id, x: index * 10, y: index * 5 })
+  )
+  const spline = createControlPointSplineApiObject({
+    id: splineId,
+    controls: pointIds as number[],
+  })
+  return createSceneGraphDelta(
+    [createSketchApiObject(0) as any, ...points, spline],
+    [0, ...pointIds, splineId]
+  )
+}
+
+function createSplineSceneGraphDeltaAtPositions({
+  pointIds,
+  positions,
+  splineId = 4,
+}: {
+  pointIds: [number, number, number] | [number, number, number, number]
+  positions: Array<[number, number]>
+  splineId?: number
+}) {
+  const points = pointIds.map((id, index) =>
+    createPointApiObject({
+      id,
+      x: positions[index]?.[0] ?? 0,
+      y: positions[index]?.[1] ?? 0,
+    })
   )
   const spline = createControlPointSplineApiObject({
     id: splineId,
@@ -494,6 +534,76 @@ describe('splineTool', () => {
     )
     expect(getDraftEntities()).toBeUndefined()
     expect((actor as any).getSnapshot().children.tool).toBeTruthy()
+
+    actor.stop()
+  })
+
+  it('finishes the current spline when the draft point snaps back onto the first control point', async () => {
+    const positionedSplineDelta = createSplineSceneGraphDeltaAtPositions({
+      pointIds: [1, 2, 3],
+      positions: [
+        [5, 5],
+        [15, 5],
+        [25, 15],
+      ],
+    })
+    const createInitialSpline = vi.fn(async () => ({
+      kclSource: { text: 'initial' } as SourceDelta,
+      sceneGraphDelta: positionedSplineDelta,
+      splineId: 4,
+      draftPointId: 3,
+      newlyAddedEntities: {
+        segmentIds: [1, 2, 3, 4],
+        constraintIds: [],
+      },
+    }))
+    const finalizeDraftPoint = vi.fn(async () => ({
+      kclSource: { text: 'finalized' } as SourceDelta,
+      sceneGraphDelta: positionedSplineDelta,
+    }))
+
+    const toolMachine = splineTool.provide({
+      actors: {
+        createInitialSpline: fromPromise(createInitialSpline as any) as any,
+        finalizeDraftPoint: fromPromise(finalizeDraftPoint as any) as any,
+      },
+    })
+    const { actor, getCallbacks, getDraftEntities } =
+      createToolHarness(toolMachine)
+
+    getCallbacks().onClick({
+      mouseEvent: createPrimarySnappingMouseEvent(),
+      intersectionPoint: { twoD: { x: 5, y: 5 } },
+    })
+    getCallbacks().onClick({
+      mouseEvent: createPrimarySnappingMouseEvent(),
+      intersectionPoint: { twoD: { x: 15, y: 5 } },
+    })
+    getCallbacks().onMove({
+      mouseEvent: new MouseEvent('mousemove', { shiftKey: false }),
+      intersectionPoint: { twoD: { x: 25, y: 15 } },
+    })
+
+    await waitFor(actor, () => createInitialSpline.mock.calls.length === 1)
+    expect(getDraftEntities()?.segmentIds.length).toBeGreaterThan(0)
+
+    getCallbacks().onMove({
+      mouseEvent: new MouseEvent('mousemove', { shiftKey: false }),
+      intersectionPoint: { twoD: { x: 5, y: 5 } },
+    })
+    getCallbacks().onClick({
+      mouseEvent: createPrimarySnappingMouseEvent(),
+      intersectionPoint: { twoD: { x: 5, y: 5 } },
+    })
+
+    await waitFor(actor, () => finalizeDraftPoint.mock.calls.length === 1)
+    await waitFor(
+      actor,
+      () =>
+        (actor as any).getSnapshot().children.tool?.getSnapshot()?.value ===
+        'ready for first point click'
+    )
+    expect(getDraftEntities()).toBeUndefined()
 
     actor.stop()
   })

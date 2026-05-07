@@ -1056,6 +1056,10 @@ export const sketchSolveMachine = setup({
 
     'exiting with cleanup': {
       on: {
+        exit: {
+          description:
+            'Ignore repeated exit requests while teardown is already in progress.',
+        },
         'delete draft entities': {
           description: `We override the default "delete draft entities" action with a no-op here because the async invoke above is already performing that cleanup.`,
         },

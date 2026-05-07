@@ -392,7 +392,6 @@ export function buildSegmentCtorFromObject(
 export function updateSegmentGroup({
   apiObject,
   group,
-  input,
   state,
   scale,
   theme,
@@ -401,22 +400,18 @@ export function updateSegmentGroup({
 }: {
   apiObject: ApiObject
   group: Group
-  input: SegmentCtor
   state: SegmentRenderState
   scale: number
   theme: Themes
   hasSolveErrors: boolean
   objects: ApiObject[]
 }): void {
-  const idNum = Number(group.name)
-  if (Number.isNaN(idNum)) {
+  const input = buildSegmentCtorFromObject(apiObject, objects)
+  if (!input) {
     return
   }
 
-  const segmentObj = objects[idNum]
-  const freedomResult: Freedom | null = segmentObj
-    ? deriveSegmentFreedom(segmentObj, objects)
-    : null
+  const freedomResult = deriveSegmentFreedom(apiObject, objects)
 
   if (input.type === 'Point') {
     segmentUtilsMap.PointSegment.update({
@@ -482,17 +477,18 @@ export function updateSegmentGroup({
  */
 function initSegmentGroup({
   apiObject,
-  input,
-  id,
   objects,
 }: {
   apiObject: ApiObject
-  input: SegmentCtor
-  id: number
   objects: ApiObject[]
 }): Group | Error {
-  const segmentObj = objects[id]
-  const isConstruction = isConstructionSegment(segmentObj)
+  const input = buildSegmentCtorFromObject(apiObject, objects)
+  if (!input) {
+    return new Error(`Unknown input type: ${(apiObject.kind as any).type}`)
+  }
+
+  const id = apiObject.id
+  const isConstruction = isConstructionSegment(apiObject)
 
   let group
   if (input.type === 'Point') {
@@ -667,8 +663,6 @@ export function updateSceneGraphFromDelta({
       }
       const newGroup = initSegmentGroup({
         apiObject: obj,
-        input: ctor,
-        id: obj.id,
         objects,
       })
       if (newGroup instanceof Error) {
@@ -691,7 +685,6 @@ export function updateSceneGraphFromDelta({
     updateSegmentGroup({
       apiObject: obj,
       group,
-      input: ctor,
       state,
       scale: factor,
       theme: context.sceneInfra.theme,
@@ -953,7 +946,6 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
       updateSegmentGroup({
         apiObject: obj,
         group,
-        input: ctor,
         state: getSegmentRenderState(
           obj.id,
           context.selectedIds,
@@ -1142,7 +1134,6 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
     updateSegmentGroup({
       apiObject: obj,
       group,
-      input: ctor,
       state: getSegmentRenderState(
         obj.id,
         context.selectedIds,

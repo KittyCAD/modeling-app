@@ -2982,6 +2982,83 @@ describe('createOnDragCallback', () => {
     )
   })
 
+  it('should drag-snap a spline endpoint onto the opposite spline endpoint', async () => {
+    const getIsSolveInProgress = vi.fn(() => false)
+    const setIsSolveInProgress = vi.fn()
+    const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(0, 0))
+    const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(5)
+    const pointA = createPointApiObject({ id: 1, x: 20, y: 50, owner: 9 })
+    const pointB = createPointApiObject({ id: 2, x: 30, y: 50, owner: 9 })
+    const pointC = createPointApiObject({ id: 3, x: 40, y: 50, owner: 9 })
+    const pointD = createPointApiObject({ id: 5, x: 50, y: 50, owner: 9 })
+    const splineEdge = createLineApiObject({
+      id: 4,
+      start: 2,
+      end: 3,
+      owner: 9,
+    })
+    const spline = createControlPointSplineApiObject({
+      id: 9,
+      controls: [1, 2, 3, 5],
+    })
+    const sceneGraphDelta = createSceneGraphDelta([
+      createSketchApiObject({ id: 0 }),
+      pointA,
+      pointB,
+      pointC,
+      splineEdge,
+      pointD,
+      spline,
+    ])
+    const getContextData = vi.fn(() => ({
+      selectedIds: [5],
+      sketchId: 0,
+      sketchExecOutcome: { sceneGraphDelta },
+    }))
+    const editSegments = vi.fn(() =>
+      Promise.resolve({
+        kclSource: { text: '' },
+        sceneGraphDelta,
+      })
+    )
+    const onNewSketchOutcome = vi.fn()
+    const getDefaultLengthUnit = vi.fn((): UnitLength => 'mm')
+    const getJsAppSettings = vi.fn(() => Promise.resolve({}))
+    const dragSnappingDeps = createDragSnappingDeps()
+
+    const callback = createOnDragCallback({
+      getIsSolveInProgress,
+      setIsSolveInProgress,
+      getLastSuccessfulDragFromPoint,
+      setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
+      getContextData,
+      editSegments,
+      onNewSketchOutcome,
+      getDefaultLengthUnit,
+      getJsAppSettings,
+      ...dragSnappingDeps,
+    })
+
+    await callback({
+      intersectionPoint: {
+        twoD: new Vector2(20, 50),
+        threeD: new Vector3(20, 50, 0),
+      },
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    expect(dragSnappingDeps.onUpdateDragSnapping).toHaveBeenCalledWith(
+      expect.objectContaining({
+        target: { type: 'point', id: 1 },
+        position: [20, 50],
+      })
+    )
+  })
+
   it('should send event to update sketch outcome after successful edit', async () => {
     const getIsSolveInProgress = vi.fn(() => false)
     const setIsSolveInProgress = vi.fn()

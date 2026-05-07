@@ -41,6 +41,13 @@ type ToolSelf = {
   }
 }
 
+type CandidateFilterArgs = {
+  candidate: SnappingCandidate
+  currentSketchObjects: ApiObject[]
+  excludedPointIdSet: Set<number>
+  excludedSegmentIdSet: Set<number>
+}
+
 function sendHoveredId(
   self: ToolSelf,
   hoveredId: SketchSolveSelectionId | null
@@ -74,6 +81,7 @@ export function getBestSnappingCandidate({
   mouseEvent,
   excludedPointIds = [],
   getExcludedPointIds,
+  isCandidateAllowed,
 }: {
   self: ToolSelf
   sceneInfra: SceneInfra
@@ -84,6 +92,7 @@ export function getBestSnappingCandidate({
   getExcludedPointIds?: (
     currentSketchObjects: ApiObject[]
   ) => Iterable<number> | undefined
+  isCandidateAllowed?: (args: CandidateFilterArgs) => boolean
 }): SnappingCandidate | null {
   if (!allowSnapping(mouseEvent)) {
     return null
@@ -111,28 +120,39 @@ export function getBestSnappingCandidate({
     }
   }
 
+  const defaultIsCandidateAllowed = (candidate: SnappingCandidate) => {
+    if (candidate.target.type === 'point') {
+      return !excludedPointIdSet.has(candidate.target.id)
+    }
+
+    const snapTargetSegmentId = getObjectIdForSnapTarget(candidate.target)
+    if (snapTargetSegmentId === null) {
+      return true
+    }
+
+    const snapTargetSegment = currentSketchObjects[snapTargetSegmentId]
+    const snapTargetOwnerId =
+      isLineSegment(snapTargetSegment) || isPointSegment(snapTargetSegment)
+        ? snapTargetSegment.kind.segment.owner
+        : null
+
+    return (
+      !excludedSegmentIdSet.has(snapTargetSegmentId) &&
+      (snapTargetOwnerId == null ||
+        !excludedSegmentIdSet.has(snapTargetOwnerId))
+    )
+  }
+
   return (
     getSnappingCandidates(mousePosition, currentSketchObjects, sceneInfra).find(
       (candidate) => {
-        if (candidate.target.type === 'point') {
-          return !excludedPointIdSet.has(candidate.target.id)
-        }
-
-        const snapTargetSegmentId = getObjectIdForSnapTarget(candidate.target)
-        if (snapTargetSegmentId === null) {
-          return true
-        }
-
-        const snapTargetSegment = currentSketchObjects[snapTargetSegmentId]
-        const snapTargetOwnerId =
-          isLineSegment(snapTargetSegment) || isPointSegment(snapTargetSegment)
-            ? snapTargetSegment.kind.segment.owner
-            : null
-
         return (
-          !excludedSegmentIdSet.has(snapTargetSegmentId) &&
-          (snapTargetOwnerId == null ||
-            !excludedSegmentIdSet.has(snapTargetOwnerId))
+          isCandidateAllowed?.({
+            candidate,
+            currentSketchObjects,
+            excludedPointIdSet,
+            excludedSegmentIdSet,
+          }) ?? defaultIsCandidateAllowed(candidate)
         )
       }
     ) ?? null

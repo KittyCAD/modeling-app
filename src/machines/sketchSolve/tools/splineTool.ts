@@ -15,6 +15,7 @@ import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
 import {
   getConstraintForSnapTarget,
+  getObjectIdForSnapTarget,
   type SnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import {
@@ -23,6 +24,7 @@ import {
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { getSketchHoverDistance } from '@src/machines/sketchSolve/interaction/interactionHelpers'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import {
   isSketchSolveErrorOutput,
@@ -95,6 +97,7 @@ type ToolContext = {
   kclManager: KclManager
   sketchId: number
   cancelTarget: 'ready' | 'unequip'
+  shouldFinishClosedSpline: boolean
 }
 
 const SPLINE_TOOL_PREVIEW = 'spline-tool-preview'
@@ -290,6 +293,13 @@ function pointDistance(a: Coords2d, b: Coords2d): number {
   return Math.hypot(a[0] - b[0], a[1] - b[1])
 }
 
+function getSplineSnapHoverDistance(sceneInfra: SceneInfra) {
+  const sketchSolveGroup = getSketchSolveGroup(sceneInfra)
+  return getSketchHoverDistance(
+    sceneInfra.getClientSceneScaleFactor(sketchSolveGroup)
+  )
+}
+
 function getControlPointSplineMatchScore(
   candidatePoints: Coords2d[],
   expectedPoints: Coords2d[]
@@ -385,6 +395,49 @@ function getSplineExcludedPointIds({
   }
   const state = getCurrentSplineState({ self, sketchId, splineId })
   return state?.splineObj.kind.segment.controls ?? []
+}
+
+function getSplineClosurePointId({
+  self,
+  sketchId,
+  splineId,
+  committedControlCount,
+}: {
+  self: Parameters<typeof getBestSnappingCandidate>[0]['self']
+  sketchId: number
+  splineId?: number
+  committedControlCount: number
+}) {
+  if (
+    splineId === undefined ||
+    committedControlCount + 1 < MIN_CONTROL_POINTS
+  ) {
+    return undefined
+  }
+  const state = getCurrentSplineState({ self, sketchId, splineId })
+  return state?.splineObj.kind.segment.controls[0]
+}
+
+function isClosingSplineSnapTarget({
+  snapTarget,
+  self,
+  context,
+}: {
+  snapTarget: SnapTarget | undefined
+  self: Parameters<typeof getBestSnappingCandidate>[0]['self']
+  context: ToolContext
+}) {
+  if (snapTarget?.type !== 'point') {
+    return false
+  }
+
+  const closurePointId = getSplineClosurePointId({
+    self,
+    sketchId: context.sketchId,
+    splineId: context.splineId,
+    committedControlCount: context.committedControlCount,
+  })
+  return closurePointId !== undefined && snapTarget.id === closurePointId
 }
 
 function sendSketchOutcomeToParent({
@@ -505,6 +558,13 @@ function getListenerSnappingCandidate({
   mouseEvent: MouseEvent
   excludedPointIds?: Iterable<number>
 }) {
+  const closurePointId = getSplineClosurePointId({
+    self,
+    sketchId: context.sketchId,
+    splineId: context.splineId,
+    committedControlCount: context.committedControlCount,
+  })
+
   return getBestSnappingCandidate({
     self,
     sceneInfra: context.sceneInfra,
@@ -512,6 +572,41 @@ function getListenerSnappingCandidate({
     mousePosition,
     mouseEvent,
     excludedPointIds,
+    isCandidateAllowed: ({
+      candidate,
+      currentSketchObjects,
+      excludedPointIdSet,
+      excludedSegmentIdSet,
+    }) => {
+      if (
+        candidate.target.type === 'point' &&
+        closurePointId !== undefined &&
+        candidate.target.id === closurePointId
+      ) {
+        return true
+      }
+
+      if (candidate.target.type === 'point') {
+        return !excludedPointIdSet.has(candidate.target.id)
+      }
+
+      const snapTargetSegmentId = getObjectIdForSnapTarget(candidate.target)
+      if (snapTargetSegmentId === null) {
+        return true
+      }
+
+      const snapTargetSegment = currentSketchObjects[snapTargetSegmentId]
+      const snapTargetOwnerId =
+        isLineSegment(snapTargetSegment) || isPointSegment(snapTargetSegment)
+          ? snapTargetSegment.kind.segment.owner
+          : null
+
+      return (
+        !excludedSegmentIdSet.has(snapTargetSegmentId) &&
+        (snapTargetOwnerId == null ||
+          !excludedSegmentIdSet.has(snapTargetOwnerId))
+      )
+    },
   })
 }
 
@@ -684,6 +779,8 @@ function animateDraftPointListener({
   context: ToolContext
 }) {
   let isEditInProgress = false
+  let lastSnappingCandidate: ReturnType<typeof getListenerSnappingCandidate> =
+    null
   context.sceneInfra.setCallbacks({
     onMove: async (args) => {
       if (!args || context.draftPointId === undefined || isEditInProgress) {
@@ -691,6 +788,7 @@ function animateDraftPointListener({
       }
       const twoD = args.intersectionPoint?.twoD
       if (!twoD) {
+        lastSnappingCandidate = null
         clearToolSnappingState({ self, sceneInfra: context.sceneInfra })
         return
       }
@@ -706,6 +804,7 @@ function animateDraftPointListener({
           splineId: context.splineId,
         }),
       })
+      lastSnappingCandidate = snappingCandidate
       sendHoveredSnappingCandidate(self, snappingCandidate)
       updateToolSnappingPreview({
         sceneInfra: context.sceneInfra,
@@ -760,7 +859,7 @@ function animateDraftPointListener({
       const twoD = args.intersectionPoint?.twoD
       if (!twoD) return
       const mousePosition = [twoD.x, twoD.y] as Coords2d
-      const snappingCandidate = getListenerSnappingCandidate({
+      const currentSnappingCandidate = getListenerSnappingCandidate({
         self,
         context,
         mousePosition,
@@ -771,6 +870,13 @@ function animateDraftPointListener({
           splineId: context.splineId,
         }),
       })
+      const snappingCandidate =
+        currentSnappingCandidate ??
+        (lastSnappingCandidate &&
+        pointDistance(mousePosition, lastSnappingCandidate.position) <=
+          getSplineSnapHoverDistance(context.sceneInfra)
+          ? lastSnappingCandidate
+          : null)
       self.send({
         type: 'add point',
         data: snappingCandidate?.position ?? mousePosition,
@@ -808,6 +914,8 @@ export const machine = setup({
     'has committed spline': ({ context }) =>
       context.committedControlCount >= MIN_CONTROL_POINTS,
     'has draft point': ({ context }) => context.draftPointId !== undefined,
+    'should finish closed spline': ({ context }) =>
+      context.shouldFinishClosedSpline,
   },
   actions: {
     'add first point listener': addFirstPointListener,
@@ -877,6 +985,16 @@ export const machine = setup({
       committedControlCount: context.committedControlCount + 1,
       draftPointId: undefined,
     })),
+    'store finalize behavior': assign(({ event, context, self }) => {
+      assertEvent(event, 'add point')
+      return {
+        shouldFinishClosedSpline: isClosingSplineSnapTarget({
+          snapTarget: event.snapTarget,
+          self,
+          context,
+        }),
+      }
+    }),
     'store appended draft point': assign(({ event }) => {
       if (!('output' in event) || !event.output || 'error' in event.output) {
         return {}
@@ -909,6 +1027,9 @@ export const machine = setup({
     }),
     'set cancel target unequip': assign({
       cancelTarget: 'unequip',
+    }),
+    'reset finish closed spline flag': assign({
+      shouldFinishClosedSpline: false,
     }),
     'toast sketch solve error': ({ event }) => {
       toastSketchSolveError(event)
@@ -1258,6 +1379,7 @@ export const machine = setup({
     kclManager: input.kclManager,
     sketchId: input.sketchId,
     cancelTarget: 'ready',
+    shouldFinishClosedSpline: false,
   }),
   id: TOOL_ID,
   initial: 'ready for first point click',
@@ -1365,6 +1487,7 @@ export const machine = setup({
             'clickNumber' in event &&
             event.clickNumber === 3,
           target: 'Finalizing draft point',
+          actions: 'store finalize behavior',
         },
         escape: {
           target: 'Cancelling draft point',
@@ -1390,7 +1513,23 @@ export const machine = setup({
           {
             guard: 'invoke output has error',
             target: 'Animating draft point',
-            actions: 'toast sketch solve error',
+            actions: [
+              'toast sketch solve error',
+              'reset finish closed spline flag',
+            ],
+          },
+          {
+            guard: 'should finish closed spline',
+            target: 'ready for first point click',
+            actions: [
+              'send result to parent',
+              'refresh spline draft entities',
+              'store finalized draft point',
+              'clear draft entities',
+              'clear staged points',
+              'clear spline state',
+              'reset finish closed spline flag',
+            ],
           },
           {
             target: 'waiting for append move',
@@ -1398,12 +1537,16 @@ export const machine = setup({
               'send result to parent',
               'refresh spline draft entities',
               'store finalized draft point',
+              'reset finish closed spline flag',
             ],
           },
         ],
         onError: {
           target: 'Animating draft point',
-          actions: 'toast sketch solve error',
+          actions: [
+            'toast sketch solve error',
+            'reset finish closed spline flag',
+          ],
         },
       },
     },

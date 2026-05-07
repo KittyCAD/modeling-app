@@ -661,6 +661,7 @@ function getDragPointSnappingCandidate({
     sceneGraphDelta.new_graph.objects
   )
   const excludedPointIds = new Set<number>(coincidentPointIds)
+  const allowedPointIds = new Set<number>()
   const excludedSegmentIds = new Set<number>()
   for (const pointId of coincidentPointIds) {
     const point = sceneGraphDelta.new_graph.objects[pointId]
@@ -673,8 +674,22 @@ function getDragPointSnappingCandidate({
   if (ownerId !== null) {
     const ownerObject = sceneGraphDelta.new_graph.objects[ownerId]
     if (isControlPointSplineSegment(ownerObject)) {
+      const controls = ownerObject.kind.segment.controls
+      const firstControlId = controls[0]
+      const lastControlId = controls[controls.length - 1]
+      if (draggedEntityId === firstControlId && lastControlId !== undefined) {
+        allowedPointIds.add(lastControlId)
+      } else if (
+        draggedEntityId === lastControlId &&
+        firstControlId !== undefined
+      ) {
+        allowedPointIds.add(firstControlId)
+      }
+
       ownerObject.kind.segment.controls.forEach((controlId) => {
-        excludedPointIds.add(controlId)
+        if (!allowedPointIds.has(controlId)) {
+          excludedPointIds.add(controlId)
+        }
       })
       excludedSegmentIds.add(ownerObject.id)
     }
@@ -690,7 +705,10 @@ function getDragPointSnappingCandidate({
     getSnappingCandidates(mousePosition, currentSketchObjects, sceneInfra).find(
       (candidate) => {
         if (candidate.target.type === 'point') {
-          return !excludedPointIds.has(candidate.target.id)
+          return (
+            allowedPointIds.has(candidate.target.id) ||
+            !excludedPointIds.has(candidate.target.id)
+          )
         }
 
         const snapTargetSegmentId = getObjectIdForSnapTarget(candidate.target)
