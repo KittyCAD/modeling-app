@@ -90,7 +90,7 @@ export default function AxisGizmo() {
       }
       updateAxisLabelHover(axisLabelObjects)
       raycasterIntersect.current = null
-      renderGizmo(renderer, scene, camera)
+      renderer.render(scene, camera)
     }
     const doRayCast = (mouse: Vector2) => {
       // If orbits are disabled, skip click logic
@@ -172,7 +172,7 @@ export default function AxisGizmo() {
       if (isPointerOverRef.current && !isHoverRefreshPausedRef.current) {
         doRayCast(mouse)
       } else {
-        renderGizmo(renderer, scene, camera)
+        renderer.render(scene, camera)
       }
     }
     kclManager.sceneInfra.camControls.cameraChange.add(animate)
@@ -181,7 +181,7 @@ export default function AxisGizmo() {
     const q = kclManager.sceneInfra.camControls.camera.quaternion
     camera.position.set(0, 0, 1).applyQuaternion(q)
     camera.quaternion.copy(q)
-    renderGizmo(renderer, scene, camera)
+    renderer.render(scene, camera)
 
     return () => {
       isDisposed = true
@@ -355,14 +355,6 @@ const createAxisLabel = (axisName: PositiveAxisName): Sprite => {
   return labelObject
 }
 
-const renderGizmo = (
-  renderer: WebGLRenderer,
-  scene: Scene,
-  camera: OrthographicCamera
-) => {
-  renderer.render(scene, camera)
-}
-
 const updateAxisLabelHover = (
   axisLabelObjects: AxisLabelObjects,
   hoveredAxisName?: AxisNames
@@ -491,5 +483,5 @@ const updateRayCaster = (
     raycasterIntersect.current = null
   }
 
-  renderGizmo(renderer, scene, camera)
+  renderer.render(scene, camera)
 }
