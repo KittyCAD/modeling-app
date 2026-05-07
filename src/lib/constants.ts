@@ -1,4 +1,4 @@
-import type { MlCopilotMode, WebSocketResponse } from '@kittycad/lib'
+import type { WebSocketResponse } from '@kittycad/lib'
 
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
@@ -364,9 +364,6 @@ export const PENDING_COMMAND_TIMEOUT = 60_000
 
 /** Timeout in MS to save layout */
 export const LAYOUT_SAVE_THROTTLE = 500
-
-// Zookeeper input
-export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'thoughtful'
 
 // Default backface color
 export const DEFAULT_BACKFACE_COLOR = '#00D5FF'

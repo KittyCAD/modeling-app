@@ -97,7 +97,10 @@ impl ExecState {
             range: meta.source_range,
             command: cmd.clone(),
         });
-        meta.ctx.engine.batch_modeling_cmd(id, meta.source_range, &cmd).await
+        meta.ctx
+            .engine
+            .batch_modeling_cmd(&meta.ctx.engine_batch, id, meta.source_range, &cmd)
+            .await
     }
 
     /// Add multiple modeling commands to the batch but don't fire them right
@@ -118,7 +121,10 @@ impl ExecState {
                 command: cmd_req.cmd.clone(),
             });
         }
-        meta.ctx.engine.batch_modeling_cmds(meta.source_range, cmds).await
+        meta.ctx
+            .engine
+            .batch_modeling_cmds(&meta.ctx.engine_batch, meta.source_range, cmds)
+            .await
     }
 
     /// Add a modeling command to the batch that gets executed at the end of the
@@ -141,7 +147,10 @@ impl ExecState {
             range: meta.source_range,
             command: cmd.clone(),
         });
-        meta.ctx.engine.batch_end_cmd(id, meta.source_range, &cmd).await
+        meta.ctx
+            .engine
+            .batch_end_cmd(&meta.ctx.engine_batch, id, meta.source_range, &cmd)
+            .await
     }
 
     /// Send the modeling cmd and wait for the response.
@@ -160,7 +169,10 @@ impl ExecState {
             range: meta.source_range,
             command: cmd.clone(),
         });
-        meta.ctx.engine.send_modeling_cmd(id, meta.source_range, &cmd).await
+        meta.ctx
+            .engine
+            .send_modeling_cmd(&meta.ctx.engine_batch, id, meta.source_range, &cmd)
+            .await
     }
 
     /// Send the modeling cmd async and don't wait for the response.
@@ -194,7 +206,10 @@ impl ExecState {
         if self.is_in_sketch_block() {
             return Err(no_modeling_in_sketch_block_error(meta.source_range));
         }
-        meta.ctx.engine.flush_batch(batch_end, meta.source_range).await
+        meta.ctx
+            .engine
+            .flush_batch(&meta.ctx.engine_batch, batch_end, meta.source_range)
+            .await
     }
 
     /// Flush just the fillets and chamfers for this specific SolidSet.
@@ -294,16 +309,8 @@ impl ExecState {
         }
 
         // We want to move these fillets and chamfers from batch_end to batch so they get executed
-        // before what ever we call next.
-        for id in ids {
-            // Pop it off the batch_end and add it to the batch.
-            let Some(item) = meta.ctx.engine.batch_end().write().await.shift_remove(&id) else {
-                // It might be in the batch already.
-                continue;
-            };
-            // Add it to the batch.
-            meta.ctx.engine.batch().write().await.push(item);
-        }
+        // before whatever we call next.
+        meta.ctx.engine_batch.move_batch_end_to_batch(ids).await;
 
         // Run flush.
         // Yes, we do need to actually flush the batch here, or references will fail later.
