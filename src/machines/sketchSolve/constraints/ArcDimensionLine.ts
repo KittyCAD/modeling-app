@@ -10,13 +10,14 @@ import {
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { Coords2d } from '@src/lang/util'
 import { getResolvedTheme } from '@src/lib/theme'
+import { getAngleDiff } from '@src/lib/utils'
 import {
   CONSTRAINT_COLOR,
   updateLabelHitObjects,
   updateLabel,
 } from '@src/machines/sketchSolve/constraints/DimensionLine'
 import { isSpriteLabel } from '@src/machines/sketchSolve/constraints/constraintUtils'
-import { dot2d, polar2d, subVec } from '@src/lib/utils2d'
+import { dot2d, getPolarAngle2d, polar2d, subVec } from '@src/lib/utils2d'
 import type { Group, Mesh } from 'three'
 import type { Line2 } from 'three/examples/jsm/lines/Line2'
 import { createArcPositions } from '@src/machines/sketchSolve/arcPositions'
@@ -70,7 +71,9 @@ export function updateArcDimensionLine(
   const arrowSpanPx = ARROW_LENGTH_PX * 2
   const gapWidthPx = labelTextWidthPx
   const showArrows = arcLengthPx >= arrowSpanPx
-  const showGap = arcLengthPx >= gapWidthPx + arrowSpanPx
+  const labelOffsetOnArc = getLabelOffsetOnArc(renderInput)
+  const showGap =
+    labelOffsetOnArc !== null && arcLengthPx >= gapWidthPx + arrowSpanPx
 
   // Set visibility
   for (const child of group.children) {
@@ -85,7 +88,7 @@ export function updateArcDimensionLine(
 
   const halfGapAngle = showGap ? (gapWidthPx * 0.5 * scale) / radius : 0
 
-  const labelOffset = sweep * 0.5
+  const labelOffset = labelOffsetOnArc ?? sweep * 0.5
   const section1EndAngle = startAngle + labelOffset - halfGapAngle
   const section2StartAngle = startAngle + labelOffset + halfGapAngle
   const endAngle = startAngle + sweep
@@ -135,6 +138,17 @@ export function updateArcDimensionLine(
   ) as Line2[]
   updateGuideLine(guideLines[0], renderInput.line1, startPoint)
   updateGuideLine(guideLines[1], renderInput.line2, endPoint)
+}
+
+function getLabelOffsetOnArc(renderInput: ArcLineInfo) {
+  const { center, labelPosition, startAngle, sweepAngle } = renderInput
+  if (center[0] === labelPosition[0] && center[1] === labelPosition[1]) {
+    return null
+  }
+
+  const labelAngle = getPolarAngle2d(center, labelPosition)
+  const offset = getAngleDiff(startAngle, labelAngle, true)
+  return offset <= sweepAngle + 1e-8 ? offset : null
 }
 
 function updateArc(

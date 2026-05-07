@@ -124,6 +124,50 @@ export function calculateArcRenderInput(
 
   const line1Dir = normalizeVec(subVec(line1[1], line1[0]))
   const line2Dir = normalizeVec(subVec(line2[1], line2[0]))
+
+  const signedAngle = normalizeAngleRad(obj.kind.constraint.angle)
+  const explicitLabelPosition = getAngleLabelPosition(obj)
+  const labelPosition =
+    explicitLabelPosition ??
+    getAutomaticAngleLabelPosition(
+      line1,
+      line2,
+      center,
+      line1Dir,
+      line2Dir,
+      signedAngle,
+      scale
+    )
+
+  const signedRadius = getSignedRadiusFromLabelPosition(
+    center,
+    line1Dir,
+    signedAngle,
+    labelPosition
+  )
+  const startVector = scaleVec(line1Dir, signedRadius)
+  const startAngle = Math.atan2(startVector[1], startVector[0])
+
+  return {
+    line1,
+    line2,
+    labelPosition,
+    center,
+    radius: Math.abs(signedRadius),
+    startAngle,
+    sweepAngle: signedAngle,
+  }
+}
+
+function getAutomaticAngleLabelPosition(
+  line1: LineSegment,
+  line2: LineSegment,
+  center: Coords2d,
+  line1Dir: Coords2d,
+  line2Dir: Coords2d,
+  signedAngle: number,
+  scale: number
+) {
   // The distances of the line segment end points from the intersection (center)
   const line1SignedDistances = [
     dot2d(subVec(line1[0], center), line1Dir),
@@ -148,39 +192,44 @@ export function calculateArcRenderInput(
   const shouldApplyNonOverlapFallback =
     !commonLineRange ||
     Math.abs(commonLineRange[1] - commonLineRange[0]) < OVERLAP_EPSILON
-  const adjustedRadiusSigned = shouldApplyNonOverlapFallback
+  const automaticRadiusSigned = shouldApplyNonOverlapFallback
     ? withMinimumMagnitude(
         radiusSigned,
         MIN_NON_OVERLAP_ANGLE_CONSTRAINT_RADIUS_PX * scale
       )
     : radiusSigned
 
-  //const signedAngle = getSignedAngleBetweenVec(line1Dir, line2Dir)
-  const signedAngle = normalizeAngleRad(obj.kind.constraint.angle)
-
-  const startVector = scaleVec(normalizeVec(line1Dir), adjustedRadiusSigned)
-  const startAngle = Math.atan2(startVector[1], startVector[0])
-  const labelPosition = addVec(
-    center,
-    rotateVec2d(startVector, signedAngle / 2)
-  )
-
-  return {
-    line1,
-    line2,
-    labelPosition,
-    center,
-    radius: Math.abs(adjustedRadiusSigned),
-    startAngle,
-    sweepAngle: signedAngle,
-  }
+  const startVector = scaleVec(line1Dir, automaticRadiusSigned)
+  return addVec(center, rotateVec2d(startVector, signedAngle / 2))
 }
 
+// Converts an API angle value to a positive radians sweep in [0, 2π).
 export function normalizeAngleRad(angle: ApiNumber) {
   const angleRadians =
     angle.units === 'Rad' ? angle.value : (angle.value * Math.PI) / 180
   const normalized = ((angleRadians % TAU) + TAU) % TAU
   return normalized
+}
+
+function getAngleLabelPosition(obj: AngleConstraint): Coords2d | undefined {
+  const labelPosition = obj.kind.constraint.labelPosition
+  return labelPosition
+    ? [labelPosition.x.value, labelPosition.y.value]
+    : undefined
+}
+
+function getSignedRadiusFromLabelPosition(
+  center: Coords2d,
+  line1Dir: Coords2d,
+  signedAngle: number,
+  labelPosition: Coords2d
+) {
+  const labelVector = subVec(labelPosition, center)
+  const labelRadius = Math.hypot(labelVector[0], labelVector[1])
+  const positiveMidDirection = rotateVec2d(line1Dir, signedAngle / 2)
+  return (
+    labelRadius * (Math.sign(dot2d(labelVector, positiveMidDirection)) || 1)
+  )
 }
 
 // Major angles are ones > 180deg
