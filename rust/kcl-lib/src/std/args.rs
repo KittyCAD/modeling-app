@@ -1150,6 +1150,23 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis3dOrEdgeReference {
     }
 }
 
+impl<'a> FromKclValue<'a> for super::axis_or_reference::MirrorAcross3d {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let case1 = crate::execution::Plane::from_kcl_val;
+        let case2 = |arg: &KclValue| {
+            let obj = arg.as_object()?;
+            let_field_of!(obj, direction);
+            let_field_of!(obj, origin);
+            Some(Self::Axis { direction, origin })
+        };
+        let case3 = super::fillet::EdgeReference::from_kcl_val;
+        case1(arg)
+            .map(Self::Plane)
+            .or_else(|| case2(arg))
+            .or_else(|| case3(arg).map(Self::Edge))
+    }
+}
+
 impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis2dOrPoint2d {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let case1 = |arg: &KclValue| {
