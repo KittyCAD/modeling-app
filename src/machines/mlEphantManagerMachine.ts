@@ -219,6 +219,14 @@ function isPresent<T>(x: undefined | T): x is T {
   return x !== null && x !== undefined
 }
 
+const intentionalMlEphantCloses = new WeakSet<WebSocket>()
+
+function closeMlEphantWebSocket(ws: WebSocket | undefined) {
+  if (ws?.readyState !== WebSocket.OPEN) return
+  intentionalMlEphantCloses.add(ws)
+  ws.close()
+}
+
 type BackendShutdownMessage = Extract<
   MlCopilotServerMessage,
   { backend_shutdown: { reason?: string } }
@@ -493,9 +501,7 @@ export const mlEphantManagerMachine = setup({
       const url = withMlephantWebSocketURL(querystring)
 
       // Defensive: if there's already an open connection, close it.
-      if (args.input.context.ws?.readyState === WebSocket.OPEN) {
-        args.input.context.ws?.close()
-      }
+      closeMlEphantWebSocket(args.input.context.ws)
 
       const ws = await Socket(WebSocket, url, args.input.context.apiToken)
       ws.binaryType = 'arraybuffer'
@@ -694,18 +700,27 @@ export const mlEphantManagerMachine = setup({
 
           ws.addEventListener('close', function (event: CloseEvent) {
             clearInterval(pingIntervalId)
+            const intentionallyClosed = intentionalMlEphantCloses.has(ws)
+            if (intentionallyClosed) {
+              intentionalMlEphantCloses.delete(ws)
+            }
 
             logZookeeperDisconnect('websocket close event received', {
               code: event.code,
               reason: event.reason,
               wasClean: event.wasClean,
               devCalledClose,
+              intentionallyClosed,
               conversationId:
                 args.input.context.conversationId ??
                 args.input.event.conversationId,
               lastMessageType: args.input.context.lastMessageType,
               readyState: getWebSocketReadyStateLabel(ws.readyState),
             })
+
+            if (intentionallyClosed) {
+              return
+            }
 
             if (theRefParentSend !== undefined && devCalledClose === false) {
               let closeReason: string | undefined
@@ -889,8 +904,7 @@ export const mlEphantManagerMachine = setup({
   context: mlEphantDefaultContext,
   exit: (args) => {
     // Make sure the connection is closed.
-    if (args.context?.ws?.readyState !== WebSocket.OPEN) return
-    args.context?.ws?.close()
+    closeMlEphantWebSocket(args.context?.ws)
   },
   states: {
     [S.Await]: {
@@ -1239,12 +1253,12 @@ export const mlEphantManagerMachine = setup({
       always: {
         target: S.Await,
         actions: [
-          (args) => {
-            // We want to keep the context around to recover.
-            if (args.context.abruptlyClosed) {
-              return assign({})
-            }
-            return assign({
+          ({ context }) => {
+            closeMlEphantWebSocket(context.ws)
+          },
+          assign(({ context }) => {
+            if (context.abruptlyClosed) return {}
+            return {
               abruptlyClosed: false,
               conversation: undefined,
               conversationId: undefined,
@@ -1253,13 +1267,10 @@ export const mlEphantManagerMachine = setup({
               lastMessageType: undefined,
               awaitingResponse: false,
               pendingBackendShutdown: false,
-            })
-          },
-          (args) => {
-            if (args.context.ws?.readyState === WebSocket.OPEN) {
-              args.context.ws?.close()
+              closeReason: undefined,
+              ws: undefined,
             }
-          },
+          }),
         ],
       },
     },
