@@ -15,10 +15,7 @@ import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { reportRejection } from '@src/lib/trap'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import toast from 'react-hot-toast'
-
-type BooleanSettingSnapshot = {
-  current: boolean
-}
+import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
 
 const RENDER_HOTKEY = 'mod+s'
 
@@ -26,15 +23,8 @@ function RenderHeaderItem({ app }: AppHeaderItemProps) {
   useSignals()
   const platform = usePlatform()
   const currentProject = app.projectSignal.value
-  const automaticallyRenderEnabled = useSelector(
-    app.settings.actor,
-    (state) => {
-      const textEditorSettings = state.context.textEditor as Record<
-        string,
-        BooleanSettingSnapshot
-      >
-      return textEditorSettings.automaticallyRender.current
-    }
+  const automaticallyRenderEnabled = useSelector(app.settings.actor, (state) =>
+    getAutomaticallyRenderEnabledFromSettings(state.context)
   )
   const executionService = app.registry.signal(executingEditorService).value
   const hasEditsSinceLastExecution =
