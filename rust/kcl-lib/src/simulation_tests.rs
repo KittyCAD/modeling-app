@@ -791,6 +791,24 @@ mod extrude_to_edge_specifier {
         super::execute(TEST_NAME, true).await
     }
 }
+mod revolve_axis_edge_ref {
+    const TEST_NAME: &str = "revolve_axis_edge_ref";
+
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod index_of_array {
     const TEST_NAME: &str = "index_of_array";
 
