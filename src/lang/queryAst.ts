@@ -49,7 +49,12 @@ import type {
 import { kclSettings, recast, sketchFromKclValue } from '@src/lang/wasm'
 import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
-import { getAngle, isArray } from '@src/lib/utils'
+import { isArray } from '@src/lib/utils'
+import {
+  deg2Rad,
+  isParallel as areVectorsParallel,
+  subVec,
+} from '@src/lib/utils2d'
 
 import type { Artifact, Plane } from '@rust/kcl-lib/bindings/Artifact'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
@@ -565,7 +570,7 @@ export function isLinesParallelAndConstrained(
     }
   | Error {
   try {
-    const EPSILON = 0.005
+    const EPSILON = deg2Rad(0.005)
     const primaryPath = getNodePathFromSourceRange(
       ast,
       primaryLine?.codeRef?.range
@@ -618,15 +623,11 @@ export function isLinesParallelAndConstrained(
     )
     if (err(_segment)) return _segment
     const { segment: secondarySegment, index: secondaryIndex } = _segment
-    const primaryAngle = getAngle(primarySegment.from, primarySegment.to)
-    const secondaryAngle = getAngle(secondarySegment.from, secondarySegment.to)
-    const secondaryAngleAlt = getAngle(
-      secondarySegment.to,
-      secondarySegment.from
+    const isParallel = areVectorsParallel(
+      subVec(primarySegment.to, primarySegment.from),
+      subVec(secondarySegment.to, secondarySegment.from),
+      EPSILON
     )
-    const isParallel =
-      Math.abs(primaryAngle - secondaryAngle) < EPSILON ||
-      Math.abs(primaryAngle - secondaryAngleAlt) < EPSILON
 
     // is secondary line fully constrain, or has constrain type of 'angle'
     const secondaryFirstArg = getArgForEnd(secondaryNode)
