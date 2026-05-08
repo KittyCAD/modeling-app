@@ -12,7 +12,7 @@
  *   (find fillet/chamfer calls, match metadata, build edgeRefs, replace).
  *
  * Why tests are in TypeScript:
- * - The code mod is implemented in TS (refactorFilletChamferTagsToEdgeRefs in edges.ts), so
+ * - The code mod is implemented in TS (refactorZ0006Unified in edges.ts), so
  *   unit tests that call it directly live here. The Rust side already has lint tests for Z0006
  *   in deprecated_edge_stdlib.rs; the refactor is TS, so tests that exercise the refactor are TS.
  *
@@ -34,9 +34,6 @@ import type { KclManager } from '@src/lang/KclManager'
 import {
   findExtrudeToCallsToFix,
   findRevolveHelixCallsToFix,
-  refactorDirectTagFilletToEdgeRefs,
-  refactorFilletChamferTagsToEdgeRefs,
-  refactorFilletChamferTagsToEdgeRefsUnified,
   refactorZ0006Unified,
 } from '@src/lang/modifyAst/edges'
 import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
@@ -401,7 +398,7 @@ function norm(s: string): string {
   return s.replace(/\s+/g, ' ').trim()
 }
 
-describe('refactorFilletChamferTagsToEdgeRefs', () => {
+describe('refactorZ0006Unified', () => {
   let wasmInstance: ModuleType
 
   beforeAll(async () => {
@@ -414,22 +411,15 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
         'body = startSketchOn(XY)\n  |> extrude(length = 1)\n  |> fillet(radius = 0.1, tags = [getOppositeEdge(e1)])'
       const ast = assertParse(code, wasmInstance)
       const graph: ArtifactGraph = defaultArtifactGraph()
-      const result = refactorFilletChamferTagsToEdgeRefs(
-        ast,
-        [],
-        graph,
-        wasmInstance
-      )
+      const result = refactorZ0006Unified(ast, [], [], graph, wasmInstance)
       expect(err(result)).toBe(true)
       if (!err(result)) return
-      expect(result.message).toContain('No edge refactor metadata')
+      expect(result.message).toContain('No Z0006 fixes to apply')
     })
 
-    it('returns recast source when metadata and graph are provided (no crash)', () => {
+    it('returns Error when metadata does not match any call', () => {
       const ast = assertParse(SAMPLE_KCL, wasmInstance)
       const graph: ArtifactGraph = defaultArtifactGraph()
-      // Metadata with a sourceRange that won't match any call (so toFix will be empty);
-      // refactor still runs and returns recast of unchanged ast.
       const metadata: EdgeRefactorMeta[] = [
         {
           edgeId: '00000000-0000-0000-0000-000000000000',
@@ -441,18 +431,16 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
           stdlibFn: 'getOppositeEdge',
         },
       ]
-      const result = refactorFilletChamferTagsToEdgeRefs(
+      const result = refactorZ0006Unified(
         ast,
         metadata,
+        [],
         graph,
         wasmInstance
       )
-      // With empty graph and non-matching sourceRange, toFix is empty so we get recast of original
-      expect(err(result)).toBe(false)
-      if (err(result)) return
-      expect(typeof result).toBe('string')
-      expect(result).toContain('fillet')
-      expect(result).toContain('getOppositeEdge')
+      expect(err(result)).toBe(true)
+      if (!err(result)) return
+      expect(result.message).toContain('No Z0006 fixes to apply')
     })
 
     it('finds revolve call in externally-tagged Expr shape', () => {
@@ -554,28 +542,21 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
     })
   })
 
-  describe('refactorDirectTagFilletToEdgeRefs (unit)', () => {
+  describe('direct tag fillet metadata (unit)', () => {
     it('returns Error when directTagFilletMetadata is empty', () => {
       const code =
         'body = startSketchOn(XY)\n  |> extrude(length = 1)\n  |> fillet(radius = 0.1, tags = [e1])'
       const ast = assertParse(code, wasmInstance)
       const graph: ArtifactGraph = defaultArtifactGraph()
-      const result = refactorDirectTagFilletToEdgeRefs(
-        ast,
-        [],
-        graph,
-        wasmInstance
-      )
+      const result = refactorZ0006Unified(ast, [], [], graph, wasmInstance)
       expect(err(result)).toBe(true)
       if (!err(result)) return
-      expect(result.message).toContain('No direct tag fillet metadata')
+      expect(result.message).toContain('No Z0006 fixes to apply')
     })
 
-    it('returns recast source when metadata and graph provided (no crash)', () => {
+    it('returns Error when direct tag metadata does not match a call', () => {
       const ast = assertParse(KCL_DIRECT_TAG_FILLET, wasmInstance)
       const graph: ArtifactGraph = defaultArtifactGraph()
-      // Mock metadata with empty tags so createEdgeRefObjectExpression will fail (no artifact);
-      // refactor still runs and returns recast of unchanged ast.
       const metadata: DirectTagFilletMeta[] = [
         {
           callSourceRange: [0, 200, 0],
@@ -591,17 +572,16 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
           ],
         },
       ]
-      const result = refactorDirectTagFilletToEdgeRefs(
+      const result = refactorZ0006Unified(
         ast,
+        [],
         metadata,
         graph,
         wasmInstance
       )
-      expect(err(result)).toBe(false)
-      if (err(result)) return
-      expect(typeof result).toBe('string')
-      expect(result).toContain('fillet')
-      expect(result).toContain('tags = [e1]')
+      expect(err(result)).toBe(true)
+      if (!err(result)) return
+      expect(result.message).toContain('No Z0006 fixes to apply')
     })
   })
 
@@ -631,9 +611,10 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
         execState.edgeRefactorMetadata?.length ?? 0
       ).toBeGreaterThanOrEqual(1)
       expect(execState.artifactGraph.size).toBeGreaterThan(0)
-      const refactored = refactorFilletChamferTagsToEdgeRefs(
+      const refactored = refactorZ0006Unified(
         ast,
         execState.edgeRefactorMetadata ?? [],
+        execState.directTagFilletMetadata ?? [],
         execState.artifactGraph,
         instanceInThisFile
       )
@@ -758,9 +739,10 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
           expect(execState.artifactGraph.size).toBeGreaterThan(0)
           return
         }
-        const refactored = refactorFilletChamferTagsToEdgeRefs(
+        const refactored = refactorZ0006Unified(
           ast,
           execState.edgeRefactorMetadata ?? [],
+          execState.directTagFilletMetadata ?? [],
           execState.artifactGraph,
           instanceInThisFile
         )
@@ -984,7 +966,7 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
           execState.directTagFilletMetadata?.length ?? 0
         ).toBeGreaterThanOrEqual(1)
         expect(execState.artifactGraph.size).toBeGreaterThan(0)
-        const refactored = refactorFilletChamferTagsToEdgeRefsUnified(
+        const refactored = refactorZ0006Unified(
           ast,
           execState.edgeRefactorMetadata ?? [],
           execState.directTagFilletMetadata ?? [],
@@ -1059,7 +1041,7 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
           expect(execState.artifactGraph.size).toBeGreaterThan(0)
           return
         }
-        const refactored = refactorFilletChamferTagsToEdgeRefsUnified(
+        const refactored = refactorZ0006Unified(
           ast,
           execState.edgeRefactorMetadata ?? [],
           execState.directTagFilletMetadata ?? [],
@@ -1093,7 +1075,7 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
         expect(
           execState.directTagFilletMetadata?.length ?? 0
         ).toBeGreaterThanOrEqual(1)
-        const refactored = refactorFilletChamferTagsToEdgeRefsUnified(
+        const refactored = refactorZ0006Unified(
           ast,
           execState.edgeRefactorMetadata ?? [],
           execState.directTagFilletMetadata ?? [],
@@ -1124,9 +1106,10 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
         )
         await kclManagerInThisFile.executeAst({ ast })
         const execState = kclManagerInThisFile.execState
-        const refactored = refactorFilletChamferTagsToEdgeRefs(
+        const refactored = refactorZ0006Unified(
           ast,
           execState.edgeRefactorMetadata ?? [],
+          execState.directTagFilletMetadata ?? [],
           execState.artifactGraph,
           instanceInThisFile
         )
