@@ -30,7 +30,10 @@ import type {
   MlCopilotModeOption,
 } from '@src/machines/mlEphantManagerMachine'
 import { MlEphantManagerTransitions } from '@src/machines/mlEphantManagerMachine'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import {
+  SystemIOMachineEvents,
+  SystemIOMachineStates,
+} from '@src/machines/systemIO/utils'
 
 const completedConversation: Conversation = {
   exchanges: [
@@ -107,20 +110,86 @@ const createFakeActor = ({
 
 const createFakeSystemIOActor = ({
   mlEphantConversations = undefined,
+  completeSavesAutomatically = true,
 }: {
   mlEphantConversations?: Map<string, string>
-} = {}) => ({
-  getSnapshot: () => ({
-    value: 'idle',
+  completeSavesAutomatically?: boolean
+} = {}) => {
+  type SaveConversationEvent = {
+    type: SystemIOMachineEvents
+    data?: { projectId?: string; conversationId?: string }
+  }
+  let snapshot = {
+    value: SystemIOMachineStates.idle,
     context: {
       mlEphantConversations,
     },
-  }),
-  subscribe: () => ({
-    unsubscribe: vi.fn(),
-  }),
-  send: vi.fn(),
-})
+  }
+  let pendingSaveEvent: SaveConversationEvent | undefined
+  const listeners = new Set<(next: typeof snapshot) => void>()
+  const notify = () => listeners.forEach((listener) => listener(snapshot))
+  const completeSave = () => {
+    if (pendingSaveEvent === undefined) {
+      return
+    }
+
+    const nextConversations = new Map(snapshot.context.mlEphantConversations)
+    const projectId = pendingSaveEvent.data?.projectId
+    if (projectId !== undefined) {
+      if (
+        pendingSaveEvent.type ===
+        SystemIOMachineEvents.deleteMlEphantConversation
+      ) {
+        nextConversations.delete(projectId)
+      } else if (pendingSaveEvent.data?.conversationId !== undefined) {
+        nextConversations.set(projectId, pendingSaveEvent.data.conversationId)
+      }
+    }
+    pendingSaveEvent = undefined
+    snapshot = {
+      value: SystemIOMachineStates.idle,
+      context: {
+        mlEphantConversations: nextConversations,
+      },
+    }
+    notify()
+  }
+
+  return {
+    getSnapshot: () => snapshot,
+    subscribe: (listener?: (next: typeof snapshot) => void) => {
+      if (listener !== undefined) {
+        listeners.add(listener)
+      }
+      return {
+        unsubscribe: () => {
+          if (listener !== undefined) {
+            listeners.delete(listener)
+          }
+        },
+      }
+    },
+    completeSave,
+    send: vi.fn((event: SaveConversationEvent) => {
+      if (
+        event.type !== SystemIOMachineEvents.saveMlEphantConversations &&
+        event.type !== SystemIOMachineEvents.deleteMlEphantConversation
+      ) {
+        return
+      }
+
+      snapshot = {
+        ...snapshot,
+        value: SystemIOMachineStates.savingMlEphantConversations,
+      }
+      notify()
+      pendingSaveEvent = event
+      if (completeSavesAutomatically) {
+        completeSave()
+      }
+    }),
+  }
+}
 
 const createStatefulClearChatActor = () => {
   let snapshot: FakeMlEphantSnapshot = {
@@ -453,6 +522,52 @@ describe('MlEphantConversationPane', () => {
       expect.objectContaining({
         type: MlEphantManagerTransitions.CacheSetupAndConnect,
         conversationId: 'old-conversation-id',
+      })
+    )
+  })
+
+  test('waits for the saved project conversation delete before starting a fresh one', () => {
+    const mlEphantManagerActor = createStatefulClearChatActor()
+    const systemIOActor = createFakeSystemIOActor({
+      mlEphantConversations: new Map([['project-id', 'old-conversation-id']]),
+      completeSavesAutomatically: false,
+    })
+
+    renderPane({
+      mlEphantManagerActor,
+      systemIOActor,
+      settingsMetaId: 'project-id',
+      theProject: {
+        name: 'sample-project',
+        path: '/tmp/sample-project',
+      },
+    })
+    mlEphantManagerActor.send.mockClear()
+    systemIOActor.send.mockClear()
+
+    fireEvent.click(screen.getByRole('button', { name: /Clear chat/ }))
+
+    expect(systemIOActor.send).toHaveBeenCalledWith({
+      type: SystemIOMachineEvents.deleteMlEphantConversation,
+      data: {
+        projectId: 'project-id',
+      },
+    })
+    expect(mlEphantManagerActor.send).toHaveBeenCalledWith({
+      type: MlEphantManagerTransitions.ConversationClose,
+    })
+    expect(mlEphantManagerActor.send).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+      })
+    )
+
+    systemIOActor.completeSave()
+
+    expect(mlEphantManagerActor.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        conversationId: undefined,
       })
     )
   })

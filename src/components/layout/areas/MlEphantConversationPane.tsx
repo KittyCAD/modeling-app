@@ -6,6 +6,7 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 import {
   type SystemIOActor,
   SystemIOMachineEvents,
+  SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import {
   MlEphantConversation,
@@ -241,8 +242,21 @@ export const MlEphantConversationPane = (props: {
   }
 
   const onClickClearChat = () => {
+    let closedConversation = props.mlEphantManagerActor
+      .getSnapshot()
+      .matches(S.Await)
+    let clearedConversationMapping = true
+    let sentDeleteConversationMapping = false
     let startedFreshConversation = false
     let sub: ReturnType<typeof props.mlEphantManagerActor.subscribe> | undefined
+    let systemIOSub:
+      | ReturnType<typeof props.systemIOActor.subscribe>
+      | undefined
+
+    const cleanupSubscriptions = () => {
+      sub?.unsubscribe()
+      systemIOSub?.unsubscribe()
+    }
 
     const startFreshConversation = () => {
       if (startedFreshConversation) {
@@ -254,7 +268,14 @@ export const MlEphantConversationPane = (props: {
         refParentSend: props.mlEphantManagerActor.send,
         conversationId: undefined,
       })
-      sub?.unsubscribe()
+      cleanupSubscriptions()
+    }
+
+    const maybeStartFreshConversation = () => {
+      if (!closedConversation || !clearedConversationMapping) {
+        return
+      }
+      startFreshConversation()
     }
 
     isClearingChat.current = true
@@ -262,26 +283,55 @@ export const MlEphantConversationPane = (props: {
     setQueue([])
     const projectId = props.settings.meta.id.current
     if (projectId !== undefined && projectId !== uuidNIL) {
-      props.systemIOActor.send({
-        type: SystemIOMachineEvents.deleteMlEphantConversation,
-        data: {
-          projectId,
-        },
+      clearedConversationMapping = false
+      const maybeDeleteConversationMapping = () => {
+        if (sentDeleteConversationMapping) {
+          return
+        }
+        if (
+          props.systemIOActor.getSnapshot().value !== SystemIOMachineStates.idle
+        ) {
+          return
+        }
+
+        sentDeleteConversationMapping = true
+        props.systemIOActor.send({
+          type: SystemIOMachineEvents.deleteMlEphantConversation,
+          data: {
+            projectId,
+          },
+        })
+      }
+
+      systemIOSub = props.systemIOActor.subscribe((next) => {
+        if (!sentDeleteConversationMapping) {
+          maybeDeleteConversationMapping()
+          return
+        }
+        if (next.value !== SystemIOMachineStates.idle) {
+          return
+        }
+
+        clearedConversationMapping = true
+        maybeStartFreshConversation()
       })
+      maybeDeleteConversationMapping()
     }
     sub = props.mlEphantManagerActor.subscribe((next) => {
       if (!next.matches(S.Await)) {
         return
       }
 
-      startFreshConversation()
+      closedConversation = true
+      maybeStartFreshConversation()
     })
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.ConversationClose,
     })
 
     if (props.mlEphantManagerActor.getSnapshot().matches(S.Await)) {
-      startFreshConversation()
+      closedConversation = true
+      maybeStartFreshConversation()
     }
   }
 
