@@ -1158,6 +1158,13 @@ function isExtrude(callee: string): boolean {
   return callee === 'extrude'
 }
 
+function isDeprecatedEdgeStdlib(calleeName: string | undefined): boolean {
+  return Boolean(
+    calleeName &&
+      (DEPRECATED_EDGE_STDLIB as readonly string[]).includes(calleeName)
+  )
+}
+
 function getTagsElementsFromCall(call: Node<CallExpressionKw>): Expr[] | null {
   const tagsArg = call.arguments?.find(
     (a) => (a.label as { name?: string })?.name === 'tags'
@@ -1185,10 +1192,7 @@ function getTagsBaseFromTagElement(el: Expr): Expr | null {
   const inner = getCallFromExpr(el)
   if (!inner) return null
   const calleeName = (inner.callee as { name?: { name?: string } })?.name?.name
-  if (
-    !calleeName ||
-    !(DEPRECATED_EDGE_STDLIB as readonly string[]).includes(calleeName)
-  ) {
+  if (!isDeprecatedEdgeStdlib(calleeName)) {
     return null
   }
 
@@ -1215,10 +1219,7 @@ function findDeprecatedEdgeStdlibCallForVariable(
     if (!call) continue
 
     const calleeName = (call.callee as { name?: { name?: string } })?.name?.name
-    if (
-      !calleeName ||
-      !(DEPRECATED_EDGE_STDLIB as readonly string[]).includes(calleeName)
-    ) {
+    if (!isDeprecatedEdgeStdlib(calleeName)) {
       continue
     }
 
@@ -1351,6 +1352,43 @@ function walkExpr(
   }
 }
 
+function visitProgramExpressions(
+  program: Program,
+  visitor: ExprVisitor,
+  options: ExprWalkOptions
+): void {
+  const body = program.body ?? []
+  for (let statementIndex = 0; statementIndex < body.length; statementIndex++) {
+    const item = body[statementIndex] as {
+      type?: string
+      declaration?: { init?: Expr }
+      expression?: Expr
+      argument?: Expr
+    }
+    const pathPrefix: PathToNode = [
+      ['body', ''],
+      [statementIndex, 'index'],
+    ]
+    if (item.type === 'VariableDeclaration' && item.declaration?.init) {
+      visitExpr(item.declaration.init, visitor, options, [
+        ...pathPrefix,
+        ['declaration', 'VariableDeclaration'],
+        ['init', ''],
+      ])
+    } else if (item.type === 'ExpressionStatement' && item.expression) {
+      visitExpr(item.expression, visitor, options, [
+        ...pathPrefix,
+        ['expression', 'ExpressionStatement'],
+      ])
+    } else if (item.type === 'ReturnStatement' && item.argument) {
+      visitExpr(item.argument, visitor, options, [
+        ...pathPrefix,
+        ['argument', 'ReturnStatement'],
+      ])
+    }
+  }
+}
+
 interface UnifiedCallToFix {
   range: [number, number, number]
   orderedPayloads: FilletEdgeRefPayload[]
@@ -1393,10 +1431,7 @@ function findFilletChamferCallsToFixUnified(
         if (inner) {
           const innerCallee = (inner.callee as { name?: { name?: string } })
             ?.name?.name
-          if (
-            innerCallee &&
-            (DEPRECATED_EDGE_STDLIB as readonly string[]).includes(innerCallee)
-          ) {
+          if (isDeprecatedEdgeStdlib(innerCallee)) {
             const meta = edgeRefactorMetadata.find((m) =>
               sourceRangeMatch(
                 m,
@@ -1469,24 +1504,7 @@ function findFilletChamferCallsToFixUnified(
     walk(expr)
   }
 
-  for (const item of program.body ?? []) {
-    if (item.type === 'VariableDeclaration' && item.declaration?.init) {
-      visitExpr(item.declaration.init, processExpr, {
-        includeCallUnlabeled: true,
-      })
-    } else if (item.type === 'ExpressionStatement' && item.expression) {
-      visitExpr(item.expression, processExpr, {
-        includeCallUnlabeled: true,
-      })
-    } else if (
-      item.type === 'ReturnStatement' &&
-      (item as { argument?: Expr }).argument
-    ) {
-      visitExpr((item as { argument: Expr }).argument, processExpr, {
-        includeCallUnlabeled: true,
-      })
-    }
-  }
+  visitProgramExpressions(program, processExpr, { includeCallUnlabeled: true })
 
   return results
 }
@@ -1524,10 +1542,7 @@ function findFilletChamferCallsToFix(
       const inner = el as Node<CallExpressionKw>
       const innerCallee = (inner.callee as { name?: { name?: string } })?.name
         ?.name
-      if (
-        !innerCallee ||
-        !(DEPRECATED_EDGE_STDLIB as readonly string[]).includes(innerCallee)
-      ) {
+      if (!isDeprecatedEdgeStdlib(innerCallee)) {
         continue
       }
       deprecatedRanges.push({
@@ -1561,24 +1576,7 @@ function findFilletChamferCallsToFix(
     walk(expr)
   }
 
-  for (const item of program.body ?? []) {
-    if (item.type === 'VariableDeclaration' && item.declaration?.init) {
-      visitExpr(item.declaration.init, processExpr, {
-        includeCallUnlabeled: true,
-      })
-    } else if (item.type === 'ExpressionStatement' && item.expression) {
-      visitExpr(item.expression, processExpr, {
-        includeCallUnlabeled: true,
-      })
-    } else if (
-      item.type === 'ReturnStatement' &&
-      (item as { argument?: Expr }).argument
-    ) {
-      visitExpr((item as { argument: Expr }).argument, processExpr, {
-        includeCallUnlabeled: true,
-      })
-    }
-  }
+  visitProgramExpressions(program, processExpr, { includeCallUnlabeled: true })
 
   return results
 }
@@ -1745,33 +1743,30 @@ export function findRevolveHelixCallsToFix(
 ): RevolveHelixCallToFix[] {
   const results: RevolveHelixCallToFix[] = []
 
-  function visitExpr(expr: Expr, pathPrefix?: PathToNode): void {
+  const processExpr: ExprVisitor = (expr, pathPrefix, walk) => {
     const call = getCallFromExpr(expr)
     if (!call) {
-      walkExpr(expr, pathPrefix)
+      walk(expr)
       return
     }
 
     const callPath = getCallPathFromExpr(expr, pathPrefix)
     const calleeName = (call.callee as { name?: { name?: string } })?.name?.name
     if (!calleeName || !isRevolveOrHelix(calleeName)) {
-      walkExpr(expr, pathPrefix)
+      walk(expr)
       return
     }
 
     const axisArg = findKwArg('axis', call)
     const inner = axisArg ? getCallFromExpr(axisArg) : null
     if (!inner) {
-      walkExpr(expr, pathPrefix)
+      walk(expr)
       return
     }
     const innerCallee = (inner.callee as { name?: { name?: string } })?.name
       ?.name
-    if (
-      !innerCallee ||
-      !(DEPRECATED_EDGE_STDLIB as readonly string[]).includes(innerCallee)
-    ) {
-      walkExpr(expr, pathPrefix)
+    if (!isDeprecatedEdgeStdlib(innerCallee)) {
+      walk(expr)
       return
     }
 
@@ -1791,81 +1786,13 @@ export function findRevolveHelixCallsToFix(
         pathToCall: callPath,
       })
     }
-    walkExpr(expr, pathPrefix)
+    walk(expr)
   }
 
-  function walkExpr(expr: Expr, pathPrefix?: PathToNode): void {
-    if (expr.type === 'PipeExpression') {
-      for (const bodyExpr of (expr as { body?: Expr[] }).body ?? []) {
-        visitExpr(bodyExpr, pathPrefix)
-      }
-      return
-    }
-    const callExpr = getCallFromExpr(expr)
-    if (callExpr) {
-      if (callExpr.unlabeled) walkExpr(callExpr.unlabeled, pathPrefix)
-      for (const arg of callExpr.arguments ?? []) walkExpr(arg.arg, pathPrefix)
-      return
-    }
-    if (expr.type === 'BinaryExpression') {
-      if (expr.left) walkExpr(expr.left, pathPrefix)
-      if (expr.right) walkExpr(expr.right, pathPrefix)
-      return
-    }
-    if (expr.type === 'ArrayExpression') {
-      for (const element of expr.elements ?? []) walkExpr(element, pathPrefix)
-      return
-    }
-    if (expr.type === 'ObjectExpression') {
-      for (const property of expr.properties ?? []) {
-        walkExpr(property.value, pathPrefix)
-      }
-      return
-    }
-    if (expr.type === 'LabelledExpression') visitExpr(expr.expr, pathPrefix)
-    else if (expr.type === 'AscribedExpression')
-      visitExpr(expr.expr, pathPrefix)
-    else if (expr.type === 'UnaryExpression')
-      walkExpr(expr.argument, pathPrefix)
-    else if (expr.type === 'MemberExpression') {
-      walkExpr(expr.object, pathPrefix)
-      walkExpr(expr.property, pathPrefix)
-    }
-  }
-
-  const body = program.body ?? []
-  for (let statementIndex = 0; statementIndex < body.length; statementIndex++) {
-    const item = body[statementIndex] as {
-      type?: string
-      declaration?: { init?: Expr }
-      expression?: Expr
-      argument?: Expr
-    }
-    const pathPrefix: PathToNode = [
-      ['body', ''],
-      [statementIndex, 'index'],
-    ]
-    if (item.type === 'VariableDeclaration' && item.declaration?.init) {
-      visitExpr(item.declaration.init, [
-        ...pathPrefix,
-        ['declaration', 'VariableDeclaration'],
-        ['init', ''],
-      ])
-    } else if (item.type === 'ExpressionStatement' && item.expression) {
-      visitExpr(item.expression, [
-        ...pathPrefix,
-        ['expression', 'ExpressionStatement'],
-      ])
-    } else if (
-      item.type === 'ReturnStatement' &&
-      (item as { argument?: Expr }).argument
-    ) {
-      visitExpr((item as { argument: Expr }).argument, [
-        ...pathPrefix,
-        ['argument', 'ReturnStatement'],
-      ])
-    }
-  }
+  visitProgramExpressions(program, processExpr, {
+    resolveWrappedCalls: true,
+    includeCallUnlabeled: true,
+  })
 
   return results
 }
@@ -1883,31 +1810,28 @@ export function findExtrudeToCallsToFix(
 ): ExtrudeToCallToFix[] {
   const results: ExtrudeToCallToFix[] = []
 
-  function visitExpr(expr: Expr, pathPrefix?: PathToNode): void {
+  const processExpr: ExprVisitor = (expr, pathPrefix, walk) => {
     const call = getCallFromExpr(expr)
     if (!call) {
-      walkExpr(expr, pathPrefix)
+      walk(expr)
       return
     }
     const callPath = getCallPathFromExpr(expr, pathPrefix)
     const calleeName = (call.callee as { name?: { name?: string } })?.name?.name
     if (!calleeName || !isExtrude(calleeName)) {
-      walkExpr(expr, pathPrefix)
+      walk(expr)
       return
     }
     const toArg = findToArg(call)
     const inner = toArg ? getCallFromExpr(toArg) : null
     if (!inner) {
-      walkExpr(expr, pathPrefix)
+      walk(expr)
       return
     }
     const innerCallee = (inner.callee as { name?: { name?: string } })?.name
       ?.name
-    if (
-      !innerCallee ||
-      !(DEPRECATED_EDGE_STDLIB as readonly string[]).includes(innerCallee)
-    ) {
-      walkExpr(expr, pathPrefix)
+    if (!isDeprecatedEdgeStdlib(innerCallee)) {
+      walk(expr)
       return
     }
 
@@ -1927,78 +1851,13 @@ export function findExtrudeToCallsToFix(
         pathToCall: callPath,
       })
     }
-    walkExpr(expr, pathPrefix)
+    walk(expr)
   }
 
-  function walkExpr(expr: Expr, pathPrefix?: PathToNode): void {
-    if (!expr || typeof expr !== 'object') return
-    const objectValue = expr as Record<string, unknown>
-    if (
-      objectValue.type === 'CallExpressionKw' ||
-      objectValue.CallExpressionKw
-    ) {
-      const call = getCallFromExpr(expr)
-      if (call?.arguments) {
-        for (const arg of call.arguments) visitExpr(arg.arg, pathPrefix)
-      }
-      return
-    }
-    if (objectValue.type === 'BinaryExpression') {
-      if ((expr as { left?: Expr }).left)
-        walkExpr((expr as { left: Expr }).left, pathPrefix)
-      if ((expr as { right?: Expr }).right)
-        walkExpr((expr as { right: Expr }).right, pathPrefix)
-      return
-    }
-    if (objectValue.type === 'ArrayExpression') {
-      for (const element of (expr as { elements?: Expr[] }).elements ?? []) {
-        walkExpr(element, pathPrefix)
-      }
-      return
-    }
-    if (objectValue.type === 'ObjectExpression') {
-      for (const property of (expr as { properties?: { value: Expr }[] })
-        .properties ?? []) {
-        walkExpr(property.value, pathPrefix)
-      }
-      return
-    }
-    if (objectValue.type === 'LabelledExpression') {
-      visitExpr((expr as { expr: Expr }).expr, pathPrefix)
-    } else if (objectValue.type === 'AscribedExpression') {
-      visitExpr((expr as { expr: Expr }).expr, pathPrefix)
-    } else if (objectValue.type === 'UnaryExpression') {
-      walkExpr((expr as { argument: Expr }).argument, pathPrefix)
-    } else if (objectValue.type === 'MemberExpression') {
-      walkExpr((expr as { object: Expr }).object, pathPrefix)
-      walkExpr((expr as { property: Expr }).property, pathPrefix)
-    }
-  }
-
-  const body = program.body ?? []
-  for (let statementIndex = 0; statementIndex < body.length; statementIndex++) {
-    const item = body[statementIndex] as {
-      type?: string
-      declaration?: { init?: Expr }
-      expression?: Expr
-    }
-    const pathPrefix: PathToNode = [
-      ['body', ''],
-      [statementIndex, 'index'],
-    ]
-    if (item.type === 'VariableDeclaration' && item.declaration?.init) {
-      visitExpr(item.declaration.init, [
-        ...pathPrefix,
-        ['declaration', 'VariableDeclaration'],
-        ['init', ''],
-      ])
-    } else if (item.type === 'ExpressionStatement' && item.expression) {
-      visitExpr(item.expression, [
-        ...pathPrefix,
-        ['expression', 'ExpressionStatement'],
-      ])
-    }
-  }
+  visitProgramExpressions(program, processExpr, {
+    resolveWrappedCalls: true,
+    includeCallUnlabeled: true,
+  })
 
   return results
 }
