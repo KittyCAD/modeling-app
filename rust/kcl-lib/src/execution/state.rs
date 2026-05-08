@@ -743,7 +743,10 @@ impl ExecState {
         &self.global.root_module_artifacts
     }
 
-    /// Record metadata from a deprecated edge stdlib call for refactor lint/code mod (Step 1).
+    /// Record metadata from a deprecated edge stdlib call for the Z0006 refactor.
+    ///
+    /// This is intentionally collected unconditionally when artifact graph support is enabled.
+    /// The temporary feature flag only controls whether the lint/action is shown in the app.
     #[cfg(feature = "artifact-graph")]
     pub(crate) fn record_edge_refactor_meta(&mut self, meta: EdgeRefactorMeta) {
         self.mod_local
@@ -752,7 +755,10 @@ impl ExecState {
             .push(RefactorMetadata::EdgeRefactor(meta));
     }
 
-    /// Record metadata from a fillet/chamfer call that used `tags` directly (for refactor to edgeRefs).
+    /// Record metadata from a fillet/chamfer call that used `tags` directly.
+    ///
+    /// This is intentionally collected unconditionally when artifact graph support is enabled.
+    /// The temporary feature flag only controls whether the lint/action is shown in the app.
     #[cfg(feature = "artifact-graph")]
     pub(crate) fn record_direct_tag_fillet_meta(&mut self, meta: DirectTagFilletMeta) {
         self.mod_local

@@ -404,6 +404,56 @@ type EqualLengthConstraintInput =
   | Extract<ApiConstraint, { type: 'LinesEqualLength' }>
   | Extract<ApiConstraint, { type: 'EqualRadius' }>
 
+type ArcSizeDimensionConstraintInput =
+  | Extract<ApiConstraint, { type: 'Radius' }>
+  | Extract<ApiConstraint, { type: 'Diameter' }>
+
+type ArcSizeDimensionUnit = Extract<
+  ApiConstraint,
+  { type: 'Radius' }
+>['radius']['units']
+
+export function buildCircularSizeDimensionConstraintInput({
+  segment,
+  radius,
+  units,
+}: {
+  segment: ApiObject | undefined
+  radius: number
+  units: ArcSizeDimensionUnit
+}): ArcSizeDimensionConstraintInput | null {
+  if (isArcSegment(segment)) {
+    const source = {
+      expr: radius.toString(),
+      is_literal: true,
+    }
+
+    return {
+      type: 'Radius',
+      radius: { value: radius, units },
+      arc: segment.id,
+      source,
+    }
+  }
+
+  if (isCircleSegment(segment)) {
+    const diameter = roundOff(radius * 2)
+    const source = {
+      expr: diameter.toString(),
+      is_literal: true,
+    }
+
+    return {
+      type: 'Diameter',
+      diameter: { value: diameter, units },
+      arc: segment.id,
+      source,
+    }
+  }
+
+  return null
+}
+
 export function buildEqualLengthConstraintInput(
   selectedIds: number[],
   objects: ApiObject[]

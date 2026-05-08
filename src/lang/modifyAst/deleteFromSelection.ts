@@ -8,6 +8,7 @@ import {
   createLiteral,
   createObjectExpression,
 } from '@src/lang/create'
+import { deleteEdgeTreatment } from '@src/lang/modifyAst/edges'
 import {
   findPipesWithImportAlias,
   getNodeFromPath,
@@ -35,8 +36,8 @@ import type {
 } from '@src/lang/wasm'
 import { err, reportRejection } from '@src/lib/trap'
 import { isArray, roundOff } from '@src/lib/utils'
-import { deleteEdgeTreatment } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Selection } from '@src/machines/modelingSharedTypes'
 
 export async function deleteFromSelection(
   ast: Node<Program>,
@@ -163,6 +164,34 @@ export async function deleteFromSelection(
   if (err(varDec)) return varDec
   const selectedNode = varDec.node
   const isSelectedCallExpression = selectedNode.type === 'CallExpressionKw'
+
+  if (
+    selection.artifact?.type === 'pattern' &&
+    selectedNode.type === 'VariableDeclarator' &&
+    selectedNode.init.type === 'PipeExpression'
+  ) {
+    const pipeBodyIndex = selection.codeRef.pathToNode.findIndex(
+      ([key, kind]) => key === 'body' && kind === 'PipeExpression'
+    )
+    const pipeItemIndex = selection.codeRef.pathToNode[pipeBodyIndex + 1]?.[0]
+    if (
+      typeof pipeItemIndex === 'number' &&
+      selectedNode.init.body.length > 1
+    ) {
+      const varDecClone = getNodeFromPath<VariableDeclarator>(
+        astClone,
+        selection.codeRef.pathToNode,
+        wasmInstance,
+        'VariableDeclarator'
+      )
+      if (err(varDecClone)) return varDecClone
+      if (varDecClone.node.init.type === 'PipeExpression') {
+        varDecClone.node.init.body.splice(pipeItemIndex, 1)
+        return astClone
+      }
+    }
+  }
+
   if (
     isSelectedCallExpression ||
     ((selection?.artifact?.type === 'wall' ||
@@ -174,6 +203,7 @@ export async function deleteFromSelection(
     (selection.artifact?.type === 'path' &&
       selection.artifact.subType === 'region') ||
     selection.artifact?.type === 'compositeSolid' ||
+    selection.artifact?.type === 'pattern' ||
     selection.artifact?.type === 'helix' ||
     selection.artifact?.type === 'planeOfFace' ||
     !selection.artifact // aka expected to be a shell at this point
@@ -186,6 +216,7 @@ export async function deleteFromSelection(
       selection.artifact.type !== 'sweep' &&
       selection.artifact.type !== 'plane' &&
       selection.artifact.type !== 'compositeSolid' &&
+      selection.artifact.type !== 'pattern' &&
       selection.artifact.type !== 'helix' &&
       selection.artifact.type !== 'path' &&
       selection.artifact.type !== 'planeOfFace'

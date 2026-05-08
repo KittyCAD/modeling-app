@@ -1,5 +1,6 @@
-import { expect, describe, test, vi } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 
+import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
@@ -12,9 +13,9 @@ import {
   findLastRangeStartingBefore,
   getEventForQueryEntityTypeWithPoint,
   getSelectionTypeDisplayText,
+  handleSelectionBatch,
   normalizeEntityReference,
 } from '@src/lib/selections'
-import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
 describe('testing source range to artifact conversion', () => {
@@ -1409,6 +1410,78 @@ describe('findLastRangeStartingBefore', () => {
 
     const result = findLastRangeStartingBefore(mockIndex, 50)
     expect(result).toBe(1)
+  })
+})
+
+describe('pattern copy selection highlighting', () => {
+  const selectionCodeRef = {
+    range: [10, 20, 0] as SourceRange,
+    pathToNode: [],
+  }
+  const patternArtifact = {
+    type: 'pattern',
+    id: 'pattern-command-id',
+    subType: 'transform',
+    sourceId: 'source-body-id',
+    copyIds: ['copy-body-id'],
+    copyFaceIds: ['copy-face-id'],
+    copyEdgeIds: ['copy-edge-id'],
+    codeRef: {
+      range: selectionCodeRef.range,
+      nodePath: [],
+    },
+  } as unknown as Artifact
+  const artifactGraph = new Map([
+    [patternArtifact.id, patternArtifact],
+  ]) as ArtifactGraph
+
+  test('maps pattern code selections to copied engine entities', () => {
+    const selections: Selection[] = [
+      { artifact: patternArtifact, codeRef: selectionCodeRef },
+    ]
+
+    const result = codeToIdSelections(selections, artifactGraph, [])
+
+    expect(result.map(({ id }) => id)).toEqual([
+      'copy-body-id',
+      'copy-face-id',
+      'copy-edge-id',
+    ])
+  })
+
+  test('keeps a selected copied pattern entity highlighted through selection batching', () => {
+    const result = handleSelectionBatch({
+      selections: {
+        graphSelections: [
+          {
+            artifact: patternArtifact,
+            codeRef: selectionCodeRef,
+            engineEntityId: 'copy-face-id',
+          },
+        ],
+        otherSelections: [],
+      },
+      artifactGraph,
+      code: 'patternLinear3d(body, instances = 3)',
+      ast: {} as any,
+      systemDeps: {
+        engineCommandManager: {
+          connection: { pingIntervalId: 1 },
+        } as any,
+        sceneEntitiesManager: { activeSegments: {} } as any,
+        wasmInstance: {} as any,
+      },
+    })
+
+    const selectAdd = result.engineEvents.find(
+      (event) =>
+        event.type === 'modeling_cmd_req' && event.cmd.type === 'select_add'
+    )
+    expect(selectAdd?.type).toBe('modeling_cmd_req')
+    if (selectAdd?.type !== 'modeling_cmd_req') return
+    expect(selectAdd.cmd.type).toBe('select_add')
+    if (selectAdd.cmd.type !== 'select_add') return
+    expect(selectAdd.cmd.entities).toEqual(['copy-face-id'])
   })
 })
 

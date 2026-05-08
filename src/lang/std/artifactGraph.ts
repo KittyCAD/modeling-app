@@ -36,6 +36,7 @@ type SweepEdgeLike = { segId: string; sweepId?: string }
  */
 export type ResolvedGraphSelection = { codeRef: CodeRef; artifact?: Artifact }
 import { err } from '@src/lib/trap'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
 export type { Artifact, ArtifactId, SegmentArtifact } from '@src/lang/wasm'
 
@@ -147,6 +148,19 @@ export function getArtifactOfTypes<T extends Artifact['type'][]>(
     return new Error(`Expected ${types.join(',')} but got ${artifact?.type}`)
   }
   return artifact as Extract<Artifact, { type: T[number] }>
+}
+
+export function getPatternArtifactForCopyId(
+  id: ArtifactId,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'pattern' }> | undefined {
+  return [...artifactGraph.values()].find(
+    (artifact): artifact is Extract<Artifact, { type: 'pattern' }> =>
+      artifact.type === 'pattern' &&
+      (artifact.copyIds.includes(id) ||
+        artifact.copyFaceIds.includes(id) ||
+        artifact.copyEdgeIds.includes(id))
+  )
 }
 
 export function expandPlane(
@@ -1081,18 +1095,141 @@ export function getSketchBlockForArtifact(
 }
 
 /**
+ * Coerce selections that may contain faces or edges to their parent body (sweep/compositeSolid).
+ * This is useful for commands that only work with bodies, but users may have faces or edges selected.
+ *
+ * @param selections - The selections to coerce
+ * @param artifactGraph - The artifact graph to use for lookups
+ * @returns A new Selections object with only body artifacts, or an Error if coercion fails
+ */
+export function coerceSelectionsToBody(
+  selections: Selections,
+  artifactGraph: ArtifactGraph
+): Selections | Error {
+  const bodySelections: Selection[] = []
+  const seenBodyIds = new Set<string>()
+
+  for (const selection of selections.graphSelections) {
+    if (!selection.artifact) {
+      // Handle selections without artifacts (e.g., imported modules)
+      // TODO: coerce to body when we have ranges for imports
+      // TODO: coerce edges and faces of imported bodies
+      if (
+        selection.codeRef &&
+        selection.codeRef.range[1] - selection.codeRef.range[0] !== 0
+      ) {
+        bodySelections.push(selection)
+      }
+      continue
+    }
+
+    // If it's already a body type, use it directly
+    if (
+      selection.artifact.type === 'sweep' ||
+      selection.artifact.type === 'compositeSolid' ||
+      selection.artifact.type === 'pattern' ||
+      selection.artifact.type === 'path'
+    ) {
+      if (!seenBodyIds.has(selection.artifact.id)) {
+        seenBodyIds.add(selection.artifact.id)
+        bodySelections.push({
+          artifact: selection.artifact,
+          codeRef: selection.codeRef,
+        })
+      }
+    } else {
+      if (!selection.codeRef) continue
+      // Get the parent body (sweep) from faces, edges, or edgeCuts
+      const maybeSweep = getSweepArtifactFromSelection(
+        selection as ResolvedGraphSelection,
+        artifactGraph
+      )
+
+      if (err(maybeSweep)) {
+        return new Error(
+          `Unable to find parent body for selected artifact: ${selection.artifact.type}`
+        )
+      }
+
+      // Prefer the path over the sweep for the final selection
+      const maybePath = getArtifactOfTypes(
+        { key: maybeSweep.pathId, types: ['path'] },
+        artifactGraph
+      )
+      if (!err(maybePath)) {
+        // Successfully got the path from the sweep
+        if (!seenBodyIds.has(maybePath.id)) {
+          seenBodyIds.add(maybePath.id)
+          bodySelections.push({
+            artifact: maybePath,
+            codeRef: maybePath.codeRef,
+          })
+        }
+      } else {
+        // Couldn't get path, use the sweep itself
+        const sweepWithType = getArtifactOfTypes(
+          { key: maybeSweep.id, types: ['sweep'] },
+          artifactGraph
+        )
+        if (!err(sweepWithType) && !seenBodyIds.has(sweepWithType.id)) {
+          seenBodyIds.add(sweepWithType.id)
+          bodySelections.push({
+            artifact: sweepWithType,
+            codeRef: maybeSweep.codeRef,
+          })
+        }
+      }
+    }
+  }
+
+  return {
+    graphSelections: bodySelections,
+    otherSelections: selections.otherSelections,
+  }
+}
+
+/**
  * Utility to filter down the artifact graph to artifacts that we
  * on the frontend deem "bodies". There is no fixed definition of a "body"
  * in the engine, but we mean: Solid3Ds of any kind, as well as 3D curves like helices.
  */
 export function getBodiesFromArtifactGraph(artifactGraph: ArtifactGraph) {
-  const artifacts = filterArtifacts(
-    {
-      types: ['compositeSolid', 'sweep'],
-      predicate: (a) => !a.consumed,
-    },
-    artifactGraph
+  const artifacts: Map<
+    ArtifactId,
+    Extract<Artifact, { type: 'compositeSolid' | 'sweep' | 'pattern' }>
+  > = new Map(
+    filterArtifacts(
+      {
+        types: ['compositeSolid', 'sweep'],
+        predicate: (a) => !a.consumed,
+      },
+      artifactGraph
+    )
   )
+
+  for (const artifact of artifactGraph.values()) {
+    if (artifact.type !== 'pattern') continue
+    const directSource = artifactGraph.get(artifact.sourceId)
+    const sourceBody =
+      directSource?.type === 'sweep' || directSource?.type === 'compositeSolid'
+        ? directSource
+        : [...artifactGraph.values()].find(
+            (
+              source
+            ): source is Extract<
+              Artifact,
+              { type: 'sweep' | 'compositeSolid' }
+            > =>
+              (source.type === 'sweep' || source.type === 'compositeSolid') &&
+              (source.patternIds || []).includes(artifact.id)
+          )
+    if (sourceBody) {
+      artifacts.set(sourceBody.id, artifact)
+    }
+    artifact.copyIds.forEach((copyId) => {
+      artifacts.set(copyId, artifact)
+    })
+  }
 
   return artifacts
 }

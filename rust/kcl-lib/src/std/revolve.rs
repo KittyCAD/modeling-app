@@ -26,7 +26,7 @@ use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
 use crate::std::axis_or_reference::Axis2dOrEdgeReference;
-use crate::std::axis_or_reference::is_edge_ref_object;
+use crate::std::edge;
 use crate::std::extrude::build_segment_surface_sketch;
 use crate::std::extrude::do_post_extrude;
 
@@ -45,131 +45,12 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 
     // axis accepts: (1) Edge or Axis2d (legacy), or (2) an object with sideFaces (edge reference payload)
     let axis_value: KclValue = args.get_kw_arg("axis", &RuntimeType::any(), exec_state)?;
-    let axis_opt: Option<Axis2dOrEdgeReference> = if !is_edge_ref_object(&axis_value) {
-        Axis2dOrEdgeReference::from_kcl_val(&axis_value)
-    } else {
-        None
-    };
-
-    let axis: Axis2dOrEdgeReference = if is_edge_ref_object(&axis_value) {
-        // axis is an edge reference payload (object with sideFaces)
-        let edge_ref_obj = match &axis_value {
-            KclValue::Object { value, .. } => value,
-            _ => {
-                return Err(KclError::new_type(KclErrorDetails {
-                    message: "axis (edge reference) must be an object with 'sideFaces' field".to_string(),
-                    source_ranges: vec![args.source_range],
-                    backtrace: Default::default(),
-                }));
-            }
-        };
-
-        let faces_value = edge_ref_obj.get("sideFaces").ok_or_else(|| {
-            KclError::new_type(KclErrorDetails {
-                message: "axis (edge reference) must have 'sideFaces' field".to_string(),
-                source_ranges: vec![args.source_range],
-                backtrace: Default::default(),
-            })
-        })?;
-
-        let faces_array = match faces_value {
-            KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
-            _ => {
-                return Err(KclError::new_type(KclErrorDetails {
-                    message: "axis (edge reference) 'sideFaces' must be an array".to_string(),
-                    source_ranges: vec![args.source_range],
-                    backtrace: Default::default(),
-                }));
-            }
-        };
-
-        if faces_array.is_empty() {
-            return Err(KclError::new_type(KclErrorDetails {
-                message: "axis (edge reference) 'sideFaces' must have at least one face".to_string(),
-                source_ranges: vec![args.source_range],
-                backtrace: Default::default(),
-            }));
-        }
-
-        // Resolve faces to UUIDs - for revolve, we try to resolve tags to face IDs
-        let mut face_uuids = Vec::new();
-        for face_value in faces_array {
-            let face_uuid = match face_value {
-                KclValue::Uuid { value, .. } => *value,
-                KclValue::TagIdentifier(tag) => match args.get_adjacent_face_to_tag(exec_state, tag, false).await {
-                    Ok(face_id) => face_id,
-                    Err(_) => args.get_tag_engine_info(exec_state, tag)?.id,
-                },
-                _ => {
-                    return Err(KclError::new_type(KclErrorDetails {
-                        message: "axis (edge reference) faces must be UUIDs or tags".to_string(),
-                        source_ranges: vec![args.source_range],
-                        backtrace: Default::default(),
-                    }));
-                }
-            };
-            face_uuids.push(face_uuid);
-        }
-
-        // Get endFaces (optional)
-        let mut end_face_uuids = Vec::new();
-        if let Some(end_faces_value) = edge_ref_obj.get("endFaces") {
-            let end_faces_array = match end_faces_value {
-                KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
-                _ => {
-                    return Err(KclError::new_type(KclErrorDetails {
-                        message: "axis (edge reference) 'endFaces' must be an array".to_string(),
-                        source_ranges: vec![args.source_range],
-                        backtrace: Default::default(),
-                    }));
-                }
-            };
-            for end_face_value in end_faces_array {
-                let end_face_uuid = match end_face_value {
-                    KclValue::Uuid { value, .. } => *value,
-                    KclValue::TagIdentifier(tag) => match args.get_adjacent_face_to_tag(exec_state, tag, false).await {
-                        Ok(face_id) => face_id,
-                        Err(_) => args.get_tag_engine_info(exec_state, tag)?.id,
-                    },
-                    _ => {
-                        return Err(KclError::new_type(KclErrorDetails {
-                            message: "axis (edge reference) endFaces must be UUIDs or tags".to_string(),
-                            source_ranges: vec![args.source_range],
-                            backtrace: Default::default(),
-                        }));
-                    }
-                };
-                end_face_uuids.push(end_face_uuid);
-            }
-        }
-
-        // Get index (optional)
-        let index = match edge_ref_obj.get("index") {
-            Some(KclValue::Number { value, .. }) => Some(*value as u32),
-            Some(_) => {
-                return Err(KclError::new_type(KclErrorDetails {
-                    message: "axis (edge reference) 'index' must be a number".to_string(),
-                    source_ranges: vec![args.source_range],
-                    backtrace: Default::default(),
-                }));
-            }
-            None => None,
-        };
-
-        // Build EdgeSpecifier from shared module
-        use kcmc::shared::EdgeSpecifier as ModelingEdgeReference;
-        let builder = ModelingEdgeReference::builder()
-            .side_faces(face_uuids)
-            .end_faces(end_face_uuids);
-
-        let edge_reference: ModelingEdgeReference = if let Some(index_val) = index {
-            builder.index(index_val).build()
-        } else {
-            builder.build()
-        };
-
+    let axis: Axis2dOrEdgeReference = if edge::is_edge_specifier_object(&axis_value) {
+        let spec = edge::parse_edge_specifier_value(&axis_value, &args)?;
+        let edge_reference =
+            edge::resolve_edge_specifier_with_adjacent_faces_or_tag_ids(&spec, exec_state, &args).await?;
         Axis2dOrEdgeReference::EdgeReference(edge_reference)
-    } else if let Some(axis_val) = axis_opt {
+    } else if let Some(axis_val) = Axis2dOrEdgeReference::from_kcl_val(&axis_value) {
         axis_val
     } else {
         return Err(KclError::new_type(KclErrorDetails {

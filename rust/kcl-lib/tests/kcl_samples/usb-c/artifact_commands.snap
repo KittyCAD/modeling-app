@@ -284,7 +284,6 @@ description: Artifact commands usb-c.kcl
           "[uuid]",
           "[uuid]"
         ],
-        "edges_references": [],
         "radius": 1.1,
         "tolerance": 0.0000001,
         "cut_type": "fillet",

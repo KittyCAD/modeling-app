@@ -13,8 +13,8 @@ description: Lints axial-fan.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      3604,
-      4020,
+      3574,
+      3990,
       1
     ],
     "overridden": false,
@@ -30,8 +30,8 @@ description: Lints axial-fan.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      616,
-      814,
+      561,
+      759,
       3
     ],
     "overridden": false,

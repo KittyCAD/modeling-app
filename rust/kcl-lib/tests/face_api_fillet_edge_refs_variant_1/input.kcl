@@ -1,4 +1,6 @@
-// Test variant 1: fillet both edges (no index, no endFaces)
+@settings(experimentalFeatures = allow)
+
+// Test variant 1: fillet both edges (no index, no disambiguators)
 // Shape has an edge split into two edges that share the same two faces.
 
 startX = 2

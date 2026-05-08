@@ -3,9 +3,12 @@ import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { KCLError, toUtf16 } from '@src/lang/errors'
-import type { ArtifactGraph } from '@src/lang/wasm'
 import { executeAstMock as executeAstMockImpl } from '@src/lang/executeAstMock'
-import { resolveRefactorLintActions } from '@src/lang/lintRefactorActions'
+import {
+  type Z0006RefactorCache,
+  resolveRefactorLintActions,
+} from '@src/lang/lintRefactorActions'
+import type { ArtifactGraph } from '@src/lang/wasm'
 import type {
   DirectTagFilletMeta,
   EdgeRefactorMeta,
@@ -15,56 +18,14 @@ import type {
 import { emptyExecState, kclLint } from '@src/lang/wasm'
 import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { jsAppSettings, userHasFeature } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/network/utils'
 import type { EditorView } from 'codemirror'
+export type { ToolTip } from '@src/lang/toolTips'
+export { isToolTip, toolTips } from '@src/lang/toolTips'
 
-export type ToolTip =
-  | 'lineTo'
-  | 'line'
-  | 'angledLine'
-  | 'angledLineOfXLength'
-  | 'angledLineOfYLength'
-  | 'angledLineToX'
-  | 'angledLineToY'
-  | 'xLine'
-  | 'yLine'
-  | 'xLineTo'
-  | 'yLineTo'
-  | 'angledLineThatIntersects'
-  | 'tangentialArc'
-  | 'tangentialArcTo'
-  | 'circle'
-  | 'circleThreePoint'
-  | 'arcTo'
-  | 'arc'
-  | 'startProfile'
-
-export const toolTips: Array<ToolTip> = [
-  'line',
-  'lineTo',
-  'angledLine',
-  'angledLineOfXLength',
-  'angledLineOfYLength',
-  'angledLineToX',
-  'angledLineToY',
-  'xLine',
-  'yLine',
-  'xLineTo',
-  'yLineTo',
-  'angledLineThatIntersects',
-  'tangentialArc',
-  'tangentialArcTo',
-  'circleThreePoint',
-  'arc',
-  'arcTo',
-  'startProfile',
-]
-
-export function isToolTip(value: string): value is ToolTip {
-  return toolTips.includes(value as ToolTip)
-}
+const ENABLE_Z0006_LINT_FLAG = 'enable_z0006_lint'
 
 interface ExecutionResult {
   logs: string[]
@@ -168,7 +129,10 @@ export async function lintAst({
   artifactGraph?: ArtifactGraph
 }): Promise<Array<Diagnostic>> {
   try {
-    let discovered_findings = await kclLint(ast, instance)
+    let [discovered_findings, shouldShowZ0006] = await Promise.all([
+      kclLint(ast, instance),
+      userHasFeature(ENABLE_Z0006_LINT_FLAG, false),
+    ])
 
     // Filter out Z0005 if sketch solve mode is not enabled
     // Only show Z0005 when useSketchSolveMode setting is enabled
@@ -189,7 +153,14 @@ export async function lintAst({
       )
     }
 
+    if (!shouldShowZ0006) {
+      discovered_findings = discovered_findings.filter(
+        (lint) => lint.finding.code !== 'Z0006'
+      )
+    }
+
     // Process findings - for Z0005 without suggestion, we'll create actions async
+    const z0006RefactorCache: Z0006RefactorCache = {}
     const diagnosticsPromises = discovered_findings.map(async (lint) => {
       let actions
       let message = lint.finding.title
@@ -222,6 +193,7 @@ export async function lintAst({
           edgeRefactorMetadata,
           directTagFilletMetadata,
           artifactGraph,
+          z0006RefactorCache,
         })
         actions = refactorResult.actions
         if (refactorResult.messageOverride) {

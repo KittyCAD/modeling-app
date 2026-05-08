@@ -150,6 +150,7 @@ pub trait SketchApi {
 
     /// Batch operations for tail-cut trim: edit a segment, add coincident constraints,
     /// delete constraints, and execute once.
+    #[allow(clippy::too_many_arguments)]
     async fn batch_tail_cut_operations(
         &mut self,
         ctx: &ExecutorContext,
@@ -158,6 +159,7 @@ pub trait SketchApi {
         edit_segments: Vec<ExistingSegmentCtor>,
         add_constraints: Vec<Constraint>,
         delete_constraint_ids: Vec<ObjectId>,
+        additional_edited_segment_ids: Vec<ObjectId>,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 }
 
@@ -531,6 +533,11 @@ pub struct ConstraintSource {
 pub struct Radius {
     pub arc: ObjectId,
     pub radius: Number,
+    #[serde(rename = "labelPosition")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(rename = "labelPosition")]
+    #[ts(optional)]
+    pub label_position: Option<Point2d<Number>>,
     #[serde(default)]
     pub source: ConstraintSource,
 }
@@ -540,6 +547,11 @@ pub struct Radius {
 pub struct Diameter {
     pub arc: ObjectId,
     pub diameter: Number,
+    #[serde(rename = "labelPosition")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(rename = "labelPosition")]
+    #[ts(optional)]
+    pub label_position: Option<Point2d<Number>>,
     #[serde(default)]
     pub source: ConstraintSource,
 }

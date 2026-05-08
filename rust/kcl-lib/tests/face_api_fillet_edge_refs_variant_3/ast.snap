@@ -38,6 +38,12 @@ description: Result of parsing face_api_fillet_edge_refs_variant_3.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Test variant 3: fillet top edge using disambiguator (endCap)",
+          "// Shape has an edge split into two edges that share the same two faces.",
+          "",
+          ""
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -1750,6 +1756,58 @@ description: Result of parsing face_api_fillet_edge_refs_variant_3.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "innerAttrs": [
+      {
+        "commentStart": 0,
+        "end": 0,
+        "moduleId": 0,
+        "name": {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "name": "settings",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "properties": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "experimentalFeatures",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "allow",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          }
+        ],
+        "start": 0,
+        "type": "Annotation"
+      }
+    ],
     "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
@@ -1778,42 +1836,7 @@ description: Result of parsing face_api_fillet_edge_refs_variant_3.kcl
           }
         ]
       },
-      "startNodes": [
-        {
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Test variant 3: fillet top edge using disambiguator (endCap)",
-            "style": "line"
-          }
-        },
-        {
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Shape has an edge split into two edges that share the same two faces.",
-            "style": "line"
-          }
-        },
-        {
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "newLine"
-          }
-        }
-      ]
+      "startNodes": []
     },
     "start": 0
   }

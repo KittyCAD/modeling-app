@@ -2064,8 +2064,7 @@ sketch000 = startSketchOn(XY)
     ctx.run(&program, &mut exec_state).await.unwrap();
 
     // Ensure nothing is left in the batch
-    assert!(ctx.engine.batch().read().await.is_empty());
-    assert!(ctx.engine.batch_end().read().await.is_empty());
+    assert!(ctx.engine_batch.is_empty().await);
 
     ctx.close().await;
 }
@@ -2087,8 +2086,7 @@ async fn kcl_test_ensure_nothing_left_in_batch_multi_file() {
     ctx.run(&program, &mut exec_state).await.unwrap();
 
     // Ensure nothing is left in the batch
-    assert!(ctx.engine.batch().read().await.is_empty());
-    assert!(ctx.engine.batch_end().read().await.is_empty());
+    assert!(ctx.engine_batch.is_empty().await);
 
     ctx.close().await;
 }

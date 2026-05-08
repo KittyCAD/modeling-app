@@ -223,11 +223,11 @@ export class ToolbarFixture {
    * Opens file by it's name
    */
   openFile = async (fileName: string) => {
-    await this.filePane
-      .getByTestId('file-tree-item')
-      .getByText(fileName)
-      .click()
-    await expect(this.fileName).toHaveText(fileName)
+    const fileTreeItem = this.page
+      .getByTestId('file-pane-scroll-container')
+      .getByRole('treeitem', { name: fileName, exact: true })
+    await expect(fileTreeItem).toBeVisible()
+    await fileTreeItem.click()
   }
   ensureFolderOpen = async (folder: Locator, open: boolean) => {
     const expanded = await folder.getAttribute('aria-expanded')

@@ -73,7 +73,6 @@ mod modules;
 mod parsing;
 mod project;
 #[cfg(feature = "artifact-graph")]
-pub mod refactor_edge_stdlib;
 mod settings;
 #[cfg(test)]
 mod simulation_tests;
@@ -93,6 +92,7 @@ mod wasm;
 
 pub use coredump::CoreDump;
 pub use engine::AsyncTasks;
+pub use engine::EngineBatchContext;
 pub use engine::EngineManager;
 pub use engine::EngineStats;
 pub use errors::BacktraceItem;
@@ -136,7 +136,9 @@ pub use parsing::ast::types::NodePath;
 pub use parsing::ast::types::Program as AstProgram;
 pub use parsing::ast::types::Step as NodePathStep;
 pub use project::ProjectManager;
+#[cfg(feature = "artifact-graph")]
 pub use settings::types::Configuration;
+#[cfg(feature = "artifact-graph")]
 pub use settings::types::project::ProjectConfiguration;
 #[cfg(not(target_arch = "wasm32"))]
 pub use unparser::recast_dir;
@@ -319,6 +321,13 @@ impl Program {
     ) -> Result<Self, KclError> {
         Ok(Self {
             ast: self.ast.change_default_units(length_units)?,
+            original_file_contents: self.original_file_contents.clone(),
+        })
+    }
+
+    pub fn change_kcl_version(&self, kcl_version: Option<String>) -> Result<Self, KclError> {
+        Ok(Self {
+            ast: self.ast.change_kcl_version(kcl_version)?,
             original_file_contents: self.original_file_contents.clone(),
         })
     }

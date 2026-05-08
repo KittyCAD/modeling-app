@@ -11,7 +11,7 @@ Extend a 2-dimensional sketch or individual segment of a sketch through a third 
 extrude(
   @sketches: [Sketch | Face | TaggedFace | Segment; 1+],
   length?: number(Length),
-  to?: Point3d | Axis3d | Plane | Edge | Face | Sketch | Solid | TaggedEdge | TaggedFace,
+  to?: Point3d | Axis3d | Plane | Edge | Face | Sketch | Solid | TaggedEdge | TaggedFace | any,
   symmetric?: bool,
   bidirectionalLength?: number(Length),
   tagStart?: TagDecl,
@@ -39,7 +39,7 @@ sketch on face for more details.
 |----------|------|-------------|----------|
 | `sketches` | `[Sketch | Face | TaggedFace | Segment; 1+]` | Which sketch or sketches should be extruded. | Yes |
 | `length` | `number(Length)` | How far to extrude the given sketches. Incompatible with `to`. | No |
-| `to` | `Point3d | Axis3d | Plane | Edge | Face | Sketch | Solid | TaggedEdge | TaggedFace` | Reference to extrude to. Incompatible with `length` and `twistAngle`. | No |
+| `to` | `Point3d | Axis3d | Plane | Edge | Face | Sketch | Solid | TaggedEdge | TaggedFace | any` | Reference to extrude to. Incompatible with `length` and `twistAngle`. Experimental face API: edge specifier objects (`{ sideFaces = [faceTag1, faceTag2], endFaces? = [...], index? }`) are not ready for generated or user-facing KCL yet; prefer existing point, axis, plane, edge, face, sketch, solid, or tag forms until point-and-click and migration support ships. | No |
 | `symmetric` | `bool` | If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch. | No |
 | `bidirectionalLength` | `number(Length)` | If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored. | No |
 | `tagStart` | `TagDecl` | A named tag for the face at the start of the extrusion, i.e. the original sketch. | No |

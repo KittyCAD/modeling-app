@@ -1,20 +1,20 @@
 import type { EntityReference, EntityType, Point2d } from '@kittycad/lib'
-import type { MachineManager } from '@src/lib/MachineManager'
-import type { PathToNode } from '@src/lang/wasm'
-import type { ArtifactId, CodeRef } from '@src/lang/std/artifactGraph'
-import type { DefaultPlaneStr } from '@src/lib/planes'
-import type { Coords2d } from '@src/lang/util'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
-import type { Setting } from '@src/lib/settings/initialSettings'
-import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveImpl'
-import type { KclManager } from '@src/lang/KclManager'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type RustContext from '@src/lib/rustContext'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { BaseUnit } from '@src/lib/settings/settingsTypes'
-import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import type { KclManager } from '@src/lang/KclManager'
+import type { Artifact, ArtifactId, CodeRef } from '@src/lang/std/artifactGraph'
+import type { Coords2d } from '@src/lang/util'
+import type { PathToNode } from '@src/lang/wasm'
+import type { MachineManager } from '@src/lib/MachineManager'
+import type { DefaultPlaneStr } from '@src/lib/planes'
 import type { Project } from '@src/lib/project'
+import type RustContext from '@src/lib/rustContext'
+import type { Setting } from '@src/lib/settings/initialSettings'
+import type { BaseUnit } from '@src/lib/settings/settingsTypes'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveImpl'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
@@ -65,9 +65,12 @@ export type EngineTopologyFallback = {
 
 export interface Selection {
   entityRef?: EntityReference
+  artifact?: Artifact
   codeRef?: CodeRef
   /** From query_entity_type_with_point reference.topology_fallback; carried only on graphSelections rows. */
   engineTopologyFallback?: EngineTopologyFallback
+  engineEntityId?: ArtifactId
+  patternIndex?: number
 }
 
 export type Selections = {

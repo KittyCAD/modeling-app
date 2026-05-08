@@ -37,7 +37,7 @@ revolved around the same axis.
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `sketches` | `[Sketch | Segment; 1+]` | The sketch or set of sketches that should be revolved, or solved sketch segments for a surface revolve. | Yes |
-| `axis` | `Axis2d | Edge | Segment | any` | Axis of revolution. Can be an Axis2d, an Edge, a solved Segment, or an edge reference object (e.g. `{ sideFaces = [faceTag1, faceTag2] }`). | Yes |
+| `axis` | `Axis2d | Edge | Segment | any` | Axis of revolution. Can be an Axis2d, an Edge, or a solved Segment. Experimental face API: edge reference objects (e.g. `{ sideFaces = [faceTag1, faceTag2] }`) are not ready for generated or user-facing KCL yet; prefer Axis2d, Edge, or Segment until point-and-click and migration support ships. | Yes |
 | `angle` | `number(Angle)` | Angle to revolve (in degrees). Default is 360. | No |
 | `tolerance` | `number(Length)` | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
 | `symmetric` | `bool` | If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch. | No |

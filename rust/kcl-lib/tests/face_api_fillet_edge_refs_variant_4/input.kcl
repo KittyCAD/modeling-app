@@ -1,4 +1,6 @@
-// Test variant 4: fillet bottom edge using endFaces (myDisambigutator2)
+@settings(experimentalFeatures = allow)
+
+// Test variant 4: fillet bottom edge using disambiguator (myDisambigutator2)
 // Shape has an edge split into two edges that share the same two faces.
 
 startX = 2

@@ -202,7 +202,6 @@ description: Artifact commands socket-head-cap-screw.kcl
         "edge_ids": [
           "[uuid]"
         ],
-        "edges_references": [],
         "radius": 0.508,
         "tolerance": 0.0000001,
         "cut_type": "fillet",

@@ -1,9 +1,6 @@
 use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::AstProgram;
-use kcl_lib::EdgeRefactorMeta;
-use kcl_lib::FormatOptions;
 use kcl_lib::KclErrorWithOutputs;
 use kcl_lib::Program;
 use kcl_lib::front::Error;
@@ -600,7 +597,7 @@ impl Context {
             .map_err(|e| format!("Could not serialize edit constraint result. {TRUE_BUG} Details: {e}"))?)
     }
 
-    /// Edit a distance constraint label position in a sketch.
+    /// Edit a constraint label position in a sketch.
     #[wasm_bindgen]
     pub async fn edit_distance_constraint_label_position(
         &self,
@@ -626,7 +623,7 @@ impl Context {
             .map_err(|e| format!("Could not deserialize anchor segment ids: {e}"))?;
 
         let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
-            format!("Could not create KCL executor context for edit distance constraint label. {TRUE_BUG} Details: {e}")
+            format!("Could not create KCL executor context for edit constraint label. {TRUE_BUG} Details: {e}")
         })?;
 
         let frontend = Arc::clone(&self.frontend);
@@ -658,9 +655,8 @@ impl Context {
             checkpoint_id,
         };
 
-        Ok(JsValue::from_serde(&result).map_err(|e| {
-            format!("Could not serialize edit distance constraint label result. {TRUE_BUG} Details: {e}")
-        })?)
+        Ok(JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize edit constraint label result. {TRUE_BUG} Details: {e}"))?)
     }
 
     /// Execute trim operations on a sketch.
@@ -829,26 +825,6 @@ impl Context {
         ctx.close().await;
 
         result.map(|transpiled_code| JsValue::from_str(&transpiled_code))
-    }
-
-    /// Refactor fillet/chamfer `tags` that use deprecated edge stdlib to `edges`.
-    /// Takes program AST JSON and edgeRefactorMetadata JSON from ExecState; returns new source.
-    #[wasm_bindgen]
-    pub fn refactor_fillet_chamfer_to_edge_refs(
-        &self,
-        program_ast_json: &str,
-        edge_refactor_metadata_json: &str,
-    ) -> Result<JsValue, JsValue> {
-        console_error_panic_hook::set_once();
-
-        let mut program: AstProgram = serde_json::from_str(program_ast_json)
-            .map_err(|e| JsValue::from_str(&format!("Could not deserialize KCL AST: {e}")))?;
-        let metadata: Vec<EdgeRefactorMeta> = serde_json::from_str(edge_refactor_metadata_json)
-            .map_err(|e| JsValue::from_str(&format!("Could not deserialize edgeRefactorMetadata: {e}")))?;
-        kcl_lib::refactor_edge_stdlib::refactor_fillet_chamfer_tags_to_edge_refs(&mut program, &metadata)
-            .map_err(|e| JsValue::from_str(&format!("Refactor failed: {e}")))?;
-        let new_source = program.recast_top(&FormatOptions::default(), 0);
-        Ok(JsValue::from_str(&new_source))
     }
 
     /// Chain a segment to a previous segment by adding it and creating a coincident constraint.

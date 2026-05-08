@@ -22,7 +22,7 @@ gdt::flatness(
 ): [GdtAnnotation; 1+]
 ```
 
-
+This is part of model-based definition (MBD).
 
 ### Arguments
 

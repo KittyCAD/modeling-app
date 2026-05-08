@@ -1,5 +1,5 @@
 //! Lint for deprecated edge stdlib functions (getOppositeEdge, getNextAdjacentEdge, etc.)
-//! when used inside fillet/chamfer `tags`, revolve/helic `axis`, or extrude `to` argument.
+//! when used inside fillet/chamfer `tags`, revolve/helix `axis`, or extrude `to` argument.
 //! Step 2 of the Z0006 upgrade path: detection only; auto-fix is Step 3.
 
 use anyhow::Result;
@@ -48,7 +48,7 @@ fn is_extrude(callee_name: &str) -> bool {
     callee_name == "extrude"
 }
 
-/// Axis argument for revolve/helic: axis = getOppositeEdge(...) etc.
+/// Axis argument for revolve/helix: axis = getOppositeEdge(...) etc.
 fn get_axis_arg(call: &CallExpressionKw) -> Option<&Expr> {
     let axis_arg = call
         .arguments
@@ -171,8 +171,8 @@ mod tests {
             "expected one Z0006 finding for getOppositeEdge in fillet tags"
         );
         assert!(
-            z0006[0].description.contains("tags") || z0006[0].description.contains("edgeRefs"),
-            "description should mention tags or edgeRefs"
+            z0006[0].description.contains("tags") || z0006[0].description.contains("edge specifiers"),
+            "description should mention tags or edge specifiers"
         );
     }
 
