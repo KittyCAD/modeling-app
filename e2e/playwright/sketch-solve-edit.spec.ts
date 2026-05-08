@@ -739,34 +739,34 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 `
     const addedLine =
       '  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 5mm])'
-    const getDirectEditorOutcomeForLine = async (line: string) =>
-      page.evaluate((expectedLine) => {
-        const events = Reflect.get(window, 'directEditorOutcomesForTest')
-        if (!Array.isArray(events)) return null
-        return (
-          events.find(
-            (
-              event
-            ): event is {
-              sourceText: string
-              updateEditor: unknown
-              writeToDisk: unknown
-              addToHistory: unknown
-            } =>
-              typeof event === 'object' &&
-              event !== null &&
-              'sourceText' in event &&
-              typeof event.sourceText === 'string' &&
-              event.sourceText.includes(expectedLine)
-          ) ?? null
-        )
-      }, line)
-    const getUpdateCodeEditorCalls = async () =>
-      page.evaluate(() => {
-        const calls = Reflect.get(window, 'updateCodeEditorCallsForTest')
-        if (!Array.isArray(calls)) return []
-        return calls.filter((call): call is string => typeof call === 'string')
-      })
+    const isDirectEditorOutcome = (
+      event: unknown
+    ): event is {
+      sourceText: string
+      updateEditor: unknown
+      writeToDisk: unknown
+      addToHistory: unknown
+    } =>
+      typeof event === 'object' &&
+      event !== null &&
+      'sourceText' in event &&
+      typeof event.sourceText === 'string'
+    const getDirectEditorOutcomeForLine = async (line: string) => {
+      const events = await page.evaluate(() =>
+        Reflect.get(window, 'directEditorOutcomesForTest')
+      )
+      if (!isArray(events)) return null
+      return events
+        .filter(isDirectEditorOutcome)
+        .find((event) => event.sourceText.includes(line))
+    }
+    const getUpdateCodeEditorCalls = async () => {
+      const calls = await page.evaluate(() =>
+        Reflect.get(window, 'updateCodeEditorCallsForTest')
+      )
+      if (!isArray(calls)) return []
+      return calls.filter((call): call is string => typeof call === 'string')
+    }
 
     await test.step('Set up a sketch and enter sketch edit mode', async () => {
       await context.addInitScript(

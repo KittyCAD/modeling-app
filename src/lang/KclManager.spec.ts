@@ -58,7 +58,7 @@ function createEmptySceneGraphDelta(): SceneGraphDelta {
 function enableSketchSolveEditorExecution(kclManager: KclManager) {
   kclManager.modelingState = {
     matches: (value: unknown) => value === 'sketchSolveMode',
-  } as unknown as KclManager['modelingState']
+  } as unknown as NonNullable<KclManager['modelingState']>
   kclManager.engineCommandManager.connection = {
     connected: true,
   } as unknown as typeof kclManager.engineCommandManager.connection
