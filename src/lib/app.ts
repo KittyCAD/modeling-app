@@ -105,6 +105,7 @@ function createAppRegistryItems({
       providesServices: [provideService(machineManagerService, machineManager)],
     }),
     appCommandsSlot.of(),
+    appRegistryServicesSlot.of(),
     ...coreRegistryItems,
   ]
 }
