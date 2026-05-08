@@ -349,6 +349,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-transform-mirror2d-5",
     "std-transform-mirror3d-0",
     "std-transform-mirror3d-1",
+    "std-transform-mirror3d-2",
     "std-transform-translate-0",
     "std-transform-translate-1",
     "std-transform-translate-2",

@@ -151,6 +151,24 @@ export fn mirror2d(
 /// }
 /// shape2 = mirror3d([shape1], across = customPlane)
 /// ```
+/// ```
+/// // Example of mirroring across segments.
+/// @settings(kclVersion = 2.0)
+/// 
+/// sketch001 = sketch(on = XY) {
+///   line3 = line(start = [var -4.59mm, var -5.11mm], end = [var -5mm, var 3.51mm])
+///   arc1 = arc(start = [var -4.69mm, var -3.99mm], end = [var -6.48mm, var 0mm], center = [var -5.13mm, var -1.79mm])
+///   horizontal([arc1.end, ORIGIN])
+///   axisLine = line(start = [var -6.01mm, var 3.21mm], end = [var 1.85mm, var -3.13mm])
+/// }
+/// 
+/// hidden001 = hide(sketch001)
+/// region001 = region(point = [-4.7462511mm, -1.7722965mm], sketch = sketch001)
+/// shape1 = extrude(region001, length = 1)
+///   |> translate(z = 1)
+/// 
+/// shape2 = mirror3d([shape1], across = sketch001.axisLine)
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn mirror3d(
   /// The body or bodies to be reflected.

@@ -1179,10 +1179,12 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::MirrorAcross3d {
             })
         };
         let case3 = super::fillet::EdgeReference::from_kcl_val;
+        let case4 = Segment::from_kcl_val;
         case1(arg)
             .map(|p| Self::Plane(Box::new(p)))
             .or_else(|| case2(arg))
             .or_else(|| case3(arg).map(|e| Self::Edge(Box::new(e))))
+            .or_else(|| case4(arg).and_then(|seg| Self::from_segment(&seg).ok()))
     }
 }
 
