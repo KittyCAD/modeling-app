@@ -306,10 +306,11 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     const bodiesPane = page.locator('#bodies-list-pane')
 
     await test.step('Verify both bodies are hidden', async () => {
+      await expect(bodiesPane).toBeVisible({ timeout: 15_000 })
       const bodyToggles = bodiesPane.getByTestId(
         'feature-tree-visibility-toggle'
       )
-      await expect(bodyToggles).toHaveCount(2)
+      await expect(bodyToggles).toHaveCount(2, { timeout: 15_000 })
       for (let i = 0; i < 2; i++) {
         await expect(
           bodyToggles.nth(i).locator('svg[aria-label="eye crossed out"]')

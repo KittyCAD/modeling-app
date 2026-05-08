@@ -1207,12 +1207,24 @@ export function buildToolbarConfig(
             },
             {
               id: 'gdt-profile',
-              onClick: () => {},
-              status: 'unavailable',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'GDT Profile', groupId: 'modeling' },
+                }),
+              status: 'experimental',
               title: 'Profile',
+              icon: 'gdtProfile',
               description:
                 'Specifies how much a surface or edge can deviate from its ideal shape.',
-              links: [],
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-profile'
+                  ),
+                },
+              ],
             },
             {
               id: 'gdt-position',
