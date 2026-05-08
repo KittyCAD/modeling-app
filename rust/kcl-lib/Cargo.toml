@@ -184,4 +184,4 @@ harness = false
 [[test]]
 name = "executor"
 path = "e2e/executor/main.rs"
-required-features = ["engine", "artifact-graph"]
+required-features = ["engine"]
