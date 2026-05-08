@@ -13,8 +13,8 @@ description: Lints helium-tank.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      1957,
-      2069,
+      3749,
+      3917,
       0
     ],
     "overridden": false,

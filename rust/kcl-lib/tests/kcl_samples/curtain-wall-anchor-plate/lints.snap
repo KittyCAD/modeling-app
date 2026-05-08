@@ -13,8 +13,8 @@ description: Lints curtain-wall-anchor-plate.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      1197,
-      1331,
+      2544,
+      2707,
       0
     ],
     "overridden": false,
@@ -30,8 +30,8 @@ description: Lints curtain-wall-anchor-plate.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      1339,
-      1479,
+      2736,
+      2900,
       0
     ],
     "overridden": false,

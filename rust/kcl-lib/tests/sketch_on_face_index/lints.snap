@@ -13,8 +13,8 @@ description: Lints sketch_on_face_index.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      373,
-      423,
+      332,
+      382,
       0
     ],
     "overridden": false,
