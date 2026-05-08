@@ -1,13 +1,3 @@
-import { reportRejection } from '@src/lib/trap'
-import { NIL as uuidNIL } from 'uuid'
-import type { SettingsType } from '@src/lib/settings/initialSettings'
-import type { KclManager } from '@src/lang/KclManager'
-import { useEffect, useState, useRef, useCallback } from 'react'
-import {
-  type SystemIOActor,
-  SystemIOMachineEvents,
-  SystemIOMachineStates,
-} from '@src/machines/systemIO/utils'
 import {
   MlEphantConversation,
   type QueuedMessage,
@@ -30,6 +20,7 @@ import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import {
   type SystemIOActor,
   SystemIOMachineEvents,
+  SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
