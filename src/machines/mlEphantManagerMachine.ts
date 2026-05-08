@@ -1,26 +1,26 @@
-import ms from 'ms'
-import { decode as msgpackDecode } from '@msgpack/msgpack'
-import { withMlephantWebSocketURL } from '@src/lib/withBaseURL'
 import type {
   MlCopilotClientMessage,
-  MlCopilotServerMessage,
   MlCopilotFile,
+  MlCopilotServerMessage,
 } from '@kittycad/lib'
-import { assertEvent, assign, setup, fromPromise } from 'xstate'
-import { createActorContext } from '@xstate/react'
-import type { ActorRefFrom } from 'xstate'
+import { decode as msgpackDecode } from '@msgpack/msgpack'
 import type { KittyCadLibFile } from '@src/lib/promptToEditTypes'
 import type { KclFileMetaMap } from '@src/lib/promptToEditTypes'
+import { withMlephantWebSocketURL } from '@src/lib/withBaseURL'
+import { createActorContext } from '@xstate/react'
+import ms from 'ms'
+import { assertEvent, assign, fromPromise, setup } from 'xstate'
+import type { ActorRefFrom } from 'xstate'
 
 import {
-  isCustomIconName,
   type CustomIconName,
+  isCustomIconName,
 } from '@src/components/CustomIcon'
 
 import { isArray } from '@src/lib/utils'
 
-import { S, transitions } from '@src/machines/utils'
 import { getKclVersion } from '@src/lib/kclVersion'
+import { S, transitions } from '@src/machines/utils'
 
 import { Socket } from '@src/lib/socket'
 
@@ -28,9 +28,9 @@ import { Socket } from '@src/lib/socket'
 // import { MockSocket } from '@src/mocks/copilot'
 
 import type { ArtifactGraph } from '@src/lang/wasm'
-import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 import { constructMultiFileIterationRequestWithPromptHelpers } from '@src/lib/promptToEdit'
 
@@ -54,6 +54,14 @@ type MlCopilotUserRequest = Omit<
   // The generated client still narrows this to the initially-known mode ids,
   // but mode discovery intentionally treats the backend-provided id as opaque.
   mode?: MlCopilotModeId
+  active_file?: string
+}
+
+type MlCopilotProjectContextRequest = Extract<
+  MlCopilotClientMessage,
+  { type: 'project_context' }
+> & {
+  active_file?: string
 }
 
 type MlCopilotClientMessageWithDiscoveredMode =
@@ -212,6 +220,7 @@ export type MlEphantManagerEvents =
       type: MlEphantManagerStates.ContinueCheck
       projectName: string
       projectFiles: FileMeta[]
+      activeFile?: string
     }
   | {
       type: MlEphantManagerTransitions.ResponseReceive
@@ -928,6 +937,9 @@ export const mlEphantManagerMachine = setup({
         project_name: requestData.body.project_name,
         source_ranges: requestData.body.source_ranges,
         current_files: filesAsByteArrays,
+        ...(requestData.activeFile
+          ? { active_file: requestData.activeFile }
+          : {}),
         ...(event.mode ? { mode: event.mode } : {}),
         ...(additionalFiles ? { additional_files: additionalFiles } : {}),
       }
@@ -991,13 +1003,11 @@ export const mlEphantManagerMachine = setup({
         )
       }
 
-      const requestProjectContext: Extract<
-        MlCopilotClientMessage,
-        { type: 'project_context' }
-      > = {
+      const requestProjectContext: MlCopilotProjectContextRequest = {
         type: 'project_context',
         project_name: event.projectName,
         current_files: filesAsByteArrays,
+        ...(event.activeFile ? { active_file: event.activeFile } : {}),
       }
 
       const requestContinue: Extract<
