@@ -86,23 +86,28 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
   )
   const executionStatusBarItem = computed(() =>
     nullableStatusBarItem(
-      executionService.value?.isExecuting.value
-        ? {
-            id: ENGINE_SCENE_EXECUTION_STATUS_BAR_ITEM_ID,
-            'data-testid': 'engine-executing-status',
-            element: 'text' as const,
-            icon: 'loading' as const,
-            label: 'Engine executing',
-            hideLabel: true,
-            order: 0,
-            toolTip: {
-              children: createElement(EngineExecutionStatusTooltip, {
-                getPendingCommandCount: () =>
-                  executionService.value?.getPendingCommandCount() ?? 0,
-              }),
-            },
-          }
-        : null
+      (() => {
+        const service = executionService.value
+
+        return service?.isExecuting.value
+          ? {
+              id: ENGINE_SCENE_EXECUTION_STATUS_BAR_ITEM_ID,
+              'data-testid': 'engine-executing-status',
+              element: 'text' as const,
+              icon: 'loading' as const,
+              label: 'Engine executing',
+              hideLabel: true,
+              order: 0,
+              toolTip: {
+                children: createElement(EngineExecutionStatusTooltip, {
+                  executionElapsedMs: service.executionElapsedMs,
+                  getPendingCommandCount: () =>
+                    executionService.value?.getPendingCommandCount() ?? 0,
+                }),
+              },
+            }
+          : null
+      })()
     )
   )
 

@@ -736,6 +736,7 @@ export class KclManager extends File {
       code: this._code,
       hasEditsSinceLastExecution: this._hasEditsSinceLastExecution,
       isExecuting: this._isExecuting,
+      executionElapsedMs: this._executionElapsedMs,
       selectionStatusLabel: this._selectionStatusLabel,
       showExperimentalFeaturesStatusBarItem:
         this._showExperimentalFeaturesStatusBarItem,
@@ -913,6 +914,10 @@ export class KclManager extends File {
   private _cancelTokens: Map<number, boolean> = new Map()
   private _executeIsStale: ExecuteArgs | null = null
   private _isExecuting = signal(false)
+  private _executionElapsedMs = signal(0)
+  private executionStartedAtMs: number | null = null
+  private executionTimerIntervalId: ReturnType<typeof setInterval> | undefined =
+    undefined
   get isExecuting() {
     return this._isExecuting.value
   }
@@ -1081,6 +1086,7 @@ export class KclManager extends File {
 
   set isExecuting(isExecuting) {
     this._isExecuting.value = isExecuting
+    this.updateExecutionTimer(isExecuting)
     // If we have finished executing, but the execute is stale, we should
     // execute again.
     if (!isExecuting && this.executeIsStale && this.sceneEntitiesManager) {
@@ -1088,6 +1094,35 @@ export class KclManager extends File {
       this.executeIsStale = null
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.executeAst(args)
+    }
+  }
+
+  private updateExecutionTimer(isExecuting: boolean) {
+    if (isExecuting) {
+      if (this.executionStartedAtMs !== null) {
+        return
+      }
+
+      this.executionStartedAtMs = Date.now()
+      this._executionElapsedMs.value = 0
+      this.executionTimerIntervalId = setInterval(() => {
+        if (this.executionStartedAtMs === null) {
+          return
+        }
+
+        this._executionElapsedMs.value = Date.now() - this.executionStartedAtMs
+      }, 100)
+      return
+    }
+
+    if (this.executionTimerIntervalId !== undefined) {
+      clearInterval(this.executionTimerIntervalId)
+      this.executionTimerIntervalId = undefined
+    }
+
+    if (this.executionStartedAtMs !== null) {
+      this._executionElapsedMs.value = Date.now() - this.executionStartedAtMs
+      this.executionStartedAtMs = null
     }
   }
 

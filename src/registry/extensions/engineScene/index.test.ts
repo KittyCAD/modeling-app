@@ -20,6 +20,7 @@ function createExecutingEditorService(
     code: signal(''),
     hasEditsSinceLastExecution: signal(false),
     isExecuting,
+    executionElapsedMs: signal(0),
     selectionStatusLabel: signal('No selection'),
     showExperimentalFeaturesStatusBarItem,
     getPendingCommandCount: vi.fn(() => 0),
