@@ -1893,6 +1893,10 @@ export function retrieveEdgeSelectionsFromEdgeRefs(
   const graphSelections: Selection[] = []
   for (const item of edgeRefsArg.value.value) {
     if (item.type !== 'Object' || !item.value) continue
+    // Selection recovery only needs the primary graph edge so edit/delete flows
+    // can reselect an operation in the scene. `endFaces` and `index` refine how
+    // the engine resolves ambiguous edge specifiers, but they are not needed to
+    // recover the editable artifact from the current artifact graph.
     const facesProp = (item.value.sideFaces ?? item.value.side_faces) as
       | OpKclValue
       | undefined
@@ -1923,6 +1927,10 @@ export function retrieveEdgeSelectionsFromSingleEdgeRef(
     return new Error('edgeRef argument is not an object')
   }
 
+  // Selection recovery intentionally uses only side faces. `endFaces` and
+  // `index` are engine disambiguators for executing the edge specifier, while
+  // this path only needs to map the stdlib argument back to a selectable graph
+  // artifact for editing.
   const facesProp = (edgeRefArg.value.value.sideFaces ??
     edgeRefArg.value.value.side_faces) as OpKclValue | undefined
   if (!facesProp || facesProp.type !== 'Array') {
