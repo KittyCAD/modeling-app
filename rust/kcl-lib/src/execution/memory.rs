@@ -249,14 +249,26 @@ impl EnvironmentsBlocks {
         Self { blocks, n: 0.into() }
     }
 
+    /// recompute n to check.
+    fn recompute_n(blocks: &LinkedList<Vec<Pin<Box<Environment>>>>) -> usize {
+        ((blocks.len() - 1) * ENVIRONMENTS_BLOCK_LEN) + blocks.back().unwrap().len()
+    }
+
     /// "Deep clone" the blocks, in its current state. Writes may be going
     /// on during this, so we'll recompute n.
     pub fn deep_clone(&self) -> Self {
-        let blocks: LinkedList<Vec<Pin<Box<Environment>>>> = self.iter().cloned().collect();
-
-        // Recompute N based on the state of the world when we cloned.
-        let n = ((blocks.len() - 1) * ENVIRONMENTS_BLOCK_LEN) + blocks.back().unwrap().len();
-
+        let blocks: LinkedList<Vec<Pin<Box<Environment>>>> = self
+            .iter()
+            .map(|og| {
+                // calling .clone will shrink the vec on us, doing it
+                // this way will just do one new allocation and associated
+                // clone.
+                let mut new = Vec::with_capacity(ENVIRONMENTS_BLOCK_LEN);
+                new.extend_from_slice(og);
+                new
+            })
+            .collect();
+        let n = Self::recompute_n(&blocks);
         Self { blocks, n: n.into() }
     }
 
@@ -279,16 +291,15 @@ impl EnvironmentsBlocks {
 
     /// Get an [Environment] given some environment id.
     pub fn get(&self, idx: usize) -> &Environment {
+        let n = self.n.load(Ordering::Relaxed);
+        if idx >= self.n.load(Ordering::Relaxed) {
+            panic!("index {} is out of range (len={})", idx, n);
+        }
+
         let vec_idx = idx % ENVIRONMENTS_BLOCK_LEN;
         let block = self.get_containing_block(idx);
         &block[vec_idx]
     }
-
-    // /// Get an [Environment] given some environment id.
-    // pub fn get_mut(&mut self, idx: usize) -> Pin<&mut Environment> {
-    //     let vec_idx = idx % ENVIRONMENTS_BLOCK_LEN;
-    //     self.get_containing_block_mut(idx)[vec_idx].as_mut()
-    // }
 
     fn get_containing_block(&self, idx: usize) -> &Vec<Pin<Box<Environment>>> {
         let block_idx = idx / ENVIRONMENTS_BLOCK_LEN;
