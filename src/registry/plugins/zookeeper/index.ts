@@ -6,10 +6,31 @@ import {
 } from '@kittycad/registry'
 import { effect } from '@preact/signals-core'
 import { MlEphantConversationPaneWrapper } from '@src/components/layout/areas/MlEphantConversationPaneWrapper'
+import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 import { layoutService as layoutServiceToken } from '@src/registry/contracts/layout'
 import { layoutAreaLibraryValueSpec } from '@src/registry/contracts/layout'
+import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { ensureZookeeperLayout, removeZookeeperLayout } from './layout'
+
+const zookeeperSettingsItem = defineRegistryItem({
+  provides: [
+    provide(settingsValueSpec, {
+      zookeeper: {
+        debugTiming: defineBooleanExtensionSetting({
+          defaultValue: false,
+          description:
+            'Whether Zookeeper records client-side reasoning and tool-call response timings.',
+          hideOnLevel: 'project',
+          userToml: {
+            sectionKey: 'zookeeper',
+            tomlKey: 'debug_timing',
+          },
+        }),
+      },
+    }),
+  ],
+})
 
 const zookeeperAreaItem = defineRegistryItem({
   provides: [
@@ -49,7 +70,7 @@ const zookeeper = createZdsPlugin({
   title: 'Zookeeper',
   description:
     'Adds the in-app LLM agent pane and keeps it in the right sidebar.',
-  items: [zookeeperAreaItem, zookeeperLayoutItem],
+  items: [zookeeperSettingsItem, zookeeperAreaItem, zookeeperLayoutItem],
   defaultSetting: 'core',
 })
 

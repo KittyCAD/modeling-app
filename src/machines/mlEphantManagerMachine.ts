@@ -1,26 +1,26 @@
-import ms from 'ms'
-import { decode as msgpackDecode } from '@msgpack/msgpack'
-import { withMlephantWebSocketURL } from '@src/lib/withBaseURL'
 import type {
   MlCopilotClientMessage,
-  MlCopilotServerMessage,
   MlCopilotFile,
+  MlCopilotServerMessage,
 } from '@kittycad/lib'
-import { assertEvent, assign, setup, fromPromise } from 'xstate'
-import { createActorContext } from '@xstate/react'
-import type { ActorRefFrom } from 'xstate'
+import { decode as msgpackDecode } from '@msgpack/msgpack'
 import type { KittyCadLibFile } from '@src/lib/promptToEditTypes'
 import type { KclFileMetaMap } from '@src/lib/promptToEditTypes'
+import { withMlephantWebSocketURL } from '@src/lib/withBaseURL'
+import { createActorContext } from '@xstate/react'
+import ms from 'ms'
+import { assertEvent, assign, fromPromise, setup } from 'xstate'
+import type { ActorRefFrom } from 'xstate'
 
 import {
-  isCustomIconName,
   type CustomIconName,
+  isCustomIconName,
 } from '@src/components/CustomIcon'
 
 import { isArray } from '@src/lib/utils'
 
-import { S, transitions } from '@src/machines/utils'
 import { getKclVersion } from '@src/lib/kclVersion'
+import { S, transitions } from '@src/machines/utils'
 
 import { Socket } from '@src/lib/socket'
 
@@ -28,9 +28,9 @@ import { Socket } from '@src/lib/socket'
 // import { MockSocket } from '@src/mocks/copilot'
 
 import type { ArtifactGraph } from '@src/lang/wasm'
-import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 import { constructMultiFileIterationRequestWithPromptHelpers } from '@src/lib/promptToEdit'
 
@@ -167,6 +167,7 @@ export enum MlEphantManagerTransitions {
   MessageSend = 'message-send',
   ResponseReceive = 'response-receive',
   ModesReceive = 'modes-receive',
+  DebugTimingSet = 'debug-timing-set',
   ConversationClose = 'conversation-close',
   Cancel = 'cancel',
   Interrupt = 'interrupt',
@@ -223,6 +224,10 @@ export type MlEphantManagerEvents =
       modeOptions: MlCopilotModeOption[]
     }
   | {
+      type: MlEphantManagerTransitions.DebugTimingSet
+      enabled: boolean
+    }
+  | {
       type: MlEphantManagerTransitions.ConversationClose
     }
   | {
@@ -254,10 +259,29 @@ export interface Exchange {
   // BELOW:
   // An optimization. `delta` messages will be appended here.
   deltasAggregated: string
+
+  debugTimings?: ZookeeperDebugTimingSpan[]
 }
 
 export type Conversation = {
   exchanges: Exchange[]
+}
+
+export type ZookeeperDebugTimingResponseType = 'reasoning' | 'tool_output'
+
+export type ZookeeperDebugTimingSpan = {
+  from: ZookeeperDebugTimingResponseType
+  to: ZookeeperDebugTimingResponseType
+  durationMs: number
+  startedAt: number
+  endedAt: number
+}
+
+type ZookeeperDebugTimingPoint = {
+  exchangeIndex: number
+  responseType: ZookeeperDebugTimingResponseType
+  timestamp: number
+  markName?: string
 }
 
 export interface MlEphantManagerContext {
@@ -275,6 +299,8 @@ export interface MlEphantManagerContext {
   pendingBackendShutdown: boolean
   defaultMode?: MlCopilotModeId
   modeOptions?: MlCopilotModeOption[]
+  debugTimingEnabled: boolean
+  lastDebugTimingPoint?: ZookeeperDebugTimingPoint
   cachedSetup?: {
     refParentSend?: (event: MlEphantManagerEvents) => void
     conversationId?: string
@@ -300,6 +326,8 @@ export const mlEphantDefaultContext = (args: {
   pendingBackendShutdown: false,
   defaultMode: undefined,
   modeOptions: undefined,
+  debugTimingEnabled: false,
+  lastDebugTimingPoint: undefined,
 })
 
 const ZOOKEEPER_DISCONNECT_LOG_PREFIX = '[zookeeper-disconnect]'
@@ -356,6 +384,132 @@ function isBackendShutdownMessage(
 
 function isResponseComplete(response: MlCopilotServerMessage): boolean {
   return 'end_of_stream' in response || 'error' in response
+}
+
+function getZookeeperDebugTimingResponseType(
+  response: MlCopilotServerMessage
+): ZookeeperDebugTimingResponseType | undefined {
+  if ('reasoning' in response) {
+    return 'reasoning'
+  }
+  if ('tool_output' in response) {
+    return 'tool_output'
+  }
+  return undefined
+}
+
+let debugTimingMarkCounter = 0
+
+function createZookeeperDebugTimingPoint({
+  responseType,
+  exchangeIndex,
+}: {
+  responseType: ZookeeperDebugTimingResponseType
+  exchangeIndex: number
+}): ZookeeperDebugTimingPoint {
+  const timestamp = globalThis.performance?.now?.() ?? Date.now()
+  const markName = `zookeeper.debugTiming.${responseType}.${debugTimingMarkCounter++}`
+
+  try {
+    globalThis.performance?.mark?.(markName)
+  } catch {
+    return { exchangeIndex, responseType, timestamp }
+  }
+
+  return { exchangeIndex, responseType, timestamp, markName }
+}
+
+function createZookeeperDebugTimingSpan({
+  previous,
+  current,
+}: {
+  previous: ZookeeperDebugTimingPoint
+  current: ZookeeperDebugTimingPoint
+}): ZookeeperDebugTimingSpan {
+  let durationMs = current.timestamp - previous.timestamp
+
+  if (previous.markName && current.markName) {
+    const measureName = `zookeeper.debugTiming.${previous.responseType}-to-${current.responseType}.${debugTimingMarkCounter++}`
+    try {
+      globalThis.performance?.measure?.(
+        measureName,
+        previous.markName,
+        current.markName
+      )
+      const measuredDuration = globalThis.performance
+        ?.getEntriesByName?.(measureName)
+        .at(-1)?.duration
+      if (typeof measuredDuration === 'number') {
+        durationMs = measuredDuration
+      }
+    } catch {
+      durationMs = current.timestamp - previous.timestamp
+    }
+  }
+
+  return {
+    from: previous.responseType,
+    to: current.responseType,
+    durationMs: Math.max(0, durationMs),
+    startedAt: previous.timestamp,
+    endedAt: current.timestamp,
+  }
+}
+
+function formatZookeeperDebugTimingResponseType(
+  responseType: ZookeeperDebugTimingResponseType
+) {
+  return responseType === 'reasoning' ? 'reasoning' : 'tool call response'
+}
+
+export function formatZookeeperDebugTimingSpan(span: ZookeeperDebugTimingSpan) {
+  const duration =
+    span.durationMs < 1000
+      ? `${span.durationMs.toFixed(1)} ms`
+      : ms(span.durationMs, { long: true })
+
+  return `${formatZookeeperDebugTimingResponseType(span.from)} -> ${formatZookeeperDebugTimingResponseType(span.to)}: ${duration}`
+}
+
+function applyZookeeperDebugTiming({
+  context,
+  exchange,
+  exchangeIndex,
+  response,
+}: {
+  context: MlEphantManagerContext
+  exchange: Exchange
+  exchangeIndex: number
+  response: MlCopilotServerMessage
+}): ZookeeperDebugTimingPoint | undefined {
+  if (!context.debugTimingEnabled) {
+    return undefined
+  }
+
+  const responseType = getZookeeperDebugTimingResponseType(response)
+  if (!responseType) {
+    return isResponseComplete(response)
+      ? undefined
+      : context.lastDebugTimingPoint
+  }
+
+  const current = createZookeeperDebugTimingPoint({
+    responseType,
+    exchangeIndex,
+  })
+  const previous = context.lastDebugTimingPoint
+  if (
+    previous &&
+    previous.exchangeIndex === exchangeIndex &&
+    previous.responseType !== current.responseType
+  ) {
+    exchange.debugTimings = [
+      ...(exchange.debugTimings ?? []),
+      createZookeeperDebugTimingSpan({ previous, current }),
+    ]
+  }
+
+  return current
 }
 
 async function toMlCopilotFile(file: File): Promise<MlCopilotFile> {
@@ -418,6 +572,14 @@ export const MlEphantConversationToMarkdown = (
 
       // An error signals end of stream as well.
       if ('error' in response || 'end_of_stream' in response) {
+        if (exchange.debugTimings && exchange.debugTimings.length > 0) {
+          reason += '**Client debug timings:**\n\n'
+          for (const timing of exchange.debugTimings) {
+            reason += `* ${formatZookeeperDebugTimingSpan(timing)}\n`
+          }
+          reason += '\n'
+        }
+
         let time = 0
         if ('end_of_stream' in response) {
           time =
@@ -543,6 +705,13 @@ export const mlEphantManagerMachine = setup({
       return {
         defaultMode: event.defaultMode ?? context.defaultMode,
         modeOptions: event.modeOptions,
+      }
+    }),
+    assignDebugTimingEnabled: assign(({ event }) => {
+      assertEvent(event, MlEphantManagerTransitions.DebugTimingSet)
+      return {
+        debugTimingEnabled: event.enabled,
+        lastDebugTimingPoint: undefined,
       }
     }),
     disconnectIfIdle: ({ context }) => {
@@ -1061,6 +1230,9 @@ export const mlEphantManagerMachine = setup({
     [MlEphantManagerTransitions.ModesReceive]: {
       actions: ['assignModeOptions'],
     },
+    [MlEphantManagerTransitions.DebugTimingSet]: {
+      actions: ['assignDebugTimingEnabled'],
+    },
   },
   states: {
     [S.Await]: {
@@ -1076,6 +1248,7 @@ export const mlEphantManagerMachine = setup({
               conversationId: undefined,
               defaultMode: undefined,
               modeOptions: undefined,
+              lastDebugTimingPoint: undefined,
               awaitingResponse: false,
               pendingBackendShutdown: false,
             }),
@@ -1112,6 +1285,7 @@ export const mlEphantManagerMachine = setup({
               ...event.output,
               defaultMode: event.output.defaultMode ?? context.defaultMode,
               modeOptions: event.output.modeOptions ?? context.modeOptions,
+              lastDebugTimingPoint: undefined,
               awaitingResponse: false,
               pendingBackendShutdown: false,
             })),
@@ -1184,6 +1358,7 @@ export const mlEphantManagerMachine = setup({
               awaitingResponse({ event }) {
                 return event.output.awaitingResponse ?? false
               },
+              lastDebugTimingPoint: undefined,
             }),
           ],
         },
@@ -1251,6 +1426,7 @@ export const mlEphantManagerMachine = setup({
                       return {
                         conversation,
                         lastMessageId,
+                        lastDebugTimingPoint: undefined,
                         awaitingResponse: false,
                         pendingBackendShutdown: responseComplete
                           ? false
@@ -1276,6 +1452,13 @@ export const mlEphantManagerMachine = setup({
                     } else {
                       lastExchange.responses.push(event.response)
                     }
+                    const lastExchangeIndex = conversation.exchanges.length - 1
+                    const lastDebugTimingPoint = applyZookeeperDebugTiming({
+                      context,
+                      exchange: lastExchange,
+                      exchangeIndex: lastExchangeIndex,
+                      response: event.response,
+                    })
 
                     // This sucks but must be done because we can't
                     // enumerate the message types.
@@ -1305,6 +1488,7 @@ export const mlEphantManagerMachine = setup({
                       conversation,
                       lastMessageId,
                       lastMessageType,
+                      lastDebugTimingPoint,
                       awaitingResponse: responseComplete
                         ? false
                         : context.awaitingResponse,
@@ -1354,6 +1538,7 @@ export const mlEphantManagerMachine = setup({
                     assign(({ event, context }) => ({
                       ...event.output,
                       awaitingResponse: true,
+                      lastDebugTimingPoint: undefined,
                       pendingBackendShutdown: context.pendingBackendShutdown,
                     })),
                   ],
@@ -1427,6 +1612,7 @@ export const mlEphantManagerMachine = setup({
               lastMessageType: undefined,
               awaitingResponse: false,
               pendingBackendShutdown: false,
+              lastDebugTimingPoint: undefined,
               closeReason: undefined,
               ws: undefined,
             }

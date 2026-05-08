@@ -7,14 +7,29 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
+import type { Setting, SettingsType } from '@src/lib/settings/initialSettings'
 import { BillingTransition } from '@src/machines/billingMachine'
 import {
   MlEphantConversationToMarkdown,
   MlEphantManagerReactContext,
+  MlEphantManagerTransitions,
 } from '@src/machines/mlEphantManagerMachine'
+import { useEffect } from 'react'
 // Yea, feels bad, but literally every other pane is doing this.
 // TODO: Don't use CSS module for this? More generic module?
 import styles from './KclEditorMenu.module.css'
+
+type ZookeeperSettings = SettingsType & {
+  zookeeper?: {
+    debugTiming?: Setting<boolean>
+  }
+}
+
+function getZookeeperDebugTimingSetting(settings: SettingsType) {
+  return Boolean(
+    (settings as ZookeeperSettings).zookeeper?.debugTiming?.current
+  )
+}
 
 export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
   useSignals()
@@ -30,6 +45,14 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
   } = useModelingContext()
   const loaderFile = project?.executingFileEntry.value
   const mlEphantManagerActor = MlEphantManagerReactContext.useActorRef()
+  const zookeeperDebugTiming = getZookeeperDebugTimingSetting(settingsValues)
+
+  useEffect(() => {
+    mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions.DebugTimingSet,
+      enabled: zookeeperDebugTiming,
+    })
+  }, [mlEphantManagerActor, zookeeperDebugTiming])
 
   const sendBillingUpdate = () => {
     billing.send({
