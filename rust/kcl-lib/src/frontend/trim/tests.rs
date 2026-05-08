@@ -2894,7 +2894,6 @@ async fn get_objects_from_kcl(kcl_code: &str) -> Vec<crate::frontend::api::Objec
 
     // If scene graph is empty, try to get objects from exec_outcome.scene_objects
     // (this is only available when artifact-graph feature is enabled)
-    #[cfg(feature = "artifact-graph")]
     if scene_graph.objects.is_empty() && !exec_outcome.scene_objects.is_empty() {
         scene_graph.objects = exec_outcome.scene_objects;
     }

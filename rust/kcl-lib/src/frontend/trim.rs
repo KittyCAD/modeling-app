@@ -16,7 +16,7 @@ use crate::frontend::sketch::Segment;
 use crate::frontend::sketch::SegmentCtor;
 use crate::pretty::NumericSuffix;
 
-#[cfg(all(feature = "artifact-graph", test))]
+#[cfg(test)]
 mod tests;
 
 // Epsilon constants for geometric calculations
@@ -2572,7 +2572,7 @@ where
 }
 
 /// Result of executing trim flow
-#[cfg(all(feature = "artifact-graph", test))]
+#[cfg(test)]
 #[derive(Debug, Clone)]
 pub struct TrimFlowResult {
     pub kcl_code: String,
@@ -2594,7 +2594,7 @@ pub struct TrimFlowResult {
 ///
 /// Note: This function is only available for non-WASM builds (tests) and uses
 /// a mock executor context so tests can run without an engine token.
-#[cfg(all(not(target_arch = "wasm32"), feature = "artifact-graph", test))]
+#[cfg(all(not(target_arch = "wasm32"), test))]
 pub(crate) async fn execute_trim_flow(
     kcl_code: &str,
     trim_points: &[Coords2d],
@@ -2634,7 +2634,6 @@ pub(crate) async fn execute_trim_flow(
 
         // If scene graph is empty, try to get objects from exec_outcome.scene_objects
         // (this is only available when artifact-graph feature is enabled)
-        #[cfg(feature = "artifact-graph")]
         if initial_scene_graph.objects.is_empty() && !exec_outcome.scene_objects.is_empty() {
             initial_scene_graph.objects = exec_outcome.scene_objects.clone();
         }

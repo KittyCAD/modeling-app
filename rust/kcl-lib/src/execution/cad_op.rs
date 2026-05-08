@@ -81,7 +81,6 @@ impl Operation {
         }
     }
 
-    #[cfg(feature = "artifact-graph")]
     pub(crate) fn fill_node_paths(&mut self, programs: &crate::execution::ProgramLookup, cached_body_items: usize) {
         match self {
             Operation::StdLibCall {
