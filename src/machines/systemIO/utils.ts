@@ -206,6 +206,9 @@ export type RequestedKCLFileDelete = {
   requestedFileName: string
 }
 
+export const normalizeKCLFileDeletePath = (filePath: string) =>
+  filePath.replaceAll('\\', '/')
+
 export type RequestedProjectFile = {
   requestedProjectName: string
   requestedFileName: string

@@ -40,6 +40,7 @@ import {
   jsonToMlConversations,
   mlConversationsToJson,
   collectProjectFiles,
+  normalizeKCLFileDeletePath,
 } from '@src/machines/systemIO/utils'
 import { fromPromise } from 'xstate'
 import { err, isErr } from '@src/lib/trap'
@@ -265,12 +266,16 @@ const sharedBulkDeleteWorkflow = async ({
   })
 
   const requestedFilesToDelete = new Set(
-    (input.filesToDelete ?? []).map((file) => file.requestedFileName)
+    (input.filesToDelete ?? []).map((file) =>
+      normalizeKCLFileDeletePath(file.requestedFileName)
+    )
   )
 
   // requestedFileName is the relative path too.
   const filesToDelete = filesInProject.filter(
-    (file) => requestedFilesToDelete.has(file.relPath) === true
+    (file) =>
+      requestedFilesToDelete.has(normalizeKCLFileDeletePath(file.relPath)) ===
+      true
   )
 
   let totalDeleted = 0

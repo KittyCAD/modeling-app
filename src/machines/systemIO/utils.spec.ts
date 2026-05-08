@@ -1,4 +1,7 @@
-import { prepareMlEphantNewFileRequest } from '@src/machines/systemIO/utils'
+import {
+  normalizeKCLFileDeletePath,
+  prepareMlEphantNewFileRequest,
+} from '@src/machines/systemIO/utils'
 import { describe, expect, it } from 'vitest'
 
 describe('System IO Utils', () => {
@@ -152,5 +155,17 @@ describe('System IO Utils', () => {
     expect(preparedPayload?.filesToDelete).toEqual([
       { requestedFileName: 'old.kcl' },
     ])
+  })
+
+  it('matches explicit Zookeeper delete signals across path separators', () => {
+    const requestedFilesToDelete = new Set(
+      [{ requestedFileName: 'parts/old.kcl' }].map((file) =>
+        normalizeKCLFileDeletePath(file.requestedFileName)
+      )
+    )
+
+    expect(
+      requestedFilesToDelete.has(normalizeKCLFileDeletePath('parts\\old.kcl'))
+    ).toBe(true)
   })
 })
