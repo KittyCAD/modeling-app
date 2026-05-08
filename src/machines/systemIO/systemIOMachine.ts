@@ -313,6 +313,12 @@ export const systemIOMachine = setup({
           }
         }
       | {
+          type: SystemIOMachineEvents.deleteMlEphantConversation
+          data: {
+            projectId: string
+          }
+        }
+      | {
           type: SystemIOMachineEvents.done_saveMlEphantConversations
           output: SystemIOContext['mlEphantConversations']
         },
@@ -751,15 +757,35 @@ export const systemIOMachine = setup({
       async (args: {
         input: {
           context: SystemIOContext
-          event: {
-            data: {
-              projectId: string
-              conversationId: string
-            }
-          }
+          event:
+            | {
+                type: SystemIOMachineEvents.saveMlEphantConversations
+                data: {
+                  projectId: string
+                  conversationId: string
+                }
+              }
+            | {
+                type: SystemIOMachineEvents.deleteMlEphantConversation
+                data: {
+                  projectId: string
+                }
+              }
         }
       }) => {
-        return new Map()
+        const next = new Map(args.input.context.mlEphantConversations)
+        if (
+          args.input.event.type ===
+          SystemIOMachineEvents.deleteMlEphantConversation
+        ) {
+          next.delete(args.input.event.data.projectId)
+        } else {
+          next.set(
+            args.input.event.data.projectId,
+            args.input.event.data.conversationId
+          )
+        }
+        return next
       }
     ),
   },
@@ -901,6 +927,9 @@ export const systemIOMachine = setup({
           target: SystemIOMachineStates.gettingMlEphantConversations,
         },
         [SystemIOMachineEvents.saveMlEphantConversations]: {
+          target: SystemIOMachineStates.savingMlEphantConversations,
+        },
+        [SystemIOMachineEvents.deleteMlEphantConversation]: {
           target: SystemIOMachineStates.savingMlEphantConversations,
         },
       },
@@ -1784,11 +1813,24 @@ export const systemIOMachine = setup({
       },
     },
     [SystemIOMachineStates.savingMlEphantConversations]: {
+      on: {
+        [SystemIOMachineEvents.saveMlEphantConversations]: {
+          target: SystemIOMachineStates.savingMlEphantConversations,
+          reenter: true,
+        },
+        [SystemIOMachineEvents.deleteMlEphantConversation]: {
+          target: SystemIOMachineStates.savingMlEphantConversations,
+          reenter: true,
+        },
+      },
       invoke: {
         id: SystemIOMachineActors.saveMlEphantConversations,
         src: SystemIOMachineActors.saveMlEphantConversations,
         input: ({ event, context }) => {
-          assertEvent(event, SystemIOMachineEvents.saveMlEphantConversations)
+          assertEvent(event, [
+            SystemIOMachineEvents.saveMlEphantConversations,
+            SystemIOMachineEvents.deleteMlEphantConversation,
+          ])
           return {
             context,
             event,

@@ -30,6 +30,7 @@ import type {
   MlCopilotModeOption,
 } from '@src/machines/mlEphantManagerMachine'
 import { MlEphantManagerTransitions } from '@src/machines/mlEphantManagerMachine'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 
 const completedConversation: Conversation = {
   exchanges: [
@@ -50,6 +51,27 @@ const completedConversation: Conversation = {
   ],
 }
 
+type FakeMlEphantSnapshot = {
+  value: string
+  context: {
+    abruptlyClosed: boolean
+    awaitingResponse: boolean
+    conversation?: Conversation
+    conversationId?: string
+    defaultMode?: MlCopilotModeId
+    modeOptions?: MlCopilotModeOption[]
+  }
+  matches: (state: unknown) => boolean
+}
+
+type FakeMlEphantActor = {
+  getSnapshot: () => FakeMlEphantSnapshot
+  subscribe: (listener?: (next: FakeMlEphantSnapshot) => void) => {
+    unsubscribe: () => void
+  }
+  send: ReturnType<typeof vi.fn>
+}
+
 const createFakeActor = ({
   conversation = completedConversation,
   defaultMode = undefined,
@@ -60,8 +82,8 @@ const createFakeActor = ({
   defaultMode?: MlCopilotModeId
   modeOptions?: MlCopilotModeOption[]
   value?: string
-} = {}) => {
-  const snapshot = {
+} = {}): FakeMlEphantActor => {
+  const snapshot: FakeMlEphantSnapshot = {
     value,
     context: {
       abruptlyClosed: false,
@@ -71,7 +93,7 @@ const createFakeActor = ({
       defaultMode,
       modeOptions,
     },
-    matches: (state: string) => state === value,
+    matches: (state: unknown) => state === value,
   }
 
   return {
@@ -99,6 +121,57 @@ const createFakeSystemIOActor = ({
   }),
   send: vi.fn(),
 })
+
+const createStatefulClearChatActor = () => {
+  let snapshot: FakeMlEphantSnapshot = {
+    value: 'ready',
+    context: {
+      abruptlyClosed: false,
+      awaitingResponse: false,
+      conversation: completedConversation,
+      conversationId: 'old-conversation-id',
+      defaultMode: undefined,
+      modeOptions: undefined,
+    },
+    matches: (state: unknown) => state === snapshot.value,
+  }
+  const listeners = new Set<(next: FakeMlEphantSnapshot) => void>()
+
+  const actor: FakeMlEphantActor = {
+    getSnapshot: () => snapshot,
+    subscribe: (listener?: (next: FakeMlEphantSnapshot) => void) => {
+      if (listener !== undefined) {
+        listeners.add(listener)
+      }
+      return {
+        unsubscribe: () => {
+          if (listener !== undefined) {
+            listeners.delete(listener)
+          }
+        },
+      }
+    },
+    send: vi.fn((event: { type: string }) => {
+      if (event.type !== MlEphantManagerTransitions.ConversationClose) {
+        return
+      }
+
+      snapshot = {
+        ...snapshot,
+        value: 'await',
+        context: {
+          ...snapshot.context,
+          awaitingResponse: false,
+          conversation: undefined,
+          conversationId: undefined,
+        },
+      }
+      listeners.forEach((listener) => listener(snapshot))
+    }),
+  }
+
+  return actor
+}
 
 const renderPane = ({
   mlEphantManagerActor = createFakeActor(),
@@ -337,6 +410,49 @@ describe('MlEphantConversationPane', () => {
       expect.objectContaining({
         type: MlEphantManagerTransitions.CacheSetupAndConnect,
         conversationId: 'conversation-id',
+      })
+    )
+  })
+
+  test('clearing chat forgets the saved project conversation before starting a fresh one', () => {
+    const mlEphantManagerActor = createStatefulClearChatActor()
+    const systemIOActor = createFakeSystemIOActor({
+      mlEphantConversations: new Map([['project-id', 'old-conversation-id']]),
+    })
+
+    renderPane({
+      mlEphantManagerActor,
+      systemIOActor,
+      settingsMetaId: 'project-id',
+      theProject: {
+        name: 'sample-project',
+        path: '/tmp/sample-project',
+      },
+    })
+    mlEphantManagerActor.send.mockClear()
+    systemIOActor.send.mockClear()
+
+    fireEvent.click(screen.getByRole('button', { name: /Clear chat/ }))
+
+    expect(systemIOActor.send).toHaveBeenCalledWith({
+      type: SystemIOMachineEvents.deleteMlEphantConversation,
+      data: {
+        projectId: 'project-id',
+      },
+    })
+    expect(mlEphantManagerActor.send).toHaveBeenCalledWith({
+      type: MlEphantManagerTransitions.ConversationClose,
+    })
+    expect(mlEphantManagerActor.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        conversationId: undefined,
+      })
+    )
+    expect(mlEphantManagerActor.send).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        conversationId: 'old-conversation-id',
       })
     )
   })

@@ -132,6 +132,7 @@ export enum SystemIOMachineEvents {
   done_getMlEphantConversations = donePrefix + 'get ml-ephant conversations',
   saveMlEphantConversations = 'save ml-ephant conversations',
   done_saveMlEphantConversations = donePrefix + 'save ml-ephant conversations',
+  deleteMlEphantConversation = 'delete ml-ephant conversation',
 }
 
 export enum SystemIOMachineActions {

@@ -6,7 +6,6 @@ import { type MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
   type SystemIOActor,
   SystemIOMachineEvents,
-  SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import { useSelector } from '@xstate/react'
 import { useEffect } from 'react'
@@ -78,13 +77,6 @@ export const useProjectIdToConversationId = (
         return
       }
       if (settings2.meta.id.current === uuidNIL) {
-        return
-      }
-      const systemIOActorSnapshot = systemIOActor.getSnapshot()
-      if (
-        systemIOActorSnapshot.value ===
-        SystemIOMachineStates.savingMlEphantConversations
-      ) {
         return
       }
       if (next.context.conversationId === undefined) {
