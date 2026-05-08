@@ -131,29 +131,19 @@ export const useWatchForNewFileRequestsFromMlEphant = (
   useEffect(() => {
     let lastId: number | undefined = undefined
     const subscription = mlEphantManagerActor.subscribe((next) => {
-      if (next.context.lastMessageId === lastId) {
-        return
-      }
+      if (next.context.lastMessageId === lastId) return
       lastId = next.context.lastMessageId
 
-      if (next.context.lastMessageType === 'delta') {
-        return
-      }
+      if (next.context.lastMessageType === 'delta') return
 
       const exchanges = next.context.conversation?.exchanges ?? []
       const lastExchange = exchanges[exchanges.length - 1]
-      if (lastExchange === undefined) {
-        return
-      }
+      if (lastExchange === undefined) return
       const lastResponse = (lastExchange.responses ?? []).slice(-1)[0] ?? {}
-      if (!('tool_output' in lastResponse)) {
-        return
-      }
+      if (!('tool_output' in lastResponse)) return
 
       // We don't know what project to write to, so do nothing.
-      if (!next.context.projectNameCurrentlyOpened) {
-        return
-      }
+      if (!next.context.projectNameCurrentlyOpened) return
 
       const fileNamesToDelete = new Set(
         lastExchange.responses.flatMap((response) => {
