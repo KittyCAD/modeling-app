@@ -1,6 +1,7 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
+import { isArray } from '@src/lib/utils'
 
 /**
  * Extract a specific line from code string (1-based line number).
@@ -740,12 +741,13 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       '  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 5mm])'
     const editedLine =
       '  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 8mm])'
-    const getWriteToFileCalls = async () =>
-      page.evaluate(() => {
-        const calls = Reflect.get(window, 'kclWriteToFileCallsForTest')
-        if (!Array.isArray(calls)) return []
-        return calls.filter((call): call is string => typeof call === 'string')
-      })
+    const getWriteToFileCalls = async () => {
+      const calls = await page.evaluate(() =>
+        Reflect.get(window, 'kclWriteToFileCallsForTest')
+      )
+      if (!isArray(calls)) return []
+      return calls.filter((call): call is string => typeof call === 'string')
+    }
 
     await test.step('Set up a sketch and enter sketch edit mode', async () => {
       await context.addInitScript(
