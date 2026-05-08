@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import {
   createArcActor,
   finalizeArcActor,
+  getArcPointIdsForSegment,
   projectPointOntoArcRadius,
   sendResultToParent,
   storeCreatedArcResult,
@@ -158,6 +159,30 @@ function createArcApiObject({
 }
 
 describe('centerArcToolImpl', () => {
+  describe('getArcPointIdsForSegment', () => {
+    it('returns center, start, and end point ids for the active draft arc', () => {
+      const centerPoint = createPointApiObject({ id: 1, x: 0, y: 0 })
+      const startPoint = createPointApiObject({ id: 2, x: 10, y: 0 })
+      const endPoint = createPointApiObject({ id: 3, x: 0, y: 10 })
+      const arcObj = createArcApiObject({
+        id: 4,
+        center: 1,
+        start: 2,
+        end: 3,
+      })
+      const sceneGraphDelta = createSceneGraphDelta([
+        centerPoint,
+        startPoint,
+        endPoint,
+        arcObj,
+      ])
+
+      expect(
+        getArcPointIdsForSegment(sceneGraphDelta.new_graph.objects, 4)
+      ).toEqual([1, 2, 3])
+    })
+  })
+
   describe('projectPointOntoArcRadius', () => {
     it('should project a point onto the circle defined by center and start', () => {
       const center: [number, number] = [0, 0]

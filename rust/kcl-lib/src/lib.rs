@@ -93,6 +93,7 @@ mod wasm;
 
 pub use coredump::CoreDump;
 pub use engine::AsyncTasks;
+pub use engine::EngineBatchContext;
 pub use engine::EngineManager;
 pub use engine::EngineStats;
 pub use errors::BacktraceItem;

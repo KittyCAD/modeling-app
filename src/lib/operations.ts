@@ -206,6 +206,23 @@ function extractStringArgument(
     : undefined
 }
 
+function extractStringArrayArgument(
+  code: string,
+  operation: StdLibCallOp,
+  argName: string
+): string | undefined {
+  const raw = extractStringArgument(code, operation, argName)
+  if (!raw) return undefined
+
+  return raw
+    .replace(/^\s*\[/, '')
+    .replace(/\]\s*$/, '')
+    .split(',')
+    .map((value) => stripQuotes(value.trim()))
+    .filter(Boolean)
+    .join(', ')
+}
+
 /**
  * Gather up the a Parameter operation's data
  * to be used in the command bar edit flow.
@@ -1936,6 +1953,69 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({
   }
 }
 
+const prepareToEditGdtProfile: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  artifactGraph,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'GDT Profile',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const edgesArg = operation.labeledArgs?.['edges']
+  if (!edgesArg || !edgesArg.sourceRange) {
+    return { reason: 'Missing or invalid edges argument' }
+  }
+
+  const edges = retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+  const tolerance = await extractKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if ('error' in tolerance) {
+    return { reason: tolerance.error }
+  }
+
+  const optionalArgs = await Promise.all([
+    extractKclArgument(code, operation, 'precision', rustContext),
+    extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
+    extractKclArgument(code, operation, 'fontPointSize', rustContext),
+    extractKclArgument(code, operation, 'fontScale', rustContext),
+  ])
+
+  const [precision, framePosition, leaderScale, fontPointSize, fontScale] =
+    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
+
+  const framePlane = extractStringArgument(code, operation, 'framePlane')
+  const datums = extractStringArrayArgument(code, operation, 'datums')
+
+  const argDefaultValues: ModelingCommandSchema['GDT Profile'] = {
+    edges,
+    datums,
+    tolerance,
+    precision,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontPointSize,
+    fontScale,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
 const prepareToEditSplit: PrepareToEditCallback = async ({
   operation,
   artifactGraph,
@@ -2066,6 +2146,11 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Flatness',
     icon: 'gdtFlatness',
     prepareToEdit: prepareToEditGdtFlatness,
+  },
+  'gdt::profile': {
+    label: 'Profile',
+    icon: 'gdtProfile',
+    prepareToEdit: prepareToEditGdtProfile,
   },
   'gear::helical': {
     label: 'Helical Gear',
@@ -3206,42 +3291,81 @@ async function prepareToEditAppearance({
 }
 
 export type HideOperation = Operation & { type: 'StdLibCall'; name: 'hide' }
+
+function getHideOperationArtifactIds(op: Operation): string[] {
+  if (!(op.type === 'StdLibCall' && op.name === 'hide')) {
+    return []
+  }
+
+  const value = op.unlabeledArg?.value
+  if (!value) {
+    return []
+  }
+
+  const values = value.type === 'Array' ? value.value : [value]
+  return values.flatMap((value) =>
+    'value' in value &&
+    typeof value.value === 'object' &&
+    value.value !== null &&
+    'artifactId' in value.value &&
+    typeof value.value.artifactId === 'string'
+      ? [value.value.artifactId]
+      : []
+  )
+}
+
 export function getHideOpByArtifactId(
   ops: Operation[],
   searchId: string
 ): HideOperation | undefined {
-  const found = ops.find((op) => {
-    if (!(op.type === 'StdLibCall' && op.name === 'hide')) {
-      return undefined
-    }
-    if (op.unlabeledArg?.value.type === 'Array') {
-      const found = op.unlabeledArg.value.value.find(
-        (a) =>
-          'value' in a &&
-          typeof a.value === 'object' &&
-          'artifactId' in a.value &&
-          typeof a.value?.artifactId === 'string' &&
-          a.value.artifactId === searchId
-      )
-
-      return found ? op : undefined
-    } else if (
-      op.unlabeledArg?.value &&
-      'value' in op.unlabeledArg.value &&
-      op.unlabeledArg.value.value &&
-      typeof op.unlabeledArg.value.value === 'object' &&
-      'artifactId' in op.unlabeledArg.value.value &&
-      typeof op.unlabeledArg.value.value.artifactId === 'string' &&
-      op.unlabeledArg.value.value.artifactId
-    ) {
-      return op.unlabeledArg.value.value.artifactId === searchId
-        ? op
-        : undefined
-    }
-    return undefined
-  })
+  const found = ops.find((op) =>
+    getHideOperationArtifactIds(op).includes(searchId)
+  )
 
   return found as HideOperation | undefined
+}
+
+type ArtifactCodeRef = Extract<Artifact, { codeRef: unknown }>['codeRef']
+
+function codeRefsMatch(left: ArtifactCodeRef, right: ArtifactCodeRef) {
+  return (
+    left.range.length === right.range.length &&
+    left.range.every((value, index) => value === right.range[index]) &&
+    JSON.stringify(left.nodePath) === JSON.stringify(right.nodePath)
+  )
+}
+
+export function getHideOpForArtifact(input: {
+  operations: Operation[]
+  artifact: Artifact
+  artifactGraph: ArtifactGraph
+}): HideOperation | undefined {
+  const { operations, artifact, artifactGraph } = input
+  const directHideOperation = getHideOpByArtifactId(operations, artifact.id)
+  if (directHideOperation) {
+    return directHideOperation
+  }
+
+  if (!('codeRef' in artifact)) {
+    return undefined
+  }
+
+  const equivalentArtifactIds = new Set(
+    [...artifactGraph.values()].flatMap((candidate) => {
+      if (
+        !('codeRef' in candidate) ||
+        !codeRefsMatch(candidate.codeRef, artifact.codeRef)
+      ) {
+        return []
+      }
+
+      return [candidate.id]
+    })
+  )
+
+  return operations.find((op) =>
+    getHideOperationArtifactIds(op).some((id) => equivalentArtifactIds.has(id))
+  ) as HideOperation | undefined
 }
 
 export function onHide(props: {

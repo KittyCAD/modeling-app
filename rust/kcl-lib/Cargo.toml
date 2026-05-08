@@ -1,7 +1,7 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
-version = "0.2.150"
+version = "0.2.151"
 edition = "2024"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
@@ -68,8 +68,8 @@ image = { version = "0.25.10", default-features = false, features = ["png"] }
 image-compare = "0.5.0"
 indexmap = { workspace = true, features = ["serde", "rayon"] }
 itertools = "0.14.0"
-kcl-derive-docs = { version = "0.2.150", path = "../kcl-derive-docs" }
-kcl-error = { version = "0.2.150", path = "../kcl-error" }
+kcl-derive-docs = { version = "0.2.151", path = "../kcl-derive-docs" }
+kcl-error = { version = "0.2.151", path = "../kcl-error" }
 ezpz = { workspace = true }
 kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
@@ -87,6 +87,7 @@ regex = "1.12.3"
 reqwest = { version = "0.12", default-features = false, features = [
   "stream",
   "rustls-tls",
+  "rustls-tls-native-roots",
 ] }
 rgba_simple = "0.10.0"
 rmp-serde = { workspace = true }
@@ -183,4 +184,4 @@ harness = false
 [[test]]
 name = "executor"
 path = "e2e/executor/main.rs"
-required-features = ["engine", "artifact-graph"]
+required-features = ["engine"]
