@@ -1,4 +1,4 @@
-import { assertParse, type PathToNode, recast, type Name } from '@src/lang/wasm'
+import { assertParse, recast, type Name } from '@src/lang/wasm'
 import {
   createSelectionFromArtifacts,
   createSelectionFromPathArtifact,

@@ -56,7 +56,6 @@ import type {
   EdgeRefactorMeta,
   Expr,
   ExpressionStatement,
-  MemberExpression,
   Name,
   PathToNode,
   Program,
@@ -80,24 +79,6 @@ import type {
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-
-function createMemberExpr(
-  object: Expr,
-  propertyName: string
-): Node<MemberExpression> {
-  return {
-    type: 'MemberExpression',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    outerAttrs: [],
-    preComments: [],
-    commentStart: 0,
-    object,
-    property: createLocalName(propertyName),
-    computed: false,
-  }
-}
 
 export function addFillet({
   ast,

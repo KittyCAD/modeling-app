@@ -6,17 +6,12 @@ import {
   createLiteral,
 } from '@src/lang/create'
 import {
-  createEdgeRefObjectExpression,
-  entityReferenceToEdgeRefPayload,
-} from '@src/lang/modifyAst/edges'
-import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
 import { getAxisExpression } from '@src/lang/modifyAst/sweeps'
 import {
   getVariableExprsFromSelection,
-  resolveToCodeRef,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import type {

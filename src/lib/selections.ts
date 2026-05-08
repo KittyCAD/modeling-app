@@ -34,7 +34,6 @@ import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
-import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
 import type { KclManager } from '@src/lang/KclManager'
 import {
   getCapCodeRef,

@@ -1902,7 +1902,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         liveSel
       )
       const sel = selectionForFillet ?? filletArgs.selection
-      const g0 = sel?.graphSelections?.[0]
       if (
         typeof localStorage !== 'undefined' &&
         localStorage.getItem('DEBUG_FILLET_SELECTION') === '1'

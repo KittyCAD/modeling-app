@@ -1,5 +1,4 @@
 import {
-  coerceSelectionsToBody,
   getArtifactFromRange,
   getBodiesFromArtifactGraph,
   getSketchBlockForArtifact,
@@ -9,7 +8,7 @@ import {
   type ResolvedGraphSelection,
 } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, PathToNode } from '@src/lang/wasm'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+import type { Selection } from '@src/machines/modelingSharedTypes'
 import { describe, expect, it } from 'vitest'
 
 describe('getSweepArtifactFromSelection', () => {
