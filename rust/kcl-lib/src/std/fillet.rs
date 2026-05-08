@@ -116,10 +116,10 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
 
     let edge_refs: Option<Vec<KclValue>> = args.get_kw_arg_opt("edges", &RuntimeType::any_array(), exec_state)?;
-    let tags_result = args.kw_arg_edge_array_and_source("tags");
+    let tags = args.kw_arg_edge_array_and_source_opt("tags")?;
 
-    match (edge_refs, tags_result) {
-        (Some(edge_refs), Ok(tags_with_source)) => {
+    match (edge_refs, tags) {
+        (Some(edge_refs), Some(tags_with_source)) => {
             validate_unique(&tags_with_source)?;
             let tags: Vec<EdgeReference> = tags_with_source.into_iter().map(|item| item.0).collect();
             let tags_as_refs = tags_to_engine_edge_references(solid.id, tags, exec_state, &args).await?;
@@ -135,7 +135,7 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
             let value = inner_fillet_with_engine_refs(solid, all_refs, params, exec_state, args).await?;
             Ok(KclValue::Solid { value })
         }
-        (Some(edge_refs), Err(_)) => {
+        (Some(edge_refs), None) => {
             let params = FilletEdgeRefParams {
                 radius,
                 tolerance,
@@ -145,13 +145,13 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
             let value = inner_fillet_with_edge_refs(solid, edge_refs, params, exec_state, args).await?;
             Ok(KclValue::Solid { value })
         }
-        (None, Ok(tags_with_source)) => {
+        (None, Some(tags_with_source)) => {
             validate_unique(&tags_with_source)?;
             let tags: Vec<EdgeReference> = tags_with_source.into_iter().map(|item| item.0).collect();
             let value = inner_fillet(solid, radius, tags, tolerance, csg_algorithm, tag, exec_state, args).await?;
             Ok(KclValue::Solid { value })
         }
-        (None, Err(_)) => Err(KclError::new_semantic(KclErrorDetails {
+        (None, None) => Err(KclError::new_semantic(KclErrorDetails {
             source_ranges: vec![args.source_range],
             message: "You must provide either 'tags' or 'edges' to fillet edges".to_owned(),
             backtrace: Default::default(),

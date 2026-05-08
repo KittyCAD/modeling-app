@@ -42,10 +42,10 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
     let edge_refs = args.get_kw_arg_opt("edges", &RuntimeType::any_array(), exec_state)?;
-    let tags_result = args.kw_arg_edge_array_and_source("tags");
+    let tags = args.kw_arg_edge_array_and_source_opt("tags")?;
 
-    match (edge_refs, tags_result) {
-        (Some(edge_refs), Ok(tags_with_source)) => {
+    match (edge_refs, tags) {
+        (Some(edge_refs), Some(tags_with_source)) => {
             // Both provided: merge tags and edges into one list and use the edges engine path.
             super::fillet::validate_unique(&tags_with_source)?;
             let tags: Vec<EdgeReference> = tags_with_source.into_iter().map(|item| item.0).collect();
@@ -67,7 +67,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             .await?;
             Ok(KclValue::Solid { value })
         }
-        (Some(edge_refs), Err(_)) => {
+        (Some(edge_refs), None) => {
             let value = inner_chamfer_with_edge_refs(
                 solid,
                 length,
@@ -83,7 +83,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             .await?;
             Ok(KclValue::Solid { value })
         }
-        (None, Ok(tags_with_source)) => {
+        (None, Some(tags_with_source)) => {
             super::fillet::validate_unique(&tags_with_source)?;
             let tags: Vec<EdgeReference> = tags_with_source.into_iter().map(|item| item.0).collect();
             let value = inner_chamfer(
@@ -101,7 +101,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             .await?;
             Ok(KclValue::Solid { value })
         }
-        (None, Err(_)) => Err(KclError::new_semantic(KclErrorDetails::new(
+        (None, None) => Err(KclError::new_semantic(KclErrorDetails::new(
             "You must provide either 'tags' or 'edges' to chamfer edges".to_string(),
             vec![args.source_range],
         ))),
