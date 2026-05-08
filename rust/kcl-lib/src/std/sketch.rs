@@ -1078,7 +1078,7 @@ async fn inner_start_sketch_on(
                             vec![args.source_range],
                         )));
                     }
-                    Axis2dOrEdgeReference::EdgeReference(_) => {
+                    Axis2dOrEdgeReference::EdgeSpecifier(_) => {
                         return Err(KclError::new_semantic(KclErrorDetails::new(
                             "Use of an edge reference here is unsupported, please specify an `Axis2d` (e.g. `X`) instead."
                                 .to_owned(),

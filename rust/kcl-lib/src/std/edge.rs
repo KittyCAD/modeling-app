@@ -40,9 +40,11 @@ pub enum TagOrUuid {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, ts_rs::TS)]
 #[serde(rename_all = "camelCase")]
 pub struct UnresolvedEdgeSpecifier {
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub side_faces: Vec<TagOrUuid>,
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub end_faces: Vec<TagOrUuid>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub index: Option<u32>,
 }
 
@@ -404,14 +406,7 @@ pub async fn get_bounded_edge(exec_state: &mut ExecState, args: Args) -> Result<
     })
 }
 
-fn array_from_kcl(v: &KclValue) -> Option<&[KclValue]> {
-    match v {
-        KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => Some(value),
-        _ => None,
-    }
-}
-
-fn tag_or_uuid_from_kcl(value: &KclValue, field_name: &str, args: &Args) -> Result<TagOrUuid, KclError> {
+fn tag_or_uuid_from_value(value: &KclValue, field_name: &str, args: &Args) -> Result<TagOrUuid, KclError> {
     match value {
         KclValue::Uuid { value, .. } => Ok(TagOrUuid::Uuid(*value)),
         KclValue::TagIdentifier(tag) => Ok(TagOrUuid::Tag(tag.clone())),
@@ -438,7 +433,7 @@ fn parse_tag_or_uuid_array(
             Ok(Vec::new())
         };
     };
-    let values = array_from_kcl(value).ok_or_else(|| {
+    let values = value.as_slice().ok_or_else(|| {
         KclError::new_type(KclErrorDetails::new(
             format!("{field_name} must be an array"),
             vec![args.source_range],
@@ -446,7 +441,7 @@ fn parse_tag_or_uuid_array(
     })?;
     values
         .iter()
-        .map(|value| tag_or_uuid_from_kcl(value, field_name, args))
+        .map(|value| tag_or_uuid_from_value(value, field_name, args))
         .collect()
 }
 

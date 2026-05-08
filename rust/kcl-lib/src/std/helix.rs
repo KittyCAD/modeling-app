@@ -35,7 +35,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
             let spec = edge::parse_edge_specifier_value(&axis_val, &args)?;
             let edge_reference =
                 edge::resolve_edge_specifier_with_adjacent_faces_or_tag_ids(&spec, exec_state, &args).await?;
-            Some(Axis3dOrEdgeReference::EdgeReference(edge_reference))
+            Some(Axis3dOrEdgeReference::EdgeSpecifier(edge_reference))
         } else {
             Axis3dOrEdgeReference::from_kcl_val(&axis_val)
         }
@@ -225,7 +225,7 @@ async fn inner_helix(
                     )
                     .await?;
             }
-            Axis3dOrEdgeReference::EdgeReference(edge_ref) => {
+            Axis3dOrEdgeReference::EdgeSpecifier(edge_ref) => {
                 // New API: use EdgeReference directly
                 let cmd = if let Some(length) = length {
                     mcmd::EntityMakeHelixFromEdge::builder()

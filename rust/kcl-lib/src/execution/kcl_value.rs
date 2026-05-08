@@ -804,6 +804,13 @@ impl KclValue {
         }
     }
 
+    pub fn as_slice(&self) -> Option<&[KclValue]> {
+        match self {
+            KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => Some(value),
+            _ => None,
+        }
+    }
+
     pub fn as_point2d(&self) -> Option<[TyF64; 2]> {
         let value = match self {
             KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => value,
