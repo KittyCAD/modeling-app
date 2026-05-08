@@ -7,7 +7,6 @@ use anyhow::Result;
 use serde_json::json;
 use tokio::task::JoinSet;
 
-use super::kcl_doc::ArgData;
 use super::kcl_doc::ConstData;
 use super::kcl_doc::DocCategory;
 use super::kcl_doc::DocData;
@@ -455,8 +454,8 @@ fn generate_function_from_kcl(
         .filter(|(_, example)| flavor.include_example(&example.1))
         .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, &example_name))
         .collect();
-    let visible_args = function.args.iter().filter(|arg| !arg.experimental).collect::<Vec<_>>();
-    let args = visible_args
+    let args = function
+        .args
         .iter()
         .map(|arg| {
             let docs = arg.docs.clone();
@@ -489,7 +488,7 @@ fn generate_function_from_kcl(
         "deprecated": function.properties.deprecated,
         "deprecated_since": function.properties.deprecated_since.as_ref().map(ToString::to_string),
         "experimental": function.properties.experimental,
-        "fn_signature": function.preferred_name.clone() + &fn_signature_with_args(function, &visible_args),
+        "fn_signature": function.preferred_name.clone() + &function.fn_signature(),
         "examples": examples,
         "args": args,
         "return_value": function.return_type.as_ref().map(|t| {
@@ -508,33 +507,6 @@ fn generate_function_from_kcl(
     write_doc_output(flavor, &file_name, output)?;
 
     Ok(())
-}
-
-fn fn_signature_with_args(function: &FnData, args: &[&ArgData]) -> String {
-    let mut signature = String::new();
-
-    if args.is_empty() {
-        signature.push_str("()");
-    } else if args.len() == 1 {
-        signature.push('(');
-        signature.push_str(&args[0].to_string());
-        signature.push(')');
-    } else {
-        signature.push('(');
-        for arg in args {
-            signature.push_str("\n  ");
-            signature.push_str(&arg.to_string());
-            signature.push(',');
-        }
-        signature.push('\n');
-        signature.push(')');
-    }
-
-    if let Some(ty) = &function.return_type {
-        signature.push_str(&format!(": {ty}"));
-    }
-
-    signature
 }
 
 fn docs_for_type(ty: &str, kcl_std: &ModData) -> Option<String> {
