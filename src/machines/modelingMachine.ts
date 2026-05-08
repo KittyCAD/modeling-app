@@ -140,6 +140,8 @@ import {
 import {
   addFlatnessGdt,
   addDatumGdt,
+  addParallelismGdt,
+  addPerpendicularityGdt,
   addProfileGdt,
 } from '@src/lang/modifyAst/gdt'
 import {
@@ -545,6 +547,14 @@ export type ModelingMachineEvent =
   | { type: 'GDT Flatness'; data: ModelingCommandSchema['GDT Flatness'] }
   | { type: 'GDT Datum'; data: ModelingCommandSchema['GDT Datum'] }
   | { type: 'GDT Profile'; data: ModelingCommandSchema['GDT Profile'] }
+  | {
+      type: 'GDT Perpendicularity'
+      data: ModelingCommandSchema['GDT Perpendicularity']
+    }
+  | {
+      type: 'GDT Parallelism'
+      data: ModelingCommandSchema['GDT Parallelism']
+    }
   | { type: 'Flip Surface'; data: ModelingCommandSchema['Flip Surface'] }
   | { type: 'Join Surfaces'; data: ModelingCommandSchema['Join Surfaces'] }
   | {
@@ -5242,6 +5252,114 @@ export const modelingMachine = setup({
         )
       }
     ),
+    gdtPerpendicularityAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Perpendicularity'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        let astWithNewSetting: Node<Program> | undefined
+        if (
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const ast = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            await input.kclManager.wasmInstancePromise
+          )
+          if (err(ast)) {
+            return Promise.reject(ast)
+          }
+
+          astWithNewSetting = ast
+        }
+
+        const result = addPerpendicularityGdt({
+          ...input.data,
+          ast: astWithNewSetting ?? input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtParallelismAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Parallelism'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        let astWithNewSetting: Node<Program> | undefined
+        if (
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const ast = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            await input.kclManager.wasmInstancePromise
+          )
+          if (err(ast)) {
+            return Promise.reject(ast)
+          }
+
+          astWithNewSetting = ast
+        }
+
+        const result = addParallelismGdt({
+          ...input.data,
+          ast: astWithNewSetting ?? input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
     flipSurfaceAstMod: fromPromise(
       async ({
         input,
@@ -5968,6 +6086,14 @@ export const modelingMachine = setup({
 
         'GDT Profile': {
           target: 'Applying GDT Profile',
+        },
+
+        'GDT Perpendicularity': {
+          target: 'Applying GDT Perpendicularity',
+        },
+
+        'GDT Parallelism': {
+          target: 'Applying GDT Parallelism',
         },
 
         'Boolean Subtract': {
@@ -8043,6 +8169,46 @@ export const modelingMachine = setup({
         id: 'gdtProfileAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'GDT Profile') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Perpendicularity': {
+      invoke: {
+        src: 'gdtPerpendicularityAstMod',
+        id: 'gdtPerpendicularityAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Perpendicularity') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Parallelism': {
+      invoke: {
+        src: 'gdtParallelismAstMod',
+        id: 'gdtParallelismAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Parallelism') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,

@@ -84,6 +84,7 @@ import {
   Compartment,
   EditorSelection,
   EditorState,
+  type Extension,
   StateEffect,
   Transaction,
   type TransactionSpec,
@@ -94,7 +95,7 @@ import {
   setSelectionFilter,
   setSelectionFilterToDefault,
 } from '@src/lib/selectionFilterUtils'
-import type { StateFrom } from 'xstate'
+import type { StateFrom, Subscription } from 'xstate'
 
 import {
   addLineHighlight,
@@ -141,8 +142,10 @@ import {
 } from '@src/editor/plugins/theme'
 import { requestWriteToFile } from '@src/editor/plugins/write'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
+import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
 import type { App } from '@src/lib/app'
 import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
+import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
 import { sketchCheckpointHistoryEffect } from '@src/editor/plugins/sketchCheckpoints'
 import { bracket } from '@src/lib/exampleKcl'
 import { setKclVersion } from '@src/lib/kclVersion'
@@ -562,6 +565,7 @@ const RECOVERY_SNAPSHOT_VERSION = 1
 const RECOVERY_SNAPSHOT_DEBOUNCE_MS = 300
 
 const keymapCompartment = new Compartment()
+const executionCompartment = new Compartment()
 
 const updateOutsideEditorAnnotation = Annotation.define<boolean>()
 export const updateOutsideEditorEvent = updateOutsideEditorAnnotation.of(true)
@@ -697,6 +701,7 @@ export class KclManager extends File {
    * all other state should be derived from the code or selection in some way.
    */
   private _code = signal(bracket)
+  private _hasEditsSinceLastExecution = signal(false)
   private _documentVersion = 0
   private _userDocumentVersion = 0
   private lastCommittedCode = ''
@@ -718,6 +723,7 @@ export class KclManager extends File {
   private nextDirectSketchHistoryEntryId = 0
   private lastSketchCheckpointRestoreRequestId = 0
   private sketchCheckpointLimit = FALLBACK_SKETCH_CHECKPOINT_LIMIT
+  private lastExecutedCode: string = ''
   lastSuccessfulCode: string = ''
   get code(): string {
     return this.editorView.state.doc.toString()
@@ -727,6 +733,22 @@ export class KclManager extends File {
   }
   get codeSignal() {
     return this._code
+  }
+  get hasEditsSinceLastExecutionSignal() {
+    return this._hasEditsSinceLastExecution
+  }
+  get executingEditorService(): ExecutingEditorService {
+    return {
+      code: this._code,
+      hasEditsSinceLastExecution: this._hasEditsSinceLastExecution,
+      isExecuting: this._isExecuting,
+      executeCode: (code) => this.executeCode(code),
+      updateCode: (code, options) => this.updateCodeEditor(code, options),
+    }
+  }
+  private markCodeAsExecuted(code: string) {
+    this.lastExecutedCode = code
+    this._hasEditsSinceLastExecution.value = !isCodeTheSame(this.code, code)
   }
 
   // Derived state
@@ -900,6 +922,8 @@ export class KclManager extends File {
     undefined
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
+  private settingsSubscription: Subscription | undefined = undefined
+  private _automaticallyRenderEnabled = true
   private _lastKnownFileCode = ''
   private pendingRecoverySnapshot: {
     path: string
@@ -929,7 +953,9 @@ export class KclManager extends File {
 
     // These belonged to the previous file
     this.lastSuccessfulOperations = []
+    this.lastExecutedCode = ''
     this.lastSuccessfulCode = ''
+    this._hasEditsSinceLastExecution.value = false
     this.lastSuccessfulVariables = {}
 
     // Without this, when leaving a project which has errors and opening another project which doesn't,
@@ -1105,6 +1131,7 @@ export class KclManager extends File {
     this.lastSuccessfulVariables = execState.variables
     this.lastSuccessfulOperations = execState.operations
     this.lastSuccessfulCode = code
+    this.markCodeAsExecuted(code)
     this.dispatchUpdateOperations(execState.operations)
     void this.updateArtifactGraph(execState.artifactGraph)
   }
@@ -1195,6 +1222,10 @@ export class KclManager extends File {
         this._userDocumentVersion += 1
       }
       this._code.value = newCode
+      this._hasEditsSinceLastExecution.value = !isCodeTheSame(
+        newCode,
+        this.lastExecutedCode
+      )
       this.persistRecoverySnapshot()
       this.rustContext.sendUpdateFile(this.id, newCode).catch(reportRejection)
     }
@@ -1215,6 +1246,37 @@ export class KclManager extends File {
       }
     }
   })
+
+  private getAutomaticallyRenderSetting() {
+    return getAutomaticallyRenderEnabledFromSettings(
+      getSettingsFromActorContext(this.systemDeps.settings)
+    )
+  }
+
+  private getExecutionExtension(
+    shouldAutomaticallyRender = this.getAutomaticallyRenderSetting()
+  ): Extension {
+    return shouldAutomaticallyRender ? this.executeKclEffect : []
+  }
+
+  setEditorAutomaticallyRender(shouldAutomaticallyRender: boolean) {
+    if (this._automaticallyRenderEnabled === shouldAutomaticallyRender) {
+      return
+    }
+
+    this._automaticallyRenderEnabled = shouldAutomaticallyRender
+    this._editorView.dispatch({
+      effects: [
+        executionCompartment.reconfigure(
+          this.getExecutionExtension(shouldAutomaticallyRender)
+        ),
+      ],
+      annotations: [
+        settingsUpdateAnnotation.of(null),
+        Transaction.addToHistory.of(false),
+      ],
+    })
+  }
 
   /**
    * This is a CodeMirror extension that watches for updates to the document,
@@ -1260,7 +1322,11 @@ export class KclManager extends File {
       if (isDirectSketchHistoryReplay) return
       if (shouldSkipExecutionForAnnotation) return
 
-      this.deferredExecution({ newCode, shouldResetCamera })
+      this.deferredExecution({
+        newCode,
+        shouldResetCamera,
+        requestedUserDocumentVersion: this._userDocumentVersion,
+      })
     }
   })
 
@@ -1268,21 +1334,44 @@ export class KclManager extends File {
     async ({
       newCode,
       shouldResetCamera,
+      requestedUserDocumentVersion,
     }: {
       newCode: string
       shouldResetCamera: boolean
+      requestedUserDocumentVersion: number
     }) => {
+      if (!this._automaticallyRenderEnabled) {
+        return
+      }
+
       // If we're in sketchSolveMode, update Rust state with the latest AST
       // This handles the case where the user directly edits in the CodeMirror editor
       // these are short term hacks while in rapid development for sketch revamp
       // should be clean up.
       try {
         if (this.modelingState?.matches('sketchSolveMode')) {
+          const isCurrentDirectEditorExecution = () =>
+            requestedUserDocumentVersion === this._userDocumentVersion &&
+            this.code === newCode
+
+          /*
+           * Direct CodeMirror edits are already present in the editor before this
+           * async work starts. `newCode` is the snapshot we executed, not an
+           * authoritative edit we can replay later. If the user keeps typing while
+           * executeCode or hackSetProgram awaits, the finished result belongs to an
+           * older document and must not update scene checkpoints or be forwarded to
+           * updateSketchOutcome. That event is also used by sketch tools, where
+           * sourceDelta is real generated KCL; letting this stale editor snapshot
+           * take that path is what overwrote freshly typed sketch lines.
+           */
           await this.executeCode(newCode)
+          if (!isCurrentDirectEditorExecution()) return
+
           const setProgramOutcome = await this.rustContext.hackSetProgram(
             this.ast,
             jsAppSettings(this.systemDeps.settings)
           )
+          if (!isCurrentDirectEditorExecution()) return
 
           if (setProgramOutcome.type === 'Success') {
             // Convert SceneGraph to SceneGraphDelta and send to sketch solve machine
@@ -1333,6 +1422,8 @@ export class KclManager extends File {
               data: {
                 sourceDelta: kclSource,
                 sceneGraphDelta,
+                updateEditor: false,
+                writeToDisk: false,
                 addToHistory: false,
                 checkpointId: directEditCheckpointId,
               },
@@ -1515,6 +1606,7 @@ export class KclManager extends File {
             this.deferredExecution({
               newCode: effect.value.redoCode,
               shouldResetCamera: effect.value.options.shouldResetCamera,
+              requestedUserDocumentVersion: this._userDocumentVersion,
             })
           }
 
@@ -1580,13 +1672,18 @@ export class KclManager extends File {
   })()
 
   private createEditorExtensions() {
+    const shouldAutomaticallyRender = this.getAutomaticallyRenderSetting()
+    this._automaticallyRenderEnabled = shouldAutomaticallyRender
+
     return [
       baseEditorExtensions(),
       keymapCompartment.of(keymap.of(this.getCodemirrorHotkeys())),
       this.highlightEngineEntitiesEffect,
       this.undoListenerEffect,
       this.syncCodeSignalToDoc,
-      this.executeKclEffect,
+      executionCompartment.of(
+        this.getExecutionExtension(shouldAutomaticallyRender)
+      ),
       this.writeToFileListener,
       this.sketchModeDirectEditHistoryExtension,
       this.syntheticHistoryCommitExtension,
@@ -1676,6 +1773,10 @@ export class KclManager extends File {
 
     this._globalHistoryView = new HistoryView([fsHistoryExtension()])
     this._editorView = this.createEditorView(initialCode)
+    this.settingsSubscription = this.systemDeps.settings.subscribe(() => {
+      this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
+    })
+    this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
     // TODO: Delete this._code, only derive from the editorView's doc
     this._code.value = initialCode
     this.markFileCodeAsSynced(initialCode)
@@ -1707,6 +1808,7 @@ export class KclManager extends File {
   public close() {
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
+    this.settingsSubscription?.unsubscribe()
     this.flushRecoverySnapshot()
     this.unwatch()
   }
@@ -1996,6 +2098,9 @@ export class KclManager extends File {
 
     this.logs = logs
     this.errors = errors
+    if (!isInterrupted) {
+      this.markCodeAsExecuted(codeThatExecuted)
+    }
     const code = this.code
     // Do not add the errors since the program was interrupted and the error is not a real KCL error
     this.addDiagnostics(
@@ -2093,6 +2198,7 @@ export class KclManager extends File {
       this.lastSuccessfulOperations = execState.operations
       this.lastSuccessfulCode = codeThatExecuted
     }
+    this.markCodeAsExecuted(codeThatExecuted)
     await this.updateArtifactGraph(execState.artifactGraph)
     return null
   }
@@ -2106,6 +2212,7 @@ export class KclManager extends File {
       console.warn('`executeCode` called before engine connection started')
       return
     }
+    this.markCodeAsExecuted(newCode)
     const ast = await this.safeParse(newCode, await this.wasmInstancePromise)
 
     if (!ast) {

@@ -1239,21 +1239,51 @@ export function buildToolbarConfig(
             },
             {
               id: 'gdt-perpendicularity',
-              onClick: () => {},
-              status: 'unavailable',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: {
+                    name: 'GDT Perpendicularity',
+                    groupId: 'modeling',
+                  },
+                }),
+              status: 'experimental',
               title: 'Perpendicularity',
+              icon: 'perpendicular',
               description:
                 'Specifies how perpendicular one feature must be to another.',
-              links: [],
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-perpendicularity'
+                  ),
+                },
+              ],
             },
             {
               id: 'gdt-parallelism',
-              onClick: () => {},
-              status: 'unavailable',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: {
+                    name: 'GDT Parallelism',
+                    groupId: 'modeling',
+                  },
+                }),
+              status: 'experimental',
               title: 'Parallelism',
+              icon: 'parallel',
               description:
                 'Specifies how parallel one feature must be to another.',
-              links: [],
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-parallelism'
+                  ),
+                },
+              ],
             },
             {
               id: 'gdt-dimension',

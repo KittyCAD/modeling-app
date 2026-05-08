@@ -49,6 +49,7 @@ use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
 use crate::std::args::TyF64;
+use crate::std::edge::UnresolvedEdgeSpecifier;
 use crate::std::sketch::FaceTag;
 use crate::std::sketch::PlaneData;
 
@@ -801,7 +802,7 @@ pub struct BoundedEdge {
     pub edge_id: Option<uuid::Uuid>,
     /// Edge specifier payload (sideFaces, endFaces, index) when not resolved. Resolved in blend().
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub edge_specifier: Option<crate::std::edge::UnresolvedEdgeSpecifier>,
+    pub edge_specifier: Option<UnresolvedEdgeSpecifier>,
     /// A percentage bound of the edge, used to restrict what portion of the edge will be used.
     /// Range (0, 1)
     pub lower_bound: f32,
