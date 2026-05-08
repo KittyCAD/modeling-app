@@ -15,12 +15,14 @@ import type {
 import { emptyExecState, kclLint } from '@src/lang/wasm'
 import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { jsAppSettings, userHasFeature } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/network/utils'
 import type { EditorView } from 'codemirror'
 export type { ToolTip } from '@src/lang/toolTips'
 export { isToolTip, toolTips } from '@src/lang/toolTips'
+
+const ENABLE_Z0006_LINT_FLAG = 'enable_z0006_lint'
 
 interface ExecutionResult {
   logs: string[]
@@ -124,7 +126,10 @@ export async function lintAst({
   artifactGraph?: ArtifactGraph
 }): Promise<Array<Diagnostic>> {
   try {
-    let discovered_findings = await kclLint(ast, instance)
+    let [discovered_findings, shouldShowZ0006] = await Promise.all([
+      kclLint(ast, instance),
+      userHasFeature(ENABLE_Z0006_LINT_FLAG, false),
+    ])
 
     // Filter out Z0005 if sketch solve mode is not enabled
     // Only show Z0005 when useSketchSolveMode setting is enabled
@@ -142,6 +147,12 @@ export async function lintAst({
     if (!shouldShowZ0005) {
       discovered_findings = discovered_findings.filter(
         (lint) => lint.finding.code !== 'Z0005'
+      )
+    }
+
+    if (!shouldShowZ0006) {
+      discovered_findings = discovered_findings.filter(
+        (lint) => lint.finding.code !== 'Z0006'
       )
     }
 
