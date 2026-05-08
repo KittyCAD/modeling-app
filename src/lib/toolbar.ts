@@ -1261,12 +1261,27 @@ export function buildToolbarConfig(
             },
             {
               id: 'gdt-parallelism',
-              onClick: () => {},
-              status: 'unavailable',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: {
+                    name: 'GDT Parallelism',
+                    groupId: 'modeling',
+                  },
+                }),
+              status: 'experimental',
               title: 'Parallelism',
+              icon: 'parallel',
               description:
                 'Specifies how parallel one feature must be to another.',
-              links: [],
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-parallelism'
+                  ),
+                },
+              ],
             },
             {
               id: 'gdt-dimension',
