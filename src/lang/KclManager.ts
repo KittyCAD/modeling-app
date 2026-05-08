@@ -34,6 +34,7 @@ import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
+  DEFAULT_EXPERIMENTAL_FEATURES,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
 } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
@@ -48,6 +49,10 @@ import {
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
 
+import {
+  FALLBACK_SKETCH_CHECKPOINT_LIMIT,
+  createHistoryExtension,
+} from '@src/editor/historyConfig'
 import { EngineDebugger } from '@src/lib/debugger'
 import {
   type handleSelectionBatch as handleSelectionBatchFn,
@@ -63,10 +68,6 @@ import type {
   Selections,
 } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import {
-  createHistoryExtension,
-  FALLBACK_SKETCH_CHECKPOINT_LIMIT,
-} from '@src/editor/historyConfig'
 
 import {
   invertedEffects,
@@ -133,6 +134,7 @@ import {
   operationsStateField,
   setOperationsEffect,
 } from '@src/editor/plugins/operations'
+import { sketchCheckpointHistoryEffect } from '@src/editor/plugins/sketchCheckpoints'
 import {
   appSettingsThemeEffect,
   editorTheme,
@@ -141,17 +143,16 @@ import {
 } from '@src/editor/plugins/theme'
 import { requestWriteToFile } from '@src/editor/plugins/write'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
-import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
 import type { App } from '@src/lib/app'
+import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
 import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
-import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
-import { sketchCheckpointHistoryEffect } from '@src/editor/plugins/sketchCheckpoints'
 import { bracket } from '@src/lib/exampleKcl'
 import { setKclVersion } from '@src/lib/kclVersion'
 import { getStringAfterLastSeparator } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
+import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { type Themes, getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type {
@@ -159,6 +160,7 @@ import type {
   modelingMachine,
 } from '@src/machines/modelingMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
 import toast from 'react-hot-toast'
 
 interface ExecuteArgs {
@@ -734,6 +736,11 @@ export class KclManager extends File {
       code: this._code,
       hasEditsSinceLastExecution: this._hasEditsSinceLastExecution,
       isExecuting: this._isExecuting,
+      selectionStatusLabel: this._selectionStatusLabel,
+      showExperimentalFeaturesStatusBarItem:
+        this._showExperimentalFeaturesStatusBarItem,
+      getPendingCommandCount: () =>
+        Object.keys(this.engineCommandManager.pendingCommands).length,
       executeCode: (code) => this.executeCode(code),
       updateCode: (code, options) => this.updateCodeEditor(code, options),
     }
@@ -793,6 +800,14 @@ export class KclManager extends File {
     otherSelections: [],
     graphSelections: [],
   }
+  private _selectionRangesSignal = signal<Selections>(this._selectionRanges)
+  private _selectionStatusLabel = computed(
+    () =>
+      getSelectionTypeDisplayText(
+        this._ast.value,
+        this._selectionRangesSignal.value
+      ) ?? 'No selection'
+  )
   undoDepth = signal(0)
   redoDepth = signal(0)
   undoListenerEffect = EditorView.updateListener.of((vu) => {
@@ -885,6 +900,16 @@ export class KclManager extends File {
   private _astParseFailed = false
   private _switchedFiles = false
   private _fileSettings: KclSettingsAnnotation = {}
+  private _fileSettingsSignal = signal<KclSettingsAnnotation>(
+    this._fileSettings
+  )
+  private _showExperimentalFeaturesStatusBarItem = computed(
+    () =>
+      (
+        this._fileSettingsSignal.value.experimentalFeatures ??
+        DEFAULT_EXPERIMENTAL_FEATURES
+      ).type !== 'Deny'
+  )
   private _cancelTokens: Map<number, boolean> = new Map()
   private _executeIsStale: ExecuteArgs | null = null
   private _isExecuting = signal(false)
@@ -2349,6 +2374,7 @@ export class KclManager extends File {
 
   set fileSettings(settings: KclSettingsAnnotation) {
     this._fileSettings = settings
+    this._fileSettingsSignal.value = settings
     this.sceneInfra.baseUnit =
       settings?.defaultLengthUnit || DEFAULT_DEFAULT_LENGTH_UNIT
   }
@@ -2440,6 +2466,7 @@ export class KclManager extends File {
   }
   set selectionRanges(selectionRanges: Selections) {
     this._selectionRanges = selectionRanges
+    this._selectionRangesSignal.value = selectionRanges
   }
   set modelingSend(send: (eventInfo: ModelingMachineEvent) => void) {
     this._modelingSend = send
