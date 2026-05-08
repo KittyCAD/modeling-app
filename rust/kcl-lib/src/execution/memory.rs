@@ -25,7 +25,7 @@
 //!
 //! Example:
 //!
-//! ```norun
+//! ```no_run
 //! a = 10
 //!
 //! fn foo() {
@@ -65,7 +65,7 @@
 //!
 //! Example:
 //!
-//! ```norun
+//! ```no_run
 //! a = 10
 //!
 //! fn foo() {
@@ -228,6 +228,34 @@ pub(crate) const TYPE_PREFIX: &str = "__ty_";
 pub(crate) const MODULE_PREFIX: &str = "__mod_";
 pub(crate) const SKETCH_PREFIX: &str = "__sketch_";
 
+/// We need to limit the number of maximum stacks that can be created in
+/// order to avoid reallocating a [Vec] after we start execution. Doing so
+/// will create a new chunk of memory, copy the 'old' data to the 'new'
+/// memory, and then free the 'old' memory.
+///
+/// This code (for better or worse) is designed to be "lock free", where this
+/// actually means something closer to "we have a spinlock on writes" but
+/// reads remain free-range. This is fine, so long as writes to the
+/// datastructure don't invalidate previously held accesses, no matter how old.
+///
+/// As a result, this means that blowing capacity and reallocating the memory
+/// that the [Vec] is using under the hood during a "write" is inherently a
+/// problem, since there's now a race between the write freeing the old memory
+/// after allocating and copying values to their new home, and a read reading
+/// from the old memory.
+///
+/// Our use of a [Pin] doesn't save us here either, since the [Pin] will only
+/// prevent the [Vec] reallocation from moving the [Environment] struct, but
+/// the list of pointers (under the hood) contained in the list are now
+/// invalid, which means we believe some random other chunk of memory is now
+/// a `Pin<Box<Environment>>`. The actual `Environment` pointer is fine, it's
+/// the list that's at fault here.
+///
+/// Until `Vec::push_within_capacity` (`vec_push_within_capacity`, #100486) is
+/// stabalized, we're going to do some slightly more expensive inserts to avoid
+/// allocations -- long-term we should switch to `push_within_capacity`.
+pub(crate) const PROGRAM_MEMORY_MAX_STACK_LEN: usize = 4096;
+
 /// KCL memory. There should be only one ProgramMemory for the interpretation of a program (
 /// including other modules). Multiple interpretation runs should have fresh instances.
 ///
@@ -290,11 +318,19 @@ impl fmt::Display for Stack {
 }
 
 impl ProgramMemory {
+    /// Create a new [ProgramMemory]. This will be able to hold a maximum
+    /// of [PROGRAM_MEMORY_MAX_STACK_LEN] Stack objects in concurrent use.
     #[allow(clippy::new_without_default)]
     pub fn new() -> Arc<Self> {
+        Self::with_stack_capacity(PROGRAM_MEMORY_MAX_STACK_LEN)
+    }
+
+    /// Create [ProgramMemory] set to allow for the provided number of
+    /// [Stack] objects concurrently in use. Calling [Self::new] will
+    /// default to [PROGRAM_MEMORY_MAX_STACK_LEN].
+    pub fn with_stack_capacity(capacity: usize) -> Arc<Self> {
         Arc::new(Self {
-            // Massively over-allocate here to try and avoid reallocating later.
-            environments: UnsafeCell::new(Vec::with_capacity(512)),
+            environments: UnsafeCell::new(Vec::with_capacity(capacity)),
             std: None,
             stats: MemoryStats::default(),
             next_stack_id: AtomicUsize::new(1),
@@ -419,11 +455,22 @@ impl ProgramMemory {
 
         let new_env = Environment::new(parent, is_root_env, owner);
         self.with_envs(|envs| {
-            let result = EnvironmentRef(envs.len(), usize::MAX);
-            // Note this might reallocate, which would hold the `with_envs` spin lock for way too long
-            // so somehow we should make sure we don't do that (though honestly the chance of that
-            // happening while another thread is waiting for the lock is pretty small).
+            let len = envs.len();
+            let result = EnvironmentRef(len, usize::MAX);
+
+            // can't be greater than capacity, less than max capacity is fine,
+            // so we check for an exact match here.
+            if len == envs.capacity() {
+                panic!(
+                    "ProgramMemory may only hold a maximum of {} active Stacks",
+                    PROGRAM_MEMORY_MAX_STACK_LEN
+                );
+            }
+
+            // TODO: move the above and this to `Vec::push_within_capacity`
+            // once that feature is stable in rust.
             envs.push(Box::pin(new_env));
+
             result
         })
     }
