@@ -1092,6 +1092,9 @@ export function createEdgeRefObjectExpression(
 
   const endFaceExprs: Expr[] = []
   if (payload.end_faces?.length) {
+    // `endFaces` narrows ambiguous side-face matches, but the refactor should
+    // still be useful when we cannot tag them: `sideFaces` alone is valid KCL
+    // and may intentionally select multiple adjacent edges for fillet/chamfer.
     for (const faceId of payload.end_faces) {
       const faceArtifact = artifactGraph.get(faceId)
       if (!faceArtifact) continue

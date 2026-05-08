@@ -73,7 +73,6 @@ mod modules;
 mod parsing;
 mod project;
 #[cfg(feature = "artifact-graph")]
-pub mod refactor_edge_stdlib;
 mod settings;
 #[cfg(test)]
 mod simulation_tests;
