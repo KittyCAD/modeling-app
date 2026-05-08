@@ -4,9 +4,9 @@ import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { useApp } from '@src/lib/boot'
 import { type MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
+  type RequestedKCLFileDelete,
   type SystemIOActor,
   SystemIOMachineEvents,
-  SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import { useSelector } from '@xstate/react'
 import { useEffect } from 'react'
@@ -80,13 +80,6 @@ export const useProjectIdToConversationId = (
       if (settings2.meta.id.current === uuidNIL) {
         return
       }
-      const systemIOActorSnapshot = systemIOActor.getSnapshot()
-      if (
-        systemIOActorSnapshot.value ===
-        SystemIOMachineStates.savingMlEphantConversations
-      ) {
-        return
-      }
       if (next.context.conversationId === undefined) {
         return
       }
@@ -116,6 +109,7 @@ export interface MlEphantNewFileRequestProps {
   toolOutput: MlToolResult
   projectNameCurrentlyOpened: string
   fileFocusedOnInEditor?: FileEntry
+  filesToDelete?: RequestedKCLFileDelete[]
 }
 
 // Watch MlEphant for any responses that require files to be created.
@@ -143,10 +137,25 @@ export const useWatchForNewFileRequestsFromMlEphant = (
       // We don't know what project to write to, so do nothing.
       if (!next.context.projectNameCurrentlyOpened) return
 
+      const fileNamesToDelete = new Set(
+        lastExchange.responses.flatMap((response) => {
+          if (!('reasoning' in response)) {
+            return []
+          }
+          if (response.reasoning.type !== 'deleted_kcl_file') {
+            return []
+          }
+          return response.reasoning.file_name
+        })
+      )
+
       fn({
         toolOutput: lastResponse.tool_output.result,
         projectNameCurrentlyOpened: next.context.projectNameCurrentlyOpened,
         fileFocusedOnInEditor: next.context.fileFocusedOnInEditor,
+        filesToDelete: Array.from(fileNamesToDelete, (requestedFileName) => ({
+          requestedFileName,
+        })),
       })
 
       // TODO: Move elsewhere eventually, decouple from SystemIOActor

@@ -1,4 +1,4 @@
-import type { RegistryItem } from '@kittycad/registry'
+import { Slot, type RegistryItem } from '@kittycad/registry'
 
 type RegistryItemModule = {
   default?: RegistryItem
@@ -9,6 +9,8 @@ const bundledRegistryItemModules: Record<string, RegistryItemModule> =
   import.meta.glob(['./extensions/*/index.ts', './plugins/*/index.ts'], {
     eager: true,
   })
+
+export const appRegistryServicesSlot = new Slot()
 
 const bundledRegistryItemKindOrder = (path: string) =>
   path.includes('/plugins/') ? 1 : 0

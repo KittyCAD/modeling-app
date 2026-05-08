@@ -51,9 +51,8 @@ function PluginItem({
           onChange={() => {
             const nextActive = !resolvedService.active.value
             app.settings.actor.send({
-              type: '*',
+              type: `set.plugins.${plugin.id}`,
               data: {
-                path: `plugins.${plugin.id}`,
                 level: 'user',
                 value: nextActive,
               },
