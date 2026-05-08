@@ -258,6 +258,13 @@ const syntheticHistoryCommitEffect =
 const directSketchHistoryMarkerEffect =
   StateEffect.define<DirectSketchHistoryMarker>()
 
+type ExecutionCompletionStatus = 'completed' | 'cancelled' | 'cleanup'
+
+type ExecutionCompletionResult = {
+  generation: number
+  status: ExecutionCompletionStatus
+}
+
 // Each of our singletons has dependencies on _other_ singletons, so importing
 // can easily become cyclic. Each will have its own Singletons type.
 interface SystemDeps {
@@ -752,9 +759,13 @@ export class KclManager extends File {
 
   private _execState = signal<ExecState>(emptyExecState())
   private _executionGeneration = 0
+  private _lastExecutionCompletion: ExecutionCompletionResult = {
+    generation: 0,
+    status: 'completed',
+  }
   private _executionCompletionWaiters: {
     afterGeneration: number
-    resolve: () => void
+    resolve: (result: ExecutionCompletionResult) => void
   }[] = []
 
   private _variables = signal<VariableMap>({})
@@ -968,7 +979,11 @@ export class KclManager extends File {
     if (err(newSource)) return false
     const trimmed = newSource.trim()
     if (!trimmed) return false
+    if (trimmed === this.code.trim()) return false
 
+    // Feature-tree edits must wait for the refactored code to execute cleanly
+    // so the operation graph is not stale. Cancel/cleanup still release the
+    // waiter, but return false below.
     const generationBeforeDispatch = this._executionGeneration
     this._editorView.dispatch({
       changes: {
@@ -977,26 +992,35 @@ export class KclManager extends File {
         insert: trimmed,
       },
     })
-    await this.waitForExecutionGenerationAfter(generationBeforeDispatch)
-    return true
+    const completion = await this.waitForExecutionGenerationAfter(
+      generationBeforeDispatch
+    )
+    return (
+      completion.status === 'completed' &&
+      this.lastSuccessfulCode.trim() === trimmed
+    )
   }
 
   private waitForExecutionGenerationAfter(
     afterGeneration: number
-  ): Promise<void> {
-    if (this._executionGeneration > afterGeneration) return Promise.resolve()
+  ): Promise<ExecutionCompletionResult> {
+    if (this._executionGeneration > afterGeneration) {
+      return Promise.resolve(this._lastExecutionCompletion)
+    }
     return new Promise((resolve) => {
       this._executionCompletionWaiters.push({ afterGeneration, resolve })
     })
   }
 
-  private notifyExecutionCompletion(): void {
+  private notifyExecutionCompletion(status: ExecutionCompletionStatus): void {
     this._executionGeneration += 1
     const generation = this._executionGeneration
+    const completion = { generation, status }
+    this._lastExecutionCompletion = completion
     this._executionCompletionWaiters = this._executionCompletionWaiters.filter(
       (waiter) => {
         if (waiter.afterGeneration < generation) {
-          waiter.resolve()
+          waiter.resolve(completion)
           return false
         }
         return true
@@ -1949,7 +1973,7 @@ export class KclManager extends File {
     if (this._cancelTokens.get(currentExecutionId)) {
       this._cancelTokens.delete(currentExecutionId)
       markOnce('code/endExecuteAst')
-      this.notifyExecutionCompletion()
+      this.notifyExecutionCompletion('cancelled')
       return
     }
 
@@ -2002,7 +2026,7 @@ export class KclManager extends File {
 
     this._cancelTokens.delete(currentExecutionId)
     markOnce('code/endExecuteAst')
-    this.notifyExecutionCompletion()
+    this.notifyExecutionCompletion('completed')
 
     // Update project thumbnail after successful execution
     if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
@@ -2022,7 +2046,7 @@ export class KclManager extends File {
   executeAstCleanUp() {
     this.isExecuting = false
     this.executeIsStale = null
-    this.notifyExecutionCompletion()
+    this.notifyExecutionCompletion('cleanup')
     this.engineCommandManager.addCommandLog({
       type: CommandLogType.ExecutionDone,
       data: null,

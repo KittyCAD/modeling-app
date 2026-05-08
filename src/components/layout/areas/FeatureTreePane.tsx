@@ -75,9 +75,9 @@ type SystemDeps = Pick<Singletons, 'kclManager'> & {
   rustContext: RustContext
 }
 
-// TODO(face-api PR3): enable once feature-tree/point-click edit flows support
-// the new edge specifier syntax. Until then, keep edits on the legacy helper
-// syntax and expose Z0006 only as an explicit lint action.
+// Keep automatic edit-time migration disabled until all feature-tree and
+// point-click edit flows support the new edge specifier syntax. Until then,
+// expose Z0006 only as an explicit lint action.
 const ENABLE_Z0006_AUTO_FIX_BEFORE_FEATURE_TREE_EDIT = false
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
