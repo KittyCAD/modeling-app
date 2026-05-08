@@ -240,6 +240,110 @@ describe('mlEphantManagerMachine', () => {
     })
   })
 
+  describe('ResponseReceive debug timings', () => {
+    it('records reasoning-to-tool-response spans when debug timing is enabled', async () => {
+      const originalPerformance = globalThis.performance
+      vi.stubGlobal('performance', {
+        now: vi.fn().mockReturnValueOnce(100).mockReturnValueOnce(175),
+        mark: vi.fn(),
+        measure: vi.fn(),
+        getEntriesByName: vi.fn(() => [{ duration: 75 }]),
+      })
+
+      const ws: TestWebSocket = new TestSocket() as TestWebSocket
+      const machine = mlEphantManagerMachine.provide({
+        actors: {
+          [MlEphantManagerStates.Setup]: fromPromise<
+            Partial<MlEphantManagerContext>,
+            SetupActorInput
+          >(async () => ({
+            ws,
+            conversation: {
+              exchanges: [
+                {
+                  deltasAggregated: '',
+                  request: {
+                    type: 'user',
+                    content: 'make me a sandwich',
+                  },
+                  responses: [],
+                },
+              ],
+            },
+          })),
+        },
+      })
+      const actor = createActor(machine, {
+        input: {
+          apiToken: '',
+        },
+      }).start()
+
+      try {
+        actor.send({
+          type: MlEphantManagerTransitions.CacheSetupAndConnect,
+          refParentSend: vi.fn(),
+        })
+
+        await waitFor(actor, (state) =>
+          state.matches(MlEphantManagerStates.WaitForContinueCheck)
+        )
+
+        actor.send({
+          type: MlEphantManagerStates.ContinueCheck,
+          projectName: 'zoo-project',
+          projectFiles: [],
+        })
+
+        await waitFor(actor, (state) =>
+          state.matches(MlEphantManagerStates.Ready)
+        )
+
+        actor.send({
+          type: MlEphantManagerTransitions.DebugTimingSet,
+          enabled: true,
+        })
+        actor.send({
+          type: MlEphantManagerTransitions.ResponseReceive,
+          response: {
+            reasoning: {
+              type: 'text',
+              content: 'thinking',
+            },
+          },
+        })
+        actor.send({
+          type: MlEphantManagerTransitions.ResponseReceive,
+          response: {
+            tool_output: {
+              result: {},
+            },
+          } as never,
+        })
+
+        await waitFor(actor, (state) => {
+          const exchange = state.context.conversation?.exchanges[0]
+          return Boolean(exchange?.debugTimings?.length)
+        })
+
+        expect(
+          actor.getSnapshot().context.conversation?.exchanges[0].debugTimings
+        ).toStrictEqual([
+          {
+            from: 'reasoning',
+            to: 'tool_output',
+            durationMs: 75,
+            startedAt: 100,
+            endedAt: 175,
+          },
+        ])
+      } finally {
+        actor.stop()
+        vi.stubGlobal('performance', originalPerformance)
+      }
+    })
+  })
+
   describe('ConversationClose', () => {
     it('clears conversation state on an intentional close', async () => {
       const ws: TestWebSocket = new TestSocket() as TestWebSocket
@@ -410,6 +514,15 @@ describe('mlEphantManagerMachine', () => {
                 },
               },
             ],
+            debugTimings: [
+              {
+                from: 'reasoning',
+                to: 'tool_output',
+                durationMs: 12.5,
+                startedAt: 100,
+                endedAt: 112.5,
+              },
+            ],
           },
         ],
       }
@@ -419,6 +532,7 @@ describe('mlEphantManagerMachine', () => {
       // All we can check is _some_ content made it through to the other side,
       // and that all code paths have been taken via the test.
       expect(output.length).toBeGreaterThan(0)
+      expect(output).toContain('reasoning -> tool call response: 12.5 ms')
     })
 
     // Motivated by https://github.com/KittyCAD/modeling-app/issues/9912

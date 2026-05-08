@@ -1,22 +1,24 @@
 import type { MlCopilotServerMessage } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { MarkdownText } from '@src/components/MarkdownText'
+import { PlaceholderLine } from '@src/components/PlaceholderLine'
 import { Thinking } from '@src/components/Thinking'
+import Tooltip from '@src/components/Tooltip'
 import {
   type Exchange,
+  type ZookeeperDebugTimingSpan,
+  formatZookeeperDebugTimingSpan,
   isMlCopilotUserRequest,
 } from '@src/machines/mlEphantManagerMachine'
 import ms from 'ms'
 import {
-  useEffect,
-  useState,
-  type ReactNode,
   type ComponentProps,
+  type ReactNode,
+  useEffect,
   useMemo,
+  useState,
 } from 'react'
-import Tooltip from '@src/components/Tooltip'
 import toast from 'react-hot-toast'
-import { PlaceholderLine } from '@src/components/PlaceholderLine'
-import { MarkdownText } from '@src/components/MarkdownText'
 
 export type ExchangeCardProps = Exchange & {
   userAvatar?: string
@@ -168,6 +170,34 @@ export const ExchangeCardStatus = (props: {
           ) : null}
         </div>
       )}
+    </div>
+  )
+}
+
+const ZookeeperDebugTimings = (props: {
+  timings?: ZookeeperDebugTimingSpan[]
+}) => {
+  if (!props.timings || props.timings.length === 0) {
+    return null
+  }
+
+  return (
+    <div
+      className="ml-9 mt-2 rounded-sm border border-chalkboard-20 dark:border-chalkboard-80 bg-chalkboard-10/50 dark:bg-chalkboard-90/50 p-2 text-[11px] leading-4 text-chalkboard-70 dark:text-chalkboard-40"
+      data-testid="zookeeper-debug-timings"
+    >
+      <div className="font-medium text-chalkboard-80 dark:text-chalkboard-30">
+        Client debug timings
+      </div>
+      <ul className="m-0 list-none p-0">
+        {props.timings.map((timing) => (
+          <li
+            key={`${timing.startedAt}-${timing.endedAt}-${timing.from}-${timing.to}`}
+          >
+            {formatZookeeperDebugTimingSpan(timing)}
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }
@@ -449,6 +479,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
             startedAt={startedAt}
             updatedAt={updatedAt}
           />
+          <ZookeeperDebugTimings timings={props.debugTimings} />
         </div>
       )}
       {reasoningThoughts.length > 0 && (

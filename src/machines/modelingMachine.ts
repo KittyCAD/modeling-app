@@ -171,6 +171,7 @@ import {
   getPlaneFromArtifact,
   isFaceFromLegacySketch,
   getSketchBlockArtifactForPathToNode,
+  getSketchBlockForArtifact,
 } from '@src/lang/std/artifactGraph'
 import {
   crossProduct,
@@ -212,7 +213,6 @@ import {
   updateExtraSegments,
   updateSelections,
 } from '@src/lib/selections'
-import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { err, isErr, reject, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
@@ -301,6 +301,42 @@ function findSceneObjectForPlaneSelection(
       sourceRangesEqual(object.source.ranges[0][0], sweepRange) &&
       sourceRangesEqual(object.source.ranges[1][0], segmentRange)
   )
+}
+
+function getSelectedSketchBlockArtifact({
+  artifactGraph,
+  selectionRanges,
+}: {
+  artifactGraph: ModelingMachineContext['kclManager']['artifactGraph']
+  selectionRanges: Selections
+}): Extract<Artifact, { type: 'sketchBlock' }> | undefined {
+  const selectedArtifact = selectionRanges.graphSelections[0]?.artifact
+  const selectedSketchBlock = getSketchBlockForArtifact(
+    selectedArtifact,
+    artifactGraph
+  )
+  if (typeof selectedSketchBlock?.sketchId === 'number') {
+    return selectedSketchBlock
+  }
+
+  const sketchPathId = isCursorInSketchCommandRange(
+    artifactGraph,
+    selectionRanges
+  )
+  if (!sketchPathId) {
+    return undefined
+  }
+
+  const sketchPathArtifact = artifactGraph.get(sketchPathId)
+  const sketchBlockFromCursor = getSketchBlockForArtifact(
+    sketchPathArtifact,
+    artifactGraph
+  )
+  if (typeof sketchBlockFromCursor?.sketchId !== 'number') {
+    return undefined
+  }
+
+  return sketchBlockFromCursor
 }
 
 async function enterSketchSolveFromSketchBlockArtifact({
@@ -686,12 +722,15 @@ export const modelingMachine = setup({
       return context.store.useSketchSolveMode?.current === true
     },
     'Selection is sketchBlock': ({
-      context: { selectionRanges },
+      context: { selectionRanges, kclManager },
       event,
     }): boolean => {
       if (event.type !== 'Enter sketch') return false
       if (event.data?.forceNewSketch) return false
-      return isSketchBlockSelected(selectionRanges)
+      return !!getSelectedSketchBlockArtifact({
+        artifactGraph: kclManager.artifactGraph,
+        selectionRanges,
+      })
     },
     'Selection is on face': ({
       context: { selectionRanges, kclManager, wasmInstance },
@@ -699,6 +738,14 @@ export const modelingMachine = setup({
     }): boolean => {
       if (event.type !== 'Enter sketch') return false
       if (event.data?.forceNewSketch) return false
+      if (
+        getSelectedSketchBlockArtifact({
+          artifactGraph: kclManager.artifactGraph,
+          selectionRanges,
+        })
+      ) {
+        return false
+      }
       if (artifactIsPlaneWithPaths(selectionRanges)) {
         return true
       } else if (selectionRanges.graphSelections[0]?.artifact) {
@@ -8561,12 +8608,13 @@ export const modelingMachine = setup({
             }
           }
           if (event.type === 'Enter sketch') {
-            // Get artifact ID from selection
-            const artifact =
-              context.selectionRanges.graphSelections[0]?.artifact
-            if (artifact?.type === 'sketchBlock' && artifact.id) {
+            const sketchBlockArtifact = getSelectedSketchBlockArtifact({
+              artifactGraph: context.kclManager.artifactGraph,
+              selectionRanges: context.selectionRanges,
+            })
+            if (sketchBlockArtifact?.id) {
               return {
-                artifactId: artifact.id,
+                artifactId: sketchBlockArtifact.id,
                 kclManager: context.kclManager,
                 rustContext: context.rustContext,
                 engineCommandManager: context.engineCommandManager,
