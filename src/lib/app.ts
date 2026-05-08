@@ -66,7 +66,10 @@ import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
-import { coreRegistryItems } from '@src/registry/registry'
+import {
+  appRegistryServicesSlot,
+  coreRegistryItems,
+} from '@src/registry/registry'
 import { useSelector } from '@xstate/react'
 import type {
   ActorRefFrom,
@@ -75,10 +78,7 @@ import type {
   Subscription,
 } from 'xstate'
 import { createActor } from 'xstate'
-import {
-  type CommandBarActorType,
-  commandBarMachine,
-} from '@src/machines/commandBarMachine'
+import { executingEditorService } from '@src/registry/contracts/executingEditor'
 
 const DEFAULT_LAYOUT_CONFIG_NAME = 'default'
 const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
