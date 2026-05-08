@@ -14,6 +14,7 @@ Functions for working with geometric dimensioning and tolerancing (GD&T). This c
 
 * [`gdt::datum`](/docs/kcl-std/functions/std-gdt-datum)
 * [`gdt::flatness`](/docs/kcl-std/functions/std-gdt-flatness)
+* [`gdt::parallelism`](/docs/kcl-std/functions/std-gdt-parallelism)
 * [`gdt::perpendicularity`](/docs/kcl-std/functions/std-gdt-perpendicularity)
 * [`gdt::profile`](/docs/kcl-std/functions/std-gdt-profile)
 
