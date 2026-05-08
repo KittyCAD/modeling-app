@@ -37,6 +37,7 @@ import type {
 import {
   NO_PROJECT_DIRECTORY,
   SystemIOMachineActors,
+  SystemIOMachineEvents,
   jsonToMlConversations,
   mlConversationsToJson,
   collectProjectFiles,
@@ -977,21 +978,36 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       async (args: {
         input: {
           context: SystemIOContext
-          event: {
-            data: {
-              projectId: string
-              conversationId: string
-            }
-          }
+          event:
+            | {
+                type: SystemIOMachineEvents.saveMlEphantConversations
+                data: {
+                  projectId: string
+                  conversationId: string
+                }
+              }
+            | {
+                type: SystemIOMachineEvents.deleteMlEphantConversation
+                data: {
+                  projectId: string
+                }
+              }
         }
       }) => {
-        const next: Map<any, any> = new Map(
+        const next = new Map<string, string>(
           args.input.context.mlEphantConversations
         )
-        next.set(
-          args.input.event.data.projectId,
-          args.input.event.data.conversationId
-        )
+        if (
+          args.input.event.type ===
+          SystemIOMachineEvents.deleteMlEphantConversation
+        ) {
+          next.delete(args.input.event.data.projectId)
+        } else {
+          next.set(
+            args.input.event.data.projectId,
+            args.input.event.data.conversationId
+          )
+        }
         const json = mlConversationsToJson(next)
         const te = new TextEncoder()
         await fsZds.writeFile(
