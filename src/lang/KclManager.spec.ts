@@ -303,6 +303,25 @@ describe('KclManager diagnostics', () => {
     expect(executeCodeSpy).toHaveBeenCalledWith('abc')
   })
 
+  it('tracks whether the editor differs from the last execution', () => {
+    const { kclManager } = createKclManagerTestHarness('a')
+    ;(kclManager as any).markCodeAsExecuted('a')
+
+    expect(kclManager.hasEditsSinceLastExecutionSignal.value).toBe(false)
+
+    kclManager.editorView.dispatch({
+      changes: { from: 1, to: 1, insert: 'b' },
+    })
+
+    expect(kclManager.hasEditsSinceLastExecutionSignal.value).toBe(true)
+
+    kclManager.editorView.dispatch({
+      changes: { from: 1, to: 2, insert: '' },
+    })
+
+    expect(kclManager.hasEditsSinceLastExecutionSignal.value).toBe(false)
+  })
+
   it('debounces repeated programmatic updates so only the latest buffer is written', async () => {
     vi.useFakeTimers()
 
