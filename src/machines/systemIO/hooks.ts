@@ -1,11 +1,7 @@
-import type { MlToolResult } from '@kittycad/lib'
-import { useApp } from '@src/lib/boot'
 import type { FileEntry } from '@src/lib/project'
+import type { MlToolResult } from '@kittycad/lib'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import {
-  type BillingActor,
-  BillingTransition,
-} from '@src/machines/billingMachine'
+import { useApp } from '@src/lib/boot'
 import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
   type RequestedKCLFileDelete,
@@ -13,10 +9,14 @@ import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
-import type { ConnectionManager } from '@src/network/connectionManager'
 import { useSelector } from '@xstate/react'
 import { useEffect } from 'react'
 import { NIL as uuidNIL } from 'uuid'
+import {
+  type BillingActor,
+  BillingTransition,
+} from '@src/machines/billingMachine'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 export const useRequestedProjectName = () => {
   const { systemIOActor } = useApp()
