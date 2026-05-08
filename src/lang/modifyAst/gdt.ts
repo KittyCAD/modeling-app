@@ -746,6 +746,164 @@ export function addParallelismGdt({
   }
 }
 
+export function addAnnotationGdt({
+  ast,
+  artifactGraph,
+  objects,
+  annotation,
+  wasmInstance,
+  framePosition,
+  framePlane,
+  leaderScale,
+  fontPointSize,
+  fontScale,
+  nodeToEdit,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  objects: Selections
+  annotation: string
+  wasmInstance: ModuleType
+  framePosition?: KclCommandValue
+  framePlane?: KclCommandValue | string
+  leaderScale?: KclCommandValue
+  fontPointSize?: KclCommandValue
+  fontScale?: KclCommandValue
+  nodeToEdit?: PathToNode
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  let modifiedAst = structuredClone(ast)
+
+  const faceSelections = objects.graphSelections.filter((selection) =>
+    isFaceArtifact(selection.artifact)
+  )
+  const edgeSelections = objects.graphSelections.filter((selection) =>
+    isProfileEdgeArtifact(selection.artifact)
+  )
+
+  if (faceSelections.length === 0 && edgeSelections.length === 0) {
+    return new Error('No valid selections found. Please select faces or edges.')
+  }
+
+  const faceExprs: Expr[] = []
+  for (const faceSelection of faceSelections) {
+    const tagResult = modifyAstWithTagsForSelection(
+      modifiedAst,
+      faceSelection,
+      artifactGraph,
+      wasmInstance
+    )
+    if (err(tagResult)) {
+      console.warn('Failed to add tag for face selection', tagResult)
+      continue
+    }
+
+    modifiedAst = tagResult.modifiedAst
+    faceExprs.push(tagResult.exprs[0])
+  }
+
+  const edgeExprs: Expr[] = []
+  for (const edgeSelection of edgeSelections) {
+    const tagResult = modifyAstWithTagsForSelection(
+      modifiedAst,
+      edgeSelection,
+      artifactGraph,
+      wasmInstance
+    )
+    if (err(tagResult)) {
+      console.warn('Failed to add tags for edge selection', tagResult)
+      continue
+    }
+
+    modifiedAst = tagResult.modifiedAst
+    if (tagResult.exprs.length < 2) {
+      console.warn('Edge selection did not resolve to enough faces', tagResult)
+      continue
+    }
+
+    edgeExprs.push(
+      createCallExpressionStdLibKw('getCommonEdge', null, [
+        createLabeledArg('faces', createArrayExpression(tagResult.exprs)),
+      ])
+    )
+  }
+
+  const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
+  const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
+  if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
+    return new Error('No valid face or edge expressions could be generated')
+  }
+
+  const styleResult = processGdtStyleParameters({
+    modifiedAst,
+    nodeToEdit,
+    wasmInstance,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontPointSize,
+    fontScale,
+  })
+  if (err(styleResult)) {
+    return styleResult
+  }
+
+  let lastPathToNode: PathToNode | undefined
+  const createAnnotationCall = (
+    targetArgName: 'faces' | 'edges',
+    targetExpr: Expr
+  ) =>
+    createCallExpressionStdLibKw(
+      'annotation',
+      null,
+      [
+        createLabeledArg(targetArgName, createArrayExpression([targetExpr])),
+        createLabeledArg('annotation', createLiteral(annotation, wasmInstance)),
+        ...styleResult.labeledArgs,
+      ],
+      undefined,
+      [createIdentifier('gdt')]
+    )
+
+  for (const faceExpr of uniqueFaceExprs) {
+    const pathToNode = setCallInAst({
+      ast: modifiedAst,
+      call: createAnnotationCall('faces', faceExpr),
+      pathToEdit: nodeToEdit,
+      pathIfNewPipe: undefined,
+      variableIfNewDecl: undefined,
+      wasmInstance,
+    })
+    if (err(pathToNode)) {
+      return pathToNode
+    }
+    lastPathToNode = pathToNode
+  }
+
+  for (const edgeExpr of uniqueEdgeExprs) {
+    const pathToNode = setCallInAst({
+      ast: modifiedAst,
+      call: createAnnotationCall('edges', edgeExpr),
+      pathToEdit: nodeToEdit,
+      pathIfNewPipe: undefined,
+      variableIfNewDecl: undefined,
+      wasmInstance,
+    })
+    if (err(pathToNode)) {
+      return pathToNode
+    }
+    lastPathToNode = pathToNode
+  }
+
+  if (!lastPathToNode) {
+    return new Error('Failed to create any gdt::annotation calls')
+  }
+
+  return {
+    modifiedAst,
+    pathToNode: lastPathToNode,
+  }
+}
+
 /**
  * Adds datum GD&T annotation to the AST.
  * Creates a single gdt::datum call for a selected face.
