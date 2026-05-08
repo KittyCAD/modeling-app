@@ -106,28 +106,30 @@ pub(super) async fn tags_to_engine_edge_references(
     Ok(refs)
 }
 
-/// Create fillets on tagged paths.
-pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid: Box<Solid> = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
-    let radius: TyF64 = args.get_kw_arg("radius", &RuntimeType::length(), exec_state)?;
-    let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
-    let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
-    let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
-    let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
+pub(super) enum TaggedEdgeInputs {
+    Tags(Vec<EdgeReference>),
+    EngineRefs(Vec<kcmc::shared::EdgeSpecifier>),
+}
 
-    let edge_refs: Option<Vec<KclValue>> = args.get_kw_arg_opt("edges", &RuntimeType::any_array(), exec_state)?;
-    let tags_result = args.kw_arg_edge_array_and_source("tags");
-    match (edge_refs, tags_result) {
-        (Some(edge_refs), Ok(tags_with_source)) => {
+pub(super) async fn parse_tagged_edge_inputs(
+    solid_id: uuid::Uuid,
+    edge_refs: Option<Vec<KclValue>>,
+    tags_with_source: Option<Vec<(EdgeReference, SourceRange)>>,
+    exec_state: &mut ExecState,
+    args: &Args,
+    missing_args_message: &str,
+) -> Result<TaggedEdgeInputs, KclError> {
+    match (edge_refs, tags_with_source) {
+        (Some(edge_refs), Some(tags_with_source)) => {
             validate_unique(&tags_with_source)?;
             let tags: Vec<EdgeReference> = tags_with_source.into_iter().map(|item| item.0).collect();
             #[cfg(feature = "artifact-graph")]
             {
                 let mut tag_entries: Vec<crate::execution::DirectTagFilletTagEntry> = Vec::new();
                 for edge_ref in &tags {
-                    if let Ok(edge_id) = edge_ref.get_engine_id(exec_state, &args)
+                    if let Ok(edge_id) = edge_ref.get_engine_id(exec_state, args)
                         && let Ok(face_ids) =
-                            super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
+                            super::edge::get_face_ids_for_edge(exec_state, solid_id, edge_id, args).await
                         && let [a, b] = face_ids.as_slice()
                     {
                         let tag_identifier = match edge_ref {
@@ -150,40 +152,67 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
                     });
                 }
             }
-            let tags_as_refs = tags_to_engine_edge_references(solid.id, tags, exec_state, &args).await?;
-            let edge_refs_parsed = parse_edge_refs_to_references(edge_refs, solid.id, exec_state, &args).await?;
+            let tags_as_refs = tags_to_engine_edge_references(solid_id, tags, exec_state, args).await?;
+            let edge_refs_parsed = super::edge::parse_edge_refs_to_references(edge_refs, exec_state, args).await?;
             let mut all_refs = tags_as_refs;
             all_refs.extend(edge_refs_parsed);
-            let params = FilletEdgeRefParams {
-                radius,
-                tolerance,
-                csg_algorithm,
-                tag,
-            };
-            let value = inner_fillet_with_engine_refs(solid, all_refs, params, exec_state, args).await?;
-            Ok(KclValue::Solid { value })
+            Ok(TaggedEdgeInputs::EngineRefs(all_refs))
         }
-        (Some(edge_refs), Err(_)) => {
-            let params = FilletEdgeRefParams {
-                radius,
-                tolerance,
-                csg_algorithm,
-                tag,
-            };
-            let value = inner_fillet_with_edge_refs(solid, edge_refs, params, exec_state, args).await?;
-            Ok(KclValue::Solid { value })
+        (Some(edge_refs), None) => {
+            let edge_refs_parsed = super::edge::parse_edge_refs_to_references(edge_refs, exec_state, args).await?;
+            Ok(TaggedEdgeInputs::EngineRefs(edge_refs_parsed))
         }
-        (None, Ok(tags_with_source)) => {
+        (None, Some(tags_with_source)) => {
             validate_unique(&tags_with_source)?;
-            let tags: Vec<EdgeReference> = tags_with_source.into_iter().map(|item| item.0).collect();
+            let tags = tags_with_source.into_iter().map(|item| item.0).collect();
+            Ok(TaggedEdgeInputs::Tags(tags))
+        }
+        (None, None) => Err(KclError::new_semantic(KclErrorDetails::new(
+            missing_args_message.to_owned(),
+            vec![args.source_range],
+        ))),
+    }
+}
+
+/// Create fillets on tagged paths.
+pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let solid: Box<Solid> = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
+    let radius: TyF64 = args.get_kw_arg("radius", &RuntimeType::length(), exec_state)?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
+    let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
+    let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
+    let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
+
+    // Edge specifiers are object-shaped payloads, so there is no narrow RuntimeType for them yet.
+    // Keep this broad at the boundary and validate the shape in parse_tagged_edge_inputs.
+    let edge_refs: Option<Vec<KclValue>> = args.get_kw_arg_opt("edges", &RuntimeType::any_array(), exec_state)?;
+    let tags = args.kw_arg_edge_array_and_source_opt("tags")?;
+
+    let edge_inputs = parse_tagged_edge_inputs(
+        solid.id,
+        edge_refs,
+        tags,
+        exec_state,
+        &args,
+        "You must provide either 'tags' or 'edges' to fillet edges",
+    )
+    .await?;
+
+    match edge_inputs {
+        TaggedEdgeInputs::EngineRefs(edge_refs) => {
+            let params = FilletEdgeRefParams {
+                radius,
+                tolerance,
+                csg_algorithm,
+                tag,
+            };
+            let value = inner_fillet_with_engine_refs(solid, edge_refs, params, exec_state, args).await?;
+            Ok(KclValue::Solid { value })
+        }
+        TaggedEdgeInputs::Tags(tags) => {
             let value = inner_fillet(solid, radius, tags, tolerance, csg_algorithm, tag, exec_state, args).await?;
             Ok(KclValue::Solid { value })
         }
-        (None, Err(_)) => Err(KclError::new_semantic(KclErrorDetails {
-            source_ranges: vec![args.source_range],
-            message: "You must provide either 'tags' or 'edges' to fillet edges".to_owned(),
-            backtrace: Default::default(),
-        })),
     }
 }
 
@@ -299,78 +328,11 @@ async fn inner_fillet(
     Ok(solid)
 }
 
-/// Helper to resolve a KclValue (tag or UUID) to a face UUID.
-/// Tags should refer to faces. If a tag refers to an edge, this will return an error
-/// with a helpful message suggesting to use face tags instead.
-pub(super) async fn resolve_face_id(
-    value: &KclValue,
-    _solid_id: uuid::Uuid,
-    exec_state: &mut ExecState,
-    args: &Args,
-) -> Result<uuid::Uuid, KclError> {
-    match value {
-        KclValue::TagIdentifier(tag) => {
-            // Try to get face ID using get_adjacent_face_to_tag (for face tags)
-            match args.get_adjacent_face_to_tag(exec_state, tag, false).await {
-                Ok(face_id) => Ok(face_id),
-                Err(_) => {
-                    // The tag doesn't refer to a face. It might refer to an edge.
-                    // Provide a helpful error message.
-                    let _engine_info = args.get_tag_engine_info(exec_state, tag)?;
-                    Err(KclError::new_type(KclErrorDetails {
-                        message: format!(
-                            "Tag `{}` does not refer to a face. For edges, the 'sideFaces' array must contain tags that refer to faces, not edges. \
-                            If you tagged a sketch segment (line/arc), that tag refers to an edge after extrusion. \
-                            You need to use face tags instead. Consider using the 'start' or 'end' face, or tag a face directly.",
-                            tag.value
-                        ),
-                        source_ranges: vec![args.source_range],
-                        backtrace: Default::default(),
-                    }))
-                }
-            }
-        }
-        KclValue::Uuid { value: uuid, .. } => Ok(*uuid),
-        _ => Err(KclError::new_type(KclErrorDetails {
-            message: "EdgeRef faces and end_faces must be tags or UUIDs".to_string(),
-            source_ranges: vec![args.source_range],
-            backtrace: Default::default(),
-        })),
-    }
-}
-
 struct FilletEdgeRefParams {
     radius: TyF64,
     tolerance: Option<TyF64>,
     csg_algorithm: CsgAlgorithm,
     tag: Option<TagNode>,
-}
-
-async fn inner_fillet_with_edge_refs(
-    solid: Box<Solid>,
-    edge_refs: Vec<KclValue>,
-    params: FilletEdgeRefParams,
-    exec_state: &mut ExecState,
-    args: Args,
-) -> Result<Box<Solid>, KclError> {
-    if edge_refs.is_empty() {
-        return Err(KclError::new_semantic(KclErrorDetails {
-            source_ranges: vec![args.source_range],
-            message: "You must provide at least one edge".to_owned(),
-            backtrace: Default::default(),
-        }));
-    }
-
-    if params.tag.is_some() && edge_refs.len() > 1 {
-        return Err(KclError::new_type(KclErrorDetails {
-            message: "You can only tag one edge at a time with a tagged fillet. Either delete the tag for the fillet fn if you don't need it OR separate into individual fillet functions for each edge.".to_string(),
-            source_ranges: vec![args.source_range],
-            backtrace: Default::default(),
-        }));
-    }
-
-    let edge_references = parse_edge_refs_to_references(edge_refs, solid.id, exec_state, &args).await?;
-    inner_fillet_with_engine_refs(solid, edge_references, params, exec_state, args).await
 }
 
 async fn inner_fillet_with_engine_refs(
@@ -441,111 +403,6 @@ async fn inner_fillet_with_engine_refs(
     }
 
     Ok(solid)
-}
-
-/// Parse edges (array of KclValue objects with sideFaces, optional endFaces/index)
-/// into engine EdgeReference structs. Shared by fillet and chamfer.
-pub(super) async fn parse_edge_refs_to_references(
-    edge_refs: Vec<KclValue>,
-    solid_id: uuid::Uuid,
-    exec_state: &mut ExecState,
-    args: &Args,
-) -> Result<Vec<kcmc::shared::EdgeSpecifier>, KclError> {
-    if edge_refs.is_empty() {
-        return Err(KclError::new_semantic(KclErrorDetails {
-            message: "You must provide at least one edge".to_owned(),
-            source_ranges: vec![args.source_range],
-            backtrace: Default::default(),
-        }));
-    }
-
-    let mut edge_references = Vec::new();
-    for edge_ref_value in edge_refs {
-        let edge_ref_obj = match edge_ref_value {
-            KclValue::Object { value, .. } => value,
-            _ => {
-                return Err(KclError::new_type(KclErrorDetails {
-                    message: "edges must be an array of objects with 'sideFaces' field".to_string(),
-                    source_ranges: vec![args.source_range],
-                    backtrace: Default::default(),
-                }));
-            }
-        };
-
-        let faces_value = edge_ref_obj.get("sideFaces").ok_or_else(|| {
-            KclError::new_type(KclErrorDetails {
-                message: "edges must have 'sideFaces' field".to_string(),
-                source_ranges: vec![args.source_range],
-                backtrace: Default::default(),
-            })
-        })?;
-
-        let faces_array = match faces_value {
-            KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
-            _ => {
-                return Err(KclError::new_type(KclErrorDetails {
-                    message: "edges 'sideFaces' must be an array".to_string(),
-                    source_ranges: vec![args.source_range],
-                    backtrace: Default::default(),
-                }));
-            }
-        };
-
-        if faces_array.is_empty() {
-            return Err(KclError::new_type(KclErrorDetails {
-                message: "edges 'sideFaces' must have at least one face".to_string(),
-                source_ranges: vec![args.source_range],
-                backtrace: Default::default(),
-            }));
-        }
-
-        let mut face_uuids = Vec::new();
-        for face_value in faces_array {
-            face_uuids.push(resolve_face_id(face_value, solid_id, exec_state, args).await?);
-        }
-
-        let mut end_face_uuids = Vec::new();
-        if let Some(end_faces_value) = edge_ref_obj.get("endFaces") {
-            let end_faces_array = match end_faces_value {
-                KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => value,
-                _ => {
-                    return Err(KclError::new_type(KclErrorDetails {
-                        message: "edges 'endFaces' must be an array".to_string(),
-                        source_ranges: vec![args.source_range],
-                        backtrace: Default::default(),
-                    }));
-                }
-            };
-            for end_face_value in end_faces_array {
-                end_face_uuids.push(resolve_face_id(end_face_value, solid_id, exec_state, args).await?);
-            }
-        }
-
-        let index = match edge_ref_obj.get("index") {
-            Some(KclValue::Number { value, .. }) => Some(*value as u32),
-            Some(_) => {
-                return Err(KclError::new_type(KclErrorDetails {
-                    message: "edge 'index' must be a number".to_string(),
-                    source_ranges: vec![args.source_range],
-                    backtrace: Default::default(),
-                }));
-            }
-            None => None,
-        };
-
-        use kcmc::shared::EdgeSpecifier as KcmcEdgeRef;
-        let builder = KcmcEdgeRef::builder().side_faces(face_uuids).end_faces(end_face_uuids);
-
-        let edge_ref = if let Some(index_val) = index {
-            builder.index(index_val).build()
-        } else {
-            builder.build()
-        };
-
-        edge_references.push(edge_ref);
-    }
-
-    Ok(edge_references)
 }
 
 #[cfg(test)]

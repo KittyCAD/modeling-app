@@ -5,7 +5,6 @@ use kittycad_modeling_cmds::shared::EdgeSpecifier as ModelingEdgeReference;
 use super::args::TyF64;
 use crate::KclError;
 use crate::errors::KclErrorDetails;
-use crate::execution::KclValue;
 use crate::execution::Plane;
 use crate::execution::Segment;
 use crate::execution::SegmentKind;
@@ -14,14 +13,6 @@ use crate::execution::Solid;
 use crate::execution::TagIdentifier;
 use crate::std::fillet::EdgeReference;
 use crate::std::sketch::FaceTag;
-
-/// True if the value is an object with a `sideFaces` (or `side_faces`) key.
-pub(crate) fn is_edge_ref_object(v: &KclValue) -> bool {
-    match v {
-        KclValue::Object { value, .. } => value.get("sideFaces").is_some(),
-        _ => false,
-    }
-}
 
 /// A 2D axis or tagged edge.
 #[derive(Debug, Clone, PartialEq)]
