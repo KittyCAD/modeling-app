@@ -46,6 +46,24 @@ function createDiagnostic(
   }
 }
 
+function createEmptySceneGraphDelta(): SceneGraphDelta {
+  return {
+    new_graph: [] as unknown as SceneGraphDelta['new_graph'],
+    new_objects: [],
+    invalidates_ids: true,
+    exec_outcome: [] as unknown as SceneGraphDelta['exec_outcome'],
+  }
+}
+
+function enableSketchSolveEditorExecution(kclManager: KclManager) {
+  kclManager.modelingState = {
+    matches: (value: unknown) => value === 'sketchSolveMode',
+  } as unknown as NonNullable<KclManager['modelingState']>
+  kclManager.engineCommandManager.connection = {
+    connected: true,
+  } as unknown as typeof kclManager.engineCommandManager.connection
+}
+
 afterEach(() => {
   vi.clearAllMocks()
   vi.clearAllTimers()
@@ -301,6 +319,137 @@ describe('KclManager diagnostics', () => {
     await vi.advanceTimersByTimeAsync(1)
     expect(executeCodeSpy).toHaveBeenCalledTimes(1)
     expect(executeCodeSpy).toHaveBeenCalledWith('abc')
+  })
+
+  it('tracks whether the editor differs from the last execution', () => {
+    const { kclManager } = createKclManagerTestHarness('a')
+    ;(kclManager as any).markCodeAsExecuted('a')
+
+    expect(kclManager.hasEditsSinceLastExecutionSignal.value).toBe(false)
+
+    kclManager.editorView.dispatch({
+      changes: { from: 1, to: 1, insert: 'b' },
+    })
+
+    expect(kclManager.hasEditsSinceLastExecutionSignal.value).toBe(true)
+
+    kclManager.editorView.dispatch({
+      changes: { from: 1, to: 2, insert: '' },
+    })
+
+    expect(kclManager.hasEditsSinceLastExecutionSignal.value).toBe(false)
+  })
+
+  it('marks fresh direct sketch editor executions as derived source updates', async () => {
+    vi.useFakeTimers()
+
+    const { kclManager } = createKclManagerTestHarness('base')
+    const sceneGraphDelta = createEmptySceneGraphDelta()
+    const checkpointId = 55
+    const modelingSendSpy = vi.fn()
+    enableSketchSolveEditorExecution(kclManager)
+    kclManager.modelingSend = modelingSendSpy
+
+    vi.spyOn(kclManager, 'executeCode').mockResolvedValue(undefined)
+    vi.spyOn(kclManager.rustContext, 'hackSetProgram').mockResolvedValue({
+      type: 'Success',
+      sceneGraph: sceneGraphDelta.new_graph,
+      execOutcome: sceneGraphDelta.exec_outcome,
+      checkpointId,
+    } as Awaited<ReturnType<typeof kclManager.rustContext.hackSetProgram>>)
+
+    kclManager.editorView.dispatch({
+      changes: { from: 4, to: 4, insert: ' fresh' },
+    })
+
+    await vi.advanceTimersByTimeAsync(1000)
+    await flushPromises()
+
+    expect(modelingSendSpy).toHaveBeenCalledTimes(1)
+    expect(modelingSendSpy).toHaveBeenCalledWith({
+      type: 'update sketch outcome',
+      data: {
+        sourceDelta: { text: 'base fresh' },
+        sceneGraphDelta,
+        updateEditor: false,
+        writeToDisk: false,
+        addToHistory: false,
+        checkpointId,
+      },
+    })
+  })
+
+  it('drops direct sketch editor executions that go stale while parsing executes', async () => {
+    vi.useFakeTimers()
+
+    const { kclManager } = createKclManagerTestHarness('base')
+    const deferredExecution = createDeferred<undefined>()
+    const modelingSendSpy = vi.fn()
+    enableSketchSolveEditorExecution(kclManager)
+    kclManager.modelingSend = modelingSendSpy
+
+    vi.spyOn(kclManager, 'executeCode').mockReturnValue(
+      deferredExecution.promise
+    )
+    const hackSetProgramSpy = vi.spyOn(kclManager.rustContext, 'hackSetProgram')
+
+    kclManager.editorView.dispatch({
+      changes: { from: 4, to: 4, insert: ' stale' },
+    })
+
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(kclManager.code).toBe('base stale')
+
+    kclManager.editorView.dispatch({
+      changes: { from: 10, to: 10, insert: ' newer' },
+    })
+    deferredExecution.resolve(undefined)
+    await flushPromises()
+
+    expect(kclManager.code).toBe('base stale newer')
+    expect(hackSetProgramSpy).not.toHaveBeenCalled()
+    expect(modelingSendSpy).not.toHaveBeenCalled()
+  })
+
+  it('drops direct sketch editor executions that go stale while Rust updates the program', async () => {
+    vi.useFakeTimers()
+
+    const { kclManager } = createKclManagerTestHarness('base')
+    const sceneGraphDelta = createEmptySceneGraphDelta()
+    const deferredSetProgram =
+      createDeferred<
+        Awaited<ReturnType<typeof kclManager.rustContext.hackSetProgram>>
+      >()
+    const modelingSendSpy = vi.fn()
+    enableSketchSolveEditorExecution(kclManager)
+    kclManager.modelingSend = modelingSendSpy
+
+    vi.spyOn(kclManager, 'executeCode').mockResolvedValue(undefined)
+    const hackSetProgramSpy = vi
+      .spyOn(kclManager.rustContext, 'hackSetProgram')
+      .mockReturnValue(deferredSetProgram.promise)
+
+    kclManager.editorView.dispatch({
+      changes: { from: 4, to: 4, insert: ' stale' },
+    })
+
+    await vi.advanceTimersByTimeAsync(1000)
+    await flushPromises()
+    expect(hackSetProgramSpy).toHaveBeenCalledTimes(1)
+
+    kclManager.editorView.dispatch({
+      changes: { from: 10, to: 10, insert: ' newer' },
+    })
+    deferredSetProgram.resolve({
+      type: 'Success',
+      sceneGraph: sceneGraphDelta.new_graph,
+      execOutcome: sceneGraphDelta.exec_outcome,
+      checkpointId: 55,
+    } as Awaited<ReturnType<typeof kclManager.rustContext.hackSetProgram>>)
+    await flushPromises()
+
+    expect(kclManager.code).toBe('base stale newer')
+    expect(modelingSendSpy).not.toHaveBeenCalled()
   })
 
   it('debounces repeated programmatic updates so only the latest buffer is written', async () => {
