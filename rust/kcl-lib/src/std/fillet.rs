@@ -154,6 +154,8 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
     let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
 
+    // Edge specifiers are object-shaped payloads, so there is no narrow RuntimeType for them yet.
+    // Keep this broad at the boundary and validate the shape in parse_tagged_edge_inputs.
     let edge_refs: Option<Vec<KclValue>> = args.get_kw_arg_opt("edges", &RuntimeType::any_array(), exec_state)?;
     let tags = args.kw_arg_edge_array_and_source_opt("tags")?;
 

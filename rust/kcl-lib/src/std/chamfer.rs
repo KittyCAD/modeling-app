@@ -41,6 +41,8 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
+    // Edge specifiers are object-shaped payloads, so there is no narrow RuntimeType for them yet.
+    // Keep this broad at the boundary and validate the shape in parse_tagged_edge_inputs.
     let edge_refs = args.get_kw_arg_opt("edges", &RuntimeType::any_array(), exec_state)?;
     let tags = args.kw_arg_edge_array_and_source_opt("tags")?;
 
