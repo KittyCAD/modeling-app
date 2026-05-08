@@ -54,42 +54,8 @@ use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
 use crate::std::axis_or_reference::Point3dAxis3dOrGeometryReference;
-use crate::std::edge::TagOrUuid;
-use crate::std::edge::UnresolvedEdgeSpecifier;
 use crate::std::edge::{self};
-use crate::std::sketch::FaceTag;
 use crate::std::solver::create_segments_in_engine;
-
-/// Resolve extrude `to = { sideFaces = [...], ... }` to engine EdgeSpecifier (face tags → face UUIDs).
-async fn unresolved_edge_specifier_to_extrude_edge_specifier(
-    unresolved: &UnresolvedEdgeSpecifier,
-    exec_state: &mut ExecState,
-    args: &Args,
-) -> Result<kcmc::shared::EdgeSpecifier, KclError> {
-    async fn resolve_face(v: &TagOrUuid, exec_state: &mut ExecState, args: &Args) -> Result<Uuid, KclError> {
-        match v {
-            TagOrUuid::Uuid(u) => Ok(*u),
-            TagOrUuid::Tag(t) => {
-                FaceTag::Tag(t.clone())
-                    .get_face_id_from_tag(exec_state, args, false)
-                    .await
-            }
-        }
-    }
-    let mut side_faces = Vec::new();
-    for v in &unresolved.side_faces {
-        side_faces.push(resolve_face(v, exec_state, args).await?);
-    }
-    let mut end_faces = Vec::new();
-    for v in &unresolved.end_faces {
-        end_faces.push(resolve_face(v, exec_state, args).await?);
-    }
-    Ok(kcmc::shared::EdgeSpecifier::builder()
-        .side_faces(side_faces)
-        .end_faces(end_faces)
-        .maybe_index(unresolved.index)
-        .build())
-}
 
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -128,7 +94,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         None => None,
         Some(v) => {
             let inner = if let KclValue::Object { value: ref obj, .. } = v {
-                if obj.contains_key("sideFaces") {
+                if edge::is_edge_specifier_object(&v) {
                     Point3dAxis3dOrGeometryReference::EdgeToReference(edge::parse_edge_specifier_object(obj, &args)?)
                 } else {
                     Point3dAxis3dOrGeometryReference::from_kcl_val(&v).ok_or_else(|| {
@@ -567,7 +533,7 @@ async fn inner_extrude(
                     )
                 }
                 Point3dAxis3dOrGeometryReference::EdgeToReference(spec) => {
-                    let inner = unresolved_edge_specifier_to_extrude_edge_specifier(spec, exec_state, &args).await?;
+                    let inner = edge::resolve_edge_specifier_with_face_tags(spec, exec_state, &args).await?;
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
                             .target(sketch_or_face_id.into())

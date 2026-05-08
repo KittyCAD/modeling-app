@@ -50,8 +50,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             super::fillet::validate_unique(&tags_with_source)?;
             let tags: Vec<EdgeReference> = tags_with_source.into_iter().map(|item| item.0).collect();
             let tags_as_refs = super::fillet::tags_to_engine_edge_references(solid.id, tags, exec_state, &args).await?;
-            let edge_refs_parsed =
-                super::fillet::parse_edge_refs_to_references(edge_refs, solid.id, exec_state, &args).await?;
+            let edge_refs_parsed = super::edge::parse_edge_refs_to_references(edge_refs, exec_state, &args).await?;
             let mut all_refs = tags_as_refs;
             all_refs.extend(edge_refs_parsed);
             let value = inner_chamfer_with_engine_refs(
@@ -252,7 +251,7 @@ async fn inner_chamfer_with_edge_refs(
         )));
     }
 
-    let edge_references = super::fillet::parse_edge_refs_to_references(edge_refs, solid.id, exec_state, &args).await?;
+    let edge_references = super::edge::parse_edge_refs_to_references(edge_refs, exec_state, &args).await?;
     inner_chamfer_with_engine_refs(
         solid,
         length,
