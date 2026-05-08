@@ -44,48 +44,33 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let edge_refs = args.get_kw_arg_opt("edges", &RuntimeType::any_array(), exec_state)?;
     let tags = args.kw_arg_edge_array_and_source_opt("tags")?;
 
-    match (edge_refs, tags) {
-        (Some(edge_refs), Some(tags_with_source)) => {
-            // Both provided: merge tags and edges into one list and use the edges engine path.
-            super::fillet::validate_unique(&tags_with_source)?;
-            let tags: Vec<EdgeReference> = tags_with_source.into_iter().map(|item| item.0).collect();
-            let tags_as_refs = super::fillet::tags_to_engine_edge_references(solid.id, tags, exec_state, &args).await?;
-            let edge_refs_parsed = super::edge::parse_edge_refs_to_references(edge_refs, exec_state, &args).await?;
-            let mut all_refs = tags_as_refs;
-            all_refs.extend(edge_refs_parsed);
+    let edge_inputs = super::fillet::parse_tagged_edge_inputs(
+        solid.id,
+        edge_refs,
+        tags,
+        exec_state,
+        &args,
+        "You must provide either 'tags' or 'edges' to chamfer edges",
+    )
+    .await?;
+
+    match edge_inputs {
+        super::fillet::TaggedEdgeInputs::EngineRefs(edge_refs) => {
             let value = inner_chamfer_with_engine_refs(
-                solid,
-                length,
-                all_refs,
-                second_length,
-                angle,
-                csg_algorithm,
-                tag,
-                exec_state,
-                args,
-            )
-            .await?;
-            Ok(KclValue::Solid { value })
-        }
-        (Some(edge_refs), None) => {
-            let value = inner_chamfer_with_edge_refs(
                 solid,
                 length,
                 edge_refs,
                 second_length,
                 angle,
-                None,
-                tag,
                 csg_algorithm,
+                tag,
                 exec_state,
                 args,
             )
             .await?;
             Ok(KclValue::Solid { value })
         }
-        (None, Some(tags_with_source)) => {
-            super::fillet::validate_unique(&tags_with_source)?;
-            let tags: Vec<EdgeReference> = tags_with_source.into_iter().map(|item| item.0).collect();
+        super::fillet::TaggedEdgeInputs::Tags(tags) => {
             let value = inner_chamfer(
                 solid,
                 length,
@@ -101,10 +86,6 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             .await?;
             Ok(KclValue::Solid { value })
         }
-        (None, None) => Err(KclError::new_semantic(KclErrorDetails::new(
-            "You must provide either 'tags' or 'edges' to chamfer edges".to_string(),
-            vec![args.source_range],
-        ))),
     }
 }
 
@@ -222,48 +203,6 @@ async fn inner_chamfer(
     }
 
     Ok(solid)
-}
-
-#[allow(clippy::too_many_arguments)]
-async fn inner_chamfer_with_edge_refs(
-    solid: Box<Solid>,
-    length: TyF64,
-    edge_refs: Vec<KclValue>,
-    second_length: Option<TyF64>,
-    angle: Option<TyF64>,
-    _custom_profile: Option<Sketch>,
-    tag: Option<TagNode>,
-    csg_algorithm: CsgAlgorithm,
-    exec_state: &mut ExecState,
-    args: Args,
-) -> Result<Box<Solid>, KclError> {
-    if tag.is_some() && edge_refs.len() > 1 {
-        return Err(KclError::new_type(KclErrorDetails::new(
-            "You can only tag one edge at a time with a tagged chamfer. Either delete the tag for the chamfer fn if you don't need it OR separate into individual chamfer functions for each edgeRef.".to_string(),
-            vec![args.source_range],
-        )));
-    }
-
-    if angle.is_some() && second_length.is_some() {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "Cannot specify both an angle and a second length. Specify only one.".to_string(),
-            vec![args.source_range],
-        )));
-    }
-
-    let edge_references = super::edge::parse_edge_refs_to_references(edge_refs, exec_state, &args).await?;
-    inner_chamfer_with_engine_refs(
-        solid,
-        length,
-        edge_references,
-        second_length,
-        angle,
-        csg_algorithm,
-        tag,
-        exec_state,
-        args,
-    )
-    .await
 }
 
 #[allow(clippy::too_many_arguments)]
