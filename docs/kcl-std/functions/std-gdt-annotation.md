@@ -1,13 +1,13 @@
 ---
 title: "gdt::annotation"
 subtitle: "Function in std::gdt"
-excerpt: "GD&T annotation for manufacturing instructions or inspection requirements."
+excerpt: "GD&T annotation for attaching manufacturing text to faces or edges."
 layout: manual
 ---
 
 **WARNING:** This function is experimental and may change or be removed.
 
-GD&T annotation for manufacturing instructions or inspection requirements.
+GD&T annotation for attaching manufacturing text to faces or edges.
 
 ```kcl
 gdt::annotation(
@@ -28,7 +28,7 @@ This is part of model-based definition (MBD).
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `annotation` | [`string`](/docs/kcl-std/types/std-types-string) | The manufacturing or inspection annotation text to display. | Yes |
+| `annotation` | [`string`](/docs/kcl-std/types/std-types-string) | The annotation text to display. | Yes |
 | `faces` | [[`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace); 1+] | The faces to be annotated. | No |
 | `edges` | [[`Edge`](/docs/kcl-std/types/std-types-Edge); 1+] | The edges to be annotated. | No |
 | `framePosition` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The position of the annotation relative to the leader arrow. The default is `[100mm, 100mm]`. | No |
@@ -87,10 +87,17 @@ blockProfile = sketch(on = XY) {
 }
 
 block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
-annotationEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
-gdt::annotation(edges = [annotationEdge], annotation = "Deburr this edge", framePosition = [12mm, 8mm], framePlane = XZ)
+sideEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+gdt::annotation(
+  edges = [sideEdge],
+  annotation = "Deburr edge",
+  framePosition = [12mm, 8mm],
+  framePlane = XZ,
+)
 
 ```
 
 
 ![Rendered example of gdt::annotation 1](/kcl-test-outputs/serial_test_example_fn_std-gdt-annotation1.png)
+
+

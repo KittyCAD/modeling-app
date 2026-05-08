@@ -1,13 +1,13 @@
 ---
 title: "gdt::annotation"
 subtitle: "Function in std::gdt"
-excerpt: "GD&T annotation for manufacturing instructions or inspection requirements."
+excerpt: "GD&T annotation for attaching manufacturing text to faces or edges."
 layout: manual
 ---
 
 **WARNING:** This function is experimental and may change or be removed.
 
-GD&T annotation for manufacturing instructions or inspection requirements.
+GD&T annotation for attaching manufacturing text to faces or edges.
 
 ```kcl
 gdt::annotation(
@@ -28,7 +28,7 @@ This is part of model-based definition (MBD).
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `annotation` | `string` | The manufacturing or inspection annotation text to display. | Yes |
+| `annotation` | `string` | The annotation text to display. | Yes |
 | `faces` | `[TaggedFace; 1+]` | The faces to be annotated. | No |
 | `edges` | `[Edge; 1+]` | The edges to be annotated. | No |
 | `framePosition` | `Point2d` | The position of the annotation relative to the leader arrow. The default is `[100mm, 100mm]`. | No |
@@ -67,3 +67,5 @@ gdt::annotation(
 
 
 ![Rendered example of gdt::annotation 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-annotation0.png)
+
+
