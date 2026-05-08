@@ -205,7 +205,8 @@
 use std::cell::UnsafeCell;
 use std::collections::LinkedList;
 use std::fmt;
-use std::ops::{Deref, DerefMut};
+use std::ops::Deref;
+use std::ops::DerefMut;
 use std::pin::Pin;
 use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
