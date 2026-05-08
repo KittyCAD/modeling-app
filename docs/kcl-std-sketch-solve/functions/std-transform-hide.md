@@ -8,7 +8,7 @@ layout: manual
 Hide solids, sketches, helices, or imported objects.
 
 ```kcl
-hide(@objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry): [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry
+hide(@objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry | [GdtAnnotation; 1+]): [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry | [GdtAnnotation; 1+]
 ```
 
 Hidden objects remain in the model and can still be referenced by later operations.
@@ -19,11 +19,11 @@ while you work.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `objects` | `[Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry` | The solid, sketch, or set of solids or sketches to hide. | Yes |
+| `objects` | [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry | [GdtAnnotation; 1+] | The object or objects to hide. | Yes |
 
 ### Returns
 
-`[Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry`
+[Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry | [GdtAnnotation; 1+]
 
 
 
