@@ -136,7 +136,9 @@ pub use parsing::ast::types::NodePath;
 pub use parsing::ast::types::Program as AstProgram;
 pub use parsing::ast::types::Step as NodePathStep;
 pub use project::ProjectManager;
+#[cfg(feature = "artifact-graph")]
 pub use settings::types::Configuration;
+#[cfg(feature = "artifact-graph")]
 pub use settings::types::project::ProjectConfiguration;
 #[cfg(not(target_arch = "wasm32"))]
 pub use unparser::recast_dir;

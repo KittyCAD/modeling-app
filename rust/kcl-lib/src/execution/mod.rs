@@ -812,12 +812,14 @@ impl Default for ExecutorSettings {
     }
 }
 
+#[cfg(feature = "artifact-graph")]
 impl From<crate::settings::types::Configuration> for ExecutorSettings {
     fn from(config: crate::settings::types::Configuration) -> Self {
         Self::from(config.settings)
     }
 }
 
+#[cfg(feature = "artifact-graph")]
 impl From<crate::settings::types::Settings> for ExecutorSettings {
     fn from(settings: crate::settings::types::Settings) -> Self {
         let modeling_settings = settings.modeling.unwrap_or_default();
@@ -833,12 +835,14 @@ impl From<crate::settings::types::Settings> for ExecutorSettings {
     }
 }
 
+#[cfg(feature = "artifact-graph")]
 impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSettings {
     fn from(config: crate::settings::types::project::ProjectConfiguration) -> Self {
         Self::from(config.settings.modeling)
     }
 }
 
+#[cfg(feature = "artifact-graph")]
 impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
     fn from(modeling: crate::settings::types::ModelingSettings) -> Self {
         Self {
@@ -853,6 +857,7 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
     }
 }
 
+#[cfg(feature = "artifact-graph")]
 impl From<crate::settings::types::project::ProjectModelingSettings> for ExecutorSettings {
     fn from(modeling: crate::settings::types::project::ProjectModelingSettings) -> Self {
         Self {
