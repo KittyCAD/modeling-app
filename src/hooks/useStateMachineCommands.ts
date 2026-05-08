@@ -4,6 +4,7 @@ import type { Actor, AnyStateMachine, EventFrom, StateFrom } from 'xstate'
 
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import { shouldDisableModelingForUnrenderedChanges } from '@src/lib/automaticRendering'
 import type {
   Command,
   StateMachineCommandSetConfig,
@@ -11,6 +12,7 @@ import type {
 } from '@src/lib/commandTypes'
 import { createMachineCommand } from '@src/lib/createMachineCommand'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { useSignals } from '@preact/signals-react/runtime'
 
 interface UseStateMachineCommandsArgs<
   T extends AnyStateMachine,
@@ -44,15 +46,25 @@ export default function useStateMachineCommands<
   onCancel,
   isExecuting,
 }: UseStateMachineCommandsArgs<T, S>) {
-  const { commands } = useApp()
+  useSignals()
+  const { commands, settings } = useApp()
   const { kclManager } = useSingletons()
+  const settingsValues = settings.useSettings()
   const { overallState } = useNetworkContext()
   const { isStreamReady } = useAppState()
+  const disableForUnrenderedChanges = shouldDisableModelingForUnrenderedChanges(
+    {
+      settings: settingsValues,
+      hasEditsSinceLastExecution:
+        kclManager.hasEditsSinceLastExecutionSignal.value,
+    }
+  )
   const shouldDisableEngineCommands =
     (overallState !== NetworkHealthState.Ok &&
       overallState !== NetworkHealthState.Weak) ||
-    kclManager.isExecutingSignal.value ||
-    !isStreamReady
+    isExecuting ||
+    !isStreamReady ||
+    disableForUnrenderedChanges
 
   useEffect(() => {
     const newCommands = Object.keys(commandBarConfig || {})

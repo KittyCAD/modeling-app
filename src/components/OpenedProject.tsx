@@ -1,13 +1,10 @@
 import { useSignalEffect } from '@preact/signals-react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { AppHeader } from '@src/components/AppHeader'
-import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
 import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
 import { useLspContext } from '@src/components/LspProvider'
 import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
-import { PublishButton } from '@src/components/PublishButton'
-import { ShareButton } from '@src/components/ShareButton'
 import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import {
   defaultGlobalStatusBarItems,
@@ -36,7 +33,6 @@ import {
 } from '@src/lib/constants'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
-import { isMobile } from '@src/lib/isMobile'
 import {
   DefaultLayoutPaneID,
   LayoutRootNode,
@@ -226,14 +222,6 @@ export function OpenedProject() {
   )
 
   useHotkeyWrapper(
-    ['mod + s'],
-    () => {
-      toast.success('Your work is auto-saved in real-time.')
-    },
-    kclManager
-  )
-
-  useHotkeyWrapper(
     ['alt + shift + f'],
     () => {
       void kclManager.format()
@@ -413,15 +401,7 @@ export function OpenedProject() {
             enableMenu={true}
             nativeFileMenuCreated={nativeFileMenuCreated}
             projectMenuChildren={undoRedoButtons}
-          >
-            {!isMobile() && (
-              <>
-                <CommandBarOpenButton />
-                <ShareButton />
-                <PublishButton project={project?.projectIORefSignal.value} />
-              </>
-            )}
-          </AppHeader>
+          />
         </div>
         <ModalContainer />
         <section className="pointer-events-auto flex-1">

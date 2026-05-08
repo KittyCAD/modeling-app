@@ -1,8 +1,11 @@
-import { expect, describe, it } from 'vitest'
-import { prepareMlEphantNewFileRequest } from '@src/machines/systemIO/utils'
+import {
+  normalizeKCLFileDeletePath,
+  prepareMlEphantNewFileRequest,
+} from '@src/machines/systemIO/utils'
+import { describe, expect, it } from 'vitest'
 
 describe('System IO Utils', () => {
-  it(`Properly reconstructs paths from Zookeeper new file requests`, () => {
+  it('Properly reconstructs paths from Zookeeper new file requests', () => {
     const preparedPayload = prepareMlEphantNewFileRequest({
       projectNameCurrentlyOpened: 'some-project',
       fileFocusedOnInEditor: {
@@ -100,5 +103,69 @@ describe('System IO Utils', () => {
         requestedProjectName: 'some-project',
       },
     ])
+  })
+
+  it('preserves files by default when preparing Zookeeper edit requests', () => {
+    const preparedPayload = prepareMlEphantNewFileRequest({
+      projectNameCurrentlyOpened: 'some-project',
+      fileFocusedOnInEditor: {
+        name: 'main.kcl',
+        path: '/some-project/main.kcl',
+        children: null,
+      },
+      toolOutput: {
+        status_code: 200,
+        type: 'edit_kcl_code',
+        project_name: 'some-project',
+        outputs: {
+          'main.kcl': 'cube = 1',
+        },
+      },
+    })
+
+    expect(preparedPayload?.files).toEqual([
+      {
+        requestedFileName: 'main.kcl',
+        requestedCode: 'cube = 1',
+        requestedProjectName: 'some-project',
+      },
+    ])
+    expect(preparedPayload?.filesToDelete).toEqual([])
+  })
+
+  it('carries only explicit Zookeeper delete signals into edit requests', () => {
+    const preparedPayload = prepareMlEphantNewFileRequest({
+      projectNameCurrentlyOpened: 'some-project',
+      fileFocusedOnInEditor: {
+        name: 'main.kcl',
+        path: '/some-project/main.kcl',
+        children: null,
+      },
+      filesToDelete: [{ requestedFileName: 'old.kcl' }],
+      toolOutput: {
+        status_code: 200,
+        type: 'edit_kcl_code',
+        project_name: 'some-project',
+        outputs: {
+          'main.kcl': 'cube = 1',
+        },
+      },
+    })
+
+    expect(preparedPayload?.filesToDelete).toEqual([
+      { requestedFileName: 'old.kcl' },
+    ])
+  })
+
+  it('matches explicit Zookeeper delete signals across path separators', () => {
+    const requestedFilesToDelete = new Set(
+      [{ requestedFileName: 'parts/old.kcl' }].map((file) =>
+        normalizeKCLFileDeletePath(file.requestedFileName)
+      )
+    )
+
+    expect(
+      requestedFilesToDelete.has(normalizeKCLFileDeletePath('parts\\old.kcl'))
+    ).toBe(true)
   })
 })

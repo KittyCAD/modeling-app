@@ -1,18 +1,19 @@
 ---
 title: "gdt::position"
 subtitle: "Function in std::gdt"
-excerpt: "GD&T position annotation specifying how much faces may deviate from their ideal location."
+excerpt: "GD&T position annotation specifying how much faces or edges may deviate from their ideal location."
 layout: manual
 ---
 
 **WARNING:** This function is experimental and may change or be removed.
 
-GD&T position annotation specifying how much faces may deviate from their ideal location.
+GD&T position annotation specifying how much faces or edges may deviate from their ideal location.
 
 ```kcl
 gdt::position(
-  faces: [TaggedFace; 1+],
   tolerance: number(Length),
+  faces?: [TaggedFace; 1+],
+  edges?: [Edge; 1+],
   datums?: [string; 1+],
   precision?: number(_),
   framePosition?: Point2d,
@@ -29,8 +30,9 @@ This is part of model-based definition (MBD).
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `faces` | `[TaggedFace; 1+]` | The faces to be annotated. | Yes |
 | `tolerance` | `number(Length)` | The positional tolerance that is acceptable. | Yes |
+| `faces` | `[TaggedFace; 1+]` | The faces to be annotated. | No |
+| `edges` | `[Edge; 1+]` | The edges to be annotated. | No |
 | `datums` | `[string; 1+]` | The datum references to display in the feature control frame. Supports up to primary, secondary, and tertiary datums. | No |
 | `precision` | `number(_)` | The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`. | No |
 | `framePosition` | `Point2d` | The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`. | No |
@@ -65,8 +67,9 @@ blockProfile = sketch(on = XY) {
 }
 
 block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+sideEdge = getCommonEdge(faces = [block.sketch.tags.edge2, top])
 gdt::position(
-  faces = [top],
+  edges = [sideEdge],
   tolerance = 0.05mm,
   datums = ["A"],
   framePosition = [12mm, 8mm],
@@ -77,5 +80,4 @@ gdt::position(
 
 
 ![Rendered example of gdt::position 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-position1.png)
-
 
