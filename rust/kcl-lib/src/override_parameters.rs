@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use kcl_error::SourceRange;
 use serde::Deserialize;
 use serde::Serialize;
@@ -28,9 +30,28 @@ pub struct KclSourceVariable {
     pub assigned: String,
 }
 
+#[derive(Debug, PartialEq, Eq, Hash)]
+struct ParameterId<'a> {
+    file_path: &'a str,
+    variable_name: &'a str,
+    source_range: SourceRange,
+    default_type: ParameterType,
+}
+
+impl<'a> From<&'a KclSourceVariable> for ParameterId<'a> {
+    fn from(parameter: &'a KclSourceVariable) -> Self {
+        Self {
+            file_path: &parameter.file_path,
+            variable_name: &parameter.variable_name,
+            source_range: parameter.source_range,
+            default_type: parameter.default_type,
+        }
+    }
+}
+
 /// Subset of KCL value's possible types, limited to types that can be easily given
 /// as literals and then overridden.
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ParameterType {
     String,
     Number,
@@ -96,14 +117,13 @@ pub fn get_parameters(kcl_project: &KclProject) -> Result<Vec<KclSourceVariable>
 /// Update the parameters from this KCL program.
 pub fn set_parameters(kcl_project: &KclProject, parameters: &[KclSourceVariable]) -> Result<KclProject> {
     let extracted_parameters = get_parameters(kcl_project)?;
+    let extracted_parameter_identities = extracted_parameters
+        .iter()
+        .map(ParameterId::from)
+        .collect::<HashSet<_>>();
 
     for parameter in parameters {
-        if !extracted_parameters.iter().any(|extracted| {
-            extracted.file_path == parameter.file_path
-                && extracted.variable_name == parameter.variable_name
-                && extracted.source_range == parameter.source_range
-                && extracted.default_type == parameter.default_type
-        }) {
+        if !extracted_parameter_identities.contains(&ParameterId::from(parameter)) {
             return Err(argument_error(format!(
                 "parameter `{}` in `{}` was not found in the KCL project",
                 parameter.variable_name, parameter.file_path
