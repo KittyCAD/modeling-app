@@ -361,8 +361,8 @@ async fn inner_fillet_with_engine_refs(
     let mut solid = solid.clone();
 
     let id = exec_state.next_uuid();
-    let mut extra_face_ids = Vec::new();
     let num_extra_ids = edge_references.len().saturating_sub(1);
+    let mut extra_face_ids = Vec::with_capacity(num_extra_ids);
     for _ in 0..num_extra_ids {
         extra_face_ids.push(exec_state.next_uuid());
     }

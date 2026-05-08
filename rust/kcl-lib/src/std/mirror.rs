@@ -5,20 +5,134 @@ use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kittycad_modeling_cmds::length_unit::LengthUnit;
 use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
+use kittycad_modeling_cmds::shared::MirrorAcross;
 use kittycad_modeling_cmds::shared::Point3d;
 use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::{self as kcmc};
 
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
+use crate::execution::ArtifactId;
 use crate::execution::ExecState;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Sketch;
+use crate::execution::Solid;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::std::Args;
 use crate::std::axis_or_reference::Axis2dOrEdgeReference;
+use crate::std::axis_or_reference::MirrorAcross3d;
+
+/// Mirror a solid.
+pub async fn mirror_3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let bodies = args.get_unlabeled_kw_arg("bodies", &RuntimeType::solids(), exec_state)?;
+    let across = args.get_kw_arg(
+        "across",
+        &RuntimeType::Union(vec![
+            RuntimeType::Primitive(PrimitiveType::Edge),
+            RuntimeType::Primitive(PrimitiveType::Axis3d),
+            RuntimeType::Primitive(PrimitiveType::Plane),
+            RuntimeType::segment(),
+        ]),
+        exec_state,
+    )?;
+
+    let bodies = inner_mirror_3d(bodies, across, exec_state, args).await?;
+    Ok(bodies.into())
+}
+
+/// Mirror a solid.
+async fn inner_mirror_3d(
+    bodies: Vec<Solid>,
+    across: MirrorAcross3d,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Vec<Solid>, KclError> {
+    let mut mirrored_bodies = bodies.clone();
+
+    if args.ctx.no_engine_commands().await {
+        return Ok(mirrored_bodies);
+    }
+
+    exec_state
+        .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), &bodies)
+        .await?;
+
+    let across = match across {
+        MirrorAcross3d::Axis { direction, origin } => MirrorAcross::Axis {
+            axis: Point3d {
+                x: direction[0].to_mm(),
+                y: direction[1].to_mm(),
+                z: direction[2].to_mm(),
+            },
+            point: Point3d {
+                x: LengthUnit(origin[0].to_mm()),
+                y: LengthUnit(origin[1].to_mm()),
+                z: LengthUnit(origin[2].to_mm()),
+            },
+        },
+        MirrorAcross3d::Edge(edge) => MirrorAcross::Edge {
+            id: edge.get_engine_id(exec_state, &args)?,
+        },
+        MirrorAcross3d::Plane(mut plane) => {
+            if plane.is_uninitialized() {
+                crate::std::sketch::ensure_sketch_plane_in_engine(
+                    &mut plane,
+                    exec_state,
+                    &args.ctx,
+                    args.source_range,
+                    args.node_path.clone(),
+                )
+                .await?;
+            }
+            MirrorAcross::Plane { id: plane.id }
+        }
+    };
+
+    let resp = exec_state
+        .send_modeling_cmd(
+            ModelingCmdMeta::from_args(exec_state, &args),
+            ModelingCmd::from(
+                mcmd::EntityMirrorAcross::builder()
+                    .ids(bodies.iter().map(|body| body.id).collect())
+                    .across(across)
+                    .build(),
+            ),
+        )
+        .await?;
+
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::EntityMirrorAcross(mirror_info),
+    } = &resp
+    else {
+        return Err(KclError::new_engine(KclErrorDetails::new(
+            format!("EntityMirrorAcross response was not as expected: {resp:?}"),
+            vec![args.source_range],
+        )));
+    };
+
+    if mirrored_bodies.len() != mirror_info.entity_face_edge_ids.len() {
+        return Err(KclError::new_engine(KclErrorDetails::new(
+            format!(
+                "EntityMirrorAcross response had {} mirrored bodies for {} input bodies",
+                mirror_info.entity_face_edge_ids.len(),
+                mirrored_bodies.len()
+            ),
+            vec![args.source_range],
+        )));
+    }
+
+    for (body, info) in mirrored_bodies.iter_mut().zip(mirror_info.entity_face_edge_ids.iter()) {
+        body.id = info.object_id;
+        body.artifact_id = ArtifactId::new(info.object_id);
+        if let Some(sketch) = body.sketch_mut() {
+            sketch.id = info.object_id;
+        }
+    }
+
+    Ok(mirrored_bodies)
+}
 
 /// Mirror a sketch.
 pub async fn mirror_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -159,9 +273,13 @@ async fn inner_mirror_2d(
                 )));
             };
         }
-        // EdgeReference variant exists for revolve, but mirror2d doesn't support edgeRef
-        Axis2dOrEdgeReference::EdgeReference(_) => {
-            unreachable!("mirror2d does not support EdgeReference, only Axis or Edge")
+        // EdgeSpecifier variant exists for revolve, but mirror2d doesn't support edge specifiers.
+        Axis2dOrEdgeReference::EdgeSpecifier(_) => {
+            debug_assert!(false, "mirror2d does not support EdgeSpecifier, only Axis or Edge");
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                "mirror2d does not support edge specifiers, only Axis or Edge".to_owned(),
+                vec![args.source_range],
+            )));
         }
     }
 

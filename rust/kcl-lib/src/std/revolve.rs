@@ -49,7 +49,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         let spec = edge::parse_edge_specifier_value(&axis_value, &args)?;
         let edge_reference =
             edge::resolve_edge_specifier_with_adjacent_faces_or_tag_ids(&spec, exec_state, &args).await?;
-        Axis2dOrEdgeReference::EdgeReference(edge_reference)
+        Axis2dOrEdgeReference::EdgeSpecifier(edge_reference)
     } else if let Some(axis_val) = Axis2dOrEdgeReference::from_kcl_val(&axis_value) {
         axis_val
     } else {
@@ -222,7 +222,7 @@ async fn inner_revolve(
                 //TODO: fix me! Need to be able to calculate this to ensure the path isn't colinear
                 glm::DVec2::new(0.0, 1.0)
             }
-            Axis2dOrEdgeReference::EdgeReference(edge_ref) => {
+            Axis2dOrEdgeReference::EdgeSpecifier(edge_ref) => {
                 // New API: use EdgeReference directly
                 exec_state
                     .batch_modeling_cmd(

@@ -1,6 +1,6 @@
 //! Types for referencing an axis or edge.
 
-use kittycad_modeling_cmds::shared::EdgeSpecifier as ModelingEdgeReference;
+use kittycad_modeling_cmds::shared::EdgeSpecifier as ModelingEdgeSpecifier;
 
 use super::args::TyF64;
 use crate::KclError;
@@ -21,8 +21,22 @@ pub enum Axis2dOrEdgeReference {
     Axis { direction: [TyF64; 2], origin: [TyF64; 2] },
     /// Tagged edge
     Edge(EdgeReference),
-    /// Edge reference with side faces, end faces, and index.
-    EdgeReference(ModelingEdgeReference),
+    /// Edge specifier with side faces, end faces, and index.
+    EdgeSpecifier(ModelingEdgeSpecifier),
+}
+
+/// A 3D mirror target.
+#[derive(Debug, Clone, PartialEq)]
+pub enum MirrorAcross3d {
+    /// 3D axis and origin.
+    Axis {
+        direction: Box<[TyF64; 3]>,
+        origin: Box<[TyF64; 3]>,
+    },
+    /// Tagged edge.
+    Edge(Box<EdgeReference>),
+    /// A plane.
+    Plane(Box<Plane>),
 }
 
 impl Axis2dOrEdgeReference {
@@ -30,6 +44,30 @@ impl Axis2dOrEdgeReference {
     pub fn from_segment(segment: &Segment) -> Result<Self, KclError> {
         match &segment.kind {
             SegmentKind::Line { .. } => Ok(Self::Edge(EdgeReference::Uuid(segment.id))),
+            SegmentKind::Point { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use a point as an axis".to_owned(),
+            })),
+            SegmentKind::Arc { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use an arc as an axis".to_owned(),
+            })),
+            SegmentKind::Circle { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use a circle as an axis".to_owned(),
+            })),
+        }
+    }
+}
+
+impl MirrorAcross3d {
+    /// Use a sketch-solve segment by finding its engine ID.
+    pub fn from_segment(segment: &Segment) -> Result<Self, KclError> {
+        match &segment.kind {
+            SegmentKind::Line { .. } => Ok(Self::Edge(Box::new(EdgeReference::Uuid(segment.id)))),
             SegmentKind::Point { .. } => Err(KclError::new_type(KclErrorDetails {
                 source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
                 backtrace: Default::default(),
@@ -57,8 +95,8 @@ pub enum Axis3dOrEdgeReference {
     Axis { direction: [TyF64; 3], origin: [TyF64; 3] },
     /// Tagged edge
     Edge(EdgeReference),
-    /// Edge reference with side faces, end faces, and index.
-    EdgeReference(ModelingEdgeReference),
+    /// Edge specifier with side faces, end faces, and index.
+    EdgeSpecifier(ModelingEdgeSpecifier),
 }
 
 impl Axis3dOrEdgeReference {
