@@ -30,6 +30,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type {
   RequestedKCLFile,
+  RequestedKCLFileDelete,
   RequestedProjectFile,
   SystemIOContext,
 } from '@src/machines/systemIO/utils'
@@ -39,6 +40,7 @@ import {
   jsonToMlConversations,
   mlConversationsToJson,
   collectProjectFiles,
+  normalizeKCLFileDeletePath,
 } from '@src/machines/systemIO/utils'
 import { fromPromise } from 'xstate'
 import { err, isErr } from '@src/lib/trap'
@@ -242,6 +244,7 @@ const sharedBulkDeleteWorkflow = async ({
     requestedProjectName: string
     context: SystemIOContext
     files: RequestedKCLFile[]
+    filesToDelete?: RequestedKCLFileDelete[]
     wasmInstance: ModuleType
   }
 }) => {
@@ -262,19 +265,28 @@ const sharedBulkDeleteWorkflow = async ({
     projectContext: project,
   })
 
-  // requestedFileName is the relative path too.
-  const filesToDelete = filesInProject.filter(
-    (f1) =>
-      input.files.some((f2) => f1.relPath === f2.requestedFileName) === false
+  const requestedFilesToDelete = new Set(
+    (input.filesToDelete ?? []).map((file) =>
+      normalizeKCLFileDeletePath(file.requestedFileName)
+    )
   )
 
+  // requestedFileName is the relative path too.
+  const filesToDelete = filesInProject.filter(
+    (file) =>
+      requestedFilesToDelete.has(normalizeKCLFileDeletePath(file.relPath)) ===
+      true
+  )
+
+  let totalDeleted = 0
   for (const file of filesToDelete) {
     if (file.type === 'other') continue
     await fsZds.rm(file.absPath)
+    totalDeleted += 1
   }
 
   // How many files we deleted successfully
-  return filesToDelete.length
+  return totalDeleted
 }
 
 export const systemIOMachineImpl = systemIOMachine.provide({
@@ -596,6 +608,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           input: {
             context: SystemIOContext
             files: RequestedKCLFile[]
+            filesToDelete?: RequestedKCLFileDelete[]
             requestedProjectName: string
             override?: boolean
             requestedFileNameWithExtension: string

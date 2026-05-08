@@ -7,6 +7,7 @@ import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   RequestedKCLFile,
+  RequestedKCLFileDelete,
   RequestedProjectFile,
   SystemIOContext,
   SystemIOInput,
@@ -132,6 +133,7 @@ export const systemIOMachine = setup({
           type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile
           data: {
             files: RequestedKCLFile[]
+            filesToDelete?: RequestedKCLFileDelete[]
             requestedProjectName: string
             requestedFileNameWithExtension: string
             override?: boolean
@@ -607,6 +609,7 @@ export const systemIOMachine = setup({
           input: {
             context: SystemIOContext
             files: RequestedKCLFile[]
+            filesToDelete?: RequestedKCLFileDelete[]
             requestedProjectName: string
             requestedFileNameWithExtension: string
             requestedSubRoute?: string
@@ -1382,6 +1385,7 @@ export const systemIOMachine = setup({
           return {
             context,
             files: event.data.files,
+            filesToDelete: event.data.filesToDelete,
             requestedProjectName: event.data.requestedProjectName,
             override: event.data.override,
             requestedFileNameWithExtension:
