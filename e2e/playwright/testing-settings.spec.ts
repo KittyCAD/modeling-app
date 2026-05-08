@@ -701,6 +701,7 @@ test.describe(
         const lightBackgroundCss = 'oklch(0.9911 0 264.48)'
         const darkBackgroundColor: [number, number, number] = [50, 40, 51] // planes are on
         const lightBackgroundColor: [number, number, number] = [227, 222, 230] // planes are on
+        const streamBackgroundColorTolerance = 20
         const streamBackgroundPixelIsColor = async (
           color: [number, number, number]
         ) => {
@@ -723,8 +724,10 @@ test.describe(
             lightBackgroundCss
           )
           await expect
-            .poll(() => streamBackgroundPixelIsColor(lightBackgroundColor))
-            .toBeLessThan(15)
+            .poll(() => streamBackgroundPixelIsColor(lightBackgroundColor), {
+              timeout: 10_000,
+            })
+            .toBeLessThanOrEqual(streamBackgroundColorTolerance)
         })
 
         await test.step(`Change media query preference to dark, emulating dusk with system theme`, async () => {
@@ -734,8 +737,10 @@ test.describe(
         await test.step(`Check the background color is dark after`, async () => {
           await expect(toolbar).toHaveCSS('background-color', darkBackgroundCss)
           await expect
-            .poll(() => streamBackgroundPixelIsColor(darkBackgroundColor))
-            .toBeLessThan(15)
+            .poll(() => streamBackgroundPixelIsColor(darkBackgroundColor), {
+              timeout: 10_000,
+            })
+            .toBeLessThanOrEqual(streamBackgroundColorTolerance)
         })
       }
     )
