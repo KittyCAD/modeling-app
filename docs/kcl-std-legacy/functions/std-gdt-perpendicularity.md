@@ -1,7 +1,7 @@
 ---
 title: "gdt::perpendicularity"
 subtitle: "Function in std::gdt"
-excerpt: "GD&T perpendicularity annotation specifying how much faces or edges may deviate from perpendicular orientation."
+excerpt: "GD&T perpendicularity annotation specifying how much faces or edges may deviate from perpendicular orientation relative to datum references."
 layout: manual
 ---
 
@@ -53,16 +53,21 @@ This is part of model-based definition (MBD).
 
 startSketchOn(XY)
   |> startProfile(at = [0, 0])
-  |> line(end = [10, 0], tag = $side1)
-  |> line(end = [0, 10], tag = $side2)
+  |> line(end = [10, 0], tag = $side)
+  |> line(end = [0, 10])
   |> line(end = [-10, 0])
   |> line(end = [0, -10])
   |> close()
   |> extrude(length = 5, tagEnd = $top)
 
-gdt::datum(face = top, name = "A", framePosition = [8mm, 0mm], framePlane = XZ)
+gdt::datum(
+  face = top,
+  name = "A",
+  framePosition = [8mm, 0mm],
+  framePlane = XZ,
+)
 gdt::perpendicularity(
-  faces = [side1],
+  faces = [side],
   tolerance = 0.05mm,
   datums = ["A"],
   framePosition = [12mm, 8mm],
@@ -71,3 +76,5 @@ gdt::perpendicularity(
 
 ```
 
+
+![Rendered example of gdt::perpendicularity 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-perpendicularity0.png)

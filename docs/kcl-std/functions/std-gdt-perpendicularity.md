@@ -1,7 +1,7 @@
 ---
 title: "gdt::perpendicularity"
 subtitle: "Function in std::gdt"
-excerpt: "GD&T perpendicularity annotation specifying how much faces or edges may deviate from perpendicular orientation."
+excerpt: "GD&T perpendicularity annotation specifying how much faces or edges may deviate from perpendicular orientation relative to datum references."
 layout: manual
 ---
 
@@ -51,25 +51,23 @@ This is part of model-based definition (MBD).
 ```kcl
 @settings(experimentalFeatures = allow)
 
-blockProfile = sketch(on = XY) {
-  edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
-  edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 6mm])
-  edge3 = line(start = [var 10mm, var 6mm], end = [var 0mm, var 6mm])
-  edge4 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
-  coincident([edge1.end, edge2.start])
-  coincident([edge2.end, edge3.start])
-  coincident([edge3.end, edge4.start])
-  coincident([edge4.end, edge1.start])
-  horizontal(edge1)
-  vertical(edge2)
-  horizontal(edge3)
-  vertical(edge4)
-}
+startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0], tag = $side)
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> line(end = [0, -10])
+  |> close()
+  |> extrude(length = 5, tagEnd = $top)
 
-block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
-gdt::datum(face = top, name = "A", framePosition = [8mm, 0mm], framePlane = XZ)
+gdt::datum(
+  face = top,
+  name = "A",
+  framePosition = [8mm, 0mm],
+  framePlane = XZ,
+)
 gdt::perpendicularity(
-  faces = [block.sketch.tags.edge2],
+  faces = [side],
   tolerance = 0.05mm,
   datums = ["A"],
   framePosition = [12mm, 8mm],
@@ -77,6 +75,9 @@ gdt::perpendicularity(
 )
 
 ```
+
+
+![Rendered example of gdt::perpendicularity 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-perpendicularity0.png)
 
 ```kcl
 @settings(experimentalFeatures = allow)
@@ -108,3 +109,5 @@ gdt::perpendicularity(
 
 ```
 
+
+![Rendered example of gdt::perpendicularity 1](/kcl-test-outputs/serial_test_example_fn_std-gdt-perpendicularity1.png)
