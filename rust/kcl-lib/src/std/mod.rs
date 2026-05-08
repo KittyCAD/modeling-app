@@ -184,6 +184,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::mirror::mirror_2d(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::transform::mirror2d"),
         ),
+        ("transform", "mirror3d") => (
+            |e, a| Box::pin(crate::std::mirror::mirror_3d(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::transform::mirror3d"),
+        ),
         ("transform", "translate") => (
             |e, a| Box::pin(crate::std::transform::translate(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::transform::translate"),
