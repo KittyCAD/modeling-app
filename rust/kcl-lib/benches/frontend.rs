@@ -68,12 +68,14 @@ fn bench_edit_segments(c: &mut Criterion) {
                         .await
                         .unwrap(),
                 );
-                mock_ctx.close().await;
                 Ok::<(), anyhow::Error>(())
             }) {
                 panic!("Failed to execute program: {err}");
             }
-        })
+        });
+        rt.block_on(async {
+            mock_ctx.close().await;
+        });
     });
 }
 
