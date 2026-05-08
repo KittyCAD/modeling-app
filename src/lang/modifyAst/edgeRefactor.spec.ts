@@ -623,79 +623,57 @@ describe('refactorZ0006Unified', () => {
       return refactored
     }
 
-    it(
-      'refactors getOppositeEdge in fillet to edgeRefs with tag names (e1, capEnd001) not UUIDs',
-      { timeout: 30_000 },
-      async () => {
-        const refactored = await runIntegrationRefactor(SAMPLE_KCL)
-        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
-        const n = norm(refactored)
-        expect(n).toContain('extrude(length = 5, tagEnd = $capEnd001)')
-        expect(n).toContain('fillet(radius = 1, edges = [')
-        expect(n).toContain('sideFaces = [e1, capEnd001]')
-      }
-    )
+    const deprecatedFilletCases = [
+      {
+        name: 'refactors getOppositeEdge in fillet to edgeRefs with tag names (e1, capEnd001) not UUIDs',
+        kcl: SAMPLE_KCL,
+        expected: [
+          'extrude(length = 5, tagEnd = $capEnd001)',
+          'fillet(radius = 1, edges = [',
+          'sideFaces = [e1, capEnd001]',
+        ],
+      },
+      {
+        name: 'refactors fillet with single-value tags (tags = getOppositeEdge(e1), no array) to edgeRefs',
+        kcl: KCL_SINGLE_TAG_GET_OPPOSITE_EDGE,
+        expected: [
+          'extrude(length = 5, tagEnd = $capEnd001)',
+          'fillet(',
+          'edges = [',
+          'sideFaces = [e1, capEnd001]',
+        ],
+      },
+      {
+        name: 'refactors getNextAdjacentEdge in fillet to edgeRefs with tag names not UUIDs',
+        kcl: KCL_GET_NEXT_ADJACENT_EDGE,
+        expected: ['fillet(', 'edges = [', 'sideFaces = [e1, seg01]'],
+      },
+      {
+        name: 'refactors getPreviousAdjacentEdge in fillet to edgeRefs with tag names not UUIDs',
+        kcl: KCL_GET_PREVIOUS_ADJACENT_EDGE,
+        expected: ['fillet(', 'edges = [', 'sideFaces = [e1, seg01]'],
+      },
+      {
+        name: 'refactors getCommonEdge in fillet to edgeRefs with tag names (e1, cap1) not UUIDs',
+        kcl: KCL_GET_COMMON_EDGE,
+        expected: [
+          'extrude(length = 5, tagEnd = $cap1)',
+          'fillet(radius = 1, edges = [',
+          'sideFaces = [e1, cap1]',
+        ],
+      },
+    ]
 
-    it(
-      'refactors fillet with single-value tags (tags = getOppositeEdge(e1), no array) to edgeRefs',
-      { timeout: 30_000 },
-      async () => {
-        const refactored = await runIntegrationRefactor(
-          KCL_SINGLE_TAG_GET_OPPOSITE_EDGE
-        )
+    for (const { name, kcl, expected } of deprecatedFilletCases) {
+      it(name, { timeout: 30_000 }, async () => {
+        const refactored = await runIntegrationRefactor(kcl)
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
         const n = norm(refactored)
-        expect(n).toContain('extrude(length = 5, tagEnd = $capEnd001)')
-        expect(n).toContain('fillet(')
-        expect(n).toContain('edges = [')
-        expect(n).toContain('sideFaces = [e1, capEnd001]')
-      }
-    )
-
-    it(
-      'refactors getNextAdjacentEdge in fillet to edgeRefs with tag names not UUIDs',
-      { timeout: 30_000 },
-      async () => {
-        const refactored = await runIntegrationRefactor(
-          KCL_GET_NEXT_ADJACENT_EDGE
-        )
-        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
-        const n = norm(refactored)
-        // Next adjacent edge is between two wall faces (segments), so both faces are segment tags; no tagEnd added.
-        expect(n).toContain('fillet(')
-        expect(n).toContain('edges = [')
-        expect(n).toContain('sideFaces = [e1, seg01]')
-      }
-    )
-
-    it(
-      'refactors getPreviousAdjacentEdge in fillet to edgeRefs with tag names not UUIDs',
-      { timeout: 30_000 },
-      async () => {
-        const refactored = await runIntegrationRefactor(
-          KCL_GET_PREVIOUS_ADJACENT_EDGE
-        )
-        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
-        const n = norm(refactored)
-        // Previous adjacent edge is between two wall faces (segments), so both faces are segment tags; no tagEnd added.
-        expect(n).toContain('fillet(')
-        expect(n).toContain('edges = [')
-        expect(n).toContain('sideFaces = [e1, seg01]')
-      }
-    )
-
-    it(
-      'refactors getCommonEdge in fillet to edgeRefs with tag names (e1, cap1) not UUIDs',
-      { timeout: 30_000 },
-      async () => {
-        const refactored = await runIntegrationRefactor(KCL_GET_COMMON_EDGE)
-        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
-        const n = norm(refactored)
-        expect(n).toContain('extrude(length = 5, tagEnd = $cap1)')
-        expect(n).toContain('fillet(radius = 1, edges = [')
-        expect(n).toContain('sideFaces = [e1, cap1]')
-      }
-    )
+        for (const expectedText of expected) {
+          expect(n).toContain(expectedText)
+        }
+      })
+    }
 
     it(
       'refactors extrude to = getCommonEdge(...) to to = { sideFaces = [facetag0, facetag1] }',
@@ -756,14 +734,22 @@ describe('refactorZ0006Unified', () => {
       }
     )
 
-    it(
-      'refactors fillet tags that reference an edgeId variable in sketch-block code',
-      { timeout: 30_000 },
-      async () => {
-        const ast = assertParse(
-          KCL_SKETCH_BLOCK_EDGE_ID_VARIABLE,
-          instanceInThisFile
-        )
+    const sketchBlockEdgeIdCases = [
+      {
+        name: 'refactors fillet tags that reference an edgeId variable in sketch-block code',
+        kcl: KCL_SKETCH_BLOCK_EDGE_ID_VARIABLE,
+        removed: 'tags = [yo]',
+      },
+      {
+        name: 'refactors inline edgeId in sketch-block code',
+        kcl: KCL_SKETCH_BLOCK_EDGE_ID_INLINE,
+        removed: 'tags = [edgeId(solid001, index = 5)]',
+      },
+    ]
+
+    for (const { name, kcl, removed } of sketchBlockEdgeIdCases) {
+      it(name, { timeout: 30_000 }, async () => {
+        const ast = assertParse(kcl, instanceInThisFile)
         await kclManagerInThisFile.executeAst({ ast })
         const execState = kclManagerInThisFile.execState
         expect(
@@ -789,46 +775,9 @@ describe('refactorZ0006Unified', () => {
           'sideFaces = [ baseRegion.tags.line2, baseRegion.tags.yoyo ]'
         )
         expect(n).toContain('endFaces = [startCap]')
-        expect(n).not.toContain('tags = [yo]')
-      }
-    )
-
-    it(
-      'refactors inline edgeId in sketch-block code',
-      { timeout: 30_000 },
-      async () => {
-        const ast = assertParse(
-          KCL_SKETCH_BLOCK_EDGE_ID_INLINE,
-          instanceInThisFile
-        )
-        await kclManagerInThisFile.executeAst({ ast })
-        const execState = kclManagerInThisFile.execState
-        expect(
-          execState.edgeRefactorMetadata?.length ?? 0
-        ).toBeGreaterThanOrEqual(1)
-        expect(execState.artifactGraph.size).toBeGreaterThan(0)
-
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
-        expect(err(refactored)).toBe(false)
-        if (err(refactored)) throw refactored
-
-        const n = norm(refactored)
-        expect(n).toContain('fillet(')
-        expect(n).toContain('radius = 0.1')
-        expect(n).toContain('edges = [')
-        expect(n).toContain(
-          'sideFaces = [ baseRegion.tags.line2, baseRegion.tags.yoyo ]'
-        )
-        expect(n).toContain('endFaces = [startCap]')
-        expect(n).not.toContain('tags = [edgeId(solid001, index = 5)]')
-      }
-    )
+        expect(n).not.toContain(removed)
+      })
+    }
 
     it(
       'refactors fillet with multiple deprecated calls in tags to edgeRefs (e1, e2)',
