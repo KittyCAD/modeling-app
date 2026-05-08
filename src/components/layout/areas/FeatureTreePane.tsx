@@ -687,6 +687,7 @@ const OperationItem = ({
             op.type === 'StdLibCall' &&
             (op.name === 'fillet' ||
               op.name === 'chamfer' ||
+              op.name === 'extrude' ||
               op.name === 'revolve' ||
               op.name === 'helix')
 
