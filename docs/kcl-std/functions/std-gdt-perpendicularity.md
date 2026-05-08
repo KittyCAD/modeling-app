@@ -111,3 +111,5 @@ gdt::perpendicularity(
 
 
 ![Rendered example of gdt::perpendicularity 1](/kcl-test-outputs/serial_test_example_fn_std-gdt-perpendicularity1.png)
+
+
