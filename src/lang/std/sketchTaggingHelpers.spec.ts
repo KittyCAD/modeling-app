@@ -7,7 +7,7 @@ import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type RustContext from '@src/lib/rustContext'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
@@ -20,14 +20,14 @@ beforeEach(async () => {
   }
 
   const { instance, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine()
+    await buildTheWorldAndNoEngineConnection()
   instanceInThisFile = instance
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
 })
 
 afterAll(() => {
-  engineCommandManagerInThisFile.tearDown()
+  engineCommandManagerInThisFile?.tearDown()
 })
 
 describe('testing addTagForSketchOnFace', () => {

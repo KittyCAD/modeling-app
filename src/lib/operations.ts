@@ -2175,7 +2175,11 @@ const prepareToEditGdtProfile: PrepareToEditCallback = async ({
     return { reason: 'Missing or invalid edges argument' }
   }
 
-  const edges = retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+  const edges = retrieveEdgeSelectionsFromOpArgs(
+    undefined,
+    edgesArg,
+    artifactGraph
+  )
   const tolerance = await extractKclArgument(
     code,
     operation,
