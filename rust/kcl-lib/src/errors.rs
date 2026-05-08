@@ -198,6 +198,19 @@ impl IsRetryable for KclError {
     }
 }
 
+const RETRYABLE_ENGINE_MESSAGE_MARKER_SETS: &[&[&str]] = &[
+    &["modeling connection", "interrupted", "please reconnect"],
+    &["modeling connection", "heartbeats", "please reconnect"],
+];
+
+fn is_retryable_engine_message(message: &str) -> bool {
+    // TODO: Replace string matching with structured engine/API retry metadata once it is available.
+    let message = message.to_ascii_lowercase();
+    RETRYABLE_ENGINE_MESSAGE_MARKER_SETS
+        .iter()
+        .any(|markers| markers.iter().all(|marker| message.contains(marker)))
+}
+
 #[derive(Error, Debug, Serialize, ts_rs::TS, Clone, PartialEq)]
 #[error("{error}")]
 #[ts(export)]
@@ -625,6 +638,11 @@ impl KclError {
     pub fn new_engine(details: KclErrorDetails) -> KclError {
         if details.message.eq_ignore_ascii_case("internal error") {
             KclError::EngineInternal { details }
+        } else if is_retryable_engine_message(&details.message) {
+            KclError::EngineHangup {
+                details,
+                api_call_id: None,
+            }
         } else {
             KclError::Engine { details }
         }
