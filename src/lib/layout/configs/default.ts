@@ -1,12 +1,11 @@
 import { isDesktop } from '@src/lib/isDesktop'
 import { isMobile } from '@src/lib/isMobile'
 import {
+  type Action,
   ActionType,
   AreaType,
-  LayoutType,
-  type Action,
-  type PaneChild,
   type Layout,
+  LayoutType,
   type PaneLayout,
 } from '@src/lib/layout/types'
 
@@ -50,17 +49,6 @@ const primaryPane: Layout = {
   sizes: isDesktop() ? [50, 50] : [100],
   splitOrientation: 'block',
   children: [
-    ...(isMobile()
-      ? [
-          {
-            id: DefaultLayoutPaneID.TTC,
-            label: 'Zookeeper',
-            type: LayoutType.Simple,
-            areaType: AreaType.TTC,
-            icon: 'sparkles',
-          } satisfies PaneChild,
-        ]
-      : []),
     {
       id: DefaultLayoutPaneID.FeatureTree,
       label: 'Feature Tree',
@@ -147,24 +135,6 @@ const modelingPane: Layout = {
   type: LayoutType.Simple,
   areaType: AreaType.ModelingScene,
 }
-const secondaryPane: Layout = {
-  id: DefaultLayoutToolbarID.Right,
-  label: DefaultLayoutToolbarID.Right,
-  type: LayoutType.Panes,
-  side: 'inline-end',
-  activeIndices: [0],
-  sizes: [100],
-  splitOrientation: 'block',
-  children: [
-    {
-      id: DefaultLayoutPaneID.TTC,
-      label: 'Zookeeper',
-      type: LayoutType.Simple,
-      areaType: AreaType.TTC,
-      icon: 'sparkles',
-    },
-  ],
-}
 
 /**
  * The default layout has:
@@ -173,16 +143,14 @@ const secondaryPane: Layout = {
  *   - code
  *   - variables
  * - the modeling view
- * - a right (in LTR languages) sidebar with:
- *   - Zookeeper
  */
 export const defaultLayoutConfig: Layout = {
   id: 'default',
   label: 'root',
   type: LayoutType.Splits,
   orientation: isMobile() ? 'block' : 'inline',
-  sizes: isMobile() ? [50, 50] : [20, 50, 30],
+  sizes: isMobile() ? [50, 50] : [20, 80],
   children: isMobile()
     ? [modelingPane, primaryPane]
-    : [primaryPane, modelingPane, secondaryPane],
+    : [primaryPane, modelingPane],
 }

@@ -1,3 +1,4 @@
+import type { ReadonlySignal } from '@preact/signals-core'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import type { MouseEventHandler, useMemo } from 'react'
 
@@ -162,6 +163,8 @@ export type LayoutContributionResult = {
 }
 
 export type LayoutService = {
+  readonly signal: ReadonlySignal<Layout>
+  update: (transform: (rootLayout: Layout) => boolean) => boolean
   applyContribution: (
     contribution: LayoutContribution
   ) => LayoutContributionResult
