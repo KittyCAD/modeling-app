@@ -75,6 +75,7 @@ use crate::NodePath;
 use crate::SourceRange;
 #[cfg(feature = "artifact-graph")]
 use crate::collections::AhashIndexSet;
+use crate::engine::EngineBatchContext;
 use crate::engine::EngineManager;
 use crate::engine::GridScaleBehavior;
 use crate::errors::KclError;
@@ -767,6 +768,7 @@ pub enum ContextType {
 #[derive(Debug, Clone)]
 pub struct ExecutorContext {
     pub engine: Arc<Box<dyn EngineManager>>,
+    pub engine_batch: EngineBatchContext,
     pub fs: Arc<FileManager>,
     pub settings: ExecutorSettings,
     pub context_type: ContextType,
@@ -891,9 +893,20 @@ impl ExecutorContext {
     ) -> Self {
         ExecutorContext {
             engine,
+            engine_batch: EngineBatchContext::default(),
             fs,
             settings,
             context_type: ContextType::Live,
+        }
+    }
+
+    fn clone_with_fresh_execution_batch(&self) -> Self {
+        Self {
+            engine: self.engine.clone(),
+            engine_batch: EngineBatchContext::new(),
+            fs: self.fs.clone(),
+            settings: self.settings.clone(),
+            context_type: self.context_type.clone(),
         }
     }
 
@@ -944,6 +957,7 @@ impl ExecutorContext {
     pub async fn new_mock(settings: Option<ExecutorSettings>) -> Self {
         ExecutorContext {
             engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            engine_batch: EngineBatchContext::default(),
             fs: Arc::new(FileManager::new()),
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
@@ -954,6 +968,7 @@ impl ExecutorContext {
     pub fn new_mock(engine: Arc<Box<dyn EngineManager>>, fs: Arc<FileManager>, settings: ExecutorSettings) -> Self {
         ExecutorContext {
             engine,
+            engine_batch: EngineBatchContext::default(),
             fs,
             settings,
             context_type: ContextType::Mock,
@@ -977,6 +992,7 @@ impl ExecutorContext {
 
         Ok(ExecutorContext {
             engine: mock_engine,
+            engine_batch: EngineBatchContext::default(),
             fs,
             settings,
             context_type: ContextType::Mock,
@@ -987,6 +1003,7 @@ impl ExecutorContext {
     pub fn new_forwarded_mock(engine: Arc<Box<dyn EngineManager>>) -> Self {
         ExecutorContext {
             engine,
+            engine_batch: EngineBatchContext::default(),
             fs: Arc::new(FileManager::new()),
             settings: Default::default(),
             context_type: ContextType::MockCustomForwarded,
@@ -1063,7 +1080,7 @@ impl ExecutorContext {
         exec_state.global.artifacts.clear();
 
         self.engine
-            .clear_scene(&mut exec_state.mod_local.id_generator, source_range)
+            .clear_scene(&self.engine_batch, &mut exec_state.mod_local.id_generator, source_range)
             .await?;
         // The engine errors out if you toggle OIT with SSAO off.
         // So ignore OIT settings if SSAO is off.
@@ -1224,6 +1241,7 @@ impl ExecutorContext {
                             && self
                                 .engine
                                 .reapply_settings(
+                                    &self.engine_batch,
                                     &self.settings,
                                     Default::default(),
                                     &mut cached_state.main.exec_state.id_generator,
@@ -1253,6 +1271,7 @@ impl ExecutorContext {
                             if self
                                 .engine
                                 .reapply_settings(
+                                    &self.engine_batch,
                                     &self.settings,
                                     Default::default(),
                                     &mut cached_state.main.exec_state.id_generator,
@@ -1310,6 +1329,7 @@ impl ExecutorContext {
                         if self
                             .engine
                             .reapply_settings(
+                                &self.engine_batch,
                                 &self.settings,
                                 Default::default(),
                                 &mut cached_state.main.exec_state.id_generator,
@@ -1492,7 +1512,7 @@ impl ExecutorContext {
                 );
 
                 let repr = repr.clone();
-                let exec_ctxt = self.clone();
+                let exec_ctxt = self.clone_with_fresh_execution_batch();
                 let results_tx = results_tx.clone();
 
                 let exec_module = async |exec_ctxt: &ExecutorContext,
@@ -1736,6 +1756,7 @@ impl ExecutorContext {
         };
         self.engine
             .reapply_settings(
+                &self.engine_batch,
                 &self.settings,
                 Default::default(),
                 exec_state.id_generator(),
@@ -1870,17 +1891,20 @@ impl ExecutorContext {
         }
 
         // Ensure all the async commands completed.
-        self.engine.ensure_async_commands_completed().await.map_err(|e| {
-            match &exec_result {
-                Ok(env_ref) => (e, Some(*env_ref)),
-                // Prefer the execution error.
-                Err((exec_err, env_ref)) => (exec_err.clone(), *env_ref),
-            }
-        })?;
+        self.engine
+            .ensure_async_commands_completed(&self.engine_batch)
+            .await
+            .map_err(|e| {
+                match &exec_result {
+                    Ok(env_ref) => (e, Some(*env_ref)),
+                    // Prefer the execution error.
+                    Err((exec_err, env_ref)) => (exec_err.clone(), *env_ref),
+                }
+            })?;
 
         // If we errored out and early-returned, there might be commands which haven't been executed
         // and should be dropped.
-        self.engine.clear_queues().await;
+        self.engine.clear_queues(&self.engine_batch).await;
 
         match exec_state.build_artifact_graph(&self.engine, program).await {
             Ok(_) => exec_result,
@@ -1922,6 +1946,7 @@ impl ExecutorContext {
         // Zoom to fit.
         self.engine
             .send_modeling_cmd(
+                &self.engine_batch,
                 uuid::Uuid::new_v4(),
                 crate::execution::SourceRange::default(),
                 &ModelingCmd::from(
@@ -1939,6 +1964,7 @@ impl ExecutorContext {
         let resp = self
             .engine
             .send_modeling_cmd(
+                &self.engine_batch,
                 uuid::Uuid::new_v4(),
                 crate::execution::SourceRange::default(),
                 &ModelingCmd::from(mcmd::TakeSnapshot::builder().format(ImageFormat::Png).build()),
@@ -1965,6 +1991,7 @@ impl ExecutorContext {
         let resp = self
             .engine
             .send_modeling_cmd(
+                &self.engine_batch,
                 uuid::Uuid::new_v4(),
                 crate::SourceRange::default(),
                 &kittycad_modeling_cmds::ModelingCmd::Export(
@@ -2088,6 +2115,7 @@ pub(crate) async fn parse_execute_with_project_dir(
                 ))
             },
         )?)),
+        engine_batch: EngineBatchContext::default(),
         fs: Arc::new(crate::fs::FileManager::new()),
         settings: ExecutorSettings {
             project_directory,

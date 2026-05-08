@@ -71,6 +71,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::gdt::flatness(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::gdt::flatness"),
         ),
+        ("gdt", "perpendicularity") => (
+            |e, a| Box::pin(crate::std::gdt::perpendicularity(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::perpendicularity"),
+        ),
+        ("gdt", "profile") => (
+            |e, a| Box::pin(crate::std::gdt::profile(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::profile"),
+        ),
         ("math", "cos") => (
             |e, a| Box::pin(crate::std::math::cos(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::math::cos"),
@@ -179,6 +187,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("transform", "mirror2d") => (
             |e, a| Box::pin(crate::std::mirror::mirror_2d(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::transform::mirror2d"),
+        ),
+        ("transform", "mirror3d") => (
+            |e, a| Box::pin(crate::std::mirror::mirror_3d(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::transform::mirror3d"),
         ),
         ("transform", "translate") => (
             |e, a| Box::pin(crate::std::transform::translate(e, a).map(|r| r.map(KclValue::continue_))),

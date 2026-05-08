@@ -1,4 +1,5 @@
 import type {
+  ApiObject,
   SceneGraphDelta,
   SegmentCtor,
   SourceDelta,
@@ -86,6 +87,26 @@ type ToolAssignArgs<TActor extends ProvidedActor = any> = AssignArgs<
   ToolEvents,
   TActor
 >
+
+export function getArcPointIdsForSegment(
+  objects: ApiObject[],
+  arcId: number | undefined
+): number[] {
+  if (arcId === undefined) {
+    return []
+  }
+
+  const arcObj = objects[arcId]
+  if (!isArcSegment(arcObj)) {
+    return []
+  }
+
+  return [
+    arcObj.kind.segment.center,
+    arcObj.kind.segment.start,
+    arcObj.kind.segment.end,
+  ]
+}
 
 ////////////// --Actions-- //////////////////
 
@@ -237,8 +258,8 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
           sketchId: context.sketchId,
           mousePosition: [twoD.x, twoD.y],
           mouseEvent: args.mouseEvent,
-          excludedPointIds:
-            context.arcEndPointId === undefined ? [] : [context.arcEndPointId],
+          getExcludedPointIds: (currentSketchObjects) =>
+            getArcPointIdsForSegment(currentSketchObjects, context.arcId),
         })
         sendHoveredSnappingCandidate(self, snappingCandidate)
         updateToolSnappingPreview({
@@ -362,8 +383,8 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
           sketchId: context.sketchId,
           mousePosition,
           mouseEvent: args.mouseEvent,
-          excludedPointIds:
-            context.arcEndPointId === undefined ? [] : [context.arcEndPointId],
+          getExcludedPointIds: (currentSketchObjects) =>
+            getArcPointIdsForSegment(currentSketchObjects, context.arcId),
         })
         const [x, y] = snappingCandidate?.position ?? mousePosition
         self.send({

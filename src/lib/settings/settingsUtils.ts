@@ -816,7 +816,7 @@ export function projectConfigurationToSettingsPayload(
         ),
         zookeeperMode: (() => {
           const v = configuration?.settings?.app?.zookeeper_mode
-          return v === 'fast' || v === 'thoughtful' ? v : undefined
+          return typeof v === 'string' && v.length > 0 ? v : undefined
         })(),
       },
       modeling: {

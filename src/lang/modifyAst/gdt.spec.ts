@@ -9,6 +9,8 @@ import { stringToKclExpression } from '@src/lib/kclHelpers'
 import {
   addFlatnessGdt,
   addDatumGdt,
+  addPerpendicularityGdt,
+  addProfileGdt,
   getUsedDatumNames,
   getNextAvailableDatumName,
 } from '@src/lang/modifyAst/gdt'
@@ -555,6 +557,102 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 
       // Verify the fillet was tagged properly
       expect(newCode).toContain('tag = $seg02')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+  })
+
+  describe('Testing addProfileGdt', () => {
+    it('should add a profile annotation to a selected edge', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const edge = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweepEdge'
+      )
+      if (!edge) {
+        throw new Error('Expected a sweep edge')
+      }
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addProfileGdt({
+        ast,
+        artifactGraph,
+        edges: createSelectionFromArtifacts([edge], artifactGraph),
+        datums: 'A, B',
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+
+      expect(newCode).toContain('gdt::profile(')
+      expect(newCode).toMatch(
+        /edges = \[\s*getCommonEdge\(faces = \[[^\]]+\]\)\s*\]/
+      )
+      expect(newCode).toContain('datums = ["A", "B"]')
+      expect(newCode).toContain('tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+  })
+
+  describe('Testing addPerpendicularityGdt', () => {
+    it('should add perpendicularity annotations to selected faces and edges', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const face = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'cap'
+      )
+      const edge = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweepEdge'
+      )
+      if (!face || !edge) {
+        throw new Error('Expected a cap face and sweep edge')
+      }
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addPerpendicularityGdt({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        datums: 'A, B',
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+
+      expect(newCode).toContain('gdt::perpendicularity(')
+      expect(newCode).toContain('faces = [')
+      expect(newCode).toContain('edges = [')
+      expect(newCode).toContain('datums = ["A", "B"]')
+      expect(newCode).toContain('tolerance = 0.1mm')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
