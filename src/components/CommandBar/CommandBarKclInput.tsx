@@ -164,7 +164,11 @@ function CommandBarKclInput({
   const editorRef = useRef<HTMLDivElement>(null)
 
   const allowArrays = arg.allowArrays ?? false
-  const options = useMemo(() => ({ allowArrays }), [allowArrays])
+  const allowStringArrays = arg.allowStringArrays ?? false
+  const options = useMemo(
+    () => ({ allowArrays, allowStringArrays }),
+    [allowArrays, allowStringArrays]
+  )
 
   const {
     calcResult,

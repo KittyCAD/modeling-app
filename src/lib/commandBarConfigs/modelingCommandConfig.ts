@@ -30,6 +30,7 @@ import {
   KCL_PLANE_XZ,
   KCL_PLANE_YZ,
   KCL_DEFAULT_TOLERANCE,
+  KCL_DEFAULT_DATUM_REFS,
   KCL_DEFAULT_PRECISION,
   KCL_DEFAULT_FONT_POINT_SIZE,
   KCL_DEFAULT_FONT_SCALE,
@@ -2737,6 +2738,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       datums: {
         inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_DATUM_REFS,
+        allowArrays: true,
+        allowStringArrays: true,
         required: false,
       },
       tolerance: {
