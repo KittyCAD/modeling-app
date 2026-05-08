@@ -724,6 +724,146 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
   })
 
+  test('treats fresh direct editor sketch executions as derived source updates', async ({
+    page,
+    context,
+    homePage,
+    scene,
+    cmdBar,
+    editor,
+    toolbar,
+  }) => {
+    const INITIAL_CODE = `sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+}
+`
+    const addedLine =
+      '  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 5mm])'
+    const getDirectEditorOutcomeForLine = async (line: string) =>
+      page.evaluate((expectedLine) => {
+        const events = Reflect.get(window, 'directEditorOutcomesForTest')
+        if (!Array.isArray(events)) return null
+        return (
+          events.find(
+            (
+              event
+            ): event is {
+              sourceText: string
+              updateEditor: unknown
+              writeToDisk: unknown
+              addToHistory: unknown
+            } =>
+              typeof event === 'object' &&
+              event !== null &&
+              'sourceText' in event &&
+              typeof event.sourceText === 'string' &&
+              event.sourceText.includes(expectedLine)
+          ) ?? null
+        )
+      }, line)
+    const getUpdateCodeEditorCalls = async () =>
+      page.evaluate(() => {
+        const calls = Reflect.get(window, 'updateCodeEditorCallsForTest')
+        if (!Array.isArray(calls)) return []
+        return calls.filter((call): call is string => typeof call === 'string')
+      })
+
+    await test.step('Set up a sketch and enter sketch edit mode', async () => {
+      await context.addInitScript(
+        async ({ code }) => {
+          localStorage.setItem('persistCode', code)
+        },
+        {
+          code: INITIAL_CODE,
+        }
+      )
+
+      await page.setBodyDimensions({ width: 1200, height: 600 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+      await editor.expectEditor.toContain('sketch001 = sketch(on = XY) {')
+
+      await toolbar.openFeatureTreePane()
+      await expect(page.getByText('Building feature tree')).not.toBeVisible({
+        timeout: 10000,
+      })
+      const sketchOperation = await toolbar.getFeatureTreeOperation(
+        'sketch001',
+        0
+      )
+      await sketchOperation.dblclick()
+      await page.waitForTimeout(600)
+      await expect(toolbar.exitSketchBtn).toBeEnabled()
+    })
+
+    await test.step('Observe the fresh direct-editor execution result', async () => {
+      await page.evaluate(() => {
+        const directEditorOutcomes: Array<{
+          sourceText: string
+          updateEditor: unknown
+          writeToDisk: unknown
+          addToHistory: unknown
+        }> = []
+        const updateCodeEditorCalls: string[] = []
+
+        const originalSendModelingEvent =
+          window.kclManager.sendModelingEvent.bind(window.kclManager)
+        window.kclManager.sendModelingEvent = ((
+          ...args: Parameters<typeof window.kclManager.sendModelingEvent>
+        ) => {
+          const [event] = args
+          if (event.type === 'update sketch outcome') {
+            directEditorOutcomes.push({
+              sourceText: event.data.sourceDelta.text,
+              updateEditor: event.data.updateEditor,
+              writeToDisk: event.data.writeToDisk,
+              addToHistory: event.data.addToHistory,
+            })
+          }
+
+          return originalSendModelingEvent(...args)
+        }) satisfies typeof window.kclManager.sendModelingEvent
+
+        const originalUpdateCodeEditor =
+          window.kclManager.updateCodeEditor.bind(window.kclManager)
+        window.kclManager.updateCodeEditor = ((
+          ...args: Parameters<typeof window.kclManager.updateCodeEditor>
+        ) => {
+          const [code] = args
+          updateCodeEditorCalls.push(code)
+          return originalUpdateCodeEditor(...args)
+        }) satisfies typeof window.kclManager.updateCodeEditor
+
+        Reflect.set(window, 'directEditorOutcomesForTest', directEditorOutcomes)
+        Reflect.set(
+          window,
+          'updateCodeEditorCallsForTest',
+          updateCodeEditorCalls
+        )
+      })
+    })
+
+    await test.step('Type KCL and let its current execution finish', async () => {
+      await editor.replaceCodeByTyping('\n}', `\n${addedLine}\n}`)
+      await editor.expectEditor.toContain(addedLine)
+
+      await expect
+        .poll(async () => getDirectEditorOutcomeForLine(addedLine))
+        .toEqual({
+          sourceText: expect.stringContaining(addedLine),
+          updateEditor: false,
+          writeToDisk: false,
+          addToHistory: false,
+        })
+
+      const updateCodeEditorCalls = await getUpdateCodeEditorCalls()
+      expect(
+        updateCodeEditorCalls.some((code) => code.includes(addedLine))
+      ).toBe(false)
+      await editor.expectEditor.toContain(addedLine)
+    })
+  })
+
   test('keeps newer copied sketch block edits when stale execution finishes', async ({
     page,
     context,
