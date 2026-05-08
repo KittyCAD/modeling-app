@@ -1,8 +1,8 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { DETERMINING_ARGS } from '@src/lang/constants'
-import type { ToolTip } from '@src/lang/langHelpers'
-import { toolTips } from '@src/lang/langHelpers'
+import type { ToolTip } from '@src/lang/toolTips'
+import { toolTips } from '@src/lang/toolTips'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { findKwArgAny, topLevelRange } from '@src/lang/util'
 import type {

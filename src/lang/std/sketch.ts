@@ -36,8 +36,8 @@ import {
   createTagDeclarator,
   findUniqueName,
 } from '@src/lang/create'
-import type { ToolTip } from '@src/lang/langHelpers'
-import { toolTips } from '@src/lang/langHelpers'
+import type { ToolTip } from '@src/lang/toolTips'
+import { toolTips } from '@src/lang/toolTips'
 import {
   mutateKwArg,
   removeKwArgs,

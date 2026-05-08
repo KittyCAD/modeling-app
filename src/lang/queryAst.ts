@@ -8,7 +8,7 @@ import {
   createMemberExpression,
   createPipeSubstitution,
 } from '@src/lang/create'
-import type { ToolTip } from '@src/lang/langHelpers'
+import type { ToolTip } from '@src/lang/toolTips'
 import { splitPathAtLastIndex } from '@src/lang/modifyAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {

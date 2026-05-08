@@ -30,8 +30,8 @@ import {
   createUnaryExpression,
 } from '@src/lang/create'
 import type { createObjectExpression } from '@src/lang/create'
-import type { ToolTip } from '@src/lang/langHelpers'
-import { toolTips } from '@src/lang/langHelpers'
+import type { ToolTip } from '@src/lang/toolTips'
+import { toolTips } from '@src/lang/toolTips'
 import { giveSketchFnCallTag } from '@src/lang/modifyAst/giveSketchFnCallTag'
 import { getNodeFromPath, getNodeFromPathCurry } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'

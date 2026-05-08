@@ -19,52 +19,8 @@ import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/network/utils'
 import type { EditorView } from 'codemirror'
-
-export type ToolTip =
-  | 'lineTo'
-  | 'line'
-  | 'angledLine'
-  | 'angledLineOfXLength'
-  | 'angledLineOfYLength'
-  | 'angledLineToX'
-  | 'angledLineToY'
-  | 'xLine'
-  | 'yLine'
-  | 'xLineTo'
-  | 'yLineTo'
-  | 'angledLineThatIntersects'
-  | 'tangentialArc'
-  | 'tangentialArcTo'
-  | 'circle'
-  | 'circleThreePoint'
-  | 'arcTo'
-  | 'arc'
-  | 'startProfile'
-
-export const toolTips: Array<ToolTip> = [
-  'line',
-  'lineTo',
-  'angledLine',
-  'angledLineOfXLength',
-  'angledLineOfYLength',
-  'angledLineToX',
-  'angledLineToY',
-  'xLine',
-  'yLine',
-  'xLineTo',
-  'yLineTo',
-  'angledLineThatIntersects',
-  'tangentialArc',
-  'tangentialArcTo',
-  'circleThreePoint',
-  'arc',
-  'arcTo',
-  'startProfile',
-]
-
-export function isToolTip(value: string): value is ToolTip {
-  return toolTips.includes(value as ToolTip)
-}
+export type { ToolTip } from '@src/lang/toolTips'
+export { isToolTip, toolTips } from '@src/lang/toolTips'
 
 interface ExecutionResult {
   logs: string[]

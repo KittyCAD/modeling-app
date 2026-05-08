@@ -1,5 +1,5 @@
 import { ARG_END, ARG_END_ABSOLUTE } from '@src/lang/constants'
-import type { ToolTip } from '@src/lang/langHelpers'
+import type { ToolTip } from '@src/lang/toolTips'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import {
   fnNameToTooltip,

@@ -8,7 +8,7 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import type RustContext from '@src/lib/rustContext'
-import { executeAstMock } from '@src/lang/langHelpers'
+import { executeAstMock } from '@src/lang/executeAstMock'
 import type { KclManager } from '@src/lang/KclManager'
 import type { PathToNode, Program } from '@src/lang/wasm'
 import type { ExecutionType } from '@src/lib/constants'
