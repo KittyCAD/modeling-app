@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
 
@@ -9,6 +9,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
 import { updateEnvironment } from '@src/env'
 import env from '@src/env'
+import { useApp } from '@src/lib/boot'
 import { APP_NAME } from '@src/lib/constants'
 import { readEnvironmentFile, writeEnvironmentFile } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -19,7 +20,6 @@ import { returnSelfOrGetHostNameFromURL, toSync } from '@src/lib/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
 import { AdvancedSignInOptions } from '@src/routes/AdvancedSignInOptions'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
-import { useApp } from '@src/lib/boot'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -29,17 +29,9 @@ let didReadFromDiskCacheForEnvironment = false
 
 const SignIn = () => {
   const { auth, settings } = useApp()
-  // Only create the native file menus on desktop
-  if (window.electron) {
-    window.electron.createFallbackMenu().catch(reportRejection)
-    // Disable these since they cannot be accessed within the sign in page.
-    window.electron
-      .disableMenu('Help.Replay onboarding tutorial')
-      .catch(reportRejection)
-    window.electron.disableMenu('Help.Show all commands').catch(reportRejection)
-  }
   const [userCode, setUserCode] = useState('')
   const [verificationUri, setVerificationUri] = useState('')
+  const signInAttemptRef = useRef(0)
 
   // Last saved environment
   // TODO: Reduce this logic
@@ -71,6 +63,20 @@ const SignIn = () => {
       window.location.reload()
     })()
   }
+
+  useEffect(() => {
+    const electron = window.electron
+    if (!electron) {
+      return
+    }
+
+    electron.createFallbackMenu().catch(reportRejection)
+    // Disable these since they cannot be accessed within the sign in page.
+    electron
+      .disableMenu('Help.Replay onboarding tutorial')
+      .catch(reportRejection)
+    electron.disableMenu('Help.Show all commands').catch(reportRejection)
+  }, [])
 
   useEffect(() => {
     if (!didReadFromDiskCacheForEnvironment) {
@@ -110,6 +116,8 @@ const SignIn = () => {
   )
 
   const signInDesktop = async (electron: IElectronAPI) => {
+    const signInAttempt = signInAttemptRef.current + 1
+    signInAttemptRef.current = signInAttempt
     const requestedEnvironment = selectedEnvironment.trim()
     updateEnvironment(requestedEnvironment)
     setUserCode('')
@@ -118,7 +126,12 @@ const SignIn = () => {
     // We want to invoke our command to login via device auth.
     const deviceFlowAuthorization = await electron
       .startDeviceFlow(withAPIBaseURL(location.search))
-      .catch(reportError)
+      .catch((error) => {
+        if (signInAttemptRef.current === signInAttempt) {
+          reportError(error)
+        }
+      })
+    if (signInAttemptRef.current !== signInAttempt) return
     if (!deviceFlowAuthorization) {
       console.error(
         'No device flow authorization received while trying to log in'
@@ -130,7 +143,12 @@ const SignIn = () => {
     setVerificationUri(deviceFlowAuthorization.verificationUri)
 
     // Now that we have the user code, we can kick off the final login step.
-    const token = await electron.loginWithDeviceFlow().catch(reportError)
+    const token = await electron.loginWithDeviceFlow().catch((error) => {
+      if (signInAttemptRef.current === signInAttempt) {
+        reportError(error)
+      }
+    })
+    if (signInAttemptRef.current !== signInAttempt) return
     if (!token) {
       console.error('No token received while trying to log in')
       toast.error('Error while trying to log in.')
@@ -141,6 +159,8 @@ const SignIn = () => {
   }
 
   const cancelSignIn = async () => {
+    signInAttemptRef.current += 1
+    await window.electron?.cancelDeviceFlow().catch(reportRejection)
     auth.send({ type: 'Log out' })
     setUserCode('')
     setVerificationUri('')

@@ -361,8 +361,7 @@ description: Operations executed kcl_v2.kcl
           }
         ]
       },
-      "sourceRange": [],
-      "isError": true
+      "sourceRange": []
     }
   ],
   "std::math": [

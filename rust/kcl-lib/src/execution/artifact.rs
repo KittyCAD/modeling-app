@@ -1,4 +1,5 @@
 use fnv::FnvHashMap;
+use fnv::FnvHashSet;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds::EnableSketchMode;
 use kittycad_modeling_cmds::FaceIsPlanar;
@@ -2043,6 +2044,10 @@ fn artifacts_to_update(
                     new_comp.composite_solid_id = Some(id);
                     new_comp.consumed = true;
                     return_arr.push(Artifact::CompositeSolid(new_comp));
+                } else if let Some(Artifact::Sweep(sweep)) = artifacts.get(input_id) {
+                    let mut new_sweep = sweep.clone();
+                    new_sweep.consumed = true;
+                    return_arr.push(Artifact::Sweep(new_sweep));
                 }
             }
             return Ok(return_arr);
@@ -2223,6 +2228,24 @@ fn artifacts_to_update(
             }
 
             let mut return_arr = Vec::new();
+            let mut consumed_sweep_ids = FnvHashSet::default();
+
+            for input_id in solid_ids.iter().chain(tool_ids.iter()) {
+                let sweep_id = match artifacts.get(input_id) {
+                    Some(Artifact::Sweep(sweep)) => Some(sweep.id),
+                    Some(Artifact::Path(path)) => path.sweep_id,
+                    _ => None,
+                };
+
+                if let Some(sweep_id) = sweep_id
+                    && consumed_sweep_ids.insert(sweep_id)
+                    && let Some(Artifact::Sweep(sweep)) = artifacts.get(&sweep_id)
+                {
+                    let mut new_sweep = sweep.clone();
+                    new_sweep.consumed = true;
+                    return_arr.push(Artifact::Sweep(new_sweep));
+                }
+            }
 
             // Create the new composite solids and update their linked artifacts
             for solid_id in &new_solid_ids {
@@ -2253,16 +2276,6 @@ fn artifacts_to_update(
                                 let mut new_path = path.clone();
                                 new_path.composite_solid_id = Some(*solid_id);
 
-                                // We want to mark any sweeps of the path used in this operation
-                                // as consumed. The path itself is already consumed by sweeping
-                                if let Some(sweep_id) = new_path.sweep_id
-                                    && let Some(Artifact::Sweep(sweep)) = artifacts.get(&sweep_id)
-                                {
-                                    let mut new_sweep = sweep.clone();
-                                    new_sweep.consumed = true;
-                                    return_arr.push(Artifact::Sweep(new_sweep));
-                                }
-
                                 return_arr.push(Artifact::Path(new_path));
                             }
                             _ => {}
@@ -2283,16 +2296,6 @@ fn artifacts_to_update(
                             Artifact::Path(path) => {
                                 let mut new_path = path.clone();
                                 new_path.composite_solid_id = Some(*solid_id);
-
-                                // We want to mark any sweeps of the path used in this operation
-                                // as consumed. The path itself is already consumed by sweeping
-                                if let Some(sweep_id) = new_path.sweep_id
-                                    && let Some(Artifact::Sweep(sweep)) = artifacts.get(&sweep_id)
-                                {
-                                    let mut new_sweep = sweep.clone();
-                                    new_sweep.consumed = true;
-                                    return_arr.push(Artifact::Sweep(new_sweep));
-                                }
 
                                 return_arr.push(Artifact::Path(new_path));
                             }
@@ -2330,6 +2333,24 @@ fn artifacts_to_update(
             }
 
             let mut return_arr = Vec::new();
+            let mut consumed_sweep_ids = FnvHashSet::default();
+
+            for input_id in solid_ids.iter().chain(tool_ids.iter()) {
+                let sweep_id = match artifacts.get(input_id) {
+                    Some(Artifact::Sweep(sweep)) => Some(sweep.id),
+                    Some(Artifact::Path(path)) => path.sweep_id,
+                    _ => None,
+                };
+
+                if let Some(sweep_id) = sweep_id
+                    && consumed_sweep_ids.insert(sweep_id)
+                    && let Some(Artifact::Sweep(sweep)) = artifacts.get(&sweep_id)
+                {
+                    let mut new_sweep = sweep.clone();
+                    new_sweep.consumed = true;
+                    return_arr.push(Artifact::Sweep(new_sweep));
+                }
+            }
 
             for (output_index, solid_id) in new_solid_ids.iter().enumerate() {
                 return_arr.push(Artifact::CompositeSolid(CompositeSolid {
@@ -2356,14 +2377,6 @@ fn artifacts_to_update(
                             Artifact::Path(path) => {
                                 let mut new_path = path.clone();
                                 new_path.composite_solid_id = Some(*solid_id);
-
-                                if let Some(sweep_id) = new_path.sweep_id
-                                    && let Some(Artifact::Sweep(sweep)) = artifacts.get(&sweep_id)
-                                {
-                                    let mut new_sweep = sweep.clone();
-                                    new_sweep.consumed = true;
-                                    return_arr.push(Artifact::Sweep(new_sweep));
-                                }
 
                                 return_arr.push(Artifact::Path(new_path));
                             }

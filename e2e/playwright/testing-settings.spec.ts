@@ -709,6 +709,7 @@ test.describe(
         const toolbar = page.locator('menu').filter({ hasText: 'Start Sketch' })
 
         await test.step(`Test setup`, async () => {
+          await page.emulateMedia({ colorScheme: 'light' })
           await page.setBodyDimensions({ width: 1200, height: 500 })
           await homePage.goToModelingScene()
           await u.waitForPageLoad()

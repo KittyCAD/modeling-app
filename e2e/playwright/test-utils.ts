@@ -10,6 +10,7 @@ import {
   TOKEN_PERSIST_KEY,
   VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM,
   COOKIE_NAME_PREFIX,
+  SIDEBAR_BUTTON_SUFFIX,
 } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
@@ -35,12 +36,20 @@ import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
-import {
-  type LayoutWithMetadata,
-  setOpenPanes,
-  getLayoutPersistKey,
-} from '@src/lib/layout'
+import { createLayoutWithMetadata } from '@src/lib/layout'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
+
+export const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
+
+export const PLAYWRIGHT_LAYOUT_SETTINGS = {
+  layout: {
+    configs: {
+      [PLAYWRIGHT_LAYOUT_CONFIG_NAME]: JSON.stringify(
+        createLayoutWithMetadata(playwrightLayoutConfig)
+      ),
+    },
+  },
+} as const
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
@@ -695,33 +704,11 @@ export async function getUtils(page: Page, test_?: typeof test) {
         .filter({ hasText: name })
     },
 
-    /**
-     * @deprecated Sorry I don't have time to fix this right now, but runs like
-     * the one linked below show me that setting the open panes in this manner is not reliable.
-     * You can either set `openPanes` as a part of the same initScript we run in setupElectron/setup,
-     * or you can imperatively open the panes with functions like {openKclCodePanel}
-     * (or we can make a general openPane function that takes a paneId).,
-     * but having a separate initScript does not seem to work reliably.
-     * @link https://github.com/KittyCAD/modeling-app/actions/runs/10731890169/job/29762700806?pr=3807#step:20:19553
-     */
     panesOpen: async (paneIds: string[]) => {
       return test?.step(`Setting ${paneIds} panes to be open`, async () => {
-        await page.addInitScript(
-          ({ layoutName, layoutPayload }) => {
-            localStorage.setItem(layoutName, layoutPayload)
-          },
-          {
-            layoutName: getLayoutPersistKey(),
-            layoutPayload: JSON.stringify({
-              version: 'v1',
-              layout: setOpenPanes(
-                structuredClone(playwrightLayoutConfig),
-                paneIds
-              ),
-            } satisfies LayoutWithMetadata),
-          }
-        )
-        await page.reload()
+        for (const paneId of paneIds) {
+          await openPane(page, paneId + SIDEBAR_BUTTON_SUFFIX)
+        }
       })
     },
   }
@@ -972,24 +959,14 @@ export async function setup(
       settings,
       IS_PLAYWRIGHT_KEY,
       TOKEN_PERSIST_KEY,
-      layoutName,
-      layoutPayload,
     }) => {
       localStorage.clear()
       localStorage.setItem(TOKEN_PERSIST_KEY, token)
       localStorage.setItem('persistCode', ``)
-      localStorage.setItem(
-        layoutName,
-        JSON.stringify({
-          version: 'v1',
-          layout: layoutPayload,
-        } satisfies LayoutWithMetadata)
-      )
       localStorage.setItem(settingsKey, settings)
       localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
       window.addEventListener('beforeunload', () => {
         localStorage.removeItem(IS_PLAYWRIGHT_KEY)
-        localStorage.removeItem(layoutName)
       })
     },
     {
@@ -998,6 +975,7 @@ export async function setup(
       settings: settingsToToml({
         settings: {
           ...TEST_SETTINGS,
+          ...PLAYWRIGHT_LAYOUT_SETTINGS,
           app: {
             appearance: {
               ...TEST_SETTINGS.app?.appearance,
@@ -1015,8 +993,6 @@ export async function setup(
       }),
       IS_PLAYWRIGHT_KEY,
       TOKEN_PERSIST_KEY,
-      layoutName: getLayoutPersistKey(),
-      layoutPayload: playwrightLayoutConfig,
     }
   )
 
@@ -1262,34 +1238,158 @@ export async function clickElectronNativeMenuById(
   tronApp: ElectronZoo,
   menuId: string
 ) {
-  const clickWasTriggered = await tronApp.electron.evaluate(
-    async ({ app }, menuId) => {
-      if (!app || !app.applicationMenu) {
-        return false
-      }
-      const menu = app.applicationMenu.getMenuItemById(menuId)
-      if (!menu) return false
-      menu.click()
-      return true
-    },
+  await clickElectronNativeMenuByIdForPage(tronApp, tronApp.page, menuId)
+}
+
+export async function clickElectronNativeMenuByIdForPage(
+  tronApp: ElectronZoo,
+  page: Page,
+  menuId: string
+) {
+  const clickWasTriggered = await triggerElectronNativeMenuByIdForPage(
+    tronApp,
+    page,
     menuId
   )
   expect(clickWasTriggered).toBe(true)
+}
+
+async function triggerElectronNativeMenuByIdForPage(
+  tronApp: ElectronZoo,
+  page: Page,
+  menuId: string
+) {
+  const browserWindowId = await getElectronBrowserWindowId(tronApp, page)
+
+  return tronApp.electron.evaluate(
+    ({ app, BrowserWindow, Menu }, { browserWindowId, menuId }) => {
+      type NativeMenuItemForTest = {
+        accelerator?: unknown
+        click?: (...args: unknown[]) => void
+        label?: unknown
+      }
+      type NativeMenuForTest = {
+        getMenuItemById: (
+          targetMenuId: string
+        ) => NativeMenuItemForTest | null | undefined
+      }
+      function isObject(value: unknown): value is Record<PropertyKey, unknown> {
+        return typeof value === 'object' && value !== null
+      }
+      function isNativeMenu(value: unknown): value is NativeMenuForTest {
+        return isObject(value) && typeof value.getMenuItemById === 'function'
+      }
+      function getWindowMenuFromTestProperties() {
+        const testProperties = Reflect.get(app, 'testProperty')
+        if (!isObject(testProperties)) return null
+
+        const nativeWindowMenus = testProperties.nativeWindowMenus
+        if (!(nativeWindowMenus instanceof Map)) return null
+
+        return nativeWindowMenus.get(browserWindowId)
+      }
+
+      const window = BrowserWindow.fromId(browserWindowId)
+      if (!window) return false
+
+      const menu =
+        process.platform === 'darwin'
+          ? Menu.getApplicationMenu()
+          : getWindowMenuFromTestProperties()
+      if (!isNativeMenu(menu)) return false
+
+      const menuItem = menu.getMenuItemById(menuId)
+      if (typeof menuItem?.click !== 'function') return false
+
+      menuItem.click(menuItem, window, {})
+      return true
+    },
+    { browserWindowId, menuId }
+  )
+}
+
+async function getElectronBrowserWindowId(tronApp: ElectronZoo, page: Page) {
+  const browserWindow = await tronApp.electron.browserWindow(page)
+  try {
+    return await browserWindow.evaluate((window) => window.id)
+  } finally {
+    await browserWindow.dispose()
+  }
 }
 
 export async function findElectronNativeMenuById(
   tronApp: ElectronZoo,
   menuId: string
 ) {
-  const found = await tronApp.electron.evaluate(async ({ app }, menuId) => {
-    if (!app || !app.applicationMenu) {
-      return false
-    }
-    const menu = app.applicationMenu.getMenuItemById(menuId)
-    if (!menu) return false
-    return true
-  }, menuId)
+  await findElectronNativeMenuByIdForPage(tronApp, tronApp.page, menuId)
+}
+
+export async function findElectronNativeMenuByIdForPage(
+  tronApp: ElectronZoo,
+  page: Page,
+  menuId: string
+) {
+  const found = Boolean(
+    await getElectronNativeMenuItemByIdForPage(tronApp, page, menuId)
+  )
   expect(found).toBe(true)
+}
+
+export async function getElectronNativeMenuItemByIdForPage(
+  tronApp: ElectronZoo,
+  page: Page,
+  menuId: string
+) {
+  const browserWindowId = await getElectronBrowserWindowId(tronApp, page)
+  return tronApp.electron.evaluate(
+    ({ app, BrowserWindow, Menu }, { browserWindowId, menuId }) => {
+      type NativeMenuItemForTest = {
+        accelerator?: unknown
+        label?: unknown
+      }
+      type NativeMenuForTest = {
+        getMenuItemById: (
+          targetMenuId: string
+        ) => NativeMenuItemForTest | null | undefined
+      }
+      function isObject(value: unknown): value is Record<PropertyKey, unknown> {
+        return typeof value === 'object' && value !== null
+      }
+      function isNativeMenu(value: unknown): value is NativeMenuForTest {
+        return isObject(value) && typeof value.getMenuItemById === 'function'
+      }
+      function getWindowMenuFromTestProperties() {
+        const testProperties = Reflect.get(app, 'testProperty')
+        if (!isObject(testProperties)) return null
+
+        const nativeWindowMenus = testProperties.nativeWindowMenus
+        if (!(nativeWindowMenus instanceof Map)) return null
+
+        return nativeWindowMenus.get(browserWindowId)
+      }
+
+      const window = BrowserWindow.fromId(browserWindowId)
+      if (!window) return null
+
+      const menu =
+        process.platform === 'darwin'
+          ? Menu.getApplicationMenu()
+          : getWindowMenuFromTestProperties()
+      if (!isNativeMenu(menu)) return null
+
+      const menuItem = menu.getMenuItemById(menuId)
+      if (!menuItem) return null
+
+      return {
+        accelerator:
+          typeof menuItem.accelerator === 'string'
+            ? menuItem.accelerator
+            : undefined,
+        label: typeof menuItem.label === 'string' ? menuItem.label : '',
+      }
+    },
+    { browserWindowId, menuId }
+  )
 }
 
 export async function openSettingsExpectText(page: Page, text: string) {
