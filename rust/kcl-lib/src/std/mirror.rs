@@ -273,7 +273,7 @@ async fn inner_mirror_2d(
                 )));
             };
         }
-        // EdgeReference variant exists for revolve, but mirror2d doesn't support edgeRef
+        // EdgeSpecifier variant exists for revolve, but mirror2d doesn't support edge specifiers.
         Axis2dOrEdgeReference::EdgeSpecifier(_) => {
             debug_assert!(false, "mirror2d does not support EdgeSpecifier, only Axis or Edge");
             return Err(KclError::new_internal(KclErrorDetails::new(
