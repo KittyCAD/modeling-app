@@ -28,7 +28,9 @@
  *   ... |> extrude(length = 5, tagEnd = $capEnd001)
  *     |> fillet(radius = 1, edges = [{ sideFaces = [e1, capEnd001] }])
  */
+import { join } from 'path'
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
+import type { KclManager } from '@src/lang/KclManager'
 import {
   findExtrudeToCallsToFix,
   findRevolveHelixCallsToFix,
@@ -44,14 +46,53 @@ import type {
   DirectTagFilletMeta,
   EdgeRefactorMeta,
 } from '@src/lang/wasm'
-import { err } from '@src/lib/trap'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
+import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import type { KclManager } from '@src/lang/KclManager'
-import { join } from 'path'
 
 const WASM_PATH = join(process.cwd(), 'public', 'kcl_wasm_lib_bg.wasm')
+
+function sourceRangeForCall(
+  node: unknown,
+  calleeName: string
+): [number, number, number] {
+  const visited = new Set<unknown>()
+
+  function walk(value: unknown): [number, number, number] | null {
+    if (!value || typeof value !== 'object' || visited.has(value)) return null
+    visited.add(value)
+
+    const objectValue = value as Record<string, unknown>
+    const call =
+      objectValue.CallExpressionKw &&
+      typeof objectValue.CallExpressionKw === 'object'
+        ? (objectValue.CallExpressionKw as Record<string, unknown>)
+        : objectValue.type === 'CallExpressionKw'
+          ? objectValue
+          : null
+
+    const name = (call?.callee as { name?: { name?: string } } | undefined)
+      ?.name?.name
+    if (call && name === calleeName) {
+      return [
+        Number(call.start ?? 0),
+        Number(call.end ?? 0),
+        Number(call.module_id ?? call.moduleId ?? 0),
+      ]
+    }
+
+    for (const child of Object.values(objectValue)) {
+      const result = walk(child)
+      if (result) return result
+    }
+    return null
+  }
+
+  const result = walk(node)
+  if (!result) throw new Error(`Could not find ${calleeName} call`)
+  return result
+}
 
 const SAMPLE_KCL = `body = startSketchOn(XY)
   |> startProfile(at = [0, 0])
@@ -479,7 +520,7 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
       const metadata: EdgeRefactorMeta[] = [
         {
           edgeId: '00000000-0000-0000-0000-000000000000',
-          sourceRange: [0, 0, 0],
+          sourceRange: sourceRangeForCall(axisArg.arg, 'getOppositeEdge'),
           faceIds: [
             '00000000-0000-0000-0000-000000000001',
             '00000000-0000-0000-0000-000000000002',
@@ -498,7 +539,7 @@ describe('refactorFilletChamferTagsToEdgeRefs', () => {
       const metadata: EdgeRefactorMeta[] = [
         {
           edgeId: '00000000-0000-0000-0000-000000000000',
-          sourceRange: [0, 0, 0],
+          sourceRange: sourceRangeForCall(ast, 'getCommonEdge'),
           faceIds: [
             '00000000-0000-0000-0000-000000000001',
             '00000000-0000-0000-0000-000000000002',

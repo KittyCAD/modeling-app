@@ -1,13 +1,14 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
+import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import {
+  createArrayExpression,
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
   createLocalName,
-  createObjectExpression,
-  createArrayExpression,
   createMemberExpression,
+  createObjectExpression,
   createTagDeclarator,
   createVariableDeclaration,
   findUniqueName,
@@ -18,6 +19,12 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
+import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
+import { getBodySelectionFromPrimitiveParentEntityId } from '@src/lang/modifyAst/faces'
+import {
+  modifyAstWithTagsForSelection,
+  mutateAstWithTagForSketchSegment,
+} from '@src/lang/modifyAst/tagManagement'
 import {
   getNodeFromPath,
   getRegionTagExprFromSegmentId,
@@ -26,6 +33,12 @@ import {
   valueOrVariable,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import {
+  getArtifactOfTypes,
+  getCodeRefsByArtifactId,
+  getSweepArtifactFromSelection,
+} from '@src/lang/std/artifactGraph'
+import { findKwArg } from '@src/lang/util'
 import type {
   Artifact,
   ArtifactGraph,
@@ -44,28 +57,15 @@ import type {
 import { recast } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
+import { isEnginePrimitiveSelection } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
+  EnginePrimitiveSelection,
   Selection,
   Selections,
-  EnginePrimitiveSelection,
 } from '@src/machines/modelingSharedTypes'
-import {
-  getArtifactOfTypes,
-  getCodeRefsByArtifactId,
-  getSweepArtifactFromSelection,
-} from '@src/lang/std/artifactGraph'
-import {
-  modifyAstWithTagsForSelection,
-  mutateAstWithTagForSketchSegment,
-} from '@src/lang/modifyAst/tagManagement'
-import { getBodySelectionFromPrimitiveParentEntityId } from '@src/lang/modifyAst/faces'
-import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
-import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
-import { findKwArg } from '@src/lang/util'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { isEnginePrimitiveSelection } from '@src/lib/selections'
 
 function createMemberExpr(
   object: Expr,
@@ -1264,11 +1264,7 @@ function sourceRangeMatch(
   const metaModuleId = isArray(sr)
     ? (sr[2] ?? 0)
     : ((sr as { moduleId?: number }).moduleId ?? 0)
-  if (metaModuleId !== moduleId) return false
-  if (metaStart === start && metaEnd === end) return true
-  if (metaStart <= start && metaEnd >= end) return true
-  if (start <= metaEnd && end >= metaStart) return true
-  return false
+  return metaModuleId === moduleId && metaStart === start && metaEnd === end
 }
 
 interface ExprWalkOptions {
@@ -1745,12 +1741,6 @@ export function findRevolveHelixCallsToFix(
   edgeRefactorMetadata: EdgeRefactorMeta[]
 ): RevolveHelixCallToFix[] {
   const results: RevolveHelixCallToFix[] = []
-  const candidates: {
-    range: [number, number, number]
-    faceIds: [string, string]
-    metaIndex: number
-    pathToCall: PathToNode
-  }[] = []
 
   function visitExpr(expr: Expr, pathPrefix?: PathToNode): void {
     const call = getCallFromExpr(expr)
@@ -1797,30 +1787,6 @@ export function findRevolveHelixCallsToFix(
         faceIds: [meta.faceIds[0], meta.faceIds[1]],
         pathToCall: callPath,
       })
-    } else {
-      const metaIndex = edgeRefactorMetadata.findIndex((m) => {
-        const ids = isArray(m.faceIds)
-          ? m.faceIds
-          : (m as { faceIds?: unknown[] }).faceIds
-        return Boolean(ids && ids.length >= 2)
-      })
-      if (metaIndex >= 0 && callPath?.length) {
-        const metadata = edgeRefactorMetadata[metaIndex]
-        const faceIds = isArray(metadata.faceIds)
-          ? ([metadata.faceIds[0], metadata.faceIds[1]] as [string, string])
-          : ([
-              (metadata as { faceIds?: string[] }).faceIds?.[0],
-              (metadata as { faceIds?: string[] }).faceIds?.[1],
-            ].filter(Boolean) as [string, string])
-        if (faceIds.length === 2) {
-          candidates.push({
-            range: [callStart, callEnd, moduleId],
-            faceIds,
-            metaIndex,
-            pathToCall: callPath,
-          })
-        }
-      }
     }
     walkExpr(expr, pathPrefix)
   }
@@ -1898,20 +1864,6 @@ export function findRevolveHelixCallsToFix(
     }
   }
 
-  if (results.length === 0 && candidates.length > 0) {
-    const used = new Set<number>()
-    for (const candidate of candidates) {
-      if (used.has(candidate.metaIndex)) continue
-      used.add(candidate.metaIndex)
-      results.push({
-        range: candidate.range,
-        faceIds: candidate.faceIds,
-        pathToCall: candidate.pathToCall,
-      })
-      break
-    }
-  }
-
   return results
 }
 
@@ -1927,12 +1879,6 @@ export function findExtrudeToCallsToFix(
   edgeRefactorMetadata: EdgeRefactorMeta[]
 ): ExtrudeToCallToFix[] {
   const results: ExtrudeToCallToFix[] = []
-  const candidates: {
-    range: [number, number, number]
-    faceIds: [string, string]
-    metaIndex: number
-    pathToCall: PathToNode
-  }[] = []
 
   function visitExpr(expr: Expr, pathPrefix?: PathToNode): void {
     const call = getCallFromExpr(expr)
@@ -1977,30 +1923,6 @@ export function findExtrudeToCallsToFix(
         faceIds: [meta.faceIds[0], meta.faceIds[1]],
         pathToCall: callPath,
       })
-    } else {
-      const metaIndex = edgeRefactorMetadata.findIndex((m) => {
-        const ids = isArray(m.faceIds)
-          ? m.faceIds
-          : (m as { faceIds?: unknown[] }).faceIds
-        return Boolean(ids && ids.length >= 2)
-      })
-      if (metaIndex >= 0 && callPath?.length) {
-        const metadata = edgeRefactorMetadata[metaIndex]
-        const faceIds = isArray(metadata.faceIds)
-          ? ([metadata.faceIds[0], metadata.faceIds[1]] as [string, string])
-          : ([
-              (metadata as { faceIds?: string[] }).faceIds?.[0],
-              (metadata as { faceIds?: string[] }).faceIds?.[1],
-            ].filter(Boolean) as [string, string])
-        if (faceIds.length === 2) {
-          candidates.push({
-            range: [callStart, callEnd, moduleId],
-            faceIds,
-            metaIndex,
-            pathToCall: callPath,
-          })
-        }
-      }
     }
     walkExpr(expr, pathPrefix)
   }
@@ -2072,20 +1994,6 @@ export function findExtrudeToCallsToFix(
         ...pathPrefix,
         ['expression', 'ExpressionStatement'],
       ])
-    }
-  }
-
-  if (results.length === 0 && candidates.length > 0) {
-    const used = new Set<number>()
-    for (const candidate of candidates) {
-      if (used.has(candidate.metaIndex)) continue
-      used.add(candidate.metaIndex)
-      results.push({
-        range: candidate.range,
-        faceIds: candidate.faceIds,
-        pathToCall: candidate.pathToCall,
-      })
-      break
     }
   }
 

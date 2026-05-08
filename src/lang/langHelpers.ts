@@ -3,9 +3,12 @@ import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { KCLError, toUtf16 } from '@src/lang/errors'
-import type { ArtifactGraph } from '@src/lang/wasm'
 import { executeAstMock as executeAstMockImpl } from '@src/lang/executeAstMock'
-import { resolveRefactorLintActions } from '@src/lang/lintRefactorActions'
+import {
+  type Z0006RefactorCache,
+  resolveRefactorLintActions,
+} from '@src/lang/lintRefactorActions'
+import type { ArtifactGraph } from '@src/lang/wasm'
 import type {
   DirectTagFilletMeta,
   EdgeRefactorMeta,
@@ -157,6 +160,7 @@ export async function lintAst({
     }
 
     // Process findings - for Z0005 without suggestion, we'll create actions async
+    const z0006RefactorCache: Z0006RefactorCache = {}
     const diagnosticsPromises = discovered_findings.map(async (lint) => {
       let actions
       let message = lint.finding.title
@@ -189,6 +193,7 @@ export async function lintAst({
           edgeRefactorMetadata,
           directTagFilletMetadata,
           artifactGraph,
+          z0006RefactorCache,
         })
         actions = refactorResult.actions
         if (refactorResult.messageOverride) {

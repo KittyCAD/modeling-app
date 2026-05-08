@@ -2,6 +2,7 @@ import type { Diagnostic } from '@codemirror/lint'
 import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
 import type { Discovered } from '@rust/kcl-lib/bindings/Discovered'
 
+import { toUtf16 } from '@src/lang/errors'
 import { refactorZ0006Unified } from '@src/lang/modifyAst/edges'
 import type {
   ArtifactGraph,
@@ -9,11 +10,10 @@ import type {
   EdgeRefactorMeta,
   Program,
 } from '@src/lang/wasm'
-import { toUtf16 } from '@src/lang/errors'
 import type RustContext from '@src/lib/rustContext'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { EditorView } from 'codemirror'
 
 type RefactorLintActionsParams = {
@@ -26,11 +26,16 @@ type RefactorLintActionsParams = {
   edgeRefactorMetadata?: EdgeRefactorMeta[]
   directTagFilletMetadata?: DirectTagFilletMeta[]
   artifactGraph?: ArtifactGraph
+  z0006RefactorCache?: Z0006RefactorCache
 }
 
 type RefactorLintActionsResult = {
   actions?: Diagnostic['actions']
   messageOverride?: string
+}
+
+export type Z0006RefactorCache = {
+  promise?: Promise<string | null>
 }
 
 function findLintVariableName(
@@ -127,8 +132,7 @@ async function createZ0005Actions({
   }
 }
 
-function createZ0006Actions({
-  lint,
+function computeZ0006RefactorSource({
   ast,
   sourceCode,
   instance,
@@ -137,14 +141,13 @@ function createZ0006Actions({
   artifactGraph,
 }: Omit<
   RefactorLintActionsParams,
-  'rustContext' | 'shouldShowZ0005'
->): RefactorLintActionsResult {
+  'lint' | 'rustContext' | 'shouldShowZ0005' | 'z0006RefactorCache'
+>): string | null {
   if (
-    lint.finding.code !== 'Z0006' ||
     !artifactGraph ||
     (!edgeRefactorMetadata?.length && !directTagFilletMetadata?.length)
   ) {
-    return {}
+    return null
   }
 
   const newSourceResult = refactorZ0006Unified(
@@ -157,12 +160,61 @@ function createZ0006Actions({
   const newSource = err(newSourceResult) ? null : newSourceResult.trim() || null
   const codeActuallyChanged =
     newSource != null && newSource !== sourceCode.trim()
-  if (!newSource || !codeActuallyChanged) return {}
+  return newSource && codeActuallyChanged ? newSource : null
+}
+
+async function getZ0006RefactorSource(
+  params: Omit<
+    RefactorLintActionsParams,
+    'lint' | 'rustContext' | 'shouldShowZ0005'
+  >
+): Promise<string | null> {
+  if (!params.z0006RefactorCache) {
+    return computeZ0006RefactorSource(params)
+  }
+
+  params.z0006RefactorCache.promise ??= Promise.resolve().then(() =>
+    computeZ0006RefactorSource(params)
+  )
+  return params.z0006RefactorCache.promise
+}
+
+async function createZ0006Actions({
+  lint,
+  ast,
+  sourceCode,
+  instance,
+  edgeRefactorMetadata,
+  directTagFilletMetadata,
+  artifactGraph,
+  z0006RefactorCache,
+}: Omit<
+  RefactorLintActionsParams,
+  'rustContext' | 'shouldShowZ0005'
+>): Promise<RefactorLintActionsResult> {
+  if (
+    lint.finding.code !== 'Z0006' ||
+    !artifactGraph ||
+    (!edgeRefactorMetadata?.length && !directTagFilletMetadata?.length)
+  ) {
+    return {}
+  }
+
+  const newSource = await getZ0006RefactorSource({
+    ast,
+    sourceCode,
+    instance,
+    edgeRefactorMetadata,
+    directTagFilletMetadata,
+    artifactGraph,
+    z0006RefactorCache,
+  })
+  if (!newSource) return {}
 
   return {
     actions: [
       {
-        name: 'Convert to edges/axis',
+        name: 'Convert to edge specifiers',
         apply: (view: EditorView, _from: number, _to: number) => {
           try {
             view.dispatch({
@@ -188,7 +240,7 @@ export async function resolveRefactorLintActions(
   const z0005 = await createZ0005Actions(params)
   if (z0005.actions || z0005.messageOverride) return z0005
 
-  const z0006 = createZ0006Actions(params)
+  const z0006 = await createZ0006Actions(params)
   if (z0006.actions || z0006.messageOverride) return z0006
 
   return {}
