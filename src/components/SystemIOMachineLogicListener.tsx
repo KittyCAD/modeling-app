@@ -278,6 +278,7 @@ export function SystemIOMachineLogicListener() {
           type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
           data: {
             files: payload.files,
+            filesToDelete: payload.filesToDelete,
             override: true,
             // Gotcha: Both are called "project name" and "file name", but one of them
             // has to include the project-relative file path between the two.

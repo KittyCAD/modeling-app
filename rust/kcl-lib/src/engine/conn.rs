@@ -224,7 +224,7 @@ impl EngineConnection {
         tcp_write
             .send(WsMsg::Binary(msg.into()))
             .await
-            .map_err(|e| anyhow!("could not send json over websocket: {e}"))?;
+            .map_err(|e| anyhow!("could not send MsgPack over websocket: {e}"))?;
         Ok(())
     }
 

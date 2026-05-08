@@ -1,12 +1,12 @@
+import { topLevelRange } from '@src/lang/util'
 import {
   sendToActorIfActive,
   updateHoveredId,
   updateSelectedCodeHighlight,
-  updateSelectedIdsFromCodeSelection,
   updateSelectedIds,
+  updateSelectedIdsFromCodeSelection,
   updateSketchOutcome,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
-import { topLevelRange } from '@src/lang/util'
 import {
   createLineApiObject,
   createPointApiObject,
@@ -357,6 +357,45 @@ describe('updateSketchOutcome', () => {
     )
     expect(updateCodeEditor.mock.invocationCallOrder[0]).toBeLessThan(
       syncSketchSolveOutcome.mock.invocationCallOrder[0]
+    )
+  })
+
+  test('does not rewrite the editor for direct CodeMirror execution outcomes', () => {
+    const setSketchSolveDiagnostics = vi.fn()
+    const dispatch = vi.fn()
+    const updateCodeEditor = vi.fn()
+    const syncSketchSolveOutcome = vi.fn()
+    const sceneGraphDelta = createSceneGraphDelta([])
+
+    updateSketchOutcome({
+      context: {
+        kclManager: {
+          code: 'newer editor code',
+          dispatch,
+          setSketchSolveDiagnostics,
+          updateCodeEditor,
+          syncSketchSolveOutcome,
+        },
+        selectedIds: [],
+        duringAreaSelectIds: [],
+      },
+      event: {
+        type: 'update sketch outcome',
+        data: {
+          sourceDelta: { text: 'executed editor snapshot' },
+          sceneGraphDelta,
+          updateEditor: false,
+          writeToDisk: false,
+          addToHistory: false,
+        },
+      },
+    } as unknown as Parameters<typeof updateSketchOutcome>[0])
+
+    expect(dispatch).toHaveBeenCalledTimes(1)
+    expect(updateCodeEditor).not.toHaveBeenCalled()
+    expect(syncSketchSolveOutcome).toHaveBeenCalledWith(
+      'executed editor snapshot',
+      sceneGraphDelta
     )
   })
 

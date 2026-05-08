@@ -343,6 +343,9 @@ fn rewrite_constraint_with_map(
     constraint: &Constraint,
     rewrite_map: &std::collections::HashMap<ObjectId, ObjectId>,
 ) -> Option<Constraint> {
+    // Keep trim constraint matches exhaustive. New constraints can break trim in
+    // unexpected ways; try trimming sketches that use the new constraint and ask
+    // Kurt, Max, or a mechanical engineer when the expected behavior is unclear.
     match constraint {
         Constraint::Coincident(coincident) => Some(Constraint::Coincident(crate::frontend::sketch::Coincident {
             segments: rewrite_constraint_segments(&coincident.segments, rewrite_map),
@@ -463,15 +466,33 @@ fn rewrite_constraint_with_map(
                     .collect(),
             })),
         },
-        _ => None,
+        Constraint::Angle(_) | Constraint::Fixed(_) | Constraint::LinesEqualLength(_) => None,
     }
 }
 
 fn point_axis_constraint_references_point(constraint: &Constraint, point_id: ObjectId) -> bool {
+    // Keep trim constraint matches exhaustive. New constraints should make an
+    // explicit preserve/delete/migrate decision rather than falling through.
     match constraint {
         Constraint::Horizontal(Horizontal::Points { points }) => points.contains(&ConstraintSegment::from(point_id)),
         Constraint::Vertical(Vertical::Points { points }) => points.contains(&ConstraintSegment::from(point_id)),
-        _ => false,
+        Constraint::Angle(_)
+        | Constraint::Coincident(_)
+        | Constraint::Diameter(_)
+        | Constraint::Distance(_)
+        | Constraint::EqualRadius(_)
+        | Constraint::Fixed(_)
+        | Constraint::Horizontal(Horizontal::Line { .. })
+        | Constraint::HorizontalDistance(_)
+        | Constraint::LinesEqualLength(_)
+        | Constraint::Midpoint(_)
+        | Constraint::Parallel(_)
+        | Constraint::Perpendicular(_)
+        | Constraint::Radius(_)
+        | Constraint::Symmetric(_)
+        | Constraint::Tangent(_)
+        | Constraint::Vertical(Vertical::Line { .. })
+        | Constraint::VerticalDistance(_) => false,
     }
 }
 
@@ -4778,6 +4799,8 @@ pub(crate) async fn execute_trim_operations_simple(
                         continue;
                     };
 
+                    // Keep this exhaustive so new constraints must declare how
+                    // circle-to-arc trim should migrate or ignore them.
                     match constraint {
                         Constraint::Coincident(coincident) => {
                             if !constraint_segments_reference_any(&coincident.segments, &rewrite_ids) {
@@ -4873,7 +4896,15 @@ pub(crate) async fn execute_trim_operations_simple(
                                 migrated_constraints.push(migrated);
                             }
                         }
-                        _ => {}
+                        Constraint::Angle(_)
+                        | Constraint::Fixed(_)
+                        | Constraint::Horizontal(_)
+                        | Constraint::LinesEqualLength(_)
+                        | Constraint::Midpoint(_)
+                        | Constraint::Parallel(_)
+                        | Constraint::Perpendicular(_)
+                        | Constraint::Symmetric(_)
+                        | Constraint::Vertical(_) => {}
                     }
                 }
 
@@ -5374,6 +5405,8 @@ pub(crate) async fn execute_trim_operations_simple(
                         continue;
                     };
 
+                    // Keep this exhaustive so new constraints must declare
+                    // whether split trim should migrate them to the new segment.
                     let should_migrate = match constraint {
                         Constraint::Parallel(parallel) => parallel.lines.contains(segment_id),
                         Constraint::Perpendicular(perpendicular) => perpendicular.lines.contains(segment_id),
@@ -5383,7 +5416,19 @@ pub(crate) async fn execute_trim_operations_simple(
                         Constraint::Vertical(Vertical::Line { line }) => line == segment_id,
                         Constraint::Vertical(Vertical::Points { points }) => original_segment_end_point_id
                             .is_some_and(|end_id| points.contains(&ConstraintSegment::from(end_id))),
-                        _ => false,
+                        Constraint::Angle(_)
+                        | Constraint::Coincident(_)
+                        | Constraint::Diameter(_)
+                        | Constraint::Distance(_)
+                        | Constraint::EqualRadius(_)
+                        | Constraint::Fixed(_)
+                        | Constraint::HorizontalDistance(_)
+                        | Constraint::LinesEqualLength(_)
+                        | Constraint::Midpoint(_)
+                        | Constraint::Radius(_)
+                        | Constraint::Symmetric(_)
+                        | Constraint::Tangent(_)
+                        | Constraint::VerticalDistance(_) => false,
                     };
 
                     if should_migrate
