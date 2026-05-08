@@ -216,35 +216,33 @@ pub(super) struct ModuleState {
     pub(super) consumed_solids: AHashMap<ConsumedSolidKey, ConsumedSolidInfo>,
     /// Defensive map from consumed engine UUID to consumption info.
     /// Rust code may create a `Solid` with a consumed `engine_id` and a
-    /// `kcl_value_id` that was not recorded in `consumed_solids`. When the exact
-    /// `(engine_id, kcl_value_id)` lookup misses, this map lets us reject that
-    /// solid by `engine_id`, unless the pair is a recorded operation output.
+    /// different `instance_id` that was not recorded in `consumed_solids`. When
+    /// the exact key lookup misses, this map lets us reject that solid by
+    /// `engine_id`, unless the key is a recorded operation output.
     pub(super) consumed_solid_ids: AHashMap<Uuid, ConsumedSolidInfo>,
 }
 
-/// Internal identity for a KCL solid value.
+/// Internal identity for one runtime KCL solid value.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub(crate) struct ConsumedSolidKey {
-    /// The engine object UUID.
+    /// The engine body UUID.
     engine_id: Uuid,
-    /// The KCL value generation UUID.
-    kcl_value_id: Uuid,
+    /// Distinguishes this KCL runtime instance from other values that may reuse
+    /// the same engine body UUID.
+    instance_id: Uuid,
 }
 
 impl ConsumedSolidKey {
-    pub(crate) fn new(engine_id: Uuid, kcl_value_id: Uuid) -> Self {
-        Self {
-            engine_id,
-            kcl_value_id,
-        }
+    pub(crate) fn new(engine_id: Uuid, instance_id: Uuid) -> Self {
+        Self { engine_id, instance_id }
     }
 
     pub(crate) fn engine_id(&self) -> Uuid {
         self.engine_id
     }
 
-    pub(crate) fn kcl_value_id(&self) -> Uuid {
-        self.kcl_value_id
+    pub(crate) fn instance_id(&self) -> Uuid {
+        self.instance_id
     }
 }
 
@@ -664,7 +662,7 @@ impl ExecState {
         fn contains_solid_key(value: &KclValue, target_key: ConsumedSolidKey) -> bool {
             match value {
                 KclValue::Solid { value } => {
-                    value.id == target_key.engine_id() && value.value_id == target_key.kcl_value_id()
+                    value.id == target_key.engine_id() && value.value_id == target_key.instance_id()
                 }
                 KclValue::HomArray { value, .. } => value.iter().any(|v| contains_solid_key(v, target_key)),
                 _ => false,
