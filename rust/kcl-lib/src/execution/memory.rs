@@ -232,7 +232,7 @@ pub(crate) const MODULE_PREFIX: &str = "__mod_";
 pub(crate) const SKETCH_PREFIX: &str = "__sketch_";
 
 /// Size of the internal "block" of [Environment]s.
-pub(crate) const ENVIRONMENTS_BLOCK_LEN: usize = 4096;
+pub(crate) const ENVIRONMENTS_BLOCK_LEN: usize = 8192;
 
 /// Internal wrapper around a fixed sized block of
 #[derive(Debug)]
