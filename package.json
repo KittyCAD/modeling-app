@@ -29,7 +29,7 @@
     "@csstools/postcss-oklab-function": "^4.0.12",
     "@headlessui/react": "^1.7.19",
     "@headlessui/tailwindcss": "^0.2.2",
-    "@kittycad/lib": "^4.1.5",
+    "@kittycad/lib": "^4.1.10",
     "@kittycad/react-shared": "^1.2.1",
     "@lezer/highlight": "^1.2.1",
     "@lezer/lr": "^1.4.10",
