@@ -28,6 +28,7 @@ layout: manual
   * [`reduce`](/docs/kcl-std-sketch-solve/functions/std-array-reduce)
   * [`slice`](/docs/kcl-std-sketch-solve/functions/std-array-slice)
 * [**std::gdt**](/docs/kcl-std/modules/std-gdt)
+  * [`gdt::annotation`](/docs/kcl-std-sketch-solve/functions/std-gdt-annotation)
   * [`gdt::datum`](/docs/kcl-std-sketch-solve/functions/std-gdt-datum)
   * [`gdt::flatness`](/docs/kcl-std-sketch-solve/functions/std-gdt-flatness)
   * [`gdt::parallelism`](/docs/kcl-std-sketch-solve/functions/std-gdt-parallelism)
