@@ -10,7 +10,7 @@ import {
   sortInteractionMapByCategory,
 } from '@src/lib/settings/initialKeybindings'
 import { platform } from '@src/lib/utils'
-import type { KeymapItem, KeymapTreeNode } from '@src/registry/contracts/keymap'
+import type { KeymapItem } from '@src/registry/contracts/keymap'
 import { keymapValueSpec } from '@src/registry/contracts/keymap'
 
 type AllKeybindingsFieldsProps = object
@@ -53,7 +53,7 @@ export const AllKeybindingsFields = forwardRef(
     useSignals()
     const { registry } = useApp()
     const keymapItemsByCategory = getKeymapItemsByCategory(
-      getKeymapItems(registry.signal(keymapValueSpec).value.scopes)
+      registry.signal(keymapValueSpec).value.items
     )
     const interactionMapWithKeymaps = mergeInteractionMapWithKeymapItems(
       interactionMap,
@@ -75,7 +75,7 @@ export const AllKeybindingsFields = forwardRef(
                 </h2>
                 {categoryItems.map((item) => (
                   <KeybindingField
-                    key={category + '-' + item.name}
+                    key={`${category}-${item.name}`}
                     category={category}
                     item={item}
                   />
@@ -102,7 +102,7 @@ function mergeInteractionMapWithKeymapItems(
   ) as typeof interactionMap
 }
 
-function getKeymapItemsByCategory(items: KeymapItem[]) {
+function getKeymapItemsByCategory(items: readonly KeymapItem[]) {
   const displayItems: Partial<
     Record<keyof typeof interactionMap, InteractionMapItem[]>
   > = {}
@@ -114,9 +114,9 @@ function getKeymapItemsByCategory(items: KeymapItem[]) {
       ...(displayItems[category] ?? []),
       {
         name: item.id,
-        sequence: item.sequence.map(formatKeymapChord).join(' '),
+        sequence: item.keystrokes.map(formatKeymapChord).join(' '),
         title: item.title,
-        description: item.description,
+        description: item.command,
       },
     ]
   }
@@ -143,24 +143,6 @@ function compareKeymapItemsForDisplay(a: KeymapItem, b: KeymapItem) {
   }
 
   return aIndex - bIndex
-}
-
-function getKeymapItems(scopes: ReadonlyMap<string, KeymapTreeNode>) {
-  const items: KeymapItem[] = []
-
-  for (const scope of scopes.values()) {
-    collectKeymapItems(scope, items)
-  }
-
-  return items
-}
-
-function collectKeymapItems(node: KeymapTreeNode, items: KeymapItem[]) {
-  items.push(...node.items)
-
-  for (const child of node.children.values()) {
-    collectKeymapItems(child, items)
-  }
 }
 
 function formatKeymapChord(chord: string) {
@@ -195,12 +177,11 @@ function KeybindingField({
 
   return (
     <div
-      className={
-        'flex gap-16 justify-between items-start py-1 px-2 -my-1 -mx-2 ' +
-        (location.hash === `#${item.name}`
+      className={`flex gap-16 justify-between items-start py-1 px-2 -my-1 -mx-2 ${
+        location.hash === `#${item.name}`
           ? 'bg-primary/5 dark:bg-chalkboard-90'
-          : '')
-      }
+          : ''
+      }`}
       id={item.name}
     >
       <div>

@@ -1,5 +1,5 @@
-const CODEMIRROR_PRINTABLE_SEQUENCE_MESSAGE =
-  'CodeMirror keymap items must not start with a text-producing chord. Use registerToCodeMirror only for shortcut chords with a non-text modifier.'
+const CODEMIRROR_PRINTABLE_KEYSTROKES_MESSAGE =
+  'Keymap items active while the code editor is focused must not start with a text-producing chord. Use the code-editor-not-focused scope for text-producing shortcuts that should only run outside the editor.'
 
 const NON_TEXT_MODIFIERS = new Set([
   'cmd',
@@ -52,9 +52,26 @@ const getObjectProperty = (node, name) =>
       getPropertyName(property) === name
   )
 
-const isTrueLiteral = (node) => node.type === 'Literal' && node.value === true
+const isEditorActiveScope = (node) =>
+  node.type === 'Literal' &&
+  (node.value === 'base' || node.value === 'code-editor-focused')
 
-const getFirstSequenceChord = (node) => {
+const isEditorActiveKeymap = (node) => {
+  const scopes = getObjectProperty(node, 'scopes')
+  if (!scopes) {
+    return true
+  }
+
+  if (scopes.value.type === 'ArrayExpression') {
+    return scopes.value.elements.some(
+      (element) => element && isEditorActiveScope(element)
+    )
+  }
+
+  return false
+}
+
+const getFirstKeystrokesChord = (node) => {
   if (node.type !== 'ArrayExpression') {
     return undefined
   }
@@ -98,37 +115,31 @@ const rule = {
         'Disallow CodeMirror keymap registrations that start with text-producing chords.',
     },
     messages: {
-      textProducingCodeMirrorSequence: CODEMIRROR_PRINTABLE_SEQUENCE_MESSAGE,
+      textProducingCodeMirrorKeystrokes:
+        CODEMIRROR_PRINTABLE_KEYSTROKES_MESSAGE,
     },
     schema: [],
   },
   create(context) {
     return {
       ObjectExpression(node) {
-        const registerToCodeMirror = getObjectProperty(
-          node,
-          'registerToCodeMirror'
-        )
-        if (
-          !registerToCodeMirror ||
-          !isTrueLiteral(registerToCodeMirror.value)
-        ) {
+        if (!isEditorActiveKeymap(node)) {
           return
         }
 
-        const sequence = getObjectProperty(node, 'sequence')
-        if (!sequence) {
+        const keystrokes = getObjectProperty(node, 'keystrokes')
+        if (!keystrokes) {
           return
         }
 
-        const firstChord = getFirstSequenceChord(sequence.value)
+        const firstChord = getFirstKeystrokesChord(keystrokes.value)
         if (!firstChord || !chordProducesText(firstChord)) {
           return
         }
 
         context.report({
-          node: sequence.value,
-          messageId: 'textProducingCodeMirrorSequence',
+          node: keystrokes.value,
+          messageId: 'textProducingCodeMirrorKeystrokes',
         })
       },
     }

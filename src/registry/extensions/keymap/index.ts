@@ -1,4 +1,5 @@
 import {
+  defineRegistryItem,
   defineRegistryItemFactory,
   defineRuntimeRegistryItem,
   provide,
@@ -7,41 +8,68 @@ import {
 import { computed, signal } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
-import { isDesktop } from '@src/lib/isDesktop'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { reportRejection } from '@src/lib/trap'
-import { commandSystemService } from '@src/registry/contracts/commands'
+import { isArray } from '@src/lib/utils'
 import {
+  commandKey,
+  commandSystemService,
+} from '@src/registry/contracts/commands'
+import {
+  type KeymapArguments,
   type KeymapItem,
+  type KeymapScope,
   type KeymapService,
   type KeymapSource,
+  BASE_KEYMAP_SCOPE,
+  CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
   keymapService,
+  keymapScopesValueSpec,
   keymapValueSpec,
-  matchKeymapSequence,
+  matchKeymapKeystrokes,
 } from '@src/registry/contracts/keymap'
 import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
+import { defaultKeymapItem } from '@src/registry/extensions/keymap/defaultKeymap'
 import { createElement } from 'react'
 
 const PARTIAL_MATCH_TIMEOUT_MS = 1500
+type SettingsKeymapTab = 'project' | 'user' | 'keybindings' | 'plugins'
+
+const defaultKeymapScopes: readonly KeymapScope[] = [
+  {
+    id: BASE_KEYMAP_SCOPE,
+    displayName: 'Base',
+  },
+  {
+    id: 'cmd-palette-open',
+    displayName: 'Command palette open',
+  },
+  {
+    id: 'settings-open',
+    displayName: 'Settings open',
+  },
+]
 
 const keymapExtension = defineRegistryItemFactory((ctx) => {
   const keymapSignal = ctx.valueSpecs.signal(keymapValueSpec)
-  const activeScopes = signal<readonly string[]>([])
+  const activeScopes = signal<readonly string[]>([
+    CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
+  ])
   const partialMatch = signal(false)
   const partialMatchProgress = signal(0)
 
-  const pendingSequences: Record<KeymapSource, string[]> = {
+  const pendingKeystrokesBySource: Record<KeymapSource, string[]> = {
     global: [],
     codeMirror: [],
   }
   let pendingTimeout: number | undefined
   let pendingAnimationFrame: number | undefined
 
-  const clearPendingSequence = () => {
-    pendingSequences.global = []
-    pendingSequences.codeMirror = []
+  const clearPendingKeystrokes = () => {
+    pendingKeystrokesBySource.global = []
+    pendingKeystrokesBySource.codeMirror = []
     partialMatch.value = false
     partialMatchProgress.value = 0
     if (pendingTimeout !== undefined) {
@@ -54,13 +82,13 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     }
   }
 
-  const schedulePendingSequenceReset = () => {
+  const schedulePendingKeystrokesReset = () => {
     if (pendingTimeout !== undefined) {
       window.clearTimeout(pendingTimeout)
     }
 
     pendingTimeout = window.setTimeout(
-      clearPendingSequence,
+      clearPendingKeystrokes,
       PARTIAL_MATCH_TIMEOUT_MS
     )
 
@@ -87,29 +115,28 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
 
   const handleKeyDown: KeymapService['handleKeyDown'] = (event, { source }) => {
     const chord = keyboardEventToKeymapChord(event)
-    const pendingSequence = pendingSequences[source]
+    const pendingKeystrokes = pendingKeystrokesBySource[source]
     if (
       !chord ||
       (source === 'global' &&
-        shouldIgnoreKeyboardEvent(event, pendingSequence.length > 0))
+        shouldIgnoreKeyboardEvent(event, pendingKeystrokes.length > 0))
     ) {
       return false
     }
 
-    const match = matchKeymapSequence(
+    const match = matchKeymapKeystrokes(
       keymapSignal.value,
       activeScopes.value,
-      [...pendingSequence, chord],
-      source
+      [...pendingKeystrokes, chord]
     )
 
     if (match.type === 'prefix') {
       event.preventDefault()
       event.stopPropagation()
       event.stopImmediatePropagation()
-      pendingSequences[source] = [...pendingSequence, chord]
+      pendingKeystrokesBySource[source] = [...pendingKeystrokes, chord]
       partialMatch.value = true
-      schedulePendingSequenceReset()
+      schedulePendingKeystrokesReset()
       return true
     }
 
@@ -117,31 +144,30 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
       event.preventDefault()
       event.stopPropagation()
       event.stopImmediatePropagation()
-      clearPendingSequence()
-      runKeymapItem(match.item, event)
+      clearPendingKeystrokes()
+      runKeymapItem(match.item)
       return true
     }
 
-    if (pendingSequence.length === 0) {
+    if (pendingKeystrokes.length === 0) {
       return false
     }
 
-    clearPendingSequence()
+    clearPendingKeystrokes()
 
-    const retryMatch = matchKeymapSequence(
+    const retryMatch = matchKeymapKeystrokes(
       keymapSignal.value,
       activeScopes.value,
-      [chord],
-      source
+      [chord]
     )
 
     if (retryMatch.type === 'prefix') {
       event.preventDefault()
       event.stopPropagation()
       event.stopImmediatePropagation()
-      pendingSequences[source] = [chord]
+      pendingKeystrokesBySource[source] = [chord]
       partialMatch.value = true
-      schedulePendingSequenceReset()
+      schedulePendingKeystrokesReset()
       return true
     }
 
@@ -149,7 +175,7 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
       event.preventDefault()
       event.stopPropagation()
       event.stopImmediatePropagation()
-      runKeymapItem(retryMatch.item, event)
+      runKeymapItem(retryMatch.item)
       return true
     }
 
@@ -157,6 +183,7 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
   }
 
   const serviceImpl: KeymapService = {
+    keymap: keymapSignal,
     partialMatch,
     applyScope: (scopeName) => {
       if (activeScopes.value.includes(scopeName)) {
@@ -177,24 +204,10 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     }),
   }
 
-  const runCommand = (name: string, groupId: string) => {
-    const commandSystem = ctx.services.get(commandSystemService)
-    const command = commandSystem.actor
-      .getSnapshot()
-      .context.commands.find(
-        (cmd) => cmd.name === name && cmd.groupId === groupId
-      )
-
-    const result = command?.onSubmit()
-    if (result instanceof Promise) {
-      result.catch(reportRejection)
-    }
-  }
-
   const resetView = () => {
     const kclManager = ctx.services
-      .get(commandSystemService)
-      .actor.getSnapshot().context.kclManager
+      .optional(commandSystemService)
+      ?.actor.getSnapshot().context.kclManager
     if (!kclManager) {
       return
     }
@@ -206,129 +219,56 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     }).catch(reportRejection)
   }
 
-  const defaultKeymapItems: readonly KeymapItem[] = [
-    {
-      id: 'command-palette.open',
-      title: 'Open command palette',
-      description: 'Open the command palette.',
-      sequence: ['mod+k'],
-      registerToCodeMirror: true,
-      run: () => {
-        ctx.services.get(commandSystemService).send({ type: 'Open' })
+  function runKeymapItem(item: KeymapItem) {
+    const result = runBuiltInKeymapCommand(item)
+    if (result instanceof Promise) {
+      result.catch(reportRejection)
+    }
+  }
+
+  function runBuiltInKeymapCommand(item: KeymapItem): unknown {
+    switch (item.command) {
+      case 'zds.commandPalette.open':
+        return ctx.services
+          .optional(commandSystemService)
+          ?.send({ type: 'Open' })
+      case 'zds.commandPalette.close':
+        return ctx.services
+          .optional(commandSystemService)
+          ?.send({ type: 'Close' })
+      case 'zds.settings.open':
+        return openSettings()
+      case 'zds.settings.tab':
+        return updateSettingsTab(getSettingsTabArgument(item.arguments))
+      case 'zds.view.reset':
+        return resetView()
+      default:
+        return runCommandById(item)
+    }
+  }
+
+  function runCommandById(item: KeymapItem) {
+    const commandSystem = ctx.services.optional(commandSystemService)
+    const command = commandSystem?.actor
+      .getSnapshot()
+      .context.commands.find((cmd) => commandKey(cmd) === item.command)
+    if (!command || !commandSystem) {
+      return
+    }
+
+    const argDefaultValues = isKeymapArgumentRecord(item.arguments)
+      ? item.arguments
+      : undefined
+
+    return commandSystem.send({
+      type: 'Find and select command',
+      data: {
+        groupId: command.groupId,
+        name: String(command.name),
+        ...(argDefaultValues ? { argDefaultValues } : {}),
       },
-    },
-    {
-      id: 'command-palette.close',
-      title: 'Close command palette',
-      description: 'Close the command palette.',
-      scope: 'cmd-palette-open',
-      sequence: ['mod+k'],
-      registerToCodeMirror: true,
-      run: () => {
-        ctx.services.get(commandSystemService).send({ type: 'Close' })
-      },
-    },
-    {
-      id: 'settings.open',
-      title: 'Open settings',
-      description: 'Open the settings panel.',
-      sequence: [isDesktop() ? 'mod+,' : 'mod+shift+,'],
-      registerToCodeMirror: true,
-      run: () => {
-        openSettings()
-      },
-    },
-    {
-      id: 'settings.project',
-      title: 'Project settings',
-      description: 'Switch to project settings.',
-      scope: 'settings-open',
-      sequence: ['p'],
-      run: () => {
-        updateSettingsTab('project')
-      },
-    },
-    {
-      id: 'settings.user',
-      title: 'User settings',
-      description: 'Switch to user settings.',
-      scope: 'settings-open',
-      sequence: ['u'],
-      run: () => {
-        updateSettingsTab('user')
-      },
-    },
-    {
-      id: 'view.top',
-      title: 'Top view',
-      description: 'View the model from the top.',
-      sequence: ['v', '1'],
-      run: () => {
-        runCommand('Top view', 'standardViews')
-      },
-    },
-    {
-      id: 'view.right',
-      title: 'Right view',
-      description: 'View the model from the right.',
-      sequence: ['v', '2'],
-      run: () => {
-        runCommand('Right view', 'standardViews')
-      },
-    },
-    {
-      id: 'view.front',
-      title: 'Front view',
-      description: 'View the model from the front.',
-      sequence: ['v', '3'],
-      run: () => {
-        runCommand('Front view', 'standardViews')
-      },
-    },
-    {
-      id: 'view.back',
-      title: 'Back view',
-      description: 'View the model from the back.',
-      sequence: ['v', '4'],
-      run: () => {
-        runCommand('Back view', 'standardViews')
-      },
-    },
-    {
-      id: 'view.bottom',
-      title: 'Bottom view',
-      description: 'View the model from the bottom.',
-      sequence: ['v', '5'],
-      run: () => {
-        runCommand('Bottom view', 'standardViews')
-      },
-    },
-    {
-      id: 'view.left',
-      title: 'Left view',
-      description: 'View the model from the left.',
-      sequence: ['v', '6'],
-      run: () => {
-        runCommand('Left view', 'standardViews')
-      },
-    },
-    {
-      id: 'view.zoom-to-fit',
-      title: 'Zoom to fit',
-      description: 'Fit the model in the camera view.',
-      sequence: ['v', 'f'],
-      run: () => {
-        runCommand('Zoom to fit', 'standardViews')
-      },
-    },
-    {
-      id: 'view.reset',
-      title: 'Reset view',
-      description: 'Reset the camera view.',
-      sequence: ['v', 'r'],
-      run: resetView,
-    },
-  ]
+    })
+  }
 
   const PartialMatchStatusBarItem = () => {
     useSignals()
@@ -367,8 +307,8 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
       id: 'keymap-extension',
       providesServices: [provideService(keymapService, serviceImpl)],
       provides: [
-        ...defaultKeymapItems.map((item) =>
-          provide(keymapValueSpec, item, { key: item.id })
+        ...defaultKeymapScopes.map((scope) =>
+          provide(keymapScopesValueSpec, scope, { key: scope.id })
         ),
         provide(
           statusBarLocalItemsValueSpec,
@@ -385,7 +325,7 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
         ),
       ],
       dispose: () => {
-        clearPendingSequence()
+        clearPendingKeystrokes()
         if (typeof window !== 'undefined') {
           window.removeEventListener('keydown', handleGlobalKeyDown, {
             capture: true,
@@ -395,6 +335,11 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     }),
   }
 }, 'keymap-extension')
+
+const keymapRegistryItem = defineRegistryItem({
+  id: 'keymap',
+  uses: [keymapExtension, defaultKeymapItem],
+})
 
 function keyboardEventToKeymapChord(event: KeyboardEvent) {
   if (isModifierKey(event.key)) {
@@ -431,13 +376,6 @@ function keyboardEventToKeymapChord(event: KeyboardEvent) {
   return parts.join('+')
 }
 
-function runKeymapItem(item: KeymapItem, event: KeyboardEvent) {
-  const result = item.run(event)
-  if (result instanceof Promise) {
-    result.catch(reportRejection)
-  }
-}
-
 function normalizeEventKey(key: string) {
   if (key.length === 1) {
     return key.toLowerCase()
@@ -465,9 +403,9 @@ function isMacPlatform() {
 
 function shouldIgnoreKeyboardEvent(
   event: KeyboardEvent,
-  hasPendingSequence: boolean
+  hasPendingKeystrokes: boolean
 ) {
-  if (event.metaKey || event.ctrlKey || event.altKey || hasPendingSequence) {
+  if (event.metaKey || event.ctrlKey || event.altKey || hasPendingKeystrokes) {
     return false
   }
 
@@ -495,10 +433,30 @@ function openSettings() {
   )
 }
 
-function updateSettingsTab(tab: 'project' | 'user') {
+function updateSettingsTab(tab: SettingsKeymapTab) {
   updateRouterSearchParams((searchParams) => {
     searchParams.set('tab', tab)
   })
+}
+
+function getSettingsTabArgument(args: KeymapArguments | undefined) {
+  if (
+    isKeymapArgumentRecord(args) &&
+    (args.tab === 'project' ||
+      args.tab === 'user' ||
+      args.tab === 'keybindings' ||
+      args.tab === 'plugins')
+  ) {
+    return args.tab
+  }
+
+  return 'user'
+}
+
+function isKeymapArgumentRecord(
+  args: KeymapArguments | undefined
+): args is { readonly [key: string]: KeymapArguments } {
+  return Boolean(args && typeof args === 'object' && !isArray(args))
 }
 
 function getRouterPathname() {
@@ -560,4 +518,4 @@ function updateRouterSearchParams(
   window.dispatchEvent(new Event('popstate'))
 }
 
-export default keymapExtension
+export default keymapRegistryItem

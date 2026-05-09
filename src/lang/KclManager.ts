@@ -161,7 +161,11 @@ import type {
   modelingMachine,
 } from '@src/machines/modelingMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import type { KeymapService } from '@src/registry/contracts/keymap'
+import {
+  CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
+  CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
+  type KeymapService,
+} from '@src/registry/contracts/keymap'
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
 import toast from 'react-hot-toast'
 
@@ -1651,6 +1655,22 @@ export class KclManager extends File {
       this.systemDeps.keymap
         ? Prec.highest(
             EditorView.domEventHandlers({
+              focus: () => {
+                this.systemDeps.keymap?.removeScope(
+                  CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE
+                )
+                this.systemDeps.keymap?.applyScope(
+                  CODE_EDITOR_FOCUSED_KEYMAP_SCOPE
+                )
+              },
+              blur: () => {
+                this.systemDeps.keymap?.removeScope(
+                  CODE_EDITOR_FOCUSED_KEYMAP_SCOPE
+                )
+                this.systemDeps.keymap?.applyScope(
+                  CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE
+                )
+              },
               keydown: (event) =>
                 this.systemDeps.keymap?.handleKeyDown(event, {
                   source: 'codeMirror',
