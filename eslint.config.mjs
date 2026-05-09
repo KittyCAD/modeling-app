@@ -10,6 +10,7 @@ import typescriptEslint from '@typescript-eslint/eslint-plugin'
 import tsParser from '@typescript-eslint/parser'
 import js from '@eslint/js'
 import { FlatCompat } from '@eslint/eslintrc'
+import noCodemirrorPrintableKeymapSequence from './src/eslint/rules/no-codemirror-printable-keymap-sequence.mjs'
 
 const compat = new FlatCompat({
   baseDirectory: import.meta.dirname,
@@ -46,6 +47,12 @@ export default defineConfig([
       'react-hooks': fixupPluginRules(reactHooks),
       'suggest-no-throw': suggestNoThrow,
       '@typescript-eslint': typescriptEslint,
+      zds: {
+        rules: {
+          'no-codemirror-printable-keymap-sequence':
+            noCodemirrorPrintableKeymapSequence,
+        },
+      },
     },
 
     languageOptions: {
@@ -183,6 +190,7 @@ export default defineConfig([
       semi: ['error', 'never'],
       'react-hooks/exhaustive-deps': 'error',
       'suggest-no-throw/suggest-no-throw': 'error',
+      'zds/no-codemirror-printable-keymap-sequence': 'error',
     },
   },
   {
