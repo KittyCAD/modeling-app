@@ -1,5 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { Fragment, useEffect, useRef } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { pluginsValueSpec } from '@kittycad/registry'
@@ -7,13 +7,13 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { PluginsList } from '@src/components/PluginList'
 import { AllKeybindingsFields } from '@src/components/Settings/AllKeybindingsFields'
 import { AllSettingsFields } from '@src/components/Settings/AllSettingsFields'
-import { KeybindingsSectionsList } from '@src/components/Settings/KeybindingsSectionsList'
 import { SettingsSearchBar } from '@src/components/Settings/SettingsSearchBar'
 import { SettingsSectionsList } from '@src/components/Settings/SettingsSectionsList'
 import { SettingsTabs } from '@src/components/Settings/SettingsTabs'
 import { useApp } from '@src/lib/boot'
 import { PATHS } from '@src/lib/paths'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
+import { userHasFeature } from '@src/lib/settings/settingsUtils'
 import { keymapService } from '@src/registry/contracts/keymap'
 
 const PLUGINS_FEATURE_FLAG = 'plugins'
@@ -34,7 +34,7 @@ export const Settings = () => {
   const keymap = app.registry.optional(keymapService)
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
-  const showPluginsTab = app.userFeatures.useHas(PLUGINS_FEATURE_FLAG, false)
+  const [showPluginsTab, setShowPluginsTab] = useState(false)
   const close = () => {
     // This makes sure input texts are saved before closing the dialog (eg. default project name).
     if (document.activeElement instanceof HTMLInputElement) {
@@ -55,6 +55,20 @@ export const Settings = () => {
       : requestedSettingsTab
 
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    let cancelled = false
+
+    void userHasFeature(PLUGINS_FEATURE_FLAG, false).then((enabled) => {
+      if (!cancelled) {
+        setShowPluginsTab(enabled)
+      }
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   useEffect(() => {
     if (!keymap) {
@@ -116,7 +130,7 @@ export const Settings = () => {
         >
           <Dialog.Panel
             data-testid="settings-dialog-panel"
-            className="rounded relative mx-auto bg-chalkboard-10 dark:bg-chalkboard-100 border dark:border-chalkboard-70 max-w-3xl w-full max-h-[66vh] shadow-lg flex flex-col gap-8"
+            className="rounded relative mx-auto bg-chalkboard-10 dark:bg-chalkboard-100 border dark:border-chalkboard-70 w-[90vw] h-[80vh] max-h-[calc(100vh-2rem)] shadow-lg flex flex-col gap-8"
           >
             <div className="p-5 pb-0 flex justify-between items-center">
               <h1 className="text-2xl font-bold">Settings</h1>
@@ -141,7 +155,10 @@ export const Settings = () => {
             <div
               className="flex-1 grid items-stretch pl-4 pr-5 pb-5 gap-2 overflow-hidden"
               style={{
-                gridTemplateColumns: 'auto 1fr',
+                gridTemplateColumns:
+                  searchParamTab === 'user' || searchParamTab === 'project'
+                    ? 'auto 1fr'
+                    : '1fr',
                 gridTemplateRows: '1fr',
               }}
             >
@@ -160,10 +177,7 @@ export const Settings = () => {
                   />
                 </>
               ) : searchParamTab === 'keybindings' ? (
-                <>
-                  <KeybindingsSectionsList scrollRef={scrollRef} />
-                  <AllKeybindingsFields ref={scrollRef} />
-                </>
+                <AllKeybindingsFields ref={scrollRef} />
               ) : searchParamTab === 'plugins' && showPluginsTab ? (
                 <PluginsList
                   ref={scrollRef}

@@ -14,6 +14,7 @@ import {
   matchKeymapKeystrokes,
   normalizeEventKey,
   normalizeKeymapChord,
+  resolveKeymapItems,
 } from '@src/registry/contracts/keymap'
 import { describe, expect, it } from 'vitest'
 
@@ -309,6 +310,80 @@ describe('keymap contract', () => {
     ])
 
     expect(items[0]?.source).toBe('test.extension.override')
+  })
+
+  it('resolves persisted user bindings into user-sourced keymap items', () => {
+    const tree = createKeymapTree(
+      resolveKeymapItems([], {
+        version: 1,
+        bindings: [
+          {
+            title: 'User command',
+            command: 'test.userCommand',
+            keystrokes: ['mod+u'],
+            arguments: { value: 'abc' },
+          },
+        ],
+      })
+    )
+
+    const match = matchKeymapKeystrokes(tree, [], ['mod+u'])
+
+    expect(match.type).toBe('full')
+    expect(match.type === 'full' ? match.item.source : undefined).toBe('User')
+  })
+
+  it('resolves persisted user bindings as overrides for matching app items', () => {
+    const item = createKeymapItem({
+      id: 'open-command-palette',
+      command: 'zds.commandPalette.open',
+      keystrokes: ['mod+k'],
+      arguments: { tab: 'project', nested: { id: 1 } },
+    })
+    const tree = createKeymapTree(
+      resolveKeymapItems([item], {
+        version: 1,
+        bindings: [
+          {
+            command: 'zds.commandPalette.open',
+            keystrokes: ['mod+p'],
+            arguments: { nested: { id: 1 }, tab: 'project' },
+          },
+        ],
+      })
+    )
+
+    expect(matchKeymapKeystrokes(tree, [], ['mod+k'])).toEqual({ type: 'none' })
+    expect(matchKeymapKeystrokes(tree, [], ['mod+p'])).toEqual({
+      type: 'full',
+      item: {
+        ...item,
+        keystrokes: ['mod+p'],
+        source: 'User',
+        scopes: undefined,
+      },
+    })
+  })
+
+  it('resolves persisted unbind entries by command and keystrokes', () => {
+    const item = createKeymapItem({
+      id: 'open-command-palette',
+      command: 'zds.commandPalette.open',
+      keystrokes: ['mod+k'],
+    })
+    const tree = createKeymapTree(
+      resolveKeymapItems([item], {
+        version: 1,
+        bindings: [
+          {
+            command: '-zds.commandPalette.open',
+            keystrokes: ['Mod + K'],
+          },
+        ],
+      })
+    )
+
+    expect(matchKeymapKeystrokes(tree, [], ['mod+k'])).toEqual({ type: 'none' })
   })
 })
 
