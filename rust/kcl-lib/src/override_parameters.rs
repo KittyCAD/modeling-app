@@ -18,6 +18,8 @@ type Result<T> = std::result::Result<T, KclError>;
 /// Extracted from KCL programs.
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct KclSourceVariable {
+    /// Stable ID for updating this parameter.
+    pub id: String,
     /// Filepath
     pub file_path: String,
     /// Source range of the assigned value in the KCL source.
@@ -27,6 +29,15 @@ pub struct KclSourceVariable {
     /// Type assigned to the variable in the KCL source.
     pub default_type: ParameterType,
     /// Value assigned to the variable in the KCL source.
+    pub assigned: String,
+}
+
+/// A new value to assign to a KCL source parameter.
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
+pub struct KclParameterOverride {
+    /// ID returned by [`get_parameters`].
+    pub id: String,
+    /// New value to assign to the parameter.
     pub assigned: String,
 }
 
@@ -46,6 +57,20 @@ impl<'a> From<&'a KclSourceVariable> for ParameterId<'a> {
             source_range: parameter.source_range,
             default_type: parameter.default_type,
         }
+    }
+}
+
+impl<'a> ParameterId<'a> {
+    fn to_stable_id(&self) -> String {
+        format!(
+            "{}\0{}\0{},{},{}\0{}",
+            self.file_path,
+            self.variable_name,
+            self.source_range.start(),
+            self.source_range.end(),
+            self.source_range.module_id().as_usize(),
+            self.default_type
+        )
     }
 }
 
@@ -101,7 +126,15 @@ pub fn get_parameters(kcl_project: &KclProject) -> Result<Vec<KclSourceVariable>
             };
 
             let source_range = SourceRange::from(&var_decl.declaration.init);
+            let parameter_id = ParameterId {
+                file_path: &file.path,
+                variable_name: &var_decl.declaration.id.name,
+                source_range,
+                default_type,
+            }
+            .to_stable_id();
             parameters.push(KclSourceVariable {
+                id: parameter_id,
                 file_path: file.path.clone(),
                 source_range,
                 variable_name: var_decl.declaration.id.name.clone(),
@@ -112,6 +145,34 @@ pub fn get_parameters(kcl_project: &KclProject) -> Result<Vec<KclSourceVariable>
     }
 
     Ok(parameters)
+}
+
+/// Update parameters from source parameter IDs and replacement values.
+pub fn set_parameter_overrides(kcl_project: &KclProject, overrides: &[KclParameterOverride]) -> Result<KclProject> {
+    let extracted_parameters = get_parameters(kcl_project)?;
+    let parameters_by_id = extracted_parameters
+        .iter()
+        .map(|parameter| (parameter.id.as_str(), parameter))
+        .collect::<std::collections::HashMap<_, _>>();
+
+    let parameters = overrides
+        .iter()
+        .map(|parameter_override| {
+            let Some(parameter) = parameters_by_id.get(parameter_override.id.as_str()) else {
+                return Err(argument_error(format!(
+                    "parameter ID `{}` was not found in the KCL project",
+                    parameter_override.id
+                )));
+            };
+
+            Ok(KclSourceVariable {
+                assigned: parameter_override.assigned.clone(),
+                ..(*parameter).clone()
+            })
+        })
+        .collect::<Result<Vec<_>>>()?;
+
+    set_parameters(kcl_project, &parameters)
 }
 
 /// Update the parameters from this KCL program.
@@ -281,6 +342,7 @@ mod tests {
         let mut params = get_parameters(&input_project).expect("get parameters");
         assert_eq!(params.len(), 1);
         let mut param = params.pop().expect("one parameter");
+        assert!(!param.id.is_empty());
         assert_eq!(param.file_path, "proj/main.kcl");
         assert_eq!(param.variable_name, "width");
         assert_eq!(param.default_type, ParameterType::Number);
@@ -324,10 +386,13 @@ depth = -3.14"#,
     #[test]
     fn preserves_inline_comments_and_spacing() {
         let input_project = project("proj/main.kcl", "width=3 // outer width");
-        let mut param = get_only_parameter(&input_project);
-        param.assigned = "44".to_owned();
+        let param = get_only_parameter(&input_project);
+        let parameter_override = KclParameterOverride {
+            id: param.id,
+            assigned: "44".to_owned(),
+        };
 
-        let output_project = set_parameters(&input_project, &[param]).expect("set parameters");
+        let output_project = set_parameter_overrides(&input_project, &[parameter_override]).expect("set parameters");
 
         assert_eq!(output_project.files[0].contents, "width=44 // outer width");
     }
@@ -488,6 +553,19 @@ width = 8"#
         param.assigned = "44".to_owned();
 
         let err = set_parameters(&input_project, &[param]).expect_err("stale parameter");
+
+        assert!(err.to_string().contains("was not found in the KCL project"));
+    }
+
+    #[test]
+    fn stale_parameter_id_is_rejected() {
+        let input_project = project("proj/main.kcl", "width = 3");
+        let parameter_override = KclParameterOverride {
+            id: "missing".to_owned(),
+            assigned: "44".to_owned(),
+        };
+
+        let err = set_parameter_overrides(&input_project, &[parameter_override]).expect_err("stale parameter");
 
         assert!(err.to_string().contains("was not found in the KCL project"));
     }
