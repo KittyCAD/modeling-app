@@ -293,10 +293,9 @@ impl EnvironmentsBlocks {
     /// Get an [Environment] given some environment id.
     pub fn get(&self, idx: usize) -> &Environment {
         let n = self.n.load(Ordering::Relaxed);
-        if idx >= self.n.load(Ordering::Relaxed) {
+        if idx >= n {
             panic!("index {} is out of range (len={})", idx, n);
         }
-
         let vec_idx = idx % ENVIRONMENTS_BLOCK_LEN;
         let block = self.get_containing_block(idx);
         &block[vec_idx]
