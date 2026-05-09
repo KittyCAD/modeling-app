@@ -9,6 +9,7 @@ import { stringToKclExpression } from '@src/lib/kclHelpers'
 import {
   addFlatnessGdt,
   addDatumGdt,
+  addAnnotationGdt,
   addParallelismGdt,
   addPerpendicularityGdt,
   addProfileGdt,
@@ -701,6 +702,47 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('gdt::parallelism(')
       expect(newCode).toContain('tolerance = 0.1mm')
       expect(newCode).toContain('datums = ["A", "B"]')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+  })
+
+  describe('Testing addAnnotationGdt', () => {
+    it('should add annotations to selected faces and edges', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        boxWithOneTagAndChamfer,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const selections = [
+        ...[...artifactGraph.values()].filter(
+          (artifact) => artifact.type === 'wall'
+        ),
+        ...[...artifactGraph.values()].filter(
+          (artifact) => artifact.type === 'segment'
+        ),
+      ].slice(0, 2)
+      const objects = createSelectionFromArtifacts(selections, artifactGraph)
+
+      const result = addAnnotationGdt({
+        ast,
+        artifactGraph,
+        objects,
+        annotation: 'Break all sharp edges',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+
+      expect(newCode).toContain('gdt::annotation(')
+      expect(newCode).toContain('annotation = "Break all sharp edges"')
+      expect(newCode).toMatch(/faces = \[[^\]]+\]|edges = \[[^\]]+\]/)
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
