@@ -20,6 +20,7 @@ pub(crate) const TRUE_BUG: &str = "This is a bug in KCL and not in your code, pl
 #[wasm_bindgen]
 pub struct Context {
     engine: Arc<Box<dyn EngineManager>>,
+    open_cascade_engine: Arc<Box<dyn EngineManager>>,
     response_context: Arc<kcl_lib::wasm_engine::ResponseContext>,
     fs: Arc<FileManager>,
     mock_engine: Arc<Box<dyn EngineManager>>,
@@ -44,10 +45,19 @@ impl Context {
             .build_global();
 
         let response_context = Arc::new(kcl_lib::wasm_engine::ResponseContext::new());
+        let open_cascade_response_context = Arc::new(kcl_lib::wasm_engine::ResponseContext::new());
+        let open_cascade_manager = kcl_lib::wasm_engine::OpenCascadeCommandManager::new();
         Ok(Self {
             engine: Arc::new(Box::new(
                 kcl_lib::wasm_engine::EngineConnection::new(engine_manager, response_context.clone())
                     .map_err(|e| format!("{:?}", e))?,
+            )),
+            open_cascade_engine: Arc::new(Box::new(
+                kcl_lib::wasm_engine::EngineConnection::new_from_open_cascade(
+                    open_cascade_manager,
+                    open_cascade_response_context.clone(),
+                )
+                .map_err(|e| format!("{:?}", e))?,
             )),
             fs: Arc::new(FileManager::new(fs_manager)),
             mock_engine: Arc::new(Box::new(
@@ -74,6 +84,14 @@ impl Context {
         if is_mock {
             return Ok(kcl_lib::ExecutorContext::new_mock(
                 self.mock_engine.clone(),
+                self.fs.clone(),
+                settings,
+            ));
+        }
+
+        if matches!(settings.engine, kcl_lib::ModelingEngine::OpenCascade) {
+            return Ok(kcl_lib::ExecutorContext::new_with_engine_and_fs(
+                self.open_cascade_engine.clone(),
                 self.fs.clone(),
                 settings,
             ));

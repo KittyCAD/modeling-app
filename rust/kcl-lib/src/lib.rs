@@ -131,6 +131,7 @@ pub use parsing::ast::types::NodePath;
 pub use parsing::ast::types::Step as NodePathStep;
 pub use project::ProjectManager;
 pub use settings::types::Configuration;
+pub use settings::types::ModelingEngine;
 pub use settings::types::project::ProjectConfiguration;
 #[cfg(not(target_arch = "wasm32"))]
 pub use unparser::recast_dir;
@@ -162,6 +163,7 @@ pub mod wasm_engine {
     pub use crate::coredump::wasm::CoreDumper;
     pub use crate::engine::conn_wasm::EngineCommandManager;
     pub use crate::engine::conn_wasm::EngineConnection;
+    pub use crate::engine::conn_wasm::OpenCascadeCommandManager;
     pub use crate::engine::conn_wasm::ResponseContext;
     pub use crate::fs::wasm::FileManager;
     pub use crate::fs::wasm::FileSystemManager;

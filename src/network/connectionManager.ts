@@ -108,6 +108,7 @@ export class ConnectionManager extends EventTarget {
     const s = getSettingsFromActorContext(this.systemDeps.settingsActor)
     return {
       theme: s.app.theme.current,
+      engine: s.modeling.engine.current,
       highlightEdges: s.modeling.highlightEdges.current,
       enableSSAO: s.modeling.enableSSAO.current,
       showScaleGrid: s.modeling.showScaleGrid.current,

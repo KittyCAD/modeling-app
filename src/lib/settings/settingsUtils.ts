@@ -676,6 +676,7 @@ export function configurationToSettingsPayload(
         ),
       },
       modeling: {
+        engine: toUndefinedIfNull(configuration?.settings?.modeling?.engine),
         defaultUnit: toUndefinedIfNull(
           configuration?.settings?.modeling?.base_unit
         ),
@@ -728,6 +729,7 @@ export function settingsPayloadToConfiguration(
   })
 
   const typedModelingSection = compactRecord({
+    engine: toUndefinedIfNull(configuration?.modeling?.engine),
     base_unit: toUndefinedIfNull(configuration?.modeling?.defaultUnit),
     camera_projection: toUndefinedIfNull(
       configuration?.modeling?.cameraProjection
@@ -820,6 +822,7 @@ export function projectConfigurationToSettingsPayload(
         })(),
       },
       modeling: {
+        engine: configuration?.settings?.modeling?.engine ?? undefined,
         defaultUnit: configuration?.settings?.modeling?.base_unit ?? undefined,
         highlightEdges: configuration?.settings?.modeling?.highlight_edges,
         enableSSAO: configuration?.settings?.modeling?.enable_ssao,
@@ -858,6 +861,7 @@ export function settingsPayloadToProjectConfiguration(
   })
 
   const typedModelingSection = compactRecord({
+    engine: configuration?.modeling?.engine,
     base_unit: configuration?.modeling?.defaultUnit,
     highlight_edges: configuration?.modeling?.highlightEdges,
     enable_ssao: configuration?.modeling?.enableSSAO,

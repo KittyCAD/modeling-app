@@ -24,6 +24,7 @@ import type {
 } from '@src/lib/settings/extensionSettings'
 import type {
   BaseUnit,
+  GeometryEngine,
   SettingProps,
   SettingsLevel,
 } from '@src/lib/settings/settingsTypes'
@@ -337,6 +338,15 @@ function createCoreSettings() {
      * Settings that affect the behavior while modeling.
      */
     modeling: {
+      /**
+       * Geometry engine to use for modeling execution.
+       */
+      engine: new Setting<GeometryEngine>({
+        defaultValue: 'zoo',
+        description: 'Geometry engine to use for modeling execution.',
+        validate: (v) => v === 'zoo' || v === 'open_cascade',
+        hideOnPlatform: 'both',
+      }),
       /**
        * The default unit to use in modeling dimensions
        */

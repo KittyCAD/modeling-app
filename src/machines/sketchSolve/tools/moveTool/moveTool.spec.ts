@@ -665,6 +665,7 @@ function createSceneGraphDelta(objects: Array<ApiObject>): SceneGraphDelta {
         project_directory: null,
         current_file: null,
         fixed_size_grid: true,
+        engine: 'zoo' as const,
       },
       sketch_mode: null,
     },

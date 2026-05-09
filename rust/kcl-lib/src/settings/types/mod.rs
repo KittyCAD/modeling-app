@@ -215,6 +215,21 @@ impl From<BackfaceDefault> for String {
     }
 }
 
+/// Geometry engine to use for modeling execution.
+#[derive(
+    Debug, Default, Copy, Clone, Deserialize, Serialize, JsonSchema, Display, FromStr, ts_rs::TS, PartialEq, Eq,
+)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+#[display(style = "snake_case")]
+pub enum ModelingEngine {
+    /// Use the Zoo Modeling API engine.
+    #[default]
+    Zoo,
+    /// Use the in-browser OpenCascade.js proof engine.
+    OpenCascade,
+}
+
 /// Settings that affect the behavior while modeling.
 #[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate, Default)]
 #[serde(rename_all = "snake_case")]
@@ -247,6 +262,9 @@ pub struct ModelingSettings {
     /// If false, the grid will get larger as you zoom out, and smaller as you zoom in.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fixed_size_grid: Option<DefaultTrue>,
+    /// Geometry engine to use for modeling execution.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub engine: Option<ModelingEngine>,
     /// Other fields that weren't recognized by our schema.
     #[serde(flatten)]
     pub other: std::collections::HashMap<String, serde_json::Value>,

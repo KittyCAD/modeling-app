@@ -10,7 +10,9 @@ mod tests {
     use kittycad_modeling_cmds::units::UnitLength;
 
     use super::types::Configuration;
+    use super::types::ModelingEngine;
     use super::types::ModelingSettings;
+    use super::types::project::ProjectConfiguration;
 
     #[test]
     fn default_unit_length_is_millimeters() {
@@ -80,5 +82,44 @@ base_unit = "mm"
         // Default config serializes to empty TOML because everything is defaulted/omitted.
         let serialized = toml::to_string(&cfg).unwrap();
         assert_eq!(serialized, "");
+    }
+
+    #[test]
+    fn default_modeling_engine_is_zoo() {
+        let cfg = Configuration::default();
+        let settings: crate::ExecutorSettings = cfg.into();
+
+        assert_eq!(settings.engine, ModelingEngine::Zoo);
+    }
+
+    #[test]
+    fn user_settings_accept_open_cascade_modeling_engine() {
+        let parsed = toml::from_str::<Configuration>(
+            r#"[settings.modeling]
+engine = "open_cascade"
+"#,
+        )
+        .unwrap();
+
+        let modeling = parsed.settings.modeling.clone().unwrap_or_default();
+        assert_eq!(modeling.engine, Some(ModelingEngine::OpenCascade));
+
+        let settings: crate::ExecutorSettings = parsed.into();
+        assert_eq!(settings.engine, ModelingEngine::OpenCascade);
+    }
+
+    #[test]
+    fn project_settings_accept_open_cascade_modeling_engine() {
+        let parsed = toml::from_str::<ProjectConfiguration>(
+            r#"[settings.modeling]
+engine = "open_cascade"
+"#,
+        )
+        .unwrap();
+
+        assert_eq!(parsed.settings.modeling.engine, Some(ModelingEngine::OpenCascade));
+
+        let settings: crate::ExecutorSettings = parsed.into();
+        assert_eq!(settings.engine, ModelingEngine::OpenCascade);
     }
 }

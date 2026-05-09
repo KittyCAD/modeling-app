@@ -9,6 +9,7 @@ use serde::Serialize;
 use validator::Validate;
 
 use crate::settings::types::DefaultTrue;
+use crate::settings::types::ModelingEngine;
 use crate::settings::types::is_default;
 
 /// Project specific settings for the app.
@@ -139,6 +140,9 @@ pub struct ProjectModelingSettings {
     /// If false, the grid will get larger as you zoom out, and smaller as you zoom in.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fixed_size_grid: Option<bool>,
+    /// Geometry engine to use for modeling execution.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub engine: Option<ModelingEngine>,
     /// Other fields that weren't recognized by our schema.
     #[serde(flatten, default, skip_serializing_if = "IndexMap::is_empty")]
     pub other: IndexMap<String, serde_json::Value>,
@@ -320,6 +324,7 @@ mod tests {
                     highlight_edges: Default::default(),
                     enable_ssao: true.into(),
                     fixed_size_grid: None,
+                    engine: None,
                     other: Default::default(),
                 },
                 other: IndexMap::from([

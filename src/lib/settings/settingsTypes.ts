@@ -2,6 +2,7 @@ import type { UnitAngle, UnitLength } from '@kittycad/lib'
 
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+import type { ModelingEngine } from '@rust/kcl-lib/bindings/ModelingEngine'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 
 import type { CommandArgumentConfig } from '@src/lib/commandTypes'
@@ -18,6 +19,7 @@ export type RgbaColor = {
 
 export interface SettingsViaQueryString {
   theme: Themes
+  engine: GeometryEngine
   highlightEdges: boolean
   enableSSAO: boolean
   showScaleGrid: boolean
@@ -32,6 +34,7 @@ export const baseUnits = {
 } as const
 
 export type BaseUnit = UnitLength
+export type GeometryEngine = ModelingEngine
 
 export const baseUnitsUnion = Object.values(baseUnits).flatMap((v) => v)
 export const baseUnitLabels = {

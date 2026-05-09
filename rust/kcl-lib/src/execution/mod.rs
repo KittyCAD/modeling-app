@@ -4,6 +4,8 @@
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
+#[cfg(not(target_arch = "wasm32"))]
+use anyhow::anyhow;
 use anyhow::Result;
 #[cfg(feature = "artifact-graph")]
 pub use artifact::Artifact;
@@ -795,6 +797,8 @@ pub struct ExecutorSettings {
     pub current_file: Option<TypedPath>,
     /// Whether or not to automatically scale the grid when user zooms.
     pub fixed_size_grid: bool,
+    /// Geometry engine to use for modeling execution.
+    pub engine: crate::settings::types::ModelingEngine,
 }
 
 impl Default for ExecutorSettings {
@@ -807,6 +811,7 @@ impl Default for ExecutorSettings {
             project_directory: None,
             current_file: None,
             fixed_size_grid: true,
+            engine: Default::default(),
         }
     }
 }
@@ -828,6 +833,7 @@ impl From<crate::settings::types::Settings> for ExecutorSettings {
             project_directory: None,
             current_file: None,
             fixed_size_grid: modeling_settings.fixed_size_grid.unwrap_or_default().0,
+            engine: modeling_settings.engine.unwrap_or_default(),
         }
     }
 }
@@ -848,6 +854,7 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             project_directory: None,
             current_file: None,
             fixed_size_grid: true,
+            engine: modeling.engine.unwrap_or_default(),
         }
     }
 }
@@ -862,6 +869,7 @@ impl From<crate::settings::types::project::ProjectModelingSettings> for Executor
             project_directory: None,
             current_file: None,
             fixed_size_grid: true,
+            engine: modeling.engine.unwrap_or_default(),
         }
     }
 }
@@ -919,6 +927,12 @@ impl ExecutorContext {
     /// Create a new default executor context.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
+        if matches!(settings.engine, crate::settings::types::ModelingEngine::OpenCascade) {
+            return Err(anyhow!(
+                "The open_cascade modeling engine is only supported by the WASM executor"
+            ));
+        }
+
         let pr = std::env::var("ZOO_ENGINE_PR").ok().and_then(|s| s.parse().ok());
         let (ws, _headers) = client
             .modeling()
@@ -1051,6 +1065,7 @@ impl ExecutorContext {
                 project_directory: None,
                 current_file: None,
                 fixed_size_grid: false,
+                engine: Default::default(),
             },
             None,
             engine_addr,

@@ -11,6 +11,7 @@ use kcmc::websocket::WebSocketResponse;
 use kittycad_modeling_cmds as kcmc;
 use tokio::sync::RwLock;
 use uuid::Uuid;
+use wasm_bindgen::JsCast;
 use wasm_bindgen::prelude::*;
 
 use crate::SourceRange;
@@ -52,9 +53,18 @@ extern "C" {
     fn start_new_session(this: &EngineCommandManager) -> Result<js_sys::Promise, js_sys::Error>;
 }
 
+#[wasm_bindgen(module = "/../../src/network/openCascadeCommandManager.ts")]
+extern "C" {
+    #[derive(Debug, Clone)]
+    pub type OpenCascadeCommandManager;
+
+    #[wasm_bindgen(constructor)]
+    pub fn new() -> OpenCascadeCommandManager;
+}
+
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
-    manager: Arc<EngineCommandManager>,
+    manager: Arc<JsValue>,
     response_context: Arc<ResponseContext>,
     ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>>,
     /// The default planes for the scene.
@@ -122,6 +132,17 @@ impl EngineConnection {
         manager: EngineCommandManager,
         response_context: Arc<ResponseContext>,
     ) -> Result<EngineConnection, JsValue> {
+        Self::new_from_js_value(manager.into(), response_context)
+    }
+
+    pub fn new_from_open_cascade(
+        manager: OpenCascadeCommandManager,
+        response_context: Arc<ResponseContext>,
+    ) -> Result<EngineConnection, JsValue> {
+        Self::new_from_js_value(manager.into(), response_context)
+    }
+
+    fn new_from_js_value(manager: JsValue, response_context: Arc<ResponseContext>) -> Result<EngineConnection, JsValue> {
         #[allow(clippy::arc_with_non_send_sync)]
         Ok(EngineConnection {
             manager: Arc::new(manager),
@@ -131,6 +152,30 @@ impl EngineConnection {
             stats: Default::default(),
             async_tasks: AsyncTasks::new(),
         })
+    }
+
+    fn call_manager_method(
+        &self,
+        method_name: &str,
+        args: &[JsValue],
+        source_range: SourceRange,
+    ) -> Result<JsValue, KclError> {
+        let method = js_sys::Reflect::get(self.manager.as_ref(), &JsValue::from_str(method_name)).map_err(|e| {
+            KclError::new_engine(KclErrorDetails::new(
+                format!("Failed to get {method_name} from engine manager: {:?}", e),
+                vec![source_range],
+            ))
+        })?;
+        let function = method.dyn_into::<js_sys::Function>().map_err(|_| {
+            KclError::new_engine(KclErrorDetails::new(
+                format!("Engine manager method {method_name} is not callable"),
+                vec![source_range],
+            ))
+        })?;
+
+        function
+            .apply(self.manager.as_ref(), &js_sys::Array::from_iter(args.iter().cloned()))
+            .map_err(|e| KclError::new_engine(KclErrorDetails::new(format!("{:?}", e).into(), vec![source_range])))
     }
 
     async fn do_fire_modeling_cmd(
@@ -159,9 +204,16 @@ impl EngineConnection {
             ))
         })?;
 
-        self.manager
-            .fire_modeling_cmd_from_wasm(id.to_string(), source_range_str, cmd_str, id_to_source_range_str)
-            .map_err(|e| KclError::new_engine(KclErrorDetails::new(e.to_string().into(), vec![source_range])))?;
+        self.call_manager_method(
+            "fireModelingCommandFromWasm",
+            &[
+                JsValue::from_str(&id.to_string()),
+                JsValue::from_str(&source_range_str),
+                JsValue::from_str(&cmd_str),
+                JsValue::from_str(&id_to_source_range_str),
+            ],
+            source_range,
+        )?;
 
         Ok(())
     }
@@ -192,10 +244,22 @@ impl EngineConnection {
             ))
         })?;
 
-        let promise = self
-            .manager
-            .send_modeling_cmd_from_wasm(id.to_string(), source_range_str, cmd_str, id_to_source_range_str)
-            .map_err(|e| KclError::new_engine(KclErrorDetails::new(e.to_string().into(), vec![source_range])))?;
+        let promise_value = self.call_manager_method(
+            "sendModelingCommandFromWasm",
+            &[
+                JsValue::from_str(&id.to_string()),
+                JsValue::from_str(&source_range_str),
+                JsValue::from_str(&cmd_str),
+                JsValue::from_str(&id_to_source_range_str),
+            ],
+            source_range,
+        )?;
+        let promise = promise_value.dyn_into::<js_sys::Promise>().map_err(|_| {
+            KclError::new_engine(KclErrorDetails::new(
+                "sendModelingCommandFromWasm did not return a Promise".into(),
+                vec![source_range],
+            ))
+        })?;
 
         let value = crate::wasm::JsFuture::from(promise).await.map_err(|e| {
             // Try to parse the error as an engine error.
@@ -290,10 +354,13 @@ impl crate::engine::EngineManager for EngineConnection {
         *self.default_planes.write().await = Some(new_planes);
 
         // Start a new session.
-        let promise = self
-            .manager
-            .start_new_session()
-            .map_err(|e| KclError::new_engine(KclErrorDetails::new(e.to_string().into(), vec![source_range])))?;
+        let promise_value = self.call_manager_method("startNewSession", &[], source_range)?;
+        let promise = promise_value.dyn_into::<js_sys::Promise>().map_err(|_| {
+            KclError::new_engine(KclErrorDetails::new(
+                "startNewSession did not return a Promise".into(),
+                vec![source_range],
+            ))
+        })?;
 
         crate::wasm::JsFuture::from(promise).await.map_err(|e| {
             KclError::new_engine(KclErrorDetails::new(

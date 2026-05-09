@@ -23,6 +23,7 @@ export const dummyInitSketchGraphDelta = Object.freeze({
       project_directory: null,
       current_file: null,
       fixed_size_grid: true,
+      engine: 'zoo' as const,
     },
     sketch_mode: null,
   },
