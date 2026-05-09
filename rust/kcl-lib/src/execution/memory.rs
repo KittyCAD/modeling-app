@@ -348,8 +348,8 @@ impl EnvironmentsBlocks {
     /// Push an [Environment] into a free spot, and return the [EnvironmentRef]
     pub fn push(&mut self, environment: Environment) -> EnvironmentRef {
         {
-            assert_eq!(ENVIRONMENTS_BLOCK_LEN, block.capacity());
             let block = self.must_current_block();
+            assert_eq!(ENVIRONMENTS_BLOCK_LEN, block.capacity());
             if block.capacity() == block.len() {
                 let _ = block;
                 self.grow();
