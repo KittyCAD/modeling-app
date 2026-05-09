@@ -7,10 +7,10 @@ import {
 } from '@codemirror/autocomplete'
 import type { ViewUpdate } from '@codemirror/view'
 import { EditorView, keymap } from '@codemirror/view'
+import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { useSelector } from '@xstate/react'
 import { use, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
-import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -21,19 +21,19 @@ import { createLocalName, createVariableDeclaration } from '@src/lang/create'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import type { SourceRange, VariableDeclarator } from '@src/lang/wasm'
 import { formatNumberValue, isPathToNode } from '@src/lang/wasm'
-import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
 import { useApp } from '@src/lib/boot'
+import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
 import { getResolvedTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 import { roundOff, roundOffWithUnits } from '@src/lib/utils'
 import { varMentions } from '@src/lib/varCompletionExtension'
 
-import { useModelingContext } from '@src/hooks/useModelingContext'
-import styles from './CommandBarKclInput.module.css'
-import { editorTheme, themeCompartment } from '@src/editor/plugins/theme'
 import { Compartment, EditorState } from '@codemirror/state'
+import { editorTheme, themeCompartment } from '@src/editor/plugins/theme'
+import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclManager'
+import styles from './CommandBarKclInput.module.css'
 
 // TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
@@ -156,7 +156,7 @@ function CommandBarKclInput({
   )
   const [canSubmit, setCanSubmit] = useState(true)
   useHotkeyWrapper(
-    ['mod + k', 'esc'],
+    ['esc'],
     () => commands.send({ type: 'Close' }),
     kclManager,
     { enableOnFormTags: true, enableOnContentEditable: true }

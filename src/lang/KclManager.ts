@@ -84,6 +84,7 @@ import {
   Compartment,
   EditorSelection,
   EditorState,
+  Prec,
   type Extension,
   StateEffect,
   Transaction,
@@ -160,6 +161,7 @@ import type {
   modelingMachine,
 } from '@src/machines/modelingMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import type { KeymapService } from '@src/registry/contracts/keymap'
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
 import toast from 'react-hot-toast'
 
@@ -271,6 +273,7 @@ interface SystemDeps {
   projectPath: Signal<string>
   engineCommandManager: ConnectionManager
   rustContext: RustContext
+  keymap?: KeymapService
 }
 
 export enum KclManagerEvents {
@@ -1645,6 +1648,16 @@ export class KclManager extends File {
 
     return [
       baseEditorExtensions(),
+      this.systemDeps.keymap
+        ? Prec.highest(
+            EditorView.domEventHandlers({
+              keydown: (event) =>
+                this.systemDeps.keymap?.handleKeyDown(event, {
+                  source: 'codeMirror',
+                }) ?? false,
+            })
+          )
+        : [],
       keymapCompartment.of(keymap.of(this.getCodemirrorHotkeys())),
       this.highlightEngineEntitiesEffect,
       this.undoListenerEffect,
@@ -2882,6 +2895,9 @@ export class KclManager extends File {
   localStoragePersistCode(): string {
     return safeLSGetItem(PERSIST_CODE_KEY) || ''
   }
+  /**
+   * @deprecated Prefer registering shortcuts through `keymapValueSpec`.
+   */
   registerHotkey(hotkey: string, callback: () => void) {
     this._hotkeys[hotkey] = callback
     this.editorView.dispatch({
