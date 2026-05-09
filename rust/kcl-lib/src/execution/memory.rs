@@ -284,6 +284,7 @@ impl EnvironmentsBlocks {
     fn grow(&mut self) -> &mut Vec<Pin<Box<Environment>>> {
         {
             let block = self.must_current_block();
+            assert_eq!(ENVIRONMENTS_BLOCK_LEN, block.capacity());
             assert_eq!(block.capacity(), block.len());
         }
         self.blocks.push_back_mut(Vec::with_capacity(ENVIRONMENTS_BLOCK_LEN))
@@ -347,6 +348,7 @@ impl EnvironmentsBlocks {
     /// Push an [Environment] into a free spot, and return the [EnvironmentRef]
     pub fn push(&mut self, environment: Environment) -> EnvironmentRef {
         {
+            assert_eq!(ENVIRONMENTS_BLOCK_LEN, block.capacity());
             let block = self.must_current_block();
             if block.capacity() == block.len() {
                 let _ = block;
