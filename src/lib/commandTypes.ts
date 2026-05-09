@@ -213,6 +213,9 @@ export type CommandArgumentConfig<
       inputType: 'kcl'
       allowArrays?: boolean
       allowStringArrays?: boolean
+      allowUncalculated?: boolean
+      inputToKclValue?: (value: string) => string
+      kclValueToInput?: (value: string) => string
       createVariable?: 'byDefault' | 'force' | 'disallow'
       variableName?:
         | string
@@ -402,6 +405,9 @@ export type CommandArgument<
       inputType: 'kcl'
       allowArrays?: boolean
       allowStringArrays?: boolean
+      allowUncalculated?: boolean
+      inputToKclValue?: (value: string) => string
+      kclValueToInput?: (value: string) => string
       createVariable?: 'byDefault' | 'force' | 'disallow'
       variableName?:
         | string

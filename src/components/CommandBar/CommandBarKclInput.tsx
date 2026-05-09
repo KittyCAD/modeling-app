@@ -142,11 +142,15 @@ function CommandBarKclInput({
     arg.name,
     previouslySetValue,
   ])
-  const initialValue = useMemo(
-    () => previouslySetValue?.valueText || defaultValue || '',
-    [previouslySetValue, defaultValue]
-  )
+  const initialValue = useMemo(() => {
+    const kclValue = previouslySetValue?.valueText || defaultValue || ''
+    return arg.kclValueToInput ? arg.kclValueToInput(kclValue) : kclValue
+  }, [arg, previouslySetValue, defaultValue])
   const [value, setValue] = useState(initialValue)
+  const kclValue = useMemo(
+    () => (arg.inputToKclValue ? arg.inputToKclValue(value) : value),
+    [arg, value]
+  )
   const [createNewVariable, setCreateNewVariable] = useState(
     (typeof previouslySetValue === 'object' &&
       'variableName' in previouslySetValue) ||
@@ -180,7 +184,7 @@ function CommandBarKclInput({
     prevVariables,
     isExecuting,
   } = useCalculateKclExpression({
-    value,
+    value: kclValue,
     initialVariableName,
     sourceRange: sourceRangeForPrevVariables,
     selectionRanges,
@@ -278,12 +282,21 @@ function CommandBarKclInput({
   }, [arg, editorRef, initialValue])
 
   useEffect(() => {
+    const canUseUncalculatedValue =
+      Boolean(arg.allowUncalculated) && valueNode !== null
     setCanSubmit(
-      calcResult !== 'NAN' &&
+      (calcResult !== 'NAN' || canUseUncalculatedValue) &&
         (!createNewVariable || isNewVariableNameUnique) &&
         !isExecuting
     )
-  }, [calcResult, createNewVariable, isNewVariableNameUnique, isExecuting])
+  }, [
+    arg.allowUncalculated,
+    calcResult,
+    createNewVariable,
+    isNewVariableNameUnique,
+    isExecuting,
+    valueNode,
+  ])
 
   function handleSubmit(e?: React.FormEvent<HTMLFormElement>) {
     e?.preventDefault()
@@ -301,7 +314,7 @@ function CommandBarKclInput({
       createNewVariable
         ? ({
             valueAst: valueNode,
-            valueText: value,
+            valueText: kclValue,
             valueCalculated: calcResult,
             variableName: newVariableName,
             insertIndex: newVariableInsertIndex,
@@ -313,7 +326,7 @@ function CommandBarKclInput({
           } satisfies KclCommandValue)
         : ({
             valueAst: valueNode,
-            valueText: value,
+            valueText: kclValue,
             valueCalculated: calcResult,
           } satisfies KclCommandValue)
     )
@@ -351,6 +364,12 @@ function CommandBarKclInput({
         >
           {isExecuting === true || !calcResult ? (
             <Spinner className="text-inherit w-4 h-4" />
+          ) : arg.valueSummary && valueNode ? (
+            arg.valueSummary({
+              valueAst: valueNode,
+              valueText: kclValue,
+              valueCalculated: calcResult,
+            } as KclCommandValue)
           ) : calcResult === 'NAN' ? (
             "Can't calculate"
           ) : (

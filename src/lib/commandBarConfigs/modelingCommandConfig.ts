@@ -530,6 +530,52 @@ export type ModelingCommandSchema = {
   }
 }
 
+const kclDatumArrayToInput = (value: string) => {
+  const trimmed = value.trim()
+  const quotedDatumRefs = [...trimmed.matchAll(/["']([^"']+)["']/g)].map(
+    ([, datumRef]) => datumRef
+  )
+  if (quotedDatumRefs.length > 0) {
+    return quotedDatumRefs.join(', ')
+  }
+
+  return trimmed
+}
+
+const datumInputToKclArray = (value: string) => {
+  const trimmed = value.trim()
+  if (
+    trimmed === '' ||
+    trimmed.startsWith('[') ||
+    trimmed.startsWith('"') ||
+    trimmed.startsWith("'")
+  ) {
+    return trimmed
+  }
+
+  const datumRefs = trimmed
+    .split(',')
+    .map((datumRef) => datumRef.trim())
+    .filter(Boolean)
+  const isDatumRefList = datumRefs.every((datumRef) =>
+    /^[A-Z][A-Z0-9_-]*$/.test(datumRef)
+  )
+  if (!isDatumRefList) {
+    return trimmed
+  }
+
+  return `[${datumRefs.map((datumRef) => JSON.stringify(datumRef)).join(', ')}]`
+}
+
+const summarizeDatumKclValue = (value?: KclCommandValue) =>
+  value
+    ? kclDatumArrayToInput(
+        value.valueCalculated === 'NAN'
+          ? value.valueText
+          : value.valueCalculated
+      )
+    : ''
+
 export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   typeof modelingMachine,
   ModelingCommandSchema
@@ -2741,6 +2787,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_DATUM_REFS,
         allowArrays: true,
         allowStringArrays: true,
+        allowUncalculated: true,
+        inputToKclValue: datumInputToKclArray,
+        kclValueToInput: kclDatumArrayToInput,
+        valueSummary: summarizeDatumKclValue,
         required: false,
       },
       tolerance: {
