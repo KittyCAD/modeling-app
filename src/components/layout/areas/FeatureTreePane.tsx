@@ -53,6 +53,10 @@ import {
   sendDeleteCommand,
   sendSelectionEvent,
 } from '@src/lib/featureTree'
+import {
+  getUnrenderedChangesDisabledReason,
+  shouldDisableModelingForUnrenderedChanges,
+} from '@src/lib/automaticRendering'
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
@@ -61,6 +65,9 @@ import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
 import type { ConnectionManager } from '@src/network/connectionManager'
+import { executingEditorService } from '@src/registry/contracts/executingEditor'
+import usePlatform from '@src/hooks/usePlatform'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
 
 type Singletons = ReturnType<typeof useSingletons>
 type SystemDeps = Pick<Singletons, 'kclManager'> & {
@@ -69,6 +76,8 @@ type SystemDeps = Pick<Singletons, 'kclManager'> & {
   sceneEntitiesManager: SceneEntities
   rustContext: RustContext
 }
+
+const UNRENDERED_EXECUTE_HOTKEY = 'mod+s'
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
   return (
@@ -111,8 +120,16 @@ function openCodePane(layout: Layout, setLayout: (l: Layout) => void) {
 
 export const FeatureTreePaneContents = memo(() => {
   useSignals()
-  const { layout, commands } = useApp()
+  const app = useApp()
+  const { layout, commands, settings } = app
+  const settingsValues = settings.useSettings()
+  const platform = usePlatform()
+  const unrenderedExecuteHotkeyLabel = hotkeyDisplay(
+    UNRENDERED_EXECUTE_HOTKEY,
+    platform
+  )
   const { kclManager } = useSingletons()
+  const executionService = app.registry.signal(executingEditorService).value
   const { engineCommandManager, rustContext } = kclManager
   const {
     send: modelingSend,
@@ -143,6 +160,12 @@ export const FeatureTreePaneContents = memo(() => {
 
   const sketchNoFace = modelingState.matches('Sketch no face')
   const hasParseErrors = kclManager.hasParseErrors()
+  const disableModelingForUnrenderedChanges =
+    shouldDisableModelingForUnrenderedChanges({
+      settings: settingsValues,
+      hasEditsSinceLastExecution:
+        kclManager.hasEditsSinceLastExecutionSignal.value,
+    })
   const diagnostics = kclManager.diagnosticsSignal.value
   const parseDiagnostics = hasParseErrors
     ? diagnostics.filter((diagnostic) => diagnostic.severity === 'error')
@@ -168,7 +191,11 @@ export const FeatureTreePaneContents = memo(() => {
   // editor.
   const operationsCode = hasParseErrors
     ? kclManager.lastSuccessfulCode || kclManager.codeSignal.value
-    : kclManager.codeSignal.value
+    : disableModelingForUnrenderedChanges
+      ? kclManager.lastSuccessfulCode || kclManager.codeSignal.value
+      : kclManager.codeSignal.value
+  const isReadOnlyFeatureTree =
+    hasParseErrors || disableModelingForUnrenderedChanges
 
   // We filter out operations that are not useful to show in the feature tree
   const operationList = groupSketchBlockOperations(
@@ -208,7 +235,38 @@ export const FeatureTreePaneContents = memo(() => {
         ) : (
           <>
             {!modelingState.matches('Sketch') && (
-              <DefaultPlanes systemDeps={systemDeps} />
+              <DefaultPlanes
+                systemDeps={systemDeps}
+                disabled={disableModelingForUnrenderedChanges}
+              />
+            )}
+            {disableModelingForUnrenderedChanges && !hasParseErrors && (
+              <div className="text-sm bg-2 text-2 py-2 px-2 rounded flex flex-col gap-2 flex-none mb-2 border border-chalkboard-20 dark:border-chalkboard-80">
+                <p className="font-medium">
+                  Feature tree actions are disabled.
+                </p>
+                <p className="text-xs opacity-80">
+                  {getUnrenderedChangesDisabledReason()}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      executionService?.executeCode().catch(reportRejection)
+                    }}
+                    disabled={kclManager.isExecuting || !executionService}
+                    className="flex gap-1 items-center py-0 pl-0.5 pr-1 m-0 flex-none text-primary dark:text-primary border border-solid border-primary bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 hover:border-primary active:border-primary disabled:cursor-wait disabled:opacity-70"
+                  >
+                    <CustomIcon name="play" className="w-5 h-5" />
+                    <span>Execute</span>
+                    {unrenderedExecuteHotkeyLabel && (
+                      <kbd className="hotkey text-xs">
+                        {unrenderedExecuteHotkeyLabel}
+                      </kbd>
+                    )}
+                  </button>
+                </div>
+              </div>
             )}
             {hasParseErrors && (
               <div className="text-sm bg-destroy-80 text-chalkboard-10 py-2 px-2 rounded flex flex-col gap-2 flex-none mb-2">
@@ -266,7 +324,7 @@ export const FeatureTreePaneContents = memo(() => {
                     key={sketchGroupKey}
                     items={opOrList}
                     code={operationsCode}
-                    isStaleReference={hasParseErrors}
+                    isStaleReference={isReadOnlyFeatureTree}
                     sketchNoFace={sketchNoFace}
                     systemDeps={systemDeps}
                     modelingActor={modelingActor}
@@ -281,7 +339,7 @@ export const FeatureTreePaneContents = memo(() => {
                   key={key}
                   items={opOrList}
                   code={operationsCode}
-                  isStaleReference={hasParseErrors}
+                  isStaleReference={isReadOnlyFeatureTree}
                   sketchNoFace={sketchNoFace}
                   systemDeps={systemDeps}
                   modelingActor={modelingActor}
@@ -293,7 +351,7 @@ export const FeatureTreePaneContents = memo(() => {
                   key={key}
                   item={opOrList}
                   code={operationsCode}
-                  isStaleReference={hasParseErrors}
+                  isStaleReference={isReadOnlyFeatureTree}
                   sketchNoFace={sketchNoFace}
                   systemDeps={systemDeps}
                   modelingActor={modelingActor}
@@ -1075,7 +1133,13 @@ const OperationItem = ({
   )
 }
 
-const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
+const DefaultPlanes = ({
+  systemDeps,
+  disabled = false,
+}: {
+  systemDeps: SystemDeps
+  disabled?: boolean
+}) => {
   const { rustContext, sceneInfra, kclManager } = systemDeps
   const { state: modelingState, send } = useModelingContext()
   const sketchNoFace = modelingState.matches('Sketch no face')
@@ -1164,24 +1228,34 @@ const DefaultPlanes = ({ systemDeps }: { systemDeps: SystemDeps }) => {
           customSuffix={plane.customSuffix}
           icon={'plane'}
           name={plane.name}
-          onClick={() => onClickPlane(plane.id)}
-          menuItems={[
-            <ContextMenuItem
-              onClick={() => startSketchOnDefaultPlane(plane.id)}
-            >
-              Start Sketch
-            </ContextMenuItem>,
-          ]}
-          visibilityToggle={{
-            visible: modelingState.context.defaultPlaneVisibility[plane.key],
-            onVisibilityChange: () => {
-              send({
-                type: 'Toggle default plane visibility',
-                planeId: plane.id,
-                planeKey: plane.key,
-              })
-            },
-          }}
+          disabled={disabled}
+          onClick={disabled ? undefined : () => onClickPlane(plane.id)}
+          menuItems={
+            disabled
+              ? undefined
+              : [
+                  <ContextMenuItem
+                    onClick={() => startSketchOnDefaultPlane(plane.id)}
+                  >
+                    Start Sketch
+                  </ContextMenuItem>,
+                ]
+          }
+          visibilityToggle={
+            disabled
+              ? undefined
+              : {
+                  visible:
+                    modelingState.context.defaultPlaneVisibility[plane.key],
+                  onVisibilityChange: () => {
+                    send({
+                      type: 'Toggle default plane visibility',
+                      planeId: plane.id,
+                      planeKey: plane.key,
+                    })
+                  },
+                }
+          }
         />
       ))}
       <div className="h-px bg-chalkboard-50/20 my-2" />

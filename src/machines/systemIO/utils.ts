@@ -132,6 +132,7 @@ export enum SystemIOMachineEvents {
   done_getMlEphantConversations = donePrefix + 'get ml-ephant conversations',
   saveMlEphantConversations = 'save ml-ephant conversations',
   done_saveMlEphantConversations = donePrefix + 'save ml-ephant conversations',
+  deleteMlEphantConversation = 'delete ml-ephant conversation',
 }
 
 export enum SystemIOMachineActions {
@@ -201,6 +202,13 @@ export type RequestedKCLFile = {
   requestedFileName: string
   requestedCode: string
 }
+
+export type RequestedKCLFileDelete = {
+  requestedFileName: string
+}
+
+export const normalizeKCLFileDeletePath = (filePath: string) =>
+  filePath.replaceAll('\\', '/')
 
 export type RequestedProjectFile = {
   requestedProjectName: string
@@ -383,6 +391,7 @@ export const prepareMlEphantNewFileRequest = ({
   toolOutput,
   projectNameCurrentlyOpened,
   fileFocusedOnInEditor,
+  filesToDelete = [],
 }: MlEphantNewFileRequestProps) => {
   if (
     toolOutput.type !== 'text_to_cad' &&
@@ -410,6 +419,7 @@ export const prepareMlEphantNewFileRequest = ({
 
   return {
     files: requestedFiles,
+    filesToDelete,
     requestedProjectName: projectNameCurrentlyOpened,
     requestedFileNameWithExtension: targetFilePathRelativeToProjectDir ?? '',
   }
