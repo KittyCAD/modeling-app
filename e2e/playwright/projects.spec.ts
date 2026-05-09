@@ -72,7 +72,9 @@ test(
     // Click keyboard shortcuts button.
     await page.getByTestId('keybindings-button').click()
     // Make sure the keyboard shortcuts modal is visible.
-    await expect(page.getByText('Enter Sketch Mode')).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: 'Keybindings' })
+    ).toBeVisible()
   }
 )
 
@@ -107,7 +109,9 @@ test(
     // Click keyboard shortcuts button.
     await page.getByTestId('keybindings-button').click()
     // Make sure the keyboard shortcuts modal is visible.
-    await expect(page.getByText('Enter Sketch Mode')).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: 'Keybindings' })
+    ).toBeVisible()
   }
 )
 
