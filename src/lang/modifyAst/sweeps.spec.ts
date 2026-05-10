@@ -564,7 +564,7 @@ extrude001 = extrude(profile001, length = 2, symmetric = false)`)
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
-    it('should add an extrude call with bodyType "surface" on two sketch solve segments', async () => {
+    it('should default extrude to bodyType "surface" on sketch solve segments', async () => {
       const { ast, artifactGraph } = await getAstAndSketchSelections(
         triangleRegion,
         instanceInThisFile,
@@ -587,7 +587,6 @@ extrude001 = extrude(profile001, length = 2, symmetric = false)`)
         ast,
         sketches: segment,
         length,
-        bodyType: 'SURFACE',
         artifactGraph,
         wasmInstance: instanceInThisFile,
       })
@@ -1140,7 +1139,7 @@ sweep001 = sweep(region001, path = profile001, sectional = true)`
       )
     })
 
-    it('should add a sweep call with surface bodyType on a sketch solve segment', async () => {
+    it('should default sweep to surface bodyType on a sketch solve segment', async () => {
       const code = `${triangleRegion}
 s2 = sketch(on = XZ) {
   line1 = line(start = [var -0.01mm, var 0.02mm], end = [var -0.03mm, var 1.65mm])
@@ -1170,7 +1169,6 @@ s2 = sketch(on = XZ) {
         artifactGraph,
         sketches: segment,
         path,
-        bodyType: 'SURFACE',
         wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
@@ -1459,7 +1457,6 @@ loft001 = loft([region001, region002])`
         ast,
         artifactGraph,
         sketches,
-        bodyType: 'SURFACE',
         wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
@@ -1774,7 +1771,6 @@ revolve001 = revolve(region001, angle = 10, axis = X)`
         sketches: segment,
         angle,
         axis: 'X',
-        bodyType: 'SURFACE',
         wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result

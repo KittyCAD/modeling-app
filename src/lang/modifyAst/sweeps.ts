@@ -67,6 +67,37 @@ import { toUtf16 } from '@src/lang/errors'
 import { isEngineRegionSelection } from '@src/lib/selections'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 
+export function inferBodyTypeForProfileSelection(
+  profileSelection: Selections | undefined,
+  bodyType: KclPreludeBodyType | undefined
+): KclPreludeBodyType | undefined {
+  if (bodyType) {
+    return bodyType
+  }
+  return hasEdgeProfileSelection(profileSelection)
+    ? KCL_PRELUDE_BODY_TYPE_SURFACE
+    : undefined
+}
+
+function hasEdgeProfileSelection(
+  profileSelection: Selections | undefined
+): boolean {
+  return (
+    profileSelection?.graphSelections.some((selection) =>
+      ['segment', 'sweepEdge', 'edgeCutEdge'].includes(
+        selection.artifact?.type || ''
+      )
+    ) === true ||
+    profileSelection?.otherSelections.some(
+      (selection) =>
+        typeof selection !== 'string' &&
+        'type' in selection &&
+        selection.type === 'enginePrimitive' &&
+        selection.primitiveType === 'edge'
+    ) === true
+  )
+}
+
 export function addExtrude({
   ast,
   artifactGraph,
@@ -231,8 +262,9 @@ export function addExtrude({
     hideSeams !== undefined
       ? [createLabeledArg('hideSeams', createLiteral(hideSeams, wasmInstance))]
       : []
-  const bodyTypeExpr = bodyType
-    ? [createLabeledArg('bodyType', createLocalName(bodyType))]
+  const effectiveBodyType = inferBodyTypeForProfileSelection(sketches, bodyType)
+  const bodyTypeExpr = effectiveBodyType
+    ? [createLabeledArg('bodyType', createLocalName(effectiveBodyType))]
     : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
@@ -411,8 +443,9 @@ export function addSweep({
   const tagEndExpr = tagEnd
     ? [createLabeledArg('tagEnd', createTagDeclarator(tagEnd))]
     : []
-  const bodyTypeExpr = bodyType
-    ? [createLabeledArg('bodyType', createLocalName(bodyType))]
+  const effectiveBodyType = inferBodyTypeForProfileSelection(sketches, bodyType)
+  const bodyTypeExpr = effectiveBodyType
+    ? [createLabeledArg('bodyType', createLocalName(effectiveBodyType))]
     : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
@@ -535,8 +568,9 @@ export function addLoft({
   const tagEndExpr = tagEnd
     ? [createLabeledArg('tagEnd', createTagDeclarator(tagEnd))]
     : []
-  const bodyTypeExpr = bodyType
-    ? [createLabeledArg('bodyType', createLocalName(bodyType))]
+  const effectiveBodyType = inferBodyTypeForProfileSelection(sketches, bodyType)
+  const bodyTypeExpr = effectiveBodyType
+    ? [createLabeledArg('bodyType', createLocalName(effectiveBodyType))]
     : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
@@ -684,8 +718,9 @@ export function addRevolve({
   const tagEndExpr = tagEnd
     ? [createLabeledArg('tagEnd', createTagDeclarator(tagEnd))]
     : []
-  const bodyTypeExpr = bodyType
-    ? [createLabeledArg('bodyType', createLocalName(bodyType))]
+  const effectiveBodyType = inferBodyTypeForProfileSelection(sketches, bodyType)
+  const bodyTypeExpr = effectiveBodyType
+    ? [createLabeledArg('bodyType', createLocalName(effectiveBodyType))]
     : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)

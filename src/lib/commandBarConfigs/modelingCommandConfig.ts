@@ -58,6 +58,7 @@ import {
   addLoft,
   addRevolve,
   addSweep,
+  inferBodyTypeForProfileSelection,
   type SweepRelativeTo,
 } from '@src/lang/modifyAst/sweeps'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
@@ -166,6 +167,16 @@ const kclBodyTypeOptions = KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
   name: capitaliseFC(value.toLowerCase()),
   value,
 }))
+
+const defaultBodyTypeForProfileSelection = (commandBarContext: {
+  argumentsToSubmit: Record<string, unknown>
+}): KclPreludeBodyType | undefined =>
+  inferBodyTypeForProfileSelection(
+    commandBarContext.argumentsToSubmit.sketches as Selections | undefined,
+    commandBarContext.argumentsToSubmit.bodyType as
+      | KclPreludeBodyType
+      | undefined
+  )
 
 const hasEngineConnection = (
   engineCommandManager: ConnectionManager
@@ -941,6 +952,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       bodyType: {
         inputType: 'options',
         required: false,
+        defaultValue: defaultBodyTypeForProfileSelection,
         options: kclBodyTypeOptions,
       },
     },
@@ -1028,6 +1040,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       bodyType: {
         inputType: 'options',
         required: false,
+        defaultValue: defaultBodyTypeForProfileSelection,
         options: kclBodyTypeOptions,
       },
     },
@@ -1106,6 +1119,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       bodyType: {
         inputType: 'options',
         required: false,
+        defaultValue: defaultBodyTypeForProfileSelection,
         options: kclBodyTypeOptions,
       },
     },
@@ -1228,6 +1242,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       bodyType: {
         inputType: 'options',
         required: false,
+        defaultValue: defaultBodyTypeForProfileSelection,
         options: kclBodyTypeOptions,
       },
     },

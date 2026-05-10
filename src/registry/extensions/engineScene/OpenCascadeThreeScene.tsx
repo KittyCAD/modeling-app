@@ -66,6 +66,7 @@ import type {
   OpenCascadeTopologyMeshes,
   OpenCascadeTopologySolidMesh,
   OpenCascadeEntityProvenance,
+  OpenCascadeVisibleSolidGlb,
 } from '@src/network/openCascadeCommandManager'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
@@ -182,6 +183,7 @@ interface OpenCascadeSceneStyle {
   backgroundColor: number
   edgeColor: number
   surfaceColor: string
+  backfaceColor?: string
   profileColor: string
   sketchLineColor: number
   selectionColor: number
@@ -263,12 +265,13 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
   const appTheme = settingsValues.app.theme.current
   const cameraProjection = settingsValues.modeling.cameraProjection.current
   const highlightEdges = settingsValues.modeling.highlightEdges.current
+  const backfaceColor = settingsValues.modeling.backfaceColor.current
   const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>(() =>
     getResolvedTheme(appTheme)
   )
   const sceneStyle = useMemo(
-    () => getOpenCascadeSceneStyle(resolvedTheme),
-    [resolvedTheme]
+    () => getOpenCascadeSceneStyle(resolvedTheme, backfaceColor),
+    [backfaceColor, resolvedTheme]
   )
   const sceneStyleRef = useRef(sceneStyle)
   const highlightEdgesRef = useRef(highlightEdges)
@@ -276,6 +279,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
   const targetRef = useRef(new Vector3())
   const modelCenterRef = useRef(new Vector3())
   const modelRadiusRef = useRef(5)
+  const loadedSolidSignatureRef = useRef<string | undefined>(undefined)
   const hasFramedModelRef = useRef(false)
   const hasFramedEmptySceneRef = useRef(false)
   const [ready, setReady] = useState(false)
@@ -726,13 +730,14 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
 
       setReady(false)
       setStage('export')
-      disposeOpenCascadeModelRoot(modelRoot)
       const visibleSolids =
         await engineCommandManager.exportVisibleOpenCascadeGlbBytes()
       if (cancelled) {
         return
       }
       if (visibleSolids.length === 0) {
+        loadedSolidSignatureRef.current = undefined
+        disposeOpenCascadeModelRoot(modelRoot)
         const sketchBounds = getOpenCascadeSketchBounds(
           engineCommandManager.exportLatestOpenCascadeSketchLineMeshes(),
           buildOpenCascadeSketchPointMeshes({
@@ -764,6 +769,18 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         return
       }
 
+      const visibleSolidSignature =
+        openCascadeVisibleSolidSignature(visibleSolids)
+      if (
+        visibleSolidSignature === loadedSolidSignatureRef.current &&
+        modelRoot.children.length > 0
+      ) {
+        setStage('ready')
+        setReady(true)
+        sceneInfra.renderFrame()
+        return
+      }
+
       setStage('load')
       const loader = new GLTFLoader()
       const loadedSolids = await Promise.all(
@@ -775,6 +792,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
           const gltf = await loader.loadAsync(objectUrl)
           return {
             solidId: solid.solidId,
+            bodyType: solid.bodyType,
             artifactIds: solid.artifactIds,
             provenance: solid.provenance,
             scene: gltf.scene,
@@ -789,19 +807,23 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         tagOpenCascadeBodyVisuals(
           solid.scene,
           solid.solidId,
+          solid.bodyType,
           solid.artifactIds,
           solid.provenance
         )
         styleLoadedOpenCascadeMeshes(
           solid.scene,
           sceneStyleRef.current,
-          highlightEdgesRef.current
+          highlightEdgesRef.current,
+          false,
+          solid.bodyType
         )
         modelRoot.add(solid.scene)
       }
       const bounds =
         getOpenCascadeSceneContentBounds(sceneInfra.scene) ??
         getOpenCascadeObjectBounds(modelRoot)
+      loadedSolidSignatureRef.current = visibleSolidSignature
       modelCenterRef.current.copy(bounds.center)
       const radius = bounds.radius
       modelRadiusRef.current = radius
@@ -905,7 +927,10 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
           )
           objectUrls.push(objectUrl)
           const gltf = await loader.loadAsync(objectUrl)
-          return gltf.scene
+          return {
+            bodyType: solid.bodyType,
+            scene: gltf.scene,
+          }
         })
       )
       if (cancelled) {
@@ -913,10 +938,14 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       }
 
       disposeOpenCascadeModelRoot(previewRoot)
-      for (const scene of loadedSolids) {
-        scene.name = `${OPEN_CASCADE_PREVIEW_ROOT}:body`
-        styleLoadedOpenCascadePreviewMeshes(scene, sceneStyleRef.current)
-        previewRoot.add(scene)
+      for (const solid of loadedSolids) {
+        solid.scene.name = `${OPEN_CASCADE_PREVIEW_ROOT}:body`
+        styleLoadedOpenCascadePreviewMeshes(
+          solid.scene,
+          sceneStyleRef.current,
+          solid.bodyType
+        )
+        previewRoot.add(solid.scene)
       }
       addOpenCascadePreviewSketchLines(
         previewRoot,
@@ -4295,12 +4324,14 @@ function makeOpenCascadeLightRoot() {
 }
 
 function getOpenCascadeSceneStyle(
-  resolvedTheme: ResolvedTheme
+  resolvedTheme: ResolvedTheme,
+  backfaceColor: string
 ): OpenCascadeSceneStyle {
   return {
     backgroundColor: getThemeColorForThreeJs(resolvedTheme),
     edgeColor: getThemeColorForThreeJs(getOppositeTheme(resolvedTheme)),
     surfaceColor: resolvedTheme === Themes.Dark ? '#6f87ad' : '#8ea6c9',
+    backfaceColor,
     profileColor: resolvedTheme === Themes.Dark ? '#96d8bd' : '#2c8065',
     sketchLineColor: getSegmentColor({
       freedom: 'Fixed',
@@ -4328,8 +4359,11 @@ function applyOpenCascadeSceneStyle(
 
   if (modelRoot) {
     modelRoot.traverse((object) => {
-      if (object instanceof Mesh) {
-        updateOpenCascadeMeshMaterial(object, style.surfaceColor, 0.58, 0.04)
+      if (
+        object instanceof Mesh &&
+        object.userData.openCascadeBackfaceVisual !== true
+      ) {
+        updateOpenCascadeBodyMeshMaterial(object, style)
         return
       }
 
@@ -4353,20 +4387,23 @@ function styleLoadedOpenCascadeMeshes(
   root: Group,
   style: OpenCascadeSceneStyle,
   highlightEdges: boolean,
-  isProfile = false
+  isProfile = false,
+  bodyType: 'solid' | 'surface' = 'solid'
 ) {
   root.traverse((object) => {
-    if (!(object instanceof Mesh)) {
+    if (
+      !(object instanceof Mesh) ||
+      object.userData.openCascadeBackfaceVisual === true
+    ) {
       return
     }
 
-    updateOpenCascadeMeshMaterial(
-      object,
-      isProfile ? style.profileColor : style.surfaceColor,
-      isProfile ? 0.78 : 0.58,
-      isProfile ? 0 : 0.04,
-      isProfile ? 0 : 0.96
-    )
+    if (isProfile) {
+      updateOpenCascadeMeshMaterial(object, style.profileColor, 0.78, 0, 0)
+    } else {
+      object.userData.openCascadeBodyType = bodyType
+      updateOpenCascadeBodyMeshMaterial(object, style)
+    }
     object.castShadow = false
     object.receiveShadow = false
 
@@ -4382,7 +4419,8 @@ function styleLoadedOpenCascadeMeshes(
 
 function styleLoadedOpenCascadePreviewMeshes(
   root: Object3D,
-  style: OpenCascadeSceneStyle
+  style: OpenCascadeSceneStyle,
+  bodyType: 'solid' | 'surface' = 'solid'
 ) {
   const previewColor = new Color(style.surfaceColor)
   previewColor.lerp(new Color(style.edgeColor), 0.18)
@@ -4411,6 +4449,7 @@ function styleLoadedOpenCascadePreviewMeshes(
       polygonOffset: true,
       polygonOffsetFactor: OPEN_CASCADE_HIGHLIGHT_POLYGON_OFFSET,
       polygonOffsetUnits: OPEN_CASCADE_HIGHLIGHT_POLYGON_OFFSET,
+      side: bodyType === 'surface' ? DoubleSide : undefined,
     })
   })
 }
@@ -4489,10 +4528,12 @@ function addOpenCascadePreviewPlanes(
 function tagOpenCascadeBodyVisuals(
   root: Object3D,
   solidId: string,
+  bodyType: 'solid' | 'surface',
   artifactIds: string[],
   provenance: OpenCascadeEntityProvenance | undefined
 ) {
   root.userData.openCascadeSolidId = solidId
+  root.userData.openCascadeBodyType = bodyType
   root.userData.openCascadeArtifactIds = artifactIds
   root.userData.openCascadeProvenance = provenance
   root.layers.set(SKETCH_LAYER)
@@ -4502,6 +4543,7 @@ function tagOpenCascadeBodyVisuals(
     }
     object.userData.openCascadeBodyVisual = true
     object.userData.openCascadeSolidId = solidId
+    object.userData.openCascadeBodyType = bodyType
     object.userData.openCascadeArtifactIds = artifactIds
     object.userData.openCascadeProvenance = provenance
     object.layers.set(SKETCH_LAYER)
@@ -4540,6 +4582,51 @@ function updateOpenCascadeMeshMaterial(
   mesh.material = material
 }
 
+function updateOpenCascadeBodyMeshMaterial(
+  mesh: Mesh,
+  style: OpenCascadeSceneStyle
+) {
+  updateOpenCascadeMeshMaterial(mesh, style.surfaceColor, 0.58, 0.04)
+  if (mesh.userData.openCascadeBodyType === 'surface') {
+    ensureOpenCascadeBackfaceMesh(mesh, style)
+  } else {
+    removeOpenCascadeBackfaceMeshes(mesh)
+  }
+}
+
+function ensureOpenCascadeBackfaceMesh(
+  mesh: Mesh,
+  style: OpenCascadeSceneStyle
+) {
+  removeOpenCascadeBackfaceMeshes(mesh)
+  const material = new MeshStandardMaterial({
+    color: style.backfaceColor || style.edgeColor,
+    roughness: 0.58,
+    metalness: 0.04,
+    transparent: true,
+    opacity: 0.96,
+    depthWrite: true,
+    side: BackSide,
+  })
+  const backfaceMesh = new Mesh(mesh.geometry.clone(), material)
+  backfaceMesh.name = `${mesh.name || 'open-cascade-surface'}:backface`
+  backfaceMesh.userData.openCascadeBackfaceVisual = true
+  backfaceMesh.layers.set(SKETCH_LAYER)
+  mesh.add(backfaceMesh)
+}
+
+function removeOpenCascadeBackfaceMeshes(mesh: Mesh) {
+  const backfaceMeshes = mesh.children.filter(
+    (child): child is Mesh =>
+      child instanceof Mesh && child.userData.openCascadeBackfaceVisual === true
+  )
+  for (const backfaceMesh of backfaceMeshes) {
+    mesh.remove(backfaceMesh)
+    backfaceMesh.geometry.dispose()
+    disposeMaterial(backfaceMesh.material)
+  }
+}
+
 function disposeOpenCascadeModelRoot(modelRoot: Group) {
   modelRoot.traverse((object) => {
     if (object instanceof Mesh) {
@@ -4574,6 +4661,26 @@ function disposeMaterial(material: Mesh['material']) {
   const texturedMaterial = material as MeshBasicMaterial | MeshStandardMaterial
   texturedMaterial.map?.dispose()
   material.dispose()
+}
+
+function openCascadeVisibleSolidSignature(
+  solids: OpenCascadeVisibleSolidGlb[]
+): string {
+  return solids
+    .map(
+      (solid) =>
+        `${solid.solidId}:${solid.bodyType}:${hashBytes32(solid.bytes)}`
+    )
+    .join('|')
+}
+
+function hashBytes32(bytes: Uint8Array): string {
+  let hash = 0x811c9dc5
+  for (const byte of bytes) {
+    hash ^= byte
+    hash = Math.imul(hash, 0x01000193)
+  }
+  return `${bytes.length}:${(hash >>> 0).toString(16)}`
 }
 
 export function getOpenCascadeObjectBounds(object: Object3D) {
