@@ -249,6 +249,9 @@ export const FeatureTreePaneContents = memo(() => {
   const firstOperationRange = operationEntries.find(
     (entry) => entry.itemRange !== undefined
   )?.itemRange
+  const lastOperationRange = operationEntries.findLast(
+    (entry) => entry.itemRange !== undefined
+  )?.itemRange
   const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
 
   const startRollbackDrag = useCallback(
@@ -289,11 +292,13 @@ export const FeatureTreePaneContents = memo(() => {
               ? { type: 'before', range: itemRange }
               : { type: 'bottom' }
           : itemRange
-            ? { type: 'after', range: itemRange }
+            ? sourceRangesEqual(itemRange, lastOperationRange)
+              ? { type: 'bottom' }
+              : { type: 'after', range: itemRange }
             : { type: 'bottom' }
       )
     },
-    [isDraggingRollback]
+    [isDraggingRollback, lastOperationRange]
   )
 
   const dropRollback = useCallback(
