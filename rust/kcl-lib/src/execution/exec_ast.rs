@@ -120,6 +120,16 @@ fn sketch_on_cache_name(sketch_id: ObjectId) -> String {
     format!("{SKETCH_PREFIX}{}_on", sketch_id.0)
 }
 
+fn is_standalone_exit_call(expr: &Expr) -> bool {
+    let Expr::CallExpressionKw(call) = expr else {
+        return false;
+    };
+    call.callee.path.is_empty()
+        && call.callee.name.name == "exit"
+        && call.unlabeled.is_none()
+        && call.arguments.is_empty()
+}
+
 #[cfg(feature = "artifact-graph")]
 fn default_plane_name_from_expr(expr: &Expr) -> Option<crate::engine::PlaneName> {
     fn parse_name(name: &str, negative: bool) -> Option<crate::engine::PlaneName> {
@@ -542,6 +552,21 @@ impl ExecutorContext {
                 }
                 BodyItem::ExpressionStatement(expression_statement) => {
                     if exec_state.sketch_mode() && sketch_mode_should_skip(&expression_statement.expression) {
+                        continue;
+                    }
+
+                    if matches!(body_type, BodyType::Root)
+                        && matches!(
+                            self.settings.engine,
+                            crate::settings::types::ModelingEngine::OpenCascade
+                        )
+                        && is_standalone_exit_call(&expression_statement.expression)
+                        && self
+                            .engine
+                            .record_rollback_marker(SourceRange::from(expression_statement))
+                            .await?
+                    {
+                        last_expr = Some(KclValue::none().continue_());
                         continue;
                     }
 

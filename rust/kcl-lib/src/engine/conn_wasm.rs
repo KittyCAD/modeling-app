@@ -142,7 +142,10 @@ impl EngineConnection {
         Self::new_from_js_value(manager.into(), response_context)
     }
 
-    pub fn new_from_js_value(manager: JsValue, response_context: Arc<ResponseContext>) -> Result<EngineConnection, JsValue> {
+    pub fn new_from_js_value(
+        manager: JsValue,
+        response_context: Arc<ResponseContext>,
+    ) -> Result<EngineConnection, JsValue> {
         #[allow(clippy::arc_with_non_send_sync)]
         Ok(EngineConnection {
             manager: Arc::new(manager),
@@ -176,6 +179,14 @@ impl EngineConnection {
         function
             .apply(self.manager.as_ref(), &js_sys::Array::from_iter(args.iter().cloned()))
             .map_err(|e| KclError::new_engine(KclErrorDetails::new(format!("{:?}", e).into(), vec![source_range])))
+    }
+
+    fn maybe_manager_method(&self, method_name: &str) -> Option<js_sys::Function> {
+        let method = js_sys::Reflect::get(self.manager.as_ref(), &JsValue::from_str(method_name)).ok()?;
+        if method.is_undefined() || method.is_null() {
+            return None;
+        }
+        method.dyn_into::<js_sys::Function>().ok()
     }
 
     async fn do_fire_modeling_cmd(
@@ -370,6 +381,37 @@ impl crate::engine::EngineManager for EngineConnection {
         })?;
 
         Ok(())
+    }
+
+    async fn record_rollback_marker(&self, source_range: SourceRange) -> Result<bool, KclError> {
+        let Some(function) = self.maybe_manager_method("recordRollbackMarker") else {
+            return Ok(false);
+        };
+        let source_range_str = serde_json::to_string(&source_range).map_err(|e| {
+            KclError::new_engine(KclErrorDetails::new(
+                format!("Failed to serialize rollback source range: {:?}", e),
+                vec![source_range],
+            ))
+        })?;
+        let value = function
+            .apply(
+                self.manager.as_ref(),
+                &js_sys::Array::of1(&JsValue::from_str(&source_range_str)),
+            )
+            .map_err(|e| KclError::new_engine(KclErrorDetails::new(format!("{:?}", e).into(), vec![source_range])))?;
+        let promise = value.dyn_into::<js_sys::Promise>().map_err(|_| {
+            KclError::new_engine(KclErrorDetails::new(
+                "recordRollbackMarker did not return a Promise".into(),
+                vec![source_range],
+            ))
+        })?;
+        let value = crate::wasm::JsFuture::from(promise).await.map_err(|e| {
+            KclError::new_engine(KclErrorDetails::new(
+                format!("Failed to wait for promise from record rollback marker: {:?}", e),
+                vec![source_range],
+            ))
+        })?;
+        Ok(value.as_bool().unwrap_or(false))
     }
 
     async fn fetch_debug(&self) -> Result<(), KclError> {

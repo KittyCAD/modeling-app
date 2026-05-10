@@ -10,6 +10,7 @@ import type { KCLError } from '@src/lang/errors'
 import {
   compilationIssuesToDiagnostics,
   kclErrorsToDiagnostics,
+  toUtf16,
 } from '@src/lang/errors'
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
 import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
@@ -20,6 +21,7 @@ import type {
   ExecState,
   PathToNode,
   Program,
+  SourceRange,
   VariableMap,
 } from '@src/lang/wasm'
 import {
@@ -30,6 +32,13 @@ import {
   parse,
   recast,
 } from '@src/lang/wasm'
+import {
+  ensureExperimentalFeaturesAllow,
+  moveRollbackExitAfterRange,
+  removeRollbackExit,
+  restoreExperimentalFeatures,
+  type RollbackEditSession,
+} from '@src/lang/modifyAst/rollback'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
@@ -717,6 +726,7 @@ export class KclManager extends File {
   private nextDirectSketchHistoryEntryId = 0
   private lastSketchCheckpointRestoreRequestId = 0
   private sketchCheckpointLimit = FALLBACK_SKETCH_CHECKPOINT_LIMIT
+  private rollbackEditSession: RollbackEditSession | undefined
   private lastExecutedCode: string = ''
   lastSuccessfulCode: string = ''
   get code(): string {
@@ -2198,6 +2208,116 @@ export class KclManager extends File {
     }, this.longExecutionTimeMs)
 
     await this.executeAst({ ast })
+  }
+
+  async beginOpenCascadeRollbackEdit(sourceRange: SourceRange) {
+    if (!this.isOpenCascadeEngineActive()) {
+      return
+    }
+    if (this.code.slice(toUtf16(sourceRange[1], this.code)).trim() === '') {
+      return
+    }
+    const wasmInstance = await this.wasmInstancePromise
+    const previousExperimentalFeatures =
+      this.fileSettings.experimentalFeatures ?? null
+    let nextCode = moveRollbackExitAfterRange(this.code, sourceRange)
+    const changedExperimentalFeatures =
+      previousExperimentalFeatures?.type !== 'Allow'
+    if (changedExperimentalFeatures) {
+      const withSettings = ensureExperimentalFeaturesAllow({
+        code: nextCode,
+        previousExperimentalFeatures,
+        wasmInstance,
+      })
+      if (err(withSettings)) {
+        return withSettings
+      }
+      nextCode = withSettings
+    }
+    const ast = await this.safeParse(nextCode, wasmInstance)
+    if (!ast) {
+      return new Error('Could not insert rollback marker')
+    }
+    this.rollbackEditSession = {
+      previousExperimentalFeatures,
+      changedExperimentalFeatures,
+      isManual: false,
+    }
+    this.updateCodeEditor(nextCode, {
+      shouldExecute: true,
+      shouldWriteToDisk: true,
+    })
+  }
+
+  async moveOpenCascadeRollbackMarker(sourceRange?: SourceRange) {
+    if (!this.isOpenCascadeEngineActive()) {
+      return
+    }
+    const wasmInstance = await this.wasmInstancePromise
+    let nextCode = moveRollbackExitAfterRange(this.code, sourceRange)
+    if (sourceRange) {
+      const previousExperimentalFeatures =
+        this.fileSettings.experimentalFeatures ?? null
+      if (previousExperimentalFeatures?.type !== 'Allow') {
+        const withSettings = ensureExperimentalFeaturesAllow({
+          code: nextCode,
+          previousExperimentalFeatures,
+          wasmInstance,
+        })
+        if (err(withSettings)) {
+          return withSettings
+        }
+        nextCode = withSettings
+      }
+    }
+    const ast = await this.safeParse(nextCode, wasmInstance)
+    if (!ast) {
+      return new Error('Could not move rollback marker')
+    }
+    if (this.rollbackEditSession) {
+      this.rollbackEditSession.isManual = true
+    }
+    this.updateCodeEditor(nextCode, {
+      shouldExecute: true,
+      shouldWriteToDisk: true,
+    })
+  }
+
+  async endOpenCascadeRollbackEdit() {
+    const session = this.rollbackEditSession
+    if (!session || session.isManual) {
+      this.rollbackEditSession = undefined
+      return
+    }
+    const wasmInstance = await this.wasmInstancePromise
+    let nextCode = removeRollbackExit(this.code)
+    if (session.changedExperimentalFeatures) {
+      const restored = restoreExperimentalFeatures({
+        code: nextCode,
+        previousExperimentalFeatures: session.previousExperimentalFeatures,
+        wasmInstance,
+      })
+      if (err(restored)) {
+        return restored
+      }
+      nextCode = restored
+    }
+    const ast = await this.safeParse(nextCode, wasmInstance)
+    if (!ast) {
+      return new Error('Could not remove rollback marker')
+    }
+    this.rollbackEditSession = undefined
+    this.updateCodeEditor(nextCode, {
+      shouldExecute: true,
+      shouldWriteToDisk: true,
+    })
+  }
+
+  private isOpenCascadeEngineActive() {
+    return (
+      'isOpenCascade' in this.engineCommandManager &&
+      this.engineCommandManager.isOpenCascade === true
+    )
   }
 
   async format() {

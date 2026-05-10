@@ -2477,6 +2477,7 @@ export const modelingMachine = setup({
             })
             .catch(reportRejection)
         } finally {
+          await kclManager.endOpenCascadeRollbackEdit().catch(reportRejection)
           kclManager.sceneEntitiesManager.tearDownSketch({ removeAxis: false })
           kclManager.sceneEntitiesManager.removeSketchGrid()
           restoreModelingCameraControls({

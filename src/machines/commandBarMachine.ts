@@ -30,8 +30,15 @@ function isCommandSubmitPromise(
   )
 }
 
-function handleCommandSubmitResult(commandName: string, result: unknown) {
-  if (!result) return
+function handleCommandSubmitResult(
+  commandName: string,
+  result: unknown,
+  onSettled?: () => void
+) {
+  if (!result) {
+    onSettled?.()
+    return
+  }
 
   if (isCommandSubmitPromise(result)) {
     Promise.resolve(result)
@@ -44,12 +51,14 @@ function handleCommandSubmitResult(commandName: string, result: unknown) {
         reportRejection(error)
         toast.error(`Failed to execute command: ${commandName}`)
       })
+      .finally(onSettled)
     return
   }
 
   if (result instanceof Error) {
     toast.error(result.message)
   }
+  onSettled?.()
 }
 
 export type CommandBarInput = {
@@ -174,12 +183,24 @@ export const commandBarMachine = setup({
         }
         const result = selectedCommand?.onSubmit(resolvedArgs)
         if (result) {
-          handleCommandSubmitResult(selectedCommand.name, result)
+          handleCommandSubmitResult(selectedCommand.name, result, () => {
+            context.kclManager
+              ?.endOpenCascadeRollbackEdit()
+              .catch(reportRejection)
+          })
         }
       } else {
         const result = selectedCommand?.onSubmit({ context, event })
         if (result) {
-          handleCommandSubmitResult(selectedCommand.name, result)
+          handleCommandSubmitResult(selectedCommand.name, result, () => {
+            context.kclManager
+              ?.endOpenCascadeRollbackEdit()
+              .catch(reportRejection)
+          })
+        } else {
+          context.kclManager
+            ?.endOpenCascadeRollbackEdit()
+            .catch(reportRejection)
         }
       }
     },
@@ -196,6 +217,9 @@ export const commandBarMachine = setup({
     'Clear selected command': assign({
       selectedCommand: undefined,
     }),
+    'Cleanup rollback edit session': ({ context }) => {
+      context.kclManager?.endOpenCascadeRollbackEdit().catch(reportRejection)
+    },
     'Set current argument to first non-skippable': assign({
       currentArgument: ({ context, event }) => {
         const { selectedCommand } = context
@@ -750,7 +774,7 @@ export const commandBarMachine = setup({
   on: {
     Close: {
       target: '.Closed',
-      actions: 'Clear selected command',
+      actions: ['Clear selected command', 'Cleanup rollback edit session'],
     },
 
     Clear: {

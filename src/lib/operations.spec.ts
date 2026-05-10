@@ -257,6 +257,11 @@ describe('operations.test.ts', () => {
       const actual = filterOperations(operations)
       expect(actual).toEqual([stdlib('std1'), userCall('foo')])
     })
+    it('drops runtime exit rollback markers', async () => {
+      const operations = [stdlib('std1'), stdlib('exit'), stdlib('std2')]
+      const actual = filterOperations(operations)
+      expect(actual).toEqual([stdlib('std1'), stdlib('std2')])
+    })
     it('drops all user-defined function return operations', async () => {
       // The returns allow us to group operations with the call, but we never
       // display the returns.

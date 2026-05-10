@@ -159,6 +159,48 @@ describe('OpenCascadeCommandManager', () => {
     expect((await manager.exportLatestGlbBytes()).length).toBeGreaterThan(0)
   })
 
+  it('executes past an OpenCascade rollback marker while exporting pre-marker render state', async () => {
+    const manager = new OpenCascadeCommandManager()
+    await buildRectangleRegionInput(manager)
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: IDS.solid,
+      cmd: {
+        type: 'extrude',
+        target: IDS.region,
+        distance: 2,
+        extrude_method: 'new',
+        body_type: 'solid',
+      },
+    })
+    await manager.recordRollbackMarker(JSON.stringify([10, 16, 0]))
+
+    await buildRectangleRegionInput(manager, {
+      path: '00000000-0000-0000-0000-000000000101',
+      region: '00000000-0000-0000-0000-000000000102',
+      commandStart: 300,
+      min: { x: 3, y: 3 },
+      max: { x: 4, y: 4 },
+    })
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-000000000103',
+      cmd: {
+        type: 'extrude',
+        target: '00000000-0000-0000-0000-000000000102',
+        distance: 2,
+        extrude_method: 'new',
+        body_type: 'solid',
+      },
+    })
+
+    expect(manager.getSolidCount()).toBe(2)
+    expect((await manager.exportVisibleGlbBytes()).map((glb) => glb.solidId))
+      .toEqual([IDS.solid])
+    expect(manager.exportLatestTopologyMeshes().solids).toHaveLength(1)
+  })
+
   it('resolves OpenCascade edge IDs by index and closest point aliases', async () => {
     const manager = new OpenCascadeCommandManager()
     await buildRectangleRegionInput(manager)

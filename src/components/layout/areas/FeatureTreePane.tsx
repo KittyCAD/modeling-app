@@ -1,6 +1,6 @@
 import type { Diagnostic } from '@codemirror/lint'
-import type { ComponentProps, ReactNode } from 'react'
-import { use, useCallback, useMemo, memo } from 'react'
+import type { ComponentProps, DragEvent, ReactNode } from 'react'
+import { use, useCallback, useMemo, memo, useState } from 'react'
 import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 import { type ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
@@ -68,6 +68,7 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import usePlatform from '@src/hooks/usePlatform'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
+import { findTopLevelRollbackExit } from '@src/lang/modifyAst/rollback'
 
 type Singletons = ReturnType<typeof useSingletons>
 type SystemDeps = Pick<Singletons, 'kclManager'> & {
@@ -203,7 +204,91 @@ export const FeatureTreePaneContents = memo(() => {
       'VariableDeclaration',
     ])
   )
+  const isOpenCascade =
+    'isOpenCascade' in engineCommandManager &&
+    engineCommandManager.isOpenCascade === true
+  const rollbackExit = isOpenCascade
+    ? findTopLevelRollbackExit(operationsCode)
+    : undefined
+  const rollbackOffset = rollbackExit?.range[0]
+  const [isDraggingRollback, setIsDraggingRollback] = useState(false)
+  const [rollbackPreviewRange, setRollbackPreviewRange] = useState<
+    SourceRange | undefined
+  >(undefined)
+  const operationEntries = useMemo(
+    () =>
+      operationList.map((opOrList, index) => {
+        const key = operationTreeItemKey(opOrList)
+        return {
+          opOrList,
+          key,
+          itemRange: operationTreeItemRange(opOrList),
+          previousRange:
+            index > 0
+              ? operationTreeItemRange(operationList[index - 1])
+              : undefined,
+        }
+      }),
+    [operationList]
+  )
+  const actualRollbackRange = useMemo(
+    () => rollbackRangeForOffset(operationEntries, rollbackOffset),
+    [operationEntries, rollbackOffset]
+  )
+  const displayedRollbackRange = isDraggingRollback
+    ? rollbackPreviewRange
+    : actualRollbackRange
   const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
+
+  const startRollbackDrag = useCallback(
+    (event: DragEvent<HTMLElement>, range: SourceRange | undefined) => {
+      event.dataTransfer.setData('application/zoo-rollback-bar', 'true')
+      event.dataTransfer.effectAllowed = 'move'
+      const dragImage = document.createElement('canvas')
+      dragImage.width = 1
+      dragImage.height = 1
+      event.dataTransfer.setDragImage(dragImage, 0, 0)
+      setIsDraggingRollback(true)
+      setRollbackPreviewRange(range)
+    },
+    []
+  )
+
+  const endRollbackDrag = useCallback(() => {
+    setIsDraggingRollback(false)
+    setRollbackPreviewRange(undefined)
+  }, [])
+
+  const moveRollbackPreviewToClosestSlot = useCallback(
+    (
+      event: DragEvent<HTMLElement>,
+      itemRange: SourceRange | undefined,
+      previousRange: SourceRange | undefined
+    ) => {
+      if (!isDraggingRollback) {
+        return
+      }
+      event.preventDefault()
+      const rect = event.currentTarget.getBoundingClientRect()
+      const isUpperHalf = event.clientY < rect.top + rect.height / 2
+      setRollbackPreviewRange(isUpperHalf ? previousRange : itemRange)
+    },
+    [isDraggingRollback]
+  )
+
+  const dropRollback = useCallback(
+    (event: DragEvent<HTMLElement>, range: SourceRange | undefined) => {
+      if (!isDraggingRollback) {
+        return
+      }
+      event.preventDefault()
+      kclManager
+        .moveOpenCascadeRollbackMarker(range)
+        .catch(reportRejection)
+        .finally(endRollbackDrag)
+    },
+    [endRollbackDrag, isDraggingRollback, kclManager]
+  )
 
   function goToError() {
     const l = layout.signal.value
@@ -300,66 +385,113 @@ export const FeatureTreePaneContents = memo(() => {
                 </div>
               </div>
             )}
-            {operationList.map((opOrList) => {
-              const key = (() => {
-                if (!isArray(opOrList)) {
-                  return `${opOrList.type}-${
-                    'name' in opOrList ? opOrList.name : 'anonymous'
-                  }-${'sourceRange' in opOrList ? opOrList.sourceRange[0] : 'start'}`
-                }
-                const first = opOrList[0]
-                const last = opOrList[opOrList.length - 1]
-                return `group-${
-                  first?.type ?? 'unknown'
-                }-${first && 'sourceRange' in first ? first.sourceRange[0] : 'start'}-${
-                  last && 'sourceRange' in last ? last.sourceRange[1] : 'end'
-                }`
-              })()
+            {operationEntries.map(
+              ({ opOrList, key, itemRange, previousRange }) => {
+                const shouldRenderRollbackAfter =
+                  itemRange !== undefined &&
+                  sourceRangesEqual(itemRange, displayedRollbackRange)
+                const isBelowRollback =
+                  rollbackOffset !== undefined &&
+                  itemRange !== undefined &&
+                  itemRange[0] > rollbackOffset
 
-              if (isArray(opOrList) && isSketchBlockOperationGroup(opOrList)) {
-                const sketchGroupKey =
-                  getSketchBlockOperationKey(opOrList[0]) ?? key
+                let rendered: ReactNode
+                if (
+                  isArray(opOrList) &&
+                  isSketchBlockOperationGroup(opOrList)
+                ) {
+                  const sketchGroupKey =
+                    getSketchBlockOperationKey(opOrList[0]) ?? key
+                  rendered = (
+                    <SketchBlockOperationGroup
+                      key={sketchGroupKey}
+                      items={opOrList}
+                      code={operationsCode}
+                      isStaleReference={isReadOnlyFeatureTree}
+                      sketchNoFace={sketchNoFace}
+                      systemDeps={systemDeps}
+                      modelingActor={modelingActor}
+                      engineCommandManager={engineCommandManager}
+                      onSelect={selectOperation}
+                    />
+                  )
+                } else {
+                  rendered = isArray(opOrList) ? (
+                    <OperationItemGroup
+                      key={key}
+                      items={opOrList}
+                      code={operationsCode}
+                      isStaleReference={isReadOnlyFeatureTree}
+                      sketchNoFace={sketchNoFace}
+                      systemDeps={systemDeps}
+                      modelingActor={modelingActor}
+                      engineCommandManager={engineCommandManager}
+                      onSelect={selectOperation}
+                    />
+                  ) : (
+                    <OperationItem
+                      key={key}
+                      item={opOrList}
+                      code={operationsCode}
+                      isStaleReference={isReadOnlyFeatureTree}
+                      sketchNoFace={sketchNoFace}
+                      systemDeps={systemDeps}
+                      modelingActor={modelingActor}
+                      engineCommandManager={engineCommandManager}
+                      onSelect={selectOperation}
+                    />
+                  )
+                }
+
                 return (
-                  <SketchBlockOperationGroup
-                    key={sketchGroupKey}
-                    items={opOrList}
-                    code={operationsCode}
-                    isStaleReference={isReadOnlyFeatureTree}
-                    sketchNoFace={sketchNoFace}
-                    systemDeps={systemDeps}
-                    modelingActor={modelingActor}
-                    engineCommandManager={engineCommandManager}
-                    onSelect={selectOperation}
-                  />
+                  <div
+                    key={key}
+                    className={isBelowRollback ? 'opacity-40' : undefined}
+                    onDragOver={
+                      isOpenCascade && itemRange
+                        ? (event) =>
+                            moveRollbackPreviewToClosestSlot(
+                              event,
+                              itemRange,
+                              previousRange
+                            )
+                        : undefined
+                    }
+                    onDrop={
+                      isOpenCascade && itemRange
+                        ? (event) => {
+                            dropRollback(event, rollbackPreviewRange)
+                          }
+                        : undefined
+                    }
+                  >
+                    {rendered}
+                    {shouldRenderRollbackAfter && (
+                      <RollbackBar
+                        onDragStart={(event) =>
+                          startRollbackDrag(event, itemRange)
+                        }
+                        onDragEnd={endRollbackDrag}
+                      />
+                    )}
+                  </div>
                 )
               }
-
-              return isArray(opOrList) ? (
-                <OperationItemGroup
-                  key={key}
-                  items={opOrList}
-                  code={operationsCode}
-                  isStaleReference={isReadOnlyFeatureTree}
-                  sketchNoFace={sketchNoFace}
-                  systemDeps={systemDeps}
-                  modelingActor={modelingActor}
-                  engineCommandManager={engineCommandManager}
-                  onSelect={selectOperation}
+            )}
+            {isOpenCascade &&
+              (displayedRollbackRange === undefined ||
+                rollbackOffset === undefined) && (
+                <RollbackBar
+                  onDragStart={(event) => startRollbackDrag(event, undefined)}
+                  onDragEnd={endRollbackDrag}
+                  onDragOver={(event) => {
+                    if (!isDraggingRollback) return
+                    event.preventDefault()
+                    setRollbackPreviewRange(undefined)
+                  }}
+                  onDrop={(event) => dropRollback(event, undefined)}
                 />
-              ) : (
-                <OperationItem
-                  key={key}
-                  item={opOrList}
-                  code={operationsCode}
-                  isStaleReference={isReadOnlyFeatureTree}
-                  sketchNoFace={sketchNoFace}
-                  systemDeps={systemDeps}
-                  modelingActor={modelingActor}
-                  engineCommandManager={engineCommandManager}
-                  onSelect={selectOperation}
-                />
-              )
-            })}
+              )}
           </>
         )}
       </section>
@@ -367,6 +499,94 @@ export const FeatureTreePaneContents = memo(() => {
   )
 })
 
+function RollbackBar({
+  onDragStart,
+  onDragEnd,
+  onDragOver,
+  onDrop,
+}: {
+  onDragStart: (event: DragEvent<HTMLElement>) => void
+  onDragEnd: () => void
+  onDragOver?: (event: DragEvent<HTMLElement>) => void
+  onDrop?: (event: DragEvent<HTMLElement>) => void
+}) {
+  return (
+    <div
+      draggable
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
+      className="my-2 flex justify-center cursor-grab active:cursor-grabbing"
+    >
+      <div className="h-1.5 w-16 rounded-full bg-primary shadow-sm shadow-primary/20" />
+      <Tooltip hoverOnly position="top" delay={250} contentClassName="text-xs">
+        Rollback bar
+      </Tooltip>
+    </div>
+  )
+}
+
+function operationTreeItemKey(item: Operation | Operation[]) {
+  if (!isArray(item)) {
+    return `${item.type}-${
+      'name' in item ? item.name : 'anonymous'
+    }-${'sourceRange' in item ? item.sourceRange[0] : 'start'}`
+  }
+  const first = item[0]
+  const last = item[item.length - 1]
+  return `group-${
+    first?.type ?? 'unknown'
+  }-${first && 'sourceRange' in first ? first.sourceRange[0] : 'start'}-${
+    last && 'sourceRange' in last ? last.sourceRange[1] : 'end'
+  }`
+}
+
+function operationTreeItemRange(
+  item: Operation | Operation[]
+): SourceRange | undefined {
+  if (isArray(item)) {
+    const ranges = item.flatMap((operation) =>
+      'sourceRange' in operation ? [operation.sourceRange] : []
+    )
+    if (ranges.length === 0) {
+      return undefined
+    }
+    return [
+      Math.min(...ranges.map((range) => range[0])),
+      Math.max(...ranges.map((range) => range[1])),
+      ranges[0][2],
+    ]
+  }
+  return 'sourceRange' in item ? item.sourceRange : undefined
+}
+
+function rollbackRangeForOffset(
+  operationEntries: { itemRange: SourceRange | undefined }[],
+  rollbackOffset: number | undefined
+): SourceRange | undefined {
+  if (rollbackOffset === undefined) {
+    return undefined
+  }
+  return operationEntries
+    .map((entry) => entry.itemRange)
+    .filter((range): range is SourceRange => range !== undefined)
+    .filter((range) => range[1] <= rollbackOffset)
+    .sort((a, b) => b[1] - a[1])[0]
+}
+
+function sourceRangesEqual(
+  left: SourceRange | undefined,
+  right: SourceRange | undefined
+) {
+  return (
+    left !== undefined &&
+    right !== undefined &&
+    left[0] === right[0] &&
+    left[1] === right[1] &&
+    left[2] === right[2]
+  )
+}
 function SketchBlockOperationGroup({
   items,
   code,
@@ -717,23 +937,42 @@ const OperationItem = ({
       item.type === 'VariableDeclaration' ||
       item.type === 'SketchSolve'
     ) {
-      const artifact =
-        getArtifactFromRange(
-          item.sourceRange,
-          systemDeps.kclManager.artifactGraph
-        ) ?? undefined
-      prepareEditCommand({
-        artifactGraph: systemDeps.kclManager.artifactGraph,
-        code: systemDeps.kclManager.code,
-        commandBarActor,
-        operation: item,
-        rustContext: systemDeps.rustContext,
-        artifact,
-      }).catch((e) => toast.error(err(e) ? e.message : JSON.stringify(e)))
+      const startEdit = async () => {
+        if (
+          'isOpenCascade' in engineCommandManager &&
+          engineCommandManager.isOpenCascade === true
+        ) {
+          const rollbackResult =
+            await systemDeps.kclManager.beginOpenCascadeRollbackEdit(
+              item.sourceRange
+            )
+          if (err(rollbackResult)) {
+            throw rollbackResult
+          }
+        }
+        const artifact =
+          getArtifactFromRange(
+            item.sourceRange,
+            systemDeps.kclManager.artifactGraph
+          ) ?? undefined
+        return prepareEditCommand({
+          artifactGraph: systemDeps.kclManager.artifactGraph,
+          code: systemDeps.kclManager.code,
+          commandBarActor,
+          operation: item,
+          rustContext: systemDeps.rustContext,
+          artifact,
+        })
+      }
+      startEdit().catch((e) =>
+        toast.error(err(e) ? e.message : JSON.stringify(e))
+      )
     }
   }, [
     item,
     commandBarActor,
+    engineCommandManager,
+    systemDeps.kclManager,
     systemDeps.kclManager.artifactGraph,
     systemDeps.kclManager.code,
     systemDeps.rustContext,

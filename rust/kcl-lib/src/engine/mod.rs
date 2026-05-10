@@ -257,6 +257,13 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.async_tasks().clear().await;
     }
 
+    /// Record a frontend-only rollback marker. Engines that do not support
+    /// rollback rendering should return false and keep normal KCL exit
+    /// semantics.
+    async fn record_rollback_marker(&self, _source_range: SourceRange) -> Result<bool, KclError> {
+        Ok(false)
+    }
+
     /// Fetch debug information from the peer.
     async fn fetch_debug(&self) -> Result<(), crate::errors::KclError>;
 

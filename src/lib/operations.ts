@@ -2984,7 +2984,12 @@ const operationFilters = [
   isNotInsideGroup,
   isNotGroupEnd,
   isNotHideOperation,
+  isNotRuntimeExitOperation,
 ]
+
+function isNotRuntimeExitOperation(ops: Operation[]): Operation[] {
+  return ops.filter((op) => !(op.type === 'StdLibCall' && op.name === 'exit'))
+}
 
 /**
  * A filter to exclude everything that occurs inside a GroupBegin and its

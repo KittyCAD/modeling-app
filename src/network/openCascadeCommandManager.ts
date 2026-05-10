@@ -244,6 +244,29 @@ type ModelingExecutionResult =
   | { kind: 'modeling'; response: OkModelingCmdResponse }
   | { kind: 'export'; response: OkWebSocketResponseData }
 
+type OpenCascadeRenderState = {
+  planes: Map<string, PlaneState>
+  paths: Map<string, PathState>
+  pathAliases: Map<string, string>
+  regions: Map<string, RegionState>
+  arrangementRegions: Map<string, ArrangementRegionState>
+  arrangementDirty: boolean
+  solids: Map<string, SolidState>
+  profileShapes: Map<string, any>
+  hiddenObjectIds: Set<string>
+  topologyEntries: Map<string, OpenCascadeTopologyEntry>
+  topologyMeshes: Map<string, OpenCascadeTopologySolidMesh>
+  extrudeTopologies: Map<string, ExtrudeTopology>
+}
+
+type OpenCascadeDagNode = {
+  id: string
+  parentId?: string
+  commandId?: string
+  sourceRange?: SourceRange
+  renderState: OpenCascadeRenderState
+}
+
 const EMPTY_RESPONSE: OkModelingCmdResponse = { type: 'empty' }
 const DEFAULT_SELECTION_FILTER = [
   'face',
@@ -340,6 +363,10 @@ export class OpenCascadeCommandManager {
   private extrudeTopologies = new Map<string, ExtrudeTopology>()
   private currentSketchPlaneId: string | undefined
   private currentSketchOnFace: SketchOnFaceProvenance | undefined
+  private dagNodes = new Map<string, OpenCascadeDagNode>()
+  private currentDagNodeId: string | undefined
+  private activeRollbackNodeId: string | undefined
+  private activeRollbackSourceRange: SourceRange | undefined
 
   constructor() {
     latestOpenCascadeCommandManager = this
@@ -351,6 +378,24 @@ export class OpenCascadeCommandManager {
 
   async startNewSession(): Promise<void> {
     this.clear()
+  }
+
+  async recordRollbackMarker(rangeStr: string): Promise<boolean> {
+    const range: SourceRange = JSON.parse(rangeStr)
+    await this.rebuildArrangementRegionsIfNeeded()
+    if (!this.currentDagNodeId) {
+      this.recordDagNode('rollback-root', range)
+    }
+    this.activeRollbackNodeId = this.currentDagNodeId
+    this.activeRollbackSourceRange = range
+    this.bumpAllRenderVersions()
+    return true
+  }
+
+  getActiveRollbackSourceRange(): SourceRange | undefined {
+    return this.activeRollbackSourceRange
+      ? structuredClone(this.activeRollbackSourceRange)
+      : undefined
   }
 
   fireModelingCommandFromWasm(
@@ -386,11 +431,12 @@ export class OpenCascadeCommandManager {
   }
 
   exportLastBrep(): Uint8Array | undefined {
-    return this.visibleSolidEntries().at(-1)?.[1].brep
+    return this.visibleSolidEntries(this.renderState()).at(-1)?.[1].brep
   }
 
   async exportLatestGlbBytes(): Promise<Uint8Array> {
-    const latest = this.visibleSolidEntries().at(-1)
+    const state = this.renderState()
+    const latest = this.visibleSolidEntries(state).at(-1)
     if (!latest) {
       return new Uint8Array()
     }
@@ -409,7 +455,8 @@ export class OpenCascadeCommandManager {
   }
 
   async exportVisibleGlbBytes(): Promise<OpenCascadeVisibleSolidGlb[]> {
-    const visible = this.visibleSolidEntries()
+    const state = this.renderState()
+    const visible = this.visibleSolidEntries(state)
     if (visible.length === 0) {
       return []
     }
@@ -431,9 +478,11 @@ export class OpenCascadeCommandManager {
   }
 
   async exportLatestProfileGlbBytes(): Promise<Uint8Array> {
-    const latest = Array.from(this.profileShapes.entries())
+    const state = this.renderState()
+    const profileShapes = state?.profileShapes ?? this.profileShapes
+    const latest = Array.from(profileShapes.entries())
       .reverse()
-      .find(([id]) => !this.isRegionOrProfileHidden(id))
+      .find(([id]) => !this.isRegionOrProfileHidden(id, state))
     if (!latest) {
       return new Uint8Array()
     }
@@ -452,15 +501,18 @@ export class OpenCascadeCommandManager {
   }
 
   exportLatestTopologyMeshes(): OpenCascadeTopologyMeshes {
+    const state = this.renderState()
+    const topologyMeshes = state?.topologyMeshes ?? this.topologyMeshes
+    const solids = state?.solids ?? this.solids
     return {
       version: this.latestTopologyVersion.value,
-      solids: Array.from(this.topologyMeshes.values())
-        .filter((solid) => this.isSolidVisible(solid.solidId))
+      solids: Array.from(topologyMeshes.values())
+        .filter((solid) => this.isSolidVisible(solid.solidId, state))
         .map((solid) => ({
           solidId: solid.solidId,
           artifactIds: this.selectableSolidArtifactIds(
             solid.solidId,
-            this.solids.get(solid.solidId)
+            solids.get(solid.solidId)
           ),
           positions: [...solid.positions],
           indices: [...solid.indices],
@@ -474,9 +526,11 @@ export class OpenCascadeCommandManager {
   }
 
   exportLatestSketchLineMeshes(): OpenCascadeSketchLineMeshes {
+    const state = this.renderState()
+    const paths = state?.paths ?? this.paths
     const segments: OpenCascadeSketchLineSegment[] = []
-    for (const [pathId, path] of this.paths) {
-      if (this.isPathHidden(pathId)) {
+    for (const [pathId, path] of paths) {
+      if (this.isPathHidden(pathId, state)) {
         continue
       }
       for (const segment of this.sketchLineSegmentsForPath(pathId, path)) {
@@ -495,11 +549,15 @@ export class OpenCascadeCommandManager {
   }
 
   async exportLatestRegionMeshes(): Promise<OpenCascadeRegionMeshes> {
-    await this.rebuildArrangementRegionsIfNeeded()
+    const state = this.renderState()
+    if (!state) {
+      await this.rebuildArrangementRegionsIfNeeded()
+    }
+    const arrangementRegions = state?.arrangementRegions ?? this.arrangementRegions
     return {
       version: this.latestRegionVersion.value,
-      regions: Array.from(this.arrangementRegions.values())
-        .filter((region) => !this.isArrangementRegionHidden(region))
+      regions: Array.from(arrangementRegions.values())
+        .filter((region) => !this.isArrangementRegionHidden(region, state))
         .map((region) => regionMeshForArrangementRegion(region)),
     }
   }
@@ -517,6 +575,7 @@ export class OpenCascadeCommandManager {
           req.cmd,
           range
         )
+        this.recordCommandIfSceneMutating(req.cmd_id, req.cmd, range)
         if (result.kind === 'export') {
           throw new Error(
             'OpenCascade export cannot be returned inside a batch'
@@ -538,6 +597,7 @@ export class OpenCascadeCommandManager {
         request.cmd,
         range
       )
+      this.recordCommandIfSceneMutating(request.cmd_id, request.cmd, range)
       if (result.kind === 'export') {
         return this.success(id, result.response)
       }
@@ -688,6 +748,27 @@ export class OpenCascadeCommandManager {
       default:
         throw new Error(`OpenCascade engine does not support ${cmd.type}`)
     }
+  }
+
+  private recordCommandIfSceneMutating(
+    commandId: string,
+    cmd: ModelingCmd,
+    range: SourceRange
+  ) {
+    if (
+      cmd.type === 'default_camera_get_settings' ||
+      cmd.type === 'default_camera_set_view' ||
+      cmd.type === 'default_camera_zoom' ||
+      cmd.type === 'default_camera_look_at' ||
+      cmd.type === 'camera_drag_start' ||
+      cmd.type === 'camera_drag_move' ||
+      cmd.type === 'camera_drag_end' ||
+      cmd.type === 'set_selection_filter' ||
+      cmd.type === 'export'
+    ) {
+      return
+    }
+    this.recordDagNode(commandId, range)
   }
 
   private extendPath(
@@ -1421,16 +1502,23 @@ export class OpenCascadeCommandManager {
     this.latestVisibilityVersion.value += 1
   }
 
-  private visibleSolidEntries(): [string, SolidState][] {
-    return Array.from(this.solids.entries()).filter(([id]) =>
-      this.isSolidVisible(id)
+  private visibleSolidEntries(
+    state: OpenCascadeRenderState | undefined = undefined
+  ): [string, SolidState][] {
+    const solids = state?.solids ?? this.solids
+    return Array.from(solids.entries()).filter(([id]) =>
+      this.isSolidVisible(id, state)
     )
   }
 
-  private isSolidVisible(solidId: string) {
-    const solid = this.solids.get(solidId)
+  private isSolidVisible(
+    solidId: string,
+    state: OpenCascadeRenderState | undefined = undefined
+  ) {
+    const solid = (state?.solids ?? this.solids).get(solidId)
+    const hiddenObjectIds = state?.hiddenObjectIds ?? this.hiddenObjectIds
     return Boolean(
-      solid && !solid.consumed && !this.hiddenObjectIds.has(solidId)
+      solid && !solid.consumed && !hiddenObjectIds.has(solidId)
     )
   }
 
@@ -1441,39 +1529,53 @@ export class OpenCascadeCommandManager {
     return Array.from(new Set([solidId, ...(solid?.sourceIds || [])]))
   }
 
-  private isPathHidden(pathId: string) {
+  private isPathHidden(
+    pathId: string,
+    state: OpenCascadeRenderState | undefined = undefined
+  ) {
+    const hiddenObjectIds = state?.hiddenObjectIds ?? this.hiddenObjectIds
+    const pathAliases = state?.pathAliases ?? this.pathAliases
     return (
-      this.hiddenObjectIds.has(pathId) ||
-      this.hiddenObjectIds.has(this.pathAliases.get(pathId) || '')
+      hiddenObjectIds.has(pathId) ||
+      hiddenObjectIds.has(pathAliases.get(pathId) || '')
     )
   }
 
-  private isRegionOrProfileHidden(regionId: string) {
-    if (this.hiddenObjectIds.has(regionId)) {
+  private isRegionOrProfileHidden(
+    regionId: string,
+    state: OpenCascadeRenderState | undefined = undefined
+  ) {
+    const hiddenObjectIds = state?.hiddenObjectIds ?? this.hiddenObjectIds
+    const regions = state?.regions ?? this.regions
+    const arrangementRegions = state?.arrangementRegions ?? this.arrangementRegions
+    if (hiddenObjectIds.has(regionId)) {
       return true
     }
-    const region = this.regions.get(regionId)
+    const region = regions.get(regionId)
     if (region) {
-      return this.hiddenObjectIds.has(region.sourcePathId)
+      return hiddenObjectIds.has(region.sourcePathId)
     }
-    const arrangementRegion = this.arrangementRegions.get(regionId)
+    const arrangementRegion = arrangementRegions.get(regionId)
     return arrangementRegion
-      ? this.isArrangementRegionHidden(arrangementRegion)
+      ? this.isArrangementRegionHidden(arrangementRegion, state)
       : false
   }
 
-  private isArrangementRegionHidden(region: ArrangementRegionState) {
+  private isArrangementRegionHidden(
+    region: ArrangementRegionState,
+    state: OpenCascadeRenderState | undefined = undefined
+  ) {
+    const hiddenObjectIds = state?.hiddenObjectIds ?? this.hiddenObjectIds
     return (
-      this.hiddenObjectIds.has(region.regionId) ||
-      this.hiddenObjectIds.has(region.parentPathId || '') ||
-      region.sourceSegmentIds.some((segmentId) =>
-        this.hiddenObjectIds.has(segmentId)
-      )
+      hiddenObjectIds.has(region.regionId) ||
+      hiddenObjectIds.has(region.parentPathId || '') ||
+      region.sourceSegmentIds.some((segmentId) => hiddenObjectIds.has(segmentId))
     )
   }
 
   private async exportBrep(): Promise<OkWebSocketResponseData> {
-    const latest = Array.from(this.solids.entries()).at(-1)
+    const solids = this.renderState()?.solids ?? this.solids
+    const latest = Array.from(solids.entries()).at(-1)
     if (!latest) {
       throw new Error('No OpenCascade solids are available to export')
     }
@@ -2593,6 +2695,90 @@ export class OpenCascadeCommandManager {
     }
   }
 
+  private renderState(): OpenCascadeRenderState | undefined {
+    if (!this.activeRollbackNodeId) {
+      return undefined
+    }
+    return this.dagNodes.get(this.activeRollbackNodeId)?.renderState
+  }
+
+  private cloneRenderState(): OpenCascadeRenderState {
+    return {
+      planes: new Map(
+        Array.from(this.planes.entries()).map(([id, plane]) => [
+          id,
+          { ...plane },
+        ])
+      ),
+      paths: new Map(
+        Array.from(this.paths.entries()).map(([id, path]) => [
+          id,
+          clonePathState(path),
+        ])
+      ),
+      pathAliases: new Map(this.pathAliases),
+      regions: new Map(
+        Array.from(this.regions.entries()).map(([id, region]) => [
+          id,
+          cloneRegionState(region),
+        ])
+      ),
+      arrangementRegions: new Map(
+        Array.from(this.arrangementRegions.entries()).map(([id, region]) => [
+          id,
+          cloneArrangementRegionState(region),
+        ])
+      ),
+      arrangementDirty: this.arrangementDirty,
+      solids: new Map(
+        Array.from(this.solids.entries()).map(([id, solid]) => [
+          id,
+          cloneSolidState(solid),
+        ])
+      ),
+      profileShapes: new Map(this.profileShapes),
+      hiddenObjectIds: new Set(this.hiddenObjectIds),
+      topologyEntries: new Map(
+        Array.from(this.topologyEntries.entries()).map(([id, entry]) => [
+          id,
+          cloneTopologyEntry(entry),
+        ])
+      ),
+      topologyMeshes: new Map(
+        Array.from(this.topologyMeshes.entries()).map(([id, mesh]) => [
+          id,
+          cloneTopologySolidMesh(mesh),
+        ])
+      ),
+      extrudeTopologies: new Map(
+        Array.from(this.extrudeTopologies.entries()).map(([id, topology]) => [
+          id,
+          cloneExtrudeTopology(topology),
+        ])
+      ),
+    }
+  }
+
+  private recordDagNode(commandId: string, sourceRange?: SourceRange) {
+    const id = `node:${this.dagNodes.size}:${commandId}`
+    this.dagNodes.set(id, {
+      id,
+      parentId: this.currentDagNodeId,
+      commandId,
+      sourceRange,
+      renderState: this.cloneRenderState(),
+    })
+    this.currentDagNodeId = id
+  }
+
+  private bumpAllRenderVersions() {
+    this.latestShapeVersion.value += 1
+    this.latestProfileVersion.value += 1
+    this.latestTopologyVersion.value += 1
+    this.latestVisibilityVersion.value += 1
+    this.markSketchChanged()
+  }
+
   private clear() {
     this.planes.clear()
     this.paths.clear()
@@ -2606,6 +2792,10 @@ export class OpenCascadeCommandManager {
     this.topologyEntries.clear()
     this.topologyMeshes.clear()
     this.extrudeTopologies.clear()
+    this.dagNodes.clear()
+    this.currentDagNodeId = undefined
+    this.activeRollbackNodeId = undefined
+    this.activeRollbackSourceRange = undefined
     this.currentSketchPlaneId = undefined
     this.currentSketchOnFace = undefined
     this.latestSelectionFilter.value = [...DEFAULT_SELECTION_FILTER]
@@ -2639,6 +2829,128 @@ export class OpenCascadeCommandManager {
 function toPoint2(point: unknown): Point2 {
   const p = point as { x?: unknown; y?: unknown }
   return { x: lengthValue(p.x), y: lengthValue(p.y) }
+}
+
+function clonePathState(path: PathState): PathState {
+  return {
+    ...path,
+    pen: path.pen ? { ...path.pen } : undefined,
+    start: path.start ? { ...path.start } : undefined,
+    segments: path.segments.map(clonePathSegmentState),
+    circle: path.circle ? { ...path.circle } : undefined,
+    edgeEntries: path.edgeEntries?.map(clonePathEdgeEntry),
+    sketchOnFace: path.sketchOnFace ? { ...path.sketchOnFace } : undefined,
+  }
+}
+
+function clonePathSegmentState(segment: PathSegmentState): PathSegmentState {
+  if (segment.type === 'line') {
+    return {
+      ...segment,
+      start: { ...segment.start },
+      end: { ...segment.end },
+    }
+  }
+  return {
+    ...segment,
+    center: { ...segment.center },
+    start: { ...segment.start },
+    end: { ...segment.end },
+  }
+}
+
+function cloneRegionState(region: RegionState): RegionState {
+  return {
+    ...region,
+    queryPoint: region.queryPoint ? { ...region.queryPoint } : undefined,
+    edgeIds: [...region.edgeIds],
+    circle: region.circle ? { ...region.circle } : undefined,
+    edgeEntries: region.edgeEntries.map(clonePathEdgeEntry),
+    boundaryPoints: region.boundaryPoints?.map((point) => ({ ...point })),
+    sketchOnFace: region.sketchOnFace ? { ...region.sketchOnFace } : undefined,
+  }
+}
+
+function cloneArrangementRegionState(
+  region: ArrangementRegionState
+): ArrangementRegionState {
+  return {
+    ...region,
+    queryPoint: { ...region.queryPoint },
+    sourceSegmentIds: [...region.sourceSegmentIds],
+    localPoints: region.localPoints.map((point) => ({ ...point })),
+    points: region.points.map((point) => ({ ...point })),
+    boundarySegments: region.boundarySegments.map((segment) => ({
+      start: { ...segment.start },
+      end: { ...segment.end },
+      sourceSegmentIds: [...segment.sourceSegmentIds],
+    })),
+    edgeEntries: region.edgeEntries?.map(clonePathEdgeEntry),
+    sketchOnFace: region.sketchOnFace ? { ...region.sketchOnFace } : undefined,
+  }
+}
+
+function cloneSolidState(solid: SolidState): SolidState {
+  return {
+    ...solid,
+    sourceIds: [...solid.sourceIds],
+    brep: solid.brep ? new Uint8Array(solid.brep) : undefined,
+    cylinder: solid.cylinder
+      ? {
+          ...solid.cylinder,
+          center: { ...solid.cylinder.center },
+        }
+      : undefined,
+  }
+}
+
+function clonePathEdgeEntry(entry: PathEdgeEntry): PathEdgeEntry {
+  return {
+    ...entry,
+    points: entry.points.map((point) => ({ ...point })),
+  }
+}
+
+function cloneTopologyEntry(
+  entry: OpenCascadeTopologyEntry
+): OpenCascadeTopologyEntry {
+  return {
+    ...entry,
+    points: entry.points ? [...entry.points] : undefined,
+    faceIds: entry.faceIds ? [...entry.faceIds] : undefined,
+  }
+}
+
+function cloneTopologySolidMesh(
+  mesh: OpenCascadeTopologySolidMesh
+): OpenCascadeTopologySolidMesh {
+  return {
+    solidId: mesh.solidId,
+    artifactIds: mesh.artifactIds ? [...mesh.artifactIds] : undefined,
+    positions: [...mesh.positions],
+    indices: [...mesh.indices],
+    groups: mesh.groups.map((group) => ({ ...group })),
+    edges: mesh.edges.map((edge) => ({
+      ...edge,
+      faceIds: [...edge.faceIds],
+      points: [...edge.points],
+    })),
+  }
+}
+
+function cloneExtrudeTopology(topology: ExtrudeTopology): ExtrudeTopology {
+  return {
+    ...topology,
+    wallsBySourceEdgeId: new Map(topology.wallsBySourceEdgeId),
+    oppositeEdgesBySourceEdgeId: new Map(topology.oppositeEdgesBySourceEdgeId),
+    nextAdjacentEdgesBySourceEdgeId: new Map(
+      topology.nextAdjacentEdgesBySourceEdgeId
+    ),
+    previousAdjacentEdgesBySourceEdgeId: new Map(
+      topology.previousAdjacentEdgesBySourceEdgeId
+    ),
+    commonEdgesByFacePair: new Map(topology.commonEdgesByFacePair),
+  }
 }
 
 function toPoint3(point: unknown): Point3 {
