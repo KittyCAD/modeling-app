@@ -79,11 +79,24 @@ type SystemDeps = Pick<Singletons, 'kclManager'> & {
 }
 
 const UNRENDERED_EXECUTE_HOTKEY = 'mod+s'
+const EMPTY_SELECTION_RANGES = {
+  graphSelections: [],
+  otherSelections: [],
+}
 
 type RollbackPlacement =
   | { type: 'before'; range: SourceRange }
   | { type: 'after'; range: SourceRange }
   | { type: 'bottom' }
+
+function modelingStateMatches(
+  modelingState: ReturnType<typeof useModelingContext>['state'] | undefined,
+  value: Parameters<
+    ReturnType<typeof useModelingContext>['state']['matches']
+  >[0]
+) {
+  return Boolean(modelingState?.matches?.(value))
+}
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
   return (
@@ -137,11 +150,10 @@ export const FeatureTreePaneContents = memo(() => {
   const { kclManager } = useSingletons()
   const executionService = app.registry.signal(executingEditorService).value
   const { engineCommandManager, rustContext } = kclManager
-  const {
-    send: modelingSend,
-    state: modelingState,
-    actor: modelingActor,
-  } = useModelingContext()
+  const modelingContext = useModelingContext()
+  const modelingSend = modelingContext?.send
+  const modelingState = modelingContext?.state
+  const modelingActor = modelingContext?.actor
   const systemDeps: SystemDeps = useMemo(
     () => ({
       kclManager,
@@ -155,6 +167,9 @@ export const FeatureTreePaneContents = memo(() => {
 
   const selectOperation = useCallback(
     (sourceRange: SourceRange) => {
+      if (!modelingSend) {
+        return
+      }
       sendSelectionEvent({
         sourceRange: sourceRangeToUtf16(sourceRange, kclManager.code),
         kclManager,
@@ -164,7 +179,7 @@ export const FeatureTreePaneContents = memo(() => {
     [modelingSend, kclManager]
   )
 
-  const sketchNoFace = modelingState.matches('Sketch no face')
+  const sketchNoFace = modelingStateMatches(modelingState, 'Sketch no face')
   const hasParseErrors = kclManager.hasParseErrors()
   const disableModelingForUnrenderedChanges =
     shouldDisableModelingForUnrenderedChanges({
@@ -348,7 +363,7 @@ export const FeatureTreePaneContents = memo(() => {
           </Loading>
         ) : (
           <>
-            {!modelingState.matches('Sketch') && (
+            {!modelingStateMatches(modelingState, 'Sketch') && (
               <DefaultPlanes
                 systemDeps={systemDeps}
                 disabled={disableModelingForUnrenderedChanges}
@@ -984,7 +999,7 @@ interface OperationProps {
   sketchNoFace: boolean
   systemDeps: SystemDeps
   engineCommandManager: ConnectionManager
-  modelingActor: ReturnType<typeof useModelingContext>['actor']
+  modelingActor?: ReturnType<typeof useModelingContext>['actor']
   onSelect: (sourceRange: SourceRange) => void
   rollbackOffset?: number
   suppressTooltip?: boolean
@@ -1011,7 +1026,7 @@ const OperationItem = ({
   const { layout } = useApp()
   const { kclManager, commandBarActor } = systemDeps
   const useSketchSolveMode =
-    modelingActor.getSnapshot().context.store.useSketchSolveMode?.current
+    modelingActor?.getSnapshot().context.store.useSketchSolveMode?.current
   const diagnostics = kclManager.diagnosticsSignal.value
   const liveAst = kclManager.astSignal.value
   const ast = kclManager.hasParseErrors() ? kclManager.lastGoodAst : liveAst
@@ -1502,11 +1517,13 @@ const OperationItem = ({
                 selectOperation()
                   .then(() => {
                     if (visibilityState.hideOperation === undefined) {
-                      onHide({
-                        ast: kclManager.ast,
-                        artifactGraph: kclManager.artifactGraph,
-                        modelingActor,
-                      })
+                      if (modelingActor) {
+                        onHide({
+                          ast: kclManager.ast,
+                          artifactGraph: kclManager.artifactGraph,
+                          modelingActor,
+                        })
+                      }
                     } else if (visibilityState.targetArtifact !== undefined) {
                       onUnhide({
                         hideOperation: visibilityState.hideOperation,
@@ -1542,28 +1559,37 @@ export const DefaultPlanes = ({
   disabled?: boolean
 }) => {
   const { rustContext, sceneInfra, kclManager } = systemDeps
-  const { state: modelingState, send } = useModelingContext()
-  const sketchNoFace = modelingState.matches('Sketch no face')
+  const modelingContext = useModelingContext()
+  const modelingState = modelingContext?.state
+  const send = modelingContext?.send
+  const selectionRanges =
+    modelingState?.context?.selectionRanges ?? EMPTY_SELECTION_RANGES
+  const defaultPlaneVisibility = modelingState?.context
+    ?.defaultPlaneVisibility ?? {
+    origin: true,
+    xy: true,
+    xz: true,
+    yz: true,
+  }
+  const useSketchSolveMode =
+    modelingState?.context?.store?.useSketchSolveMode?.current
+  const sketchNoFace = modelingStateMatches(modelingState, 'Sketch no face')
   const isOpenCascade =
     'isOpenCascade' in kclManager.engineCommandManager &&
     Boolean(kclManager.engineCommandManager.isOpenCascade)
   const selectedDefaultPlaneKeys = useMemo(
     () =>
       selectedFeatureTreeDefaultPlaneKeys(
-        modelingState.context.selectionRanges,
+        selectionRanges,
         rustContext.defaultPlanes
       ),
-    [modelingState.context.selectionRanges, rustContext.defaultPlanes]
+    [selectionRanges, rustContext.defaultPlanes]
   )
 
   const onClickPlane = useCallback(
     (planeId: string) => {
       if (sketchNoFace) {
-        void selectSketchPlane(
-          planeId,
-          modelingState.context.store.useSketchSolveMode?.current,
-          kclManager
-        )
+        void selectSketchPlane(planeId, useSketchSolveMode, kclManager)
       } else {
         const foundDefaultPlane =
           rustContext.defaultPlanes !== null &&
@@ -1571,7 +1597,7 @@ export const DefaultPlanes = ({
             ([, plane]) => plane === planeId
           )
         if (foundDefaultPlane) {
-          send({
+          send?.({
             type: 'Set selection',
             data: {
               selectionType: 'defaultPlaneSelection',
@@ -1585,7 +1611,7 @@ export const DefaultPlanes = ({
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [sketchNoFace, modelingState.context.store.useSketchSolveMode]
+    [sketchNoFace, useSketchSolveMode]
   )
 
   const startSketchOnDefaultPlane = useCallback(
@@ -1595,13 +1621,9 @@ export const DefaultPlanes = ({
         data: { forceNewSketch: true },
       })
 
-      void selectSketchPlane(
-        planeId,
-        modelingState.context.store.useSketchSolveMode?.current,
-        kclManager
-      )
+      void selectSketchPlane(planeId, useSketchSolveMode, kclManager)
     },
-    [modelingState.context.store.useSketchSolveMode, sceneInfra, kclManager]
+    [useSketchSolveMode, sceneInfra, kclManager]
   )
 
   const defaultPlanes = rustContext.defaultPlanes
@@ -1649,9 +1671,9 @@ export const DefaultPlanes = ({
             disabled
               ? undefined
               : {
-                  visible: modelingState.context.defaultPlaneVisibility.origin,
+                  visible: defaultPlaneVisibility.origin,
                   onVisibilityChange: () => {
-                    send({
+                    send?.({
                       type: 'Toggle default plane visibility',
                       planeKey: 'origin',
                     })
@@ -1688,10 +1710,9 @@ export const DefaultPlanes = ({
               disabled
                 ? undefined
                 : {
-                    visible:
-                      modelingState.context.defaultPlaneVisibility[plane.key],
+                    visible: defaultPlaneVisibility[plane.key],
                     onVisibilityChange: () => {
-                      send({
+                      send?.({
                         type: 'Toggle default plane visibility',
                         planeId,
                         planeKey: plane.key,

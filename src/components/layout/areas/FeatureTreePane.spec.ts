@@ -11,33 +11,42 @@ import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { defaultNodePath } from '@src/lang/wasm'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 
-const { sendMock, modelingContextState } = vi.hoisted(() => ({
-  sendMock: vi.fn(),
-  modelingContextState: {
-    matches: () => false,
-    context: {
-      defaultPlaneVisibility: {
-        origin: true,
-        xy: true,
-        xz: true,
-        yz: true,
+const { sendMock, modelingContextState, modelingContextValue } = vi.hoisted(
+  () => {
+    const sendMock = vi.fn()
+    const modelingContextState = {
+      matches: () => false,
+      context: {
+        defaultPlaneVisibility: {
+          origin: true,
+          xy: true,
+          xz: true,
+          yz: true,
+        },
+        selectionRanges: {
+          graphSelections: [],
+          otherSelections: [],
+        },
+        store: {
+          useSketchSolveMode: { current: undefined },
+        },
       },
-      selectionRanges: {
-        graphSelections: [],
-        otherSelections: [],
+    } as any
+    return {
+      sendMock,
+      modelingContextState,
+      modelingContextValue: {
+        current: {
+          send: sendMock,
+          state: modelingContextState,
+        } as any,
       },
-      store: {
-        useSketchSolveMode: { current: undefined },
-      },
-    },
-  } as any,
-}))
+    }
+  }
+)
 
 vi.mock('@src/hooks/useModelingContext', () => ({
-  useModelingContext: () => ({
-    send: sendMock,
-    state: modelingContextState,
-  }),
+  useModelingContext: () => modelingContextValue.current,
 }))
 
 describe('FeatureTreePane', () => {
@@ -48,6 +57,10 @@ describe('FeatureTreePane', () => {
         graphSelections: [],
         otherSelections: [],
       }
+      modelingContextValue.current = {
+        send: sendMock,
+        state: modelingContextState,
+      } as any
     })
 
     function createSystemDeps({
@@ -78,6 +91,28 @@ describe('FeatureTreePane', () => {
         },
       } as any
     }
+
+    it('renders while modeling context state is temporarily missing', () => {
+      modelingContextValue.current = {
+        send: sendMock,
+      } as any
+
+      expect(() =>
+        render(
+          createElement(DefaultPlanes, {
+            systemDeps: createSystemDeps({
+              isOpenCascade: true,
+              defaultPlanes: {
+                xy: 'plane-xy',
+                xz: 'plane-xz',
+                yz: 'plane-yz',
+              },
+            }),
+          })
+        )
+      ).not.toThrow()
+      expect(screen.getByText('Origin')).toBeTruthy()
+    })
 
     it('shows the Origin row only for OpenCascade', () => {
       const { rerender } = render(
