@@ -14,7 +14,9 @@ import {
   getSketchBlockForArtifact,
   getSketchBlockForPathArtifact,
 } from '@src/lang/std/artifactGraph'
+import { createLiteral } from '@src/lang/create'
 import type { ArtifactGraph } from '@src/lang/wasm'
+import type { KclCommandValue } from '@src/lib/commandTypes'
 import { useApp, useSingletons } from '@src/lib/boot'
 import {
   type CameraAxisName,
@@ -102,6 +104,16 @@ import {
   isOpenCascadeAreaSelectionMatch,
   openCascadeAreaSelectionBox,
 } from './openCascadeAreaSelect'
+import {
+  OPEN_CASCADE_PREVIEW_HANDLE_ROOT,
+  disposeOpenCascadePreviewHandles,
+  findOpenCascadePreviewHandleIntersection,
+  rebuildOpenCascadePreviewHandleRoot,
+  startOpenCascadePreviewHandleDrag,
+  updateOpenCascadePreviewHandleScale,
+  valueForOpenCascadePreviewHandleDrag,
+  type OpenCascadePreviewHandleDragState,
+} from './openCascadePreviewHandles'
 
 const OPEN_CASCADE_SOLID_ROOT = 'OPEN_CASCADE_SOLID_ROOT'
 const OPEN_CASCADE_PREVIEW_ROOT = 'OPEN_CASCADE_PREVIEW_ROOT'
@@ -242,8 +254,10 @@ type OpenCascadeSelectionPayload = {
 
 export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
   useSignals()
-  const { settings } = useApp()
+  const { commands, settings } = useApp()
   const { kclManager } = useSingletons()
+  const commandBarState = commands.useState()
+  const commandBarContextRef = useRef(commandBarState.context)
   const { state, send } = useModelingContext()
   const settingsValues = settings.useSettings()
   const appTheme = settingsValues.app.theme.current
@@ -297,6 +311,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
   const useSketchSolveMode =
     state.context.store.useSketchSolveMode?.current === true
   const isExecuting = kclManager.isExecuting
+  commandBarContextRef.current = commandBarState.context
   const setOpenCascadeSelectionFilter = (filter: EntityType[]) => {
     engineCommandManager
       .sendSceneCommand({
@@ -337,6 +352,8 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     solidRoot.name = OPEN_CASCADE_SOLID_ROOT
     const previewRoot = new Group()
     previewRoot.name = OPEN_CASCADE_PREVIEW_ROOT
+    const previewHandleRoot = new Group()
+    previewHandleRoot.name = OPEN_CASCADE_PREVIEW_HANDLE_ROOT
     const profileRoot = new Group()
     profileRoot.name = OPEN_CASCADE_PROFILE_ROOT
     const pickRoot = new Group()
@@ -363,6 +380,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     scene.add(
       solidRoot,
       previewRoot,
+      previewHandleRoot,
       profileRoot,
       pickRoot,
       regionPickRoot,
@@ -389,6 +407,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     return () => {
       disposeOpenCascadeModelRoot(solidRoot)
       disposeOpenCascadeModelRoot(previewRoot)
+      disposeOpenCascadePreviewHandles(previewHandleRoot)
       disposeOpenCascadeModelRoot(profileRoot)
       disposeOpenCascadeModelRoot(pickRoot)
       disposeOpenCascadeModelRoot(regionPickRoot)
@@ -402,6 +421,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       scene.remove(
         solidRoot,
         previewRoot,
+        previewHandleRoot,
         profileRoot,
         pickRoot,
         regionPickRoot,
@@ -424,12 +444,20 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     const offsetPlaneRoot = sceneInfra.scene.getObjectByName(
       OPEN_CASCADE_OFFSET_PLANE_ROOT
     )
+    const previewRoot = sceneInfra.scene.getObjectByName(
+      OPEN_CASCADE_PREVIEW_ROOT
+    )
+    const previewHandleRoot = sceneInfra.scene.getObjectByName(
+      OPEN_CASCADE_PREVIEW_HANDLE_ROOT
+    )
     const sketchPointRoot = sceneInfra.scene.getObjectByName(
       OPEN_CASCADE_SKETCH_POINT_ROOT
     )
     if (
       !(guideRoot instanceof Group) &&
       !(offsetPlaneRoot instanceof Group) &&
+      !(previewRoot instanceof Group) &&
+      !(previewHandleRoot instanceof Group) &&
       !(sketchPointRoot instanceof Group)
     ) {
       return
@@ -441,6 +469,16 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       }
       if (offsetPlaneRoot instanceof Group) {
         updateOpenCascadeGuideScale(offsetPlaneRoot, sceneInfra)
+      }
+      if (previewRoot instanceof Group) {
+        updateOpenCascadeGuideScale(previewRoot, sceneInfra)
+      }
+      if (previewHandleRoot instanceof Group) {
+        updateOpenCascadePreviewHandleScale(
+          previewHandleRoot,
+          sceneInfra.getClientSceneScaleFactor.bind(sceneInfra),
+          sceneInfra.camControls.camera
+        )
       }
       if (sketchPointRoot instanceof Group) {
         updateOpenCascadeGuideScale(sketchPointRoot, sceneInfra)
@@ -835,12 +873,20 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
 
       const visibleSolids =
         await engineCommandManager.exportVisibleOpenCascadePreviewGlbBytes()
+      const sketchLines =
+        engineCommandManager.exportLatestOpenCascadePreviewSketchLineMeshes()
+      const planeMeshes =
+        engineCommandManager.exportLatestOpenCascadePreviewPlaneMeshes()
       if (cancelled) {
         return
       }
 
       disposeOpenCascadeModelRoot(previewRoot)
-      if (visibleSolids.length === 0) {
+      if (
+        visibleSolids.length === 0 &&
+        sketchLines.segments.length === 0 &&
+        planeMeshes.planes.length === 0
+      ) {
         sceneInfra.renderFrame()
         return
       }
@@ -866,6 +912,18 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         styleLoadedOpenCascadePreviewMeshes(scene, sceneStyleRef.current)
         previewRoot.add(scene)
       }
+      addOpenCascadePreviewSketchLines(
+        previewRoot,
+        sketchLines,
+        sceneStyleRef.current
+      )
+      addOpenCascadePreviewPlanes(
+        previewRoot,
+        planeMeshes,
+        sceneStyleRef.current,
+        resolvedTheme
+      )
+      updateOpenCascadeGuideScale(previewRoot, sceneInfra)
       sceneInfra.renderFrame()
     }
 
@@ -877,7 +935,44 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         URL.revokeObjectURL(objectUrl)
       }
     }
-  }, [engineCommandManager, kclManager.sceneInfra, latestPreviewVersion])
+  }, [
+    engineCommandManager,
+    kclManager.sceneInfra,
+    latestPreviewVersion,
+    resolvedTheme,
+  ])
+
+  useEffect(() => {
+    const sceneInfra = kclManager.sceneInfra
+    const previewRoot = sceneInfra.scene.getObjectByName(
+      OPEN_CASCADE_PREVIEW_ROOT
+    )
+    const previewHandleRoot = sceneInfra.scene.getObjectByName(
+      OPEN_CASCADE_PREVIEW_HANDLE_ROOT
+    )
+    if (
+      !(previewRoot instanceof Group) ||
+      !(previewHandleRoot instanceof Group)
+    ) {
+      return
+    }
+    rebuildOpenCascadePreviewHandleRoot({
+      root: previewHandleRoot,
+      previewRoot,
+      command: commandBarState.context.selectedCommand,
+      context: commandBarState.context,
+      camera: sceneInfra.camControls.camera,
+      resolvedTheme,
+      getClientSceneScaleFactor:
+        sceneInfra.getClientSceneScaleFactor.bind(sceneInfra),
+    })
+    sceneInfra.renderFrame()
+  }, [
+    commandBarState.context,
+    kclManager.sceneInfra,
+    latestPreviewVersion,
+    resolvedTheme,
+  ])
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: latestTopologyVersion is a signal value that intentionally rebuilds pick buffers.
   useEffect(() => {
@@ -1028,8 +1123,10 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       cancelled = true
     }
   }, [
+    commands,
     engineCommandManager,
     kclManager.artifactGraph,
+    kclManager.wasmInstancePromise,
     kclManager.sceneInfra,
     latestSceneGraphDelta,
     latestTopologyVersion,
@@ -1208,6 +1305,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     let hoveredRegionId: string | undefined
     let hoveredBodyId: string | undefined
     let hoveredOffsetPlaneId: string | undefined
+    let activePreviewHandleDrag: OpenCascadePreviewHandleDragState | undefined
     const areaSelectionPreviewIds = new Set<string>()
     const selectionBoxState = makeSelectionBoxVisualState()
     const isSelectingSketchPlane = state.matches('Sketch no face')
@@ -1270,6 +1368,31 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         return
       }
       updateMouseVectorForEvent(event)
+      const previewHandle = findOpenCascadePreviewHandleIntersection(
+        sceneInfra.raycastRing(0, 1)
+      )
+      const previewHandleArgName = previewHandle?.userData.argumentName as
+        | string
+        | undefined
+      const commandBarContext = commandBarContextRef.current
+      if (
+        previewHandle?.userData.kind === 'count' &&
+        previewHandleArgName &&
+        commandBarContext.selectedCommand?.args?.[previewHandleArgName]
+      ) {
+        event.preventDefault()
+        event.stopPropagation()
+        commands.send({
+          type: 'Edit argument',
+          data: {
+            arg: {
+              ...commandBarContext.selectedCommand.args[previewHandleArgName],
+              name: previewHandleArgName,
+            },
+          },
+        })
+        return
+      }
       const hit = resolveHit(sceneInfra.raycastRing(0, 1))
       const sketchId = sketchIdForSketchEditHit(hit)
       if (!sketchId) {
@@ -1505,9 +1628,62 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     ]
 
     sceneInfra.setCallbacks({
-      onMouseDownSelection: () => {
-        const hit = resolveHit(sceneInfra.raycastRing(0, 1))
+      onMouseDownSelection: (arg) => {
+        const { mouseEvent, intersects } = arg || {}
+        const intersections = intersects || sceneInfra.raycastRing(0, 1)
+        const previewHandle =
+          findOpenCascadePreviewHandleIntersection(intersections)
+        if (previewHandle) {
+          const argumentName = previewHandle.userData.argumentName as
+            | string
+            | undefined
+          activePreviewHandleDrag = startOpenCascadePreviewHandleDrag({
+            object: previewHandle,
+            event: mouseEvent || new MouseEvent('mousedown'),
+            camera: sceneInfra.camControls.camera,
+            getClientSceneScaleFactor:
+              sceneInfra.getClientSceneScaleFactor.bind(sceneInfra),
+            currentValue: numericCommandArgumentValue(
+              argumentName
+                ? ({
+                    ...commandBarContextRef.current.argumentsToSubmit,
+                    ...commandBarContextRef.current.previewArgumentsToSubmit,
+                  }[argumentName] as unknown)
+                : undefined
+            ),
+          })
+          return Boolean(activePreviewHandleDrag)
+        }
+        const hit = resolveHit(intersections)
         return Boolean(hit)
+      },
+      onDrag: ({ mouseEvent }) => {
+        if (!activePreviewHandleDrag) {
+          return
+        }
+        const value = valueForOpenCascadePreviewHandleDrag(
+          activePreviewHandleDrag,
+          mouseEvent
+        )
+        const drag = activePreviewHandleDrag
+        kclManager.wasmInstancePromise
+          .then((wasmInstance) => {
+            commands.send({
+              type: 'Set preview handle argument',
+              data: {
+                [drag.handle.argumentName]:
+                  kclCommandValueForOpenCascadePreviewHandle(
+                    value,
+                    drag.handle.kind,
+                    wasmInstance
+                  ),
+              },
+            })
+          })
+          .catch((error) => console.warn(error))
+      },
+      onDragEnd: () => {
+        activePreviewHandleDrag = undefined
       },
       onMove: ({ intersects }) => {
         const hit = resolveHit(intersects)
@@ -2257,6 +2433,43 @@ function withAlpha(hexColor: string, alpha: number) {
   return `rgba(${Math.round(color.r * 255)}, ${Math.round(
     color.g * 255
   )}, ${Math.round(color.b * 255)}, ${alpha})`
+}
+
+function numericCommandArgumentValue(value: unknown) {
+  if (typeof value === 'number') {
+    return value
+  }
+  if (value && typeof value === 'object' && 'valueCalculated' in value) {
+    const parsed = Number.parseFloat(String(value.valueCalculated))
+    return Number.isFinite(parsed) ? parsed : 0
+  }
+  if (value && typeof value === 'object' && 'valueText' in value) {
+    const parsed = Number.parseFloat(String(value.valueText))
+    return Number.isFinite(parsed) ? parsed : 0
+  }
+  if (typeof value === 'string') {
+    const parsed = Number.parseFloat(value)
+    return Number.isFinite(parsed) ? parsed : 0
+  }
+  return 0
+}
+
+function kclCommandValueForOpenCascadePreviewHandle(
+  value: number,
+  kind: OpenCascadePreviewHandleDragState['handle']['kind'],
+  wasmInstance: Parameters<typeof createLiteral>[1]
+): KclCommandValue {
+  const rounded =
+    kind === 'count'
+      ? Math.max(1, Math.round(value))
+      : Math.round(value * 1000) / 1000
+  const suffix = kind === 'angle' ? 'Deg' : undefined
+  const valueText = suffix ? `${rounded}deg` : String(rounded)
+  return {
+    valueAst: createLiteral(rounded, wasmInstance, suffix, 6),
+    valueText,
+    valueCalculated: valueText,
+  }
 }
 
 function point3ToVector(point: { x: number; y: number; z: number }) {
@@ -4182,6 +4395,77 @@ function styleLoadedOpenCascadePreviewMeshes(
       polygonOffsetUnits: OPEN_CASCADE_HIGHLIGHT_POLYGON_OFFSET,
     })
   })
+}
+
+function addOpenCascadePreviewSketchLines(
+  previewRoot: Group,
+  sketchLines: OpenCascadeSketchLineMeshes,
+  style: OpenCascadeSceneStyle
+) {
+  const previewColor = new Color(style.sketchLineColor)
+  previewColor.lerp(new Color(style.hoverColor), 0.45)
+
+  for (const segment of sketchLines.segments) {
+    const geometry = geometryForSketchLineSegment(segment)
+    if (!geometry) {
+      continue
+    }
+    const material = new LineBasicMaterial({
+      color: previewColor,
+      transparent: true,
+      opacity: 0.75,
+      depthTest: false,
+      depthWrite: false,
+    })
+    const line = new LineSegments(geometry, material)
+    line.name = `${OPEN_CASCADE_PREVIEW_ROOT}:sketchLine:${segment.segmentId}`
+    line.renderOrder = 90
+    line.raycast = () => {}
+    line.userData.openCascadePreview = true
+    line.userData.openCascadeSketchLine = true
+    previewRoot.add(line)
+  }
+}
+
+function addOpenCascadePreviewPlanes(
+  previewRoot: Group,
+  planeMeshes: OpenCascadePlaneMeshes,
+  style: OpenCascadeSceneStyle,
+  resolvedTheme: ResolvedTheme
+) {
+  const selectedEntityIds = new Set<string>()
+  for (const plane of planeMeshes.planes) {
+    const group = makeOpenCascadeOffsetPlane(
+      plane,
+      selectedEntityIds,
+      undefined,
+      {
+        style,
+        resolvedTheme,
+      }
+    )
+    group.name = `${OPEN_CASCADE_PREVIEW_ROOT}:plane:${plane.planeId}`
+    group.userData.openCascadePreview = true
+    group.traverse((object) => {
+      object.userData.openCascadePreview = true
+      object.raycast = () => {}
+      if (
+        object instanceof Mesh &&
+        object.material instanceof MeshBasicMaterial
+      ) {
+        object.material.color.set(style.hoverColor)
+        object.material.opacity = 0.34
+      }
+      if (
+        object instanceof LineSegments &&
+        object.material instanceof LineBasicMaterial
+      ) {
+        object.material.color.set(style.hoverColor)
+        object.material.opacity = 0.72
+      }
+    })
+    previewRoot.add(group)
+  }
 }
 
 function tagOpenCascadeBodyVisuals(

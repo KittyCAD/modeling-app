@@ -47,6 +47,20 @@ export interface KclExpressionWithVariable extends KclExpression {
   insertIndex: number
 }
 export type KclCommandValue = KclExpression | KclExpressionWithVariable
+export type OpenCascadePreviewHandleKind =
+  | 'linearDistance'
+  | 'angle'
+  | 'edgeOffset'
+  | 'count'
+export type OpenCascadePreviewHandleConfig = {
+  kind: OpenCascadePreviewHandleKind
+  argumentName: string
+  label?: string
+  direction?: 'positive' | 'negative'
+  axisArgumentName?: string
+  visibleWhenArgument?: string
+  min?: number
+}
 export type CommandInputType = INPUT_TYPE[number]
 type CommandStatus = 'active' | 'development' | 'inactive' | 'experimental'
 export type CommandSelectionType =
@@ -102,6 +116,7 @@ export type Command<
     context: CommandBarContext,
     machineActor?: ActorRefFrom<T>
   ) => Promise<Node<Program> | Error | undefined>
+  openCascadePreviewHandles?: OpenCascadePreviewHandleConfig[]
   machineActor?: Actor<T>
   onSubmit: (data?: CommandSchema, wasmInstance?: ModuleType) => unknown
   onCancel?: () => void

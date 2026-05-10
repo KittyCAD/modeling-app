@@ -817,6 +817,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Pull a sketch into 3D along its normal or perpendicular.',
     icon: 'extrude',
     needsReview: true,
+    openCascadePreviewHandles: [
+      { kind: 'linearDistance', argumentName: 'length', label: 'Length' },
+      {
+        kind: 'linearDistance',
+        argumentName: 'bidirectionalLength',
+        label: 'Second length',
+        direction: 'negative',
+        visibleWhenArgument: 'bidirectionalLength',
+      },
+    ],
     reviewValidation: async (context, modelingActor) => {
       if (!modelingActor) {
         return new Error('modelingMachine not found')
@@ -1104,6 +1114,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a 3D body by rotating a sketch region about an axis.',
     icon: 'revolve',
     needsReview: true,
+    openCascadePreviewHandles: [
+      { kind: 'angle', argumentName: 'angle', label: 'Angle' },
+      {
+        kind: 'angle',
+        argumentName: 'bidirectionalAngle',
+        label: 'Second angle',
+        direction: 'negative',
+        visibleWhenArgument: 'bidirectionalAngle',
+      },
+    ],
     reviewValidation: async (context, modelingActor) => {
       if (!modelingActor) {
         return new Error('modelingMachine not found')
@@ -1239,13 +1259,25 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
+    previewAst: (context, modelingActor) =>
+      previewAstFromModifyAstResult(
+        context,
+        modelingActor,
+        ({ args, kclManager, wasmInstance }) =>
+          addShell({
+            ...(args as ModelingCommandSchema['Shell']),
+            ast: kclManager.ast,
+            artifactGraph: kclManager.artifactGraph,
+            wasmInstance,
+          })
+      ),
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
       },
       faces: {
         inputType: 'selection',
-        selectionTypes: ['cap', 'wall'],
+        selectionTypes: ['cap', 'wall', 'primitiveFace', 'enginePrimitiveFace'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -2036,6 +2068,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Fillet edge',
     icon: 'fillet3d',
     needsReview: true,
+    openCascadePreviewHandles: [
+      {
+        kind: 'edgeOffset',
+        argumentName: 'radius',
+        label: 'Radius',
+        min: 0,
+      },
+    ],
     reviewValidation: async (context, modelingActor) => {
       if (!modelingActor) {
         return new Error('modelingMachine not found')
@@ -2104,6 +2144,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Chamfer edge',
     icon: 'chamfer3d',
     needsReview: true,
+    openCascadePreviewHandles: [
+      {
+        kind: 'edgeOffset',
+        argumentName: 'length',
+        label: 'Length',
+        min: 0,
+      },
+    ],
     reviewValidation: async (context, modelingActor) => {
       if (!modelingActor) {
         return new Error('modelingMachine not found')
@@ -2611,6 +2659,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a circular pattern of 3D solids around an axis.',
     icon: 'patternCircular3d',
     needsReview: true,
+    openCascadePreviewHandles: [
+      { kind: 'angle', argumentName: 'arcDegrees', label: 'Arc' },
+      { kind: 'count', argumentName: 'instances', label: 'Instances' },
+    ],
     reviewValidation: async (context, modelingActor) => {
       if (!modelingActor) {
         return new Error('modelingMachine not found')
@@ -2696,6 +2748,15 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a linear pattern of 3D solids along an axis.',
     icon: 'patternLinear3d',
     needsReview: true,
+    openCascadePreviewHandles: [
+      {
+        kind: 'linearDistance',
+        argumentName: 'distance',
+        label: 'Distance',
+        axisArgumentName: 'axis',
+      },
+      { kind: 'count', argumentName: 'instances', label: 'Instances' },
+    ],
     reviewValidation: async (context, modelingActor) => {
       if (!modelingActor) {
         return new Error('modelingMachine not found')

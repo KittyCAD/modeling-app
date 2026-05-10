@@ -114,6 +114,7 @@ export type CommandBarMachineEvent =
     }
   | { type: 'Submit argument'; data: { [x: string]: unknown } }
   | { type: 'Update argument draft'; data: { [x: string]: unknown } }
+  | { type: 'Set preview handle argument'; data: { [x: string]: unknown } }
   | {
       type: 'xstate.done.actor.validateSingleArgument'
       output: { [x: string]: unknown }
@@ -183,6 +184,26 @@ export const commandBarMachine = setup({
     'Update argument draft': assign({
       previewArgumentsToSubmit: ({ context, event }) => {
         if (event.type !== 'Update argument draft') {
+          return context.previewArgumentsToSubmit
+        }
+        return {
+          ...context.previewArgumentsToSubmit,
+          ...event.data,
+        }
+      },
+    }),
+    'Set preview handle argument': assign({
+      argumentsToSubmit: ({ context, event }) => {
+        if (event.type !== 'Set preview handle argument') {
+          return context.argumentsToSubmit
+        }
+        return {
+          ...context.argumentsToSubmit,
+          ...event.data,
+        }
+      },
+      previewArgumentsToSubmit: ({ context, event }) => {
+        if (event.type !== 'Set preview handle argument') {
           return context.previewArgumentsToSubmit
         }
         return {
@@ -854,6 +875,9 @@ export const commandBarMachine = setup({
     },
   },
   on: {
+    'Set preview handle argument': {
+      actions: ['Set preview handle argument', 'Schedule OpenCascade preview'],
+    },
     Close: {
       target: '.Closed',
       actions: [

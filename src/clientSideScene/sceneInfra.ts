@@ -116,7 +116,12 @@ export class SceneInfra {
   onDragCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onMoveCallback: (arg: OnMoveCallbackArgs) => Voidish = () => {}
   onClickCallback: (arg: OnClickCallbackArgs) => Voidish = () => {}
-  onMouseDownSelection: (() => boolean) | undefined
+  onMouseDownSelection:
+    | ((arg?: {
+        mouseEvent: MouseEvent
+        intersects: Intersection[]
+      }) => boolean)
+    | undefined
   onMouseEnter: (arg: OnMouseEnterLeaveArgs) => Voidish = () => {}
   onMouseLeave: (arg: OnMouseEnterLeaveArgs) => Voidish = () => {}
   onAreaSelectStartCallback: (arg: OnAreaSelectCallbackArgs) => Voidish =
@@ -129,7 +134,10 @@ export class SceneInfra {
     onDrag?: (arg: OnDragCallbackArgs) => Voidish
     onMove?: (arg: OnMoveCallbackArgs) => Voidish
     onClick?: (arg: OnClickCallbackArgs) => Voidish
-    onMouseDownSelection?: () => boolean // used by sketch-solve only
+    onMouseDownSelection?: (arg?: {
+      mouseEvent: MouseEvent
+      intersects: Intersection[]
+    }) => boolean // used by sketch-solve and OpenCascade scene interaction
     onMouseEnter?: (arg: OnMouseEnterLeaveArgs) => Voidish // used by sketch 1 only
     onMouseLeave?: (arg: OnMouseEnterLeaveArgs) => Voidish // used by sketch 1 only
     onAreaSelectStart?: (arg: OnAreaSelectCallbackArgs) => Voidish
@@ -819,7 +827,10 @@ export class SceneInfra {
 
     if (this.onMouseDownSelection) {
       // function is defined -> we're in new sketch-solve mode
-      this.selected = this.onMouseDownSelection()
+      this.selected = this.onMouseDownSelection({
+        mouseEvent: event,
+        intersects: this.raycastRing(),
+      })
         ? {
             mouseDownVector,
             object: new Object3D(), // just a dummy, delete this property if sketch 1 is deprecated
