@@ -101,6 +101,186 @@ describe('OpenCascadeThreeScene helpers', () => {
     expect(bounds?.radius).toBe(10)
   })
 
+  it('computes sketch bounds from standalone OpenCascade sketch points', () => {
+    const bounds = helpers.getOpenCascadeSketchBounds(
+      { version: 1, segments: [] },
+      {
+        version: 1,
+        points: [
+          {
+            pointId: 'point-1',
+            sketchId: 'sketch-1',
+            artifactId: 'point-1',
+            position: [3, 4, 5],
+          },
+        ],
+      }
+    )
+
+    expect(bounds?.center.x).toBeCloseTo(3)
+    expect(bounds?.center.y).toBeCloseTo(4)
+    expect(bounds?.center.z).toBeCloseTo(5)
+    expect(bounds?.radius).toBe(1)
+  })
+
+  it('builds OpenCascade sketch point meshes from standalone scene-graph points', () => {
+    const engineCommandManager = {
+      exportLatestOpenCascadePlaneMeshes: () => ({ version: 1, planes: [] }),
+      exportOpenCascadePathPlane: () => ({
+        planeId: 'path-1-plane',
+        origin: { x: 10, y: 20, z: 30 },
+        xAxis: { x: 1, y: 0, z: 0 },
+        yAxis: { x: 0, y: 0, z: 1 },
+        normal: { x: 0, y: -1, z: 0 },
+      }),
+      isOpenCascadePathVisible: () => true,
+    } as never
+    const source = { type: 'Simple', range: [0, 0, 0], node_path: null }
+    const sceneGraphDelta = {
+      new_graph: {
+        version: 7,
+        objects: [
+          {
+            id: 0,
+            kind: {
+              type: 'Sketch',
+              args: { on: { default: 'xy' } },
+              plane: 0,
+              segments: [1, 2],
+              constraints: [],
+            },
+            artifact_id: 'sketch-block-1',
+            label: '',
+            comments: '',
+            source,
+          },
+          {
+            id: 1,
+            kind: {
+              type: 'Segment',
+              segment: {
+                type: 'Point',
+                position: {
+                  x: { value: 2, units: 'Mm' },
+                  y: { value: 3, units: 'Mm' },
+                },
+                ctor: null,
+                owner: null,
+                freedom: 'Free',
+                constraints: [],
+              },
+            },
+            artifact_id: 'point-1',
+            label: '',
+            comments: '',
+            source,
+          },
+          {
+            id: 2,
+            kind: {
+              type: 'Segment',
+              segment: {
+                type: 'Point',
+                position: {
+                  x: { value: 99, units: 'Mm' },
+                  y: { value: 99, units: 'Mm' },
+                },
+                ctor: null,
+                owner: 3,
+                freedom: 'Free',
+                constraints: [],
+              },
+            },
+            artifact_id: 'owned-point',
+            label: '',
+            comments: '',
+            source,
+          },
+        ],
+        project: 0,
+        file: 0,
+        settings: {},
+        sketch_mode: null,
+      },
+      new_objects: [],
+      invalidates_ids: false,
+      exec_outcome: {},
+    } as never
+    const artifactGraph = new Map([
+      [
+        'sketch-block-1',
+        {
+          type: 'sketchBlock',
+          id: 'sketch-block-1',
+          pathId: 'path-1',
+        },
+      ],
+    ]) as never
+
+    const points = helpers.buildOpenCascadeSketchPointMeshes({
+      sceneGraphDelta,
+      artifactGraph,
+      engineCommandManager,
+      defaultUnit: 'mm',
+    })
+
+    expect(points.version).toBe(7)
+    expect(points.points).toHaveLength(1)
+    expect(points.points[0]).toMatchObject({
+      pointId: 'point-1',
+      sketchId: 'sketch-block-1',
+      pathId: 'path-1',
+      artifactId: 'point-1',
+      position: [12, 20, 33],
+    })
+  })
+
+  it('renders and resolves OpenCascade sketch point hits', () => {
+    const root = new Group()
+    helpers.rebuildOpenCascadeSketchPointRoot(
+      root,
+      {
+        version: 1,
+        points: [
+          {
+            pointId: 'point-1',
+            sketchId: 'sketch-1',
+            pathId: 'path-1',
+            artifactId: 'point-1',
+            position: [1, 2, 3],
+          },
+        ],
+      },
+      new Set(['point-1']),
+      undefined,
+      {
+        backgroundColor: 0,
+        edgeColor: 0,
+        surfaceColor: '#ffffff',
+        profileColor: '#ffffff',
+        sketchLineColor: 0x111111,
+        selectionColor: 0xff0000,
+        hoverColor: 0x00ff00,
+      }
+    )
+
+    const group = root.getObjectByName('OPEN_CASCADE_SKETCH_POINT_ROOT:point-1')
+    const visual = group?.children.find((child) => child instanceof Mesh)
+
+    expect(group?.position.toArray()).toEqual([1, 2, 3])
+    expect(group?.userData.openCascadeFixedScreenScale).toBe(true)
+    expect(
+      ((visual as Mesh).material as MeshBasicMaterial).color.getHexString()
+    ).toBe('ff0000')
+    expect(
+      helpers.resolveOpenCascadeHit([{ object: visual } as never])
+    ).toMatchObject({
+      hitType: 'sketchPoint',
+      pointId: 'point-1',
+      pathId: 'path-1',
+    })
+  })
+
   it('uses current file units for empty-scene camera bounds', () => {
     const mmBounds = helpers.getOpenCascadeEmptySceneBounds(1)
     const inchBounds = helpers.getOpenCascadeEmptySceneBounds(25.4)
@@ -566,6 +746,53 @@ describe('OpenCascadeThreeScene helpers', () => {
 
     expect(highlightRoot.children).toHaveLength(1)
     expect(highlightRoot.children[0].name).toContain('body:solid-1')
+  })
+
+  it('lifts selected topology face highlights off the picked face', () => {
+    const highlightRoot = new Group()
+
+    helpers.rebuildOpenCascadeHighlightRoot(
+      highlightRoot,
+      {
+        version: 1,
+        solids: [
+          {
+            solidId: 'solid-1',
+            positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+            indices: [0, 1, 2],
+            groups: [
+              {
+                start: 0,
+                count: 3,
+                topologyId: 'face-1',
+                artifactId: 'face-1',
+                kind: 'face',
+                role: 'wall',
+              },
+            ],
+            edges: [],
+          },
+        ],
+      },
+      new Set(['face-1']),
+      undefined,
+      {
+        backgroundColor: 0,
+        edgeColor: 0,
+        surfaceColor: '#ffffff',
+        profileColor: '#ffffff',
+        sketchLineColor: 0,
+        selectionColor: 0xff0000,
+        hoverColor: 0x00ff00,
+      } as never
+    )
+
+    expect(highlightRoot.children).toHaveLength(1)
+    const mesh = highlightRoot.children[0] as Mesh<BufferGeometry>
+    const positions = mesh.geometry.getAttribute('position')
+    expect(positions.getZ(0)).toBeGreaterThan(0)
+    expect(positions.getZ(1)).toBeGreaterThan(0)
+    expect(positions.getZ(2)).toBeGreaterThan(0)
   })
 
   it('adds selected region highlight overlays', () => {

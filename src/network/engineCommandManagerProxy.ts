@@ -408,6 +408,14 @@ export class EngineCommandManagerProxy extends ConnectionManager {
     return this.openCascadeCommandManager.exportLatestSketchLineMeshes()
   }
 
+  exportOpenCascadePathPlane(pathId: string) {
+    return this.openCascadeCommandManager.exportOpenCascadePathPlane(pathId)
+  }
+
+  isOpenCascadePathVisible(pathId: string) {
+    return this.openCascadeCommandManager.isPathVisible(pathId)
+  }
+
   exportLatestOpenCascadePlaneMeshes() {
     return this.openCascadeCommandManager.exportLatestPlaneMeshes()
   }

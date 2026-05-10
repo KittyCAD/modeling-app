@@ -11869,6 +11869,108 @@ sketch002 = sketch(on = XY) {
         mock_ctx.close().await;
     }
 
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_sketch_followed_by_exit_allows_segment_edit() {
+        clear_mem_cache().await;
+
+        let source = r#"@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+}
+exit()
+"#;
+
+        let program = Program::parse(source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_engine(
+            std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            Default::default(),
+        );
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+        let project_id = ProjectId(0);
+        let file_id = FileId(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line_id = sketch
+            .segments
+            .iter()
+            .copied()
+            .find(|seg_id| {
+                matches!(
+                    &frontend.scene_graph.objects[seg_id.0].kind,
+                    ObjectKind::Segment {
+                        segment: Segment::Line(_)
+                    }
+                )
+            })
+            .expect("Expected a line segment in sketch");
+
+        let scene_delta = frontend
+            .edit_sketch(&mock_ctx, project_id, file_id, version, sketch_id)
+            .await
+            .unwrap();
+        assert_eq!(scene_delta.new_graph.sketch_mode, Some(sketch_id));
+
+        let line_ctor = LineCtor {
+            start: Point2d {
+                x: Expr::Var(Number {
+                    value: 1.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 2.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            end: Point2d {
+                x: Expr::Var(Number {
+                    value: 5.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 6.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            construction: None,
+        };
+        let (src_delta, edit_scene_delta) = frontend
+            .edit_segments(
+                &mock_ctx,
+                version,
+                sketch_id,
+                vec![ExistingSegmentCtor {
+                    id: line_id,
+                    ctor: SegmentCtor::Line(line_ctor),
+                }],
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(edit_scene_delta.new_graph.sketch_mode, Some(sketch_id));
+        assert!(
+            src_delta
+                .text
+                .contains("line(start = [var 1mm, var 2mm], end = [var 5mm, var 6mm])"),
+            "Expected edited line in source, got: {}",
+            src_delta.text
+        );
+        assert!(
+            src_delta.text.contains("exit()"),
+            "Expected rollback marker to remain after sketch edit, got: {}",
+            src_delta.text
+        );
+
+        clear_mem_cache().await;
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
     // Regression tests: operations on source code with extra whitespace/newlines.
     // These test that NodePath-based lookups work correctly when source ranges
     // are shifted by extra whitespace that wouldn't be present after formatting.

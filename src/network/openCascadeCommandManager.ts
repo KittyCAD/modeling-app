@@ -212,6 +212,19 @@ export type OpenCascadeSketchLineMeshes = {
   segments: OpenCascadeSketchLineSegment[]
 }
 
+export type OpenCascadeSketchPoint = {
+  pointId: string
+  sketchId: string
+  pathId?: string
+  artifactId: string
+  position: number[]
+}
+
+export type OpenCascadeSketchPointMeshes = {
+  version: number
+  points: OpenCascadeSketchPoint[]
+}
+
 export type OpenCascadeRegionFaceGroup = {
   start: number
   count: number
@@ -593,6 +606,34 @@ export class OpenCascadeCommandManager {
       version: this.latestSketchVersion.value,
       segments,
     }
+  }
+
+  exportOpenCascadePathPlane(pathId: string): OpenCascadePlaneMesh | undefined {
+    const state = this.renderState()
+    const paths = state?.paths ?? this.paths
+    const pathAliases = state?.pathAliases ?? this.pathAliases
+    const direct = paths.get(pathId)
+    const aliasedPathId = pathAliases.get(pathId)
+    const aliasedPath = aliasedPathId ? paths.get(aliasedPathId) : undefined
+    const path = direct || aliasedPath
+    if (!path) {
+      return undefined
+    }
+    const plane = this.planeForPath(path)
+    if (!plane) {
+      return undefined
+    }
+    return {
+      planeId: path.planeId || aliasedPathId || pathId,
+      origin: { ...plane.origin },
+      xAxis: { ...plane.xAxis },
+      yAxis: { ...plane.yAxis },
+      normal: { ...plane.normal },
+    }
+  }
+
+  isPathVisible(pathId: string): boolean {
+    return !this.isPathHidden(pathId, this.renderState())
   }
 
   exportLatestPlaneMeshes(): OpenCascadePlaneMeshes {

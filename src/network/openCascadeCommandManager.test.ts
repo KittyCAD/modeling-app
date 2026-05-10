@@ -135,6 +135,38 @@ describe('OpenCascadeCommandManager', () => {
         (group: { role: string }) => group.role
       )
     ).toEqual(['startCap', 'endCap', 'wall'])
+    const endCapId = topologyMeshes.solids[0].groups.find(
+      (group) => group.role === 'endCap'
+    )?.topologyId
+    expect(endCapId).toBeTruthy()
+    if (!endCapId) {
+      throw new Error('No circular extrusion end cap id')
+    }
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000e4',
+      cmd: {
+        type: 'enable_sketch_mode',
+        entity_id: endCapId,
+        adjust_camera: false,
+        animated: false,
+        ortho: false,
+      },
+    })
+    const sketchPlaneResponse = await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000e5',
+      cmd: { type: 'get_sketch_mode_plane' },
+    })
+    const sketchPlane = sketchPlaneResponse.resp.data.modeling_response.data
+    expect(sketchPlane.origin.z).toBeCloseTo(5)
+    expect(
+      Math.hypot(
+        sketchPlane.z_axis.x,
+        sketchPlane.z_axis.y,
+        sketchPlane.z_axis.z
+      )
+    ).toBeCloseTo(1)
     const glbBytes = await manager.exportLatestGlbBytes()
     expect(glbBytes.length).toBeGreaterThan(0)
 
@@ -1378,6 +1410,35 @@ part002 = startSketchOn(XY)
 
     expect(manager.getSolidCount()).toBe(1)
     expect(manager.exportLastBrep()?.length).toBeGreaterThan(0)
+  })
+
+  it('executes a sketch on the END cap of a cylindrical extrusion', async () => {
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(
+      `baseSketch = sketch(on = XY) {
+  circle1 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+}
+baseRegion = region(point = [0mm, 0mm], sketch = baseSketch)
+cylinder = extrude(baseRegion, length = 5)
+topSketch = sketch(on = startSketchOn(cylinder, face = END)) {
+  circle2 = circle(start = [var 0.5mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle2.center, ORIGIN])
+}
+`,
+      instance
+    )
+
+    const execState = await rustContext.execute(ast, {
+      settings: { modeling: { engine: 'open_cascade' } },
+    })
+
+    expect(execState.variables.cylinder?.type).toBe('Solid')
+    expect(execState.variables.topSketch).toBeTruthy()
+    const manager = OpenCascadeCommandManager.latestInstance()
+    expect(
+      manager?.exportLatestSketchLineMeshes().segments.length
+    ).toBeGreaterThan(0)
   })
 
   it('lofts two line-based regions', async () => {
