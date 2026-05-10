@@ -1540,12 +1540,20 @@ export function retrieveSelectionsFromOpArg(
   }
 
   const graphSelections: Selection[] = []
+  const selectedArtifactIds = new Set<string>()
   for (const artifactId of artifactIds) {
     let artifact =
       artifactGraph.get(artifactId) ??
       getPatternArtifactForCopyId(artifactId, artifactGraph)
     if (!artifact) {
       continue
+    }
+
+    if (artifact.type === 'segment') {
+      const parentPath = artifactGraph.get(artifact.pathId)
+      if (parentPath?.type === 'path' && parentPath.subType === 'region') {
+        artifact = parentPath
+      }
     }
 
     if (artifact.type === 'segment') {
@@ -1556,6 +1564,11 @@ export function retrieveSelectionsFromOpArg(
         artifact = correspondingWall
       }
     }
+
+    if (selectedArtifactIds.has(artifact.id)) {
+      continue
+    }
+    selectedArtifactIds.add(artifact.id)
 
     const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
     if (!codeRefs || codeRefs.length === 0) {
