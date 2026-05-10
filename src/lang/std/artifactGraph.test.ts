@@ -150,6 +150,123 @@ describe('getSweepArtifactFromSelection', () => {
       expect(result.id).toBe('sweep-1')
     }
   })
+
+  it('should return sweep from primitiveEdge selection when solidId is a sweep', () => {
+    const artifactGraph: ArtifactGraph = new Map()
+    const sweep: Artifact = {
+      type: 'sweep',
+      id: 'sweep-1',
+      codeRef: {
+        range: [0, 0, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      pathId: 'path-1',
+      subType: 'extrusion',
+      surfaceIds: [],
+      edgeIds: [],
+      method: 'merge',
+      trajectoryId: null,
+      consumed: false,
+    }
+    const primitiveEdge: Artifact = {
+      type: 'primitiveEdge',
+      id: 'edge-1',
+      solidId: 'sweep-1',
+      codeRef: {
+        range: [0, 0, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+    }
+
+    artifactGraph.set(sweep.id, sweep)
+    artifactGraph.set(primitiveEdge.id, primitiveEdge)
+
+    const result = getSweepArtifactFromSelection(
+      {
+        artifact: primitiveEdge,
+        codeRef: primitiveEdge.codeRef,
+      },
+      artifactGraph
+    )
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (!(result instanceof Error)) {
+      expect(result.id).toBe('sweep-1')
+    }
+  })
+
+  it('should return sweep from primitiveEdge selection when solidId is a source segment', () => {
+    const artifactGraph: ArtifactGraph = new Map()
+    const path: Artifact = {
+      type: 'path',
+      subType: 'sketch',
+      id: 'path-1',
+      codeRef: { range: [0, 0, 0], pathToNode: [], nodePath: { steps: [] } },
+      planeId: 'plane-1',
+      segIds: ['segment-1'],
+      sweepId: 'sweep-1',
+      trajectorySweepId: null,
+      consumed: true,
+    }
+    const sweep: Artifact = {
+      type: 'sweep',
+      id: 'sweep-1',
+      codeRef: {
+        range: [0, 0, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      pathId: 'path-1',
+      subType: 'extrusion',
+      surfaceIds: [],
+      edgeIds: [],
+      method: 'merge',
+      trajectoryId: null,
+      consumed: false,
+    }
+    const segment: Artifact = {
+      type: 'segment',
+      id: 'segment-1',
+      pathId: 'path-1',
+      edgeIds: [],
+      commonSurfaceIds: [],
+      codeRef: {
+        range: [0, 0, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+    }
+    const primitiveEdge: Artifact = {
+      type: 'primitiveEdge',
+      id: 'edge-1',
+      solidId: 'segment-1',
+      codeRef: {
+        range: [0, 0, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+    }
+
+    artifactGraph.set(path.id, path)
+    artifactGraph.set(sweep.id, sweep)
+    artifactGraph.set(segment.id, segment)
+    artifactGraph.set(primitiveEdge.id, primitiveEdge)
+
+    const result = getSweepArtifactFromSelection(
+      {
+        artifact: primitiveEdge,
+        codeRef: primitiveEdge.codeRef,
+      },
+      artifactGraph
+    )
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (!(result instanceof Error)) {
+      expect(result.id).toBe('sweep-1')
+    }
+  })
 })
 
 describe('coerceSelectionsToBody', () => {

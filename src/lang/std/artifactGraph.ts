@@ -401,14 +401,8 @@ export function getSweepArtifactFromSelection(
     if (err(_artifact)) return _artifact
     sweepArtifact = _artifact
   } else if (selection.artifact?.type === 'primitiveEdge') {
-    console.log({ selection, artifactGraph })
-    const path = getArtifactOfTypes(
-      { key: selection.artifact.solidId, types: ['path'] },
-      artifactGraph
-    )
-    if (err(path)) return path
-    const _artifact = getArtifactOfTypes(
-      { key: path.sweepId!, types: ['sweep'] },
+    const _artifact = getSweepArtifactFromPrimitiveEdge(
+      selection.artifact,
       artifactGraph
     )
     if (err(_artifact)) return _artifact
@@ -436,6 +430,43 @@ export function getSweepArtifactFromSelection(
   if (!sweepArtifact) return new Error('No sweep artifact found')
 
   return sweepArtifact
+}
+
+function getSweepArtifactFromPrimitiveEdge(
+  primitiveEdge: Extract<Artifact, { type: 'primitiveEdge' }>,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'sweep' }> | Error {
+  const parent = artifactGraph.get(primitiveEdge.solidId)
+  if (!parent) {
+    return new Error(`No artifact found with key ${primitiveEdge.solidId}`)
+  }
+
+  if (parent.type === 'sweep') {
+    return parent
+  }
+
+  if (parent.type === 'path') {
+    if (!parent.sweepId) return new Error('Path does not have a sweepId')
+    return getArtifactOfTypes(
+      { key: parent.sweepId, types: ['sweep'] },
+      artifactGraph
+    )
+  }
+
+  if (parent.type === 'segment') {
+    const path = getArtifactOfTypes(
+      { key: parent.pathId, types: ['path'] },
+      artifactGraph
+    )
+    if (err(path)) return path
+    if (!path.sweepId) return new Error('Path does not have a sweepId')
+    return getArtifactOfTypes(
+      { key: path.sweepId, types: ['sweep'] },
+      artifactGraph
+    )
+  }
+
+  return new Error(`Expected sweep,path,segment but got ${parent.type}`)
 }
 
 export function getCodeRefsByArtifactId(
