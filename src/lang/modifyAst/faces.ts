@@ -172,11 +172,7 @@ export function addDeleteFace({
   let { solidsExprs, facesExprs } = result
   modifiedAst = result.modifiedAst
 
-  const enginePrimitives = faces.otherSelections.filter(
-    (selection): selection is EnginePrimitiveSelection =>
-      isEnginePrimitiveSelection(selection) &&
-      selection.primitiveType === 'face'
-  )
+  const enginePrimitives = getEnginePrimitiveFaceSelectionsFromSelection(faces)
   if (enginePrimitives.length > 0) {
     const result = insertFacePrimitiveVariablesAndOffsetPathToNode({
       enginePrimitives,
@@ -841,35 +837,55 @@ export function getPlaneExprFromSelection({
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; expr: Expr } {
   let modifiedAst = ast
-  const hasFaceToOffset = plane.graphSelections.some(
-    (sel) =>
-      sel.artifact?.type === 'cap' ||
-      sel.artifact?.type === 'wall' ||
-      sel.artifact?.type === 'edgeCut'
-  )
-  if (hasFaceToOffset) {
+  const enginePrimitives = getEnginePrimitiveFaceSelectionsFromSelection(plane)
+  if (
+    enginePrimitives.length > 0 ||
+    plane.graphSelections.some((sel) => isFaceArtifact(sel.artifact))
+  ) {
     const result = buildSolidsAndFacesExprs(
       plane,
       artifactGraph,
       modifiedAst,
       wasmInstance,
-      nodeToEdit
+      nodeToEdit,
+      {
+        // Keep lookup aligned with deleteFace so selected parent solids map directly.
+        lastChildLookup: false,
+        artifactTypeFilter: ['sweep', 'compositeSolid'],
+      }
     )
     if (err(result)) {
       return result
     }
 
-    const { solidsExpr, facesExpr } = result
+    let { solidsExprs, facesExprs } = result
     modifiedAst = result.modifiedAst
+
+    if (enginePrimitives.length > 0) {
+      const result = insertFacePrimitiveVariablesAndOffsetPathToNode({
+        enginePrimitives,
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+      })
+      if (err(result)) return result
+      solidsExprs = deduplicateFaceExprs(solidsExprs.concat(result.solidsExprs))
+      facesExprs.push(...result.faceExprs)
+    }
+
+    const solidsExpr = createVariableExpressionsArray(solidsExprs)
+    const facesExpr = createVariableExpressionsArray(facesExprs)
     if (!facesExpr) {
       return new Error("Couldn't retrieve face from selection")
     }
 
     return {
       modifiedAst,
-      expr: createCallExpressionStdLibKw('planeOf', solidsExpr, [
-        createLabeledArg('face', facesExpr),
-      ]),
+      expr: insertPlaneOfVariableAndOffsetPathToNode({
+        solidsExpr,
+        facesExpr,
+        modifiedAst,
+      }),
     }
   }
 
@@ -1012,7 +1028,8 @@ export function isFaceArtifact(artifact: Artifact | undefined): boolean {
     artifact !== undefined &&
     (artifact.type === 'cap' ||
       artifact.type === 'wall' ||
-      artifact.type === 'edgeCut')
+      artifact.type === 'edgeCut' ||
+      artifact.type === 'primitiveFace')
   )
 }
 
@@ -1148,27 +1165,22 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
       otherSelections: [],
     }
   } else if (planeArtifact.type === 'planeOfFace') {
-    const faceArtifact = getArtifactOfTypes(
-      { key: planeArtifact.faceId, types: ['cap', 'wall', 'edgeCut'] },
-      artifactGraph
-    )
-    if (err(faceArtifact)) {
-      return new Error("Couldn't retrieve face artifact for planeOfFace")
-    }
+    const faceArtifact = artifactGraph.get(planeArtifact.faceId)
+    if (faceArtifact && isFaceArtifact(faceArtifact)) {
+      const codeRef = getFaceCodeRef(faceArtifact)
+      if (!codeRef) {
+        return new Error("Couldn't retrieve code reference for face artifact")
+      }
 
-    const codeRef = getFaceCodeRef(faceArtifact)
-    if (!codeRef) {
-      return new Error("Couldn't retrieve code reference for face artifact")
-    }
-
-    return {
-      graphSelections: [
-        {
-          artifact: faceArtifact,
-          codeRef,
-        },
-      ],
-      otherSelections: [],
+      return {
+        graphSelections: [
+          {
+            artifact: faceArtifact,
+            codeRef,
+          },
+        ],
+        otherSelections: [],
+      }
     }
   }
 
@@ -1344,4 +1356,46 @@ function insertFacePrimitiveVariablesAndOffsetPathToNode({
   }
 
   return { solidsExprs: solidExprs, faceExprs }
+}
+
+function insertPlaneOfVariableAndOffsetPathToNode({
+  solidsExpr,
+  facesExpr,
+  modifiedAst,
+}: {
+  solidsExpr: Expr | null
+  facesExpr: Expr
+  modifiedAst: Node<Program>
+}) {
+  const planeOfExpr = createCallExpressionStdLibKw('planeOf', solidsExpr, [
+    createLabeledArg('face', facesExpr),
+  ])
+  const planeVariableName = findUniqueName(
+    modifiedAst,
+    KCL_DEFAULT_CONSTANT_PREFIXES.PLANE
+  )
+  const variableIdentifierAst = createLocalName(planeVariableName)
+  insertVariableAndOffsetPathToNode(
+    {
+      valueAst: planeOfExpr,
+      valueText: '',
+      valueCalculated: '',
+      variableName: planeVariableName,
+      variableDeclarationAst: createVariableDeclaration(
+        planeVariableName,
+        planeOfExpr
+      ),
+      variableIdentifierAst,
+      insertIndex: modifiedAst.body.length,
+    },
+    modifiedAst
+  )
+  return variableIdentifierAst
+}
+
+function getEnginePrimitiveFaceSelectionsFromSelection(selection: Selections) {
+  return selection.otherSelections.filter(
+    (s): s is EnginePrimitiveSelection =>
+      isEnginePrimitiveSelection(s) && s.primitiveType === 'face'
+  )
 }

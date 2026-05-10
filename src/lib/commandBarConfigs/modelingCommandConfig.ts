@@ -1417,6 +1417,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           'cap',
           'wall',
           'edgeCut',
+          'enginePrimitiveFace',
           'segment',
           'sweepEdge',
           'edgeCutEdge',
@@ -1594,7 +1595,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       plane: {
         inputType: 'selection',
-        selectionTypes: ['plane', 'cap', 'wall', 'edgeCut'],
+        selectionTypes: [
+          'plane',
+          'cap',
+          'wall',
+          'edgeCut',
+          'enginePrimitiveFace',
+        ],
         multiple: false,
         required: true,
         skip: true,

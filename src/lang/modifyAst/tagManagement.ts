@@ -45,6 +45,7 @@ import type {
   Expr,
   PathToNode,
   Program,
+  VariableDeclaration,
 } from '@src/lang/wasm'
 import type { EdgeCutInfo, Selection } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
@@ -126,6 +127,23 @@ export function modifyAstWithTagsForSelection(
     return {
       modifiedAst: result.modifiedAst,
       exprs: [result.expr],
+    }
+  }
+
+  if (selection.artifact.type === 'primitiveFace') {
+    const directLookup = getNodeFromPath<VariableDeclaration>(
+      ast,
+      selection.codeRef.pathToNode,
+      wasmInstance,
+      'VariableDeclaration'
+    )
+    if (err(directLookup)) return directLookup
+    if (directLookup.node.type !== 'VariableDeclaration') {
+      return new Error('Failed to retrieve variable')
+    }
+    return {
+      modifiedAst: ast,
+      exprs: [createLocalName(directLookup.node.declaration.id.name)],
     }
   }
 

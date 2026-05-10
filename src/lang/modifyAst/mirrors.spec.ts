@@ -1,7 +1,7 @@
 import { addMirror } from '@src/lang/modifyAst/mirrors'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { assertParse, recast } from '@src/lang/wasm'
-import type { VariableDeclaration } from '@src/lang/wasm'
+import type { Artifact, VariableDeclaration } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import {
   createSelectionFromArtifacts,
@@ -9,7 +9,10 @@ import {
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  NonCodeSelection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
@@ -266,14 +269,16 @@ extrude001 = extrude(profile001, length = 10)`
       if (!bodyArtifact || !('codeRef' in bodyArtifact)) {
         throw new Error('Body artifact not found')
       }
-      const capArtifact = {
+      const capArtifact: Artifact = {
         type: 'cap',
         id: 'cap-end-test',
         subType: 'end',
         sweepId: bodyArtifact.id,
         pathIds: [],
         edgeCutEdgeIds: [],
-      } as any
+        faceCodeRef: bodyArtifact.codeRef,
+        cmdId: '',
+      }
       artifactGraph.set(capArtifact.id, capArtifact)
       const result = addMirror({
         ast,
@@ -306,8 +311,69 @@ extrude001 = extrude(profile001, length = 10)`
       await enginelessExecutor(result.modifiedAst, rustContext)
       const newCode = recast(result.modifiedAst, instance)
       expect(newCode).toContain(
-        `solid001 = mirror3d(extrude001, across = planeOf(extrude001, face = capEnd001))`
+        `plane001 = planeOf(extrude001, face = capEnd001)
+solid001 = mirror3d(extrude001, across = plane001)`
       )
+    })
+
+    it('should support an engine primitive face as the mirror reference', async () => {
+      const code = `sketch001 = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> angledLine(angle = 0deg, length = 30, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 30)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = 30)
+shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
+      const { instance, rustContext } = getTestWorld()
+      const ast = assertParse(code, instance)
+      const { artifactGraph, variables } = await enginelessExecutor(
+        ast,
+        rustContext
+      )
+      const bodyArtifact = artifactGraph
+        .values()
+        .find((artifact) => artifact.type === 'sweep')
+      if (!bodyArtifact || !('codeRef' in bodyArtifact)) {
+        throw new Error('Body artifact not found')
+      }
+      const primitiveFace: NonCodeSelection = {
+        entityId: 'irrelevant-for-this-test',
+        parentEntityId: bodyArtifact.id,
+        primitiveIndex: 6,
+        primitiveType: 'face',
+        type: 'enginePrimitive',
+      }
+      const result = addMirror({
+        ast,
+        artifactGraph,
+        variables,
+        bodies: {
+          graphSelections: [
+            {
+              artifact: bodyArtifact,
+              codeRef: bodyArtifact.codeRef,
+            },
+          ],
+          otherSelections: [],
+        },
+        across: {
+          graphSelections: [],
+          otherSelections: [primitiveFace],
+        },
+        wasmInstance: instance,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      await enginelessExecutor(result.modifiedAst, rustContext)
+      const newCode = recast(result.modifiedAst, instance)
+      expect(newCode).toContain(`${code}
+face001 = faceId(extrude001, index = 6)
+plane001 = planeOf(extrude001, face = face001)
+solid001 = mirror3d(extrude001, across = plane001)`)
     })
 
     it('should support a sketch segment as the mirror reference', async () => {
