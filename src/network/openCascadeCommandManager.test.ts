@@ -5,6 +5,7 @@ import { assertParse } from '@src/lang/wasm'
 import { OpenCascadeCommandManager } from '@src/network/openCascadeCommandManager'
 import {
   OPEN_CASCADE_CIRCLE_EXTRUDE_KCL,
+  OPEN_CASCADE_INTERSECTING_REGION_EXTRUDE_KCL,
   OPEN_CASCADE_LOFT_KCL,
   OPEN_CASCADE_REVOLVE_KCL,
   OPEN_CASCADE_SKETCH_V2_CIRCLE_KCL,
@@ -358,6 +359,11 @@ describe('OpenCascadeCommandManager', () => {
 
   it.each([
     ['circle-region-extrude', OPEN_CASCADE_CIRCLE_EXTRUDE_KCL, 'extrude001'],
+    [
+      'intersecting-region-extrude',
+      OPEN_CASCADE_INTERSECTING_REGION_EXTRUDE_KCL,
+      'extrude001',
+    ],
     ['revolve', OPEN_CASCADE_REVOLVE_KCL, 'sketch001'],
     ['sweep', OPEN_CASCADE_SWEEP_KCL, 'profile001'],
     ['loft', OPEN_CASCADE_LOFT_KCL, 'loft001'],

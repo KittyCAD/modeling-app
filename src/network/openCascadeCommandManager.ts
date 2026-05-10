@@ -64,7 +64,7 @@ type PathState = {
 
 type RegionState = {
   sourcePathId: string
-  wire: any
+  wire?: any
   face: any
   regionEdgeId: string
   queryPoint?: Point2
@@ -72,16 +72,27 @@ type RegionState = {
   planeId?: string
   circle?: CircleState
   edgeEntries: PathEdgeEntry[]
+  boundaryPoints?: Point3[]
+}
+
+type ArrangementRegionBoundarySegment = {
+  start: Point3
+  end: Point3
+  sourceSegmentIds: string[]
 }
 
 type ArrangementRegionState = {
   regionId: string
   planeId?: string
   parentPathId?: string
+  wire?: any
   face?: any
   queryPoint: Point2
   sourceSegmentIds: string[]
+  localPoints: Point2[]
   points: Point3[]
+  boundarySegments: ArrangementRegionBoundarySegment[]
+  edgeEntries?: PathEdgeEntry[]
 }
 
 type SolidState = {
@@ -691,9 +702,29 @@ export class OpenCascadeCommandManager {
     cmd: Extract<ModelingCmd, { type: 'create_region_from_query_point' }>,
     range: SourceRange
   ): Promise<OkModelingCmdResponse> {
-    const pathId = cmd.object_id
-    const region = await this.storeRegion(commandId, pathId, range)
-    region.queryPoint = toPoint2(cmd.query_point ?? (cmd as any).point)
+    const queryPoint = toPoint2(cmd.query_point ?? (cmd as any).point)
+    let region: RegionState | undefined
+    if (this.paths.has(cmd.object_id)) {
+      try {
+        region = await this.storeRegion(commandId, cmd.object_id, range)
+      } catch {
+        // Open or multi-loop sketches fall through to arrangement lookup.
+      }
+    }
+    if (!region) {
+      const arrangementRegion = await this.arrangementRegionForQueryPoint(
+        cmd.object_id,
+        queryPoint
+      )
+      region = arrangementRegion
+        ? this.storeArrangementRegion(
+            commandId,
+            arrangementRegion,
+            cmd.object_id
+          )
+        : await this.storeRegion(commandId, cmd.object_id, range)
+    }
+    region.queryPoint = queryPoint
     const mappedEdgeId = region.circle?.edgeId || region.edgeIds[0] || commandId
 
     return {
@@ -1134,18 +1165,17 @@ export class OpenCascadeCommandManager {
     }
     await this.rebuildArrangementRegionsIfNeeded()
     const arrangementRegion = this.arrangementRegions.get(targetId)
-    if (arrangementRegion?.face && arrangementRegion.parentPathId) {
+    if (arrangementRegion?.face) {
       return {
-        sourcePathId: arrangementRegion.parentPathId,
-        wire: undefined,
+        sourcePathId: arrangementRegion.parentPathId || targetId,
+        wire: arrangementRegion.wire,
         face: arrangementRegion.face,
         regionEdgeId: arrangementRegion.regionId,
         queryPoint: arrangementRegion.queryPoint,
         edgeIds: arrangementRegion.sourceSegmentIds,
         planeId: arrangementRegion.planeId,
-        edgeEntries: arrangementRegion.sourceSegmentIds.flatMap((segmentId) =>
-          this.pathEdgeEntryForSegment(segmentId)
-        ),
+        edgeEntries: arrangementRegion.edgeEntries || [],
+        boundaryPoints: arrangementRegion.points,
       }
     }
     const pathId = this.pathAliases.get(targetId) || targetId
@@ -1203,6 +1233,57 @@ export class OpenCascadeCommandManager {
     this.arrangementDirty = true
     this.latestRegionVersion.value += 1
     return region
+  }
+
+  private storeArrangementRegion(
+    commandId: string,
+    arrangementRegion: ArrangementRegionState,
+    fallbackParentId: string
+  ): RegionState {
+    const region: RegionState = {
+      sourcePathId: arrangementRegion.parentPathId || fallbackParentId,
+      wire: arrangementRegion.wire,
+      face: arrangementRegion.face,
+      regionEdgeId: commandId,
+      queryPoint: arrangementRegion.queryPoint,
+      edgeIds: arrangementRegion.sourceSegmentIds,
+      planeId: arrangementRegion.planeId,
+      edgeEntries: arrangementRegion.edgeEntries || [],
+      boundaryPoints: arrangementRegion.points,
+    }
+    this.regions.set(commandId, region)
+    this.profileShapes.set(commandId, region.face)
+    this.latestProfileVersion.value += 1
+    this.arrangementDirty = true
+    this.latestRegionVersion.value += 1
+    return region
+  }
+
+  private async arrangementRegionForQueryPoint(
+    objectId: string,
+    queryPoint: Point2
+  ): Promise<ArrangementRegionState | undefined> {
+    await this.rebuildArrangementRegionsIfNeeded()
+    const candidates = Array.from(this.arrangementRegions.values())
+      .filter((region) => {
+        if (!region.face) {
+          return false
+        }
+        if (
+          region.parentPathId &&
+          region.parentPathId !== objectId &&
+          this.paths.has(objectId)
+        ) {
+          return false
+        }
+        return pointInPolygon2(queryPoint, region.localPoints)
+      })
+      .sort(
+        (a, b) =>
+          Math.abs(signedArea2(a.localPoints)) -
+          Math.abs(signedArea2(b.localPoints))
+      )
+    return candidates[0]
   }
 
   private findPathIdForRegionInput(
@@ -1586,7 +1667,9 @@ export class OpenCascadeCommandManager {
   ): Promise<OkModelingCmdResponse> {
     const explicitRegion = this.regions.get(regionId)
     if (explicitRegion) {
-      const points = orderedBoundaryPoints(explicitRegion.edgeEntries)
+      const points =
+        explicitRegion.boundaryPoints ||
+        orderedBoundaryPoints(explicitRegion.edgeEntries)
       return {
         type: 'region_get_query_point',
         data: {
@@ -1719,10 +1802,17 @@ export class OpenCascadeCommandManager {
         regionId,
         planeId: region.planeId,
         parentPathId: region.sourcePathId,
+        wire: region.wire,
         face: region.face,
         queryPoint: region.queryPoint || queryPointForWorldPoints(points),
         sourceSegmentIds: region.edgeIds,
+        localPoints: points.map(point3ToPoint2),
         points,
+        boundarySegments: boundarySegmentsForPoints(
+          points,
+          region.edgeIds.length ? region.edgeIds : [regionId]
+        ),
+        edgeEntries: region.edgeEntries,
       })
     }
 
@@ -1741,9 +1831,10 @@ export class OpenCascadeCommandManager {
       if (explicitSignatures.has(signature)) {
         continue
       }
+      const shape = this.buildShapeForArrangementRegion(detectedRegion, oc)
       nextRegions.set(detectedRegion.regionId, {
         ...detectedRegion,
-        face: this.buildFaceForArrangementRegion(detectedRegion.points, oc),
+        ...shape,
       })
     }
 
@@ -1751,35 +1842,68 @@ export class OpenCascadeCommandManager {
     this.arrangementDirty = false
   }
 
-  private buildFaceForArrangementRegion(
-    points: Point3[],
+  private buildShapeForArrangementRegion(
+    region: ArrangementDetectedRegion,
     oc: OpenCascadeInstance
-  ): any | undefined {
-    const uniquePoints = withoutClosingPoint(points)
-    if (uniquePoints.length < 3) {
-      return undefined
+  ): { wire?: any; face?: any; edgeEntries: PathEdgeEntry[] } {
+    const uniquePoints = withoutClosingPoint(region.points)
+    const segments =
+      region.boundarySegments.length > 0
+        ? region.boundarySegments
+        : boundarySegmentsForPoints(
+            uniquePoints,
+            region.sourceSegmentIds.length
+              ? region.sourceSegmentIds
+              : [region.regionId]
+          )
+    if (segments.length < 3) {
+      return { edgeEntries: [] }
     }
 
     const wireBuilder = new oc.BRepBuilderAPI_MakeWire_1()
-    for (let index = 0; index < uniquePoints.length; index += 1) {
+    const edgeEntries: PathEdgeEntry[] = []
+    const usedIds = new Set<string>()
+    for (let index = 0; index < segments.length; index += 1) {
+      const segment = segments[index]
       const edgeBuilder = new oc.BRepBuilderAPI_MakeEdge_3(
-        toGpPnt(uniquePoints[index], oc),
-        toGpPnt(uniquePoints[(index + 1) % uniquePoints.length], oc)
+        toGpPnt(segment.start, oc),
+        toGpPnt(segment.end, oc)
       )
       if (!edgeBuilder.IsDone()) {
-        return undefined
+        return { edgeEntries }
       }
-      wireBuilder.Add_1(edgeBuilder.Edge())
+      const sourceId =
+        segment.sourceSegmentIds.length === 1
+          ? segment.sourceSegmentIds[0]
+          : deriveTopologyId(
+              `${region.regionId}:${segment.sourceSegmentIds.join(':')}`,
+              41
+            )
+      const edgeId = usedIds.has(sourceId)
+        ? deriveTopologyId(`${region.regionId}:${sourceId}:${index}`, 42)
+        : sourceId
+      usedIds.add(edgeId)
+      const edge = edgeBuilder.Edge()
+      wireBuilder.Add_1(edge)
+      edgeEntries.push({
+        id: edgeId,
+        edge,
+        points: [segment.start, segment.end],
+      })
     }
     if (!wireBuilder.IsDone()) {
-      return undefined
+      return { edgeEntries }
     }
 
     const faceBuilder = new oc.BRepBuilderAPI_MakeFace_15(
       wireBuilder.Wire(),
       true
     )
-    return faceBuilder.IsDone() ? faceBuilder.Face() : undefined
+    return {
+      wire: wireBuilder.Wire(),
+      face: faceBuilder.IsDone() ? faceBuilder.Face() : undefined,
+      edgeEntries,
+    }
   }
 
   private success(
@@ -1993,7 +2117,8 @@ function buildExtrudeTopologyMesh(
   const indices: number[] = []
   const groups: OpenCascadeTopologyFaceGroup[] = []
   const edges: OpenCascadeTopologyEdgeLine[] = []
-  const boundary = orderedBoundaryPoints(region.edgeEntries)
+  const boundary =
+    region.boundaryPoints || orderedBoundaryPoints(region.edgeEntries)
   const topBoundary = boundary.map((point) => add(point, scale(normal, height)))
 
   addCapGroup({
@@ -2365,10 +2490,11 @@ function detectPlanarArrangementRegionsForPlane(
 
       const sourceSegmentIds = new Set<string>()
       const pathIds = new Set<string>()
+      const boundarySegments: ArrangementRegionBoundarySegment[] = []
       for (let index = 0; index < cycle.length; index += 1) {
-        const edgeKey = [cycle[index], cycle[(index + 1) % cycle.length]]
-          .sort()
-          .join(':')
+        const fromVertexId = cycle[index]
+        const toVertexId = cycle[(index + 1) % cycle.length]
+        const edgeKey = [fromVertexId, toVertexId].sort().join(':')
         const sourceEdge = edgeByKey.get(edgeKey)
         if (!sourceEdge) {
           continue
@@ -2378,6 +2504,15 @@ function detectPlanarArrangementRegionsForPlane(
         }
         for (const pathId of sourceEdge.pathIds) {
           pathIds.add(pathId)
+        }
+        const start = vertices.get(fromVertexId)
+        const end = vertices.get(toVertexId)
+        if (start && end) {
+          boundarySegments.push({
+            start: localToWorld({ x: start.x, y: start.y, z: 0 }, plane),
+            end: localToWorld({ x: end.x, y: end.y, z: 0 }, plane),
+            sourceSegmentIds: Array.from(sourceEdge.sourceSegmentIds).sort(),
+          })
         }
       }
       if (sourceSegmentIds.size === 0) {
@@ -2400,9 +2535,11 @@ function detectPlanarArrangementRegionsForPlane(
         parentPathId,
         queryPoint,
         sourceSegmentIds: sourceIds,
+        localPoints: cyclePoints,
         points: cyclePoints.map((point) =>
           localToWorld({ x: point.x, y: point.y, z: 0 }, plane)
         ),
+        boundarySegments,
       })
     }
   }
@@ -2530,6 +2667,22 @@ function orderedBoundaryPoints(edgeEntries: PathEdgeEntry[]): Point3[] {
   return points
 }
 
+function boundarySegmentsForPoints(
+  points: Point3[],
+  sourceSegmentIds: string[]
+): ArrangementRegionBoundarySegment[] {
+  const uniquePoints = withoutClosingPoint(points)
+  return uniquePoints.map((point, index) => ({
+    start: point,
+    end: uniquePoints[(index + 1) % uniquePoints.length],
+    sourceSegmentIds: [
+      sourceSegmentIds[index] ||
+        sourceSegmentIds[sourceSegmentIds.length - 1] ||
+        '',
+    ].filter(Boolean),
+  }))
+}
+
 function centroid(points: Point3[]): Point3 {
   const sum = points.reduce((acc, point) => add(acc, point), {
     x: 0,
@@ -2653,6 +2806,45 @@ function polygonCentroid2(points: Point2[]): Point2 {
   }
   const divisor = 6 * area
   return { x: x / divisor, y: y / divisor }
+}
+
+function pointInPolygon2(point: Point2, polygon: Point2[]) {
+  if (polygon.length < 3) {
+    return false
+  }
+  let inside = false
+  for (
+    let index = 0, previousIndex = polygon.length - 1;
+    index < polygon.length;
+    previousIndex = index, index += 1
+  ) {
+    const current = polygon[index]
+    const previous = polygon[previousIndex]
+    const onEdge =
+      Math.abs(
+        cross2(
+          { x: previous.x - point.x, y: previous.y - point.y },
+          { x: current.x - point.x, y: current.y - point.y }
+        )
+      ) < 1e-7 &&
+      point.x >= Math.min(previous.x, current.x) - 1e-7 &&
+      point.x <= Math.max(previous.x, current.x) + 1e-7 &&
+      point.y >= Math.min(previous.y, current.y) - 1e-7 &&
+      point.y <= Math.max(previous.y, current.y) + 1e-7
+    if (onEdge) {
+      return true
+    }
+    if (
+      previous.y > point.y !== current.y > point.y &&
+      point.x <
+        ((current.x - previous.x) * (point.y - previous.y)) /
+          (current.y - previous.y) +
+          previous.x
+    ) {
+      inside = !inside
+    }
+  }
+  return inside
 }
 
 function quantizedPoint2Key(point: Point2) {
