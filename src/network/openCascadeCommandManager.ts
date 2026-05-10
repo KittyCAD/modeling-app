@@ -67,10 +67,21 @@ type RegionState = {
   wire: any
   face: any
   regionEdgeId: string
+  queryPoint?: Point2
   edgeIds: string[]
   planeId?: string
   circle?: CircleState
   edgeEntries: PathEdgeEntry[]
+}
+
+type ArrangementRegionState = {
+  regionId: string
+  planeId?: string
+  parentPathId?: string
+  face?: any
+  queryPoint: Point2
+  sourceSegmentIds: string[]
+  points: Point3[]
 }
 
 type SolidState = {
@@ -153,6 +164,29 @@ export type OpenCascadeSketchLineSegment = {
 export type OpenCascadeSketchLineMeshes = {
   version: number
   segments: OpenCascadeSketchLineSegment[]
+}
+
+export type OpenCascadeRegionFaceGroup = {
+  start: number
+  count: number
+  regionId: string
+  artifactId: string
+  planeId?: string
+  parentPathId?: string
+  sourceSegmentIds: string[]
+  queryPoint: Point2
+}
+
+export type OpenCascadeRegionMesh = {
+  regionId: string
+  positions: number[]
+  indices: number[]
+  groups: OpenCascadeRegionFaceGroup[]
+}
+
+export type OpenCascadeRegionMeshes = {
+  version: number
+  regions: OpenCascadeRegionMesh[]
 }
 
 type ExtrudeTopology = {
@@ -246,11 +280,14 @@ export class OpenCascadeCommandManager {
   readonly latestProfileVersion = signal(0)
   readonly latestTopologyVersion = signal(0)
   readonly latestSketchVersion = signal(0)
+  readonly latestRegionVersion = signal(0)
   readonly latestExportError = signal<string | undefined>(undefined)
   private planes = new Map<string, PlaneState>()
   private paths = new Map<string, PathState>()
   private pathAliases = new Map<string, string>()
   private regions = new Map<string, RegionState>()
+  private arrangementRegions = new Map<string, ArrangementRegionState>()
+  private arrangementDirty = true
   private solids = new Map<string, SolidState>()
   private profileShapes = new Map<string, any>()
   private topologyEntries = new Map<string, OpenCascadeTopologyEntry>()
@@ -374,6 +411,16 @@ export class OpenCascadeCommandManager {
     }
   }
 
+  async exportLatestRegionMeshes(): Promise<OpenCascadeRegionMeshes> {
+    await this.rebuildArrangementRegionsIfNeeded()
+    return {
+      version: this.latestRegionVersion.value,
+      regions: Array.from(this.arrangementRegions.values()).map((region) =>
+        regionMeshForArrangementRegion(region)
+      ),
+    }
+  }
+
   private async executeRequest(
     id: string,
     request: WebSocketRequest,
@@ -467,12 +514,12 @@ export class OpenCascadeCommandManager {
           planeId: this.currentSketchPlaneId,
           segments: [],
         })
-        this.latestSketchVersion.value += 1
+        this.markSketchChanged()
         return modeling({ type: 'start_path', data: {} })
       case 'move_path_pen': {
         const path = this.requirePath(cmd.path, range)
         path.pen = toPoint3(cmd.to)
-        this.latestSketchVersion.value += 1
+        this.markSketchChanged()
         return modeling({ type: 'move_path_pen', data: {} })
       }
       case 'extend_path':
@@ -485,7 +532,7 @@ export class OpenCascadeCommandManager {
         return modeling(await this.createRegion(commandId, cmd, range))
       case 'create_region_from_query_point':
         return modeling(
-          await this.createRegionFromQueryPoint(commandId, cmd.object_id, range)
+          await this.createRegionFromQueryPoint(commandId, cmd, range)
         )
       case 'extrude':
         return modeling(await this.extrude(commandId, cmd, range))
@@ -513,6 +560,10 @@ export class OpenCascadeCommandManager {
         return modeling(this.getRelatedEdge(cmd, 'previousAdjacent'))
       case 'solid3d_get_common_edge':
         return modeling(this.getCommonEdge(cmd))
+      case 'region_get_query_point':
+        return modeling(await this.getRegionQueryPoint(cmd.region_id))
+      case 'entity_get_parent_id':
+        return modeling(await this.getParentEntityId(cmd.entity_id))
       case 'export':
         return { kind: 'export', response: await this.exportBrep() }
       default:
@@ -537,7 +588,7 @@ export class OpenCascadeCommandManager {
       const end = endpointFromSegment(start, segment)
       path.segments.push({ id: commandId, type: 'line', start, end })
       path.pen = end
-      this.latestSketchVersion.value += 1
+      this.markSketchChanged()
       return { type: 'extend_path', data: {} }
     }
 
@@ -549,7 +600,7 @@ export class OpenCascadeCommandManager {
       const end = endpointFromSegment(start, segment)
       path.segments.push({ id: commandId, type: 'line', start, end })
       path.pen = end
-      this.latestSketchVersion.value += 1
+      this.markSketchChanged()
       return { type: 'extend_path', data: {} }
     }
 
@@ -597,7 +648,7 @@ export class OpenCascadeCommandManager {
       }
     }
     path.pen = arcEnd
-    this.latestSketchVersion.value += 1
+    this.markSketchChanged()
     return { type: 'extend_path', data: {} }
   }
 
@@ -610,7 +661,7 @@ export class OpenCascadeCommandManager {
     path.closed = true
     path.closeCommandId = commandId
     this.pathAliases.set(commandId, pathId)
-    this.latestSketchVersion.value += 1
+    this.markSketchChanged()
     return { type: 'close_path', data: { face_id: commandId } }
   }
 
@@ -633,10 +684,12 @@ export class OpenCascadeCommandManager {
 
   private async createRegionFromQueryPoint(
     commandId: string,
-    pathId: string,
+    cmd: Extract<ModelingCmd, { type: 'create_region_from_query_point' }>,
     range: SourceRange
   ): Promise<OkModelingCmdResponse> {
+    const pathId = cmd.object_id
     const region = await this.storeRegion(commandId, pathId, range)
+    region.queryPoint = toPoint2(cmd.query_point ?? (cmd as any).point)
     const mappedEdgeId = region.circle?.edgeId || region.edgeIds[0] || commandId
 
     return {
@@ -1075,6 +1128,22 @@ export class OpenCascadeCommandManager {
     if (region) {
       return region
     }
+    await this.rebuildArrangementRegionsIfNeeded()
+    const arrangementRegion = this.arrangementRegions.get(targetId)
+    if (arrangementRegion?.face && arrangementRegion.parentPathId) {
+      return {
+        sourcePathId: arrangementRegion.parentPathId,
+        wire: undefined,
+        face: arrangementRegion.face,
+        regionEdgeId: arrangementRegion.regionId,
+        queryPoint: arrangementRegion.queryPoint,
+        edgeIds: arrangementRegion.sourceSegmentIds,
+        planeId: arrangementRegion.planeId,
+        edgeEntries: arrangementRegion.sourceSegmentIds.flatMap((segmentId) =>
+          this.pathEdgeEntryForSegment(segmentId)
+        ),
+      }
+    }
     const pathId = this.pathAliases.get(targetId) || targetId
     if (this.paths.has(pathId)) {
       return this.storeRegion(targetId, pathId, range)
@@ -1127,6 +1196,8 @@ export class OpenCascadeCommandManager {
     this.regions.set(commandId, region)
     this.profileShapes.set(commandId, region.face)
     this.latestProfileVersion.value += 1
+    this.arrangementDirty = true
+    this.latestRegionVersion.value += 1
     return region
   }
 
@@ -1151,6 +1222,15 @@ export class OpenCascadeCommandManager {
       }
     }
     return undefined
+  }
+
+  private pathEdgeEntryForSegment(segmentId: string): PathEdgeEntry[] {
+    const pathId = this.findPathIdForSegment(segmentId)
+    if (!pathId) {
+      return []
+    }
+    const path = this.paths.get(pathId)
+    return path?.edgeEntries?.filter((entry) => entry.id === segmentId) || []
   }
 
   private async buildPathShape(
@@ -1497,6 +1577,143 @@ export class OpenCascadeCommandManager {
     })
   }
 
+  private async getRegionQueryPoint(
+    regionId: string
+  ): Promise<OkModelingCmdResponse> {
+    const explicitRegion = this.regions.get(regionId)
+    if (explicitRegion) {
+      const points = orderedBoundaryPoints(explicitRegion.edgeEntries)
+      return {
+        type: 'region_get_query_point',
+        data: {
+          query_point:
+            explicitRegion.queryPoint || queryPointForWorldPoints(points),
+        },
+      } as OkModelingCmdResponse
+    }
+
+    await this.rebuildArrangementRegionsIfNeeded()
+    const arrangementRegion = this.arrangementRegions.get(regionId)
+    if (!arrangementRegion) {
+      throw new Error(`No OpenCascade region found for ${regionId}`)
+    }
+    return {
+      type: 'region_get_query_point',
+      data: { query_point: arrangementRegion.queryPoint },
+    } as OkModelingCmdResponse
+  }
+
+  private async getParentEntityId(
+    entityId: string
+  ): Promise<OkModelingCmdResponse> {
+    const explicitRegion = this.regions.get(entityId)
+    if (explicitRegion) {
+      return {
+        type: 'entity_get_parent_id',
+        data: { entity_id: explicitRegion.sourcePathId },
+      } as OkModelingCmdResponse
+    }
+
+    await this.rebuildArrangementRegionsIfNeeded()
+    const arrangementRegion = this.arrangementRegions.get(entityId)
+    if (arrangementRegion?.parentPathId) {
+      return {
+        type: 'entity_get_parent_id',
+        data: { entity_id: arrangementRegion.parentPathId },
+      } as OkModelingCmdResponse
+    }
+
+    const pathId = this.findPathIdForSegment(entityId)
+    if (pathId) {
+      return {
+        type: 'entity_get_parent_id',
+        data: { entity_id: pathId },
+      } as OkModelingCmdResponse
+    }
+
+    throw new Error(`No OpenCascade parent entity found for ${entityId}`)
+  }
+
+  private async rebuildArrangementRegionsIfNeeded() {
+    if (!this.arrangementDirty) {
+      return
+    }
+
+    const nextRegions = new Map<string, ArrangementRegionState>()
+    const oc = await initOpenCascade()
+
+    for (const [regionId, region] of this.regions) {
+      const points = orderedBoundaryPoints(region.edgeEntries)
+      if (points.length < 3) {
+        continue
+      }
+      nextRegions.set(regionId, {
+        regionId,
+        planeId: region.planeId,
+        parentPathId: region.sourcePathId,
+        face: region.face,
+        queryPoint: region.queryPoint || queryPointForWorldPoints(points),
+        sourceSegmentIds: region.edgeIds,
+        points,
+      })
+    }
+
+    const explicitSignatures = new Set(
+      Array.from(nextRegions.values()).map((region) =>
+        arrangementRegionSignature(region.sourceSegmentIds)
+      )
+    )
+    for (const detectedRegion of detectPlanarArrangementRegions(
+      this.paths,
+      this.planes
+    )) {
+      const signature = arrangementRegionSignature(
+        detectedRegion.sourceSegmentIds
+      )
+      if (explicitSignatures.has(signature)) {
+        continue
+      }
+      nextRegions.set(detectedRegion.regionId, {
+        ...detectedRegion,
+        face: this.buildFaceForArrangementRegion(detectedRegion.points, oc),
+      })
+    }
+
+    this.arrangementRegions = nextRegions
+    this.arrangementDirty = false
+  }
+
+  private buildFaceForArrangementRegion(
+    points: Point3[],
+    oc: OpenCascadeInstance
+  ): any | undefined {
+    const uniquePoints = withoutClosingPoint(points)
+    if (uniquePoints.length < 3) {
+      return undefined
+    }
+
+    const wireBuilder = new oc.BRepBuilderAPI_MakeWire_1()
+    for (let index = 0; index < uniquePoints.length; index += 1) {
+      const edgeBuilder = new oc.BRepBuilderAPI_MakeEdge_3(
+        toGpPnt(uniquePoints[index], oc),
+        toGpPnt(uniquePoints[(index + 1) % uniquePoints.length], oc)
+      )
+      if (!edgeBuilder.IsDone()) {
+        return undefined
+      }
+      wireBuilder.Add_1(edgeBuilder.Edge())
+    }
+    if (!wireBuilder.IsDone()) {
+      return undefined
+    }
+
+    const faceBuilder = new oc.BRepBuilderAPI_MakeFace_15(
+      wireBuilder.Wire(),
+      true
+    )
+    return faceBuilder.IsDone() ? faceBuilder.Face() : undefined
+  }
+
   private success(
     requestId: string,
     resp: OkWebSocketResponseData
@@ -1513,6 +1730,8 @@ export class OpenCascadeCommandManager {
     this.paths.clear()
     this.pathAliases.clear()
     this.regions.clear()
+    this.arrangementRegions.clear()
+    this.arrangementDirty = true
     this.solids.clear()
     this.profileShapes.clear()
     this.topologyEntries.clear()
@@ -1523,7 +1742,13 @@ export class OpenCascadeCommandManager {
     this.latestShapeVersion.value += 1
     this.latestProfileVersion.value += 1
     this.latestTopologyVersion.value += 1
+    this.markSketchChanged()
+  }
+
+  private markSketchChanged() {
+    this.arrangementDirty = true
     this.latestSketchVersion.value += 1
+    this.latestRegionVersion.value += 1
   }
 
   private findExtrudeTopology(objectId: string): ExtrudeTopology | undefined {
@@ -1782,6 +2007,331 @@ function buildExtrudeTopologyMesh(
   return { solidId, positions, indices, groups, edges }
 }
 
+function regionMeshForArrangementRegion(
+  region: ArrangementRegionState
+): OpenCascadeRegionMesh {
+  const points = withoutClosingPoint(region.points)
+  const positions = flattenPoints(points)
+  const indices: number[] = []
+  if (points.length >= 3) {
+    for (let index = 1; index < points.length - 1; index += 1) {
+      indices.push(0, index, index + 1)
+    }
+  }
+  return {
+    regionId: region.regionId,
+    positions,
+    indices,
+    groups:
+      indices.length > 0
+        ? [
+            {
+              start: 0,
+              count: indices.length,
+              regionId: region.regionId,
+              artifactId: region.regionId,
+              planeId: region.planeId,
+              parentPathId: region.parentPathId,
+              sourceSegmentIds: [...region.sourceSegmentIds],
+              queryPoint: { ...region.queryPoint },
+            },
+          ]
+        : [],
+  }
+}
+
+type ArrangementRawSegment = {
+  start: Point2
+  end: Point2
+  sourceSegmentId: string
+  pathId: string
+  planeId?: string
+}
+
+type ArrangementDetectedRegion = Omit<ArrangementRegionState, 'face'>
+
+function detectPlanarArrangementRegions(
+  paths: Map<string, PathState>,
+  planes: Map<string, PlaneState>
+): ArrangementDetectedRegion[] {
+  const rawSegmentsByPlane = new Map<string, ArrangementRawSegment[]>()
+  for (const [pathId, path] of paths) {
+    const planeKey = path.planeId || ''
+    const segments = rawArrangementSegmentsForPath(pathId, path)
+    if (segments.length === 0) {
+      continue
+    }
+    rawSegmentsByPlane.set(planeKey, [
+      ...(rawSegmentsByPlane.get(planeKey) || []),
+      ...segments,
+    ])
+  }
+
+  const regions: ArrangementDetectedRegion[] = []
+  for (const [planeKey, rawSegments] of rawSegmentsByPlane) {
+    const planeId = planeKey || undefined
+    const planeRegions = detectPlanarArrangementRegionsForPlane(
+      planeId,
+      rawSegments,
+      planeId ? planes.get(planeId) : undefined
+    )
+    regions.push(...planeRegions)
+  }
+  return regions
+}
+
+function rawArrangementSegmentsForPath(
+  pathId: string,
+  path: PathState
+): ArrangementRawSegment[] {
+  const planeId = path.planeId
+  const segments = path.segments.flatMap((segment) => {
+    const points =
+      segment.type === 'line'
+        ? [point3ToPoint2(segment.start), point3ToPoint2(segment.end)]
+        : sampleArcLocalPoints(segment)
+    const rawSegments: ArrangementRawSegment[] = []
+    for (let index = 0; index < points.length - 1; index += 1) {
+      if (!points2Close(points[index], points[index + 1])) {
+        rawSegments.push({
+          start: points[index],
+          end: points[index + 1],
+          sourceSegmentId: segment.id,
+          pathId,
+          planeId,
+        })
+      }
+    }
+    return rawSegments
+  })
+
+  if (
+    path.closed &&
+    path.start &&
+    path.pen &&
+    !pointsClose(path.start, path.pen) &&
+    !path.circle
+  ) {
+    segments.push({
+      start: point3ToPoint2(path.pen),
+      end: point3ToPoint2(path.start),
+      sourceSegmentId:
+        path.closeCommandId ||
+        deriveTopologyId(path.segments.at(-1)?.id || pathId, 15),
+      pathId,
+      planeId,
+    })
+  }
+
+  return segments
+}
+
+function detectPlanarArrangementRegionsForPlane(
+  planeId: string | undefined,
+  rawSegments: ArrangementRawSegment[],
+  plane: PlaneState | undefined
+): ArrangementDetectedRegion[] {
+  const vertices = new Map<string, Point2>()
+  const vertexIdsByKey = new Map<string, string>()
+  const edgeByKey = new Map<
+    string,
+    {
+      from: string
+      to: string
+      sourceSegmentIds: Set<string>
+      pathIds: Set<string>
+    }
+  >()
+
+  const vertexIdForPoint = (point: Point2) => {
+    const key = quantizedPoint2Key(point)
+    const existing = vertexIdsByKey.get(key)
+    if (existing) {
+      return existing
+    }
+    const id = `v${vertexIdsByKey.size}`
+    vertexIdsByKey.set(key, id)
+    vertices.set(id, point)
+    return id
+  }
+
+  for (let index = 0; index < rawSegments.length; index += 1) {
+    const segment = rawSegments[index]
+    const splitParameters = new Set<number>([0, 1])
+    for (let otherIndex = 0; otherIndex < rawSegments.length; otherIndex += 1) {
+      if (index === otherIndex) {
+        continue
+      }
+      const intersection = segmentIntersectionParameters(
+        segment,
+        rawSegments[otherIndex]
+      )
+      if (intersection) {
+        splitParameters.add(intersection.t)
+      }
+    }
+    const sortedParameters = Array.from(splitParameters).sort((a, b) => a - b)
+    for (let tIndex = 0; tIndex < sortedParameters.length - 1; tIndex += 1) {
+      const t0 = sortedParameters[tIndex]
+      const t1 = sortedParameters[tIndex + 1]
+      if (Math.abs(t1 - t0) < 1e-7) {
+        continue
+      }
+      const start = interpolatePoint2(segment.start, segment.end, t0)
+      const end = interpolatePoint2(segment.start, segment.end, t1)
+      if (points2Close(start, end)) {
+        continue
+      }
+      const from = vertexIdForPoint(start)
+      const to = vertexIdForPoint(end)
+      const edgeKey = [from, to].sort().join(':')
+      const edge = edgeByKey.get(edgeKey) || {
+        from,
+        to,
+        sourceSegmentIds: new Set<string>(),
+        pathIds: new Set<string>(),
+      }
+      edge.sourceSegmentIds.add(segment.sourceSegmentId)
+      edge.pathIds.add(segment.pathId)
+      edgeByKey.set(edgeKey, edge)
+    }
+  }
+
+  const adjacency = new Map<
+    string,
+    { to: string; angle: number; edgeKey: string }[]
+  >()
+  for (const [edgeKey, edge] of edgeByKey) {
+    const from = vertices.get(edge.from)
+    const to = vertices.get(edge.to)
+    if (!from || !to) {
+      continue
+    }
+    const forward = {
+      to: edge.to,
+      angle: Math.atan2(to.y - from.y, to.x - from.x),
+      edgeKey,
+    }
+    const backward = {
+      to: edge.from,
+      angle: Math.atan2(from.y - to.y, from.x - to.x),
+      edgeKey,
+    }
+    adjacency.set(edge.from, [...(adjacency.get(edge.from) || []), forward])
+    adjacency.set(edge.to, [...(adjacency.get(edge.to) || []), backward])
+  }
+  for (const edges of adjacency.values()) {
+    edges.sort((a, b) => a.angle - b.angle)
+  }
+
+  const visited = new Set<string>()
+  const regions: ArrangementDetectedRegion[] = []
+  const seenCycles = new Set<string>()
+  for (const from of adjacency.keys()) {
+    for (const edge of adjacency.get(from) || []) {
+      const halfEdgeKey = `${from}->${edge.to}`
+      if (visited.has(halfEdgeKey)) {
+        continue
+      }
+      const cycle = walkArrangementFace(from, edge.to, adjacency, visited)
+      if (cycle.length < 3) {
+        continue
+      }
+      const cyclePoints = cycle
+        .map((vertexId) => vertices.get(vertexId))
+        .filter((point): point is Point2 => Boolean(point))
+      const area = signedArea2(cyclePoints)
+      if (area <= 1e-7) {
+        continue
+      }
+      const cycleKey = cycle.slice().sort().join(':')
+      if (seenCycles.has(cycleKey)) {
+        continue
+      }
+      seenCycles.add(cycleKey)
+
+      const sourceSegmentIds = new Set<string>()
+      const pathIds = new Set<string>()
+      for (let index = 0; index < cycle.length; index += 1) {
+        const edgeKey = [cycle[index], cycle[(index + 1) % cycle.length]]
+          .sort()
+          .join(':')
+        const sourceEdge = edgeByKey.get(edgeKey)
+        if (!sourceEdge) {
+          continue
+        }
+        for (const sourceSegmentId of sourceEdge.sourceSegmentIds) {
+          sourceSegmentIds.add(sourceSegmentId)
+        }
+        for (const pathId of sourceEdge.pathIds) {
+          pathIds.add(pathId)
+        }
+      }
+      if (sourceSegmentIds.size === 0) {
+        continue
+      }
+
+      const queryPoint = polygonCentroid2(cyclePoints)
+      const sourceIds = Array.from(sourceSegmentIds).sort()
+      const parentPathId =
+        pathIds.size === 1 ? Array.from(pathIds)[0] : undefined
+      const regionId = deriveTopologyId(
+        `arrangement:${planeId || ''}:${sourceIds.join(':')}:${quantizedPoint2Key(
+          queryPoint
+        )}`,
+        40
+      )
+      regions.push({
+        regionId,
+        planeId,
+        parentPathId,
+        queryPoint,
+        sourceSegmentIds: sourceIds,
+        points: cyclePoints.map((point) =>
+          localToWorld({ x: point.x, y: point.y, z: 0 }, plane)
+        ),
+      })
+    }
+  }
+  return regions
+}
+
+function walkArrangementFace(
+  startFrom: string,
+  startTo: string,
+  adjacency: Map<string, { to: string; angle: number; edgeKey: string }[]>,
+  visited: Set<string>
+) {
+  const cycle: string[] = []
+  let from = startFrom
+  let to = startTo
+
+  for (let guard = 0; guard < 10000; guard += 1) {
+    const halfEdgeKey = `${from}->${to}`
+    if (visited.has(halfEdgeKey)) {
+      break
+    }
+    visited.add(halfEdgeKey)
+    cycle.push(from)
+
+    const outgoing = adjacency.get(to) || []
+    const reverseIndex = outgoing.findIndex((edge) => edge.to === from)
+    if (reverseIndex === -1 || outgoing.length === 0) {
+      break
+    }
+    const next =
+      outgoing[(reverseIndex - 1 + outgoing.length) % outgoing.length]
+    from = to
+    to = next.to
+
+    if (from === startFrom && to === startTo) {
+      break
+    }
+  }
+
+  return cycle
+}
+
 function addCapGroup(input: {
   positions: number[]
   indices: number[]
@@ -1874,6 +2424,130 @@ function centroid(points: Point3[]): Point3 {
     z: 0,
   })
   return scale(sum, 1 / points.length)
+}
+
+function queryPointForWorldPoints(points: Point3[]): Point2 {
+  const uniquePoints = withoutClosingPoint(points)
+  if (uniquePoints.length < 3) {
+    return { x: 0, y: 0 }
+  }
+  return polygonCentroid2(uniquePoints.map(point3ToPoint2))
+}
+
+function point3ToPoint2(point: Point3): Point2 {
+  return { x: point.x, y: point.y }
+}
+
+function sampleArcLocalPoints(
+  segment: Extract<PathSegmentState, { type: 'arc' }>
+): Point2[] {
+  const angleSpan = segment.fullCircle
+    ? Math.PI * 2
+    : segment.endAngle - segment.startAngle
+  const steps = Math.max(16, Math.ceil(Math.abs(angleSpan) / (Math.PI / 16)))
+  const points: Point2[] = []
+  for (let index = 0; index <= steps; index += 1) {
+    const t = index / steps
+    const angle = segment.startAngle + angleSpan * t
+    points.push({
+      x: segment.center.x + segment.radius * Math.cos(angle),
+      y: segment.center.y + segment.radius * Math.sin(angle),
+    })
+  }
+  return points
+}
+
+function withoutClosingPoint(points: Point3[]): Point3[] {
+  const uniquePoints = points.filter(
+    (point, index) => index === 0 || !pointsClose(point, points[index - 1])
+  )
+  if (
+    uniquePoints.length > 1 &&
+    pointsClose(uniquePoints[0], uniquePoints[uniquePoints.length - 1])
+  ) {
+    uniquePoints.pop()
+  }
+  return uniquePoints
+}
+
+function points2Close(a: Point2, b: Point2): boolean {
+  return Math.hypot(a.x - b.x, a.y - b.y) < 1e-6
+}
+
+function interpolatePoint2(start: Point2, end: Point2, t: number): Point2 {
+  return {
+    x: start.x + (end.x - start.x) * t,
+    y: start.y + (end.y - start.y) * t,
+  }
+}
+
+function segmentIntersectionParameters(
+  first: ArrangementRawSegment,
+  second: ArrangementRawSegment
+): { t: number; u: number } | undefined {
+  const p = first.start
+  const r = { x: first.end.x - first.start.x, y: first.end.y - first.start.y }
+  const q = second.start
+  const s = {
+    x: second.end.x - second.start.x,
+    y: second.end.y - second.start.y,
+  }
+  const denominator = cross2(r, s)
+  if (Math.abs(denominator) < 1e-9) {
+    return undefined
+  }
+  const qp = { x: q.x - p.x, y: q.y - p.y }
+  const t = cross2(qp, s) / denominator
+  const u = cross2(qp, r) / denominator
+  if (t <= 1e-7 || t >= 1 - 1e-7 || u <= 1e-7 || u >= 1 - 1e-7) {
+    return undefined
+  }
+  return { t, u }
+}
+
+function cross2(a: Point2, b: Point2) {
+  return a.x * b.y - a.y * b.x
+}
+
+function signedArea2(points: Point2[]) {
+  let area = 0
+  for (let index = 0; index < points.length; index += 1) {
+    const current = points[index]
+    const next = points[(index + 1) % points.length]
+    area += current.x * next.y - next.x * current.y
+  }
+  return area / 2
+}
+
+function polygonCentroid2(points: Point2[]): Point2 {
+  const area = signedArea2(points)
+  if (Math.abs(area) < 1e-9) {
+    const sum = points.reduce(
+      (acc, point) => ({ x: acc.x + point.x, y: acc.y + point.y }),
+      { x: 0, y: 0 }
+    )
+    return { x: sum.x / points.length, y: sum.y / points.length }
+  }
+
+  let x = 0
+  let y = 0
+  for (let index = 0; index < points.length; index += 1) {
+    const current = points[index]
+    const next = points[(index + 1) % points.length]
+    const factor = current.x * next.y - next.x * current.y
+    x += (current.x + next.x) * factor
+    y += (current.y + next.y) * factor
+  }
+  const divisor = 6 * area
+  return { x: x / divisor, y: y / divisor }
+}
+
+function quantizedPoint2Key(point: Point2) {
+  return `${Math.round(point.x * 1e6)}:${Math.round(point.y * 1e6)}`
+}
+
+function arrangementRegionSignature(sourceSegmentIds: string[]) {
+  return sourceSegmentIds.slice().sort().join(':')
 }
 
 function flattenPoints(points: Point3[]): number[] {

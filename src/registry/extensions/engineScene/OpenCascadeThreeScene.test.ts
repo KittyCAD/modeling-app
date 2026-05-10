@@ -149,4 +149,79 @@ describe('OpenCascadeThreeScene helpers', () => {
     expect(xz?.visible).toBe(false)
     expect(yz?.visible).toBe(true)
   })
+
+  it('creates invisible region pick meshes with group metadata', () => {
+    const root = new Group()
+
+    helpers.rebuildOpenCascadeRegionPickRoot(root, {
+      version: 1,
+      regions: [
+        {
+          regionId: 'region-1',
+          positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+          indices: [0, 1, 2],
+          groups: [
+            {
+              start: 0,
+              count: 3,
+              regionId: 'region-1',
+              artifactId: 'region-1',
+              parentPathId: 'path-1',
+              sourceSegmentIds: ['edge-1', 'edge-2', 'edge-3'],
+              queryPoint: { x: 0.25, y: 0.25 },
+            },
+          ],
+        },
+      ],
+    })
+
+    const mesh = root.children[0] as Mesh
+    expect(mesh).toBeInstanceOf(Mesh)
+    expect(mesh.userData.openCascadeRegionPickMesh).toBe(true)
+    expect(mesh.userData.openCascadeRegionMesh.regionId).toBe('region-1')
+    expect((mesh.material as MeshBasicMaterial).colorWrite).toBe(false)
+  })
+
+  it('adds selected region highlight overlays', () => {
+    const root = new Group()
+
+    helpers.rebuildOpenCascadeHighlightRoot(
+      root,
+      { version: 1, solids: [] },
+      new Set(['region-1']),
+      undefined,
+      {
+        backgroundColor: 0,
+        edgeColor: 0,
+        surfaceColor: '#ffffff',
+        profileColor: '#ffffff',
+        sketchLineColor: 0,
+        selectionColor: 0xff0000,
+        hoverColor: 0x00ff00,
+      } as never,
+      {
+        version: 1,
+        regions: [
+          {
+            regionId: 'region-1',
+            positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+            indices: [0, 1, 2],
+            groups: [
+              {
+                start: 0,
+                count: 3,
+                regionId: 'region-1',
+                artifactId: 'region-1',
+                sourceSegmentIds: [],
+                queryPoint: { x: 0.25, y: 0.25 },
+              },
+            ],
+          },
+        ],
+      }
+    )
+
+    expect(root.children).toHaveLength(1)
+    expect(root.children[0].name).toContain('region-1')
+  })
 })

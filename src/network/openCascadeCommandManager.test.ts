@@ -150,6 +150,66 @@ describe('OpenCascadeCommandManager', () => {
     expect((await manager.exportLatestGlbBytes()).length).toBeGreaterThan(0)
   })
 
+  it('detects a closed rectangle as an automatic pickable region', async () => {
+    const manager = new OpenCascadeCommandManager()
+    await buildRectangleRegionInput(manager, { createRegion: false })
+
+    const regionMeshes = await manager.exportLatestRegionMeshes()
+    expect(regionMeshes.regions).toHaveLength(1)
+    const region = regionMeshes.regions[0]
+    expect(region.groups[0].parentPathId).toBe(IDS.path)
+    expect(region.groups[0].queryPoint.x).toBeCloseTo(0)
+    expect(region.groups[0].queryPoint.y).toBeCloseTo(0)
+
+    const queryPointResponse = await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-000000000060',
+      cmd: {
+        type: 'region_get_query_point',
+        region_id: region.regionId,
+      },
+    })
+    expect(
+      queryPointResponse.resp.data.modeling_response.data.query_point.x
+    ).toBeCloseTo(0)
+
+    const parentResponse = await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-000000000061',
+      cmd: {
+        type: 'entity_get_parent_id',
+        entity_id: region.regionId,
+      },
+    })
+    expect(parentResponse.resp.data.modeling_response.data.entity_id).toBe(
+      IDS.path
+    )
+  })
+
+  it('detects multiple bounded regions from overlapping rectangles', async () => {
+    const manager = new OpenCascadeCommandManager()
+    await buildRectangleRegionInput(manager, {
+      createRegion: false,
+      path: '00000000-0000-0000-0000-000000000070',
+      commandStart: 70,
+      min: { x: 0, y: 0 },
+      max: { x: 2, y: 2 },
+    })
+    await buildRectangleRegionInput(manager, {
+      createRegion: false,
+      path: '00000000-0000-0000-0000-000000000080',
+      commandStart: 80,
+      min: { x: 1, y: 1 },
+      max: { x: 3, y: 3 },
+    })
+
+    const regionMeshes = await manager.exportLatestRegionMeshes()
+    expect(regionMeshes.regions.length).toBeGreaterThan(1)
+    expect(
+      regionMeshes.regions.every((region) => region.groups[0].count > 0)
+    ).toBe(true)
+  })
+
   it('revolves a circular region and exports BREP bytes', async () => {
     const manager = new OpenCascadeCommandManager()
     await buildCircleRegionInput(manager)
@@ -361,12 +421,22 @@ async function buildRectangleRegionInput(
     region?: string
     z?: number
     size?: number
+    min?: { x: number; y: number }
+    max?: { x: number; y: number }
+    createRegion?: boolean
+    commandStart?: number
   } = {}
 ) {
   const path = options.path || IDS.path
   const region = options.region || IDS.region
   const z = options.z || 0
   const size = options.size || 1
+  const min = options.min || { x: -size, y: -size }
+  const max = options.max || { x: size, y: size }
+  const commandId = (offset: number) =>
+    `00000000-0000-0000-0000-${String(
+      (options.commandStart || 40) + offset
+    ).padStart(12, '0')}`
 
   await send(manager, IDS.request, {
     type: 'modeling_cmd_batch_req',
@@ -383,56 +453,60 @@ async function buildRectangleRegionInput(
         },
       },
       {
-        cmd_id: '00000000-0000-0000-0000-000000000040',
+        cmd_id: commandId(0),
         cmd: { type: 'enable_sketch_mode', entity_id: IDS.plane },
       },
       { cmd_id: path, cmd: { type: 'start_path' } },
       {
-        cmd_id: '00000000-0000-0000-0000-000000000041',
-        cmd: { type: 'move_path_pen', path, to: { x: -size, y: -size, z: 0 } },
+        cmd_id: commandId(1),
+        cmd: { type: 'move_path_pen', path, to: { x: min.x, y: min.y, z: 0 } },
       },
       {
-        cmd_id: '00000000-0000-0000-0000-000000000042',
+        cmd_id: commandId(2),
         cmd: {
           type: 'extend_path',
           path,
           segment: {
             type: 'line',
-            end: { x: size, y: -size, z: 0 },
+            end: { x: max.x, y: min.y, z: 0 },
             relative: false,
           },
         },
       },
       {
-        cmd_id: '00000000-0000-0000-0000-000000000043',
+        cmd_id: commandId(3),
         cmd: {
           type: 'extend_path',
           path,
           segment: {
             type: 'line',
-            end: { x: size, y: size, z: 0 },
+            end: { x: max.x, y: max.y, z: 0 },
             relative: false,
           },
         },
       },
       {
-        cmd_id: '00000000-0000-0000-0000-000000000044',
+        cmd_id: commandId(4),
         cmd: {
           type: 'extend_path',
           path,
           segment: {
             type: 'line',
-            end: { x: -size, y: size, z: 0 },
+            end: { x: min.x, y: max.y, z: 0 },
             relative: false,
           },
         },
       },
       {
-        cmd_id: '00000000-0000-0000-0000-000000000045',
+        cmd_id: commandId(5),
         cmd: { type: 'close_path', path_id: path },
       },
     ],
   })
+
+  if (options.createRegion === false) {
+    return
+  }
 
   await send(manager, IDS.request, {
     type: 'modeling_cmd_req',
