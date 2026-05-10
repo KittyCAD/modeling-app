@@ -93,6 +93,7 @@ const OPEN_CASCADE_ORIGIN_OUTLINE_RADIUS_PX = 8
 const OPEN_CASCADE_HIGHLIGHT_POLYGON_OFFSET = -4
 const OPEN_CASCADE_SKETCH_LINE_PICK_RADIUS_PX = 8
 const OPEN_CASCADE_EMPTY_SCENE_RADIUS_BASE_UNITS = 10
+const OPEN_CASCADE_MIN_CAMERA_NEAR_BASE_UNITS = 0.001
 
 type OpenCascadeCamera = PerspectiveCamera | OrthographicCamera
 type ResolvedTheme = Exclude<Themes, Themes.System>
@@ -280,6 +281,28 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
 
   useEffect(() => {
     const sceneInfra = kclManager.sceneInfra
+    const updateClipping = () => {
+      updateCameraClipping(
+        sceneInfra.camControls.camera,
+        sceneInfra.camControls.target,
+        modelRadiusRef.current,
+        sceneInfra.baseUnitMultiplier
+      )
+    }
+    const unsubscribers = [
+      sceneInfra.camControls.cameraChange.add(updateClipping),
+      sceneInfra.baseUnitChange.add(updateClipping),
+    ]
+    updateClipping()
+    return () => {
+      for (const unsubscribe of unsubscribers) {
+        unsubscribe()
+      }
+    }
+  }, [kclManager.sceneInfra])
+
+  useEffect(() => {
+    const sceneInfra = kclManager.sceneInfra
     const guideRoot = sceneInfra.scene.getObjectByName(OPEN_CASCADE_GUIDE_ROOT)
     if (!(guideRoot instanceof Group)) {
       return
@@ -401,7 +424,8 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         command,
         camera,
         targetRef.current,
-        modelRadiusRef.current
+        modelRadiusRef.current,
+        sceneInfra.baseUnitMultiplier
       )
       sceneInfra.camControls.target.copy(targetRef.current)
       sceneInfra.camControls.onCameraChange()
@@ -439,7 +463,8 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         updateCameraClipping(
           sceneInfra.camControls.camera,
           sceneInfra.camControls.target,
-          bounds.radius
+          bounds.radius,
+          sceneInfra.baseUnitMultiplier
         )
         sceneInfra.camControls.onCameraChange()
         setStage('empty')
@@ -473,7 +498,8 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
           sceneInfra.camControls.camera,
           targetRef.current,
           radius,
-          true
+          true,
+          sceneInfra.baseUnitMultiplier
         )
         sceneInfra.camControls.target.copy(targetRef.current)
         hasFramedModelRef.current = true
@@ -483,7 +509,8 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         updateCameraClipping(
           sceneInfra.camControls.camera,
           targetRef.current,
-          radius
+          radius,
+          sceneInfra.baseUnitMultiplier
         )
       }
       sceneInfra.camControls.onCameraChange()
@@ -640,7 +667,8 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         sceneInfra.camControls.camera,
         targetRef.current,
         bounds.radius,
-        true
+        true,
+        sceneInfra.baseUnitMultiplier
       )
       sceneInfra.camControls.target.copy(targetRef.current)
       hasFramedModelRef.current = true
@@ -660,7 +688,8 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         sceneInfra.camControls.camera,
         targetRef.current,
         emptyBounds.radius,
-        true
+        true,
+        sceneInfra.baseUnitMultiplier
       )
       sceneInfra.camControls.target.copy(targetRef.current)
       sceneInfra.camControls.onCameraChange()
@@ -2069,7 +2098,8 @@ function fitCameraToRadius(
   camera: OpenCascadeCamera,
   target: Vector3,
   radius: number,
-  useDefaultDirection = false
+  useDefaultDirection = false,
+  baseUnitMultiplier = 1
 ) {
   const direction = useDefaultDirection
     ? new Vector3(1.15, -1.65, 1.05).normalize()
@@ -2079,7 +2109,7 @@ function fitCameraToRadius(
   }
 
   camera.position.copy(target).add(direction.multiplyScalar(radius * 2.4))
-  updateCameraClipping(camera, target, radius)
+  updateCameraClipping(camera, target, radius, baseUnitMultiplier)
   if (camera instanceof OrthographicCamera) {
     camera.zoom = orthographicZoomToFit(camera, radius)
   }
@@ -2098,11 +2128,22 @@ function fitCameraToRadius(
 function updateCameraClipping(
   camera: OpenCascadeCamera,
   target: Vector3,
-  radius: number
+  radius: number,
+  baseUnitMultiplier = 1
 ) {
   const distance = camera.position.distanceTo(target)
-  camera.near = Math.max(0.01, Math.min(radius / 100, distance / 100))
-  camera.far = Math.max(radius * 40, distance + radius * 4, 1000)
+  const unitScale =
+    Number.isFinite(baseUnitMultiplier) && baseUnitMultiplier > 0
+      ? baseUnitMultiplier
+      : 1
+  const modelRadius = Math.max(radius, unitScale)
+  const minNear = Math.max(
+    unitScale * OPEN_CASCADE_MIN_CAMERA_NEAR_BASE_UNITS,
+    0.000001
+  )
+  const adaptiveNear = Math.min(modelRadius / 10000, distance / 10000)
+  camera.near = Math.max(minNear, adaptiveNear)
+  camera.far = Math.max(modelRadius * 80, distance + modelRadius * 8, 1000)
   camera.updateProjectionMatrix()
 }
 
@@ -2117,25 +2158,27 @@ function applyOpenCascadeCameraCommand(
   command: OpenCascadeCameraControlCommand,
   camera: OpenCascadeCamera,
   target: Vector3,
-  radius: number
+  radius: number,
+  baseUnitMultiplier = 1
 ) {
   if (command.type === 'zoom_to_fit') {
-    fitCameraToRadius(camera, target, radius)
+    fitCameraToRadius(camera, target, radius, false, baseUnitMultiplier)
     return
   }
   if (command.type === 'view_isometric') {
-    fitCameraToRadius(camera, target, radius, true)
+    fitCameraToRadius(camera, target, radius, true, baseUnitMultiplier)
     return
   }
 
-  setCameraToAxis(command.axis, camera, target, radius)
+  setCameraToAxis(command.axis, camera, target, radius, baseUnitMultiplier)
 }
 
 function setCameraToAxis(
   axis: CameraAxisName,
   camera: OpenCascadeCamera,
   target: Vector3,
-  radius: number
+  radius: number,
+  baseUnitMultiplier = 1
 ) {
   const direction = axisToDirection(axis)
   const distance = Math.max(camera.position.distanceTo(target), radius * 2.4)
@@ -2144,6 +2187,7 @@ function setCameraToAxis(
     axis === 'z' || axis === '-z' ? new Vector3(0, 1, 0) : new Vector3(0, 0, 1)
   )
   camera.lookAt(target)
+  updateCameraClipping(camera, target, radius, baseUnitMultiplier)
   camera.updateProjectionMatrix()
 }
 
