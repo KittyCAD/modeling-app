@@ -163,6 +163,39 @@ export async function deleteFromSelection(
   if (err(varDec)) return varDec
 
   if (
+    selection.artifact?.type === 'path' &&
+    selection.artifact.subType === 'region'
+  ) {
+    const bodyIndicesToDelete = new Set<number>()
+    const regionBodyIndex = topLevelBodyIndex(selection.codeRef.pathToNode)
+    if (typeof regionBodyIndex === 'number') {
+      bodyIndicesToDelete.add(regionBodyIndex)
+    }
+
+    if (selection.artifact.sweepId) {
+      const sweepArtifact = getArtifactOfTypes(
+        { key: selection.artifact.sweepId, types: ['sweep'] },
+        artifactGraph
+      )
+      if (!err(sweepArtifact)) {
+        const sweepBodyIndex = topLevelBodyIndex(
+          sweepArtifact.codeRef.pathToNode
+        )
+        if (typeof sweepBodyIndex === 'number') {
+          bodyIndicesToDelete.add(sweepBodyIndex)
+        }
+      }
+    }
+
+    for (const bodyIndex of Array.from(bodyIndicesToDelete).sort(
+      (a, b) => b - a
+    )) {
+      astClone.body.splice(bodyIndex, 1)
+    }
+    return astClone
+  }
+
+  if (
     selection.artifact?.type === 'pattern' &&
     varDec.node.init.type === 'PipeExpression'
   ) {
@@ -472,4 +505,9 @@ export async function deleteFromSelection(
   }
 
   return new Error('Selection not recognised, could not delete')
+}
+
+function topLevelBodyIndex(pathToNode: PathToNode): number | undefined {
+  const bodyIndex = pathToNode[1]?.[0]
+  return typeof bodyIndex === 'number' ? bodyIndex : undefined
 }
