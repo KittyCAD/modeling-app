@@ -3,7 +3,10 @@ import { describe, expect, it, vi } from 'vitest'
 import { assertParse } from '@src/lang/wasm'
 import { ConnectionManager } from '@src/network/connectionManager'
 import { EngineCommandManagerProxy } from '@src/network/engineCommandManagerProxy'
-import { OPEN_CASCADE_CIRCLE_EXTRUDE_KCL } from '@src/network/openCascadeProofFixture'
+import {
+  OPEN_CASCADE_CIRCLE_EXTRUDE_KCL,
+  OPEN_CASCADE_TRANSFORM_KCL,
+} from '@src/network/openCascadeProofFixture'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
 const RANGE = JSON.stringify([0, 0, 0])
@@ -137,5 +140,29 @@ describe('EngineCommandManagerProxy', () => {
     proxy.clearOpenCascadePreview()
     expect(await proxy.exportVisibleOpenCascadePreviewGlbBytes()).toEqual([])
     expect(proxy.latestOpenCascadePreviewStatus.value).toBe('idle')
+  })
+
+  it('exports transformed bodies from OpenCascade previews', async () => {
+    const { engineCommandManager, instance, rustContext, settingsActor } =
+      await buildTheWorldAndNoEngineConnection()
+    const proxy = engineCommandManager as EngineCommandManagerProxy
+
+    await vi.waitFor(() =>
+      expect(settingsActor.getSnapshot().value).toBe('idle')
+    )
+    settingsActor.send({
+      type: 'set.modeling.engine',
+      data: { level: 'user', value: 'open_cascade' },
+      doNotPersist: true,
+    })
+
+    const ast = assertParse(OPEN_CASCADE_TRANSFORM_KCL, instance)
+    await proxy.runOpenCascadePreviewAst(ast, rustContext, {
+      settings: { modeling: { engine: 'open_cascade' } },
+    })
+
+    const previewGlbs = await proxy.exportVisibleOpenCascadePreviewGlbBytes()
+    expect(previewGlbs).toHaveLength(1)
+    expect(previewGlbs[0]?.bytes.length).toBeGreaterThan(0)
   })
 })
