@@ -5,6 +5,7 @@ import { SKETCH_LAYER } from '@src/clientSideScene/sceneUtils'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import {
   getCodeRefsByArtifactId,
+  getSketchBlockForArtifact,
   getSketchBlockForPathArtifact,
 } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph } from '@src/lang/wasm'
@@ -13,6 +14,7 @@ import {
   type CameraAxisName,
   type OpenCascadeCameraControlCommand,
   addOpenCascadeCameraControlListener,
+  btnName,
 } from '@src/lib/cameraControls'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import {
@@ -964,6 +966,66 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         objectSelectionOnly,
       })
 
+    const updateMouseVectorForEvent = (event: MouseEvent) => {
+      const rect = sceneInfra.renderer.domElement.getBoundingClientRect()
+      if (rect.width === 0 || rect.height === 0) {
+        return
+      }
+      sceneInfra.currentMouseVector.x =
+        ((event.clientX - rect.left) / rect.width) * 2 - 1
+      sceneInfra.currentMouseVector.y =
+        -((event.clientY - rect.top) / rect.height) * 2 + 1
+    }
+
+    const sketchIdForSketchEditHit = (
+      hit: OpenCascadeResolvedHit | undefined
+    ) => {
+      if (!hit) {
+        return undefined
+      }
+      if (hit.hitType === 'sketchLine') {
+        const artifact = kclManager.artifactGraph.get(hit.artifactId)
+        return getSketchBlockForArtifact(artifact, kclManager.artifactGraph)?.id
+      }
+      if (hit.hitType === 'region') {
+        const pathArtifact = hit.parentPathId
+          ? kclManager.artifactGraph.get(hit.parentPathId)
+          : undefined
+        if (pathArtifact?.type === 'path') {
+          return getSketchBlockForPathArtifact(
+            pathArtifact,
+            kclManager.artifactGraph
+          )?.id
+        }
+        const artifact = kclManager.artifactGraph.get(hit.artifactId)
+        return getSketchBlockForArtifact(artifact, kclManager.artifactGraph)?.id
+      }
+      return undefined
+    }
+
+    const onDoubleClick = (event: MouseEvent) => {
+      if (
+        sceneInfra.camControls.wasDragging ||
+        !btnName(event).left ||
+        state.matches('Sketch') ||
+        state.matches('sketchSolveMode')
+      ) {
+        return
+      }
+      updateMouseVectorForEvent(event)
+      const hit = resolveHit(sceneInfra.raycastRing(0, 1))
+      const sketchId = sketchIdForSketchEditHit(hit)
+      if (!sketchId) {
+        return
+      }
+      event.preventDefault()
+      event.stopPropagation()
+      send({
+        type: 'Edit sketch solve',
+        data: { artifactId: sketchId },
+      })
+    }
+
     const updateHighlight = (hoveredHit?: OpenCascadeResolvedHit) => {
       const highlightRoot = scene.getObjectByName(OPEN_CASCADE_HIGHLIGHT_ROOT)
       if (!(highlightRoot instanceof Group)) {
@@ -1338,8 +1400,13 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         })
       },
     })
+    sceneInfra.renderer.domElement.addEventListener('dblclick', onDoubleClick)
 
     return () => {
+      sceneInfra.renderer.domElement.removeEventListener(
+        'dblclick',
+        onDoubleClick
+      )
       for (const unsubscribe of unsubscribeLinePickThreshold) {
         unsubscribe()
       }
