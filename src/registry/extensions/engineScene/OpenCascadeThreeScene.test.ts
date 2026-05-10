@@ -105,6 +105,87 @@ describe('OpenCascadeThreeScene helpers', () => {
         `${helpers.OPEN_CASCADE_GUIDE_OBJECT_IDS.origin}-fill`
       )
     ).toBeInstanceOf(Mesh)
+    expect(
+      root.getObjectByName(
+        `${helpers.OPEN_CASCADE_GUIDE_OBJECT_IDS.xy}-selection`
+      )
+    ).toBeInstanceOf(Mesh)
+  })
+
+  it('resolves OpenCascade default plane guide hits when enabled', () => {
+    const root = helpers.makeOpenCascadeGuideRoot()
+    const xy = root.getObjectByName(helpers.OPEN_CASCADE_GUIDE_OBJECT_IDS.xy)
+    const planeMesh = xy?.children.find((child) => child instanceof Mesh)
+
+    expect(xy?.layers.isEnabled(2)).toBe(true)
+    expect(planeMesh?.layers.isEnabled(2)).toBe(true)
+
+    expect(
+      helpers.resolveOpenCascadeHit([{ object: planeMesh } as never], {
+        includeDefaultPlanes: false,
+      })
+    ).toBeUndefined()
+
+    expect(
+      helpers.resolveOpenCascadeHit([{ object: planeMesh } as never], {
+        includeDefaultPlanes: true,
+      })
+    ).toEqual({
+      hitType: 'defaultPlane',
+      planeKey: 'xy',
+      plane: 'XY',
+    })
+  })
+
+  it('maps OpenCascade default plane hits to modeling selections', () => {
+    expect(
+      helpers.openCascadeDefaultPlaneSelection(
+        { hitType: 'defaultPlane', planeKey: 'xz', plane: 'XZ' },
+        {
+          xy: 'plane-xy',
+          xz: 'plane-xz',
+          yz: 'plane-yz',
+          negXy: 'plane-neg-xy',
+          negXz: 'plane-neg-xz',
+          negYz: 'plane-neg-yz',
+        }
+      )
+    ).toEqual({
+      name: 'XZ',
+      id: 'plane-xz',
+    })
+  })
+
+  it('highlights selected OpenCascade default plane guides', () => {
+    const root = helpers.makeOpenCascadeGuideRoot()
+    const selected = helpers.selectedOpenCascadeDefaultPlaneKeys(
+      {
+        otherSelections: [{ name: '-XZ', id: 'plane-neg-xz' }],
+      },
+      {
+        xy: 'plane-xy',
+        xz: 'plane-xz',
+        yz: 'plane-yz',
+        negXy: 'plane-neg-xy',
+        negXz: 'plane-neg-xz',
+        negYz: 'plane-neg-yz',
+      }
+    )
+
+    helpers.applyOpenCascadeGuideSelection(root, selected, 0xff00ff)
+
+    const xy = root.getObjectByName(
+      `${helpers.OPEN_CASCADE_GUIDE_OBJECT_IDS.xy}-selection`
+    ) as Mesh
+    const xz = root.getObjectByName(
+      `${helpers.OPEN_CASCADE_GUIDE_OBJECT_IDS.xz}-selection`
+    ) as Mesh
+
+    expect(xy.visible).toBe(false)
+    expect(xz.visible).toBe(true)
+    expect((xz.material as MeshBasicMaterial).color.getHexString()).toBe(
+      'ff00ff'
+    )
   })
 
   it('reverses the OpenCascade origin fill and outline colors by theme', () => {

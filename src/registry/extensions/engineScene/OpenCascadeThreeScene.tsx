@@ -108,26 +108,26 @@ interface OpenCascadeSceneStyle {
   hoverColor: number
 }
 
-type OpenCascadeResolvedTopologyHit = OpenCascadeTopologyFaceGroup & {
+export type OpenCascadeResolvedTopologyHit = OpenCascadeTopologyFaceGroup & {
   hitType: 'topology'
   solidId: string
 }
 
-type OpenCascadeResolvedSketchLineHit = OpenCascadeSketchLineSegment & {
+export type OpenCascadeResolvedSketchLineHit = OpenCascadeSketchLineSegment & {
   hitType: 'sketchLine'
 }
 
-type OpenCascadeResolvedRegionHit = OpenCascadeRegionFaceGroup & {
+export type OpenCascadeResolvedRegionHit = OpenCascadeRegionFaceGroup & {
   hitType: 'region'
 }
 
-type OpenCascadeResolvedDefaultPlaneHit = {
+export type OpenCascadeResolvedDefaultPlaneHit = {
   hitType: 'defaultPlane'
   planeKey: 'xy' | 'xz' | 'yz'
   plane: DefaultPlaneStr
 }
 
-type OpenCascadeResolvedHit =
+export type OpenCascadeResolvedHit =
   | OpenCascadeResolvedTopologyHit
   | OpenCascadeResolvedSketchLineHit
   | OpenCascadeResolvedRegionHit
@@ -300,6 +300,29 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     latestVisibilityVersion,
     openCascadeManager,
     state.context.defaultPlaneVisibility,
+  ])
+
+  useEffect(() => {
+    const sceneInfra = kclManager.sceneInfra
+    const guideRoot = sceneInfra.scene.getObjectByName(OPEN_CASCADE_GUIDE_ROOT)
+    if (!(guideRoot instanceof Group)) {
+      return
+    }
+
+    applyOpenCascadeGuideSelection(
+      guideRoot,
+      selectedOpenCascadeDefaultPlaneKeys(
+        state.context.selectionRanges,
+        kclManager.rustContext.defaultPlanes
+      ),
+      sceneStyle.selectionColor
+    )
+    sceneInfra.renderFrame()
+  }, [
+    kclManager.sceneInfra,
+    kclManager.rustContext.defaultPlanes,
+    sceneStyle.selectionColor,
+    state.context.selectionRanges,
   ])
 
   useEffect(() => {
@@ -666,7 +689,8 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     const isSelectingSketchPlane = state.matches('Sketch no face')
     const resolveHit = (intersects: Intersection[]) =>
       resolveOpenCascadeHit(intersects, {
-        includeDefaultPlanes: isSelectingSketchPlane,
+        includeDefaultPlanes: true,
+        preferDefaultPlanes: isSelectingSketchPlane,
       })
 
     const updateHighlight = (hoveredHit?: OpenCascadeResolvedHit) => {
@@ -769,19 +793,21 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         }
         if (isSelectingSketchPlane) {
           if (hit.hitType === 'defaultPlane') {
-            const defaultPlaneId =
-              kclManager.rustContext.defaultPlanes?.[hit.planeKey]
-            if (!defaultPlaneId) {
+            const selection = openCascadeDefaultPlaneSelection(
+              hit,
+              kclManager.rustContext.defaultPlanes
+            )
+            if (!selection) {
               return
             }
             if (useSketchSolveMode) {
               send({
                 type: 'Select sketch solve plane',
-                data: defaultPlaneId,
+                data: selection.id,
               })
               return
             }
-            selectDefaultSketchPlane(defaultPlaneId, {
+            selectDefaultSketchPlane(selection.id, {
               sceneInfra,
               rustContext: kclManager.rustContext,
             })
@@ -848,6 +874,19 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
           }
         }
         if (hit.hitType === 'defaultPlane') {
+          const selection = openCascadeDefaultPlaneSelection(
+            hit,
+            kclManager.rustContext.defaultPlanes
+          )
+          if (selection) {
+            send({
+              type: 'Set selection',
+              data: {
+                selectionType: 'defaultPlaneSelection',
+                selection,
+              },
+            })
+          }
           return
         }
         const artifact = artifactForOpenCascadeHit(
@@ -1120,6 +1159,7 @@ function makeOpenCascadePlaneGuide({
   group.userData.openCascadeDefaultPlaneKey = key
   group.userData.openCascadeFixedScreenScale = true
   group.quaternion.copy(quaternionFromPlaneAxes(xAxis, yAxis))
+  group.layers.set(SKETCH_LAYER)
 
   const offset = OPEN_CASCADE_GUIDE_PLANE_OFFSET_PX
   const end = offset + OPEN_CASCADE_GUIDE_PLANE_SIZE_PX
@@ -1148,7 +1188,27 @@ function makeOpenCascadePlaneGuide({
   const plane = new Mesh(geometry, material)
   plane.renderOrder = 40
   plane.userData.openCascadeDefaultPlaneKey = key
+  plane.layers.set(SKETCH_LAYER)
   group.add(plane)
+
+  const selection = new Mesh(
+    geometry.clone(),
+    new MeshBasicMaterial({
+      color: 0,
+      transparent: true,
+      opacity: 0.38,
+      side: DoubleSide,
+      depthTest: false,
+      depthWrite: false,
+    })
+  )
+  selection.name = `${id}-selection`
+  selection.renderOrder = 39
+  selection.visible = false
+  selection.userData.openCascadeDefaultPlaneKey = key
+  selection.userData.openCascadeDefaultPlaneSelectionKey = key
+  selection.layers.set(SKETCH_LAYER)
+  group.add(selection)
 
   return group
 }
@@ -1226,6 +1286,30 @@ export function applyOpenCascadeGuideVisibility(
       return
     }
     object.visible = visibility[key] ?? true
+  })
+}
+
+export function applyOpenCascadeGuideSelection(
+  guideRoot: Group,
+  selectedPlaneKeys: Set<'xy' | 'xz' | 'yz'>,
+  selectionColor: number
+) {
+  guideRoot.traverse((object) => {
+    if (!(object instanceof Mesh)) {
+      return
+    }
+    const key = object.userData.openCascadeDefaultPlaneSelectionKey as
+      | 'xy'
+      | 'xz'
+      | 'yz'
+      | undefined
+    if (!key) {
+      return
+    }
+    object.visible = selectedPlaneKeys.has(key)
+    if (object.material instanceof MeshBasicMaterial) {
+      object.material.color.set(selectionColor)
+    }
   })
 }
 
@@ -1529,15 +1613,22 @@ function geometryForRegionGroup(
   return geometry
 }
 
-function resolveOpenCascadeHit(
+export function resolveOpenCascadeHit(
   intersects: Intersection[],
-  options: { includeDefaultPlanes?: boolean } = {}
+  options: {
+    includeDefaultPlanes?: boolean
+    preferDefaultPlanes?: boolean
+  } = {}
 ): OpenCascadeResolvedHit | undefined {
+  const defaultPlaneHits: OpenCascadeResolvedDefaultPlaneHit[] = []
   for (const intersection of intersects) {
     if (options.includeDefaultPlanes) {
       const defaultPlane = findOpenCascadeDefaultPlaneGuide(intersection.object)
       if (defaultPlane) {
-        return defaultPlane
+        if (options.preferDefaultPlanes) {
+          return defaultPlane
+        }
+        defaultPlaneHits.push(defaultPlane)
       }
     }
 
@@ -1588,6 +1679,9 @@ function resolveOpenCascadeHit(
     if (group) {
       return { ...group, hitType: 'topology', solidId: solid.solidId }
     }
+  }
+  if (defaultPlaneHits.length > 0) {
+    return defaultPlaneHits[0]
   }
   return undefined
 }
@@ -1650,6 +1744,20 @@ function findOpenCascadeDefaultPlaneGuide(
   return undefined
 }
 
+export function openCascadeDefaultPlaneSelection(
+  hit: OpenCascadeResolvedDefaultPlaneHit,
+  defaultPlanes: DefaultPlanes | null
+) {
+  const id = defaultPlanes?.[hit.planeKey]
+  if (!id) {
+    return undefined
+  }
+  return {
+    name: hit.plane,
+    id,
+  }
+}
+
 function selectedOpenCascadeEntityIds(selectionRanges: {
   graphSelections: {
     artifact?: { id: string }
@@ -1689,6 +1797,39 @@ function selectedOpenCascadeEntityIds(selectionRanges: {
     }
   }
   return ids
+}
+
+export function selectedOpenCascadeDefaultPlaneKeys(
+  selectionRanges: {
+    otherSelections: unknown[]
+  },
+  defaultPlanes: DefaultPlanes | null
+) {
+  const selected = new Set<'xy' | 'xz' | 'yz'>()
+  if (!defaultPlanes) {
+    return selected
+  }
+
+  for (const selection of selectionRanges.otherSelections) {
+    if (!selection || typeof selection !== 'object') {
+      continue
+    }
+    const id =
+      'id' in selection && typeof selection.id === 'string'
+        ? selection.id
+        : undefined
+    if (!id) {
+      continue
+    }
+    if (id === defaultPlanes.xy || id === defaultPlanes.negXy) {
+      selected.add('xy')
+    } else if (id === defaultPlanes.xz || id === defaultPlanes.negXz) {
+      selected.add('xz')
+    } else if (id === defaultPlanes.yz || id === defaultPlanes.negYz) {
+      selected.add('yz')
+    }
+  }
+  return selected
 }
 
 function artifactForOpenCascadeHit(
