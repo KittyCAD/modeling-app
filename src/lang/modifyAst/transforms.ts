@@ -64,9 +64,24 @@ export function addTranslate({
     return vars
   }
 
-  const xExpr = x ? [createLabeledArg('x', valueOrVariable(x))] : []
-  const yExpr = y ? [createLabeledArg('y', valueOrVariable(y))] : []
-  const zExpr = z ? [createLabeledArg('z', valueOrVariable(z))] : []
+  const xExpr = [
+    createLabeledArg(
+      'x',
+      x ? valueOrVariable(x) : createLiteral(0, wasmInstance)
+    ),
+  ]
+  const yExpr = [
+    createLabeledArg(
+      'y',
+      y ? valueOrVariable(y) : createLiteral(0, wasmInstance)
+    ),
+  ]
+  const zExpr = [
+    createLabeledArg(
+      'z',
+      z ? valueOrVariable(z) : createLiteral(0, wasmInstance)
+    ),
+  ]
   const globalExpr =
     global !== undefined
       ? [createLabeledArg('global', createLiteral(global, wasmInstance))]

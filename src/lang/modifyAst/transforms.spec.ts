@@ -182,7 +182,9 @@ split001 = split(extrude001, tools = extrude002)`
       if (err(newCode)) {
         throw newCode
       }
-      expect(newCode).toContain(`${code}\ntranslate(split001[1], x = 1)`)
+      expect(newCode).toContain(
+        `${code}\ntranslate(split001[1], x = 1, y = 0, z = 0)`
+      )
     })
 
     async function runEditTranslateTest(
