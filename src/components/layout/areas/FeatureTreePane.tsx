@@ -247,10 +247,9 @@ export const FeatureTreePaneContents = memo(() => {
     (event: DragEvent<HTMLElement>, range: SourceRange | undefined) => {
       event.dataTransfer.setData('application/zoo-rollback-bar', 'true')
       event.dataTransfer.effectAllowed = 'move'
-      const dragImage = document.createElement('canvas')
-      dragImage.width = 1
-      dragImage.height = 1
+      const dragImage = makeInvisibleDragImage()
       event.dataTransfer.setDragImage(dragImage, 0, 0)
+      requestAnimationFrame(() => dragImage.remove())
       setIsDraggingRollback(true)
       setRollbackPreviewRange(range)
     },
@@ -523,14 +522,36 @@ function RollbackBar({
       onDragEnd={onDragEnd}
       onDragOver={onDragOver}
       onDrop={onDrop}
-      className="my-2 flex justify-center cursor-grab active:cursor-grabbing"
+      className="my-2 flex items-center justify-center cursor-grab active:cursor-grabbing"
     >
-      <div className="h-1.5 w-16 rounded-full bg-primary shadow-sm shadow-primary/20" />
-      <Tooltip hoverOnly position="top" delay={250} contentClassName="text-xs">
+      <div className="h-[1px] bg-3 flex-1" />
+      <div className="w-16 max-w-full flex-none rounded-full bg-1 hover:bg-2 hover:shadow-sm border b-3 flex items-center justify-center text-transparent hover:text-inherit">
+        <CustomIcon name="sixDots" className="w-3 h-3" />
+      </div>
+      <div className="h-[1px] bg-3 flex-1" />
+      <Tooltip
+        hoverOnly
+        position="bottom"
+        delay={250}
+        contentClassName="text-xs"
+      >
         Rollback bar
       </Tooltip>
     </div>
   )
+}
+
+function makeInvisibleDragImage() {
+  const dragImage = document.createElement('div')
+  dragImage.style.position = 'fixed'
+  dragImage.style.left = '-100px'
+  dragImage.style.top = '-100px'
+  dragImage.style.width = '1px'
+  dragImage.style.height = '1px'
+  dragImage.style.opacity = '0'
+  dragImage.style.pointerEvents = 'none'
+  document.body.appendChild(dragImage)
+  return dragImage
 }
 
 function operationTreeItemKey(item: Operation | Operation[]) {
