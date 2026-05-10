@@ -278,6 +278,7 @@ type ModelingExecutionResult =
 type OpenCascadeRenderState = {
   planes: Map<string, PlaneState>
   renderablePlaneIds: Set<string>
+  sketchSupportPlaneIds: Set<string>
   paths: Map<string, PathState>
   pathAliases: Map<string, string>
   regions: Map<string, RegionState>
@@ -384,6 +385,7 @@ export class OpenCascadeCommandManager {
   readonly latestExportError = signal<string | undefined>(undefined)
   private planes = new Map<string, PlaneState>()
   private renderablePlaneIds = new Set<string>()
+  private sketchSupportPlaneIds = new Set<string>()
   private paths = new Map<string, PathState>()
   private pathAliases = new Map<string, string>()
   private regions = new Map<string, RegionState>()
@@ -583,13 +585,17 @@ export class OpenCascadeCommandManager {
     const planes = state?.planes ?? this.planes
     const renderablePlaneIds =
       state?.renderablePlaneIds ?? this.renderablePlaneIds
+    const sketchSupportPlaneIds =
+      state?.sketchSupportPlaneIds ?? this.sketchSupportPlaneIds
     const hiddenObjectIds = state?.hiddenObjectIds ?? this.hiddenObjectIds
     return {
       version: this.latestPlaneVersion.value,
       planes: Array.from(planes.entries())
         .filter(
           ([planeId]) =>
-            renderablePlaneIds.has(planeId) && !hiddenObjectIds.has(planeId)
+            renderablePlaneIds.has(planeId) &&
+            !sketchSupportPlaneIds.has(planeId) &&
+            !hiddenObjectIds.has(planeId)
         )
         .map(([planeId, plane]) => ({
           planeId,
@@ -717,6 +723,10 @@ export class OpenCascadeCommandManager {
         return modeling(EMPTY_RESPONSE)
       case 'enable_sketch_mode':
         this.currentSketchPlaneId = cmd.entity_id
+        if (this.planes.has(cmd.entity_id)) {
+          this.sketchSupportPlaneIds.add(cmd.entity_id)
+          this.latestPlaneVersion.value += 1
+        }
         this.currentSketchOnFace = this.sketchOnFaceProvenanceForTopologyFace(
           cmd.entity_id
         )
@@ -3014,6 +3024,7 @@ export class OpenCascadeCommandManager {
         ])
       ),
       renderablePlaneIds: new Set(this.renderablePlaneIds),
+      sketchSupportPlaneIds: new Set(this.sketchSupportPlaneIds),
       paths: new Map(
         Array.from(this.paths.entries()).map(([id, path]) => [
           id,
@@ -3087,6 +3098,7 @@ export class OpenCascadeCommandManager {
   private clear() {
     this.planes.clear()
     this.renderablePlaneIds.clear()
+    this.sketchSupportPlaneIds.clear()
     this.paths.clear()
     this.pathAliases.clear()
     this.regions.clear()

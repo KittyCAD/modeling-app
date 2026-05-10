@@ -67,6 +67,17 @@ describe('OpenCascadeCommandManager', () => {
 
     await send(manager, IDS.request, {
       type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-00000000000c',
+      cmd: {
+        type: 'enable_sketch_mode',
+        entity_id: IDS.plane,
+      },
+    })
+
+    expect(manager.exportLatestPlaneMeshes().planes).toHaveLength(0)
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
       cmd_id: '00000000-0000-0000-0000-00000000000b',
       cmd: {
         type: 'object_visible',

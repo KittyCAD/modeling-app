@@ -9,6 +9,7 @@ import {
   MeshBasicMaterial,
   OrthographicCamera,
   PerspectiveCamera,
+  Scene,
   Vector3,
 } from 'three'
 import { beforeAll, describe, expect, it } from 'vitest'
@@ -230,6 +231,42 @@ describe('OpenCascadeThreeScene helpers', () => {
       hitType: 'offsetPlane',
       planeId: 'offset-plane-1',
     })
+  })
+
+  it('ignores OpenCascade offset planes when computing scene content bounds', () => {
+    const scene = new Scene()
+    const root = new Group()
+    root.name = 'OPEN_CASCADE_OFFSET_PLANE_ROOT'
+    helpers.rebuildOpenCascadeOffsetPlaneRoot(
+      root,
+      {
+        version: 1,
+        planes: [
+          {
+            planeId: 'offset-plane-1',
+            origin: { x: 100, y: 0, z: 0 },
+            xAxis: { x: 1, y: 0, z: 0 },
+            yAxis: { x: 0, y: 1, z: 0 },
+            normal: { x: 0, y: 0, z: 1 },
+          },
+        ],
+      },
+      new Set(),
+      undefined,
+      {
+        backgroundColor: 0xffffff,
+        edgeColor: 0,
+        surfaceColor: '#ffffff',
+        profileColor: '#ffffff',
+        sketchLineColor: 0,
+        selectionColor: 0xff00ff,
+        hoverColor: 0x00ff00,
+      },
+      Themes.Light
+    )
+    scene.add(root)
+
+    expect(helpers.getOpenCascadeSceneContentBounds(scene)).toBeUndefined()
   })
 
   it('highlights selected OpenCascade default plane guides', () => {

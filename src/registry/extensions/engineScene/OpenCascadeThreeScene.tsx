@@ -2954,7 +2954,6 @@ export function getOpenCascadeSceneContentBounds(scene: Scene) {
     OPEN_CASCADE_PROFILE_ROOT,
     OPEN_CASCADE_SKETCH_LINE_ROOT,
     OPEN_CASCADE_REGION_PICK_ROOT,
-    OPEN_CASCADE_OFFSET_PLANE_ROOT,
   ]) {
     const root = scene.getObjectByName(rootName)
     if (!root) {
