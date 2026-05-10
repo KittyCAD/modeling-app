@@ -59,6 +59,10 @@ import {
 } from '@src/lib/automaticRendering'
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
+import {
+  BodyItem,
+  getBodyItemPropsFromArtifactGraph,
+} from '@src/components/layout/areas/BodiesPane'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
@@ -230,6 +234,16 @@ export const FeatureTreePaneContents = memo(() => {
       'VariableDeclaration',
     ])
   )
+  const openCascadeBodies = useMemo(
+    () =>
+      isOpenCascade
+        ? getBodyItemPropsFromArtifactGraph({
+            artifactGraph: kclManager.artifactGraph,
+            operations: unfilteredOperationList,
+          })
+        : new Map(),
+    [isOpenCascade, kclManager.artifactGraph, unfilteredOperationList]
+  )
   const rollbackExit = isOpenCascade
     ? findTopLevelRollbackExit(operationsCode)
     : undefined
@@ -362,7 +376,7 @@ export const FeatureTreePaneContents = memo(() => {
             Building feature tree...
           </Loading>
         ) : (
-          <>
+          <div className="flex min-h-full flex-col">
             {!modelingStateMatches(modelingState, 'Sketch') && (
               <DefaultPlanes
                 systemDeps={systemDeps}
@@ -568,6 +582,7 @@ export const FeatureTreePaneContents = memo(() => {
             )}
             {isOpenCascade && (
               <RollbackDropSlot
+                className="min-h-12 flex-1"
                 onDragOver={(event) => {
                   if (!isDraggingRollback) return
                   event.preventDefault()
@@ -587,7 +602,10 @@ export const FeatureTreePaneContents = memo(() => {
                 )}
               </RollbackDropSlot>
             )}
-          </>
+            {isOpenCascade && openCascadeBodies.size > 0 && (
+              <OpenCascadeBodiesSection bodies={openCascadeBodies} />
+            )}
+          </div>
         )}
       </section>
     </div>
@@ -633,15 +651,17 @@ function RollbackBar({
 
 function RollbackDropSlot({
   children,
+  className = 'min-h-4',
   onDragOver,
   onDrop,
 }: {
   children?: ReactNode
+  className?: string
   onDragOver: (event: DragEvent<HTMLElement>) => void
   onDrop: (event: DragEvent<HTMLElement>) => void
 }) {
   return (
-    <div className="min-h-4" onDragOver={onDragOver} onDrop={onDrop}>
+    <div className={className} onDragOver={onDragOver} onDrop={onDrop}>
       {children}
     </div>
   )
@@ -726,6 +746,26 @@ function sourceRangesEqual(
     left[0] === right[0] &&
     left[1] === right[1] &&
     left[2] === right[2]
+  )
+}
+
+function OpenCascadeBodiesSection({
+  bodies,
+}: {
+  bodies: ReturnType<typeof getBodyItemPropsFromArtifactGraph>
+}) {
+  return (
+    <section className="my-2 flex-none">
+      <div className="h-px bg-chalkboard-50/20 my-2" />
+      <div className="px-2 pb-1 text-xs font-medium text-chalkboard-60 dark:text-chalkboard-40">
+        Bodies
+      </div>
+      <ul>
+        {Array.from(bodies.entries()).map(([id, props], i) => (
+          <BodyItem key={id || i} {...props} />
+        ))}
+      </ul>
+    </section>
   )
 }
 

@@ -1,4 +1,3 @@
-import type { PropsOf } from '@headlessui/react/dist/types'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
@@ -24,8 +23,57 @@ import { err } from '@src/lib/trap'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { useSignals } from '@preact/signals-react/runtime'
 import toast from 'react-hot-toast'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 
-type SolidArtifact = Artifact & { type: 'compositeSolid' | 'sweep' | 'pattern' }
+export type SolidArtifact = Artifact & {
+  type: 'compositeSolid' | 'sweep' | 'pattern'
+}
+
+export type BodyItemProps = {
+  label: string
+  artifact: SolidArtifact
+  artifactGraph: ArtifactGraph
+  hideOperation?: HideOperation
+  engineEntityId?: string
+  patternIndex?: number
+}
+
+export function getBodyItemPropsFromArtifactGraph({
+  artifactGraph,
+  operations,
+}: {
+  artifactGraph: ArtifactGraph
+  operations?: Operation[]
+}): Map<string, BodyItemProps> {
+  const bodies = getBodiesFromArtifactGraph(artifactGraph)
+  const bodyProps: Map<string, BodyItemProps> = new Map()
+
+  let i = 0
+  for (const [id, artifact] of bodies || new Map()) {
+    const patternIndex =
+      artifact.type === 'pattern'
+        ? Math.max(0, artifact.copyIds.indexOf(id) + 1)
+        : undefined
+    const hideOperation =
+      (operations ? getHideOpByArtifactId(operations, id) : undefined) ??
+      (artifact.type === 'pattern' && patternIndex === 0
+        ? operations
+          ? getHideOpByArtifactId(operations, artifact.sourceId)
+          : undefined
+        : undefined)
+    bodyProps.set(id, {
+      artifact,
+      artifactGraph,
+      label: `Body ${i + 1}`,
+      hideOperation,
+      engineEntityId: artifact.type === 'pattern' ? id : undefined,
+      patternIndex,
+    })
+    i++
+  }
+
+  return bodyProps
+}
 
 export function BodiesPane(props: AreaTypeComponentProps) {
   useSignals()
@@ -33,32 +81,10 @@ export function BodiesPane(props: AreaTypeComponentProps) {
   const execState = kclManager.execStateSignal.value
   const artifactGraph = execState.artifactGraph
   const operations = execState.operations
-  const bodies = getBodiesFromArtifactGraph(artifactGraph)
-  const bodiesWithProps: Map<string, PropsOf<typeof BodyItem>> = new Map()
-
-  if (operations) {
-    let i = 0
-    for (let [id, artifact] of bodies || new Map()) {
-      const patternIndex =
-        artifact.type === 'pattern'
-          ? Math.max(0, artifact.copyIds.indexOf(id) + 1)
-          : undefined
-      const hideOperation =
-        getHideOpByArtifactId(operations, id) ??
-        (artifact.type === 'pattern' && patternIndex === 0
-          ? getHideOpByArtifactId(operations, artifact.sourceId)
-          : undefined)
-      bodiesWithProps.set(id, {
-        artifact,
-        artifactGraph,
-        label: `Body ${i + 1}`,
-        hideOperation,
-        engineEntityId: artifact.type === 'pattern' ? id : undefined,
-        patternIndex,
-      })
-      i++
-    }
-  }
+  const bodiesWithProps = getBodyItemPropsFromArtifactGraph({
+    artifactGraph,
+    operations,
+  })
 
   return (
     <LayoutPanel
@@ -71,14 +97,12 @@ export function BodiesPane(props: AreaTypeComponentProps) {
         icon="model"
         title={props.layout.label}
       />
-      {bodies && <BodiesList bodies={bodiesWithProps} />}
+      <BodiesList bodies={bodiesWithProps} />
     </LayoutPanel>
   )
 }
 
-function BodiesList({
-  bodies,
-}: { bodies: Map<string, PropsOf<typeof BodyItem>> }) {
+export function BodiesList({ bodies }: { bodies: Map<string, BodyItemProps> }) {
   return (
     <section className="overflow-auto mr-1 pb-8">
       <ul>
@@ -90,27 +114,19 @@ function BodiesList({
   )
 }
 
-function BodyItem({
+export function BodyItem({
   label,
   artifact,
   artifactGraph,
   hideOperation,
   engineEntityId,
   patternIndex,
-}: {
-  label: string
-  artifact: SolidArtifact
-  artifactGraph: ArtifactGraph
-  hideOperation?: HideOperation
-  engineEntityId?: string
-  patternIndex?: number
-}) {
+}: BodyItemProps) {
   const { kclManager } = useSingletons()
-  const {
-    actor: modelingActor,
-    context: modelingContext,
-    send: modelingSend,
-  } = useModelingContext()
+  const modeling = useModelingContext()
+  const modelingActor = modeling?.actor
+  const modelingContext = modeling?.context
+  const modelingSend = modeling?.send
 
   const sourceRange = sourceRangeFromRust(artifact.codeRef.range)
   const codeRef = getCodeRefsByArtifactId(artifact.id, artifactGraph)?.[0] ?? {
@@ -129,14 +145,17 @@ function BodyItem({
   }
 
   const isSelected = engineEntityId
-    ? modelingContext.selectionRanges.graphSelections.some(
+    ? modelingContext?.selectionRanges.graphSelections.some(
         (selection) => selection.engineEntityId === engineEntityId
-      )
+      ) === true
     : kclManager.editorState.selection.main.from >=
         toUtf16(sourceRange[0], kclManager.code) &&
       kclManager.editorState.selection.main.to <=
         toUtf16(sourceRange[1], kclManager.code)
   const onSelect = () => {
+    if (!modelingSend) {
+      return
+    }
     if (engineEntityId) {
       modelingSend({
         type: 'Set selection',
@@ -170,12 +189,14 @@ function BodyItem({
             onVisibilityChange={() => {
               onSelect()
               if (hideOperation === undefined) {
-                onHide({
-                  ast: kclManager.ast,
-                  artifactGraph: kclManager.artifactGraph,
-                  modelingActor,
-                  objects: selections,
-                })
+                if (modelingActor) {
+                  onHide({
+                    ast: kclManager.ast,
+                    artifactGraph: kclManager.artifactGraph,
+                    modelingActor,
+                    objects: selections,
+                  })
+                }
               } else {
                 onUnhide({
                   hideOperation,
