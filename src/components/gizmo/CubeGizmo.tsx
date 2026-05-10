@@ -52,7 +52,11 @@ export default function CubeGizmo() {
   }, [resolvedTheme])
 
   useEffect(() => {
+    const isOpenCascade =
+      'isOpenCascade' in kclManager.engineCommandManager &&
+      kclManager.engineCommandManager.isOpenCascade === true
     const disabled =
+      !isOpenCascade &&
       modelingState.matches('Sketch') &&
       !settingsValues.app.allowOrbitInSketchMode.current
 

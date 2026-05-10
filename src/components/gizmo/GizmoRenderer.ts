@@ -611,7 +611,12 @@ async function animateCameraToQuaternion(
   sceneInfra: SceneInfra
 ) {
   const camControls = sceneInfra.camControls
-  const previousSyncDirection = camControls.syncDirection
+  const isOpenCascade =
+    'isOpenCascade' in camControls.engineCommandManager &&
+    camControls.engineCommandManager.isOpenCascade === true
+  const previousSyncDirection = isOpenCascade
+    ? 'clientToEngine'
+    : camControls.syncDirection
   const previousEnableRotate = camControls.enableRotate
   const previousEnablePan = camControls.enablePan
   const previousEnableZoom = camControls.enableZoom
@@ -631,6 +636,8 @@ async function animateCameraToQuaternion(
     camControls.enableRotate = previousEnableRotate
     camControls.enablePan = previousEnablePan
     camControls.enableZoom = previousEnableZoom
-    camControls.syncDirection = previousSyncDirection
+    camControls.syncDirection = isOpenCascade
+      ? 'clientToEngine'
+      : previousSyncDirection
   }
 }

@@ -322,6 +322,39 @@ function shouldAnimateOpenCascadeToSketchPlane(
   )
 }
 
+function setCameraSyncDirectionForEngine({
+  engineCommandManager,
+  kclManager,
+  syncDirection,
+}: {
+  engineCommandManager: ConnectionManager
+  kclManager: KclManager
+  syncDirection: 'clientToEngine' | 'engineToClient'
+}) {
+  kclManager.sceneInfra.camControls.syncDirection = isOpenCascadeEngine(
+    engineCommandManager
+  )
+    ? 'clientToEngine'
+    : syncDirection
+}
+
+function restoreModelingCameraControls({
+  engineCommandManager,
+  kclManager,
+}: {
+  engineCommandManager: ConnectionManager
+  kclManager: KclManager
+}) {
+  const camControls = kclManager.sceneInfra.camControls
+  camControls.enablePan = true
+  camControls.enableRotate = true
+  setCameraSyncDirectionForEngine({
+    engineCommandManager,
+    kclManager,
+    syncDirection: 'engineToClient',
+  })
+}
+
 async function animateToSketchPlaneAfterSelection({
   engineCommandManager,
   kclManager,
@@ -357,7 +390,11 @@ async function animateToSketchPlaneAfterSelection({
   }
 
   const camControls = kclManager.sceneInfra.camControls
-  camControls.syncDirection = 'clientToEngine'
+  setCameraSyncDirectionForEngine({
+    engineCommandManager,
+    kclManager,
+    syncDirection: 'clientToEngine',
+  })
   const origin =
     plane.type === 'defaultPlane'
       ? new Vector3(0, 0, 0)
@@ -539,7 +576,11 @@ async function enterSketchSolveFromSketchBlockArtifact({
     plane: planeData,
     store,
   })
-  kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
+  setCameraSyncDirectionForEngine({
+    engineCommandManager,
+    kclManager,
+    syncDirection: 'clientToEngine',
+  })
 
   const project = projectRef?.current
   if (!project) {
@@ -1717,13 +1758,14 @@ export const modelingMachine = setup({
       context.kclManager.sceneInfra.resetMouseListeners()
     },
     'restore modeling camera controls': ({ context }) => {
-      const camControls = context.kclManager.sceneInfra.camControls
-      camControls.enablePan = true
-      camControls.enableRotate = true
-      camControls.syncDirection = 'engineToClient'
+      restoreModelingCameraControls(context)
     },
     'clientToEngine cam sync direction': ({ context }) => {
-      context.kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
+      setCameraSyncDirectionForEngine({
+        engineCommandManager: context.engineCommandManager,
+        kclManager: context.kclManager,
+        syncDirection: 'clientToEngine',
+      })
     },
     'disable rotate for sketch solve mode': ({ context }) => {
       // Sketch solve currently has sync issues with engine and trouble translating world space to sketch space,
@@ -2396,13 +2438,24 @@ export const modelingMachine = setup({
             cmd: { type: 'sketch_mode_disable' },
           })
 
-          kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
+          setCameraSyncDirectionForEngine({
+            engineCommandManager,
+            kclManager,
+            syncDirection: 'clientToEngine',
+          })
 
-          if (store.cameraProjection?.current === 'perspective') {
+          if (
+            !isOpenCascadeEngine(engineCommandManager) &&
+            store.cameraProjection?.current === 'perspective'
+          ) {
             await kclManager.sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
           }
 
-          kclManager.sceneInfra.camControls.syncDirection = 'engineToClient'
+          setCameraSyncDirectionForEngine({
+            engineCommandManager,
+            kclManager,
+            syncDirection: 'engineToClient',
+          })
 
           // TODO: Re-evaluate if this pause/play logic is needed.
           // TODO: Do I need this video element?
@@ -2424,12 +2477,12 @@ export const modelingMachine = setup({
             })
             .catch(reportRejection)
         } finally {
-          const camControls = kclManager.sceneInfra.camControls
           kclManager.sceneEntitiesManager.tearDownSketch({ removeAxis: false })
           kclManager.sceneEntitiesManager.removeSketchGrid()
-          camControls.enablePan = true
-          camControls.enableRotate = true
-          camControls.syncDirection = 'engineToClient'
+          restoreModelingCameraControls({
+            engineCommandManager,
+            kclManager,
+          })
           kclManager.sceneEntitiesManager.resetOverlays()
           kclManager.sceneInfra.stop()
         }
@@ -3375,7 +3428,11 @@ export const modelingMachine = setup({
             plane,
             store,
           })
-          kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
+          setCameraSyncDirectionForEngine({
+            engineCommandManager,
+            kclManager,
+            syncDirection: 'clientToEngine',
+          })
           return {
             sketchEntryNodePath: [],
             planeNodePath: pathToNewSketchNode,
@@ -3394,7 +3451,11 @@ export const modelingMachine = setup({
         kclManager.sceneInfra.camControls.enableRotate =
           isOpenCascadeEngine(engineCommandManager) ||
           kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode
-        kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
+        setCameraSyncDirectionForEngine({
+          engineCommandManager,
+          kclManager,
+          syncDirection: 'clientToEngine',
+        })
 
         await animateToSketchPlaneAfterSelection({
           engineCommandManager,
@@ -3646,7 +3707,11 @@ export const modelingMachine = setup({
           store,
         })
 
-        kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
+        setCameraSyncDirectionForEngine({
+          engineCommandManager,
+          kclManager,
+          syncDirection: 'clientToEngine',
+        })
         kclManager.updateCodeEditor(
           newSketchResult.kclSource.text,
           {
