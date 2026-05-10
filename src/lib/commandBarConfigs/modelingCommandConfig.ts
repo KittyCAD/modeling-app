@@ -1318,6 +1318,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
+    previewAst: (context, modelingActor) =>
+      previewAstFromModifyAstResult(
+        context,
+        modelingActor,
+        ({ args, kclManager, wasmInstance }) =>
+          addHelix({
+            ...(args as ModelingCommandSchema['Helix']),
+            ast: kclManager.ast,
+            artifactGraph: kclManager.artifactGraph,
+            wasmInstance,
+          })
+      ),
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
