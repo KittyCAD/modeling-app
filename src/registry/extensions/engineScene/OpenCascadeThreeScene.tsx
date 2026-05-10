@@ -66,9 +66,13 @@ import {
   Quaternion,
   type Scene,
   SphereGeometry,
+  Vector2,
   Vector3,
 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { Line2 } from 'three/examples/jsm/lines/Line2.js'
+import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
+import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
 
 const OPEN_CASCADE_SOLID_ROOT = 'OPEN_CASCADE_SOLID_ROOT'
 const OPEN_CASCADE_PROFILE_ROOT = 'OPEN_CASCADE_PROFILE_ROOT'
@@ -97,6 +101,7 @@ const OPEN_CASCADE_ORIGIN_RADIUS_PX = 6
 const OPEN_CASCADE_ORIGIN_OUTLINE_RADIUS_PX = 8
 const OPEN_CASCADE_HIGHLIGHT_POLYGON_OFFSET = -4
 const OPEN_CASCADE_SKETCH_LINE_PICK_RADIUS_PX = 8
+const OPEN_CASCADE_SELECTED_EDGE_WIDTH_PX = 5
 const OPEN_CASCADE_EMPTY_SCENE_RADIUS_BASE_UNITS = 10
 const OPEN_CASCADE_MIN_CAMERA_NEAR_BASE_UNITS = 0.001
 
@@ -1899,7 +1904,7 @@ function rebuildOpenCascadeSelectedEdgeRoot(
         continue
       }
       selectedEdgeRoot.add(
-        makeOpenCascadeEdgeLine({
+        makeOpenCascadeSelectedEdgeLine({
           solidId: solid.solidId,
           edge,
           parentFaceId: edge.faceIds[0],
@@ -1949,6 +1954,45 @@ function makeOpenCascadeEdgeLine({
   return line
 }
 
+function makeOpenCascadeSelectedEdgeLine({
+  solidId,
+  edge,
+  parentFaceId,
+  color,
+  opacity,
+  renderOrder,
+  userDataKey,
+}: {
+  solidId: string
+  edge: OpenCascadeTopologyEdgeLine
+  parentFaceId?: string
+  color: number
+  opacity: number
+  renderOrder: number
+  userDataKey: 'openCascadeSelectedEdge'
+}) {
+  const geometry = selectedLineGeometryForTopologyEdge(edge)
+  const material = new LineMaterial({
+    color,
+    transparent: true,
+    opacity,
+    depthTest: false,
+    depthWrite: false,
+    linewidth: OPEN_CASCADE_SELECTED_EDGE_WIDTH_PX * window.devicePixelRatio,
+    resolution: new Vector2(window.innerWidth, window.innerHeight),
+    worldUnits: false,
+  })
+  const line = new Line2(geometry, material)
+  line.name = `${userDataKey}:${edge.topologyId}`
+  line.renderOrder = renderOrder
+  line.userData[userDataKey] = true
+  line.userData.openCascadeTopologyEdge = edge
+  line.userData.openCascadeSolidId = solidId
+  line.userData.openCascadeParentFaceId = parentFaceId
+  line.layers.set(SKETCH_LAYER)
+  return line
+}
+
 function geometryForTopologyEdge(edge: OpenCascadeTopologyEdgeLine) {
   const geometry = new BufferGeometry()
   const positions: number[] = []
@@ -1966,6 +2010,14 @@ function geometryForTopologyEdge(edge: OpenCascadeTopologyEdgeLine) {
   }
   geometry.setAttribute('position', new Float32BufferAttribute(positions, 3))
   geometry.computeBoundingSphere()
+  return geometry
+}
+
+function selectedLineGeometryForTopologyEdge(
+  edge: OpenCascadeTopologyEdgeLine
+) {
+  const geometry = new LineGeometry()
+  geometry.setPositions(edge.points)
   return geometry
 }
 
