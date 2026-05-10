@@ -9,7 +9,7 @@ import {
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import {
   PATHS,
-  getProjectDirectoryFromKCLFilePath,
+  getParentAbsolutePath,
   joinOSPaths,
   joinRouterPaths,
   safeEncodeForRouterPaths,
@@ -37,7 +37,7 @@ import { useNavigate } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
 
 export function SystemIOMachineLogicListener() {
-  const { auth, billing, settings, systemIOActor } = useApp()
+  const { auth, billing, settings, systemIOActor, project } = useApp()
   const { kclManager } = useSingletons()
   // We gotta stop with this pattern. It doesn't scale. "Eager hook creation"
   const requestedProjectName = useRequestedProjectName()
@@ -72,12 +72,8 @@ export function SystemIOMachineLogicListener() {
       encodedURI
     ) {
       filePathWithExtension = decodeURIComponent(encodedURI)
-      const applicationProjectDirectory =
-        settingsValues.app.projectDirectory.current
-      projectDirectory = getProjectDirectoryFromKCLFilePath(
-        filePathWithExtension,
-        applicationProjectDirectory
-      )
+      projectDirectory =
+        project?.path ?? getParentAbsolutePath(filePathWithExtension)
     }
 
     // Close current file in current project if it exists
@@ -139,16 +135,16 @@ export function SystemIOMachineLogicListener() {
         SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile,
         SystemIOMachineStates.importFileFromURL,
       ].includes(lastOperation)
-      const isHomeAndNotCreating = pathname === PATHS.HOME && !isCreating
+      const isHomeAndNotCreating =
+        pathname === PATHS.HOME && !isCreating && !requestedProjectName.path
       if (isHomeAndNotCreating) {
         // Don't navigate
         return
       }
 
-      const projectPathWithoutSpecificKCLFile = joinOSPaths(
-        projectDirectoryPath,
-        requestedProjectName.name
-      )
+      const projectPathWithoutSpecificKCLFile =
+        requestedProjectName.path ||
+        joinOSPaths(projectDirectoryPath, requestedProjectName.name)
       const requestedPath = joinRouterPaths(
         PATHS.FILE,
         safeEncodeForRouterPaths(projectPathWithoutSpecificKCLFile),
@@ -198,21 +194,6 @@ export function SystemIOMachineLogicListener() {
     }, [requestedFileName])
   }
 
-  const useApplicationProjectDirectory = () => {
-    useEffect(() => {
-      if (pathname === PATHS.HOME || pathname === PATHS.HOME_SETTINGS) {
-        systemIOActor.send({
-          type: SystemIOMachineEvents.setProjectDirectoryPath,
-          data: {
-            requestedProjectDirectoryPath:
-              settingsValues.app.projectDirectory.current || '',
-          },
-        })
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    }, [settingsValues.app.projectDirectory.current, pathname])
-  }
-
   const useDefaultProjectName = () => {
     useEffect(() => {
       systemIOActor.send({
@@ -256,9 +237,7 @@ export function SystemIOMachineLogicListener() {
           })
         }
       },
-      settingsValues.app.projectDirectory.current
-        ? [settingsValues.app.projectDirectory.current]
-        : []
+      project?.path ? [project.path] : []
     )
   }
 
@@ -300,7 +279,6 @@ export function SystemIOMachineLogicListener() {
 
   useGlobalProjectNavigation()
   useGlobalFileNavigation()
-  useApplicationProjectDirectory()
   useDefaultProjectName()
   useWatchingApplicationProjectDirectory()
 

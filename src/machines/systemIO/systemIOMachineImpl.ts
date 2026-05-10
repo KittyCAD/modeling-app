@@ -4,12 +4,15 @@ import {
   createNewProjectDirectory,
   ensureProjectDirectoryExists,
   getAppSettingsFilePath,
+  getInitialDefaultDir,
   getProjectInfo,
+  listRecentProjectsForCurrentEnvironment,
   mkdirOrNOOP,
   readAppSettingsFile,
+  removeRecentProjectPath,
   renameProjectDirectory,
   canReadWriteDirectory,
-  statIsDirectory,
+  trackRecentProject,
 } from '@src/lib/desktop'
 import { newKclFile } from '@src/lang/project'
 import { DEFAULT_DEFAULT_LENGTH_UNIT, FILE_EXT } from '@src/lib/constants'
@@ -25,7 +28,6 @@ import {
   getStringAfterLastSeparator,
   parentPathRelativeToProject,
 } from '@src/lib/paths'
-import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type {
@@ -35,7 +37,6 @@ import type {
   SystemIOContext,
 } from '@src/machines/systemIO/utils'
 import {
-  NO_PROJECT_DIRECTORY,
   SystemIOMachineActors,
   SystemIOMachineEvents,
   jsonToMlConversations,
@@ -62,11 +63,27 @@ const prepareBulkProjectWrite = async ({
   useSettingsProjectDirectoryFallback?: boolean
 }) => {
   const configuration = await readAppSettingsFile(wasmInstance)
+  const requestedProjectBaseName = requestedProjectName?.split(fsZds.sep)[0]
+  const existingRequestedProject = context.folders?.find(
+    (project) => project.name === requestedProjectBaseName
+  )
+  const configuredProjectDirectory =
+    err(configuration) || !configuration
+      ? ''
+      : configuration.settings?.project &&
+          typeof configuration.settings.project === 'object' &&
+          'directory' in configuration.settings.project &&
+          typeof configuration.settings.project.directory === 'string'
+        ? configuration.settings.project.directory
+        : ''
   const projectDirectoryPath =
+    (existingRequestedProject
+      ? fsZds.dirname(existingRequestedProject.path)
+      : '') ||
     context.projectDirectoryPath ||
-    (useSettingsProjectDirectoryFallback
+    (useSettingsProjectDirectoryFallback && configuredProjectDirectory
       ? await ensureProjectDirectoryExists(configuration)
-      : '')
+      : await mkdirOrNOOP(await getInitialDefaultDir()))
 
   if (!projectDirectoryPath) {
     return Promise.reject(
@@ -143,6 +160,8 @@ const sharedBulkCreateWorkflow = async ({
       projectDirectoryPath
     )
   }
+  const project = await getProjectInfo(projectRoot, input.wasmInstance)
+  await trackRecentProject(project)
   const numberOfFiles = input.files.length
   const fileText = numberOfFiles > 1 ? 'files' : 'file'
   const message = input.override
@@ -152,6 +171,7 @@ const sharedBulkCreateWorkflow = async ({
     message,
     fileName: '',
     projectName: newProjectName,
+    projectDirectoryPath,
     subRoute: 'subRoute' in input ? input.subRoute : '',
   }
 }
@@ -223,10 +243,14 @@ const sharedBulkWriteImportedProjectFilesWorkflow = async ({
       }
     }
 
+    const project = await getProjectInfo(projectRoot, wasmInstance)
+    await trackRecentProject(project)
+
     return {
       message: `Successfully imported project within "${projectName}"`,
       fileName: requestedFileNameWithExtension,
       projectName,
+      projectDirectoryPath: fsZds.dirname(projectRoot),
       subRoute: '',
     }
   } catch (error) {
@@ -294,44 +318,9 @@ export const systemIOMachineImpl = systemIOMachine.provide({
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
       async ({ input: context }: { input: SystemIOContext }) => {
-        const projects = []
-        const projectDirectoryPath = context.projectDirectoryPath
-        if (projectDirectoryPath === NO_PROJECT_DIRECTORY) {
-          return []
-        }
-        await mkdirOrNOOP(projectDirectoryPath)
-        // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
-        const entries = await fsZds.readdir(projectDirectoryPath)
-        const { value: canReadWriteProjectDirectory } =
-          await canReadWriteDirectory(projectDirectoryPath)
-
-        for (let entry of entries) {
-          // Skip directories that start with a dot
-          if (entry.startsWith('.')) {
-            continue
-          }
-          const projectPath = fsZds.join(projectDirectoryPath, entry)
-
-          // if it's not a directory ignore.
-          // Gotcha: statIsDirectory will work even if you do not have read write permissions on the project path
-          const isDirectory = await statIsDirectory(projectPath)
-          if (!isDirectory) {
-            continue
-          }
-          const project: Project = await getProjectInfo(
-            projectPath,
-            await context.wasmInstancePromise
-          )
-          if (
-            project.kcl_file_count === 0 &&
-            project.readWriteAccess &&
-            canReadWriteProjectDirectory
-          ) {
-            continue
-          }
-          projects.push(project)
-        }
-        return projects
+        return listRecentProjectsForCurrentEnvironment(
+          await context.wasmInstancePromise
+        )
       }
     ),
     [SystemIOMachineActors.createProject]: fromPromise(
@@ -347,13 +336,16 @@ export const systemIOMachineImpl = systemIOMachine.provide({
 
         const requestedProjectName = input.requestedProjectName
         const uniqueName = getUniqueProjectName(requestedProjectName, folders)
-        await createNewProjectDirectory(
+        const project = await createNewProjectDirectory(
           uniqueName,
           await input.context.wasmInstancePromise
         )
+        await trackRecentProject(project)
         return {
           message: `Successfully created "${uniqueName}"`,
           name: uniqueName,
+          path: project.path,
+          projectDirectoryPath: fsZds.dirname(project.path),
         }
       }
     ),
@@ -365,6 +357,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           context: SystemIOContext
           requestedProjectName: string
           projectName: string
+          projectPath?: string
           redirect: boolean
         }
       }) => {
@@ -391,15 +384,32 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           )
         }
 
-        await renameProjectDirectory(
-          fsZds.join(input.context.projectDirectoryPath, projectName),
+        const projectToRename = folders.find(
+          (p) => p.path === input.projectPath || p.name === projectName
+        )
+        const oldProjectPath =
+          input.projectPath ||
+          projectToRename?.path ||
+          fsZds.join(input.context.projectDirectoryPath, projectName)
+        const newProjectPath = await renameProjectDirectory(
+          oldProjectPath,
           newProjectName
         )
+        await removeRecentProjectPath(oldProjectPath)
+        const renamedProject = await getProjectInfo(
+          newProjectPath,
+          await input.context.wasmInstancePromise
+        )
+        await trackRecentProject(renamedProject, {
+          lastOpenedAt: projectToRename?.last_opened_at,
+        })
 
         return {
           message: `Successfully renamed "${projectName}" to "${newProjectName}"`,
           oldName: projectName,
           newName: newProjectName,
+          path: renamedProject.path,
+          projectDirectoryPath: fsZds.dirname(renamedProject.path),
           redirect: input.redirect,
         }
       }
@@ -408,17 +418,28 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       async ({
         input,
       }: {
-        input: { context: SystemIOContext; requestedProjectName: string }
+        input: {
+          context: SystemIOContext
+          requestedProjectName: string
+          projectPath?: string
+        }
       }) => {
-        await fsZds.rm(
+        const projectToDelete = input.context.folders?.find(
+          (p) =>
+            p.path === input.projectPath ||
+            p.name === input.requestedProjectName
+        )
+        const projectPath =
+          input.projectPath ||
+          projectToDelete?.path ||
           fsZds.join(
             input.context.projectDirectoryPath,
             input.requestedProjectName
-          ),
-          {
-            recursive: true,
-          }
-        )
+          )
+        await fsZds.rm(projectPath, {
+          recursive: true,
+        })
+        await removeRecentProjectPath(projectPath)
 
         return {
           message: `Successfully deleted "${input.requestedProjectName}"`,
@@ -456,11 +477,17 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       }
 
       const wasmInstance = await input.app.wasmPromise
-
-      const baseDir = fsZds.join(
-        input.context.projectDirectoryPath,
-        newProjectName
+      const existingProject = folders.find(
+        (project) => project.name === newProjectName
       )
+      let projectDirectoryPath =
+        (existingProject ? fsZds.dirname(existingProject.path) : '') ||
+        input.context.projectDirectoryPath
+      if (!projectDirectoryPath) {
+        projectDirectoryPath = await getInitialDefaultDir()
+      }
+
+      const baseDir = fsZds.join(projectDirectoryPath, newProjectName)
       const { name: newFileName } = await getNextFileName({
         entryName: requestedFileNameWithExtension,
         baseDir,
@@ -470,19 +497,21 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       const configuration = await readAppSettingsFile(wasmInstance)
 
       // Create the project around the file if newProject
-      await createNewProjectDirectory(
+      const project = await createNewProjectDirectory(
         newProjectName,
         wasmInstance,
         requestedCode,
         configuration,
         newFileName,
-        input.context.projectDirectoryPath
+        projectDirectoryPath
       )
+      await trackRecentProject(project)
 
       return {
         message: 'Successfully created file.',
         fileName: newFileName,
         projectName: newProjectName,
+        projectDirectoryPath: fsZds.dirname(project.path),
         subRoute: input.requestedSubRoute || '',
       }
     }),

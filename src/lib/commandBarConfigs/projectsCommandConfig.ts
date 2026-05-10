@@ -1,5 +1,6 @@
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
+import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
@@ -44,31 +45,24 @@ export function createProjectCommands({
     groupId: 'projects',
     needsReview: false,
     onSubmit: (record) => {
-      if (record) {
+      if (record?.path) {
+        const projectPath = String(record.path)
         systemIOActor.send({
           type: SystemIOMachineEvents.navigateToProject,
-          data: { requestedProjectName: record.name },
+          data: {
+            requestedProjectName: fsZds.basename(projectPath),
+            requestedProjectPath: projectPath,
+          },
         })
       }
     },
     args: {
-      name: {
+      path: {
         required: true,
-        inputType: 'options',
-        options: () => {
-          const folders = folderSnapshot()
-          const options: CommandArgumentOption<string>[] = []
-          if (!folders) return options
-
-          folders.forEach((folder) => {
-            options.push({
-              name: folder.name,
-              value: folder.name,
-              isCurrent: false,
-            })
-          })
-          return options
-        },
+        inputType: 'path',
+        filters: [],
+        openDialogProperties: ['openDirectory'],
+        openDialogTitle: 'Open a project folder',
       },
     },
   }

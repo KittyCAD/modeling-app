@@ -23,6 +23,7 @@ import {
   downloadProjectById,
   getPublicProjectNameById,
 } from '@src/lib/downloadProject'
+import { getInitialDefaultDir } from '@src/lib/desktop'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
@@ -206,7 +207,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
     await waitFor(app.settings.actor, (state) => state.matches('idle'))
 
     const systemIOContext = app.systemIOActor.getSnapshot().context
-    const projectDirectoryPath = app.settings.get().app.projectDirectory.current
+    const projectDirectoryPath = await getInitialDefaultDir()
     if (!projectDirectoryPath) {
       return new Error('Unable to determine the project directory.')
     }

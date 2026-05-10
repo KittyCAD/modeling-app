@@ -2,12 +2,7 @@ import type { FormEvent, HTMLProps } from 'react'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { BillingDialog } from '@kittycad/react-shared'
 import { ActionButton } from '@src/components/ActionButton'
@@ -39,7 +34,6 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
-import type { SettingsType } from '@src/lib/settings/initialSettings'
 import {
   getNextSearchParams,
   getSortFunction,
@@ -49,7 +43,6 @@ import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { BillingTransition } from '@src/machines/billingMachine'
 import {
-  useCanReadWriteProjectDirectory,
   useFolders,
   useState as useSystemIOState,
 } from '@src/machines/systemIO/hooks'
@@ -66,12 +59,6 @@ import {
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
 import type { ActorRefFrom } from 'xstate'
-import { waitFor } from 'xstate'
-
-type ReadWriteProjectState = {
-  value: boolean
-  error: unknown
-}
 
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
@@ -83,7 +70,6 @@ const Home = () => {
   const settingsActor = settings.actor
   useQueryParamEffects(kclManager)
   const navigate = useNavigate()
-  const readWriteProjectDir = useCanReadWriteProjectDirectory()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const apiToken = auth.useToken()
   const networkMachineStatus = useNetworkMachineStatus()
@@ -117,28 +103,6 @@ const Home = () => {
   const settingsValues = settings.useSettings()
   const machineApiEnabled = settingsValues.app.machineApi.current
   const onboardingStatus = settingsValues.app.onboardingStatus.current
-
-  useEffect(() => {
-    systemIOActor.send({
-      type: SystemIOMachineEvents.setProjectDirectoryPath,
-      data: {
-        requestedProjectDirectoryPath:
-          settingsValues.app?.projectDirectory?.current,
-      },
-    })
-    void waitFor(systemIOActor, (state) =>
-      state.matches(SystemIOMachineStates.idle)
-    ).then(() => {
-      systemIOActor.send({
-        type: SystemIOMachineEvents.setProjectDirectoryPath,
-        data: {
-          requestedProjectDirectoryPath:
-            settingsValues.app?.projectDirectory?.current,
-        },
-      })
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [settingsValues.app?.projectDirectory?.current])
 
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
@@ -200,8 +164,6 @@ const Home = () => {
       void navigate(PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS)
     } else if (data.menuLabel === 'File.Preferences.User default units') {
       void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#defaultUnit`)
-    } else if (data.menuLabel === 'Edit.Change project directory') {
-      void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#projectDirectory`)
     } else if (data.menuLabel === 'File.Sign out') {
       auth.send({ type: 'Log out' })
     } else if (
@@ -256,8 +218,6 @@ const Home = () => {
           setQuery={setQuery}
           sort={sort}
           setSearchParams={setSearchParams}
-          settings={settingsValues}
-          readWriteProjectDir={readWriteProjectDir}
           className="col-start-2 -col-end-1"
         />
         <aside
@@ -435,16 +395,12 @@ interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
   setQuery: (query: string) => void
   sort: string
   setSearchParams: (params: Record<string, string>) => void
-  settings: SettingsType
-  readWriteProjectDir: ReadWriteProjectState
 }
 
 function HomeHeader({
   setQuery,
   sort,
   setSearchParams,
-  settings,
-  readWriteProjectDir,
   ...rest
 }: HomeHeaderProps) {
   const isSortByModified = sort?.includes('modified') || !sort || sort === null
@@ -497,38 +453,14 @@ function HomeHeader({
                   : '',
               }}
             >
-              Last Modified
+              Last Opened
             </ActionButton>
           </div>
         </div>
       </div>
       <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
-        Loaded from{' '}
-        <Link
-          data-testid="project-directory-settings-link"
-          to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
-          className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
-        >
-          {settings.app.projectDirectory.current}
-        </Link>
-        .
+        Recently opened projects for this environment.
       </p>
-      {!readWriteProjectDir.value && (
-        <section>
-          <div className="flex items-center select-none">
-            <div className="flex gap-8 items-center justify-between grow bg-destroy-80 text-white py-1 px-4 my-2 rounded-sm">
-              <p className="">{errorMessage(readWriteProjectDir.error)}</p>
-              <Link
-                data-testid="project-directory-settings-link"
-                to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
-                className="py-1 text-white underline underline-offset-2 text-sm"
-              >
-                Change Project Directory
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
     </section>
   )
 }
@@ -566,7 +498,7 @@ function ProjectGrid({
             <ul className="grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {searchResults.sort(getSortFunction(sort)).map((project) => (
                 <ProjectCard
-                  key={project.name}
+                  key={project.path}
                   project={project}
                   handleRenameProject={handleRenameProject}
                   handleDeleteProject={handleDeleteProject(systemIOActor)}
@@ -580,7 +512,7 @@ function ProjectGrid({
             >
               No projects found
               {projects !== undefined && projects.length === 0
-                ? ', ready to make your first one?'
+                ? ', open or create one to add it here.'
                 : ` with the search term "${query}"`}
             </p>
           )}
@@ -588,20 +520,6 @@ function ProjectGrid({
       )}
     </section>
   )
-}
-
-/** Type narrowing function of unknown error to a string */
-function errorMessage(error: unknown): string {
-  if (error !== undefined && error instanceof Error) {
-    return error.message
-  }
-  if (error && typeof error === 'object') {
-    return JSON.stringify(error)
-  }
-  if (typeof error === 'string') {
-    return error
-  }
-  return 'Unknown error'
 }
 
 function handleRenameProject(
@@ -623,6 +541,7 @@ function handleRenameProject(
         data: {
           requestedProjectName: String(newProjectName),
           projectName: project.name,
+          projectPath: project.path,
           redirect: false,
         },
       })
@@ -638,6 +557,7 @@ function handleDeleteProject(
       type: SystemIOMachineEvents.deleteProject,
       data: {
         requestedProjectName: String(project.name),
+        projectPath: project.path,
       },
     })
   }

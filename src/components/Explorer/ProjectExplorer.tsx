@@ -184,12 +184,11 @@ export const ProjectExplorer = ({
   canNavigate: boolean
   overrideApplicationProjectDirectory?: string
 }) => {
-  const { settings, systemIOActor } = useApp()
+  const { systemIOActor } = useApp()
   const { kclManager } = useSingletons()
   const errors = kclManager.errorsSignal.value
-  const settingsValues = settings.useSettings()
   const applicationProjectDirectory =
-    settingsValues.app.projectDirectory.current
+    overrideApplicationProjectDirectory || getParentAbsolutePath(project.path)
 
   /**
    * Read the file you are loading into and open all of the parent paths to that file
@@ -197,7 +196,7 @@ export const ProjectExplorer = ({
    */
   const defaultFileKey = parentPathRelativeToApplicationDirectory(
     file?.path || project.default_file,
-    overrideApplicationProjectDirectory || applicationProjectDirectory
+    applicationProjectDirectory
   )
   const defaultOpenedRows: { [key: string]: boolean } = {}
   const pathIterator = desktopSafePathSplit(defaultFileKey)

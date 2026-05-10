@@ -1,4 +1,5 @@
 import type { EntityType } from '@kittycad/lib'
+import type { OpenDialogOptions } from 'electron'
 import type { ReactNode } from 'react'
 import type {
   Actor,
@@ -13,12 +14,12 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { Expr, Name, VariableDeclaration } from '@src/lang/wasm'
+import type { MachineManager } from '@src/lib/MachineManager'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   CommandBarContext,
   commandBarMachine,
 } from '@src/machines/commandBarMachine'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { MachineManager } from '@src/lib/MachineManager'
 
 type Icon = CustomIconName
 const _TARGETS = ['both', 'web', 'desktop'] as const
@@ -440,6 +441,8 @@ export type CommandArgument<
             wasmInstance?: ModuleType
           ) => OutputType)
       filters: FiltersConfig
+      openDialogProperties?: OpenDialogOptions['properties']
+      openDialogTitle?: string
     }
   | {
       inputType: 'text'

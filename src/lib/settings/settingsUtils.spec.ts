@@ -189,7 +189,6 @@ describe('project settings serialization regression', () => {
           onboardingStatus: 'dismissed',
           allowOrbitInSketchMode: true,
           machineApi: true,
-          projectDirectory: '/tmp/projects',
         },
         debug: {
           showPanel: true,
@@ -242,7 +241,6 @@ describe('project settings serialization regression', () => {
     expect(serializedToml).toContain('minor_grids_per_major = 5')
     expect(serializedToml).toContain('snaps_per_minor = 3')
     expect(serializedToml).toContain('[settings.project]')
-    expect(serializedToml).toContain('directory = "/tmp/projects"')
     expect(serializedToml).toContain('default_project_name = "plugin-template"')
     expect(serializedToml).toContain('[settings.command_bar]')
     expect(serializedToml).toContain('include_settings = false')
@@ -262,7 +260,6 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.app?.onboardingStatus).toBe('dismissed')
     expect(parsedPayload.app?.allowOrbitInSketchMode).toBe(true)
     expect(parsedPayload.app?.machineApi).toBe(true)
-    expect(parsedPayload.app?.projectDirectory).toBe('/tmp/projects')
     expect(parsedPayload.debug?.showPanel).toBe(true)
     expect(parsedPayload.debug?.showModelingMachineState).toBe(true)
     expect(parsedPayload.projects?.defaultProjectName).toBe('plugin-template')

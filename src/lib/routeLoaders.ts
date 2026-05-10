@@ -7,7 +7,12 @@ import fsZds from '@src/lib/fs-zds'
 import { redirect } from 'react-router-dom'
 import { waitFor } from 'xstate'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
-import { getProjectInfo, getInitialDefaultDir } from '@src/lib/desktop'
+import {
+  getProjectInfo,
+  getInitialDefaultDir,
+  readRecentProjectsForEnvironment,
+  trackRecentProject,
+} from '@src/lib/desktop'
 import { readAppSettingsFile } from '@src/lib/desktop'
 import {
   PATHS,
@@ -63,7 +68,7 @@ export const baseLoader =
     const settings = await loadAndValidateSettings(wasmInstance, undefined)
 
     const requestedProjectName = fsZds.resolve(
-      settings.settings.app.projectDirectory.current,
+      await getInitialDefaultDir(),
       DEFAULT_WEB_PROJECT_NAME
     )
 
@@ -72,7 +77,10 @@ export const baseLoader =
       await fsZds.stat(requestedProjectName)
       app.systemIOActor.send({
         type: SystemIOMachineEvents.navigateToProject,
-        data: { requestedProjectName },
+        data: {
+          requestedProjectName: fsZds.basename(requestedProjectName),
+          requestedProjectPath: requestedProjectName,
+        },
       })
     } catch {
       await projectSkeletonCreate(
@@ -124,11 +132,19 @@ export const fileLoader =
       heuristicProjectFilePath
     )
 
+    const recentProjects = window.electron
+      ? await readRecentProjectsForEnvironment().catch(() => [])
+      : []
+    const knownProjectPaths = [
+      ...(app.project?.path ? [app.project.path] : []),
+      ...recentProjects.map((project) => project.path),
+    ]
     const projectPathData = await getProjectMetaByRouteId(
       readAppSettingsFile,
       wasmInstance,
       params.id,
-      settings.configuration
+      settings.configuration,
+      knownProjectPaths
     )
 
     if (!projectPathData) {
@@ -196,6 +212,9 @@ export const fileLoader =
     const maybeProjectInfo = await getProjectInfo(projectPath, wasmInstance)
 
     const project = maybeProjectInfo ?? defaultProjectData
+    if (window.electron) {
+      await trackRecentProject(project)
+    }
 
     // Fire off the event to load the project settings
     // once we know it's idle.
@@ -217,10 +236,7 @@ export const fileLoader =
         : undefined
     )
 
-    const appProjectDir = settings.settings.app.projectDirectory.current
-    const requestedProjectDirectoryPath = project.path.includes(appProjectDir)
-      ? appProjectDir
-      : getParentAbsolutePath(project.path) // Fallback to parent directory if foreign to app project dir
+    const requestedProjectDirectoryPath = getParentAbsolutePath(project.path)
     app.systemIOActor.send({
       type: SystemIOMachineEvents.setProjectDirectoryPath,
       data: {

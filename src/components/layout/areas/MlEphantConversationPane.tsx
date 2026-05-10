@@ -25,6 +25,7 @@ import type { FileEntry, Project } from '@src/lib/project'
 import { useSelector } from '@xstate/react'
 import { useSearchParams } from 'react-router-dom'
 import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
+import { getParentAbsolutePath } from '@src/lib/paths'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { SnapshotFrom } from 'xstate'
 import type { MlCopilotModeId } from '@src/machines/mlEphantManagerMachine'
@@ -122,7 +123,7 @@ export const MlEphantConversationPane = (props: {
       type: MlEphantManagerTransitions.MessageSend,
       prompt: request,
       projectForPromptOutput: project,
-      applicationProjectDirectory: props.settings.app.projectDirectory.current,
+      applicationProjectDirectory: getParentAbsolutePath(project.path),
       fileSelectedDuringPrompting: {
         entry: props.loaderFile,
         content: props.kclManager.code,

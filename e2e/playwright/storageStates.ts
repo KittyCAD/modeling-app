@@ -50,7 +50,6 @@ export const TEST_SETTINGS_CORRUPTED = {
   app: {
     theme: Themes.Dark,
     onboardingStatus: 'dismissed',
-    projectDirectory: 123 as any,
   },
   debug: {
     showPanel: true,

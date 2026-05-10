@@ -6,6 +6,7 @@ import {
   writeEnvironmentConfigurationKittycadWebSocketUrl,
   writeEnvironmentConfigurationMlephantWebSocketUrl,
   writeEnvironmentFile,
+  getInitialDefaultDir,
 } from '@src/lib/desktop'
 import { getNextFileName, getUniqueProjectName } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -210,15 +211,33 @@ export function createApplicationCommands({
                 return
               }
 
-              const projectDirectoryPath =
-                app.systemIOActor.getSnapshot().context.projectDirectoryPath
               const fileData = new Uint8Array(fr.result)
 
-              getNextFileName({
-                entryName: fileNameWithExtension,
-                baseDir: joinOSPaths(projectDirectoryPath, uniqueNameIfNeeded),
-                wasmInstance,
-              })
+              const folders =
+                app.systemIOActor.getSnapshot().context.folders ?? []
+              const existingProject = folders.find(
+                (folder) => folder.name === uniqueNameIfNeeded
+              )
+              const projectDirectoryPathPromise = existingProject
+                ? Promise.resolve(fsZds.dirname(existingProject.path))
+                : app.systemIOActor.getSnapshot().context.projectDirectoryPath
+                  ? Promise.resolve(
+                      app.systemIOActor.getSnapshot().context
+                        .projectDirectoryPath
+                    )
+                  : getInitialDefaultDir()
+
+              projectDirectoryPathPromise
+                .then((projectDirectoryPath) =>
+                  getNextFileName({
+                    entryName: fileNameWithExtension,
+                    baseDir: joinOSPaths(
+                      projectDirectoryPath,
+                      uniqueNameIfNeeded
+                    ),
+                    wasmInstance,
+                  })
+                )
                 .then(({ path }) => {
                   return fsZds.writeFile(path, fileData)
                 })

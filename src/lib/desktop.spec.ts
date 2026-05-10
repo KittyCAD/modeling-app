@@ -8,9 +8,12 @@ import {
   getEnvironmentConfigurationPath,
   getEnvironmentFilePath,
   listProjects,
+  listRecentProjectsForCurrentEnvironment,
   readEnvironmentConfigurationFile,
   readEnvironmentConfigurationToken,
   readEnvironmentFile,
+  readRecentProjectsForEnvironment,
+  trackRecentProject,
 } from '@src/lib/desktop'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
 import type { DeepPartial } from '@src/lib/types'
@@ -356,6 +359,86 @@ describe('desktop utilities', () => {
       // mock clean up
       mockElectron.packageJson.name = ''
       expect(actual).toBe(expected)
+    })
+  })
+
+  describe('recent projects', () => {
+    it('tracks recent projects in the environment configuration file', async () => {
+      mockElectron.packageJson.name = 'zoo-modeling-app'
+      await trackRecentProject(
+        {
+          path: '/test/projects/valid-project',
+          name: 'valid-project',
+          children: null,
+          default_file: '/test/projects/valid-project/file1.kcl',
+          metadata: null,
+          kcl_file_count: 2,
+          directory_count: 1,
+          readWriteAccess: true,
+        },
+        { environmentName: 'development', lastOpenedAt: 42 }
+      )
+
+      const [path, contents] = mockElectron.writeFile.mock.lastCall ?? []
+      expect(path).toBe('/appData/zoo-modeling-app/envs/development.json')
+      expect(
+        JSON.parse(new TextDecoder().decode(contents as Uint8Array))
+          .recentProjects
+      ).toEqual([
+        {
+          path: '/test/projects/valid-project',
+          name: 'valid-project',
+          default_file: '/test/projects/valid-project/file1.kcl',
+          kcl_file_count: 2,
+          directory_count: 1,
+          last_opened_at: 42,
+        },
+      ])
+      mockElectron.packageJson.name = ''
+    })
+
+    it('reads recent projects for the current environment', async () => {
+      const { instance } = await buildTheWorldNode()
+      mockElectron.packageJson.name = 'zoo-modeling-app'
+      const previousBaseDomain = process.env.VITE_ZOO_BASE_DOMAIN
+      process.env.VITE_ZOO_BASE_DOMAIN = 'development'
+      mockElectron.readFile.mockImplementation(async (path: string) => {
+        if (path.endsWith('/envs/development.json')) {
+          return JSON.stringify({
+            domain: 'development',
+            token: '',
+            recentProjects: [
+              {
+                path: '/test/projects/valid-project',
+                name: 'valid-project',
+                default_file: '/test/projects/valid-project/file1.kcl',
+                kcl_file_count: 2,
+                directory_count: 1,
+                last_opened_at: 42,
+              },
+            ],
+          })
+        }
+        return ''
+      })
+
+      const recentProjects =
+        await readRecentProjectsForEnvironment('development')
+      expect(recentProjects[0].last_opened_at).toBe(42)
+
+      const projects = await listRecentProjectsForCurrentEnvironment(instance)
+      expect(projects).toHaveLength(1)
+      expect(projects[0].path).toBe('/test/projects/valid-project')
+      expect(projects[0].kcl_file_count).toBe(2)
+      expect(projects[0].directory_count).toBe(1)
+      expect(projects[0].last_opened_at).toBe(42)
+
+      mockElectron.packageJson.name = ''
+      if (previousBaseDomain === undefined) {
+        delete process.env.VITE_ZOO_BASE_DOMAIN
+      } else {
+        process.env.VITE_ZOO_BASE_DOMAIN = previousBaseDomain
+      }
     })
   })
 })

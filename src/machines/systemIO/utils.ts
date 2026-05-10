@@ -176,7 +176,7 @@ export type SystemIOContext = SystemIOInput & {
    * We watch objects because we want to be able to navigate to itself
    * if we used a string the useEffect would not change
    */
-  requestedProjectName: { name: string; subRoute?: string }
+  requestedProjectName: { name: string; path?: string; subRoute?: string }
   requestedFileName: { project: string; file: string; subRoute?: string }
   canReadWriteProjectDirectory: { value: boolean; error: unknown }
   clearURLParams: { value: boolean }
@@ -191,6 +191,7 @@ export type SystemIOContext = SystemIOInput & {
 
   /** Temporary storage to return to project after renaming */
   pendingRenamedProjectName?: string
+  pendingRenamedProjectPath?: string
   lastOperation: any
 
   // A mapping between project id and conversation ids.

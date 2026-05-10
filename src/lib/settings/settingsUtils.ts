@@ -12,7 +12,6 @@ import {
   mouseControlsToCameraSystem,
 } from '@src/lib/cameraControls'
 import {
-  getInitialDefaultDir,
   readAppSettingsFile,
   readProjectSettingsFile,
   writeAppSettingsFile,
@@ -567,10 +566,6 @@ const USER_APP_ONLY_SETTINGS_SECTIONS = [
   ]),
   defineAppOnlySection('project', [
     defineStringAppOnlyField(
-      { category: 'app', field: 'projectDirectory' },
-      'directory'
-    ),
-    defineStringAppOnlyField(
       { category: 'projects', field: 'defaultProjectName' },
       'default_project_name'
     ),
@@ -992,8 +987,6 @@ export async function loadAndValidateSettings(
   }
 
   let settingsNext = createSettings(extensionSettings)
-
-  settingsNext.app.projectDirectory.default = await getInitialDefaultDir()
 
   settingsNext = setSettingsAtLevel(
     settingsNext,

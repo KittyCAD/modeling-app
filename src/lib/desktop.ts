@@ -16,7 +16,10 @@ import {
   parseProjectSettings,
 } from '@src/lang/wasm'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
-import type { EnvironmentConfiguration } from '@src/lib/constants'
+import type {
+  EnvironmentConfiguration,
+  RecentProject,
+} from '@src/lib/constants'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   ENVIRONMENT_CONFIGURATION_FOLDER,
@@ -156,9 +159,12 @@ export async function createNewProjectDirectory(
   }
 
   if (err(configuration)) return Promise.reject(configuration)
+  const configuredProjectDirectory = getProjectDirectorySetting(configuration)
   const mainDir =
     overrideApplicationProjectDirectory ||
-    (await ensureProjectDirectoryExists(configuration))
+    (configuredProjectDirectory
+      ? await ensureProjectDirectoryExists(configuration)
+      : await mkdirOrNOOP(await getInitialDefaultDir()))
 
   if (!projectName) {
     return Promise.reject('Project name cannot be empty.')
@@ -764,9 +770,6 @@ export const readAppSettingsFile = async (
   wasmInstance: ModuleType
 ): Promise<DeepPartial<Configuration>> => {
   let settingsPath = await getAppSettingsFilePath()
-  const initialProjectDirConfig: { [key: string]: JsonValue } = {
-    directory: await getInitialDefaultDir(),
-  }
 
   // The file exists, read it and parse it.
   try {
@@ -779,28 +782,7 @@ export const readAppSettingsFile = async (
       return Promise.reject(parsedAppConfig)
     }
 
-    const hasProjectDirectorySetting =
-      getProjectDirectorySetting(parsedAppConfig)
-
-    if (hasProjectDirectorySetting) {
-      return parsedAppConfig
-    } else {
-      // inject the default project directory setting
-      const mergedConfig: DeepPartial<Configuration> = {
-        ...parsedAppConfig,
-        settings: {
-          ...parsedAppConfig.settings,
-          project: Object.assign(
-            {},
-            getProjectSettingsSection(parsedAppConfig),
-            initialProjectDirConfig
-          ) as {
-            [key: string]: JsonValue
-          },
-        },
-      }
-      return mergedConfig
-    }
+    return parsedAppConfig
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (_e: unknown) {
     console.log('creating default app settings')
@@ -811,19 +793,7 @@ export const readAppSettingsFile = async (
       return Promise.reject(defaultAppConfig)
     }
 
-    // inject the default project directory setting
-    const mergedDefaultConfig: DeepPartial<Configuration> = {
-      ...defaultAppConfig,
-      settings: {
-        ...defaultAppConfig.settings,
-        project: Object.assign(
-          {},
-          getProjectSettingsSection(defaultAppConfig),
-          initialProjectDirConfig
-        ) as { [key: string]: JsonValue },
-      },
-    }
-    return mergedDefaultConfig
+    return defaultAppConfig
   }
 }
 
@@ -977,6 +947,173 @@ export const writeEnvironmentFile = async (environment: string) => {
   )
   console.log('environment written to disk')
   return result
+}
+
+const RECENT_PROJECTS_LIMIT = 50
+
+const getRecentProjectsEnvironmentName = async (environmentName?: string) => {
+  const selectedEnvironment =
+    environmentName ||
+    env().VITE_ZOO_BASE_DOMAIN ||
+    (await readEnvironmentFile())
+  return selectedEnvironment || 'default'
+}
+
+const normalizeRecentProjects = (
+  recentProjects: EnvironmentConfiguration['recentProjects']
+): RecentProject[] => {
+  if (!isArray(recentProjects)) {
+    return []
+  }
+
+  return recentProjects
+    .filter((project): project is RecentProject => {
+      return (
+        typeof project?.path === 'string' &&
+        typeof project?.name === 'string' &&
+        typeof project?.default_file === 'string' &&
+        typeof project?.kcl_file_count === 'number' &&
+        typeof project?.directory_count === 'number' &&
+        typeof project?.last_opened_at === 'number'
+      )
+    })
+    .sort((a, b) => b.last_opened_at - a.last_opened_at)
+    .slice(0, RECENT_PROJECTS_LIMIT)
+}
+
+const writeEnvironmentConfigurationObject = async (
+  environmentName: string,
+  environmentConfiguration: EnvironmentConfiguration
+) => {
+  const path = await getEnvironmentConfigurationPath(environmentName)
+  const requestedConfiguration = JSON.stringify(environmentConfiguration)
+  return fsZds.writeFile(path, new TextEncoder().encode(requestedConfiguration))
+}
+
+export const readRecentProjectsForEnvironment = async (
+  environmentName?: string
+): Promise<RecentProject[]> => {
+  const selectedEnvironment =
+    await getRecentProjectsEnvironmentName(environmentName)
+  const environmentConfiguration =
+    await getEnvironmentConfigurationObject(selectedEnvironment)
+  return normalizeRecentProjects(environmentConfiguration.recentProjects)
+}
+
+export const writeRecentProjectsForEnvironment = async (
+  recentProjects: RecentProject[],
+  environmentName?: string
+) => {
+  const selectedEnvironment =
+    await getRecentProjectsEnvironmentName(environmentName)
+  const environmentConfiguration =
+    await getEnvironmentConfigurationObject(selectedEnvironment)
+  environmentConfiguration.recentProjects =
+    normalizeRecentProjects(recentProjects)
+  return writeEnvironmentConfigurationObject(
+    selectedEnvironment,
+    environmentConfiguration
+  )
+}
+
+const projectToRecentProject = (
+  project: Project,
+  lastOpenedAt = Date.now()
+): RecentProject => {
+  return {
+    path: project.path,
+    name: project.name,
+    default_file: project.default_file,
+    kcl_file_count: project.kcl_file_count,
+    directory_count: project.directory_count,
+    last_opened_at: lastOpenedAt,
+  }
+}
+
+export const trackRecentProject = async (
+  project: Project,
+  options: { environmentName?: string; lastOpenedAt?: number } = {}
+) => {
+  const recentProjects = await readRecentProjectsForEnvironment(
+    options.environmentName
+  )
+  const nextProject = projectToRecentProject(
+    project,
+    options.lastOpenedAt ?? Date.now()
+  )
+  const nextProjects = [
+    nextProject,
+    ...recentProjects.filter((recent) => recent.path !== project.path),
+  ]
+  return writeRecentProjectsForEnvironment(
+    nextProjects,
+    options.environmentName
+  )
+}
+
+export const removeRecentProjectPath = async (
+  projectPath: string,
+  environmentName?: string
+) => {
+  const recentProjects = await readRecentProjectsForEnvironment(environmentName)
+  return writeRecentProjectsForEnvironment(
+    recentProjects.filter((recent) => recent.path !== projectPath),
+    environmentName
+  )
+}
+
+const projectFromRecentProject = (recentProject: RecentProject): Project => ({
+  metadata: {
+    accessed: null,
+    created: null,
+    modified: recentProject.last_opened_at,
+    permission: null,
+    size: 0,
+    type: 'directory',
+  },
+  kcl_file_count: recentProject.kcl_file_count,
+  directory_count: recentProject.directory_count,
+  last_opened_at: recentProject.last_opened_at,
+  default_file: recentProject.default_file,
+  path: recentProject.path,
+  name: recentProject.name,
+  children: null,
+  readWriteAccess: false,
+})
+
+export const listRecentProjectsForCurrentEnvironment = async (
+  initPromise: Promise<ModuleType> | ModuleType
+): Promise<Project[]> => {
+  const wasmInstance = await initPromise
+  const recentProjects = await readRecentProjectsForEnvironment()
+  const projects: Project[] = []
+  const refreshedRecentProjects: RecentProject[] = []
+
+  for (const recentProject of recentProjects) {
+    try {
+      const project = await getProjectInfo(recentProject.path, wasmInstance)
+      const projectWithLastOpened = {
+        ...project,
+        last_opened_at: recentProject.last_opened_at,
+      }
+      projects.push(projectWithLastOpened)
+      refreshedRecentProjects.push(
+        projectToRecentProject(
+          projectWithLastOpened,
+          recentProject.last_opened_at
+        )
+      )
+    } catch {
+      projects.push(projectFromRecentProject(recentProject))
+      refreshedRecentProjects.push(recentProject)
+    }
+  }
+
+  await writeRecentProjectsForEnvironment(refreshedRecentProjects)
+
+  return projects.sort(
+    (a, b) => (b.last_opened_at ?? 0) - (a.last_opened_at ?? 0)
+  )
 }
 
 export const listAllEnvironments = async () => {

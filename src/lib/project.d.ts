@@ -51,6 +51,10 @@ export type Project = {
   kcl_file_count: number
   directory_count: number
   /**
+   * Timestamp for when this project was last opened by this app/environment.
+   */
+  last_opened_at?: number
+  /**
    * Absolute path most likely to main.kcl within the project
    */
   default_file: string

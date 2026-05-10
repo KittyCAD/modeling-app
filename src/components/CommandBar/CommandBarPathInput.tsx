@@ -63,8 +63,9 @@ function CommandBarPathInput({
       inputRef.current.value = inputRefVal
     } else if (inputRef.current) {
       const configuration: OpenDialogOptions = {
-        properties: ['openFile'],
-        title: 'Pick a file to load into the current project',
+        properties: arg.openDialogProperties ?? ['openFile'],
+        title:
+          arg.openDialogTitle ?? 'Pick a file to load into the current project',
       }
 
       if (arg.filters) {
@@ -75,7 +76,9 @@ function CommandBarPathInput({
         return new Error("Can't open file picker without electron")
       }
       const newPath = await window.electron.open(configuration)
-      if (newPath.canceled) return
+      if (newPath.canceled) {
+        return
+      }
       inputRef.current.value = newPath.filePaths[0]
     } else {
       return new Error("Couldn't find inputRef")

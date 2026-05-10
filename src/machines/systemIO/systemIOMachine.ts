@@ -62,7 +62,7 @@ export const systemIOMachine = setup({
         }
       | {
           type: SystemIOMachineEvents.navigateToProject
-          data: { requestedProjectName: string }
+          data: { requestedProjectName: string; requestedProjectPath?: string }
         }
       | {
           type: SystemIOMachineEvents.navigateToFile
@@ -81,16 +81,22 @@ export const systemIOMachine = setup({
           data: {
             requestedProjectName: string
             projectName: string
+            projectPath?: string
             redirect: boolean
           }
         }
       | {
           type: SystemIOMachineEvents.done_renameProject
-          output: { redirect: boolean; newName: string }
+          output: {
+            redirect: boolean
+            newName: string
+            path?: string
+            projectDirectoryPath?: string
+          }
         }
       | {
           type: SystemIOMachineEvents.deleteProject
-          data: { requestedProjectName: string }
+          data: { requestedProjectName: string; projectPath?: string }
         }
       | {
           type: SystemIOMachineEvents.done_deleteProject
@@ -152,11 +158,20 @@ export const systemIOMachine = setup({
         }
       | {
           type: SystemIOMachineEvents.done_bulkCreateKCLFilesAndNavigateToFile
-          output: { projectName: string; fileName: string; subRoute?: string }
+          output: {
+            projectName: string
+            fileName: string
+            projectDirectoryPath?: string
+            subRoute?: string
+          }
         }
       | {
           type: SystemIOMachineEvents.done_bulkCreateAndDeleteKCLFilesAndNavigateToFile
-          output: { projectName: string; fileName: string }
+          output: {
+            projectName: string
+            fileName: string
+            projectDirectoryPath?: string
+          }
         }
       | {
           type: SystemIOMachineEvents.importFileFromURL
@@ -172,6 +187,7 @@ export const systemIOMachine = setup({
           output: {
             projectName: string
             fileName: string
+            projectDirectoryPath?: string
             subRoute?: string
           }
         }
@@ -359,6 +375,7 @@ export const systemIOMachine = setup({
         assertEvent(event, SystemIOMachineEvents.navigateToProject)
         return {
           name: event.data.requestedProjectName,
+          path: event.data.requestedProjectPath,
         }
       },
     }),
@@ -444,9 +461,13 @@ export const systemIOMachine = setup({
       async ({
         input: { context, requestedProjectName },
       }: {
-        input: { context: SystemIOContext; requestedProjectName: string }
+        input: {
+          context: SystemIOContext
+          requestedProjectName: string
+          projectPath?: string
+        }
       }) => {
-        return { message: '', name: '' }
+        return { message: '', name: '', path: '', projectDirectoryPath: '' }
       }
     ),
     [SystemIOMachineActors.deleteProject]: fromPromise(
@@ -466,12 +487,15 @@ export const systemIOMachine = setup({
           context: SystemIOContext
           requestedProjectName: string
           projectName: string
+          projectPath?: string
           redirect: boolean
         }
       }): Promise<{
         message: string
         newName: string
         oldName: string
+        path?: string
+        projectDirectoryPath?: string
         redirect: boolean
       }> => {
         return { message: '', newName: '', oldName: '', redirect: true }
@@ -494,9 +518,16 @@ export const systemIOMachine = setup({
         message: string
         fileName: string
         projectName: string
+        projectDirectoryPath: string
         subRoute: string
       }> => {
-        return { message: '', fileName: '', projectName: '', subRoute: '' }
+        return {
+          message: '',
+          fileName: '',
+          projectName: '',
+          projectDirectoryPath: '',
+          subRoute: '',
+        }
       }
     ),
     [SystemIOMachineActors.checkReadWrite]: fromPromise(
@@ -541,9 +572,16 @@ export const systemIOMachine = setup({
         message: string
         fileName: string
         projectName: string
+        projectDirectoryPath: string
         subRoute: string
       }> => {
-        return { message: '', fileName: '', projectName: '', subRoute: '' }
+        return {
+          message: '',
+          fileName: '',
+          projectName: '',
+          projectDirectoryPath: '',
+          subRoute: '',
+        }
       }
     ),
     [SystemIOMachineActors.bulkCreateKCLFilesAndNavigateToProject]: fromPromise(
@@ -561,9 +599,16 @@ export const systemIOMachine = setup({
         message: string
         fileName: string
         projectName: string
+        projectDirectoryPath: string
         subRoute: string
       }> => {
-        return { message: '', fileName: '', projectName: '', subRoute: '' }
+        return {
+          message: '',
+          fileName: '',
+          projectName: '',
+          projectDirectoryPath: '',
+          subRoute: '',
+        }
       }
     ),
     [SystemIOMachineActors.bulkImportProjectFilesAndNavigateToFile]:
@@ -582,9 +627,16 @@ export const systemIOMachine = setup({
           message: string
           fileName: string
           projectName: string
+          projectDirectoryPath: string
           subRoute: string
         }> => {
-          return { message: '', fileName: '', projectName: '', subRoute: '' }
+          return {
+            message: '',
+            fileName: '',
+            projectName: '',
+            projectDirectoryPath: '',
+            subRoute: '',
+          }
         }
       ),
     [SystemIOMachineActors.bulkCreateKCLFilesAndNavigateToFile]: fromPromise(
@@ -602,9 +654,16 @@ export const systemIOMachine = setup({
         message: string
         fileName: string
         projectName: string
+        projectDirectoryPath: string
         subRoute: string
       }> => {
-        return { message: '', fileName: '', projectName: '', subRoute: '' }
+        return {
+          message: '',
+          fileName: '',
+          projectName: '',
+          projectDirectoryPath: '',
+          subRoute: '',
+        }
       }
     ),
     [SystemIOMachineActors.bulkCreateAndDeleteKCLFilesAndNavigateToFile]:
@@ -624,9 +683,16 @@ export const systemIOMachine = setup({
           message: string
           fileName: string
           projectName: string
+          projectDirectoryPath: string
           subRoute: string
         }> => {
-          return { message: '', fileName: '', projectName: '', subRoute: '' }
+          return {
+            message: '',
+            fileName: '',
+            projectName: '',
+            projectDirectoryPath: '',
+            subRoute: '',
+          }
         }
       ),
     [SystemIOMachineActors.renameFolder]: fromPromise(
@@ -819,6 +885,7 @@ export const systemIOMachine = setup({
       project: NO_PROJECT_DIRECTORY,
     },
     pendingRenamedProjectName: undefined,
+    pendingRenamedProjectPath: undefined,
     lastOperation: SystemIOMachineStates.idle,
     mlEphantConversations: undefined,
   }),
@@ -960,11 +1027,15 @@ export const systemIOMachine = setup({
                 // If we just finished renaming, navigate to the renamed project
                 if (context.pendingRenamedProjectName) {
                   const newName = context.pendingRenamedProjectName
-                  return { name: newName }
+                  return {
+                    name: newName,
+                    path: context.pendingRenamedProjectPath,
+                  }
                 }
                 return context.requestedProjectName
               },
               pendingRenamedProjectName: () => undefined, // clear after redirect
+              pendingRenamedProjectPath: () => undefined,
             }),
           ],
         },
@@ -989,9 +1060,22 @@ export const systemIOMachine = setup({
           actions: [
             assign({
               lastOperation: SystemIOMachineStates.creatingProject,
+              projectDirectoryPath: ({ event }) => {
+                return (event as { output: { projectDirectoryPath: string } })
+                  .output.projectDirectoryPath
+              },
               requestedProjectName: ({ event }) => {
+                const output = (
+                  event as {
+                    output: {
+                      name: string
+                      path: string
+                    }
+                  }
+                ).output
                 return {
-                  name: (event as { output: { name: string } }).output.name,
+                  name: output.name,
+                  path: output.path,
                 }
               },
             }),
@@ -1014,6 +1098,7 @@ export const systemIOMachine = setup({
             context,
             requestedProjectName: event.data.requestedProjectName,
             projectName: event.data.projectName,
+            projectPath: event.data.projectPath,
             redirect: event.data.redirect,
           }
         },
@@ -1028,15 +1113,38 @@ export const systemIOMachine = setup({
                 ).output
                 return output.redirect ? output.newName : undefined
               },
+              pendingRenamedProjectPath: ({ event }) => {
+                const output = (
+                  event as { output: { redirect: boolean; path?: string } }
+                ).output
+                return output.redirect ? output.path : undefined
+              },
             }),
             SystemIOMachineActions.toastSuccess,
             assign({
               lastOperation: SystemIOMachineStates.renamingProject,
+              projectDirectoryPath: ({ event }) => {
+                const output = (
+                  event as {
+                    output: { projectDirectoryPath?: string }
+                  }
+                ).output
+                return output.projectDirectoryPath || ''
+              },
               requestedProjectName: ({ event }) => {
                 assertEvent(event, SystemIOMachineEvents.done_renameProject)
+                const output = (
+                  event as {
+                    output: {
+                      newName: string
+                      path?: string
+                      redirect?: boolean
+                    }
+                  }
+                ).output
                 return {
-                  name: (event as { output: { newName: string } }).output
-                    .newName,
+                  name: output.newName,
+                  path: output.redirect ? output.path : undefined,
                 }
               },
             }),
@@ -1057,6 +1165,7 @@ export const systemIOMachine = setup({
           return {
             context,
             requestedProjectName: event.data.requestedProjectName,
+            projectPath: event.data.projectPath,
           }
         },
         onDone: {
@@ -1121,6 +1230,14 @@ export const systemIOMachine = setup({
           actions: [
             assign({
               lastOperation: SystemIOMachineStates.importFileFromURL,
+              projectDirectoryPath: ({ event }) => {
+                const output = (
+                  event as {
+                    output: { projectDirectoryPath?: string }
+                  }
+                ).output
+                return output.projectDirectoryPath || ''
+              },
               requestedProjectName: ({ event }) => {
                 assertEvent(event, SystemIOMachineEvents.done_importFileFromURL)
                 const output = (
@@ -1128,6 +1245,7 @@ export const systemIOMachine = setup({
                     output: {
                       projectName: string
                       fileName: string
+                      projectDirectoryPath?: string
                       subRoute?: string
                     }
                   }
@@ -1141,6 +1259,7 @@ export const systemIOMachine = setup({
                     output: {
                       projectName: string
                       fileName: string
+                      projectDirectoryPath?: string
                       subRoute?: string
                     }
                   }
@@ -1259,6 +1378,9 @@ export const systemIOMachine = setup({
             assign({
               lastOperation:
                 SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToProject,
+              projectDirectoryPath: ({ event }) => {
+                return event.output.projectDirectoryPath || ''
+              },
               requestedProjectName: ({ event }) => {
                 return {
                   name: event.output.projectName,
@@ -1298,6 +1420,14 @@ export const systemIOMachine = setup({
           target: SystemIOMachineStates.readingFolders,
           actions: [
             assign({
+              projectDirectoryPath: ({ event }) => {
+                const output = (
+                  event as {
+                    output: { projectDirectoryPath?: string }
+                  }
+                ).output
+                return output.projectDirectoryPath || ''
+              },
               requestedFileName: ({ event }) => {
                 assertEvent(
                   event,
@@ -1308,6 +1438,7 @@ export const systemIOMachine = setup({
                     output: {
                       projectName: string
                       fileName: string
+                      projectDirectoryPath?: string
                       subRoute?: string
                     }
                   }
@@ -1356,12 +1487,21 @@ export const systemIOMachine = setup({
             assign({
               lastOperation:
                 SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile,
+              projectDirectoryPath: ({ event }) => {
+                const output = (
+                  event as {
+                    output: { projectDirectoryPath?: string }
+                  }
+                ).output
+                return output.projectDirectoryPath || ''
+              },
               requestedFileName: ({ event }) => {
                 const output = (
                   event as {
                     output: {
                       projectName: string
                       fileName: string
+                      projectDirectoryPath?: string
                       subRoute?: string
                     }
                   }
@@ -1381,12 +1521,20 @@ export const systemIOMachine = setup({
                 return {
                   name: (
                     event as {
-                      output: { projectName: string; subRoute?: string }
+                      output: {
+                        projectName: string
+                        projectDirectoryPath?: string
+                        subRoute?: string
+                      }
                     }
                   ).output.projectName,
                   subRoute: (
                     event as {
-                      output: { projectName: string; subRoute?: string }
+                      output: {
+                        projectName: string
+                        projectDirectoryPath?: string
+                        subRoute?: string
+                      }
                     }
                   ).output.subRoute,
                 }
@@ -1426,13 +1574,27 @@ export const systemIOMachine = setup({
           target: SystemIOMachineStates.readingFolders,
           actions: [
             assign({
+              projectDirectoryPath: ({ event }) => {
+                const output = (
+                  event as {
+                    output: { projectDirectoryPath?: string }
+                  }
+                ).output
+                return output.projectDirectoryPath || ''
+              },
               requestedFileName: ({ event }) => {
                 assertEvent(
                   event,
                   SystemIOMachineEvents.done_bulkCreateAndDeleteKCLFilesAndNavigateToFile
                 )
                 const output = (
-                  event as { output: { projectName: string; fileName: string } }
+                  event as {
+                    output: {
+                      projectName: string
+                      fileName: string
+                      projectDirectoryPath?: string
+                    }
+                  }
                 ).output
                 // Gotcha: file could have an ending of .kcl...
                 const file = output.fileName.endsWith('.kcl')
