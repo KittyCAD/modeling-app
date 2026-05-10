@@ -1,13 +1,9 @@
 import { useSignalEffect } from '@preact/signals-react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { AppHeader } from '@src/components/AppHeader'
-import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
-import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
 import { useLspContext } from '@src/components/LspProvider'
 import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
-import { PublishButton } from '@src/components/PublishButton'
-import { ShareButton } from '@src/components/ShareButton'
 import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import {
   defaultGlobalStatusBarItems,
@@ -15,7 +11,6 @@ import {
 } from '@src/components/StatusBar/defaultStatusBarItems'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import { UndoRedoButtons } from '@src/components/UndoRedoButtons'
-import { UnitsMenu } from '@src/components/UnitsMenu'
 import { WasmErrToast } from '@src/components/WasmErrToast'
 import { ZookeeperCreditsMenu } from '@src/components/ZookeeperCreditsMenu'
 import { getMlEphantProjectReloadBehavior } from '@src/components/openedProjectUtils'
@@ -24,19 +19,17 @@ import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnection
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
-import { useApp, useSingletons } from '@src/lib/boot'
 import {
   autoUpdateDownloadProgressSignal,
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
+import { useApp, useSingletons } from '@src/lib/boot'
 import {
-  DEFAULT_EXPERIMENTAL_FEATURES,
   ONBOARDING_TOAST_ID,
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
-import { isMobile } from '@src/lib/isMobile'
 import {
   DefaultLayoutPaneID,
   LayoutRootNode,
@@ -48,7 +41,6 @@ import { useDefaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
 import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
@@ -59,8 +51,12 @@ import {
   MlEphantManagerTransitions,
 } from '@src/machines/mlEphantManagerMachine'
 import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
-import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
+import {
+  statusBarGlobalItemsValueSpec,
+  statusBarLocalItemsValueSpec,
+} from '@src/registry/contracts/statusBar'
+import { filterEngineSceneStatusBarItems } from '@src/registry/extensions/engineScene/statusBar'
 import {
   TutorialRequestToast,
   needsToOnboard,
@@ -189,6 +185,10 @@ export function OpenedProject() {
 
   const settingsValues = settings.useSettings()
   const machineApiEnabled = settingsValues.app.machineApi.current
+  const registryLocalStatusBarItems = filterEngineSceneStatusBarItems(
+    registry.signal(statusBarLocalItemsValueSpec).value,
+    settingsValues
+  )
   const authToken = auth.useToken()
   const onboardingStatus =
     settingsValues.app.onboardingStatus.current ||
@@ -223,14 +223,6 @@ export function OpenedProject() {
     {
       splitKey: '|',
     }
-  )
-
-  useHotkeyWrapper(
-    ['mod + s'],
-    () => {
-      toast.success('Your work is auto-saved in real-time.')
-    },
-    kclManager
   )
 
   useHotkeyWrapper(
@@ -353,19 +345,6 @@ export function OpenedProject() {
     }
   }, [])
 
-  const experimentalFeaturesLevel =
-    kclManager.fileSettings.experimentalFeatures ??
-    DEFAULT_EXPERIMENTAL_FEATURES
-  const experimentalFeaturesLocalStatusBarItems: StatusBarItemType[] =
-    experimentalFeaturesLevel.type !== 'Deny'
-      ? [
-          {
-            id: 'experimental-features',
-            component: ExperimentalFeaturesMenu,
-          },
-        ]
-      : []
-
   const zookeeperLocalStatusBarItems: StatusBarItemType[] = useMemo(
     () =>
       getOpenPanes({ rootLayout: layout.signal.value }).includes(
@@ -413,15 +392,7 @@ export function OpenedProject() {
             enableMenu={true}
             nativeFileMenuCreated={nativeFileMenuCreated}
             projectMenuChildren={undoRedoButtons}
-          >
-            {!isMobile() && (
-              <>
-                <CommandBarOpenButton />
-                <ShareButton />
-                <PublishButton project={project?.projectIORefSignal.value} />
-              </>
-            )}
-          </AppHeader>
+          />
         </div>
         <ModalContainer />
         <section className="pointer-events-auto flex-1">
@@ -465,24 +436,7 @@ export function OpenedProject() {
                   },
                 ] satisfies StatusBarItemType[])
               : []),
-            {
-              id: 'selection',
-              'data-testid': 'selection-status',
-              element: 'text',
-              label:
-                getSelectionTypeDisplayText(
-                  kclManager.astSignal.value,
-                  modelingState.context.selectionRanges
-                ) ?? 'No selection',
-              toolTip: {
-                children: 'Currently selected geometry',
-              },
-            },
-            {
-              id: 'units',
-              component: UnitsMenu,
-            },
-            ...experimentalFeaturesLocalStatusBarItems,
+            ...registryLocalStatusBarItems,
             ...zookeeperLocalStatusBarItems,
             ...defaultLocalStatusBarItems,
           ]}
