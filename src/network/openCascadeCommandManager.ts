@@ -102,6 +102,12 @@ type RegionState = {
   edgeEntries: PathEdgeEntry[]
   boundaryPoints?: Point3[]
   sketchOnFace?: SketchOnFaceProvenance
+  fromArrangement?: boolean
+}
+
+type RevolveInteriorEdgeSuppression = {
+  origin: Point3
+  axis: Point3
 }
 
 type ArrangementRegionBoundarySegment = {
@@ -136,6 +142,8 @@ type SolidState = {
   provenance?: OpenCascadeEntityProvenance
   brep?: Uint8Array
   consumed?: boolean
+  suppressMeshEdges?: boolean
+  suppressRevolveInteriorEdges?: RevolveInteriorEdgeSuppression
   cylinder?: {
     center: Point2
     radius: number
@@ -187,6 +195,7 @@ export type OpenCascadeTopologyEdgeLine = {
   edgeIndex: number
   faceIds: string[]
   points: number[]
+  suppressed?: boolean
 }
 
 export type OpenCascadeTopologySolidMesh = {
@@ -271,6 +280,7 @@ export type OpenCascadeVisibleSolidGlb = {
   bodyType: 'solid' | 'surface'
   artifactIds: string[]
   provenance?: OpenCascadeEntityProvenance
+  suppressMeshEdges?: boolean
   bytes: Uint8Array
 }
 
@@ -556,6 +566,7 @@ export class OpenCascadeCommandManager {
         bodyType: solid.bodyType || 'solid',
         artifactIds: this.selectableSolidArtifactIds(id, solid),
         provenance: cloneEntityProvenance(solid.provenance),
+        suppressMeshEdges: solid.suppressMeshEdges,
         bytes: this.writeGlb(id, solid.shape, oc),
       }))
       this.latestExportError.value = undefined
@@ -610,10 +621,12 @@ export class OpenCascadeCommandManager {
           positions: [...solid.positions],
           indices: [...solid.indices],
           groups: solid.groups.map((group) => ({ ...group })),
-          edges: solid.edges.map((edge) => ({
-            ...edge,
-            points: [...edge.points],
-          })),
+          edges: solid.edges
+            .filter((edge) => !edge.suppressed)
+            .map((edge) => ({
+              ...edge,
+              points: [...edge.points],
+            })),
         })),
     }
   }
@@ -1381,13 +1394,18 @@ export class OpenCascadeCommandManager {
           )
         : primaryShape
 
+    const suppressRevolveInteriorEdges =
+      region?.fromArrangement && cmd.body_type !== 'surface'
+        ? { origin, axis }
+        : undefined
     this.storeSolid(
       commandId,
       shape,
       [cmd.target],
       oc,
       _range,
-      cmd.body_type === 'surface' ? 'surface' : 'solid'
+      cmd.body_type === 'surface' ? 'surface' : 'solid',
+      suppressRevolveInteriorEdges
     )
     return { type: 'revolve', data: {} }
   }
@@ -2818,6 +2836,7 @@ export class OpenCascadeCommandManager {
         edgeEntries: arrangementRegion.edgeEntries || [],
         boundaryPoints: arrangementRegion.points,
         sketchOnFace: arrangementRegion.sketchOnFace,
+        fromArrangement: true,
       }
     }
     const pathId = this.pathAliases.get(targetId) || targetId
@@ -2918,6 +2937,7 @@ export class OpenCascadeCommandManager {
       edgeEntries: arrangementRegion.edgeEntries || [],
       boundaryPoints: arrangementRegion.points,
       sketchOnFace: arrangementRegion.sketchOnFace,
+      fromArrangement: true,
     }
     this.regions.set(commandId, region)
     this.profileShapes.set(commandId, region.face)
@@ -3181,8 +3201,16 @@ export class OpenCascadeCommandManager {
     sourceIds: string[],
     oc: OpenCascadeInstance,
     range?: SourceRange,
-    bodyType?: 'solid' | 'surface'
+    bodyType?: 'solid' | 'surface',
+    suppressRevolveInteriorEdges?: RevolveInteriorEdgeSuppression
   ): SolidState {
+    const inheritedSuppression = sourceIds
+      .map((sourceId) => this.findSolidEntry(sourceId)?.[1])
+      .find(
+        (solid) => solid?.suppressRevolveInteriorEdges
+      )?.suppressRevolveInteriorEdges
+    const activeSuppression =
+      suppressRevolveInteriorEdges || inheritedSuppression
     const solid: SolidState = {
       shape,
       bodyType: bodyType || this.bodyTypeForShape(shape, oc),
@@ -3192,6 +3220,8 @@ export class OpenCascadeCommandManager {
       startCapId: `${commandId.slice(0, 35)}1`,
       endCapId: `${commandId.slice(0, 35)}2`,
       provenance: entityProvenanceForRange(range),
+      suppressMeshEdges: Boolean(activeSuppression),
+      suppressRevolveInteriorEdges: activeSuppression,
     }
     solid.brep = this.writeBrep(commandId, shape, oc)
     this.solids.set(commandId, solid)
@@ -3448,7 +3478,8 @@ export class OpenCascadeCommandManager {
     const { mesh, faceShapes, edgeShapes } = buildGenericTopology(
       solidId,
       solid.shape,
-      oc
+      oc,
+      solid.suppressRevolveInteriorEdges
     )
     mesh.artifactIds = this.selectableSolidArtifactIds(solidId, solid)
     mesh.provenance = cloneEntityProvenance(solid.provenance)
@@ -5497,7 +5528,8 @@ type GenericTopologyBuild = {
 function buildGenericTopology(
   solidId: string,
   shape: any,
-  oc: OpenCascadeInstance
+  oc: OpenCascadeInstance,
+  suppressRevolveInteriorEdges?: RevolveInteriorEdgeSuppression
 ): GenericTopologyBuild {
   new oc.BRepMesh_IncrementalMesh_2(shape, 0.1, false, 0.1, false)
   const positions: number[] = []
@@ -5567,6 +5599,9 @@ function buildGenericTopology(
   const edges: OpenCascadeTopologyEdgeLine[] = []
   for (const entry of genericEdges.values()) {
     const topologyId = deriveTopologyId(`${solidId}:edge:${edges.length}`, 0)
+    const suppressed =
+      suppressRevolveInteriorEdges !== undefined &&
+      shouldSuppressRevolveInteriorEdge(entry, suppressRevolveInteriorEdges, oc)
     edgeShapes.set(topologyId, entry.edge)
     edges.push({
       topologyId,
@@ -5576,6 +5611,7 @@ function buildGenericTopology(
       edgeIndex: edges.length,
       faceIds: Array.from(entry.faceIds),
       points: flattenPoints(entry.points),
+      suppressed,
     })
   }
 
@@ -6515,6 +6551,65 @@ function sampleEdgePoints(edge: any, oc: OpenCascadeInstance): Point3[] {
     // Fall back to topological vertices below.
   }
   return edgeEndpoints(edge, oc) || []
+}
+
+function shouldSuppressRevolveInteriorEdge(
+  edge: { edge: any; points: Point3[]; faceIds: Set<string> },
+  suppression: RevolveInteriorEdgeSuppression,
+  oc: OpenCascadeInstance
+): boolean {
+  if (edge.faceIds.size < 2 || edge.points.length < 3) {
+    return false
+  }
+  if (!isCircularEdge(edge.edge, oc)) {
+    return false
+  }
+  return pointsLieOnCircleAroundAxis(
+    edge.points,
+    suppression.origin,
+    suppression.axis
+  )
+}
+
+function isCircularEdge(edge: any, oc: OpenCascadeInstance): boolean {
+  try {
+    const curve = new oc.BRepAdaptor_Curve_2(edge)
+    const type = curve.GetType()
+    return Boolean(type?.GeomAbs_Circle)
+  } catch {
+    return false
+  }
+}
+
+function pointsLieOnCircleAroundAxis(
+  points: Point3[],
+  axisOrigin: Point3,
+  axis: Point3
+): boolean {
+  const axisDirection = normalize(axis)
+  const first = points[0]
+  const firstProjection = dot(subtract(first, axisOrigin), axisDirection)
+  const firstRadius = distanceToAxis(first, axisOrigin, axisDirection)
+  if (firstRadius < 1e-7) {
+    return false
+  }
+  const projectionTolerance = Math.max(1e-5, firstRadius * 1e-5)
+  const radiusTolerance = Math.max(1e-5, firstRadius * 1e-4)
+  return points.every((point) => {
+    const projection = dot(subtract(point, axisOrigin), axisDirection)
+    const radius = distanceToAxis(point, axisOrigin, axisDirection)
+    return (
+      Math.abs(projection - firstProjection) <= projectionTolerance &&
+      Math.abs(radius - firstRadius) <= radiusTolerance
+    )
+  })
+}
+
+function distanceToAxis(point: Point3, axisOrigin: Point3, axis: Point3) {
+  const offset = subtract(point, axisOrigin)
+  const projection = scale(axis, dot(offset, axis))
+  const perpendicular = subtract(offset, projection)
+  return Math.hypot(perpendicular.x, perpendicular.y, perpendicular.z)
 }
 
 function edgeGeometryKey(points: Point3[]): string {

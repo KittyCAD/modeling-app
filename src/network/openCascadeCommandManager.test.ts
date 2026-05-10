@@ -2120,7 +2120,14 @@ plateRevolve = startSketchOn(YZ)
     expect(execState.variables.plateRevolve?.type).toBe('Solid')
     const manager = OpenCascadeCommandManager.latestInstance()
     expect(manager?.getSolidCount()).toBe(1)
-    expect(await manager?.exportVisibleGlbBytes()).toHaveLength(1)
+    const visibleSolids = await manager?.exportVisibleGlbBytes()
+    expect(visibleSolids).toHaveLength(1)
+    expect(visibleSolids?.[0].suppressMeshEdges).toBe(true)
+    expect(
+      manager
+        ?.exportLatestTopologyMeshes()
+        .solids[0].edges.some((edge) => edge.suppressed)
+    ).toBe(false)
   })
 })
 

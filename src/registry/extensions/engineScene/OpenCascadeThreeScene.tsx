@@ -795,6 +795,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
             bodyType: solid.bodyType,
             artifactIds: solid.artifactIds,
             provenance: solid.provenance,
+            suppressMeshEdges: solid.suppressMeshEdges,
             scene: gltf.scene,
           }
         })
@@ -816,7 +817,8 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
           sceneStyleRef.current,
           highlightEdgesRef.current,
           false,
-          solid.bodyType
+          solid.bodyType,
+          solid.suppressMeshEdges
         )
         modelRoot.add(solid.scene)
       }
@@ -4388,7 +4390,8 @@ function styleLoadedOpenCascadeMeshes(
   style: OpenCascadeSceneStyle,
   highlightEdges: boolean,
   isProfile = false,
-  bodyType: 'solid' | 'surface' = 'solid'
+  bodyType: 'solid' | 'surface' = 'solid',
+  suppressMeshEdges = false
 ) {
   root.traverse((object) => {
     if (
@@ -4406,6 +4409,10 @@ function styleLoadedOpenCascadeMeshes(
     }
     object.castShadow = false
     object.receiveShadow = false
+
+    if (suppressMeshEdges) {
+      return
+    }
 
     const edgeGeometry = new EdgesGeometry(object.geometry, 30)
     const edgeMaterial = new LineBasicMaterial({ color: style.edgeColor })
