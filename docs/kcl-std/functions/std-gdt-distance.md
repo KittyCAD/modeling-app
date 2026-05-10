@@ -104,3 +104,5 @@ gdt::distance(
 
 
 ![Rendered example of gdt::distance 1](/kcl-test-outputs/serial_test_example_fn_std-gdt-distance1.png)
+
+
