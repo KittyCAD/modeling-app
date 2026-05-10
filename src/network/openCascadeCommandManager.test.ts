@@ -315,13 +315,15 @@ part002 = startSketchOn(XY)
     })
     const filletEdgeId =
       filletManager.exportLatestTopologyMeshes().solids[0].edges[0].topologyId
+    const filletStartVolume = await getVolume(filletManager, IDS.solid)
     await send(filletManager, IDS.request, {
       type: 'modeling_cmd_req',
       cmd_id: '00000000-0000-0000-0000-0000000000e2',
       cmd: {
         type: 'solid3d_fillet_edge',
         object_id: IDS.solid,
-        edge_ids: [filletEdgeId],
+        edge_id: filletEdgeId,
+        edge_ids: [],
         radius: 0.2,
         tolerance: 1e-7,
         cut_type: 'fillet',
@@ -332,6 +334,9 @@ part002 = startSketchOn(XY)
     expect(filletManager.exportLastBrep()?.length).toBeGreaterThan(0)
     expect((await filletManager.exportLatestGlbBytes()).length).toBeGreaterThan(
       0
+    )
+    expect(await getVolume(filletManager, IDS.solid)).toBeLessThan(
+      filletStartVolume
     )
 
     const chamferManager = new OpenCascadeCommandManager()
@@ -349,6 +354,7 @@ part002 = startSketchOn(XY)
     })
     const chamferEdgeId =
       chamferManager.exportLatestTopologyMeshes().solids[0].edges[0].topologyId
+    const chamferStartVolume = await getVolume(chamferManager, IDS.solid)
     await send(chamferManager, IDS.request, {
       type: 'modeling_cmd_req',
       cmd_id: '00000000-0000-0000-0000-0000000000e3',
@@ -373,6 +379,9 @@ part002 = startSketchOn(XY)
     expect(
       (await chamferManager.exportLatestGlbBytes()).length
     ).toBeGreaterThan(0)
+    expect(await getVolume(chamferManager, IDS.solid)).toBeLessThan(
+      chamferStartVolume
+    )
   })
 
   it('exports multiple visible bodies as separate GLBs', async () => {
@@ -1353,6 +1362,22 @@ async function buildTwoOverlappingExtrudes(manager: OpenCascadeCommandManager) {
       body_type: 'solid',
     },
   })
+}
+
+async function getVolume(
+  manager: OpenCascadeCommandManager,
+  entityId: string
+): Promise<number> {
+  const response = await send(manager, IDS.request, {
+    type: 'modeling_cmd_req',
+    cmd_id: '00000000-0000-0000-0000-0000000000f0',
+    cmd: {
+      type: 'volume',
+      entity_ids: [entityId],
+      output_unit: 'cm3',
+    },
+  })
+  return response.resp.data.modeling_response.data.volume
 }
 
 async function send(

@@ -740,6 +740,8 @@ export class OpenCascadeCommandManager {
         return modeling(await this.filletEdges(commandId, cmd))
       case 'solid3d_cut_edges':
         return modeling(await this.chamferEdges(commandId, cmd))
+      case 'volume':
+        return modeling(await this.volume(cmd))
       case 'region_get_query_point':
         return modeling(await this.getRegionQueryPoint(cmd.region_id))
       case 'entity_get_parent_id':
@@ -1446,19 +1448,31 @@ export class OpenCascadeCommandManager {
     const solidId = (cmd as any).object_id
     const solid = this.requireSolid(solidId)
     const oc = await initOpenCascade()
+    const edgeIds = this.edgeIdsFromCutCommand(cmd)
+    const radius = lengthValue((cmd as any).radius)
+    if (edgeIds.length === 0) {
+      throw new Error('OpenCascade fillet requires at least one edge')
+    }
+    if (!(radius > 0)) {
+      throw new Error('OpenCascade fillet requires a positive radius')
+    }
+    const beforeVolume = this.shapeVolume(solid.shape, oc)
     const fillet = new oc.BRepFilletAPI_MakeFillet(
       solid.shape,
       oc.ChFi3d_FilletShape.ChFi3d_Rational
     )
-    for (const edgeId of (cmd as any).edge_ids || []) {
-      fillet.Add_2(
-        lengthValue((cmd as any).radius),
-        this.requireEdge(edgeId, oc)
-      )
+    for (const edgeId of edgeIds) {
+      fillet.Add_2(radius, this.requireEdge(edgeId, oc))
     }
     fillet.Build(new oc.Message_ProgressRange_1())
     this.throwIfBooleanFailed(fillet, 'fillet')
-    this.replaceSolidShape(solidId, fillet.Shape(), oc)
+    const nextShape = fillet.Shape()
+    this.throwIfCutDidNotChangeShape(
+      beforeVolume,
+      this.shapeVolume(nextShape, oc),
+      'fillet'
+    )
+    this.replaceSolidShape(solidId, nextShape, oc)
     return { type: 'solid3d_fillet_edge', data: { face_id: commandId } } as any
   }
 
@@ -1468,23 +1482,59 @@ export class OpenCascadeCommandManager {
   ): Promise<OkModelingCmdResponse> {
     const solidId = (cmd as any).object_id
     const solid = this.requireSolid(solidId)
+    const edgeIds = this.edgeIdsFromCutCommand(cmd)
     const distance =
       lengthValue((cmd as any).cut_type?.chamfer?.distance) ||
       lengthValue((cmd as any).cut_type?.distance) ||
       lengthValue((cmd as any).distance)
+    if (edgeIds.length === 0) {
+      throw new Error('OpenCascade chamfer requires at least one edge')
+    }
     if (!(distance > 0)) {
       throw new Error('OpenCascade chamfer requires a positive distance')
     }
 
     const oc = await initOpenCascade()
+    const beforeVolume = this.shapeVolume(solid.shape, oc)
     const chamfer = new oc.BRepFilletAPI_MakeChamfer(solid.shape)
-    for (const edgeId of (cmd as any).edge_ids || []) {
+    for (const edgeId of edgeIds) {
       chamfer.Add_2(distance, this.requireEdge(edgeId, oc))
     }
     chamfer.Build(new oc.Message_ProgressRange_1())
     this.throwIfBooleanFailed(chamfer, 'chamfer')
-    this.replaceSolidShape(solidId, chamfer.Shape(), oc)
+    const nextShape = chamfer.Shape()
+    this.throwIfCutDidNotChangeShape(
+      beforeVolume,
+      this.shapeVolume(nextShape, oc),
+      'chamfer'
+    )
+    this.replaceSolidShape(solidId, nextShape, oc)
     return { type: 'solid3d_cut_edges', data: { face_id: commandId } } as any
+  }
+
+  private async volume(
+    cmd: Extract<ModelingCmd, { type: 'volume' }>
+  ): Promise<OkModelingCmdResponse> {
+    const oc = await initOpenCascade()
+    const entityIds = (cmd as any).entity_ids || []
+    const solids =
+      entityIds.length > 0
+        ? entityIds.map((entityId: string) => this.requireSolid(entityId))
+        : this.visibleSolidEntries(this.renderState()).map(([, solid]) => solid)
+    const volumeInModelUnits = solids.reduce(
+      (total: number, solid: SolidState) =>
+        total + this.shapeVolume(solid.shape, oc),
+      0
+    )
+    return {
+      type: 'volume',
+      data: {
+        volume: convertVolumeFromModelUnits(
+          volumeInModelUnits,
+          (cmd as any).output_unit || 'cm3'
+        ),
+      },
+    } as any
   }
 
   private setObjectVisibility(objectId: string, visible: boolean) {
@@ -2082,6 +2132,33 @@ export class OpenCascadeCommandManager {
     if (isDone === false || hasErrors === true) {
       throw new Error(`OpenCascade failed to run boolean ${label}`)
     }
+  }
+
+  private throwIfCutDidNotChangeShape(
+    beforeVolume: number,
+    afterVolume: number,
+    label: 'fillet' | 'chamfer'
+  ) {
+    const tolerance = Math.max(1e-9, Math.abs(beforeVolume) * 1e-8)
+    if (Math.abs(afterVolume - beforeVolume) <= tolerance) {
+      throw new Error(
+        `OpenCascade ${label} did not modify the solid; check the selected edge and cut size`
+      )
+    }
+  }
+
+  private edgeIdsFromCutCommand(cmd: unknown): string[] {
+    const command = cmd as { edge_id?: string | null; edge_ids?: string[] }
+    return [
+      ...(command.edge_id ? [command.edge_id] : []),
+      ...(command.edge_ids || []),
+    ].filter((edgeId, index, edgeIds) => edgeIds.indexOf(edgeId) === index)
+  }
+
+  private shapeVolume(shape: any, oc: OpenCascadeInstance): number {
+    const properties = new oc.GProp_GProps_1()
+    oc.BRepGProp.VolumeProperties_1(shape, properties, true, false, false)
+    return Math.abs(properties.Mass())
   }
 
   private shapeList(shapes: any[], oc: OpenCascadeInstance): any {
@@ -4010,6 +4087,33 @@ function callIfFunction(object: unknown, method: string): any | undefined {
   }
   const candidate = (object as Record<string, unknown>)[method]
   return typeof candidate === 'function' ? candidate.call(object) : undefined
+}
+
+function convertVolumeFromModelUnits(
+  volume: number,
+  outputUnit: string
+): number {
+  switch (outputUnit) {
+    case 'cm3':
+    case 'ml':
+      return volume / 1000
+    case 'l':
+      return volume / 1_000_000
+    case 'm3':
+      return volume / 1_000_000_000
+    case 'in3':
+      return volume / 16_387.064
+    case 'ft3':
+      return volume / 28_316_846.592
+    case 'yd3':
+      return volume / 764_554_857.984
+    case 'usfloz':
+      return volume / 29_573.5295625
+    case 'usgal':
+      return volume / 3_785_411.784
+    default:
+      return volume
+  }
 }
 
 function firstShapeFromList(list: any): any | undefined {
