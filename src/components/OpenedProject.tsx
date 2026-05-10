@@ -112,6 +112,10 @@ export function OpenedProject() {
 
   // Handle our project folder disappearing (Go back to Projects listing)
   useEffect(() => {
+    if (!isDesktop()) {
+      return
+    }
+
     if (
       projects &&
       projects.length > 0 &&

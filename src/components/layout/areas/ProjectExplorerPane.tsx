@@ -20,6 +20,8 @@ import {
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useState, use, useEffect, useRef, useCallback } from 'react'
 import toast from 'react-hot-toast'
+import { getProjectInfo } from '@src/lib/desktop'
+import { isDesktop } from '@src/lib/isDesktop'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import {
   type AreaTypeComponentProps,
@@ -44,12 +46,46 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     send: modelingSend,
     actor: modelingActor,
   } = useModelingContext()
+  const [createFilePressed, setCreateFilePressed] = useState<number>(0)
+  const [createFolderPressed, setCreateFolderPressed] = useState<number>(0)
+  const [refreshExplorerPressed, setRefresFolderPressed] = useState<number>(0)
+  const [collapsePressed, setCollapsedPressed] = useState<number>(0)
 
   useEffect(() => {
+    projectRef.current = project?.projectIORefSignal
+  }, [project])
+
+  useEffect(() => {
+    const setProjectWithPlaceholders = (sourceProject: Project) => {
+      // Duplicate the state to not edit the raw data
+      const duplicated = structuredClone(sourceProject)
+      addPlaceHoldersForNewFileAndFolder(
+        duplicated.children,
+        sourceProject.path
+      )
+      setTheProject(duplicated)
+    }
+
     // Have no idea why the project loader data doesn't have the children from the ls on disk
     // That means it is a different object or cached incorrectly?
-    if (!project || !file || !projects) {
+    if (!project || !file) {
       return
+    }
+
+    if (!isDesktop()) {
+      let cancelled = false
+      getProjectInfo(project.path, wasmInstance)
+        .then((projectInfo) => {
+          if (cancelled) {
+            return
+          }
+          setProjectWithPlaceholders(projectInfo)
+        })
+        .catch(reportRejection)
+
+      return () => {
+        cancelled = true
+      }
     }
 
     if (projects === undefined) {
@@ -68,16 +104,15 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       return
     }
 
-    // Duplicate the state to not edit the raw data
-    const duplicated = structuredClone(foundProject)
-    addPlaceHoldersForNewFileAndFolder(duplicated.children, foundProject.path)
-    setTheProject(duplicated)
-  }, [file, projects, project, systemIOActor])
-
-  const [createFilePressed, setCreateFilePressed] = useState<number>(0)
-  const [createFolderPressed, setCreateFolderPressed] = useState<number>(0)
-  const [refreshExplorerPressed, setRefresFolderPressed] = useState<number>(0)
-  const [collapsePressed, setCollapsedPressed] = useState<number>(0)
+    setProjectWithPlaceholders(foundProject)
+  }, [
+    file,
+    projects,
+    project,
+    systemIOActor,
+    wasmInstance,
+    refreshExplorerPressed,
+  ])
 
   const openCodeEditorPaneIfClosed = useCallback(() => {
     const rootLayout = layout.get()

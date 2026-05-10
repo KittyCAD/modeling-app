@@ -12,6 +12,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -46,6 +47,19 @@ export function projectBasename(filePath: string, projectPath: string): string {
   return trimmedStr
 }
 
+function fileUri(
+  filePath: string | null | undefined,
+  projectPath?: string | null
+) {
+  const path = filePath || PROJECT_ENTRYPOINT
+
+  if (projectPath && path.startsWith(projectPath)) {
+    return `file://${path}`
+  }
+
+  return `file:///${projectBasename(path, projectPath || '')}`
+}
+
 type LspContext = {
   lspClients: LanguageServerClient[]
   copilotLSP: Extension | null
@@ -76,6 +90,9 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   const { kclManager } = useSingletons()
   const [isKclLspReady, setIsKclLspReady] = useState(false)
   const [isCopilotLspReady, setIsCopilotLspReady] = useState(false)
+  const lastWorkspaceFolderByClientRef = useRef(
+    new WeakMap<LanguageServerClient, string>()
+  )
 
   const token = auth.useToken()
   const navigate = useNavigate()
@@ -267,18 +284,18 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     projectPath: string | null,
     redirect: boolean
   ) => {
-    const currentFilePath = projectBasename(
-      file?.path || PROJECT_ENTRYPOINT,
-      projectPath || ''
-    )
     lspClients.forEach((lspClient) => {
       lspClient.textDocumentDidClose({
         textDocument: {
-          uri: `file:///${currentFilePath}`,
+          uri: fileUri(file?.path, projectPath),
         },
       })
     })
     kclManager.clearGlobalHistory()
+    lastWorkspaceFolderByClientRef.current = new WeakMap<
+      LanguageServerClient,
+      string
+    >()
 
     if (redirect) {
       void navigate(PATHS.HOME)
@@ -290,23 +307,30 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     file: FileEntry | null
   ) => {
     const projectName = project?.name || 'ProjectRoot'
+    const projectUri = project?.path ? `file://${project.path}` : 'file://'
+    const workspaceFolderKey = `${projectUri}:${projectName}`
     // Send that the workspace folders changed.
     lspClients.forEach((lspClient) => {
-      lspClient.workspaceDidChangeWorkspaceFolders(
-        [{ uri: 'file://', name: projectName }],
-        []
-      )
+      if (
+        lastWorkspaceFolderByClientRef.current.get(lspClient) !==
+        workspaceFolderKey
+      ) {
+        lspClient.workspaceDidChangeWorkspaceFolders(
+          [{ uri: projectUri, name: projectName }],
+          []
+        )
+        lastWorkspaceFolderByClientRef.current.set(
+          lspClient,
+          workspaceFolderKey
+        )
+      }
     })
     if (file) {
       // Send that the file was opened.
-      const filename = projectBasename(
-        file?.path || PROJECT_ENTRYPOINT,
-        project?.path || ''
-      )
       lspClients.forEach((lspClient) => {
         lspClient.textDocumentDidOpen({
           textDocument: {
-            uri: `file:///${filename}`,
+            uri: fileUri(file.path, project?.path),
             languageId: 'kcl',
             version: 1,
             text: '',
@@ -317,14 +341,10 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const onFileOpen = (filePath: string | null, projectPath: string | null) => {
-    const currentFilePath = projectBasename(
-      filePath || PROJECT_ENTRYPOINT,
-      projectPath || ''
-    )
     lspClients.forEach((lspClient) => {
       lspClient.textDocumentDidOpen({
         textDocument: {
-          uri: `file:///${currentFilePath}`,
+          uri: fileUri(filePath, projectPath),
           languageId: 'kcl',
           version: 1,
           text: '',
@@ -334,26 +354,21 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const onFileClose = (filePath: string | null, projectPath: string | null) => {
-    const currentFilePath = projectBasename(
-      filePath || PROJECT_ENTRYPOINT,
-      projectPath || ''
-    )
     lspClients.forEach((lspClient) => {
       lspClient.textDocumentDidClose({
         textDocument: {
-          uri: `file:///${currentFilePath}`,
+          uri: fileUri(filePath, projectPath),
         },
       })
     })
   }
 
   const onFileCreate = (file: FileEntry, projectPath: string | null) => {
-    const currentFilePath = projectBasename(file.path, projectPath || '')
     lspClients.forEach((lspClient) => {
       lspClient.workspaceDidCreateFiles({
         files: [
           {
-            uri: `file:///${currentFilePath}`,
+            uri: fileUri(file.path, projectPath),
           },
         ],
       })
@@ -365,14 +380,12 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     newFile: FileEntry,
     projectPath: string | null
   ) => {
-    const oldFilePath = projectBasename(oldFile.path, projectPath || '')
-    const newFilePath = projectBasename(newFile.path, projectPath || '')
     lspClients.forEach((lspClient) => {
       lspClient.workspaceDidRenameFiles({
         files: [
           {
-            oldUri: `file:///${oldFilePath}`,
-            newUri: `file:///${newFilePath}`,
+            oldUri: fileUri(oldFile.path, projectPath),
+            newUri: fileUri(newFile.path, projectPath),
           },
         ],
       })
@@ -380,12 +393,11 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const onFileDelete = (file: FileEntry, projectPath: string | null) => {
-    const currentFilePath = projectBasename(file.path, projectPath || '')
     lspClients.forEach((lspClient) => {
       lspClient.workspaceDidDeleteFiles({
         files: [
           {
-            uri: `file:///${currentFilePath}`,
+            uri: fileUri(file.path, projectPath),
           },
         ],
       })
