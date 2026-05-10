@@ -163,6 +163,23 @@ export const OPEN_CASCADE_BOOLEAN_INTERSECT_KCL = `${OPEN_CASCADE_BOOLEAN_BASE_K
 export const OPEN_CASCADE_BOOLEAN_SPLIT_KCL = `${OPEN_CASCADE_BOOLEAN_BASE_KCL}booleanSplit = split([part001], tools = [part002], keepTools = true)[0]
 `
 
+const OPEN_CASCADE_EDGE_CUT_BASE_KCL = `block = startSketchOn(XY)
+  |> startProfile(at = [-1, -1])
+  |> line(end = [2, 0])
+  |> line(end = [0, 2])
+  |> line(end = [-2, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 2)
+edge001 = edgeId(block, index = 0)
+`
+
+export const OPEN_CASCADE_FILLET_KCL = `${OPEN_CASCADE_EDGE_CUT_BASE_KCL}fillet001 = fillet(block, tags = [edge001], radius = 0.2)
+`
+
+export const OPEN_CASCADE_CHAMFER_KCL = `${OPEN_CASCADE_EDGE_CUT_BASE_KCL}chamfer001 = chamfer(block, tags = [edge001], length = 0.2)
+`
+
 export const OPEN_CASCADE_PROOF_FIXTURES = [
   {
     name: 'openCascadeProofFixture',
@@ -215,5 +232,13 @@ export const OPEN_CASCADE_PROOF_FIXTURES = [
   {
     name: 'openCascadeBooleanSplitProofFixture',
     code: OPEN_CASCADE_BOOLEAN_SPLIT_KCL,
+  },
+  {
+    name: 'openCascadeFilletProofFixture',
+    code: OPEN_CASCADE_FILLET_KCL,
+  },
+  {
+    name: 'openCascadeChamferProofFixture',
+    code: OPEN_CASCADE_CHAMFER_KCL,
   },
 ]

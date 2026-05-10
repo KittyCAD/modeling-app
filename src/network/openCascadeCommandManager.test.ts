@@ -8,7 +8,9 @@ import {
   OPEN_CASCADE_BOOLEAN_SPLIT_KCL,
   OPEN_CASCADE_BOOLEAN_SUBTRACT_KCL,
   OPEN_CASCADE_BOOLEAN_UNION_KCL,
+  OPEN_CASCADE_CHAMFER_KCL,
   OPEN_CASCADE_CIRCLE_EXTRUDE_KCL,
+  OPEN_CASCADE_FILLET_KCL,
   OPEN_CASCADE_INTERSECTING_REGION_EXTRUDE_KCL,
   OPEN_CASCADE_LOFT_KCL,
   OPEN_CASCADE_REVOLVE_KCL,
@@ -155,6 +157,126 @@ describe('OpenCascadeCommandManager', () => {
     ).toHaveLength(4)
     expect(topologyMeshes.solids[0].edges.length).toBeGreaterThanOrEqual(4)
     expect((await manager.exportLatestGlbBytes()).length).toBeGreaterThan(0)
+  })
+
+  it('resolves OpenCascade edge IDs by index and closest point aliases', async () => {
+    const manager = new OpenCascadeCommandManager()
+    await buildRectangleRegionInput(manager)
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: IDS.solid,
+      cmd: {
+        type: 'extrude',
+        target: IDS.region,
+        distance: 2,
+        extrude_method: 'new',
+        body_type: 'solid',
+      },
+    })
+
+    const topologyEdge = manager.exportLatestTopologyMeshes().solids[0].edges[0]
+    const edgeUuidResponse = await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000e0',
+      cmd: {
+        type: 'solid3d_get_edge_uuid',
+        object_id: IDS.path,
+        edge_index: topologyEdge.edgeIndex,
+      },
+    })
+    expect(edgeUuidResponse.resp.data.modeling_response.data.edge_id).toBe(
+      topologyEdge.topologyId
+    )
+
+    const closestEdgeResponse = await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000e1',
+      cmd: {
+        type: 'closest_edge',
+        object_id: IDS.path,
+        closest_to: { x: -1, y: -1, z: 0 },
+      },
+    })
+    expect(
+      closestEdgeResponse.resp.data.modeling_response.data.edge_id
+    ).toBeTruthy()
+  })
+
+  it('fillets and chamfers selected OpenCascade extrude edges', async () => {
+    const filletManager = new OpenCascadeCommandManager()
+    await buildRectangleRegionInput(filletManager)
+    await send(filletManager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: IDS.solid,
+      cmd: {
+        type: 'extrude',
+        target: IDS.region,
+        distance: 2,
+        extrude_method: 'new',
+        body_type: 'solid',
+      },
+    })
+    const filletEdgeId =
+      filletManager.exportLatestTopologyMeshes().solids[0].edges[0].topologyId
+    await send(filletManager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000e2',
+      cmd: {
+        type: 'solid3d_fillet_edge',
+        object_id: IDS.solid,
+        edge_ids: [filletEdgeId],
+        radius: 0.2,
+        tolerance: 1e-7,
+        cut_type: 'fillet',
+        extra_face_ids: [],
+      },
+    })
+    expect(filletManager.getSolidCount()).toBe(1)
+    expect(filletManager.exportLastBrep()?.length).toBeGreaterThan(0)
+    expect((await filletManager.exportLatestGlbBytes()).length).toBeGreaterThan(
+      0
+    )
+
+    const chamferManager = new OpenCascadeCommandManager()
+    await buildRectangleRegionInput(chamferManager)
+    await send(chamferManager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: IDS.solid,
+      cmd: {
+        type: 'extrude',
+        target: IDS.region,
+        distance: 2,
+        extrude_method: 'new',
+        body_type: 'solid',
+      },
+    })
+    const chamferEdgeId =
+      chamferManager.exportLatestTopologyMeshes().solids[0].edges[0].topologyId
+    await send(chamferManager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000e3',
+      cmd: {
+        type: 'solid3d_cut_edges',
+        object_id: IDS.solid,
+        edge_ids: [chamferEdgeId],
+        tolerance: 1e-7,
+        cut_type: {
+          chamfer: {
+            distance: 0.2,
+            second_distance: null,
+            angle: null,
+            swap: false,
+          },
+        },
+        extra_face_ids: [],
+      },
+    })
+    expect(chamferManager.getSolidCount()).toBe(1)
+    expect(chamferManager.exportLastBrep()?.length).toBeGreaterThan(0)
+    expect(
+      (await chamferManager.exportLatestGlbBytes()).length
+    ).toBeGreaterThan(0)
   })
 
   it('exports multiple visible bodies as separate GLBs', async () => {
@@ -748,6 +870,8 @@ describe('OpenCascadeCommandManager', () => {
       'booleanIntersect',
     ],
     ['boolean-split', OPEN_CASCADE_BOOLEAN_SPLIT_KCL, 'booleanSplit'],
+    ['fillet', OPEN_CASCADE_FILLET_KCL, 'fillet001'],
+    ['chamfer', OPEN_CASCADE_CHAMFER_KCL, 'chamfer001'],
   ])(
     'executes the %s KCL proof through WASM',
     async (_, code, variableName) => {

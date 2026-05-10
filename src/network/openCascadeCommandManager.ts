@@ -141,6 +141,9 @@ type OpenCascadeTopologyEntry = {
   kind: OpenCascadeTopologyKind
   role: OpenCascadeFaceRole | OpenCascadeEdgeRole
   shape?: any
+  points?: number[]
+  faceIds?: string[]
+  edgeIndex?: number
 }
 
 export type OpenCascadeTopologyFaceGroup = {
@@ -157,6 +160,8 @@ export type OpenCascadeTopologyEdgeLine = {
   artifactId: string
   kind: 'edge'
   role: OpenCascadeEdgeRole
+  edgeIndex: number
+  faceIds: string[]
   points: number[]
 }
 
@@ -666,6 +671,14 @@ export class OpenCascadeCommandManager {
         return modeling(this.getRelatedEdge(cmd, 'previousAdjacent'))
       case 'solid3d_get_common_edge':
         return modeling(this.getCommonEdge(cmd))
+      case 'solid3d_get_edge_uuid':
+        return modeling(this.getEdgeUuid(cmd))
+      case 'closest_edge':
+        return modeling(this.getClosestEdge(cmd))
+      case 'solid3d_fillet_edge':
+        return modeling(await this.filletEdges(commandId, cmd))
+      case 'solid3d_cut_edges':
+        return modeling(await this.chamferEdges(commandId, cmd))
       case 'region_get_query_point':
         return modeling(await this.getRegionQueryPoint(cmd.region_id))
       case 'entity_get_parent_id':
@@ -1304,6 +1317,94 @@ export class OpenCascadeCommandManager {
     } as OkModelingCmdResponse
   }
 
+  private getEdgeUuid(cmd: ModelingCmd): OkModelingCmdResponse {
+    const edgeCommand = cmd as {
+      type: 'solid3d_get_edge_uuid'
+      object_id: string
+      edge_index: number
+    }
+    const solidMesh = this.topologyMeshForSolidAlias(edgeCommand.object_id)
+    const edge = solidMesh?.edges[edgeCommand.edge_index]
+    if (!edge) {
+      throw new Error(
+        `No OpenCascade edge ${edgeCommand.edge_index} found for ${edgeCommand.object_id}`
+      )
+    }
+    return {
+      type: 'solid3d_get_edge_uuid',
+      data: { edge_id: edge.topologyId },
+    } as OkModelingCmdResponse
+  }
+
+  private getClosestEdge(cmd: ModelingCmd): OkModelingCmdResponse {
+    const edgeCommand = cmd as {
+      type: 'closest_edge'
+      object_id: string
+      closest_to: { x: number; y: number; z: number }
+    }
+    const point = toPoint3(edgeCommand.closest_to)
+    const solidMesh = this.topologyMeshForSolidAlias(edgeCommand.object_id)
+    const edge = solidMesh?.edges
+      .map((candidate) => ({
+        edge: candidate,
+        distance: distanceToPolyline(point, unflattenPoints(candidate.points)),
+      }))
+      .sort((a, b) => a.distance - b.distance)[0]?.edge
+
+    return {
+      type: 'closest_edge',
+      data: { edge_id: edge?.topologyId || null },
+    } as OkModelingCmdResponse
+  }
+
+  private async filletEdges(
+    commandId: string,
+    cmd: Extract<ModelingCmd, { type: 'solid3d_fillet_edge' }>
+  ): Promise<OkModelingCmdResponse> {
+    const solidId = (cmd as any).object_id
+    const solid = this.requireSolid(solidId)
+    const oc = await initOpenCascade()
+    const fillet = new oc.BRepFilletAPI_MakeFillet(
+      solid.shape,
+      oc.ChFi3d_FilletShape.ChFi3d_Rational
+    )
+    for (const edgeId of (cmd as any).edge_ids || []) {
+      fillet.Add_2(
+        lengthValue((cmd as any).radius),
+        this.requireEdge(edgeId, oc)
+      )
+    }
+    fillet.Build(new oc.Message_ProgressRange_1())
+    this.throwIfBooleanFailed(fillet, 'fillet')
+    this.replaceSolidShape(solidId, fillet.Shape(), oc)
+    return { type: 'solid3d_fillet_edge', data: { face_id: commandId } } as any
+  }
+
+  private async chamferEdges(
+    commandId: string,
+    cmd: Extract<ModelingCmd, { type: 'solid3d_cut_edges' }>
+  ): Promise<OkModelingCmdResponse> {
+    const solidId = (cmd as any).object_id
+    const solid = this.requireSolid(solidId)
+    const distance =
+      lengthValue((cmd as any).cut_type?.chamfer?.distance) ||
+      lengthValue((cmd as any).cut_type?.distance) ||
+      lengthValue((cmd as any).distance)
+    if (!(distance > 0)) {
+      throw new Error('OpenCascade chamfer requires a positive distance')
+    }
+
+    const oc = await initOpenCascade()
+    const chamfer = new oc.BRepFilletAPI_MakeChamfer(solid.shape)
+    for (const edgeId of (cmd as any).edge_ids || []) {
+      chamfer.Add_2(distance, this.requireEdge(edgeId, oc))
+    }
+    chamfer.Build(new oc.Message_ProgressRange_1())
+    this.throwIfBooleanFailed(chamfer, 'chamfer')
+    this.replaceSolidShape(solidId, chamfer.Shape(), oc)
+    return { type: 'solid3d_cut_edges', data: { face_id: commandId } } as any
+  }
+
   private setObjectVisibility(objectId: string, visible: boolean) {
     if (visible) {
       this.hiddenObjectIds.delete(objectId)
@@ -1895,6 +1996,81 @@ export class OpenCascadeCommandManager {
     return solid
   }
 
+  private requireEdge(edgeId: string, oc: OpenCascadeInstance): any {
+    const entry = this.topologyEntries.get(edgeId)
+    if (!entry || entry.kind !== 'edge') {
+      throw new Error(`No OpenCascade edge found for ${edgeId}`)
+    }
+    if (entry.shape) {
+      return entry.shape
+    }
+    const points = entry.points ? unflattenPoints(entry.points) : []
+    const edge =
+      points.length >= 2
+        ? this.findShapeEdgeByPoints(
+            this.requireSolid(entry.solidId).shape,
+            points[0],
+            points[points.length - 1],
+            oc
+          )
+        : undefined
+    if (!edge) {
+      throw new Error(`No OpenCascade edge shape found for ${edgeId}`)
+    }
+    entry.shape = edge
+    return edge
+  }
+
+  private findShapeEdgeByPoints(
+    shape: any,
+    start: Point3,
+    end: Point3,
+    oc: OpenCascadeInstance
+  ): any | undefined {
+    const explorer = new oc.TopExp_Explorer_2(
+      shape,
+      oc.TopAbs_ShapeEnum.TopAbs_EDGE,
+      oc.TopAbs_ShapeEnum.TopAbs_SHAPE
+    )
+    for (; explorer.More(); explorer.Next()) {
+      const edge = oc.TopoDS.Edge_1(explorer.Current())
+      const endpoints = edgeEndpoints(edge, oc)
+      if (!endpoints) {
+        continue
+      }
+      const [first, last] = endpoints
+      if (
+        (pointsClose(first, start) && pointsClose(last, end)) ||
+        (pointsClose(first, end) && pointsClose(last, start))
+      ) {
+        return edge
+      }
+    }
+    return undefined
+  }
+
+  private replaceSolidShape(
+    solidId: string,
+    shape: any,
+    oc: OpenCascadeInstance
+  ) {
+    const entry = this.findSolidEntry(solidId)
+    if (!entry) {
+      throw new Error(`No OpenCascade solid found for ${solidId}`)
+    }
+    const [storedSolidId, solid] = entry
+    solid.shape = shape
+    solid.brep = this.writeBrep(storedSolidId, shape, oc)
+    this.topologyMeshes.delete(storedSolidId)
+    for (const [topologyId, topology] of this.topologyEntries) {
+      if (topology.solidId === storedSolidId) {
+        this.topologyEntries.delete(topologyId)
+      }
+    }
+    this.latestShapeVersion.value += 1
+    this.latestTopologyVersion.value += 1
+  }
+
   private markSolidsConsumed(solidIds: string[], except = new Set<string>()) {
     let changed = false
     for (const solidId of solidIds) {
@@ -1926,6 +2102,15 @@ export class OpenCascadeCommandManager {
     }
     return Array.from(this.solids.entries()).find(([, solid]) =>
       solid.sourceIds.includes(solidId)
+    )
+  }
+
+  private topologyMeshForSolidAlias(
+    solidId: string
+  ): OpenCascadeTopologySolidMesh | undefined {
+    return (
+      this.topologyMeshes.get(solidId) ||
+      this.topologyMeshes.get(this.findSolidEntry(solidId)?.[0] || '')
     )
   }
 
@@ -2030,6 +2215,21 @@ export class OpenCascadeCommandManager {
       renderSolidId !== commandId
         ? this.topologyMeshes.get(renderSolidId)
         : undefined
+    const edgeIndexOffset = currentMesh?.edges.length || 0
+    for (const edge of nextMesh.edges) {
+      const existing = this.topologyEntries.get(edge.topologyId)
+      this.topologyEntries.set(edge.topologyId, {
+        topologyId: edge.topologyId,
+        artifactId: edge.artifactId,
+        solidId: renderSolidId,
+        kind: 'edge',
+        role: edge.role,
+        shape: existing?.shape,
+        points: [...edge.points],
+        faceIds: [...edge.faceIds],
+        edgeIndex: edgeIndexOffset + edge.edgeIndex,
+      })
+    }
     this.topologyMeshes.set(
       renderSolidId,
       currentMesh
@@ -2522,6 +2722,10 @@ function add(a: Point3, b: Point3): Point3 {
   return { x: a.x + b.x, y: a.y + b.y, z: a.z + b.z }
 }
 
+function subtract(a: Point3, b: Point3): Point3 {
+  return { x: a.x - b.x, y: a.y - b.y, z: a.z - b.z }
+}
+
 function scale(v: Point3, scalar: number): Point3 {
   return { x: v.x * scalar, y: v.y * scalar, z: v.z * scalar }
 }
@@ -2548,6 +2752,10 @@ function normalize(v: Point3): Point3 {
 
 function pointsClose(a: Point3, b: Point3): boolean {
   return Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z) < 1e-6
+}
+
+function distance(a: Point3, b: Point3): number {
+  return Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z)
 }
 
 function pointsForPathSegment(
@@ -2601,6 +2809,25 @@ function buildExtrudeTopologyMesh(
   const indices: number[] = []
   const groups: OpenCascadeTopologyFaceGroup[] = []
   const edges: OpenCascadeTopologyEdgeLine[] = []
+  const pushEdge = (
+    topologyId: string | undefined,
+    role: OpenCascadeEdgeRole,
+    points: Point3[],
+    faceIds: string[]
+  ) => {
+    if (!topologyId) {
+      return
+    }
+    edges.push({
+      topologyId,
+      artifactId: topologyId,
+      kind: 'edge',
+      role,
+      edgeIndex: edges.length,
+      faceIds,
+      points: flattenPoints(points),
+    })
+  }
   const boundary =
     region.boundaryPoints || orderedBoundaryPoints(region.edgeEntries)
   const topBoundary = boundary.map((point) => add(point, scale(normal, height)))
@@ -2653,36 +2880,23 @@ function buildExtrudeTopologyMesh(
     )
     const previousAdjacentEdgeId =
       topology.previousAdjacentEdgesBySourceEdgeId.get(entry.id)
-    if (nextAdjacentEdgeId) {
-      edges.push({
-        topologyId: nextAdjacentEdgeId,
-        artifactId: nextAdjacentEdgeId,
-        kind: 'edge',
-        role: 'adjacentEdge',
-        points: flattenPoints(entry.points),
-      })
-    }
-    if (oppositeEdgeId) {
-      edges.push({
-        topologyId: oppositeEdgeId,
-        artifactId: oppositeEdgeId,
-        kind: 'edge',
-        role: 'oppositeEdge',
-        points: flattenPoints(
-          entry.points.map((point) => add(point, scale(normal, height)))
-        ),
-      })
-    }
-    if (previousAdjacentEdgeId) {
-      const start = entry.points[0]
-      edges.push({
-        topologyId: previousAdjacentEdgeId,
-        artifactId: previousAdjacentEdgeId,
-        kind: 'edge',
-        role: 'adjacentEdge',
-        points: flattenPoints([start, add(start, scale(normal, height))]),
-      })
-    }
+    pushEdge(nextAdjacentEdgeId, 'adjacentEdge', entry.points, [
+      wallFaceId,
+      topology.startCapId,
+    ])
+    pushEdge(
+      oppositeEdgeId,
+      'oppositeEdge',
+      entry.points.map((point) => add(point, scale(normal, height))),
+      [wallFaceId, topology.endCapId]
+    )
+    const start = entry.points[0]
+    pushEdge(
+      previousAdjacentEdgeId,
+      'adjacentEdge',
+      [start, add(start, scale(normal, height))],
+      [wallFaceId]
+    )
   }
 
   return { solidId, positions, indices, groups, edges }
@@ -2708,7 +2922,13 @@ function mergeTopologyMeshes(
         start: group.start + current.indices.length,
       })),
     ],
-    edges: [...current.edges, ...next.edges],
+    edges: [
+      ...current.edges,
+      ...next.edges.map((edge) => ({
+        ...edge,
+        edgeIndex: current.edges.length + edge.edgeIndex,
+      })),
+    ],
   }
 }
 
@@ -3365,6 +3585,70 @@ function arrangementRegionSignature(sourceSegmentIds: string[]) {
 
 function flattenPoints(points: Point3[]): number[] {
   return points.flatMap((point) => [point.x, point.y, point.z])
+}
+
+function unflattenPoints(points: number[]): Point3[] {
+  const result: Point3[] = []
+  for (let index = 0; index <= points.length - 3; index += 3) {
+    result.push({
+      x: points[index],
+      y: points[index + 1],
+      z: points[index + 2],
+    })
+  }
+  return result
+}
+
+function edgeEndpoints(
+  edge: any,
+  oc: OpenCascadeInstance
+): [Point3, Point3] | undefined {
+  const vertices: Point3[] = []
+  const explorer = new oc.TopExp_Explorer_2(
+    edge,
+    oc.TopAbs_ShapeEnum.TopAbs_VERTEX,
+    oc.TopAbs_ShapeEnum.TopAbs_SHAPE
+  )
+  for (; explorer.More(); explorer.Next()) {
+    const point = oc.BRep_Tool.Pnt(oc.TopoDS.Vertex_1(explorer.Current()))
+    vertices.push(gpPntToPoint3(point))
+  }
+  if (vertices.length < 2) {
+    return undefined
+  }
+  return [vertices[0], vertices[vertices.length - 1]]
+}
+
+function gpPntToPoint3(point: any): Point3 {
+  return { x: point.X(), y: point.Y(), z: point.Z() }
+}
+
+function distanceToPolyline(point: Point3, polyline: Point3[]): number {
+  if (polyline.length === 0) {
+    return Number.POSITIVE_INFINITY
+  }
+  if (polyline.length === 1) {
+    return distance(point, polyline[0])
+  }
+  let minDistance = Number.POSITIVE_INFINITY
+  for (let index = 0; index < polyline.length - 1; index += 1) {
+    minDistance = Math.min(
+      minDistance,
+      distanceToSegment(point, polyline[index], polyline[index + 1])
+    )
+  }
+  return minDistance
+}
+
+function distanceToSegment(point: Point3, start: Point3, end: Point3): number {
+  const ab = subtract(end, start)
+  const ap = subtract(point, start)
+  const lengthSquared = dot(ab, ab)
+  const t =
+    lengthSquared <= 0
+      ? 0
+      : Math.max(0, Math.min(1, dot(ap, ab) / lengthSquared))
+  return distance(point, add(start, scale(ab, t)))
 }
 
 function deriveTopologyId(sourceId: string, salt: number): string {

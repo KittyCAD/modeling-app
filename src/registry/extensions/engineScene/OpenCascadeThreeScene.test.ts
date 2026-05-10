@@ -1,4 +1,13 @@
-import { BoxGeometry, Group, Mesh, MeshBasicMaterial } from 'three'
+import {
+  BoxGeometry,
+  BufferGeometry,
+  Float32BufferAttribute,
+  Group,
+  LineBasicMaterial,
+  LineSegments,
+  Mesh,
+  MeshBasicMaterial,
+} from 'three'
 import { beforeAll, describe, expect, it } from 'vitest'
 
 let helpers: typeof import('./OpenCascadeThreeScene')
@@ -331,6 +340,68 @@ describe('OpenCascadeThreeScene helpers', () => {
       artifactId: 'solid-1',
       artifactIds: ['solid-1'],
     })
+  })
+
+  it('gives lazy OpenCascade edge candidates priority over face hits', () => {
+    const edgeGeometry = new BufferGeometry()
+    edgeGeometry.setAttribute(
+      'position',
+      new Float32BufferAttribute([0, 0, 0, 1, 0, 0], 3)
+    )
+    const edgeLine = new LineSegments(
+      edgeGeometry,
+      new LineBasicMaterial({ color: 0xff0000 })
+    )
+    edgeLine.userData.openCascadeEdgeCandidate = true
+    edgeLine.userData.openCascadeSolidId = 'solid-1'
+    edgeLine.userData.openCascadeParentFaceId = 'face-1'
+    edgeLine.userData.openCascadeTopologyEdge = {
+      topologyId: 'edge-1',
+      artifactId: 'edge-1',
+      kind: 'edge',
+      role: 'adjacentEdge',
+      edgeIndex: 2,
+      faceIds: ['face-1'],
+      points: [0, 0, 0, 1, 0, 0],
+    }
+
+    const faceMesh = new Mesh(new BoxGeometry(1, 1, 1), new MeshBasicMaterial())
+    faceMesh.userData.openCascadePickMesh = true
+    faceMesh.userData.openCascadeTopologySolid = {
+      solidId: 'solid-1',
+      positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+      indices: [0, 1, 2],
+      groups: [
+        {
+          start: 0,
+          count: 3,
+          topologyId: 'face-1',
+          artifactId: 'face-1',
+          kind: 'face',
+          role: 'wall',
+        },
+      ],
+      edges: [],
+    }
+
+    expect(
+      helpers.resolveOpenCascadeHit([
+        { object: faceMesh, faceIndex: 0 } as never,
+        { object: edgeLine } as never,
+      ])
+    ).toMatchObject({
+      hitType: 'edge',
+      topologyId: 'edge-1',
+      solidId: 'solid-1',
+      parentFaceId: 'face-1',
+      edgeIndex: 2,
+    })
+
+    expect(
+      helpers.resolveOpenCascadeHit([{ object: edgeLine } as never], {
+        objectSelectionOnly: true,
+      })
+    ).toBeUndefined()
   })
 
   it('adds selected body highlight overlays from visual meshes', () => {
