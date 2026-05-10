@@ -2557,7 +2557,7 @@ function fitCameraToRadius(
   camera.updateProjectionMatrix()
 }
 
-function updateCameraClipping(
+export function updateCameraClipping(
   camera: OpenCascadeCamera,
   target: Vector3,
   radius: number,
@@ -2569,13 +2569,26 @@ function updateCameraClipping(
       ? baseUnitMultiplier
       : 1
   const modelRadius = Math.max(radius, unitScale)
+  const far = Math.max(modelRadius * 100, distance + modelRadius * 20, 1000)
+  if (camera instanceof OrthographicCamera) {
+    camera.near = 0
+    camera.far = far
+    camera.updateProjectionMatrix()
+    return
+  }
+
   const minNear = Math.max(
     unitScale * OPEN_CASCADE_MIN_CAMERA_NEAR_BASE_UNITS,
     0.000001
   )
-  const adaptiveNear = Math.min(modelRadius / 10000, distance / 10000)
+  const closestModelDistance = Math.max(distance - modelRadius * 1.5, 0)
+  const adaptiveNear = Math.min(
+    modelRadius / 100000,
+    distance / 100000,
+    closestModelDistance / 1000
+  )
   camera.near = Math.max(minNear, adaptiveNear)
-  camera.far = Math.max(modelRadius * 80, distance + modelRadius * 8, 1000)
+  camera.far = far
   camera.updateProjectionMatrix()
 }
 

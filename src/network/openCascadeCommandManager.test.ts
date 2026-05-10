@@ -196,8 +196,9 @@ describe('OpenCascadeCommandManager', () => {
     })
 
     expect(manager.getSolidCount()).toBe(2)
-    expect((await manager.exportVisibleGlbBytes()).map((glb) => glb.solidId))
-      .toEqual([IDS.solid])
+    expect(
+      (await manager.exportVisibleGlbBytes()).map((glb) => glb.solidId)
+    ).toEqual([IDS.solid])
     expect(manager.exportLatestTopologyMeshes().solids).toHaveLength(1)
   })
 

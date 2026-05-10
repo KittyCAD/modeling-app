@@ -7,6 +7,9 @@ import {
   LineSegments,
   Mesh,
   MeshBasicMaterial,
+  OrthographicCamera,
+  PerspectiveCamera,
+  Vector3,
 } from 'three'
 import { beforeAll, describe, expect, it } from 'vitest'
 
@@ -83,6 +86,26 @@ describe('OpenCascadeThreeScene helpers', () => {
     expect(mmBounds.radius).toBe(10)
     expect(inchBounds.radius).toBe(254)
     expect(invalidBounds.radius).toBe(10)
+  })
+
+  it('keeps OpenCascade orthographic clipping at the camera instead of slicing the model', () => {
+    const camera = new OrthographicCamera(-10, 10, 10, -10, 0.1, 100)
+    camera.position.set(0, -12, 0)
+
+    helpers.updateCameraClipping(camera, new Vector3(0, 0, 0), 5, 1)
+
+    expect(camera.near).toBe(0)
+    expect(camera.far).toBeGreaterThan(100)
+  })
+
+  it('keeps OpenCascade perspective near plane very close to the camera', () => {
+    const camera = new PerspectiveCamera(45, 1, 1, 10)
+    camera.position.set(0, -12, 0)
+
+    helpers.updateCameraClipping(camera, new Vector3(0, 0, 0), 5, 1)
+
+    expect(camera.near).toBeLessThan(0.01)
+    expect(camera.far).toBeGreaterThan(100)
   })
 
   it('creates stable OpenCascade guide objects', () => {

@@ -553,7 +553,8 @@ export class OpenCascadeCommandManager {
     if (!state) {
       await this.rebuildArrangementRegionsIfNeeded()
     }
-    const arrangementRegions = state?.arrangementRegions ?? this.arrangementRegions
+    const arrangementRegions =
+      state?.arrangementRegions ?? this.arrangementRegions
     return {
       version: this.latestRegionVersion.value,
       regions: Array.from(arrangementRegions.values())
@@ -1517,9 +1518,7 @@ export class OpenCascadeCommandManager {
   ) {
     const solid = (state?.solids ?? this.solids).get(solidId)
     const hiddenObjectIds = state?.hiddenObjectIds ?? this.hiddenObjectIds
-    return Boolean(
-      solid && !solid.consumed && !hiddenObjectIds.has(solidId)
-    )
+    return Boolean(solid && !solid.consumed && !hiddenObjectIds.has(solidId))
   }
 
   private selectableSolidArtifactIds(
@@ -1547,7 +1546,8 @@ export class OpenCascadeCommandManager {
   ) {
     const hiddenObjectIds = state?.hiddenObjectIds ?? this.hiddenObjectIds
     const regions = state?.regions ?? this.regions
-    const arrangementRegions = state?.arrangementRegions ?? this.arrangementRegions
+    const arrangementRegions =
+      state?.arrangementRegions ?? this.arrangementRegions
     if (hiddenObjectIds.has(regionId)) {
       return true
     }
@@ -1569,7 +1569,9 @@ export class OpenCascadeCommandManager {
     return (
       hiddenObjectIds.has(region.regionId) ||
       hiddenObjectIds.has(region.parentPathId || '') ||
-      region.sourceSegmentIds.some((segmentId) => hiddenObjectIds.has(segmentId))
+      region.sourceSegmentIds.some((segmentId) =>
+        hiddenObjectIds.has(segmentId)
+      )
     )
   }
 

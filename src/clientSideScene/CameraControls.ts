@@ -1391,7 +1391,10 @@ export class CameraControls {
 
   onCameraChange = (forceUpdate = false) => {
     const distance = this.target.distanceTo(this.camera.position)
-    if (this.camera.far / 2.1 < distance || this.camera.far / 1.9 > distance) {
+    if (
+      !this.isOpenCascadeEngine() &&
+      (this.camera.far / 2.1 < distance || this.camera.far / 1.9 > distance)
+    ) {
       this.camera.far = distance * 2
       this.camera.near = distance / 10
       this.camera.updateProjectionMatrix()
@@ -1408,6 +1411,13 @@ export class CameraControls {
     }
     this.deferReactUpdate(this.reactCameraProperties)
     this.cameraChange.dispatch()
+  }
+
+  private isOpenCascadeEngine() {
+    return (
+      'isOpenCascade' in this.engineCommandManager &&
+      this.engineCommandManager.isOpenCascade === true
+    )
   }
   getInteractionType = (
     event: PointerEvent | WheelEvent | MouseEvent
