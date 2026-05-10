@@ -555,7 +555,7 @@ plane001 = offsetPlane(YZ, offset = 10)`
         stage: 'arguments',
         currentArgKey: 'across',
         currentArgValue: '',
-        headerArguments: { Bodies: '1 region', Across: '' },
+        headerArguments: { Bodies: '1 sweep', Across: '' },
         highlightedHeaderArg: 'across',
         commandName: 'Mirror',
       })
@@ -566,7 +566,7 @@ plane001 = offsetPlane(YZ, offset = 10)`
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
-        headerArguments: { Bodies: '1 region', Across: '1 plane' },
+        headerArguments: { Bodies: '1 sweep', Across: '1 plane' },
         commandName: 'Mirror',
       })
       await cmdBar.submit()
