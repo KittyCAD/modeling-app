@@ -2,6 +2,7 @@ import {
   defineRegistryItemFactory,
   defineRuntimeRegistryItem,
   provide,
+  provideService,
 } from '@kittycad/registry'
 import { computed } from '@preact/signals-core'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
@@ -15,6 +16,8 @@ import { Suspense, createElement, lazy } from 'react'
 import { EngineExecutionStatusTooltip } from './EngineExecutionStatusTooltip'
 import { ENGINE_SCENE_EXECUTION_STATUS_BAR_ITEM_ID } from './constants'
 import { layoutAreaLibraryValueSpec } from '@src/registry/contracts/layout'
+import { openCascadeRollbackEditService } from '@src/registry/contracts/openCascadeRollbackEdit'
+import { engineSceneOpenCascadeRollbackEditService } from './openCascadeRollbackEditService'
 
 const EngineSceneModelingArea = lazy(async () => {
   const { ModelingArea } = await import('./ModelingArea')
@@ -127,6 +130,12 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
   return {
     item: defineRuntimeRegistryItem({
       id: 'engine-scene-extension',
+      providesServices: [
+        provideService(
+          openCascadeRollbackEditService,
+          engineSceneOpenCascadeRollbackEditService
+        ),
+      ],
       provides: [
         provide(settingsValueSpec, {
           modeling: {

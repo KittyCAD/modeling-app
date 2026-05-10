@@ -7,6 +7,7 @@ import { signal } from '@preact/signals-core'
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { layoutAreaLibraryValueSpec } from '@src/registry/contracts/layout'
+import { openCascadeRollbackEditService } from '@src/registry/contracts/openCascadeRollbackEdit'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { describe, expect, it, vi } from 'vitest'
@@ -50,6 +51,31 @@ describe('engineScene extension', () => {
 
     expect(areaLibrary.modeling.hide()).toBe(false)
     expect(areaLibrary.modeling.Component).toBeTypeOf('function')
+  })
+
+  it('provides durable OpenCascade rollback edit state', () => {
+    const registry = new Registry()
+    registry.configure([engineSceneExtension])
+
+    const service = registry.get(openCascadeRollbackEditService)
+    service.begin({
+      previousExperimentalFeatures: null,
+      changedExperimentalFeatures: false,
+      isManual: false,
+    })
+
+    const sameRegistryService = registry.get(openCascadeRollbackEditService)
+    expect(sameRegistryService.session.value).toEqual({
+      previousExperimentalFeatures: null,
+      changedExperimentalFeatures: false,
+      isManual: false,
+    })
+    expect(sameRegistryService.consumeTemporary()).toEqual({
+      previousExperimentalFeatures: null,
+      changedExperimentalFeatures: false,
+      isManual: false,
+    })
+    expect(service.session.value).toBeUndefined()
   })
 
   it('contributes ordered engine scene local status bar items', () => {

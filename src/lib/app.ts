@@ -81,6 +81,7 @@ import type {
 import { createActor } from 'xstate'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { provideEngineCommandManagerService } from '@src/registry/contracts/engineCommandManager'
+import { openCascadeRollbackEditService } from '@src/registry/contracts/openCascadeRollbackEdit'
 
 const DEFAULT_LAYOUT_CONFIG_NAME = 'default'
 const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
@@ -538,6 +539,9 @@ export class App implements AppSubsystems {
       projectPath: signal(''),
       engineCommandManager: this.engineCommandManager,
       rustContext: this.rustContext,
+      openCascadeRollbackEditService: this.registry.get(
+        openCascadeRollbackEditService
+      ),
     })
 
     this.registry.reconfigure(appRegistryServicesSlot, [

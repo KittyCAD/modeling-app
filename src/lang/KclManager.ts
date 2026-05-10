@@ -78,6 +78,8 @@ import type {
   Selections,
 } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
+import { engineSceneOpenCascadeRollbackEditService } from '@src/registry/extensions/engineScene/openCascadeRollbackEditService'
+import type { OpenCascadeRollbackEditService } from '@src/registry/contracts/openCascadeRollbackEdit'
 
 import {
   invertedEffects,
@@ -281,6 +283,7 @@ interface SystemDeps {
   projectPath: Signal<string>
   engineCommandManager: ConnectionManager
   rustContext: RustContext
+  openCascadeRollbackEditService?: OpenCascadeRollbackEditService
 }
 
 export enum KclManagerEvents {
@@ -727,7 +730,7 @@ export class KclManager extends File {
   private nextDirectSketchHistoryEntryId = 0
   private lastSketchCheckpointRestoreRequestId = 0
   private sketchCheckpointLimit = FALLBACK_SKETCH_CHECKPOINT_LIMIT
-  private rollbackEditSession: RollbackEditSession | undefined
+  private openCascadeRollbackEditService: OpenCascadeRollbackEditService
   private rollbackCleanupGeneration = 0
   private rollbackCleanupTimeouts: ReturnType<typeof setTimeout>[] = []
   private lastExecutedCode: string = ''
@@ -1735,6 +1738,9 @@ export class KclManager extends File {
     // Register our additional, KclManager-specific watch event handler
     this.onWatchEvent.push(this.#onWatchEvent)
     this.systemDeps = systemDeps
+    this.openCascadeRollbackEditService =
+      systemDeps.openCascadeRollbackEditService ??
+      engineSceneOpenCascadeRollbackEditService
     const getSettings = () =>
       getSettingsFromActorContext(this.systemDeps.settings)
     this.engineCommandManager = this.systemDeps.engineCommandManager
@@ -2242,11 +2248,11 @@ export class KclManager extends File {
     if (!ast) {
       return new Error('Could not insert rollback marker')
     }
-    this.rollbackEditSession = {
+    this.openCascadeRollbackEditService.begin({
       previousExperimentalFeatures,
       changedExperimentalFeatures,
       isManual: false,
-    }
+    })
     this.updateCodeEditor(nextCode, {
       shouldExecute: true,
       shouldWriteToDisk: true,
@@ -2285,9 +2291,7 @@ export class KclManager extends File {
     if (!ast) {
       return new Error('Could not move rollback marker')
     }
-    if (this.rollbackEditSession) {
-      this.rollbackEditSession.isManual = true
-    }
+    this.openCascadeRollbackEditService.markManual()
     this.updateCodeEditor(nextCode, {
       shouldExecute: true,
       shouldWriteToDisk: true,
@@ -2295,12 +2299,10 @@ export class KclManager extends File {
   }
 
   async endOpenCascadeRollbackEdit() {
-    const session = this.rollbackEditSession
-    if (!session || session.isManual) {
-      this.rollbackEditSession = undefined
+    const session = this.openCascadeRollbackEditService.consumeTemporary()
+    if (!session) {
       return
     }
-    this.rollbackEditSession = undefined
     const result = await this.removeOpenCascadeRollbackMarkerForSession(session)
     if (err(result)) {
       return result
