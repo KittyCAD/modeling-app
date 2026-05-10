@@ -72,4 +72,38 @@ describe('EngineCommandManagerProxy', () => {
       request_id: '00000000-0000-0000-0000-000000000003',
     })
   })
+
+  it('forwards OpenCascade scene command batches for selection filters', async () => {
+    const { engineCommandManager, settingsActor } =
+      await buildTheWorldAndNoEngineConnection(true)
+    const proxy = engineCommandManager as EngineCommandManagerProxy
+
+    await vi.waitFor(() =>
+      expect(settingsActor.getSnapshot().value).toBe('idle')
+    )
+    settingsActor.send({
+      type: 'set.modeling.engine',
+      data: { level: 'user', value: 'open_cascade' },
+      doNotPersist: true,
+    })
+
+    await proxy.sendSceneCommand({
+      type: 'modeling_cmd_batch_req',
+      batch_id: '00000000-0000-0000-0000-000000000005',
+      requests: [
+        {
+          cmd_id: '00000000-0000-0000-0000-000000000006',
+          cmd: {
+            type: 'set_selection_filter',
+            filter: ['object'],
+          },
+        },
+      ],
+      responses: false,
+    })
+
+    expect(proxy.openCascadeCommandManager.latestSelectionFilter.value).toEqual([
+      'object',
+    ])
+  })
 })

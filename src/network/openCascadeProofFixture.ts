@@ -132,6 +132,37 @@ export const OPEN_CASCADE_SKETCH_ON_FACE_MERGE_EXTRUDE_KCL = `${OPEN_CASCADE_SKE
 export const OPEN_CASCADE_SKETCH_ON_FACE_NEW_EXTRUDE_KCL = `${OPEN_CASCADE_SKETCH_ON_FACE_BASE}newExtrude = extrude(topRegion, length = 3, method = NEW)
 `
 
+const OPEN_CASCADE_BOOLEAN_BASE_KCL = `part001 = startSketchOn(XY)
+  |> startProfile(at = [-5, -5])
+  |> line(end = [10, 0])
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 5)
+
+part002 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [8, 0])
+  |> line(end = [0, 8])
+  |> line(end = [-8, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 5)
+`
+
+export const OPEN_CASCADE_BOOLEAN_UNION_KCL = `${OPEN_CASCADE_BOOLEAN_BASE_KCL}booleanUnion = union([part001, part002])
+`
+
+export const OPEN_CASCADE_BOOLEAN_SUBTRACT_KCL = `${OPEN_CASCADE_BOOLEAN_BASE_KCL}booleanSubtract = subtract(part001, tools = [part002])
+`
+
+export const OPEN_CASCADE_BOOLEAN_INTERSECT_KCL = `${OPEN_CASCADE_BOOLEAN_BASE_KCL}booleanIntersect = intersect([part001, part002])
+`
+
+export const OPEN_CASCADE_BOOLEAN_SPLIT_KCL = `${OPEN_CASCADE_BOOLEAN_BASE_KCL}booleanSplit = split([part001], tools = [part002], keepTools = true)[0]
+`
+
 export const OPEN_CASCADE_PROOF_FIXTURES = [
   {
     name: 'openCascadeProofFixture',
@@ -168,5 +199,21 @@ export const OPEN_CASCADE_PROOF_FIXTURES = [
   {
     name: 'openCascadeSketchOnFaceNewExtrudeProofFixture',
     code: OPEN_CASCADE_SKETCH_ON_FACE_NEW_EXTRUDE_KCL,
+  },
+  {
+    name: 'openCascadeBooleanUnionProofFixture',
+    code: OPEN_CASCADE_BOOLEAN_UNION_KCL,
+  },
+  {
+    name: 'openCascadeBooleanSubtractProofFixture',
+    code: OPEN_CASCADE_BOOLEAN_SUBTRACT_KCL,
+  },
+  {
+    name: 'openCascadeBooleanIntersectProofFixture',
+    code: OPEN_CASCADE_BOOLEAN_INTERSECT_KCL,
+  },
+  {
+    name: 'openCascadeBooleanSplitProofFixture',
+    code: OPEN_CASCADE_BOOLEAN_SPLIT_KCL,
   },
 ]

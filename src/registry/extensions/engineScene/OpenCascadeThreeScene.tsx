@@ -128,11 +128,19 @@ export type OpenCascadeResolvedDefaultPlaneHit = {
   plane: DefaultPlaneStr
 }
 
+export type OpenCascadeResolvedBodyHit = {
+  hitType: 'body'
+  solidId: string
+  artifactId: string
+  artifactIds: string[]
+}
+
 export type OpenCascadeResolvedHit =
   | OpenCascadeResolvedTopologyHit
   | OpenCascadeResolvedSketchLineHit
   | OpenCascadeResolvedRegionHit
   | OpenCascadeResolvedDefaultPlaneHit
+  | OpenCascadeResolvedBodyHit
 
 export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
   useSignals()
@@ -169,6 +177,10 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
   const latestRegionVersion = openCascadeManager.latestRegionVersion.value
   const latestVisibilityVersion =
     openCascadeManager.latestVisibilityVersion.value
+  const activeSelectionFilter = openCascadeManager.latestSelectionFilter.value
+  const objectSelectionOnly =
+    activeSelectionFilter.includes('object') &&
+    activeSelectionFilter.every((filter) => filter === 'object')
   const exportError = diagnostic || openCascadeManager.latestExportError.value
   const passiveProfilesVisible =
     !state.matches('Sketch') && !state.matches('sketchSolveMode')
@@ -436,7 +448,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
   // biome-ignore lint/correctness/useExhaustiveDependencies: latestShapeVersion is a signal value that intentionally reloads GLB content.
   useEffect(() => {
     let cancelled = false
-    let objectUrl: string | undefined
+    let objectUrls: string[] = []
 
     async function loadLatestShape() {
       const sceneInfra = kclManager.sceneInfra
@@ -450,11 +462,12 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       setReady(false)
       setStage('export')
       disposeOpenCascadeModelRoot(modelRoot)
-      const bytes = await engineCommandManager.exportLatestOpenCascadeGlbBytes()
+      const visibleSolids =
+        await engineCommandManager.exportVisibleOpenCascadeGlbBytes()
       if (cancelled) {
         return
       }
-      if (bytes.length === 0) {
+      if (visibleSolids.length === 0) {
         const bounds = getOpenCascadeEmptySceneBounds(
           sceneInfra.baseUnitMultiplier
         )
@@ -472,23 +485,40 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         return
       }
 
-      objectUrl = URL.createObjectURL(
-        new Blob([bytes as BlobPart], { type: 'model/gltf-binary' })
-      )
       setStage('load')
-      const gltf = await new GLTFLoader().loadAsync(objectUrl)
-      if (cancelled) {
-        return
-      }
+      const loader = new GLTFLoader()
+      const loadedSolids = await Promise.all(
+        visibleSolids.map(async (solid) => {
+          const objectUrl = URL.createObjectURL(
+            new Blob([solid.bytes as BlobPart], { type: 'model/gltf-binary' })
+          )
+          objectUrls.push(objectUrl)
+          const gltf = await loader.loadAsync(objectUrl)
+          return {
+            solidId: solid.solidId,
+            artifactIds: solid.artifactIds,
+            scene: gltf.scene,
+          }
+        })
+      )
+      if (cancelled) return
 
       disposeOpenCascadeModelRoot(modelRoot)
-      styleLoadedOpenCascadeMeshes(
-        gltf.scene,
-        sceneStyleRef.current,
-        highlightEdgesRef.current
-      )
-      modelRoot.add(gltf.scene)
-      const bounds = getOpenCascadeObjectBounds(gltf.scene)
+      for (const solid of loadedSolids) {
+        solid.scene.name = `${OPEN_CASCADE_SOLID_ROOT}:${solid.solidId}`
+        tagOpenCascadeBodyVisuals(
+          solid.scene,
+          solid.solidId,
+          solid.artifactIds
+        )
+        styleLoadedOpenCascadeMeshes(
+          solid.scene,
+          sceneStyleRef.current,
+          highlightEdgesRef.current
+        )
+        modelRoot.add(solid.scene)
+      }
+      const bounds = getOpenCascadeObjectBounds(modelRoot)
       modelCenterRef.current.copy(bounds.center)
       const radius = bounds.radius
       modelRadiusRef.current = radius
@@ -530,7 +560,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
 
     return () => {
       cancelled = true
-      if (objectUrl) {
+      for (const objectUrl of objectUrls) {
         URL.revokeObjectURL(objectUrl)
       }
     }
@@ -614,7 +644,10 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
           selectedIds,
           undefined,
           sceneStyle,
-          regionMeshes
+          regionMeshes,
+          undefined,
+          undefined,
+          sceneInfra.scene.getObjectByName(OPEN_CASCADE_SOLID_ROOT)
         )
         sceneInfra.renderFrame()
       })
@@ -715,11 +748,13 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     let hoveredTopologyId: string | undefined
     let hoveredSketchSegmentId: string | undefined
     let hoveredRegionId: string | undefined
+    let hoveredBodyId: string | undefined
     const isSelectingSketchPlane = state.matches('Sketch no face')
     const resolveHit = (intersects: Intersection[]) =>
       resolveOpenCascadeHit(intersects, {
         includeDefaultPlanes: true,
         preferDefaultPlanes: isSelectingSketchPlane,
+        objectSelectionOnly,
       })
 
     const updateHighlight = (hoveredHit?: OpenCascadeResolvedHit) => {
@@ -745,7 +780,9 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
               : undefined,
             sceneStyleRef.current,
             regionMeshes,
-            hoveredHit?.hitType === 'region' ? hoveredHit.regionId : undefined
+            hoveredHit?.hitType === 'region' ? hoveredHit.regionId : undefined,
+            hoveredHit?.hitType === 'body' ? hoveredHit.solidId : undefined,
+            scene.getObjectByName(OPEN_CASCADE_SOLID_ROOT)
           )
           sceneInfra.renderFrame()
         })
@@ -792,16 +829,19 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
           hit?.hitType === 'sketchLine' ? hit.segmentId : undefined
         const nextRegionId =
           hit?.hitType === 'region' ? hit.regionId : undefined
+        const nextBodyId = hit?.hitType === 'body' ? hit.solidId : undefined
         if (
           hoveredTopologyId === nextTopologyId &&
           hoveredSketchSegmentId === nextSketchSegmentId &&
-          hoveredRegionId === nextRegionId
+          hoveredRegionId === nextRegionId &&
+          hoveredBodyId === nextBodyId
         ) {
           return
         }
         hoveredTopologyId = nextTopologyId
         hoveredSketchSegmentId = nextSketchSegmentId
         hoveredRegionId = nextRegionId
+        hoveredBodyId = nextBodyId
         updateHighlight(hit)
       },
       onClick: ({ intersects }) => {
@@ -813,6 +853,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
           hoveredTopologyId = undefined
           hoveredSketchSegmentId = undefined
           hoveredRegionId = undefined
+          hoveredBodyId = undefined
           updateHighlight()
           send({
             type: 'Set selection',
@@ -930,7 +971,9 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
             ? hit.topologyId
             : hit.hitType === 'region'
               ? hit.regionId
-              : hit.segmentId
+              : hit.hitType === 'body'
+                ? hit.solidId
+                : hit.segmentId
         if (artifact && codeRef) {
           send({
             type: 'Set selection',
@@ -958,14 +1001,18 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
                   ? hit.solidId
                   : hit.hitType === 'region'
                     ? hit.parentPathId
-                    : hit.pathId,
+                    : hit.hitType === 'body'
+                      ? hit.solidId
+                      : hit.pathId,
               primitiveIndex: 0,
               primitiveType:
                 hit.hitType === 'topology'
                   ? hit.kind
                   : hit.hitType === 'region'
                     ? 'face'
-                    : 'edge',
+                    : hit.hitType === 'body'
+                      ? 'object'
+                      : 'edge',
             },
           },
         })
@@ -990,6 +1037,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     send,
     state.value,
     state.context.selectionRanges,
+    objectSelectionOnly,
     useSketchSolveMode,
   ])
 
@@ -1450,12 +1498,16 @@ export function rebuildOpenCascadeHighlightRoot(
   hoveredTopologyId: string | undefined,
   style: OpenCascadeSceneStyle,
   regionMeshes?: OpenCascadeRegionMeshes,
-  hoveredRegionId?: string
+  hoveredRegionId?: string,
+  hoveredBodyId?: string,
+  modelRoot?: Object3D | null
 ) {
   disposeOpenCascadeModelRoot(highlightRoot)
   for (const solid of topologyMeshes.solids) {
     const highlightedGroups = solid.groups.filter(
       (group) =>
+        solid.solidId === hoveredBodyId ||
+        selectedTopologyIds.has(solid.solidId) ||
         group.topologyId === hoveredTopologyId ||
         selectedTopologyIds.has(group.topologyId) ||
         selectedTopologyIds.has(group.artifactId)
@@ -1483,6 +1535,15 @@ export function rebuildOpenCascadeHighlightRoot(
       mesh.renderOrder = 20
       highlightRoot.add(mesh)
     }
+  }
+  if (modelRoot) {
+    appendOpenCascadeBodyVisualHighlights(
+      highlightRoot,
+      modelRoot,
+      selectedTopologyIds,
+      hoveredBodyId,
+      style
+    )
   }
   if (!regionMeshes) {
     return
@@ -1518,6 +1579,46 @@ export function rebuildOpenCascadeHighlightRoot(
       highlightRoot.add(mesh)
     }
   }
+}
+
+function appendOpenCascadeBodyVisualHighlights(
+  highlightRoot: Group,
+  modelRoot: Object3D,
+  selectedIds: Set<string>,
+  hoveredBodyId: string | undefined,
+  style: OpenCascadeSceneStyle
+) {
+  modelRoot.updateWorldMatrix(true, true)
+  modelRoot.traverse((object) => {
+    if (
+      !(object instanceof Mesh) ||
+      object.userData.openCascadeBodyVisual !== true
+    ) {
+      return
+    }
+    const solidId = object.userData.openCascadeSolidId as string | undefined
+    if (!solidId || (solidId !== hoveredBodyId && !selectedIds.has(solidId))) {
+      return
+    }
+
+    const geometry = object.geometry.clone()
+    geometry.applyMatrix4(object.matrixWorld)
+    const isSelected = selectedIds.has(solidId)
+    const material = new MeshBasicMaterial({
+      color: isSelected ? style.selectionColor : style.hoverColor,
+      transparent: true,
+      opacity: isSelected ? 0.24 : 0.14,
+      depthWrite: false,
+      polygonOffset: true,
+      polygonOffsetFactor: OPEN_CASCADE_HIGHLIGHT_POLYGON_OFFSET,
+      polygonOffsetUnits: OPEN_CASCADE_HIGHLIGHT_POLYGON_OFFSET,
+      side: DoubleSide,
+    })
+    const mesh = new Mesh(geometry, material)
+    mesh.name = `${OPEN_CASCADE_HIGHLIGHT_ROOT}:body:${solidId}`
+    mesh.renderOrder = 22
+    highlightRoot.add(mesh)
+  })
 }
 
 function rebuildOpenCascadeSketchLineRoot(
@@ -1647,6 +1748,7 @@ export function resolveOpenCascadeHit(
   options: {
     includeDefaultPlanes?: boolean
     preferDefaultPlanes?: boolean
+    objectSelectionOnly?: boolean
   } = {}
 ): OpenCascadeResolvedHit | undefined {
   const defaultPlaneHits: OpenCascadeResolvedDefaultPlaneHit[] = []
@@ -1691,6 +1793,22 @@ export function resolveOpenCascadeHit(
 
     const mesh = findOpenCascadePickMesh(intersection.object)
     if (!mesh || intersection.faceIndex == null) {
+      if (options.objectSelectionOnly) {
+        const body = findOpenCascadeBodyVisual(intersection.object)
+        if (body) {
+          const solidId = body.userData.openCascadeSolidId as string
+          const artifactIds =
+            (body.userData.openCascadeArtifactIds as string[] | undefined) || [
+              solidId,
+            ]
+          return {
+            hitType: 'body',
+            solidId,
+            artifactId: artifactIds[0] || solidId,
+            artifactIds,
+          }
+        }
+      }
       continue
     }
     const solid = mesh.userData.openCascadeTopologySolid as
@@ -1706,11 +1824,30 @@ export function resolveOpenCascadeHit(
         indexStart < candidate.start + candidate.count
     )
     if (group) {
+      if (options.objectSelectionOnly) {
+        return {
+          hitType: 'body',
+          solidId: solid.solidId,
+          artifactId: solid.artifactIds?.[0] || solid.solidId,
+          artifactIds: solid.artifactIds || [solid.solidId],
+        }
+      }
       return { ...group, hitType: 'topology', solidId: solid.solidId }
     }
   }
   if (defaultPlaneHits.length > 0) {
     return defaultPlaneHits[0]
+  }
+  return undefined
+}
+
+function findOpenCascadeBodyVisual(object: unknown): Object3D | undefined {
+  let current = object instanceof Object3D ? object : undefined
+  while (current) {
+    if (current.userData.openCascadeBodyVisual === true) {
+      return current
+    }
+    current = current.parent || undefined
   }
   return undefined
 }
@@ -1871,6 +2008,15 @@ function artifactForOpenCascadeHit(
   if (hit.hitType === 'region') {
     return artifactGraph.get(hit.artifactId)
   }
+  if (hit.hitType === 'body') {
+    for (const artifactId of hit.artifactIds) {
+      const artifact = artifactGraph.get(artifactId)
+      if (artifact) {
+        return artifact
+      }
+    }
+    return undefined
+  }
   if (hit.hitType === 'defaultPlane') {
     return undefined
   }
@@ -1977,6 +2123,25 @@ function styleLoadedOpenCascadeMeshes(
     edgeLines.userData.openCascadeEdgeLines = true
     edgeLines.visible = !isProfile && highlightEdges
     object.add(edgeLines)
+  })
+}
+
+function tagOpenCascadeBodyVisuals(
+  root: Object3D,
+  solidId: string,
+  artifactIds: string[]
+) {
+  root.userData.openCascadeSolidId = solidId
+  root.userData.openCascadeArtifactIds = artifactIds
+  root.layers.set(SKETCH_LAYER)
+  root.traverse((object) => {
+    if (!(object instanceof Mesh)) {
+      return
+    }
+    object.userData.openCascadeBodyVisual = true
+    object.userData.openCascadeSolidId = solidId
+    object.userData.openCascadeArtifactIds = artifactIds
+    object.layers.set(SKETCH_LAYER)
   })
 }
 

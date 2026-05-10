@@ -111,6 +111,7 @@ type SolidState = {
   startCapId: string
   endCapId: string
   brep?: Uint8Array
+  consumed?: boolean
   cylinder?: {
     center: Point2
     radius: number
@@ -161,6 +162,7 @@ export type OpenCascadeTopologyEdgeLine = {
 
 export type OpenCascadeTopologySolidMesh = {
   solidId: string
+  artifactIds?: string[]
   positions: number[]
   indices: number[]
   groups: OpenCascadeTopologyFaceGroup[]
@@ -208,6 +210,12 @@ export type OpenCascadeRegionMeshes = {
   regions: OpenCascadeRegionMesh[]
 }
 
+export type OpenCascadeVisibleSolidGlb = {
+  solidId: string
+  artifactIds: string[]
+  bytes: Uint8Array
+}
+
 type ExtrudeTopology = {
   regionId: string
   pathId: string
@@ -232,6 +240,14 @@ type ModelingExecutionResult =
   | { kind: 'export'; response: OkWebSocketResponseData }
 
 const EMPTY_RESPONSE: OkModelingCmdResponse = { type: 'empty' }
+const DEFAULT_SELECTION_FILTER = [
+  'face',
+  'edge',
+  'solid2d',
+  'curve',
+  'object',
+  'path',
+]
 
 let openCascadePromise: Promise<OpenCascadeInstance> | undefined
 let latestOpenCascadeCommandManager: OpenCascadeCommandManager | undefined
@@ -301,6 +317,9 @@ export class OpenCascadeCommandManager {
   readonly latestSketchVersion = signal(0)
   readonly latestRegionVersion = signal(0)
   readonly latestVisibilityVersion = signal(0)
+  readonly latestSelectionFilter = signal<string[]>([
+    ...DEFAULT_SELECTION_FILTER,
+  ])
   readonly latestExportError = signal<string | undefined>(undefined)
   private planes = new Map<string, PlaneState>()
   private paths = new Map<string, PathState>()
@@ -362,11 +381,11 @@ export class OpenCascadeCommandManager {
   }
 
   exportLastBrep(): Uint8Array | undefined {
-    return Array.from(this.solids.values()).at(-1)?.brep
+    return this.visibleSolidEntries().at(-1)?.[1].brep
   }
 
   async exportLatestGlbBytes(): Promise<Uint8Array> {
-    const latest = Array.from(this.solids.entries()).at(-1)
+    const latest = this.visibleSolidEntries().at(-1)
     if (!latest) {
       return new Uint8Array()
     }
@@ -377,6 +396,28 @@ export class OpenCascadeCommandManager {
       const bytes = this.writeGlb(id, solid.shape, oc)
       this.latestExportError.value = undefined
       return bytes
+    } catch (error) {
+      this.latestExportError.value =
+        error instanceof Error ? error.message : String(error)
+      throw error
+    }
+  }
+
+  async exportVisibleGlbBytes(): Promise<OpenCascadeVisibleSolidGlb[]> {
+    const visible = this.visibleSolidEntries()
+    if (visible.length === 0) {
+      return []
+    }
+
+    const oc = await initOpenCascade()
+    try {
+      const exports = visible.map(([id, solid]) => ({
+        solidId: id,
+        artifactIds: this.selectableSolidArtifactIds(id, solid),
+        bytes: this.writeGlb(id, solid.shape, oc),
+      }))
+      this.latestExportError.value = undefined
+      return exports
     } catch (error) {
       this.latestExportError.value =
         error instanceof Error ? error.message : String(error)
@@ -408,16 +449,22 @@ export class OpenCascadeCommandManager {
   exportLatestTopologyMeshes(): OpenCascadeTopologyMeshes {
     return {
       version: this.latestTopologyVersion.value,
-      solids: Array.from(this.topologyMeshes.values()).map((solid) => ({
-        solidId: solid.solidId,
-        positions: [...solid.positions],
-        indices: [...solid.indices],
-        groups: solid.groups.map((group) => ({ ...group })),
-        edges: solid.edges.map((edge) => ({
-          ...edge,
-          points: [...edge.points],
+      solids: Array.from(this.topologyMeshes.values())
+        .filter((solid) => this.isSolidVisible(solid.solidId))
+        .map((solid) => ({
+          solidId: solid.solidId,
+          artifactIds: this.selectableSolidArtifactIds(
+            solid.solidId,
+            this.solids.get(solid.solidId)
+          ),
+          positions: [...solid.positions],
+          indices: [...solid.indices],
+          groups: solid.groups.map((group) => ({ ...group })),
+          edges: solid.edges.map((edge) => ({
+            ...edge,
+            points: [...edge.points],
+          })),
         })),
-      })),
     }
   }
 
@@ -518,6 +565,9 @@ export class OpenCascadeCommandManager {
       case 'object_visible':
         this.setObjectVisibility(cmd.object_id, !cmd.hidden)
         return modeling(EMPTY_RESPONSE)
+      case 'set_selection_filter':
+        this.latestSelectionFilter.value = [...((cmd as any).filter || [])]
+        return modeling(EMPTY_RESPONSE)
       case 'plane_set_color':
       case 'edge_lines_visible':
       case 'object_set_material_params_pbr':
@@ -590,6 +640,14 @@ export class OpenCascadeCommandManager {
         return modeling(await this.sweep(commandId, cmd, range))
       case 'loft':
         return modeling(await this.loft(commandId, cmd, range))
+      case 'boolean_union':
+        return modeling(await this.booleanUnion(commandId, cmd))
+      case 'boolean_subtract':
+        return modeling(await this.booleanSubtract(commandId, cmd))
+      case 'boolean_intersection':
+        return modeling(await this.booleanIntersection(commandId, cmd))
+      case 'boolean_imprint':
+        return modeling(await this.booleanImprint(commandId, cmd))
       case 'entity_make_helix':
         return modeling(await this.makeHelix(commandId, cmd, range))
       case 'entity_make_helix_from_params':
@@ -792,7 +850,9 @@ export class OpenCascadeCommandManager {
     const solid: SolidState = {
       shape,
       sourceRegionId: cmd.target,
-      sourceIds: [cmd.target],
+      sourceIds: Array.from(
+        new Set([cmd.target, region.sourcePathId, region.regionEdgeId])
+      ),
       sideFaceId: `${commandId.slice(0, 35)}0`,
       startCapId: `${commandId.slice(0, 35)}1`,
       endCapId: `${commandId.slice(0, 35)}2`,
@@ -834,7 +894,14 @@ export class OpenCascadeCommandManager {
       const mergedSolid: SolidState = {
         ...parentSolid,
         shape: fusedShape,
-        sourceIds: Array.from(new Set([...parentSolid.sourceIds, cmd.target])),
+        sourceIds: Array.from(
+          new Set([
+            ...parentSolid.sourceIds,
+            cmd.target,
+            region.sourcePathId,
+            region.regionEdgeId,
+          ])
+        ),
       }
       mergedSolid.brep = this.writeBrep(parentSolidId, fusedShape, oc)
       this.solids.set(parentSolidId, mergedSolid)
@@ -921,6 +988,115 @@ export class OpenCascadeCommandManager {
 
     this.storeSolid(commandId, shape, cmd.section_ids, oc)
     return { type: 'loft', data: { solid_id: commandId } }
+  }
+
+  private async booleanUnion(
+    commandId: string,
+    cmd: Extract<ModelingCmd, { type: 'boolean_union' }>
+  ): Promise<OkModelingCmdResponse> {
+    const solidIds = [...((cmd as any).solid_ids || [])]
+    const oc = await initOpenCascade()
+    const shape = this.foldBooleanShapes(
+      solidIds,
+      oc,
+      (left, right) => this.booleanPair('union', left, right, oc),
+      'union'
+    )
+
+    this.storeSolid(commandId, shape, solidIds, oc)
+    this.markSolidsConsumed(solidIds, new Set([commandId]))
+    return booleanResponse('boolean_union')
+  }
+
+  private async booleanIntersection(
+    commandId: string,
+    cmd: Extract<ModelingCmd, { type: 'boolean_intersection' }>
+  ): Promise<OkModelingCmdResponse> {
+    const solidIds = [...((cmd as any).solid_ids || [])]
+    const oc = await initOpenCascade()
+    const shape = this.foldBooleanShapes(
+      solidIds,
+      oc,
+      (left, right) => this.booleanPair('intersection', left, right, oc),
+      'intersection'
+    )
+
+    this.storeSolid(commandId, shape, solidIds, oc)
+    this.markSolidsConsumed(solidIds, new Set([commandId]))
+    return booleanResponse('boolean_intersection')
+  }
+
+  private async booleanSubtract(
+    commandId: string,
+    cmd: Extract<ModelingCmd, { type: 'boolean_subtract' }>
+  ): Promise<OkModelingCmdResponse> {
+    const targetIds = [...((cmd as any).target_ids || [])]
+    const toolIds = [...((cmd as any).tool_ids || [])]
+    if (targetIds.length === 0) {
+      throw new Error('OpenCascade boolean subtract requires a target solid')
+    }
+    if (toolIds.length === 0) {
+      throw new Error('OpenCascade boolean subtract requires a tool solid')
+    }
+
+    const oc = await initOpenCascade()
+    const outputIds: string[] = []
+    for (const [index, targetId] of targetIds.entries()) {
+      let shape = this.requireSolid(targetId).shape
+      for (const toolId of toolIds) {
+        shape = this.booleanPair(
+          'subtract',
+          shape,
+          this.requireSolid(toolId).shape,
+          oc
+        )
+      }
+      const outputId = deriveBooleanSolidId(commandId, index)
+      outputIds.push(outputId)
+      this.storeSolid(outputId, shape, [targetId, ...toolIds], oc)
+    }
+
+    this.markSolidsConsumed([...targetIds, ...toolIds], new Set(outputIds))
+    return booleanResponse('boolean_subtract', outputIds.slice(1))
+  }
+
+  private async booleanImprint(
+    commandId: string,
+    cmd: Extract<ModelingCmd, { type: 'boolean_imprint' }>
+  ): Promise<OkModelingCmdResponse> {
+    const bodyIds = [...((cmd as any).body_ids || [])]
+    const toolIds = [...((cmd as any).tool_ids || [])]
+    if (bodyIds.length === 0) {
+      throw new Error('OpenCascade boolean split requires at least one body')
+    }
+
+    const oc = await initOpenCascade()
+    const splitter = new oc.BRepAlgoAPI_Splitter_1()
+    splitter.SetArguments(
+      this.shapeList(
+        bodyIds.map((bodyId) => this.requireSolid(bodyId).shape),
+        oc
+      )
+    )
+    if (toolIds.length > 0) {
+      splitter.SetTools(
+        this.shapeList(
+          toolIds.map((toolId) => this.requireSolid(toolId).shape),
+          oc
+        )
+      )
+    }
+    splitter.Build(new oc.Message_ProgressRange_1())
+    this.throwIfBooleanFailed(splitter, 'split')
+    this.storeSolid(commandId, splitter.Shape(), [...bodyIds, ...toolIds], oc)
+    this.markSolidsConsumed(
+      [
+        ...bodyIds,
+        ...((cmd as any).keep_tools === true ? [] : toolIds),
+      ],
+      new Set([commandId])
+    )
+    return booleanResponse('boolean_imprint')
   }
 
   private async makeHelix(
@@ -1137,10 +1313,32 @@ export class OpenCascadeCommandManager {
     } else {
       this.hiddenObjectIds.add(objectId)
     }
+    if (this.solids.has(objectId)) {
+      this.latestShapeVersion.value += 1
+      this.latestTopologyVersion.value += 1
+    }
     this.latestProfileVersion.value += 1
     this.latestSketchVersion.value += 1
     this.latestRegionVersion.value += 1
     this.latestVisibilityVersion.value += 1
+  }
+
+  private visibleSolidEntries(): [string, SolidState][] {
+    return Array.from(this.solids.entries()).filter(([id]) =>
+      this.isSolidVisible(id)
+    )
+  }
+
+  private isSolidVisible(solidId: string) {
+    const solid = this.solids.get(solidId)
+    return Boolean(solid && !solid.consumed && !this.hiddenObjectIds.has(solidId))
+  }
+
+  private selectableSolidArtifactIds(
+    solidId: string,
+    solid: SolidState | undefined
+  ): string[] {
+    return Array.from(new Set([solidId, ...(solid?.sourceIds || [])]))
   }
 
   private isPathHidden(pathId: string) {
@@ -1624,16 +1822,110 @@ export class OpenCascadeCommandManager {
     toolShape: any,
     oc: OpenCascadeInstance
   ): any {
-    const fuse = new oc.BRepAlgoAPI_Fuse_3(
-      baseShape,
-      toolShape,
-      new oc.Message_ProgressRange_1()
-    )
-    const isDone = callIfFunction(fuse, 'IsDone')
-    if (isDone === false) {
-      throw new Error('OpenCascade failed to merge extrude with parent solid')
+    return this.booleanPair('merge extrude', baseShape, toolShape, oc)
+  }
+
+  private foldBooleanShapes(
+    solidIds: string[],
+    oc: OpenCascadeInstance,
+    combine: (left: any, right: any) => any,
+    label: string
+  ): any {
+    if (solidIds.length === 0) {
+      throw new Error(`OpenCascade boolean ${label} requires at least one solid`)
     }
-    return fuse.Shape()
+    return solidIds
+      .slice(1)
+      .reduce(
+        (shape, solidId) => combine(shape, this.requireSolid(solidId).shape),
+        this.requireSolid(solidIds[0]).shape
+      )
+  }
+
+  private booleanPair(
+    operation: 'union' | 'intersection' | 'subtract' | 'merge extrude',
+    leftShape: any,
+    rightShape: any,
+    oc: OpenCascadeInstance
+  ): any {
+    const booleanOperation =
+      operation === 'subtract'
+        ? new oc.BRepAlgoAPI_Cut_3(
+            leftShape,
+            rightShape,
+            new oc.Message_ProgressRange_1()
+          )
+        : operation === 'intersection'
+          ? new oc.BRepAlgoAPI_Common_3(
+              leftShape,
+              rightShape,
+              new oc.Message_ProgressRange_1()
+            )
+          : new oc.BRepAlgoAPI_Fuse_3(
+              leftShape,
+              rightShape,
+              new oc.Message_ProgressRange_1()
+            )
+    this.throwIfBooleanFailed(booleanOperation, operation)
+    return booleanOperation.Shape()
+  }
+
+  private throwIfBooleanFailed(operation: any, label: string) {
+    const isDone = callIfFunction(operation, 'IsDone')
+    const hasErrors = callIfFunction(operation, 'HasErrors')
+    if (isDone === false || hasErrors === true) {
+      throw new Error(`OpenCascade failed to run boolean ${label}`)
+    }
+  }
+
+  private shapeList(shapes: any[], oc: OpenCascadeInstance): any {
+    const list = new oc.TopTools_ListOfShape_1()
+    for (const shape of shapes) {
+      list.Append_1(shape)
+    }
+    return list
+  }
+
+  private requireSolid(solidId: string): SolidState {
+    const solid = this.findSolidEntry(solidId)?.[1]
+    if (!solid) {
+      throw new Error(`No OpenCascade solid found for ${solidId}`)
+    }
+    return solid
+  }
+
+  private markSolidsConsumed(solidIds: string[], except = new Set<string>()) {
+    let changed = false
+    for (const solidId of solidIds) {
+      if (except.has(solidId)) {
+        continue
+      }
+      const entry = this.findSolidEntry(solidId)
+      if (entry && except.has(entry[0])) {
+        continue
+      }
+      const solid = entry?.[1]
+      if (!solid || solid.consumed) {
+        continue
+      }
+      solid.consumed = true
+      changed = true
+    }
+    if (!changed) {
+      return
+    }
+    this.latestShapeVersion.value += 1
+    this.latestTopologyVersion.value += 1
+  }
+
+  private findSolidEntry(solidId: string): [string, SolidState] | undefined {
+    const direct = this.solids.get(solidId)
+    if (direct) {
+      return [solidId, direct]
+    }
+    return Array.from(this.solids.entries()).find(([, solid]) =>
+      solid.sourceIds.includes(solidId)
+    )
   }
 
   private registerExtrudeTopology(
@@ -2115,6 +2407,7 @@ export class OpenCascadeCommandManager {
     this.extrudeTopologies.clear()
     this.currentSketchPlaneId = undefined
     this.currentSketchOnFace = undefined
+    this.latestSelectionFilter.value = [...DEFAULT_SELECTION_FILTER]
     this.latestExportError.value = undefined
     this.latestShapeVersion.value += 1
     this.latestProfileVersion.value += 1
@@ -3084,6 +3377,16 @@ function deriveTopologyId(sourceId: string, salt: number): string {
   ].join('-')
 }
 
+function deriveBooleanSolidId(commandId: string, index: number): string {
+  if (index === 0) {
+    return commandId
+  }
+  if (commandId.length === 36) {
+    return `${commandId.slice(0, 31)}${String(index).padStart(5, '0')}`
+  }
+  return `${commandId}-result-${index}`
+}
+
 function hashToHex(input: string): string {
   const seeds = [0x811c9dc5, 0x9e3779b9, 0x85ebca6b, 0xc2b2ae35]
   return seeds
@@ -3140,6 +3443,23 @@ function orthonormalBasis(axis: Point3): { x: Point3; y: Point3 } {
 
 function modeling(response: OkModelingCmdResponse): ModelingExecutionResult {
   return { kind: 'modeling', response }
+}
+
+function booleanResponse(
+  type:
+    | 'boolean_union'
+    | 'boolean_subtract'
+    | 'boolean_intersection'
+    | 'boolean_imprint',
+  extraSolidIds: string[] = []
+): OkModelingCmdResponse {
+  return {
+    type,
+    data: {
+      any_intersections: true,
+      extra_solid_ids: extraSolidIds,
+    },
+  } as OkModelingCmdResponse
 }
 
 function modelingResponseForHelix(): OkModelingCmdResponse {

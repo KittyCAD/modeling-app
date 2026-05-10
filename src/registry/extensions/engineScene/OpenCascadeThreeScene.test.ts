@@ -298,6 +298,74 @@ describe('OpenCascadeThreeScene helpers', () => {
     expect((mesh.material as MeshBasicMaterial).colorWrite).toBe(false)
   })
 
+  it('resolves body hits only when OpenCascade object selection is active', () => {
+    const mesh = new Mesh(new BoxGeometry(1, 1, 1), new MeshBasicMaterial())
+    mesh.userData.openCascadePickMesh = true
+    mesh.userData.openCascadeTopologySolid = {
+      solidId: 'solid-1',
+      positions: [0, 0, 0, 1, 0, 0, 0, 1, 0],
+      indices: [0, 1, 2],
+      groups: [
+        {
+          start: 0,
+          count: 3,
+          topologyId: 'face-1',
+          artifactId: 'face-1',
+          kind: 'face',
+          role: 'wall',
+        },
+      ],
+      edges: [],
+    }
+
+    expect(
+      helpers.resolveOpenCascadeHit([{ object: mesh, faceIndex: 0 } as never])
+    ).toMatchObject({ hitType: 'topology', topologyId: 'face-1' })
+    expect(
+      helpers.resolveOpenCascadeHit(
+        [{ object: mesh, faceIndex: 0 } as never],
+        { objectSelectionOnly: true }
+      )
+    ).toEqual({
+      hitType: 'body',
+      solidId: 'solid-1',
+      artifactId: 'solid-1',
+      artifactIds: ['solid-1'],
+    })
+  })
+
+  it('adds selected body highlight overlays from visual meshes', () => {
+    const highlightRoot = new Group()
+    const modelRoot = new Group()
+    const mesh = new Mesh(new BoxGeometry(1, 1, 1), new MeshBasicMaterial())
+    mesh.userData.openCascadeBodyVisual = true
+    mesh.userData.openCascadeSolidId = 'solid-1'
+    modelRoot.add(mesh)
+
+    helpers.rebuildOpenCascadeHighlightRoot(
+      highlightRoot,
+      { version: 1, solids: [] },
+      new Set(['solid-1']),
+      undefined,
+      {
+        backgroundColor: 0,
+        edgeColor: 0,
+        surfaceColor: '#ffffff',
+        profileColor: '#ffffff',
+        sketchLineColor: 0,
+        selectionColor: 0xff0000,
+        hoverColor: 0x00ff00,
+      } as never,
+      undefined,
+      undefined,
+      undefined,
+      modelRoot
+    )
+
+    expect(highlightRoot.children).toHaveLength(1)
+    expect(highlightRoot.children[0].name).toContain('body:solid-1')
+  })
+
   it('adds selected region highlight overlays', () => {
     const root = new Group()
 

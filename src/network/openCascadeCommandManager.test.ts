@@ -4,6 +4,10 @@ import { describe, expect, it } from 'vitest'
 import { assertParse } from '@src/lang/wasm'
 import { OpenCascadeCommandManager } from '@src/network/openCascadeCommandManager'
 import {
+  OPEN_CASCADE_BOOLEAN_INTERSECT_KCL,
+  OPEN_CASCADE_BOOLEAN_SPLIT_KCL,
+  OPEN_CASCADE_BOOLEAN_SUBTRACT_KCL,
+  OPEN_CASCADE_BOOLEAN_UNION_KCL,
   OPEN_CASCADE_CIRCLE_EXTRUDE_KCL,
   OPEN_CASCADE_INTERSECTING_REGION_EXTRUDE_KCL,
   OPEN_CASCADE_LOFT_KCL,
@@ -151,6 +155,153 @@ describe('OpenCascadeCommandManager', () => {
     ).toHaveLength(4)
     expect(topologyMeshes.solids[0].edges.length).toBeGreaterThanOrEqual(4)
     expect((await manager.exportLatestGlbBytes()).length).toBeGreaterThan(0)
+  })
+
+  it('exports multiple visible bodies as separate GLBs', async () => {
+    const manager = new OpenCascadeCommandManager()
+    await buildRectangleRegionInput(manager, {
+      path: '00000000-0000-0000-0000-0000000000b1',
+      region: '00000000-0000-0000-0000-0000000000b2',
+      commandStart: 180,
+      min: { x: -1, y: -1 },
+      max: { x: 1, y: 1 },
+    })
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000b3',
+      cmd: {
+        type: 'extrude',
+        target: '00000000-0000-0000-0000-0000000000b2',
+        distance: 2,
+        extrude_method: 'new',
+        body_type: 'solid',
+      },
+    })
+    await buildRectangleRegionInput(manager, {
+      path: '00000000-0000-0000-0000-0000000000b4',
+      region: '00000000-0000-0000-0000-0000000000b5',
+      commandStart: 190,
+      min: { x: 0, y: 0 },
+      max: { x: 2, y: 2 },
+    })
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000b6',
+      cmd: {
+        type: 'extrude',
+        target: '00000000-0000-0000-0000-0000000000b5',
+        distance: 2,
+        extrude_method: 'new',
+        body_type: 'solid',
+      },
+    })
+
+    const visibleSolids = await manager.exportVisibleGlbBytes()
+    expect(visibleSolids.map((solid) => solid.solidId)).toEqual([
+      '00000000-0000-0000-0000-0000000000b3',
+      '00000000-0000-0000-0000-0000000000b6',
+    ])
+    expect(visibleSolids.every((solid) => solid.bytes.length > 0)).toBe(true)
+  })
+
+  it('stores OpenCascade selection filters from single commands and batches', async () => {
+    const manager = new OpenCascadeCommandManager()
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000c0',
+      cmd: {
+        type: 'set_selection_filter',
+        filter: ['object'],
+      },
+    })
+    expect(manager.latestSelectionFilter.value).toEqual(['object'])
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_batch_req',
+      requests: [
+        {
+          cmd_id: '00000000-0000-0000-0000-0000000000c1',
+          cmd: {
+            type: 'set_selection_filter',
+            filter: ['face', 'edge'],
+          },
+        },
+      ],
+    })
+    expect(manager.latestSelectionFilter.value).toEqual(['face', 'edge'])
+  })
+
+  it('runs boolean union, subtract, intersect, and split commands', async () => {
+    const manager = new OpenCascadeCommandManager()
+    await buildTwoOverlappingExtrudes(manager)
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000d0',
+      cmd: {
+        type: 'boolean_union',
+        solid_ids: [
+          '00000000-0000-0000-0000-0000000000d3',
+          '00000000-0000-0000-0000-0000000000d6',
+        ],
+        tolerance: 1e-7,
+      },
+    })
+    expect((await manager.exportVisibleGlbBytes()).map((solid) => solid.solidId))
+      .toEqual(['00000000-0000-0000-0000-0000000000d0'])
+
+    const subtractManager = new OpenCascadeCommandManager()
+    await buildTwoOverlappingExtrudes(subtractManager)
+    const subtractResponse = await send(subtractManager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000d7',
+      cmd: {
+        type: 'boolean_subtract',
+        target_ids: ['00000000-0000-0000-0000-0000000000d3'],
+        tool_ids: ['00000000-0000-0000-0000-0000000000d6'],
+        tolerance: 1e-7,
+      },
+    })
+    expect(
+      subtractResponse.resp.data.modeling_response.data.any_intersections
+    ).toBe(true)
+    expect(await subtractManager.exportVisibleGlbBytes()).toHaveLength(1)
+
+    const intersectManager = new OpenCascadeCommandManager()
+    await buildTwoOverlappingExtrudes(intersectManager)
+    await send(intersectManager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000d8',
+      cmd: {
+        type: 'boolean_intersection',
+        solid_ids: [
+          '00000000-0000-0000-0000-0000000000d3',
+          '00000000-0000-0000-0000-0000000000d6',
+        ],
+        tolerance: 1e-7,
+      },
+    })
+    expect(await intersectManager.exportVisibleGlbBytes()).toHaveLength(1)
+
+    const splitManager = new OpenCascadeCommandManager()
+    await buildTwoOverlappingExtrudes(splitManager)
+    await send(splitManager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000d9',
+      cmd: {
+        type: 'boolean_imprint',
+        body_ids: ['00000000-0000-0000-0000-0000000000d3'],
+        tool_ids: ['00000000-0000-0000-0000-0000000000d6'],
+        separate_bodies: true,
+        keep_tools: true,
+        tolerance: 1e-7,
+      },
+    })
+    expect((await splitManager.exportVisibleGlbBytes()).map((solid) => solid.solidId))
+      .toEqual([
+        '00000000-0000-0000-0000-0000000000d6',
+        '00000000-0000-0000-0000-0000000000d9',
+      ])
   })
 
   it('returns sketch mode plane details for default planes and extrude faces', async () => {
@@ -587,6 +738,18 @@ describe('OpenCascadeCommandManager', () => {
       OPEN_CASCADE_SKETCH_ON_FACE_NEW_EXTRUDE_KCL,
       'newExtrude',
     ],
+    ['boolean-union', OPEN_CASCADE_BOOLEAN_UNION_KCL, 'booleanUnion'],
+    [
+      'boolean-subtract',
+      OPEN_CASCADE_BOOLEAN_SUBTRACT_KCL,
+      'booleanSubtract',
+    ],
+    [
+      'boolean-intersect',
+      OPEN_CASCADE_BOOLEAN_INTERSECT_KCL,
+      'booleanIntersect',
+    ],
+    ['boolean-split', OPEN_CASCADE_BOOLEAN_SPLIT_KCL, 'booleanSplit'],
   ])(
     'executes the %s KCL proof through WASM',
     async (_, code, variableName) => {
@@ -932,6 +1095,45 @@ async function buildLineTrajectory(
         },
       },
     ],
+  })
+}
+
+async function buildTwoOverlappingExtrudes(manager: OpenCascadeCommandManager) {
+  await buildRectangleRegionInput(manager, {
+    path: '00000000-0000-0000-0000-0000000000d1',
+    region: '00000000-0000-0000-0000-0000000000d2',
+    commandStart: 210,
+    min: { x: -1, y: -1 },
+    max: { x: 1, y: 1 },
+  })
+  await send(manager, IDS.request, {
+    type: 'modeling_cmd_req',
+    cmd_id: '00000000-0000-0000-0000-0000000000d3',
+    cmd: {
+      type: 'extrude',
+      target: '00000000-0000-0000-0000-0000000000d2',
+      distance: 2,
+      extrude_method: 'new',
+      body_type: 'solid',
+    },
+  })
+  await buildRectangleRegionInput(manager, {
+    path: '00000000-0000-0000-0000-0000000000d4',
+    region: '00000000-0000-0000-0000-0000000000d5',
+    commandStart: 220,
+    min: { x: 0, y: 0 },
+    max: { x: 2, y: 2 },
+  })
+  await send(manager, IDS.request, {
+    type: 'modeling_cmd_req',
+    cmd_id: '00000000-0000-0000-0000-0000000000d6',
+    cmd: {
+      type: 'extrude',
+      target: '00000000-0000-0000-0000-0000000000d5',
+      distance: 2,
+      extrude_method: 'new',
+      body_type: 'solid',
+    },
   })
 }
 

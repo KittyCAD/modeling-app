@@ -138,14 +138,19 @@ export class EngineCommandManagerProxy extends ConnectionManager {
       return super.sendSceneCommand(command, forceWebsocket)
     }
 
-    if (command.type !== 'modeling_cmd_req') {
+    if (
+      command.type !== 'modeling_cmd_req' &&
+      command.type !== 'modeling_cmd_batch_req'
+    ) {
       return null
     }
 
     try {
       const encoded =
         await this.openCascadeCommandManager.sendModelingCommandFromWasm(
-          command.cmd_id || uuidv4(),
+          (command as { cmd_id?: string; batch_id?: string }).cmd_id ||
+            (command as { batch_id?: string }).batch_id ||
+            uuidv4(),
           JSON.stringify(defaultSourceRange()),
           JSON.stringify(command),
           '{}'
@@ -243,6 +248,10 @@ export class EngineCommandManagerProxy extends ConnectionManager {
 
   async exportLatestOpenCascadeGlbBytes() {
     return this.openCascadeCommandManager.exportLatestGlbBytes()
+  }
+
+  async exportVisibleOpenCascadeGlbBytes() {
+    return this.openCascadeCommandManager.exportVisibleGlbBytes()
   }
 
   async exportLatestOpenCascadeProfileGlbBytes() {
