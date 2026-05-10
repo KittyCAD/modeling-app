@@ -1,3 +1,4 @@
+import { dispatchOpenCascadeCameraControl } from '@src/lib/cameraControls'
 import { AxisNames } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
@@ -183,30 +184,67 @@ export function modelingMenuCallbackMostActions({
         },
       })
     } else if (data.menuLabel === 'View.Standard views.Right view') {
+      if (isOpenCascadeEngine(kclManager.engineCommandManager)) {
+        dispatchOpenCascadeCameraControl({ type: 'axis', axis: AxisNames.X })
+        return
+      }
       kclManager.sceneInfra.camControls
         .updateCameraToAxis(AxisNames.X)
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Back view') {
+      if (isOpenCascadeEngine(kclManager.engineCommandManager)) {
+        dispatchOpenCascadeCameraControl({ type: 'axis', axis: AxisNames.Y })
+        return
+      }
       kclManager.sceneInfra.camControls
         .updateCameraToAxis(AxisNames.Y)
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Top view') {
+      if (isOpenCascadeEngine(kclManager.engineCommandManager)) {
+        dispatchOpenCascadeCameraControl({ type: 'axis', axis: AxisNames.Z })
+        return
+      }
       kclManager.sceneInfra.camControls
         .updateCameraToAxis(AxisNames.Z)
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Left view') {
+      if (isOpenCascadeEngine(kclManager.engineCommandManager)) {
+        dispatchOpenCascadeCameraControl({
+          type: 'axis',
+          axis: AxisNames.NEG_X,
+        })
+        return
+      }
       kclManager.sceneInfra.camControls
         .updateCameraToAxis(AxisNames.NEG_X)
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Front view') {
+      if (isOpenCascadeEngine(kclManager.engineCommandManager)) {
+        dispatchOpenCascadeCameraControl({
+          type: 'axis',
+          axis: AxisNames.NEG_Y,
+        })
+        return
+      }
       kclManager.sceneInfra.camControls
         .updateCameraToAxis(AxisNames.NEG_Y)
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Bottom view') {
+      if (isOpenCascadeEngine(kclManager.engineCommandManager)) {
+        dispatchOpenCascadeCameraControl({
+          type: 'axis',
+          axis: AxisNames.NEG_Z,
+        })
+        return
+      }
       kclManager.sceneInfra.camControls
         .updateCameraToAxis(AxisNames.NEG_Z)
         .catch(reportRejection)
     } else if (data.menuLabel === 'View.Standard views.Reset view') {
+      if (isOpenCascadeEngine(kclManager.engineCommandManager)) {
+        dispatchOpenCascadeCameraControl({ type: 'view_isometric' })
+        return
+      }
       kclManager.sceneInfra.camControls
         .resetCameraPosition()
         .catch(reportRejection)
@@ -300,4 +338,10 @@ export function modelingMenuCallbackMostActions({
     }
   }
   return cb
+}
+
+function isOpenCascadeEngine(engineCommandManager: unknown) {
+  return Boolean(
+    (engineCommandManager as { isOpenCascade?: boolean }).isOpenCascade
+  )
 }

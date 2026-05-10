@@ -1,4 +1,5 @@
 import type { Command } from '@src/lib/commandTypes'
+import { dispatchOpenCascadeCameraControl } from '@src/lib/cameraControls'
 import { AxisNames } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import { engineStreamZoomToFit } from '@src/lib/utils'
@@ -14,6 +15,11 @@ export function createStandardViewsCommands(kclManager: KclManager) {
     icon: 'settings',
     needsReview: false,
     onSubmit: (data) => {
+      if (isOpenCascadeEngine(engineCommandManager)) {
+        dispatchOpenCascadeCameraControl({ type: 'axis', axis: AxisNames.Z })
+        return
+      }
+
       sceneInfra.camControls
         .updateCameraToAxis(AxisNames.Z)
         .catch(reportRejection)
@@ -27,6 +33,11 @@ export function createStandardViewsCommands(kclManager: KclManager) {
     icon: 'settings',
     needsReview: false,
     onSubmit: (data) => {
+      if (isOpenCascadeEngine(engineCommandManager)) {
+        dispatchOpenCascadeCameraControl({ type: 'axis', axis: AxisNames.X })
+        return
+      }
+
       sceneInfra.camControls
         .updateCameraToAxis(AxisNames.X)
         .catch(reportRejection)
@@ -40,6 +51,14 @@ export function createStandardViewsCommands(kclManager: KclManager) {
     icon: 'settings',
     needsReview: false,
     onSubmit: (data) => {
+      if (isOpenCascadeEngine(engineCommandManager)) {
+        dispatchOpenCascadeCameraControl({
+          type: 'axis',
+          axis: AxisNames.NEG_Y,
+        })
+        return
+      }
+
       sceneInfra.camControls
         .updateCameraToAxis(AxisNames.NEG_Y)
         .catch(reportRejection)
@@ -54,6 +73,11 @@ export function createStandardViewsCommands(kclManager: KclManager) {
     icon: 'settings',
     needsReview: false,
     onSubmit: (data) => {
+      if (isOpenCascadeEngine(engineCommandManager)) {
+        dispatchOpenCascadeCameraControl({ type: 'axis', axis: AxisNames.Y })
+        return
+      }
+
       sceneInfra.camControls
         .updateCameraToAxis(AxisNames.Y)
         .catch(reportRejection)
@@ -68,6 +92,14 @@ export function createStandardViewsCommands(kclManager: KclManager) {
     icon: 'settings',
     needsReview: false,
     onSubmit: (data) => {
+      if (isOpenCascadeEngine(engineCommandManager)) {
+        dispatchOpenCascadeCameraControl({
+          type: 'axis',
+          axis: AxisNames.NEG_Z,
+        })
+        return
+      }
+
       sceneInfra.camControls
         .updateCameraToAxis(AxisNames.NEG_Z)
         .catch(reportRejection)
@@ -82,6 +114,14 @@ export function createStandardViewsCommands(kclManager: KclManager) {
     icon: 'settings',
     needsReview: false,
     onSubmit: (data) => {
+      if (isOpenCascadeEngine(engineCommandManager)) {
+        dispatchOpenCascadeCameraControl({
+          type: 'axis',
+          axis: AxisNames.NEG_X,
+        })
+        return
+      }
+
       sceneInfra.camControls
         .updateCameraToAxis(AxisNames.NEG_X)
         .catch(reportRejection)
@@ -96,6 +136,11 @@ export function createStandardViewsCommands(kclManager: KclManager) {
     icon: 'settings',
     needsReview: false,
     onSubmit: (data) => {
+      if (isOpenCascadeEngine(engineCommandManager)) {
+        dispatchOpenCascadeCameraControl({ type: 'zoom_to_fit' })
+        return
+      }
+
       engineStreamZoomToFit({ engineCommandManager, padding: 0.1 }).catch(
         reportRejection
       )
@@ -111,4 +156,10 @@ export function createStandardViewsCommands(kclManager: KclManager) {
     leftViewCommand,
     zoomToFitCommand,
   }
+}
+
+function isOpenCascadeEngine(engineCommandManager: unknown) {
+  return Boolean(
+    (engineCommandManager as { isOpenCascade?: boolean }).isOpenCascade
+  )
 }

@@ -4,6 +4,7 @@ import type { MutableRefObject } from 'react'
 
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { dispatchOpenCascadeCameraControl } from '@src/lib/cameraControls'
 import { AxisNames } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import type { ColorRepresentation, Intersection } from 'three'
@@ -140,6 +141,12 @@ export default function AxisGizmo() {
     const onAxisClick = (axisName: AxisNames) => {
       isHoverRefreshPausedRef.current = true
       resetRayCast()
+      if (isOpenCascadeEngine(kclManager.engineCommandManager)) {
+        dispatchOpenCascadeCameraControl({ type: 'axis', axis: axisName })
+        refreshHoverAfterCameraUpdate()
+        return
+      }
+
       void kclManager.sceneInfra.camControls
         .updateCameraToAxis(axisName)
         .catch(reportRejection)
@@ -202,6 +209,12 @@ export default function AxisGizmo() {
       <canvas ref={canvasRef} />
       <ViewControlContextMenu menuTargetElement={wrapperRef} />
     </div>
+  )
+}
+
+function isOpenCascadeEngine(engineCommandManager: unknown) {
+  return Boolean(
+    (engineCommandManager as { isOpenCascade?: boolean }).isOpenCascade
   )
 }
 

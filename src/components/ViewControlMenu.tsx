@@ -8,6 +8,7 @@ import {
 } from '@src/components/ContextMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { getSelectedSketchTarget } from '@src/lang/queryAst'
+import { dispatchOpenCascadeCameraControl } from '@src/lib/cameraControls'
 import type { AxisNames } from '@src/lib/constants'
 import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
@@ -60,6 +61,14 @@ export function useViewControlMenuItems() {
         <ContextMenuItem
           key={axisName}
           onClick={() => {
+            if (isOpenCascadeEngine(kclManager.engineCommandManager)) {
+              dispatchOpenCascadeCameraControl({
+                type: 'axis',
+                axis: axisName as AxisNames,
+              })
+              return
+            }
+
             kclManager.sceneInfra.camControls
               .updateCameraToAxis(axisName as AxisNames)
               .catch(reportRejection)
@@ -195,6 +204,12 @@ export function useViewControlMenuItems() {
     ]
   )
   return menuItems
+}
+
+function isOpenCascadeEngine(engineCommandManager: unknown) {
+  return Boolean(
+    (engineCommandManager as { isOpenCascade?: boolean }).isOpenCascade
+  )
 }
 
 export const ViewControlContextMenu = memo(function ViewControlContextMenu({

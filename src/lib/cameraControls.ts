@@ -108,6 +108,46 @@ export interface MouseGuard {
   rotate: MouseGuardHandler
 }
 
+export type CameraAxisName = 'x' | 'y' | 'z' | '-x' | '-y' | '-z'
+
+export type OpenCascadeCameraControlCommand =
+  | { type: 'axis'; axis: CameraAxisName }
+  | { type: 'zoom_to_fit' }
+  | { type: 'view_isometric' }
+
+const OPEN_CASCADE_CAMERA_CONTROL_EVENT = 'open-cascade-camera-control'
+
+export function dispatchOpenCascadeCameraControl(
+  command: OpenCascadeCameraControlCommand
+) {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  window.dispatchEvent(
+    new CustomEvent<OpenCascadeCameraControlCommand>(
+      OPEN_CASCADE_CAMERA_CONTROL_EVENT,
+      { detail: command }
+    )
+  )
+}
+
+export function addOpenCascadeCameraControlListener(
+  listener: (command: OpenCascadeCameraControlCommand) => void
+) {
+  if (typeof window === 'undefined') {
+    return () => {}
+  }
+
+  const eventListener = (event: Event) => {
+    listener((event as CustomEvent<OpenCascadeCameraControlCommand>).detail)
+  }
+
+  window.addEventListener(OPEN_CASCADE_CAMERA_CONTROL_EVENT, eventListener)
+  return () =>
+    window.removeEventListener(OPEN_CASCADE_CAMERA_CONTROL_EVENT, eventListener)
+}
+
 export const btnName = (e: MouseEvent) => ({
   middle: !!(e.buttons & 4) || e.button === 1,
   right: !!(e.buttons & 2) || e.button === 2,

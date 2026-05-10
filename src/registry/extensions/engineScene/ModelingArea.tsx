@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ConnectionStream } from '@src/components/ConnectionStream'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -89,12 +89,16 @@ function ZooModelingArea() {
 }
 
 function OpenCascadeModelingArea() {
+  useSignals()
   const { settings } = useApp()
   const { kclManager } = useSingletons()
   const [diagnostic, setDiagnostic] = useState<string | undefined>()
+  const executionCounterRef = useRef(0)
+  const code = kclManager.codeSignal.value
 
   useEffect(() => {
     let cancelled = false
+    const executionId = ++executionCounterRef.current
 
     async function startAndExecute() {
       const engineCommandManager =
@@ -117,28 +121,46 @@ function OpenCascadeModelingArea() {
         })
       }
 
+      await engineCommandManager.startNewSession()
+      if (cancelled || executionId !== executionCounterRef.current) {
+        return
+      }
+
       await kclManager.rustContext.clearSceneAndBustCache(
         jsAppSettings(settings.actor),
         kclManager.path || undefined
       )
-      await kclManager.executeCode()
+      if (cancelled || executionId !== executionCounterRef.current) {
+        return
+      }
 
-      if (!cancelled) {
+      await kclManager.executeCode(code)
+
+      if (!cancelled && executionId === executionCounterRef.current) {
         setDiagnostic(undefined)
       }
     }
 
-    startAndExecute().catch((error) => {
-      if (!cancelled) {
-        setDiagnostic(error instanceof Error ? error.message : String(error))
-      }
-      reportRejection(error)
-    })
+    const timeoutId = window.setTimeout(() => {
+      startAndExecute().catch((error) => {
+        if (!cancelled && executionId === executionCounterRef.current) {
+          setDiagnostic(error instanceof Error ? error.message : String(error))
+        }
+        reportRejection(error)
+      })
+    }, 200)
 
     return () => {
       cancelled = true
+      window.clearTimeout(timeoutId)
     }
-  }, [kclManager, settings.actor])
+  }, [code, kclManager, settings.actor])
+
+  useEffect(() => {
+    return () => {
+      executionCounterRef.current += 1
+    }
+  }, [])
 
   return (
     <div className="relative z-0 min-w-64 flex flex-col flex-1 items-center overflow-hidden bg-chalkboard-10 dark:bg-chalkboard-100">

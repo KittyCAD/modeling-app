@@ -1,4 +1,5 @@
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { dispatchOpenCascadeCameraControl } from '@src/lib/cameraControls'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import { engineStreamZoomToFit, engineViewIsometric } from '@src/lib/utils'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
@@ -24,6 +25,13 @@ export async function resetCameraPosition({
   // We need a padding of 0.1 for zoom_to_fit for all E2E tests since they were originally
   // written with zoom_to_fit with padding 0.1
   const padding = 0.1
+  if (isOpenCascadeEngine(engineCommandManager)) {
+    dispatchOpenCascadeCameraControl({
+      type: isPlaywright() ? 'zoom_to_fit' : 'view_isometric',
+    })
+    return
+  }
+
   if (isPlaywright()) {
     await engineStreamZoomToFit({ engineCommandManager, padding })
   } else {
@@ -41,4 +49,10 @@ export async function resetCameraPosition({
       padding,
     })
   }
+}
+
+function isOpenCascadeEngine(engineCommandManager: unknown) {
+  return Boolean(
+    (engineCommandManager as { isOpenCascade?: boolean }).isOpenCascade
+  )
 }
