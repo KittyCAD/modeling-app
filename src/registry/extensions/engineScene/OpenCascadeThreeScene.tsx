@@ -1662,7 +1662,9 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         threshold: previousLineThreshold,
       }
       removeSelectionBox(selectionBoxState)
-      sceneInfra.resetMouseListeners()
+      if (!kclManager.modelingState?.matches('sketchSolveMode')) {
+        sceneInfra.resetMouseListeners()
+      }
     }
   }, [
     engineCommandManager,
