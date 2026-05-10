@@ -23,12 +23,12 @@ console_error_panic_hook = "0.1.7"
 dashmap = { version = "6.1.0" }
 http = "1"
 indexmap = "2.13.1"
-ezpz = "0.2.23"
-kittycad = { version = "0.4.11", default-features = false, features = [
+ezpz = "0.2.24"
+kittycad = { version = "0.4.12", default-features = false, features = [
   "js",
   "requests",
 ] }
-kittycad-modeling-cmds = { version = "0.2.189", features = [
+kittycad-modeling-cmds = { version = "0.2.195", features = [
   "ts-rs",
   "websocket",
 ] }
@@ -57,7 +57,7 @@ tracing-subscriber = { version = "0.3.23", features = [
   "json",
 ] }
 uuid = { version = "1", features = ["v4", "serde"] }
-zip = { version = "8.5.0", default-features = false }
+zip = { version = "8.6.0", default-features = false }
 
 [workspace.lints.clippy]
 assertions_on_result_states = "warn"

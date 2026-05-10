@@ -117,6 +117,7 @@ impl Artifact {
             Artifact::EdgeCut(a) => vec![a.consumed_edge_id],
             Artifact::EdgeCutEdge(a) => vec![a.edge_cut_id],
             Artifact::Helix(a) => a.axis_id.map(|id| vec![id]).unwrap_or_default(),
+            Artifact::Pattern(a) => vec![a.source_id],
         }
     }
 
@@ -131,6 +132,7 @@ impl Artifact {
                 if let Some(composite_solid_id) = a.composite_solid_id {
                     ids.push(composite_solid_id);
                 }
+                ids.extend(&a.pattern_ids);
                 ids
             }
             Artifact::Plane(a) => a.path_ids.clone(),
@@ -151,6 +153,7 @@ impl Artifact {
                 if let Some(composite_solid_id) = a.composite_solid_id {
                     ids.push(composite_solid_id);
                 }
+                ids.extend(&a.pattern_ids);
                 ids
             }
             Artifact::Segment(a) => {
@@ -208,6 +211,7 @@ impl Artifact {
                 let mut ids = Vec::new();
                 ids.extend(&a.surface_ids);
                 ids.extend(&a.edge_ids);
+                ids.extend(&a.pattern_ids);
                 ids
             }
             Artifact::Wall(a) => {
@@ -252,6 +256,13 @@ impl Artifact {
                 if let Some(sweep_id) = a.trajectory_sweep_id {
                     ids.push(sweep_id);
                 }
+                ids
+            }
+            Artifact::Pattern(a) => {
+                // Note: Don't include source_id since it's the parent.
+                let mut ids = a.copy_ids.clone();
+                ids.extend(&a.copy_face_ids);
+                ids.extend(&a.copy_edge_ids);
                 ids
             }
         }
@@ -328,7 +339,8 @@ impl ArtifactGraph {
                 | Artifact::SweepEdge(_)
                 | Artifact::EdgeCut(_)
                 | Artifact::EdgeCutEdge(_)
-                | Artifact::Helix(_) => false,
+                | Artifact::Helix(_)
+                | Artifact::Pattern(_) => false,
             };
             if !grouped {
                 ungrouped.push(id);
@@ -526,6 +538,18 @@ impl ArtifactGraph {
                 )?;
                 node_path_display(output, prefix, None, &helix.code_ref)?;
             }
+            Artifact::Pattern(pattern) => {
+                writeln!(
+                    output,
+                    "{prefix}{id}[\"Pattern {:?}<br>{:?}<br>Copies: {}<br>Faces: {}<br>Edges: {}\"]",
+                    pattern.sub_type,
+                    code_ref_display(&pattern.code_ref),
+                    pattern.copy_ids.len(),
+                    pattern.copy_face_ids.len(),
+                    pattern.copy_edge_ids.len(),
+                )?;
+                node_path_display(output, prefix, None, &pattern.code_ref)?;
+            }
         }
         Ok(())
     }
@@ -657,6 +681,7 @@ fn surface_blend_creates_blend_sweep_artifact() {
             trajectory_id: None,
             method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
             consumed: false,
+            pattern_ids: Vec::new(),
         }),
     );
     artifacts.insert(
@@ -671,6 +696,7 @@ fn surface_blend_creates_blend_sweep_artifact() {
             trajectory_id: None,
             method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
             consumed: false,
+            pattern_ids: Vec::new(),
         }),
     );
 
@@ -712,6 +738,7 @@ fn surface_blend_creates_blend_sweep_artifact() {
     let updated = artifacts_to_update(
         &artifacts,
         &artifact_command,
+        &FnvHashMap::default(),
         &FnvHashMap::default(),
         &FnvHashMap::default(),
         &FnvHashMap::default(),
@@ -760,6 +787,7 @@ fn create_region_creates_region_path_sub_type() {
             origin_path_id: None,
             inner_path_id: None,
             outer_path_id: None,
+            pattern_ids: Vec::new(),
         }),
     );
 
@@ -788,6 +816,7 @@ fn create_region_creates_region_path_sub_type() {
         &FnvHashMap::default(),
         &FnvHashMap::default(),
         &FnvHashMap::default(),
+        &FnvHashMap::default(),
         &programs,
         0,
         &IndexMap::default(),
@@ -806,6 +835,103 @@ fn create_region_creates_region_path_sub_type() {
     assert_eq!(region_path.sketch_block_id, None);
     // It links back to the origin sketch path.
     assert_eq!(region_path.origin_path_id, Some(origin_path_id));
+}
+
+#[test]
+fn pattern_artifact_links_to_source_geometry() {
+    let path_id = ArtifactId::new(Uuid::new_v4());
+    let sweep_id = ArtifactId::new(Uuid::new_v4());
+    let pattern_id = ArtifactId::new(Uuid::new_v4());
+    let plane_id = ArtifactId::new(Uuid::new_v4());
+    let copy_id = Uuid::new_v4();
+    let copy_face_id = Uuid::new_v4();
+    let copy_edge_id = Uuid::new_v4();
+    let code_ref = CodeRef::placeholder(SourceRange::synthetic());
+    let face_edge_infos: Vec<kcmc::output::FaceEdgeInfo> = serde_json::from_value(serde_json::json!([
+        {
+            "object_id": copy_id,
+            "faces": [copy_face_id],
+            "edges": [copy_edge_id],
+        }
+    ]))
+    .expect("valid face-edge info");
+
+    let mut artifacts = IndexMap::new();
+    artifacts.insert(
+        path_id,
+        Artifact::Path(Path {
+            id: path_id,
+            sub_type: PathSubType::Sketch,
+            plane_id,
+            seg_ids: Vec::new(),
+            consumed: true,
+            sweep_id: Some(sweep_id),
+            trajectory_sweep_id: None,
+            solid2d_id: None,
+            code_ref: code_ref.clone(),
+            composite_solid_id: None,
+            sketch_block_id: None,
+            origin_path_id: None,
+            inner_path_id: None,
+            outer_path_id: None,
+            pattern_ids: Vec::new(),
+        }),
+    );
+    artifacts.insert(
+        sweep_id,
+        Artifact::Sweep(Sweep {
+            id: sweep_id,
+            sub_type: SweepSubType::Extrusion,
+            path_id,
+            surface_ids: Vec::new(),
+            edge_ids: Vec::new(),
+            code_ref: code_ref.clone(),
+            trajectory_id: None,
+            method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            consumed: false,
+            pattern_ids: Vec::new(),
+        }),
+    );
+
+    let updated = pattern_artifact_updates(
+        &artifacts,
+        pattern_id,
+        PatternSubType::Circular,
+        path_id,
+        &face_edge_infos,
+        code_ref,
+    );
+
+    assert!(matches!(
+        updated.first(),
+        Some(Artifact::Pattern(Pattern {
+            id,
+            sub_type: PatternSubType::Circular,
+            source_id,
+            copy_ids,
+            copy_face_ids,
+            copy_edge_ids,
+            ..
+        })) if *id == pattern_id
+            && *source_id == path_id
+            && copy_ids == &vec![ArtifactId::new(copy_id)]
+            && copy_face_ids == &vec![ArtifactId::new(copy_face_id)]
+            && copy_edge_ids == &vec![ArtifactId::new(copy_edge_id)]
+    ));
+    assert_eq!(
+        updated.first().map(Artifact::child_ids),
+        Some(vec![
+            ArtifactId::new(copy_id),
+            ArtifactId::new(copy_face_id),
+            ArtifactId::new(copy_edge_id)
+        ])
+    );
+    assert!(updated.iter().any(|artifact| {
+        matches!(artifact, Artifact::Path(path) if path.id == path_id && path.pattern_ids == vec![pattern_id])
+    }));
+    assert!(updated.iter().any(|artifact| {
+        matches!(artifact, Artifact::Sweep(sweep) if sweep.id == sweep_id && sweep.pattern_ids == vec![pattern_id])
+    }));
 }
 
 #[test]

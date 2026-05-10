@@ -1,6 +1,15 @@
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
-import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { CustomIconName } from '@src/components/CustomIcon'
+import type { KclManager } from '@src/lang/KclManager'
+import { toUtf16 } from '@src/lang/errors'
+import { updateModelingState } from '@src/lang/modelingWorkflows'
+import {
+  deleteTermFromUnlabeledArgumentArray,
+  deleteTopLevelStatement,
+} from '@src/lang/modifyAst'
+import { retrieveEdgeSelectionsFromOpArgs } from '@src/lang/modifyAst/edges'
 import {
   retrieveFaceSelectionsFromOpArgs,
   retrieveHoleBodyArgs,
@@ -9,12 +18,12 @@ import {
   retrieveNonDefaultPlaneSelectionFromOpArg,
 } from '@src/lang/modifyAst/faces'
 import {
-  retrieveAxisOrEdgeSelectionsFromOpArg,
-  retrieveBodyTypeFromOpArg,
-  retrieveTagDeclaratorFromOpArg,
   SWEEP_CONSTANTS,
   SWEEP_MODULE,
   type SweepRelativeTo,
+  retrieveAxisOrEdgeSelectionsFromOpArg,
+  retrieveBodyTypeFromOpArg,
+  retrieveTagDeclaratorFromOpArg,
 } from '@src/lang/modifyAst/sweeps'
 import {
   getNodeFromPath,
@@ -28,8 +37,9 @@ import {
   getCodeRefsByArtifactId,
 } from '@src/lang/std/artifactGraph'
 import {
-  type Program,
   type ArtifactGraph,
+  type CallExpressionKw,
+  type Program,
   pathToNodeFromRustNodePath,
 } from '@src/lang/wasm'
 import type {
@@ -37,32 +47,23 @@ import type {
   ModelingCommandSchema,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
-import { getStringValue, stringToKclExpression } from '@src/lib/kclHelpers'
-import { isDefaultPlaneStr } from '@src/lib/planes'
-import { isArray, isNonNullable, stripQuotes } from '@src/lib/utils'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
-import type RustContext from '@src/lib/rustContext'
-import { err } from '@src/lib/trap'
-import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
-import { retrieveEdgeSelectionsFromOpArgs } from '@src/lang/modifyAst/edges'
 import {
-  type KclPreludeBodyType,
+  EXECUTION_TYPE_REAL,
   KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
   KCL_PRELUDE_EXTRUDE_METHOD_NEW,
+  type KclPreludeBodyType,
   type KclPreludeExtrudeMethod,
-  EXECUTION_TYPE_REAL,
 } from '@src/lib/constants'
-import { toUtf16 } from '@src/lang/errors'
+import { getStringValue, stringToKclExpression } from '@src/lib/kclHelpers'
+import { isDefaultPlaneStr } from '@src/lib/planes'
+import type RustContext from '@src/lib/rustContext'
+import { err } from '@src/lib/trap'
+import { isArray, isNonNullable, stripQuotes } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
 import type { modelingMachine } from '@src/machines/modelingMachine'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import type { ActorRefFrom } from 'xstate'
-import {
-  deleteTermFromUnlabeledArgumentArray,
-  deleteTopLevelStatement,
-} from '@src/lang/modifyAst'
-import type { KclManager } from '@src/lang/KclManager'
-import { updateModelingState } from '@src/lang/modelingWorkflows'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -200,6 +201,23 @@ function extractStringArgument(
   return arg?.sourceRange
     ? code.slice(...arg.sourceRange.map((r) => toUtf16(r, code)))
     : undefined
+}
+
+function extractStringArrayArgument(
+  code: string,
+  operation: StdLibCallOp,
+  argName: string
+): string | undefined {
+  const raw = extractStringArgument(code, operation, argName)
+  if (!raw) return undefined
+
+  return raw
+    .replace(/^\s*\[/, '')
+    .replace(/\]\s*$/, '')
+    .split(',')
+    .map((value) => stripQuotes(value.trim()))
+    .filter(Boolean)
+    .join(', ')
 }
 
 /**
@@ -1920,6 +1938,298 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({
   }
 }
 
+const prepareToEditGdtProfile: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  artifactGraph,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'GDT Profile',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const edgesArg = operation.labeledArgs?.['edges']
+  if (!edgesArg || !edgesArg.sourceRange) {
+    return { reason: 'Missing or invalid edges argument' }
+  }
+
+  const edges = retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+  const tolerance = await extractKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if ('error' in tolerance) {
+    return { reason: tolerance.error }
+  }
+
+  const optionalArgs = await Promise.all([
+    extractKclArgument(code, operation, 'precision', rustContext),
+    extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
+    extractKclArgument(code, operation, 'fontPointSize', rustContext),
+    extractKclArgument(code, operation, 'fontScale', rustContext),
+  ])
+
+  const [precision, framePosition, leaderScale, fontPointSize, fontScale] =
+    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
+
+  const framePlane = extractStringArgument(code, operation, 'framePlane')
+  const datums = extractStringArrayArgument(code, operation, 'datums')
+
+  const argDefaultValues: ModelingCommandSchema['GDT Profile'] = {
+    edges,
+    datums,
+    tolerance,
+    precision,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontPointSize,
+    fontScale,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+const prepareToEditGdtPerpendicularity: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  artifactGraph,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'GDT Perpendicularity',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const graphSelections: Selections['graphSelections'] = []
+  const facesArg = operation.labeledArgs?.['faces']
+  if (facesArg?.sourceRange) {
+    const faces = extractFaceSelections(artifactGraph, facesArg)
+    if ('error' in faces) {
+      return { reason: faces.error }
+    }
+    graphSelections.push(...faces)
+  }
+
+  const edgesArg = operation.labeledArgs?.['edges']
+  if (edgesArg?.sourceRange) {
+    graphSelections.push(
+      ...retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+        .graphSelections
+    )
+  }
+
+  if (graphSelections.length === 0) {
+    return { reason: 'Missing or invalid faces or edges argument' }
+  }
+
+  const tolerance = await extractKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if ('error' in tolerance) {
+    return { reason: tolerance.error }
+  }
+
+  const optionalArgs = await Promise.all([
+    extractKclArgument(code, operation, 'precision', rustContext),
+    extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
+    extractKclArgument(code, operation, 'fontPointSize', rustContext),
+    extractKclArgument(code, operation, 'fontScale', rustContext),
+  ])
+
+  const [precision, framePosition, leaderScale, fontPointSize, fontScale] =
+    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
+
+  const framePlane = extractStringArgument(code, operation, 'framePlane')
+  const datums = extractStringArrayArgument(code, operation, 'datums')
+
+  const argDefaultValues: ModelingCommandSchema['GDT Perpendicularity'] = {
+    objects: { graphSelections, otherSelections: [] },
+    datums,
+    tolerance,
+    precision,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontPointSize,
+    fontScale,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+const prepareToEditGdtParallelism: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  artifactGraph,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'GDT Parallelism',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const graphSelections: Selections['graphSelections'] = []
+  const facesArg = operation.labeledArgs?.['faces']
+  if (facesArg?.sourceRange) {
+    const faces = extractFaceSelections(artifactGraph, facesArg)
+    if ('error' in faces) {
+      return { reason: faces.error }
+    }
+    graphSelections.push(...faces)
+  }
+
+  const edgesArg = operation.labeledArgs?.['edges']
+  if (edgesArg?.sourceRange) {
+    graphSelections.push(
+      ...retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+        .graphSelections
+    )
+  }
+
+  if (graphSelections.length === 0) {
+    return { reason: 'Missing or invalid faces or edges argument' }
+  }
+
+  const tolerance = await extractKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if ('error' in tolerance) {
+    return { reason: tolerance.error }
+  }
+
+  const optionalArgs = await Promise.all([
+    extractKclArgument(code, operation, 'precision', rustContext),
+    extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
+    extractKclArgument(code, operation, 'fontPointSize', rustContext),
+    extractKclArgument(code, operation, 'fontScale', rustContext),
+  ])
+
+  const [precision, framePosition, leaderScale, fontPointSize, fontScale] =
+    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
+
+  const framePlane = extractStringArgument(code, operation, 'framePlane')
+  const datums = extractStringArrayArgument(code, operation, 'datums')
+
+  const argDefaultValues: ModelingCommandSchema['GDT Parallelism'] = {
+    objects: { graphSelections, otherSelections: [] },
+    datums,
+    tolerance,
+    precision,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontPointSize,
+    fontScale,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+const prepareToEditGdtAnnotation: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  artifactGraph,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'GDT Annotation',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const graphSelections: Selections['graphSelections'] = []
+  const facesArg = operation.labeledArgs?.['faces']
+  if (facesArg?.sourceRange) {
+    const faces = extractFaceSelections(artifactGraph, facesArg)
+    if ('error' in faces) {
+      return { reason: faces.error }
+    }
+    graphSelections.push(...faces)
+  }
+
+  const edgesArg = operation.labeledArgs?.['edges']
+  if (edgesArg?.sourceRange) {
+    graphSelections.push(
+      ...retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+        .graphSelections
+    )
+  }
+
+  if (graphSelections.length === 0) {
+    return { reason: 'Missing or invalid faces or edges argument' }
+  }
+
+  const annotationRaw = extractStringArgument(code, operation, 'annotation')
+  if (!annotationRaw) {
+    return { reason: 'Missing or invalid annotation argument' }
+  }
+  const annotation = stripQuotes(annotationRaw)
+
+  const optionalArgs = await Promise.all([
+    extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
+    extractKclArgument(code, operation, 'fontPointSize', rustContext),
+    extractKclArgument(code, operation, 'fontScale', rustContext),
+  ])
+
+  const [framePosition, leaderScale, fontPointSize, fontScale] =
+    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
+
+  const framePlane = extractStringArgument(code, operation, 'framePlane')
+
+  const argDefaultValues: ModelingCommandSchema['GDT Annotation'] = {
+    objects: { graphSelections, otherSelections: [] },
+    annotation,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontPointSize,
+    fontScale,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
 const prepareToEditSplit: PrepareToEditCallback = async ({
   operation,
   artifactGraph,
@@ -2050,6 +2360,26 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Flatness',
     icon: 'gdtFlatness',
     prepareToEdit: prepareToEditGdtFlatness,
+  },
+  'gdt::perpendicularity': {
+    label: 'Perpendicularity',
+    icon: 'perpendicular',
+    prepareToEdit: prepareToEditGdtPerpendicularity,
+  },
+  'gdt::parallelism': {
+    label: 'Parallelism',
+    icon: 'parallel',
+    prepareToEdit: prepareToEditGdtParallelism,
+  },
+  'gdt::annotation': {
+    label: 'Annotation',
+    icon: 'text',
+    prepareToEdit: prepareToEditGdtAnnotation,
+  },
+  'gdt::profile': {
+    label: 'Profile',
+    icon: 'gdtProfile',
+    prepareToEdit: prepareToEditGdtProfile,
   },
   'gear::helical': {
     label: 'Helical Gear',
@@ -3190,50 +3520,91 @@ async function prepareToEditAppearance({
 }
 
 export type HideOperation = Operation & { type: 'StdLibCall'; name: 'hide' }
+
+function getHideOperationArtifactIds(op: Operation): string[] {
+  if (!(op.type === 'StdLibCall' && op.name === 'hide')) {
+    return []
+  }
+
+  const value = op.unlabeledArg?.value
+  if (!value) {
+    return []
+  }
+
+  const values = value.type === 'Array' ? value.value : [value]
+  return values.flatMap((value) =>
+    'value' in value &&
+    typeof value.value === 'object' &&
+    value.value !== null &&
+    'artifactId' in value.value &&
+    typeof value.value.artifactId === 'string'
+      ? [value.value.artifactId]
+      : []
+  )
+}
+
 export function getHideOpByArtifactId(
   ops: Operation[],
   searchId: string
 ): HideOperation | undefined {
-  const found = ops.find((op) => {
-    if (!(op.type === 'StdLibCall' && op.name === 'hide')) {
-      return undefined
-    }
-    if (op.unlabeledArg?.value.type === 'Array') {
-      const found = op.unlabeledArg.value.value.find(
-        (a) =>
-          'value' in a &&
-          typeof a.value === 'object' &&
-          'artifactId' in a.value &&
-          typeof a.value?.artifactId === 'string' &&
-          a.value.artifactId === searchId
-      )
-
-      return found ? op : undefined
-    } else if (
-      op.unlabeledArg?.value &&
-      'value' in op.unlabeledArg.value &&
-      op.unlabeledArg.value.value &&
-      typeof op.unlabeledArg.value.value === 'object' &&
-      'artifactId' in op.unlabeledArg.value.value &&
-      typeof op.unlabeledArg.value.value.artifactId === 'string' &&
-      op.unlabeledArg.value.value.artifactId
-    ) {
-      return op.unlabeledArg.value.value.artifactId === searchId
-        ? op
-        : undefined
-    }
-    return undefined
-  })
+  const found = ops.find((op) =>
+    getHideOperationArtifactIds(op).includes(searchId)
+  )
 
   return found as HideOperation | undefined
+}
+
+type ArtifactCodeRef = Extract<Artifact, { codeRef: unknown }>['codeRef']
+
+function codeRefsMatch(left: ArtifactCodeRef, right: ArtifactCodeRef) {
+  return (
+    left.range.length === right.range.length &&
+    left.range.every((value, index) => value === right.range[index]) &&
+    JSON.stringify(left.nodePath) === JSON.stringify(right.nodePath)
+  )
+}
+
+export function getHideOpForArtifact(input: {
+  operations: Operation[]
+  artifact: Artifact
+  artifactGraph: ArtifactGraph
+}): HideOperation | undefined {
+  const { operations, artifact, artifactGraph } = input
+  const directHideOperation = getHideOpByArtifactId(operations, artifact.id)
+  if (directHideOperation) {
+    return directHideOperation
+  }
+
+  if (!('codeRef' in artifact)) {
+    return undefined
+  }
+
+  const equivalentArtifactIds = new Set(
+    [...artifactGraph.values()].flatMap((candidate) => {
+      if (
+        !('codeRef' in candidate) ||
+        !codeRefsMatch(candidate.codeRef, artifact.codeRef)
+      ) {
+        return []
+      }
+
+      return [candidate.id]
+    })
+  )
+
+  return operations.find((op) =>
+    getHideOperationArtifactIds(op).some((id) => equivalentArtifactIds.has(id))
+  ) as HideOperation | undefined
 }
 
 export function onHide(props: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   modelingActor: ActorRefFrom<typeof modelingMachine>
+  objects?: Selections
 }) {
-  const selection = props.modelingActor.getSnapshot().context.selectionRanges
+  const selection =
+    props.objects ?? props.modelingActor.getSnapshot().context.selectionRanges
 
   props.modelingActor.send({
     type: 'Hide',
@@ -3253,12 +3624,21 @@ export async function onUnhide(props: {
   }
   let modifiedAst = structuredClone(props.kclManager.ast)
   const pathToNode = pathToNodeFromRustNodePath(props.hideOperation.nodePath)
+  const wasmInstance = await props.kclManager.rustContext.wasmInstancePromise
+  const hideCall = getNodeFromPath<Node<CallExpressionKw>>(
+    modifiedAst,
+    pathToNode,
+    wasmInstance,
+    'CallExpressionKw'
+  )
+  const hideArgIsSyntacticArray =
+    !err(hideCall) && hideCall.node.unlabeled?.type === 'ArrayExpression'
 
   if (
     props.hideOperation.unlabeledArg.value.type === 'Array' &&
+    hideArgIsSyntacticArray &&
     'codeRef' in props.targetArtifact
   ) {
-    const wasmInstance = await props.kclManager.rustContext.wasmInstancePromise
     // Multi-item case: remove that target artifact's name
     const termToDelete = getVariableNameFromNodePath(
       pathToNodeFromRustNodePath(props.targetArtifact.codeRef.nodePath),

@@ -27,7 +27,7 @@ split(
 | `merge` | [`bool`](/docs/kcl-std/types/std-types-bool) | Whether to merge the bodies into one after. Defaults to false. | No |
 | `keepTools` | [`bool`](/docs/kcl-std/types/std-types-bool) | If false, the tool bodies will be removed from the scene. If true, they'll be kept. Defaults to false. | No |
 | `tools` | [[`Solid`](/docs/kcl-std/types/std-types-Solid)] | The tools to split the target bodies along. | No |
-| `legacyMethod` | [`bool`](/docs/kcl-std/types/std-types-bool) | You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm. If true, revert to older engine SSI algorithm. Defaults to false. | No |
+| `legacyMethod` | [`bool`](/docs/kcl-std/types/std-types-bool) | **Deprecated as of KCL 2.0.** You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm. If true, revert to older engine SSI algorithm. Defaults to false. | No |
 
 ### Returns
 

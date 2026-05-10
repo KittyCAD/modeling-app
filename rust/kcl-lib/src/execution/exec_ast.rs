@@ -14,6 +14,8 @@ use crate::errors::KclErrorDetails;
 use crate::exec::Sketch;
 use crate::execution::AbstractSegment;
 use crate::execution::BodyType;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ConstraintKind;
 use crate::execution::ControlFlowKind;
 use crate::execution::EarlyReturn;
 use crate::execution::EnvironmentRef;
@@ -40,6 +42,7 @@ use crate::execution::UnsolvedExpr;
 use crate::execution::UnsolvedSegment;
 use crate::execution::UnsolvedSegmentKind;
 use crate::execution::annotations;
+use crate::execution::annotations::FnAttrs;
 use crate::execution::cad_op::OpKclValue;
 use crate::execution::control_continue;
 use crate::execution::early_return;
@@ -50,6 +53,8 @@ use crate::execution::kcl_value::KclFunctionSourceParams;
 use crate::execution::kcl_value::TypeDef;
 use crate::execution::memory::SKETCH_PREFIX;
 use crate::execution::memory::{self};
+#[cfg(feature = "artifact-graph")]
+use crate::execution::sketch_constraint_status_for_sketch;
 use crate::execution::sketch_solve::FreedomAnalysis;
 use crate::execution::sketch_solve::Solved;
 use crate::execution::sketch_solve::create_segment_scene_objects;
@@ -1056,10 +1061,18 @@ impl ExecutorContext {
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
             Expr::FunctionExpression(function_expression) => {
                 let attrs = annotations::get_fn_attrs(annotations, metadata.source_range)?;
-                let experimental = attrs.map(|a| a.experimental).unwrap_or_default();
+                let experimental = attrs
+                    .as_ref()
+                    .map(|a| a.experimental)
+                    // Use the default for the field, not the bool type.
+                    .unwrap_or_else(|| FnAttrs::default().experimental);
 
                 // Check the KCL @(feature_tree = ) annotation.
-                let include_in_feature_tree = attrs.unwrap_or_default().include_in_feature_tree;
+                let include_in_feature_tree = attrs
+                    .as_ref()
+                    .map(|a| a.include_in_feature_tree)
+                    // Use the default for the field, not the bool type.
+                    .unwrap_or_else(|| FnAttrs::default().include_in_feature_tree);
                 let (mut closure, placeholder_env_ref) = if let Some(attrs) = attrs
                     && (attrs.impl_ == annotations::Impl::Rust
                         || attrs.impl_ == annotations::Impl::RustConstrainable
@@ -1264,8 +1277,6 @@ impl Node<SketchBlock> {
         };
         #[cfg(not(feature = "artifact-graph"))]
         let _ = on_object_id;
-        #[cfg(not(feature = "artifact-graph"))]
-        let _ = sketch_id;
         #[cfg(feature = "artifact-graph")]
         let sketch_ctor_on = sketch_on_frontend_plane(&self.arguments, on_object_id);
         #[cfg(feature = "artifact-graph")]
@@ -1324,15 +1335,12 @@ impl Node<SketchBlock> {
             self.prep_mem(exec_state.mut_stack().snapshot(), exec_state);
 
             // Track that we're executing a sketch block.
-            #[cfg(feature = "artifact-graph")]
             let initial_sketch_block_state = {
                 SketchBlockState {
                     sketch_id: Some(sketch_id),
                     ..Default::default()
                 }
             };
-            #[cfg(not(feature = "artifact-graph"))]
-            let initial_sketch_block_state = SketchBlockState::default();
 
             let original_value = exec_state.mod_local.sketch_block.replace(initial_sketch_block_state);
 
@@ -1629,6 +1637,35 @@ impl Node<SketchBlock> {
                 node_path: NodePath::placeholder(),
                 source_range: range,
             });
+
+            // Warn if the sketch has conflicting constraints. Skip this when
+            // freedom analysis didn't run (e.g., during dragging), because the
+            // freedom values on points are stale defaults in that case.
+            if exec_state.mod_local.freedom_analysis {
+                let status = {
+                    let scene_objects = &exec_state.mod_local.artifacts.scene_objects;
+                    scene_objects
+                        .get(sketch_id.0)
+                        .and_then(|obj| sketch_constraint_status_for_sketch(scene_objects, obj))
+                };
+                if let Some(status) = status
+                    && status.status == ConstraintKind::OverConstrained
+                {
+                    let description = if status.conflict_count == 1 {
+                        "segment has"
+                    } else {
+                        "segments have"
+                    };
+                    let message = format!(
+                        "Sketch is over-constrained: {} {description} conflicting constraints",
+                        status.conflict_count,
+                    );
+                    exec_state.warn(
+                        CompilationIssue::err(range, message),
+                        annotations::WARN_OVER_CONSTRAINED_SKETCH,
+                    );
+                }
+            }
         }
 
         let properties = self.sketch_properties(sketch, variables);
@@ -3154,7 +3191,9 @@ impl Node<BinaryExpression> {
                                 );
                             }
                         }
-                        SketchConstraintKind::Distance { points } => {
+                        SketchConstraintKind::Distance { points, label_position } => {
+                            #[cfg(not(feature = "artifact-graph"))]
+                            let _ = label_position;
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];
@@ -3276,6 +3315,7 @@ impl Node<BinaryExpression> {
                                     distance: n.try_into().map_err(|_| {
                                         internal_err("Failed to convert distance units numeric suffix:", range)
                                     })?,
+                                    label_position: label_position.clone(),
                                     source,
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);
@@ -3302,7 +3342,7 @@ impl Node<BinaryExpression> {
                                 );
                             }
                         }
-                        SketchConstraintKind::Radius { points } | SketchConstraintKind::Diameter { points } => {
+                        SketchConstraintKind::Radius { .. } | SketchConstraintKind::Diameter { .. } => {
                             #[derive(Clone, Copy)]
                             enum CircularSegmentConstraintTarget {
                                 Arc {
@@ -3343,6 +3383,17 @@ impl Node<BinaryExpression> {
                                     })
                             }
 
+                            let (points, label_position) = match &constraint.kind {
+                                SketchConstraintKind::Radius { points, label_position } => {
+                                    (points, label_position.clone())
+                                }
+                                SketchConstraintKind::Diameter { points, label_position } => {
+                                    (points, label_position.clone())
+                                }
+                                _ => unreachable!(),
+                            };
+                            #[cfg(not(feature = "artifact-graph"))]
+                            let _ = &label_position;
                             let range = self.as_source_range();
                             let center = &points[0];
                             let start = &points[1];
@@ -3494,6 +3545,7 @@ impl Node<BinaryExpression> {
                                         diameter: n.try_into().map_err(|_| {
                                             internal_err("Failed to convert diameter units numeric suffix:", range)
                                         })?,
+                                        label_position,
                                         source,
                                     })
                                 } else {
@@ -3503,6 +3555,7 @@ impl Node<BinaryExpression> {
                                         radius: n.try_into().map_err(|_| {
                                             internal_err("Failed to convert radius units numeric suffix:", range)
                                         })?,
+                                        label_position,
                                         source,
                                     })
                                 };
@@ -3533,7 +3586,9 @@ impl Node<BinaryExpression> {
                                 );
                             }
                         }
-                        SketchConstraintKind::HorizontalDistance { points } => {
+                        SketchConstraintKind::HorizontalDistance { points, label_position } => {
+                            #[cfg(not(feature = "artifact-graph"))]
+                            let _ = label_position;
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];
@@ -3622,6 +3677,7 @@ impl Node<BinaryExpression> {
                                     distance: n.try_into().map_err(|_| {
                                         internal_err("Failed to convert distance units numeric suffix:", range)
                                     })?,
+                                    label_position: label_position.clone(),
                                     source,
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);
@@ -3651,7 +3707,9 @@ impl Node<BinaryExpression> {
                                 );
                             }
                         }
-                        SketchConstraintKind::VerticalDistance { points } => {
+                        SketchConstraintKind::VerticalDistance { points, label_position } => {
+                            #[cfg(not(feature = "artifact-graph"))]
+                            let _ = label_position;
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];
@@ -3738,6 +3796,7 @@ impl Node<BinaryExpression> {
                                     distance: n.try_into().map_err(|_| {
                                         internal_err("Failed to convert distance units numeric suffix:", range)
                                     })?,
+                                    label_position: label_position.clone(),
                                     source,
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);
@@ -4652,6 +4711,7 @@ d = b + c
                     })
                     .unwrap(),
             )),
+            engine_batch: crate::engine::EngineBatchContext::default(),
             fs: Arc::new(crate::fs::FileManager::new()),
             settings: ExecutorSettings {
                 project_directory: Some(crate::TypedPath(tmpdir.path().into())),

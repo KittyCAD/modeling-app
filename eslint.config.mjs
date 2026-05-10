@@ -8,15 +8,11 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import suggestNoThrow from 'eslint-plugin-suggest-no-throw'
 import typescriptEslint from '@typescript-eslint/eslint-plugin'
 import tsParser from '@typescript-eslint/parser'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 import js from '@eslint/js'
 import { FlatCompat } from '@eslint/eslintrc'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 const compat = new FlatCompat({
-  baseDirectory: __dirname,
+  baseDirectory: import.meta.dirname,
   recommendedConfig: js.configs.recommended,
   allConfig: js.configs.all,
 })
@@ -207,11 +203,27 @@ export default defineConfig([
     },
   },
   {
-    files: ['packages/**/*.ts', 'rust/**/*.ts'],
+    files: [
+      'src/registry/extensions/**/*.{ts,tsx}',
+      'src/registry/plugins/**/*.{ts,tsx}',
+    ],
+
+    rules: {
+      'no-restricted-imports': 'off',
+    },
+  },
+  {
+    files: ['packages/**/*.{ts,tsx}', 'rust/**/*.ts'],
     extends: compat.extends(),
 
     rules: {
       'no-restricted-imports': 'off',
+    },
+  },
+  {
+    files: ['packages/registry/src/**/*.{ts,tsx}'],
+    rules: {
+      'suggest-no-throw/suggest-no-throw': 'off',
     },
   },
 ])

@@ -94,7 +94,7 @@ jobs:
           mkdir rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
 
-      - uses: actions/setup-node@v6.3.0
+      - uses: actions/setup-node@v6.4.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -224,7 +224,7 @@ jobs:
           mkdir rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
 
-      - uses: actions/setup-node@v6.3.0
+      - uses: actions/setup-node@v6.4.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -343,7 +343,7 @@ jobs:
           mkdir rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
 
-      - uses: actions/setup-node@v6.3.0
+      - uses: actions/setup-node@v6.4.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -375,7 +375,7 @@ jobs:
         if: ${{ !cancelled() && (success() || failure()) }}
         continue-on-error: true
         with:
-          name: test-results-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
+          name: test-results-desktop-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
           path: test-results/
 
       - name: npm run test:e2e:desktop
@@ -436,7 +436,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v6.3.0
+      - uses: actions/setup-node@v6.4.0
         with:
           node-version-file: .nvmrc
           cache: npm

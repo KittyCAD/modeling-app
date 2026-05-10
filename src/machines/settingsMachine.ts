@@ -20,6 +20,7 @@ import type { Command } from '@src/lib/commandTypes'
 import type { Project } from '@src/lib/project'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { createSettings } from '@src/lib/settings/initialSettings'
+import type { ResolvedExtensionSettings } from '@src/lib/settings/extensionSettings'
 import type {
   BaseUnit,
   SetEventTypes,
@@ -44,6 +45,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 export type SettingsActorDepsType = {
   currentProject?: Project
   commandBarActor: ActorRefFrom<typeof commandBarMachine>
+  extensionSettings: ResolvedExtensionSettings
   wasmInstancePromise: Promise<ModuleType>
 }
 export type SettingsMachineContext = SettingsType & SettingsActorDepsType
@@ -96,12 +98,18 @@ export const settingsMachine = setup({
 
       const {
         currentProject,
+        extensionSettings,
         wasmInstancePromise,
         commandBarActor: _c,
         ...settings
       } = input.context
 
-      await saveSettings(wasmInstancePromise, settings, currentProject?.path)
+      await saveSettings(
+        wasmInstancePromise,
+        settings,
+        extensionSettings,
+        currentProject?.path
+      )
 
       if (input.toastCallback) {
         input.toastCallback()
@@ -109,16 +117,23 @@ export const settingsMachine = setup({
     }),
     loadUserSettings: fromPromise<
       SettingsType,
-      { wasmInstancePromise: Promise<ModuleType> }
+      {
+        extensionSettings: ResolvedExtensionSettings
+        wasmInstancePromise: Promise<ModuleType>
+      }
     >(async ({ input }) => {
       const { settings } = await loadAndValidateSettings(
-        input.wasmInstancePromise
+        input.wasmInstancePromise,
+        {
+          extensionSettings: input.extensionSettings,
+        }
       )
       return settings
     }),
     loadProjectSettings: fromPromise<
       SettingsType,
       {
+        extensionSettings: ResolvedExtensionSettings
         project: Project
         settings: SettingsType
         wasmInstancePromise: Promise<ModuleType>
@@ -126,7 +141,10 @@ export const settingsMachine = setup({
     >(async ({ input }) => {
       const { settings } = await loadAndValidateSettings(
         input.wasmInstancePromise,
-        input.project.path
+        {
+          extensionSettings: input.extensionSettings,
+          projectPath: input.project.path,
+        }
       )
       return settings
     }),
@@ -217,10 +235,15 @@ export const settingsMachine = setup({
       if (!('data' in event)) {
         return
       }
-      const eventParts = event.type.replace(/^set./, '').split('.') as [
-        keyof SettingsType,
-        string,
-      ]
+      const settingPath =
+        event.type === '*' ? event.data.path : event.type.replace(/^set\./, '')
+      if (
+        settingPath === 'layout.configs' ||
+        settingPath.startsWith('layout.configs.')
+      ) {
+        return
+      }
+      const eventParts = settingPath.split('.') as [keyof SettingsType, string]
       const truncatedNewValue = event.data.value?.toString().slice(0, 28)
       const message =
         `Set ${decamelize(eventParts[1], { separator: ' ' })}` +
@@ -271,9 +294,12 @@ export const settingsMachine = setup({
     setSettingAtLevel: assign(({ context, event }) => {
       if (!('data' in event)) return {}
       const { level, value } = event.data
-      const [category, setting] = event.type
-        .replace(/^set./, '')
-        .split('.') as [keyof SettingsType, string]
+      const settingPath =
+        event.type === '*' ? event.data.path : event.type.replace(/^set\./, '')
+      const [category, setting] = settingPath.split('.') as [
+        keyof SettingsType,
+        string,
+      ]
 
       // @ts-ignore
       context[category][setting][level] = value
@@ -390,6 +416,12 @@ export const settingsMachine = setup({
           actions: ['setSettingAtLevel'],
         },
 
+        'set.layout.configs': {
+          target: 'persisting settings',
+
+          actions: ['setSettingAtLevel'],
+        },
+
         'set.app.streamIdleMode': {
           target: 'persisting settings',
 
@@ -484,6 +516,13 @@ export const settingsMachine = setup({
     },
 
     'persisting settings': {
+      on: {
+        'set.layout.configs': {
+          target: 'persisting settings',
+          reenter: true,
+          actions: ['setSettingAtLevel'],
+        },
+      },
       invoke: {
         src: 'persistSettings',
         onDone: {
@@ -519,6 +558,7 @@ export const settingsMachine = setup({
       invoke: {
         src: 'loadUserSettings',
         input: ({ context }) => ({
+          extensionSettings: context.extensionSettings,
           wasmInstancePromise: context.wasmInstancePromise,
         }),
         onDone: {
@@ -567,6 +607,7 @@ export const settingsMachine = setup({
         input: ({ event, context }) => {
           assertEvent(event, 'load.project')
           return {
+            extensionSettings: context.extensionSettings,
             settings: getOnlySettingsFromContext(context),
             project: event.project,
             wasmInstancePromise: context.wasmInstancePromise,
@@ -583,6 +624,7 @@ export function getOnlySettingsFromContext(
   const {
     currentProject: _c,
     commandBarActor: _cba,
+    extensionSettings: _extensionSettings,
     wasmInstancePromise: _w,
     ...settings
   } = s

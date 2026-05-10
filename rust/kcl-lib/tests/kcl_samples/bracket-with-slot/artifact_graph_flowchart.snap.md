@@ -131,7 +131,7 @@ flowchart LR
   47["Plane<br>[5360, 5850, 0]"]
     %% [ProgramBodyItem { index: 27 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   53["SweepEdge Opposite"]
-  54["Sweep Loft<br>[6031, 6090, 0]<br>Consumed: false"]
+  54["Sweep Loft<br>[6031, 6090, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 30 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   55[Wall]
     %% face_code_ref=Missing NodePath

@@ -3,8 +3,6 @@ import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import type { JsonValue } from '@rust/kcl-lib/bindings/serde_json/JsonValue'
-import decamelize from 'decamelize'
-import { NIL as uuidNIL, v4 } from 'uuid'
 import {
   serializeConfiguration,
   serializeProjectConfiguration,
@@ -22,12 +20,21 @@ import {
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
+import type {
+  LayoutWithMetadata,
+  LayoutsWithMetadata,
+} from '@src/lib/layout/types'
 import {
-  createSettings,
+  createLayoutWithMetadata,
+  parseLayoutJsonWithMigrations,
+  parseLayoutWithMigrations,
+} from '@src/lib/layout/utils'
+import type { ResolvedExtensionSettings } from '@src/lib/settings/extensionSettings'
+import {
   Setting,
   type SettingsType,
+  createSettings,
 } from '@src/lib/settings/initialSettings'
-import { getToken } from '@src/machines/authMachine'
 import type {
   SaveSettingsPayload,
   SettingsLevel,
@@ -35,9 +42,12 @@ import type {
 import { appThemeToTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { isArray } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { getToken } from '@src/machines/authMachine'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
+import decamelize from 'decamelize'
+import { NIL as uuidNIL, v4 } from 'uuid'
 
 const FEATURES_CACHE_TTL_MS = 30 * 1_000
 
@@ -125,8 +135,8 @@ export function formatSettingsLabel(key: string): string {
 }
 
 type OmitNull<T> = T extends null ? undefined : T
-const toUndefinedIfNull = (a: any): OmitNull<any> =>
-  a === null ? undefined : a
+const toUndefinedIfNull = <T>(a: T): OmitNull<T> =>
+  (a === null ? undefined : a) as OmitNull<T>
 
 function compactRecord<T extends Record<string, unknown>>(
   value: T
@@ -191,11 +201,11 @@ function setSettingsPayloadFieldValue(
   selector: AppOnlySettingsFieldSelector,
   value: unknown
 ) {
-  payload[selector.category] = {
-    ...((payload[selector.category] as Record<string, unknown> | undefined) ??
-      {}),
+  const payloadRecord = payload as Record<string, Record<string, unknown>>
+  payloadRecord[selector.category] = {
+    ...(payloadRecord[selector.category] ?? {}),
     [selector.field]: value,
-  } as SaveSettingsPayload[keyof SaveSettingsPayload]
+  }
 }
 
 function defineAppOnlySection(
@@ -251,22 +261,96 @@ function defineMappedAppOnlyField(
   return defineAppOnlyField(selector, tomlKey, codec)
 }
 
+function parseLayoutSettingValue(value: unknown): LayoutWithMetadata | Error {
+  if (typeof value === 'string') {
+    return parseLayoutJsonWithMigrations(value)
+  }
+
+  return parseLayoutWithMigrations(value)
+}
+
+function defineLayoutsAppOnlyField(
+  selector: AppOnlySettingsFieldSelector,
+  tomlKey: string
+): AppOnlySettingsFieldDefinition {
+  return defineAppOnlyField(selector, tomlKey, {
+    fromToml: (value) => {
+      const layoutsValue =
+        typeof value === 'string'
+          ? (() => {
+              try {
+                return JSON.parse(value)
+              } catch {
+                return undefined
+              }
+            })()
+          : value
+      if (!layoutsValue || typeof layoutsValue !== 'object') {
+        return undefined
+      }
+
+      const layouts = Object.entries(layoutsValue).reduce<LayoutsWithMetadata>(
+        (parsedLayouts, [name, layoutValue]) => {
+          const parsed = parseLayoutSettingValue(layoutValue)
+          if (!err(parsed)) {
+            parsedLayouts[name] = parsed
+          }
+          return parsedLayouts
+        },
+        {}
+      )
+
+      return Object.keys(layouts).length > 0 ? layouts : undefined
+    },
+    toToml: (value) => {
+      if (!value || typeof value !== 'object') {
+        return undefined
+      }
+
+      const layouts = Object.entries(value).reduce<Record<string, string>>(
+        (serializedLayouts, [name, layoutValue]) => {
+          if (
+            !layoutValue ||
+            typeof layoutValue !== 'object' ||
+            !('layout' in layoutValue) ||
+            !layoutValue.layout
+          ) {
+            return serializedLayouts
+          }
+
+          const layoutWithMetadata =
+            'version' in layoutValue && typeof layoutValue.version === 'string'
+              ? (layoutValue as LayoutWithMetadata)
+              : createLayoutWithMetadata(
+                  layoutValue.layout as LayoutWithMetadata['layout']
+                )
+          serializedLayouts[name] = JSON.stringify(layoutWithMetadata)
+          return serializedLayouts
+        },
+        {}
+      )
+
+      return Object.keys(layouts).length > 0 ? layouts : undefined
+    },
+  })
+}
+
 function readAppOnlySettingsPayload(
   settings: unknown,
   sections: readonly AppOnlySettingsSectionDefinition[]
 ): DeepPartial<SaveSettingsPayload> {
   const payload = {} as DeepPartial<SaveSettingsPayload>
 
-  sections.forEach((sectionDef) => {
+  for (const sectionDef of sections) {
     const section = getTomlSettingsSection(settings, sectionDef.sectionKey)
 
-    sectionDef.fields.forEach((fieldDef) => {
+    for (const fieldDef of sectionDef.fields) {
       const value = fieldDef.codec.fromToml(section?.[fieldDef.tomlKey])
       if (value !== undefined) {
         setSettingsPayloadFieldValue(payload, fieldDef.selector, value)
       }
-    })
-  })
+    }
+  }
 
   return payload
 }
@@ -296,23 +380,86 @@ function writeAppOnlySettingsSections(
   )
 }
 
+function readExtensionSettingsPayload(
+  settings: unknown,
+  extensionSettings: ResolvedExtensionSettings,
+  level: 'user' | 'project'
+): DeepPartial<SaveSettingsPayload> {
+  const payload = {} as DeepPartial<SaveSettingsPayload>
+  const payloadRecord = payload as Record<string, Record<string, unknown>>
+
+  for (const [category, settingDefs] of Object.entries(extensionSettings)) {
+    for (const [settingName, definition] of Object.entries(settingDefs)) {
+      const binding =
+        level === 'user' ? definition.userToml : definition.projectToml
+      if (!binding) {
+        continue
+      }
+
+      const section = getTomlSettingsSection(settings, binding.sectionKey)
+      const value = binding.fromToml(section?.[binding.tomlKey])
+      if (value === undefined) {
+        continue
+      }
+
+      if (!payloadRecord[category]) {
+        payloadRecord[category] = {}
+      }
+
+      payloadRecord[category][settingName] = value
+    }
+  }
+
+  return payload
+}
+
+function writeExtensionSettingsSections(
+  payload: DeepPartial<SaveSettingsPayload>,
+  extensionSettings: ResolvedExtensionSettings,
+  level: 'user' | 'project'
+): Partial<Record<string, TomlJsonObject>> {
+  const groupedSections = new Map<string, TomlJsonObject>()
+  const payloadRecord = payload as Record<string, Record<string, unknown>>
+
+  for (const [category, settingDefs] of Object.entries(extensionSettings)) {
+    for (const [settingName, definition] of Object.entries(settingDefs)) {
+      const binding =
+        level === 'user' ? definition.userToml : definition.projectToml
+      if (!binding) {
+        continue
+      }
+
+      const categoryValues = payloadRecord[category]
+      const value = binding.toToml(categoryValues?.[settingName])
+      if (value === undefined) {
+        continue
+      }
+
+      const section = groupedSections.get(binding.sectionKey) ?? {}
+      section[binding.tomlKey] = value
+      groupedSections.set(binding.sectionKey, section)
+    }
+  }
+
+  return Object.fromEntries(groupedSections.entries())
+}
+
 function mergeSettingsPayloads(
   ...payloads: DeepPartial<SaveSettingsPayload>[]
 ): DeepPartial<SaveSettingsPayload> {
   return payloads.reduce(
     (merged, payload) => {
-      Object.entries(payload).forEach(([category, value]) => {
+      const mergedRecord = merged as Record<string, Record<string, unknown>>
+      for (const [category, value] of Object.entries(payload)) {
         if (!value) {
-          return
+          continue
         }
 
-        merged[category as keyof SaveSettingsPayload] = {
-          ...((merged[category as keyof SaveSettingsPayload] as
-            | Record<string, unknown>
-            | undefined) ?? {}),
+        mergedRecord[category] = {
+          ...(mergedRecord[category] ?? {}),
           ...(value as Record<string, unknown>),
-        } as SaveSettingsPayload[keyof SaveSettingsPayload]
-      })
+        }
+      }
 
       return merged
     },
@@ -326,6 +473,23 @@ function mergeTomlSections(
   return compactRecord(
     Object.assign({}, ...sections.filter((section) => section !== undefined))
   )
+}
+
+function mergeSettingsSectionMaps(
+  ...sectionMaps: Partial<Record<string, TomlJsonObject>>[]
+): Partial<Record<string, TomlJsonObject>> {
+  const merged = new Map<string, TomlJsonObject>()
+
+  for (const sectionMap of sectionMaps) {
+    for (const [sectionKey, sectionValue] of Object.entries(sectionMap)) {
+      merged.set(sectionKey, {
+        ...(merged.get(sectionKey) ?? {}),
+        ...sectionValue,
+      })
+    }
+  }
+
+  return Object.fromEntries(merged.entries())
 }
 
 // App-owned settings sections are serialized through Rust as opaque TOML
@@ -427,6 +591,12 @@ const USER_APP_ONLY_SETTINGS_SECTIONS = [
       'blinking_cursor'
     ),
   ]),
+  defineAppOnlySection('layout', [
+    defineLayoutsAppOnlyField(
+      { category: 'layout', field: 'configs' },
+      'configs'
+    ),
+  ]),
 ] as const
 
 const PROJECT_APP_ONLY_SETTINGS_SECTIONS = [
@@ -492,7 +662,8 @@ const PROJECT_APP_ONLY_SETTINGS_SECTIONS = [
  * for hiding and showing settings.
  **/
 export function configurationToSettingsPayload(
-  configuration: DeepPartial<Configuration>
+  configuration: DeepPartial<Configuration>,
+  extensionSettings: ResolvedExtensionSettings = {}
 ): DeepPartial<SaveSettingsPayload> {
   return mergeSettingsPayloads(
     {
@@ -534,12 +705,18 @@ export function configurationToSettingsPayload(
     readAppOnlySettingsPayload(
       configuration?.settings,
       USER_APP_ONLY_SETTINGS_SECTIONS
+    ),
+    readExtensionSettingsPayload(
+      configuration?.settings,
+      extensionSettings,
+      'user'
     )
   )
 }
 
 export function settingsPayloadToConfiguration(
-  configuration: DeepPartial<SaveSettingsPayload>
+  configuration: DeepPartial<SaveSettingsPayload>,
+  extensionSettings: ResolvedExtensionSettings = {}
 ): DeepPartial<Configuration> {
   const appearance = compactRecord({
     theme: toUndefinedIfNull(configuration?.app?.theme),
@@ -563,9 +740,12 @@ export function settingsPayloadToConfiguration(
     fixed_size_grid: toUndefinedIfNull(configuration?.modeling?.fixedSizeGrid),
   })
 
-  const appOnlySections = writeAppOnlySettingsSections(
-    configuration,
-    USER_APP_ONLY_SETTINGS_SECTIONS
+  const appOnlySections = mergeSettingsSectionMaps(
+    writeAppOnlySettingsSections(
+      configuration,
+      USER_APP_ONLY_SETTINGS_SECTIONS
+    ),
+    writeExtensionSettingsSections(configuration, extensionSettings, 'user')
   )
 
   const settings = compactRecord({
@@ -613,16 +793,17 @@ function deepPartialNamedViewsToNamedViews(
     return namedViews
   }
 
-  Object.entries(maybeViews)?.forEach(([key, maybeView]) => {
+  for (const [key, maybeView] of Object.entries(maybeViews)) {
     if (isNamedView(maybeView)) {
       namedViews[key] = maybeView
     }
-  })
+  }
   return namedViews
 }
 
 export function projectConfigurationToSettingsPayload(
-  configuration: DeepPartial<ProjectConfiguration>
+  configuration: DeepPartial<ProjectConfiguration>,
+  extensionSettings: ResolvedExtensionSettings = {}
 ): DeepPartial<SaveSettingsPayload> {
   return mergeSettingsPayloads(
     {
@@ -635,7 +816,7 @@ export function projectConfigurationToSettingsPayload(
         ),
         zookeeperMode: (() => {
           const v = configuration?.settings?.app?.zookeeper_mode
-          return v === 'fast' || v === 'thoughtful' ? v : undefined
+          return typeof v === 'string' && v.length > 0 ? v : undefined
         })(),
       },
       modeling: {
@@ -650,12 +831,18 @@ export function projectConfigurationToSettingsPayload(
     readAppOnlySettingsPayload(
       configuration?.settings,
       PROJECT_APP_ONLY_SETTINGS_SECTIONS
+    ),
+    readExtensionSettingsPayload(
+      configuration?.settings,
+      extensionSettings,
+      'project'
     )
   )
 }
 
 export function settingsPayloadToProjectConfiguration(
-  configuration: DeepPartial<SaveSettingsPayload>
+  configuration: DeepPartial<SaveSettingsPayload>,
+  extensionSettings: ResolvedExtensionSettings = {}
 ): DeepPartial<ProjectConfiguration> {
   const namedViews = deepPartialNamedViewsToNamedViews(
     configuration?.app?.namedViews
@@ -677,9 +864,12 @@ export function settingsPayloadToProjectConfiguration(
     fixed_size_grid: configuration?.modeling?.fixedSizeGrid,
   })
 
-  const appOnlySections = writeAppOnlySettingsSections(
-    configuration,
-    PROJECT_APP_ONLY_SETTINGS_SECTIONS
+  const appOnlySections = mergeSettingsSectionMaps(
+    writeAppOnlySettingsSections(
+      configuration,
+      PROJECT_APP_ONLY_SETTINGS_SECTIONS
+    ),
+    writeExtensionSettingsSections(configuration, extensionSettings, 'project')
   )
 
   const settings = compactRecord({
@@ -778,24 +968,37 @@ export interface AppSettings {
  */
 export async function loadAndValidateSettings(
   initPromise: Promise<ModuleType> | ModuleType,
-  projectPath?: string
+  projectPathOrOptions:
+    | string
+    | {
+        extensionSettings?: ResolvedExtensionSettings
+        projectPath?: string
+      }
+    | undefined = {}
 ): Promise<AppSettings> {
+  const options =
+    typeof projectPathOrOptions === 'string'
+      ? { projectPath: projectPathOrOptions }
+      : projectPathOrOptions
+  const { extensionSettings = {}, projectPath } = options
   // Make sure we have wasm initialized.
   const wasmInstance = await initPromise
 
   // Load the app settings from the file system or localStorage.
   const appSettingsPayload = await readAppSettingsFile(wasmInstance)
 
-  if (err(appSettingsPayload)) return Promise.reject(appSettingsPayload)
+  if (err(appSettingsPayload)) {
+    return Promise.reject(appSettingsPayload)
+  }
 
-  let settingsNext = createSettings()
+  let settingsNext = createSettings(extensionSettings)
 
   settingsNext.app.projectDirectory.default = await getInitialDefaultDir()
 
   settingsNext = setSettingsAtLevel(
     settingsNext,
     'user',
-    configurationToSettingsPayload(appSettingsPayload)
+    configurationToSettingsPayload(appSettingsPayload, extensionSettings)
   )
 
   // Load the project settings if they exist
@@ -805,8 +1008,9 @@ export async function loadAndValidateSettings(
       wasmInstance
     )
 
-    if (err(projectSettings))
+    if (err(projectSettings)) {
       return Promise.reject(new Error('Invalid project settings'))
+    }
 
     if (
       !projectSettings.settings?.meta?.id ||
@@ -817,10 +1021,11 @@ export async function loadAndValidateSettings(
         projectSettings,
         wasmInstance
       )
-      if (err(projectTomlString))
+      if (err(projectTomlString)) {
         return Promise.reject(
           new Error('Could not serialize project configuration')
         )
+      }
 
       await writeProjectSettingsFile(projectPath, projectTomlString)
     }
@@ -829,7 +1034,10 @@ export async function loadAndValidateSettings(
     settingsNext = setSettingsAtLevel(
       settingsNext,
       'project',
-      projectConfigurationToSettingsPayload(projectSettingsPayload)
+      projectConfigurationToSettingsPayload(
+        projectSettingsPayload,
+        extensionSettings
+      )
     )
   }
 
@@ -854,16 +1062,16 @@ async function resolveAsyncHideOnPlatform(
   const settingsToResolve: Array<{ setting: Setting<unknown> }> = []
 
   // Collect all settings with async hideOnPlatform functions
-  Object.entries(settings).forEach(([_, categorySettings]) => {
-    Object.entries(categorySettings).forEach(([_, setting]) => {
+  for (const categorySettings of Object.values(settings)) {
+    for (const setting of Object.values(categorySettings)) {
       if (
         setting instanceof Setting &&
         typeof setting.hideOnPlatform === 'function'
       ) {
         settingsToResolve.push({ setting })
       }
-    })
-  })
+    }
+  }
 
   if (settingsToResolve.length === 0) {
     return
@@ -898,6 +1106,7 @@ async function resolveAsyncHideOnPlatform(
 export async function saveSettings(
   initPromise: Promise<ModuleType>,
   allSettings: SettingsType,
+  extensionSettings: ResolvedExtensionSettings = {},
   projectPath?: string
 ) {
   // Make sure we have wasm initialized.
@@ -906,10 +1115,12 @@ export async function saveSettings(
   // Get the user settings.
   const jsAppSettings = getChangedSettingsAtLevel(allSettings, 'user')
   const appTomlString = serializeConfiguration(
-    settingsPayloadToConfiguration(jsAppSettings),
+    settingsPayloadToConfiguration(jsAppSettings, extensionSettings),
     wasmInstance
   )
-  if (err(appTomlString)) return
+  if (err(appTomlString)) {
+    return
+  }
 
   // Write the app settings.
   await writeAppSettingsFile(appTomlString)
@@ -925,17 +1136,21 @@ export async function saveSettings(
     projectPath,
     wasmInstance
   )
-  if (err(existingProjectSettings)) return
+  if (err(existingProjectSettings)) {
+    return
+  }
 
   const mergedProjectSettings = replaceProjectSettingsPreservingMetadata(
     existingProjectSettings,
-    settingsPayloadToProjectConfiguration(jsProjectSettings)
+    settingsPayloadToProjectConfiguration(jsProjectSettings, extensionSettings)
   )
   const projectTomlString = serializeProjectConfiguration(
     mergedProjectSettings,
     wasmInstance
   )
-  if (err(projectTomlString)) return
+  if (err(projectTomlString)) {
+    return
+  }
 
   // Write the project settings.
   await writeProjectSettingsFile(projectPath, projectTomlString)
@@ -945,35 +1160,29 @@ export function getChangedSettingsAtLevel(
   allSettings: SettingsType,
   level: SettingsLevel
 ): Partial<SaveSettingsPayload> {
-  const changedSettings = {} as Record<
-    keyof SettingsType,
-    Record<string, unknown>
-  >
-  Object.entries(allSettings).forEach(([category, settingsCategory]) => {
-    const categoryKey = category as keyof SettingsType
-    Object.entries(settingsCategory).forEach(
-      ([setting, settingValue]: [string, unknown]) => {
-        if (!(settingValue instanceof Setting)) {
-          return
-        }
-        // If setting is different its ancestors' non-undefined values,
-        // then it has been changed from the default
-        if (
-          settingValue[level] !== undefined &&
-          ((level === 'project' &&
-            (settingValue.user !== undefined
-              ? settingValue.project !== settingValue.user
-              : settingValue.project !== settingValue.default)) ||
-            (level === 'user' && settingValue.user !== settingValue.default))
-        ) {
-          if (!changedSettings[categoryKey]) {
-            changedSettings[categoryKey] = {}
-          }
-          changedSettings[categoryKey][setting] = settingValue[level]
-        }
+  const changedSettings = {} as Record<string, Record<string, unknown>>
+  for (const [category, settingsCategory] of Object.entries(allSettings)) {
+    for (const [setting, settingValue] of Object.entries(settingsCategory)) {
+      if (!(settingValue instanceof Setting)) {
+        continue
       }
-    )
-  })
+      // If setting is different its ancestors' non-undefined values,
+      // then it has been changed from the default
+      if (
+        settingValue[level] !== undefined &&
+        ((level === 'project' &&
+          (settingValue.user !== undefined
+            ? settingValue.project !== settingValue.user
+            : settingValue.project !== settingValue.default)) ||
+          (level === 'user' && settingValue.user !== settingValue.default))
+      ) {
+        if (!changedSettings[category]) {
+          changedSettings[category] = {}
+        }
+        changedSettings[category][setting] = settingValue[level]
+      }
+    }
+  }
 
   return changedSettings
 }
@@ -982,21 +1191,21 @@ export function getAllCurrentSettings(
   allSettings: SettingsType
 ): SaveSettingsPayload {
   const currentSettings = {} as SaveSettingsPayload
-  Object.entries(allSettings).forEach(([category, settingsCategory]) => {
-    const categoryKey = category as keyof SettingsType
-    Object.entries(settingsCategory).forEach(
-      ([setting, settingValue]: [string, unknown]) => {
-        if (!(settingValue instanceof Setting)) {
-          return
-        }
-        const settingKey = setting as keyof SettingsType[typeof categoryKey]
-        currentSettings[categoryKey] = {
-          ...currentSettings[categoryKey],
-          [settingKey]: settingValue.current,
-        }
+  const currentSettingsRecord = currentSettings as Record<
+    string,
+    Record<string, unknown>
+  >
+  for (const [category, settingsCategory] of Object.entries(allSettings)) {
+    for (const [setting, settingValue] of Object.entries(settingsCategory)) {
+      if (!(settingValue instanceof Setting)) {
+        continue
       }
-    )
-  })
+      currentSettingsRecord[category] = {
+        ...currentSettingsRecord[category],
+        [setting]: settingValue.current,
+      }
+    }
+  }
 
   return currentSettings
 }
@@ -1005,16 +1214,14 @@ export function clearSettingsAtLevel(
   allSettings: SettingsType,
   level: SettingsLevel
 ) {
-  Object.entries(allSettings).forEach(([_category, settingsCategory]) => {
-    Object.entries(settingsCategory).forEach(
-      ([_, settingValue]: [string, unknown]) => {
-        if (!(settingValue instanceof Setting)) {
-          return
-        }
-        settingValue[level] = undefined
+  for (const settingsCategory of Object.values(allSettings)) {
+    for (const settingValue of Object.values(settingsCategory)) {
+      if (!(settingValue instanceof Setting)) {
+        continue
       }
-    )
-  })
+      settingValue[level] = undefined
+    }
+  }
 
   return allSettings
 }
@@ -1024,18 +1231,18 @@ export function setSettingsAtLevel(
   level: SettingsLevel,
   newSettings: Partial<SaveSettingsPayload>
 ) {
-  Object.entries(newSettings).forEach(([category, settingsCategory]) => {
-    const categoryKey = category as keyof SettingsType
-    if (!allSettings[categoryKey]) return // ignore unrecognized categories
-    Object.entries(settingsCategory).forEach(([settingKey, settingValue]) => {
-      // TODO: How do you get a valid type for allSettings[categoryKey][settingKey]?
-      // it seems to always collapses to `never`, which is not correct
-      // @ts-ignore
-      if (!(settingKey in allSettings[categoryKey])) return // ignore unrecognized settings
-      // @ts-ignore
-      allSettings[categoryKey][settingKey][level] = settingValue as unknown
-    })
-  })
+  const settingsRecord = allSettings as Record<string, Record<string, Setting>>
+  for (const [category, settingsCategory] of Object.entries(newSettings)) {
+    if (!settingsRecord[category]) {
+      continue // ignore unrecognized categories
+    }
+    for (const [settingKey, settingValue] of Object.entries(settingsCategory)) {
+      if (!(settingKey in settingsRecord[category])) {
+        continue // ignore unrecognized settings
+      }
+      settingsRecord[category][settingKey][level] = settingValue
+    }
+  }
 
   return allSettings
 }
@@ -1075,11 +1282,15 @@ export function shouldShowSettingInput(
   settingsLevel: SettingsLevel
 ): boolean {
   const isHidden = shouldHideSetting(setting, settingsLevel)
-  if (isHidden) return false
+  if (isHidden) {
+    return false
+  }
 
   return !!(
     setting.Component ||
-    ['string', 'boolean', 'number'].some((t) => typeof setting.default === t) ||
+    typeof setting.default === 'string' ||
+    typeof setting.default === 'boolean' ||
+    typeof setting.default === 'number' ||
     (setting.commandConfig?.inputType &&
       ['string', 'options', 'boolean', 'number'].some(
         (t) => setting.commandConfig?.inputType === t
@@ -1093,13 +1304,16 @@ export function shouldShowSettingInput(
  * shouldShowSettingInput being applied
  */
 export function getSettingInputType(setting: Setting) {
-  if (setting.Component) return 'component'
-  if (setting.commandConfig)
+  if (setting.Component) {
+    return 'component'
+  }
+  if (setting.commandConfig) {
     return setting.commandConfig.inputType as
       | 'string'
       | 'options'
       | 'boolean'
       | 'number'
+  }
   return typeof setting.default as 'string' | 'boolean' | 'number'
 }
 
