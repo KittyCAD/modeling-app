@@ -51,6 +51,10 @@ export async function deleteFromSelection(
   getFaceDetails: (id: string) => Promise<FaceIsPlanar> = () => ({}) as any
 ): Promise<Node<Program> | Error> {
   const astClone = structuredClone(ast)
+  const finalizeDeletion = (candidate: Node<Program> | Error) =>
+    err(candidate)
+      ? candidate
+      : cleanupUnusedTransparentSelectionBindings(candidate)
   let deletionArtifact = selection.artifact
 
   // Coerce sketch artifacts to their plane first
@@ -109,7 +113,7 @@ export async function deleteFromSelection(
       const sketchVarDec = getNodePathFromSourceRange(astClone, codeRef.range)
       const sketchBodyIndex = Number(sketchVarDec[1][0])
       astClone.body.splice(sketchBodyIndex, 1)
-      return astClone
+      return finalizeDeletion(astClone)
     }
 
     // If we coerced the artifact from a sketch to a plane,
@@ -122,7 +126,7 @@ export async function deleteFromSelection(
       if (sketchVarDec.length >= 2) {
         const sketchBodyIndex = Number(sketchVarDec[1][0])
         astClone.body.splice(sketchBodyIndex, 1)
-        return astClone
+        return finalizeDeletion(astClone)
       }
     }
   }
@@ -154,7 +158,7 @@ export async function deleteFromSelection(
 
     const importIndex = selection.codeRef.pathToNode[1][0]
     astClone.body.splice(importIndex, 1)
-    return astClone
+    return finalizeDeletion(astClone)
   }
 
   // Below is all AST-based deletion logic
@@ -196,7 +200,7 @@ export async function deleteFromSelection(
     )) {
       astClone.body.splice(bodyIndex, 1)
     }
-    return astClone
+    return finalizeDeletion(astClone)
   }
 
   if (
@@ -217,7 +221,7 @@ export async function deleteFromSelection(
       if (err(varDecClone)) return varDecClone
       if (varDecClone.node.init.type === 'PipeExpression') {
         varDecClone.node.init.body.splice(pipeItemIndex, 1)
-        return astClone
+        return finalizeDeletion(astClone)
       }
     }
   }
@@ -479,9 +483,11 @@ export async function deleteFromSelection(
       })
     }
     // await prom
-    return astClone
+    return finalizeDeletion(astClone)
   } else if (selection.artifact?.type === 'edgeCut') {
-    return deleteEdgeTreatment(astClone, selection, wasmInstance)
+    return finalizeDeletion(
+      await deleteEdgeTreatment(astClone, selection, wasmInstance)
+    )
   } else if (varDec.node.init.type === 'PipeExpression') {
     const pipeBody = varDec.node.init.body
     const doNotDeleteProfileIfItHasBeenExtruded = !(
@@ -496,7 +502,7 @@ export async function deleteFromSelection(
       // remove varDec
       const varDecIndex = varDec.shallowPath[1][0] as number
       astClone.body.splice(varDecIndex, 1)
-      return astClone
+      return finalizeDeletion(astClone)
     }
   } else if (
     // single expression profiles
@@ -505,7 +511,7 @@ export async function deleteFromSelection(
   ) {
     const varDecIndex = varDec.shallowPath[1][0] as number
     astClone.body.splice(varDecIndex, 1)
-    return astClone
+    return finalizeDeletion(astClone)
   }
 
   return new Error('Selection not recognised, could not delete')
@@ -578,7 +584,73 @@ export function deleteSketchBlockAndDependentRegions(
   )) {
     astClone.body.splice(bodyIndex, 1)
   }
-  return astClone
+  return cleanupUnusedTransparentSelectionBindings(astClone)
+}
+
+const TRANSPARENT_SELECTION_HELPER_CALLS = new Set([
+  'region',
+  'edgeId',
+  'faceId',
+])
+
+function cleanupUnusedTransparentSelectionBindings(
+  ast: Node<Program>
+): Node<Program> {
+  let removed = false
+  do {
+    removed = false
+    const helperDeclarations = transparentSelectionHelperDeclarations(ast)
+    if (helperDeclarations.size === 0) {
+      break
+    }
+
+    const referenceCounts = new Map<string, number>()
+    for (const { name } of helperDeclarations.values()) {
+      referenceCounts.set(name, 0)
+    }
+
+    traverse(ast, {
+      enter: (node) => {
+        if (node.type !== 'Name') {
+          return
+        }
+        const name = node.name.name
+        if (referenceCounts.has(name)) {
+          referenceCounts.set(name, (referenceCounts.get(name) || 0) + 1)
+        }
+      },
+    })
+
+    const indicesToDelete = Array.from(helperDeclarations.entries())
+      .filter(([, { name }]) => (referenceCounts.get(name) || 0) === 0)
+      .map(([bodyIndex]) => bodyIndex)
+      .sort((a, b) => b - a)
+
+    for (const bodyIndex of indicesToDelete) {
+      ast.body.splice(bodyIndex, 1)
+      removed = true
+    }
+  } while (removed)
+
+  return ast
+}
+
+function transparentSelectionHelperDeclarations(ast: Node<Program>) {
+  const declarations = new Map<number, { name: string }>()
+  ast.body.forEach((bodyItem, bodyIndex) => {
+    if (bodyItem.type !== 'VariableDeclaration') {
+      return
+    }
+    const init = bodyItem.declaration.init
+    if (
+      init.type !== 'CallExpressionKw' ||
+      !TRANSPARENT_SELECTION_HELPER_CALLS.has(init.callee.name.name)
+    ) {
+      return
+    }
+    declarations.set(bodyIndex, { name: bodyItem.declaration.id.name })
+  })
+  return declarations
 }
 
 function isRegionOwnedBySketch(
