@@ -13,8 +13,7 @@ import { useApp } from '@src/lib/boot'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 import Loading from '@src/components/Loading'
 import type { Command, CommandArgument } from '@src/lib/commandTypes'
-
-export const COMMAND_PALETTE_HOTKEY = 'mod+k'
+import { COMMAND_PALETTE_HOTKEY } from '@src/components/CommandBar/constants'
 
 export const CommandBar = () => {
   const { pathname } = useLocation()

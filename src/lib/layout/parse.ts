@@ -1,5 +1,7 @@
 import type {
   Action,
+  ActionTypeId,
+  AreaTypeId,
   BaseLayout,
   Layout,
   LayoutWithMetadata,
@@ -9,8 +11,6 @@ import type {
   SimpleLayout,
   SplitLayout,
 } from '@src/lib/layout/types'
-import { ActionType } from '@src/lib/layout/types'
-import { AreaType } from '@src/lib/layout/types'
 import { LayoutType } from '@src/lib/layout/types'
 import { isArray } from '@src/lib/utils'
 import { isErr } from '@src/lib/trap'
@@ -61,11 +61,11 @@ export function parseLayoutInner(l: unknown): Layout | Error {
 function validateLayoutType(l: string): l is LayoutType {
   return Object.values(LayoutType).includes(l as LayoutType)
 }
-function validateAreaType(a: unknown): a is AreaType {
-  return Object.values(AreaType).includes(a as AreaType)
+function validateAreaType(a: unknown): a is AreaTypeId {
+  return typeof a === 'string' && a.length > 0
 }
-function validateActionType(a: unknown): a is ActionType {
-  return Object.values(ActionType).includes(a as ActionType)
+function validateActionType(a: unknown): a is ActionTypeId {
+  return typeof a === 'string' && a.length > 0
 }
 
 /** Basic record (object) type narrowing */

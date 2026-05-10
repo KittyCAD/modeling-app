@@ -15,11 +15,13 @@ import {
 } from '@src/lang/wasm'
 import {
   filterOperations,
+  getHideOpForArtifact,
   getOperationVariableName,
   groupSketchBlockOperations,
   groupOperationTypeStreaks,
 } from '@src/lib/operations'
 import { expect, describe, it } from 'vitest'
+import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
 
 function stdlib(name: string): Operation {
   return {
@@ -31,6 +33,48 @@ function stdlib(name: string): Operation {
     sourceRange: defaultSourceRange(),
     isError: false,
   }
+}
+
+function hideOperation(searchId: string): Operation {
+  return {
+    type: 'StdLibCall',
+    name: 'hide',
+    unlabeledArg: {
+      sourceRange: defaultSourceRange(),
+      value: {
+        type: 'Solid',
+        value: { artifactId: searchId },
+      },
+    },
+    labeledArgs: {},
+    nodePath: defaultNodePath(),
+    sourceRange: defaultSourceRange(),
+    isError: false,
+  }
+}
+
+function compositeSolidArtifact(
+  id: string,
+  sourceRange: SourceRange,
+  nodePath: NodePath = defaultNodePath()
+): Artifact {
+  return {
+    type: 'compositeSolid',
+    id,
+    consumed: false,
+    subType: 'subtract',
+    solidIds: [],
+    toolIds: [],
+    codeRef: {
+      range: sourceRange,
+      nodePath,
+      pathToNode: [],
+    },
+  }
+}
+
+function toArtifactGraph(artifacts: Artifact[]): ArtifactGraph {
+  return new Map(artifacts.map((artifact) => [artifact.id, artifact]))
 }
 
 function stdlibInSketchBlock(name: string, index = 0): Operation {
@@ -98,6 +142,65 @@ function moduleEnd(): Operation {
 }
 
 describe('operations.test.ts', () => {
+  describe('body visibility operations', () => {
+    it('finds a hide operation by direct artifact id', () => {
+      const artifact = compositeSolidArtifact('body-artifact', [0, 10, 0])
+      const hideOp = hideOperation('body-artifact')
+
+      const result = getHideOpForArtifact({
+        operations: [hideOp],
+        artifact,
+        artifactGraph: toArtifactGraph([artifact]),
+      })
+
+      expect(result).toBe(hideOp)
+    })
+
+    it('finds a hide operation for equivalent boolean result artifacts', () => {
+      const sourceRange: SourceRange = [0, 24, 0]
+      const nodePath = defaultNodePath()
+      const hiddenArtifact = compositeSolidArtifact(
+        'hidden-result-artifact',
+        sourceRange,
+        nodePath
+      )
+      const bodyRowArtifact = compositeSolidArtifact(
+        'body-row-artifact',
+        sourceRange,
+        nodePath
+      )
+      const hideOp = hideOperation(hiddenArtifact.id)
+
+      const result = getHideOpForArtifact({
+        operations: [hideOp],
+        artifact: bodyRowArtifact,
+        artifactGraph: toArtifactGraph([hiddenArtifact, bodyRowArtifact]),
+      })
+
+      expect(result).toBe(hideOp)
+    })
+
+    it('does not find a hide operation for a different boolean operation', () => {
+      const hiddenArtifact = compositeSolidArtifact(
+        'hidden-result-artifact',
+        [0, 24, 0]
+      )
+      const visibleArtifact = compositeSolidArtifact(
+        'visible-result-artifact',
+        [30, 54, 0]
+      )
+      const hideOp = hideOperation(hiddenArtifact.id)
+
+      const result = getHideOpForArtifact({
+        operations: [hideOp],
+        artifact: visibleArtifact,
+        artifactGraph: toArtifactGraph([hiddenArtifact, visibleArtifact]),
+      })
+
+      expect(result).toBeUndefined()
+    })
+  })
+
   describe('operations filtering', () => {
     it('drops stdlib operations inside a user-defined function call', async () => {
       const operations = [

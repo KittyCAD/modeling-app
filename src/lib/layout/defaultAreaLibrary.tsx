@@ -2,7 +2,7 @@ import { useApp, useSingletons } from '@src/lib/boot'
 import { ConnectionStream } from '@src/components/ConnectionStream'
 import Gizmo from '@src/components/gizmo/Gizmo'
 import { Toolbar } from '@src/Toolbar'
-import type { AreaType, AreaTypeDefinition } from '@src/lib/layout/types'
+import type { AreaLibrary, AreaTypeDefinition } from '@src/lib/layout/types'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import type { MouseEventHandler } from 'react'
 import { useCallback, useMemo, useState } from 'react'
@@ -21,6 +21,7 @@ import { MODELING_AREA_CONTAINER_ID } from '@src/lib/layout/modelingArea'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { DEFAULT_SKETCH_SOLVE_STREAM_DIMMING } from '@src/clientSideScene/ClientSideSceneComp'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { layoutAreaLibraryValueSpec } from '@src/registry/contracts/layout'
 
 function ModelingArea() {
   const { auth } = useApp()
@@ -91,15 +92,14 @@ function ModelingArea() {
   )
 }
 
-/**
- * For now we have strict area types but in future
- * we should make it possible to register your own in an extension.
- */
 export const useDefaultAreaLibrary = () => {
   useSignals()
-  const { settings, layout } = useApp()
+  const { settings, layout, registry } = useApp()
   const { kclManager } = useSingletons()
   const getSettings = settings.get
+  const registeredAreaLibrary = registry.signal(
+    layoutAreaLibraryValueSpec
+  ).value
   const onCodeNotificationClick: MouseEventHandler = useCallback(
     (e) => {
       e.preventDefault()
@@ -194,8 +194,9 @@ export const useDefaultAreaLibrary = () => {
           shortcut: 'Shift + D',
           Component: DebugPane,
         },
-      } satisfies Record<AreaType, AreaTypeDefinition>),
-    [getSettings, kclManager, onCodeNotificationClick]
+        ...registeredAreaLibrary,
+      } satisfies AreaLibrary),
+    [getSettings, kclManager, onCodeNotificationClick, registeredAreaLibrary]
   )
 }
 
@@ -220,4 +221,4 @@ export const testAreaLibrary = Object.freeze({
   logs: testArea('Logs'),
   variables: testArea('Variables'),
   debug: testArea('Debug'),
-} satisfies Record<AreaType, AreaTypeDefinition>)
+} satisfies AreaLibrary)

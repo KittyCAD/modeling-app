@@ -1,18 +1,20 @@
 import { isDesktop } from '@src/lib/isDesktop'
 import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
-import type { ActionType, ActionTypeDefinition } from '@src/lib/layout/types'
+import type { ActionLibrary } from '@src/lib/layout/types'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { isMobile } from '@src/lib/isMobile'
+import { useSignals } from '@preact/signals-react/runtime'
+import { layoutActionLibraryValueSpec } from '@src/registry/contracts/layout'
 
-/**
- * For now we have strict action types but in future
- * we should make it possible to register your own in an extension.
- */
 export const useDefaultActionLibrary = () => {
-  const { commands, settings } = useApp()
+  useSignals()
+  const { commands, settings, registry } = useApp()
   const { kclManager } = useSingletons()
   const machineApiEnabled = settings.useSettings().app.machineApi.current
+  const registeredActionLibrary = registry.signal(
+    layoutActionLibraryValueSpec
+  ).value
 
   return Object.freeze({
     export: {
@@ -73,5 +75,6 @@ export const useDefaultActionLibrary = () => {
         }),
       useHidden: () => !isDesktop() || !machineApiEnabled,
     },
-  } satisfies Record<ActionType, ActionTypeDefinition>)
+    ...registeredActionLibrary,
+  } satisfies ActionLibrary)
 }

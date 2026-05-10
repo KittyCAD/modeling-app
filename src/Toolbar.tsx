@@ -8,6 +8,10 @@ import { ActionButtonRecentDropdown } from '@src/components/ActionButtonRecentDr
 import { CustomIcon } from '@src/components/CustomIcon'
 import { LegacySketchModeBanner } from '@src/components/SketchSolveAnnouncements'
 import Tooltip from '@src/components/Tooltip'
+import {
+  getUnrenderedChangesDisabledReason,
+  shouldDisableModelingForUnrenderedChanges,
+} from '@src/lib/automaticRendering'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
@@ -50,11 +54,13 @@ import type { SnapshotFrom } from 'xstate'
 import { isArray, type Platform } from '@src/lib/utils'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import usePlatform from '@src/hooks/usePlatform'
+import { executingEditorService } from '@src/registry/contracts/executingEditor'
+import { reportRejection } from '@src/lib/trap'
 
-type ToolbarProps = { isExecuting: boolean } & Omit<
-  ReturnType<typeof useModelingContext>,
-  'theProject'
-> &
+type ToolbarProps = {
+  isExecuting: boolean
+  disableModelingForUnrenderedChanges: boolean
+} & Omit<ReturnType<typeof useModelingContext>, 'theProject'> &
   Pick<
     ReturnType<typeof useNetworkContext>,
     'overallState' | 'immediateState'
@@ -64,11 +70,19 @@ type ToolbarProps = { isExecuting: boolean } & Omit<
     'isStreamReady' | 'isStreamAcceptingInput'
   >
 
+const UNRENDERED_EXECUTE_HOTKEY = 'mod+s'
+
 const Toolbar_ = memo(
   (props: ToolbarProps) => {
-    const { commands } = useApp()
+    const app = useApp()
+    const { commands } = app
     const { kclManager } = useSingletons()
     const platform = usePlatform()
+    const executionService = app.registry.signal(executingEditorService).value
+    const unrenderedExecuteHotkeyLabel = hotkeyDisplay(
+      UNRENDERED_EXECUTE_HOTKEY,
+      platform
+    )
     const toolbarConfig = useToolbarConfig()
     const wasmInstance = use(kclManager.wasmInstancePromise)
     const iconClassName =
@@ -101,6 +115,7 @@ const Toolbar_ = memo(
       (props.overallState !== NetworkHealthState.Ok &&
         props.overallState !== NetworkHealthState.Weak) ||
       props.isExecuting ||
+      props.disableModelingForUnrenderedChanges ||
       props.immediateState.type !==
         EngineConnectionStateType.ConnectionEstablished ||
       !props.isStreamReady ||
@@ -291,9 +306,11 @@ const Toolbar_ = memo(
               : maybeIconConfig.hotkey?.(props.state),
           disabled: isDisabled,
           disabledReason:
-            typeof maybeIconConfig.disabledReason === 'function'
-              ? maybeIconConfig.disabledReason(props.state)
-              : maybeIconConfig.disabledReason,
+            props.disableModelingForUnrenderedChanges && isDisabled
+              ? getUnrenderedChangesDisabledReason()
+              : typeof maybeIconConfig.disabledReason === 'function'
+                ? maybeIconConfig.disabledReason(props.state)
+                : maybeIconConfig.disabledReason,
           disableHotkey: maybeIconConfig.disableHotkey?.(props.state),
           status: maybeIconConfig.status,
           // Store the item-specific callback props for use in onClick handlers
@@ -759,6 +776,29 @@ const Toolbar_ = memo(
           })}
         </ul>
         <div className="flex flex-col items-center absolute top-full left-1/2 -translate-x-1/2">
+          {props.disableModelingForUnrenderedChanges && (
+            <div className="mt-2 py-1 px-2 bg-2 text-2 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg flex items-center gap-2">
+              <p className="text-xs m-0">
+                {getUnrenderedChangesDisabledReason()}
+              </p>
+              <button
+                type="button"
+                className="flex gap-1 items-center py-0 pl-0.5 pr-1 m-0 flex-none text-primary dark:text-primary border border-solid border-primary bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 hover:border-primary active:border-primary disabled:cursor-wait disabled:opacity-70"
+                disabled={props.isExecuting || !executionService}
+                onClick={() => {
+                  executionService?.executeCode().catch(reportRejection)
+                }}
+              >
+                <CustomIcon name="play" className="w-5 h-5" />
+                <span>Execute</span>
+                {unrenderedExecuteHotkeyLabel && (
+                  <kbd className="hotkey text-xs">
+                    {unrenderedExecuteHotkeyLabel}
+                  </kbd>
+                )}
+              </button>
+            </div>
+          )}
           {props.state.matches('Sketch no face') && (
             <div className="mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg">
               <p className="text-xs">
@@ -785,6 +825,8 @@ const Toolbar_ = memo(
     oldP.immediateState?.type === newP.immediateState?.type &&
     oldP.isStreamReady === newP.isStreamReady &&
     oldP.isStreamAcceptingInput === newP.isStreamAcceptingInput &&
+    oldP.disableModelingForUnrenderedChanges ===
+      newP.disableModelingForUnrenderedChanges &&
     oldP.context?.currentTool === newP.context?.currentTool
 )
 
@@ -931,10 +973,10 @@ const ToolbarItemTooltipRichContent = memo(
           )}
         </div>
         <p className="px-2 my-2 text-ch font-sans">{itemConfig.description}</p>
-        {itemConfig.extraNote && (
+        {itemConfig.extraInfo && (
           <p className="px-2 my-2 text-ch font-sans">
-            <span className="font-semibold">Note: </span>
-            {itemConfig.extraNote}
+            <span className="font-semibold">Info: </span>
+            {itemConfig.extraInfo}
           </p>
         )}
         {/* Add disabled reason if item is disabled */}
@@ -980,10 +1022,18 @@ const ToolbarItemTooltipRichContent = memo(
 // inside that causes a render anyway. Instead we memo the inner.
 export function Toolbar() {
   const { kclManager } = useSingletons()
+  const { settings } = useApp()
+  const settingsValues = settings.useSettings()
   const { state, send, context, actor } = useModelingContext()
   const { overallState, immediateState } = useNetworkContext()
   const { isStreamReady, isStreamAcceptingInput } = useAppState()
   useSignals()
+  const disableModelingForUnrenderedChanges =
+    shouldDisableModelingForUnrenderedChanges({
+      settings: settingsValues,
+      hasEditsSinceLastExecution:
+        kclManager.hasEditsSinceLastExecutionSignal.value,
+    })
 
   return (
     <Toolbar_
@@ -996,6 +1046,7 @@ export function Toolbar() {
       actor={actor}
       isStreamAcceptingInput={isStreamAcceptingInput}
       isExecuting={kclManager.isExecutingSignal.value}
+      disableModelingForUnrenderedChanges={disableModelingForUnrenderedChanges}
     />
   )
 }
