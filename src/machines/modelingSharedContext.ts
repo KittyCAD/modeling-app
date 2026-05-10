@@ -1,13 +1,13 @@
 import type { KclManager } from '@src/lang/KclManager'
+import type { MachineManager } from '@src/lib/MachineManager'
 import type RustContext from '@src/lib/rustContext'
-import type { ConnectionManager } from '@src/network/connectionManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type {
   ModelingMachineContext,
   ModelingMachineInternalContext,
 } from '@src/machines/modelingSharedTypes'
-import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import type { MachineManager } from '@src/lib/MachineManager'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 export const dummyInitSketchGraphDelta = Object.freeze({
   new_graph: {
@@ -59,11 +59,13 @@ export const modelingMachineInitialInternalContext: ModelingMachineInternalConte
     segmentHoverMap: {},
     store: {},
     defaultPlaneVisibility: {
+      origin: true,
       xy: true,
       xz: true,
       yz: true,
     },
     savedDefaultPlaneVisibility: {
+      origin: true,
       xy: true,
       xz: true,
       yz: true,
@@ -101,11 +103,13 @@ export function generateModelingMachineDefaultContext(systemDeps: {
     segmentHoverMap: {},
     store: {},
     defaultPlaneVisibility: {
+      origin: true,
       xy: true,
       xz: true,
       yz: true,
     },
     savedDefaultPlaneVisibility: {
+      origin: true,
       xy: true,
       xz: true,
       yz: true,

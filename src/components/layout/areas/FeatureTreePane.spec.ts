@@ -1,10 +1,113 @@
-import { describe, it, expect } from 'vitest'
-import { getFeatureTreeValueDetail } from '@src/components/layout/areas/FeatureTreePane'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { createElement } from 'react'
+import { describe, it, expect, vi } from 'vitest'
+import {
+  DefaultPlanes,
+  getFeatureTreeValueDetail,
+} from '@src/components/layout/areas/FeatureTreePane'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { defaultNodePath } from '@src/lang/wasm'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 
+const { sendMock } = vi.hoisted(() => ({
+  sendMock: vi.fn(),
+}))
+
+vi.mock('@src/hooks/useModelingContext', () => ({
+  useModelingContext: () => ({
+    send: sendMock,
+    state: {
+      matches: () => false,
+      context: {
+        defaultPlaneVisibility: {
+          origin: true,
+          xy: true,
+          xz: true,
+          yz: true,
+        },
+        store: {
+          useSketchSolveMode: { current: undefined },
+        },
+      },
+    },
+  }),
+}))
+
 describe('FeatureTreePane', () => {
+  describe('DefaultPlanes', () => {
+    function createSystemDeps({
+      isOpenCascade,
+      defaultPlanes,
+    }: {
+      isOpenCascade: boolean
+      defaultPlanes: { xy: string; xz: string; yz: string } | null
+    }) {
+      return {
+        rustContext: {
+          defaultPlanes,
+        },
+        sceneInfra: {
+          modelingSend: vi.fn(),
+        },
+        kclManager: {
+          engineCommandManager: {
+            isOpenCascade,
+          },
+        },
+      } as any
+    }
+
+    it('shows the Origin row only for OpenCascade', () => {
+      const { rerender } = render(
+        createElement(DefaultPlanes, {
+          systemDeps: createSystemDeps({
+            isOpenCascade: false,
+            defaultPlanes: null,
+          }),
+        })
+      )
+
+      expect(screen.queryByText('Origin')).toBeNull()
+
+      rerender(
+        createElement(DefaultPlanes, {
+          systemDeps: createSystemDeps({
+            isOpenCascade: true,
+            defaultPlanes: null,
+          }),
+        })
+      )
+
+      expect(screen.getByText('Origin')).toBeTruthy()
+    })
+
+    it('sends origin and default-plane visibility toggle events', () => {
+      sendMock.mockClear()
+      render(
+        createElement(DefaultPlanes, {
+          systemDeps: createSystemDeps({
+            isOpenCascade: true,
+            defaultPlanes: { xy: 'plane-xy', xz: 'plane-xz', yz: 'plane-yz' },
+          }),
+        })
+      )
+
+      const toggles = screen.getAllByTestId('feature-tree-visibility-toggle')
+      fireEvent.click(toggles[0])
+      fireEvent.click(toggles[2])
+
+      expect(sendMock).toHaveBeenNthCalledWith(1, {
+        type: 'Toggle default plane visibility',
+        planeKey: 'origin',
+      })
+      expect(sendMock).toHaveBeenNthCalledWith(2, {
+        type: 'Toggle default plane visibility',
+        planeId: 'plane-xy',
+        planeKey: 'xy',
+      })
+    })
+  })
+
   describe('getFeatureTreeValueDetail', () => {
     describe('VariableDeclaration operations', () => {
       function createVariableDeclarationOperation(

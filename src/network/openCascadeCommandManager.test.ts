@@ -61,6 +61,13 @@ describe('OpenCascadeCommandManager', () => {
     })
     expect(manager.getSolidCount()).toBe(1)
     expect(manager.exportLastBrep()?.length).toBeGreaterThan(0)
+    const topologyMeshes = manager.exportLatestTopologyMeshes()
+    expect(topologyMeshes.solids).toHaveLength(1)
+    expect(
+      topologyMeshes.solids[0].groups.map(
+        (group: { role: string }) => group.role
+      )
+    ).toEqual(['startCap', 'endCap', 'wall'])
     const glbBytes = await manager.exportLatestGlbBytes()
     expect(glbBytes.length).toBeGreaterThan(0)
 
@@ -69,15 +76,36 @@ describe('OpenCascadeCommandManager', () => {
       cmd_id: '00000000-0000-0000-0000-00000000000b',
       cmd: {
         type: 'solid3d_get_extrusion_face_info',
-        object_id: IDS.region,
-        edge_id: IDS.region,
+        object_id: IDS.path,
+        edge_id: IDS.edge,
+      },
+    })
+    const faceInfo = faceInfoResponse.resp.data.modeling_response.data.faces
+    expect(faceInfo.map((face: { cap: string }) => face.cap)).toEqual([
+      'none',
+      'bottom',
+      'top',
+    ])
+    expect(faceInfo[0].curve_id).toBe(IDS.edge)
+    expect(faceInfo[0].face_id).not.toBe(IDS.edge)
+
+    const adjacencyResponse = await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-00000000000d',
+      cmd: {
+        type: 'solid3d_get_adjacency_info',
+        object_id: IDS.path,
+        edge_id: IDS.edge,
       },
     })
     expect(
-      faceInfoResponse.resp.data.modeling_response.data.faces.map(
-        (face: { cap: string }) => face.cap
-      )
-    ).toEqual(['none', 'bottom', 'top'])
+      adjacencyResponse.resp.data.modeling_response.data.edges[0].original_info
+        .edge_id
+    ).toBe(IDS.edge)
+    expect(
+      adjacencyResponse.resp.data.modeling_response.data.edges[0].opposite_info
+        .edge_id
+    ).toBeTruthy()
 
     const exportResponse = await send(manager, IDS.request, {
       type: 'modeling_cmd_req',
@@ -110,6 +138,13 @@ describe('OpenCascadeCommandManager', () => {
 
     expect(manager.getSolidCount()).toBe(1)
     expect(manager.exportLastBrep()?.length).toBeGreaterThan(0)
+    const topologyMeshes = manager.exportLatestTopologyMeshes()
+    expect(
+      topologyMeshes.solids[0].groups.filter(
+        (group: { role: string }) => group.role === 'wall'
+      )
+    ).toHaveLength(4)
+    expect(topologyMeshes.solids[0].edges.length).toBeGreaterThanOrEqual(4)
     expect((await manager.exportLatestGlbBytes()).length).toBeGreaterThan(0)
   })
 

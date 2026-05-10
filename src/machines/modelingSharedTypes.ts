@@ -271,6 +271,7 @@ export type ModelingMachineContext = ModelingMachineInput &
   ModelingMachineInternalContext
 
 export type PlaneVisibilityMap = {
+  origin: boolean
   xy: boolean
   xz: boolean
   yz: boolean

@@ -2348,6 +2348,9 @@ export class KclManager extends File {
     planeKey: keyof PlaneVisibilityMap,
     visible: boolean
   ) {
+    if (planeKey === 'origin') {
+      return
+    }
     const planeId = this.defaultPlanes?.[planeKey]
     if (!planeId) {
       console.warn(`Plane ${planeKey} not found`)

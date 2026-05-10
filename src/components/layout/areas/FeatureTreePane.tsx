@@ -1133,7 +1133,7 @@ const OperationItem = ({
   )
 }
 
-const DefaultPlanes = ({
+export const DefaultPlanes = ({
   systemDeps,
   disabled = false,
 }: {
@@ -1143,6 +1143,9 @@ const DefaultPlanes = ({
   const { rustContext, sceneInfra, kclManager } = systemDeps
   const { state: modelingState, send } = useModelingContext()
   const sketchNoFace = modelingState.matches('Sketch no face')
+  const isOpenCascade =
+    'isOpenCascade' in kclManager.engineCommandManager &&
+    Boolean(kclManager.engineCommandManager.isOpenCascade)
 
   const onClickPlane = useCallback(
     (planeId: string) => {
@@ -1193,12 +1196,14 @@ const DefaultPlanes = ({
   )
 
   const defaultPlanes = rustContext.defaultPlanes
-  if (!defaultPlanes) return null
+  if (!defaultPlanes && !isOpenCascade) {
+    return null
+  }
 
   const planes = [
     {
       name: 'Front plane',
-      id: defaultPlanes.xz,
+      id: defaultPlanes?.xz,
       key: 'xz',
       customSuffix: (
         <div className="text-blue-500/50 font-bold text-xs">XZ</div>
@@ -1206,13 +1211,13 @@ const DefaultPlanes = ({
     },
     {
       name: 'Top plane',
-      id: defaultPlanes.xy,
+      id: defaultPlanes?.xy,
       key: 'xy',
       customSuffix: <div className="text-red-500/50 font-bold text-xs">XY</div>,
     },
     {
       name: 'Side plane',
-      id: defaultPlanes.yz,
+      id: defaultPlanes?.yz,
       key: 'yz',
       customSuffix: (
         <div className="text-green-500/50 font-bold text-xs">YZ</div>
@@ -1222,42 +1227,71 @@ const DefaultPlanes = ({
 
   return (
     <div className="mb-2">
-      {planes.map((plane) => (
+      {isOpenCascade && (
         <OperationItemWrapper
-          key={plane.key}
-          customSuffix={plane.customSuffix}
-          icon={'plane'}
-          name={plane.name}
-          disabled={disabled}
-          onClick={disabled ? undefined : () => onClickPlane(plane.id)}
-          menuItems={
-            disabled
-              ? undefined
-              : [
-                  <ContextMenuItem
-                    onClick={() => startSketchOnDefaultPlane(plane.id)}
-                  >
-                    Start Sketch
-                  </ContextMenuItem>,
-                ]
+          key="origin"
+          customSuffix={
+            <div className="text-chalkboard-60 font-bold text-xs">0,0,0</div>
           }
+          icon={'circle'}
+          name="Origin"
+          disabled={disabled}
           visibilityToggle={
             disabled
               ? undefined
               : {
-                  visible:
-                    modelingState.context.defaultPlaneVisibility[plane.key],
+                  visible: modelingState.context.defaultPlaneVisibility.origin,
                   onVisibilityChange: () => {
                     send({
                       type: 'Toggle default plane visibility',
-                      planeId: plane.id,
-                      planeKey: plane.key,
+                      planeKey: 'origin',
                     })
                   },
                 }
           }
         />
-      ))}
+      )}
+      {planes.map((plane) => {
+        const planeId = plane.id
+        const planeDisabled = disabled || !planeId
+
+        return (
+          <OperationItemWrapper
+            key={plane.key}
+            customSuffix={plane.customSuffix}
+            icon={'plane'}
+            name={plane.name}
+            disabled={planeDisabled}
+            onClick={planeDisabled ? undefined : () => onClickPlane(planeId)}
+            menuItems={
+              planeDisabled
+                ? undefined
+                : [
+                    <ContextMenuItem
+                      onClick={() => startSketchOnDefaultPlane(planeId)}
+                    >
+                      Start Sketch
+                    </ContextMenuItem>,
+                  ]
+            }
+            visibilityToggle={
+              disabled
+                ? undefined
+                : {
+                    visible:
+                      modelingState.context.defaultPlaneVisibility[plane.key],
+                    onVisibilityChange: () => {
+                      send({
+                        type: 'Toggle default plane visibility',
+                        planeId,
+                        planeKey: plane.key,
+                      })
+                    },
+                  }
+            }
+          />
+        )
+      })}
       <div className="h-px bg-chalkboard-50/20 my-2" />
     </div>
   )

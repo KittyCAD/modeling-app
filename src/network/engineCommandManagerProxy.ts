@@ -1,30 +1,23 @@
-import { decode as msgpackDecode } from '@msgpack/msgpack'
 import type { WebSocketResponse } from '@kittycad/lib'
-import type { EngineCommand } from '@src/lang/std/artifactGraph'
+import { decode as msgpackDecode } from '@msgpack/msgpack'
 import { defaultSourceRange } from '@src/lang/sourceRange'
+import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
-import {
-  ConnectionManager,
-  type ConnectionSystemDeps,
-} from '@src/network/connectionManager'
+import { ConnectionManager } from '@src/network/connectionManager'
+import { OpenCascadeCommandManager } from '@src/network/openCascadeCommandManager'
 import type { ManagerTearDown } from '@src/network/utils'
 import {
   EngineCommandManagerEvents,
   EngineConnectionEvents,
   EngineConnectionStateType,
 } from '@src/network/utils'
-import { OpenCascadeCommandManager } from '@src/network/openCascadeCommandManager'
 
 type StartArgs = Parameters<ConnectionManager['start']>[0]
 
 export class EngineCommandManagerProxy extends ConnectionManager {
   readonly openCascadeCommandManager = new OpenCascadeCommandManager()
-
-  constructor(systemDeps: ConnectionSystemDeps) {
-    super(systemDeps)
-  }
 
   get currentEngine() {
     return this.settings.engine
@@ -254,6 +247,10 @@ export class EngineCommandManagerProxy extends ConnectionManager {
 
   async exportLatestOpenCascadeProfileGlbBytes() {
     return this.openCascadeCommandManager.exportLatestProfileGlbBytes()
+  }
+
+  exportLatestOpenCascadeTopologyMeshes() {
+    return this.openCascadeCommandManager.exportLatestTopologyMeshes()
   }
 
   async exportLatestOpenCascadeGlbUrl() {

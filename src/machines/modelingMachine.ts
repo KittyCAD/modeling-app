@@ -635,12 +635,12 @@ export type ModelingMachineEvent =
   | { type: 'Artifact graph initialized' }
   | {
       type: 'Toggle default plane visibility'
-      planeId: string
+      planeId?: string
       planeKey: keyof PlaneVisibilityMap
     }
   | {
       type: 'Save default plane visibility'
-      planeId: string
+      planeId?: string
       planeKey: keyof PlaneVisibilityMap
     }
   | {
@@ -1019,7 +1019,12 @@ export const modelingMachine = setup({
       defaultPlaneVisibility: ({ context }) => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         context.kclManager.hidePlanes()
-        return { xy: false, xz: false, yz: false }
+        return {
+          ...context.defaultPlaneVisibility,
+          xy: false,
+          xz: false,
+          yz: false,
+        }
       },
     }),
     'reset sketch metadata': assign({
@@ -1422,7 +1427,12 @@ export const modelingMachine = setup({
       defaultPlaneVisibility: ({ context }) => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         context.kclManager.showPlanes()
-        return { xy: true, xz: true, yz: true }
+        return {
+          ...context.defaultPlaneVisibility,
+          xy: true,
+          xz: true,
+          yz: true,
+        }
       },
     }),
     'show default planes if no errors': assign({
@@ -1432,7 +1442,7 @@ export const modelingMachine = setup({
         if (!kclManager.hasErrors()) {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           kclManager.showPlanes()
-          return { xy: true, xz: true, yz: true }
+          return { ...defaultPlaneVisibility, xy: true, xz: true, yz: true }
         }
         return { ...defaultPlaneVisibility }
       },
@@ -1444,7 +1454,14 @@ export const modelingMachine = setup({
         return {}
       }
       void context.kclManager.showPlanes()
-      return { defaultPlaneVisibility: { xy: true, xz: true, yz: true } }
+      return {
+        defaultPlaneVisibility: {
+          ...context.defaultPlaneVisibility,
+          xy: true,
+          xz: true,
+          yz: true,
+        },
+      }
     }),
     'setup noPoints onClick listener': ({
       context: {
@@ -2083,9 +2100,11 @@ export const modelingMachine = setup({
       const currentVisibility = currentVisibilityMap[event.planeKey]
       const newVisibility = !currentVisibility
 
-      context.kclManager.engineCommandManager
-        .setPlaneHidden(event.planeId, !newVisibility)
-        .catch(reportRejection)
+      if (event.planeId && event.planeKey !== 'origin') {
+        context.kclManager.engineCommandManager
+          .setPlaneHidden(event.planeId, !newVisibility)
+          .catch(reportRejection)
+      }
 
       return {
         defaultPlaneVisibility: {
