@@ -12,6 +12,48 @@ export const OPEN_CASCADE_REVOLVE_KCL = `sketch001 = startSketchOn(XY)
   |> revolve(angle = 360, axis = Y)
 `
 
+export const OPEN_CASCADE_SYMMETRIC_REVOLVE_KCL = `symRevolve = startSketchOn(XY)
+  |> circle(center = [15, 0], radius = 5)
+  |> revolve(angle = 90, axis = Y, symmetric = true)
+`
+
+export const OPEN_CASCADE_BIDIRECTIONAL_REVOLVE_KCL = `bidirectionalRevolve = startSketchOn(XY)
+  |> circle(center = [15, 0], radius = 5)
+  |> revolve(angle = 90, axis = Y, bidirectionalAngle = 45)
+`
+
+export const OPEN_CASCADE_SYMMETRIC_EXTRUDE_KCL = `sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
+  line2 = line(start = [var 5mm, var 0mm], end = [var 5mm, var 5mm])
+  line3 = line(start = [var 5mm, var 5mm], end = [var 0mm, var 5mm])
+  line4 = line(start = [var 0mm, var 5mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line1)
+  vertical(line2)
+}
+region001 = region(point = [2.5mm, 2.5mm], sketch = sketch001)
+symExtrude = extrude(region001, length = 5, symmetric = true)
+`
+
+export const OPEN_CASCADE_BIDIRECTIONAL_EXTRUDE_KCL = `sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
+  line2 = line(start = [var 5mm, var 0mm], end = [var 5mm, var 5mm])
+  line3 = line(start = [var 5mm, var 5mm], end = [var 0mm, var 5mm])
+  line4 = line(start = [var 0mm, var 5mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line1)
+  vertical(line2)
+}
+region001 = region(point = [2.5mm, 2.5mm], sketch = sketch001)
+bidirectionalExtrude = extrude(region001, length = 5, bidirectionalLength = 2)
+`
+
 export const OPEN_CASCADE_SWEEP_KCL = `sweepPath = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [0, 10])
@@ -19,6 +61,39 @@ export const OPEN_CASCADE_SWEEP_KCL = `sweepPath = startSketchOn(XZ)
 profile001 = startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)
   |> sweep(path = sweepPath)
+`
+
+export const OPEN_CASCADE_HELIX_KCL = `helixGuide = helix(
+  axis = Z,
+  radius = 2,
+  length = 6,
+  revolutions = 1.5,
+  angleStart = 0,
+)
+`
+
+export const OPEN_CASCADE_HELIX_SWEEP_KCL = `helixGuide = helix(
+  axis = Z,
+  radius = 2,
+  length = 6,
+  revolutions = 1.5,
+  angleStart = 0,
+)
+
+profileSketch = sketch(on = XZ) {
+  line1 = line(start = [var 2mm, var 0mm], end = [var 2mm, var 0.5mm])
+  line2 = line(start = [var 2mm, var 0.5mm], end = [var 2.5mm, var 0.5mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 2.5mm, var 0.5mm], end = [var 2.5mm, var 0mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 2.5mm, var 0mm], end = [var 2mm, var 0mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  vertical(line1)
+  horizontal(line2)
+}
+profileRegion = region(point = [2.25mm, 0.25mm], sketch = profileSketch)
+sweep001 = sweep(profileRegion, path = helixGuide)
 `
 
 export const OPEN_CASCADE_LOFT_KCL = `squareSketch = startSketchOn(XY)
@@ -180,6 +255,17 @@ export const OPEN_CASCADE_FILLET_KCL = `${OPEN_CASCADE_EDGE_CUT_BASE_KCL}fillet0
 export const OPEN_CASCADE_CHAMFER_KCL = `${OPEN_CASCADE_EDGE_CUT_BASE_KCL}chamfer001 = chamfer(block, tags = [edge001], length = 0.2)
 `
 
+export const OPEN_CASCADE_SHELL_KCL = `block = startSketchOn(XY)
+  |> startProfile(at = [-1, -1])
+  |> line(end = [2, 0])
+  |> line(end = [0, 2])
+  |> line(end = [-2, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 2, tagEnd = $capEnd001)
+shell001 = shell(block, faces = capEnd001, thickness = 0.2)
+`
+
 export const OPEN_CASCADE_TRANSFORM_KCL = `transformSolid = startSketchOn(XY)
   |> startProfile(at = [-1, -1])
   |> line(end = [2, 0])
@@ -235,8 +321,32 @@ export const OPEN_CASCADE_PROOF_FIXTURES = [
     code: OPEN_CASCADE_REVOLVE_KCL,
   },
   {
+    name: 'openCascadeSymmetricRevolveProofFixture',
+    code: OPEN_CASCADE_SYMMETRIC_REVOLVE_KCL,
+  },
+  {
+    name: 'openCascadeBidirectionalRevolveProofFixture',
+    code: OPEN_CASCADE_BIDIRECTIONAL_REVOLVE_KCL,
+  },
+  {
+    name: 'openCascadeSymmetricExtrudeProofFixture',
+    code: OPEN_CASCADE_SYMMETRIC_EXTRUDE_KCL,
+  },
+  {
+    name: 'openCascadeBidirectionalExtrudeProofFixture',
+    code: OPEN_CASCADE_BIDIRECTIONAL_EXTRUDE_KCL,
+  },
+  {
     name: 'openCascadeSweepProofFixture',
     code: OPEN_CASCADE_SWEEP_KCL,
+  },
+  {
+    name: 'openCascadeHelixProofFixture',
+    code: OPEN_CASCADE_HELIX_KCL,
+  },
+  {
+    name: 'openCascadeHelixSweepProofFixture',
+    code: OPEN_CASCADE_HELIX_SWEEP_KCL,
   },
   {
     name: 'openCascadeLoftProofFixture',
@@ -285,6 +395,10 @@ export const OPEN_CASCADE_PROOF_FIXTURES = [
   {
     name: 'openCascadeChamferProofFixture',
     code: OPEN_CASCADE_CHAMFER_KCL,
+  },
+  {
+    name: 'openCascadeShellProofFixture',
+    code: OPEN_CASCADE_SHELL_KCL,
   },
   {
     name: 'openCascadeTransformProofFixture',

@@ -15,6 +15,10 @@ import openCascadeWasmUrl from 'opencascade.js/dist/opencascade.full.wasm?url'
 
 type Point2 = { x: number; y: number }
 type Point3 = { x: number; y: number; z: number }
+type StlTriangle = {
+  normal: Point3
+  vertices: [Point3, Point3, Point3]
+}
 type TransformMatrix = [
   number,
   number,
@@ -898,6 +902,8 @@ export class OpenCascadeCommandManager {
         return modeling(await this.filletEdges(commandId, cmd))
       case 'solid3d_cut_edges':
         return modeling(await this.chamferEdges(commandId, cmd))
+      case 'solid3d_shell_face':
+        return modeling(await this.shellFaces(cmd))
       case 'volume':
         return modeling(await this.volume(cmd))
       case 'region_get_query_point':
@@ -905,7 +911,7 @@ export class OpenCascadeCommandManager {
       case 'entity_get_parent_id':
         return modeling(await this.getParentEntityId(cmd.entity_id))
       case 'export':
-        return { kind: 'export', response: await this.exportBrep() }
+        return { kind: 'export', response: await this.exportFormat(cmd) }
       default:
         throw new Error(`OpenCascade engine does not support ${cmd.type}`)
     }
@@ -1100,7 +1106,23 @@ export class OpenCascadeCommandManager {
       false,
       true
     )
-    const shape = prism.Shape()
+    const oppositeHeight = oppositeLengthValue((cmd as any).opposite, height)
+    const oppositePrism =
+      oppositeHeight !== undefined
+        ? new oc.BRepPrimAPI_MakePrism_1(
+            region.face,
+            new oc.gp_Vec_4(
+              normal.x * oppositeHeight,
+              normal.y * oppositeHeight,
+              normal.z * oppositeHeight
+            ),
+            false,
+            true
+          )
+        : undefined
+    const shape = oppositePrism
+      ? this.fuseShapes(prism.Shape(), oppositePrism.Shape(), oc)
+      : prism.Shape()
 
     const solid: SolidState = {
       shape,
@@ -1186,7 +1208,7 @@ export class OpenCascadeCommandManager {
       ? localVectorToWorld(toPoint3(cmd.axis), plane)
       : normalize(toPoint3(cmd.axis))
     const angle = angleValueRadians(cmd.angle)
-    const shape = new oc.BRepPrimAPI_MakeRevol_1(
+    const primaryShape = new oc.BRepPrimAPI_MakeRevol_1(
       region.face,
       new oc.gp_Ax1_2(
         new oc.gp_Pnt_3(origin.x, origin.y, origin.z),
@@ -1195,6 +1217,26 @@ export class OpenCascadeCommandManager {
       angle,
       false
     ).Shape()
+    const oppositeAngle = oppositeAngleValueRadians(
+      (cmd as any).opposite,
+      angle
+    )
+    const shape =
+      oppositeAngle !== undefined
+        ? this.fuseShapes(
+            primaryShape,
+            new oc.BRepPrimAPI_MakeRevol_1(
+              region.face,
+              new oc.gp_Ax1_2(
+                new oc.gp_Pnt_3(origin.x, origin.y, origin.z),
+                new oc.gp_Dir_4(axis.x, axis.y, axis.z)
+              ),
+              oppositeAngle,
+              false
+            ).Shape(),
+            oc
+          )
+        : primaryShape
 
     this.storeSolid(commandId, shape, [cmd.target], oc, _range)
     return { type: 'revolve', data: {} }
@@ -1407,11 +1449,17 @@ export class OpenCascadeCommandManager {
     commandId: string,
     cmd: Extract<ModelingCmd, { type: 'entity_make_helix_from_edge' }>
   ): Promise<OkModelingCmdResponse> {
+    const edgePoints = this.pointsForEdgeReference((cmd as any).edge_id)
+    const start = edgePoints?.[0] || { x: 0, y: 0, z: 0 }
+    const end = edgePoints?.at(-1) || { x: 0, y: 0, z: 1 }
+    const edgeVector = subtract(end, start)
+    const edgeLength = Math.hypot(edgeVector.x, edgeVector.y, edgeVector.z)
     await this.storeHelixPath(commandId, {
-      center: { x: 0, y: 0, z: 0 },
-      axis: { x: 0, y: 0, z: 1 },
+      center: start,
+      axis: edgeLength > 0 ? normalize(edgeVector) : { x: 0, y: 0, z: 1 },
       radius: lengthValue(cmd.radius),
-      length: lengthValue(cmd.length ?? 1),
+      length:
+        cmd.length === undefined ? edgeLength || 1 : lengthValue(cmd.length),
       revolutions: cmd.revolutions,
       startAngle: angleValueRadians(cmd.start_angle),
       isClockwise: cmd.is_clockwise,
@@ -1718,6 +1766,53 @@ export class OpenCascadeCommandManager {
     )
     this.replaceSolidShape(solidId, nextShape, oc)
     return { type: 'solid3d_cut_edges', data: { face_id: commandId } } as any
+  }
+
+  private async shellFaces(
+    cmd: Extract<ModelingCmd, { type: 'solid3d_shell_face' }>
+  ): Promise<OkModelingCmdResponse> {
+    const solidId = (cmd as any).object_id
+    const solid = this.requireSolid(solidId)
+    const faceIds = [...(((cmd as any).face_ids as string[]) || [])]
+    const thickness = lengthValue((cmd as any).shell_thickness)
+    const hollow = Boolean((cmd as any).hollow)
+    if (!hollow && faceIds.length === 0) {
+      throw new Error('OpenCascade shell requires at least one face')
+    }
+    if (!(thickness > 0)) {
+      throw new Error('OpenCascade shell requires a positive thickness')
+    }
+
+    const oc = await initOpenCascade()
+    const beforeVolume = this.shapeVolume(solid.shape, oc)
+    const closingFaces = this.shapeList(
+      faceIds.map((faceId) => this.requireFace(faceId)),
+      oc
+    )
+    const shellShape = this.thickSolidByJoin(
+      solid.shape,
+      closingFaces,
+      -thickness,
+      oc
+    )
+    const nextShape =
+      hollow && faceIds.length === 0
+        ? this.booleanPair('subtract', solid.shape, shellShape, oc)
+        : shellShape
+    const nextVolume = this.shapeVolume(nextShape, oc)
+    if (Math.abs(beforeVolume - nextVolume) < 1e-7) {
+      throw new Error('OpenCascade shell did not change the solid volume')
+    }
+    this.replaceSolidShape(solidId, nextShape, oc)
+    return {
+      type: 'solid3d_shell_face',
+      data: {
+        object_id: solidId,
+        face_ids: faceIds,
+        shell_thickness: (cmd as any).shell_thickness,
+        hollow,
+      },
+    } as OkModelingCmdResponse
   }
 
   private async setObjectTransform(
@@ -2121,27 +2216,145 @@ export class OpenCascadeCommandManager {
     )
   }
 
-  private async exportBrep(): Promise<OkWebSocketResponseData> {
-    const solids = this.renderState()?.solids ?? this.solids
-    const latest = Array.from(solids.entries()).at(-1)
-    if (!latest) {
-      throw new Error('No OpenCascade solids are available to export')
-    }
-
-    const [id, solid] = latest
+  private async exportFormat(
+    cmd: Extract<ModelingCmd, { type: 'export' }>
+  ): Promise<OkWebSocketResponseData> {
+    const format = (
+      cmd as {
+        format?: {
+          type?: string
+          storage?: unknown
+          units?: unknown
+          coords?: unknown
+        }
+      }
+    ).format
     const oc = await initOpenCascade()
-    const brep = solid.brep || this.writeBrep(id, solid.shape, oc)
+    const shape = this.exportShape(oc, format)
+    const type = format?.type || 'brep'
+    const file = await this.writeExportFile(type, shape, format, oc)
     return {
       type: 'export',
       data: {
         files: [
           {
-            name: `${id}.brep`,
-            contents: Array.from(brep),
+            name: file.name,
+            contents: Array.from(file.contents),
           },
         ],
       },
     }
+  }
+
+  private async writeExportFile(
+    type: string,
+    shape: any,
+    format:
+      | { type?: string; storage?: unknown; units?: unknown; coords?: unknown }
+      | undefined,
+    oc: OpenCascadeInstance
+  ): Promise<{ name: string; contents: Uint8Array }> {
+    switch (type) {
+      case 'gltf':
+        return {
+          name: 'open-cascade.glb',
+          contents: this.writeGlb('export', shape, oc),
+        }
+      case 'step':
+        return {
+          name: 'open-cascade.step',
+          contents: this.writeStep(shape, format, oc),
+        }
+      case 'stl':
+        return {
+          name: 'open-cascade.stl',
+          contents: this.writeStl(
+            shape,
+            'export',
+            ((format as { storage?: unknown })?.storage || 'ascii') === 'ascii',
+            oc
+          ),
+        }
+      case 'obj':
+        return {
+          name: 'open-cascade.obj',
+          contents: stlTrianglesToObj(
+            this.readBinaryStlTriangles(
+              this.writeStl(shape, 'export-obj', false, oc)
+            )
+          ),
+        }
+      case 'ply':
+        return {
+          name: 'open-cascade.ply',
+          contents: stlTrianglesToPly(
+            this.readBinaryStlTriangles(
+              this.writeStl(shape, 'export-ply', false, oc)
+            ),
+            ((format as { storage?: unknown })?.storage || 'ascii') as string
+          ),
+        }
+      default:
+        return {
+          name: 'open-cascade.brep',
+          contents: this.writeBrep('export', shape, oc),
+        }
+    }
+  }
+
+  private exportShape(
+    oc: OpenCascadeInstance,
+    format?: { units?: unknown; coords?: unknown }
+  ): any {
+    const visible = this.visibleSolidEntries(this.renderState())
+    if (visible.length === 0) {
+      throw new Error('No OpenCascade solids are available to export')
+    }
+
+    const shape =
+      visible.length === 1
+        ? visible[0][1].shape
+        : this.compoundShape(visible, oc)
+    return this.transformShapeForExport(shape, format, oc)
+  }
+
+  private compoundShape(
+    solids: [string, SolidState][],
+    oc: OpenCascadeInstance
+  ): any {
+    const compound = new oc.TopoDS_Compound()
+    const builder = new oc.BRep_Builder()
+    builder.MakeCompound(compound)
+    for (const [, solid] of solids) {
+      builder.Add(compound, solid.shape)
+    }
+    return compound
+  }
+
+  private transformShapeForExport(
+    shape: any,
+    format: { units?: unknown; coords?: unknown } | undefined,
+    oc: OpenCascadeInstance
+  ): any {
+    const scale = 1 / unitLengthToMm(format?.units)
+    const coords = format?.coords as
+      | {
+          up?: { axis?: unknown }
+          forward?: { axis?: unknown; direction?: unknown }
+        }
+      | undefined
+    const yUp = coords?.up?.axis === 'y'
+    if (scale === 1 && !yUp) {
+      return shape
+    }
+
+    const trsf = new oc.gp_Trsf()
+    if (yUp) {
+      trsf.SetValues(scale, 0, 0, 0, 0, 0, scale, 0, 0, -scale, 0, 0)
+    } else {
+      trsf.SetScale(new oc.gp_Pnt_3(0, 0, 0), scale)
+    }
+    return new oc.BRepBuilderAPI_Transform_2(shape, trsf, true).Shape()
   }
 
   private writeBrep(
@@ -2152,6 +2365,77 @@ export class OpenCascadeCommandManager {
     const fileName = `/${id}.brep`
     oc.BRepTools.Write_3(shape, fileName, new oc.Message_ProgressRange_1())
     return oc.FS.readFile(fileName)
+  }
+
+  private writeStep(
+    shape: any,
+    format: { units?: unknown } | undefined,
+    oc: OpenCascadeInstance
+  ): Uint8Array {
+    const fileName = '/export.step'
+    unlinkIfExists(fileName, oc)
+    oc.Interface_Static.SetCVal('write.step.unit', stepUnitName(format?.units))
+    const writer = new oc.STEPControl_Writer_1()
+    const transferStatus = writer.Transfer(
+      shape,
+      oc.STEPControl_StepModelType.STEPControl_AsIs,
+      true,
+      new oc.Message_ProgressRange_1()
+    )
+    if (!isOpenCascadeDoneStatus(transferStatus, oc)) {
+      throw new Error('OpenCascade STEP transfer failed')
+    }
+    const writeStatus = writer.Write(fileName)
+    if (!isOpenCascadeDoneStatus(writeStatus, oc)) {
+      throw new Error('OpenCascade STEP writer failed')
+    }
+    return oc.FS.readFile(fileName)
+  }
+
+  private writeStl(
+    shape: any,
+    id: string,
+    ascii: boolean,
+    oc: OpenCascadeInstance
+  ): Uint8Array {
+    const fileName = `/${id}.stl`
+    unlinkIfExists(fileName, oc)
+    new oc.BRepMesh_IncrementalMesh_2(shape, 0.1, false, 0.1, false)
+    const didWrite = oc.StlAPI.Write(shape, fileName, ascii)
+    if (!didWrite) {
+      throw new Error('OpenCascade STL writer failed')
+    }
+    return oc.FS.readFile(fileName)
+  }
+
+  private readBinaryStlTriangles(bytes: Uint8Array): StlTriangle[] {
+    if (bytes.length < 84) {
+      throw new Error('OpenCascade STL export was unexpectedly empty')
+    }
+    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
+    const triangleCount = view.getUint32(80, true)
+    const triangles: StlTriangle[] = []
+    let offset = 84
+    for (let i = 0; i < triangleCount && offset + 50 <= bytes.length; i += 1) {
+      const normal: Point3 = {
+        x: view.getFloat32(offset, true),
+        y: view.getFloat32(offset + 4, true),
+        z: view.getFloat32(offset + 8, true),
+      }
+      offset += 12
+      const vertices: [Point3, Point3, Point3] = [0, 1, 2].map(() => {
+        const vertex = {
+          x: view.getFloat32(offset, true),
+          y: view.getFloat32(offset + 4, true),
+          z: view.getFloat32(offset + 8, true),
+        }
+        offset += 12
+        return vertex
+      }) as [Point3, Point3, Point3]
+      triangles.push({ normal, vertices })
+      offset += 2
+    }
+    return triangles
   }
 
   private writeGlb(
@@ -2700,6 +2984,38 @@ export class OpenCascadeCommandManager {
     return edge
   }
 
+  private requireFace(faceId: string): any {
+    const entry = this.topologyEntries.get(faceId)
+    if (!entry || entry.kind !== 'face' || !entry.shape) {
+      throw new Error(`No OpenCascade face found for ${faceId}`)
+    }
+    return entry.shape
+  }
+
+  private thickSolidByJoin(
+    shape: any,
+    closingFaces: any,
+    offset: number,
+    oc: OpenCascadeInstance
+  ): any {
+    const thickSolid = new oc.BRepOffsetAPI_MakeThickSolid()
+    thickSolid.MakeThickSolidByJoin(
+      shape,
+      closingFaces,
+      offset,
+      1e-3,
+      oc.BRepOffset_Mode.BRepOffset_Skin,
+      false,
+      false,
+      oc.GeomAbs_JoinType.GeomAbs_Arc,
+      false,
+      new oc.Message_ProgressRange_1()
+    )
+    thickSolid.Build(new oc.Message_ProgressRange_1())
+    this.throwIfBooleanFailed(thickSolid, 'shell')
+    return thickSolid.Shape()
+  }
+
   private findShapeEdgeByPoints(
     shape: any,
     start: Point3,
@@ -3058,6 +3374,8 @@ export class OpenCascadeCommandManager {
     const basis = orthonormalBasis(axis)
     const turns = Math.max(0.001, Math.abs(input.revolutions))
     const steps = Math.max(16, Math.ceil(turns * 32))
+    const points: Point3[] = []
+    const edgeEntries: PathEdgeEntry[] = []
     let previous: Point3 | undefined
 
     for (let i = 0; i <= steps; i += 1) {
@@ -3073,6 +3391,7 @@ export class OpenCascadeCommandManager {
         add(input.center, radial),
         scale(axis, input.length * t)
       )
+      points.push(point)
       if (previous) {
         const edgeBuilder = new oc.BRepBuilderAPI_MakeEdge_3(
           toGpPnt(previous, oc),
@@ -3081,7 +3400,13 @@ export class OpenCascadeCommandManager {
         if (!edgeBuilder.IsDone()) {
           throw new Error('OpenCascade failed to build helix edge')
         }
-        wireBuilder.Add_1(edgeBuilder.Edge())
+        const edge = edgeBuilder.Edge()
+        wireBuilder.Add_1(edge)
+        edgeEntries.push({
+          id: deriveTopologyId(commandId, i),
+          edge,
+          points: [previous, point],
+        })
       }
       previous = point
     }
@@ -3089,9 +3414,41 @@ export class OpenCascadeCommandManager {
       throw new Error('OpenCascade failed to build helix wire')
     }
     this.paths.set(commandId, {
-      segments: [],
+      segments: edgeEntries.map((edge) => ({
+        id: edge.id,
+        type: 'line',
+        start: edge.points[0],
+        end: edge.points[1],
+      })),
       wire: wireBuilder.Wire(),
+      edgeEntries,
     })
+    this.markSketchChanged()
+  }
+
+  private pointsForEdgeReference(edgeId: string | null | undefined) {
+    if (!edgeId) {
+      return undefined
+    }
+
+    const topologyEntry = this.topologyEntries.get(edgeId)
+    if (topologyEntry?.points) {
+      return unflattenPoints(topologyEntry.points)
+    }
+
+    for (const path of this.paths.values()) {
+      const edgeEntry = path.edgeEntries?.find((entry) => entry.id === edgeId)
+      if (edgeEntry) {
+        return edgeEntry.points.map((point) => ({ ...point }))
+      }
+
+      const segment = path.segments.find((candidate) => candidate.id === edgeId)
+      if (segment) {
+        return pointsForPathSegment(segment, this.planeForPath(path))
+      }
+    }
+
+    return undefined
   }
 
   private async getRegionQueryPoint(
@@ -4171,6 +4528,69 @@ function angleValueRadians(value: unknown): number {
   return angle?.unit === 'radians' ? raw : (raw * Math.PI) / 180
 }
 
+function oppositeLengthValue(opposite: unknown, primary: number) {
+  const magnitude = oppositeMagnitude(opposite, Math.abs(primary), lengthValue)
+  if (magnitude === undefined || magnitude === 0) {
+    return undefined
+  }
+  return -Math.sign(primary || 1) * Math.abs(magnitude)
+}
+
+function oppositeAngleValueRadians(opposite: unknown, primary: number) {
+  if (Math.abs(primary) >= Math.PI * 2 - 1e-7) {
+    return undefined
+  }
+  const magnitude = oppositeMagnitude(
+    opposite,
+    Math.abs(primary),
+    angleValueRadians
+  )
+  if (magnitude === undefined || magnitude === 0) {
+    return undefined
+  }
+  return -Math.sign(primary || 1) * Math.abs(magnitude)
+}
+
+function oppositeMagnitude(
+  opposite: unknown,
+  symmetricMagnitude: number,
+  value: (input: unknown) => number
+) {
+  if (!opposite || isNoOpposite(opposite)) {
+    return undefined
+  }
+  if (isSymmetricOpposite(opposite)) {
+    return symmetricMagnitude
+  }
+  const other = otherOppositeValue(opposite)
+  if (other !== undefined) {
+    return value(other)
+  }
+  return undefined
+}
+
+function isNoOpposite(opposite: unknown) {
+  return (
+    typeof opposite === 'string' &&
+    (opposite === 'None' || opposite.toLowerCase() === 'none')
+  )
+}
+
+function isSymmetricOpposite(opposite: unknown) {
+  return (
+    typeof opposite === 'string' &&
+    (opposite === 'Symmetric' || opposite.toLowerCase() === 'symmetric')
+  )
+}
+
+function otherOppositeValue(opposite: unknown) {
+  if (!opposite || typeof opposite !== 'object') {
+    return undefined
+  }
+  const record = opposite as Record<string, unknown>
+  return record.Other ?? record.other ?? record.value
+}
+
 function isNewExtrudeMethod(method: unknown): boolean {
   return typeof method === 'string' && method.toLowerCase() === 'new'
 }
@@ -5218,6 +5638,137 @@ function convertVolumeFromModelUnits(
     default:
       return volume
   }
+}
+
+function unitLengthToMm(unit: unknown): number {
+  switch (unit) {
+    case 'cm':
+      return 10
+    case 'm':
+      return 1000
+    case 'in':
+      return 25.4
+    case 'ft':
+      return 304.8
+    case 'yd':
+      return 914.4
+    case 'mm':
+    default:
+      return 1
+  }
+}
+
+function stepUnitName(unit: unknown): string {
+  switch (unit) {
+    case 'cm':
+      return 'CM'
+    case 'm':
+      return 'M'
+    case 'in':
+      return 'INCH'
+    case 'ft':
+      return 'FT'
+    case 'yd':
+      return 'YD'
+    case 'mm':
+    default:
+      return 'MM'
+  }
+}
+
+function unlinkIfExists(fileName: string, oc: OpenCascadeInstance) {
+  try {
+    oc.FS.unlink(fileName)
+  } catch {
+    // Missing files are fine; Emscripten throws for unlink on absent paths.
+  }
+}
+
+function isOpenCascadeDoneStatus(status: unknown, oc: OpenCascadeInstance) {
+  const returnStatus = (oc as any).IFSelect_ReturnStatus
+  return (
+    status === 1 ||
+    status === returnStatus?.IFSelect_RetDone ||
+    status === returnStatus?.values?.[1] ||
+    (typeof status === 'object' &&
+      status !== null &&
+      'IFSelect_RetDone' in status)
+  )
+}
+
+function stlTrianglesToObj(triangles: StlTriangle[]): Uint8Array {
+  const lines = ['# Exported by Zoo OpenCascade engine']
+  let vertexIndex = 1
+  for (const triangle of triangles) {
+    for (const vertex of triangle.vertices) {
+      lines.push(`v ${vertex.x} ${vertex.y} ${vertex.z}`)
+    }
+    lines.push(`f ${vertexIndex} ${vertexIndex + 1} ${vertexIndex + 2}`)
+    vertexIndex += 3
+  }
+  return new TextEncoder().encode(`${lines.join('\n')}\n`)
+}
+
+function stlTrianglesToPly(
+  triangles: StlTriangle[],
+  storage: string
+): Uint8Array {
+  const vertexCount = triangles.length * 3
+  const header = [
+    'ply',
+    storage === 'binary_big_endian'
+      ? 'format binary_big_endian 1.0'
+      : storage === 'binary_little_endian'
+        ? 'format binary_little_endian 1.0'
+        : 'format ascii 1.0',
+    'comment Exported by Zoo OpenCascade engine',
+    `element vertex ${vertexCount}`,
+    'property float x',
+    'property float y',
+    'property float z',
+    `element face ${triangles.length}`,
+    'property list uchar uint vertex_indices',
+    'end_header',
+  ].join('\n')
+
+  if (storage !== 'binary_big_endian' && storage !== 'binary_little_endian') {
+    const lines = [header]
+    for (const triangle of triangles) {
+      for (const vertex of triangle.vertices) {
+        lines.push(`${vertex.x} ${vertex.y} ${vertex.z}`)
+      }
+    }
+    for (let index = 0; index < vertexCount; index += 3) {
+      lines.push(`3 ${index} ${index + 1} ${index + 2}`)
+    }
+    return new TextEncoder().encode(`${lines.join('\n')}\n`)
+  }
+
+  const littleEndian = storage === 'binary_little_endian'
+  const headerBytes = new TextEncoder().encode(`${header}\n`)
+  const bodyBytes = new Uint8Array(vertexCount * 12 + triangles.length * 13)
+  const view = new DataView(bodyBytes.buffer)
+  let offset = 0
+  for (const triangle of triangles) {
+    for (const vertex of triangle.vertices) {
+      view.setFloat32(offset, vertex.x, littleEndian)
+      view.setFloat32(offset + 4, vertex.y, littleEndian)
+      view.setFloat32(offset + 8, vertex.z, littleEndian)
+      offset += 12
+    }
+  }
+  for (let index = 0; index < vertexCount; index += 3) {
+    view.setUint8(offset, 3)
+    view.setUint32(offset + 1, index, littleEndian)
+    view.setUint32(offset + 5, index + 1, littleEndian)
+    view.setUint32(offset + 9, index + 2, littleEndian)
+    offset += 13
+  }
+
+  const bytes = new Uint8Array(headerBytes.length + bodyBytes.length)
+  bytes.set(headerBytes)
+  bytes.set(bodyBytes, headerBytes.length)
+  return bytes
 }
 
 function firstShapeFromList(list: any): any | undefined {

@@ -8,19 +8,26 @@ import {
   OPEN_CASCADE_BOOLEAN_SPLIT_KCL,
   OPEN_CASCADE_BOOLEAN_SUBTRACT_KCL,
   OPEN_CASCADE_BOOLEAN_UNION_KCL,
+  OPEN_CASCADE_BIDIRECTIONAL_EXTRUDE_KCL,
+  OPEN_CASCADE_BIDIRECTIONAL_REVOLVE_KCL,
   OPEN_CASCADE_CHAMFER_KCL,
   OPEN_CASCADE_CIRCLE_EXTRUDE_KCL,
   OPEN_CASCADE_FILLET_KCL,
+  OPEN_CASCADE_HELIX_KCL,
+  OPEN_CASCADE_HELIX_SWEEP_KCL,
   OPEN_CASCADE_INTERSECTING_REGION_EXTRUDE_KCL,
   OPEN_CASCADE_LOFT_KCL,
   OPEN_CASCADE_OFFSET_PLANE_KCL,
   OPEN_CASCADE_PATTERN_KCL,
   OPEN_CASCADE_REVOLVE_KCL,
+  OPEN_CASCADE_SHELL_KCL,
   OPEN_CASCADE_SKETCH_V2_CIRCLE_KCL,
   OPEN_CASCADE_SKETCH_V2_RECTANGLE_KCL,
   OPEN_CASCADE_SKETCH_ON_FACE_MERGE_EXTRUDE_KCL,
   OPEN_CASCADE_SKETCH_ON_FACE_NEW_EXTRUDE_KCL,
   OPEN_CASCADE_SWEEP_KCL,
+  OPEN_CASCADE_SYMMETRIC_EXTRUDE_KCL,
+  OPEN_CASCADE_SYMMETRIC_REVOLVE_KCL,
   OPEN_CASCADE_TRANSFORM_KCL,
 } from '@src/network/openCascadeProofFixture'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
@@ -219,6 +226,87 @@ describe('OpenCascadeCommandManager', () => {
     expect(exportResponse.resp.data.files[0].contents.length).toBeGreaterThan(0)
   })
 
+  it('exports visible OpenCascade solids as STEP, STL, OBJ, and PLY', async () => {
+    const manager = new OpenCascadeCommandManager()
+
+    await buildRectangleRegionInput(manager)
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: IDS.solid,
+      cmd: {
+        type: 'extrude',
+        target: IDS.region,
+        distance: 2,
+        extrude_method: 'new',
+        body_type: 'solid',
+      },
+    })
+
+    const stepResponse = await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000a1',
+      cmd: {
+        type: 'export',
+        entity_ids: [],
+        format: { type: 'step', units: 'mm' },
+      },
+    })
+    const stepFile = stepResponse.resp.data.files[0]
+    expect(stepResponse.resp.type).toBe('export')
+    expect(stepFile.name).toBe('open-cascade.step')
+    expect(
+      new TextDecoder().decode(new Uint8Array(stepFile.contents))
+    ).toContain('ISO-10303')
+
+    const stlResponse = await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000a2',
+      cmd: {
+        type: 'export',
+        entity_ids: [],
+        format: { type: 'stl', storage: 'ascii', units: 'mm' },
+      },
+    })
+    const stlFile = stlResponse.resp.data.files[0]
+    expect(stlResponse.resp.type).toBe('export')
+    expect(stlFile.name).toBe('open-cascade.stl')
+    expect(
+      new TextDecoder().decode(new Uint8Array(stlFile.contents))
+    ).toContain('solid')
+
+    const objResponse = await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000a3',
+      cmd: {
+        type: 'export',
+        entity_ids: [],
+        format: { type: 'obj', units: 'mm' },
+      },
+    })
+    const objText = new TextDecoder().decode(
+      new Uint8Array(objResponse.resp.data.files[0].contents)
+    )
+    expect(objResponse.resp.data.files[0].name).toBe('open-cascade.obj')
+    expect(objText).toContain('\nv ')
+    expect(objText).toContain('\nf ')
+
+    const plyResponse = await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000a4',
+      cmd: {
+        type: 'export',
+        entity_ids: [],
+        format: { type: 'ply', storage: 'ascii', units: 'mm' },
+      },
+    })
+    const plyText = new TextDecoder().decode(
+      new Uint8Array(plyResponse.resp.data.files[0].contents)
+    )
+    expect(plyResponse.resp.data.files[0].name).toBe('open-cascade.ply')
+    expect(plyText).toContain('element vertex')
+    expect(plyText).toContain('element face')
+  })
+
   it('uses per-command source ranges so imported solids carry render provenance', async () => {
     const manager = new OpenCascadeCommandManager()
 
@@ -281,6 +369,37 @@ describe('OpenCascadeCommandManager', () => {
     ).toHaveLength(4)
     expect(topologyMeshes.solids[0].edges.length).toBeGreaterThanOrEqual(4)
     expect((await manager.exportLatestGlbBytes()).length).toBeGreaterThan(0)
+  })
+
+  it('builds symmetric and bidirectional OpenCascade extrudes as opposing fused prisms', async () => {
+    const extrudeVolume = async (opposite?: unknown) => {
+      const manager = new OpenCascadeCommandManager()
+      await buildRectangleRegionInput(manager)
+      await send(manager, IDS.request, {
+        type: 'modeling_cmd_req',
+        cmd_id: IDS.solid,
+        cmd: {
+          type: 'extrude',
+          target: IDS.region,
+          distance: 2,
+          extrude_method: 'new',
+          body_type: 'solid',
+          ...(opposite === undefined ? {} : { opposite }),
+        },
+      })
+      expect(manager.getSolidCount()).toBe(1)
+      expect((await manager.exportLatestGlbBytes()).length).toBeGreaterThan(0)
+      return getVolume(manager, IDS.solid)
+    }
+
+    const oneWayVolume = await extrudeVolume()
+    const symmetricVolume = await extrudeVolume('Symmetric')
+    const bidirectionalVolume = await extrudeVolume({ Other: 1 })
+
+    expect(symmetricVolume).toBeGreaterThan(oneWayVolume * 1.9)
+    expect(symmetricVolume).toBeLessThan(oneWayVolume * 2.1)
+    expect(bidirectionalVolume).toBeGreaterThan(oneWayVolume * 1.4)
+    expect(bidirectionalVolume).toBeLessThan(oneWayVolume * 1.6)
   })
 
   it('executes past an OpenCascade rollback marker while exporting pre-marker render state', async () => {
@@ -535,6 +654,47 @@ part002 = startSketchOn(XY)
     expect(await getVolume(chamferManager, IDS.solid)).toBeLessThan(
       chamferStartVolume
     )
+  })
+
+  it('shells a selected OpenCascade extrude face', async () => {
+    const manager = new OpenCascadeCommandManager()
+    await buildRectangleRegionInput(manager)
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: IDS.solid,
+      cmd: {
+        type: 'extrude',
+        target: IDS.region,
+        distance: 2,
+        extrude_method: 'new',
+        body_type: 'solid',
+      },
+    })
+    const endCapId = manager
+      .exportLatestTopologyMeshes()
+      .solids[0].groups.find((group) => group.role === 'endCap')?.topologyId
+    expect(endCapId).toBeTruthy()
+    if (!endCapId) {
+      throw new Error('No end cap face found for shell test')
+    }
+    const startVolume = await getVolume(manager, IDS.solid)
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000e6',
+      cmd: {
+        type: 'solid3d_shell_face',
+        object_id: IDS.solid,
+        face_ids: [endCapId],
+        shell_thickness: 0.25,
+        hollow: false,
+      },
+    })
+
+    expect(manager.getSolidCount()).toBe(1)
+    expect(manager.exportLastBrep()?.length).toBeGreaterThan(0)
+    expect((await manager.exportLatestGlbBytes()).length).toBeGreaterThan(0)
+    expect(await getVolume(manager, IDS.solid)).toBeLessThan(startVolume)
   })
 
   it('applies OpenCascade object transforms to solids and pick topology', async () => {
@@ -1484,7 +1644,20 @@ topSketch = sketch(on = startSketchOn(cylinder, face = END)) {
       'extrude001',
     ],
     ['revolve', OPEN_CASCADE_REVOLVE_KCL, 'sketch001'],
+    ['symmetric-revolve', OPEN_CASCADE_SYMMETRIC_REVOLVE_KCL, 'symRevolve'],
+    [
+      'bidirectional-revolve',
+      OPEN_CASCADE_BIDIRECTIONAL_REVOLVE_KCL,
+      'bidirectionalRevolve',
+    ],
+    ['symmetric-extrude', OPEN_CASCADE_SYMMETRIC_EXTRUDE_KCL, 'symExtrude'],
+    [
+      'bidirectional-extrude',
+      OPEN_CASCADE_BIDIRECTIONAL_EXTRUDE_KCL,
+      'bidirectionalExtrude',
+    ],
     ['sweep', OPEN_CASCADE_SWEEP_KCL, 'profile001'],
+    ['helix-sweep', OPEN_CASCADE_HELIX_SWEEP_KCL, 'sweep001'],
     ['loft', OPEN_CASCADE_LOFT_KCL, 'loft001'],
     [
       'sketch-on-face-merge-extrude',
@@ -1506,6 +1679,7 @@ topSketch = sketch(on = startSketchOn(cylinder, face = END)) {
     ['boolean-split', OPEN_CASCADE_BOOLEAN_SPLIT_KCL, 'booleanSplit'],
     ['fillet', OPEN_CASCADE_FILLET_KCL, 'fillet001'],
     ['chamfer', OPEN_CASCADE_CHAMFER_KCL, 'chamfer001'],
+    ['shell', OPEN_CASCADE_SHELL_KCL, 'shell001'],
     ['transform', OPEN_CASCADE_TRANSFORM_KCL, 'transformSolid'],
   ])(
     'executes the %s KCL proof through WASM',
@@ -1526,6 +1700,27 @@ topSketch = sketch(on = startSketchOn(cylinder, face = END)) {
       expect(glbBytes?.length).toBeGreaterThan(0)
     }
   )
+
+  it('executes standalone helix KCL and exports a visible path mesh', async () => {
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(OPEN_CASCADE_HELIX_KCL, instance)
+
+    const execState = await rustContext.execute(ast, {
+      settings: { modeling: { engine: 'open_cascade' } },
+    })
+
+    expect(execState.variables.helixGuide?.type).toBe('Helix')
+    if (execState.variables.helixGuide?.type !== 'Helix') {
+      throw new Error('Expected helixGuide to be a Helix')
+    }
+    const manager = OpenCascadeCommandManager.latestInstance()
+    const sketchLines = manager?.exportLatestSketchLineMeshes()
+    expect(sketchLines?.segments.length).toBeGreaterThan(16)
+    expect(sketchLines?.segments[0]).toMatchObject({
+      pathId: execState.variables.helixGuide.value.value,
+      kind: 'line',
+    })
+  })
 
   it('executes the pattern KCL proof through WASM', async () => {
     const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()

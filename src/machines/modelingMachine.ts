@@ -5941,13 +5941,18 @@ export const modelingMachine = setup({
           return new Error(errorMessage)
         }
 
+        const outputExtension =
+          data.type === 'gltf' &&
+          isOpenCascadeEngine(kclManager.engineCommandManager)
+            ? 'glb'
+            : data.type
         let fileName = (kclManager.currentFileName ?? 'output.kcl')?.replace(
           '.kcl',
-          `.${data.type}`
+          `.${outputExtension}`
         )
         // Ensure the file has an extension.
         if (!fileName.includes('.')) {
-          fileName += `.${data.type}`
+          fileName += `.${outputExtension}`
         }
 
         const { up, scale, ...formatData } = data
