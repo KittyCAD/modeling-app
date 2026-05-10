@@ -13,14 +13,27 @@ import { err, reportRejection } from '@src/lib/trap'
 import type { KclManager } from '@src/lang/KclManager'
 
 export function useEngineConnectionSubscriptions() {
-  const { send, context, state } = useModelingContext()
-  const { engineCommandManager, kclManager, rustContext, wasmInstance } =
-    context
+  const modeling = useModelingContext()
+  const send = modeling?.send
+  const context = modeling?.context
+  const state = modeling?.state
+  const engineCommandManager = context?.engineCommandManager
+  const kclManager = context?.kclManager
+  const rustContext = context?.rustContext
+  const wasmInstance = context?.wasmInstance
   const stateRef = useRef(state)
   stateRef.current = state
 
   useEffect(() => {
-    if (!engineCommandManager) return
+    if (
+      !engineCommandManager ||
+      !kclManager ||
+      !rustContext ||
+      !wasmInstance ||
+      !send
+    ) {
+      return
+    }
 
     const unSubHover = engineCommandManager.subscribeToUnreliable({
       // Note this is our hover logic, "highlight_set_entity" is the event that is fired when we hover over an entity
@@ -49,10 +62,10 @@ export function useEngineConnectionSubscriptions() {
       callback: (engineEvent) => {
         ;(async () => {
           if (
-            stateRef.current.matches('Sketch no face') ||
+            stateRef.current?.matches('Sketch no face') ||
             // Ignore select_with_point in sketch solve: without this selection is overridden
             // and breaks multiple line highlights
-            stateRef.current.matches('sketchSolveMode')
+            stateRef.current?.matches('sketchSolveMode')
           ) {
             return
           }
@@ -65,8 +78,8 @@ export function useEngineConnectionSubscriptions() {
           // Check state again, in case we went into sketch mode before getEventForSelectWithPoint returned.
           // This is probably rare, but we do go into sketch mode on double click.
           if (
-            stateRef.current.matches('Sketch no face') ||
-            stateRef.current.matches('sketchSolveMode')
+            stateRef.current?.matches('Sketch no face') ||
+            stateRef.current?.matches('sketchSolveMode')
           ) {
             return
           }
@@ -88,7 +101,9 @@ export function useEngineConnectionSubscriptions() {
   ])
 
   useEffect(() => {
-    if (!engineCommandManager) return
+    if (!engineCommandManager || !context || !state || !kclManager) {
+      return
+    }
 
     const unSub = engineCommandManager.subscribeTo({
       event: 'select_with_point',
@@ -104,7 +119,7 @@ export function useEngineConnectionSubscriptions() {
     })
     return unSub
   }, [
-    context.store.useSketchSolveMode,
+    context?.store.useSketchSolveMode,
     state,
     kclManager,
     rustContext,
@@ -113,8 +128,15 @@ export function useEngineConnectionSubscriptions() {
 
   // Re-apply plane visibility when planes are (re)created on the Rust side
   useEffect(() => {
+    if (!rustContext || !kclManager) {
+      return
+    }
+
     const unsubscribe = rustContext.planesCreated.add(() => {
-      const vis = stateRef.current.context.defaultPlaneVisibility
+      const vis = stateRef.current?.context.defaultPlaneVisibility
+      if (!vis) {
+        return
+      }
       void kclManager.setPlaneVisibilityByKey('xy', vis.xy)
       void kclManager.setPlaneVisibilityByKey('xz', vis.xz)
       void kclManager.setPlaneVisibilityByKey('yz', vis.yz)
