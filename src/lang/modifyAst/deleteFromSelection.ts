@@ -24,6 +24,7 @@ import {
   getFaceCodeRef,
 } from '@src/lang/std/artifactGraph'
 import type {
+  Artifact,
   ArtifactGraph,
   CallExpressionKw,
   KclValue,
@@ -37,6 +38,9 @@ import { err, reportRejection } from '@src/lib/trap'
 import { isArray, roundOff } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selection } from '@src/machines/modelingSharedTypes'
+
+type SketchBlockArtifact = Extract<Artifact, { type: 'sketchBlock' }>
+type PathArtifact = Extract<Artifact, { type: 'path' }>
 
 export async function deleteFromSelection(
   ast: Node<Program>,
@@ -505,6 +509,96 @@ export async function deleteFromSelection(
   }
 
   return new Error('Selection not recognised, could not delete')
+}
+
+export function deleteSketchBlockAndDependentRegions(
+  ast: Node<Program>,
+  sketchBlock: SketchBlockArtifact,
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): Node<Program> | Error {
+  const astClone = structuredClone(ast)
+  const bodyIndicesToDelete = new Set<number>()
+  const sketchBodyIndex = topLevelBodyIndex(sketchBlock.codeRef.pathToNode)
+  if (typeof sketchBodyIndex !== 'number') {
+    return new Error('Could not find sketch body index')
+  }
+  bodyIndicesToDelete.add(sketchBodyIndex)
+
+  const sketchVarDec = getNodeFromPath<VariableDeclarator>(
+    ast,
+    sketchBlock.codeRef.pathToNode,
+    wasmInstance,
+    'VariableDeclarator'
+  )
+  const sketchVariableName = err(sketchVarDec)
+    ? undefined
+    : sketchVarDec.node.id.name
+
+  for (const artifact of artifactGraph.values()) {
+    if (
+      artifact.type === 'path' &&
+      artifact.subType === 'region' &&
+      isRegionOwnedBySketch(artifact, sketchBlock)
+    ) {
+      const regionBodyIndex = topLevelBodyIndex(artifact.codeRef.pathToNode)
+      if (typeof regionBodyIndex === 'number') {
+        bodyIndicesToDelete.add(regionBodyIndex)
+      }
+      if (artifact.sweepId) {
+        const sweep = getArtifactOfTypes(
+          { key: artifact.sweepId, types: ['sweep'] },
+          artifactGraph
+        )
+        if (!err(sweep)) {
+          const sweepBodyIndex = topLevelBodyIndex(sweep.codeRef.pathToNode)
+          if (typeof sweepBodyIndex === 'number') {
+            bodyIndicesToDelete.add(sweepBodyIndex)
+          }
+        }
+      }
+    }
+  }
+
+  if (sketchVariableName) {
+    ast.body.forEach((bodyItem, index) => {
+      if (
+        bodyItem.type === 'VariableDeclaration' &&
+        bodyItem.declaration.init.type === 'CallExpressionKw' &&
+        bodyItem.declaration.init.callee.name.name === 'hide' &&
+        callReferencesName(bodyItem.declaration.init, sketchVariableName)
+      ) {
+        bodyIndicesToDelete.add(index)
+      }
+    })
+  }
+
+  for (const bodyIndex of Array.from(bodyIndicesToDelete).sort(
+    (a, b) => b - a
+  )) {
+    astClone.body.splice(bodyIndex, 1)
+  }
+  return astClone
+}
+
+function isRegionOwnedBySketch(
+  region: PathArtifact,
+  sketchBlock: SketchBlockArtifact
+) {
+  return (
+    (Boolean(sketchBlock.pathId) &&
+      region.originPathId === sketchBlock.pathId) ||
+    region.sketchBlockId === sketchBlock.id
+  )
+}
+
+function callReferencesName(call: CallExpressionKw, name: string) {
+  return (
+    (call.unlabeled?.type === 'Name' && call.unlabeled.name.name === name) ||
+    call.arguments.some(
+      (arg) => arg.arg.type === 'Name' && arg.arg.name.name === name
+    )
+  )
 }
 
 function topLevelBodyIndex(pathToNode: PathToNode): number | undefined {

@@ -5,7 +5,10 @@ import type {
 import type { KclManager } from '@src/lang/KclManager'
 import { executeAstMock } from '@src/lang/langHelpers'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
-import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
+import {
+  deleteFromSelection,
+  deleteSketchBlockAndDependentRegions,
+} from '@src/lang/modifyAst/deleteFromSelection'
 import { rewireAfterDelete } from '@src/lang/modifyAst/rewire'
 import { EXECUTION_TYPE_REAL, SKETCH_FILE_VERSION } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
@@ -27,6 +30,31 @@ export async function deleteSelectionPromise({
   }
 }): Promise<Error | undefined> {
   const ast = systemDeps.kclManager.ast
+  const isOpenCascade =
+    'isOpenCascade' in systemDeps.kclManager.engineCommandManager &&
+    systemDeps.kclManager.engineCommandManager.isOpenCascade === true
+
+  if (isOpenCascade && selection.artifact?.type === 'sketchBlock') {
+    const modifiedAst = deleteSketchBlockAndDependentRegions(
+      ast,
+      selection.artifact,
+      systemDeps.kclManager.artifactGraph,
+      await systemDeps.kclManager.wasmInstancePromise
+    )
+    if (err(modifiedAst)) {
+      return new Error(deletionErrorMessage)
+    }
+
+    await updateModelingState(
+      modifiedAst,
+      EXECUTION_TYPE_REAL,
+      systemDeps.kclManager,
+      {
+        isDeleting: true,
+      }
+    )
+    return
+  }
 
   // Filtering on type here for Rust API based deletion, as this is the point of convergence
   // of deletion calls, from the feature tree but also Delete hotkey globally.

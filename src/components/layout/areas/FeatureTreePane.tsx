@@ -199,14 +199,17 @@ export const FeatureTreePaneContents = memo(() => {
     hasParseErrors || disableModelingForUnrenderedChanges
 
   // We filter out operations that are not useful to show in the feature tree
-  const operationList = groupSketchBlockOperations(
-    groupOperationTypeStreaks(filterOperations(unfilteredOperationList), [
-      'VariableDeclaration',
-    ])
-  )
   const isOpenCascade =
     'isOpenCascade' in engineCommandManager &&
     engineCommandManager.isOpenCascade === true
+  const featureTreeOperations = isOpenCascade
+    ? filterOpenCascadeEphemeralOperations(unfilteredOperationList)
+    : unfilteredOperationList
+  const operationList = groupSketchBlockOperations(
+    groupOperationTypeStreaks(filterOperations(featureTreeOperations), [
+      'VariableDeclaration',
+    ])
+  )
   const rollbackExit = isOpenCascade
     ? findTopLevelRollbackExit(operationsCode)
     : undefined
@@ -587,6 +590,14 @@ function sourceRangesEqual(
     left[2] === right[2]
   )
 }
+
+export function filterOpenCascadeEphemeralOperations(operations: Operation[]) {
+  return operations.filter(
+    (operation) =>
+      !(operation.type === 'StdLibCall' && operation.name === 'region')
+  )
+}
+
 function SketchBlockOperationGroup({
   items,
   code,

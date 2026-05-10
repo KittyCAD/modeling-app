@@ -3,6 +3,7 @@ import { createElement } from 'react'
 import { beforeEach, describe, it, expect, vi } from 'vitest'
 import {
   DefaultPlanes,
+  filterOpenCascadeEphemeralOperations,
   getFeatureTreeValueDetail,
   selectedFeatureTreeDefaultPlaneKeys,
 } from '@src/components/layout/areas/FeatureTreePane'
@@ -254,6 +255,31 @@ describe('FeatureTreePane', () => {
         expect(valueDetail?.display).toBe('A')
         expect(valueDetail?.calculated).toEqual({ type: 'String', value: 'A' })
       })
+    })
+  })
+
+  describe('filterOpenCascadeEphemeralOperations', () => {
+    it('filters region operations from the OpenCascade feature tree list', () => {
+      const regionOperation: Operation = {
+        type: 'StdLibCall',
+        name: 'region',
+        unlabeledArg: null,
+        labeledArgs: {},
+        nodePath: defaultNodePath(),
+        sourceRange: defaultSourceRange(),
+        isError: false,
+      }
+      const extrudeOperation: Operation = {
+        ...regionOperation,
+        name: 'extrude',
+      }
+
+      expect(
+        filterOpenCascadeEphemeralOperations([
+          regionOperation,
+          extrudeOperation,
+        ])
+      ).toEqual([extrudeOperation])
     })
   })
 })
