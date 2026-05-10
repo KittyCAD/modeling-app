@@ -337,6 +337,7 @@ export class App implements AppSubsystems {
       : defaultLayout
     const layoutSignal = signal<Layout>(runtimeDefaultLayout)
     const layoutService = createLayoutService(layoutSignal)
+    let hasHydratedLayout = false
     const layout: AppLayoutSystem = {
       signal: layoutSignal,
       get: () => layoutSignal.value,
@@ -347,16 +348,19 @@ export class App implements AppSubsystems {
         layoutSignal.value = structuredClone(runtimeDefaultLayout)
       },
       service: layoutService,
-      saveEffectUnsubscribeFn: effect(() =>
-        saveLayout({ layout: layoutSignal.value, layoutName: layoutConfigName })
-      ),
+      saveEffectUnsubscribeFn: effect(() => {
+        const currentLayout = layoutSignal.value
+        if (!hasHydratedLayout) {
+          return
+        }
+        saveLayout({ layout: currentLayout, layoutName: layoutConfigName })
+      }),
     }
     appRegistry.configure([
       ...createAppRegistryItems({ wasmPromise, machineManager }),
       createLayoutServiceRegistryItem(layoutService),
     ])
 
-    let hasHydratedLayout = false
     const applyRegistryLayoutContributions = () =>
       layoutService.applyContributions(
         appRegistry.get(layoutContributionsValueSpec)
