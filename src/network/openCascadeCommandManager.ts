@@ -2819,9 +2819,33 @@ export class OpenCascadeCommandManager {
     }
     const pathId = this.pathAliases.get(targetId) || targetId
     if (this.paths.has(pathId)) {
-      return this.storeRegion(targetId, pathId, range)
+      try {
+        return await this.storeRegion(targetId, pathId, range)
+      } catch (error) {
+        const arrangementRegion = this.arrangementRegionForPath(pathId)
+        if (arrangementRegion?.face) {
+          return this.storeArrangementRegion(
+            targetId,
+            arrangementRegion,
+            pathId
+          )
+        }
+        throw error
+      }
     }
     throw new Error(`No OpenCascade region found for ${targetId}`)
+  }
+
+  private arrangementRegionForPath(
+    pathId: string
+  ): ArrangementRegionState | undefined {
+    return Array.from(this.arrangementRegions.values())
+      .filter((region) => region.parentPathId === pathId && region.face)
+      .sort(
+        (a, b) =>
+          Math.abs(signedArea2(b.localPoints)) -
+          Math.abs(signedArea2(a.localPoints))
+      )[0]
   }
 
   private async wireForTarget(

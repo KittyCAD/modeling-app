@@ -2042,6 +2042,47 @@ profile001 = startSketchOn(XY)
       Array.from({ length: region?.indices.length || 0 }, (_, index) => index)
     )
   })
+
+  it('revolves a complex V1 curved profile using the arrangement face fallback', async () => {
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(
+      `@settings(defaultLengthUnit = mm)
+
+boltSize = 4.5
+
+plateRevolve = startSketchOn(YZ)
+  |> startProfile(at = [22.9, 0])
+  |> arc(angleStart = 180, angleEnd = 176, radius = 120)
+  |> arc(angleStart = -60, angleEnd = 54, radius = 5)
+  |> arc(angleStart = 180, angleEnd = 176, radius = 120)
+  |> arc(angleStart = -60, angleEnd = 54, radius = 5)
+  |> arc(angleStart = 180, angleEnd = 176, radius = 120)
+  |> arc(angleStart = -60, angleEnd = 54, radius = 5)
+  |> arc(angleStart = 180, angleEnd = 174, radius = 170)
+  |> tangentialArc(endAbsolute = [41.8, 91.88])
+  |> tangentialArc(endAbsolute = [56.92, 117.08], tag = $seg01)
+  |> angledLine(angle = tangentToEnd(seg01), length = 23.16)
+  |> tangentialArc(endAbsolute = [60.93, 140.44], tag = $seg02)
+  |> angledLine(angle = tangentToEnd(seg02), length = 25.65)
+  |> tangentialArc(endAbsolute = [48.35, 85.53])
+  |> tangentialArc(endAbsolute = [35.2, 67.73], tag = $seg03)
+  |> angledLine(angle = tangentToEnd(seg03), length = 49.06)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> revolve(axis = Y, angle = 65, symmetric = true)
+`,
+      instance
+    )
+
+    const execState = await rustContext.execute(ast, {
+      settings: { modeling: { engine: 'open_cascade' } },
+    })
+
+    expect(execState.variables.plateRevolve?.type).toBe('Solid')
+    const manager = OpenCascadeCommandManager.latestInstance()
+    expect(manager?.getSolidCount()).toBe(1)
+    expect(await manager?.exportVisibleGlbBytes()).toHaveLength(1)
+  })
 })
 
 async function buildCircleRegionInput(manager: OpenCascadeCommandManager) {
