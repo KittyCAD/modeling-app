@@ -469,6 +469,7 @@ export const FeatureTreePaneContents = memo(() => {
                       modelingActor={modelingActor}
                       engineCommandManager={engineCommandManager}
                       rollbackOffset={rollbackOffset}
+                      suppressTooltip={isDraggingRollback}
                       onSelect={selectOperation}
                     />
                   )
@@ -484,6 +485,7 @@ export const FeatureTreePaneContents = memo(() => {
                       modelingActor={modelingActor}
                       engineCommandManager={engineCommandManager}
                       rollbackOffset={rollbackOffset}
+                      suppressTooltip={isDraggingRollback}
                       onSelect={selectOperation}
                     />
                   ) : (
@@ -497,6 +499,7 @@ export const FeatureTreePaneContents = memo(() => {
                       modelingActor={modelingActor}
                       engineCommandManager={engineCommandManager}
                       rollbackOffset={rollbackOffset}
+                      suppressTooltip={isDraggingRollback}
                       onSelect={selectOperation}
                     />
                   )
@@ -722,6 +725,7 @@ function SketchBlockOperationGroup({
   modelingActor,
   engineCommandManager,
   rollbackOffset,
+  suppressTooltip,
   onSelect,
 }: Omit<OperationProps, 'item'> & { items: Operation[] }) {
   if (items.length === 0) {
@@ -743,6 +747,7 @@ function SketchBlockOperationGroup({
         modelingActor={modelingActor}
         engineCommandManager={engineCommandManager}
         rollbackOffset={rollbackOffset}
+        suppressTooltip={suppressTooltip}
         onSelect={onSelect}
       />
     )
@@ -792,6 +797,7 @@ function SketchBlockOperationGroup({
                 modelingActor={modelingActor}
                 engineCommandManager={engineCommandManager}
                 rollbackOffset={rollbackOffset}
+                suppressTooltip={suppressTooltip}
                 onSelect={onSelect}
                 size="sm"
               />
@@ -820,6 +826,7 @@ function OperationItemGroup({
   modelingActor,
   engineCommandManager,
   rollbackOffset,
+  suppressTooltip,
   onSelect,
 }: Omit<OperationProps, 'item'> & { items: Operation[] }) {
   return (
@@ -851,6 +858,7 @@ function OperationItemGroup({
                 modelingActor={modelingActor}
                 engineCommandManager={engineCommandManager}
                 rollbackOffset={rollbackOffset}
+                suppressTooltip={suppressTooltip}
                 onSelect={onSelect}
                 size="sm"
               />
@@ -974,6 +982,7 @@ interface OperationProps {
   modelingActor: ReturnType<typeof useModelingContext>['actor']
   onSelect: (sourceRange: SourceRange) => void
   rollbackOffset?: number
+  suppressTooltip?: boolean
   size?: 'default' | 'sm'
 }
 /**
@@ -990,6 +999,7 @@ const OperationItem = ({
   modelingActor,
   engineCommandManager,
   rollbackOffset,
+  suppressTooltip,
   size,
 }: OperationProps) => {
   useSignals()
@@ -1441,19 +1451,21 @@ const OperationItem = ({
       variableName={variableName}
       valueDetail={valueDetail}
       Tooltip={
-        <Tooltip
-          delay={500}
-          position="bottom-left"
-          wrapperClassName="left-0 right-0"
-          contentClassName="text-sm max-w-full"
-        >
-          <VariableTooltipContents
-            variableName={variableName}
-            valueDetail={valueDetail}
-            name={name}
-            type={item.type}
-          />
-        </Tooltip>
+        suppressTooltip ? undefined : (
+          <Tooltip
+            delay={500}
+            position="bottom-left"
+            wrapperClassName="left-0 right-0"
+            contentClassName="text-sm max-w-full"
+          >
+            <VariableTooltipContents
+              variableName={variableName}
+              valueDetail={valueDetail}
+              name={name}
+              type={item.type}
+            />
+          </Tooltip>
+        )
       }
       menuItems={menuItems}
       onClick={
