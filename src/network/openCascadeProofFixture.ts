@@ -232,6 +232,58 @@ export const OPEN_CASCADE_BOOLEAN_UNION_KCL = `${OPEN_CASCADE_BOOLEAN_BASE_KCL}b
 export const OPEN_CASCADE_BOOLEAN_SUBTRACT_KCL = `${OPEN_CASCADE_BOOLEAN_BASE_KCL}booleanSubtract = subtract(part001, tools = [part002])
 `
 
+export const OPEN_CASCADE_BOOLEAN_SUBTRACT_EDGE_FILLET_REPRO_KCL = `@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 1.39mm, var 0.5mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+}
+region001 = region(point = [-0mm, -0mm], sketch = sketch001)
+sketch002 = sketch(on = YZ) {
+  point1 = point(at = [var 0.33mm, var -2.71mm])
+  line1 = line(start = [var -1.26mm, var -4.88mm], end = [var 1.92mm, var -4.88mm])
+  line2 = line(start = [var 1.92mm, var -4.88mm], end = [var 1.92mm, var -0.54mm])
+  line3 = line(start = [var 1.92mm, var -0.54mm], end = [var -1.26mm, var -0.54mm])
+  line4 = line(start = [var -1.26mm, var -0.54mm], end = [var -1.26mm, var -4.88mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  line5 = line(start = [var -1.26mm, var -4.88mm], end = [var 1.92mm, var -0.54mm], construction = true)
+  line6 = line(start = [var 1.92mm, var -4.88mm], end = [var -1.26mm, var -0.54mm], construction = true)
+  coincident([line5.start, line1.start])
+  coincident([line5.end, line2.end])
+  coincident([line6.start, line1.end])
+  coincident([line6.end, line4.start])
+  coincident([point1, line5])
+  coincident([point1, line6])
+  equalLength([line5, line6])
+  midpoint(line6, point = point1)
+}
+region002 = region(point = [0.33mm, -2.71mm], sketch = sketch002)
+region003 = region(point = [0.33mm, -2.71mm], sketch = sketch002)
+hidden001 = hide(sketch002)
+region004 = region(point = [0.33mm, -2.71mm], sketch = sketch002)
+extrude001 = extrude(region004, length = 3, symmetric = true)
+hidden002 = hide(sketch001)
+region005 = region(point = [-0mm, -0mm], sketch = sketch001)
+sketch003 = sketch(on = XZ) {
+  arc1 = arc(start = [var -3.42mm, var 0.69mm], end = [var 3.47mm, var 0.37mm], center = [var 0mm, var 0mm])
+  coincident([arc1.center, ORIGIN])
+  line1 = line(start = [var -3.42mm, var 0.69mm], end = [var 3.47mm, var 0.37mm])
+  coincident([line1.start, arc1.start])
+  coincident([line1.end, arc1.end])
+}
+hidden003 = hide(sketch003)
+region006 = region(point = [-0.0554212mm, -1.1928576mm], sketch = sketch003)
+extrude002 = extrude(region006, length = 5, symmetric = true)
+solid001 = subtract(extrude001, tools = extrude002)
+`
+
 export const OPEN_CASCADE_BOOLEAN_INTERSECT_KCL = `${OPEN_CASCADE_BOOLEAN_BASE_KCL}booleanIntersect = intersect([part001, part002])
 `
 

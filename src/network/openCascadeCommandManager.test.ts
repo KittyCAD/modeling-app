@@ -5,6 +5,7 @@ import { assertParse } from '@src/lang/wasm'
 import { OpenCascadeCommandManager } from '@src/network/openCascadeCommandManager'
 import {
   OPEN_CASCADE_BOOLEAN_INTERSECT_KCL,
+  OPEN_CASCADE_BOOLEAN_SUBTRACT_EDGE_FILLET_REPRO_KCL,
   OPEN_CASCADE_BOOLEAN_SPLIT_KCL,
   OPEN_CASCADE_BOOLEAN_SUBTRACT_KCL,
   OPEN_CASCADE_BOOLEAN_UNION_KCL,
@@ -612,9 +613,7 @@ part002 = startSketchOn(XY)
     expect(filletTopology.groups.length).toBeGreaterThan(0)
     expect(filletTopology.edges.length).toBeGreaterThan(0)
     expect(
-      filletTopology.groups.every((group) =>
-        group.topologyId.startsWith(`${IDS.solid}:face:`)
-      )
+      filletTopology.groups.every((group) => isUuidLike(group.topologyId))
     ).toBe(true)
     expect(
       filletTopology.edges.some((edge) => edge.topologyId === filletEdgeId)
@@ -746,6 +745,7 @@ part002 = startSketchOn(XY)
     const topology = manager.exportLatestTopologyMeshes().solids[0]
     expect(topology.groups.length).toBeGreaterThan(0)
     expect(topology.groups.every((group) => group.role === 'wall')).toBe(true)
+    expect((await manager.exportVisibleGlbBytes())[0]?.bodyType).toBe('surface')
     expect((await manager.exportLatestGlbBytes()).length).toBeGreaterThan(0)
   })
 
@@ -1827,6 +1827,36 @@ topSketch = sketch(on = startSketchOn(cylinder, face = END)) {
     }
   )
 
+  it('exports selectable topology for the boolean subtract fillet regression', async () => {
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(
+      `${OPEN_CASCADE_BOOLEAN_SUBTRACT_EDGE_FILLET_REPRO_KCL}
+edge001 = edgeId(solid001, index = 0)
+fillet001 = fillet(solid001, tags = edge001, radius = 0.1)
+`,
+      instance
+    )
+
+    const execState = await rustContext.execute(ast, {
+      settings: { modeling: { engine: 'open_cascade' } },
+    })
+
+    expect(execState.variables.solid001?.type).toBe('Solid')
+    expect(execState.variables.edge001?.type).toBe('Uuid')
+    expect(execState.variables.fillet001?.type).toBe('Solid')
+    const manager = OpenCascadeCommandManager.latestInstance()
+    const topology = manager?.exportLatestTopologyMeshes()
+    const solidTopology = topology?.solids[0]
+    expect(solidTopology?.groups.length).toBeGreaterThan(0)
+    expect(solidTopology?.edges.length).toBeGreaterThan(0)
+    expect(
+      solidTopology?.groups.every((group) => isUuidLike(group.topologyId))
+    ).toBe(true)
+    expect(
+      solidTopology?.edges.every((edge) => isUuidLike(edge.topologyId))
+    ).toBe(true)
+  })
+
   it('executes standalone helix KCL and exports a visible path mesh', async () => {
     const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
     const ast = assertParse(OPEN_CASCADE_HELIX_KCL, instance)
@@ -2284,6 +2314,12 @@ function boundsForFlattenedPoints(points: number[]) {
     bounds.max.z = Math.max(bounds.max.z, points[index + 2])
   }
   return bounds
+}
+
+function isUuidLike(value: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    value
+  )
 }
 
 async function send(

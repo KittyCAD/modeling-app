@@ -1,3 +1,4 @@
+import { encode as msgpackEncode } from '@msgpack/msgpack'
 import { signal, type Signal } from '@preact/signals-core'
 import type {
   OpenCascadePlaneMesh,
@@ -24,7 +25,7 @@ type OpenCascadeWorkerResponse =
     }
   | {
       type: 'stream'
-      snapshot: OpenCascadeRenderSnapshot
+      snapshot: OpenCascadeRenderSnapshotPatch
     }
 
 type PendingRequest = {
@@ -52,6 +53,11 @@ const EMPTY_SNAPSHOT: OpenCascadeRenderSnapshot = {
   pathPlanes: {},
   pathVisibility: {},
 }
+
+type OpenCascadeRenderSnapshotPatch = Partial<
+  Omit<OpenCascadeRenderSnapshot, 'versions'>
+> &
+  Pick<OpenCascadeRenderSnapshot, 'versions'>
 
 export type OpenCascadeManagerLike = {
   latestShapeVersion: Signal<number>
@@ -171,12 +177,27 @@ export class OpenCascadeWorkerClient implements OpenCascadeManagerLike {
     commandStr: string,
     idToRangeStr: string
   ): Promise<Uint8Array> {
-    return this.request<Uint8Array>('sendModelingCommandFromWasm', [
-      id,
-      rangeStr,
-      commandStr,
-      idToRangeStr,
-    ])
+    try {
+      return await this.request<Uint8Array>('sendModelingCommandFromWasm', [
+        id,
+        rangeStr,
+        commandStr,
+        idToRangeStr,
+      ])
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      this.latestExportError.value = message
+      return msgpackEncode({
+        success: false,
+        request_id: id,
+        errors: [
+          {
+            error_code: 'internal_api',
+            message,
+          },
+        ],
+      })
+    }
   }
 
   getSolidCount(): number {
@@ -283,18 +304,33 @@ export class OpenCascadeWorkerClient implements OpenCascadeManagerLike {
     this.pendingRequests.clear()
   }
 
-  private applySnapshot(snapshot: OpenCascadeRenderSnapshot) {
-    this.snapshot = snapshot
-    this.hiddenObjectIds = new Set(snapshot.hiddenObjectIds)
-    this.latestShapeVersion.value = snapshot.versions.shape
-    this.latestProfileVersion.value = snapshot.versions.profile
-    this.latestTopologyVersion.value = snapshot.versions.topology
-    this.latestSketchVersion.value = snapshot.versions.sketch
-    this.latestRegionVersion.value = snapshot.versions.region
-    this.latestPlaneVersion.value = snapshot.versions.plane
-    this.latestVisibilityVersion.value = snapshot.versions.visibility
-    this.latestSelectionFilter.value = [...snapshot.selectionFilter]
-    this.latestExportError.value = snapshot.exportError
+  private applySnapshot(snapshot: OpenCascadeRenderSnapshotPatch) {
+    this.snapshot = {
+      ...this.snapshot,
+      ...snapshot,
+      versions: snapshot.versions,
+      selectionFilter:
+        snapshot.selectionFilter ?? this.snapshot.selectionFilter,
+      hiddenObjectIds:
+        snapshot.hiddenObjectIds ?? this.snapshot.hiddenObjectIds,
+      topologyMeshes: snapshot.topologyMeshes ?? this.snapshot.topologyMeshes,
+      sketchLineMeshes:
+        snapshot.sketchLineMeshes ?? this.snapshot.sketchLineMeshes,
+      planeMeshes: snapshot.planeMeshes ?? this.snapshot.planeMeshes,
+      regionMeshes: snapshot.regionMeshes ?? this.snapshot.regionMeshes,
+      pathPlanes: snapshot.pathPlanes ?? this.snapshot.pathPlanes,
+      pathVisibility: snapshot.pathVisibility ?? this.snapshot.pathVisibility,
+    }
+    this.hiddenObjectIds = new Set(this.snapshot.hiddenObjectIds)
+    this.latestShapeVersion.value = this.snapshot.versions.shape
+    this.latestProfileVersion.value = this.snapshot.versions.profile
+    this.latestTopologyVersion.value = this.snapshot.versions.topology
+    this.latestSketchVersion.value = this.snapshot.versions.sketch
+    this.latestRegionVersion.value = this.snapshot.versions.region
+    this.latestPlaneVersion.value = this.snapshot.versions.plane
+    this.latestVisibilityVersion.value = this.snapshot.versions.visibility
+    this.latestSelectionFilter.value = [...this.snapshot.selectionFilter]
+    this.latestExportError.value = this.snapshot.exportError
   }
 }
 

@@ -268,6 +268,7 @@ export type OpenCascadePlaneMeshes = {
 
 export type OpenCascadeVisibleSolidGlb = {
   solidId: string
+  bodyType: 'solid' | 'surface'
   artifactIds: string[]
   provenance?: OpenCascadeEntityProvenance
   bytes: Uint8Array
@@ -552,6 +553,7 @@ export class OpenCascadeCommandManager {
     try {
       const exports = visible.map(([id, solid]) => ({
         solidId: id,
+        bodyType: solid.bodyType || 'solid',
         artifactIds: this.selectableSolidArtifactIds(id, solid),
         provenance: cloneEntityProvenance(solid.provenance),
         bytes: this.writeGlb(id, solid.shape, oc),
@@ -5127,7 +5129,7 @@ function buildGenericTopology(
   let faceIndex = 0
   for (; faceExplorer.More(); faceExplorer.Next()) {
     const face = oc.TopoDS.Face_1(faceExplorer.Current())
-    const topologyId = `${solidId}:face:${faceIndex}`
+    const topologyId = deriveTopologyId(`${solidId}:face:${faceIndex}`, 0)
     const groupStart = indices.length
     appendFaceTriangulation(positions, indices, face, oc)
     const groupCount = indices.length - groupStart
@@ -5172,7 +5174,7 @@ function buildGenericTopology(
   const edgeShapes = new Map<string, any>()
   const edges: OpenCascadeTopologyEdgeLine[] = []
   for (const entry of genericEdges.values()) {
-    const topologyId = `${solidId}:edge:${edges.length}`
+    const topologyId = deriveTopologyId(`${solidId}:edge:${edges.length}`, 0)
     edgeShapes.set(topologyId, entry.edge)
     edges.push({
       topologyId,
