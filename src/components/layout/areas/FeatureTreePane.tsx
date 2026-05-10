@@ -1642,7 +1642,7 @@ export const DefaultPlanes = ({
           customSuffix={
             <div className="text-chalkboard-60 font-bold text-xs">0,0,0</div>
           }
-          icon={'circle'}
+          icon={'oneDot'}
           name="Origin"
           disabled={disabled}
           visibilityToggle={
