@@ -133,6 +133,7 @@ import {
   addRevolve,
   addSweep,
 } from '@src/lang/modifyAst/sweeps'
+import { addMirror } from '@src/lang/modifyAst/mirrors'
 import {
   addPatternCircular3D,
   addPatternLinear3D,
@@ -492,6 +493,10 @@ export type ModelingMachineEvent =
   | {
       type: 'Boolean Split'
       data: ModelingCommandSchema['Boolean Split']
+    }
+  | {
+      type: 'Mirror'
+      data: ModelingCommandSchema['Mirror']
     }
   | {
       type: 'Pattern Circular 3D'
@@ -5835,6 +5840,45 @@ export const modelingMachine = setup({
       }
     ),
 
+    mirrorAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Mirror'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              wasmInstance: ModuleType
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
+        const result = addMirror({
+          ...input.data,
+          ast,
+          artifactGraph,
+          wasmInstance: input.wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+
     patternCircular3dAstMod: fromPromise(
       async ({
         input,
@@ -6179,6 +6223,10 @@ export const modelingMachine = setup({
 
         'Boolean Split': {
           target: 'Boolean splitting',
+        },
+
+        Mirror: {
+          target: 'Mirroring',
         },
 
         'Pattern Circular 3D': {
@@ -8455,6 +8503,27 @@ export const modelingMachine = setup({
         id: 'boolSplitAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'Boolean Split') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
+          }
+        },
+        onDone: 'idle',
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    Mirroring: {
+      invoke: {
+        src: 'mirrorAstMod',
+        id: 'mirrorAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Mirror') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,

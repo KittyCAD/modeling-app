@@ -78,6 +78,7 @@ import {
   addRingGear,
   addSpurGear,
 } from '@src/lang/modifyAst/gears'
+import { addMirror } from '@src/lang/modifyAst/mirrors'
 import {
   addAppearance,
   addClone,
@@ -499,6 +500,10 @@ export type ModelingCommandSchema = {
   'Boolean Subtract': {
     solids: Selections
     tools: Selections
+  }
+  Mirror: {
+    bodies: Selections
+    across: Selections
   }
   'Boolean Union': {
     solids: Selections
@@ -1363,6 +1368,53 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+    },
+  },
+  Mirror: {
+    description: 'Mirror solids across a plane or edge.',
+    icon: 'mirror',
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addMirror({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Mirror']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await kclManager.wasmInstancePromise,
+      })
+      if (err(modRes)) {
+        return modRes
+      }
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) {
+        return execRes
+      }
+    },
+    args: {
+      bodies: {
+        ...objectsTypesAndFilters,
+        inputType: 'selectionMixed',
+        multiple: true,
+        required: true,
+      },
+      across: {
+        inputType: 'selection',
+        selectionTypes: ['plane', 'segment', 'sweepEdge', 'edgeCutEdge'],
+        clearSelectionFirst: true,
+        multiple: false,
+        required: true,
       },
     },
   },

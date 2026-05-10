@@ -2482,6 +2482,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Mirror 2D',
     icon: 'mirror',
   },
+  mirror3d: {
+    label: 'Mirror',
+    icon: 'mirror', // TODO: need 3D version
+  },
   region: {
     label: 'Region',
     // TODO: add a region icon
