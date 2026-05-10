@@ -15,6 +15,24 @@ import openCascadeWasmUrl from 'opencascade.js/dist/opencascade.full.wasm?url'
 
 type Point2 = { x: number; y: number }
 type Point3 = { x: number; y: number; z: number }
+type TransformMatrix = [
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+]
 type OpenCascadeInstance = any
 
 type PathSegmentState =
@@ -675,6 +693,8 @@ export class OpenCascadeCommandManager {
       case 'set_selection_filter':
         this.latestSelectionFilter.value = [...((cmd as any).filter || [])]
         return modeling(EMPTY_RESPONSE)
+      case 'set_object_transform':
+        return modeling(await this.setObjectTransform(cmd, range))
       case 'plane_set_color':
       case 'edge_lines_visible':
       case 'object_set_material_params_pbr':
@@ -1553,6 +1573,45 @@ export class OpenCascadeCommandManager {
     return { type: 'solid3d_cut_edges', data: { face_id: commandId } } as any
   }
 
+  private async setObjectTransform(
+    cmd: Extract<ModelingCmd, { type: 'set_object_transform' }>,
+    range: SourceRange
+  ): Promise<OkModelingCmdResponse> {
+    const objectId = (cmd as any).object_id as string
+    const transforms = [...(((cmd as any).transforms as unknown[]) || [])]
+    if (transforms.length === 0) {
+      return EMPTY_RESPONSE
+    }
+
+    const oc = await initOpenCascade()
+    const solidEntry = this.findSolidEntry(objectId)
+    if (solidEntry) {
+      const [storedSolidId, solid] = solidEntry
+      const localOrigin = this.shapeBoundsCenter(solid.shape, oc)
+      const matrix = matrixForComponentTransforms(transforms, localOrigin)
+      solid.shape = this.transformShape(solid.shape, matrix, oc)
+      solid.brep = this.writeBrep(storedSolidId, solid.shape, oc)
+      this.transformTopologyForSolid(storedSolidId, matrix)
+      this.latestShapeVersion.value += 1
+      this.latestTopologyVersion.value += 1
+      return EMPTY_RESPONSE
+    }
+
+    const pathEntry = this.findPathEntry(objectId)
+    if (pathEntry) {
+      const [pathId, path] = pathEntry
+      const localOrigin = pathWorldBoundsCenter(path, this.planeForPath(path))
+      const matrix = matrixForComponentTransforms(transforms, localOrigin)
+      this.transformPath(pathId, path, matrix)
+      await this.rebuildRegionsForPath(pathId, range)
+      this.markSketchChanged()
+      this.latestProfileVersion.value += 1
+      return EMPTY_RESPONSE
+    }
+
+    throw new Error(`No OpenCascade object found for transform ${objectId}`)
+  }
+
   private async volume(
     cmd: Extract<ModelingCmd, { type: 'volume' }>
   ): Promise<OkModelingCmdResponse> {
@@ -2330,6 +2389,127 @@ export class OpenCascadeCommandManager {
     )
   }
 
+  private findPathEntry(pathId: string): [string, PathState] | undefined {
+    const direct = this.paths.get(pathId)
+    if (direct) {
+      return [pathId, direct]
+    }
+    const aliasedPathId = this.pathAliases.get(pathId)
+    const aliasedPath = aliasedPathId
+      ? this.paths.get(aliasedPathId)
+      : undefined
+    if (aliasedPath && aliasedPathId) {
+      return [aliasedPathId, aliasedPath]
+    }
+    return undefined
+  }
+
+  private shapeBoundsCenter(shape: any, oc: OpenCascadeInstance): Point3 {
+    const box = new oc.Bnd_Box_1()
+    oc.BRepBndLib.Add(shape, box, true)
+    const min = box.CornerMin()
+    const max = box.CornerMax()
+    return {
+      x: (min.X() + max.X()) / 2,
+      y: (min.Y() + max.Y()) / 2,
+      z: (min.Z() + max.Z()) / 2,
+    }
+  }
+
+  private transformShape(
+    shape: any,
+    matrix: TransformMatrix,
+    oc: OpenCascadeInstance
+  ): any {
+    const linear = new oc.gp_Mat_2(
+      matrix[0],
+      matrix[1],
+      matrix[2],
+      matrix[4],
+      matrix[5],
+      matrix[6],
+      matrix[8],
+      matrix[9],
+      matrix[10]
+    )
+    const translation = new oc.gp_XYZ_2(matrix[3], matrix[7], matrix[11])
+    const transform = new oc.gp_GTrsf_3(linear, translation)
+    const builder = new oc.BRepBuilderAPI_GTransform_2(shape, transform, true)
+    return builder.Shape()
+  }
+
+  private transformTopologyForSolid(solidId: string, matrix: TransformMatrix) {
+    const mesh = this.topologyMeshes.get(solidId)
+    if (mesh) {
+      mesh.positions = transformFlattenedPoints(mesh.positions, matrix)
+      mesh.edges = mesh.edges.map((edge) => ({
+        ...edge,
+        points: transformFlattenedPoints(edge.points, matrix),
+      }))
+    }
+    for (const entry of this.topologyEntries.values()) {
+      if (entry.solidId !== solidId) {
+        continue
+      }
+      entry.shape = undefined
+      if (entry.points) {
+        entry.points = transformFlattenedPoints(entry.points, matrix)
+      }
+    }
+  }
+
+  private transformPath(
+    pathId: string,
+    path: PathState,
+    matrix: TransformMatrix
+  ) {
+    path.segments = transformPathSegments(
+      path.segments,
+      this.planeForPath(path),
+      matrix
+    )
+    path.planeId = undefined
+    path.circle = undefined
+    path.wire = undefined
+    path.face = undefined
+    path.edgeEntries = undefined
+    path.start = path.segments[0]?.start
+    path.pen = path.segments.at(-1)?.end
+    for (const region of this.regions.values()) {
+      if (region.sourcePathId !== pathId) {
+        continue
+      }
+      region.wire = undefined
+      region.face = undefined
+      region.edgeEntries = []
+      region.boundaryPoints = undefined
+      region.circle = undefined
+    }
+  }
+
+  private async rebuildRegionsForPath(pathId: string, range: SourceRange) {
+    const regions = Array.from(this.regions.values()).filter(
+      (region) => region.sourcePathId === pathId
+    )
+    if (regions.length === 0) {
+      return
+    }
+    const path = this.requirePath(pathId, range)
+    const shape = await this.buildPathShape(pathId, range)
+    if (!shape.face) {
+      return
+    }
+    for (const region of regions) {
+      region.wire = shape.wire
+      region.face = shape.face
+      region.edgeEntries = shape.edgeEntries
+      region.edgeIds = shape.edgeEntries.map((edge) => edge.id)
+      region.planeId = path.planeId
+      region.circle = path.circle
+      this.profileShapes.set(region.regionEdgeId, region.face)
+    }
+  }
+
   private topologyMeshForSolidAlias(
     solidId: string
   ): OpenCascadeTopologySolidMesh | undefined {
@@ -2956,6 +3136,263 @@ export class OpenCascadeCommandManager {
 function toPoint2(point: unknown): Point2 {
   const p = point as { x?: unknown; y?: unknown }
   return { x: lengthValue(p.x), y: lengthValue(p.y) }
+}
+
+function matrixForComponentTransforms(
+  transforms: unknown[],
+  localOrigin: Point3
+): TransformMatrix {
+  return transforms.reduce<TransformMatrix>(
+    (matrix, transform) =>
+      multiplyMatrix(
+        matrixForComponentTransform(transform, localOrigin),
+        matrix
+      ),
+    identityMatrix()
+  )
+}
+
+function matrixForComponentTransform(
+  transform: unknown,
+  localOrigin: Point3
+): TransformMatrix {
+  const component = transform as {
+    translate?: { property?: unknown; origin?: unknown } | null
+    scale?: { property?: unknown; origin?: unknown } | null
+    rotate_angle_axis?: { property?: unknown; origin?: unknown } | null
+    rotate_rpy?: { property?: unknown; origin?: unknown } | null
+  }
+
+  if (component.translate?.property) {
+    const translation = toPoint3(component.translate.property)
+    return translationMatrix(translation.x, translation.y, translation.z)
+  }
+
+  if (component.scale?.property) {
+    const scale = toPoint3(component.scale.property)
+    const origin = originForTransform(component.scale.origin, localOrigin)
+    return aboutOriginMatrix(
+      scaleMatrix(scale.x || 1, scale.y || 1, scale.z || 1),
+      origin
+    )
+  }
+
+  if (component.rotate_angle_axis?.property) {
+    const property = component.rotate_angle_axis.property as {
+      x?: unknown
+      y?: unknown
+      z?: unknown
+      w?: unknown
+    }
+    const origin = originForTransform(
+      component.rotate_angle_axis.origin,
+      localOrigin
+    )
+    return aboutOriginMatrix(
+      rotationAxisAngleMatrix(
+        normalize({
+          x: lengthValue(property.x),
+          y: lengthValue(property.y),
+          z: lengthValue(property.z),
+        }),
+        angleValueRadians(property.w)
+      ),
+      origin
+    )
+  }
+
+  if (component.rotate_rpy?.property) {
+    const property = toPoint3(component.rotate_rpy.property)
+    const origin = originForTransform(component.rotate_rpy.origin, localOrigin)
+    return aboutOriginMatrix(
+      multiplyMatrix(
+        rotationAxisAngleMatrix(
+          { x: 0, y: 0, z: 1 },
+          angleValueRadians(property.z)
+        ),
+        multiplyMatrix(
+          rotationAxisAngleMatrix(
+            { x: 0, y: 1, z: 0 },
+            angleValueRadians(property.y)
+          ),
+          rotationAxisAngleMatrix(
+            { x: 1, y: 0, z: 0 },
+            angleValueRadians(property.x)
+          )
+        )
+      ),
+      origin
+    )
+  }
+
+  return identityMatrix()
+}
+
+function originForTransform(origin: unknown, localOrigin: Point3): Point3 {
+  const typedOrigin = origin as { type?: unknown; origin?: unknown } | undefined
+  if (typedOrigin?.type === 'global') {
+    return { x: 0, y: 0, z: 0 }
+  }
+  if (typedOrigin?.type === 'custom') {
+    return toPoint3(typedOrigin.origin)
+  }
+  return localOrigin
+}
+
+function identityMatrix(): TransformMatrix {
+  return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+}
+
+function translationMatrix(x: number, y: number, z: number): TransformMatrix {
+  return [1, 0, 0, x, 0, 1, 0, y, 0, 0, 1, z, 0, 0, 0, 1]
+}
+
+function scaleMatrix(x: number, y: number, z: number): TransformMatrix {
+  return [x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1]
+}
+
+function rotationAxisAngleMatrix(axis: Point3, angle: number): TransformMatrix {
+  const { x, y, z } = axis
+  const cos = Math.cos(angle)
+  const sin = Math.sin(angle)
+  const t = 1 - cos
+  return [
+    t * x * x + cos,
+    t * x * y - sin * z,
+    t * x * z + sin * y,
+    0,
+    t * x * y + sin * z,
+    t * y * y + cos,
+    t * y * z - sin * x,
+    0,
+    t * x * z - sin * y,
+    t * y * z + sin * x,
+    t * z * z + cos,
+    0,
+    0,
+    0,
+    0,
+    1,
+  ]
+}
+
+function aboutOriginMatrix(
+  matrix: TransformMatrix,
+  origin: Point3
+): TransformMatrix {
+  return multiplyMatrix(
+    translationMatrix(origin.x, origin.y, origin.z),
+    multiplyMatrix(matrix, translationMatrix(-origin.x, -origin.y, -origin.z))
+  )
+}
+
+function multiplyMatrix(
+  a: TransformMatrix,
+  b: TransformMatrix
+): TransformMatrix {
+  const result = new Array(16).fill(0) as TransformMatrix
+  for (let row = 0; row < 4; row += 1) {
+    for (let col = 0; col < 4; col += 1) {
+      for (let inner = 0; inner < 4; inner += 1) {
+        result[row * 4 + col] += a[row * 4 + inner] * b[inner * 4 + col]
+      }
+    }
+  }
+  return result
+}
+
+function transformPoint(point: Point3, matrix: TransformMatrix): Point3 {
+  return {
+    x:
+      matrix[0] * point.x +
+      matrix[1] * point.y +
+      matrix[2] * point.z +
+      matrix[3],
+    y:
+      matrix[4] * point.x +
+      matrix[5] * point.y +
+      matrix[6] * point.z +
+      matrix[7],
+    z:
+      matrix[8] * point.x +
+      matrix[9] * point.y +
+      matrix[10] * point.z +
+      matrix[11],
+  }
+}
+
+function transformFlattenedPoints(
+  points: number[],
+  matrix: TransformMatrix
+): number[] {
+  const transformed: number[] = []
+  for (let index = 0; index < points.length; index += 3) {
+    const point = transformPoint(
+      { x: points[index], y: points[index + 1], z: points[index + 2] },
+      matrix
+    )
+    transformed.push(point.x, point.y, point.z)
+  }
+  return transformed
+}
+
+function pathWorldBoundsCenter(path: PathState, plane?: PlaneState): Point3 {
+  const points = path.segments.flatMap((segment) =>
+    pointsForPathSegment(segment, plane)
+  )
+  if (points.length === 0) {
+    return { x: 0, y: 0, z: 0 }
+  }
+  const min = {
+    x: Math.min(...points.map((point) => point.x)),
+    y: Math.min(...points.map((point) => point.y)),
+    z: Math.min(...points.map((point) => point.z)),
+  }
+  const max = {
+    x: Math.max(...points.map((point) => point.x)),
+    y: Math.max(...points.map((point) => point.y)),
+    z: Math.max(...points.map((point) => point.z)),
+  }
+  return {
+    x: (min.x + max.x) / 2,
+    y: (min.y + max.y) / 2,
+    z: (min.z + max.z) / 2,
+  }
+}
+
+function transformPathSegments(
+  segments: PathSegmentState[],
+  plane: PlaneState | undefined,
+  matrix: TransformMatrix
+): PathSegmentState[] {
+  return segments.flatMap((segment) => {
+    if (segment.type === 'line') {
+      return [
+        {
+          ...segment,
+          start: transformPoint(localToWorld(segment.start, plane), matrix),
+          end: transformPoint(localToWorld(segment.end, plane), matrix),
+        },
+      ]
+    }
+
+    const points = sampleArcPoints(segment, plane).map((point) =>
+      transformPoint(point, matrix)
+    )
+    const lines: PathSegmentState[] = []
+    for (let index = 0; index < points.length - 1; index += 1) {
+      if (pointsClose(points[index], points[index + 1])) {
+        continue
+      }
+      lines.push({
+        id: index === 0 ? segment.id : deriveTopologyId(segment.id, index),
+        type: 'line',
+        start: points[index],
+        end: points[index + 1],
+      })
+    }
+    return lines
+  })
 }
 
 function clonePathState(path: PathState): PathState {

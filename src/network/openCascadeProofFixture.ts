@@ -180,6 +180,19 @@ export const OPEN_CASCADE_FILLET_KCL = `${OPEN_CASCADE_EDGE_CUT_BASE_KCL}fillet0
 export const OPEN_CASCADE_CHAMFER_KCL = `${OPEN_CASCADE_EDGE_CUT_BASE_KCL}chamfer001 = chamfer(block, tags = [edge001], length = 0.2)
 `
 
+export const OPEN_CASCADE_TRANSFORM_KCL = `transformSolid = startSketchOn(XY)
+  |> startProfile(at = [-1, -1])
+  |> line(end = [2, 0])
+  |> line(end = [0, 2])
+  |> line(end = [-2, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 2)
+  |> translate(x = 3, y = -1, z = 2)
+  |> rotate(yaw = 45)
+  |> scale(factor = 1.25)
+`
+
 export const OPEN_CASCADE_PROOF_FIXTURES = [
   {
     name: 'openCascadeProofFixture',
@@ -240,5 +253,9 @@ export const OPEN_CASCADE_PROOF_FIXTURES = [
   {
     name: 'openCascadeChamferProofFixture',
     code: OPEN_CASCADE_CHAMFER_KCL,
+  },
+  {
+    name: 'openCascadeTransformProofFixture',
+    code: OPEN_CASCADE_TRANSFORM_KCL,
   },
 ]

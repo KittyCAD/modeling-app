@@ -19,6 +19,7 @@ import {
   OPEN_CASCADE_SKETCH_ON_FACE_MERGE_EXTRUDE_KCL,
   OPEN_CASCADE_SKETCH_ON_FACE_NEW_EXTRUDE_KCL,
   OPEN_CASCADE_SWEEP_KCL,
+  OPEN_CASCADE_TRANSFORM_KCL,
 } from '@src/network/openCascadeProofFixture'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
@@ -424,6 +425,130 @@ part002 = startSketchOn(XY)
     expect(await getVolume(chamferManager, IDS.solid)).toBeLessThan(
       chamferStartVolume
     )
+  })
+
+  it('applies OpenCascade object transforms to solids and pick topology', async () => {
+    const manager = new OpenCascadeCommandManager()
+    await buildRectangleRegionInput(manager)
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: IDS.solid,
+      cmd: {
+        type: 'extrude',
+        target: IDS.region,
+        distance: 2,
+        extrude_method: 'new',
+        body_type: 'solid',
+      },
+    })
+
+    const beforeMesh = manager.exportLatestTopologyMeshes().solids[0]
+    const beforeBounds = boundsForFlattenedPoints(beforeMesh.positions)
+    const beforeVolume = await getVolume(manager, IDS.solid)
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000e4',
+      cmd: {
+        type: 'set_object_transform',
+        object_id: IDS.solid,
+        transforms: [
+          {
+            translate: {
+              property: { x: 3, y: -2, z: 1 },
+              set: false,
+              origin: { type: 'local' },
+            },
+            rotate_rpy: null,
+            rotate_angle_axis: null,
+            scale: null,
+          },
+        ],
+      },
+    })
+
+    const translatedBounds = boundsForFlattenedPoints(
+      manager.exportLatestTopologyMeshes().solids[0].positions
+    )
+    expect(translatedBounds.min.x).toBeCloseTo(beforeBounds.min.x + 3)
+    expect(translatedBounds.min.y).toBeCloseTo(beforeBounds.min.y - 2)
+    expect(translatedBounds.min.z).toBeCloseTo(beforeBounds.min.z + 1)
+    expect(await getVolume(manager, IDS.solid)).toBeCloseTo(beforeVolume)
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000e5',
+      cmd: {
+        type: 'set_object_transform',
+        object_id: IDS.solid,
+        transforms: [
+          {
+            translate: null,
+            rotate_rpy: null,
+            rotate_angle_axis: null,
+            scale: {
+              property: { x: 2, y: 2, z: 2 },
+              set: false,
+              origin: { type: 'local' },
+            },
+          },
+        ],
+      },
+    })
+
+    expect(await getVolume(manager, IDS.solid)).toBeCloseTo(beforeVolume * 8)
+  })
+
+  it('applies OpenCascade object transforms to sketch line geometry', async () => {
+    const manager = new OpenCascadeCommandManager()
+    await buildRectangleRegionInput(manager)
+    const beforeBounds = boundsForFlattenedPoints(
+      manager
+        .exportLatestSketchLineMeshes()
+        .segments.flatMap((segment) => segment.points)
+    )
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000e6',
+      cmd: {
+        type: 'set_object_transform',
+        object_id: IDS.path,
+        transforms: [
+          {
+            translate: {
+              property: { x: 5, y: 0, z: 0 },
+              set: false,
+              origin: { type: 'local' },
+            },
+            rotate_rpy: null,
+            rotate_angle_axis: null,
+            scale: null,
+          },
+        ],
+      },
+    })
+
+    const afterBounds = boundsForFlattenedPoints(
+      manager
+        .exportLatestSketchLineMeshes()
+        .segments.flatMap((segment) => segment.points)
+    )
+    expect(afterBounds.min.x).toBeCloseTo(beforeBounds.min.x + 5)
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: IDS.solid,
+      cmd: {
+        type: 'extrude',
+        target: IDS.region,
+        distance: 2,
+        extrude_method: 'new',
+        body_type: 'solid',
+      },
+    })
+    expect(manager.getSolidCount()).toBe(1)
+    expect((await manager.exportLatestGlbBytes()).length).toBeGreaterThan(0)
   })
 
   it('exports multiple visible bodies as separate GLBs', async () => {
@@ -1019,6 +1144,7 @@ part002 = startSketchOn(XY)
     ['boolean-split', OPEN_CASCADE_BOOLEAN_SPLIT_KCL, 'booleanSplit'],
     ['fillet', OPEN_CASCADE_FILLET_KCL, 'fillet001'],
     ['chamfer', OPEN_CASCADE_CHAMFER_KCL, 'chamfer001'],
+    ['transform', OPEN_CASCADE_TRANSFORM_KCL, 'transformSolid'],
   ])(
     'executes the %s KCL proof through WASM',
     async (_, code, variableName) => {
@@ -1420,6 +1546,30 @@ async function getVolume(
     },
   })
   return response.resp.data.modeling_response.data.volume
+}
+
+function boundsForFlattenedPoints(points: number[]) {
+  const bounds = {
+    min: {
+      x: Number.POSITIVE_INFINITY,
+      y: Number.POSITIVE_INFINITY,
+      z: Number.POSITIVE_INFINITY,
+    },
+    max: {
+      x: Number.NEGATIVE_INFINITY,
+      y: Number.NEGATIVE_INFINITY,
+      z: Number.NEGATIVE_INFINITY,
+    },
+  }
+  for (let index = 0; index < points.length; index += 3) {
+    bounds.min.x = Math.min(bounds.min.x, points[index])
+    bounds.min.y = Math.min(bounds.min.y, points[index + 1])
+    bounds.min.z = Math.min(bounds.min.z, points[index + 2])
+    bounds.max.x = Math.max(bounds.max.x, points[index])
+    bounds.max.y = Math.max(bounds.max.y, points[index + 1])
+    bounds.max.z = Math.max(bounds.max.z, points[index + 2])
+  }
+  return bounds
 }
 
 async function send(
