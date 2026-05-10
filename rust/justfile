@@ -89,6 +89,20 @@ redo-sim-tests:
     # needs to happen *after* they're all generated.
     ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{ cita }} {{ kcl_lib_flags }} --no-quiet -- simulation_tests::kcl_samples::test_after_engine
 
+# Run OpenCascade coverage for KCL proof programs, sample entry points, language
+# docs, and stdlib docs. Use `scope=sample-files` for non-main sample modules.
+# Narrow with e.g. `just kcl-open-cascade-coverage cylinder samples`.
+kcl-open-cascade-coverage filter="" scope="proof,samples,docs,stdlib" limit="0":
+    cd .. && KCL_OPEN_CASCADE_COVERAGE_FILTER='{{ filter }}' KCL_OPEN_CASCADE_COVERAGE_SCOPE='{{ scope }}' KCL_OPEN_CASCADE_COVERAGE_LIMIT='{{ limit }}' npx vitest run --config vitest.opencascade-coverage.config.ts
+
+# First prove the Zoo-backed Rust corpora still pass, then report the same
+# docs/sample surface through the OpenCascade WASM proof engine.
+kcl-engine-coverage filter="" scope="proof,samples,docs,stdlib" limit="0":
+    {{ cnr }} {{ kcl_lib_flags }} -- docs::gen_std_tests::test_code_in_topics
+    {{ cnr }} {{ kcl_lib_flags }} -- docs::kcl_doc::test::kcl_test_examples
+    {{ cnr }} {{ kcl_lib_flags }} -- simulation_tests::kcl_samples::kcl_test_execute
+    cd .. && KCL_OPEN_CASCADE_COVERAGE_FILTER='{{ filter }}' KCL_OPEN_CASCADE_COVERAGE_SCOPE='{{ scope }}' KCL_OPEN_CASCADE_COVERAGE_LIMIT='{{ limit }}' npx vitest run --config vitest.opencascade-coverage.config.ts
+
 test:
     cargo install cargo-nextest --locked
     {{ cnr }} --workspace --features=artifact-graph
