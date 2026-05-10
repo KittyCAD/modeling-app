@@ -415,6 +415,7 @@ export const FeatureTreePaneContents = memo(() => {
                       systemDeps={systemDeps}
                       modelingActor={modelingActor}
                       engineCommandManager={engineCommandManager}
+                      rollbackOffset={rollbackOffset}
                       onSelect={selectOperation}
                     />
                   )
@@ -429,6 +430,7 @@ export const FeatureTreePaneContents = memo(() => {
                       systemDeps={systemDeps}
                       modelingActor={modelingActor}
                       engineCommandManager={engineCommandManager}
+                      rollbackOffset={rollbackOffset}
                       onSelect={selectOperation}
                     />
                   ) : (
@@ -441,6 +443,7 @@ export const FeatureTreePaneContents = memo(() => {
                       systemDeps={systemDeps}
                       modelingActor={modelingActor}
                       engineCommandManager={engineCommandManager}
+                      rollbackOffset={rollbackOffset}
                       onSelect={selectOperation}
                     />
                   )
@@ -606,6 +609,7 @@ function SketchBlockOperationGroup({
   systemDeps,
   modelingActor,
   engineCommandManager,
+  rollbackOffset,
   onSelect,
 }: Omit<OperationProps, 'item'> & { items: Operation[] }) {
   if (items.length === 0) {
@@ -626,6 +630,7 @@ function SketchBlockOperationGroup({
         systemDeps={systemDeps}
         modelingActor={modelingActor}
         engineCommandManager={engineCommandManager}
+        rollbackOffset={rollbackOffset}
         onSelect={onSelect}
       />
     )
@@ -653,6 +658,7 @@ function SketchBlockOperationGroup({
             systemDeps={systemDeps}
             modelingActor={modelingActor}
             engineCommandManager={engineCommandManager}
+            rollbackOffset={rollbackOffset}
             onSelect={onSelect}
           />
         </div>
@@ -673,6 +679,7 @@ function SketchBlockOperationGroup({
                 systemDeps={systemDeps}
                 modelingActor={modelingActor}
                 engineCommandManager={engineCommandManager}
+                rollbackOffset={rollbackOffset}
                 onSelect={onSelect}
                 size="sm"
               />
@@ -700,6 +707,7 @@ function OperationItemGroup({
   systemDeps,
   modelingActor,
   engineCommandManager,
+  rollbackOffset,
   onSelect,
 }: Omit<OperationProps, 'item'> & { items: Operation[] }) {
   return (
@@ -730,6 +738,7 @@ function OperationItemGroup({
                 systemDeps={systemDeps}
                 modelingActor={modelingActor}
                 engineCommandManager={engineCommandManager}
+                rollbackOffset={rollbackOffset}
                 onSelect={onSelect}
                 size="sm"
               />
@@ -852,6 +861,7 @@ interface OperationProps {
   engineCommandManager: ConnectionManager
   modelingActor: ReturnType<typeof useModelingContext>['actor']
   onSelect: (sourceRange: SourceRange) => void
+  rollbackOffset?: number
   size?: 'default' | 'sm'
 }
 /**
@@ -867,6 +877,7 @@ const OperationItem = ({
   systemDeps,
   modelingActor,
   engineCommandManager,
+  rollbackOffset,
   size,
 }: OperationProps) => {
   useSignals()
@@ -953,6 +964,16 @@ const OperationItem = ({
           'isOpenCascade' in engineCommandManager &&
           engineCommandManager.isOpenCascade === true
         ) {
+          if (item.sourceRange[0] > (rollbackOffset ?? Infinity)) {
+            const moveResult =
+              await systemDeps.kclManager.moveOpenCascadeRollbackMarker(
+                item.sourceRange
+              )
+            if (err(moveResult)) {
+              throw moveResult
+            }
+            return
+          }
           const rollbackResult =
             await systemDeps.kclManager.beginOpenCascadeRollbackEdit(
               item.sourceRange
@@ -983,6 +1004,7 @@ const OperationItem = ({
     item,
     commandBarActor,
     engineCommandManager,
+    rollbackOffset,
     systemDeps.kclManager,
     systemDeps.kclManager.artifactGraph,
     systemDeps.kclManager.code,

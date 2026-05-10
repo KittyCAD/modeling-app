@@ -1,5 +1,5 @@
 import { decode as msgpackDecode } from '@msgpack/msgpack'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import { assertParse } from '@src/lang/wasm'
 import { OpenCascadeCommandManager } from '@src/network/openCascadeCommandManager'
@@ -200,6 +200,59 @@ describe('OpenCascadeCommandManager', () => {
       (await manager.exportVisibleGlbBytes()).map((glb) => glb.solidId)
     ).toEqual([IDS.solid])
     expect(manager.exportLatestTopologyMeshes().solids).toHaveLength(1)
+  })
+
+  it('returns operations after an OpenCascade rollback marker', async () => {
+    const { instance, rustContext, settingsActor } =
+      await buildTheWorldAndNoEngineConnection()
+    await vi.waitFor(() =>
+      expect(settingsActor.getSnapshot().value).toBe('idle')
+    )
+    settingsActor.send({
+      type: 'set.modeling.engine',
+      data: { level: 'user', value: 'open_cascade' },
+      doNotPersist: true,
+    })
+    const code = `@settings(experimentalFeatures = allow)
+part001 = startSketchOn(XY)
+  |> startProfile(at = [-1, -1])
+  |> line(end = [2, 0])
+  |> line(end = [0, 2])
+  |> line(end = [-2, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 1)
+
+exit()
+
+part002 = startSketchOn(XY)
+  |> startProfile(at = [3, 3])
+  |> line(end = [1, 0])
+  |> line(end = [0, 1])
+  |> line(end = [-1, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 1)
+`
+    const ast = assertParse(code, instance)
+
+    const execState = await rustContext.execute(ast, {
+      settings: { modeling: { engine: 'open_cascade' } },
+    })
+
+    expect(execState.variables.part002?.type).toBe('Solid')
+    const exitOffset = code.indexOf('exit()')
+    expect(
+      execState.operations.some(
+        (operation) =>
+          'sourceRange' in operation && operation.sourceRange[0] > exitOffset
+      )
+    ).toBe(true)
+    const manager = OpenCascadeCommandManager.latestInstance()
+    expect(manager?.getSolidCount()).toBe(2)
+    expect(
+      (await manager?.exportVisibleGlbBytes())?.map((glb) => glb.solidId)
+    ).toEqual([expect.any(String)])
   })
 
   it('resolves OpenCascade edge IDs by index and closest point aliases', async () => {

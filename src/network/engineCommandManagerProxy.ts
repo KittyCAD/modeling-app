@@ -83,6 +83,14 @@ export class EngineCommandManagerProxy extends ConnectionManager {
     await this.openCascadeCommandManager.startNewSession()
   }
 
+  async recordRollbackMarker(sourceRange: string) {
+    if (!this.isOpenCascade) {
+      return false
+    }
+
+    return this.openCascadeCommandManager.recordRollbackMarker(sourceRange)
+  }
+
   async setTheme(...args: Parameters<ConnectionManager['setTheme']>) {
     if (this.isOpenCascade) {
       return

@@ -556,10 +556,6 @@ impl ExecutorContext {
                     }
 
                     if matches!(body_type, BodyType::Root)
-                        && matches!(
-                            self.settings.engine,
-                            crate::settings::types::ModelingEngine::OpenCascade
-                        )
                         && is_standalone_exit_call(&expression_statement.expression)
                         && self
                             .engine
