@@ -12,7 +12,12 @@ import type { DeepPartial } from '@src/lib/types'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import { ConnectionManager } from '@src/network/connectionManager'
-import { OpenCascadeCommandManager } from '@src/network/openCascadeCommandManager'
+import {
+  OpenCascadeMainThreadClient,
+  OpenCascadeWorkerClient,
+  type OpenCascadeManagerLike,
+  shouldUseOpenCascadeWorker,
+} from '@src/network/openCascadeWorkerClient'
 import type { ManagerTearDown } from '@src/network/utils'
 import {
   EngineCommandManagerEvents,
@@ -23,17 +28,15 @@ import {
 type StartArgs = Parameters<ConnectionManager['start']>[0]
 
 export class EngineCommandManagerProxy extends ConnectionManager {
-  readonly openCascadeCommandManager = new OpenCascadeCommandManager()
+  readonly openCascadeCommandManager = createOpenCascadeManager()
   readonly latestOpenCascadePreviewVersion = signal(0)
   readonly latestOpenCascadePreviewStatus = signal<
     'idle' | 'running' | 'ready' | 'error'
   >('idle')
-  private openCascadePreviewCommandManager = new OpenCascadeCommandManager({
+  private openCascadePreviewCommandManager = createOpenCascadeManager({
     registerLatest: false,
   })
-  private openCascadePreviewRoutingManager:
-    | OpenCascadeCommandManager
-    | undefined
+  private openCascadePreviewRoutingManager: OpenCascadeManagerLike | undefined
   private openCascadePreviewRequestId = 0
 
   get currentEngine() {
@@ -296,7 +299,7 @@ export class EngineCommandManagerProxy extends ConnectionManager {
     }
 
     const requestId = ++this.openCascadePreviewRequestId
-    const previewManager = new OpenCascadeCommandManager({
+    const previewManager = createOpenCascadeManager({
       registerLatest: false,
     })
     const previewEngineManager =
@@ -318,6 +321,7 @@ export class EngineCommandManagerProxy extends ConnectionManager {
         previewManager.exportLatestSketchLineMeshes()
       const visiblePreviewPlanes = previewManager.exportLatestPlaneMeshes()
       if (requestId !== this.openCascadePreviewRequestId) {
+        previewManager.dispose?.()
         return
       }
       if (
@@ -328,6 +332,7 @@ export class EngineCommandManagerProxy extends ConnectionManager {
         this.latestOpenCascadePreviewStatus.value = 'ready'
         return
       }
+      this.openCascadePreviewCommandManager.dispose?.()
       this.openCascadePreviewCommandManager = previewManager
       this.latestOpenCascadePreviewStatus.value = 'ready'
       this.latestOpenCascadePreviewVersion.value += 1
@@ -340,13 +345,18 @@ export class EngineCommandManagerProxy extends ConnectionManager {
       if (this.openCascadePreviewRoutingManager === previewManager) {
         this.openCascadePreviewRoutingManager = undefined
       }
+      if (this.openCascadePreviewCommandManager !== previewManager) {
+        previewManager.dispose?.()
+      }
     }
   }
 
   clearOpenCascadePreview() {
     this.openCascadePreviewRequestId += 1
+    this.openCascadePreviewRoutingManager?.dispose?.()
     this.openCascadePreviewRoutingManager = undefined
-    this.openCascadePreviewCommandManager = new OpenCascadeCommandManager({
+    this.openCascadePreviewCommandManager.dispose?.()
+    this.openCascadePreviewCommandManager = createOpenCascadeManager({
       registerLatest: false,
     })
     this.latestOpenCascadePreviewStatus.value = 'idle'
@@ -366,7 +376,7 @@ export class EngineCommandManagerProxy extends ConnectionManager {
   }
 
   private createOpenCascadePreviewEngineManager(
-    manager: OpenCascadeCommandManager
+    manager: OpenCascadeManagerLike
   ) {
     return {
       currentEngine: 'open_cascade',
@@ -456,7 +466,18 @@ export class EngineCommandManagerProxy extends ConnectionManager {
   }
 
   async exportLatestOpenCascadeBrepBytes() {
-    const bytes = this.openCascadeCommandManager.exportLastBrep()
+    if (this.openCascadeCommandManager.exportLastBrepBytes) {
+      return this.openCascadeCommandManager.exportLastBrepBytes()
+    }
+    const bytes = this.openCascadeCommandManager.exportLastBrep?.()
     return bytes ?? new Uint8Array()
   }
+}
+
+function createOpenCascadeManager(options?: {
+  registerLatest?: boolean
+}): OpenCascadeManagerLike {
+  return shouldUseOpenCascadeWorker()
+    ? new OpenCascadeWorkerClient()
+    : new OpenCascadeMainThreadClient(options)
 }

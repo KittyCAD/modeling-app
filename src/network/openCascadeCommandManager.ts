@@ -272,6 +272,28 @@ export type OpenCascadeVisibleSolidGlb = {
   bytes: Uint8Array
 }
 
+export type OpenCascadeRenderSnapshot = {
+  versions: {
+    shape: number
+    profile: number
+    topology: number
+    sketch: number
+    region: number
+    plane: number
+    visibility: number
+  }
+  selectionFilter: string[]
+  exportError?: string
+  solidCount: number
+  hiddenObjectIds: string[]
+  topologyMeshes: OpenCascadeTopologyMeshes
+  sketchLineMeshes: OpenCascadeSketchLineMeshes
+  planeMeshes: OpenCascadePlaneMeshes
+  regionMeshes: OpenCascadeRegionMeshes
+  pathPlanes: Record<string, OpenCascadePlaneMesh>
+  pathVisibility: Record<string, boolean>
+}
+
 export type OpenCascadeEntityProvenance = {
   imported: boolean
   sourceRange: SourceRange
@@ -359,7 +381,7 @@ async function initOpenCascadeForNode(): Promise<OpenCascadeInstance> {
 }
 
 async function initOpenCascadeFromFullJs(): Promise<OpenCascadeInstance> {
-  if (typeof window === 'undefined') {
+  if (typeof window === 'undefined' && typeof self === 'undefined') {
     throw new Error(
       'OpenCascade.js execution is only supported in the browser Vite runtime'
     )
@@ -671,6 +693,12 @@ export class OpenCascadeCommandManager {
     return this.hiddenObjectIds.has(id)
   }
 
+  exportHiddenObjectIds(): string[] {
+    return Array.from(
+      this.renderState()?.hiddenObjectIds ?? this.hiddenObjectIds
+    )
+  }
+
   async exportLatestRegionMeshes(): Promise<OpenCascadeRegionMeshes> {
     const state = this.renderState()
     if (!state) {
@@ -683,6 +711,44 @@ export class OpenCascadeCommandManager {
       regions: Array.from(arrangementRegions.values())
         .filter((region) => !this.isArrangementRegionHidden(region, state))
         .map((region) => regionMeshForArrangementRegion(region)),
+    }
+  }
+
+  async exportRenderSnapshot(): Promise<OpenCascadeRenderSnapshot> {
+    const state = this.renderState()
+    const paths = state?.paths ?? this.paths
+    const pathAliases = state?.pathAliases ?? this.pathAliases
+    const pathIds = new Set([...paths.keys(), ...pathAliases.keys()])
+    const pathPlanes: Record<string, OpenCascadePlaneMesh> = {}
+    const pathVisibility: Record<string, boolean> = {}
+    for (const pathId of pathIds) {
+      const plane = this.exportOpenCascadePathPlane(pathId)
+      if (plane) {
+        pathPlanes[pathId] = plane
+      }
+      pathVisibility[pathId] = this.isPathVisible(pathId)
+    }
+
+    return {
+      versions: {
+        shape: this.latestShapeVersion.value,
+        profile: this.latestProfileVersion.value,
+        topology: this.latestTopologyVersion.value,
+        sketch: this.latestSketchVersion.value,
+        region: this.latestRegionVersion.value,
+        plane: this.latestPlaneVersion.value,
+        visibility: this.latestVisibilityVersion.value,
+      },
+      selectionFilter: [...this.latestSelectionFilter.value],
+      exportError: this.latestExportError.value,
+      solidCount: this.visibleSolidEntries(state).length,
+      hiddenObjectIds: this.exportHiddenObjectIds(),
+      topologyMeshes: this.exportLatestTopologyMeshes(),
+      sketchLineMeshes: this.exportLatestSketchLineMeshes(),
+      planeMeshes: this.exportLatestPlaneMeshes(),
+      regionMeshes: await this.exportLatestRegionMeshes(),
+      pathPlanes,
+      pathVisibility,
     }
   }
 
