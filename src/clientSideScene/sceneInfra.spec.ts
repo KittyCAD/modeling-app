@@ -123,4 +123,64 @@ describe('SceneInfra camera controls', () => {
       initialPosition.distanceTo(controls.target)
     )
   })
+
+  it('resets local drag anchors when modifier keys switch camera interaction modes', () => {
+    const sceneInfra = makeSceneInfraForCallbacksTest()
+    const controls = sceneInfra.camControls
+    controls.syncDirection = 'clientToEngine'
+    controls.interactionGuards = cameraMouseDragGuards.Zoo
+    controls.domElement.setPointerCapture = vi.fn()
+    controls.domElement.releasePointerCapture = vi.fn()
+
+    const pointerDown = new MouseEvent('pointerdown', {
+      clientX: 10,
+      clientY: 10,
+      buttons: 2,
+      button: 2,
+      cancelable: true,
+    }) as PointerEvent
+    Object.defineProperty(pointerDown, 'pointerId', { value: 1 })
+    controls.onMouseDown(pointerDown)
+
+    const orbitMove = new MouseEvent('pointermove', {
+      clientX: 20,
+      clientY: 20,
+      buttons: 2,
+      button: 2,
+    }) as PointerEvent
+    controls.onMouseMove(orbitMove)
+    expect(controls.pendingRotation).not.toBeNull()
+
+    const switchToPan = new MouseEvent('pointermove', {
+      clientX: 21,
+      clientY: 21,
+      buttons: 2,
+      button: 2,
+      shiftKey: true,
+    }) as PointerEvent
+    controls.onMouseMove(switchToPan)
+    expect(controls.pendingRotation).toBeNull()
+    expect(controls.pendingPan).toBeNull()
+
+    const panMove = new MouseEvent('pointermove', {
+      clientX: 30,
+      clientY: 30,
+      buttons: 2,
+      button: 2,
+      shiftKey: true,
+    }) as PointerEvent
+    controls.onMouseMove(panMove)
+    expect(controls.pendingPan).not.toBeNull()
+
+    const switchToZoom = new MouseEvent('pointermove', {
+      clientX: 31,
+      clientY: 31,
+      buttons: 2,
+      button: 2,
+      ctrlKey: true,
+    }) as PointerEvent
+    controls.onMouseMove(switchToZoom)
+    expect(controls.pendingPan).toBeNull()
+    expect(controls.pendingZoom).toBeNull()
+  })
 })

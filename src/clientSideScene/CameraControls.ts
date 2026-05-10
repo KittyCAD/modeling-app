@@ -54,6 +54,7 @@ enum StandardView {
 }
 
 type interactionType = 'pan' | 'rotate' | 'zoom'
+type CameraInteraction = CameraDragInteractionType | 'none'
 
 interface ThreeCamValues {
   position: Vector3
@@ -124,6 +125,7 @@ export class CameraControls {
   pendingRotation: Vector2 | null = null
   pendingTrackballRotation: Vector2 | null = null
   pendingPan: Vector3 | null = null
+  activeDragInteraction: CameraInteraction = 'none'
   interactionGuards: MouseGuard = cameraMouseDragGuards.Zoo
   isFovAnimationInProgress = false
   perspectiveFovBeforeOrtho = 45
@@ -456,6 +458,7 @@ export class CameraControls {
     this.worldDownPosition = this.screenToWorld(event).clone()
     this.cameraDown = this.camera.clone()
     let interaction = this.getInteractionType(event)
+    this.activeDragInteraction = interaction
     if (interaction === 'none') return
     event.preventDefault()
     this.handleStart()
@@ -483,16 +486,26 @@ export class CameraControls {
     }
 
     if (this.isDragging) {
+      const interaction = this.getInteractionType(event)
+      if (interaction === 'none') {
+        return
+      }
+
+      if (
+        this.syncDirection !== 'engineToClient' &&
+        this.activeDragInteraction !== 'none' &&
+        interaction !== this.activeDragInteraction
+      ) {
+        this.resetLocalDragGesture(event, interaction)
+        this.wasDragging = true
+        return
+      }
+
       this.mouseNewPosition.set(event.clientX, event.clientY)
       const deltaMove = this.mouseNewPosition
         .clone()
         .sub(this.mouseDownPosition)
       this.mouseDownPosition.copy(this.mouseNewPosition)
-
-      const interaction = this.getInteractionType(event)
-      if (interaction === 'none') {
-        return
-      }
 
       // If there's a valid interaction and the mouse is moving,
       // our past (and current) interaction was a drag.
@@ -580,6 +593,7 @@ export class CameraControls {
   onMouseUpInner = (event: PointerEvent) => {
     this.domElement.releasePointerCapture(event.pointerId)
     this.isDragging = false
+    this.activeDragInteraction = 'none'
     this.handleEnd()
     if (this.syncDirection === 'engineToClient') {
       const interaction = this.getInteractionType(event)
@@ -643,6 +657,23 @@ export class CameraControls {
       )
     }
     this.handleEnd()
+  }
+
+  resetLocalDragGesture = (
+    event: PointerEvent,
+    interaction: CameraDragInteractionType
+  ) => {
+    this.pendingRotation = null
+    this.pendingTrackballRotation = null
+    this.pendingZoom = null
+    this.pendingPan = null
+    this._zoomFocus = null
+    this._lastWheelEvent = null
+    this.activeDragInteraction = interaction
+    this.mouseDownPosition.set(event.clientX, event.clientY)
+    this.mouseNewPosition.copy(this.mouseDownPosition)
+    this.cameraDown = this.camera.clone()
+    this.worldDownPosition = this.screenToWorld(event, this.cameraDown).clone()
   }
 
   useOrthographicCamera = () => {
