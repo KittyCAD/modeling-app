@@ -13,6 +13,7 @@ import {
   OPEN_CASCADE_FILLET_KCL,
   OPEN_CASCADE_INTERSECTING_REGION_EXTRUDE_KCL,
   OPEN_CASCADE_LOFT_KCL,
+  OPEN_CASCADE_PATTERN_KCL,
   OPEN_CASCADE_REVOLVE_KCL,
   OPEN_CASCADE_SKETCH_V2_CIRCLE_KCL,
   OPEN_CASCADE_SKETCH_V2_RECTANGLE_KCL,
@@ -575,6 +576,187 @@ part002 = startSketchOn(XY)
     })
     expect(manager.getSolidCount()).toBe(1)
     expect((await manager.exportLatestGlbBytes()).length).toBeGreaterThan(0)
+  })
+
+  it('patterns OpenCascade solids with transformed topology provenance', async () => {
+    const manager = new OpenCascadeCommandManager()
+    await buildRectangleRegionInput(manager)
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: IDS.solid,
+      cmd: {
+        type: 'extrude',
+        target: IDS.region,
+        distance: 2,
+        extrude_method: 'new',
+        body_type: 'solid',
+      },
+    })
+
+    const beforeMesh = manager.exportLatestTopologyMeshes().solids[0]
+    const beforeBounds = boundsForFlattenedPoints(beforeMesh.positions)
+    const response = await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000f1',
+      cmd: {
+        type: 'entity_linear_pattern_transform',
+        entity_id: IDS.solid,
+        transform: [],
+        transforms: [
+          [
+            {
+              translate: { x: 3, y: 0, z: 0 },
+              scale: { x: 1, y: 1, z: 1 },
+              rotation: {
+                axis: { x: 0, y: 0, z: 1 },
+                angle: { unit: 'degrees', value: 0 },
+                origin: { type: 'local' },
+              },
+              replicate: true,
+            },
+          ],
+          [
+            {
+              translate: { x: 6, y: 0, z: 0 },
+              scale: { x: 1, y: 1, z: 1 },
+              rotation: {
+                axis: { x: 0, y: 0, z: 1 },
+                angle: { unit: 'degrees', value: 0 },
+                origin: { type: 'local' },
+              },
+              replicate: true,
+            },
+          ],
+        ],
+      },
+    })
+
+    const copyIds =
+      response.resp.data.modeling_response.data.entity_face_edge_ids.map(
+        (info: { object_id: string }) => info.object_id
+      )
+    expect(copyIds).toHaveLength(2)
+    expect(manager.getSolidCount()).toBe(3)
+    const topologyMeshes = manager.exportLatestTopologyMeshes().solids
+    expect(topologyMeshes.map((mesh) => mesh.solidId)).toEqual([
+      IDS.solid,
+      ...copyIds,
+    ])
+    expect(topologyMeshes[1].artifactIds).toContain(IDS.solid)
+    expect(topologyMeshes[1].groups[0].topologyId).not.toBe(
+      beforeMesh.groups[0].topologyId
+    )
+    const firstCopyBounds = boundsForFlattenedPoints(
+      topologyMeshes[1].positions
+    )
+    expect(firstCopyBounds.min.x).toBeCloseTo(beforeBounds.min.x + 3)
+    expect(await getVolume(manager, copyIds[0])).toBeCloseTo(
+      await getVolume(manager, IDS.solid)
+    )
+    expect(await manager.exportVisibleGlbBytes()).toHaveLength(3)
+  })
+
+  it('patterns OpenCascade solids around an axis', async () => {
+    const manager = new OpenCascadeCommandManager()
+    await buildRectangleRegionInput(manager, {
+      min: { x: 2, y: 0 },
+      max: { x: 4, y: 2 },
+    })
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: IDS.solid,
+      cmd: {
+        type: 'extrude',
+        target: IDS.region,
+        distance: 2,
+        extrude_method: 'new',
+        body_type: 'solid',
+      },
+    })
+    const beforeVolume = await getVolume(manager, IDS.solid)
+
+    const response = await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000f2',
+      cmd: {
+        type: 'entity_circular_pattern',
+        entity_id: IDS.solid,
+        axis: { x: 0, y: 0, z: 1 },
+        center: { x: 0, y: 0, z: 0 },
+        num_repetitions: 3,
+        arc_degrees: 360,
+        rotate_duplicates: true,
+      },
+    })
+
+    const copyIds =
+      response.resp.data.modeling_response.data.entity_face_edge_ids.map(
+        (info: { object_id: string }) => info.object_id
+      )
+    expect(copyIds).toHaveLength(3)
+    expect(manager.getSolidCount()).toBe(4)
+    expect(await getVolume(manager, copyIds[2])).toBeCloseTo(beforeVolume)
+    expect(await manager.exportVisibleGlbBytes()).toHaveLength(4)
+  })
+
+  it('patterns OpenCascade sketch paths for later region use', async () => {
+    const manager = new OpenCascadeCommandManager()
+    await buildRectangleRegionInput(manager)
+    const beforeSegments = manager.exportLatestSketchLineMeshes().segments
+
+    const response = await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000f3',
+      cmd: {
+        type: 'entity_linear_pattern_transform',
+        entity_id: IDS.path,
+        transform: [
+          {
+            translate: { x: 4, y: 0, z: 0 },
+            scale: { x: 1, y: 1, z: 1 },
+            rotation: {
+              axis: { x: 0, y: 0, z: 1 },
+              angle: { unit: 'degrees', value: 0 },
+              origin: { type: 'local' },
+            },
+            replicate: true,
+          },
+        ],
+        transforms: [],
+      },
+    })
+
+    const copyId =
+      response.resp.data.modeling_response.data.entity_face_edge_ids[0]
+        .object_id
+    const afterSegments = manager.exportLatestSketchLineMeshes().segments
+    expect(afterSegments).toHaveLength(beforeSegments.length * 2)
+    const copiedSegmentIds = afterSegments
+      .slice(beforeSegments.length)
+      .map((segment) => segment.segmentId)
+    expect(copiedSegmentIds).not.toContain(beforeSegments[0].segmentId)
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000f4',
+      cmd: {
+        type: 'create_region_from_query_point',
+        object_id: copyId,
+        query_point: { x: 4, y: 0 },
+      },
+    })
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000f5',
+      cmd: {
+        type: 'extrude',
+        target: '00000000-0000-0000-0000-0000000000f4',
+        distance: 1,
+        extrude_method: 'new',
+        body_type: 'solid',
+      },
+    })
+    expect(manager.getSolidCount()).toBe(1)
   })
 
   it('exports multiple visible bodies as separate GLBs', async () => {
@@ -1190,6 +1372,21 @@ part002 = startSketchOn(XY)
       expect(glbBytes?.length).toBeGreaterThan(0)
     }
   )
+
+  it('executes the pattern KCL proof through WASM', async () => {
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(OPEN_CASCADE_PATTERN_KCL, instance)
+
+    const execState = await rustContext.execute(ast, {
+      settings: { modeling: { engine: 'open_cascade' } },
+    })
+
+    expect(execState.variables.linearPattern).toBeTruthy()
+    expect(execState.variables.circularPattern).toBeTruthy()
+    const manager = OpenCascadeCommandManager.latestInstance()
+    expect(manager?.getSolidCount()).toBe(6)
+    expect(await manager?.exportVisibleGlbBytes()).toHaveLength(6)
+  })
 
   it('executes hidden intersecting region extrude and suppresses passive sketch and region meshes', async () => {
     const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()

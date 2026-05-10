@@ -193,6 +193,19 @@ export const OPEN_CASCADE_TRANSFORM_KCL = `transformSolid = startSketchOn(XY)
   |> scale(factor = 1.25)
 `
 
+export const OPEN_CASCADE_PATTERN_KCL = `patternSource = startSketchOn(XY)
+  |> startProfile(at = [-1, -1])
+  |> line(end = [2, 0])
+  |> line(end = [0, 2])
+  |> line(end = [-2, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 1)
+
+linearPattern = patternLinear3d(patternSource, instances = 3, distance = 4, axis = X)
+circularPattern = patternCircular3d(patternSource, instances = 4, axis = Z, center = [0, 0, 0])
+`
+
 export const OPEN_CASCADE_PROOF_FIXTURES = [
   {
     name: 'openCascadeProofFixture',
@@ -257,5 +270,9 @@ export const OPEN_CASCADE_PROOF_FIXTURES = [
   {
     name: 'openCascadeTransformProofFixture',
     code: OPEN_CASCADE_TRANSFORM_KCL,
+  },
+  {
+    name: 'openCascadePatternProofFixture',
+    code: OPEN_CASCADE_PATTERN_KCL,
   },
 ]

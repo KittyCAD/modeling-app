@@ -785,6 +785,12 @@ export class OpenCascadeCommandManager {
         return modeling(await this.booleanIntersection(commandId, cmd))
       case 'boolean_imprint':
         return modeling(await this.booleanImprint(commandId, cmd))
+      case 'entity_linear_pattern_transform':
+        return modeling(
+          await this.linearPatternTransform(commandId, cmd, range)
+        )
+      case 'entity_circular_pattern':
+        return modeling(await this.circularPattern(commandId, cmd, range))
       case 'entity_make_helix':
         return modeling(await this.makeHelix(commandId, cmd, range))
       case 'entity_make_helix_from_params':
@@ -1641,6 +1647,252 @@ export class OpenCascadeCommandManager {
     }
 
     throw new Error(`No OpenCascade object found for transform ${objectId}`)
+  }
+
+  private async linearPatternTransform(
+    commandId: string,
+    cmd: Extract<ModelingCmd, { type: 'entity_linear_pattern_transform' }>,
+    range: SourceRange
+  ): Promise<OkModelingCmdResponse> {
+    const command = cmd as {
+      entity_id: string
+      transform?: unknown[]
+      transforms?: unknown[][]
+    }
+    const transformSets =
+      command.transforms && command.transforms.length > 0
+        ? command.transforms
+        : (command.transform || []).map((transform) => [transform])
+    const oc = await initOpenCascade()
+    const ids = await this.patternEntityCopies(
+      commandId,
+      command.entity_id,
+      transformSets
+        .map((transforms, index) => ({ transforms, index }))
+        .filter(({ transforms }) => patternTransformReplicates(transforms))
+        .map(({ transforms, index }) => ({
+          id: deriveBooleanSolidId(commandId, index),
+          matrix: this.patternEntityTransformMatrix(
+            command.entity_id,
+            transforms,
+            oc
+          ),
+        })),
+      range,
+      oc
+    )
+    return patternResponse('entity_linear_pattern_transform', ids)
+  }
+
+  private async circularPattern(
+    commandId: string,
+    cmd: Extract<ModelingCmd, { type: 'entity_circular_pattern' }>,
+    range: SourceRange
+  ): Promise<OkModelingCmdResponse> {
+    const command = cmd as {
+      entity_id: string
+      axis: unknown
+      center: unknown
+      num_repetitions: number
+      arc_degrees: number
+      rotate_duplicates: boolean
+    }
+    const repetitions = Math.max(0, command.num_repetitions || 0)
+    const axis = normalize(toPoint3(command.axis))
+    const center = toPoint3(command.center)
+    const fullCircle = Math.abs((command.arc_degrees || 360) - 360) < 1e-6
+    const divisor = fullCircle ? repetitions + 1 : Math.max(1, repetitions)
+    const oc = await initOpenCascade()
+    const sourceCenter = this.patternEntityCenter(command.entity_id, oc)
+    const copies = Array.from({ length: repetitions }, (_, index) => {
+      const angle = ((command.arc_degrees || 360) * (index + 1)) / divisor
+      const rotation = aboutOriginMatrix(
+        rotationAxisAngleMatrix(axis, (angle * Math.PI) / 180),
+        center
+      )
+      const matrix = command.rotate_duplicates
+        ? rotation
+        : translationBetween(
+            sourceCenter,
+            transformPoint(sourceCenter, rotation)
+          )
+      return {
+        id: deriveBooleanSolidId(commandId, index),
+        matrix,
+      }
+    })
+
+    const ids = await this.patternEntityCopies(
+      commandId,
+      command.entity_id,
+      copies,
+      range,
+      oc
+    )
+    return patternResponse('entity_circular_pattern', ids)
+  }
+
+  private patternEntityCenter(
+    entityId: string,
+    oc: OpenCascadeInstance
+  ): Point3 {
+    const solidEntry = this.findSolidEntry(entityId)
+    if (solidEntry) {
+      return this.shapeBoundsCenter(solidEntry[1].shape, oc)
+    }
+    const pathEntry = this.findPathEntry(entityId)
+    if (pathEntry) {
+      return pathWorldBoundsCenter(
+        pathEntry[1],
+        this.planeForPath(pathEntry[1])
+      )
+    }
+    throw new Error(`No OpenCascade entity found for pattern ${entityId}`)
+  }
+
+  private patternEntityTransformMatrix(
+    entityId: string,
+    transforms: unknown[],
+    oc: OpenCascadeInstance
+  ): TransformMatrix {
+    return matrixForComponentTransforms(
+      transforms,
+      this.patternEntityCenter(entityId, oc)
+    )
+  }
+
+  private async patternEntityCopies(
+    commandId: string,
+    sourceEntityId: string,
+    copies: { id: string; matrix: TransformMatrix }[],
+    range: SourceRange,
+    oc: OpenCascadeInstance
+  ): Promise<string[]> {
+    if (copies.length === 0) {
+      return []
+    }
+
+    const solidEntry = this.findSolidEntry(sourceEntityId)
+    if (solidEntry) {
+      const [sourceSolidId, sourceSolid] = solidEntry
+      for (const copy of copies) {
+        this.storePatternSolidCopy(
+          copy.id,
+          sourceSolidId,
+          sourceSolid,
+          copy.matrix,
+          oc
+        )
+      }
+      this.latestShapeVersion.value += 1
+      this.latestTopologyVersion.value += 1
+      return copies.map((copy) => copy.id)
+    }
+
+    const pathEntry = this.findPathEntry(sourceEntityId)
+    if (pathEntry) {
+      const [sourcePathId, sourcePath] = pathEntry
+      for (const copy of copies) {
+        const path = clonePathState(sourcePath)
+        remapPatternPathIds(path, copy.id, sourcePathId)
+        this.transformPath(copy.id, path, copy.matrix)
+        this.paths.set(copy.id, path)
+        if (path.closed) {
+          await this.rebuildRegionsForPath(copy.id, range)
+        }
+      }
+      this.markSketchChanged()
+      this.latestProfileVersion.value += 1
+      return copies.map((copy) => copy.id)
+    }
+
+    throw new Error(`No OpenCascade entity found for pattern ${sourceEntityId}`)
+  }
+
+  private storePatternSolidCopy(
+    copyId: string,
+    sourceSolidId: string,
+    sourceSolid: SolidState,
+    matrix: TransformMatrix,
+    oc: OpenCascadeInstance
+  ) {
+    const shape = this.transformShape(sourceSolid.shape, matrix, oc)
+    const solid: SolidState = {
+      ...cloneSolidState(sourceSolid),
+      shape,
+      sourceIds: Array.from(
+        new Set([sourceSolidId, ...sourceSolid.sourceIds, copyId])
+      ),
+      sideFaceId: deriveTopologyId(copyId, 0),
+      startCapId: deriveTopologyId(copyId, 1),
+      endCapId: deriveTopologyId(copyId, 2),
+      brep: this.writeBrep(copyId, shape, oc),
+      consumed: false,
+    }
+    this.solids.set(copyId, solid)
+    this.storePatternTopologyCopy(copyId, sourceSolidId, matrix)
+  }
+
+  private storePatternTopologyCopy(
+    copyId: string,
+    sourceSolidId: string,
+    matrix: TransformMatrix
+  ) {
+    const sourceMesh = this.topologyMeshForSolidAlias(sourceSolidId)
+    if (!sourceMesh) {
+      return
+    }
+
+    const faceIdMap = new Map<string, string>()
+    const mesh = cloneTopologySolidMesh(sourceMesh)
+    mesh.solidId = copyId
+    mesh.artifactIds = Array.from(
+      new Set([copyId, sourceSolidId, ...(sourceMesh.artifactIds || [])])
+    )
+    mesh.positions = transformFlattenedPoints(mesh.positions, matrix)
+    mesh.groups = mesh.groups.map((group, index) => {
+      const topologyId = deriveTopologyId(`${copyId}:face:${index}`, 0)
+      faceIdMap.set(group.topologyId, topologyId)
+      return {
+        ...group,
+        topologyId,
+        artifactId: topologyId,
+      }
+    })
+    mesh.edges = mesh.edges.map((edge, index) => {
+      const topologyId = deriveTopologyId(`${copyId}:edge:${index}`, 0)
+      return {
+        ...edge,
+        topologyId,
+        artifactId: topologyId,
+        edgeIndex: index,
+        faceIds: edge.faceIds.map((faceId) => faceIdMap.get(faceId) || faceId),
+        points: transformFlattenedPoints(edge.points, matrix),
+      }
+    })
+    this.topologyMeshes.set(copyId, mesh)
+
+    for (const group of mesh.groups) {
+      this.topologyEntries.set(group.topologyId, {
+        topologyId: group.topologyId,
+        artifactId: group.artifactId,
+        solidId: copyId,
+        kind: 'face',
+        role: group.role,
+      })
+    }
+    for (const edge of mesh.edges) {
+      this.topologyEntries.set(edge.topologyId, {
+        topologyId: edge.topologyId,
+        artifactId: edge.artifactId,
+        solidId: copyId,
+        kind: 'edge',
+        role: edge.role,
+        points: [...edge.points],
+        faceIds: [...edge.faceIds],
+        edgeIndex: edge.edgeIndex,
+      })
+    }
   }
 
   private async volume(
@@ -3189,6 +3441,11 @@ function matrixForComponentTransform(
   transform: unknown,
   localOrigin: Point3
 ): TransformMatrix {
+  const directMatrix = matrixForDirectTransform(transform, localOrigin)
+  if (directMatrix) {
+    return directMatrix
+  }
+
   const component = transform as {
     translate?: { property?: unknown; origin?: unknown } | null
     scale?: { property?: unknown; origin?: unknown } | null
@@ -3261,6 +3518,60 @@ function matrixForComponentTransform(
   return identityMatrix()
 }
 
+function matrixForDirectTransform(
+  transform: unknown,
+  localOrigin: Point3
+): TransformMatrix | undefined {
+  const direct = transform as {
+    translate?: unknown
+    scale?: unknown
+    rotation?: { axis?: unknown; angle?: unknown; origin?: unknown } | null
+  }
+  const hasDirectTranslate =
+    direct.translate &&
+    typeof direct.translate === 'object' &&
+    'x' in direct.translate
+  const hasDirectScale =
+    direct.scale && typeof direct.scale === 'object' && 'x' in direct.scale
+  const hasDirectRotation = Boolean(direct.rotation)
+  if (!hasDirectTranslate && !hasDirectScale && !hasDirectRotation) {
+    return undefined
+  }
+
+  const translate = hasDirectTranslate
+    ? toPoint3(direct.translate)
+    : { x: 0, y: 0, z: 0 }
+  const scale = hasDirectScale ? toPoint3(direct.scale) : { x: 1, y: 1, z: 1 }
+  const rotation = direct.rotation
+  const rotationOrigin = originForTransform(rotation?.origin, localOrigin)
+  const rotationMatrix = rotation
+    ? aboutOriginMatrix(
+        rotationAxisAngleMatrix(
+          normalize(toPoint3(rotation.axis || { x: 0, y: 0, z: 1 })),
+          angleValueRadians(rotation.angle)
+        ),
+        rotationOrigin
+      )
+    : identityMatrix()
+
+  return multiplyMatrix(
+    translationMatrix(translate.x, translate.y, translate.z),
+    multiplyMatrix(
+      rotationMatrix,
+      aboutOriginMatrix(
+        scaleMatrix(scale.x || 1, scale.y || 1, scale.z || 1),
+        localOrigin
+      )
+    )
+  )
+}
+
+function patternTransformReplicates(transforms: unknown[]): boolean {
+  return transforms.every(
+    (transform) => (transform as { replicate?: unknown }).replicate !== false
+  )
+}
+
 function originForTransform(origin: unknown, localOrigin: Point3): Point3 {
   const typedOrigin = origin as { type?: unknown; origin?: unknown } | undefined
   if (typedOrigin?.type === 'global') {
@@ -3278,6 +3589,10 @@ function identityMatrix(): TransformMatrix {
 
 function translationMatrix(x: number, y: number, z: number): TransformMatrix {
   return [1, 0, 0, x, 0, 1, 0, y, 0, 0, 1, z, 0, 0, 0, 1]
+}
+
+function translationBetween(start: Point3, end: Point3): TransformMatrix {
+  return translationMatrix(end.x - start.x, end.y - start.y, end.z - start.z)
 }
 
 function scaleMatrix(x: number, y: number, z: number): TransformMatrix {
@@ -3352,6 +3667,39 @@ function transformPoint(point: Point3, matrix: TransformMatrix): Point3 {
       matrix[10] * point.z +
       matrix[11],
   }
+}
+
+function patternResponse(
+  type: 'entity_linear_pattern_transform' | 'entity_circular_pattern',
+  ids: string[]
+): OkModelingCmdResponse {
+  return {
+    type,
+    data: {
+      entity_face_edge_ids: ids.map((objectId) => ({
+        object_id: objectId,
+        faces: [],
+        edges: [],
+      })),
+    },
+  } as unknown as OkModelingCmdResponse
+}
+
+function remapPatternPathIds(
+  path: PathState,
+  copyId: string,
+  sourcePathId: string
+) {
+  path.closeCommandId = path.closed ? copyId : undefined
+  path.segments = path.segments.map((segment, index) => ({
+    ...segment,
+    id: deriveTopologyId(`${copyId}:${sourcePathId}:segment:${index}`, 0),
+  }))
+  path.edgeEntries = path.edgeEntries?.map((entry, index) => ({
+    ...entry,
+    id: deriveTopologyId(`${copyId}:${sourcePathId}:edge:${index}`, 0),
+    edge: undefined,
+  }))
 }
 
 function transformFlattenedPoints(
