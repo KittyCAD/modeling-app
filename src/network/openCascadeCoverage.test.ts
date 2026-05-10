@@ -9,7 +9,7 @@ import type { Program } from '@rust/kcl-lib/bindings/Program'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { OpenCascadeCommandManager } from '@src/network/openCascadeCommandManager'
-import { OPEN_CASCADE_CIRCLE_EXTRUDE_KCL } from '@src/network/openCascadeProofFixture'
+import { OPEN_CASCADE_PROOF_FIXTURES } from '@src/network/openCascadeProofFixture'
 
 type CoverageScope = 'proof' | 'samples' | 'sample-files' | 'docs' | 'stdlib'
 
@@ -51,13 +51,14 @@ describe('OpenCascade KCL coverage', () => {
 
     printReport(results)
 
-    const proofResult = results.find(
-      (result) =>
-        result.item.source === 'proof' &&
-        result.item.name === 'openCascadeProofFixture'
-    )
-    if (proofResult) {
-      expect(proofResult.status).toBe('ok')
+    for (const fixture of OPEN_CASCADE_PROOF_FIXTURES) {
+      const proofResult = results.find(
+        (result) =>
+          result.item.source === 'proof' && result.item.name === fixture.name
+      )
+      if (proofResult) {
+        expect(proofResult.status).toBe('ok')
+      }
     }
 
     if (process.env.KCL_OPEN_CASCADE_COVERAGE_EXPECT_ALL === '1') {
@@ -164,17 +165,12 @@ async function collectCorpus(): Promise<CoverageItem[]> {
   ])
 
   return [
-    {
-      source: 'proof',
-      name: 'openCascadeProofFixture',
-      code: OPEN_CASCADE_CIRCLE_EXTRUDE_KCL,
-      path: path.join(
-        ROOT_DIR,
-        'src',
-        'network',
-        'openCascadeProofFixture.kcl'
-      ),
-    },
+    ...OPEN_CASCADE_PROOF_FIXTURES.map((fixture) => ({
+      source: 'proof' as const,
+      name: fixture.name,
+      code: fixture.code,
+      path: path.join(ROOT_DIR, 'src', 'network', `${fixture.name}.kcl`),
+    })),
     ...samples,
     ...(await collectSampleFiles()),
     ...docs,
