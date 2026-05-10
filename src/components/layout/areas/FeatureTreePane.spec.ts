@@ -1,46 +1,67 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
-import { describe, it, expect, vi } from 'vitest'
+import { beforeEach, describe, it, expect, vi } from 'vitest'
 import {
   DefaultPlanes,
   getFeatureTreeValueDetail,
+  selectedFeatureTreeDefaultPlaneKeys,
 } from '@src/components/layout/areas/FeatureTreePane'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { defaultNodePath } from '@src/lang/wasm'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 
-const { sendMock } = vi.hoisted(() => ({
+const { sendMock, modelingContextState } = vi.hoisted(() => ({
   sendMock: vi.fn(),
+  modelingContextState: {
+    matches: () => false,
+    context: {
+      defaultPlaneVisibility: {
+        origin: true,
+        xy: true,
+        xz: true,
+        yz: true,
+      },
+      selectionRanges: {
+        graphSelections: [],
+        otherSelections: [],
+      },
+      store: {
+        useSketchSolveMode: { current: undefined },
+      },
+    },
+  } as any,
 }))
 
 vi.mock('@src/hooks/useModelingContext', () => ({
   useModelingContext: () => ({
     send: sendMock,
-    state: {
-      matches: () => false,
-      context: {
-        defaultPlaneVisibility: {
-          origin: true,
-          xy: true,
-          xz: true,
-          yz: true,
-        },
-        store: {
-          useSketchSolveMode: { current: undefined },
-        },
-      },
-    },
+    state: modelingContextState,
   }),
 }))
 
 describe('FeatureTreePane', () => {
   describe('DefaultPlanes', () => {
+    beforeEach(() => {
+      sendMock.mockClear()
+      modelingContextState.context.selectionRanges = {
+        graphSelections: [],
+        otherSelections: [],
+      }
+    })
+
     function createSystemDeps({
       isOpenCascade,
       defaultPlanes,
     }: {
       isOpenCascade: boolean
-      defaultPlanes: { xy: string; xz: string; yz: string } | null
+      defaultPlanes: {
+        xy: string
+        xz: string
+        yz: string
+        negXy?: string
+        negXz?: string
+        negYz?: string
+      } | null
     }) {
       return {
         rustContext: {
@@ -82,7 +103,6 @@ describe('FeatureTreePane', () => {
     })
 
     it('sends origin and default-plane visibility toggle events', () => {
-      sendMock.mockClear()
       render(
         createElement(DefaultPlanes, {
           systemDeps: createSystemDeps({
@@ -105,6 +125,61 @@ describe('FeatureTreePane', () => {
         planeId: 'plane-xy',
         planeKey: 'xy',
       })
+    })
+
+    it('highlights selected default plane rows', () => {
+      modelingContextState.context.selectionRanges = {
+        graphSelections: [],
+        otherSelections: [{ name: '-XZ', id: 'plane-neg-xz' }] as unknown[],
+      }
+
+      render(
+        createElement(DefaultPlanes, {
+          systemDeps: createSystemDeps({
+            isOpenCascade: true,
+            defaultPlanes: {
+              xy: 'plane-xy',
+              xz: 'plane-xz',
+              yz: 'plane-yz',
+              negXy: 'plane-neg-xy',
+              negXz: 'plane-neg-xz',
+              negYz: 'plane-neg-yz',
+            },
+          }),
+        })
+      )
+
+      expect(
+        screen
+          .getByText('Front plane')
+          .closest('[data-testid="feature-tree-operation-item"]')
+      ).toHaveClass('bg-primary/25')
+      expect(
+        screen
+          .getByText('Top plane')
+          .closest('[data-testid="feature-tree-operation-item"]')
+      ).not.toHaveClass('bg-primary/25')
+    })
+
+    it('maps positive and negative default plane selections to feature tree rows', () => {
+      expect(
+        selectedFeatureTreeDefaultPlaneKeys(
+          {
+            otherSelections: [
+              { name: 'XY', id: 'plane-xy' },
+              { name: '-YZ', id: 'plane-neg-yz' },
+            ],
+          },
+          {
+            xy: 'plane-xy',
+            xz: 'plane-xz',
+            yz: 'plane-yz',
+            negXy: 'plane-neg-xy',
+            negXz: 'plane-neg-xz',
+            negYz: 'plane-neg-yz',
+          } as never
+        )
+      ).toEqual(new Set(['xy', 'yz']))
     })
   })
 

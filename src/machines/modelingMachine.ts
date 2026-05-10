@@ -374,6 +374,113 @@ async function animateToSketchPlaneAfterSelection({
   kclManager.sceneInfra.renderFrame()
 }
 
+function selectedSketchTargetId({
+  selectionRanges,
+  defaultPlanes,
+}: {
+  selectionRanges: Selections
+  defaultPlanes: RustContext['defaultPlanes']
+}) {
+  for (const selection of selectionRanges.otherSelections) {
+    if (isEnginePrimitiveSelection(selection)) {
+      return selection.entityId
+    }
+    if (!selection || typeof selection !== 'object') {
+      continue
+    }
+    const id =
+      'id' in selection && typeof selection.id === 'string'
+        ? selection.id
+        : undefined
+    if (
+      id &&
+      defaultPlanes &&
+      [
+        defaultPlanes.xy,
+        defaultPlanes.xz,
+        defaultPlanes.yz,
+        defaultPlanes.negXy,
+        defaultPlanes.negXz,
+        defaultPlanes.negYz,
+      ].includes(id)
+    ) {
+      return id
+    }
+  }
+
+  const graphSelection = selectionRanges.graphSelections[0]
+  if (graphSelection?.engineEntityId) {
+    return graphSelection.engineEntityId
+  }
+
+  const artifact = graphSelection?.artifact
+  if (
+    artifact &&
+    (artifact.type === 'plane' ||
+      artifact.type === 'wall' ||
+      artifact.type === 'cap')
+  ) {
+    return artifact.id
+  }
+
+  return undefined
+}
+
+async function selectedSketchTargetPlane({
+  selectionRanges,
+  kclManager,
+  rustContext,
+  wasmInstance,
+}: {
+  selectionRanges: Selections
+  kclManager: KclManager
+  rustContext: RustContext
+  wasmInstance: ModuleType
+}) {
+  const artifactOrPlaneId = selectedSketchTargetId({
+    selectionRanges,
+    defaultPlanes: rustContext.defaultPlanes,
+  })
+  if (!artifactOrPlaneId) {
+    return reject(new Error('Please select a valid sketch plane.'))
+  }
+
+  const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId, {
+    sceneInfra: kclManager.sceneInfra,
+    rustContext,
+  })
+  if (!err(defaultResult) && defaultResult) {
+    return defaultResult
+  }
+
+  const artifact = kclManager.artifactGraph.get(artifactOrPlaneId)
+  const offsetResult = await getOffsetSketchPlaneData(artifact, {
+    sceneEntitiesManager: kclManager.sceneEntitiesManager,
+    sceneInfra: kclManager.sceneInfra,
+  })
+  if (!isErr(offsetResult) && offsetResult) {
+    return offsetResult
+  }
+
+  const faceResult = await selectionBodyFace(
+    artifactOrPlaneId,
+    kclManager.artifactGraph,
+    kclManager.astSignal.value,
+    kclManager.execState,
+    {
+      wasmInstance,
+      rustContext,
+      sceneInfra: kclManager.sceneInfra,
+      sceneEntitiesManager: kclManager.sceneEntitiesManager,
+    }
+  )
+  if (faceResult) {
+    return faceResult
+  }
+
+  return reject(new Error('Please select a valid sketch plane.'))
+}
+
 async function enterSketchSolveFromSketchBlockArtifact({
   sketchBlockArtifact,
   kclManager,
@@ -771,6 +878,33 @@ export const modelingMachine = setup({
       if (event.type !== 'Enter sketch') return false
       if (event.data?.forceNewSketch) return false
       return isSketchBlockSelected(selectionRanges)
+    },
+    'Selection is sketch target': ({
+      context: { selectionRanges, rustContext },
+      event,
+    }) => {
+      if (event.type !== 'Enter sketch') return false
+      if (event.data?.forceNewSketch === false) return false
+      return Boolean(
+        selectedSketchTargetId({
+          selectionRanges,
+          defaultPlanes: rustContext.defaultPlanes,
+        })
+      )
+    },
+    'Selection is sketch solve target': ({
+      context: { selectionRanges, rustContext, store },
+      event,
+    }) => {
+      if (event.type !== 'Enter sketch') return false
+      if (store.useSketchSolveMode?.current !== true) return false
+      if (event.data?.forceNewSketch === false) return false
+      return Boolean(
+        selectedSketchTargetId({
+          selectionRanges,
+          defaultPlanes: rustContext.defaultPlanes,
+        })
+      )
     },
     'Selection is on face': ({
       context: { selectionRanges, kclManager, wasmInstance },
@@ -3160,16 +3294,37 @@ export const modelingMachine = setup({
         input,
       }: {
         input?: {
-          plane: ExtrudeFacePlane | DefaultPlane | OffsetPlane
+          plane?: ExtrudeFacePlane | DefaultPlane | OffsetPlane
+          selectionRanges?: Selections
           kclManager: KclManager
           engineCommandManager: ConnectionManager
           wasmInstance: ModuleType
+          rustContext?: RustContext
           store?: ModelingMachineContext['store']
         }
       }) => {
         if (!input) return null
-        const { plane, kclManager, engineCommandManager, wasmInstance, store } =
-          input
+        const {
+          kclManager,
+          engineCommandManager,
+          wasmInstance,
+          rustContext,
+          selectionRanges,
+          store,
+        } = input
+        const plane =
+          input.plane ??
+          (selectionRanges && rustContext
+            ? await selectedSketchTargetPlane({
+                selectionRanges,
+                kclManager,
+                rustContext,
+                wasmInstance,
+              })
+            : undefined)
+        if (!plane) {
+          return reject(new Error('Please select a valid sketch plane.'))
+        }
         if (kclManager.hasParseErrors()) {
           const errorMessage =
             'Unable to enter sketch while KCL has parse errors.'
@@ -6182,6 +6337,24 @@ export const modelingMachine = setup({
             guard: 'Selection is sketchBlock',
           },
           {
+            target: 'animating to sketch solve mode',
+            actions: [
+              ({ context }) => {
+                context.kclManager.sceneInfra.animate()
+              },
+            ],
+            guard: 'Selection is sketch solve target',
+          },
+          {
+            target: 'animating to plane',
+            actions: [
+              ({ context }) => {
+                context.kclManager.sceneInfra.animate()
+              },
+            ],
+            guard: 'Selection is sketch target',
+          },
+          {
             target: 'animating to existing sketch',
             actions: [
               ({ context }) => {
@@ -7719,6 +7892,16 @@ export const modelingMachine = setup({
         id: 'animate-to-face',
 
         input: ({ event, context }) => {
+          if (event.type === 'Enter sketch') {
+            return {
+              selectionRanges: context.selectionRanges,
+              kclManager: context.kclManager,
+              engineCommandManager: context.engineCommandManager,
+              wasmInstance: context.wasmInstance,
+              rustContext: context.rustContext,
+              store: context.store,
+            }
+          }
           if (event.type !== 'Select sketch plane') return undefined
           return {
             plane: event.data,
@@ -8683,9 +8866,17 @@ export const modelingMachine = setup({
           actions: 'toastError',
         },
         input: ({ event, context }) => {
-          if (event.type !== 'Select sketch solve plane') return undefined
+          const artifactOrPlaneId =
+            event.type === 'Select sketch solve plane'
+              ? event.data
+              : event.type === 'Enter sketch'
+                ? selectedSketchTargetId({
+                    selectionRanges: context.selectionRanges,
+                    defaultPlanes: context.rustContext.defaultPlanes,
+                  })
+                : undefined
           return {
-            artifactOrPlaneId: event.data,
+            artifactOrPlaneId,
             kclManager: context.kclManager,
             rustContext: context.rustContext,
             engineCommandManager: context.engineCommandManager,

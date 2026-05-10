@@ -1146,6 +1146,14 @@ export const DefaultPlanes = ({
   const isOpenCascade =
     'isOpenCascade' in kclManager.engineCommandManager &&
     Boolean(kclManager.engineCommandManager.isOpenCascade)
+  const selectedDefaultPlaneKeys = useMemo(
+    () =>
+      selectedFeatureTreeDefaultPlaneKeys(
+        modelingState.context.selectionRanges,
+        rustContext.defaultPlanes
+      ),
+    [modelingState.context.selectionRanges, rustContext.defaultPlanes]
+  )
 
   const onClickPlane = useCallback(
     (planeId: string) => {
@@ -1262,6 +1270,7 @@ export const DefaultPlanes = ({
             icon={'plane'}
             name={plane.name}
             disabled={planeDisabled}
+            isSelected={selectedDefaultPlaneKeys.has(plane.key)}
             onClick={planeDisabled ? undefined : () => onClickPlane(planeId)}
             menuItems={
               planeDisabled
@@ -1295,6 +1304,40 @@ export const DefaultPlanes = ({
       <div className="h-px bg-chalkboard-50/20 my-2" />
     </div>
   )
+}
+
+export function selectedFeatureTreeDefaultPlaneKeys(
+  selectionRanges: {
+    otherSelections?: unknown[]
+  },
+  defaultPlanes: RustContext['defaultPlanes']
+) {
+  const selected = new Set<'xy' | 'xz' | 'yz'>()
+  if (!defaultPlanes) {
+    return selected
+  }
+
+  for (const selection of selectionRanges.otherSelections ?? []) {
+    if (!selection || typeof selection !== 'object') {
+      continue
+    }
+    const id =
+      'id' in selection && typeof selection.id === 'string'
+        ? selection.id
+        : undefined
+    if (!id) {
+      continue
+    }
+    if (id === defaultPlanes.xy || id === defaultPlanes.negXy) {
+      selected.add('xy')
+    } else if (id === defaultPlanes.xz || id === defaultPlanes.negXz) {
+      selected.add('xz')
+    } else if (id === defaultPlanes.yz || id === defaultPlanes.negYz) {
+      selected.add('yz')
+    }
+  }
+
+  return selected
 }
 
 /**
