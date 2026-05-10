@@ -273,6 +273,51 @@ describe('OpenCascadeCommandManager', () => {
     ).toBe(true)
   })
 
+  it('hides OpenCascade sketch line, region, and profile geometry for hidden sketches', async () => {
+    const manager = new OpenCascadeCommandManager()
+    await buildRectangleRegionInput(manager)
+
+    expect(
+      manager.exportLatestSketchLineMeshes().segments.length
+    ).toBeGreaterThan(0)
+    expect((await manager.exportLatestRegionMeshes()).regions.length).toBe(1)
+    expect(
+      (await manager.exportLatestProfileGlbBytes()).length
+    ).toBeGreaterThan(0)
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-000000000066',
+      cmd: {
+        type: 'object_visible',
+        object_id: IDS.path,
+        hidden: true,
+      },
+    })
+
+    expect(manager.exportLatestSketchLineMeshes().segments).toHaveLength(0)
+    expect((await manager.exportLatestRegionMeshes()).regions).toHaveLength(0)
+    expect(await manager.exportLatestProfileGlbBytes()).toHaveLength(0)
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-000000000067',
+      cmd: {
+        type: 'object_visible',
+        object_id: IDS.path,
+        hidden: false,
+      },
+    })
+
+    expect(
+      manager.exportLatestSketchLineMeshes().segments.length
+    ).toBeGreaterThan(0)
+    expect((await manager.exportLatestRegionMeshes()).regions.length).toBe(1)
+    expect(
+      (await manager.exportLatestProfileGlbBytes()).length
+    ).toBeGreaterThan(0)
+  })
+
   it('revolves a circular region and exports BREP bytes', async () => {
     const manager = new OpenCascadeCommandManager()
     await buildCircleRegionInput(manager)
@@ -386,6 +431,25 @@ describe('OpenCascadeCommandManager', () => {
       expect(glbBytes?.length).toBeGreaterThan(0)
     }
   )
+
+  it('executes hidden intersecting region extrude and suppresses passive sketch and region meshes', async () => {
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(
+      OPEN_CASCADE_INTERSECTING_REGION_EXTRUDE_KCL,
+      instance
+    )
+
+    const execState = await rustContext.execute(ast, {
+      settings: { modeling: { engine: 'open_cascade' } },
+    })
+
+    expect(execState.variables.extrude001?.type).toBe('Solid')
+    const manager = OpenCascadeCommandManager.latestInstance()
+    expect(manager?.getSolidCount()).toBeGreaterThan(0)
+    expect(manager?.exportLatestSketchLineMeshes().segments).toHaveLength(0)
+    expect((await manager?.exportLatestRegionMeshes())?.regions).toHaveLength(0)
+    expect(await manager?.exportLatestProfileGlbBytes()).toHaveLength(0)
+  })
 
   it.each([
     ['rectangle', OPEN_CASCADE_SKETCH_V2_RECTANGLE_KCL, 4],

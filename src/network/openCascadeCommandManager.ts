@@ -301,6 +301,7 @@ export class OpenCascadeCommandManager {
   private arrangementDirty = true
   private solids = new Map<string, SolidState>()
   private profileShapes = new Map<string, any>()
+  private hiddenObjectIds = new Set<string>()
   private topologyEntries = new Map<string, OpenCascadeTopologyEntry>()
   private topologyMeshes = new Map<string, OpenCascadeTopologySolidMesh>()
   private extrudeTopologies = new Map<string, ExtrudeTopology>()
@@ -374,7 +375,9 @@ export class OpenCascadeCommandManager {
   }
 
   async exportLatestProfileGlbBytes(): Promise<Uint8Array> {
-    const latest = Array.from(this.profileShapes.entries()).at(-1)
+    const latest = Array.from(this.profileShapes.entries())
+      .reverse()
+      .find(([id]) => !this.isRegionOrProfileHidden(id))
     if (!latest) {
       return new Uint8Array()
     }
@@ -411,6 +414,9 @@ export class OpenCascadeCommandManager {
   exportLatestSketchLineMeshes(): OpenCascadeSketchLineMeshes {
     const segments: OpenCascadeSketchLineSegment[] = []
     for (const [pathId, path] of this.paths) {
+      if (this.isPathHidden(pathId)) {
+        continue
+      }
       for (const segment of this.sketchLineSegmentsForPath(pathId, path)) {
         segments.push(segment)
       }
@@ -426,9 +432,9 @@ export class OpenCascadeCommandManager {
     await this.rebuildArrangementRegionsIfNeeded()
     return {
       version: this.latestRegionVersion.value,
-      regions: Array.from(this.arrangementRegions.values()).map((region) =>
-        regionMeshForArrangementRegion(region)
-      ),
+      regions: Array.from(this.arrangementRegions.values())
+        .filter((region) => !this.isArrangementRegionHidden(region))
+        .map((region) => regionMeshForArrangementRegion(region)),
     }
   }
 
@@ -495,9 +501,11 @@ export class OpenCascadeCommandManager {
           normal: normalize(cross(toPoint3(cmd.x_axis), toPoint3(cmd.y_axis))),
         })
         return modeling(EMPTY_RESPONSE)
+      case 'object_visible':
+        this.setObjectVisibility(cmd.object_id, !cmd.hidden)
+        return modeling(EMPTY_RESPONSE)
       case 'plane_set_color':
       case 'edge_lines_visible':
-      case 'object_visible':
       case 'object_set_material_params_pbr':
       case 'object_bring_to_front':
       case 'set_grid_reference_plane':
@@ -1069,6 +1077,52 @@ export class OpenCascadeCommandManager {
       type: 'solid3d_get_common_edge',
       data: { edge: edge || null },
     } as OkModelingCmdResponse
+  }
+
+  private setObjectVisibility(objectId: string, visible: boolean) {
+    if (visible) {
+      this.hiddenObjectIds.delete(objectId)
+    } else {
+      this.hiddenObjectIds.add(objectId)
+    }
+    this.latestProfileVersion.value += 1
+    this.latestSketchVersion.value += 1
+    this.latestRegionVersion.value += 1
+  }
+
+  private isPathHidden(pathId: string) {
+    return (
+      this.hiddenObjectIds.has(pathId) ||
+      this.hiddenObjectIds.has(this.pathAliases.get(pathId) || '')
+    )
+  }
+
+  private isRegionOrProfileHidden(regionId: string) {
+    if (this.hiddenObjectIds.has(regionId)) {
+      return true
+    }
+    const region = this.regions.get(regionId)
+    if (region) {
+      return (
+        this.hiddenObjectIds.has(region.sourcePathId) ||
+        this.hiddenObjectIds.has(region.planeId || '')
+      )
+    }
+    const arrangementRegion = this.arrangementRegions.get(regionId)
+    return arrangementRegion
+      ? this.isArrangementRegionHidden(arrangementRegion)
+      : false
+  }
+
+  private isArrangementRegionHidden(region: ArrangementRegionState) {
+    return (
+      this.hiddenObjectIds.has(region.regionId) ||
+      this.hiddenObjectIds.has(region.parentPathId || '') ||
+      this.hiddenObjectIds.has(region.planeId || '') ||
+      region.sourceSegmentIds.some((segmentId) =>
+        this.hiddenObjectIds.has(segmentId)
+      )
+    )
   }
 
   private async exportBrep(): Promise<OkWebSocketResponseData> {
@@ -1926,6 +1980,7 @@ export class OpenCascadeCommandManager {
     this.arrangementDirty = true
     this.solids.clear()
     this.profileShapes.clear()
+    this.hiddenObjectIds.clear()
     this.topologyEntries.clear()
     this.topologyMeshes.clear()
     this.extrudeTopologies.clear()
