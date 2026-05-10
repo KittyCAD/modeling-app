@@ -339,9 +339,24 @@ part002 = startSketchOn(XY)
       topologyEdge.topologyId
     )
 
+    const topologyFace =
+      manager.exportLatestTopologyMeshes().solids[0].groups[1]
+    const faceUuidResponse = await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000e2',
+      cmd: {
+        type: 'solid3d_get_face_uuid',
+        object_id: IDS.path,
+        face_index: 1,
+      },
+    })
+    expect(faceUuidResponse.resp.data.modeling_response.data.face_id).toBe(
+      topologyFace.topologyId
+    )
+
     const closestEdgeResponse = await send(manager, IDS.request, {
       type: 'modeling_cmd_req',
-      cmd_id: '00000000-0000-0000-0000-0000000000e1',
+      cmd_id: '00000000-0000-0000-0000-0000000000e3',
       cmd: {
         type: 'closest_edge',
         object_id: IDS.path,

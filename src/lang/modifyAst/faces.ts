@@ -784,28 +784,63 @@ export function addOffsetPlane({
 
   // 2. Prepare unlabeled and labeled arguments
   let planeExpr: Expr | undefined
-  const hasFaceToOffset = plane.graphSelections.some(
+  let pathIfNewPipe: PathToNode | undefined
+  const graphFaceSelections = plane.graphSelections.filter(
     (sel) =>
       sel.artifact?.type === 'cap' ||
       sel.artifact?.type === 'wall' ||
       sel.artifact?.type === 'edgeCut'
   )
+  const enginePrimitiveFaceSelections = plane.otherSelections.filter(
+    (selection): selection is EnginePrimitiveSelection =>
+      isEnginePrimitiveSelection(selection) &&
+      selection.primitiveType === 'face'
+  )
+  const hasFaceToOffset =
+    graphFaceSelections.length > 0 || enginePrimitiveFaceSelections.length > 0
   if (hasFaceToOffset) {
-    const result = buildSolidsAndFacesExprs(
-      plane,
-      artifactGraph,
-      modifiedAst,
-      wasmInstance,
-      mNodeToEdit
-    )
-    if (err(result)) {
-      return result
+    let solidsExprs: Expr[] = []
+    const facesExprs: Expr[] = []
+
+    if (graphFaceSelections.length > 0) {
+      const result = buildSolidsAndFacesExprs(
+        { graphSelections: graphFaceSelections, otherSelections: [] },
+        artifactGraph,
+        modifiedAst,
+        wasmInstance,
+        mNodeToEdit
+      )
+      if (err(result)) {
+        return result
+      }
+
+      modifiedAst = result.modifiedAst
+      solidsExprs = solidsExprs.concat(result.solidsExprs)
+      facesExprs.push(...result.facesExprs)
+      pathIfNewPipe = result.pathIfPipe
     }
 
-    const { solidsExpr, facesExpr } = result
-    modifiedAst = result.modifiedAst
+    if (enginePrimitiveFaceSelections.length > 0) {
+      const result = insertFacePrimitiveVariablesAndOffsetPathToNode({
+        enginePrimitives: enginePrimitiveFaceSelections,
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+      })
+      if (err(result)) return result
+      solidsExprs = solidsExprs.concat(result.solidsExprs)
+      facesExprs.push(...result.faceExprs)
+    }
+
+    const solidsExpr = createVariableExpressionsArray(
+      deduplicateFaceExprs(solidsExprs)
+    )
+    const facesExpr = createVariableExpressionsArray(facesExprs)
     if (!facesExpr) {
       return new Error("Couldn't retrieve face from selection")
+    }
+    if (!solidsExpr) {
+      return new Error("Couldn't retrieve solid from selected face")
     }
 
     planeExpr = createCallExpressionStdLibKw('planeOf', solidsExpr, [
@@ -833,7 +868,7 @@ export function addOffsetPlane({
     ast: modifiedAst,
     call,
     pathToEdit: mNodeToEdit,
-    pathIfNewPipe: undefined,
+    pathIfNewPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.PLANE,
     wasmInstance,
   })

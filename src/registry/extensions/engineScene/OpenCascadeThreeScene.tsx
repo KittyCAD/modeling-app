@@ -127,6 +127,7 @@ interface OpenCascadeSceneStyle {
 export type OpenCascadeResolvedTopologyHit = OpenCascadeTopologyFaceGroup & {
   hitType: 'topology'
   solidId: string
+  faceIndex: number
 }
 
 export type OpenCascadeResolvedEdgeHit = OpenCascadeTopologyEdgeLine & {
@@ -1307,7 +1308,12 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
                         : hit.hitType === 'offsetPlane'
                           ? hit.planeId
                           : hit.pathId,
-              primitiveIndex: hit.hitType === 'edge' ? hit.edgeIndex : 0,
+              primitiveIndex:
+                hit.hitType === 'edge'
+                  ? hit.edgeIndex
+                  : hit.hitType === 'topology'
+                    ? hit.faceIndex
+                    : 0,
               primitiveType:
                 hit.hitType === 'topology'
                   ? hit.kind
@@ -2505,11 +2511,12 @@ export function resolveOpenCascadeHit(
       continue
     }
     const indexStart = intersection.faceIndex * 3
-    const group = solid.groups.find(
+    const groupIndex = solid.groups.findIndex(
       (candidate) =>
         indexStart >= candidate.start &&
         indexStart < candidate.start + candidate.count
     )
+    const group = groupIndex >= 0 ? solid.groups[groupIndex] : undefined
     if (group) {
       if (options.objectSelectionOnly) {
         return {
@@ -2519,7 +2526,12 @@ export function resolveOpenCascadeHit(
           artifactIds: solid.artifactIds || [solid.solidId],
         }
       }
-      return { ...group, hitType: 'topology', solidId: solid.solidId }
+      return {
+        ...group,
+        hitType: 'topology',
+        solidId: solid.solidId,
+        faceIndex: groupIndex,
+      }
     }
   }
   if (defaultPlaneHits.length > 0) {

@@ -805,6 +805,8 @@ export class OpenCascadeCommandManager {
         return modeling(this.getCommonEdge(cmd))
       case 'solid3d_get_edge_uuid':
         return modeling(this.getEdgeUuid(cmd))
+      case 'solid3d_get_face_uuid':
+        return modeling(this.getFaceUuid(cmd))
       case 'closest_edge':
         return modeling(this.getClosestEdge(cmd))
       case 'solid3d_fillet_edge':
@@ -1488,6 +1490,25 @@ export class OpenCascadeCommandManager {
     return {
       type: 'solid3d_get_edge_uuid',
       data: { edge_id: edge.topologyId },
+    } as OkModelingCmdResponse
+  }
+
+  private getFaceUuid(cmd: ModelingCmd): OkModelingCmdResponse {
+    const faceCommand = cmd as {
+      type: 'solid3d_get_face_uuid'
+      object_id: string
+      face_index: number
+    }
+    const solidMesh = this.topologyMeshForSolidAlias(faceCommand.object_id)
+    const face = solidMesh?.groups[faceCommand.face_index]
+    if (!face) {
+      throw new Error(
+        `No OpenCascade face ${faceCommand.face_index} found for ${faceCommand.object_id}`
+      )
+    }
+    return {
+      type: 'solid3d_get_face_uuid',
+      data: { face_id: face.topologyId },
     } as OkModelingCmdResponse
   }
 

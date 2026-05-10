@@ -1626,6 +1626,43 @@ plane001 = offsetPlane(planeOf(extrude001, face = capEnd001), offset = 3)`)
       await enginelessExecutor(result2.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add an offset plane call on an engine primitive face', async () => {
+      const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(
+        cylinder,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
+      const faceSelection: NonCodeSelection = {
+        entityId: 'open-cascade-face-1',
+        parentEntityId: sweep?.id,
+        primitiveIndex: 1,
+        primitiveType: 'face',
+        type: 'enginePrimitive',
+      }
+      const offset = (await stringToKclExpression(
+        '2',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addOffsetPlane({
+        ast,
+        artifactGraph,
+        variables,
+        plane: { graphSelections: [], otherSelections: [faceSelection] },
+        offset,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`${cylinder}
+face001 = faceId(extrude001, index = 1)
+plane001 = offsetPlane(planeOf(extrude001, face = face001), offset = 2)`)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add an offset plane call on box wall and allow edits', async () => {
       const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(
         box,
