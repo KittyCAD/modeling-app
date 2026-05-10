@@ -728,6 +728,8 @@ export class KclManager extends File {
   private lastSketchCheckpointRestoreRequestId = 0
   private sketchCheckpointLimit = FALLBACK_SKETCH_CHECKPOINT_LIMIT
   private rollbackEditSession: RollbackEditSession | undefined
+  private rollbackCleanupGeneration = 0
+  private rollbackCleanupTimeouts: ReturnType<typeof setTimeout>[] = []
   private lastExecutedCode: string = ''
   lastSuccessfulCode: string = ''
   get code(): string {
@@ -2215,6 +2217,7 @@ export class KclManager extends File {
     if (!this.isOpenCascadeEngineActive()) {
       return
     }
+    this.clearScheduledOpenCascadeRollbackCleanup()
     if (this.code.slice(toUtf16(sourceRange[1], this.code)).trim() === '') {
       return
     }
@@ -2257,6 +2260,7 @@ export class KclManager extends File {
     if (!this.isOpenCascadeEngineActive()) {
       return
     }
+    this.clearScheduledOpenCascadeRollbackCleanup()
     const wasmInstance = await this.wasmInstancePromise
     let nextCode =
       sourceRange && placement === 'before'
@@ -2297,6 +2301,16 @@ export class KclManager extends File {
       return
     }
     this.rollbackEditSession = undefined
+    const result = await this.removeOpenCascadeRollbackMarkerForSession(session)
+    if (err(result)) {
+      return result
+    }
+    this.scheduleOpenCascadeRollbackCleanupRetries(session)
+  }
+
+  private async removeOpenCascadeRollbackMarkerForSession(
+    session: RollbackEditSession
+  ) {
     const wasmInstance = await this.wasmInstancePromise
     let nextCode = removeRollbackExit(this.code)
     if (session.changedExperimentalFeatures) {
@@ -2310,6 +2324,9 @@ export class KclManager extends File {
       }
       nextCode = restored
     }
+    if (nextCode === this.code) {
+      return
+    }
     const ast = await this.safeParse(nextCode, wasmInstance)
     if (!ast) {
       return new Error('Could not remove rollback marker')
@@ -2318,6 +2335,37 @@ export class KclManager extends File {
       shouldExecute: true,
       shouldWriteToDisk: true,
     })
+  }
+
+  private clearScheduledOpenCascadeRollbackCleanup() {
+    this.rollbackCleanupGeneration += 1
+    for (const timeout of this.rollbackCleanupTimeouts) {
+      clearTimeout(timeout)
+    }
+    this.rollbackCleanupTimeouts = []
+  }
+
+  private scheduleOpenCascadeRollbackCleanupRetries(
+    session: RollbackEditSession
+  ) {
+    this.clearScheduledOpenCascadeRollbackCleanup()
+    const generation = this.rollbackCleanupGeneration
+
+    for (const delayMs of [50, 250, 1000]) {
+      let timeout: ReturnType<typeof setTimeout>
+      timeout = setTimeout(() => {
+        this.rollbackCleanupTimeouts = this.rollbackCleanupTimeouts.filter(
+          (scheduledTimeout) => scheduledTimeout !== timeout
+        )
+        if (generation !== this.rollbackCleanupGeneration) {
+          return
+        }
+        this.removeOpenCascadeRollbackMarkerForSession(session).catch(
+          reportRejection
+        )
+      }, delayMs)
+      this.rollbackCleanupTimeouts.push(timeout)
+    }
   }
 
   private isOpenCascadeEngineActive() {
