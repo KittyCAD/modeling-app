@@ -1090,10 +1090,7 @@ export class OpenCascadeCommandManager {
     this.throwIfBooleanFailed(splitter, 'split')
     this.storeSolid(commandId, splitter.Shape(), [...bodyIds, ...toolIds], oc)
     this.markSolidsConsumed(
-      [
-        ...bodyIds,
-        ...((cmd as any).keep_tools === true ? [] : toolIds),
-      ],
+      [...bodyIds, ...((cmd as any).keep_tools === true ? [] : toolIds)],
       new Set([commandId])
     )
     return booleanResponse('boolean_imprint')
@@ -1331,7 +1328,9 @@ export class OpenCascadeCommandManager {
 
   private isSolidVisible(solidId: string) {
     const solid = this.solids.get(solidId)
-    return Boolean(solid && !solid.consumed && !this.hiddenObjectIds.has(solidId))
+    return Boolean(
+      solid && !solid.consumed && !this.hiddenObjectIds.has(solidId)
+    )
   }
 
   private selectableSolidArtifactIds(
@@ -1832,7 +1831,9 @@ export class OpenCascadeCommandManager {
     label: string
   ): any {
     if (solidIds.length === 0) {
-      throw new Error(`OpenCascade boolean ${label} requires at least one solid`)
+      throw new Error(
+        `OpenCascade boolean ${label} requires at least one solid`
+      )
     }
     return solidIds
       .slice(1)

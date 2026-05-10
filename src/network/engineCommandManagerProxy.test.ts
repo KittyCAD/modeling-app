@@ -102,8 +102,8 @@ describe('EngineCommandManagerProxy', () => {
       responses: false,
     })
 
-    expect(proxy.openCascadeCommandManager.latestSelectionFilter.value).toEqual([
-      'object',
-    ])
+    expect(proxy.openCascadeCommandManager.latestSelectionFilter.value).toEqual(
+      ['object']
+    )
   })
 })

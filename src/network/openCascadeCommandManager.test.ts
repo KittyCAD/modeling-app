@@ -247,8 +247,9 @@ describe('OpenCascadeCommandManager', () => {
         tolerance: 1e-7,
       },
     })
-    expect((await manager.exportVisibleGlbBytes()).map((solid) => solid.solidId))
-      .toEqual(['00000000-0000-0000-0000-0000000000d0'])
+    expect(
+      (await manager.exportVisibleGlbBytes()).map((solid) => solid.solidId)
+    ).toEqual(['00000000-0000-0000-0000-0000000000d0'])
 
     const subtractManager = new OpenCascadeCommandManager()
     await buildTwoOverlappingExtrudes(subtractManager)
@@ -297,11 +298,12 @@ describe('OpenCascadeCommandManager', () => {
         tolerance: 1e-7,
       },
     })
-    expect((await splitManager.exportVisibleGlbBytes()).map((solid) => solid.solidId))
-      .toEqual([
-        '00000000-0000-0000-0000-0000000000d6',
-        '00000000-0000-0000-0000-0000000000d9',
-      ])
+    expect(
+      (await splitManager.exportVisibleGlbBytes()).map((solid) => solid.solidId)
+    ).toEqual([
+      '00000000-0000-0000-0000-0000000000d6',
+      '00000000-0000-0000-0000-0000000000d9',
+    ])
   })
 
   it('returns sketch mode plane details for default planes and extrude faces', async () => {
@@ -739,11 +741,7 @@ describe('OpenCascadeCommandManager', () => {
       'newExtrude',
     ],
     ['boolean-union', OPEN_CASCADE_BOOLEAN_UNION_KCL, 'booleanUnion'],
-    [
-      'boolean-subtract',
-      OPEN_CASCADE_BOOLEAN_SUBTRACT_KCL,
-      'booleanSubtract',
-    ],
+    ['boolean-subtract', OPEN_CASCADE_BOOLEAN_SUBTRACT_KCL, 'booleanSubtract'],
     [
       'boolean-intersect',
       OPEN_CASCADE_BOOLEAN_INTERSECT_KCL,

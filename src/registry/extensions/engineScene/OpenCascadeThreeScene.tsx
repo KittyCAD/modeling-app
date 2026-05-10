@@ -506,11 +506,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       disposeOpenCascadeModelRoot(modelRoot)
       for (const solid of loadedSolids) {
         solid.scene.name = `${OPEN_CASCADE_SOLID_ROOT}:${solid.solidId}`
-        tagOpenCascadeBodyVisuals(
-          solid.scene,
-          solid.solidId,
-          solid.artifactIds
-        )
+        tagOpenCascadeBodyVisuals(solid.scene, solid.solidId, solid.artifactIds)
         styleLoadedOpenCascadeMeshes(
           solid.scene,
           sceneStyleRef.current,
@@ -1797,10 +1793,9 @@ export function resolveOpenCascadeHit(
         const body = findOpenCascadeBodyVisual(intersection.object)
         if (body) {
           const solidId = body.userData.openCascadeSolidId as string
-          const artifactIds =
-            (body.userData.openCascadeArtifactIds as string[] | undefined) || [
-              solidId,
-            ]
+          const artifactIds = (body.userData.openCascadeArtifactIds as
+            | string[]
+            | undefined) || [solidId]
           return {
             hitType: 'body',
             solidId,

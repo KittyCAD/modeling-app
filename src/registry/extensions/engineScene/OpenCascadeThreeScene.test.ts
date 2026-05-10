@@ -322,10 +322,9 @@ describe('OpenCascadeThreeScene helpers', () => {
       helpers.resolveOpenCascadeHit([{ object: mesh, faceIndex: 0 } as never])
     ).toMatchObject({ hitType: 'topology', topologyId: 'face-1' })
     expect(
-      helpers.resolveOpenCascadeHit(
-        [{ object: mesh, faceIndex: 0 } as never],
-        { objectSelectionOnly: true }
-      )
+      helpers.resolveOpenCascadeHit([{ object: mesh, faceIndex: 0 } as never], {
+        objectSelectionOnly: true,
+      })
     ).toEqual({
       hitType: 'body',
       solidId: 'solid-1',
