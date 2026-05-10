@@ -2013,6 +2013,35 @@ sketch001 = startSketchOn(XY)
       }
     )
   })
+
+  it('exports V1 curved profile region meshes from OpenCascade face triangulation', async () => {
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(
+      `@settings(defaultLengthUnit = mm)
+
+profile001 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0])
+  |> tangentialArc(endAbsolute = [18, 8])
+  |> arc(interiorAbsolute = [9, 14], endAbsolute = [0, 8])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+`,
+      instance
+    )
+
+    await rustContext.execute(ast, {
+      settings: { modeling: { engine: 'open_cascade' } },
+    })
+
+    const manager = OpenCascadeCommandManager.latestInstance()
+    const [region] = (await manager?.exportLatestRegionMeshes())?.regions || []
+    expect(region?.groups[0]?.count).toBeGreaterThan(0)
+    expect(region?.positions.length).toBe(region?.indices.length * 3)
+    expect(region?.indices).toEqual(
+      Array.from({ length: region?.indices.length || 0 }, (_, index) => index)
+    )
+  })
 })
 
 async function buildCircleRegionInput(manager: OpenCascadeCommandManager) {

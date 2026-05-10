@@ -707,13 +707,14 @@ export class OpenCascadeCommandManager {
     if (!state) {
       await this.rebuildArrangementRegionsIfNeeded()
     }
+    const oc = await initOpenCascade()
     const arrangementRegions =
       state?.arrangementRegions ?? this.arrangementRegions
     return {
       version: this.latestRegionVersion.value,
       regions: Array.from(arrangementRegions.values())
         .filter((region) => !this.isArrangementRegionHidden(region, state))
-        .map((region) => regionMeshForArrangementRegion(region)),
+        .map((region) => regionMeshForArrangementRegion(region, oc)),
     }
   }
 
@@ -5730,8 +5731,16 @@ function mergeTopologyMeshes(
 }
 
 function regionMeshForArrangementRegion(
-  region: ArrangementRegionState
+  region: ArrangementRegionState,
+  oc: OpenCascadeInstance
 ): OpenCascadeRegionMesh {
+  const faceMesh = region.face
+    ? regionMeshForArrangementRegionFace(region, oc)
+    : undefined
+  if (faceMesh) {
+    return faceMesh
+  }
+
   const points = withoutClosingPoint(region.points)
   const positions = flattenPoints(points)
   const indices: number[] = []
@@ -5759,6 +5768,36 @@ function regionMeshForArrangementRegion(
             },
           ]
         : [],
+  }
+}
+
+function regionMeshForArrangementRegionFace(
+  region: ArrangementRegionState,
+  oc: OpenCascadeInstance
+): OpenCascadeRegionMesh | undefined {
+  const positions: number[] = []
+  const indices: number[] = []
+  new oc.BRepMesh_IncrementalMesh_2(region.face, 0.1, false, 0.1, false)
+  appendFaceTriangulation(positions, indices, region.face, oc)
+  if (positions.length === 0 || indices.length === 0) {
+    return undefined
+  }
+  return {
+    regionId: region.regionId,
+    positions,
+    indices,
+    groups: [
+      {
+        start: 0,
+        count: indices.length,
+        regionId: region.regionId,
+        artifactId: region.regionId,
+        planeId: region.planeId,
+        parentPathId: region.parentPathId,
+        sourceSegmentIds: [...region.sourceSegmentIds],
+        queryPoint: { ...region.queryPoint },
+      },
+    ],
   }
 }
 
