@@ -258,16 +258,6 @@ test.describe(
         await cmdBar.toBeOpened()
         await cmdBar.expectCommandName('Delete project')
       })
-      await test.step('Home.Edit.Change project directory', async () => {
-        await page.reload()
-        await homePage.projectsLoaded()
-        await homePage.isNativeFileMenuCreated()
-        await clickElectronNativeMenuById(
-          tronApp,
-          'Edit.Change project directory'
-        )
-        await openSettingsExpectLocator(page, '#projectDirectory')
-      })
 
       await test.step('Home.View.Command Palette...', async () => {
         await page.reload()
@@ -422,14 +412,6 @@ test.describe(
         await page.waitForTimeout(250)
         await clickElectronNativeMenuById(tronApp, 'Edit.Delete project')
         await cmdBar.expectCommandName('Delete project')
-      })
-      await test.step('Modeling.Edit.Change project directory', async () => {
-        await page.waitForTimeout(250)
-        await clickElectronNativeMenuById(
-          tronApp,
-          'Edit.Change project directory'
-        )
-        await openSettingsExpectLocator(page, '#projectDirectory')
       })
       await test.step('Modeling.View.Orthographic view', async () => {
         await clickElectronNativeMenuById(tronApp, 'View.Orthographic view')

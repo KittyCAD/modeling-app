@@ -99,15 +99,27 @@ const seedRecentProjectsFromProjectDirectory = async (
   projectDirName: string
 ) => {
   const entries = await fsp.readdir(projectDirName, { withFileTypes: true })
-  const projectDirectories = entries
-    .filter((entry) => entry.isDirectory() && !entry.name.startsWith('.'))
-    .map((entry) => path.join(projectDirName, entry.name))
-    .sort()
+  const projectDirectories = await Promise.all(
+    entries
+      .filter((entry) => entry.isDirectory() && !entry.name.startsWith('.'))
+      .map(async (entry) => {
+        const projectPath = path.join(projectDirName, entry.name)
+        const stat = await fsp.stat(projectPath)
+        return {
+          projectPath,
+          lastOpenedAt: Math.trunc(stat.mtimeMs),
+        }
+      })
+  )
+  projectDirectories.sort((a, b) => {
+    const modifiedDiff = b.lastOpenedAt - a.lastOpenedAt
+    if (modifiedDiff !== 0) return modifiedDiff
+    return a.projectPath.localeCompare(b.projectPath)
+  })
 
-  const now = Date.now()
   const recentProjects = await Promise.all(
-    projectDirectories.map((projectPath, index) =>
-      projectDirectoryToRecentProject(projectPath, now - index)
+    projectDirectories.map(({ projectPath, lastOpenedAt }) =>
+      projectDirectoryToRecentProject(projectPath, lastOpenedAt)
     )
   )
 
