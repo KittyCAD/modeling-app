@@ -22,7 +22,7 @@ import {
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import type { UnitLength } from '@kittycad/lib/dist/types/src'
-import { uuidv4 } from '@src/lib/utils'
+import { isArray, uuidv4 } from '@src/lib/utils'
 
 const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
   const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
@@ -78,9 +78,14 @@ test.describe(
         expect(storedSettings.settings?.modeling?.mouse_controls).toBe('zoo')
         // Commenting this out because tests need this to be set to work properly.
         // expect(storedSettings.settings?.app?.project_directory).toBe('')
-        expect(storedSettings.settings?.project?.default_project_name).toBe(
-          'untitled'
-        )
+        const projectSettings = storedSettings.settings?.project
+        expect(
+          projectSettings &&
+            typeof projectSettings === 'object' &&
+            !isArray(projectSettings)
+            ? projectSettings.default_project_name
+            : undefined
+        ).toBe('untitled')
       }
     )
 
@@ -347,7 +352,7 @@ test.describe(
 
         await createProject({ name: 'project-000', page })
 
-        const changeShowDebugPanelFs = async (show_debug_panel: boolean) => {
+        const changeShowDebugPanelFs = async (showPanel: boolean) => {
           const tempSettingsFilePath = join(
             projectDirName,
             'project-000',
@@ -357,8 +362,8 @@ test.describe(
             tempSettingsFilePath,
             settingsToToml({
               settings: {
-                app: {
-                  show_debug_panel,
+                debug: {
+                  show_panel: showPanel,
                 },
                 // TODO: make sure this isn't just working around a bug
                 // where the existing data wouldn't be preserved?
@@ -704,6 +709,7 @@ test.describe(
         const toolbar = page.locator('menu').filter({ hasText: 'Start Sketch' })
 
         await test.step(`Test setup`, async () => {
+          await page.emulateMedia({ colorScheme: 'light' })
           await page.setBodyDimensions({ width: 1200, height: 500 })
           await homePage.goToModelingScene()
           await u.waitForPageLoad()

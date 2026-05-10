@@ -1,4 +1,5 @@
 import type {
+  ApiObject,
   SceneGraphDelta,
   SegmentCtor,
   SourceDelta,
@@ -24,7 +25,7 @@ import {
 } from '@src/machines/sketchSolve/tools/centerArcSwapUtils'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import {
-  getCoincidentSegmentsForSnapTarget,
+  applyConstraintsForSnapTarget,
   type SnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import {
@@ -86,6 +87,26 @@ type ToolAssignArgs<TActor extends ProvidedActor = any> = AssignArgs<
   ToolEvents,
   TActor
 >
+
+export function getArcPointIdsForSegment(
+  objects: ApiObject[],
+  arcId: number | undefined
+): number[] {
+  if (arcId === undefined) {
+    return []
+  }
+
+  const arcObj = objects[arcId]
+  if (!isArcSegment(arcObj)) {
+    return []
+  }
+
+  return [
+    arcObj.kind.segment.center,
+    arcObj.kind.segment.start,
+    arcObj.kind.segment.end,
+  ]
+}
 
 ////////////// --Actions-- //////////////////
 
@@ -237,8 +258,8 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
           sketchId: context.sketchId,
           mousePosition: [twoD.x, twoD.y],
           mouseEvent: args.mouseEvent,
-          excludedPointIds:
-            context.arcEndPointId === undefined ? [] : [context.arcEndPointId],
+          getExcludedPointIds: (currentSketchObjects) =>
+            getArcPointIdsForSegment(currentSketchObjects, context.arcId),
         })
         sendHoveredSnappingCandidate(self, snappingCandidate)
         updateToolSnappingPreview({
@@ -362,8 +383,8 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
           sketchId: context.sketchId,
           mousePosition,
           mouseEvent: args.mouseEvent,
-          excludedPointIds:
-            context.arcEndPointId === undefined ? [] : [context.arcEndPointId],
+          getExcludedPointIds: (currentSketchObjects) =>
+            getArcPointIdsForSegment(currentSketchObjects, context.arcId),
         })
         const [x, y] = snappingCandidate?.position ?? mousePosition
         self.send({
@@ -722,26 +743,20 @@ export async function createArcActor({
     const snapConstraintNewObjects: number[] = []
 
     for (const { segmentId, snapTarget } of snapTargets) {
-      const coincidentSegments = getCoincidentSegmentsForSnapTarget(
+      const snapResult = await applyConstraintsForSnapTarget({
         segmentId,
-        snapTarget
-      )
-      if (coincidentSegments === null) {
+        target: snapTarget,
+        rustContext,
+        sketchId,
+        settings,
+      })
+      if (snapResult.result === null) {
         continue
       }
 
-      const snapResult = await rustContext.addConstraint(
-        0,
-        sketchId,
-        {
-          type: 'Coincident',
-          segments: coincidentSegments,
-        },
-        settings
-      )
-      latestKclSource = snapResult.kclSource
-      latestSceneGraphDelta = snapResult.sceneGraphDelta
-      snapConstraintNewObjects.push(...snapResult.sceneGraphDelta.new_objects)
+      latestKclSource = snapResult.result.kclSource
+      latestSceneGraphDelta = snapResult.result.sceneGraphDelta
+      snapConstraintNewObjects.push(...snapResult.newObjectIds)
     }
 
     if (snapConstraintNewObjects.length === 0) {
@@ -978,22 +993,10 @@ export async function finalizeArcActor({
       return result
     }
 
-    const snapConstraints = snapTargets
-      .map(({ segmentId, snapTarget }) => ({
-        coincidentSegments: getCoincidentSegmentsForSnapTarget(
-          segmentId,
-          snapTarget
-        ),
-      }))
-      .filter(
-        (
-          target
-        ): target is {
-          coincidentSegments: NonNullable<
-            ReturnType<typeof getCoincidentSegmentsForSnapTarget>
-          >
-        } => target.coincidentSegments !== null
-      )
+    const snapConstraints = snapTargets.map(({ segmentId, snapTarget }) => ({
+      segmentId,
+      snapTarget,
+    }))
 
     if (snapConstraints.length === 0) {
       return result
@@ -1004,21 +1007,26 @@ export async function finalizeArcActor({
     let latestSceneGraphDelta = result.sceneGraphDelta
     let latestCheckpointId = result.checkpointId ?? null
 
-    for (const [index, { coincidentSegments }] of snapConstraints.entries()) {
-      const snapResult = await rustContext.addConstraint(
-        0,
+    for (const [
+      index,
+      { segmentId, snapTarget },
+    ] of snapConstraints.entries()) {
+      const snapResult = await applyConstraintsForSnapTarget({
+        segmentId,
+        target: snapTarget,
+        rustContext,
         sketchId,
-        {
-          type: 'Coincident',
-          segments: coincidentSegments,
-        },
         settings,
-        index === snapConstraints.length - 1
-      )
-      latestKclSource = snapResult.kclSource
-      latestSceneGraphDelta = snapResult.sceneGraphDelta
-      latestCheckpointId = snapResult.checkpointId ?? null
-      newObjects.push(...snapResult.sceneGraphDelta.new_objects)
+        createCheckpoint: index === snapConstraints.length - 1,
+      })
+      if (snapResult.result === null) {
+        continue
+      }
+
+      latestKclSource = snapResult.result.kclSource
+      latestSceneGraphDelta = snapResult.result.sceneGraphDelta
+      latestCheckpointId = snapResult.result.checkpointId ?? null
+      newObjects.push(...snapResult.newObjectIds)
     }
 
     return {

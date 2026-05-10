@@ -122,6 +122,12 @@ import {
 } from '@src/lang/modifyAst/faces'
 import { addHelix } from '@src/lang/modifyAst/geometry'
 import {
+  addHelicalGear,
+  addHerringboneGear,
+  addRingGear,
+  addSpurGear,
+} from '@src/lang/modifyAst/gears'
+import {
   addExtrude,
   addLoft,
   addRevolve,
@@ -131,7 +137,14 @@ import {
   addPatternCircular3D,
   addPatternLinear3D,
 } from '@src/lang/modifyAst/pattern3D'
-import { addFlatnessGdt, addDatumGdt } from '@src/lang/modifyAst/gdt'
+import {
+  addFlatnessGdt,
+  addDatumGdt,
+  addAnnotationGdt,
+  addParallelismGdt,
+  addPerpendicularityGdt,
+  addProfileGdt,
+} from '@src/lang/modifyAst/gdt'
 import {
   addAppearance,
   addClone,
@@ -501,6 +514,13 @@ export type ModelingMachineEvent =
   | { type: 'Blend'; data?: ModelingCommandSchema['Blend'] }
   | { type: 'Offset plane'; data: ModelingCommandSchema['Offset plane'] }
   | { type: 'Helix'; data: ModelingCommandSchema['Helix'] }
+  | { type: 'Helical Gear'; data?: ModelingCommandSchema['Helical Gear'] }
+  | {
+      type: 'Herringbone Gear'
+      data?: ModelingCommandSchema['Herringbone Gear']
+    }
+  | { type: 'Spur Gear'; data?: ModelingCommandSchema['Spur Gear'] }
+  | { type: 'Ring Gear'; data?: ModelingCommandSchema['Ring Gear'] }
   | { type: 'Text-to-CAD' }
   | { type: 'Prompt-to-edit'; data: ModelingCommandSchema['Prompt-to-edit'] }
   | {
@@ -524,6 +544,16 @@ export type ModelingMachineEvent =
     }
   | { type: 'GDT Flatness'; data: ModelingCommandSchema['GDT Flatness'] }
   | { type: 'GDT Datum'; data: ModelingCommandSchema['GDT Datum'] }
+  | { type: 'GDT Profile'; data: ModelingCommandSchema['GDT Profile'] }
+  | {
+      type: 'GDT Perpendicularity'
+      data: ModelingCommandSchema['GDT Perpendicularity']
+    }
+  | {
+      type: 'GDT Parallelism'
+      data: ModelingCommandSchema['GDT Parallelism']
+    }
+  | { type: 'GDT Annotation'; data: ModelingCommandSchema['GDT Annotation'] }
   | { type: 'Flip Surface'; data: ModelingCommandSchema['Flip Surface'] }
   | { type: 'Join Surfaces'; data: ModelingCommandSchema['Join Surfaces'] }
   | {
@@ -619,21 +649,15 @@ export type ModelingMachineEvent =
   | {
       type: 'equip tool'
       data: { tool: EquipTool }
+      keepSelection?: boolean
     }
   | {
       type:
-        | 'coincident'
-        | 'Fixed'
-        | 'Tangent'
-        | 'EqualLength'
-        | 'Vertical'
-        | 'Horizontal'
-        | 'Parallel'
-        | 'Perpendicular'
         | 'Dimension'
         | 'HorizontalDistance'
         | 'VerticalDistance'
         | 'construction'
+      keepSelection?: boolean
     }
   | { type: 'unequip tool' }
   | UpdateSketchOutcomeEvent
@@ -1034,22 +1058,15 @@ export const modelingMachine = setup({
         if (event.type !== 'Add start point') return {}
 
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        kclManager.sceneEntitiesManager
-          .setupDraftSegment(
-            event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
-            event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
-            sketchDetails.planeNodePath,
-            sketchDetails.zAxis,
-            sketchDetails.yAxis,
-            sketchDetails.origin,
-            'line'
-          )
-          .then(() => {
-            return kclManager.updateEditorWithAstAndWriteToFile(
-              kclManager.ast,
-              { shouldAddToHistory: false }
-            )
-          })
+        kclManager.sceneEntitiesManager.setupDraftSegment(
+          event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
+          event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin,
+          'line'
+        )
         return {
           sketchDetails: {
             ...sketchDetails,
@@ -1065,22 +1082,15 @@ export const modelingMachine = setup({
         if (event.type !== 'Continue existing profile') return {}
 
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        kclManager.sceneEntitiesManager
-          .setupDraftSegment(
-            event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
-            event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
-            sketchDetails.planeNodePath,
-            sketchDetails.zAxis,
-            sketchDetails.yAxis,
-            sketchDetails.origin,
-            'tangentialArc'
-          )
-          .then(() => {
-            return kclManager.updateEditorWithAstAndWriteToFile(
-              kclManager.ast,
-              { shouldAddToHistory: false }
-            )
-          })
+        kclManager.sceneEntitiesManager.setupDraftSegment(
+          event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
+          event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin,
+          'tangentialArc'
+        )
         return {
           sketchDetails: {
             ...sketchDetails,
@@ -1468,11 +1478,12 @@ export const modelingMachine = setup({
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
         shouldAddToHistory: false,
+        shouldWriteToDisk: false,
       })
     },
     'reset client scene mouse handlers': ({ context }) => {
       // when not in sketch mode we don't need any mouse listeners
-      // (note the orbit controls are always active though)
+      // Orbit controls are always active though.
       context.kclManager.sceneInfra.resetMouseListeners()
     },
     'restore modeling camera controls': ({ context }) => {
@@ -3642,7 +3653,7 @@ export const modelingMachine = setup({
 
         for (const variable of Object.values(kclManager.execState.variables)) {
           // find programMemory that matches path artifact
-          // Note: this is similar to sketchFromKclValueOptional(), could be combined?
+          // This is similar to sketchFromKclValueOptional(), could be combined.
           if (
             variable?.type === 'Sketch' &&
             variable.value.artifactId === mainPath
@@ -3913,9 +3924,6 @@ export const modelingMachine = setup({
           data
         )
         if (err(result)) return reject(result)
-        await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
-          shouldAddToHistory: false,
-        })
 
         return result
       }
@@ -3941,9 +3949,6 @@ export const modelingMachine = setup({
             data.p2
           )
         if (err(result)) return reject(result)
-        await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
-          shouldAddToHistory: false,
-        })
 
         return result
       }
@@ -3968,9 +3973,6 @@ export const modelingMachine = setup({
             data
           )
         if (err(result)) return reject(result)
-        await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
-          shouldAddToHistory: false,
-        })
 
         return result
       }
@@ -3994,9 +3996,6 @@ export const modelingMachine = setup({
             data
           )
         if (err(result)) return reject(result)
-        await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
-          shouldAddToHistory: false,
-        })
 
         return result
       }
@@ -4019,9 +4018,6 @@ export const modelingMachine = setup({
           data
         )
         if (err(result)) return reject(result)
-        await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
-          shouldAddToHistory: false,
-        })
 
         return result
       }
@@ -4045,9 +4041,6 @@ export const modelingMachine = setup({
             data
           )
         if (err(result)) return reject(result)
-        await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
-          shouldAddToHistory: false,
-        })
 
         return result
       }
@@ -4382,6 +4375,222 @@ export const modelingMachine = setup({
           ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
+        }
+
+        const { modifiedAst, pathToNode } = astResult
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [pathToNode],
+          }
+        )
+      }
+    ),
+    helicalGearAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Helical Gear'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        let astWithNewSetting: Node<Program> | undefined
+        if (
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const ast = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            await input.kclManager.wasmInstancePromise
+          )
+          if (err(ast)) {
+            return Promise.reject(ast)
+          }
+
+          astWithNewSetting = ast
+        }
+
+        const astResult = addHelicalGear({
+          ...input.data,
+          ast: astWithNewSetting ?? input.kclManager.ast,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
+        }
+
+        const { modifiedAst, pathToNode } = astResult
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [pathToNode],
+          }
+        )
+      }
+    ),
+    herringboneGearAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Herringbone Gear'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        let astWithNewSetting: Node<Program> | undefined
+        if (
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const ast = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            await input.kclManager.wasmInstancePromise
+          )
+          if (err(ast)) {
+            return Promise.reject(ast)
+          }
+
+          astWithNewSetting = ast
+        }
+
+        const astResult = addHerringboneGear({
+          ...input.data,
+          ast: astWithNewSetting ?? input.kclManager.ast,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
+        }
+
+        const { modifiedAst, pathToNode } = astResult
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [pathToNode],
+          }
+        )
+      }
+    ),
+    spurGearAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Spur Gear'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        let astWithNewSetting: Node<Program> | undefined
+        if (
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const ast = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            await input.kclManager.wasmInstancePromise
+          )
+          if (err(ast)) {
+            return Promise.reject(ast)
+          }
+
+          astWithNewSetting = ast
+        }
+
+        const astResult = addSpurGear({
+          ...input.data,
+          ast: astWithNewSetting ?? input.kclManager.ast,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
+        }
+
+        const { modifiedAst, pathToNode } = astResult
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [pathToNode],
+          }
+        )
+      }
+    ),
+    ringGearAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Ring Gear'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        let astWithNewSetting: Node<Program> | undefined
+        if (
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const ast = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            await input.kclManager.wasmInstancePromise
+          )
+          if (err(ast)) {
+            return Promise.reject(ast)
+          }
+
+          astWithNewSetting = ast
+        }
+
+        const astResult = addRingGear({
+          ...input.data,
+          ast: astWithNewSetting ?? input.kclManager.ast,
           wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(astResult)) {
@@ -4981,6 +5190,222 @@ export const modelingMachine = setup({
         }
 
         const result = addDatumGdt({
+          ...input.data,
+          ast: astWithNewSetting ?? input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtProfileAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Profile'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        let astWithNewSetting: Node<Program> | undefined
+        if (
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const ast = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            await input.kclManager.wasmInstancePromise
+          )
+          if (err(ast)) {
+            return Promise.reject(ast)
+          }
+
+          astWithNewSetting = ast
+        }
+
+        const result = addProfileGdt({
+          ...input.data,
+          ast: astWithNewSetting ?? input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtPerpendicularityAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Perpendicularity'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        let astWithNewSetting: Node<Program> | undefined
+        if (
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const ast = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            await input.kclManager.wasmInstancePromise
+          )
+          if (err(ast)) {
+            return Promise.reject(ast)
+          }
+
+          astWithNewSetting = ast
+        }
+
+        const result = addPerpendicularityGdt({
+          ...input.data,
+          ast: astWithNewSetting ?? input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtParallelismAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Parallelism'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        let astWithNewSetting: Node<Program> | undefined
+        if (
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const ast = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            await input.kclManager.wasmInstancePromise
+          )
+          if (err(ast)) {
+            return Promise.reject(ast)
+          }
+
+          astWithNewSetting = ast
+        }
+
+        const result = addParallelismGdt({
+          ...input.data,
+          ast: astWithNewSetting ?? input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtAnnotationAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Annotation'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        let astWithNewSetting: Node<Program> | undefined
+        if (
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const ast = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            await input.kclManager.wasmInstancePromise
+          )
+          if (err(ast)) {
+            return Promise.reject(ast)
+          }
+
+          astWithNewSetting = ast
+        }
+
+        const result = addAnnotationGdt({
           ...input.data,
           ast: astWithNewSetting ?? input.kclManager.ast,
           artifactGraph: input.kclManager.artifactGraph,
@@ -5652,6 +6077,22 @@ export const modelingMachine = setup({
           target: 'Applying helix',
         },
 
+        'Helical Gear': {
+          target: 'Applying helical gear',
+        },
+
+        'Herringbone Gear': {
+          target: 'Applying herringbone gear',
+        },
+
+        'Spur Gear': {
+          target: 'Applying spur gear',
+        },
+
+        'Ring Gear': {
+          target: 'Applying ring gear',
+        },
+
         Shell: {
           target: 'Applying shell',
         },
@@ -5706,6 +6147,22 @@ export const modelingMachine = setup({
 
         'GDT Datum': {
           target: 'Applying GDT Datum',
+        },
+
+        'GDT Profile': {
+          target: 'Applying GDT Profile',
+        },
+
+        'GDT Perpendicularity': {
+          target: 'Applying GDT Perpendicularity',
+        },
+
+        'GDT Parallelism': {
+          target: 'Applying GDT Parallelism',
+        },
+
+        'GDT Annotation': {
+          target: 'Applying GDT Annotation',
         },
 
         'Boolean Subtract': {
@@ -7178,30 +7635,6 @@ export const modelingMachine = setup({
             'unequip tool': {
               actions: ['forward event to sketch solve if active'],
             },
-            coincident: {
-              actions: ['forward event to sketch solve if active'],
-            },
-            Fixed: {
-              actions: ['forward event to sketch solve if active'],
-            },
-            Tangent: {
-              actions: ['forward event to sketch solve if active'],
-            },
-            Parallel: {
-              actions: ['forward event to sketch solve if active'],
-            },
-            Perpendicular: {
-              actions: ['forward event to sketch solve if active'],
-            },
-            EqualLength: {
-              actions: ['forward event to sketch solve if active'],
-            },
-            Vertical: {
-              actions: ['forward event to sketch solve if active'],
-            },
-            Horizontal: {
-              actions: ['forward event to sketch solve if active'],
-            },
             Dimension: {
               actions: ['forward event to sketch solve if active'],
             },
@@ -7366,6 +7799,86 @@ export const modelingMachine = setup({
         id: 'helixAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'Helix') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying helical gear': {
+      invoke: {
+        src: 'helicalGearAstMod',
+        id: 'helicalGearAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Helical Gear') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying herringbone gear': {
+      invoke: {
+        src: 'herringboneGearAstMod',
+        id: 'herringboneGearAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Herringbone Gear') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying spur gear': {
+      invoke: {
+        src: 'spurGearAstMod',
+        id: 'spurGearAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Spur Gear') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying ring gear': {
+      invoke: {
+        src: 'ringGearAstMod',
+        id: 'ringGearAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Ring Gear') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,
@@ -7701,6 +8214,86 @@ export const modelingMachine = setup({
         id: 'gdtDatumAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'GDT Datum') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Profile': {
+      invoke: {
+        src: 'gdtProfileAstMod',
+        id: 'gdtProfileAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Profile') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Perpendicularity': {
+      invoke: {
+        src: 'gdtPerpendicularityAstMod',
+        id: 'gdtPerpendicularityAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Perpendicularity') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Parallelism': {
+      invoke: {
+        src: 'gdtParallelismAstMod',
+        id: 'gdtParallelismAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Parallelism') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Annotation': {
+      invoke: {
+        src: 'gdtAnnotationAstMod',
+        id: 'gdtAnnotationAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Annotation') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,

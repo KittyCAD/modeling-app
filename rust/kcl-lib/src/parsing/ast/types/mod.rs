@@ -37,6 +37,7 @@ use crate::errors::KclError;
 use crate::execution::KclValue;
 use crate::execution::Metadata;
 use crate::execution::TagIdentifier;
+use crate::execution::annotations::VersionConstraint;
 use crate::execution::annotations::WarningLevel;
 use crate::execution::annotations::{self};
 use crate::execution::types::ArrayLen;
@@ -322,6 +323,24 @@ impl CodeBlock for Node<Program> {
     }
 }
 
+fn kcl_version_expr(kcl_version: &str) -> Result<Expr, KclError> {
+    let value = kcl_version.parse::<f64>().map_err(|_| {
+        KclError::new_semantic(crate::errors::KclErrorDetails::new(
+            format!("Unexpected KCL version value: `{kcl_version}`; expected a number, e.g. `2.0`"),
+            vec![],
+        ))
+    })?;
+
+    Ok(Expr::Literal(Box::new(Node::no_src(Literal {
+        value: LiteralValue::Number {
+            value,
+            suffix: NumericSuffix::None,
+        },
+        raw: kcl_version.to_owned(),
+        digest: None,
+    }))))
+}
+
 impl Node<Program> {
     /// Walk the ast and get all the variables and tags as completion items.
     pub fn completion_items<'a>(&'a self, position: usize) -> Result<Vec<CompletionItem>> {
@@ -459,6 +478,45 @@ impl Node<Program> {
         Ok(new_program)
     }
 
+    /// Return a new program with the KCL version changed.
+    pub fn change_kcl_version(&self, kcl_version: Option<String>) -> Result<Self, KclError> {
+        let mut new_program = self.clone();
+        new_program.set_kcl_version(kcl_version)?;
+
+        Ok(new_program)
+    }
+
+    /// Set the KCL version in place.
+    pub(crate) fn set_kcl_version(&mut self, kcl_version: Option<String>) -> Result<(), KclError> {
+        let mut found = false;
+        for node in &mut self.inner_attrs {
+            if node.name() == Some(annotations::SETTINGS) {
+                if let Some(version) = &kcl_version {
+                    node.inner
+                        .add_or_update(annotations::SETTINGS_VERSION, kcl_version_expr(version)?);
+                }
+                // Previous source range no longer makes sense, but we want to
+                // preserve other things like comments.
+                node.reset_source();
+                found = true;
+                break;
+            }
+        }
+
+        if !found {
+            let mut settings = Annotation::new(annotations::SETTINGS);
+            if let Some(version) = &kcl_version {
+                settings
+                    .inner
+                    .add_or_update(annotations::SETTINGS_VERSION, kcl_version_expr(version)?);
+            }
+
+            self.inner_attrs.push(settings);
+        }
+
+        Ok(())
+    }
+
     /// Return a new program with the experimental features warning level
     /// changed.
     pub fn change_experimental_features(&self, warning_level: Option<WarningLevel>) -> Result<Self, KclError> {
@@ -556,16 +614,16 @@ impl Node<Program> {
         // The position must be within the variable declaration.
         crate::walk::walk(self, |node: crate::walk::Node<'a>| {
             match node {
-                crate::walk::Node::CallExpressionKw(call) => {
-                    if call.inner.callee.inner.name.inner.name == "appearance" {
-                        for arg in &call.arguments {
-                            if let Some(l) = &arg.label
-                                && l.inner.name == "color"
-                            {
-                                // Get the value of the argument.
-                                if let Expr::Literal(literal) = &arg.arg {
-                                    add_color(literal);
-                                }
+                crate::walk::Node::CallExpressionKw(call)
+                    if call.inner.callee.inner.name.inner.name == "appearance" =>
+                {
+                    for arg in &call.arguments {
+                        if let Some(l) = &arg.label
+                            && l.inner.name == "color"
+                        {
+                            // Get the value of the argument.
+                            if let Expr::Literal(literal) = &arg.arg {
+                                add_color(literal);
                             }
                         }
                     }
@@ -596,16 +654,15 @@ impl Node<Program> {
         // Find the literal with the same start and end.
         crate::walk::walk(self, |node: crate::walk::Node<'a>| {
             match node {
-                crate::walk::Node::Literal(literal) => {
+                crate::walk::Node::Literal(literal)
                     // Account for the quotes in the literal.
                     if (literal.start + 1) == pos_start
                         && (literal.end - 1) == pos_end
                         && literal.value.is_color().is_some()
-                    {
+                    => {
                         found.replace(true);
                         return Ok(true);
                     }
-                }
                 _ => {
                     // Do nothing.
                 }
@@ -4063,6 +4120,11 @@ pub struct Parameter {
     /// Whether it's experimental.
     #[serde(default, skip_serializing_if = "is_false")]
     pub experimental: bool,
+    /// If set, this parameter is deprecated as of the given KCL version (e.g.,
+    /// "2.0"). The parser validates that this is a dotted integer version;
+    /// downstream code reparses it into a `VersionConstraint`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub deprecated_since: Option<VersionConstraint>,
     /// The parameter's label or name.
     pub identifier: Node<Identifier>,
     /// The type of the parameter.
@@ -4156,6 +4218,10 @@ impl Node<FunctionExpression> {
         ConstraintLevel::Ignore {
             source_ranges: vec![self.into()],
         }
+    }
+
+    pub fn name_str(&self) -> Option<&str> {
+        self.name.as_ref().map(|id| id.name.as_str())
     }
 }
 
@@ -4802,6 +4868,7 @@ cylinder = startSketchOn(-XZ)
                     name: None,
                     params: vec![Parameter {
                         experimental: Default::default(),
+                        deprecated_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
                             digest: None,
@@ -4823,6 +4890,7 @@ cylinder = startSketchOn(-XZ)
                     name: None,
                     params: vec![Parameter {
                         experimental: Default::default(),
+                        deprecated_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
                             digest: None,
@@ -4845,6 +4913,7 @@ cylinder = startSketchOn(-XZ)
                     params: vec![
                         Parameter {
                             experimental: Default::default(),
+                            deprecated_since: None,
                             identifier: Node::no_src(Identifier {
                                 name: "foo".to_owned(),
                                 digest: None,
@@ -4856,6 +4925,7 @@ cylinder = startSketchOn(-XZ)
                         },
                         Parameter {
                             experimental: Default::default(),
+                            deprecated_since: None,
                             identifier: Node::no_src(Identifier {
                                 name: "bar".to_owned(),
                                 digest: None,
@@ -4994,6 +5064,61 @@ startSketchOn(XY)
         assert_eq!(
             formatted,
             r#"@settings(defaultLengthUnit = mm)
+
+startSketchOn(XY)
+"#
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_get_meta_settings_nothing_to_kcl_version() {
+        let some_program_string = r#"startSketchOn(XY)"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+        let result = program.meta_settings().unwrap();
+        assert!(result.is_none());
+
+        // Edit the ast.
+        let new_program = program.change_kcl_version(Some("2.0".to_owned())).unwrap();
+
+        let result = new_program.meta_settings().unwrap();
+        assert!(result.is_some());
+        let meta_settings = result.unwrap();
+
+        assert_eq!(meta_settings.kcl_version, "2.0");
+
+        let formatted = new_program.recast_top(&Default::default(), 0);
+
+        assert_eq!(
+            formatted,
+            r#"@settings(kclVersion = 2.0)
+
+startSketchOn(XY)
+"#
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_get_meta_settings_updates_kcl_version() {
+        let some_program_string = r#"@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+startSketchOn(XY)"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+
+        // Edit the ast.
+        let new_program = program.change_kcl_version(Some("2.0".to_owned())).unwrap();
+
+        let result = new_program.meta_settings().unwrap();
+        assert!(result.is_some());
+        let meta_settings = result.unwrap();
+
+        assert_eq!(meta_settings.default_length_units, UnitLength::Inches);
+        assert_eq!(meta_settings.kcl_version, "2.0");
+
+        let formatted = new_program.recast_top(&Default::default(), 0);
+
+        assert_eq!(
+            formatted,
+            r#"@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 startSketchOn(XY)
 "#

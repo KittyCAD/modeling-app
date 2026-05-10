@@ -6,6 +6,7 @@ import type {
   SegmentCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclManager'
@@ -30,16 +31,17 @@ import {
 } from '@src/machines/sketchSolve/sketchSolveSelection'
 import { Group } from 'three'
 
-import { StateEffect, Transaction } from '@codemirror/state'
+import { StateEffect, Transaction, EditorSelection } from '@codemirror/state'
 import { disposeGroupChildren } from '@src/clientSideScene/sceneHelpers'
 import {
   SKETCH_LAYER,
   SKETCH_SOLVE_GROUP,
 } from '@src/clientSideScene/sceneUtils'
+import { selectionDispatchedBySketchSolveEvent } from '@src/editor/plugins/sketchSelection'
 import { compilationIssuesToDiagnostics } from '@src/lang/errors'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { deferredCallback } from '@src/lib/utils'
+import { deferredCallback, isNonNullable, isOverlap } from '@src/lib/utils'
 import type { InvisibleConstraintDisplayState } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
 import {
   CONSTRAINT_TYPE,
@@ -51,6 +53,8 @@ import {
 import {
   type ConstraintHoverPopup,
   findSegmentsForInvisibleConstraint,
+  getInvisibleConstraintSegmentHoverColor,
+  isInvisibleConstraintSegmentSecondaryHovered,
   isInvisibleConstraintObject,
 } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
 import { updateOriginSprite } from '@src/machines/sketchSolve/originSprite'
@@ -70,6 +74,7 @@ import { machine as rectTool } from '@src/machines/sketchSolve/tools/rectTool'
 import { machine as tangentialArcTool } from '@src/machines/sketchSolve/tools/tangentialArcToolDiagram'
 import { machine as threePointArcTool } from '@src/machines/sketchSolve/tools/threePointArcToolDiagram'
 import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
+import { constraintToolMachines } from '@src/machines/sketchSolve/tools/constraintToolMachine'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import {
   type ActionArgs,
@@ -106,21 +111,18 @@ export type SketchSolveMachineEvent =
   | { type: 'exit' }
   | { type: 'escape' }
   | { type: 'unequip tool' }
-  | { type: 'equip tool'; data: { tool: EquipTool } }
+  | {
+      type: 'equip tool'
+      data: { tool: EquipTool }
+      keepSelection?: boolean
+    }
   | {
       type:
-        | 'coincident'
-        | 'Fixed'
-        | 'Tangent'
-        | 'EqualLength'
-        | 'Vertical'
-        | 'Horizontal'
-        | 'Parallel'
-        | 'Perpendicular'
         | 'Dimension'
         | 'HorizontalDistance'
         | 'VerticalDistance'
         | 'construction'
+      keepSelection?: boolean
     }
   | { type: 'toggle non-visual constraints' }
   | {
@@ -136,6 +138,12 @@ export type SketchSolveMachineEvent =
       data: {
         hoveredId: SketchSolveSelectionId | null
         constraintHoverPopups?: ConstraintHoverPopup[]
+      }
+    }
+  | {
+      type: 'update selected ids from code selection'
+      data: {
+        ranges: SourceRange[]
       }
     }
   | { type: typeof CHILD_TOOL_DONE_EVENT }
@@ -172,28 +180,27 @@ export type UpdateSketchOutcomeEvent = {
      */
     debounceEditorUpdate?: boolean
     /**
+     * Defaults to true because most sketch-solve outcomes come from point/click
+     * tools whose Rust-generated sourceDelta is the new source of truth. Direct
+     * CodeMirror executions set this false: their sourceDelta is only the
+     * already-typed snapshot that produced the sceneGraphDelta, so replaying it
+     * back into CodeMirror later can overwrite newer user edits.
+     */
+    updateEditor?: boolean
+    /**
      * Defaults to true. Set to false to skip persisting to disk, which is useful
      * for high-frequency preview/drag updates.
      */
     writeToDisk?: boolean
     /**
-     * Defaults to the same value as `writeToDisk`.
+     * Defaults to the same value as `writeToDisk` when `updateEditor` is true.
+     * Ignored when `updateEditor` is false because there is no editor write to
+     * attach a history entry to.
      */
     addToHistory?: boolean
     checkpointId?: number | null
   }
 }
-
-type ToolActorRef =
-  | ActorRefFrom<typeof dimensionTool>
-  | ActorRefFrom<typeof rectTool>
-  | ActorRefFrom<typeof pointTool>
-  | ActorRefFrom<typeof lineTool>
-  | ActorRefFrom<typeof trimTool>
-  | ActorRefFrom<typeof centerArcTool>
-  | ActorRefFrom<typeof circleTool>
-  | ActorRefFrom<typeof tangentialArcTool>
-  | ActorRefFrom<typeof threePointArcTool>
 
 export const equipTools = Object.freeze({
   trimTool,
@@ -208,7 +215,10 @@ export const equipTools = Object.freeze({
   circleTool,
   tangentialArcTool,
   threePointArcTool,
+  ...constraintToolMachines,
 })
+
+type ToolActorRef = ActorRefFrom<(typeof equipTools)[EquipTool]>
 
 export type SketchSolveContext = {
   sketchSolveToolName: EquipTool | null
@@ -762,6 +772,69 @@ export function updateSelectedIds({ event, context }: SolveAssignArgs) {
   return updates
 }
 
+export function updateSelectedIdsFromCodeSelection({
+  context,
+  event,
+}: SolveAssignArgs): Partial<SketchSolveContext> {
+  assertEvent(event, 'update selected ids from code selection')
+
+  const objects = context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects
+  if (!objects) {
+    return {
+      selectedIds: [],
+      duringAreaSelectIds: [],
+    }
+  }
+
+  return {
+    selectedIds: getObjectIdsForCodeSelectionRanges(
+      getCurrentSketchObjectsById(objects, context.sketchId),
+      event.data.ranges
+    ),
+    duringAreaSelectIds: [],
+  }
+}
+
+// Updates codemirror selection highlights based on currently selected objects.
+export function updateSelectedCodeHighlight({ context }: SolveActionArgs) {
+  const objects = context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects
+  if (!objects) {
+    return
+  }
+
+  const selectedObjectIds = Array.from(
+    new Set([
+      ...getObjectSelectionIds(context.selectedIds),
+      ...context.duringAreaSelectIds,
+    ])
+  )
+
+  // Deduplicate sources as different selected ids can refer to the same objects
+  // eg. line point and its owner line, or overlap between selectedIds and areaSelectIds.
+  const sourceRanges = dedupeSourceRanges(
+    selectedObjectIds.flatMap((id) => getSourceRangesForObjectId(objects, id))
+  ).sort((a, b) => a[0] - b[0])
+  const codeMirrorSelections = sourceRanges.flatMap((range) =>
+    range[1]
+      ? [
+          EditorSelection.cursor(
+            Math.min(range[1], context.kclManager.code.length)
+          ),
+        ]
+      : []
+  )
+
+  context.kclManager.editorView.dispatch({
+    selection: EditorSelection.create(
+      codeMirrorSelections.length
+        ? codeMirrorSelections
+        : [EditorSelection.cursor(context.kclManager.code.length)],
+      Math.max(codeMirrorSelections.length - 1, 0)
+    ),
+    annotations: selectionDispatchedBySketchSolveEvent,
+  })
+}
+
 export function refreshSelectionStyling({ context }: SolveActionArgs) {
   // Update selection styling for all existing sketch-solve segments
   if (!context.sketchExecOutcome?.sceneGraphDelta) {
@@ -852,6 +925,89 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
         objects,
       })
     }
+  })
+}
+
+export function updateHoveredId({
+  context,
+  event,
+}: SolveAssignArgs): Partial<SketchSolveContext> {
+  assertEvent(event, 'update hovered id')
+  const hoveredId = event.data.hoveredId
+  let highlightRanges: SourceRange[] = []
+
+  if (isObjectSelectionId(hoveredId)) {
+    const objects = context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects
+    if (objects) {
+      highlightRanges = getSourceRangesForObjectId(objects, hoveredId)
+    }
+  }
+
+  context.kclManager.setHighlightRange(highlightRanges)
+
+  return {
+    hoveredId,
+    constraintHoverPopups: event.data.constraintHoverPopups ?? [],
+  }
+}
+
+export function clearHoveredCodeHighlight({ context }: SolveActionArgs) {
+  context.kclManager.setHighlightRange([])
+}
+
+function getSourceRangesForObjectId(
+  objects: ApiObject[],
+  objectId: number
+): SourceRange[] {
+  const object = objects[objectId]
+
+  if (object?.source.type === 'Simple') {
+    return [object.source.range]
+  }
+  if (object?.source.type === 'BackTrace') {
+    return object.source.ranges.map(([range]) => range)
+  }
+  return []
+}
+
+function getObjectIdsForCodeSelectionRanges(
+  objects: ApiObject[],
+  codeSelectionRanges: SourceRange[]
+): number[] {
+  return objects
+    .filter(isNonNullable)
+    .filter(isSelectableFromCodeSelection)
+    .filter((object) =>
+      getSourceRangesForObjectId(objects, object.id).some((sourceRange) =>
+        codeSelectionRanges.some((selectionRange) =>
+          isOverlap(sourceRange, selectionRange)
+        )
+      )
+    )
+    .map((object) => object.id)
+}
+
+function isSelectableFromCodeSelection(object: ApiObject): boolean {
+  if (isConstraint(object)) {
+    return true
+  }
+
+  if (object.kind.type !== 'Segment') {
+    return false
+  }
+
+  return !isPointSegment(object) || object.kind.segment.owner === null
+}
+
+function dedupeSourceRanges(sourceRanges: SourceRange[]): SourceRange[] {
+  const seen = new Set<string>()
+  return sourceRanges.filter((range) => {
+    const key = range.join(':')
+    if (seen.has(key)) {
+      return false
+    }
+    seen.add(key)
+    return true
   })
 }
 
@@ -1009,11 +1165,26 @@ function getSegmentRenderState(
   draftEntityIds: Array<number> | undefined,
   objects: ApiObject[]
 ): SegmentRenderState {
+  const hoveredObject = isObjectSelectionId(hoveredId)
+    ? objects[hoveredId]
+    : null
+  const hoveredInvisibleConstraint = isInvisibleConstraintObject(hoveredObject)
+    ? hoveredObject
+    : null
+
   return {
     selected:
       selectedIds.includes(segmentId) ||
       duringAreaSelectIds.includes(segmentId),
     hovered: hoveredId === segmentId || hoveredSegmentIds.includes(segmentId),
+    secondaryHovered: isInvisibleConstraintSegmentSecondaryHovered(
+      segmentId,
+      hoveredInvisibleConstraint
+    ),
+    hoverColor: getInvisibleConstraintSegmentHoverColor(
+      segmentId,
+      hoveredInvisibleConstraint
+    ),
     draft: draftEntityIds?.includes(segmentId) ?? false,
     construction: isConstructionSegment(objects[segmentId]),
   }
@@ -1113,10 +1284,23 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     ],
   }
 
-  const shouldWriteToDisk = event.data.writeToDisk !== false
-  const shouldAddToHistory = event.data.addToHistory ?? shouldWriteToDisk
+  const shouldUpdateEditor = event.data.updateEditor !== false
+  // Disk/history writes are coupled to editor writes here. When an outcome is
+  // derived from direct editor text, the file already follows the editor through
+  // the normal CodeMirror listener, and this async outcome may be older than the
+  // current document. Never let that snapshot become a second writer.
+  const shouldWriteToDisk =
+    shouldUpdateEditor && event.data.writeToDisk !== false
+  const shouldAddToHistory =
+    shouldUpdateEditor && (event.data.addToHistory ?? shouldWriteToDisk)
+  const isCheckpointOnlyCommit =
+    shouldAddToHistory &&
+    event.data.checkpointId != null &&
+    context.kclManager.code === event.data.sourceDelta.text
   const shouldDispatchSceneImmediately =
-    context.kclManager.code !== event.data.sourceDelta.text
+    !shouldUpdateEditor ||
+    context.kclManager.code !== event.data.sourceDelta.text ||
+    isCheckpointOnlyCommit
 
   if (shouldDispatchSceneImmediately) {
     context.kclManager.dispatch({
@@ -1134,6 +1318,28 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
         effects: [] as StateEffect<unknown>[],
       }
     : additionalSpec
+
+  if (!shouldUpdateEditor) {
+    /*
+     * This is the direct CodeMirror edit path. The editor is already the source
+     * of truth, and KclManager has already checked that this async execution is
+     * still fresh before sending the event. Keep the derived scene/diagnostic
+     * state in sync, but do not write source text back through CodeMirror or
+     * disk. A source write here turns an old execution snapshot into an editor
+     * command, which is the exact stale overwrite bug this path prevents.
+     */
+    context.kclManager.syncSketchSolveOutcome(
+      event.data.sourceDelta.text,
+      sceneGraphDelta
+    )
+
+    return {
+      sketchExecOutcome: {
+        sourceDelta: event.data.sourceDelta,
+        sceneGraphDelta,
+      },
+    }
+  }
 
   // Update editor - debounce only if explicitly requested (e.g., for single-click that might be double-click)
   // This allows frequent updates (dragging handles) to be immediate, while others can be debounce
@@ -1307,6 +1513,9 @@ export function spawnTool(
       rustContext: context.rustContext,
       kclManager: context.kclManager,
       sketchId: context.sketchId,
+      initialSelectionIds: context.selectedIds,
+      initialObjects:
+        context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || [],
       toolVariant: toolVariants[nameOfToolToSpawn],
     },
   })
@@ -1344,6 +1553,8 @@ export type ToolInput = {
   rustContext: RustContext
   kclManager: KclManager
   sketchId: number
+  initialSelectionIds?: SketchSolveSelectionId[]
+  initialObjects?: ApiObject[]
   toolVariant?: string // eg. 'corner' | 'center' | 'angled' for rectTool
 }
 

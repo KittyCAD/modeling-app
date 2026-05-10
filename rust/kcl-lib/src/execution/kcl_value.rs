@@ -34,6 +34,7 @@ use crate::execution::UnsolvedExpr;
 use crate::execution::annotations::FnAttrs;
 use crate::execution::annotations::SETTINGS;
 use crate::execution::annotations::SETTINGS_UNIT_LENGTH;
+use crate::execution::annotations::VersionConstraint;
 use crate::execution::annotations::{self};
 use crate::execution::types::NumericType;
 use crate::execution::types::PrimitiveType;
@@ -168,6 +169,8 @@ where
 #[derive(Debug, Clone, PartialEq)]
 pub struct NamedParam {
     pub experimental: bool,
+    /// Constraint marking the KCL version at or after which this parameter is deprecated.
+    pub deprecated_since: Option<VersionConstraint>,
     pub default_value: Option<DefaultParamVal>,
     pub ty: Option<Type>,
 }
@@ -178,15 +181,19 @@ pub struct FunctionSource {
     pub named_args: IndexMap<String, NamedParam>,
     pub return_type: Option<Node<Type>>,
     pub deprecated: bool,
+    /// Constraint on the KCL version at which this function is deprecated, e.g.
+    /// "2.0". When the active `kclVersion` is at or after this, calls trigger a
+    /// deprecation warning.
+    pub deprecated_since: Option<VersionConstraint>,
     pub experimental: bool,
     pub include_in_feature_tree: bool,
-    pub is_std: bool,
+    pub std_props: Option<StdFnProps>,
     pub body: FunctionBody,
     pub ast: crate::parsing::ast::types::BoxNode<FunctionExpression>,
 }
 
 pub struct KclFunctionSourceParams {
-    pub is_std: bool,
+    pub std_props: Option<StdFnProps>,
     pub experimental: bool,
     pub include_in_feature_tree: bool,
 }
@@ -195,7 +202,7 @@ impl FunctionSource {
     pub fn rust(
         func: crate::std::StdFn,
         ast: Box<Node<FunctionExpression>>,
-        _props: StdFnProps,
+        props: StdFnProps,
         attrs: FnAttrs,
     ) -> Self {
         let (input_arg, named_args) = Self::args_from_ast(&ast);
@@ -205,9 +212,10 @@ impl FunctionSource {
             named_args,
             return_type: ast.return_type.clone(),
             deprecated: attrs.deprecated,
+            deprecated_since: attrs.deprecated_since,
             experimental: attrs.experimental,
             include_in_feature_tree: attrs.include_in_feature_tree,
-            is_std: true,
+            std_props: Some(props),
             body: FunctionBody::Rust(func),
             ast,
         }
@@ -215,7 +223,7 @@ impl FunctionSource {
 
     pub fn kcl(ast: Box<Node<FunctionExpression>>, memory: EnvironmentRef, params: KclFunctionSourceParams) -> Self {
         let KclFunctionSourceParams {
-            is_std,
+            std_props,
             experimental,
             include_in_feature_tree,
         } = params;
@@ -225,9 +233,10 @@ impl FunctionSource {
             named_args,
             return_type: ast.return_type.clone(),
             deprecated: false,
+            deprecated_since: None,
             experimental,
             include_in_feature_tree,
-            is_std,
+            std_props,
             body: FunctionBody::Kcl(memory),
             ast,
         }
@@ -250,6 +259,7 @@ impl FunctionSource {
                 p.identifier.name.clone(),
                 NamedParam {
                     experimental: p.experimental,
+                    deprecated_since: p.deprecated_since.clone(),
                     default_value: p.default_value.clone(),
                     ty: p.param_type.as_ref().map(|t| t.inner.clone()),
                 },
@@ -257,6 +267,10 @@ impl FunctionSource {
         }
 
         (input_arg, named_args)
+    }
+
+    pub(crate) fn is_std(&self) -> bool {
+        self.std_props.is_some()
     }
 }
 

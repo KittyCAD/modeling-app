@@ -1,0 +1,115 @@
+// Coilover Bottom
+// Part consists of a 70 mm diameter retainer plate with a cylindrical lower mount body below it, and a eye-end mount (or hole) at the bottom. Above the retainer plate, there is a cylindrical damper body with a hole through its length that allows a piston shaft to pass through it when included in the coilover assembly.
+
+// Set units
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+// Import parameters
+import retainerPlateDia, retainerPlateLength, baseSeatingDia, baseSeatingLength, lowerMountDia, damperBodyLength, lowerMountLength, eyeEndMountOuterDia, eyeEndMountLength, eyeEndMountHoleDia, eyeEndMountThickness, eyeEndMountFillet, damperBodyDia, pistonShaftHoleDia, lengthBelowRetainerPlate, lowerMountOverallLength, pointOffset from "parameters.kcl"
+
+// Retainer Plate
+retainerPlateSketch = startSketchOn(XY)
+retainerPlateProfile = circle(
+  retainerPlateSketch,
+  center = [0, 0],
+  radius = retainerPlateDia / 2,
+  tag = $seg01,
+)
+retainerPlateExtrude = extrude(retainerPlateProfile, length = retainerPlateLength, tagStart = $capStart001)
+  |> chamfer(
+       length = 3.7,
+       tags = [
+         getCommonEdge(faces = [seg01, capStart001])
+       ],
+     )
+
+// Base seating just below the retainer plate
+baseSeatingSketch = startSketchOn(retainerPlateExtrude, face = START)
+baseSeatingProfile = circle(baseSeatingSketch, center = [0.0, 0.0], radius = baseSeatingDia / 2)
+baseSeatingExtrude = extrude(baseSeatingProfile, length = baseSeatingLength)
+
+// Lower Mount
+lowerMountSketch = startSketchOn(baseSeatingExtrude, face = END)
+lowerMountProfile = circle(
+  lowerMountSketch,
+  center = [0, 0],
+  radius = lowerMountDia / 2,
+  tag = $seg02,
+)
+lowerMountExtrude = extrude(lowerMountProfile, length = lowerMountLength, tagEnd = $capEnd001)
+  |> chamfer(
+       length = 3,
+       tags = [
+         getCommonEdge(faces = [seg02, capEnd001])
+       ],
+     )
+
+// Eye End for Lower Mount
+eyeEndSketch = startSketchOn(lowerMountExtrude, face = END)
+eyeEndProfile = circle(
+  eyeEndSketch,
+  center = [0, 0],
+  radius = eyeEndMountOuterDia / 2,
+  tag = $seg04,
+)
+eyeEndExtrude = extrude(eyeEndProfile, length = eyeEndMountLength, tagEnd = $capEnd002)
+  |> fillet(
+       radius = eyeEndMountOuterDia / 2 - 0.01,
+       tags = [
+         getCommonEdge(faces = [seg04, capEnd002])
+       ],
+     )
+  |> fillet(
+       radius = 3,
+       tags = [
+         getCommonEdge(faces = [capEnd001, seg04])
+       ],
+     )
+
+// Eye End Outer Profile for Lower Mount
+eyeEndOuterSketch = startSketchOn(YZ)
+
+eyeEndOuterProfile = startProfile(
+       eyeEndOuterSketch,
+       at = [
+         eyeEndMountThickness / 2 + eyeEndMountFillet + pointOffset,
+         -lengthBelowRetainerPlate + 25
+       ],
+     )
+  |> xLine(length = -pointOffset)
+  |> tangentialArc(radius = eyeEndMountFillet, angle = 90)
+  |> yLine(length = -22)
+  |> xLine(length = -eyeEndMountThickness)
+  |> yLine(length = 22)
+  |> tangentialArc(radius = eyeEndMountFillet, angle = 90)
+  |> xLine(length = -pointOffset)
+  |> yLine(length = -30)
+  |> xLine(endAbsolute = eyeEndMountThickness / 2 + eyeEndMountFillet + pointOffset)
+  |> close(%)
+
+eyeEndOuterExtrude = extrude(eyeEndOuterProfile, length = 30, symmetric = true)
+lowerMount = subtract([eyeEndExtrude], tools = [eyeEndOuterExtrude])
+
+// Eye End Hole for Lower Mount
+eyeEndHolePlane = offsetPlane(XZ, offset = 15)
+eyeEndHoleSketch = startSketchOn(eyeEndHolePlane)
+eyeEndHoleProfile = circle(
+  eyeEndHoleSketch,
+  center = [
+    0,
+    -lengthBelowRetainerPlate + eyeEndMountOuterDia / 2
+  ],
+  radius = eyeEndMountHoleDia / 2,
+)
+eyeEndHoleExtrude = extrude(eyeEndHoleProfile, length = -40)
+lowerMountSolid = subtract([lowerMount], tools = [eyeEndHoleExtrude])
+
+// Damper body above the retainer plate
+damperBodySketch = startSketchOn(XY)
+damperBodyProfile = circle(damperBodySketch, center = [0, 0], radius = damperBodyDia / 2)
+damperBodyExtrude = extrude(damperBodyProfile, length = damperBodyLength)
+
+// Hole for the piston shaft in the damper body
+pistonShaftSketch = startSketchOn(damperBodyExtrude, face = END)
+pistonShaftProfile = circle(pistonShaftSketch, center = [0, 0], radius = pistonShaftHoleDia / 2)
+pistonShaftHole = extrude(pistonShaftProfile, length = -damperBodyLength)

@@ -11,16 +11,14 @@ import {
   Menu,
   app,
   autoUpdater,
-  desktopCapturer,
   dialog,
   ipcMain,
   nativeTheme,
   screen,
   shell,
-  systemPreferences,
 } from 'electron'
 import { autoUpdater as appUpdater } from 'electron-updater'
-import { Issuer } from 'openid-client'
+import { type DeviceFlowHandle, Issuer } from 'openid-client'
 
 import fs from 'fs'
 import {
@@ -29,22 +27,19 @@ import {
   parseCLIArgs,
 } from '@src/commandLineArgs'
 import { initialiseWasmNode } from '@src/lang/wasmUtilsNode'
+import { getAppFolderNameFromBuild } from '@src/lib/appFolderName'
+import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
 import {
   OAUTH2_DEVICE_CLIENT_ID,
   ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
-import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
-import { discoverMachineApi } from '@src/lib/discoverMachineApi'
 import { registerFileProtocolCsp } from '@src/lib/csp'
+import { DeviceFlowSessionStore } from '@src/lib/deviceFlowSessions'
+import { discoverMachineApi } from '@src/lib/discoverMachineApi'
+import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { reportRejection } from '@src/lib/trap'
-import {
-  buildAndSetMenuForFallback,
-  buildAndSetMenuForModelingPage,
-  buildAndSetMenuForProjectPage,
-  disableMenu,
-  enableMenu,
-} from '@src/menu'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { WindowMenuManager, isAppMenuPage } from '@src/menu/windowMenus'
 import { configureSystemCertificates } from '@src/systemCertificates'
 
 // Linux hack for electron >= 38, here we're forcing XWayland due to issues we've experienced
@@ -67,19 +62,16 @@ let isInstallingUpdate = false
 /** All Electron windows will share this WASM module */
 const initPromise = initialiseWasmNode()
 
-// Preemptive code, GC may delete a menu while a user is using it as seen in VSCode
-// as seen on https://github.com/microsoft/vscode/issues/55347
-let oldMenus: Menu[] = []
-const scheduleMenuGC = () => {
-  setTimeout(() => {
-    oldMenus = []
-  }, 10000)
-}
-
 type MachineApiSignal = 'on' | 'off'
 
 // Check the command line arguments for a project path
 const args = parseCLIArgs(process.argv)
+let startupMacOpenFiles: string[] = []
+let startupOpenUrls: string[] = []
+const deviceFlowSessions = new DeviceFlowSessionStore<
+  BrowserWindow,
+  DeviceFlowHandle
+>()
 
 // @ts-ignore: TS1343
 const viteEnv = import.meta.env
@@ -97,6 +89,20 @@ process.env.VITE_ZOO_BASE_DOMAIN ??= viteEnv.VITE_ZOO_BASE_DOMAIN
 // Likely convenient to keep for debugging
 console.log('Environment vars', process.env)
 console.log('Parsed CLI args', args)
+
+// Set Electron's profile paths before app.ready. Chromium session/cache state is
+// initialized lazily, so doing this late lets different builds share app storage.
+const appProfilePath = path.join(
+  app.getPath('appData'),
+  getAppFolderNameFromBuild({
+    packageName: packageJSON.name,
+    packageVersion: packageJSON.version,
+    platform: os.platform(),
+  })
+)
+fs.mkdirSync(appProfilePath, { recursive: true })
+app.setPath('userData', appProfilePath)
+app.setPath('sessionData', appProfilePath)
 
 /// Register our application to handle all "zoo-studio:" protocols.
 const singleInstanceLock = app.requestSingleInstanceLock()
@@ -118,6 +124,42 @@ if (!singleInstanceLock && process.env.NODE_ENV !== 'test') {
   app.quit()
 } else {
   registerStartupListeners()
+}
+
+const consumeStartupPathOrUrl = (): string | undefined => {
+  const pathOrUrl = getPathOrUrlFromArgs(args)
+  if (pathOrUrl?.startsWith(ZOO_STUDIO_PROTOCOL + '://')) {
+    console.log('Retrieved deep link from CLI args', pathOrUrl)
+    return pathOrUrl
+  }
+
+  // macOS: open-url events that were received before the app is ready.
+  if (startupOpenUrls[0]) {
+    const openUrl = startupOpenUrls[0]
+    startupOpenUrls = []
+    console.log('Retrieved deep link from open-url', openUrl)
+    return openUrl
+  }
+
+  // The dev and test launchers pass "." as an arg. Do not turn that into a
+  // startup project route.
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL || process.env.NODE_ENV === 'test') {
+    return undefined
+  }
+
+  // macOS: open-file events that were received before the app is ready.
+  if (startupMacOpenFiles[0]) {
+    const filePath = startupMacOpenFiles[0]
+    startupMacOpenFiles = []
+    return filePath
+  }
+
+  if (pathOrUrl) {
+    args._[1] = ''
+    return pathOrUrl
+  }
+
+  return undefined
 }
 
 const createWindow = (pathToOpen?: string): BrowserWindow => {
@@ -181,25 +223,18 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
       windowBounds: bounds,
     })
   })
-
-  // Deep Link: Case of a cold start from Windows or Linux
-  const pathOrUrl = getPathOrUrlFromArgs(args)
-  if (
-    !pathToOpen &&
-    pathOrUrl &&
-    pathOrUrl.startsWith(ZOO_STUDIO_PROTOCOL + '://')
-  ) {
-    pathToOpen = pathOrUrl
-    console.log('Retrieved deep link from CLI args', pathToOpen)
-  }
-
-  // Deep Link: Case of a second window opened for macOS
-  // @ts-ignore
-  if (!pathToOpen && global['openUrls'] && global['openUrls'][0]) {
-    // @ts-ignore
-    pathToOpen = global['openUrls'][0]
-    console.log('Retrieved deep link from open-url', pathToOpen)
-  }
+  newWindow.on('closed', () => {
+    windowMenuManager.clearWindow(newWindow)
+    deviceFlowSessions.abort(newWindow)
+    if (mainWindow !== newWindow) return
+    const nextMainWindow = BrowserWindow.getAllWindows().find(
+      (browserWindow) => !browserWindow.isDestroyed()
+    )
+    mainWindow = nextMainWindow ?? null
+  })
+  newWindow.on('focus', () => {
+    windowMenuManager.rebuildWindowMenu(newWindow)
+  })
 
   const pathIsCustomProtocolLink =
     pathToOpen?.startsWith(ZOO_STUDIO_PROTOCOL) ?? false
@@ -230,8 +265,8 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
         })
         .catch(reportRejection)
     } else {
-      // otherwise we're trying to open a local file from the command line
-      getProjectPathAtStartup(initPromise, pathToOpen)
+      // otherwise we're trying to resolve a local file/project path
+      resolveProjectPathForWindow(initPromise, pathToOpen)
         .then(async (projectPath) => {
           const startIndex = path.join(
             __dirname,
@@ -269,6 +304,20 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
   })
 
   return newWindow
+}
+
+const menuActions = {
+  openNewWindow: () => {
+    createWindow()
+  },
+}
+const windowMenuManager = new WindowMenuManager(menuActions)
+
+function sendToAllWindows(channel: string, ...args: unknown[]) {
+  for (const browserWindow of BrowserWindow.getAllWindows()) {
+    if (browserWindow.isDestroyed()) continue
+    browserWindow.webContents.send(channel, ...args)
+  }
 }
 
 interface LocalDeviceState {
@@ -343,7 +392,7 @@ app.on('ready', (event, data) => {
   registerFileProtocolCsp()
 
   // Create the mainWindow
-  mainWindow = createWindow()
+  mainWindow = createWindow(consumeStartupPathOrUrl())
   // Set menu application to null to avoid default electron menu
   Menu.setApplicationMenu(null)
 })
@@ -352,15 +401,16 @@ app.on('ready', (event, data) => {
 // There is just not enough code to warrant it and further abstracts everything
 // which is already quite abstracted
 
-// @ts-ignore
-// electron/electron.d.ts has done type = App, making declaration merging not
-// possible :(
-app.resizeWindow = async (width: number, height: number) => {
-  return mainWindow?.setSize(width, height)
+const appTestProperties: Record<string, unknown> = {}
+Reflect.set(app, 'testProperty', appTestProperties)
+if (NODE_ENV === 'test') {
+  appTestProperties.nativeWindowMenus =
+    windowMenuManager.nativeWindowMenusForTests
+  Reflect.set(app, 'resizeWindow', (width: number, height: number) => {
+    const targetWindow = BrowserWindow.getFocusedWindow() ?? mainWindow
+    return targetWindow?.setSize(width, height)
+  })
 }
-
-// @ts-ignore can't declaration merge with App
-app.testProperty = {}
 // @ts-ignore can't declaration merge with App
 app.machineApiState = 'off' as MachineApiSignal
 
@@ -373,9 +423,8 @@ const setMachineApiState = (signal: MachineApiSignal) => {
   app.machineApiState = signal
 }
 
-ipcMain.handle('app.testProperty', (event, propertyName) => {
-  // @ts-ignore can't declaration merge with App
-  return app.testProperty[propertyName]
+ipcMain.handle('app.testProperty', (_event, propertyName: string) => {
+  return appTestProperties[propertyName]
 })
 
 ipcMain.handle('machine-api.get-state', () => {
@@ -388,7 +437,8 @@ ipcMain.handle('machine-api.set-state', (_event, signal: MachineApiSignal) => {
 })
 
 ipcMain.handle('app.resizeWindow', (event, data) => {
-  return mainWindow?.setSize(data[0], data[1])
+  const targetWindow = BrowserWindow.fromWebContents(event.sender)
+  return targetWindow?.setSize(data[0], data[1])
 })
 
 ipcMain.handle('app.getPath', (event, data) => {
@@ -396,9 +446,19 @@ ipcMain.handle('app.getPath', (event, data) => {
 })
 
 ipcMain.handle('dialog.showOpenDialog', (event, data) => {
+  const targetWindow = BrowserWindow.fromWebContents(event.sender)
+  if (targetWindow && !targetWindow.isDestroyed()) {
+    return dialog.showOpenDialog(targetWindow, data)
+  }
+
   return dialog.showOpenDialog(data)
 })
 ipcMain.handle('dialog.showSaveDialog', (event, data) => {
+  const targetWindow = BrowserWindow.fromWebContents(event.sender)
+  if (targetWindow && !targetWindow.isDestroyed()) {
+    return dialog.showSaveDialog(targetWindow, data)
+  }
+
   return dialog.showSaveDialog(data)
 })
 
@@ -414,49 +474,16 @@ ipcMain.handle('openInNewWindow', (event, data) => {
   return createWindow(data)
 })
 
-ipcMain.handle(
-  'take.screenshot',
-  async (event, data: { width: number; height: number }) => {
-    /**
-     * Operation system access to getting screen sources, even though we are only use application windows
-     * Linux: Yes!
-     * Mac OS: This user consent was not required on macOS 10.13 High Sierra so this method will always return granted. macOS 10.14 Mojave or higher requires consent for microphone and camera access. macOS 10.15 Catalina or higher requires consent for screen access.
-     * Windows 10: has a global setting controlling microphone and camera access for all win32 applications. It will always return granted for screen and for all media types on older versions of Windows.
-     */
-    let accessToScreenSources = true
-
-    // Can we check for access and if so, is it granted
-    // Linux does not even have access to the function getMediaAccessStatus, not going to polyfill
-    if (systemPreferences && systemPreferences.getMediaAccessStatus) {
-      const accessString = systemPreferences.getMediaAccessStatus('screen')
-      accessToScreenSources = accessString === 'granted' ? true : false
-    }
-
-    if (accessToScreenSources) {
-      const sources = await desktopCapturer.getSources({
-        types: ['window'],
-        thumbnailSize: { width: data.width, height: data.height },
-      })
-
-      for (const source of sources) {
-        // electron-builder uses the value of productName in package.json for the title of the application
-        if (source.name === packageJSON.productName) {
-          // @ts-ignore image/png is real.
-          return source.thumbnail.toDataURL('image/png') // The image to display the screenshot
-        }
-      }
-    }
-
-    // Cannot take a native desktop screenshot, unable to access screens
-    return ''
-  }
-)
-
 ipcMain.handle('argv.parser', (event, data) => {
   return argvFromYargs
 })
 
-ipcMain.handle('startDeviceFlow', async (_, host: string) => {
+ipcMain.handle('startDeviceFlow', async (event, host: string) => {
+  const targetWindow = BrowserWindow.fromWebContents(event.sender)
+  if (!targetWindow) {
+    return Promise.reject(new Error('No window available for device flow'))
+  }
+
   // Do an OAuth 2.0 Device Authorization Grant dance to get a token.
   // We quiet ts because we are not using this in the standard way.
   // @ts-ignore
@@ -473,34 +500,62 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
   })
 
   const handle = await client.deviceAuthorization()
+  const verificationUri =
+    handle.verification_uri_complete || handle.verification_uri
 
-  // Register this handle to be used later.
-  ipcMain.handleOnce('loginWithDeviceFlow', async () => {
-    if (!handle) {
-      return Promise.reject(
-        new Error(
-          'No handle available. Did you call startDeviceFlow before calling this?'
-        )
-      )
-    }
-    shell.openExternal(handle.verification_uri_complete).catch(reportRejection)
+  if (!verificationUri) {
+    return Promise.reject(new Error('No verification URI received'))
+  }
 
-    // Wait for the user to login.
-    try {
-      console.log('Polling for token')
-      const tokenSet = await handle.poll()
-      console.log('Received token set')
-      console.log(tokenSet)
-      return tokenSet.access_token
-    } catch (e) {
-      console.log(e)
-    }
-
-    return Promise.reject(new Error('No access token received'))
+  deviceFlowSessions.set(targetWindow, {
+    handle,
+    verificationUri,
   })
 
-  // Return the user code so the app can display it.
-  return handle.user_code
+  return {
+    userCode: handle.user_code,
+    verificationUri,
+  }
+})
+
+ipcMain.handle('cancelDeviceFlow', (event) => {
+  const targetWindow = BrowserWindow.fromWebContents(event.sender)
+  if (targetWindow) {
+    deviceFlowSessions.abort(targetWindow)
+  }
+})
+
+ipcMain.handle('loginWithDeviceFlow', async (event) => {
+  const targetWindow = BrowserWindow.fromWebContents(event.sender)
+  const deviceFlowSession = targetWindow
+    ? deviceFlowSessions.get(targetWindow)
+    : undefined
+  if (!targetWindow || !deviceFlowSession) {
+    return Promise.reject(
+      new Error(
+        'No handle available. Did you call startDeviceFlow before calling this?'
+      )
+    )
+  }
+
+  if (NODE_ENV !== 'test') {
+    shell.openExternal(deviceFlowSession.verificationUri).catch(reportRejection)
+  }
+
+  // Wait for the user to login.
+  try {
+    console.log('Polling for token')
+    const tokenSet = await deviceFlowSession.handle.poll()
+    console.log('Received token set')
+    console.log(tokenSet)
+    return tokenSet.access_token
+  } catch (e) {
+    console.log(e)
+  } finally {
+    deviceFlowSessions.deleteIfCurrent(targetWindow, deviceFlowSession)
+  }
+
+  return Promise.reject(new Error('No access token received'))
 })
 
 // Used to find other devices on the local network, e.g. 3D printers, CNC machines, etc.
@@ -524,35 +579,32 @@ ipcMain.handle('find_machine_api', () => {
 ipcMain.handle('create-menu', (event, data) => {
   const page = data.page
 
-  if (!(page === 'project' || page === 'modeling' || page === 'fallback')) {
+  if (!isAppMenuPage(page)) {
     return
   }
 
-  // Store old menu in our array to avoid GC to collect the menu and crash
-  const oldMenu = Menu.getApplicationMenu()
-  if (oldMenu) {
-    oldMenus.push(oldMenu)
+  const targetWindow = BrowserWindow.fromWebContents(event.sender)
+  if (!targetWindow) {
+    return
   }
 
-  if (page === 'project' && mainWindow) {
-    buildAndSetMenuForProjectPage(mainWindow)
-  } else if (page === 'modeling' && mainWindow) {
-    buildAndSetMenuForModelingPage(mainWindow)
-  } else if (page === 'fallback' && mainWindow) {
-    buildAndSetMenuForFallback(mainWindow)
-  }
-
-  scheduleMenuGC()
+  windowMenuManager.setWindowMenuPage(targetWindow, page)
 })
 
 ipcMain.handle('enable-menu', (event, data) => {
   const menuId = data.menuId
-  enableMenu(menuId)
+  const targetWindow = BrowserWindow.fromWebContents(event.sender)
+  if (targetWindow) {
+    windowMenuManager.updateMenuStateForWindow(targetWindow, menuId, true)
+  }
 })
 
 ipcMain.handle('disable-menu', (event, data) => {
   const menuId = data.menuId
-  disableMenu(menuId)
+  const targetWindow = BrowserWindow.fromWebContents(event.sender)
+  if (targetWindow) {
+    windowMenuManager.updateMenuStateForWindow(targetWindow, menuId, false)
+  }
 })
 
 ipcMain.handle('get-path-userdata', () => app.getPath('userData'))
@@ -587,44 +639,42 @@ app.on('ready', () => {
   appUpdater.on('checking-for-update', () => {
     console.log('checking-for-update')
     if (!backgroundCheckingForUpdates) {
-      mainWindow?.webContents.send('update-checking')
+      sendToAllWindows('update-checking')
     }
   })
 
   appUpdater.on('update-not-available', (info) => {
     console.log('update-not-available', info)
     if (!backgroundCheckingForUpdates) {
-      mainWindow?.webContents.send('update-not-available')
+      sendToAllWindows('update-not-available')
     }
   })
 
   appUpdater.on('error', (error) => {
     console.error('update-error', error)
-    mainWindow?.webContents.send('update-error', error)
+    sendToAllWindows('update-error', error)
   })
 
   appUpdater.on('update-available', (info) => {
     console.log('update-available', info)
   })
 
-  appUpdater.prependOnceListener('download-progress', (progress) => {
-    // For now, we'll send nothing and just start a loading spinner.
-    // See below for a TODO to send progress data to the renderer.
-    console.log('update-download-start', {
-      version: '',
-    })
-    mainWindow?.webContents.send('update-download-start', progress)
-  })
+  appUpdater.prependOnceListener(
+    'download-progress',
+    (progress: AutoUpdateDownloadProgress) => {
+      console.log('update-download-start', progress)
+      sendToAllWindows('update-download-start', progress)
+    }
+  )
 
-  appUpdater.on('download-progress', (progress) => {
-    // TODO: in a future PR (https://github.com/KittyCAD/modeling-app/issues/3994)
-    // send this data to mainWindow to show a progress bar for the download.
+  appUpdater.on('download-progress', (progress: AutoUpdateDownloadProgress) => {
     console.log('download-progress', progress)
+    sendToAllWindows('update-download-progress', progress)
   })
 
   appUpdater.on('update-downloaded', (info) => {
     console.log('update-downloaded', info)
-    mainWindow?.webContents.send('update-downloaded', {
+    sendToAllWindows('update-downloaded', {
       version: info.version,
       releaseNotes: info.releaseNotes,
     })
@@ -683,9 +733,9 @@ app.on('ready', () => {
   })
 })
 
-const getProjectPathAtStartup = async (
+const resolveProjectPathForWindow = async (
   initPromise: Promise<ModuleType>,
-  filePath?: string
+  pathToOpen?: string
 ): Promise<string | null> => {
   // Make sure we have WASM, because we're about to use it indirectly.
   const wasmInstance = await initPromise
@@ -697,37 +747,7 @@ const getProjectPathAtStartup = async (
     return null
   }
 
-  let projectPath: string | null = filePath || null
-  if (projectPath === null) {
-    // macOS: open-file events that were received before the app is ready
-    const macOpenFiles: string[] = (global as any).macOpenFiles
-    if (macOpenFiles && macOpenFiles && macOpenFiles.length > 0) {
-      projectPath = macOpenFiles[0] // We only do one project at a time
-    }
-    // Reset this so we don't accidentally use it again.
-    const macOpenFilesEmpty: string[] = []
-    // @ts-ignore
-    global['macOpenFiles'] = macOpenFilesEmpty
-
-    // macOS: open-url events that were received before the app is ready
-    const getOpenUrls: string[] = (global as any).getOpenUrls
-    if (getOpenUrls && getOpenUrls.length > 0) {
-      projectPath = getOpenUrls[0] // We only do one project at a
-    }
-    // Reset this so we don't accidentally use it again.
-    // @ts-ignore
-    global['getOpenUrls'] = []
-
-    // Check if we have a project path in the command line arguments
-    // If we do, we will load the project at that path
-    if (args._.length > 1) {
-      if (args._[1].length > 0) {
-        projectPath = args._[1]
-        // Reset all this value so we don't accidentally use it again.
-        args._[1] = ''
-      }
-    }
-  }
+  const projectPath: string | null = pathToOpen || null
 
   if (projectPath) {
     // We have a project path, load the project information.
@@ -764,9 +784,7 @@ function registerStartupListeners() {
    * macOS: when someone drops a file to the not-yet running VSCode, the open-file event fires even before
    * the app-ready event. We listen very early for open-file and remember this upon startup as path to open.
    */
-  const macOpenFiles: string[] = []
-  // @ts-ignore
-  global['macOpenFiles'] = macOpenFiles
+  startupMacOpenFiles = []
   app.on('open-file', function (event, path) {
     event.preventDefault()
 
@@ -774,16 +792,14 @@ function registerStartupListeners() {
     if (mainWindow) {
       createWindow(path)
     } else {
-      macOpenFiles.push(path)
+      startupMacOpenFiles.push(path)
     }
   })
 
   /**
    * macOS: react to open-url requests (including Deep Link on second instances)
    */
-  const openUrls: string[] = []
-  // @ts-ignore
-  global['openUrls'] = openUrls
+  startupOpenUrls = []
   const onOpenUrl = function (
     event: { preventDefault: () => void },
     url: string
@@ -794,7 +810,7 @@ function registerStartupListeners() {
     if (mainWindow) {
       createWindow(url)
     } else {
-      openUrls.push(url)
+      startupOpenUrls.push(url)
     }
   }
 

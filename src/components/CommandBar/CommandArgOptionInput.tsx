@@ -47,7 +47,7 @@ function CommandArgOptionInput({
   )
   const inputRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
-  const [shouldSubmitOnChange, setShouldSubmitOnChange] = useState(false)
+  const shouldSubmitOnChange = useRef(false)
   const [selectedOption, setSelectedOption] = useState<
     CommandArgumentOption<unknown>
   >(currentOption || resolvedOptions[0])
@@ -104,7 +104,8 @@ function CommandArgOptionInput({
     setSelectedOption(option)
 
     // But we only submit the value itself
-    if (shouldSubmitOnChange) {
+    if (shouldSubmitOnChange.current) {
+      shouldSubmitOnChange.current = false
       onSubmit(option.value)
     }
   }
@@ -123,9 +124,9 @@ function CommandArgOptionInput({
       ref={formRef}
       onKeyDownCapture={(e) => {
         if (e.key === 'Enter') {
-          setShouldSubmitOnChange(true)
+          shouldSubmitOnChange.current = true
         } else {
-          setShouldSubmitOnChange(false)
+          shouldSubmitOnChange.current = false
         }
       }}
     >
@@ -158,9 +159,9 @@ function CommandArgOptionInput({
               }
 
               if (event.key === 'Enter') {
-                setShouldSubmitOnChange(true)
+                shouldSubmitOnChange.current = true
               } else {
-                setShouldSubmitOnChange(false)
+                shouldSubmitOnChange.current = false
               }
             }}
             value={query}
@@ -182,7 +183,7 @@ function CommandArgOptionInput({
             static
             className="overflow-y-auto max-h-96 cursor-pointer"
             onMouseDown={() => {
-              setShouldSubmitOnChange(true)
+              shouldSubmitOnChange.current = true
             }}
           >
             {filteredOptions?.map((option) => (

@@ -33,6 +33,15 @@ description: Artifact commands router-template-slate.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -59,8 +68,8 @@ description: Artifact commands router-template-slate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.0,
-          "y": 28.118750000000002,
+          "x": -0.000000004038446625897093,
+          "y": 28.119999999999845,
           "z": 0.0
         }
       }
@@ -82,10 +91,10 @@ description: Artifact commands router-template-slate.kcl
           "type": "line",
           "end": {
             "x": 10.75,
-            "y": 0.0,
+            "y": 28.12,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -101,7 +110,7 @@ description: Artifact commands router-template-slate.kcl
             "x": 10.75,
             "y": 20.0
           },
-          "radius": 8.11875,
+          "radius": 8.120000000000001,
           "start": {
             "unit": "degrees",
             "value": 90.0
@@ -123,8 +132,8 @@ description: Artifact commands router-template-slate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 18.86875,
-            "y": -12.49375,
+            "x": 18.87,
+            "y": -12.49,
             "z": 0.0
           },
           "relative": false
@@ -141,7 +150,7 @@ description: Artifact commands router-template-slate.kcl
           "type": "line",
           "end": {
             "x": 30.75,
-            "y": -12.49375,
+            "y": -12.49,
             "z": 0.0
           },
           "relative": false
@@ -157,25 +166,8 @@ description: Artifact commands router-template-slate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": -110.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
-            "y": -122.49375,
+            "x": 30.75,
+            "y": -122.49,
             "z": 0.0
           },
           "relative": false
@@ -191,11 +183,11 @@ description: Artifact commands router-template-slate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -30.75,
-            "y": 0.0,
+            "x": -0.000000000000002522020735589705,
+            "y": -122.49,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -208,11 +200,11 @@ description: Artifact commands router-template-slate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 110.0,
+            "x": -30.750000000000004,
+            "y": -122.48999999911221,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -225,11 +217,11 @@ description: Artifact commands router-template-slate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 11.881250000000001,
-            "y": 0.0,
+            "x": -30.750625000000625,
+            "y": -12.49000000088778,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -242,11 +234,28 @@ description: Artifact commands router-template-slate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 32.49375,
+            "x": -18.869375000000623,
+            "y": -12.489999999665352,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -18.86958331673116,
+            "y": 19.999999999666816,
+            "z": 0.0
+          },
+          "relative": false
         }
       }
     },
@@ -259,17 +268,17 @@ description: Artifact commands router-template-slate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -10.749999999999998,
-            "y": 19.999999999999993
+            "x": -10.750833359502215,
+            "y": 20.000833363337303
           },
           "radius": 8.11875,
           "start": {
             "unit": "degrees",
-            "value": 180.0
+            "value": -179.99411877183036
           },
           "end": {
             "unit": "degrees",
-            "value": 90.0
+            "value": -270.0058812272431
           },
           "relative": false
         }
@@ -284,8 +293,8 @@ description: Artifact commands router-template-slate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 28.118750000000002,
+            "x": -0.00000000403844662993554,
+            "y": 28.119999999999845,
             "z": 0.0
           },
           "relative": false
@@ -296,8 +305,12 @@ description: Artifact commands router-template-slate.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -389,7 +402,7 @@ description: Artifact commands router-template-slate.kcl
         "path": "[uuid]",
         "to": {
           "x": -20.75,
-          "y": -12.49375,
+          "y": -12.49,
           "z": 0.0
         }
       }
@@ -410,11 +423,11 @@ description: Artifact commands router-template-slate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -7.0,
-            "y": 0.0,
+            "x": -27.75,
+            "y": -12.49,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -427,28 +440,11 @@ description: Artifact commands router-template-slate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.000000000000014695761589768237,
-            "y": -80.0,
+            "x": -27.75,
+            "y": -92.49,
             "z": 0.0
           },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 7.0,
-            "y": -0.0000000000000008572527594031472,
-            "z": 0.0
-          },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -462,7 +458,7 @@ description: Artifact commands router-template-slate.kcl
           "type": "line",
           "end": {
             "x": -20.75,
-            "y": -12.49375,
+            "y": -92.49,
             "z": 0.0
           },
           "relative": false
@@ -473,8 +469,29 @@ description: Artifact commands router-template-slate.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -20.75,
+            "y": -12.49,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -562,7 +579,7 @@ description: Artifact commands router-template-slate.kcl
         "path": "[uuid]",
         "to": {
           "x": 20.75,
-          "y": -12.49375,
+          "y": -12.49,
           "z": 0.0
         }
       }
@@ -583,11 +600,11 @@ description: Artifact commands router-template-slate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 7.0,
-            "y": 0.0,
+            "x": 27.75,
+            "y": -12.49,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -600,28 +617,11 @@ description: Artifact commands router-template-slate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000000004898587196589413,
-            "y": -80.0,
+            "x": 27.75,
+            "y": -92.49,
             "z": 0.0
           },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -7.0,
-            "y": -0.0,
-            "z": 0.0
-          },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -635,7 +635,7 @@ description: Artifact commands router-template-slate.kcl
           "type": "line",
           "end": {
             "x": 20.75,
-            "y": -12.49375,
+            "y": -92.49,
             "z": 0.0
           },
           "relative": false
@@ -646,8 +646,29 @@ description: Artifact commands router-template-slate.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 20.75,
+            "y": -12.49,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {

@@ -11,10 +11,14 @@ diameter = 10
 sketch = startSketchOn(XY)
 
 // create the profile centered at the origin
-profile = startProfile(sketch, at = [-diameter / 2, 0])
-  |> xLine(length = diameter)
-  |> arc(angleStart = 0.0, angleEnd = 180.0, radius = diameter / 2)
-  |> close()
+profile = sketch(on = sketch) {
+  line1 = line(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm])
+  arc2 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([line1.end, arc2.start])
+  horizontal(line1)
+  radius(arc2) == 5mm
+}
 
+region001 = region(segments = [profile.line1, profile.arc2])
 // revolve the profile to create the sphere
-wedge = revolve(profile, axis = X, angle = 360.0)
+sphere = revolve(region001, axis = X, angle = 360.0)

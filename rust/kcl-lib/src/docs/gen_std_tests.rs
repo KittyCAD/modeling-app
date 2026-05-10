@@ -14,6 +14,7 @@ use super::kcl_doc::ExampleProperties;
 use super::kcl_doc::ExampleSketchSyntax;
 use super::kcl_doc::FnData;
 use super::kcl_doc::ModData;
+use super::kcl_doc::Properties;
 use super::kcl_doc::TyData;
 use super::kcl_doc::remove_md_links;
 use crate::ConnectionError;
@@ -27,6 +28,15 @@ mod type_formatter;
 fn escape_frontmatter_value(value: &str) -> String {
     // YAML frontmatter is double-quoted in templates, so escape backslashes and quotes.
     value.replace('\\', "\\\\").replace('"', "\\\"")
+}
+
+fn check_deprecation_attrs(qual_name: &str, props: &Properties) -> Result<()> {
+    if props.deprecated && props.deprecated_since.is_some() {
+        return Err(anyhow::anyhow!(
+            "{qual_name} has both `deprecated` and `deprecated_since` set; only one may be specified"
+        ));
+    }
+    Ok(())
 }
 
 fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
@@ -334,6 +344,8 @@ fn generate_type_from_kcl(
         return Ok(());
     }
 
+    check_deprecation_attrs(&ty.qual_name, &ty.properties)?;
+
     let hbs = init_handlebars()?;
 
     let examples: Vec<serde_json::Value> = ty
@@ -351,6 +363,7 @@ fn generate_type_from_kcl(
         "summary": sanitize_markdown_links(flavor, ty.summary.clone()),
         "description": sanitize_markdown_links(flavor, ty.description.clone()),
         "deprecated": ty.properties.deprecated,
+        "deprecated_since": ty.properties.deprecated_since.as_ref().map(ToString::to_string),
         "experimental": ty.properties.experimental,
         "examples": examples,
     });
@@ -430,6 +443,8 @@ fn generate_function_from_kcl(
         return Ok(());
     }
 
+    check_deprecation_attrs(&function.qual_name, &function.properties)?;
+
     let hbs = init_handlebars()?;
 
     let examples: Vec<serde_json::Value> = function
@@ -460,6 +475,7 @@ fn generate_function_from_kcl(
                         .unwrap_or_default(),
                 ),
                 "required": arg.kind.required(),
+                "deprecated_since": arg.deprecated_since.as_ref().map(ToString::to_string),
             })
         })
         .collect::<Vec<_>>();
@@ -470,6 +486,7 @@ fn generate_function_from_kcl(
         "summary": sanitize_markdown_links(flavor, function.summary.clone()),
         "description": sanitize_markdown_links(flavor, function.description.clone()),
         "deprecated": function.properties.deprecated,
+        "deprecated_since": function.properties.deprecated_since.as_ref().map(ToString::to_string),
         "experimental": function.properties.experimental,
         "fn_signature": function.preferred_name.clone() + &function.fn_signature(),
         "examples": examples,
@@ -515,6 +532,9 @@ fn generate_const_from_kcl(
     if cnst.properties.doc_hidden {
         return Ok(());
     }
+
+    check_deprecation_attrs(&cnst.qual_name, &cnst.properties)?;
+
     let hbs = init_handlebars()?;
 
     let examples: Vec<serde_json::Value> = cnst
@@ -531,6 +551,7 @@ fn generate_const_from_kcl(
         "summary": sanitize_markdown_links(flavor, cnst.summary.clone()),
         "description": sanitize_markdown_links(flavor, cnst.description.clone()),
         "deprecated": cnst.properties.deprecated,
+        "deprecated_since": cnst.properties.deprecated_since.as_ref().map(ToString::to_string),
         "experimental": cnst.properties.experimental,
         "type_": cnst.ty,
         "type_desc": cnst.ty.as_ref().map(|t| {
@@ -673,7 +694,7 @@ fn cleanup_type_string(input: &str, fmt_for_text: bool, kcl_std: &ModData, flavo
 
 #[test]
 fn test_generate_stdlib_markdown_docs() {
-    let kcl_std = crate::docs::kcl_doc::walk_prelude();
+    let kcl_std = crate::docs::kcl_doc::walk_stdlib();
 
     for flavor in StdlibDocFlavor::ALL {
         generate_index(&kcl_std, flavor).unwrap();
@@ -768,7 +789,7 @@ async fn run_example(program: &crate::Program) -> Result<(), ExecErrorWithState>
     let result = ctx
         .run(program, &mut exec_state)
         .await
-        .map_err(|err| ExecErrorWithState::new(err.into(), exec_state));
+        .map_err(|err| ExecErrorWithState::new(err.into(), exec_state, None));
     // Always close, even when there's an error.
     ctx.close().await;
     result.map(|_| ())
@@ -780,7 +801,7 @@ mod tests {
 
     #[test]
     fn test_cleanup_type_string() {
-        let kcl_std = crate::docs::kcl_doc::walk_prelude();
+        let kcl_std = crate::docs::kcl_doc::walk_stdlib();
 
         struct Test {
             input: &'static str,

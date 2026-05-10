@@ -11,8 +11,15 @@ outerDiameter = 0.438
 thicknessNom = 0.032
 
 // Define the sketch of the washer
-washerSketch = startSketchOn(XY)
-  |> circle(center = [0, 0], radius = outerDiameter / 2)
-  |> subtract2d(tool = circle(center = [0, 0], radius = innerDiameter / 2))
+washerSketch = sketch(on = XY) {
+  circle1 = circle(start = [var 0.22in, var 0in], center = [var 0in, var 0in])
+  coincident([circle1.center, ORIGIN])
+  distance([circle1.center, circle1.start]) == outerDiameter / 2
+  circle2 = circle(start = [var 0.1in, var 0in], center = [var 0in, var 0in])
+  coincident([circle2.center, ORIGIN])
+  distance([circle2.start, circle2.center]) == innerDiameter / 2
+}
 
-washer = extrude(washerSketch, length = thicknessNom)
+ringRegion = region(point = [0.15in, 0in], sketch = washerSketch)
+hide(washerSketch)
+washer = extrude(ringRegion, length = thicknessNom)

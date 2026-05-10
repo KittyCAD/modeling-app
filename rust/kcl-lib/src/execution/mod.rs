@@ -57,9 +57,15 @@ pub use sketch_transpiler::transpile_all_old_sketches_to_new;
 pub use sketch_transpiler::transpile_old_sketch_to_new;
 pub use sketch_transpiler::transpile_old_sketch_to_new_ast;
 pub use sketch_transpiler::transpile_old_sketch_to_new_with_execution;
+pub(crate) use state::ConstraintKey;
+pub(crate) use state::ConstraintState;
+pub(crate) use state::ConsumedSolidInfo;
+pub(crate) use state::ConsumedSolidOperation;
 pub use state::ExecState;
+pub(crate) use state::KclVersion;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
+pub(crate) use state::TangencyMode;
 use uuid::Uuid;
 
 use crate::CompilationIssue;
@@ -69,6 +75,7 @@ use crate::NodePath;
 use crate::SourceRange;
 #[cfg(feature = "artifact-graph")]
 use crate::collections::AhashIndexSet;
+use crate::engine::EngineBatchContext;
 use crate::engine::EngineManager;
 use crate::engine::GridScaleBehavior;
 use crate::errors::KclError;
@@ -288,6 +295,7 @@ pub struct ExecOutcome {
 /// Per-segment freedom used by the constraint report. Mirrors
 /// [`crate::front::Freedom`] but adds an `Error` variant for when
 /// a point lookup fails.
+#[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
 #[derive(Debug, Clone, Copy, PartialEq)]
 enum SegmentFreedom {
     Free,
@@ -350,6 +358,117 @@ pub struct SketchConstraintReport {
     pub errors: Vec<SketchConstraintStatus>,
 }
 
+/// Compute the constraint status for a single sketch object.
+///
+/// Returns `None` if `sketch_obj` is not a sketch.
+///
+/// Note: a sketch with no countable segments (`total_count == 0`) is reported
+/// as [`ConstraintKind::FullyConstrained`]. This is vacuously true — there are
+/// no free or conflicting segments. Callers can check `total_count == 0` to
+/// distinguish this from a genuinely constrained sketch.
+#[cfg(feature = "artifact-graph")]
+pub(crate) fn sketch_constraint_status_for_sketch(
+    scene_objects: &[Object],
+    sketch_obj: &Object,
+) -> Option<SketchConstraintStatus> {
+    use crate::front::ObjectKind;
+    use crate::front::Segment;
+
+    let ObjectKind::Sketch(sketch) = &sketch_obj.kind else {
+        return None;
+    };
+
+    // Closure to look up a point's freedom by ObjectId.
+    let lookup = |id: ObjectId| -> Option<crate::front::Freedom> {
+        let obj = scene_objects.get(id.0)?;
+        if let ObjectKind::Segment {
+            segment: Segment::Point(p),
+        } = &obj.kind
+        {
+            Some(p.freedom())
+        } else {
+            None
+        }
+    };
+
+    let mut free_count: usize = 0;
+    let mut conflict_count: usize = 0;
+    let mut error_count: usize = 0;
+    let mut total_count: usize = 0;
+
+    for &seg_id in &sketch.segments {
+        let Some(seg_obj) = scene_objects.get(seg_id.0) else {
+            continue;
+        };
+        let ObjectKind::Segment { segment } = &seg_obj.kind else {
+            continue;
+        };
+        // Skip owned points — their freedom is already captured by
+        // the parent geometry (Line/Arc/Circle) that looks them up.
+        if let Segment::Point(p) = segment
+            && p.owner.is_some()
+        {
+            continue;
+        }
+        let freedom = segment
+            .freedom(lookup)
+            .map(SegmentFreedom::from)
+            .unwrap_or(SegmentFreedom::Error);
+        total_count += 1;
+        match freedom {
+            SegmentFreedom::Free => free_count += 1,
+            SegmentFreedom::Conflict => conflict_count += 1,
+            SegmentFreedom::Error => error_count += 1,
+            SegmentFreedom::Fixed => {}
+        }
+    }
+
+    let status = if error_count > 0 {
+        ConstraintKind::Error
+    } else if conflict_count > 0 {
+        ConstraintKind::OverConstrained
+    } else if free_count > 0 {
+        ConstraintKind::UnderConstrained
+    } else {
+        ConstraintKind::FullyConstrained
+    };
+
+    Some(SketchConstraintStatus {
+        name: sketch_obj.label.clone(),
+        status,
+        free_count,
+        conflict_count,
+        total_count,
+    })
+}
+
+#[cfg(feature = "artifact-graph")]
+pub(crate) fn sketch_constraint_report_from_scene_objects(scene_objects: &[Object]) -> SketchConstraintReport {
+    let mut fully_constrained = Vec::new();
+    let mut under_constrained = Vec::new();
+    let mut over_constrained = Vec::new();
+    let mut errors = Vec::new();
+
+    for obj in scene_objects {
+        let Some(entry) = sketch_constraint_status_for_sketch(scene_objects, obj) else {
+            continue;
+        };
+        match entry.status {
+            ConstraintKind::FullyConstrained => fully_constrained.push(entry),
+            ConstraintKind::UnderConstrained => under_constrained.push(entry),
+            ConstraintKind::OverConstrained => over_constrained.push(entry),
+            ConstraintKind::Error => errors.push(entry),
+        }
+    }
+
+    SketchConstraintReport {
+        fully_constrained,
+        under_constrained,
+        over_constrained,
+        errors,
+    }
+}
+
 impl ExecOutcome {
     pub fn scene_object_by_id(&self, id: ObjectId) -> Option<&Object> {
         #[cfg(feature = "artifact-graph")]
@@ -382,101 +501,7 @@ impl ExecOutcome {
     /// Line/Arc/Circle) are skipped to avoid double-counting.
     #[cfg(feature = "artifact-graph")]
     pub fn sketch_constraint_report(&self) -> SketchConstraintReport {
-        use crate::front::ObjectKind;
-        use crate::front::Segment;
-
-        // Closure to look up a point's freedom by ObjectId.
-        let lookup = |id: ObjectId| -> Option<crate::front::Freedom> {
-            let obj = self.scene_objects.get(id.0)?;
-            if let ObjectKind::Segment {
-                segment: Segment::Point(p),
-            } = &obj.kind
-            {
-                Some(p.freedom())
-            } else {
-                None
-            }
-        };
-
-        let mut fully_constrained = Vec::new();
-        let mut under_constrained = Vec::new();
-        let mut over_constrained = Vec::new();
-        let mut errors = Vec::new();
-
-        for obj in &self.scene_objects {
-            let ObjectKind::Sketch(sketch) = &obj.kind else {
-                continue;
-            };
-
-            let mut free_count: usize = 0;
-            let mut conflict_count: usize = 0;
-            let mut error_count: usize = 0;
-            let mut total_count: usize = 0;
-
-            for &seg_id in &sketch.segments {
-                let Some(seg_obj) = self.scene_objects.get(seg_id.0) else {
-                    continue;
-                };
-                let ObjectKind::Segment { segment } = &seg_obj.kind else {
-                    continue;
-                };
-                // Skip owned points — their freedom is already captured by
-                // the parent geometry (Line/Arc/Circle) that looks them up.
-                if let Segment::Point(p) = segment
-                    && p.owner.is_some()
-                {
-                    continue;
-                }
-                let freedom = segment
-                    .freedom(lookup)
-                    .map(SegmentFreedom::from)
-                    .unwrap_or(SegmentFreedom::Error);
-                total_count += 1;
-                match freedom {
-                    SegmentFreedom::Free => free_count += 1,
-                    SegmentFreedom::Conflict => conflict_count += 1,
-                    SegmentFreedom::Error => error_count += 1,
-                    SegmentFreedom::Fixed => {}
-                }
-            }
-
-            // Note: a sketch with no countable segments (total_count == 0)
-            // is reported as FullyConstrained. This is vacuously true — there
-            // are no free or conflicting segments, so it satisfies the
-            // definition. Callers can check total_count == 0 to distinguish
-            // this from a genuinely constrained sketch.
-            let status = if error_count > 0 {
-                ConstraintKind::Error
-            } else if conflict_count > 0 {
-                ConstraintKind::OverConstrained
-            } else if free_count > 0 {
-                ConstraintKind::UnderConstrained
-            } else {
-                ConstraintKind::FullyConstrained
-            };
-
-            let entry = SketchConstraintStatus {
-                name: obj.label.clone(),
-                status,
-                free_count,
-                conflict_count,
-                total_count,
-            };
-
-            match status {
-                ConstraintKind::FullyConstrained => fully_constrained.push(entry),
-                ConstraintKind::UnderConstrained => under_constrained.push(entry),
-                ConstraintKind::OverConstrained => over_constrained.push(entry),
-                ConstraintKind::Error => errors.push(entry),
-            }
-        }
-
-        SketchConstraintReport {
-            fully_constrained,
-            under_constrained,
-            over_constrained,
-            errors,
-        }
+        sketch_constraint_report_from_scene_objects(&self.scene_objects)
     }
 }
 
@@ -743,6 +768,7 @@ pub enum ContextType {
 #[derive(Debug, Clone)]
 pub struct ExecutorContext {
     pub engine: Arc<Box<dyn EngineManager>>,
+    pub engine_batch: EngineBatchContext,
     pub fs: Arc<FileManager>,
     pub settings: ExecutorSettings,
     pub context_type: ContextType,
@@ -793,14 +819,15 @@ impl From<crate::settings::types::Configuration> for ExecutorSettings {
 
 impl From<crate::settings::types::Settings> for ExecutorSettings {
     fn from(settings: crate::settings::types::Settings) -> Self {
+        let modeling_settings = settings.modeling.unwrap_or_default();
         Self {
-            highlight_edges: settings.modeling.highlight_edges.into(),
-            enable_ssao: settings.modeling.enable_ssao.into(),
-            show_grid: settings.modeling.show_scale_grid,
+            highlight_edges: modeling_settings.highlight_edges.unwrap_or_default().into(),
+            enable_ssao: modeling_settings.enable_ssao.unwrap_or_default().into(),
+            show_grid: modeling_settings.show_scale_grid.unwrap_or_default(),
             replay: None,
             project_directory: None,
             current_file: None,
-            fixed_size_grid: settings.modeling.fixed_size_grid,
+            fixed_size_grid: modeling_settings.fixed_size_grid.unwrap_or_default().0,
         }
     }
 }
@@ -814,9 +841,9 @@ impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSet
 impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
     fn from(modeling: crate::settings::types::ModelingSettings) -> Self {
         Self {
-            highlight_edges: modeling.highlight_edges.into(),
-            enable_ssao: modeling.enable_ssao.into(),
-            show_grid: modeling.show_scale_grid,
+            highlight_edges: modeling.highlight_edges.unwrap_or_default().into(),
+            enable_ssao: modeling.enable_ssao.unwrap_or_default().into(),
+            show_grid: modeling.show_scale_grid.unwrap_or_default(),
             replay: None,
             project_directory: None,
             current_file: None,
@@ -866,9 +893,20 @@ impl ExecutorContext {
     ) -> Self {
         ExecutorContext {
             engine,
+            engine_batch: EngineBatchContext::default(),
             fs,
             settings,
             context_type: ContextType::Live,
+        }
+    }
+
+    fn clone_with_fresh_execution_batch(&self) -> Self {
+        Self {
+            engine: self.engine.clone(),
+            engine_batch: EngineBatchContext::new(),
+            fs: self.fs.clone(),
+            settings: self.settings.clone(),
+            context_type: self.context_type.clone(),
         }
     }
 
@@ -919,6 +957,7 @@ impl ExecutorContext {
     pub async fn new_mock(settings: Option<ExecutorSettings>) -> Self {
         ExecutorContext {
             engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            engine_batch: EngineBatchContext::default(),
             fs: Arc::new(FileManager::new()),
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
@@ -929,6 +968,7 @@ impl ExecutorContext {
     pub fn new_mock(engine: Arc<Box<dyn EngineManager>>, fs: Arc<FileManager>, settings: ExecutorSettings) -> Self {
         ExecutorContext {
             engine,
+            engine_batch: EngineBatchContext::default(),
             fs,
             settings,
             context_type: ContextType::Mock,
@@ -952,6 +992,7 @@ impl ExecutorContext {
 
         Ok(ExecutorContext {
             engine: mock_engine,
+            engine_batch: EngineBatchContext::default(),
             fs,
             settings,
             context_type: ContextType::Mock,
@@ -962,6 +1003,7 @@ impl ExecutorContext {
     pub fn new_forwarded_mock(engine: Arc<Box<dyn EngineManager>>) -> Self {
         ExecutorContext {
             engine,
+            engine_batch: EngineBatchContext::default(),
             fs: Arc::new(FileManager::new()),
             settings: Default::default(),
             context_type: ContextType::MockCustomForwarded,
@@ -1038,7 +1080,7 @@ impl ExecutorContext {
         exec_state.global.artifacts.clear();
 
         self.engine
-            .clear_scene(&mut exec_state.mod_local.id_generator, source_range)
+            .clear_scene(&self.engine_batch, &mut exec_state.mod_local.id_generator, source_range)
             .await?;
         // The engine errors out if you toggle OIT with SSAO off.
         // So ignore OIT settings if SSAO is off.
@@ -1083,6 +1125,7 @@ impl ExecutorContext {
         exec_state.global.module_infos = mem.module_infos;
         exec_state.global.path_to_source_id = mem.path_to_source_id;
         exec_state.global.id_to_source = mem.id_to_source;
+        exec_state.mod_local.constraint_state = mem.constraint_state;
         #[cfg(feature = "artifact-graph")]
         {
             let len = _mock_config
@@ -1145,6 +1188,7 @@ impl ExecutorContext {
         let module_infos = exec_state.global.module_infos.clone();
         let path_to_source_id = exec_state.global.path_to_source_id.clone();
         let id_to_source = exec_state.global.id_to_source.clone();
+        let constraint_state = exec_state.mod_local.constraint_state.clone();
         #[cfg(feature = "artifact-graph")]
         let scene_objects = exec_state.global.root_module_artifacts.scene_objects.clone();
         #[cfg(not(feature = "artifact-graph"))]
@@ -1157,6 +1201,7 @@ impl ExecutorContext {
             module_infos,
             path_to_source_id,
             id_to_source,
+            constraint_state,
             scene_objects,
         };
         cache::write_old_memory(state).await;
@@ -1196,6 +1241,7 @@ impl ExecutorContext {
                             && self
                                 .engine
                                 .reapply_settings(
+                                    &self.engine_batch,
                                     &self.settings,
                                     Default::default(),
                                     &mut cached_state.main.exec_state.id_generator,
@@ -1225,6 +1271,7 @@ impl ExecutorContext {
                             if self
                                 .engine
                                 .reapply_settings(
+                                    &self.engine_batch,
                                     &self.settings,
                                     Default::default(),
                                     &mut cached_state.main.exec_state.id_generator,
@@ -1264,6 +1311,7 @@ impl ExecutorContext {
 
                             if !clear_scene {
                                 // Return early we don't need to clear the scene.
+                                cache::write_old_memory(cached_state.mock_memory_state()).await;
                                 return Ok(cached_state.into_exec_outcome(self).await);
                             }
 
@@ -1281,6 +1329,7 @@ impl ExecutorContext {
                         if self
                             .engine
                             .reapply_settings(
+                                &self.engine_batch,
                                 &self.settings,
                                 Default::default(),
                                 &mut cached_state.main.exec_state.id_generator,
@@ -1296,11 +1345,13 @@ impl ExecutorContext {
                             ))
                             .await;
 
+                            cache::write_old_memory(cached_state.mock_memory_state()).await;
                             return Ok(cached_state.into_exec_outcome(self).await);
                         }
                         (true, program, None)
                     }
                     CacheResult::NoAction(false) => {
+                        cache::write_old_memory(cached_state.mock_memory_state()).await;
                         return Ok(cached_state.into_exec_outcome(self).await);
                     }
                 };
@@ -1461,7 +1512,7 @@ impl ExecutorContext {
                 );
 
                 let repr = repr.clone();
-                let exec_ctxt = self.clone();
+                let exec_ctxt = self.clone_with_fresh_execution_batch();
                 let results_tx = results_tx.clone();
 
                 let exec_module = async |exec_ctxt: &ExecutorContext,
@@ -1705,6 +1756,7 @@ impl ExecutorContext {
         };
         self.engine
             .reapply_settings(
+                &self.engine_batch,
                 &self.settings,
                 Default::default(),
                 exec_state.id_generator(),
@@ -1737,6 +1789,7 @@ impl ExecutorContext {
                 module_infos: exec_state.global.module_infos.clone(),
                 path_to_source_id: exec_state.global.path_to_source_id.clone(),
                 id_to_source: exec_state.global.id_to_source.clone(),
+                constraint_state: exec_state.mod_local.constraint_state.clone(),
                 #[cfg(feature = "artifact-graph")]
                 scene_objects: exec_state.global.root_module_artifacts.scene_objects.clone(),
                 #[cfg(not(feature = "artifact-graph"))]
@@ -1838,17 +1891,20 @@ impl ExecutorContext {
         }
 
         // Ensure all the async commands completed.
-        self.engine.ensure_async_commands_completed().await.map_err(|e| {
-            match &exec_result {
-                Ok(env_ref) => (e, Some(*env_ref)),
-                // Prefer the execution error.
-                Err((exec_err, env_ref)) => (exec_err.clone(), *env_ref),
-            }
-        })?;
+        self.engine
+            .ensure_async_commands_completed(&self.engine_batch)
+            .await
+            .map_err(|e| {
+                match &exec_result {
+                    Ok(env_ref) => (e, Some(*env_ref)),
+                    // Prefer the execution error.
+                    Err((exec_err, env_ref)) => (exec_err.clone(), *env_ref),
+                }
+            })?;
 
         // If we errored out and early-returned, there might be commands which haven't been executed
         // and should be dropped.
-        self.engine.clear_queues().await;
+        self.engine.clear_queues(&self.engine_batch).await;
 
         match exec_state.build_artifact_graph(&self.engine, program).await {
             Ok(_) => exec_result,
@@ -1890,6 +1946,7 @@ impl ExecutorContext {
         // Zoom to fit.
         self.engine
             .send_modeling_cmd(
+                &self.engine_batch,
                 uuid::Uuid::new_v4(),
                 crate::execution::SourceRange::default(),
                 &ModelingCmd::from(
@@ -1907,6 +1964,7 @@ impl ExecutorContext {
         let resp = self
             .engine
             .send_modeling_cmd(
+                &self.engine_batch,
                 uuid::Uuid::new_v4(),
                 crate::execution::SourceRange::default(),
                 &ModelingCmd::from(mcmd::TakeSnapshot::builder().format(ImageFormat::Png).build()),
@@ -1933,6 +1991,7 @@ impl ExecutorContext {
         let resp = self
             .engine
             .send_modeling_cmd(
+                &self.engine_batch,
                 uuid::Uuid::new_v4(),
                 crate::SourceRange::default(),
                 &kittycad_modeling_cmds::ModelingCmd::Export(
@@ -2056,6 +2115,7 @@ pub(crate) async fn parse_execute_with_project_dir(
                 ))
             },
         )?)),
+        engine_batch: EngineBatchContext::default(),
         fs: Arc::new(crate::fs::FileManager::new()),
         settings: ExecutorSettings {
             project_directory,
@@ -3260,6 +3320,29 @@ extrude001 = extrude(region001, length = 1)
         ctx.close().await;
     }
 
+    #[tokio::test(flavor = "multi_thread")]
+    async fn face_parent_solid_stays_compact_for_repeated_sketch_on_face() {
+        let code = format!(
+            r#"{}
+
+face7 = faceOf(solid6, face = r6.tags.line1)
+r7 = squareRegion(onSurface = face7)
+solid7 = extrude(r7, length = width)
+"#,
+            include_str!("../../tests/endless_impeller/input.kcl")
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        let solid7 = mem_get_json(result.exec_state.stack(), result.mem_env, "solid7");
+        assert!(matches!(solid7, KclValue::Solid { .. }), "actual: {solid7:?}");
+
+        let face7 = match mem_get_json(result.exec_state.stack(), result.mem_env, "face7") {
+            KclValue::Face { value } => value,
+            value => panic!("expected face7 to be a Face, got {value:?}"),
+        };
+        assert!(face7.parent_solid.creator_sketch_id.is_some());
+    }
+
     #[cfg(feature = "artifact-graph")]
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_has_stable_ids() {
@@ -3296,11 +3379,18 @@ extrude001 = extrude(region001, length = 1)
         };
         ctx.run_mock(&crate::Program::empty(), &cold_start).await.unwrap();
 
-        let mem = cache::read_old_memory().await.unwrap();
+        let mut mem = cache::read_old_memory().await.unwrap();
         assert!(
             mem.path_to_source_id.len() > 3,
             "expected prelude imports to populate multiple modules, got {:?}",
             mem.path_to_source_id
+        );
+        mem.constraint_state.insert(
+            crate::front::ObjectId(1),
+            indexmap::indexmap! {
+                crate::execution::ConstraintKey::LineCircle([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) =>
+                    crate::execution::ConstraintState::Tangency(crate::execution::TangencyMode::LineCircle(ezpz::LineSide::Left))
+            },
         );
 
         let mut exec_state = ExecState::new_mock(&ctx, &MockConfig::default());
@@ -3309,7 +3399,46 @@ extrude001 = extrude(region001, length = 1)
         assert_eq!(exec_state.global.path_to_source_id, mem.path_to_source_id);
         assert_eq!(exec_state.global.id_to_source, mem.id_to_source);
         assert_eq!(exec_state.global.module_infos, mem.module_infos);
+        assert_eq!(exec_state.mod_local.constraint_state, mem.constraint_state);
 
+        clear_mem_cache().await;
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn run_with_caching_no_action_refreshes_mock_memory() {
+        cache::bust_cache().await;
+        clear_mem_cache().await;
+
+        let ctx = ExecutorContext::new_with_engine(
+            std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            Default::default(),
+        );
+        let program = crate::Program::parse_no_errs(
+            r#"sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+}
+"#,
+        )
+        .unwrap();
+
+        ctx.run_with_caching(program.clone()).await.unwrap();
+        let baseline_memory = cache::read_old_memory().await.unwrap();
+        assert!(
+            !baseline_memory.scene_objects.is_empty(),
+            "expected engine execution to persist full-scene mock memory"
+        );
+
+        cache::write_old_memory(cache::SketchModeState::new_for_tests()).await;
+        assert_eq!(cache::read_old_memory().await.unwrap().scene_objects.len(), 0);
+
+        ctx.run_with_caching(program).await.unwrap();
+        let refreshed_memory = cache::read_old_memory().await.unwrap();
+        assert_eq!(refreshed_memory.scene_objects, baseline_memory.scene_objects);
+        assert_eq!(refreshed_memory.path_to_source_id, baseline_memory.path_to_source_id);
+        assert_eq!(refreshed_memory.id_to_source, baseline_memory.id_to_source);
+
+        cache::bust_cache().await;
         clear_mem_cache().await;
         ctx.close().await;
     }
@@ -3524,6 +3653,45 @@ sketch(on = XY) {
         parse_execute(&code).await.unwrap();
     }
 
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_shadowed_get_opposite_edge_binding_does_not_panic() {
+        let code = r#"startX = 2
+
+baseSketch = sketch(on = XY) {
+  yoyo = line(start = [startX, 0], end = [7, 6])
+  line2 = line(start = [7, 6], end = [7, 12])
+  hi = line(start = [7, 12], end = [startX, 0])
+}
+
+baseRegion = region(point = [5.5, 6], sketch = baseSketch)
+myExtrude = extrude(
+  baseRegion,
+  length = 5,
+  tagEnd = $endCap,
+  tagStart = $startCap,
+)
+yodawg = getCommonEdge(faces = [
+  baseRegion.tags.hi,
+  baseRegion.tags.yoyo
+])
+
+cutSketch = sketch(on = YZ) {
+  myDisambigutator = line(start = [-3.29, 4.75], end = [2.03, 2.44])
+  myDisambigutator2 = line(start = [2.03, 2.44], end = [-3.49, 0.31])
+  line3 = line(start = [-3.49, 0.31], end = [-3.29, 4.75])
+}
+
+cutRegion = region(point = [-1.5833333333, 2.5], sketch = cutSketch)
+extrude001 = extrude(cutRegion, length = 5)
+solid001 = subtract(myExtrude, tools = extrude001)
+
+yoyo = getOppositeEdge(baseRegion.tags.hi)
+fillet(solid001, radius = 0.1, tags = yoyo)
+"#;
+
+        parse_execute(code).await.unwrap();
+    }
+
     // END Mock Execution tests
 
     // Sketch constraint report tests
@@ -3538,6 +3706,41 @@ sketch(on = XY) {
         let report = outcome.sketch_constraint_report();
         ctx.close().await;
         report
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn warn_when_sketch_is_over_constrained() {
+        let code = r#"
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -10.64mm, var 26.44mm], end = [var 13.05mm, var 5.52mm])
+  fixed([line1.start, ORIGIN])
+  fixed([line1.start, [20, 20]])
+}
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let issues = result.exec_state.issues();
+        let Some(warning) = issues.iter().find(|issue| issue.message.contains("over-constrained")) else {
+            panic!("expected over-constrained warning; found {issues:#?}");
+        };
+        assert_eq!(warning.severity, Severity::Warning);
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn no_warning_when_sketch_is_not_over_constrained() {
+        // Under-constrained sketch should not emit the over-constrained warning.
+        let code = r#"
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+}
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let issues = result.exec_state.issues();
+        assert!(
+            !issues.iter().any(|issue| issue.message.contains("over-constrained")),
+            "did not expect over-constrained warning; found {issues:#?}"
+        );
     }
 
     #[cfg(feature = "artifact-graph")]
@@ -3634,5 +3837,25 @@ s2 = sketch(on = XZ) {
         );
         assert_eq!(report.fully_constrained.len(), 1);
         assert_eq!(report.under_constrained.len(), 1);
+    }
+
+    #[cfg(not(feature = "artifact-graph"))]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_sketch_solve_works_without_artifact_graph_feature() {
+        let code = r#"
+sketch001 = sketch(on = XY) {
+    line1 = line(start = [var -3.38mm, var 3.71mm], end = [var 4.29mm, var 3.59mm])
+    line2 = line(start = [var 4.29mm, var 3.59mm], end = [var 4.31mm, var -3.13mm])
+    coincident([line1.end, line2.start])
+    line3 = line(start = [var 4.31mm, var -3.13mm], end = [var -3.61mm, var -3.18mm])
+    coincident([line2.end, line3.start])
+    line4 = line(start = [var -3.61mm, var -3.18mm], end = [var -3.38mm, var 3.71mm])
+    coincident([line3.end, line4.start])
+    coincident([line4.end, line1.start])
+    circle1 = circle(start = [var -5.73mm, var 1.42mm], center = [var -7.07mm, var 1.47mm])
+    tangent([line4, circle1])
+}
+"#;
+        parse_execute(code).await.unwrap();
     }
 }

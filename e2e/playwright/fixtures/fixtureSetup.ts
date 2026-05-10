@@ -25,8 +25,21 @@ import { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
 import { FsFixture } from '@e2e/playwright/fixtures/fsFixture'
 
 import { TEST_SETTINGS } from '@e2e/playwright/storageStates'
-import { getUtils, settingsToToml, setup } from '@e2e/playwright/test-utils'
+import {
+  getUtils,
+  PLAYWRIGHT_LAYOUT_SETTINGS,
+  settingsToToml,
+  setup,
+} from '@e2e/playwright/test-utils'
 import type { ILog } from '@src/lib/debugger'
+import { isArray } from '@src/lib/utils'
+
+const TEST_PROJECT_SETTINGS =
+  TEST_SETTINGS.project &&
+  typeof TEST_SETTINGS.project === 'object' &&
+  !isArray(TEST_SETTINGS.project)
+    ? TEST_SETTINGS.project
+    : undefined
 
 export class AuthenticatedApp {
   public readonly page: Page
@@ -307,12 +320,13 @@ export class ElectronZoo {
         settings: {
           ...TEST_SETTINGS,
           ...appSettings,
+          ...PLAYWRIGHT_LAYOUT_SETTINGS,
           app: {
             ...TEST_SETTINGS.app,
             ...appSettings.app,
           },
           project: {
-            ...TEST_SETTINGS.project,
+            ...TEST_PROJECT_SETTINGS,
             directory: this.projectDirName,
           },
         },
@@ -321,11 +335,12 @@ export class ElectronZoo {
       settingsOverridesToml = settingsToToml({
         settings: {
           ...TEST_SETTINGS,
+          ...PLAYWRIGHT_LAYOUT_SETTINGS,
           app: {
             ...TEST_SETTINGS.app,
           },
           project: {
-            ...TEST_SETTINGS.project,
+            ...TEST_PROJECT_SETTINGS,
             directory: this.projectDirName,
           },
         },

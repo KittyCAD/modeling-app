@@ -21,11 +21,49 @@ pub enum Axis2dOrEdgeReference {
     Edge(EdgeReference),
 }
 
+/// A 3D mirror target.
+#[derive(Debug, Clone, PartialEq)]
+pub enum MirrorAcross3d {
+    /// 3D axis and origin.
+    Axis {
+        direction: Box<[TyF64; 3]>,
+        origin: Box<[TyF64; 3]>,
+    },
+    /// Tagged edge.
+    Edge(Box<EdgeReference>),
+    /// A plane.
+    Plane(Box<Plane>),
+}
+
 impl Axis2dOrEdgeReference {
     /// Use a sketch-solve segment by finding its engine ID.
     pub fn from_segment(segment: &Segment) -> Result<Self, KclError> {
         match &segment.kind {
             SegmentKind::Line { .. } => Ok(Self::Edge(EdgeReference::Uuid(segment.id))),
+            SegmentKind::Point { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use a point as an axis".to_owned(),
+            })),
+            SegmentKind::Arc { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use an arc as an axis".to_owned(),
+            })),
+            SegmentKind::Circle { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use a circle as an axis".to_owned(),
+            })),
+        }
+    }
+}
+
+impl MirrorAcross3d {
+    /// Use a sketch-solve segment by finding its engine ID.
+    pub fn from_segment(segment: &Segment) -> Result<Self, KclError> {
+        match &segment.kind {
+            SegmentKind::Line { .. } => Ok(Self::Edge(Box::new(EdgeReference::Uuid(segment.id)))),
             SegmentKind::Point { .. } => Err(KclError::new_type(KclErrorDetails {
                 source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
                 backtrace: Default::default(),

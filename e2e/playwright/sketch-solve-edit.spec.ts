@@ -1,8 +1,7 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
-import { settingsToToml } from '@e2e/playwright/test-utils'
-import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
+import { isArray } from '@src/lib/utils'
 
 /**
  * Extract a specific line from code string (1-based line number).
@@ -74,6 +73,29 @@ async function clickSegmentById(
   await page.mouse.click(box.x, box.y) // box size is 1x1 px so we can ignore width, height
 }
 
+async function selectSketchSolveConstraintFromDropdown(
+  page: Page,
+  constraintId:
+    | 'coincident'
+    | 'Tangent'
+    | 'Parallel'
+    | 'Perpendicular'
+    | 'equalLength'
+    | 'vertical'
+    | 'Horizontal'
+    | 'Fixed'
+) {
+  await page.getByRole('button', { name: 'constraints: open menu' }).click()
+  await expect(page.getByTestId(`dropdown-${constraintId}`)).toBeVisible()
+  await page.getByTestId(`dropdown-${constraintId}`).click()
+}
+
+async function expectNoUnsupportedSelectionToast(page: Page) {
+  await expect(
+    page.getByText('Some faces and edges are not currently selectable.')
+  ).not.toBeVisible()
+}
+
 async function dragBetweenRatios(
   page: Page,
   scene: SceneFixture,
@@ -106,16 +128,6 @@ sketch(on = XZ) {
   point(at = [var -0.36mm, var -1.23mm])
 }
 `
-
-const userSettingsToml = settingsToToml({
-  settings: {
-    ...TEST_SETTINGS,
-    modeling: {
-      ...TEST_SETTINGS.modeling,
-      use_sketch_solve_mode: true,
-    },
-  },
-})
 
 function withDefaultLengthUnitInches(code: string): string {
   return `@settings(defaultLengthUnit = in)
@@ -222,35 +234,17 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     cmdBar,
     editor,
     toolbar,
-    tronApp,
   }) => {
     const INITIAL_CODE = ''
     const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
 
     await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
-      // Set useSketchSolveMode in user settings (it's stored at user level even though hideOnLevel is 'project')
-      // This ensures it's available immediately when the app loads, regardless of IS_STAGING_OR_DEBUG
-      if (tronApp) {
-        // Electron: settings via file system using cleanProjectDir
-        await tronApp.cleanProjectDir({
-          modeling: {
-            use_sketch_solve_mode: true,
-          },
-        })
-      }
-
       await context.addInitScript(
-        async ({ code, settingsKey, settingsToml }) => {
+        async ({ code }) => {
           localStorage.setItem('persistCode', code)
-          // Set useSketchSolveMode in user settings
-          if (settingsToml) {
-            localStorage.setItem(settingsKey, settingsToml)
-          }
         },
         {
           code: INITIAL_CODE,
-          settingsKey: TEST_SETTINGS_KEY,
-          settingsToml: userSettingsToml,
         }
       )
 
@@ -358,14 +352,14 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       // await page.waitForTimeout(100)
 
       // Click the coincident tool
-      await page.getByTestId('coincident').click()
+      await selectSketchSolveConstraintFromDropdown(page, 'coincident')
 
       await editor.expectEditor.toContain(
         'coincident([line1.start, line2.end])'
       )
       await page.waitForTimeout(100)
     })
-    const [clearSelection] = scene.makeMouseHelpers(0.5, 0.5, {
+    const [clearSelection] = scene.makeMouseHelpers(0.9, 0.5, {
       format: 'ratio',
     })
     await test.step('Select lines between segments 2-3 and 5-6, then apply parallel constraint', async () => {
@@ -395,7 +389,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       // Click the parallel tool
       // await page.waitForTimeout(100)
-      await page.getByTestId('Parallel').click()
+      await selectSketchSolveConstraintFromDropdown(page, 'Parallel')
 
       await editor.expectEditor.toContain('parallel([line1, line3])')
     })
@@ -430,33 +424,18 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     cmdBar,
     editor,
     toolbar,
-    tronApp,
   }) => {
     const INITIAL_CODE = ''
     const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
     const getLineCount = (code: string) => (code.match(/line\(/g) ?? []).length
 
     await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
-      if (tronApp) {
-        await tronApp.cleanProjectDir({
-          modeling: {
-            use_sketch_solve_mode: true,
-          },
-        })
-      }
-
       await context.addInitScript(
-        async ({ code, settingsKey, settingsToml }) => {
+        async ({ code }) => {
           localStorage.setItem('persistCode', code)
-          localStorage.setItem('debug:mixed-history', '1')
-          if (settingsToml) {
-            localStorage.setItem(settingsKey, settingsToml)
-          }
         },
         {
           code: INITIAL_CODE,
-          settingsKey: TEST_SETTINGS_KEY,
-          settingsToml: userSettingsToml,
         }
       )
 
@@ -580,25 +559,12 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     }
 
     await test.step('Set up the app with initial sketch code and enable sketch solve mode', async () => {
-      if (tronApp) {
-        await tronApp.cleanProjectDir({
-          modeling: {
-            use_sketch_solve_mode: true,
-          },
-        })
-      }
-
       await context.addInitScript(
-        async ({ code, settingsKey, settingsToml }) => {
+        async ({ code }) => {
           localStorage.setItem('persistCode', code)
-          if (settingsToml) {
-            localStorage.setItem(settingsKey, settingsToml)
-          }
         },
         {
           code: INITIAL_CODE,
-          settingsKey: TEST_SETTINGS_KEY,
-          settingsToml: userSettingsToml,
         }
       )
 
@@ -758,6 +724,305 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
   })
 
+  test('treats fresh direct editor sketch executions as derived source updates', async ({
+    page,
+    context,
+    homePage,
+    scene,
+    cmdBar,
+    editor,
+    toolbar,
+  }) => {
+    const INITIAL_CODE = `sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+}
+`
+    const addedLine =
+      '  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 5mm])'
+    const isDirectEditorOutcome = (
+      event: unknown
+    ): event is {
+      sourceText: string
+      updateEditor: unknown
+      writeToDisk: unknown
+      addToHistory: unknown
+    } =>
+      typeof event === 'object' &&
+      event !== null &&
+      'sourceText' in event &&
+      typeof event.sourceText === 'string'
+    const getDirectEditorOutcomeForLine = async (line: string) => {
+      const events = await page.evaluate(() =>
+        Reflect.get(window, 'directEditorOutcomesForTest')
+      )
+      if (!isArray(events)) return null
+      return events
+        .filter(isDirectEditorOutcome)
+        .find((event) => event.sourceText.includes(line))
+    }
+    const getUpdateCodeEditorCalls = async () => {
+      const calls = await page.evaluate(() =>
+        Reflect.get(window, 'updateCodeEditorCallsForTest')
+      )
+      if (!isArray(calls)) return []
+      return calls.filter((call): call is string => typeof call === 'string')
+    }
+
+    await test.step('Set up a sketch and enter sketch edit mode', async () => {
+      await context.addInitScript(
+        async ({ code }) => {
+          localStorage.setItem('persistCode', code)
+        },
+        {
+          code: INITIAL_CODE,
+        }
+      )
+
+      await page.setBodyDimensions({ width: 1200, height: 600 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+      await editor.expectEditor.toContain('sketch001 = sketch(on = XY) {')
+
+      await toolbar.openFeatureTreePane()
+      await expect(page.getByText('Building feature tree')).not.toBeVisible({
+        timeout: 10000,
+      })
+      const sketchOperation = await toolbar.getFeatureTreeOperation(
+        'sketch001',
+        0
+      )
+      await sketchOperation.dblclick()
+      await page.waitForTimeout(600)
+      await expect(toolbar.exitSketchBtn).toBeEnabled()
+    })
+
+    await test.step('Observe the fresh direct-editor execution result', async () => {
+      await page.evaluate(() => {
+        const directEditorOutcomes: Array<{
+          sourceText: string
+          updateEditor: unknown
+          writeToDisk: unknown
+          addToHistory: unknown
+        }> = []
+        const updateCodeEditorCalls: string[] = []
+
+        const originalSendModelingEvent =
+          window.kclManager.sendModelingEvent.bind(window.kclManager)
+        window.kclManager.sendModelingEvent = ((
+          ...args: Parameters<typeof window.kclManager.sendModelingEvent>
+        ) => {
+          const [event] = args
+          if (event.type === 'update sketch outcome') {
+            directEditorOutcomes.push({
+              sourceText: event.data.sourceDelta.text,
+              updateEditor: event.data.updateEditor,
+              writeToDisk: event.data.writeToDisk,
+              addToHistory: event.data.addToHistory,
+            })
+          }
+
+          return originalSendModelingEvent(...args)
+        }) satisfies typeof window.kclManager.sendModelingEvent
+
+        const originalUpdateCodeEditor =
+          window.kclManager.updateCodeEditor.bind(window.kclManager)
+        window.kclManager.updateCodeEditor = ((
+          ...args: Parameters<typeof window.kclManager.updateCodeEditor>
+        ) => {
+          const [code] = args
+          updateCodeEditorCalls.push(code)
+          return originalUpdateCodeEditor(...args)
+        }) satisfies typeof window.kclManager.updateCodeEditor
+
+        Reflect.set(window, 'directEditorOutcomesForTest', directEditorOutcomes)
+        Reflect.set(
+          window,
+          'updateCodeEditorCallsForTest',
+          updateCodeEditorCalls
+        )
+      })
+    })
+
+    await test.step('Type KCL and let its current execution finish', async () => {
+      await editor.replaceCodeByTyping('\n}', `\n${addedLine}\n}`)
+      await editor.expectEditor.toContain(addedLine)
+
+      await expect
+        .poll(async () => getDirectEditorOutcomeForLine(addedLine))
+        .toEqual({
+          sourceText: expect.stringContaining(addedLine),
+          updateEditor: false,
+          writeToDisk: false,
+          addToHistory: false,
+        })
+
+      const updateCodeEditorCalls = await getUpdateCodeEditorCalls()
+      expect(
+        updateCodeEditorCalls.some((code) => code.includes(addedLine))
+      ).toBe(false)
+      await editor.expectEditor.toContain(addedLine)
+    })
+  })
+
+  test('keeps newer copied sketch block edits when stale execution finishes', async ({
+    page,
+    context,
+    homePage,
+    scene,
+    cmdBar,
+    editor,
+    toolbar,
+  }) => {
+    const INITIAL_CODE = `sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+}
+`
+    const copiedLine =
+      '  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 5mm])'
+    const editedLine =
+      '  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 8mm])'
+    const getWriteToFileCalls = async () => {
+      const calls = await page.evaluate(() =>
+        Reflect.get(window, 'kclWriteToFileCallsForTest')
+      )
+      if (!isArray(calls)) return []
+      return calls.filter((call): call is string => typeof call === 'string')
+    }
+
+    await test.step('Set up a sketch and enter sketch edit mode', async () => {
+      await context.addInitScript(
+        async ({ code }) => {
+          localStorage.setItem('persistCode', code)
+        },
+        {
+          code: INITIAL_CODE,
+        }
+      )
+
+      await page.setBodyDimensions({ width: 1200, height: 600 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+      await editor.expectEditor.toContain('sketch001 = sketch(on = XY) {')
+
+      await toolbar.openFeatureTreePane()
+      await expect(page.getByText('Building feature tree')).not.toBeVisible({
+        timeout: 10000,
+      })
+      const sketchOperation = await toolbar.getFeatureTreeOperation(
+        'sketch001',
+        0
+      )
+      await sketchOperation.dblclick()
+      await page.waitForTimeout(600)
+      await expect(toolbar.exitSketchBtn).toBeEnabled()
+    })
+
+    await test.step('Delay the next sketch execution and observe editor saves', async () => {
+      await page.evaluate(() => {
+        const writeToFileCalls: string[] = []
+        const originalWriteToFile = window.kclManager.writeToFile.bind(
+          window.kclManager
+        )
+        /*
+         * This is only a spy on the save path. The test still edits through
+         * CodeMirror with editor.replaceCodeByTyping, so CodeMirror decides when
+         * to write. Recording writeToFile calls here proves raw typing still
+         * reaches the normal save listener, and that the delayed execution does
+         * not add a stale out-of-band save afterward.
+         */
+        window.kclManager.writeToFile = (async (
+          ...args: Parameters<typeof window.kclManager.writeToFile>
+        ) => {
+          const [newCode = window.kclManager.code] = args
+          writeToFileCalls.push(newCode)
+          return originalWriteToFile(...args)
+        }) satisfies typeof window.kclManager.writeToFile
+        Reflect.set(window, 'kclWriteToFileCallsForTest', writeToFileCalls)
+
+        const originalHackSetProgram = window.rustContext.hackSetProgram.bind(
+          window.rustContext
+        )
+        let shouldDelayNextHackSetProgram = true
+        let releaseDelayedHackSetProgram: (() => void) | undefined
+
+        window.addEventListener('release-delayed-sketch-execution', () => {
+          releaseDelayedHackSetProgram?.()
+        })
+
+        const delayedHackSetProgram: typeof window.rustContext.hackSetProgram =
+          async (...args) => {
+            if (shouldDelayNextHackSetProgram) {
+              shouldDelayNextHackSetProgram = false
+              window.dispatchEvent(
+                new Event('delayed-sketch-execution-started')
+              )
+              await new Promise<void>((resolve) => {
+                releaseDelayedHackSetProgram = resolve
+              })
+            }
+
+            return originalHackSetProgram(...args)
+          }
+
+        window.rustContext.hackSetProgram = delayedHackSetProgram
+      })
+    })
+
+    await test.step('Copy a sketch line, then edit its endpoint before execution returns', async () => {
+      const delayedExecutionStarted = page.evaluate(
+        () =>
+          new Promise<void>((resolve) => {
+            window.addEventListener(
+              'delayed-sketch-execution-started',
+              () => resolve(),
+              { once: true }
+            )
+          })
+      )
+
+      await editor.replaceCodeByTyping('\n}', `\n${copiedLine}\n}`)
+      await delayedExecutionStarted
+      await editor.expectEditor.toContain(copiedLine)
+
+      await editor.replaceCodeByTyping(
+        'end = [var 10mm, var 5mm]',
+        'end = [var 10mm, var 8mm]'
+      )
+      await editor.expectEditor.toContain(editedLine)
+
+      await expect
+        .poll(async () => {
+          const writeToFileCalls = await getWriteToFileCalls()
+          return writeToFileCalls.at(-1) ?? ''
+        })
+        .toContain(editedLine)
+      const writeToFileCountBeforeStaleExecutionReturns = (
+        await getWriteToFileCalls()
+      ).length
+
+      await page.evaluate(() => {
+        window.dispatchEvent(new Event('release-delayed-sketch-execution'))
+      })
+      await page.waitForTimeout(100)
+
+      const writeToFileCallsAfterStaleExecutionReturns =
+        await getWriteToFileCalls()
+      expect(writeToFileCallsAfterStaleExecutionReturns).toHaveLength(
+        writeToFileCountBeforeStaleExecutionReturns
+      )
+      expect(writeToFileCallsAfterStaleExecutionReturns.at(-1)).toContain(
+        editedLine
+      )
+    })
+
+    await test.step('The newer endpoint value should still be in the editor', async () => {
+      const currentCode = await editor.getCurrentCode()
+
+      expect(currentCode).toContain(editedLine)
+      expect(currentCode).not.toContain(copiedLine)
+    })
+  })
+
   test('undoing center arcs removes one arc at a time in sketch solve mode', async ({
     page,
     context,
@@ -772,25 +1037,12 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     const INITIAL_CODE = ''
 
     await test.step('Set up app with sketch solve mode enabled', async () => {
-      if (tronApp) {
-        await tronApp.cleanProjectDir({
-          modeling: {
-            use_sketch_solve_mode: true,
-          },
-        })
-      }
-
       await context.addInitScript(
-        async ({ code, settingsKey, settingsToml }) => {
+        async ({ code }) => {
           localStorage.setItem('persistCode', code)
-          if (settingsToml) {
-            localStorage.setItem(settingsKey, settingsToml)
-          }
         },
         {
           code: INITIAL_CODE,
-          settingsKey: TEST_SETTINGS_KEY,
-          settingsToml: userSettingsToml,
         }
       )
 
@@ -1205,7 +1457,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     cmdBar,
     editor,
     toolbar,
-    tronApp,
   }) => {
     const CONSTRAINT_TEST_CODE = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var -11.38mm, var 3.66mm], end = [var -11.5mm, var 0.43mm])
@@ -1230,25 +1481,12 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 `
 
     await test.step('Set up app with existing sketch code in sketch solve mode', async () => {
-      if (tronApp) {
-        await tronApp.cleanProjectDir({
-          modeling: {
-            use_sketch_solve_mode: true,
-          },
-        })
-      }
-
       await context.addInitScript(
-        async ({ code, settingsKey, settingsToml }) => {
+        async ({ code }) => {
           localStorage.setItem('persistCode', code)
-          if (settingsToml) {
-            localStorage.setItem(settingsKey, settingsToml)
-          }
         },
         {
           code: CONSTRAINT_TEST_CODE,
-          settingsKey: TEST_SETTINGS_KEY,
-          settingsToml: userSettingsToml,
         }
       )
 
@@ -1314,37 +1552,53 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       select,
       apply,
       assertChanged,
+      applyBeforeSelect = false,
+      cleanupAfterStep,
     }: {
       label: string
       select: () => Promise<void>
       apply: () => Promise<void>
       assertChanged: (code: string) => void
+      applyBeforeSelect?: boolean
+      cleanupAfterStep?: () => Promise<void>
     }) => {
       await test.step(label, async () => {
         await scene.clickNoWhere()
         const codeBefore = await editor.getCurrentCode()
         expect(normaliseCode(codeBefore)).toBe(normaliseCode(initialCode))
 
-        await select()
-        await apply()
+        if (applyBeforeSelect) {
+          await apply()
+          await select()
+        } else {
+          await select()
+          await apply()
+        }
 
         const changedCode = await waitForCodeChange(page, codeBefore)
         assertChanged(changedCode)
+        await expectNoUnsupportedSelectionToast(page)
 
         await expectBackToInitialCode(changedCode)
         await scene.clickNoWhere()
+        if (cleanupAfterStep) {
+          await cleanupAfterStep()
+        } else if (applyBeforeSelect) {
+          await page.keyboard.press('Escape')
+        }
       })
     }
 
     await applyConstraintStep({
       label: 'coincident 1',
       select: async () => {
-        await clickMidpoint('2', '3')
         await clickPoint('5')
+        await clickMidpoint('2', '3')
       },
       apply: async () => {
-        await page.getByTestId('coincident').click()
+        await selectSketchSolveConstraintFromDropdown(page, 'coincident')
       },
+      applyBeforeSelect: true,
       assertChanged: (code) => {
         expect((code.match(/coincident\(/g) ?? []).length).toBe(1)
       },
@@ -1357,10 +1611,27 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await clickPoint('8')
       },
       apply: async () => {
+        await selectSketchSolveConstraintFromDropdown(page, 'coincident')
+      },
+      applyBeforeSelect: true,
+      assertChanged: (code) => {
+        expect((code.match(/coincident\(/g) ?? []).length).toBe(1)
+      },
+    })
+
+    await applyConstraintStep({
+      label: 'coincident 3 points',
+      select: async () => {
+        await clickPoint('3')
+        await clickPoint('8')
+        await clickPoint('11')
+      },
+      apply: async () => {
         await page.getByTestId('coincident').click()
       },
       assertChanged: (code) => {
         expect((code.match(/coincident\(/g) ?? []).length).toBe(1)
+        expect(code).toMatch(/coincident\(\[[^\]]*,[^\]]*,[^\]]+\]\)/)
       },
     })
 
@@ -1371,8 +1642,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await clickMidpoint('14', '15')
       },
       apply: async () => {
-        await page.getByTestId('Tangent').click()
+        await selectSketchSolveConstraintFromDropdown(page, 'Tangent')
       },
+      applyBeforeSelect: true,
       assertChanged: (code) => {
         expect((code.match(/tangent\(/g) ?? []).length).toBe(1)
       },
@@ -1385,8 +1657,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await clickMidpoint('21', '22')
       },
       apply: async () => {
-        await page.getByTestId('Parallel').click()
+        await selectSketchSolveConstraintFromDropdown(page, 'Parallel')
       },
+      applyBeforeSelect: true,
       assertChanged: (code) => {
         expect((code.match(/parallel\(/g) ?? []).length).toBe(1)
       },
@@ -1399,8 +1672,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await clickMidpoint('27', '28')
       },
       apply: async () => {
-        await page.getByTestId('Perpendicular').click()
+        await selectSketchSolveConstraintFromDropdown(page, 'Perpendicular')
       },
+      applyBeforeSelect: true,
       assertChanged: (code) => {
         expect((code.match(/perpendicular\(/g) ?? []).length).toBe(1)
       },
@@ -1413,8 +1687,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await clickMidpoint('33', '34')
       },
       apply: async () => {
-        await page.getByTestId('equalLength').click()
+        await selectSketchSolveConstraintFromDropdown(page, 'equalLength')
       },
+      applyBeforeSelect: true,
       assertChanged: (code) => {
         expect((code.match(/equalLength\(/g) ?? []).length).toBe(1)
       },
@@ -1426,8 +1701,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await clickMidpoint('36', '37')
       },
       apply: async () => {
-        await page.getByTestId('vertical').click()
+        await selectSketchSolveConstraintFromDropdown(page, 'vertical')
       },
+      applyBeforeSelect: true,
       assertChanged: (code) => {
         expect((code.match(/vertical\(/g) ?? []).length).toBe(1)
       },
@@ -1439,8 +1715,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await clickMidpoint('39', '40')
       },
       apply: async () => {
-        await page.getByTestId('Horizontal').click()
+        await selectSketchSolveConstraintFromDropdown(page, 'Horizontal')
       },
+      applyBeforeSelect: true,
       assertChanged: (code) => {
         expect((code.match(/horizontal\(/g) ?? []).length).toBe(1)
       },
@@ -1452,8 +1729,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await clickPoint('42')
       },
       apply: async () => {
-        await page.getByTestId('Fixed').click()
+        await selectSketchSolveConstraintFromDropdown(page, 'Fixed')
       },
+      applyBeforeSelect: true,
       assertChanged: (code) => {
         expect(code).toMatch(/fixed\(|coincident\(/)
       },
@@ -1520,7 +1798,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     cmdBar,
     editor,
     toolbar,
-    tronApp,
   }) => {
     const TRIM_TEST_CODE = `sketch001 = sketch(on = YZ) {
   line1 = line(start = [var -8.66mm, var 2.52mm], end = [var -8.77mm, var -2.76mm])
@@ -1535,25 +1812,12 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
 
     await test.step('Set up app with trim fixture in sketch solve mode', async () => {
-      if (tronApp) {
-        await tronApp.cleanProjectDir({
-          modeling: {
-            use_sketch_solve_mode: true,
-          },
-        })
-      }
-
       await context.addInitScript(
-        async ({ code, settingsKey, settingsToml }) => {
+        async ({ code }) => {
           localStorage.setItem('persistCode', code)
-          if (settingsToml) {
-            localStorage.setItem(settingsKey, settingsToml)
-          }
         },
         {
           code: TRIM_TEST_CODE,
-          settingsKey: TEST_SETTINGS_KEY,
-          settingsToml: userSettingsToml,
         }
       )
 
@@ -1795,6 +2059,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
     await test.step('Expect extrusion', async () => {
       await scene.settled(cmdBar)
+      await editor.expectEditor.toContain('hidden001 = hide(sketch001)')
       await editor.expectEditor.toContain(
         'region(point = [0.025mm, -1.9875mm], sketch = sketch001)'
       )
@@ -1896,6 +2161,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
     await test.step('Expect extrusion uses inches for region point', async () => {
       await scene.settled(cmdBar)
+      await editor.expectEditor.toContain('hidden001 = hide(sketch001)')
       await editor.expectEditor.toContain(
         'region(point = [0.0009843in, -0.078248in], sketch = sketch001)'
       )
@@ -1916,9 +2182,9 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     cmdBar,
     editor,
     toolbar,
-    tronApp,
   }) => {
     const code = `${square}
+hidden001 = hide(sketch001)
 region001 = region(point = [0.025mm, -1.9875mm], sketch = sketch001)
 extrude001 = extrude(region001, length = 5)`
     const [clickCenter] = scene.makeMouseHelpers(0.5, 0.5, {
@@ -1926,24 +2192,12 @@ extrude001 = extrude(region001, length = 5)`
     })
 
     await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
-      if (tronApp) {
-        await tronApp.cleanProjectDir({
-          modeling: {
-            use_sketch_solve_mode: true,
-          },
-        })
-      }
       await context.addInitScript(
-        async ({ code, settingsKey, settingsToml }) => {
+        async ({ code }) => {
           localStorage.setItem('persistCode', code)
-          if (settingsToml) {
-            localStorage.setItem(settingsKey, settingsToml)
-          }
         },
         {
           code,
-          settingsKey: TEST_SETTINGS_KEY,
-          settingsToml: userSettingsToml,
         }
       )
 
@@ -1978,9 +2232,9 @@ extrude001 = extrude(region001, length = 5)`
     cmdBar,
     editor,
     toolbar,
-    tronApp,
   }) => {
     const code = `${square}
+hidden001 = hide(sketch001)
 region001 = region(point = [0.025mm, -1.9875mm], sketch = sketch001)
 extrude001 = extrude(region001, length = 5)`
     const [clickAboveCenter] = scene.makeMouseHelpers(0.5, 0.35, {
@@ -1988,24 +2242,12 @@ extrude001 = extrude(region001, length = 5)`
     })
 
     await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
-      if (tronApp) {
-        await tronApp.cleanProjectDir({
-          modeling: {
-            use_sketch_solve_mode: true,
-          },
-        })
-      }
       await context.addInitScript(
-        async ({ code, settingsKey, settingsToml }) => {
+        async ({ code }) => {
           localStorage.setItem('persistCode', code)
-          if (settingsToml) {
-            localStorage.setItem(settingsKey, settingsToml)
-          }
         },
         {
           code,
-          settingsKey: TEST_SETTINGS_KEY,
-          settingsToml: userSettingsToml,
         }
       )
 

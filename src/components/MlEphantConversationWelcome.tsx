@@ -1,5 +1,6 @@
 import type { PropsWithChildren, ReactNode } from 'react'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { isDesktop } from '@src/lib/isDesktop'
 
 /**
  * Local authoring surface for the MlEphant welcome message.
@@ -29,7 +30,7 @@ export const MlEphantConversationWelcome = () => {
             autoPlay
             loop
           >
-            <source src="/mlephant-idle-1.webm" />
+            <source src={`${isDesktop() ? '.' : ''}/mlephant-idle-1.webm`} />
           </video>
         }
         heading="Ask me anything"
@@ -47,7 +48,7 @@ export const MlEphantConversationWelcome = () => {
             autoPlay
             loop
           >
-            <source src="/mlephant-idle-2.webm" />
+            <source src={`${isDesktop() ? '.' : ''}/mlephant-idle-2.webm`} />
           </video>
         }
         heading="Turn thoughts into geometry"
@@ -65,7 +66,7 @@ export const MlEphantConversationWelcome = () => {
             autoPlay
             loop
           >
-            <source src="/mlephant-idle-3.webm" />
+            <source src={`${isDesktop() ? '.' : ''}/mlephant-idle-3.webm`} />
           </video>
         }
         heading="Supplemental analysis"

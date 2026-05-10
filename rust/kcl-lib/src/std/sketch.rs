@@ -16,6 +16,7 @@ use kcmc::shared::Point3d as KPoint3d; // Point3d is already defined in this pkg
 use kcmc::websocket::ModelingCmdReq;
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::shared::PathSegment;
+use kittycad_modeling_cmds::shared::RegionVersion;
 use kittycad_modeling_cmds::units::UnitLength;
 use parse_display::Display;
 use parse_display::FromStr;
@@ -42,6 +43,7 @@ use crate::execution::ExecState;
 use crate::execution::GeoMeta;
 use crate::execution::Geometry;
 use crate::execution::KclValue;
+use crate::execution::KclVersion;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Path;
 use crate::execution::Plane;
@@ -1270,9 +1272,9 @@ pub(crate) async fn create_sketch(
             // Flush the batch for our fillets/chamfers if there are any.
             // If we do not do these for sketch on face, things will fail with face does not exist.
             exec_state
-                .flush_batch_for_solids(
+                .flush_batch_for_face_parent_solids(
                     ModelingCmdMeta::new(exec_state, ctx, source_range),
-                    &[(*face.solid).clone()],
+                    std::slice::from_ref(&face.parent_solid),
                 )
                 .await?;
         }
@@ -1361,6 +1363,7 @@ pub(crate) async fn create_sketch(
         id: path_id,
         original_id: path_id,
         artifact_id: path_id.into(),
+        origin_sketch_id: None,
         on: sketch_surface,
         paths: vec![],
         inner_paths: vec![],
@@ -2978,6 +2981,11 @@ async fn inner_region(
     args: Args,
 ) -> Result<KclValue, KclError> {
     let region_id = exec_state.next_uuid();
+    let kcl_version = exec_state.kcl_version();
+    let region_version = match kcl_version {
+        KclVersion::V1 => RegionVersion::V0,
+        KclVersion::V2 => RegionVersion::V1,
+    };
 
     let (sketch_or_segment, region_mapping) = match (point, segments) {
         (Some(point), None) => {
@@ -2991,6 +2999,7 @@ async fn inner_region(
                         mcmd::CreateRegionFromQueryPoint::builder()
                             .object_id(sketch.sketch()?.id)
                             .query_point(KPoint2d::from(point_to_mm(pt.clone())).map(LengthUnit))
+                            .version(region_version)
                             .build(),
                     ),
                 )
@@ -3056,6 +3065,7 @@ async fn inner_region(
                             .intersection_segment(seg1.id)
                             .intersection_index(intersection_index)
                             .curve_clockwise(direction.is_clockwise())
+                            .version(region_version)
                             .build(),
                     ),
                 )
@@ -3123,6 +3133,7 @@ async fn inner_region(
                     id: region_id,
                     original_id: region_id,
                     artifact_id: region_id.into(),
+                    origin_sketch_id: None,
                     on: segment.surface.clone(),
                     paths: vec![first_path],
                     inner_paths: vec![],
@@ -3138,6 +3149,7 @@ async fn inner_region(
             }
         }
     };
+    sketch.origin_sketch_id = Some(sketch.id);
     sketch.id = region_id;
     sketch.original_id = region_id;
     sketch.artifact_id = region_id.into();

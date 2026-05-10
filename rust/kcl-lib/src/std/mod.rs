@@ -27,6 +27,7 @@ pub mod segment;
 pub mod shapes;
 pub mod shell;
 pub mod sketch;
+pub(crate) mod solid_consumption;
 pub(crate) mod solver;
 pub mod surfaces;
 pub mod sweep;
@@ -55,7 +56,7 @@ pub struct StdFnProps {
 }
 
 impl StdFnProps {
-    fn default(name: &str) -> Self {
+    pub(crate) fn default(name: &str) -> Self {
         Self { name: name.to_owned() }
     }
 }
@@ -69,6 +70,22 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("gdt", "flatness") => (
             |e, a| Box::pin(crate::std::gdt::flatness(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::gdt::flatness"),
+        ),
+        ("gdt", "perpendicularity") => (
+            |e, a| Box::pin(crate::std::gdt::perpendicularity(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::perpendicularity"),
+        ),
+        ("gdt", "parallelism") => (
+            |e, a| Box::pin(crate::std::gdt::parallelism(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::parallelism"),
+        ),
+        ("gdt", "annotation") => (
+            |e, a| Box::pin(crate::std::gdt::annotation(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::annotation"),
+        ),
+        ("gdt", "profile") => (
+            |e, a| Box::pin(crate::std::gdt::profile(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::profile"),
         ),
         ("math", "cos") => (
             |e, a| Box::pin(crate::std::math::cos(e, a).map(|r| r.map(KclValue::continue_))),
@@ -178,6 +195,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("transform", "mirror2d") => (
             |e, a| Box::pin(crate::std::mirror::mirror_2d(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::transform::mirror2d"),
+        ),
+        ("transform", "mirror3d") => (
+            |e, a| Box::pin(crate::std::mirror::mirror_3d(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::transform::mirror3d"),
         ),
         ("transform", "translate") => (
             |e, a| Box::pin(crate::std::transform::translate(e, a).map(|r| r.map(KclValue::continue_))),
@@ -555,6 +576,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::constraints::equal_length(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solver::equalLength"),
         ),
+        ("solver", "midpoint") => (
+            |e, a| Box::pin(crate::std::constraints::midpoint(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solver::midpoint"),
+        ),
         ("solver", "equalRadius") => (
             |e, a| Box::pin(crate::std::constraints::equal_radius(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solver::equalRadius"),
@@ -566,6 +591,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("solver", "tangent") => (
             |e, a| Box::pin(crate::std::constraints::tangent(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solver::tangent"),
+        ),
+        ("solver", "symmetric") => (
+            |e, a| Box::pin(crate::std::constraints::symmetric(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solver::symmetric"),
         ),
         ("solver", "horizontal") => (
             |e, a| Box::pin(crate::std::constraints::horizontal(e, a).map(|r| r.map(KclValue::continue_))),

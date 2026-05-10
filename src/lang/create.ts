@@ -65,7 +65,12 @@ function createRawStr(
   // For strings, include double quotes in raw so they're preserved during unparse
   // Escape backslashes and double quotes to create valid KCL string literals
   if (typeof value === 'string') {
-    const escaped = value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
+    const escaped = value
+      .replace(/\\/g, '\\\\')
+      .replace(/\n/g, '\\n')
+      .replace(/\r/g, '\\r')
+      .replace(/\t/g, '\\t')
+      .replace(/"/g, '\\"')
     return `"${escaped}"`
   }
 
@@ -403,7 +408,8 @@ export const createLabeledArg = (label: string, arg: Expr): LabeledArg => {
 
 export function createMemberExpression(
   parent: string | Expr,
-  propertyName: string
+  property: string | Expr,
+  computed = false
 ): Node<MemberExpression> {
   return {
     type: 'MemberExpression',
@@ -414,7 +420,8 @@ export function createMemberExpression(
     preComments: [],
     commentStart: 0,
     object: typeof parent === 'string' ? createLocalName(parent) : parent,
-    property: createLocalName(propertyName),
-    computed: false,
+    property:
+      typeof property === 'string' ? createLocalName(property) : property,
+    computed,
   }
 }

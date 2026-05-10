@@ -29,7 +29,7 @@ and complex multi-body part modeling.
 | `solids` | `[Solid; 1+]` | The solids to use as the base to subtract from. | Yes |
 | `tools` | `[Solid]` | The solids to subtract. | Yes |
 | `tolerance` | `number(Length)` | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
-| `legacyMethod` | `bool` | You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm. If true, revert to older engine SSI algorithm. Defaults to false. | No |
+| `legacyMethod` | `bool` | **Deprecated as of KCL 2.0.** You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm. If true, revert to older engine SSI algorithm. Defaults to false. | No |
 
 ### Returns
 
@@ -192,15 +192,15 @@ profile011 = circle(
 
 // Extrude the 4 circles into 4 rods.
 rods = extrude(
-       [
-         profile008,
-         profile009,
-         profile010,
-         profile011
-       ],
-       length = -6,
-       method = NEW,
-     )
+  [
+    profile008,
+    profile009,
+    profile010,
+    profile011
+  ],
+  length = -6,
+  method = NEW,
+)
   |> appearance(color = "#ff2222", roughness = 50, metalness = 90)
 
 // Subtract all 4 rods from both cubes.
