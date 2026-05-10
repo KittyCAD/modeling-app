@@ -717,6 +717,94 @@ part002 = startSketchOn(XY)
     expect(await getVolume(manager, IDS.solid)).toBeLessThan(startVolume)
   })
 
+  it('exports capless surface extrudes and reports their body type', async () => {
+    const manager = new OpenCascadeCommandManager()
+    await buildRectangleRegionInput(manager)
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: IDS.solid,
+      cmd: {
+        type: 'extrude',
+        target: IDS.region,
+        distance: 2,
+        extrude_method: 'new',
+        body_type: 'surface',
+      },
+    })
+
+    const bodyTypeResponse = await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000e7',
+      cmd: {
+        type: 'solid3d_get_body_type',
+        object_id: IDS.solid,
+      },
+    })
+    expect(bodyTypeResponse.resp.data.modeling_response.data.body_type).toBe(
+      'surface'
+    )
+    const topology = manager.exportLatestTopologyMeshes().solids[0]
+    expect(topology.groups.length).toBeGreaterThan(0)
+    expect(topology.groups.every((group) => group.role === 'wall')).toBe(true)
+    expect((await manager.exportLatestGlbBytes()).length).toBeGreaterThan(0)
+  })
+
+  it('deletes faces into a surface body and can flip and join it', async () => {
+    const manager = new OpenCascadeCommandManager()
+    await buildRectangleRegionInput(manager)
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: IDS.solid,
+      cmd: {
+        type: 'extrude',
+        target: IDS.region,
+        distance: 2,
+        extrude_method: 'new',
+        body_type: 'solid',
+      },
+    })
+    const endCapId = manager
+      .exportLatestTopologyMeshes()
+      .solids[0].groups.find((group) => group.role === 'endCap')?.topologyId
+    expect(endCapId).toBeTruthy()
+    if (!endCapId) {
+      throw new Error('No end cap face found for deleteFace test')
+    }
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000e8',
+      cmd: {
+        type: 'entity_delete_children',
+        entity_id: IDS.solid,
+        child_entity_ids: [endCapId],
+      },
+    })
+    const surfaceTypeResponse = await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000e9',
+      cmd: { type: 'solid3d_get_body_type', object_id: IDS.solid },
+    })
+    expect(surfaceTypeResponse.resp.data.modeling_response.data.body_type).toBe(
+      'surface'
+    )
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000ea',
+      cmd: { type: 'solid3d_flip', object_id: IDS.solid },
+    })
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000eb',
+      cmd: { type: 'solid3d_join', object_id: IDS.solid },
+    })
+    expect(manager.getSolidCount()).toBe(1)
+    expect(
+      manager.exportLatestTopologyMeshes().solids[0].groups.length
+    ).toBeGreaterThan(0)
+    expect((await manager.exportLatestGlbBytes()).length).toBeGreaterThan(0)
+  })
+
   it('applies OpenCascade object transforms to solids and pick topology', async () => {
     const manager = new OpenCascadeCommandManager()
     await buildRectangleRegionInput(manager)

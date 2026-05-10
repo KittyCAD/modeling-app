@@ -127,6 +127,7 @@ type ArrangementRegionState = {
 
 type SolidState = {
   shape: any
+  bodyType?: 'solid' | 'surface'
   sourceRegionId?: string
   sourceIds: string[]
   sideFaceId: string
@@ -924,6 +925,18 @@ export class OpenCascadeCommandManager {
         return modeling(await this.sweep(commandId, cmd, range))
       case 'loft':
         return modeling(await this.loft(commandId, cmd, range))
+      case 'solid3d_get_body_type':
+        return modeling(this.getBodyType(cmd))
+      case 'solid3d_flip':
+        return modeling(await this.flipSolid(cmd))
+      case 'entity_delete_children':
+        return modeling(await this.deleteChildren(cmd))
+      case 'solid3d_join':
+        return modeling(await this.joinSolid(cmd))
+      case 'solid3d_multi_join':
+        return modeling(await this.multiJoinSolids(commandId, cmd, range))
+      case 'surface_blend':
+        return modeling(await this.surfaceBlend(commandId, cmd, range))
       case 'boolean_union':
         return modeling(await this.booleanUnion(commandId, cmd, range))
       case 'boolean_subtract':
@@ -1160,6 +1173,43 @@ export class OpenCascadeCommandManager {
     cmd: Extract<ModelingCmd, { type: 'extrude' }>,
     range: SourceRange
   ): Promise<OkModelingCmdResponse> {
+    if (cmd.body_type === 'surface') {
+      const profile = await this.wireForTarget(cmd.target, range)
+      const oc = await initOpenCascade()
+      const height = lengthValue(cmd.distance)
+      const plane = this.planeForTarget(cmd.target)
+      const normal = plane?.normal || { x: 0, y: 0, z: 1 }
+      const prism = new oc.BRepPrimAPI_MakePrism_1(
+        profile.wire,
+        new oc.gp_Vec_4(
+          normal.x * height,
+          normal.y * height,
+          normal.z * height
+        ),
+        false,
+        true
+      )
+      const oppositeHeight = oppositeLengthValue((cmd as any).opposite, height)
+      const oppositePrism =
+        oppositeHeight !== undefined
+          ? new oc.BRepPrimAPI_MakePrism_1(
+              profile.wire,
+              new oc.gp_Vec_4(
+                normal.x * oppositeHeight,
+                normal.y * oppositeHeight,
+                normal.z * oppositeHeight
+              ),
+              false,
+              true
+            )
+          : undefined
+      const shape = oppositePrism
+        ? this.fuseShapes(prism.Shape(), oppositePrism.Shape(), oc)
+        : prism.Shape()
+      this.storeSolid(commandId, shape, [cmd.target], oc, range, 'surface')
+      return { type: 'extrude', data: {} }
+    }
+
     const region = await this.regionForTarget(cmd.target, range)
 
     const oc = await initOpenCascade()
@@ -1192,6 +1242,7 @@ export class OpenCascadeCommandManager {
 
     const solid: SolidState = {
       shape,
+      bodyType: 'solid',
       sourceRegionId: cmd.target,
       sourceIds: Array.from(
         new Set([cmd.target, region.sourcePathId, region.regionEdgeId])
@@ -1209,9 +1260,9 @@ export class OpenCascadeCommandManager {
         planeId: region.planeId,
       }
     }
-    const shouldMerge =
-      cmd.body_type !== 'surface' &&
-      !isNewExtrudeMethod((cmd as { extrude_method?: unknown }).extrude_method)
+    const shouldMerge = !isNewExtrudeMethod(
+      (cmd as { extrude_method?: unknown }).extrude_method
+    )
     const parentSolidId = shouldMerge
       ? region.sketchOnFace?.parentSolidId
       : undefined
@@ -1274,9 +1325,18 @@ export class OpenCascadeCommandManager {
     cmd: Extract<ModelingCmd, { type: 'revolve' }>,
     _range: SourceRange
   ): Promise<OkModelingCmdResponse> {
-    const region = await this.regionForTarget(cmd.target, _range)
+    const region =
+      cmd.body_type === 'surface'
+        ? undefined
+        : await this.regionForTarget(cmd.target, _range)
+    const profile =
+      cmd.body_type === 'surface'
+        ? (await this.wireForTarget(cmd.target, _range)).wire
+        : region?.face
     const oc = await initOpenCascade()
-    const plane = region.planeId ? this.planes.get(region.planeId) : undefined
+    const plane = region?.planeId
+      ? this.planes.get(region.planeId)
+      : this.planeForTarget(cmd.target)
     const origin = cmd.axis_is_2d
       ? localToWorld(toPoint3(cmd.origin), plane)
       : toPoint3(cmd.origin)
@@ -1285,7 +1345,7 @@ export class OpenCascadeCommandManager {
       : normalize(toPoint3(cmd.axis))
     const angle = angleValueRadians(cmd.angle)
     const primaryShape = new oc.BRepPrimAPI_MakeRevol_1(
-      region.face,
+      profile,
       new oc.gp_Ax1_2(
         new oc.gp_Pnt_3(origin.x, origin.y, origin.z),
         new oc.gp_Dir_4(axis.x, axis.y, axis.z)
@@ -1302,7 +1362,7 @@ export class OpenCascadeCommandManager {
         ? this.fuseShapes(
             primaryShape,
             new oc.BRepPrimAPI_MakeRevol_1(
-              region.face,
+              profile,
               new oc.gp_Ax1_2(
                 new oc.gp_Pnt_3(origin.x, origin.y, origin.z),
                 new oc.gp_Dir_4(axis.x, axis.y, axis.z)
@@ -1314,7 +1374,14 @@ export class OpenCascadeCommandManager {
           )
         : primaryShape
 
-    this.storeSolid(commandId, shape, [cmd.target], oc, _range)
+    this.storeSolid(
+      commandId,
+      shape,
+      [cmd.target],
+      oc,
+      _range,
+      cmd.body_type === 'surface' ? 'surface' : 'solid'
+    )
     return { type: 'revolve', data: {} }
   }
 
@@ -1334,7 +1401,14 @@ export class OpenCascadeCommandManager {
       profile
     ).Shape()
 
-    this.storeSolid(commandId, shape, [cmd.target, cmd.trajectory], oc, range)
+    this.storeSolid(
+      commandId,
+      shape,
+      [cmd.target, cmd.trajectory],
+      oc,
+      range,
+      cmd.body_type === 'surface' ? 'surface' : 'solid'
+    )
     return { type: 'sweep', data: {} }
   }
 
@@ -1361,7 +1435,14 @@ export class OpenCascadeCommandManager {
     loft.Build(new oc.Message_ProgressRange_1())
     const shape = loft.Shape()
 
-    this.storeSolid(commandId, shape, cmd.section_ids, oc, _range)
+    this.storeSolid(
+      commandId,
+      shape,
+      cmd.section_ids,
+      oc,
+      _range,
+      cmd.body_type === 'surface' ? 'surface' : 'solid'
+    )
     return { type: 'loft', data: { solid_id: commandId } }
   }
 
@@ -1771,6 +1852,145 @@ export class OpenCascadeCommandManager {
       type: 'closest_edge',
       data: { edge_id: edge?.topologyId || null },
     } as OkModelingCmdResponse
+  }
+
+  private getBodyType(cmd: ModelingCmd): OkModelingCmdResponse {
+    const solid = this.requireSolid((cmd as { object_id: string }).object_id)
+    return {
+      type: 'solid3d_get_body_type',
+      data: {
+        body_type: solid.bodyType || 'solid',
+      },
+    } as OkModelingCmdResponse
+  }
+
+  private async flipSolid(cmd: ModelingCmd): Promise<OkModelingCmdResponse> {
+    const solidId = (cmd as { object_id: string }).object_id
+    const solid = this.requireSolid(solidId)
+    if (typeof solid.shape.Reversed !== 'function') {
+      throw new Error('OpenCascade shape reversal is unavailable')
+    }
+    const oc = await initOpenCascade()
+    this.replaceSolidShape(solidId, solid.shape.Reversed(), oc)
+    return { type: 'solid3d_flip', data: {} } as OkModelingCmdResponse
+  }
+
+  private async deleteChildren(
+    cmd: ModelingCmd
+  ): Promise<OkModelingCmdResponse> {
+    const command = cmd as {
+      entity_id: string
+      child_entity_ids: string[]
+    }
+    if (!command.child_entity_ids?.length) {
+      return {
+        type: 'entity_delete_children',
+        data: {},
+      } as OkModelingCmdResponse
+    }
+    const solid = this.requireSolid(command.entity_id)
+    const oc = await initOpenCascade()
+    const defeaturing = new oc.BRepAlgoAPI_Defeaturing()
+    defeaturing.SetShape(solid.shape)
+    for (const faceId of command.child_entity_ids) {
+      defeaturing.AddFaceToRemove(this.requireFace(faceId))
+    }
+    defeaturing.Build(new oc.Message_ProgressRange_1())
+    this.throwIfBooleanFailed(defeaturing, 'delete face')
+    if (typeof defeaturing.Shape !== 'function') {
+      throw new Error('OpenCascade delete face did not produce a shape')
+    }
+    this.replaceSolidShape(command.entity_id, defeaturing.Shape(), oc)
+    this.requireSolid(command.entity_id).bodyType = 'surface'
+    return {
+      type: 'entity_delete_children',
+      data: {},
+    } as OkModelingCmdResponse
+  }
+
+  private async joinSolid(cmd: ModelingCmd): Promise<OkModelingCmdResponse> {
+    const solidId = (cmd as { object_id: string }).object_id
+    const solid = this.requireSolid(solidId)
+    const oc = await initOpenCascade()
+    const sewedShape = this.sewShapes([solid.shape], 1e-7, oc)
+    this.replaceSolidShape(solidId, sewedShape, oc)
+    this.requireSolid(solidId).bodyType = this.bodyTypeForShape(sewedShape, oc)
+    return { type: 'solid3d_join', data: {} } as OkModelingCmdResponse
+  }
+
+  private async multiJoinSolids(
+    commandId: string,
+    cmd: ModelingCmd,
+    range: SourceRange
+  ): Promise<OkModelingCmdResponse> {
+    const command = cmd as { object_ids: string[]; tolerance?: unknown }
+    const solidIds = [...(command.object_ids || [])]
+    if (solidIds.length === 0) {
+      throw new Error('OpenCascade join requires at least one surface')
+    }
+    const oc = await initOpenCascade()
+    const tolerance = lengthValue(command.tolerance) || 1e-7
+    const shape = this.sewShapes(
+      solidIds.map((solidId) => this.requireSolid(solidId).shape),
+      tolerance,
+      oc
+    )
+    this.storeSolid(
+      commandId,
+      shape,
+      solidIds,
+      oc,
+      range,
+      this.bodyTypeForShape(shape, oc)
+    )
+    this.markSolidsConsumed(solidIds, new Set([commandId]))
+    return { type: 'solid3d_multi_join', data: {} } as OkModelingCmdResponse
+  }
+
+  private async surfaceBlend(
+    commandId: string,
+    cmd: ModelingCmd,
+    range: SourceRange
+  ): Promise<OkModelingCmdResponse> {
+    const command = cmd as {
+      surfaces: Array<{
+        object_id: string
+        edges: Array<{ edge_id?: string | null }>
+      }>
+    }
+    const edgeIds = command.surfaces
+      .flatMap((surface) => surface.edges || [])
+      .map((edge) => edge.edge_id)
+      .filter((edgeId): edgeId is string => Boolean(edgeId))
+    if (edgeIds.length !== 2) {
+      throw new Error('OpenCascade surface blend requires exactly two edges')
+    }
+    const oc = await initOpenCascade()
+    const filling = new oc.BRepFill_Filling(
+      3,
+      15,
+      2,
+      false,
+      1e-5,
+      1e-4,
+      1e-2,
+      1e-1,
+      8,
+      9
+    )
+    for (const edgeId of edgeIds) {
+      filling.Add_1(
+        this.requireEdge(edgeId, oc),
+        oc.GeomAbs_Shape.GeomAbs_C0,
+        true
+      )
+    }
+    filling.Build()
+    if (!filling.IsDone()) {
+      throw new Error('OpenCascade failed to build surface blend')
+    }
+    this.storeSolid(commandId, filling.Face(), edgeIds, oc, range, 'surface')
+    return { type: 'surface_blend', data: {} } as OkModelingCmdResponse
   }
 
   private async filletEdges(
@@ -2910,15 +3130,31 @@ export class OpenCascadeCommandManager {
     return path.planeId ? this.planes.get(path.planeId) : undefined
   }
 
+  private planeForTarget(targetId: string): PlaneState | undefined {
+    const region = this.regions.get(targetId)
+    if (region?.planeId) {
+      return this.planes.get(region.planeId)
+    }
+    const pathId =
+      this.pathAliases.get(targetId) ||
+      (this.paths.has(targetId)
+        ? targetId
+        : this.findPathIdForSegment(targetId))
+    const path = pathId ? this.paths.get(pathId) : undefined
+    return path ? this.planeForPath(path) : undefined
+  }
+
   private storeSolid(
     commandId: string,
     shape: any,
     sourceIds: string[],
     oc: OpenCascadeInstance,
-    range?: SourceRange
+    range?: SourceRange,
+    bodyType?: 'solid' | 'surface'
   ): SolidState {
     const solid: SolidState = {
       shape,
+      bodyType: bodyType || this.bodyTypeForShape(shape, oc),
       sourceRegionId: sourceIds.find((sourceId) => this.regions.has(sourceId)),
       sourceIds,
       sideFaceId: `${commandId.slice(0, 35)}0`,
@@ -2931,6 +3167,37 @@ export class OpenCascadeCommandManager {
     this.registerGenericTopologyForSolid(commandId, solid, oc)
     this.latestShapeVersion.value += 1
     return solid
+  }
+
+  private sewShapes(
+    shapes: any[],
+    tolerance: number,
+    oc: OpenCascadeInstance
+  ): any {
+    const sewing = new oc.BRepBuilderAPI_Sewing(
+      tolerance,
+      true,
+      true,
+      true,
+      false
+    )
+    for (const shape of shapes) {
+      sewing.Add(shape)
+    }
+    sewing.Perform(new oc.Message_ProgressRange_1())
+    return sewing.SewedShape()
+  }
+
+  private bodyTypeForShape(
+    shape: any,
+    oc: OpenCascadeInstance
+  ): 'solid' | 'surface' {
+    if (typeof shape?.ShapeType !== 'function') {
+      return 'solid'
+    }
+    return shape.ShapeType() === oc.TopAbs_ShapeEnum.TopAbs_SOLID
+      ? 'solid'
+      : 'surface'
   }
 
   private fuseShapes(
