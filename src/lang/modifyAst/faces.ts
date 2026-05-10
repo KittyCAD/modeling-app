@@ -95,8 +95,29 @@ export function addShell({
     return result
   }
 
-  const { solidsExpr, facesExpr, pathIfPipe } = result
+  let { solidsExprs, facesExprs } = result
+  const { pathIfPipe } = result
   modifiedAst = result.modifiedAst
+
+  const enginePrimitives = faces.otherSelections.filter(
+    (selection): selection is EnginePrimitiveSelection =>
+      isEnginePrimitiveSelection(selection) &&
+      selection.primitiveType === 'face'
+  )
+  if (enginePrimitives.length > 0) {
+    const result = insertFacePrimitiveVariablesAndOffsetPathToNode({
+      enginePrimitives,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(result)) return result
+    solidsExprs = deduplicateFaceExprs(solidsExprs.concat(result.solidsExprs))
+    facesExprs.push(...result.faceExprs)
+  }
+
+  const solidsExpr = createVariableExpressionsArray(solidsExprs)
+  const facesExpr = createVariableExpressionsArray(facesExprs)
   if (!facesExpr) {
     return new Error("Couldn't retrieve face from selection")
   }
@@ -1265,7 +1286,7 @@ function insertFacePrimitiveVariablesAndOffsetPathToNode({
     )
     if (!bodySelection) {
       return new Error(
-        'Delete Face could not resolve a parent solid for a selected primitive face.'
+        'Could not resolve a parent solid for a selected primitive face.'
       )
     }
 

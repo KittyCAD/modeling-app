@@ -212,6 +212,47 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add a shell call from an OpenCascade primitive face selection', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        cylinder,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
+      const primitiveFace: NonCodeSelection = {
+        entityId: 'open-cascade-face-id',
+        parentEntityId: sweep?.id,
+        primitiveIndex: 2,
+        primitiveType: 'face',
+        type: 'enginePrimitive',
+      }
+      const faces: Selections = {
+        graphSelections: [],
+        otherSelections: [primitiveFace],
+      }
+      const thickness = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+
+      const result = addShell({
+        ast,
+        artifactGraph,
+        faces,
+        thickness,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`${cylinder}
+face001 = faceId(extrude001, index = 2)
+shell001 = shell(extrude001, faces = face001, thickness = 1)`)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add a shell call on variable-less extrude', async () => {
       // Note: this was code from https://github.com/KittyCAD/modeling-app/issues/7640
       const code = `sketch001 = startSketchOn(XY)
