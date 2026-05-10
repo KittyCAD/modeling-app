@@ -1,4 +1,5 @@
 import { useSignals } from '@preact/signals-react/runtime'
+import type { EntityType } from '@kittycad/lib'
 import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_LAYER } from '@src/clientSideScene/sceneUtils'
@@ -30,7 +31,7 @@ import {
   getResolvedTheme,
   getThemeColorForThreeJs,
 } from '@src/lib/theme'
-import { isArray } from '@src/lib/utils'
+import { isArray, uuidv4 } from '@src/lib/utils'
 import { getSegmentColor } from '@src/machines/sketchSolve/segmentsUtils'
 import type {
   NonCodeSelection,
@@ -128,10 +129,29 @@ const OPEN_CASCADE_SKETCH_LINE_PICK_RADIUS_PX = 8
 const OPEN_CASCADE_SELECTED_EDGE_WIDTH_PX = 5
 const OPEN_CASCADE_EMPTY_SCENE_RADIUS_BASE_UNITS = 10
 const OPEN_CASCADE_MIN_CAMERA_NEAR_BASE_UNITS = 0.001
+const OPEN_CASCADE_DEFAULT_SELECTION_FILTER = [
+  'face',
+  'edge',
+  'solid2d',
+  'curve',
+  'object',
+  'path',
+] satisfies EntityType[]
+const OPEN_CASCADE_SKETCH_SELECTION_FILTER = [
+  'solid2d',
+  'curve',
+  'path',
+] satisfies EntityType[]
 
 type OpenCascadeCamera = PerspectiveCamera | OrthographicCamera
 type ResolvedTheme = Exclude<Themes, Themes.System>
 type OpenCascadeGuideVisibilityKey = 'origin' | 'xy' | 'xz' | 'yz'
+type OpenCascadeSelectionFilterFlags = {
+  faces: boolean
+  bodies: boolean
+  edges: boolean
+  sketches: boolean
+}
 
 interface OpenCascadeSceneStyle {
   backgroundColor: number
@@ -241,20 +261,34 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
   const latestPreviewVersion =
     engineCommandManager.latestOpenCascadePreviewVersion.value
   const activeSelectionFilter = openCascadeManager.latestSelectionFilter.value
-  const objectSelectionOnly =
-    activeSelectionFilter.includes('object') &&
-    activeSelectionFilter.every((filter) => filter === 'object')
+  const selectionFilterFlags = openCascadeSelectionFilterFlags(
+    activeSelectionFilter
+  )
+  const objectSelectionOnly = isOpenCascadeObjectOnlySelectionFilter(
+    activeSelectionFilter
+  )
   const edgeSelectionOnly =
-    activeSelectionFilter.includes('edge') &&
-    activeSelectionFilter.every(
-      (filter) => filter === 'edge' || filter === 'face'
-    )
+    selectionFilterFlags.edges &&
+    !selectionFilterFlags.bodies &&
+    !selectionFilterFlags.sketches
   const exportError = diagnostic || openCascadeManager.latestExportError.value
   const passiveProfilesVisible =
     !state.matches('Sketch') && !state.matches('sketchSolveMode')
   const useSketchSolveMode =
     state.context.store.useSketchSolveMode?.current === true
   const isExecuting = kclManager.isExecuting
+  const setOpenCascadeSelectionFilter = (filter: EntityType[]) => {
+    engineCommandManager
+      .sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'set_selection_filter',
+          filter,
+        },
+      })
+      .catch((error) => console.warn(error))
+  }
 
   sceneStyleRef.current = sceneStyle
   highlightEdgesRef.current = highlightEdges
@@ -1746,8 +1780,124 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
           {exportError}
         </div>
       )}
+      <OpenCascadeSelectionFilterControls
+        flags={selectionFilterFlags}
+        onChange={(nextFlags) =>
+          setOpenCascadeSelectionFilter(
+            openCascadeSelectionFilterFromFlags(nextFlags)
+          )
+        }
+        onReset={() =>
+          setOpenCascadeSelectionFilter([
+            ...OPEN_CASCADE_DEFAULT_SELECTION_FILTER,
+          ])
+        }
+      />
     </div>
   )
+}
+
+function OpenCascadeSelectionFilterControls({
+  flags,
+  onChange,
+  onReset,
+}: {
+  flags: OpenCascadeSelectionFilterFlags
+  onChange: (flags: OpenCascadeSelectionFilterFlags) => void
+  onReset: () => void
+}) {
+  const options: Array<{
+    key: keyof OpenCascadeSelectionFilterFlags
+    label: string
+  }> = [
+    { key: 'faces', label: 'Faces' },
+    { key: 'bodies', label: 'Bodies' },
+    { key: 'edges', label: 'Edges' },
+    { key: 'sketches', label: 'Sketches' },
+  ]
+
+  return (
+    <div className="pointer-events-auto absolute bottom-3 left-3 flex items-center gap-2 rounded border border-chalkboard-30 bg-chalkboard-10/90 px-2 py-1.5 text-xs text-chalkboard-90 shadow-sm backdrop-blur-sm dark:border-chalkboard-80 dark:bg-chalkboard-100/90 dark:text-chalkboard-20">
+      <span className="text-[10px] uppercase tracking-wide text-chalkboard-60 dark:text-chalkboard-50">
+        Select
+      </span>
+      {options.map(({ key, label }) => (
+        <label key={key} className="flex cursor-pointer items-center gap-1">
+          <input
+            type="checkbox"
+            checked={flags[key]}
+            onChange={(event) => {
+              const nextFlags = {
+                ...flags,
+                [key]: event.currentTarget.checked,
+              }
+              onChange(ensureOpenCascadeSelectionFilterHasTarget(nextFlags))
+            }}
+            className="h-3 w-3"
+          />
+          {label}
+        </label>
+      ))}
+      <button
+        type="button"
+        onClick={onReset}
+        className="ml-1 rounded border border-chalkboard-30 px-1.5 py-0.5 text-[10px] text-chalkboard-70 hover:bg-chalkboard-20 dark:border-chalkboard-70 dark:text-chalkboard-40 dark:hover:bg-chalkboard-90"
+      >
+        Reset
+      </button>
+    </div>
+  )
+}
+
+export function openCascadeSelectionFilterFlags(
+  filter: readonly string[]
+): OpenCascadeSelectionFilterFlags {
+  return {
+    faces: filter.includes('face'),
+    bodies: filter.includes('object'),
+    edges: filter.includes('edge'),
+    sketches: OPEN_CASCADE_SKETCH_SELECTION_FILTER.some((value) =>
+      filter.includes(value)
+    ),
+  }
+}
+
+function ensureOpenCascadeSelectionFilterHasTarget(
+  flags: OpenCascadeSelectionFilterFlags
+): OpenCascadeSelectionFilterFlags {
+  if (flags.faces || flags.bodies || flags.edges || flags.sketches) {
+    return flags
+  }
+
+  return { ...flags, faces: true }
+}
+
+export function openCascadeSelectionFilterFromFlags(
+  flags: OpenCascadeSelectionFilterFlags
+): EntityType[] {
+  const nextFilter: EntityType[] = []
+  if (flags.faces) {
+    nextFilter.push('face')
+  }
+  if (flags.edges) {
+    nextFilter.push('edge')
+  }
+  if (flags.sketches) {
+    nextFilter.push(...OPEN_CASCADE_SKETCH_SELECTION_FILTER)
+  }
+  if (flags.bodies) {
+    nextFilter.push('object')
+  }
+  return nextFilter.length
+    ? nextFilter
+    : [...OPEN_CASCADE_DEFAULT_SELECTION_FILTER]
+}
+
+export function isOpenCascadeObjectOnlySelectionFilter(
+  filter: readonly string[]
+) {
+  const flags = openCascadeSelectionFilterFlags(filter)
+  return flags.bodies && !flags.faces && !flags.edges && !flags.sketches
 }
 
 export function makeOpenCascadeGuideRoot() {

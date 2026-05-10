@@ -30,6 +30,30 @@ beforeAll(async () => {
 })
 
 describe('OpenCascadeThreeScene helpers', () => {
+  it('derives OpenCascade object-only selection mode only from an exact body filter', () => {
+    expect(
+      helpers.isOpenCascadeObjectOnlySelectionFilter([
+        'face',
+        'edge',
+        'solid2d',
+        'curve',
+        'object',
+        'path',
+      ])
+    ).toBe(false)
+    expect(helpers.isOpenCascadeObjectOnlySelectionFilter(['object'])).toBe(
+      true
+    )
+    expect(
+      helpers.openCascadeSelectionFilterFromFlags({
+        faces: true,
+        bodies: false,
+        edges: false,
+        sketches: false,
+      })
+    ).toEqual(['face'])
+  })
+
   it('computes bounds without recentering the object', () => {
     const root = new Group()
     root.position.set(2, 3, 4)
