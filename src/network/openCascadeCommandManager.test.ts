@@ -607,6 +607,18 @@ part002 = startSketchOn(XY)
     expect((await filletManager.exportLatestGlbBytes()).length).toBeGreaterThan(
       0
     )
+    const filletTopology = filletManager.exportLatestTopologyMeshes().solids[0]
+    expect(filletTopology.solidId).toBe(IDS.solid)
+    expect(filletTopology.groups.length).toBeGreaterThan(0)
+    expect(filletTopology.edges.length).toBeGreaterThan(0)
+    expect(
+      filletTopology.groups.every((group) =>
+        group.topologyId.startsWith(`${IDS.solid}:face:`)
+      )
+    ).toBe(true)
+    expect(
+      filletTopology.edges.some((edge) => edge.topologyId === filletEdgeId)
+    ).toBe(false)
     expect(await getVolume(filletManager, IDS.solid)).toBeLessThan(
       filletStartVolume
     )
@@ -651,6 +663,14 @@ part002 = startSketchOn(XY)
     expect(
       (await chamferManager.exportLatestGlbBytes()).length
     ).toBeGreaterThan(0)
+    const chamferTopology =
+      chamferManager.exportLatestTopologyMeshes().solids[0]
+    expect(chamferTopology.solidId).toBe(IDS.solid)
+    expect(chamferTopology.groups.length).toBeGreaterThan(0)
+    expect(chamferTopology.edges.length).toBeGreaterThan(0)
+    expect(
+      chamferTopology.edges.some((edge) => edge.topologyId === chamferEdgeId)
+    ).toBe(false)
     expect(await getVolume(chamferManager, IDS.solid)).toBeLessThan(
       chamferStartVolume
     )
@@ -1137,6 +1157,10 @@ part002 = startSketchOn(XY)
     expect(
       (await manager.exportVisibleGlbBytes()).map((solid) => solid.solidId)
     ).toEqual(['00000000-0000-0000-0000-0000000000d0'])
+    const unionTopology = manager.exportLatestTopologyMeshes().solids[0]
+    expect(unionTopology.solidId).toBe('00000000-0000-0000-0000-0000000000d0')
+    expect(unionTopology.groups.length).toBeGreaterThan(0)
+    expect(unionTopology.edges.length).toBeGreaterThan(0)
 
     const subtractManager = new OpenCascadeCommandManager()
     await buildTwoOverlappingExtrudes(subtractManager)
@@ -1154,6 +1178,13 @@ part002 = startSketchOn(XY)
       subtractResponse.resp.data.modeling_response.data.any_intersections
     ).toBe(true)
     expect(await subtractManager.exportVisibleGlbBytes()).toHaveLength(1)
+    const subtractTopology =
+      subtractManager.exportLatestTopologyMeshes().solids[0]
+    expect(subtractTopology.solidId).toBe(
+      '00000000-0000-0000-0000-0000000000d7'
+    )
+    expect(subtractTopology.groups.length).toBeGreaterThan(0)
+    expect(subtractTopology.edges.length).toBeGreaterThan(0)
 
     const intersectManager = new OpenCascadeCommandManager()
     await buildTwoOverlappingExtrudes(intersectManager)
@@ -1170,6 +1201,13 @@ part002 = startSketchOn(XY)
       },
     })
     expect(await intersectManager.exportVisibleGlbBytes()).toHaveLength(1)
+    const intersectTopology =
+      intersectManager.exportLatestTopologyMeshes().solids[0]
+    expect(intersectTopology.solidId).toBe(
+      '00000000-0000-0000-0000-0000000000d8'
+    )
+    expect(intersectTopology.groups.length).toBeGreaterThan(0)
+    expect(intersectTopology.edges.length).toBeGreaterThan(0)
 
     const splitManager = new OpenCascadeCommandManager()
     await buildTwoOverlappingExtrudes(splitManager)

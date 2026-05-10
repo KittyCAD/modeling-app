@@ -1225,15 +1225,6 @@ export class OpenCascadeCommandManager {
         ? this.fuseShapes(parentSolid.shape, shape, oc)
         : undefined
 
-    this.registerExtrudeTopology(
-      commandId,
-      solid,
-      region,
-      prism,
-      height,
-      normal,
-      renderSolidId
-    )
     if (parentSolidId && parentSolid && fusedShape) {
       const mergedSolid: SolidState = {
         ...parentSolid,
@@ -1250,7 +1241,26 @@ export class OpenCascadeCommandManager {
       }
       mergedSolid.brep = this.writeBrep(parentSolidId, fusedShape, oc)
       this.solids.set(parentSolidId, mergedSolid)
+      this.registerGenericTopologyForSolid(parentSolidId, mergedSolid, oc)
+      this.registerExtrudeTopology(
+        commandId,
+        solid,
+        region,
+        prism,
+        height,
+        normal,
+        renderSolidId
+      )
     } else {
+      this.registerExtrudeTopology(
+        commandId,
+        solid,
+        region,
+        prism,
+        height,
+        normal,
+        renderSolidId
+      )
       solid.brep = this.writeBrep(commandId, shape, oc)
       this.solids.set(commandId, solid)
     }
@@ -2101,17 +2111,19 @@ export class OpenCascadeCommandManager {
       consumed: false,
     }
     this.solids.set(copyId, solid)
-    this.storePatternTopologyCopy(copyId, sourceSolidId, matrix)
+    if (!this.storePatternTopologyCopy(copyId, sourceSolidId, matrix)) {
+      this.registerGenericTopologyForSolid(copyId, solid, oc)
+    }
   }
 
   private storePatternTopologyCopy(
     copyId: string,
     sourceSolidId: string,
     matrix: TransformMatrix
-  ) {
+  ): boolean {
     const sourceMesh = this.topologyMeshForSolidAlias(sourceSolidId)
     if (!sourceMesh) {
-      return
+      return false
     }
 
     const faceIdMap = new Map<string, string>()
@@ -2164,6 +2176,7 @@ export class OpenCascadeCommandManager {
         edgeIndex: edge.edgeIndex,
       })
     }
+    return true
   }
 
   private async volume(
@@ -2915,6 +2928,7 @@ export class OpenCascadeCommandManager {
     }
     solid.brep = this.writeBrep(commandId, shape, oc)
     this.solids.set(commandId, solid)
+    this.registerGenericTopologyForSolid(commandId, solid, oc)
     this.latestShapeVersion.value += 1
     return solid
   }
@@ -3122,14 +3136,64 @@ export class OpenCascadeCommandManager {
     const [storedSolidId, solid] = entry
     solid.shape = shape
     solid.brep = this.writeBrep(storedSolidId, shape, oc)
-    this.topologyMeshes.delete(storedSolidId)
+    this.registerGenericTopologyForSolid(storedSolidId, solid, oc)
+    this.latestShapeVersion.value += 1
+    this.latestTopologyVersion.value += 1
+  }
+
+  private registerGenericTopologyForSolid(
+    solidId: string,
+    solid: SolidState,
+    oc: OpenCascadeInstance
+  ) {
+    this.removeTopologyForSolid(solidId)
+    const { mesh, faceShapes, edgeShapes } = buildGenericTopology(
+      solidId,
+      solid.shape,
+      oc
+    )
+    mesh.artifactIds = this.selectableSolidArtifactIds(solidId, solid)
+    mesh.provenance = cloneEntityProvenance(solid.provenance)
+    this.topologyMeshes.set(solidId, mesh)
+
+    for (const group of mesh.groups) {
+      this.topologyEntries.set(group.topologyId, {
+        topologyId: group.topologyId,
+        artifactId: group.artifactId,
+        solidId,
+        kind: 'face',
+        role: group.role,
+        shape: faceShapes.get(group.topologyId),
+      })
+    }
+    for (const edge of mesh.edges) {
+      this.topologyEntries.set(edge.topologyId, {
+        topologyId: edge.topologyId,
+        artifactId: edge.artifactId,
+        solidId,
+        kind: 'edge',
+        role: edge.role,
+        shape: edgeShapes.get(edge.topologyId),
+        points: [...edge.points],
+        faceIds: [...edge.faceIds],
+        edgeIndex: edge.edgeIndex,
+      })
+    }
+    this.latestTopologyVersion.value += 1
+  }
+
+  private removeTopologyForSolid(solidId: string) {
+    this.topologyMeshes.delete(solidId)
     for (const [topologyId, topology] of this.topologyEntries) {
-      if (topology.solidId === storedSolidId) {
+      if (topology.solidId === solidId) {
         this.topologyEntries.delete(topologyId)
       }
     }
-    this.latestShapeVersion.value += 1
-    this.latestTopologyVersion.value += 1
+    for (const [key, topology] of this.extrudeTopologies) {
+      if (topology.solidId === solidId) {
+        this.extrudeTopologies.delete(key)
+      }
+    }
   }
 
   private markSolidsConsumed(solidIds: string[], except = new Set<string>()) {
@@ -4763,6 +4827,135 @@ function sampleArcPoints(
   return points
 }
 
+type GenericTopologyBuild = {
+  mesh: OpenCascadeTopologySolidMesh
+  faceShapes: Map<string, any>
+  edgeShapes: Map<string, any>
+}
+
+function buildGenericTopology(
+  solidId: string,
+  shape: any,
+  oc: OpenCascadeInstance
+): GenericTopologyBuild {
+  new oc.BRepMesh_IncrementalMesh_2(shape, 0.1, false, 0.1, false)
+  const positions: number[] = []
+  const indices: number[] = []
+  const groups: OpenCascadeTopologyFaceGroup[] = []
+  const faceShapes = new Map<string, any>()
+  const genericEdges = new Map<
+    string,
+    {
+      edge: any
+      points: Point3[]
+      faceIds: Set<string>
+    }
+  >()
+
+  const faceExplorer = new oc.TopExp_Explorer_2(
+    shape,
+    oc.TopAbs_ShapeEnum.TopAbs_FACE,
+    oc.TopAbs_ShapeEnum.TopAbs_SHAPE
+  )
+  let faceIndex = 0
+  for (; faceExplorer.More(); faceExplorer.Next()) {
+    const face = oc.TopoDS.Face_1(faceExplorer.Current())
+    const topologyId = `${solidId}:face:${faceIndex}`
+    const groupStart = indices.length
+    appendFaceTriangulation(positions, indices, face, oc)
+    const groupCount = indices.length - groupStart
+    if (groupCount > 0) {
+      groups.push({
+        start: groupStart,
+        count: groupCount,
+        topologyId,
+        artifactId: topologyId,
+        kind: 'face',
+        role: 'wall',
+      })
+    }
+    faceShapes.set(topologyId, face)
+
+    const edgeExplorer = new oc.TopExp_Explorer_2(
+      face,
+      oc.TopAbs_ShapeEnum.TopAbs_EDGE,
+      oc.TopAbs_ShapeEnum.TopAbs_SHAPE
+    )
+    for (; edgeExplorer.More(); edgeExplorer.Next()) {
+      const edge = oc.TopoDS.Edge_1(edgeExplorer.Current())
+      const points = sampleEdgePoints(edge, oc)
+      if (points.length < 2) {
+        continue
+      }
+      const key = edgeGeometryKey(points)
+      const entry = genericEdges.get(key)
+      if (entry) {
+        entry.faceIds.add(topologyId)
+      } else {
+        genericEdges.set(key, {
+          edge,
+          points,
+          faceIds: new Set([topologyId]),
+        })
+      }
+    }
+    faceIndex += 1
+  }
+
+  const edgeShapes = new Map<string, any>()
+  const edges: OpenCascadeTopologyEdgeLine[] = []
+  for (const entry of genericEdges.values()) {
+    const topologyId = `${solidId}:edge:${edges.length}`
+    edgeShapes.set(topologyId, entry.edge)
+    edges.push({
+      topologyId,
+      artifactId: topologyId,
+      kind: 'edge',
+      role: 'adjacentEdge',
+      edgeIndex: edges.length,
+      faceIds: Array.from(entry.faceIds),
+      points: flattenPoints(entry.points),
+    })
+  }
+
+  return {
+    mesh: {
+      solidId,
+      positions,
+      indices,
+      groups,
+      edges,
+    },
+    faceShapes,
+    edgeShapes,
+  }
+}
+
+function appendFaceTriangulation(
+  positions: number[],
+  indices: number[],
+  face: any,
+  oc: OpenCascadeInstance
+) {
+  const location = new oc.TopLoc_Location_1()
+  const triangulationHandle = oc.BRep_Tool.Triangulation(face, location, 0)
+  if (!triangulationHandle || callIfFunction(triangulationHandle, 'IsNull')) {
+    return
+  }
+  const triangulation = triangulationHandle.get()
+  const transform = location.Transformation()
+  const triangleCount = triangulation.NbTriangles()
+  for (let triangleIndex = 1; triangleIndex <= triangleCount; triangleIndex++) {
+    const triangle = triangulation.Triangle(triangleIndex)
+    for (const nodePosition of [1, 2, 3]) {
+      const point = triangulation.Node(triangle.Value(nodePosition))
+      point.Transform(transform)
+      positions.push(point.X(), point.Y(), point.Z())
+      indices.push(indices.length)
+    }
+  }
+}
+
 function buildExtrudeTopologyMesh(
   solidId: string,
   region: RegionState,
@@ -5598,6 +5791,45 @@ function edgeEndpoints(
     return undefined
   }
   return [vertices[0], vertices[vertices.length - 1]]
+}
+
+function sampleEdgePoints(edge: any, oc: OpenCascadeInstance): Point3[] {
+  try {
+    const curve = new oc.BRepAdaptor_Curve_2(edge)
+    const first = curve.FirstParameter()
+    const last = curve.LastParameter()
+    if (Number.isFinite(first) && Number.isFinite(last)) {
+      const steps = Math.max(
+        1,
+        Math.min(32, Math.ceil(Math.abs(last - first) * 4))
+      )
+      const points: Point3[] = []
+      for (let index = 0; index <= steps; index += 1) {
+        const t = first + ((last - first) * index) / steps
+        points.push(gpPntToPoint3(curve.Value(t)))
+      }
+      if (points.length >= 2) {
+        return points
+      }
+    }
+  } catch {
+    // Fall back to topological vertices below.
+  }
+  return edgeEndpoints(edge, oc) || []
+}
+
+function edgeGeometryKey(points: Point3[]): string {
+  const forward = points.map(quantizedPoint3Key)
+  const reverse = [...forward].reverse()
+  const forwardKey = forward.join('|')
+  const reverseKey = reverse.join('|')
+  return forwardKey < reverseKey ? forwardKey : reverseKey
+}
+
+function quantizedPoint3Key(point: Point3): string {
+  return `${Math.round(point.x * 1e6)}:${Math.round(point.y * 1e6)}:${Math.round(
+    point.z * 1e6
+  )}`
 }
 
 function gpPntToPoint3(point: any): Point3 {
