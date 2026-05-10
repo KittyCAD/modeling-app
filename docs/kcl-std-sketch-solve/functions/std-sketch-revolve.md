@@ -40,7 +40,7 @@ revolved around the same axis.
 | `axis` | `Axis2d | Edge | Segment` | Axis of revolution. | Yes |
 | `angle` | `number(Angle)` | Angle to revolve (in degrees). Default is 360. | No |
 | `tolerance` | `number(Length)` | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
-| `symmetric` | `bool` | If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch. | No |
+| `symmetric` | `bool` | If true, the revolve will happen symmetrically around the sketch. For revolve, `angle` is the full included angle split across both directions, unlike symmetric extrude where `length` is applied in each direction. Otherwise, the revolve will happen on only one side of the sketch. | No |
 | `bidirectionalAngle` | `number(Angle)` | If specified, will also revolve in the opposite direction to 'angle' to the specified angle. If 'symmetric' is true, this value is ignored. | No |
 | `tagStart` | `TagDecl` | A named tag for the face at the start of the revolve, i.e. the original sketch. | No |
 | `tagEnd` | `TagDecl` | A named tag for the face at the end of the revolve. | No |

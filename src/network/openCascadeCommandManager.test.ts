@@ -403,6 +403,45 @@ describe('OpenCascadeCommandManager', () => {
     expect(bidirectionalVolume).toBeLessThan(oneWayVolume * 1.6)
   })
 
+  it('treats symmetric OpenCascade revolve angle as the full included angle', async () => {
+    const revolveVolume = async (opposite?: unknown) => {
+      const manager = new OpenCascadeCommandManager()
+      await buildRectangleRegionInput(manager, {
+        min: { x: 2, y: 0 },
+        max: { x: 3, y: 1 },
+      })
+      await send(manager, IDS.request, {
+        type: 'modeling_cmd_req',
+        cmd_id: IDS.solid,
+        cmd: {
+          type: 'revolve',
+          target: IDS.region,
+          origin: { x: 0, y: 0, z: 0 },
+          axis: { x: 0, y: 1, z: 0 },
+          axis_is_2d: true,
+          angle: { unit: 'degrees', value: 90 },
+          tolerance: 1e-7,
+          opposite: opposite ?? 'None',
+          body_type: 'solid',
+        },
+      })
+      expect(manager.getSolidCount()).toBe(1)
+      expect((await manager.exportLatestGlbBytes()).length).toBeGreaterThan(0)
+      return getVolume(manager, IDS.solid)
+    }
+
+    const oneWayVolume = await revolveVolume()
+    const symmetricVolume = await revolveVolume('Symmetric')
+    const bidirectionalVolume = await revolveVolume({
+      Other: { unit: 'degrees', value: 45 },
+    })
+
+    expect(symmetricVolume).toBeGreaterThan(oneWayVolume * 0.9)
+    expect(symmetricVolume).toBeLessThan(oneWayVolume * 1.1)
+    expect(bidirectionalVolume).toBeGreaterThan(oneWayVolume * 1.4)
+    expect(bidirectionalVolume).toBeLessThan(oneWayVolume * 1.6)
+  })
+
   it('executes past an OpenCascade rollback marker while exporting pre-marker render state', async () => {
     const manager = new OpenCascadeCommandManager()
     await buildRectangleRegionInput(manager)

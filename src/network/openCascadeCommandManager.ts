@@ -1347,7 +1347,10 @@ export class OpenCascadeCommandManager {
     const axis = cmd.axis_is_2d
       ? localVectorToWorld(toPoint3(cmd.axis), plane)
       : normalize(toPoint3(cmd.axis))
-    const angle = angleValueRadians(cmd.angle)
+    const rawAngle = angleValueRadians(cmd.angle)
+    const angle = isSymmetricOpposite((cmd as any).opposite)
+      ? rawAngle / 2
+      : rawAngle
     const primaryShape = new oc.BRepPrimAPI_MakeRevol_1(
       profile,
       new oc.gp_Ax1_2(
