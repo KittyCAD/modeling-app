@@ -1,14 +1,18 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSignals } from '@preact/signals-react/runtime'
 import {
   AmbientLight,
   Box3,
   Color,
   DirectionalLight,
+  EdgesGeometry,
   Group,
+  LineBasicMaterial,
+  LineSegments,
   MathUtils,
   Mesh,
   MeshStandardMaterial,
+  OrthographicCamera,
   PerspectiveCamera,
   Quaternion,
   Scene,
@@ -26,21 +30,59 @@ import {
   type CameraAxisName,
   type OpenCascadeCameraControlCommand,
 } from '@src/lib/cameraControls'
+import {
+  darkModeMatcher,
+  getOppositeTheme,
+  getResolvedTheme,
+  getThemeColorForThreeJs,
+  Themes,
+} from '@src/lib/theme'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { EngineCommandManagerProxy } from '@src/network/engineCommandManagerProxy'
+import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+import { isArray } from '@src/lib/utils'
+
+const DEFAULT_PERSPECTIVE_FOV = 38
+const ORTHOGRAPHIC_CAMERA_SIZE = 20
+const OPEN_CASCADE_EDGE_LINES_NAME = 'open-cascade-edge-lines'
+
+type OpenCascadeCamera = PerspectiveCamera | OrthographicCamera
+type ResolvedTheme = Exclude<Themes, Themes.System>
+
+interface OpenCascadeSceneStyle {
+  backgroundColor: number
+  edgeColor: number
+  surfaceColor: string
+}
 
 export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
   useSignals()
   const { settings } = useApp()
   const { kclManager } = useSingletons()
-  const mouseControls = settings.useSettings().modeling.mouseControls.current
+  const settingsValues = settings.useSettings()
+  const appTheme = settingsValues.app.theme.current
+  const mouseControls = settingsValues.modeling.mouseControls.current
+  const cameraProjection = settingsValues.modeling.cameraProjection.current
+  const highlightEdges = settingsValues.modeling.highlightEdges.current
+  const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>(() =>
+    getResolvedTheme(appTheme)
+  )
+  const sceneStyle = useMemo(
+    () => getOpenCascadeSceneStyle(resolvedTheme),
+    [resolvedTheme]
+  )
+  const initialCameraProjectionRef = useRef(cameraProjection)
   const containerRef = useRef<HTMLDivElement>(null)
   const sceneRef = useRef<Scene | undefined>(undefined)
-  const cameraRef = useRef<PerspectiveCamera | undefined>(undefined)
+  const cameraRef = useRef<OpenCascadeCamera | undefined>(undefined)
   const rendererRef = useRef<WebGLRenderer | undefined>(undefined)
   const modelRootRef = useRef<Group | undefined>(undefined)
   const targetRef = useRef(new Vector3())
   const modelRadiusRef = useRef(5)
   const hasFramedModelRef = useRef(false)
+  const syncingToSceneInfraRef = useRef(false)
+  const sceneStyleRef = useRef(sceneStyle)
+  const highlightEdgesRef = useRef(highlightEdges)
   const [ready, setReady] = useState(false)
   const [stage, setStage] = useState('waiting')
   const engineCommandManager =
@@ -50,6 +92,41 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
   const exportError =
     diagnostic ||
     engineCommandManager.openCascadeCommandManager.latestExportError.value
+  sceneStyleRef.current = sceneStyle
+  highlightEdgesRef.current = highlightEdges
+  const publishOpenCascadeCamera = useCallback(() => {
+    const camera = cameraRef.current
+    if (!camera) {
+      return
+    }
+
+    try {
+      syncingToSceneInfraRef.current = true
+      syncSceneInfraCameraFromOpenCascade(
+        kclManager.sceneInfra,
+        camera,
+        targetRef.current
+      )
+    } finally {
+      syncingToSceneInfraRef.current = false
+    }
+  }, [kclManager.sceneInfra])
+
+  useEffect(() => {
+    const syncResolvedTheme = () => {
+      setResolvedTheme(getResolvedTheme(appTheme))
+    }
+    syncResolvedTheme()
+
+    if (appTheme !== Themes.System) {
+      return
+    }
+
+    darkModeMatcher?.addEventListener('change', syncResolvedTheme)
+    return () => {
+      darkModeMatcher?.removeEventListener('change', syncResolvedTheme)
+    }
+  }, [appTheme])
 
   useEffect(() => {
     const container = containerRef.current
@@ -58,8 +135,16 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     }
 
     const scene = new Scene()
-    scene.background = new Color('#f5f7fa')
-    const camera = new PerspectiveCamera(38, 1, 0.01, 1000)
+    applyOpenCascadeSceneStyle(
+      scene,
+      undefined,
+      sceneStyleRef.current,
+      highlightEdgesRef.current
+    )
+    const camera = createOpenCascadeCamera(
+      initialCameraProjectionRef.current,
+      1
+    )
     camera.position.set(6, -8, 6)
     camera.lookAt(targetRef.current)
 
@@ -89,12 +174,21 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     rendererRef.current = renderer
     modelRootRef.current = modelRoot
 
-    const render = () => renderer.render(scene, camera)
+    const render = () => {
+      const activeCamera = cameraRef.current
+      if (activeCamera) {
+        renderer.render(scene, activeCamera)
+      }
+    }
     const resize = () => {
+      const activeCamera = cameraRef.current
+      if (!activeCamera) {
+        return
+      }
+
       const width = Math.max(1, container.clientWidth)
       const height = Math.max(1, container.clientHeight)
-      camera.aspect = width / height
-      camera.updateProjectionMatrix()
+      resizeOpenCascadeCamera(activeCamera, width / height)
       renderer.setSize(width, height, false)
       render()
     }
@@ -112,13 +206,82 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       rendererRef.current = undefined
       modelRootRef.current = undefined
     }
-  }, [])
+  }, [kclManager.sceneInfra])
+
+  useEffect(() => {
+    const scene = sceneRef.current
+    const renderer = rendererRef.current
+    const camera = cameraRef.current
+    if (!scene || !renderer || !camera) {
+      return
+    }
+
+    applyOpenCascadeSceneStyle(
+      scene,
+      modelRootRef.current,
+      sceneStyle,
+      highlightEdges
+    )
+    renderer.render(scene, camera)
+  }, [highlightEdges, sceneStyle])
+
+  useEffect(() => {
+    const container = containerRef.current
+    const renderer = rendererRef.current
+    const scene = sceneRef.current
+    const previousCamera = cameraRef.current
+    if (!container || !renderer || !scene || !previousCamera) {
+      return
+    }
+    if (cameraProjectionMatches(previousCamera, cameraProjection)) {
+      return
+    }
+
+    const nextCamera = createOpenCascadeCamera(
+      cameraProjection,
+      Math.max(1, container.clientWidth) / Math.max(1, container.clientHeight)
+    )
+    copyCameraViewForProjectionChange(
+      previousCamera,
+      nextCamera,
+      targetRef.current
+    )
+    cameraRef.current = nextCamera
+    renderer.render(scene, nextCamera)
+    publishOpenCascadeCamera()
+  }, [cameraProjection, publishOpenCascadeCamera])
+
+  useEffect(() => {
+    const onCameraChange = () => {
+      if (syncingToSceneInfraRef.current) {
+        return
+      }
+
+      const renderer = rendererRef.current
+      const scene = sceneRef.current
+      const camera = cameraRef.current
+      if (!renderer || !scene || !camera) {
+        return
+      }
+
+      syncOpenCascadeCameraFromSceneInfra(
+        camera,
+        targetRef.current,
+        kclManager.sceneInfra
+      )
+      renderer.render(scene, camera)
+    }
+
+    kclManager.sceneInfra.camControls.cameraChange.add(onCameraChange)
+    return () => {
+      kclManager.sceneInfra.camControls.cameraChange.remove(onCameraChange)
+    }
+  }, [kclManager.sceneInfra])
 
   useEffect(() => {
     const renderer = rendererRef.current
     const scene = sceneRef.current
-    const camera = cameraRef.current
-    if (!renderer || !scene || !camera) {
+    if (!renderer || !scene) {
       return
     }
 
@@ -126,7 +289,12 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     const element = renderer.domElement
     const lastPointer = new Vector2()
     let interaction: 'pan' | 'rotate' | 'zoom' | undefined
-    const render = () => renderer.render(scene, camera)
+    const render = () => {
+      const activeCamera = cameraRef.current
+      if (activeCamera) {
+        renderer.render(scene, activeCamera)
+      }
+    }
     const stopInteraction = () => {
       interaction = undefined
       element.classList.remove('cursor-grabbing')
@@ -166,14 +334,20 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       const dx = event.clientX - lastPointer.x
       const dy = event.clientY - lastPointer.y
       lastPointer.set(event.clientX, event.clientY)
+      const activeCamera = cameraRef.current
+      if (!activeCamera) {
+        return
+      }
+
       if (interaction === 'pan') {
-        panCamera(camera, targetRef.current, dx, dy)
+        panCamera(activeCamera, targetRef.current, dx, dy)
       } else if (interaction === 'zoom') {
-        zoomCamera(camera, targetRef.current, 1 + dy * 0.01)
+        zoomCamera(activeCamera, targetRef.current, 1 + dy * 0.01)
       } else {
-        orbitCamera(camera, targetRef.current, dx, dy)
+        orbitCamera(activeCamera, targetRef.current, dx, dy)
       }
       render()
+      publishOpenCascadeCamera()
     }
     const onWheel = (event: WheelEvent) => {
       if (!guards.zoom.scrollCallback(event)) {
@@ -181,8 +355,13 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       }
 
       event.preventDefault()
-      zoomCamera(camera, targetRef.current, event.deltaY > 0 ? 1.1 : 0.9)
+      const activeCamera = cameraRef.current
+      if (!activeCamera) {
+        return
+      }
+      zoomCamera(activeCamera, targetRef.current, event.deltaY > 0 ? 1.1 : 0.9)
       render()
+      publishOpenCascadeCamera()
     }
     const onContextMenu = (event: MouseEvent) => event.preventDefault()
 
@@ -195,7 +374,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       element.removeEventListener('contextmenu', onContextMenu)
       stopInteraction()
     }
-  }, [mouseControls])
+  }, [mouseControls, publishOpenCascadeCamera])
 
   useEffect(() => {
     return addOpenCascadeCameraControlListener((command) => {
@@ -213,8 +392,9 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         modelRadiusRef.current
       )
       renderer.render(scene, camera)
+      publishOpenCascadeCamera()
     })
-  }, [])
+  }, [publishOpenCascadeCamera])
 
   useEffect(() => {
     let cancelled = false
@@ -231,7 +411,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
 
       setReady(false)
       setStage('export')
-      modelRoot.clear()
+      disposeOpenCascadeModelRoot(modelRoot)
       const bytes = await engineCommandManager.exportLatestOpenCascadeGlbBytes()
       if (cancelled) {
         return
@@ -251,29 +431,31 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         return
       }
 
-      modelRoot.clear()
+      disposeOpenCascadeModelRoot(modelRoot)
+      const meshes: Mesh[] = []
       gltf.scene.traverse((object) => {
         if (object instanceof Mesh) {
-          object.material = new MeshStandardMaterial({
-            color: '#8ea6c9',
-            roughness: 0.58,
-            metalness: 0.04,
-          })
-          object.castShadow = false
-          object.receiveShadow = false
+          meshes.push(object)
         }
+      })
+      meshes.forEach((mesh) => {
+        styleOpenCascadeMesh(
+          mesh,
+          sceneStyleRef.current,
+          highlightEdgesRef.current
+        )
       })
       modelRoot.add(gltf.scene)
       const radius = centerObject(gltf.scene)
       modelRadiusRef.current = radius
-      fitCameraToRadius(
-        camera,
-        targetRef.current,
-        radius,
-        !hasFramedModelRef.current
-      )
-      hasFramedModelRef.current = true
+      if (!hasFramedModelRef.current) {
+        fitCameraToRadius(camera, targetRef.current, radius, true)
+        hasFramedModelRef.current = true
+      } else {
+        updateCameraClipping(camera, targetRef.current, radius)
+      }
       renderer.render(scene, camera)
+      publishOpenCascadeCamera()
       setStage('ready')
       setReady(true)
     }
@@ -293,14 +475,14 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         URL.revokeObjectURL(objectUrl)
       }
     }
-  }, [engineCommandManager, latestShapeVersion])
+  }, [engineCommandManager, latestShapeVersion, publishOpenCascadeCamera])
 
   return (
     <div
       ref={containerRef}
       data-testid="open-cascade-scene"
       data-stage={stage}
-      className="relative min-h-0 w-full flex-1 overflow-hidden"
+      className="absolute inset-0 h-full w-full overflow-hidden"
     >
       <div
         data-testid="open-cascade-scene-ready"
@@ -316,6 +498,241 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       )}
     </div>
   )
+}
+
+function getOpenCascadeSceneStyle(
+  resolvedTheme: ResolvedTheme
+): OpenCascadeSceneStyle {
+  return {
+    backgroundColor: getThemeColorForThreeJs(resolvedTheme),
+    edgeColor: getThemeColorForThreeJs(getOppositeTheme(resolvedTheme)),
+    surfaceColor: resolvedTheme === Themes.Dark ? '#6f87ad' : '#8ea6c9',
+  }
+}
+
+function applyOpenCascadeSceneStyle(
+  scene: Scene,
+  modelRoot: Group | undefined,
+  style: OpenCascadeSceneStyle,
+  highlightEdges: boolean
+) {
+  scene.background = new Color(style.backgroundColor)
+
+  if (!modelRoot) {
+    return
+  }
+
+  modelRoot.traverse((object) => {
+    if (object instanceof Mesh) {
+      updateOpenCascadeMeshMaterial(object, style)
+      return
+    }
+
+    if (
+      object instanceof LineSegments &&
+      object.userData.openCascadeEdgeLines === true
+    ) {
+      object.visible = highlightEdges
+      if (object.material instanceof LineBasicMaterial) {
+        object.material.color.set(style.edgeColor)
+      }
+    }
+  })
+}
+
+function styleOpenCascadeMesh(
+  mesh: Mesh,
+  style: OpenCascadeSceneStyle,
+  highlightEdges: boolean
+) {
+  updateOpenCascadeMeshMaterial(mesh, style)
+  mesh.castShadow = false
+  mesh.receiveShadow = false
+
+  const edgeGeometry = new EdgesGeometry(mesh.geometry, 30)
+  const edgeMaterial = new LineBasicMaterial({ color: style.edgeColor })
+  const edgeLines = new LineSegments(edgeGeometry, edgeMaterial)
+  edgeLines.name = OPEN_CASCADE_EDGE_LINES_NAME
+  edgeLines.userData.openCascadeEdgeLines = true
+  edgeLines.visible = highlightEdges
+  mesh.add(edgeLines)
+}
+
+function updateOpenCascadeMeshMaterial(
+  mesh: Mesh,
+  style: OpenCascadeSceneStyle
+) {
+  disposeMaterial(mesh.material)
+  mesh.material = new MeshStandardMaterial({
+    color: style.surfaceColor,
+    roughness: 0.58,
+    metalness: 0.04,
+  })
+}
+
+function disposeOpenCascadeModelRoot(modelRoot: Group) {
+  modelRoot.traverse((object) => {
+    if (object instanceof Mesh) {
+      disposeMaterial(object.material)
+      return
+    }
+
+    if (
+      object instanceof LineSegments &&
+      object.userData.openCascadeEdgeLines === true
+    ) {
+      object.geometry.dispose()
+      disposeMaterial(object.material)
+    }
+  })
+  modelRoot.clear()
+}
+
+function disposeMaterial(material: Mesh['material']) {
+  if (isArray(material)) {
+    material.forEach((entry) => entry.dispose())
+    return
+  }
+
+  material.dispose()
+}
+
+function syncSceneInfraCameraFromOpenCascade(
+  sceneInfra: SceneInfra,
+  openCascadeCamera: OpenCascadeCamera,
+  openCascadeTarget: Vector3
+) {
+  const camControls = sceneInfra.camControls
+  const controlsCamera = camControls.camera
+  controlsCamera.position.copy(openCascadeCamera.position)
+  controlsCamera.quaternion.copy(openCascadeCamera.quaternion)
+  controlsCamera.up.copy(openCascadeCamera.up)
+  controlsCamera.near = openCascadeCamera.near
+  controlsCamera.far = openCascadeCamera.far
+  if (controlsCamera instanceof PerspectiveCamera) {
+    if (openCascadeCamera instanceof PerspectiveCamera) {
+      controlsCamera.fov = openCascadeCamera.fov
+      controlsCamera.aspect = openCascadeCamera.aspect
+    }
+  } else if (openCascadeCamera instanceof OrthographicCamera) {
+    controlsCamera.left = openCascadeCamera.left
+    controlsCamera.right = openCascadeCamera.right
+    controlsCamera.top = openCascadeCamera.top
+    controlsCamera.bottom = openCascadeCamera.bottom
+    controlsCamera.zoom = openCascadeCamera.zoom
+  }
+  controlsCamera.updateProjectionMatrix()
+  controlsCamera.updateMatrixWorld()
+  camControls.target.copy(openCascadeTarget)
+  camControls.onCameraChange()
+}
+
+function syncOpenCascadeCameraFromSceneInfra(
+  openCascadeCamera: OpenCascadeCamera,
+  openCascadeTarget: Vector3,
+  sceneInfra: SceneInfra
+) {
+  const camControls = sceneInfra.camControls
+  const controlsCamera = camControls.camera
+  openCascadeCamera.position.copy(controlsCamera.position)
+  openCascadeCamera.quaternion.copy(controlsCamera.quaternion)
+  openCascadeCamera.up.copy(controlsCamera.up)
+  openCascadeCamera.near = controlsCamera.near
+  openCascadeCamera.far = controlsCamera.far
+  if (controlsCamera instanceof PerspectiveCamera) {
+    if (openCascadeCamera instanceof PerspectiveCamera) {
+      openCascadeCamera.fov = controlsCamera.fov
+    }
+  } else if (openCascadeCamera instanceof OrthographicCamera) {
+    openCascadeCamera.zoom = controlsCamera.zoom
+  }
+  openCascadeCamera.updateProjectionMatrix()
+  openCascadeCamera.updateMatrixWorld()
+  openCascadeTarget.copy(camControls.target)
+}
+
+function createOpenCascadeCamera(
+  projection: CameraProjectionType,
+  aspect: number
+): OpenCascadeCamera {
+  if (projection === 'orthographic') {
+    const camera = new OrthographicCamera()
+    camera.up.set(0, 0, 1)
+    resizeOpenCascadeCamera(camera, aspect)
+    return camera
+  }
+
+  const camera = new PerspectiveCamera(
+    DEFAULT_PERSPECTIVE_FOV,
+    aspect,
+    0.01,
+    1000
+  )
+  camera.up.set(0, 0, 1)
+  return camera
+}
+
+function resizeOpenCascadeCamera(camera: OpenCascadeCamera, aspect: number) {
+  if (camera instanceof PerspectiveCamera) {
+    camera.aspect = aspect
+  } else {
+    camera.left = -ORTHOGRAPHIC_CAMERA_SIZE * aspect
+    camera.right = ORTHOGRAPHIC_CAMERA_SIZE * aspect
+    camera.top = ORTHOGRAPHIC_CAMERA_SIZE
+    camera.bottom = -ORTHOGRAPHIC_CAMERA_SIZE
+  }
+  camera.updateProjectionMatrix()
+}
+
+function cameraProjectionMatches(
+  camera: OpenCascadeCamera,
+  projection: CameraProjectionType
+) {
+  return (
+    (projection === 'perspective' && camera instanceof PerspectiveCamera) ||
+    (projection === 'orthographic' && camera instanceof OrthographicCamera)
+  )
+}
+
+function copyCameraViewForProjectionChange(
+  previousCamera: OpenCascadeCamera,
+  nextCamera: OpenCascadeCamera,
+  target: Vector3
+) {
+  nextCamera.position.copy(previousCamera.position)
+  nextCamera.quaternion.copy(previousCamera.quaternion)
+  nextCamera.up.copy(previousCamera.up)
+  nextCamera.near = previousCamera.near
+  nextCamera.far = previousCamera.far
+
+  const distance = Math.max(previousCamera.position.distanceTo(target), 0.01)
+  const direction = previousCamera.position.clone().sub(target).normalize()
+  if (direction.lengthSq() === 0) {
+    direction.set(1.15, -1.65, 1.05).normalize()
+  }
+
+  if (
+    previousCamera instanceof PerspectiveCamera &&
+    nextCamera instanceof OrthographicCamera
+  ) {
+    const visibleHeight =
+      2 * distance * Math.tan(MathUtils.degToRad(previousCamera.fov / 2))
+    nextCamera.zoom = Math.max(
+      0.01,
+      (ORTHOGRAPHIC_CAMERA_SIZE * 2) / visibleHeight
+    )
+  } else if (
+    previousCamera instanceof OrthographicCamera &&
+    nextCamera instanceof PerspectiveCamera
+  ) {
+    const visibleHeight = (ORTHOGRAPHIC_CAMERA_SIZE * 2) / previousCamera.zoom
+    const nextDistance =
+      visibleHeight / (2 * Math.tan(MathUtils.degToRad(nextCamera.fov / 2)))
+    nextCamera.position.copy(target).add(direction.multiplyScalar(nextDistance))
+  }
+
+  nextCamera.updateProjectionMatrix()
+  nextCamera.updateMatrixWorld()
 }
 
 function centerObject(object: Group) {
@@ -334,7 +751,7 @@ function centerObject(object: Group) {
 }
 
 function fitCameraToRadius(
-  camera: PerspectiveCamera,
+  camera: OpenCascadeCamera,
   target: Vector3,
   radius: number,
   useDefaultDirection = false
@@ -347,8 +764,10 @@ function fitCameraToRadius(
   }
 
   camera.position.copy(target).add(direction.multiplyScalar(radius * 2.4))
-  camera.near = Math.max(0.01, radius / 100)
-  camera.far = radius * 40
+  updateCameraClipping(camera, target, radius)
+  if (camera instanceof OrthographicCamera) {
+    camera.zoom = orthographicZoomToFit(camera, radius)
+  }
   if (useDefaultDirection) {
     camera.up.set(0, 0, 1)
   } else if (
@@ -361,9 +780,27 @@ function fitCameraToRadius(
   camera.updateProjectionMatrix()
 }
 
+function updateCameraClipping(
+  camera: OpenCascadeCamera,
+  target: Vector3,
+  radius: number
+) {
+  const distance = camera.position.distanceTo(target)
+  camera.near = Math.max(0.01, Math.min(radius / 100, distance / 100))
+  camera.far = Math.max(radius * 40, distance + radius * 4, 1000)
+  camera.updateProjectionMatrix()
+}
+
+function orthographicZoomToFit(camera: OrthographicCamera, radius: number) {
+  const paddedSize = Math.max(radius * 1.35, 0.01)
+  const viewWidth = Math.abs(camera.right - camera.left)
+  const viewHeight = Math.abs(camera.top - camera.bottom)
+  return Math.max(0.01, Math.min(viewWidth, viewHeight) / paddedSize)
+}
+
 function applyOpenCascadeCameraCommand(
   command: OpenCascadeCameraControlCommand,
-  camera: PerspectiveCamera,
+  camera: OpenCascadeCamera,
   target: Vector3,
   radius: number
 ) {
@@ -381,7 +818,7 @@ function applyOpenCascadeCameraCommand(
 
 function setCameraToAxis(
   axis: CameraAxisName,
-  camera: PerspectiveCamera,
+  camera: OpenCascadeCamera,
   target: Vector3,
   radius: number
 ) {
@@ -413,7 +850,7 @@ function axisToDirection(axis: CameraAxisName) {
 }
 
 function orbitCamera(
-  camera: PerspectiveCamera,
+  camera: OpenCascadeCamera,
   target: Vector3,
   dx: number,
   dy: number
@@ -437,13 +874,16 @@ function orbitCamera(
 }
 
 function panCamera(
-  camera: PerspectiveCamera,
+  camera: OpenCascadeCamera,
   target: Vector3,
   dx: number,
   dy: number
 ) {
   const distance = camera.position.distanceTo(target)
-  const panScale = distance * 0.0015
+  const panScale =
+    camera instanceof OrthographicCamera
+      ? (ORTHOGRAPHIC_CAMERA_SIZE / camera.zoom) * 0.0025
+      : distance * 0.0015
   const forward = target.clone().sub(camera.position).normalize()
   const right = forward.clone().cross(camera.up).normalize()
   const up = camera.up.clone().normalize()
@@ -456,10 +896,20 @@ function panCamera(
 }
 
 function zoomCamera(
-  camera: PerspectiveCamera,
+  camera: OpenCascadeCamera,
   target: Vector3,
   factor: number
 ) {
+  if (camera instanceof OrthographicCamera) {
+    camera.zoom = MathUtils.clamp(
+      camera.zoom / Math.max(0.1, factor),
+      0.01,
+      10000
+    )
+    camera.updateProjectionMatrix()
+    return
+  }
+
   const offset = camera.position.clone().sub(target)
   const nextDistance = MathUtils.clamp(
     offset.length() * Math.max(0.1, factor),

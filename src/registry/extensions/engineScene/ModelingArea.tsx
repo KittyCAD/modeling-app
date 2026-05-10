@@ -163,7 +163,7 @@ function OpenCascadeModelingArea() {
   }, [])
 
   return (
-    <div className="relative z-0 min-w-64 flex flex-col flex-1 items-center overflow-hidden bg-chalkboard-10 dark:bg-chalkboard-100">
+    <div className="relative z-0 min-w-64 flex flex-col flex-1 items-center overflow-hidden">
       <Toolbar />
       <OpenCascadeThreeScene diagnostic={diagnostic} />
       <ModelingGizmo />
