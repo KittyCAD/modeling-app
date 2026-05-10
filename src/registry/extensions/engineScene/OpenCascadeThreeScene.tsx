@@ -1,4 +1,5 @@
 import { useSignals } from '@preact/signals-react/runtime'
+import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import { SKETCH_LAYER } from '@src/clientSideScene/sceneUtils'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import {
@@ -91,6 +92,7 @@ const OPEN_CASCADE_ORIGIN_RADIUS_PX = 6
 const OPEN_CASCADE_ORIGIN_OUTLINE_RADIUS_PX = 8
 const OPEN_CASCADE_HIGHLIGHT_POLYGON_OFFSET = -4
 const OPEN_CASCADE_SKETCH_LINE_PICK_RADIUS_PX = 8
+const OPEN_CASCADE_EMPTY_SCENE_RADIUS_BASE_UNITS = 10
 
 type OpenCascadeCamera = PerspectiveCamera | OrthographicCamera
 type ResolvedTheme = Exclude<Themes, Themes.System>
@@ -153,6 +155,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
   const modelCenterRef = useRef(new Vector3())
   const modelRadiusRef = useRef(5)
   const hasFramedModelRef = useRef(false)
+  const hasFramedEmptySceneRef = useRef(false)
   const [ready, setReady] = useState(false)
   const [stage, setStage] = useState('waiting')
   const engineCommandManager =
@@ -163,6 +166,8 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
   const latestTopologyVersion = openCascadeManager.latestTopologyVersion.value
   const latestSketchVersion = openCascadeManager.latestSketchVersion.value
   const latestRegionVersion = openCascadeManager.latestRegionVersion.value
+  const latestVisibilityVersion =
+    openCascadeManager.latestVisibilityVersion.value
   const exportError = diagnostic || openCascadeManager.latestExportError.value
   const passiveProfilesVisible =
     !state.matches('Sketch') && !state.matches('sketchSolveMode')
@@ -282,10 +287,20 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
 
     applyOpenCascadeGuideVisibility(
       guideRoot,
-      state.context.defaultPlaneVisibility
+      resolveOpenCascadeGuideVisibility({
+        visibility: state.context.defaultPlaneVisibility,
+        defaultPlanes: kclManager.rustContext.defaultPlanes,
+        isObjectHidden: (id) => openCascadeManager.isObjectHidden(id),
+      })
     )
     sceneInfra.renderFrame()
-  }, [kclManager.sceneInfra, state.context.defaultPlaneVisibility])
+  }, [
+    kclManager.sceneInfra,
+    kclManager.rustContext.defaultPlanes,
+    latestVisibilityVersion,
+    openCascadeManager,
+    state.context.defaultPlaneVisibility,
+  ])
 
   useEffect(() => {
     const sceneInfra = kclManager.sceneInfra
@@ -393,6 +408,17 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         return
       }
       if (bytes.length === 0) {
+        const bounds = getOpenCascadeEmptySceneBounds(
+          sceneInfra.baseUnitMultiplier
+        )
+        modelCenterRef.current.copy(bounds.center)
+        modelRadiusRef.current = bounds.radius
+        updateCameraClipping(
+          sceneInfra.camControls.camera,
+          sceneInfra.camControls.target,
+          bounds.radius
+        )
+        sceneInfra.camControls.onCameraChange()
         setStage('empty')
         sceneInfra.renderFrame()
         return
@@ -428,6 +454,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         )
         sceneInfra.camControls.target.copy(targetRef.current)
         hasFramedModelRef.current = true
+        hasFramedEmptySceneRef.current = false
       } else {
         targetRef.current.copy(sceneInfra.camControls.target)
         updateCameraClipping(
@@ -594,6 +621,27 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       )
       sceneInfra.camControls.target.copy(targetRef.current)
       hasFramedModelRef.current = true
+      hasFramedEmptySceneRef.current = false
+    } else if (
+      !bounds &&
+      !hasFramedModelRef.current &&
+      !hasFramedEmptySceneRef.current
+    ) {
+      const emptyBounds = getOpenCascadeEmptySceneBounds(
+        sceneInfra.baseUnitMultiplier
+      )
+      modelCenterRef.current.copy(emptyBounds.center)
+      modelRadiusRef.current = emptyBounds.radius
+      targetRef.current.copy(emptyBounds.center)
+      fitCameraToRadius(
+        sceneInfra.camControls.camera,
+        targetRef.current,
+        emptyBounds.radius,
+        true
+      )
+      sceneInfra.camControls.target.copy(targetRef.current)
+      sceneInfra.camControls.onCameraChange()
+      hasFramedEmptySceneRef.current = true
     }
     sceneInfra.renderFrame()
   }, [
@@ -1179,6 +1227,29 @@ export function applyOpenCascadeGuideVisibility(
     }
     object.visible = visibility[key] ?? true
   })
+}
+
+export function resolveOpenCascadeGuideVisibility({
+  visibility,
+  defaultPlanes,
+  isObjectHidden,
+}: {
+  visibility: Partial<Record<OpenCascadeGuideVisibilityKey, boolean>>
+  defaultPlanes: DefaultPlanes | null
+  isObjectHidden: (id: string) => boolean
+}): Partial<Record<OpenCascadeGuideVisibilityKey, boolean>> {
+  return {
+    ...visibility,
+    xy:
+      (visibility.xy ?? true) &&
+      (defaultPlanes ? !isObjectHidden(defaultPlanes.xy) : true),
+    xz:
+      (visibility.xz ?? true) &&
+      (defaultPlanes ? !isObjectHidden(defaultPlanes.xz) : true),
+    yz:
+      (visibility.yz ?? true) &&
+      (defaultPlanes ? !isObjectHidden(defaultPlanes.yz) : true),
+  }
 }
 
 function rebuildOpenCascadePickRoot(
@@ -1803,7 +1874,7 @@ function disposeMaterial(material: Mesh['material']) {
 export function getOpenCascadeObjectBounds(object: Object3D) {
   const box = new Box3().setFromObject(object)
   if (box.isEmpty()) {
-    return { center: new Vector3(), radius: 5 }
+    return getOpenCascadeEmptySceneBounds(1)
   }
 
   const center = new Vector3()
@@ -1812,6 +1883,17 @@ export function getOpenCascadeObjectBounds(object: Object3D) {
   box.getSize(size)
 
   return { center, radius: Math.max(size.x, size.y, size.z, 1) }
+}
+
+export function getOpenCascadeEmptySceneBounds(baseUnitMultiplier: number) {
+  const unitScale =
+    Number.isFinite(baseUnitMultiplier) && baseUnitMultiplier > 0
+      ? baseUnitMultiplier
+      : 1
+  return {
+    center: new Vector3(),
+    radius: Math.max(1, OPEN_CASCADE_EMPTY_SCENE_RADIUS_BASE_UNITS * unitScale),
+  }
 }
 
 export function getOpenCascadeSketchLineBounds(

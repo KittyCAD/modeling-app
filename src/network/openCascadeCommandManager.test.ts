@@ -287,6 +287,24 @@ describe('OpenCascadeCommandManager', () => {
 
     await send(manager, IDS.request, {
       type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-000000000068',
+      cmd: {
+        type: 'object_visible',
+        object_id: IDS.plane,
+        hidden: true,
+      },
+    })
+
+    expect(
+      manager.exportLatestSketchLineMeshes().segments.length
+    ).toBeGreaterThan(0)
+    expect((await manager.exportLatestRegionMeshes()).regions.length).toBe(1)
+    expect(
+      (await manager.exportLatestProfileGlbBytes()).length
+    ).toBeGreaterThan(0)
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
       cmd_id: '00000000-0000-0000-0000-000000000066',
       cmd: {
         type: 'object_visible',

@@ -292,6 +292,7 @@ export class OpenCascadeCommandManager {
   readonly latestTopologyVersion = signal(0)
   readonly latestSketchVersion = signal(0)
   readonly latestRegionVersion = signal(0)
+  readonly latestVisibilityVersion = signal(0)
   readonly latestExportError = signal<string | undefined>(undefined)
   private planes = new Map<string, PlaneState>()
   private paths = new Map<string, PathState>()
@@ -426,6 +427,10 @@ export class OpenCascadeCommandManager {
       version: this.latestSketchVersion.value,
       segments,
     }
+  }
+
+  isObjectHidden(id: string): boolean {
+    return this.hiddenObjectIds.has(id)
   }
 
   async exportLatestRegionMeshes(): Promise<OpenCascadeRegionMeshes> {
@@ -1088,6 +1093,7 @@ export class OpenCascadeCommandManager {
     this.latestProfileVersion.value += 1
     this.latestSketchVersion.value += 1
     this.latestRegionVersion.value += 1
+    this.latestVisibilityVersion.value += 1
   }
 
   private isPathHidden(pathId: string) {
@@ -1103,10 +1109,7 @@ export class OpenCascadeCommandManager {
     }
     const region = this.regions.get(regionId)
     if (region) {
-      return (
-        this.hiddenObjectIds.has(region.sourcePathId) ||
-        this.hiddenObjectIds.has(region.planeId || '')
-      )
+      return this.hiddenObjectIds.has(region.sourcePathId)
     }
     const arrangementRegion = this.arrangementRegions.get(regionId)
     return arrangementRegion
@@ -1118,7 +1121,6 @@ export class OpenCascadeCommandManager {
     return (
       this.hiddenObjectIds.has(region.regionId) ||
       this.hiddenObjectIds.has(region.parentPathId || '') ||
-      this.hiddenObjectIds.has(region.planeId || '') ||
       region.sourceSegmentIds.some((segmentId) =>
         this.hiddenObjectIds.has(segmentId)
       )
@@ -1989,6 +1991,7 @@ export class OpenCascadeCommandManager {
     this.latestShapeVersion.value += 1
     this.latestProfileVersion.value += 1
     this.latestTopologyVersion.value += 1
+    this.latestVisibilityVersion.value += 1
     this.markSketchChanged()
   }
 

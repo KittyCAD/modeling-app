@@ -63,6 +63,19 @@ describe('OpenCascadeThreeScene helpers', () => {
     expect(bounds?.radius).toBe(10)
   })
 
+  it('uses current file units for empty-scene camera bounds', () => {
+    const mmBounds = helpers.getOpenCascadeEmptySceneBounds(1)
+    const inchBounds = helpers.getOpenCascadeEmptySceneBounds(25.4)
+    const invalidBounds = helpers.getOpenCascadeEmptySceneBounds(Number.NaN)
+
+    expect(mmBounds.center.x).toBe(0)
+    expect(mmBounds.center.y).toBe(0)
+    expect(mmBounds.center.z).toBe(0)
+    expect(mmBounds.radius).toBe(10)
+    expect(inchBounds.radius).toBe(254)
+    expect(invalidBounds.radius).toBe(10)
+  })
+
   it('creates stable OpenCascade guide objects', () => {
     const root = helpers.makeOpenCascadeGuideRoot()
 
@@ -148,6 +161,28 @@ describe('OpenCascadeThreeScene helpers', () => {
     expect(xy?.visible).toBe(true)
     expect(xz?.visible).toBe(false)
     expect(yz?.visible).toBe(true)
+  })
+
+  it('combines modeling state and OpenCascade object visibility for guides', () => {
+    expect(
+      helpers.resolveOpenCascadeGuideVisibility({
+        visibility: { origin: true, xy: true, xz: true, yz: false },
+        defaultPlanes: {
+          xy: 'plane-xy',
+          xz: 'plane-xz',
+          yz: 'plane-yz',
+          negXy: 'plane-neg-xy',
+          negXz: 'plane-neg-xz',
+          negYz: 'plane-neg-yz',
+        },
+        isObjectHidden: (id) => id === 'plane-xz',
+      })
+    ).toEqual({
+      origin: true,
+      xy: true,
+      xz: false,
+      yz: false,
+    })
   })
 
   it('creates invisible region pick meshes with group metadata', () => {
