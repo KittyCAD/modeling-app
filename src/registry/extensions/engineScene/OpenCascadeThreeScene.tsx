@@ -1,5 +1,6 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_LAYER } from '@src/clientSideScene/sceneUtils'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import {
@@ -196,6 +197,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     !state.matches('Sketch') && !state.matches('sketchSolveMode')
   const useSketchSolveMode =
     state.context.store.useSketchSolveMode?.current === true
+  const isExecuting = kclManager.isExecuting
 
   sceneStyleRef.current = sceneStyle
   highlightEdgesRef.current = highlightEdges
@@ -484,6 +486,10 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
 
     async function loadLatestShape() {
       const sceneInfra = kclManager.sceneInfra
+      if (isExecuting) {
+        setStage('executing')
+        return
+      }
       const modelRoot = sceneInfra.scene.getObjectByName(
         OPEN_CASCADE_SOLID_ROOT
       )
@@ -500,6 +506,14 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         return
       }
       if (visibleSolids.length === 0) {
+        const sketchBounds = getOpenCascadeSketchLineBounds(
+          engineCommandManager.exportLatestOpenCascadeSketchLineMeshes()
+        )
+        if (sketchBounds) {
+          setStage('empty')
+          sceneInfra.renderFrame()
+          return
+        }
         const bounds = getOpenCascadeEmptySceneBounds(
           sceneInfra.baseUnitMultiplier
         )
@@ -546,7 +560,9 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         )
         modelRoot.add(solid.scene)
       }
-      const bounds = getOpenCascadeObjectBounds(modelRoot)
+      const bounds =
+        getOpenCascadeSceneContentBounds(sceneInfra.scene) ??
+        getOpenCascadeObjectBounds(modelRoot)
       modelCenterRef.current.copy(bounds.center)
       const radius = bounds.radius
       modelRadiusRef.current = radius
@@ -592,7 +608,12 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         URL.revokeObjectURL(objectUrl)
       }
     }
-  }, [engineCommandManager, kclManager.sceneInfra, latestShapeVersion])
+  }, [
+    engineCommandManager,
+    isExecuting,
+    kclManager.sceneInfra,
+    latestShapeVersion,
+  ])
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: latestTopologyVersion is a signal value that intentionally rebuilds pick buffers.
   useEffect(() => {
@@ -630,6 +651,24 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         }
         rebuildOpenCascadeRegionPickRoot(regionPickRoot, regionMeshes)
         regionPickRoot.visible = passiveProfilesVisible
+        if (
+          !isExecuting &&
+          !hasFramedModelRef.current &&
+          openCascadeManager.getSolidCount() === 0
+        ) {
+          const bounds = getOpenCascadeSceneContentBounds(sceneInfra.scene)
+          if (bounds) {
+            frameOpenCascadeInitialBounds({
+              bounds,
+              sceneInfra,
+              modelCenterRef,
+              modelRadiusRef,
+              targetRef,
+              hasFramedModelRef,
+              hasFramedEmptySceneRef,
+            })
+          }
+        }
         sceneInfra.renderFrame()
       })
       .catch((error) => console.warn(error))
@@ -639,8 +678,10 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     }
   }, [
     engineCommandManager,
+    isExecuting,
     kclManager.sceneInfra,
     latestRegionVersion,
+    openCascadeManager,
     passiveProfilesVisible,
   ])
 
@@ -714,6 +755,9 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
 
   useEffect(() => {
     const sceneInfra = kclManager.sceneInfra
+    if (isExecuting) {
+      return
+    }
     const sketchLineRoot = sceneInfra.scene.getObjectByName(
       OPEN_CASCADE_SKETCH_LINE_ROOT
     )
@@ -732,20 +776,20 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     )
     sketchLineRoot.visible = passiveProfilesVisible
     const bounds = getOpenCascadeSketchLineBounds(sketchLines)
-    if (bounds && !hasFramedModelRef.current) {
-      modelCenterRef.current.copy(bounds.center)
-      modelRadiusRef.current = bounds.radius
-      targetRef.current.copy(bounds.center)
-      fitCameraToRadius(
-        sceneInfra.camControls.camera,
-        targetRef.current,
-        bounds.radius,
-        true,
-        sceneInfra.baseUnitMultiplier
-      )
-      sceneInfra.camControls.target.copy(targetRef.current)
-      hasFramedModelRef.current = true
-      hasFramedEmptySceneRef.current = false
+    if (
+      bounds &&
+      !hasFramedModelRef.current &&
+      openCascadeManager.getSolidCount() === 0
+    ) {
+      frameOpenCascadeInitialBounds({
+        bounds: getOpenCascadeSceneContentBounds(sceneInfra.scene) ?? bounds,
+        sceneInfra,
+        modelCenterRef,
+        modelRadiusRef,
+        targetRef,
+        hasFramedModelRef,
+        hasFramedEmptySceneRef,
+      })
     } else if (
       !bounds &&
       !hasFramedModelRef.current &&
@@ -771,8 +815,10 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     sceneInfra.renderFrame()
   }, [
     engineCommandManager,
+    isExecuting,
     kclManager.sceneInfra,
     latestSketchVersion,
+    openCascadeManager,
     passiveProfilesVisible,
     sceneStyle,
     state.context.selectionRanges,
@@ -1147,6 +1193,9 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
 
     async function loadLatestProfile() {
       const sceneInfra = kclManager.sceneInfra
+      if (isExecuting) {
+        return
+      }
       const profileRoot = sceneInfra.scene.getObjectByName(
         OPEN_CASCADE_PROFILE_ROOT
       )
@@ -1182,6 +1231,23 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       )
       profileRoot.add(gltf.scene)
       profileRoot.visible = passiveProfilesVisible
+      if (
+        !hasFramedModelRef.current &&
+        openCascadeManager.getSolidCount() === 0
+      ) {
+        const bounds = getOpenCascadeSceneContentBounds(sceneInfra.scene)
+        if (bounds) {
+          frameOpenCascadeInitialBounds({
+            bounds,
+            sceneInfra,
+            modelCenterRef,
+            modelRadiusRef,
+            targetRef,
+            hasFramedModelRef,
+            hasFramedEmptySceneRef,
+          })
+        }
+      }
       sceneInfra.renderFrame()
     }
 
@@ -1197,8 +1263,10 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     }
   }, [
     engineCommandManager,
+    isExecuting,
     kclManager.sceneInfra,
     latestProfileVersion,
+    openCascadeManager,
     passiveProfilesVisible,
   ])
 
@@ -2479,12 +2547,76 @@ export function getOpenCascadeObjectBounds(object: Object3D) {
     return getOpenCascadeEmptySceneBounds(1)
   }
 
+  return openCascadeBoundsFromBox(box)
+}
+
+export function getOpenCascadeSceneContentBounds(scene: Scene) {
+  const box = new Box3()
+  let hasBounds = false
+  for (const rootName of [
+    OPEN_CASCADE_SOLID_ROOT,
+    OPEN_CASCADE_PROFILE_ROOT,
+    OPEN_CASCADE_SKETCH_LINE_ROOT,
+    OPEN_CASCADE_REGION_PICK_ROOT,
+  ]) {
+    const root = scene.getObjectByName(rootName)
+    if (!root) {
+      continue
+    }
+    const rootBox = new Box3().setFromObject(root)
+    if (rootBox.isEmpty()) {
+      continue
+    }
+    box.union(rootBox)
+    hasBounds = true
+  }
+
+  return hasBounds ? openCascadeBoundsFromBox(box) : undefined
+}
+
+function openCascadeBoundsFromBox(box: Box3) {
   const center = new Vector3()
   const size = new Vector3()
   box.getCenter(center)
   box.getSize(size)
 
   return { center, radius: Math.max(size.x, size.y, size.z, 1) }
+}
+
+function frameOpenCascadeInitialBounds({
+  bounds,
+  sceneInfra,
+  modelCenterRef,
+  modelRadiusRef,
+  targetRef,
+  hasFramedModelRef,
+  hasFramedEmptySceneRef,
+}: {
+  bounds: { center: Vector3; radius: number }
+  sceneInfra: {
+    camControls: SceneInfra['camControls']
+    baseUnitMultiplier: number
+  }
+  modelCenterRef: { current: Vector3 }
+  modelRadiusRef: { current: number }
+  targetRef: { current: Vector3 }
+  hasFramedModelRef: { current: boolean }
+  hasFramedEmptySceneRef: { current: boolean }
+}) {
+  modelCenterRef.current.copy(bounds.center)
+  modelRadiusRef.current = bounds.radius
+  targetRef.current.copy(bounds.center)
+  fitCameraToRadius(
+    sceneInfra.camControls.camera,
+    targetRef.current,
+    bounds.radius,
+    true,
+    sceneInfra.baseUnitMultiplier
+  )
+  sceneInfra.camControls.target.copy(targetRef.current)
+  sceneInfra.camControls.onCameraChange()
+  hasFramedModelRef.current = true
+  hasFramedEmptySceneRef.current = false
 }
 
 export function getOpenCascadeEmptySceneBounds(baseUnitMultiplier: number) {
