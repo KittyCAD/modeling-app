@@ -18,12 +18,14 @@ function CommandArgOptionInput({
   argName,
   stepBack,
   onSubmit,
+  onDraft,
   placeholder,
 }: {
   arg: CommandArgument<unknown> & { inputType: 'options' }
   argName: string
   stepBack: () => void
   onSubmit: (data: unknown) => void
+  onDraft?: (data: unknown) => void
   placeholder?: string
 }) {
   const actorContext = useSelector(arg.machineActor, contextSelector)
@@ -102,6 +104,7 @@ function CommandArgOptionInput({
   function handleSelectOption(option: CommandArgumentOption<unknown>) {
     // We deal with the whole option object internally
     setSelectedOption(option)
+    onDraft?.(option.value)
 
     // But we only submit the value itself
     if (shouldSubmitOnChange.current) {

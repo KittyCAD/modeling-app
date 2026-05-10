@@ -73,6 +73,7 @@ export type CommandBarContext = CommandBarInput & {
   selectedCommand?: Command
   currentArgument?: CommandArgument<unknown> & { name: string }
   argumentsToSubmit: { [x: string]: unknown }
+  previewArgumentsToSubmit: { [x: string]: unknown }
   reviewValidationError?: string
   machineManager: MachineManager
   kclManager?: KclManager
@@ -112,6 +113,7 @@ export type CommandBarMachineEvent =
       data: { commands: Command[] }
     }
   | { type: 'Submit argument'; data: { [x: string]: unknown } }
+  | { type: 'Update argument draft'; data: { [x: string]: unknown } }
   | {
       type: 'xstate.done.actor.validateSingleArgument'
       output: { [x: string]: unknown }
@@ -161,6 +163,31 @@ export const commandBarMachine = setup({
         return {
           ...context.argumentsToSubmit,
           [argName]: argData,
+        }
+      },
+      previewArgumentsToSubmit: ({ context, event }) => {
+        if (event.type !== 'xstate.done.actor.validateSingleArgument') {
+          return context.previewArgumentsToSubmit
+        }
+        const [argName, argData] = Object.entries(event.output)[0]
+        const { currentArgument } = context
+        if (!currentArgument) {
+          return context.previewArgumentsToSubmit
+        }
+        return {
+          ...context.previewArgumentsToSubmit,
+          [argName]: argData,
+        }
+      },
+    }),
+    'Update argument draft': assign({
+      previewArgumentsToSubmit: ({ context, event }) => {
+        if (event.type !== 'Update argument draft') {
+          return context.previewArgumentsToSubmit
+        }
+        return {
+          ...context.previewArgumentsToSubmit,
+          ...event.data,
         }
       },
     }),
@@ -313,6 +340,15 @@ export const commandBarMachine = setup({
         const { [argToRemove.name]: _, ...rest } = context.argumentsToSubmit
         return rest
       },
+      previewArgumentsToSubmit: ({ context, event }) => {
+        if (event.type !== 'Remove argument') {
+          return context.previewArgumentsToSubmit
+        }
+        const argToRemove = Object.values(event.data)[0]
+        const { [argToRemove.name]: _, ...rest } =
+          context.previewArgumentsToSubmit
+        return rest
+      },
     }),
     'Set current argument': assign({
       currentArgument: ({ context, event }) => {
@@ -330,6 +366,7 @@ export const commandBarMachine = setup({
       selectedCommand: undefined,
       currentArgument: undefined,
       argumentsToSubmit: {},
+      previewArgumentsToSubmit: {},
     }),
     'Set selected command': assign({
       selectedCommand: ({ context, event }) =>
@@ -356,6 +393,30 @@ export const commandBarMachine = setup({
           event.type !== 'Find and select command'
         )
           return {}
+        const command =
+          'data' in event && 'command' in event.data
+            ? event.data.command
+            : context.selectedCommand
+        if (!command?.args) return {}
+        const args: { [x: string]: unknown } = {}
+        for (const [argName, arg] of Object.entries(command.args)) {
+          args[argName] =
+            event.data.argDefaultValues &&
+            argName in event.data.argDefaultValues
+              ? event.data.argDefaultValues[argName]
+              : (arg.skip || arg.prepopulate) && 'defaultValue' in arg
+                ? arg.defaultValue
+                : undefined
+        }
+        return args
+      },
+      previewArgumentsToSubmit: ({ context, event }) => {
+        if (
+          event.type !== 'Select command' &&
+          event.type !== 'Find and select command'
+        ) {
+          return {}
+        }
         const command =
           'data' in event && 'command' in event.data
             ? event.data.command
@@ -629,6 +690,7 @@ export const commandBarMachine = setup({
       codeBasedSelections: [],
     },
     argumentsToSubmit: {},
+    previewArgumentsToSubmit: {},
     reviewValidationError: undefined,
   }),
   id: 'Command Bar',
@@ -717,6 +779,12 @@ export const commandBarMachine = setup({
           target: 'Gathering arguments',
           internal: true,
           actions: ['Set current argument'],
+        },
+
+        'Update argument draft': {
+          target: 'Gathering arguments',
+          internal: true,
+          actions: ['Update argument draft', 'Schedule OpenCascade preview'],
         },
 
         'Deselect command': {
@@ -870,8 +938,15 @@ function scheduleOpenCascadeCommandPreview(context: CommandBarContext) {
   }
 
   openCascadePreviewTimer = setTimeout(() => {
+    const previewContext = {
+      ...context,
+      argumentsToSubmit: {
+        ...context.argumentsToSubmit,
+        ...context.previewArgumentsToSubmit,
+      },
+    }
     selectedCommand
-      .previewAst?.(context, selectedCommand.machineActor)
+      .previewAst?.(previewContext, selectedCommand.machineActor)
       .then((previewAst) => {
         if (!previewAst || previewAst instanceof Error) {
           return

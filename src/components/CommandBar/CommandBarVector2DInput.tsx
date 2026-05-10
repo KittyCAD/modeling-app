@@ -82,6 +82,7 @@ function CommandBarVector2DInput({
   arg,
   stepBack,
   onSubmit,
+  onDraft,
   executingEditor: kclManager,
 }: {
   arg: CommandArgument<unknown> & {
@@ -90,6 +91,7 @@ function CommandBarVector2DInput({
   }
   stepBack: () => void
   onSubmit: (data: KclCommandValue) => void
+  onDraft?: (data: KclCommandValue) => void
   executingEditor: KclManager
 }) {
   const { commands, wasmPromise } = useApp()
@@ -149,6 +151,7 @@ function CommandBarVector2DInput({
   const [y, setY] = useState(defaultValues.y)
   // Tracks form readiness based on calculation execution state
   const [canSubmit, setCanSubmit] = useState(true)
+  const lastDraftKeyRef = useRef<string | undefined>(undefined)
 
   // In the render, each input shows real-time feedback
   // Use calculation hook for each coordinate
@@ -193,6 +196,51 @@ function CommandBarVector2DInput({
   useEffect(() => {
     setCanSubmit(!xCalculation.isExecuting && !yCalculation.isExecuting)
   }, [xCalculation.isExecuting, yCalculation.isExecuting])
+
+  useEffect(() => {
+    if (
+      xCalculation.isExecuting ||
+      yCalculation.isExecuting ||
+      xCalculation.calcResult === 'NAN' ||
+      yCalculation.calcResult === 'NAN' ||
+      !xCalculation.valueNode ||
+      !yCalculation.valueNode ||
+      !x.trim() ||
+      !y.trim()
+    ) {
+      return
+    }
+
+    const vectorExpression = `[${x.trim()}, ${y.trim()}]`
+    if (lastDraftKeyRef.current === vectorExpression) {
+      return
+    }
+    lastDraftKeyRef.current = vectorExpression
+    let cancelled = false
+    stringToKclExpression(vectorExpression, rustContext, { allowArrays: true })
+      .then((result) => {
+        if (cancelled || result instanceof Error || 'errors' in result) {
+          return
+        }
+        onDraft?.(result)
+      })
+      .catch(() => {})
+
+    return () => {
+      cancelled = true
+    }
+  }, [
+    onDraft,
+    rustContext,
+    x,
+    xCalculation.calcResult,
+    xCalculation.isExecuting,
+    xCalculation.valueNode,
+    y,
+    yCalculation.calcResult,
+    yCalculation.isExecuting,
+    yCalculation.valueNode,
+  ])
 
   // Detailed validation (Is the user's input actually valid?)
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {

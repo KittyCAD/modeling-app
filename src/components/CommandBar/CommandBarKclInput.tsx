@@ -63,6 +63,7 @@ function CommandBarKclInput({
   arg,
   stepBack,
   onSubmit,
+  onDraft,
   executingEditor: kclManager,
 }: {
   arg: CommandArgument<unknown> & {
@@ -71,6 +72,7 @@ function CommandBarKclInput({
   }
   stepBack: () => void
   onSubmit: (event: unknown) => void
+  onDraft?: (event: unknown) => void
   executingEditor: KclManager
 }) {
   const { commands, settings, wasmPromise } = useApp()
@@ -155,6 +157,7 @@ function CommandBarKclInput({
       false
   )
   const [canSubmit, setCanSubmit] = useState(true)
+  const lastDraftKeyRef = useRef<string | undefined>(undefined)
   useHotkeyWrapper(
     ['mod + k', 'esc'],
     () => commands.send({ type: 'Close' }),
@@ -280,6 +283,57 @@ function CommandBarKclInput({
         !isExecuting
     )
   }, [calcResult, createNewVariable, isNewVariableNameUnique, isExecuting])
+
+  useEffect(() => {
+    if (
+      calcResult === 'NAN' ||
+      (createNewVariable && !isNewVariableNameUnique) ||
+      isExecuting ||
+      valueNode === null
+    ) {
+      return
+    }
+
+    const nextDraft = createNewVariable
+      ? ({
+          valueAst: valueNode,
+          valueText: value,
+          valueCalculated: calcResult,
+          variableName: newVariableName,
+          insertIndex: newVariableInsertIndex,
+          variableIdentifierAst: createLocalName(newVariableName),
+          variableDeclarationAst: createVariableDeclaration(
+            newVariableName,
+            valueNode
+          ),
+        } satisfies KclCommandValue)
+      : ({
+          valueAst: valueNode,
+          valueText: value,
+          valueCalculated: calcResult,
+        } satisfies KclCommandValue)
+    const draftKey = JSON.stringify({
+      valueText: nextDraft.valueText,
+      valueCalculated: nextDraft.valueCalculated,
+      variableName:
+        'variableName' in nextDraft ? nextDraft.variableName : undefined,
+    })
+    if (lastDraftKeyRef.current === draftKey) {
+      return
+    }
+    lastDraftKeyRef.current = draftKey
+    onDraft?.(nextDraft)
+  }, [
+    calcResult,
+    createNewVariable,
+    isExecuting,
+    isNewVariableNameUnique,
+    newVariableInsertIndex,
+    newVariableName,
+    onDraft,
+    value,
+    valueNode,
+  ])
 
   function handleSubmit(e?: React.FormEvent<HTMLFormElement>) {
     e?.preventDefault()

@@ -11,6 +11,7 @@ import CommandBarVector3DInput from '@src/components/CommandBar/CommandBarVector
 import CommandBarVector2DInput from '@src/components/CommandBar/CommandBarVector2DInput'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import { useApp } from '@src/lib/boot'
+import { useCallback } from 'react'
 
 function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
   const { commands } = useApp()
@@ -19,16 +20,33 @@ function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
     context: { currentArgument },
   } = commandBarState
 
-  function onSubmit(data: unknown) {
-    if (!currentArgument) return
+  const onSubmit = useCallback(
+    (data: unknown) => {
+      if (!currentArgument) return
 
-    commands.send({
-      type: 'Submit argument',
-      data: {
-        [currentArgument.name]: data,
-      },
-    })
-  }
+      commands.send({
+        type: 'Submit argument',
+        data: {
+          [currentArgument.name]: data,
+        },
+      })
+    },
+    [commands, currentArgument]
+  )
+
+  const onDraft = useCallback(
+    (data: unknown) => {
+      if (!currentArgument) return
+
+      commands.send({
+        type: 'Update argument draft',
+        data: {
+          [currentArgument.name]: data,
+        },
+      })
+    },
+    [commands, currentArgument]
+  )
 
   function clear() {
     if (!currentArgument) return
@@ -48,6 +66,7 @@ function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
           arg={currentArgument}
           stepBack={stepBack}
           onSubmit={onSubmit}
+          onDraft={onDraft}
         />
         <CommandBarDivider />
       </CommandBarHeaderFooter>
@@ -69,10 +88,12 @@ function ArgumentInput({
   arg,
   stepBack,
   onSubmit,
+  onDraft,
 }: {
   arg: CommandArgument<unknown> & { name: string }
   stepBack: () => void
   onSubmit: (event: any) => void
+  onDraft: (event: any) => void
 }) {
   const app = useApp()
   const executingEditor = app.project?.executingEditor.value
@@ -85,6 +106,7 @@ function ArgumentInput({
           argName={arg.displayName || arg.name}
           stepBack={stepBack}
           onSubmit={onSubmit}
+          onDraft={onDraft}
           placeholder="Select an option"
         />
       )
@@ -102,6 +124,7 @@ function ArgumentInput({
           argName={arg.displayName || arg.name}
           stepBack={stepBack}
           onSubmit={onSubmit}
+          onDraft={onDraft}
           placeholder="Select an option"
         />
       )
@@ -111,6 +134,7 @@ function ArgumentInput({
           arg={arg}
           stepBack={stepBack}
           onSubmit={onSubmit}
+          onDraft={onDraft}
           executingEditor={executingEditor}
         />
       ) : (
@@ -123,6 +147,7 @@ function ArgumentInput({
           arg={arg}
           stepBack={stepBack}
           onSubmit={onSubmit}
+          onDraft={onDraft}
           executingEditor={executingEditor}
         />
       ) : (
@@ -135,6 +160,7 @@ function ArgumentInput({
           arg={arg}
           stepBack={stepBack}
           onSubmit={onSubmit}
+          onDraft={onDraft}
           executingEditor={executingEditor}
         />
       ) : (
@@ -146,6 +172,7 @@ function ArgumentInput({
           arg={arg}
           stepBack={stepBack}
           onSubmit={onSubmit}
+          onDraft={onDraft}
         />
       )
     case 'path':
@@ -154,6 +181,7 @@ function ArgumentInput({
           arg={arg}
           stepBack={stepBack}
           onSubmit={onSubmit}
+          onDraft={onDraft}
         />
       )
     case 'vector3d':
@@ -162,6 +190,7 @@ function ArgumentInput({
           arg={arg}
           stepBack={stepBack}
           onSubmit={onSubmit}
+          onDraft={onDraft}
           executingEditor={executingEditor}
         />
       ) : (
@@ -173,6 +202,7 @@ function ArgumentInput({
           arg={arg}
           stepBack={stepBack}
           onSubmit={onSubmit}
+          onDraft={onDraft}
           executingEditor={executingEditor}
         />
       ) : (
@@ -185,6 +215,7 @@ function ArgumentInput({
           arg={arg as any}
           stepBack={stepBack}
           onSubmit={onSubmit}
+          onDraft={onDraft}
         />
       )
     default:
@@ -193,6 +224,7 @@ function ArgumentInput({
           arg={arg}
           stepBack={stepBack}
           onSubmit={onSubmit}
+          onDraft={onDraft}
         />
       )
   }

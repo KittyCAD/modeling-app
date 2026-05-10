@@ -18,6 +18,7 @@ function CommandBarPathInput({
   arg,
   stepBack,
   onSubmit,
+  onDraft,
 }: {
   arg: CommandArgument<unknown> & {
     inputType: 'path'
@@ -25,6 +26,7 @@ function CommandBarPathInput({
   }
   stepBack: () => void
   onSubmit: (event: unknown) => void
+  onDraft?: (event: unknown) => void
 }) {
   const { wasmPromise, commands } = useApp()
   const wasmInstance = use(wasmPromise)
@@ -109,6 +111,7 @@ function CommandBarPathInput({
           className="flex-grow px-2 py-1 !bg-transparent focus:outline-none"
           placeholder="Enter a path"
           defaultValue={defaultValue}
+          onChange={(event) => onDraft?.(event.currentTarget.value)}
           onKeyDown={(event) => {
             if (event.key === 'Backspace' && event.metaKey) {
               stepBack()

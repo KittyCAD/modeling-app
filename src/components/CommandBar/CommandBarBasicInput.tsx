@@ -15,6 +15,7 @@ function CommandBarBasicInput({
   arg,
   stepBack,
   onSubmit,
+  onDraft,
 }: {
   arg: CommandArgument<unknown> & {
     inputType: 'string' | 'color' | 'tagDeclarator'
@@ -22,6 +23,7 @@ function CommandBarBasicInput({
   }
   stepBack: () => void
   onSubmit: (event: unknown) => void
+  onDraft?: (event: unknown) => void
 }) {
   const { wasmPromise, commands } = useApp()
   const wasmInstance = use(wasmPromise)
@@ -93,6 +95,7 @@ function CommandBarBasicInput({
           className={`flex-grow ${arg.inputType === 'color' ? 'h-[41px]' : 'px-2 py-1 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80'} !bg-transparent focus:outline-none`}
           placeholder="Enter a value"
           defaultValue={defaultValue}
+          onChange={(event) => onDraft?.(event.currentTarget.value)}
           data-1p-ignore
           data-lpignore="true"
           data-form-type="other"

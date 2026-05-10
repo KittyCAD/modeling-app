@@ -9,6 +9,7 @@ function CommandBarTextareaInput({
   arg,
   stepBack,
   onSubmit,
+  onDraft,
 }: {
   arg: CommandArgument<unknown> & {
     inputType: 'text'
@@ -16,6 +17,7 @@ function CommandBarTextareaInput({
   }
   stepBack: () => void
   onSubmit: (event: unknown) => void
+  onDraft?: (event: unknown) => void
 }) {
   const { commands } = useApp()
   const commandBarState = commands.useState()
@@ -63,6 +65,7 @@ function CommandBarTextareaInput({
               | string
               | undefined) || (arg.defaultValue as string)
           }
+          onChange={(event) => onDraft?.(event.currentTarget.value)}
           onKeyDown={(event) => {
             if (event.key === 'Backspace' && event.metaKey) {
               stepBack()

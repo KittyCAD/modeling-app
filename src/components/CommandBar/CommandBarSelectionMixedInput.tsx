@@ -24,11 +24,13 @@ export default function CommandBarSelectionMixedInput({
   arg,
   stepBack,
   onSubmit,
+  onDraft: _onDraft,
   executingEditor: kclManager,
 }: {
   arg: CommandArgument<unknown> & { inputType: 'selectionMixed'; name: string }
   stepBack: () => void
   onSubmit: (data: unknown) => void
+  onDraft?: (data: unknown) => void
   executingEditor: KclManager
 }) {
   const { commands, wasmPromise } = useApp()

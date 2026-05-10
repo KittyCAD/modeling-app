@@ -76,6 +76,7 @@ function CommandBarVector3DInput({
   arg,
   stepBack,
   onSubmit,
+  onDraft,
   executingEditor: kclManager,
 }: {
   arg: CommandArgument<unknown> & {
@@ -84,6 +85,7 @@ function CommandBarVector3DInput({
   }
   stepBack: () => void
   onSubmit: (data: KclCommandValue) => void
+  onDraft?: (data: KclCommandValue) => void
   executingEditor: KclManager
 }) {
   const { commands } = useApp()
@@ -130,6 +132,7 @@ function CommandBarVector3DInput({
   const [z, setZ] = useState(defaultValues.z)
   // Tracks form readiness based on calculation execution state
   const [canSubmit, setCanSubmit] = useState(true)
+  const lastDraftKeyRef = useRef<string | undefined>(undefined)
 
   // In the render, each input shows real-time feedback
   // Use calculation hook for each coordinate
@@ -192,6 +195,61 @@ function CommandBarVector3DInput({
     xCalculation.isExecuting,
     yCalculation.isExecuting,
     zCalculation.isExecuting,
+  ])
+
+  useEffect(() => {
+    if (
+      xCalculation.isExecuting ||
+      yCalculation.isExecuting ||
+      zCalculation.isExecuting ||
+      xCalculation.calcResult === 'NAN' ||
+      yCalculation.calcResult === 'NAN' ||
+      zCalculation.calcResult === 'NAN' ||
+      !xCalculation.valueNode ||
+      !yCalculation.valueNode ||
+      !zCalculation.valueNode ||
+      !x.trim() ||
+      !y.trim() ||
+      !z.trim()
+    ) {
+      return
+    }
+
+    const vectorExpression = `[${x.trim()}, ${y.trim()}, ${z.trim()}]`
+    if (lastDraftKeyRef.current === vectorExpression) {
+      return
+    }
+    lastDraftKeyRef.current = vectorExpression
+    let cancelled = false
+    stringToKclExpression(vectorExpression, kclManager.rustContext, {
+      allowArrays: true,
+    })
+      .then((result) => {
+        if (cancelled || result instanceof Error || 'errors' in result) {
+          return
+        }
+        onDraft?.(result)
+      })
+      .catch(() => {})
+
+    return () => {
+      cancelled = true
+    }
+  }, [
+    kclManager.rustContext,
+    onDraft,
+    x,
+    xCalculation.calcResult,
+    xCalculation.isExecuting,
+    xCalculation.valueNode,
+    y,
+    yCalculation.calcResult,
+    yCalculation.isExecuting,
+    yCalculation.valueNode,
+    z,
+    zCalculation.calcResult,
+    zCalculation.isExecuting,
+    zCalculation.valueNode,
   ])
 
   // Detailed validation (Is the user's input actually valid?)
