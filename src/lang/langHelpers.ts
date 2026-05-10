@@ -1,6 +1,7 @@
 import type { Diagnostic } from '@codemirror/lint'
 import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 
 import { KCLError, toUtf16 } from '@src/lang/errors'
 import type { ExecState, Program } from '@src/lang/wasm'
@@ -62,6 +63,7 @@ interface ExecutionResult {
   logs: string[]
   errors: KCLError[]
   execState: ExecState
+  sceneGraphDelta?: SceneGraphDelta
   isInterrupted: boolean
 }
 
@@ -76,12 +78,14 @@ export async function executeAst({
 }): Promise<ExecutionResult> {
   try {
     const settings = jsAppSettings(rustContext.settingsActor)
-    const execState = await rustContext.execute(ast, settings, path)
+    const { execState, sceneGraphDelta } =
+      await rustContext.executeWithSceneGraph(ast, settings, path)
     await rustContext.waitForAllEngineModelingCommands()
     return {
       logs: [],
       errors: [],
       execState,
+      sceneGraphDelta,
       isInterrupted: false,
     }
   } catch (e: any) {

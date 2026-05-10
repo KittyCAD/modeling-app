@@ -252,6 +252,10 @@ export class EngineCommandManagerProxy extends ConnectionManager {
     return this.openCascadeCommandManager.exportLatestGlbBytes()
   }
 
+  async exportLatestOpenCascadeProfileGlbBytes() {
+    return this.openCascadeCommandManager.exportLatestProfileGlbBytes()
+  }
+
   async exportLatestOpenCascadeGlbUrl() {
     const bytes = await this.exportLatestOpenCascadeGlbBytes()
     const blob = new Blob([bytes as BlobPart], {

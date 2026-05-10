@@ -331,6 +331,7 @@ export class SceneInfra {
   private isRenderingPaused = false
   private lastFrameTime = 0
   private animationFrameId = -1
+  private animationLoopRetainCount = 0
 
   constructor(
     engineCommandManager: ConnectionManager,
@@ -420,7 +421,19 @@ export class SceneInfra {
   }
 
   animate = () => {
-    this.animationFrameId = requestAnimationFrame(this.animate)
+    this.animationLoopRetainCount += 1
+    this.startAnimationLoop()
+  }
+
+  private startAnimationLoop = () => {
+    if (this.animationFrameId !== -1) {
+      return
+    }
+    this.animationFrameId = requestAnimationFrame(this.animateFrame)
+  }
+
+  private animateFrame = () => {
+    this.animationFrameId = requestAnimationFrame(this.animateFrame)
     TWEEN.update() // This will update all tweens during the animation loop
     if (!this.isFovAnimationInProgress) {
       this.camControls.update()
@@ -439,7 +452,7 @@ export class SceneInfra {
     }
   }
 
-  private renderFrame() {
+  renderFrame() {
     this.runOnBeforeRenderIfNeeded()
     this.renderer.render(this.scene, this.camControls.camera)
     this.labelRenderer.render(this.scene, this.camControls.camera)
@@ -454,6 +467,13 @@ export class SceneInfra {
   }
 
   stop = () => {
+    this.animationLoopRetainCount = Math.max(
+      0,
+      this.animationLoopRetainCount - 1
+    )
+    if (this.animationLoopRetainCount > 0) {
+      return
+    }
     if (this.animationFrameId !== -1) {
       cancelAnimationFrame(this.animationFrameId)
       this.animationFrameId = -1

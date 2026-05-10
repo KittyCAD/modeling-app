@@ -156,12 +156,14 @@ async function withBrowserOpenCascadeEnvironment<T>(
 
 export class OpenCascadeCommandManager {
   readonly latestShapeVersion = signal(0)
+  readonly latestProfileVersion = signal(0)
   readonly latestExportError = signal<string | undefined>(undefined)
   private planes = new Map<string, PlaneState>()
   private paths = new Map<string, PathState>()
   private pathAliases = new Map<string, string>()
   private regions = new Map<string, RegionState>()
   private solids = new Map<string, SolidState>()
+  private profileShapes = new Map<string, any>()
   private currentSketchPlaneId: string | undefined
 
   constructor() {
@@ -222,6 +224,25 @@ export class OpenCascadeCommandManager {
     const oc = await initOpenCascade()
     try {
       const bytes = this.writeGlb(id, solid.shape, oc)
+      this.latestExportError.value = undefined
+      return bytes
+    } catch (error) {
+      this.latestExportError.value =
+        error instanceof Error ? error.message : String(error)
+      throw error
+    }
+  }
+
+  async exportLatestProfileGlbBytes(): Promise<Uint8Array> {
+    const latest = Array.from(this.profileShapes.entries()).at(-1)
+    if (!latest) {
+      return new Uint8Array()
+    }
+
+    const [id, shape] = latest
+    const oc = await initOpenCascade()
+    try {
+      const bytes = this.writeGlb(`${id}-profile`, shape, oc)
       this.latestExportError.value = undefined
       return bytes
     } catch (error) {
@@ -305,6 +326,16 @@ export class OpenCascadeCommandManager {
       case 'set_grid_auto_scale':
       case 'set_order_independent_transparency':
       case 'zoom_to_fit':
+      case 'camera_drag_start':
+      case 'camera_drag_move':
+      case 'camera_drag_end':
+      case 'default_camera_zoom':
+      case 'default_camera_look_at':
+      case 'default_camera_set_view':
+      case 'default_camera_get_settings':
+      case 'default_camera_set_orthographic':
+      case 'default_camera_set_perspective':
+      case 'default_camera_perspective_settings':
         return modeling(EMPTY_RESPONSE)
       case 'enable_sketch_mode':
         this.currentSketchPlaneId = cmd.entity_id
@@ -833,6 +864,8 @@ export class OpenCascadeCommandManager {
       circle: path.circle,
     }
     this.regions.set(commandId, region)
+    this.profileShapes.set(commandId, region.face)
+    this.latestProfileVersion.value += 1
     return region
   }
 
@@ -1050,9 +1083,11 @@ export class OpenCascadeCommandManager {
     this.pathAliases.clear()
     this.regions.clear()
     this.solids.clear()
+    this.profileShapes.clear()
     this.currentSketchPlaneId = undefined
     this.latestExportError.value = undefined
     this.latestShapeVersion.value += 1
+    this.latestProfileVersion.value += 1
   }
 }
 

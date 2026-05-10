@@ -780,6 +780,7 @@ export class KclManager extends File {
   livePathsToWatch = signal<string[]>([])
 
   private _execState = signal<ExecState>(emptyExecState())
+  lastSceneGraphDeltaSignal = signal<SceneGraphDelta | undefined>(undefined)
 
   private _variables = signal<VariableMap>({})
   lastSuccessfulVariables: VariableMap = {}
@@ -2006,11 +2007,13 @@ export class KclManager extends File {
     this.setSketchSolveDiagnostics([])
 
     const codeThatExecuted = this.code
-    const { logs, errors, execState, isInterrupted } = await executeAst({
-      ast,
-      path: this.path,
-      rustContext: this.rustContext,
-    })
+    const { logs, errors, execState, sceneGraphDelta, isInterrupted } =
+      await executeAst({
+        ast,
+        path: this.path,
+        rustContext: this.rustContext,
+      })
+    this.lastSceneGraphDeltaSignal.value = sceneGraphDelta
 
     const livePathsToWatch = Object.values(execState.filenames)
       .filter((file) => {
@@ -3320,17 +3323,17 @@ export class KclManager extends File {
 
 function safeLSGetItem(key: string) {
   if (typeof window === 'undefined') return
-  return localStorage?.getItem(key)
+  return localStorage?.getItem?.(key)
 }
 
 function safeLSSetItem(key: string, value: string) {
   if (typeof window === 'undefined') return
-  localStorage?.setItem(key, value)
+  localStorage?.setItem?.(key, value)
 }
 
 function safeLSRemoveItem(key: string) {
   if (typeof window === 'undefined') return
-  localStorage?.removeItem(key)
+  localStorage?.removeItem?.(key)
 }
 
 type RecoverySnapshot = {

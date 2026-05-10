@@ -51,7 +51,11 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { cleanupSketchSolveGroup } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { EditingConstraintInput } from '@src/clientSideScene/EditingConstraintInput'
 
-function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
+function useShouldHideScene({
+  sharedRendererMode,
+}: {
+  sharedRendererMode: SharedRendererMode
+}): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
   const [isTween, setIsTween] = useState(false)
 
@@ -69,6 +73,10 @@ function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
     )
   }, [sceneInfra.camControls])
 
+  if (sharedRendererMode === 'open_cascade') {
+    return { hideClient: false, hideServer: true }
+  }
+
   if (DEBUG_SHOW_BOTH_SCENES || !isCamMoving)
     return { hideClient: false, hideServer: false }
   let hideServer = state.matches('Sketch') || state.matches('sketchSolveMode')
@@ -80,21 +88,24 @@ function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
 }
 
 export const DEFAULT_SKETCH_SOLVE_STREAM_DIMMING = 0.8
+type SharedRendererMode = 'zoo' | 'open_cascade'
 
 export const ClientSideScene = ({
   cameraControls,
   enableTouchControls,
   sketchSolveStreamDimming = DEFAULT_SKETCH_SOLVE_STREAM_DIMMING,
+  sharedRendererMode = 'zoo',
 }: {
   cameraControls: CameraSystem
   enableTouchControls: boolean
   sketchSolveStreamDimming?: number
+  sharedRendererMode?: SharedRendererMode
 }) => {
   const {
     kclManager: { sceneEntitiesManager, sceneInfra, engineCommandManager },
   } = useSingletons()
   const { state, send, context } = useModelingContext()
-  const { hideClient, hideServer } = useShouldHideScene()
+  const { hideClient, hideServer } = useShouldHideScene({ sharedRendererMode })
 
   // Listen for changes to the camera controls setting
   // and update the client-side scene's controls accordingly.
@@ -126,6 +137,12 @@ export const ClientSideScene = ({
     container.addEventListener('mousedown', sceneInfra.onMouseDown)
     const onMouseUp = toSync(sceneInfra.onMouseUp, reportRejection)
     container.addEventListener('mouseup', onMouseUp)
+    const onContextMenu = (event: MouseEvent) => {
+      event.preventDefault()
+    }
+    if (sharedRendererMode === 'open_cascade') {
+      container.addEventListener('contextmenu', onContextMenu)
+    }
 
     // Detect canvas size changes
     const observer = new ResizeObserver(() => {
@@ -153,16 +170,26 @@ export const ClientSideScene = ({
     // send
     sceneInfra.setSend(send)
     engineCommandManager.modelingSend = send
+    const previousSyncDirection = sceneInfra.camControls.syncDirection
+    if (sharedRendererMode === 'open_cascade') {
+      sceneInfra.camControls.syncDirection = 'clientToEngine'
+      sceneInfra.animate()
+    }
 
     return () => {
       container.removeEventListener('mousemove', onMouseMove)
       container.removeEventListener('mousedown', sceneInfra.onMouseDown)
       container.removeEventListener('mouseup', onMouseUp)
+      container.removeEventListener('contextmenu', onContextMenu)
       sceneEntitiesManager.tearDownSketch({ removeAxis: true })
       cleanupSketchSolveGroup(sceneInfra)
 
       observer.disconnect()
       media.removeEventListener('change', handleChange)
+      if (sharedRendererMode === 'open_cascade') {
+        sceneInfra.stop()
+        sceneInfra.camControls.syncDirection = previousSyncDirection
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
@@ -202,7 +229,10 @@ export const ClientSideScene = ({
   const inSketchMode = state.matches('Sketch')
   const inSketchSolveMode = state.matches('sketchSolveMode')
   const shouldApplyStreamDimming =
-    !hideClient && !hideServer && (inSketchMode || inSketchSolveMode)
+    sharedRendererMode === 'zoo' &&
+    !hideClient &&
+    !hideServer &&
+    (inSketchMode || inSketchSolveMode)
   const streamDimmingOpacity = hideServer
     ? 1
     : shouldApplyStreamDimming

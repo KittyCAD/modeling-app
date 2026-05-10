@@ -43,6 +43,10 @@ describe('OpenCascadeCommandManager', () => {
     ).toEqual({
       [IDS.region]: IDS.edge,
     })
+    expect(manager.latestProfileVersion.value).toBeGreaterThan(0)
+    expect(
+      (await manager.exportLatestProfileGlbBytes()).length
+    ).toBeGreaterThan(0)
 
     await send(manager, IDS.request, {
       type: 'modeling_cmd_req',
@@ -120,7 +124,7 @@ describe('OpenCascadeCommandManager', () => {
       cmd: {
         type: 'revolve',
         target: IDS.region,
-        origin: { x: 0, y: 0, z: 0 },
+        origin: { x: 3, y: 0, z: 0 },
         axis: { x: 0, y: 1, z: 0 },
         axis_is_2d: true,
         angle: { unit: 'degrees', value: 360 },

@@ -253,8 +253,8 @@ function getTokenFromEnvOrCookie(): string {
   const queryParams = new URLSearchParams(window.location?.search ?? '')
   const queryToken = queryParams.get(VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM)
   if (queryToken) {
-    window.localStorage?.setItem(TOKEN_PERSIST_KEY, queryToken)
-    window.localStorage?.setItem(IS_PLAYWRIGHT_KEY, 'true')
+    window.localStorage?.setItem?.(TOKEN_PERSIST_KEY, queryToken)
+    window.localStorage?.setItem?.(IS_PLAYWRIGHT_KEY, 'true')
     return queryToken
   }
 
@@ -267,8 +267,8 @@ function getTokenFromEnvOrCookie(): string {
   if (cookieToken) return cookieToken
 
   // Try to retrieve the token from storage for Playwright
-  if (window.localStorage?.getItem(IS_PLAYWRIGHT_KEY) === 'true') {
-    const storedToken = window.localStorage?.getItem(TOKEN_PERSIST_KEY)
+  if (window.localStorage?.getItem?.(IS_PLAYWRIGHT_KEY) === 'true') {
+    const storedToken = window.localStorage?.getItem?.(TOKEN_PERSIST_KEY)
     if (storedToken) return storedToken
   }
 

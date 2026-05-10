@@ -137,6 +137,14 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     path?: string
   ): Promise<ExecState> {
+    return (await this.executeWithSceneGraph(node, settings, path)).execState
+  }
+
+  async executeWithSceneGraph(
+    node: Node<Program>,
+    settings: DeepPartial<Configuration>,
+    path?: string
+  ): Promise<{ execState: ExecState; sceneGraphDelta: SceneGraphDelta }> {
     const instance = await this._checkContextInstance()
 
     try {
@@ -151,7 +159,7 @@ export default class RustContext {
       this.setDefaultPlanes(outcome.defaultPlanes)
 
       // Return the result.
-      return outcome
+      return { execState: outcome, sceneGraphDelta: result }
     } catch (e: any) {
       const err = errFromErrWithOutputs(e)
       this.setDefaultPlanes(err.defaultPlanes)

@@ -9,7 +9,7 @@ import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 const hasWindow = typeof window !== 'undefined'
 const isTestEnv =
-  hasWindow && window.localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
+  hasWindow && window.localStorage?.getItem?.(IS_PLAYWRIGHT_KEY) === 'true'
 
 export function getAppVersion({
   isTestEnvironment,

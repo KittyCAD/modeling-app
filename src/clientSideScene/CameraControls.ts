@@ -122,6 +122,7 @@ export class CameraControls {
   lastPerspectiveFov = 45
   pendingZoom: number | null = null
   pendingRotation: Vector2 | null = null
+  pendingTrackballRotation: Vector2 | null = null
   pendingPan: Vector3 | null = null
   interactionGuards: MouseGuard = cameraMouseDragGuards.Zoo
   isFovAnimationInProgress = false
@@ -456,6 +457,7 @@ export class CameraControls {
     this.cameraDown = this.camera.clone()
     let interaction = this.getInteractionType(event)
     if (interaction === 'none') return
+    event.preventDefault()
     this.handleStart()
 
     if (this.syncDirection === 'engineToClient') {
@@ -506,12 +508,14 @@ export class CameraControls {
       // else "clientToEngine" (Sketch Mode) or forceUpdate
       // Implement camera movement logic here based on deltaMove
       // For example, for rotating the camera around the target:
-      if (interaction === 'rotate') {
-        this.pendingRotation = this.pendingRotation
-          ? this.pendingRotation
-          : new Vector2()
-        this.pendingRotation.x += deltaMove.x
-        this.pendingRotation.y += deltaMove.y
+      if (interaction === 'rotate' || interaction === 'rotatetrackball') {
+        const pendingRotation =
+          interaction === 'rotatetrackball'
+            ? (this.pendingTrackballRotation =
+                this.pendingTrackballRotation ?? new Vector2())
+            : (this.pendingRotation = this.pendingRotation ?? new Vector2())
+        pendingRotation.x += deltaMove.x
+        pendingRotation.y += deltaMove.y
       } else if (interaction === 'zoom') {
         this.pendingZoom = this.pendingZoom ? this.pendingZoom : 1
         this.pendingZoom *= 1 + deltaMove.y * 0.01
@@ -821,6 +825,15 @@ export class CameraControls {
       didChange = true
     }
 
+    if (this.pendingTrackballRotation) {
+      this.rotateCameraTrackball(
+        this.pendingTrackballRotation.x,
+        this.pendingTrackballRotation.y
+      )
+      this.pendingTrackballRotation = null
+      didChange = true
+    }
+
     if (this.pendingZoom) {
       if (this.camera instanceof PerspectiveCamera) {
         // move camera towards or away from the target
@@ -934,6 +947,36 @@ export class CameraControls {
     this.camera.position.copy(this.target).add(offset)
 
     // Look at the target
+    this.camera.updateMatrixWorld()
+  }
+
+  rotateCameraTrackball = (deltaX: number, deltaY: number) => {
+    const radianX = MathUtils.degToRad(deltaX * this.rotationSpeed)
+    const radianY = MathUtils.degToRad(deltaY * this.rotationSpeed)
+    const offset = new Vector3().subVectors(this.camera.position, this.target)
+
+    if (offset.lengthSq() === 0) {
+      return
+    }
+
+    const cameraUp = this.camera.up.clone().normalize()
+    const cameraDirection = offset.clone().normalize()
+    const cameraRight = new Vector3()
+      .crossVectors(cameraUp, cameraDirection)
+      .normalize()
+
+    if (cameraRight.lengthSq() === 0) {
+      return
+    }
+
+    offset.applyAxisAngle(cameraUp, -radianX)
+    offset.applyAxisAngle(cameraRight, -radianY)
+    this.camera.up.applyAxisAngle(cameraRight, -radianY)
+    this.camera.up.applyAxisAngle(cameraUp, -radianX)
+    this.camera.up.normalize()
+
+    this.camera.position.copy(this.target).add(offset)
+    this.camera.lookAt(this.target)
     this.camera.updateMatrixWorld()
   }
 

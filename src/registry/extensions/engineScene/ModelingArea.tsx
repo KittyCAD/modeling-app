@@ -4,7 +4,10 @@ import { ConnectionStream } from '@src/components/ConnectionStream'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Gizmo from '@src/components/gizmo/Gizmo'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { DEFAULT_SKETCH_SOLVE_STREAM_DIMMING } from '@src/clientSideScene/ClientSideSceneComp'
+import {
+  ClientSideScene,
+  DEFAULT_SKETCH_SOLVE_STREAM_DIMMING,
+} from '@src/clientSideScene/ClientSideSceneComp'
 import { Toolbar } from '@src/Toolbar'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
@@ -92,6 +95,7 @@ function OpenCascadeModelingArea() {
   useSignals()
   const { settings } = useApp()
   const { kclManager } = useSingletons()
+  const settingsValues = settings.useSettings()
   const [diagnostic, setDiagnostic] = useState<string | undefined>()
   const executionCounterRef = useRef(0)
   const code = kclManager.codeSignal.value
@@ -165,6 +169,13 @@ function OpenCascadeModelingArea() {
   return (
     <div className="relative z-0 min-w-64 flex flex-col flex-1 items-center overflow-hidden">
       <Toolbar />
+      <ClientSideScene
+        cameraControls={settingsValues.modeling.mouseControls.current}
+        enableTouchControls={
+          settingsValues.modeling.enableTouchControls.current
+        }
+        sharedRendererMode="open_cascade"
+      />
       <OpenCascadeThreeScene diagnostic={diagnostic} />
       <ModelingGizmo />
     </div>
