@@ -4,6 +4,8 @@ import type {
   OutputFormat3d,
   UnitLength,
 } from '@kittycad/lib'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Program } from '@rust/kcl-lib/bindings/Program'
 
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
@@ -102,6 +104,7 @@ import {
 import { capitaliseFC } from '@src/lib/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -177,6 +180,35 @@ const hasEngineConnection = (
     engineCommandManager.connection?.connected ||
     new Error('No engine connection to send command')
   )
+}
+
+async function previewAstFromModifyAstResult(
+  context: {
+    argumentsToSubmit: Record<string, unknown>
+    wasmInstancePromise: Promise<ModuleType>
+  },
+  modelingActor:
+    | { getSnapshot: () => { context: ModelingMachineContext } }
+    | undefined,
+  build: (props: {
+    args: Record<string, unknown>
+    kclManager: ModelingMachineContext['kclManager']
+    wasmInstance: ModuleType
+  }) => Error | { modifiedAst: Node<Program> }
+): Promise<Node<Program> | undefined> {
+  if (!modelingActor) {
+    return undefined
+  }
+  const { kclManager } = modelingActor.getSnapshot().context
+  const result = build({
+    args: context.argumentsToSubmit,
+    kclManager,
+    wasmInstance: await context.wasmInstancePromise,
+  })
+  if (err(result) || !result || typeof result !== 'object') {
+    return undefined
+  }
+  return 'modifiedAst' in result ? result.modifiedAst : undefined
 }
 
 export type ModelingCommandSchema = {
@@ -808,6 +840,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
+    previewAst: (context, modelingActor) =>
+      previewAstFromModifyAstResult(
+        context,
+        modelingActor,
+        ({ args, kclManager, wasmInstance }) =>
+          addExtrude({
+            ...(args as ModelingCommandSchema['Extrude']),
+            ast: kclManager.ast,
+            artifactGraph: kclManager.artifactGraph,
+            wasmInstance,
+          })
+      ),
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -919,6 +963,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
+    previewAst: (context, modelingActor) =>
+      previewAstFromModifyAstResult(
+        context,
+        modelingActor,
+        ({ args, kclManager, wasmInstance }) =>
+          addSweep({
+            ...(args as ModelingCommandSchema['Sweep']),
+            ast: kclManager.ast,
+            artifactGraph: kclManager.artifactGraph,
+            wasmInstance,
+          })
+      ),
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -993,6 +1049,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
+    previewAst: (context, modelingActor) =>
+      previewAstFromModifyAstResult(
+        context,
+        modelingActor,
+        ({ args, kclManager, wasmInstance }) =>
+          addLoft({
+            ...(args as ModelingCommandSchema['Loft']),
+            ast: kclManager.ast,
+            artifactGraph: kclManager.artifactGraph,
+            wasmInstance,
+          })
+      ),
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -1059,6 +1127,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
+    previewAst: (context, modelingActor) =>
+      previewAstFromModifyAstResult(
+        context,
+        modelingActor,
+        ({ args, kclManager, wasmInstance }) =>
+          addRevolve({
+            ...(args as ModelingCommandSchema['Revolve']),
+            ast: kclManager.ast,
+            artifactGraph: kclManager.artifactGraph,
+            wasmInstance,
+          })
+      ),
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -1354,6 +1434,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
+    previewAst: (context, modelingActor) =>
+      previewAstFromModifyAstResult(
+        context,
+        modelingActor,
+        ({ args, kclManager, wasmInstance }) =>
+          addSubtract({
+            ...(args as ModelingCommandSchema['Boolean Subtract']),
+            ast: kclManager.ast,
+            artifactGraph: kclManager.artifactGraph,
+            wasmInstance,
+          })
+      ),
     args: {
       solids: {
         ...objectsTypesAndFilters,
@@ -1399,6 +1491,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
+    previewAst: (context, modelingActor) =>
+      previewAstFromModifyAstResult(
+        context,
+        modelingActor,
+        ({ args, kclManager, wasmInstance }) =>
+          addUnion({
+            ...(args as ModelingCommandSchema['Boolean Union']),
+            ast: kclManager.ast,
+            artifactGraph: kclManager.artifactGraph,
+            wasmInstance,
+          })
+      ),
     args: {
       solids: {
         ...objectsTypesAndFilters,
@@ -1437,6 +1541,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
+    previewAst: (context, modelingActor) =>
+      previewAstFromModifyAstResult(
+        context,
+        modelingActor,
+        ({ args, kclManager, wasmInstance }) =>
+          addIntersect({
+            ...(args as ModelingCommandSchema['Boolean Intersect']),
+            ast: kclManager.ast,
+            artifactGraph: kclManager.artifactGraph,
+            wasmInstance,
+          })
+      ),
     args: {
       solids: {
         ...objectsTypesAndFilters,
@@ -1476,6 +1592,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
+    previewAst: (context, modelingActor) =>
+      previewAstFromModifyAstResult(
+        context,
+        modelingActor,
+        ({ args, kclManager, wasmInstance }) =>
+          addSplit({
+            ...(args as ModelingCommandSchema['Boolean Split']),
+            ast: kclManager.ast,
+            artifactGraph: kclManager.artifactGraph,
+            wasmInstance,
+          })
+      ),
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -1533,6 +1661,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
+    previewAst: (context, modelingActor) =>
+      previewAstFromModifyAstResult(
+        context,
+        modelingActor,
+        ({ args, kclManager, wasmInstance }) =>
+          addOffsetPlane({
+            ...(args as ModelingCommandSchema['Offset plane']),
+            ast: kclManager.ast,
+            artifactGraph: kclManager.artifactGraph,
+            variables: kclManager.variables,
+            wasmInstance,
+          })
+      ),
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -1918,6 +2059,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
+    previewAst: (context, modelingActor) =>
+      previewAstFromModifyAstResult(
+        context,
+        modelingActor,
+        ({ args, kclManager, wasmInstance }) =>
+          addFillet({
+            ...(args as ModelingCommandSchema['Fillet']),
+            ast: kclManager.ast,
+            artifactGraph: kclManager.artifactGraph,
+            wasmInstance,
+          })
+      ),
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -1974,6 +2127,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
+    previewAst: (context, modelingActor) =>
+      previewAstFromModifyAstResult(
+        context,
+        modelingActor,
+        ({ args, kclManager, wasmInstance }) =>
+          addChamfer({
+            ...(args as ModelingCommandSchema['Chamfer']),
+            ast: kclManager.ast,
+            artifactGraph: kclManager.artifactGraph,
+            wasmInstance,
+          })
+      ),
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -2184,6 +2349,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
+    previewAst: (context, modelingActor) =>
+      previewAstFromModifyAstResult(
+        context,
+        modelingActor,
+        ({ args, kclManager, wasmInstance }) =>
+          addTranslate({
+            ...(args as ModelingCommandSchema['Translate']),
+            ast: kclManager.ast,
+            artifactGraph: kclManager.artifactGraph,
+            wasmInstance,
+          })
+      ),
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -2243,6 +2420,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
+    previewAst: (context, modelingActor) =>
+      previewAstFromModifyAstResult(
+        context,
+        modelingActor,
+        ({ args, kclManager, wasmInstance }) =>
+          addRotate({
+            ...(args as ModelingCommandSchema['Rotate']),
+            ast: kclManager.ast,
+            artifactGraph: kclManager.artifactGraph,
+            wasmInstance,
+          })
+      ),
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -2302,6 +2491,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
+    previewAst: (context, modelingActor) =>
+      previewAstFromModifyAstResult(
+        context,
+        modelingActor,
+        ({ args, kclManager, wasmInstance }) =>
+          addScale({
+            ...(args as ModelingCommandSchema['Scale']),
+            ast: kclManager.ast,
+            artifactGraph: kclManager.artifactGraph,
+            wasmInstance,
+          })
+      ),
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -2433,6 +2634,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
+    previewAst: (context, modelingActor) =>
+      previewAstFromModifyAstResult(
+        context,
+        modelingActor,
+        ({ args, kclManager, wasmInstance }) =>
+          addPatternCircular3D({
+            ...(args as ModelingCommandSchema['Pattern Circular 3D']),
+            ast: kclManager.ast,
+            artifactGraph: kclManager.artifactGraph,
+            wasmInstance,
+          })
+      ),
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -2506,6 +2719,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
+    previewAst: (context, modelingActor) =>
+      previewAstFromModifyAstResult(
+        context,
+        modelingActor,
+        ({ args, kclManager, wasmInstance }) =>
+          addPatternLinear3D({
+            ...(args as ModelingCommandSchema['Pattern Linear 3D']),
+            ast: kclManager.ast,
+            artifactGraph: kclManager.artifactGraph,
+            wasmInstance,
+          })
+      ),
     args: {
       nodeToEdit: {
         ...nodeToEditProps,

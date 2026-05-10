@@ -167,6 +167,40 @@ export default class RustContext {
     }
   }
 
+  async executePreview(
+    node: Node<Program>,
+    settings: DeepPartial<Configuration>,
+    path?: string
+  ): Promise<ExecState> {
+    return this.executePreviewWithEngineManager(
+      node,
+      settings,
+      this.engineCommandManager,
+      path
+    )
+  }
+
+  async executePreviewWithEngineManager(
+    node: Node<Program>,
+    settings: DeepPartial<Configuration>,
+    engineCommandManager: unknown,
+    path?: string
+  ): Promise<ExecState> {
+    const instance = await this.wasmInstancePromise
+    const context = new instance.Context(engineCommandManager, projectFsManager)
+
+    try {
+      const result: SceneGraphDelta = await context.execute(
+        JSON.stringify(node),
+        path,
+        JSON.stringify(settings)
+      )
+      return execStateFromRust(result.exec_outcome)
+    } catch (e: any) {
+      return Promise.reject(errFromErrWithOutputs(e))
+    }
+  }
+
   /** Execute a program with in mock mode. */
   async executeMock(
     node: Node<Program>,

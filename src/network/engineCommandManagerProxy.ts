@@ -1,8 +1,14 @@
 import type { WebSocketResponse } from '@kittycad/lib'
+import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Program } from '@rust/kcl-lib/bindings/Program'
 import { decode as msgpackDecode } from '@msgpack/msgpack'
+import { signal } from '@preact/signals-core'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
+import type RustContext from '@src/lib/rustContext'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
+import type { DeepPartial } from '@src/lib/types'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import { ConnectionManager } from '@src/network/connectionManager'
@@ -18,6 +24,17 @@ type StartArgs = Parameters<ConnectionManager['start']>[0]
 
 export class EngineCommandManagerProxy extends ConnectionManager {
   readonly openCascadeCommandManager = new OpenCascadeCommandManager()
+  readonly latestOpenCascadePreviewVersion = signal(0)
+  readonly latestOpenCascadePreviewStatus = signal<
+    'idle' | 'running' | 'ready' | 'error'
+  >('idle')
+  private openCascadePreviewCommandManager = new OpenCascadeCommandManager({
+    registerLatest: false,
+  })
+  private openCascadePreviewRoutingManager:
+    | OpenCascadeCommandManager
+    | undefined
+  private openCascadePreviewRequestId = 0
 
   get currentEngine() {
     return this.settings.engine
@@ -81,6 +98,7 @@ export class EngineCommandManagerProxy extends ConnectionManager {
 
     this.responseMap = {}
     await this.openCascadeCommandManager.startNewSession()
+    this.clearOpenCascadePreview()
   }
 
   async recordRollbackMarker(sourceRange: string) {
@@ -154,15 +172,16 @@ export class EngineCommandManagerProxy extends ConnectionManager {
     }
 
     try {
-      const encoded =
-        await this.openCascadeCommandManager.sendModelingCommandFromWasm(
-          (command as { cmd_id?: string; batch_id?: string }).cmd_id ||
-            (command as { batch_id?: string }).batch_id ||
-            uuidv4(),
-          JSON.stringify(defaultSourceRange()),
-          JSON.stringify(command),
-          '{}'
-        )
+      const manager =
+        this.openCascadePreviewRoutingManager || this.openCascadeCommandManager
+      const encoded = await manager.sendModelingCommandFromWasm(
+        (command as { cmd_id?: string; batch_id?: string }).cmd_id ||
+          (command as { batch_id?: string }).batch_id ||
+          uuidv4(),
+        JSON.stringify(defaultSourceRange()),
+        JSON.stringify(command),
+        '{}'
+      )
       return msgpackDecode(encoded) as WebSocketResponse
     } catch (error) {
       console.warn(error)
@@ -189,7 +208,9 @@ export class EngineCommandManagerProxy extends ConnectionManager {
       return new Error(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
     }
 
-    this.openCascadeCommandManager
+    const manager =
+      this.openCascadePreviewRoutingManager || this.openCascadeCommandManager
+    manager
       .sendModelingCommandFromWasm(id, rangeStr, commandStr, idToRangeStr)
       .catch(reportRejection)
   }
@@ -213,7 +234,9 @@ export class EngineCommandManagerProxy extends ConnectionManager {
       return Promise.reject(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
     }
 
-    return this.openCascadeCommandManager.sendModelingCommandFromWasm(
+    const manager =
+      this.openCascadePreviewRoutingManager || this.openCascadeCommandManager
+    return manager.sendModelingCommandFromWasm(
       id,
       rangeStr,
       commandStr,
@@ -260,6 +283,117 @@ export class EngineCommandManagerProxy extends ConnectionManager {
 
   async exportVisibleOpenCascadeGlbBytes() {
     return this.openCascadeCommandManager.exportVisibleGlbBytes()
+  }
+
+  async runOpenCascadePreviewAst(
+    ast: Node<Program>,
+    rustContext: RustContext,
+    settings: DeepPartial<Configuration>,
+    path?: string
+  ) {
+    if (!this.isOpenCascade) {
+      return
+    }
+
+    const requestId = ++this.openCascadePreviewRequestId
+    const previewManager = new OpenCascadeCommandManager({
+      registerLatest: false,
+    })
+    const previewEngineManager =
+      this.createOpenCascadePreviewEngineManager(previewManager)
+    this.openCascadePreviewRoutingManager = previewManager
+    this.latestOpenCascadePreviewStatus.value = 'running'
+    try {
+      await rustContext.executePreviewWithEngineManager(
+        ast,
+        settings,
+        previewEngineManager,
+        path
+      )
+      if (requestId !== this.openCascadePreviewRequestId) {
+        return
+      }
+      this.openCascadePreviewCommandManager = previewManager
+      this.latestOpenCascadePreviewStatus.value = 'ready'
+      this.latestOpenCascadePreviewVersion.value += 1
+    } catch (error) {
+      if (requestId === this.openCascadePreviewRequestId) {
+        this.latestOpenCascadePreviewStatus.value = 'error'
+      }
+      throw error
+    } finally {
+      if (this.openCascadePreviewRoutingManager === previewManager) {
+        this.openCascadePreviewRoutingManager = undefined
+      }
+    }
+  }
+
+  clearOpenCascadePreview() {
+    this.openCascadePreviewRequestId += 1
+    this.openCascadePreviewRoutingManager = undefined
+    this.openCascadePreviewCommandManager = new OpenCascadeCommandManager({
+      registerLatest: false,
+    })
+    this.latestOpenCascadePreviewStatus.value = 'idle'
+    this.latestOpenCascadePreviewVersion.value += 1
+  }
+
+  async exportVisibleOpenCascadePreviewGlbBytes() {
+    return this.openCascadePreviewCommandManager.exportVisibleGlbBytes()
+  }
+
+  private createOpenCascadePreviewEngineManager(
+    manager: OpenCascadeCommandManager
+  ) {
+    return {
+      currentEngine: 'open_cascade',
+      isOpenCascade: true,
+      openCascadeCommandManager: manager,
+      started: true,
+      fireModelingCommandFromWasm: (
+        id: string,
+        rangeStr: string,
+        commandStr: string,
+        idToRangeStr: string
+      ) =>
+        manager.fireModelingCommandFromWasm(
+          id,
+          rangeStr,
+          commandStr,
+          idToRangeStr
+        ),
+      sendModelingCommandFromWasm: (
+        id: string,
+        rangeStr: string,
+        commandStr: string,
+        idToRangeStr: string
+      ) =>
+        manager.sendModelingCommandFromWasm(
+          id,
+          rangeStr,
+          commandStr,
+          idToRangeStr
+        ),
+      sendSceneCommand: async (command: EngineCommand) => {
+        if (
+          command.type !== 'modeling_cmd_req' &&
+          command.type !== 'modeling_cmd_batch_req'
+        ) {
+          return null
+        }
+
+        const encoded = await manager.sendModelingCommandFromWasm(
+          (command as { cmd_id?: string; batch_id?: string }).cmd_id ||
+            (command as { batch_id?: string }).batch_id ||
+            uuidv4(),
+          JSON.stringify(defaultSourceRange()),
+          JSON.stringify(command),
+          '{}'
+        )
+        return msgpackDecode(encoded) as WebSocketResponse
+      },
+      waitForAllModelingCommands: () => Promise.resolve([]),
+    }
   }
 
   async exportLatestOpenCascadeProfileGlbBytes() {

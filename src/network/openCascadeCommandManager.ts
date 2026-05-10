@@ -413,8 +413,10 @@ export class OpenCascadeCommandManager {
   private activeRollbackNodeId: string | undefined
   private activeRollbackSourceRange: SourceRange | undefined
 
-  constructor() {
-    latestOpenCascadeCommandManager = this
+  constructor(options: { registerLatest?: boolean } = {}) {
+    if (options.registerLatest !== false) {
+      latestOpenCascadeCommandManager = this
+    }
   }
 
   static latestInstance(): OpenCascadeCommandManager | undefined {

@@ -96,6 +96,7 @@ import {
 } from './openCascadeAreaSelect'
 
 const OPEN_CASCADE_SOLID_ROOT = 'OPEN_CASCADE_SOLID_ROOT'
+const OPEN_CASCADE_PREVIEW_ROOT = 'OPEN_CASCADE_PREVIEW_ROOT'
 const OPEN_CASCADE_PROFILE_ROOT = 'OPEN_CASCADE_PROFILE_ROOT'
 const OPEN_CASCADE_LIGHT_ROOT = 'OPEN_CASCADE_LIGHT_ROOT'
 const OPEN_CASCADE_PICK_ROOT = 'OPEN_CASCADE_PICK_ROOT'
@@ -237,6 +238,8 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
   const latestPlaneVersion = openCascadeManager.latestPlaneVersion.value
   const latestVisibilityVersion =
     openCascadeManager.latestVisibilityVersion.value
+  const latestPreviewVersion =
+    engineCommandManager.latestOpenCascadePreviewVersion.value
   const activeSelectionFilter = openCascadeManager.latestSelectionFilter.value
   const objectSelectionOnly =
     activeSelectionFilter.includes('object') &&
@@ -277,6 +280,8 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     const scene = sceneInfra.scene
     const solidRoot = new Group()
     solidRoot.name = OPEN_CASCADE_SOLID_ROOT
+    const previewRoot = new Group()
+    previewRoot.name = OPEN_CASCADE_PREVIEW_ROOT
     const profileRoot = new Group()
     profileRoot.name = OPEN_CASCADE_PROFILE_ROOT
     const pickRoot = new Group()
@@ -300,6 +305,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
 
     scene.add(
       solidRoot,
+      previewRoot,
       profileRoot,
       pickRoot,
       regionPickRoot,
@@ -324,6 +330,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
 
     return () => {
       disposeOpenCascadeModelRoot(solidRoot)
+      disposeOpenCascadeModelRoot(previewRoot)
       disposeOpenCascadeModelRoot(profileRoot)
       disposeOpenCascadeModelRoot(pickRoot)
       disposeOpenCascadeModelRoot(regionPickRoot)
@@ -335,6 +342,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       disposeOpenCascadeModelRoot(offsetPlaneRoot)
       scene.remove(
         solidRoot,
+        previewRoot,
         profileRoot,
         pickRoot,
         regionPickRoot,
@@ -713,6 +721,66 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     kclManager.sceneInfra,
     latestShapeVersion,
   ])
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: latestPreviewVersion is a signal value that intentionally reloads preview GLB content.
+  useEffect(() => {
+    let cancelled = false
+    let objectUrls: string[] = []
+
+    async function loadLatestPreview() {
+      const sceneInfra = kclManager.sceneInfra
+      const previewRoot = sceneInfra.scene.getObjectByName(
+        OPEN_CASCADE_PREVIEW_ROOT
+      )
+      if (!(previewRoot instanceof Group)) {
+        return
+      }
+
+      const visibleSolids =
+        await engineCommandManager.exportVisibleOpenCascadePreviewGlbBytes()
+      if (cancelled) {
+        return
+      }
+
+      disposeOpenCascadeModelRoot(previewRoot)
+      if (visibleSolids.length === 0) {
+        sceneInfra.renderFrame()
+        return
+      }
+
+      const loader = new GLTFLoader()
+      const loadedSolids = await Promise.all(
+        visibleSolids.map(async (solid) => {
+          const objectUrl = URL.createObjectURL(
+            new Blob([solid.bytes as BlobPart], { type: 'model/gltf-binary' })
+          )
+          objectUrls.push(objectUrl)
+          const gltf = await loader.loadAsync(objectUrl)
+          return gltf.scene
+        })
+      )
+      if (cancelled) {
+        return
+      }
+
+      disposeOpenCascadeModelRoot(previewRoot)
+      for (const scene of loadedSolids) {
+        scene.name = `${OPEN_CASCADE_PREVIEW_ROOT}:body`
+        styleLoadedOpenCascadePreviewMeshes(scene, sceneStyleRef.current)
+        previewRoot.add(scene)
+      }
+      sceneInfra.renderFrame()
+    }
+
+    loadLatestPreview().catch((error) => console.warn(error))
+
+    return () => {
+      cancelled = true
+      for (const objectUrl of objectUrls) {
+        URL.revokeObjectURL(objectUrl)
+      }
+    }
+  }, [engineCommandManager, kclManager.sceneInfra, latestPreviewVersion])
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: latestTopologyVersion is a signal value that intentionally rebuilds pick buffers.
   useEffect(() => {
@@ -3577,6 +3645,41 @@ function styleLoadedOpenCascadeMeshes(
     edgeLines.userData.openCascadeEdgeLines = true
     edgeLines.visible = !isProfile && highlightEdges
     object.add(edgeLines)
+  })
+}
+
+function styleLoadedOpenCascadePreviewMeshes(
+  root: Object3D,
+  style: OpenCascadeSceneStyle
+) {
+  const previewColor = new Color(style.surfaceColor)
+  previewColor.lerp(new Color(style.edgeColor), 0.18)
+  previewColor.offsetHSL(0, 0.08, 0.16)
+
+  root.userData.openCascadePreview = true
+  root.traverse((object) => {
+    object.userData.openCascadePreview = true
+    object.renderOrder = 90
+
+    if (!(object instanceof Mesh)) {
+      return
+    }
+
+    object.raycast = () => {}
+    object.castShadow = false
+    object.receiveShadow = false
+    disposeMaterial(object.material)
+    object.material = new MeshStandardMaterial({
+      color: previewColor,
+      roughness: 0.62,
+      metalness: 0,
+      transparent: true,
+      opacity: 0.5,
+      depthWrite: false,
+      polygonOffset: true,
+      polygonOffsetFactor: OPEN_CASCADE_HIGHLIGHT_POLYGON_OFFSET,
+      polygonOffsetUnits: OPEN_CASCADE_HIGHLIGHT_POLYGON_OFFSET,
+    })
   })
 }
 

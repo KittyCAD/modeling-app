@@ -14,6 +14,9 @@ import toast from 'react-hot-toast'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 import type { ActorRefFrom } from 'xstate'
 import { reportRejection } from '@src/lib/trap'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+
+let openCascadePreviewTimer: ReturnType<typeof setTimeout> | undefined
 
 export type CommandBarActorType = ActorRefFrom<typeof commandBarMachine>
 
@@ -219,6 +222,12 @@ export const commandBarMachine = setup({
     }),
     'Cleanup rollback edit session': ({ context }) => {
       context.kclManager?.endOpenCascadeRollbackEdit().catch(reportRejection)
+    },
+    'Schedule OpenCascade preview': ({ context }) => {
+      scheduleOpenCascadeCommandPreview(context)
+    },
+    'Clear OpenCascade preview': ({ context }) => {
+      clearOpenCascadeCommandPreview(context)
     },
     'Set current argument to first non-skippable': assign({
       currentArgument: ({ context, event }) => {
@@ -713,6 +722,7 @@ export const commandBarMachine = setup({
         'Deselect command': {
           target: 'Selecting command',
           actions: [
+            'Clear OpenCascade preview',
             'Cleanup rollback edit session',
             assign({
               selectedCommand: (_c, _e) => undefined,
@@ -723,11 +733,15 @@ export const commandBarMachine = setup({
     },
 
     Review: {
-      entry: ['Clear current argument'],
+      entry: ['Clear current argument', 'Schedule OpenCascade preview'],
       on: {
         'Submit command': {
           target: 'Closed',
-          actions: ['Execute command', 'Clear selected command'],
+          actions: [
+            'Clear OpenCascade preview',
+            'Execute command',
+            'Clear selected command',
+          ],
         },
 
         'Add argument': {
@@ -737,7 +751,7 @@ export const commandBarMachine = setup({
 
         'Remove argument': {
           target: 'Review',
-          actions: ['Remove argument'],
+          actions: ['Remove argument', 'Schedule OpenCascade preview'],
         },
 
         'Edit argument': {
@@ -760,7 +774,11 @@ export const commandBarMachine = setup({
           },
           {
             target: 'Closed',
-            actions: ['Execute command', 'Clear selected command'],
+            actions: [
+              'Clear OpenCascade preview',
+              'Execute command',
+              'Clear selected command',
+            ],
           },
         ],
         onError: [
@@ -775,13 +793,21 @@ export const commandBarMachine = setup({
   on: {
     Close: {
       target: '.Closed',
-      actions: ['Cleanup rollback edit session', 'Clear selected command'],
+      actions: [
+        'Clear OpenCascade preview',
+        'Cleanup rollback edit session',
+        'Clear selected command',
+      ],
     },
 
     Clear: {
       target: '#Command Bar',
       reenter: false,
-      actions: ['Cleanup rollback edit session', 'Clear argument data'],
+      actions: [
+        'Clear OpenCascade preview',
+        'Cleanup rollback edit session',
+        'Clear argument data',
+      ],
     },
 
     'Find and select command': {
@@ -820,4 +846,63 @@ function sortCommands(a: Command, b: Command) {
   if (b.groupId === 'settings' && !(a.groupId === 'settings')) return -1
   if (a.groupId === 'settings' && !(b.groupId === 'settings')) return 1
   return a.name.localeCompare(b.name)
+}
+
+function scheduleOpenCascadeCommandPreview(context: CommandBarContext) {
+  clearTimeout(openCascadePreviewTimer)
+  openCascadePreviewTimer = undefined
+
+  const selectedCommand = context.selectedCommand
+  const modelingContext = selectedCommand?.machineActor?.getSnapshot().context
+  const engineCommandManager = modelingContext?.engineCommandManager
+  const rustContext = modelingContext?.rustContext
+  const kclManager = modelingContext?.kclManager || context.kclManager
+  if (
+    !selectedCommand?.previewAst ||
+    !engineCommandManager ||
+    !rustContext ||
+    !kclManager ||
+    !('isOpenCascade' in engineCommandManager) ||
+    !engineCommandManager.isOpenCascade ||
+    kclManager.isExecuting
+  ) {
+    return
+  }
+
+  openCascadePreviewTimer = setTimeout(() => {
+    selectedCommand
+      .previewAst?.(context, selectedCommand.machineActor)
+      .then((previewAst) => {
+        if (!previewAst || previewAst instanceof Error) {
+          return
+        }
+        return engineCommandManager.runOpenCascadePreviewAst(
+          previewAst,
+          rustContext,
+          jsAppSettings(rustContext.settingsActor),
+          kclManager.path
+        )
+      })
+      .catch((error) => {
+        if (error instanceof Error) {
+          console.debug('OpenCascade preview failed', error.message)
+          return
+        }
+        console.debug('OpenCascade preview failed', error)
+      })
+  }, 250)
+}
+
+function clearOpenCascadeCommandPreview(context: CommandBarContext) {
+  clearTimeout(openCascadePreviewTimer)
+  openCascadePreviewTimer = undefined
+  const engineCommandManager =
+    context.selectedCommand?.machineActor?.getSnapshot().context
+      ?.engineCommandManager
+  if (
+    engineCommandManager &&
+    'clearOpenCascadePreview' in engineCommandManager
+  ) {
+    engineCommandManager.clearOpenCascadePreview()
+  }
 }

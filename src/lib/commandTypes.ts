@@ -9,6 +9,7 @@ import type {
 } from 'xstate'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Program } from '@rust/kcl-lib/bindings/Program'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import type { Artifact } from '@src/lang/std/artifactGraph'
@@ -97,6 +98,10 @@ export type Command<
     context: CommandBarContext,
     machineActor?: ActorRefFrom<T>
   ) => Promise<undefined | Error>
+  previewAst?: (
+    context: CommandBarContext,
+    machineActor?: ActorRefFrom<T>
+  ) => Promise<Node<Program> | Error | undefined>
   machineActor?: Actor<T>
   onSubmit: (data?: CommandSchema, wasmInstance?: ModuleType) => unknown
   onCancel?: () => void
