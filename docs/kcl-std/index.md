@@ -28,6 +28,7 @@ layout: manual
   * [`reduce`](/docs/kcl-std/functions/std-array-reduce)
   * [`slice`](/docs/kcl-std/functions/std-array-slice)
 * [**std::gdt**](/docs/kcl-std/modules/std-gdt)
+  * [`gdt::annotation`](/docs/kcl-std/functions/std-gdt-annotation)
   * [`gdt::datum`](/docs/kcl-std/functions/std-gdt-datum)
   * [`gdt::flatness`](/docs/kcl-std/functions/std-gdt-flatness)
   * [`gdt::parallelism`](/docs/kcl-std/functions/std-gdt-parallelism)

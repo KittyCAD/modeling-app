@@ -95,6 +95,7 @@ import {
   addFlatnessGdt,
   addDatumGdt,
   addPositionGdt,
+  addAnnotationGdt,
   addParallelismGdt,
   addPerpendicularityGdt,
   addProfileGdt,
@@ -251,14 +252,14 @@ export type ModelingCommandSchema = {
   Shell: {
     // Enables editing workflow
     nodeToEdit?: PathToNode
-    // KCL stdlib arguments, note that we'll be inferring solids from faces here
+    // KCL stdlib arguments, with solids inferred from faces here
     faces: Selections
     thickness: KclCommandValue
   }
   Hole: {
     // Enables editing workflow
     nodeToEdit?: PathToNode
-    // KCL stdlib arguments, note that we'll be inferring solids from faces here
+    // KCL stdlib arguments, with solids inferred from faces here
     face: Selections
     cutAt: KclCommandValue
     holeBody: HoleBody
@@ -483,6 +484,16 @@ export type ModelingCommandSchema = {
     datums?: string
     tolerance: KclCommandValue
     precision?: KclCommandValue
+    framePosition?: KclCommandValue
+    framePlane?: string
+    leaderScale?: KclCommandValue
+    fontPointSize?: KclCommandValue
+    fontScale?: KclCommandValue
+  }
+  'GDT Annotation': {
+    nodeToEdit?: PathToNode
+    objects: Selections
+    annotation: string
     framePosition?: KclCommandValue
     framePlane?: string
     leaderScale?: KclCommandValue
@@ -883,7 +894,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         clearSelectionFirst: true,
         required: false,
         multiple: false,
-        description: 'Note: Only parallel faces are supported for now.',
+        description: 'Only parallel faces are supported for now.',
       },
       symmetric: {
         inputType: 'boolean',
@@ -3093,6 +3104,82 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
+  'GDT Annotation': {
+    description: 'Add model-based definition annotation to faces and edges.',
+    icon: 'text',
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addAnnotationGdt({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Annotation']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    status: 'experimental',
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      objects: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+        multiple: true,
+        required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      annotation: {
+        inputType: 'text',
+        defaultValue: 'Break all sharp edges',
+        required: true,
+      },
+      framePosition: {
+        inputType: 'vector2d',
+        defaultValue: KCL_DEFAULT_ORIGIN_2D,
+        required: false,
+      },
+      framePlane: {
+        inputType: 'options',
+        defaultValue: KCL_PLANE_XY,
+        options: [
+          { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
+          { name: 'XZ Plane', value: KCL_PLANE_XZ },
+          { name: 'YZ Plane', value: KCL_PLANE_YZ },
+        ],
+        required: false,
+      },
+      leaderScale: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LEADER_SCALE,
+        required: false,
+      },
+      fontPointSize: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_FONT_POINT_SIZE,
+        required: false,
+      },
+      fontScale: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_FONT_SCALE,
+        required: false,
+      },
+    },
+  },
   'Flip Surface': {
     description:
       'Flips the orientation of a surface, swapping which side is the front and which is the reverse.',
@@ -3242,7 +3329,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
         multiple: true,
         required: true,
-        description: 'Note: Only straight edges are supported now.',
+        description: 'Only straight edges are supported now.',
       },
     },
   },

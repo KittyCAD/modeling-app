@@ -81,6 +81,8 @@ pub const TEST_NAMES: &[&str] = &[
     "std-gdt-flatness-1",
     "std-gdt-flatness-2",
     "std-gdt-flatness-3",
+    "std-gdt-annotation-0",
+    "std-gdt-annotation-1",
     "std-gdt-perpendicularity-0",
     "std-gdt-perpendicularity-1",
     "std-gdt-parallelism-0",
