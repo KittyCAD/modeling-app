@@ -79,6 +79,8 @@ const Toolbar_ = memo(
     const { kclManager } = useSingletons()
     const platform = usePlatform()
     const executionService = app.registry.signal(executingEditorService).value
+    const modelingEngine = app.settings.useSettings().modeling.engine.current
+    const reliesOnZooEngine = modelingEngine !== 'open_cascade'
     const unrenderedExecuteHotkeyLabel = hotkeyDisplay(
       UNRENDERED_EXECUTE_HOTKEY,
       platform
@@ -112,14 +114,15 @@ const Toolbar_ = memo(
     const [showRichContent, setShowRichContent] = useState(false)
 
     const disableAllButtons =
-      (props.overallState !== NetworkHealthState.Ok &&
-        props.overallState !== NetworkHealthState.Weak) ||
       props.isExecuting ||
       props.disableModelingForUnrenderedChanges ||
-      props.immediateState.type !==
-        EngineConnectionStateType.ConnectionEstablished ||
-      !props.isStreamReady ||
-      !props.isStreamAcceptingInput
+      (reliesOnZooEngine &&
+        ((props.overallState !== NetworkHealthState.Ok &&
+          props.overallState !== NetworkHealthState.Weak) ||
+          props.immediateState.type !==
+            EngineConnectionStateType.ConnectionEstablished ||
+          !props.isStreamReady ||
+          !props.isStreamAcceptingInput))
 
     // Load bearing logic for determining the items in the toolbar
     // Based on the state of the modeling machine determine what toolbar should be rendered

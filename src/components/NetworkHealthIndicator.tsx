@@ -3,6 +3,7 @@ import { ActionIcon } from '@src/components/ActionIcon'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import { useApp } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import type { ConnectingTypeGroup } from '@src/network/utils'
@@ -71,8 +72,23 @@ const overallConnectionStateIcon = {
   [NetworkHealthState.Disconnected]: 'networkCrossedOut',
 } as const
 
+const OPEN_CASCADE_NETWORK_TOOLTIP =
+  "The OpenCascade engine doesn't require a network connection 🏖️"
+
 export const useNetworkHealthStatus = (): StatusBarItemType => {
+  const { settings } = useApp()
   const { overallState } = useNetworkContext()
+  const modelingEngine = settings.useSettings().modeling.engine.current
+
+  if (modelingEngine === 'open_cascade') {
+    return {
+      id: 'network-health',
+      'data-testid': 'network-toggle-opencascade',
+      label: '😊',
+      element: 'text',
+      toolTip: { children: OPEN_CASCADE_NETWORK_TOOLTIP },
+    }
+  }
 
   return {
     id: 'network-health',

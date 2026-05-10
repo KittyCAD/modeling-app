@@ -167,6 +167,12 @@ const kclBodyTypeOptions = KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
 const hasEngineConnection = (
   engineCommandManager: ConnectionManager
 ): true | Error => {
+  if ('currentEngine' in engineCommandManager) {
+    if (engineCommandManager.currentEngine === 'open_cascade') {
+      return true
+    }
+  }
+
   return (
     engineCommandManager.connection?.connected ||
     new Error('No engine connection to send command')
