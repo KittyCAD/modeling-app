@@ -867,6 +867,9 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       const previewRoot = sceneInfra.scene.getObjectByName(
         OPEN_CASCADE_PREVIEW_ROOT
       )
+      const previewHandleRoot = sceneInfra.scene.getObjectByName(
+        OPEN_CASCADE_PREVIEW_HANDLE_ROOT
+      )
       if (!(previewRoot instanceof Group)) {
         return
       }
@@ -882,6 +885,9 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       }
 
       disposeOpenCascadeModelRoot(previewRoot)
+      if (previewHandleRoot instanceof Group) {
+        disposeOpenCascadePreviewHandles(previewHandleRoot)
+      }
       if (
         visibleSolids.length === 0 &&
         sketchLines.segments.length === 0 &&
@@ -924,6 +930,18 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         resolvedTheme
       )
       updateOpenCascadeGuideScale(previewRoot, sceneInfra)
+      if (previewHandleRoot instanceof Group) {
+        rebuildOpenCascadePreviewHandleRoot({
+          root: previewHandleRoot,
+          previewRoot,
+          command: commandBarContextRef.current.selectedCommand,
+          context: commandBarContextRef.current,
+          camera: sceneInfra.camControls.camera,
+          resolvedTheme,
+          getClientSceneScaleFactor:
+            sceneInfra.getClientSceneScaleFactor.bind(sceneInfra),
+        })
+      }
       sceneInfra.renderFrame()
     }
 
