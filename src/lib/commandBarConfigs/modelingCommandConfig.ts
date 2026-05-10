@@ -469,7 +469,7 @@ export type ModelingCommandSchema = {
   }
   'GDT Distance': {
     nodeToEdit?: PathToNode
-    edges: Selections
+    objects: Selections
     tolerance: KclCommandValue
     precision?: KclCommandValue
     framePosition?: KclCommandValue
@@ -2945,7 +2945,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   'GDT Distance': {
-    description: 'Add an MBD distance annotation to edge lengths.',
+    description:
+      'Add an MBD distance annotation to an edge length or between two faces or edges.',
     icon: 'dimension',
     needsReview: true,
     reviewValidation: async (context, modelingActor) => {
@@ -2980,9 +2981,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       nodeToEdit: {
         ...nodeToEditProps,
       },
-      edges: {
+      objects: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'sweepEdge'],
+        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),

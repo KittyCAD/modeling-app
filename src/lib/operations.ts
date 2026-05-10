@@ -1,6 +1,10 @@
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
+import type {
+  OpArg,
+  OpKclValue,
+  Operation,
+} from '@rust/kcl-lib/bindings/Operation'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import type { KclManager } from '@src/lang/KclManager'
 import { toUtf16 } from '@src/lang/errors'
@@ -127,9 +131,9 @@ async function extractKclArgument(
  */
 function extractFaceSelections(
   artifactGraph: ArtifactGraph,
-  facesArg: any
+  facesArg: OpArg
 ): Selection[] | { error: string } {
-  const faceValues: any[] =
+  const faceValues: OpKclValue[] =
     facesArg.value.type === 'Array' ? facesArg.value.value : [facesArg.value]
 
   const graphSelections: Selection[] = []
@@ -190,6 +194,42 @@ function extractFaceSelections(
   }
 
   return graphSelections
+}
+
+function extractDistanceTargetSelections(
+  artifactGraph: ArtifactGraph,
+  targetArg: OpArg
+): Selection[] | { error: string } {
+  const value = targetArg.value
+
+  if (value.type === 'Uuid') {
+    return retrieveEdgeSelectionsFromOpArgs(targetArg, artifactGraph)
+      .graphSelections
+  }
+
+  if (value.type === 'Face') {
+    const artifactId = value.artifact_id
+    const artifact = artifactGraph.get(artifactId)
+    const codeRefs = getCodeRefsByArtifactId(artifactId, artifactGraph)
+    if (artifact && codeRefs && codeRefs.length > 0) {
+      return [{ artifact, codeRef: codeRefs[0] }]
+    }
+  }
+
+  const faceSelections = extractFaceSelections(artifactGraph, targetArg)
+  if (!('error' in faceSelections)) {
+    return faceSelections
+  }
+
+  const edgeSelections = retrieveEdgeSelectionsFromOpArgs(
+    targetArg,
+    artifactGraph
+  ).graphSelections
+  if (edgeSelections.length > 0) {
+    return edgeSelections
+  }
+
+  return { error: 'Missing or invalid distance target argument' }
 }
 
 function extractStringArgument(
@@ -2107,12 +2147,42 @@ const prepareToEditGdtDistance: PrepareToEditCallback = async ({
     return { reason: 'Wrong operation type' }
   }
 
-  const edgesArg = operation.labeledArgs?.['edges']
-  if (!edgesArg || !edgesArg.sourceRange) {
-    return { reason: 'Missing or invalid edges argument' }
+  const graphSelections: Selections['graphSelections'] = []
+  const fromArg = operation.labeledArgs?.['from']
+  const toArg = operation.labeledArgs?.['to']
+  if (fromArg?.sourceRange || toArg?.sourceRange) {
+    if (!fromArg?.sourceRange || !toArg?.sourceRange) {
+      return { reason: 'Distance requires both from and to arguments' }
+    }
+
+    const fromSelections = extractDistanceTargetSelections(
+      artifactGraph,
+      fromArg
+    )
+    if ('error' in fromSelections) {
+      return { reason: fromSelections.error }
+    }
+
+    const toSelections = extractDistanceTargetSelections(artifactGraph, toArg)
+    if ('error' in toSelections) {
+      return { reason: toSelections.error }
+    }
+
+    graphSelections.push(...fromSelections, ...toSelections)
   }
 
-  const edges = retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+  const edgesArg = operation.labeledArgs?.['edges']
+  if (edgesArg?.sourceRange) {
+    graphSelections.push(
+      ...retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+        .graphSelections
+    )
+  }
+
+  if (graphSelections.length === 0) {
+    return { reason: 'Missing or invalid distance target argument' }
+  }
+
   const tolerance = await extractKclArgument(
     code,
     operation,
@@ -2137,7 +2207,7 @@ const prepareToEditGdtDistance: PrepareToEditCallback = async ({
   const framePlane = extractStringArgument(code, operation, 'framePlane')
 
   const argDefaultValues: ModelingCommandSchema['GDT Distance'] = {
-    edges,
+    objects: { graphSelections, otherSelections: [] },
     tolerance,
     precision,
     framePosition,

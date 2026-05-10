@@ -550,6 +550,7 @@ export function addProfileGdt({
 export function addDistanceGdt({
   ast,
   artifactGraph,
+  objects,
   edges,
   tolerance,
   wasmInstance,
@@ -563,7 +564,8 @@ export function addDistanceGdt({
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
-  edges: Selections
+  objects?: Selections
+  edges?: Selections
   tolerance: KclCommandValue
   wasmInstance: ModuleType
   precision?: KclCommandValue
@@ -575,45 +577,76 @@ export function addDistanceGdt({
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   let modifiedAst = structuredClone(ast)
+  const selections = objects ?? edges
 
-  const edgeSelections = edges.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
-  )
-  if (edgeSelections.length === 0) {
+  if (!selections) {
     return new Error(
-      'No valid edge selections found. Please select sketch or sweep edges.'
+      'No selections found. Select one edge for an edge length, or exactly two faces or edges for a distance.'
     )
   }
 
-  const edgeExprs: Expr[] = []
-  for (const edgeSelection of edgeSelections) {
+  const targetSelections = selections.graphSelections.filter(
+    (selection) =>
+      isFaceArtifact(selection.artifact) ||
+      isProfileEdgeArtifact(selection.artifact)
+  )
+  if (targetSelections.length === 0) {
+    return new Error(
+      'No valid selections found. Select one edge, or exactly two faces or edges.'
+    )
+  }
+
+  const targets: Array<{ kind: 'face' | 'edge'; expr: Expr }> = []
+  for (const selection of targetSelections) {
     const tagResult = modifyAstWithTagsForSelection(
       modifiedAst,
-      edgeSelection,
+      selection,
       artifactGraph,
       wasmInstance
     )
     if (err(tagResult)) {
-      console.warn('Failed to add tags for edge selection', tagResult)
+      console.warn('Failed to add tags for distance selection', tagResult)
       continue
     }
 
     modifiedAst = tagResult.modifiedAst
-    if (tagResult.exprs.length < 2) {
-      console.warn('Edge selection did not resolve to enough faces', tagResult)
-      continue
-    }
 
-    edgeExprs.push(
-      createCallExpressionStdLibKw('getCommonEdge', null, [
-        createLabeledArg('faces', createArrayExpression(tagResult.exprs)),
-      ])
+    if (isFaceArtifact(selection.artifact)) {
+      targets.push({ kind: 'face', expr: tagResult.exprs[0] })
+    } else {
+      if (tagResult.exprs.length < 2) {
+        console.warn(
+          'Edge selection did not resolve to enough faces',
+          tagResult
+        )
+        continue
+      }
+
+      targets.push({
+        kind: 'edge',
+        expr: createCallExpressionStdLibKw('getCommonEdge', null, [
+          createLabeledArg('faces', createArrayExpression(tagResult.exprs)),
+        ]),
+      })
+    }
+  }
+
+  if (targets.length === 0) {
+    return new Error('No valid distance targets could be generated')
+  }
+
+  if (targets.length === 1 && targets[0].kind !== 'edge') {
+    return new Error(
+      'A single distance selection must be an edge. Select two faces or edges to measure between entities.'
     )
   }
 
-  const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
-  if (uniqueEdgeExprs.length === 0) {
-    return new Error('No valid edge expressions could be generated')
+  const allTargetsAreEdges = targets.every((target) => target.kind === 'edge')
+
+  if (targets.length > 2 && !allTargetsAreEdges) {
+    return new Error(
+      'Select one or more edges for edge lengths, or exactly two faces or edges for a distance.'
+    )
   }
 
   if ('variableName' in tolerance && tolerance.variableName) {
@@ -637,50 +670,59 @@ export function addDistanceGdt({
     return styleResult
   }
 
-  let lastPathToNode: PathToNode | undefined
-  for (const edgeExpr of uniqueEdgeExprs) {
-    const labeledArgs = [
-      createLabeledArg('edges', createArrayExpression([edgeExpr])),
-      createLabeledArg('tolerance', valueOrVariable(tolerance)),
-    ]
+  const edgeLengthExprs =
+    targets.length === 1 || targets.length > 2
+      ? deduplicateFaceExprs(targets.map((target) => target.expr))
+      : []
 
-    if (precision !== undefined) {
-      labeledArgs.push(
-        createLabeledArg('precision', valueOrVariable(precision))
-      )
-    }
-
-    labeledArgs.push(...styleResult.labeledArgs)
-
-    const call = createCallExpressionStdLibKw(
-      'distance',
-      null,
-      labeledArgs,
-      undefined,
-      [createIdentifier('gdt')]
-    )
-
-    const pathToNode = setCallInAst({
-      ast: modifiedAst,
-      call,
-      pathToEdit: nodeToEdit,
-      pathIfNewPipe: undefined,
-      variableIfNewDecl: undefined,
-      wasmInstance,
-    })
-    if (err(pathToNode)) {
-      return pathToNode
-    }
-    lastPathToNode = pathToNode
+  if (
+    (targets.length === 1 || targets.length > 2) &&
+    edgeLengthExprs.length === 0
+  ) {
+    return new Error('No valid edge expressions could be generated')
   }
 
-  if (!lastPathToNode) {
-    return new Error('Failed to create any gdt::distance calls')
+  const labeledArgs =
+    edgeLengthExprs.length > 0
+      ? [
+          createLabeledArg('edges', createArrayExpression(edgeLengthExprs)),
+          createLabeledArg('tolerance', valueOrVariable(tolerance)),
+        ]
+      : [
+          createLabeledArg('from', targets[0].expr),
+          createLabeledArg('to', targets[1].expr),
+          createLabeledArg('tolerance', valueOrVariable(tolerance)),
+        ]
+
+  if (precision !== undefined) {
+    labeledArgs.push(createLabeledArg('precision', valueOrVariable(precision)))
+  }
+
+  labeledArgs.push(...styleResult.labeledArgs)
+
+  const call = createCallExpressionStdLibKw(
+    'distance',
+    null,
+    labeledArgs,
+    undefined,
+    [createIdentifier('gdt')]
+  )
+
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
+    call,
+    pathToEdit: nodeToEdit,
+    pathIfNewPipe: undefined,
+    variableIfNewDecl: undefined,
+    wasmInstance,
+  })
+  if (err(pathToNode)) {
+    return pathToNode
   }
 
   return {
     modifiedAst,
-    pathToNode: lastPathToNode,
+    pathToNode,
   }
 }
 

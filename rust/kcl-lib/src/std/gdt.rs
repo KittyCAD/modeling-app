@@ -17,6 +17,7 @@ use crate::KclError;
 use crate::errors::KclErrorDetails;
 use crate::exec::KclValue;
 use crate::execution::ControlFlowKind;
+use crate::execution::Face;
 use crate::execution::GdtAnnotation;
 use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
@@ -27,6 +28,7 @@ use crate::execution::types::ArrayLen;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types as ast;
 use crate::std::Args;
+use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
 use crate::std::fillet::EdgeReference;
 use crate::std::sketch::ensure_sketch_plane_in_engine;
@@ -36,6 +38,57 @@ use crate::std::sketch::ensure_sketch_plane_in_engine;
 pub(crate) struct AnnotationStyle {
     pub font_point_size: Option<TyF64>,
     pub font_scale: Option<TyF64>,
+}
+
+#[derive(Debug, Clone)]
+enum DistanceEntity {
+    Face(Box<Face>),
+    TaggedFace(Box<TagIdentifier>),
+    Edge(EdgeReference),
+}
+
+#[derive(Debug, Clone, Copy)]
+struct DistanceEndpoint {
+    entity_id: uuid::Uuid,
+    entity_pos: KPoint2d<f64>,
+}
+
+impl DistanceEntity {
+    async fn to_endpoint(&self, exec_state: &mut ExecState, args: &Args) -> Result<DistanceEndpoint, KclError> {
+        match self {
+            DistanceEntity::Face(face) => Ok(DistanceEndpoint {
+                entity_id: face.id,
+                entity_pos: KPoint2d { x: 0.5, y: 0.5 },
+            }),
+            DistanceEntity::TaggedFace(face) => Ok(DistanceEndpoint {
+                entity_id: args.get_adjacent_face_to_tag(exec_state, face, false).await?,
+                entity_pos: KPoint2d { x: 0.5, y: 0.5 },
+            }),
+            DistanceEntity::Edge(edge) => Ok(DistanceEndpoint {
+                entity_id: edge.get_engine_id(exec_state, args)?,
+                entity_pos: KPoint2d { x: 0.5, y: 0.0 },
+            }),
+        }
+    }
+}
+
+impl<'a> FromKclValue<'a> for DistanceEntity {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Face { value } => Some(Self::Face(value.to_owned())),
+            KclValue::Uuid { value, .. } => Some(Self::Edge(EdgeReference::Uuid(*value))),
+            KclValue::TagIdentifier(value) => Some(Self::TaggedFace(value.to_owned())),
+            _ => None,
+        }
+    }
+}
+
+fn distance_entity_type() -> RuntimeType {
+    RuntimeType::Union(vec![
+        RuntimeType::face(),
+        RuntimeType::tagged_face(),
+        RuntimeType::edge(),
+    ])
 }
 
 pub async fn datum(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -264,7 +317,9 @@ pub async fn position(exec_state: &mut ExecState, args: Args) -> Result<KclValue
 }
 
 pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let edges: Vec<EdgeReference> = args.get_kw_arg(
+    let from: Option<DistanceEntity> = args.get_kw_arg_opt("from", &distance_entity_type(), exec_state)?;
+    let to: Option<DistanceEntity> = args.get_kw_arg_opt("to", &distance_entity_type(), exec_state)?;
+    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
         "edges",
         &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
         exec_state,
@@ -279,7 +334,9 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
 
     let annotations = inner_distance(
-        edges,
+        from,
+        to,
+        edges.unwrap_or_default(),
         tolerance,
         precision,
         frame_position,
@@ -655,6 +712,8 @@ async fn inner_annotation(
 
 #[allow(clippy::too_many_arguments)]
 async fn inner_distance(
+    from: Option<DistanceEntity>,
+    to: Option<DistanceEntity>,
     edges: Vec<EdgeReference>,
     tolerance: TyF64,
     precision: Option<TyF64>,
@@ -680,11 +739,60 @@ async fn inner_distance(
     )
     .await?;
 
+    if from.is_some() || to.is_some() {
+        if !edges.is_empty() {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Distance cannot combine `from`/`to` with `edges`.".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+
+        let (Some(from), Some(to)) = (from, to) else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Distance requires both `from` and `to` when measuring between entities.".to_owned(),
+                vec![args.source_range],
+            )));
+        };
+
+        let from = from.to_endpoint(exec_state, args).await?;
+        let to = to.to_endpoint(exec_state, args).await?;
+        let mut annotations = Vec::with_capacity(1);
+        create_basic_distance_annotation(
+            from,
+            to,
+            &tolerance,
+            precision,
+            frame_position.as_ref(),
+            frame_plane.id,
+            leader_scale.as_ref(),
+            &style,
+            exec_state,
+            args,
+            &mut annotations,
+        )
+        .await?;
+        return Ok(annotations);
+    }
+
+    if edges.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Distance requires either `edges` or both `from` and `to`.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
     let mut annotations = Vec::with_capacity(edges.len());
     for edge in &edges {
         let edge_id = edge.get_engine_id(exec_state, args)?;
         create_basic_distance_annotation(
-            edge_id,
+            DistanceEndpoint {
+                entity_id: edge_id,
+                entity_pos: KPoint2d { x: 0.0, y: 0.0 },
+            },
+            DistanceEndpoint {
+                entity_id: edge_id,
+                entity_pos: KPoint2d { x: 1.0, y: 0.0 },
+            },
             &tolerance,
             precision,
             frame_position.as_ref(),
@@ -923,7 +1031,8 @@ fn resolve_precision(precision: Option<TyF64>, args: &Args) -> Result<u32, KclEr
 
 #[allow(clippy::too_many_arguments)]
 async fn create_basic_distance_annotation(
-    entity_id: uuid::Uuid,
+    from: DistanceEndpoint,
+    to: DistanceEndpoint,
     tolerance: &TyF64,
     precision: u32,
     frame_position: Option<&[TyF64; 2]>,
@@ -937,10 +1046,10 @@ async fn create_basic_distance_annotation(
     let meta = vec![Metadata::from(args.source_range)];
     let annotation_id = exec_state.next_uuid();
     let dimension = AnnotationBasicDimension::builder()
-        .from_entity_id(entity_id)
-        .from_entity_pos(KPoint2d { x: 0.0, y: 0.0 })
-        .to_entity_id(entity_id)
-        .to_entity_pos(KPoint2d { x: 1.0, y: 0.0 })
+        .from_entity_id(from.entity_id)
+        .from_entity_pos(from.entity_pos)
+        .to_entity_id(to.entity_id)
+        .to_entity_pos(to.entity_pos)
         .dimension(
             AnnotationMbdBasicDimension::builder()
                 .tolerance(tolerance.to_mm())

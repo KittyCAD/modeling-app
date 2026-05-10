@@ -1306,7 +1306,7 @@ export function buildToolbarConfig(
               title: 'Distance',
               icon: 'dimension',
               description:
-                'Adds edge distance annotations with manufacturing tolerances.',
+                'Adds distance annotations to edge lengths or between two entities.',
               links: [
                 {
                   label: 'KCL docs',
