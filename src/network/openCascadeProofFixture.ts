@@ -206,6 +206,25 @@ linearPattern = patternLinear3d(patternSource, instances = 3, distance = 4, axis
 circularPattern = patternCircular3d(patternSource, instances = 4, axis = Z, center = [0, 0, 0])
 `
 
+export const OPEN_CASCADE_OFFSET_PLANE_KCL = `sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
+  line2 = line(start = [var 5mm, var 0mm], end = [var 5mm, var 5mm])
+  line3 = line(start = [var 5mm, var 5mm], end = [var 0mm, var 5mm])
+  line4 = line(start = [var 0mm, var 5mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line1)
+  vertical(line2)
+}
+hidden001 = hide(sketch001)
+region001 = region(point = [2.5mm, 2.5mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 5)
+face001 = faceId(extrude001, index = 3)
+plane001 = offsetPlane(planeOf(extrude001, face = face001), offset = 1)
+`
+
 export const OPEN_CASCADE_PROOF_FIXTURES = [
   {
     name: 'openCascadeProofFixture',
@@ -274,5 +293,9 @@ export const OPEN_CASCADE_PROOF_FIXTURES = [
   {
     name: 'openCascadePatternProofFixture',
     code: OPEN_CASCADE_PATTERN_KCL,
+  },
+  {
+    name: 'openCascadeOffsetPlaneProofFixture',
+    code: OPEN_CASCADE_OFFSET_PLANE_KCL,
   },
 ]

@@ -13,6 +13,7 @@ import {
   OPEN_CASCADE_FILLET_KCL,
   OPEN_CASCADE_INTERSECTING_REGION_EXTRUDE_KCL,
   OPEN_CASCADE_LOFT_KCL,
+  OPEN_CASCADE_OFFSET_PLANE_KCL,
   OPEN_CASCADE_PATTERN_KCL,
   OPEN_CASCADE_REVOLVE_KCL,
   OPEN_CASCADE_SKETCH_V2_CIRCLE_KCL,
@@ -390,6 +391,20 @@ part002 = startSketchOn(XY)
     expect(faceUuidResponse.resp.data.modeling_response.data.face_id).toBe(
       topologyFace.topologyId
     )
+
+    const faceIsPlanarResponse = await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000e4',
+      cmd: {
+        type: 'face_is_planar',
+        object_id: topologyFace.topologyId,
+      },
+    })
+    const facePlane = faceIsPlanarResponse.resp.data.modeling_response.data
+    expect(facePlane.origin).toBeTruthy()
+    expect(facePlane.x_axis).toBeTruthy()
+    expect(facePlane.y_axis).toBeTruthy()
+    expect(facePlane.z_axis).toBeTruthy()
 
     const closestEdgeResponse = await send(manager, IDS.request, {
       type: 'modeling_cmd_req',
@@ -867,6 +882,48 @@ part002 = startSketchOn(XY)
       ],
     })
     expect(manager.latestSelectionFilter.value).toEqual(['face', 'edge'])
+  })
+
+  it('returns structured OpenCascade failures for unsupported commands', async () => {
+    const manager = new OpenCascadeCommandManager()
+    const batchResponse = await send(manager, IDS.request, {
+      type: 'modeling_cmd_batch_req',
+      requests: [
+        {
+          cmd_id: '00000000-0000-0000-0000-0000000000c2',
+          cmd: {
+            type: 'open_cascade_missing_command',
+          },
+        },
+      ],
+    })
+
+    const batchFailure =
+      batchResponse.resp.data.responses['00000000-0000-0000-0000-0000000000c2']
+    expect(batchFailure.errors[0]).toMatchObject({
+      error_code: 'internal_api',
+      message:
+        'OpenCascade engine does not support open_cascade_missing_command',
+    })
+
+    const singleResponse = await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000c3',
+      cmd: {
+        type: 'open_cascade_missing_command',
+      },
+    })
+    expect(singleResponse).toMatchObject({
+      success: false,
+      request_id: IDS.request,
+      errors: [
+        {
+          error_code: 'internal_api',
+          message:
+            'OpenCascade engine does not support open_cascade_missing_command',
+        },
+      ],
+    })
   })
 
   it('runs boolean union, subtract, intersect, and split commands', async () => {
@@ -1422,6 +1479,22 @@ part002 = startSketchOn(XY)
     const manager = OpenCascadeCommandManager.latestInstance()
     expect(manager?.getSolidCount()).toBe(6)
     expect(await manager?.exportVisibleGlbBytes()).toHaveLength(6)
+  })
+
+  it('executes offsetPlane from planeOf through WASM and exports the unused plane', async () => {
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(OPEN_CASCADE_OFFSET_PLANE_KCL, instance)
+
+    const execState = await rustContext.execute(ast, {
+      settings: { modeling: { engine: 'open_cascade' } },
+    })
+
+    expect(execState.variables.extrude001?.type).toBe('Solid')
+    expect(execState.variables.plane001?.type).toBe('Plane')
+    const manager = OpenCascadeCommandManager.latestInstance()
+    expect(manager?.getSolidCount()).toBe(1)
+    expect(await manager?.exportVisibleGlbBytes()).toHaveLength(1)
+    expect(manager?.exportLatestPlaneMeshes().planes).toHaveLength(1)
   })
 
   it('executes hidden intersecting region extrude and suppresses passive sketch and region meshes', async () => {

@@ -649,19 +649,25 @@ export class OpenCascadeCommandManager {
       const responses: Record<string, BatchResponse> = {}
       for (const req of request.requests) {
         const commandRange = sourceRangeForCommand(req.cmd_id, range, idToRange)
-        const result = await this.executeModelingCommand(
-          req.cmd_id,
-          req.cmd,
-          commandRange
-        )
-        this.recordCommandIfSceneMutating(req.cmd_id, req.cmd, commandRange)
-        if (result.kind === 'export') {
-          throw new Error(
-            'OpenCascade export cannot be returned inside a batch'
+        try {
+          const result = await this.executeModelingCommand(
+            req.cmd_id,
+            req.cmd,
+            commandRange
           )
-        }
-        responses[req.cmd_id] = {
-          response: result.response,
+          this.recordCommandIfSceneMutating(req.cmd_id, req.cmd, commandRange)
+          if (result.kind === 'export') {
+            throw new Error(
+              'OpenCascade export cannot be returned inside a batch'
+            )
+          }
+          responses[req.cmd_id] = {
+            response: result.response,
+          }
+        } catch (error) {
+          responses[req.cmd_id] = {
+            errors: [apiErrorForOpenCascadeError(error)],
+          } as BatchResponse
         }
       }
       return this.success(id, {
@@ -676,23 +682,27 @@ export class OpenCascadeCommandManager {
         range,
         idToRange
       )
-      const result = await this.executeModelingCommand(
-        request.cmd_id,
-        request.cmd,
-        commandRange
-      )
-      this.recordCommandIfSceneMutating(
-        request.cmd_id,
-        request.cmd,
-        commandRange
-      )
-      if (result.kind === 'export') {
-        return this.success(id, result.response)
+      try {
+        const result = await this.executeModelingCommand(
+          request.cmd_id,
+          request.cmd,
+          commandRange
+        )
+        this.recordCommandIfSceneMutating(
+          request.cmd_id,
+          request.cmd,
+          commandRange
+        )
+        if (result.kind === 'export') {
+          return this.success(id, result.response)
+        }
+        return this.success(id, {
+          type: 'modeling',
+          data: { modeling_response: result.response },
+        })
+      } catch (error) {
+        return this.failure(id, error)
       }
-      return this.success(id, {
-        type: 'modeling',
-        data: { modeling_response: result.response },
-      })
     }
 
     throw new Error(`OpenCascade engine does not support ${request.type}`)
@@ -837,6 +847,8 @@ export class OpenCascadeCommandManager {
         return modeling(this.getEdgeUuid(cmd))
       case 'solid3d_get_face_uuid':
         return modeling(this.getFaceUuid(cmd))
+      case 'face_is_planar':
+        return modeling(this.faceIsPlanar(cmd))
       case 'closest_edge':
         return modeling(this.getClosestEdge(cmd))
       case 'solid3d_fillet_edge':
@@ -1551,6 +1563,25 @@ export class OpenCascadeCommandManager {
     return {
       type: 'solid3d_get_face_uuid',
       data: { face_id: face.topologyId },
+    } as OkModelingCmdResponse
+  }
+
+  private faceIsPlanar(cmd: ModelingCmd): OkModelingCmdResponse {
+    const command = cmd as {
+      type: 'face_is_planar'
+      object_id: string
+    }
+    const facePlane = this.planarFaceForTopologyFace(command.object_id)
+    return {
+      type: 'face_is_planar',
+      data: facePlane
+        ? {
+            origin: facePlane.origin,
+            x_axis: facePlane.x_axis,
+            y_axis: facePlane.y_axis,
+            z_axis: facePlane.z_axis,
+          }
+        : {},
     } as OkModelingCmdResponse
   }
 
@@ -3159,6 +3190,17 @@ export class OpenCascadeCommandManager {
         z_axis: Point3
       }
     | undefined {
+    return this.planarFaceForTopologyFace(topologyId)
+  }
+
+  private planarFaceForTopologyFace(topologyId: string):
+    | {
+        origin: Point3
+        x_axis: Point3
+        y_axis: Point3
+        z_axis: Point3
+      }
+    | undefined {
     for (const solid of this.topologyMeshes.values()) {
       const group = solid.groups.find(
         (group) =>
@@ -3173,6 +3215,9 @@ export class OpenCascadeCommandManager {
       }
       const origin = centroid(points)
       const normal = normalForPoints(points)
+      if (!arePointsCoplanar(points, origin, normal)) {
+        continue
+      }
       const yAxis = stableFaceYAxis(points, normal)
       return {
         origin,
@@ -3318,6 +3363,14 @@ export class OpenCascadeCommandManager {
       request_id: requestId,
       resp,
     }
+  }
+
+  private failure(requestId: string, error: unknown): WebSocketResponse {
+    return {
+      success: false,
+      request_id: requestId,
+      errors: [apiErrorForOpenCascadeError(error)],
+    } as WebSocketResponse
   }
 
   private renderState(): OpenCascadeRenderState | undefined {
@@ -3925,6 +3978,13 @@ function cloneSourceRange(range: SourceRange): SourceRange {
   return [tuple[0] || 0, tuple[1] || 0, tuple[2] || 0] as unknown as SourceRange
 }
 
+function apiErrorForOpenCascadeError(error: unknown) {
+  return {
+    error_code: 'internal_api',
+    message: error instanceof Error ? error.message : String(error),
+  } as const
+}
+
 function entityProvenanceForRange(
   range: SourceRange | undefined
 ): OpenCascadeEntityProvenance | undefined {
@@ -4374,6 +4434,16 @@ function normalForPoints(points: Point3[]): Point3 {
     }
   }
   return { x: 0, y: 0, z: 1 }
+}
+
+function arePointsCoplanar(
+  points: Point3[],
+  origin: Point3,
+  normal: Point3
+): boolean {
+  return points.every(
+    (point) => Math.abs(dot(subtract(point, origin), normal)) < 1e-5
+  )
 }
 
 function stableFaceYAxis(points: Point3[], normal: Point3): Point3 {
