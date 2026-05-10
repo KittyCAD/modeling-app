@@ -489,7 +489,6 @@ export class OpenCascadeCommandManager {
       case 'object_visible':
       case 'object_set_material_params_pbr':
       case 'object_bring_to_front':
-      case 'sketch_mode_disable':
       case 'set_grid_reference_plane':
       case 'set_grid_scale':
       case 'set_grid_auto_scale':
@@ -509,6 +508,11 @@ export class OpenCascadeCommandManager {
       case 'enable_sketch_mode':
         this.currentSketchPlaneId = cmd.entity_id
         return modeling(EMPTY_RESPONSE)
+      case 'sketch_mode_disable':
+        this.currentSketchPlaneId = undefined
+        return modeling(EMPTY_RESPONSE)
+      case 'get_sketch_mode_plane':
+        return modeling(await this.getSketchModePlane())
       case 'start_path':
         this.paths.set(commandId, {
           planeId: this.currentSketchPlaneId,
@@ -1634,6 +1638,70 @@ export class OpenCascadeCommandManager {
     throw new Error(`No OpenCascade parent entity found for ${entityId}`)
   }
 
+  private async getSketchModePlane(): Promise<OkModelingCmdResponse> {
+    const entityId = this.currentSketchPlaneId
+    if (!entityId) {
+      throw new Error('No OpenCascade sketch plane is active')
+    }
+
+    const plane = this.planes.get(entityId)
+    if (plane) {
+      return {
+        type: 'get_sketch_mode_plane',
+        data: {
+          origin: plane.origin,
+          x_axis: plane.xAxis,
+          y_axis: plane.yAxis,
+          z_axis: plane.normal,
+        },
+      } as OkModelingCmdResponse
+    }
+
+    await this.rebuildArrangementRegionsIfNeeded()
+    const facePlane = this.sketchModePlaneForTopologyFace(entityId)
+    if (facePlane) {
+      return {
+        type: 'get_sketch_mode_plane',
+        data: facePlane,
+      } as OkModelingCmdResponse
+    }
+
+    throw new Error(`No OpenCascade sketch plane found for ${entityId}`)
+  }
+
+  private sketchModePlaneForTopologyFace(topologyId: string):
+    | {
+        origin: Point3
+        x_axis: Point3
+        y_axis: Point3
+        z_axis: Point3
+      }
+    | undefined {
+    for (const solid of this.topologyMeshes.values()) {
+      const group = solid.groups.find(
+        (group) =>
+          group.topologyId === topologyId || group.artifactId === topologyId
+      )
+      if (!group) {
+        continue
+      }
+      const points = pointsForTopologyGroup(solid, group)
+      if (points.length < 3) {
+        continue
+      }
+      const origin = centroid(points)
+      const normal = normalForPoints(points)
+      const yAxis = stableFaceYAxis(points, normal)
+      return {
+        origin,
+        x_axis: normalize(cross(yAxis, normal)),
+        y_axis: yAxis,
+        z_axis: normal,
+      }
+    }
+    return undefined
+  }
+
   private async rebuildArrangementRegionsIfNeeded() {
     if (!this.arrangementDirty) {
       return
@@ -1858,6 +1926,10 @@ function cross(a: Point3, b: Point3): Point3 {
   }
 }
 
+function dot(a: Point3, b: Point3): number {
+  return a.x * b.x + a.y * b.y + a.z * b.z
+}
+
 function normalize(v: Point3): Point3 {
   const length = Math.hypot(v.x, v.y, v.z)
   if (length === 0) {
@@ -2038,6 +2110,47 @@ function regionMeshForArrangementRegion(
           ]
         : [],
   }
+}
+
+function pointsForTopologyGroup(
+  solid: OpenCascadeTopologySolidMesh,
+  group: OpenCascadeTopologyFaceGroup
+): Point3[] {
+  const points: Point3[] = []
+  for (let index = group.start; index < group.start + group.count; index += 1) {
+    const vertexIndex = solid.indices[index] * 3
+    points.push({
+      x: solid.positions[vertexIndex],
+      y: solid.positions[vertexIndex + 1],
+      z: solid.positions[vertexIndex + 2],
+    })
+  }
+  return points
+}
+
+function normalForPoints(points: Point3[]): Point3 {
+  for (let index = 0; index < points.length - 2; index += 3) {
+    const a = points[index]
+    const b = points[index + 1]
+    const c = points[index + 2]
+    const rawNormal = cross(add(b, scale(a, -1)), add(c, scale(a, -1)))
+    if (Math.hypot(rawNormal.x, rawNormal.y, rawNormal.z) > 1e-6) {
+      return normalize(rawNormal)
+    }
+  }
+  return { x: 0, y: 0, z: 1 }
+}
+
+function stableFaceYAxis(points: Point3[], normal: Point3): Point3 {
+  for (let index = 0; index < points.length - 1; index += 1) {
+    const edge = add(points[index + 1], scale(points[index], -1))
+    const projected = add(edge, scale(normal, -dot(edge, normal)))
+    const axis = normalize(projected)
+    if (Math.hypot(axis.x, axis.y, axis.z) > 0.5) {
+      return axis
+    }
+  }
+  return orthonormalBasis(normal).y
 }
 
 type ArrangementRawSegment = {

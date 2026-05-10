@@ -150,6 +150,68 @@ describe('OpenCascadeCommandManager', () => {
     expect((await manager.exportLatestGlbBytes()).length).toBeGreaterThan(0)
   })
 
+  it('returns sketch mode plane details for default planes and extrude faces', async () => {
+    const manager = new OpenCascadeCommandManager()
+    await buildRectangleRegionInput(manager)
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-000000000062',
+      cmd: {
+        type: 'enable_sketch_mode',
+        entity_id: IDS.plane,
+        adjust_camera: false,
+        animated: false,
+        ortho: false,
+      },
+    })
+    const defaultPlaneResponse = await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-000000000063',
+      cmd: { type: 'get_sketch_mode_plane' },
+    })
+    expect(
+      defaultPlaneResponse.resp.data.modeling_response.data.z_axis.z
+    ).toBeCloseTo(1)
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: IDS.solid,
+      cmd: {
+        type: 'extrude',
+        target: IDS.region,
+        distance: 2,
+        extrude_method: 'new',
+        body_type: 'solid',
+      },
+    })
+    const wallFaceId = manager
+      .exportLatestTopologyMeshes()
+      .solids[0].groups.find((group) => group.role === 'wall')?.topologyId
+    expect(wallFaceId).toBeTruthy()
+    if (!wallFaceId) {
+      throw new Error('No wall face id')
+    }
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-000000000064',
+      cmd: {
+        type: 'enable_sketch_mode',
+        entity_id: wallFaceId,
+        adjust_camera: false,
+        animated: false,
+        ortho: false,
+      },
+    })
+    const faceResponse = await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-000000000065',
+      cmd: { type: 'get_sketch_mode_plane' },
+    })
+    const normal = faceResponse.resp.data.modeling_response.data.z_axis
+    expect(Math.hypot(normal.x, normal.y, normal.z)).toBeCloseTo(1)
+  })
+
   it('detects a closed rectangle as an automatic pickable region', async () => {
     const manager = new OpenCascadeCommandManager()
     await buildRectangleRegionInput(manager, { createRegion: false })

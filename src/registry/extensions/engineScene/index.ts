@@ -147,6 +147,25 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
                 tomlKey: 'show_executing_spinner',
               },
             }),
+            openCascadeAnimateToSketchPlane: defineBooleanExtensionSetting({
+              defaultValue: true,
+              title: 'OpenCascade animate to sketch plane',
+              description:
+                'Whether OpenCascade rotates the camera normal to the selected sketch plane when entering sketch mode.',
+              isEnabled: (settings) =>
+                settings.modeling.engine.current === 'open_cascade',
+              commandConfig: {
+                inputType: 'boolean',
+              },
+              userToml: {
+                sectionKey: 'modeling',
+                tomlKey: 'open_cascade_animate_to_sketch_plane',
+              },
+              projectToml: {
+                sectionKey: 'modeling',
+                tomlKey: 'open_cascade_animate_to_sketch_plane',
+              },
+            }),
           },
         }),
         provide(layoutAreaLibraryValueSpec, {

@@ -303,12 +303,84 @@ function findSceneObjectForPlaneSelection(
   )
 }
 
+function isOpenCascadeEngine(engineCommandManager: ConnectionManager) {
+  return (
+    'isOpenCascade' in engineCommandManager &&
+    engineCommandManager.isOpenCascade === true
+  )
+}
+
+function shouldAnimateOpenCascadeToSketchPlane(
+  store?: ModelingMachineContext['store']
+) {
+  return (
+    (
+      store?.openCascadeAnimateToSketchPlane as
+        | { current?: boolean }
+        | undefined
+    )?.current ?? true
+  )
+}
+
+async function animateToSketchPlaneAfterSelection({
+  engineCommandManager,
+  kclManager,
+  entityId,
+  plane,
+  store,
+}: {
+  engineCommandManager: ConnectionManager
+  kclManager: KclManager
+  entityId: string
+  plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane
+  store?: ModelingMachineContext['store']
+}) {
+  if (!isOpenCascadeEngine(engineCommandManager)) {
+    await letEngineAnimateAndSyncCamAfter(engineCommandManager, entityId)
+    return
+  }
+
+  await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'enable_sketch_mode',
+      adjust_camera: false,
+      animated: false,
+      ortho: false,
+      entity_id: entityId,
+    },
+  })
+
+  if (!shouldAnimateOpenCascadeToSketchPlane(store)) {
+    return
+  }
+
+  const camControls = kclManager.sceneInfra.camControls
+  camControls.syncDirection = 'clientToEngine'
+  const origin =
+    plane.type === 'defaultPlane'
+      ? new Vector3(0, 0, 0)
+      : new Vector3(...plane.position)
+  const targetQuaternion = quaternionFromUpNForward(
+    new Vector3(...plane.yAxis),
+    new Vector3(...plane.zAxis)
+  )
+  await camControls.tweenCameraToQuaternion(targetQuaternion, origin)
+  camControls.enablePan = true
+  camControls.enableRotate = true
+  camControls.target.copy(origin)
+  camControls.onCameraChange()
+  kclManager.sceneInfra.renderFrame()
+}
+
 async function enterSketchSolveFromSketchBlockArtifact({
   sketchBlockArtifact,
   kclManager,
   rustContext,
   engineCommandManager,
   defaultUnit,
+  store,
   projectRef,
   wasmInstance,
 }: {
@@ -317,6 +389,7 @@ async function enterSketchSolveFromSketchBlockArtifact({
   rustContext: RustContext
   engineCommandManager: ConnectionManager
   defaultUnit?: ModelingMachineContext['store']['defaultUnit']
+  store?: ModelingMachineContext['store']
   projectRef?: { current: Project | undefined }
   wasmInstance: ModuleType
 }): Promise<{
@@ -352,7 +425,13 @@ async function enterSketchSolveFromSketchBlockArtifact({
 
   const id =
     planeData.type === 'extrudeFace' ? planeData.faceId : planeData.planeId
-  await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+  await animateToSketchPlaneAfterSelection({
+    engineCommandManager,
+    kclManager,
+    entityId: id,
+    plane: planeData,
+    store,
+  })
   kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
 
   const project = projectRef?.current
@@ -1517,7 +1596,9 @@ export const modelingMachine = setup({
       // so block orbit input until those controls are synchronized.
       // When that is the case, the hidden setting "allow orbit in sketch mode" will be shown to users.
       context.kclManager.sceneInfra.camControls.enableRotate =
-        context.kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode
+        isOpenCascadeEngine(context.engineCommandManager) ||
+        context.kclManager.sceneInfra.camControls
+          ._setting_allowOrbitInSketchMode
     },
     /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to faces only': ({ context }) => {
@@ -3083,10 +3164,12 @@ export const modelingMachine = setup({
           kclManager: KclManager
           engineCommandManager: ConnectionManager
           wasmInstance: ModuleType
+          store?: ModelingMachineContext['store']
         }
       }) => {
         if (!input) return null
-        const { plane, kclManager, engineCommandManager, wasmInstance } = input
+        const { plane, kclManager, engineCommandManager, wasmInstance, store } =
+          input
         if (kclManager.hasParseErrors()) {
           const errorMessage =
             'Unable to enter sketch while KCL has parse errors.'
@@ -3130,7 +3213,13 @@ export const modelingMachine = setup({
           }
 
           const id = plane.type === 'extrudeFace' ? plane.faceId : plane.planeId
-          await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+          await animateToSketchPlaneAfterSelection({
+            engineCommandManager,
+            kclManager,
+            entityId: id,
+            plane,
+            store,
+          })
           kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
           return {
             sketchEntryNodePath: [],
@@ -3148,13 +3237,17 @@ export const modelingMachine = setup({
         )
         await kclManager.updateAst(modifiedAst, false)
         kclManager.sceneInfra.camControls.enableRotate =
+          isOpenCascadeEngine(engineCommandManager) ||
           kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode
         kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
 
-        await letEngineAnimateAndSyncCamAfter(
+        await animateToSketchPlaneAfterSelection({
           engineCommandManager,
-          plane.planeId
-        )
+          kclManager,
+          entityId: plane.planeId,
+          plane,
+          store,
+        })
 
         return {
           sketchEntryNodePath: [],
@@ -3179,6 +3272,7 @@ export const modelingMachine = setup({
               engineCommandManager: ConnectionManager
               wasmInstance: ModuleType
               defaultUnit?: ModelingMachineContext['store']['defaultUnit']
+              store?: ModelingMachineContext['store']
               projectRef?: { current: Project | undefined }
             }
           | undefined
@@ -3197,6 +3291,7 @@ export const modelingMachine = setup({
           engineCommandManager,
           wasmInstance,
           defaultUnit,
+          store,
           projectRef,
         } = input
         if (kclManager.hasParseErrors()) {
@@ -3309,6 +3404,7 @@ export const modelingMachine = setup({
             rustContext,
             engineCommandManager,
             defaultUnit,
+            store,
             projectRef,
             wasmInstance,
           })
@@ -3387,7 +3483,13 @@ export const modelingMachine = setup({
 
         const id =
           result.type === 'extrudeFace' ? result.faceId : result.planeId
-        await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+        await animateToSketchPlaneAfterSelection({
+          engineCommandManager,
+          kclManager,
+          entityId: id,
+          plane: result,
+          store,
+        })
 
         kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
         kclManager.updateCodeEditor(
@@ -3418,6 +3520,7 @@ export const modelingMachine = setup({
               rustContext: RustContext
               engineCommandManager: ConnectionManager
               defaultUnit?: ModelingMachineContext['store']['defaultUnit']
+              store?: ModelingMachineContext['store']
               projectRef?: { current: Project | undefined }
             }
           | undefined
@@ -3437,6 +3540,7 @@ export const modelingMachine = setup({
           rustContext,
           engineCommandManager,
           defaultUnit,
+          store,
           projectRef,
         } = input
         const wasmInstance = await kclManager.wasmInstancePromise
@@ -3455,6 +3559,7 @@ export const modelingMachine = setup({
           rustContext,
           engineCommandManager,
           defaultUnit,
+          store,
           projectRef,
           wasmInstance,
         })
@@ -3650,12 +3755,13 @@ export const modelingMachine = setup({
     ),
     'animate-to-sketch': fromPromise(
       async ({
-        input: { selectionRanges, kclManager, engineCommandManager },
+        input: { selectionRanges, kclManager, engineCommandManager, store },
       }: {
         input: {
           selectionRanges: Selections
           kclManager: KclManager
           engineCommandManager: ConnectionManager
+          store?: ModelingMachineContext['store']
         }
       }): Promise<ModelingMachineContext['sketchDetails']> => {
         const artifact = selectionRanges.graphSelections[0].artifact
@@ -3720,11 +3826,23 @@ export const modelingMachine = setup({
               kclManager.ast,
               planeCodeRef.range
             )
-            await letEngineAnimateAndSyncCamAfter(
-              engineCommandManager,
-              artifact.id
-            )
             const normal = crossProduct(planeVar.xAxis, planeVar.yAxis)
+            const planeDetails: OffsetPlane = {
+              type: 'offsetPlane',
+              planeId: artifact.id,
+              pathToNode: planPath,
+              position: toTuple(planeVar.origin),
+              zAxis: toTuple(normal),
+              yAxis: toTuple(planeVar.yAxis),
+              negated: false,
+            }
+            await animateToSketchPlaneAfterSelection({
+              engineCommandManager,
+              kclManager,
+              entityId: artifact.id,
+              plane: planeDetails,
+              store,
+            })
             return {
               sketchEntryNodePath: [],
               planeNodePath: planPath,
@@ -3740,10 +3858,6 @@ export const modelingMachine = setup({
           await kclManager.sceneEntitiesManager.getSketchOrientationDetails(
             sketch.value
           )
-        await letEngineAnimateAndSyncCamAfter(
-          engineCommandManager,
-          info?.sketchDetails?.faceId || ''
-        )
 
         const sketchArtifact = kclManager.artifactGraph.get(mainPath)
         if (sketchArtifact?.type !== 'path') {
@@ -3763,15 +3877,31 @@ export const modelingMachine = setup({
           kclManager.ast,
           codeRef.range
         )
+        const sketchOrigin = info.sketchDetails.origin.map(
+          (a) => a / kclManager.sceneInfra.baseUnitMultiplier
+        ) as [number, number, number]
+        await animateToSketchPlaneAfterSelection({
+          engineCommandManager,
+          kclManager,
+          entityId: info?.sketchDetails?.faceId || '',
+          plane: {
+            type: 'offsetPlane',
+            planeId: info?.sketchDetails?.faceId || '',
+            pathToNode: planeNodePath,
+            position: sketchOrigin,
+            zAxis: info.sketchDetails.zAxis || [0, 0, 1],
+            yAxis: info.sketchDetails.yAxis || [0, 1, 0],
+            negated: false,
+          },
+          store,
+        })
         return {
           sketchEntryNodePath: sketchArtifact.codeRef.pathToNode || [],
           sketchNodePaths: sketchPaths,
           planeNodePath,
           zAxis: info.sketchDetails.zAxis || null,
           yAxis: info.sketchDetails.yAxis || null,
-          origin: info.sketchDetails.origin.map(
-            (a) => a / kclManager.sceneInfra.baseUnitMultiplier
-          ) as [number, number, number],
+          origin: sketchOrigin,
           animateTargetId: info?.sketchDetails?.faceId || '',
         }
       }
@@ -7595,6 +7725,7 @@ export const modelingMachine = setup({
             kclManager: context.kclManager,
             engineCommandManager: context.engineCommandManager,
             wasmInstance: context.wasmInstance,
+            store: context.store,
           }
         },
 
@@ -7616,6 +7747,7 @@ export const modelingMachine = setup({
           selectionRanges: context.selectionRanges,
           kclManager: context.kclManager,
           engineCommandManager: context.engineCommandManager,
+          store: context.store,
         }),
 
         onDone: {
@@ -8559,6 +8691,7 @@ export const modelingMachine = setup({
             engineCommandManager: context.engineCommandManager,
             wasmInstance: context.wasmInstance,
             defaultUnit: context.store.defaultUnit,
+            store: context.store,
             projectRef: context.projectRef,
           }
         },
@@ -8576,6 +8709,7 @@ export const modelingMachine = setup({
               rustContext: context.rustContext,
               engineCommandManager: context.engineCommandManager,
               defaultUnit: context.store.defaultUnit,
+              store: context.store,
               projectRef: context.projectRef,
             }
           }
@@ -8590,6 +8724,7 @@ export const modelingMachine = setup({
                 rustContext: context.rustContext,
                 engineCommandManager: context.engineCommandManager,
                 defaultUnit: context.store.defaultUnit,
+                store: context.store,
                 projectRef: context.projectRef,
               }
             }

@@ -12,6 +12,11 @@ import {
   type OpenCascadeCameraControlCommand,
   addOpenCascadeCameraControlListener,
 } from '@src/lib/cameraControls'
+import type { DefaultPlaneStr } from '@src/lib/planes'
+import {
+  selectDefaultSketchPlane,
+  selectionBodyFace,
+} from '@src/lib/selections'
 import {
   Themes,
   darkModeMatcher,
@@ -114,10 +119,17 @@ type OpenCascadeResolvedRegionHit = OpenCascadeRegionFaceGroup & {
   hitType: 'region'
 }
 
+type OpenCascadeResolvedDefaultPlaneHit = {
+  hitType: 'defaultPlane'
+  planeKey: 'xy' | 'xz' | 'yz'
+  plane: DefaultPlaneStr
+}
+
 type OpenCascadeResolvedHit =
   | OpenCascadeResolvedTopologyHit
   | OpenCascadeResolvedSketchLineHit
   | OpenCascadeResolvedRegionHit
+  | OpenCascadeResolvedDefaultPlaneHit
 
 export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
   useSignals()
@@ -154,6 +166,8 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
   const exportError = diagnostic || openCascadeManager.latestExportError.value
   const passiveProfilesVisible =
     !state.matches('Sketch') && !state.matches('sketchSolveMode')
+  const useSketchSolveMode =
+    state.context.store.useSketchSolveMode?.current === true
 
   sceneStyleRef.current = sceneStyle
   highlightEdgesRef.current = highlightEdges
@@ -601,6 +615,11 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     let hoveredTopologyId: string | undefined
     let hoveredSketchSegmentId: string | undefined
     let hoveredRegionId: string | undefined
+    const isSelectingSketchPlane = state.matches('Sketch no face')
+    const resolveHit = (intersects: Intersection[]) =>
+      resolveOpenCascadeHit(intersects, {
+        includeDefaultPlanes: isSelectingSketchPlane,
+      })
 
     const updateHighlight = (hoveredHit?: OpenCascadeResolvedHit) => {
       const highlightRoot = scene.getObjectByName(OPEN_CASCADE_HIGHLIGHT_ROOT)
@@ -661,11 +680,11 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
 
     sceneInfra.setCallbacks({
       onMouseDownSelection: () => {
-        const hit = resolveOpenCascadeHit(sceneInfra.raycastRing(0, 1))
+        const hit = resolveHit(sceneInfra.raycastRing(0, 1))
         return Boolean(hit)
       },
       onMove: ({ intersects }) => {
-        const hit = resolveOpenCascadeHit(intersects)
+        const hit = resolveHit(intersects)
         const nextTopologyId =
           hit?.hitType === 'topology' ? hit.topologyId : undefined
         const nextSketchSegmentId =
@@ -688,7 +707,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         if (sceneInfra.camControls.wasDragging) {
           return
         }
-        const hit = resolveOpenCascadeHit(intersects)
+        const hit = resolveHit(intersects)
         if (!hit) {
           hoveredTopologyId = undefined
           hoveredSketchSegmentId = undefined
@@ -699,6 +718,59 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
             data: { selectionType: 'singleCodeCursor' },
           })
           return
+        }
+        if (isSelectingSketchPlane) {
+          if (hit.hitType === 'defaultPlane') {
+            const defaultPlaneId =
+              kclManager.rustContext.defaultPlanes?.[hit.planeKey]
+            if (!defaultPlaneId) {
+              return
+            }
+            if (useSketchSolveMode) {
+              send({
+                type: 'Select sketch solve plane',
+                data: defaultPlaneId,
+              })
+              return
+            }
+            selectDefaultSketchPlane(defaultPlaneId, {
+              sceneInfra,
+              rustContext: kclManager.rustContext,
+            })
+            return
+          }
+          if (hit.hitType === 'topology') {
+            if (useSketchSolveMode) {
+              send({
+                type: 'Select sketch solve plane',
+                data: hit.topologyId,
+              })
+              return
+            }
+            kclManager.wasmInstancePromise
+              .then((wasmInstance) =>
+                selectionBodyFace(
+                  hit.topologyId,
+                  kclManager.artifactGraph,
+                  kclManager.ast,
+                  kclManager.execState,
+                  {
+                    sceneInfra,
+                    rustContext: kclManager.rustContext,
+                    sceneEntitiesManager: kclManager.sceneEntitiesManager,
+                    wasmInstance,
+                  }
+                )
+              )
+              .then((plane) => {
+                if (!plane) {
+                  return
+                }
+                send({ type: 'Select sketch plane', data: plane })
+              })
+              .catch((error) => console.warn(error))
+            return
+          }
         }
         if (hit.hitType === 'region') {
           const pathArtifact = hit.parentPathId
@@ -726,6 +798,9 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
             })
             return
           }
+        }
+        if (hit.hitType === 'defaultPlane') {
+          return
         }
         const artifact = artifactForOpenCascadeHit(
           hit,
@@ -797,7 +872,9 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     kclManager.sceneInfra,
     passiveProfilesVisible,
     send,
+    state.value,
     state.context.selectionRanges,
+    useSketchSolveMode,
   ])
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: latestProfileVersion is a signal value that intentionally reloads profile content.
@@ -992,6 +1069,7 @@ function makeOpenCascadePlaneGuide({
   group.name = id
   group.userData.openCascadeGuideId = id
   group.userData.openCascadeGuideVisibilityKey = key
+  group.userData.openCascadeDefaultPlaneKey = key
   group.userData.openCascadeFixedScreenScale = true
   group.quaternion.copy(quaternionFromPlaneAxes(xAxis, yAxis))
 
@@ -1021,6 +1099,7 @@ function makeOpenCascadePlaneGuide({
   })
   const plane = new Mesh(geometry, material)
   plane.renderOrder = 40
+  plane.userData.openCascadeDefaultPlaneKey = key
   group.add(plane)
 
   return group
@@ -1380,9 +1459,17 @@ function geometryForRegionGroup(
 }
 
 function resolveOpenCascadeHit(
-  intersects: Intersection[]
+  intersects: Intersection[],
+  options: { includeDefaultPlanes?: boolean } = {}
 ): OpenCascadeResolvedHit | undefined {
   for (const intersection of intersects) {
+    if (options.includeDefaultPlanes) {
+      const defaultPlane = findOpenCascadeDefaultPlaneGuide(intersection.object)
+      if (defaultPlane) {
+        return defaultPlane
+      }
+    }
+
     const sketchLine = findOpenCascadeSketchLine(intersection.object)
     if (sketchLine) {
       const segment = sketchLine.userData.openCascadeSketchLineSegment as
@@ -1470,6 +1557,28 @@ function findOpenCascadeRegionPickMesh(object: unknown): Mesh | undefined {
   return undefined
 }
 
+function findOpenCascadeDefaultPlaneGuide(
+  object: unknown
+): OpenCascadeResolvedDefaultPlaneHit | undefined {
+  let current = object instanceof Object3D ? object : undefined
+  while (current) {
+    const planeKey = current.userData.openCascadeDefaultPlaneKey as
+      | 'xy'
+      | 'xz'
+      | 'yz'
+      | undefined
+    if (planeKey) {
+      return {
+        hitType: 'defaultPlane',
+        planeKey,
+        plane: planeKey.toUpperCase() as DefaultPlaneStr,
+      }
+    }
+    current = current.parent || undefined
+  }
+  return undefined
+}
+
 function selectedOpenCascadeEntityIds(selectionRanges: {
   graphSelections: {
     artifact?: { id: string }
@@ -1520,6 +1629,9 @@ function artifactForOpenCascadeHit(
   }
   if (hit.hitType === 'region') {
     return artifactGraph.get(hit.artifactId)
+  }
+  if (hit.hitType === 'defaultPlane') {
+    return undefined
   }
 
   return (

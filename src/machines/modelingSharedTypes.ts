@@ -211,6 +211,7 @@ export interface Store {
   videoElement?: HTMLVideoElement
   cameraProjection?: Setting<CameraProjectionType>
   useSketchSolveMode?: Setting<boolean>
+  openCascadeAnimateToSketchPlane?: Setting<boolean>
   defaultUnit?: Setting<BaseUnit>
 }
 
