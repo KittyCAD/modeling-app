@@ -208,6 +208,7 @@ import {
   handleSelectionBatch,
   isEnginePrimitiveSelection,
   isEngineRegionSelection,
+  openCascadeTopologyFaceToSketchPlane,
   selectionBodyFace,
   updateExtraSegments,
   updateSelections,
@@ -468,11 +469,13 @@ async function selectedSketchTargetPlane({
   kclManager,
   rustContext,
   wasmInstance,
+  engineCommandManager,
 }: {
   selectionRanges: Selections
   kclManager: KclManager
   rustContext: RustContext
   wasmInstance: ModuleType
+  engineCommandManager?: ConnectionManager
 }) {
   const artifactOrPlaneId = selectedSketchTargetId({
     selectionRanges,
@@ -513,6 +516,28 @@ async function selectedSketchTargetPlane({
   )
   if (faceResult) {
     return faceResult
+  }
+
+  if (engineCommandManager && isOpenCascadeEngine(engineCommandManager)) {
+    const openCascadeProxy = engineCommandManager as any
+    const topologyMeshes =
+      openCascadeProxy.openCascadeCommandManager?.exportLatestTopologyMeshes?.() ??
+      openCascadeProxy.exportLatestOpenCascadeTopologyMeshes?.()
+    if (!topologyMeshes) {
+      return reject(new Error('Please select a valid sketch plane.'))
+    }
+    const openCascadeFaceResult = await openCascadeTopologyFaceToSketchPlane(
+      artifactOrPlaneId,
+      topologyMeshes,
+      kclManager.artifactGraph,
+      {
+        sceneInfra: kclManager.sceneInfra,
+        sceneEntitiesManager: kclManager.sceneEntitiesManager,
+      }
+    )
+    if (openCascadeFaceResult) {
+      return openCascadeFaceResult
+    }
   }
 
   return reject(new Error('Please select a valid sketch plane.'))
@@ -3374,6 +3399,7 @@ export const modelingMachine = setup({
                 kclManager,
                 rustContext,
                 wasmInstance,
+                engineCommandManager,
               })
             : undefined)
         if (!plane) {
@@ -3552,6 +3578,24 @@ export const modelingMachine = setup({
           )
           if (sweepFaceSelected) {
             result = sweepFaceSelected
+          }
+        }
+        if (!result && isOpenCascadeEngine(engineCommandManager)) {
+          const openCascadeProxy = engineCommandManager as any
+          const topologyMeshes =
+            openCascadeProxy.openCascadeCommandManager?.exportLatestTopologyMeshes?.() ??
+            openCascadeProxy.exportLatestOpenCascadeTopologyMeshes?.()
+          if (topologyMeshes) {
+            result =
+              (await openCascadeTopologyFaceToSketchPlane(
+                artifactOrPlaneId,
+                topologyMeshes,
+                kclManager.artifactGraph,
+                {
+                  sceneInfra: kclManager.sceneInfra,
+                  sceneEntitiesManager: kclManager.sceneEntitiesManager,
+                }
+              )) ?? null
           }
         }
         if (!result) {

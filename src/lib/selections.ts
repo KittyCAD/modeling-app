@@ -87,6 +87,7 @@ import type {
 } from '@src/machines/modelingSharedTypes'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
+import type { OpenCascadeTopologyMeshes } from '@src/network/openCascadeCommandManager'
 import toast from 'react-hot-toast'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
@@ -1462,6 +1463,65 @@ export async function selectOffsetSketchPlane(
     return false
   }
   return true
+}
+
+export async function openCascadeTopologyFaceToSketchPlane(
+  faceId: ArtifactId,
+  topologyMeshes: OpenCascadeTopologyMeshes,
+  artifactGraph: ArtifactGraph,
+  systemDeps: {
+    sceneInfra: SceneInfra
+    sceneEntitiesManager: SceneEntities
+  }
+): Promise<ExtrudeFacePlane | undefined> {
+  for (const solid of topologyMeshes.solids) {
+    const group = solid.groups.find(
+      (candidate) =>
+        candidate.topologyId === faceId || candidate.artifactId === faceId
+    )
+    if (!group) {
+      continue
+    }
+    if (group.role !== 'startCap' && group.role !== 'endCap') {
+      return undefined
+    }
+
+    const sweep = [solid.solidId, ...(solid.artifactIds || [])]
+      .map((artifactId) => artifactGraph.get(artifactId))
+      .find((artifact) => artifact?.type === 'sweep')
+    if (sweep?.type !== 'sweep') {
+      return undefined
+    }
+
+    const path = artifactGraph.get(sweep.pathId)
+    if (path?.type !== 'path') {
+      return undefined
+    }
+
+    const faceInfo =
+      await systemDeps.sceneEntitiesManager.getFaceDetails(faceId)
+    if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) {
+      return undefined
+    }
+
+    return {
+      type: 'extrudeFace',
+      zAxis: [faceInfo.z_axis.x, faceInfo.z_axis.y, faceInfo.z_axis.z],
+      yAxis: [faceInfo.y_axis.x, faceInfo.y_axis.y, faceInfo.y_axis.z],
+      position: [faceInfo.origin.x, faceInfo.origin.y, faceInfo.origin.z].map(
+        (num) => num / systemDeps.sceneInfra.baseUnitMultiplier
+      ) as [number, number, number],
+      sketchPathToNode: path.codeRef.pathToNode,
+      extrudePathToNode: sweep.codeRef.pathToNode,
+      faceInfo: {
+        type: 'cap',
+        subType: group.role === 'startCap' ? 'start' : 'end',
+      },
+      faceId,
+    }
+  }
+
+  return undefined
 }
 
 export async function selectionBodyFace(

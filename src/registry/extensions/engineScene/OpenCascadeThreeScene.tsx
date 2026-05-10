@@ -16,6 +16,7 @@ import {
 } from '@src/lib/cameraControls'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import {
+  openCascadeTopologyFaceToSketchPlane,
   selectDefaultSketchPlane,
   selectionBodyFace,
 } from '@src/lib/selections'
@@ -1046,10 +1047,21 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
                 )
               )
               .then((plane) => {
-                if (!plane) {
-                  return
+                if (plane) {
+                  return plane
                 }
-                send({ type: 'Select sketch plane', data: plane })
+                return openCascadeTopologyFaceToSketchPlane(
+                  hit.topologyId,
+                  engineCommandManager.exportLatestOpenCascadeTopologyMeshes(),
+                  kclManager.artifactGraph,
+                  {
+                    sceneInfra,
+                    sceneEntitiesManager: kclManager.sceneEntitiesManager,
+                  }
+                )
+              })
+              .then((plane) => {
+                if (plane) send({ type: 'Select sketch plane', data: plane })
               })
               .catch((error) => console.warn(error))
             return
