@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ConnectionStream } from '@src/components/ConnectionStream'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Gizmo from '@src/components/gizmo/Gizmo'
+import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import {
   ClientSideScene,
@@ -10,6 +11,7 @@ import {
 } from '@src/clientSideScene/ClientSideSceneComp'
 import { Toolbar } from '@src/Toolbar'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { btnName } from '@src/lib/cameraControls'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import type { EngineCommandManagerProxy } from '@src/network/engineCommandManagerProxy'
@@ -98,7 +100,35 @@ function OpenCascadeModelingArea() {
   const settingsValues = settings.useSettings()
   const [diagnostic, setDiagnostic] = useState<string | undefined>()
   const executionCounterRef = useRef(0)
+  const sceneWrapperRef = useRef<HTMLDivElement>(null)
+  const contextMenuMouseDownRef = useRef<{
+    x: number
+    y: number
+    moved: boolean
+  } | null>(null)
   const code = kclManager.codeSignal.value
+
+  const viewControlContextMenuGuard: (e: MouseEvent) => boolean = useCallback(
+    (e: MouseEvent) => {
+      const rightClick = btnName(e).right
+      const clickState = contextMenuMouseDownRef.current
+      const shouldOpen = Boolean(rightClick && clickState && !clickState.moved)
+      contextMenuMouseDownRef.current = null
+      return shouldOpen
+    },
+    []
+  )
+
+  const updateContextMenuGesture = useCallback((event: React.MouseEvent) => {
+    if (!contextMenuMouseDownRef.current) {
+      return
+    }
+    const deltaX = event.clientX - contextMenuMouseDownRef.current.x
+    const deltaY = event.clientY - contextMenuMouseDownRef.current.y
+    if (Math.hypot(deltaX, deltaY) > 4) {
+      contextMenuMouseDownRef.current.moved = true
+    }
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -167,7 +197,22 @@ function OpenCascadeModelingArea() {
   }, [])
 
   return (
-    <div className="relative z-0 min-w-64 flex flex-col flex-1 items-center overflow-hidden">
+    <div
+      ref={sceneWrapperRef}
+      className="relative z-0 min-w-64 flex flex-col flex-1 items-center overflow-hidden"
+      onMouseDownCapture={(event) => {
+        if (btnName(event.nativeEvent).right) {
+          contextMenuMouseDownRef.current = {
+            x: event.clientX,
+            y: event.clientY,
+            moved: false,
+          }
+        }
+      }}
+      onMouseMoveCapture={updateContextMenuGesture}
+      onContextMenu={(e) => e.preventDefault()}
+      onContextMenuCapture={(e) => e.preventDefault()}
+    >
       <Toolbar />
       <ClientSideScene
         cameraControls={settingsValues.modeling.mouseControls.current}
@@ -177,6 +222,11 @@ function OpenCascadeModelingArea() {
         sharedRendererMode="open_cascade"
       />
       <OpenCascadeThreeScene diagnostic={diagnostic} />
+      <ViewControlContextMenu
+        event="mouseup"
+        guard={viewControlContextMenuGuard}
+        menuTargetElement={sceneWrapperRef}
+      />
       <ModelingGizmo />
     </div>
   )
