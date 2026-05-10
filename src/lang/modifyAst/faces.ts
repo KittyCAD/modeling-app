@@ -783,42 +783,20 @@ export function addOffsetPlane({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  let planeExpr: Expr | undefined
-  const hasFaceToOffset = plane.graphSelections.some(
-    (sel) =>
-      sel.artifact?.type === 'cap' ||
-      sel.artifact?.type === 'wall' ||
-      sel.artifact?.type === 'edgeCut'
-  )
-  if (hasFaceToOffset) {
-    const result = buildSolidsAndFacesExprs(
-      plane,
-      artifactGraph,
-      modifiedAst,
-      wasmInstance,
-      mNodeToEdit
-    )
-    if (err(result)) {
-      return result
-    }
-
-    const { solidsExpr, facesExpr } = result
-    modifiedAst = result.modifiedAst
-    if (!facesExpr) {
-      return new Error("Couldn't retrieve face from selection")
-    }
-
-    planeExpr = createCallExpressionStdLibKw('planeOf', solidsExpr, [
-      createLabeledArg('face', facesExpr),
-    ])
-  } else {
-    planeExpr = getSelectedPlaneAsNode(plane, variables, wasmInstance)
-    if (!planeExpr) {
-      return new Error('No plane found in the selection')
-    }
+  const planeResult = getPlaneExprFromSelection({
+    ast: modifiedAst,
+    artifactGraph,
+    variables,
+    plane,
+    wasmInstance,
+    nodeToEdit: mNodeToEdit,
+  })
+  if (err(planeResult)) {
+    return planeResult
   }
+  modifiedAst = planeResult.modifiedAst
 
-  const call = createCallExpressionStdLibKw('offsetPlane', planeExpr, [
+  const call = createCallExpressionStdLibKw('offsetPlane', planeResult.expr, [
     createLabeledArg('offset', valueOrVariable(offset)),
   ])
 
@@ -845,6 +823,72 @@ export function addOffsetPlane({
     modifiedAst,
     pathToNode,
   }
+}
+
+export function getPlaneExprFromSelection({
+  ast,
+  artifactGraph,
+  variables,
+  plane,
+  wasmInstance,
+  nodeToEdit,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  variables: VariableMap
+  plane: Selections
+  wasmInstance: ModuleType
+  nodeToEdit?: PathToNode
+}): Error | { modifiedAst: Node<Program>; expr: Expr } {
+  let modifiedAst = ast
+  const hasFaceToOffset = plane.graphSelections.some(
+    (sel) =>
+      sel.artifact?.type === 'cap' ||
+      sel.artifact?.type === 'wall' ||
+      sel.artifact?.type === 'edgeCut'
+  )
+  if (hasFaceToOffset) {
+    const result = buildSolidsAndFacesExprs(
+      plane,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      nodeToEdit
+    )
+    if (err(result)) {
+      return result
+    }
+
+    const { solidsExpr, facesExpr } = result
+    modifiedAst = result.modifiedAst
+    if (!facesExpr) {
+      return new Error("Couldn't retrieve face from selection")
+    }
+
+    return {
+      modifiedAst,
+      expr: createCallExpressionStdLibKw('planeOf', solidsExpr, [
+        createLabeledArg('face', facesExpr),
+      ]),
+    }
+  }
+
+  const defaultPlane = plane.otherSelections.find(
+    (selection) => typeof selection === 'object' && 'name' in selection
+  )
+  if (defaultPlane) {
+    return {
+      modifiedAst,
+      expr: createLocalName(defaultPlane.name.toUpperCase()),
+    }
+  }
+
+  const planeExpr = getSelectedPlaneAsNode(plane, variables, wasmInstance)
+  if (!planeExpr) {
+    return new Error('No plane found in the selection')
+  }
+
+  return { modifiedAst, expr: planeExpr }
 }
 
 // Utilities

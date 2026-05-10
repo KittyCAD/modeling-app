@@ -3,23 +3,20 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   createCallExpressionStdLibKw,
   createLabeledArg,
-  createLocalName,
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
   setCallInAst,
 } from '@src/lang/modifyAst'
+import { getPlaneExprFromSelection } from '@src/lang/modifyAst/faces'
 import { getAxisExpression } from '@src/lang/modifyAst/sweeps'
-import {
-  getNodeFromPath,
-  getVariableExprsFromSelection,
-} from '@src/lang/queryAst'
+import { getVariableExprsFromSelection } from '@src/lang/queryAst'
 import type {
   ArtifactGraph,
   Expr,
   PathToNode,
   Program,
-  VariableDeclaration,
+  VariableMap,
 } from '@src/lang/wasm'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
@@ -29,6 +26,7 @@ import type { Selections } from '@src/machines/modelingSharedTypes'
 export function addMirror({
   ast,
   artifactGraph,
+  variables,
   bodies,
   across,
   nodeToEdit,
@@ -36,6 +34,7 @@ export function addMirror({
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
+  variables: VariableMap
   bodies: Selections
   across: Selections
   nodeToEdit?: PathToNode
@@ -64,6 +63,7 @@ export function addMirror({
   const acrossExpr = getMirrorAcrossExpression({
     across,
     artifactGraph,
+    variables,
     ast: modifiedAst,
     wasmInstance,
     nodeToEdit: mNodeToEdit,
@@ -101,12 +101,14 @@ export function addMirror({
 function getMirrorAcrossExpression({
   across,
   artifactGraph,
+  variables,
   ast,
   wasmInstance,
   nodeToEdit,
 }: {
   across: Selections
   artifactGraph: ArtifactGraph
+  variables: VariableMap
   ast: Node<Program>
   wasmInstance: ModuleType
   nodeToEdit?: PathToNode
@@ -137,49 +139,12 @@ function getMirrorAcrossExpression({
     }
   }
 
-  const planeSelection = across.graphSelections.find(
-    (selection) => selection.artifact?.type === 'plane'
-  )
-  if (planeSelection) {
-    const variable = getNodeFromPath<VariableDeclaration>(
-      ast,
-      planeSelection.codeRef.pathToNode,
-      wasmInstance,
-      'VariableDeclaration'
-    )
-    if (err(variable)) {
-      return variable
-    }
-
-    const init = variable.node.declaration?.init
-    if (
-      init?.type !== 'CallExpressionKw' ||
-      init.callee.name.name !== 'offsetPlane'
-    ) {
-      return new Error('Selected mirror reference must be an offset plane')
-    }
-
-    return {
-      modifiedAst: ast,
-      expr: createLocalName(variable.node.declaration.id.name),
-    }
-  }
-
-  const vars = getVariableExprsFromSelection(
-    across,
-    artifactGraph,
+  return getPlaneExprFromSelection({
     ast,
+    artifactGraph,
+    variables,
+    plane: across,
     wasmInstance,
-    nodeToEdit
-  )
-  if (err(vars)) {
-    return vars
-  }
-
-  const expr = createVariableExpressionsArray(vars.exprs)
-  if (!expr || expr.type === 'PipeSubstitution') {
-    return new Error('No mirror reference provided')
-  }
-
-  return { modifiedAst: ast, expr }
+    nodeToEdit,
+  })
 }

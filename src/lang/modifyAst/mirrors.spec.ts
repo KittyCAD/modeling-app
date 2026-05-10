@@ -55,12 +55,15 @@ async function getBodiesAndAcross({
   code: string
   bodyIds: number[]
   acrossId: number
-  acrossType: 'plane' | 'segment'
+  acrossType: 'plane' | 'segment' | 'wall'
   bodyType?: 'path' | 'sweep'
 }) {
   const { instance, rustContext } = getTestWorld()
   const ast = assertParse(code, instance)
-  const { artifactGraph } = await enginelessExecutor(ast, rustContext)
+  const { artifactGraph, variables } = await enginelessExecutor(
+    ast,
+    rustContext
+  )
   const bodyArtifacts = artifactGraph
     .values()
     .filter((artifact) => artifact.type === bodyType)
@@ -106,7 +109,7 @@ async function getBodiesAndAcross({
     artifactGraph
   )
 
-  return { ast, artifactGraph, bodies, across }
+  return { ast, artifactGraph, variables, bodies, across }
 }
 
 describe('mirror', () => {
@@ -121,19 +124,21 @@ describe('mirror', () => {
       code: string
       bodyIds: number[]
       acrossId?: number
-      acrossType?: 'plane' | 'segment'
+      acrossType?: 'plane' | 'segment' | 'wall'
       bodyType?: 'path' | 'sweep'
     }) {
-      const { ast, artifactGraph, bodies, across } = await getBodiesAndAcross({
-        code,
-        bodyIds,
-        acrossId,
-        acrossType,
-        bodyType,
-      })
+      const { ast, artifactGraph, variables, bodies, across } =
+        await getBodiesAndAcross({
+          code,
+          bodyIds,
+          acrossId,
+          acrossType,
+          bodyType,
+        })
       const result = addMirror({
         ast,
         artifactGraph,
+        variables,
         bodies,
         across,
         wasmInstance: getTestWorld().instance,
@@ -197,6 +202,112 @@ plane002 = offsetPlane(YZ, offset = 1)`
       })
 
       expect(newCode).toContain(`${code}\n${expectedNewLine}`)
+    })
+
+    it('should support a default plane as the mirror reference', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0.2, 0.2], radius = 0.1)
+extrude001 = extrude(profile001, length = 1)`
+      const { instance, rustContext } = getTestWorld()
+      const ast = assertParse(code, instance)
+      const { artifactGraph, variables } = await enginelessExecutor(
+        ast,
+        rustContext
+      )
+      const bodyArtifact = artifactGraph
+        .values()
+        .find((artifact) => artifact.type === 'sweep')
+      if (!bodyArtifact || !('codeRef' in bodyArtifact)) {
+        throw new Error('Body artifact not found')
+      }
+      const result = addMirror({
+        ast,
+        artifactGraph,
+        variables,
+        bodies: {
+          graphSelections: [
+            {
+              artifact: bodyArtifact,
+              codeRef: bodyArtifact.codeRef,
+            },
+          ],
+          otherSelections: [],
+        },
+        across: {
+          graphSelections: [],
+          otherSelections: [{ name: 'YZ', id: 'default-yz' }],
+        },
+        wasmInstance: instance,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      await enginelessExecutor(result.modifiedAst, rustContext)
+      const newCode = recast(result.modifiedAst, instance)
+      expect(newCode).toContain(
+        `${code}\nsolid001 = mirror3d(extrude001, across = YZ)`
+      )
+    })
+
+    it('should support a body face as the mirror reference', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 10)
+extrude001 = extrude(profile001, length = 10)`
+      const { instance, rustContext } = getTestWorld()
+      const ast = assertParse(code, instance)
+      const { artifactGraph, variables } = await enginelessExecutor(
+        ast,
+        rustContext
+      )
+      const bodyArtifact = artifactGraph
+        .values()
+        .find((artifact) => artifact.type === 'sweep')
+      if (!bodyArtifact || !('codeRef' in bodyArtifact)) {
+        throw new Error('Body artifact not found')
+      }
+      const capArtifact = {
+        type: 'cap',
+        id: 'cap-end-test',
+        subType: 'end',
+        sweepId: bodyArtifact.id,
+        pathIds: [],
+        edgeCutEdgeIds: [],
+      } as any
+      artifactGraph.set(capArtifact.id, capArtifact)
+      const result = addMirror({
+        ast,
+        artifactGraph,
+        variables,
+        bodies: {
+          graphSelections: [
+            {
+              artifact: bodyArtifact,
+              codeRef: bodyArtifact.codeRef,
+            },
+          ],
+          otherSelections: [],
+        },
+        across: {
+          graphSelections: [
+            {
+              artifact: capArtifact,
+              codeRef: bodyArtifact.codeRef,
+            },
+          ],
+          otherSelections: [],
+        },
+        wasmInstance: instance,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      await enginelessExecutor(result.modifiedAst, rustContext)
+      const newCode = recast(result.modifiedAst, instance)
+      expect(newCode).toContain(
+        `solid001 = mirror3d(extrude001, across = planeOf(extrude001, face = capEnd001))`
+      )
     })
 
     it('should support a sketch segment as the mirror reference', async () => {

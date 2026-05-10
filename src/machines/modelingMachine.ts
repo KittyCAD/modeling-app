@@ -5857,12 +5857,12 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const ast = input.kclManager.ast
-        const artifactGraph = input.kclManager.artifactGraph
+        const { ast, artifactGraph, variables } = input.kclManager
         const result = addMirror({
           ...input.data,
           ast,
           artifactGraph,
+          variables,
           wasmInstance: input.wasmInstance,
         })
         if (err(result)) {

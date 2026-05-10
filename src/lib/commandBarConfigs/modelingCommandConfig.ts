@@ -1389,6 +1389,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...(context.argumentsToSubmit as ModelingCommandSchema['Mirror']),
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
+        variables: kclManager.variables,
         wasmInstance: await kclManager.wasmInstancePromise,
       })
       if (err(modRes)) {
@@ -1411,7 +1412,15 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       across: {
         inputType: 'selection',
-        selectionTypes: ['plane', 'segment', 'sweepEdge', 'edgeCutEdge'],
+        selectionTypes: [
+          'plane',
+          'cap',
+          'wall',
+          'edgeCut',
+          'segment',
+          'sweepEdge',
+          'edgeCutEdge',
+        ],
         clearSelectionFirst: true,
         multiple: false,
         required: true,
