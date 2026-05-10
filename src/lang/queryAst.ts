@@ -1553,6 +1553,29 @@ export function retrieveSelectionsFromOpArg(
       const parentPath = artifactGraph.get(artifact.pathId)
       if (parentPath?.type === 'path' && parentPath.subType === 'region') {
         artifact = parentPath
+      } else if (
+        opArg.value.type === 'Sketch' &&
+        opArg.value.value.artifactId === artifact.id &&
+        artifact.pathId === artifact.id &&
+        artifact.originalSegId
+      ) {
+        artifact = {
+          type: 'path',
+          id: artifact.id,
+          subType: 'region',
+          planeId: '',
+          segIds: [artifact.id],
+          consumed: true,
+          trajectorySweepId: null,
+          solid2dId: null,
+          codeRef: artifact.codeRef,
+          compositeSolidId: null,
+          sketchBlockId: null,
+          originPathId: null,
+          innerPathId: null,
+          outerPathId: null,
+          patternIds: [],
+        }
       }
     }
 
