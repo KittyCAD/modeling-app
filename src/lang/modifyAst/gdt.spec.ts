@@ -13,6 +13,7 @@ import {
   addAnnotationGdt,
   addParallelismGdt,
   addPerpendicularityGdt,
+  addDimensionGdt,
   addProfileGdt,
   getUsedDatumNames,
   getNextAvailableDatumName,
@@ -660,6 +661,51 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('faces = [')
       expect(newCode).toContain('edges = [')
       expect(newCode).toContain('datums = ["A", "B"]')
+      expect(newCode).toContain('tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+  })
+
+  describe('Testing addDimensionGdt', () => {
+    it('should add a dimension annotation to a selected edge', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const edge = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweepEdge'
+      )
+      if (!edge) {
+        throw new Error('Expected a sweep edge')
+      }
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addDimensionGdt({
+        ast,
+        artifactGraph,
+        edges: createSelectionFromArtifacts([edge], artifactGraph),
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+
+      expect(newCode).toContain('gdt::dimension(')
+      expect(newCode).toMatch(
+        /edges = \[\s*getCommonEdge\(faces = \[[^\]]+\]\)\s*\]/
+      )
       expect(newCode).toContain('tolerance = 0.1mm')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)

@@ -1,8 +1,10 @@
 use kcl_error::SourceRange;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
+use kittycad_modeling_cmds::shared::AnnotationBasicDimension;
 use kittycad_modeling_cmds::shared::AnnotationFeatureControl;
 use kittycad_modeling_cmds::shared::AnnotationLineEnd;
+use kittycad_modeling_cmds::shared::AnnotationMbdBasicDimension;
 use kittycad_modeling_cmds::shared::AnnotationMbdControlFrame;
 use kittycad_modeling_cmds::shared::AnnotationOptions;
 use kittycad_modeling_cmds::shared::AnnotationType;
@@ -246,6 +248,39 @@ pub async fn position(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         edges.unwrap_or_default(),
         tolerance,
         datums,
+        precision,
+        frame_position,
+        frame_plane,
+        leader_scale,
+        AnnotationStyle {
+            font_point_size,
+            font_scale,
+        },
+        exec_state,
+        &args,
+    )
+    .await?;
+    Ok(annotations.into())
+}
+
+pub async fn dimension(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let edges: Vec<EdgeReference> = args.get_kw_arg(
+        "edges",
+        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
+    let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
+    let frame_position: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
+    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
+    let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
+    let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
+    let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
+
+    let annotations = inner_dimension(
+        edges,
+        tolerance,
         precision,
         frame_position,
         frame_plane,
@@ -619,6 +654,53 @@ async fn inner_annotation(
 }
 
 #[allow(clippy::too_many_arguments)]
+async fn inner_dimension(
+    edges: Vec<EdgeReference>,
+    tolerance: TyF64,
+    precision: Option<TyF64>,
+    frame_position: Option<[TyF64; 2]>,
+    frame_plane: Option<Plane>,
+    leader_scale: Option<TyF64>,
+    style: AnnotationStyle,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<GdtAnnotation>, KclError> {
+    let precision = resolve_precision(precision, args)?;
+    let mut frame_plane = if let Some(plane) = frame_plane {
+        plane
+    } else {
+        xy_plane(exec_state, args).await?
+    };
+    ensure_sketch_plane_in_engine(
+        &mut frame_plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
+
+    let mut annotations = Vec::with_capacity(edges.len());
+    for edge in &edges {
+        let edge_id = edge.get_engine_id(exec_state, args)?;
+        create_basic_dimension_annotation(
+            edge_id,
+            &tolerance,
+            precision,
+            frame_position.as_ref(),
+            frame_plane.id,
+            leader_scale.as_ref(),
+            &style,
+            exec_state,
+            args,
+            &mut annotations,
+        )
+        .await?;
+    }
+    Ok(annotations)
+}
+
+#[allow(clippy::too_many_arguments)]
 async fn inner_profile(
     edges: Vec<EdgeReference>,
     datums: Option<Vec<String>>,
@@ -837,6 +919,65 @@ fn resolve_precision(precision: Option<TyF64>, args: &Args) -> Result<u32, KclEr
     } else {
         Ok(3)
     }
+}
+
+#[allow(clippy::too_many_arguments)]
+async fn create_basic_dimension_annotation(
+    entity_id: uuid::Uuid,
+    tolerance: &TyF64,
+    precision: u32,
+    frame_position: Option<&[TyF64; 2]>,
+    frame_plane_id: uuid::Uuid,
+    leader_scale: Option<&TyF64>,
+    style: &AnnotationStyle,
+    exec_state: &mut ExecState,
+    args: &Args,
+    annotations: &mut Vec<GdtAnnotation>,
+) -> Result<(), KclError> {
+    let meta = vec![Metadata::from(args.source_range)];
+    let annotation_id = exec_state.next_uuid();
+    let dimension = AnnotationBasicDimension::builder()
+        .from_entity_id(entity_id)
+        .from_entity_pos(KPoint2d { x: 0.0, y: 0.0 })
+        .to_entity_id(entity_id)
+        .to_entity_pos(KPoint2d { x: 1.0, y: 0.0 })
+        .dimension(
+            AnnotationMbdBasicDimension::builder()
+                .tolerance(tolerance.to_mm())
+                .build(),
+        )
+        .plane_id(frame_plane_id)
+        .offset(if let Some(offset) = frame_position {
+            KPoint2d {
+                x: offset[0].to_mm(),
+                y: offset[1].to_mm(),
+            }
+        } else {
+            KPoint2d { x: 100.0, y: 100.0 }
+        })
+        .precision(precision)
+        .font_scale(style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
+        .font_point_size(style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
+        .arrow_scale(leader_scale.map(|n| n.n as f32).unwrap_or(1.0))
+        .build();
+    let options = AnnotationOptions::builder().dimension(dimension).build();
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
+            ModelingCmd::from(
+                mcmd::NewAnnotation::builder()
+                    .options(options)
+                    .clobber(false)
+                    .annotation_type(AnnotationType::T3D)
+                    .build(),
+            ),
+        )
+        .await?;
+    annotations.push(GdtAnnotation {
+        id: annotation_id,
+        meta,
+    });
+    Ok(())
 }
 
 #[allow(clippy::too_many_arguments)]

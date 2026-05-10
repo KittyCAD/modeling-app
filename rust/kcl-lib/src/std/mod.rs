@@ -83,6 +83,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::gdt::annotation(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::gdt::annotation"),
         ),
+        ("gdt", "dimension") => (
+            |e, a| Box::pin(crate::std::gdt::dimension(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::dimension"),
+        ),
         ("gdt", "profile") => (
             |e, a| Box::pin(crate::std::gdt::profile(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::gdt::profile"),

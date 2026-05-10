@@ -1297,12 +1297,24 @@ export function buildToolbarConfig(
             },
             {
               id: 'gdt-dimension',
-              onClick: () => {},
-              status: 'unavailable',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'GDT Dimension', groupId: 'modeling' },
+                }),
+              status: 'experimental',
               title: 'Dimension',
+              icon: 'dimension',
               description:
                 'Adds size dimensions with manufacturing tolerances.',
-              links: [],
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-dimension'
+                  ),
+                },
+              ],
             },
             {
               id: 'gdt-annotation',
