@@ -140,6 +140,7 @@ import {
 import {
   addFlatnessGdt,
   addDatumGdt,
+  addPositionGdt,
   addAnnotationGdt,
   addParallelismGdt,
   addPerpendicularityGdt,
@@ -544,6 +545,7 @@ export type ModelingMachineEvent =
     }
   | { type: 'GDT Flatness'; data: ModelingCommandSchema['GDT Flatness'] }
   | { type: 'GDT Datum'; data: ModelingCommandSchema['GDT Datum'] }
+  | { type: 'GDT Position'; data: ModelingCommandSchema['GDT Position'] }
   | { type: 'GDT Profile'; data: ModelingCommandSchema['GDT Profile'] }
   | {
       type: 'GDT Perpendicularity'
@@ -5263,6 +5265,60 @@ export const modelingMachine = setup({
         )
       }
     ),
+    gdtPositionAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Position'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        let astWithNewSetting: Node<Program> | undefined
+        if (
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const ast = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            await input.kclManager.wasmInstancePromise
+          )
+          if (err(ast)) {
+            return Promise.reject(ast)
+          }
+
+          astWithNewSetting = ast
+        }
+
+        const result = addPositionGdt({
+          ...input.data,
+          ast: astWithNewSetting ?? input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
     gdtPerpendicularityAstMod: fromPromise(
       async ({
         input,
@@ -6147,6 +6203,10 @@ export const modelingMachine = setup({
 
         'GDT Datum': {
           target: 'Applying GDT Datum',
+        },
+
+        'GDT Position': {
+          target: 'Applying GDT Position',
         },
 
         'GDT Profile': {
@@ -8234,6 +8294,26 @@ export const modelingMachine = setup({
         id: 'gdtProfileAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'GDT Profile') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Position': {
+      invoke: {
+        src: 'gdtPositionAstMod',
+        id: 'gdtPositionAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Position') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,
