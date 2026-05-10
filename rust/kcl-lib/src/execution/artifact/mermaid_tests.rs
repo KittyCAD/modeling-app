@@ -740,6 +740,7 @@ fn surface_blend_creates_blend_sweep_artifact() {
         &artifact_command,
         &FnvHashMap::default(),
         &FnvHashMap::default(),
+        &FnvHashMap::default(),
         &programs,
         0,
         &IndexMap::default(),
@@ -809,6 +810,7 @@ fn create_region_creates_region_path_sub_type() {
     let updated = artifacts_to_update(
         &artifacts,
         &artifact_command,
+        &FnvHashMap::default(),
         &FnvHashMap::default(),
         &FnvHashMap::default(),
         &programs,
