@@ -142,7 +142,7 @@ impl EngineConnection {
         Self::new_from_js_value(manager.into(), response_context)
     }
 
-    fn new_from_js_value(manager: JsValue, response_context: Arc<ResponseContext>) -> Result<EngineConnection, JsValue> {
+    pub fn new_from_js_value(manager: JsValue, response_context: Arc<ResponseContext>) -> Result<EngineConnection, JsValue> {
         #[allow(clippy::arc_with_non_send_sync)]
         Ok(EngineConnection {
             manager: Arc::new(manager),

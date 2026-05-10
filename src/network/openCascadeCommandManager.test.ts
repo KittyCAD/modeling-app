@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 
 import { assertParse } from '@src/lang/wasm'
 import { OpenCascadeCommandManager } from '@src/network/openCascadeCommandManager'
+import { OPEN_CASCADE_CIRCLE_EXTRUDE_KCL } from '@src/network/openCascadeProofFixture'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
 const RANGE = JSON.stringify([0, 0, 0])
@@ -105,6 +106,8 @@ describe('OpenCascadeCommandManager', () => {
     })
     expect(manager.getSolidCount()).toBe(1)
     expect(manager.exportLastBrep()?.length).toBeGreaterThan(0)
+    const glbBytes = await manager.exportLatestGlbBytes()
+    expect(glbBytes.length).toBeGreaterThan(0)
 
     const faceInfoResponse = await send(manager, IDS.request, {
       type: 'modeling_cmd_req',
@@ -136,17 +139,7 @@ describe('OpenCascadeCommandManager', () => {
 
   it('executes the circle-region-extrude KCL proof through WASM', async () => {
     const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
-    const ast = assertParse(
-      `sketch001 = sketch(on = XY) {
-  circle1 = circle(start = [var 0.89mm, var 0.72mm], center = [var 0mm, var 0mm])
-  coincident([circle1.center, ORIGIN])
-}
-hidden001 = hide(sketch001)
-region001 = region(point = [-0.8880564mm, -0.7184276mm], sketch = sketch001)
-extrude001 = extrude(region001, length = 5)
-`,
-      instance
-    )
+    const ast = assertParse(OPEN_CASCADE_CIRCLE_EXTRUDE_KCL, instance)
 
     const execState = await rustContext.execute(ast, {
       settings: { modeling: { engine: 'open_cascade' } },
@@ -156,6 +149,8 @@ extrude001 = extrude(region001, length = 5)
     const manager = OpenCascadeCommandManager.latestInstance()
     expect(manager?.getSolidCount()).toBe(1)
     expect(manager?.exportLastBrep()?.length).toBeGreaterThan(0)
+    const glbBytes = await manager?.exportLatestGlbBytes()
+    expect(glbBytes?.length).toBeGreaterThan(0)
   })
 })
 

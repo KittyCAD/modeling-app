@@ -57,6 +57,7 @@ import {
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
 import { ConnectionManager } from '@src/network/connectionManager'
+import { EngineCommandManagerProxy } from '@src/network/engineCommandManagerProxy'
 import {
   type CommandSystemService,
   commandSystemService,
@@ -79,6 +80,7 @@ import type {
 } from 'xstate'
 import { createActor } from 'xstate'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
+import { provideEngineCommandManagerService } from '@src/registry/contracts/engineCommandManager'
 
 const DEFAULT_LAYOUT_CONFIG_NAME = 'default'
 const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
@@ -304,7 +306,7 @@ export class App implements AppSubsystems {
           return getOnlySettingsFromContext(state.context)
         }),
     }
-    const engineCommandManager = new ConnectionManager({
+    const engineCommandManager = new EngineCommandManagerProxy({
       settingsActor,
     })
     const rustContext = new RustContext(
@@ -540,8 +542,9 @@ export class App implements AppSubsystems {
 
     this.registry.reconfigure(appRegistryServicesSlot, [
       defineRegistryItem({
-        id: 'executing-editor-services',
+        id: 'app-runtime-services',
         providesServices: [
+          provideEngineCommandManagerService(this.engineCommandManager),
           provideService(
             executingEditorService,
             kclManager.executingEditorService

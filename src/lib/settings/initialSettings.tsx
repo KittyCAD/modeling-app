@@ -345,7 +345,19 @@ function createCoreSettings() {
         defaultValue: 'zoo',
         description: 'Geometry engine to use for modeling execution.',
         validate: (v) => v === 'zoo' || v === 'open_cascade',
-        hideOnPlatform: 'both',
+        commandConfig: {
+          inputType: 'options',
+          defaultValueFromContext: (context) => context.modeling.engine.current,
+          options: (cmdContext, settingsContext) =>
+            (['zoo', 'open_cascade'] satisfies GeometryEngine[]).map((v) => ({
+              name: v,
+              value: v,
+              isCurrent: settingsContext.modeling.engine.shouldShowCurrentLabel(
+                cmdContext.argumentsToSubmit.level as SettingsLevel,
+                v
+              ),
+            })),
+        },
       }),
       /**
        * The default unit to use in modeling dimensions

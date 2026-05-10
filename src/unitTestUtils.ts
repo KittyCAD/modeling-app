@@ -21,7 +21,7 @@ import { createSettings } from '@src/lib/settings/initialSettings'
 import { settingsMachine } from '@src/machines/settingsMachine'
 import { MachineManager } from '@src/lib/MachineManager'
 import { signal } from '@preact/signals-core'
-import { ConnectionManager } from '@src/network/connectionManager'
+import { EngineCommandManagerProxy } from '@src/network/engineCommandManagerProxy'
 import RustContext from '@src/lib/rustContext'
 
 /**
@@ -77,7 +77,7 @@ export async function buildTheWorldAndConnectToEngine() {
       wasmInstancePromise: instancePromise,
     },
   })
-  const engineCommandManager = new ConnectionManager({
+  const engineCommandManager = new EngineCommandManagerProxy({
     settingsActor,
   })
   const rustContext = new RustContext(
@@ -173,7 +173,7 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
       wasmInstancePromise: instancePromise,
     },
   })
-  const engineCommandManager = new ConnectionManager({
+  const engineCommandManager = new EngineCommandManagerProxy({
     settingsActor,
   })
   const rustContext = new RustContext(

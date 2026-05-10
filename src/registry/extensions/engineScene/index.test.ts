@@ -6,6 +6,7 @@ import {
 import { signal } from '@preact/signals-core'
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
+import { layoutAreaLibraryValueSpec } from '@src/registry/contracts/layout'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { describe, expect, it, vi } from 'vitest'
@@ -39,6 +40,16 @@ describe('engineScene extension', () => {
       .modeling.showExecutingSpinner.createSetting()
 
     expect(setting.default).toBe(false)
+  })
+
+  it('contributes the modeling layout area', () => {
+    const registry = new Registry()
+    registry.configure([engineSceneExtension])
+
+    const areaLibrary = registry.get(layoutAreaLibraryValueSpec)
+
+    expect(areaLibrary.modeling.hide()).toBe(false)
+    expect(areaLibrary.modeling.Component).toBeTypeOf('function')
   })
 
   it('contributes ordered engine scene local status bar items', () => {

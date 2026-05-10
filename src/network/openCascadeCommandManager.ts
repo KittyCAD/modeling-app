@@ -1,4 +1,5 @@
 import { encode as msgpackEncode } from '@msgpack/msgpack'
+import { signal } from '@preact/signals-core'
 import type {
   BatchResponse,
   ModelingCmd,
@@ -73,6 +74,8 @@ async function initOpenCascade(): Promise<OpenCascadeInstance> {
 }
 
 export class OpenCascadeCommandManager {
+  readonly latestShapeVersion = signal(0)
+  readonly latestExportError = signal<string | undefined>(undefined)
   private planes = new Map<string, PlaneState>()
   private paths = new Map<string, PathState>()
   private regions = new Map<string, RegionState>()
@@ -125,6 +128,25 @@ export class OpenCascadeCommandManager {
 
   exportLastBrep(): Uint8Array | undefined {
     return Array.from(this.solids.values()).at(-1)?.brep
+  }
+
+  async exportLatestGlbBytes(): Promise<Uint8Array> {
+    const latest = Array.from(this.solids.entries()).at(-1)
+    if (!latest) {
+      return new Uint8Array()
+    }
+
+    const [id, solid] = latest
+    const oc = await initOpenCascade()
+    try {
+      const bytes = this.writeGlb(id, solid.shape, oc)
+      this.latestExportError.value = undefined
+      return bytes
+    } catch (error) {
+      this.latestExportError.value =
+        error instanceof Error ? error.message : String(error)
+      throw error
+    }
   }
 
   private async executeRequest(
@@ -319,6 +341,7 @@ export class OpenCascadeCommandManager {
     }
     solid.brep = this.writeBrep(commandId, shape, oc)
     this.solids.set(commandId, solid)
+    this.latestShapeVersion.value += 1
 
     return { type: 'extrude', data: {} }
   }
@@ -388,6 +411,42 @@ export class OpenCascadeCommandManager {
     return oc.FS.readFile(fileName)
   }
 
+  private writeGlb(
+    id: string,
+    shape: any,
+    oc: OpenCascadeInstance
+  ): Uint8Array {
+    const fileName = `/${id}.glb`
+    try {
+      oc.FS.unlink(fileName)
+    } catch {
+      // Missing files are fine; Emscripten throws for unlink on absent paths.
+    }
+
+    const docHandle = new oc.Handle_TDocStd_Document_2(
+      new oc.TDocStd_Document(new oc.TCollection_ExtendedString_1())
+    )
+    const shapeTool = oc.XCAFDoc_DocumentTool.ShapeTool(
+      docHandle.get().Main()
+    ).get()
+    shapeTool.SetShape(shapeTool.NewShape(), shape)
+    new oc.BRepMesh_IncrementalMesh_2(shape, 0.1, false, 0.1, false)
+    const writer = new oc.RWGltf_CafWriter(
+      new oc.TCollection_AsciiString_2(fileName),
+      true
+    )
+    const didWrite = writer.Perform_2(
+      docHandle,
+      new oc.TColStd_IndexedDataMapOfStringString_1(),
+      new oc.Message_ProgressRange_1()
+    )
+    if (!didWrite) {
+      throw new Error('OpenCascade GLB writer failed')
+    }
+
+    return oc.FS.readFile(fileName)
+  }
+
   private requirePath(pathId: string, _range: SourceRange): PathState {
     const path = this.paths.get(pathId)
     if (!path) {
@@ -413,6 +472,8 @@ export class OpenCascadeCommandManager {
     this.regions.clear()
     this.solids.clear()
     this.currentSketchPlaneId = undefined
+    this.latestExportError.value = undefined
+    this.latestShapeVersion.value += 1
   }
 }
 

@@ -14,6 +14,19 @@ import {
 import { Suspense, createElement, lazy } from 'react'
 import { EngineExecutionStatusTooltip } from './EngineExecutionStatusTooltip'
 import { ENGINE_SCENE_EXECUTION_STATUS_BAR_ITEM_ID } from './constants'
+import { layoutAreaLibraryValueSpec } from '@src/registry/contracts/layout'
+
+const EngineSceneModelingArea = lazy(async () => {
+  const { ModelingArea } = await import('./ModelingArea')
+  return { default: ModelingArea }
+})
+
+const EngineSceneModelingAreaComponent = () =>
+  createElement(
+    Suspense,
+    { fallback: null },
+    createElement(EngineSceneModelingArea)
+  )
 
 const UnitsMenu = lazy(async () => {
   const { UnitsMenu } = await import('@src/components/UnitsMenu')
@@ -134,6 +147,12 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
                 tomlKey: 'show_executing_spinner',
               },
             }),
+          },
+        }),
+        provide(layoutAreaLibraryValueSpec, {
+          modeling: {
+            hide: () => false,
+            Component: EngineSceneModelingAreaComponent,
           },
         }),
         provide(statusBarLocalItemsValueSpec, selectionStatusBarItem),

@@ -46,17 +46,29 @@ impl Context {
 
         let response_context = Arc::new(kcl_lib::wasm_engine::ResponseContext::new());
         let open_cascade_response_context = Arc::new(kcl_lib::wasm_engine::ResponseContext::new());
-        let open_cascade_manager = kcl_lib::wasm_engine::OpenCascadeCommandManager::new();
+        let engine_manager_value: JsValue = engine_manager.clone().into();
+        let open_cascade_engine_manager = js_sys::Reflect::get(
+            &engine_manager_value,
+            &JsValue::from_str("openCascadeCommandManager"),
+        )
+        .ok()
+        .filter(|value| !value.is_null() && !value.is_undefined());
         Ok(Self {
             engine: Arc::new(Box::new(
                 kcl_lib::wasm_engine::EngineConnection::new(engine_manager, response_context.clone())
                     .map_err(|e| format!("{:?}", e))?,
             )),
             open_cascade_engine: Arc::new(Box::new(
-                kcl_lib::wasm_engine::EngineConnection::new_from_open_cascade(
-                    open_cascade_manager,
-                    open_cascade_response_context.clone(),
-                )
+                match open_cascade_engine_manager {
+                    Some(manager) => kcl_lib::wasm_engine::EngineConnection::new_from_js_value(
+                        manager,
+                        open_cascade_response_context.clone(),
+                    ),
+                    None => kcl_lib::wasm_engine::EngineConnection::new_from_open_cascade(
+                        kcl_lib::wasm_engine::OpenCascadeCommandManager::new(),
+                        open_cascade_response_context.clone(),
+                    ),
+                }
                 .map_err(|e| format!("{:?}", e))?,
             )),
             fs: Arc::new(FileManager::new(fs_manager)),

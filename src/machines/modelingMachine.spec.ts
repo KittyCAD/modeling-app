@@ -1,5 +1,4 @@
-/** Engine-using integration tests of modelingMachine.
- * For engineless unit tests, see modelingMachine.test.ts */
+/** Engine-using integration tests of modelingMachine. */
 import { assertParse, recast, type CallExpressionKw } from '@src/lang/wasm'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import { err } from '@src/lib/trap'
