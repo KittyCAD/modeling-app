@@ -1,4 +1,6 @@
-import { recast, type PlaneArtifact } from '@src/lang/wasm'
+import { recast, type Artifact, type PlaneArtifact } from '@src/lang/wasm'
+import type { CodeRef } from '@rust/kcl-lib/bindings/Artifact'
+import type { OpArg } from '@rust/kcl-lib/bindings/Operation'
 import type {
   NonCodeSelection,
   Selections,
@@ -1455,6 +1457,94 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
       expect(selections.faces.graphSelections).toHaveLength(2)
       expect(selections.faces.graphSelections[0].artifact!.type).toEqual('cap')
       expect(selections.faces.graphSelections[1].artifact!.type).toEqual('cap')
+    })
+
+    it('should find the solid and face of a chained hole edit', () => {
+      const codeRef: CodeRef = {
+        range: [0, 0, 0],
+        pathToNode: [['body', 'Program']],
+        nodePath: { steps: [] },
+      }
+      const artifactGraph = new Map<string, Artifact>()
+      const path: Artifact = {
+        type: 'path',
+        id: 'path-1',
+        subType: 'sketch',
+        planeId: 'plane-1',
+        segIds: [],
+        consumed: true,
+        sweepId: 'sweep-1',
+        trajectorySweepId: null,
+        codeRef,
+      }
+      const sweep: Artifact = {
+        type: 'sweep',
+        id: 'sweep-1',
+        subType: 'extrusion',
+        pathId: path.id,
+        surfaceIds: ['cap-end-1'],
+        edgeIds: [],
+        codeRef,
+        trajectoryId: null,
+        method: 'merge',
+        consumed: true,
+      }
+      const capEnd001: Artifact = {
+        type: 'cap',
+        id: 'cap-end-1',
+        subType: 'end',
+        edgeCutEdgeIds: [],
+        sweepId: sweep.id,
+        pathIds: [],
+        faceCodeRef: codeRef,
+        cmdId: 'cmd-1',
+      }
+      const hole001: Artifact = {
+        type: 'compositeSolid',
+        id: 'hole-1',
+        consumed: true,
+        subType: 'subtract',
+        solidIds: [sweep.id],
+        toolIds: [],
+        codeRef,
+        compositeSolidId: 'hole-2',
+      }
+
+      artifactGraph.set(path.id, path)
+      artifactGraph.set(sweep.id, sweep)
+      artifactGraph.set(capEnd001.id, capEnd001)
+      artifactGraph.set(hole001.id, hole001)
+
+      const solidsArg: OpArg = {
+        value: { type: 'Solid', value: { artifactId: hole001.id } },
+        sourceRange: [0, 0, 0],
+      }
+      const faceArg: OpArg = {
+        value: {
+          type: 'TagIdentifier',
+          value: 'capEnd001',
+          artifact_id: capEnd001.id,
+        },
+        sourceRange: [0, 0, 0],
+      }
+
+      const selections = retrieveFaceSelectionsFromOpArgs(
+        solidsArg,
+        faceArg,
+        artifactGraph
+      )
+      if (err(selections)) throw selections
+
+      expect(selections.solids.graphSelections).toHaveLength(1)
+      expect(selections.solids.graphSelections[0].artifact!.type).toEqual(
+        'compositeSolid'
+      )
+      expect(selections.faces.graphSelections).toHaveLength(1)
+      const face = selections.faces.graphSelections[0]
+      if (!face.artifact || face.artifact.type !== 'cap') {
+        throw new Error('Artifact not found in the selection')
+      }
+      expect(face.artifact.subType).toEqual('end')
     })
   })
 

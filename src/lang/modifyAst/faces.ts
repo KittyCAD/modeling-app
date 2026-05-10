@@ -984,7 +984,7 @@ export function retrieveFaceSelectionsFromOpArgs(
   }
 
   const sweepIds = solids.graphSelections.flatMap((s) =>
-    s.artifact?.type === 'sweep' ? s.artifact.id : []
+    getSweepIdsFromBodyArtifact(s.artifact, artifactGraph)
   )
   if (sweepIds.length === 0) {
     return new Error('No sweep artifact found in solids selection')
@@ -1002,14 +1002,13 @@ export function retrieveFaceSelectionsFromOpArgs(
         return codeRef
       }
 
-      candidates.set(artifact.subType, {
+      const selection = {
         artifact,
         codeRef,
-      })
-      candidates.set(artifact.id, {
-        artifact,
-        codeRef,
-      })
+      }
+      candidates.set(artifact.subType, selection)
+      candidates.set(artifact.subType.toUpperCase(), selection)
+      candidates.set(artifact.id, selection)
     } else if (
       artifact.type === 'wall' &&
       sweepIdsSet.has(artifact.sweepId) &&
@@ -1024,10 +1023,11 @@ export function retrieveFaceSelectionsFromOpArgs(
       }
 
       const { codeRef } = segArtifact
-      candidates.set(artifact.segId, {
+      const selection = {
         artifact,
         codeRef,
-      })
+      }
+      candidates.set(artifact.segId, selection)
     }
   }
 
@@ -1050,26 +1050,99 @@ export function retrieveFaceSelectionsFromOpArgs(
         )
       }
     } else if (
-      v.type === 'TagIdentifier' &&
-      v.artifact_id &&
-      candidates.has(v.artifact_id)
+      (v.type === 'TagIdentifier' || v.type === 'Face') &&
+      v.artifact_id
     ) {
       const result = candidates.get(v.artifact_id)
       if (result) {
         graphSelections.push(result)
-      } else {
-        console.warn(
-          'retrieveFaceSelectionsFromOpArgs result from artifact_id is missing and not a selection'
-        )
+        continue
       }
+
+      const artifact = artifactGraph.get(v.artifact_id)
+      const codeRefs = getCodeRefsByArtifactId(v.artifact_id, artifactGraph)
+      if (
+        isFaceArtifact(artifact) &&
+        codeRefs &&
+        codeRefs.length > 0 &&
+        artifact
+      ) {
+        graphSelections.push({
+          artifact,
+          codeRef: codeRefs[0],
+        })
+        continue
+      }
+
+      console.warn(
+        'retrieveFaceSelectionsFromOpArgs result from artifact_id is missing and not a selection'
+      )
     } else {
-      console.warn('Face value is not a String or TagIdentifier', v)
+      console.warn('Face value is not a String, TagIdentifier, or Face', v)
       continue
     }
   }
 
+  if (graphSelections.length !== faceValues.length) {
+    return new Error("Couldn't retrieve face selections from operation")
+  }
+
   const faces = { graphSelections, otherSelections: [] }
   return { solids, faces }
+}
+
+function getSweepIdsFromBodyArtifact(
+  artifact: Artifact | undefined,
+  artifactGraph: ArtifactGraph,
+  seen = new Set<string>()
+): string[] {
+  if (!artifact || seen.has(artifact.id)) {
+    return []
+  }
+  seen.add(artifact.id)
+
+  if (artifact.type === 'sweep') {
+    return [artifact.id]
+  }
+
+  if (artifact.type === 'path' && artifact.sweepId) {
+    return [artifact.sweepId]
+  }
+
+  if (artifact.type === 'compositeSolid') {
+    const relatedBodyIds = [
+      ...artifact.solidIds,
+      ...artifact.toolIds,
+      ...[...artifactGraph.values()].flatMap((candidate) => {
+        if (
+          candidate.type === 'path' &&
+          candidate.compositeSolidId === artifact.id &&
+          candidate.sweepId
+        ) {
+          return [candidate.sweepId]
+        }
+
+        if (
+          candidate.type === 'compositeSolid' &&
+          candidate.compositeSolidId === artifact.id
+        ) {
+          return [candidate.id]
+        }
+
+        return []
+      }),
+    ]
+
+    return relatedBodyIds.flatMap((solidId) =>
+      getSweepIdsFromBodyArtifact(
+        artifactGraph.get(solidId),
+        artifactGraph,
+        seen
+      )
+    )
+  }
+
+  return []
 }
 
 export function retrieveNonDefaultPlaneSelectionFromOpArg(
