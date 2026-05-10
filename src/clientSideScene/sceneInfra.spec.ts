@@ -64,6 +64,24 @@ describe('SceneInfra animation loop', () => {
     requestAnimationFrame.mockRestore()
     cancelAnimationFrame.mockRestore()
   })
+
+  it('can stop without clearing the last client-side frame', () => {
+    const requestAnimationFrame = vi
+      .spyOn(window, 'requestAnimationFrame')
+      .mockReturnValue(1)
+    const cancelAnimationFrame = vi.spyOn(window, 'cancelAnimationFrame')
+    const sceneInfra = makeSceneInfraForCallbacksTest()
+    sceneInfra.renderer.clear = vi.fn()
+
+    sceneInfra.animate()
+    sceneInfra.stop({ clear: false })
+
+    expect(cancelAnimationFrame).toHaveBeenCalledWith(1)
+    expect(sceneInfra.renderer.clear).not.toHaveBeenCalled()
+
+    requestAnimationFrame.mockRestore()
+    cancelAnimationFrame.mockRestore()
+  })
 })
 
 describe('SceneInfra camera controls', () => {

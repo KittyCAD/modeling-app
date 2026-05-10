@@ -474,7 +474,7 @@ export class SceneInfra {
     this.onBeforeRender()
   }
 
-  stop = () => {
+  stop = ({ clear = true }: { clear?: boolean } = {}) => {
     this.animationLoopRetainCount = Math.max(
       0,
       this.animationLoopRetainCount - 1
@@ -485,9 +485,11 @@ export class SceneInfra {
     if (this.animationFrameId !== -1) {
       cancelAnimationFrame(this.animationFrameId)
       this.animationFrameId = -1
-      // If you stop the renderer it will render a last frame of the sketch scene
-      // clear it since they should not be seeing this renderer anyway
-      this.renderer.clear()
+      if (clear) {
+        // If you stop the renderer it will render a last frame of the sketch scene
+        // clear it since they should not be seeing this renderer anyway
+        this.renderer.clear()
+      }
     }
   }
 

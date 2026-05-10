@@ -632,7 +632,7 @@ async function animateCameraToQuaternion(
   } catch (e) {
     console.warn(e)
   } finally {
-    sceneInfra.stop()
+    sceneInfra.stop({ clear: previousSyncDirection !== 'clientToEngine' })
     camControls.enableRotate = previousEnableRotate
     camControls.enablePan = previousEnablePan
     camControls.enableZoom = previousEnableZoom
