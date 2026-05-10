@@ -36,6 +36,33 @@ describe('OpenCascadeThreeScene helpers', () => {
     ;(mesh.material as MeshBasicMaterial).dispose()
   })
 
+  it('computes sketch line bounds for camera framing', () => {
+    const bounds = helpers.getOpenCascadeSketchLineBounds({
+      version: 1,
+      segments: [
+        {
+          pathId: 'path-1',
+          segmentId: 'line-1',
+          artifactId: 'line-1',
+          kind: 'line',
+          points: [0, 0, 0, 10, 0, 0],
+        },
+        {
+          pathId: 'path-1',
+          segmentId: 'line-2',
+          artifactId: 'line-2',
+          kind: 'line',
+          points: [10, 0, 0, 10, 8, 0],
+        },
+      ],
+    })
+
+    expect(bounds?.center.x).toBeCloseTo(5)
+    expect(bounds?.center.y).toBeCloseTo(4)
+    expect(bounds?.center.z).toBeCloseTo(0)
+    expect(bounds?.radius).toBe(10)
+  })
+
   it('creates stable OpenCascade guide objects', () => {
     const root = helpers.makeOpenCascadeGuideRoot()
 

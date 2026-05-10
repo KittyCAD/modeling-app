@@ -253,6 +253,10 @@ export class EngineCommandManagerProxy extends ConnectionManager {
     return this.openCascadeCommandManager.exportLatestTopologyMeshes()
   }
 
+  exportLatestOpenCascadeSketchLineMeshes() {
+    return this.openCascadeCommandManager.exportLatestSketchLineMeshes()
+  }
+
   async exportLatestOpenCascadeGlbUrl() {
     const bytes = await this.exportLatestOpenCascadeGlbBytes()
     const blob = new Blob([bytes as BlobPart], {

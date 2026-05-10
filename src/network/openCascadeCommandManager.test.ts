@@ -7,6 +7,8 @@ import {
   OPEN_CASCADE_CIRCLE_EXTRUDE_KCL,
   OPEN_CASCADE_LOFT_KCL,
   OPEN_CASCADE_REVOLVE_KCL,
+  OPEN_CASCADE_SKETCH_V2_CIRCLE_KCL,
+  OPEN_CASCADE_SKETCH_V2_RECTANGLE_KCL,
   OPEN_CASCADE_SWEEP_KCL,
 } from '@src/network/openCascadeProofFixture'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
@@ -254,6 +256,30 @@ describe('OpenCascadeCommandManager', () => {
       expect(manager?.exportLastBrep()?.length).toBeGreaterThan(0)
       const glbBytes = await manager?.exportLatestGlbBytes()
       expect(glbBytes?.length).toBeGreaterThan(0)
+    }
+  )
+
+  it.each([
+    ['rectangle', OPEN_CASCADE_SKETCH_V2_RECTANGLE_KCL, 4],
+    ['circle', OPEN_CASCADE_SKETCH_V2_CIRCLE_KCL, 1],
+  ])(
+    'executes the V2 sketch %s proof and exports sketch line meshes',
+    async (_, code, expectedSegmentCount) => {
+      const { instance, rustContext } =
+        await buildTheWorldAndNoEngineConnection()
+      const ast = assertParse(code, instance)
+
+      const execState = await rustContext.execute(ast, {
+        settings: { modeling: { engine: 'open_cascade' } },
+      })
+
+      expect(execState.variables.sketch001).toBeTruthy()
+      const manager = OpenCascadeCommandManager.latestInstance()
+      const sketchLines = manager?.exportLatestSketchLineMeshes()
+      expect(sketchLines?.segments).toHaveLength(expectedSegmentCount)
+      expect(
+        sketchLines?.segments.every((segment) => segment.points.length >= 6)
+      ).toBe(true)
     }
   )
 })

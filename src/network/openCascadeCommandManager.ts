@@ -142,6 +142,19 @@ export type OpenCascadeTopologyMeshes = {
   solids: OpenCascadeTopologySolidMesh[]
 }
 
+export type OpenCascadeSketchLineSegment = {
+  pathId: string
+  segmentId: string
+  artifactId: string
+  kind: 'line' | 'arc'
+  points: number[]
+}
+
+export type OpenCascadeSketchLineMeshes = {
+  version: number
+  segments: OpenCascadeSketchLineSegment[]
+}
+
 type ExtrudeTopology = {
   regionId: string
   pathId: string
@@ -232,6 +245,7 @@ export class OpenCascadeCommandManager {
   readonly latestShapeVersion = signal(0)
   readonly latestProfileVersion = signal(0)
   readonly latestTopologyVersion = signal(0)
+  readonly latestSketchVersion = signal(0)
   readonly latestExportError = signal<string | undefined>(undefined)
   private planes = new Map<string, PlaneState>()
   private paths = new Map<string, PathState>()
@@ -346,6 +360,20 @@ export class OpenCascadeCommandManager {
     }
   }
 
+  exportLatestSketchLineMeshes(): OpenCascadeSketchLineMeshes {
+    const segments: OpenCascadeSketchLineSegment[] = []
+    for (const [pathId, path] of this.paths) {
+      for (const segment of this.sketchLineSegmentsForPath(pathId, path)) {
+        segments.push(segment)
+      }
+    }
+
+    return {
+      version: this.latestSketchVersion.value,
+      segments,
+    }
+  }
+
   private async executeRequest(
     id: string,
     request: WebSocketRequest,
@@ -439,10 +467,12 @@ export class OpenCascadeCommandManager {
           planeId: this.currentSketchPlaneId,
           segments: [],
         })
+        this.latestSketchVersion.value += 1
         return modeling({ type: 'start_path', data: {} })
       case 'move_path_pen': {
         const path = this.requirePath(cmd.path, range)
         path.pen = toPoint3(cmd.to)
+        this.latestSketchVersion.value += 1
         return modeling({ type: 'move_path_pen', data: {} })
       }
       case 'extend_path':
@@ -507,6 +537,7 @@ export class OpenCascadeCommandManager {
       const end = endpointFromSegment(start, segment)
       path.segments.push({ id: commandId, type: 'line', start, end })
       path.pen = end
+      this.latestSketchVersion.value += 1
       return { type: 'extend_path', data: {} }
     }
 
@@ -518,6 +549,7 @@ export class OpenCascadeCommandManager {
       const end = endpointFromSegment(start, segment)
       path.segments.push({ id: commandId, type: 'line', start, end })
       path.pen = end
+      this.latestSketchVersion.value += 1
       return { type: 'extend_path', data: {} }
     }
 
@@ -565,6 +597,7 @@ export class OpenCascadeCommandManager {
       }
     }
     path.pen = arcEnd
+    this.latestSketchVersion.value += 1
     return { type: 'extend_path', data: {} }
   }
 
@@ -577,6 +610,7 @@ export class OpenCascadeCommandManager {
     path.closed = true
     path.closeCommandId = commandId
     this.pathAliases.set(commandId, pathId)
+    this.latestSketchVersion.value += 1
     return { type: 'close_path', data: { face_id: commandId } }
   }
 
@@ -1201,6 +1235,48 @@ export class OpenCascadeCommandManager {
     return entries
   }
 
+  private sketchLineSegmentsForPath(
+    pathId: string,
+    path: PathState
+  ): OpenCascadeSketchLineSegment[] {
+    const segments = path.segments.map((segment) => ({
+      pathId,
+      segmentId: segment.id,
+      artifactId: segment.id,
+      kind: segment.type,
+      points: flattenPoints(
+        pointsForPathSegment(segment, this.planeForPath(path))
+      ),
+    }))
+
+    if (
+      path.closed &&
+      path.start &&
+      path.pen &&
+      !pointsClose(path.start, path.pen) &&
+      !path.circle
+    ) {
+      const closingEdgeId =
+        path.closeCommandId ||
+        deriveTopologyId(
+          segments.at(-1)?.segmentId || path.segments.at(-1)?.id || '',
+          15
+        )
+      segments.push({
+        pathId,
+        segmentId: closingEdgeId,
+        artifactId: closingEdgeId,
+        kind: 'line',
+        points: flattenPoints([
+          localToWorld(path.pen, this.planeForPath(path)),
+          localToWorld(path.start, this.planeForPath(path)),
+        ]),
+      })
+    }
+
+    return segments
+  }
+
   private makeLineEdge(
     start: Point3,
     end: Point3,
@@ -1447,6 +1523,7 @@ export class OpenCascadeCommandManager {
     this.latestShapeVersion.value += 1
     this.latestProfileVersion.value += 1
     this.latestTopologyVersion.value += 1
+    this.latestSketchVersion.value += 1
   }
 
   private findExtrudeTopology(objectId: string): ExtrudeTopology | undefined {
@@ -1566,6 +1643,20 @@ function normalize(v: Point3): Point3 {
 
 function pointsClose(a: Point3, b: Point3): boolean {
   return Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z) < 1e-6
+}
+
+function pointsForPathSegment(
+  segment: PathSegmentState,
+  plane?: PlaneState
+): Point3[] {
+  if (segment.type === 'line') {
+    return [
+      localToWorld(segment.start, plane),
+      localToWorld(segment.end, plane),
+    ]
+  }
+
+  return sampleArcPoints(segment, plane)
 }
 
 function sampleArcPoints(

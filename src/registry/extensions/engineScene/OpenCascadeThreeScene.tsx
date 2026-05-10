@@ -2,6 +2,7 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { SKETCH_LAYER } from '@src/clientSideScene/sceneUtils'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
+import type { ArtifactGraph } from '@src/lang/wasm'
 import { useApp, useSingletons } from '@src/lib/boot'
 import {
   type CameraAxisName,
@@ -19,6 +20,8 @@ import { isArray } from '@src/lib/utils'
 import { getSegmentColor } from '@src/machines/sketchSolve/segmentsUtils'
 import type { EngineCommandManagerProxy } from '@src/network/engineCommandManagerProxy'
 import type {
+  OpenCascadeSketchLineMeshes,
+  OpenCascadeSketchLineSegment,
   OpenCascadeTopologyFaceGroup,
   OpenCascadeTopologyMeshes,
   OpenCascadeTopologySolidMesh,
@@ -42,7 +45,7 @@ import {
   Mesh,
   MeshBasicMaterial,
   MeshStandardMaterial,
-  type Object3D,
+  Object3D,
   OrthographicCamera,
   type PerspectiveCamera,
   Quaternion,
@@ -57,6 +60,7 @@ const OPEN_CASCADE_PROFILE_ROOT = 'OPEN_CASCADE_PROFILE_ROOT'
 const OPEN_CASCADE_LIGHT_ROOT = 'OPEN_CASCADE_LIGHT_ROOT'
 const OPEN_CASCADE_PICK_ROOT = 'OPEN_CASCADE_PICK_ROOT'
 const OPEN_CASCADE_HIGHLIGHT_ROOT = 'OPEN_CASCADE_HIGHLIGHT_ROOT'
+const OPEN_CASCADE_SKETCH_LINE_ROOT = 'OPEN_CASCADE_SKETCH_LINE_ROOT'
 const OPEN_CASCADE_GUIDE_ROOT = 'OPEN_CASCADE_GUIDE_ROOT'
 const OPEN_CASCADE_EDGE_LINES_NAME = 'open-cascade-edge-lines'
 const OPEN_CASCADE_ORIGIN_ID = 'open-cascade-origin'
@@ -74,6 +78,7 @@ const OPEN_CASCADE_GUIDE_PLANE_SIZE_PX = 200
 const OPEN_CASCADE_ORIGIN_RADIUS_PX = 6
 const OPEN_CASCADE_ORIGIN_OUTLINE_RADIUS_PX = 8
 const OPEN_CASCADE_HIGHLIGHT_POLYGON_OFFSET = -4
+const OPEN_CASCADE_SKETCH_LINE_PICK_RADIUS_PX = 8
 
 type OpenCascadeCamera = PerspectiveCamera | OrthographicCamera
 type ResolvedTheme = Exclude<Themes, Themes.System>
@@ -84,13 +89,23 @@ interface OpenCascadeSceneStyle {
   edgeColor: number
   surfaceColor: string
   profileColor: string
+  sketchLineColor: number
   selectionColor: number
   hoverColor: number
 }
 
-type OpenCascadeResolvedHit = OpenCascadeTopologyFaceGroup & {
+type OpenCascadeResolvedTopologyHit = OpenCascadeTopologyFaceGroup & {
+  hitType: 'topology'
   solidId: string
 }
+
+type OpenCascadeResolvedSketchLineHit = OpenCascadeSketchLineSegment & {
+  hitType: 'sketchLine'
+}
+
+type OpenCascadeResolvedHit =
+  | OpenCascadeResolvedTopologyHit
+  | OpenCascadeResolvedSketchLineHit
 
 export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
   useSignals()
@@ -122,6 +137,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
   const latestShapeVersion = openCascadeManager.latestShapeVersion.value
   const latestProfileVersion = openCascadeManager.latestProfileVersion.value
   const latestTopologyVersion = openCascadeManager.latestTopologyVersion.value
+  const latestSketchVersion = openCascadeManager.latestSketchVersion.value
   const exportError = diagnostic || openCascadeManager.latestExportError.value
   const passiveProfilesVisible =
     !state.matches('Sketch') && !state.matches('sketchSolveMode')
@@ -157,6 +173,8 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     pickRoot.visible = true
     const highlightRoot = new Group()
     highlightRoot.name = OPEN_CASCADE_HIGHLIGHT_ROOT
+    const sketchLineRoot = new Group()
+    sketchLineRoot.name = OPEN_CASCADE_SKETCH_LINE_ROOT
     const guideRoot = makeOpenCascadeGuideRoot()
     const lightRoot = makeOpenCascadeLightRoot()
 
@@ -165,6 +183,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       profileRoot,
       pickRoot,
       highlightRoot,
+      sketchLineRoot,
       guideRoot,
       lightRoot
     )
@@ -183,12 +202,14 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       disposeOpenCascadeModelRoot(profileRoot)
       disposeOpenCascadeModelRoot(pickRoot)
       disposeOpenCascadeModelRoot(highlightRoot)
+      disposeOpenCascadeModelRoot(sketchLineRoot)
       disposeOpenCascadeModelRoot(guideRoot)
       scene.remove(
         solidRoot,
         profileRoot,
         pickRoot,
         highlightRoot,
+        sketchLineRoot,
         guideRoot,
         lightRoot
       )
@@ -244,10 +265,12 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     const scene = sceneInfra.scene
     const solidRoot = scene.getObjectByName(OPEN_CASCADE_SOLID_ROOT)
     const profileRoot = scene.getObjectByName(OPEN_CASCADE_PROFILE_ROOT)
+    const sketchLineRoot = scene.getObjectByName(OPEN_CASCADE_SKETCH_LINE_ROOT)
     const guideRoot = scene.getObjectByName(OPEN_CASCADE_GUIDE_ROOT)
     if (
       solidRoot instanceof Group ||
       profileRoot instanceof Group ||
+      sketchLineRoot instanceof Group ||
       guideRoot instanceof Group
     ) {
       applyOpenCascadeSceneStyle(
@@ -260,6 +283,9 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       if (guideRoot instanceof Group) {
         applyOpenCascadeGuideTheme(guideRoot, resolvedTheme)
       }
+      if (sketchLineRoot instanceof Group) {
+        updateOpenCascadeSketchLineStyle(sketchLineRoot, sceneStyle)
+      }
       sceneInfra.renderFrame()
     }
   }, [highlightEdges, kclManager.sceneInfra, resolvedTheme, sceneStyle])
@@ -271,11 +297,17 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     const pickRoot = kclManager.sceneInfra.scene.getObjectByName(
       OPEN_CASCADE_PICK_ROOT
     )
+    const sketchLineRoot = kclManager.sceneInfra.scene.getObjectByName(
+      OPEN_CASCADE_SKETCH_LINE_ROOT
+    )
     if (profileRoot) {
       profileRoot.visible = passiveProfilesVisible
     }
     if (pickRoot) {
       pickRoot.visible = passiveProfilesVisible
+    }
+    if (sketchLineRoot) {
+      sketchLineRoot.visible = passiveProfilesVisible
     }
     kclManager.sceneInfra.renderFrame()
   }, [kclManager.sceneInfra, passiveProfilesVisible])
@@ -410,6 +442,9 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     const highlightRoot = sceneInfra.scene.getObjectByName(
       OPEN_CASCADE_HIGHLIGHT_ROOT
     )
+    const sketchLineRoot = sceneInfra.scene.getObjectByName(
+      OPEN_CASCADE_SKETCH_LINE_ROOT
+    )
     if (!(highlightRoot instanceof Group)) {
       return
     }
@@ -417,14 +452,66 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     rebuildOpenCascadeHighlightRoot(
       highlightRoot,
       engineCommandManager.exportLatestOpenCascadeTopologyMeshes(),
-      selectedOpenCascadeTopologyIds(state.context.selectionRanges),
+      selectedOpenCascadeEntityIds(state.context.selectionRanges),
       undefined,
       sceneStyle
     )
+    if (sketchLineRoot instanceof Group) {
+      rebuildOpenCascadeSketchLineRoot(
+        sketchLineRoot,
+        engineCommandManager.exportLatestOpenCascadeSketchLineMeshes(),
+        selectedOpenCascadeEntityIds(state.context.selectionRanges),
+        undefined,
+        sceneStyle
+      )
+    }
     sceneInfra.renderFrame()
   }, [
     engineCommandManager,
     kclManager.sceneInfra,
+    sceneStyle,
+    state.context.selectionRanges,
+  ])
+
+  useEffect(() => {
+    const sceneInfra = kclManager.sceneInfra
+    const sketchLineRoot = sceneInfra.scene.getObjectByName(
+      OPEN_CASCADE_SKETCH_LINE_ROOT
+    )
+    if (!(sketchLineRoot instanceof Group)) {
+      return
+    }
+
+    const sketchLines =
+      engineCommandManager.exportLatestOpenCascadeSketchLineMeshes()
+    rebuildOpenCascadeSketchLineRoot(
+      sketchLineRoot,
+      sketchLines,
+      selectedOpenCascadeEntityIds(state.context.selectionRanges),
+      undefined,
+      sceneStyle
+    )
+    sketchLineRoot.visible = passiveProfilesVisible
+    const bounds = getOpenCascadeSketchLineBounds(sketchLines)
+    if (bounds && !hasFramedModelRef.current) {
+      modelCenterRef.current.copy(bounds.center)
+      modelRadiusRef.current = bounds.radius
+      targetRef.current.copy(bounds.center)
+      fitCameraToRadius(
+        sceneInfra.camControls.camera,
+        targetRef.current,
+        bounds.radius,
+        true
+      )
+      sceneInfra.camControls.target.copy(targetRef.current)
+      hasFramedModelRef.current = true
+    }
+    sceneInfra.renderFrame()
+  }, [
+    engineCommandManager,
+    kclManager.sceneInfra,
+    latestSketchVersion,
+    passiveProfilesVisible,
     sceneStyle,
     state.context.selectionRanges,
   ])
@@ -437,56 +524,97 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     const sceneInfra = kclManager.sceneInfra
     const scene = sceneInfra.scene
     let hoveredTopologyId: string | undefined
+    let hoveredSketchSegmentId: string | undefined
 
-    const updateHighlight = (hoveredId?: string) => {
+    const updateHighlight = (hoveredHit?: OpenCascadeResolvedHit) => {
       const highlightRoot = scene.getObjectByName(OPEN_CASCADE_HIGHLIGHT_ROOT)
       if (!(highlightRoot instanceof Group)) {
         return
       }
+      const sketchLineRoot = scene.getObjectByName(
+        OPEN_CASCADE_SKETCH_LINE_ROOT
+      )
       rebuildOpenCascadeHighlightRoot(
         highlightRoot,
         engineCommandManager.exportLatestOpenCascadeTopologyMeshes(),
-        selectedOpenCascadeTopologyIds(state.context.selectionRanges),
-        hoveredId,
+        selectedOpenCascadeEntityIds(state.context.selectionRanges),
+        hoveredHit?.hitType === 'topology' ? hoveredHit.topologyId : undefined,
         sceneStyleRef.current
       )
+      if (sketchLineRoot instanceof Group) {
+        rebuildOpenCascadeSketchLineRoot(
+          sketchLineRoot,
+          engineCommandManager.exportLatestOpenCascadeSketchLineMeshes(),
+          selectedOpenCascadeEntityIds(state.context.selectionRanges),
+          hoveredHit?.hitType === 'sketchLine'
+            ? hoveredHit.segmentId
+            : undefined,
+          sceneStyleRef.current
+        )
+      }
       sceneInfra.renderFrame()
     }
 
+    const updateLinePickThreshold = () => {
+      sceneInfra.raycaster.params.Line = {
+        ...sceneInfra.raycaster.params.Line,
+        threshold:
+          sceneInfra.getClientSceneScaleFactor() *
+          OPEN_CASCADE_SKETCH_LINE_PICK_RADIUS_PX,
+      }
+    }
+    const previousLineThreshold = sceneInfra.raycaster.params.Line?.threshold
+    updateLinePickThreshold()
+    const unsubscribeLinePickThreshold = [
+      sceneInfra.camControls.cameraChange.add(updateLinePickThreshold),
+      sceneInfra.baseUnitChange.add(updateLinePickThreshold),
+    ]
+
     sceneInfra.setCallbacks({
       onMouseDownSelection: () => {
-        const hit = resolveOpenCascadeTopologyHit(sceneInfra.raycastRing(0, 1))
+        const hit = resolveOpenCascadeHit(sceneInfra.raycastRing(0, 1))
         return Boolean(hit)
       },
       onMove: ({ intersects }) => {
-        const hit = resolveOpenCascadeTopologyHit(intersects)
-        if (hoveredTopologyId === hit?.topologyId) {
+        const hit = resolveOpenCascadeHit(intersects)
+        const nextTopologyId =
+          hit?.hitType === 'topology' ? hit.topologyId : undefined
+        const nextSketchSegmentId =
+          hit?.hitType === 'sketchLine' ? hit.segmentId : undefined
+        if (
+          hoveredTopologyId === nextTopologyId &&
+          hoveredSketchSegmentId === nextSketchSegmentId
+        ) {
           return
         }
-        hoveredTopologyId = hit?.topologyId
-        updateHighlight(hoveredTopologyId)
+        hoveredTopologyId = nextTopologyId
+        hoveredSketchSegmentId = nextSketchSegmentId
+        updateHighlight(hit)
       },
       onClick: ({ intersects }) => {
         if (sceneInfra.camControls.wasDragging) {
           return
         }
-        const hit = resolveOpenCascadeTopologyHit(intersects)
+        const hit = resolveOpenCascadeHit(intersects)
         if (!hit) {
           hoveredTopologyId = undefined
-          updateHighlight(undefined)
+          hoveredSketchSegmentId = undefined
+          updateHighlight()
           send({
             type: 'Set selection',
             data: { selectionType: 'singleCodeCursor' },
           })
           return
         }
-        const artifact = kclManager.artifactGraph.get(hit.artifactId)
+        const artifact = artifactForOpenCascadeHit(
+          hit,
+          kclManager.artifactGraph
+        )
         const codeRef = artifact
-          ? getCodeRefsByArtifactId(
-              hit.artifactId,
-              kclManager.artifactGraph
-            )?.[0]
+          ? getCodeRefsByArtifactId(artifact.id, kclManager.artifactGraph)?.[0]
           : undefined
+        const engineEntityId =
+          hit.hitType === 'topology' ? hit.topologyId : hit.segmentId
         if (artifact && codeRef) {
           send({
             type: 'Set selection',
@@ -495,7 +623,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
               selection: {
                 artifact,
                 codeRef,
-                engineEntityId: hit.topologyId,
+                engineEntityId,
               },
             },
           })
@@ -508,10 +636,11 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
             selectionType: 'enginePrimitiveSelection',
             selection: {
               type: 'enginePrimitive',
-              entityId: hit.topologyId,
-              parentEntityId: hit.solidId,
+              entityId: engineEntityId,
+              parentEntityId:
+                hit.hitType === 'topology' ? hit.solidId : hit.pathId,
               primitiveIndex: 0,
-              primitiveType: hit.kind,
+              primitiveType: hit.hitType === 'topology' ? hit.kind : 'edge',
             },
           },
         })
@@ -519,6 +648,13 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     })
 
     return () => {
+      for (const unsubscribe of unsubscribeLinePickThreshold) {
+        unsubscribe()
+      }
+      sceneInfra.raycaster.params.Line = {
+        ...sceneInfra.raycaster.params.Line,
+        threshold: previousLineThreshold,
+      }
       sceneInfra.resetMouseListeners()
     }
   }, [
@@ -912,6 +1048,82 @@ function rebuildOpenCascadeHighlightRoot(
   }
 }
 
+function rebuildOpenCascadeSketchLineRoot(
+  sketchLineRoot: Group,
+  sketchLines: OpenCascadeSketchLineMeshes,
+  selectedEntityIds: Set<string>,
+  hoveredSegmentId: string | undefined,
+  style: OpenCascadeSceneStyle
+) {
+  disposeOpenCascadeModelRoot(sketchLineRoot)
+  for (const segment of sketchLines.segments) {
+    const geometry = geometryForSketchLineSegment(segment)
+    if (!geometry) {
+      continue
+    }
+    const isSelected =
+      selectedEntityIds.has(segment.segmentId) ||
+      selectedEntityIds.has(segment.artifactId)
+    const isHovered = segment.segmentId === hoveredSegmentId
+    const material = new LineBasicMaterial({
+      color: isSelected
+        ? style.selectionColor
+        : isHovered
+          ? style.hoverColor
+          : style.sketchLineColor,
+      transparent: true,
+      opacity: isSelected || isHovered ? 1 : 0.82,
+      depthTest: false,
+      depthWrite: false,
+    })
+    const line = new LineSegments(geometry, material)
+    line.name = `${OPEN_CASCADE_SKETCH_LINE_ROOT}:${segment.segmentId}`
+    line.renderOrder = isSelected || isHovered ? 32 : 12
+    line.userData.openCascadeSketchLine = true
+    line.userData.openCascadeSketchLineSegment = segment
+    line.layers.set(SKETCH_LAYER)
+    sketchLineRoot.add(line)
+  }
+}
+
+function updateOpenCascadeSketchLineStyle(
+  sketchLineRoot: Group,
+  style: OpenCascadeSceneStyle
+) {
+  sketchLineRoot.traverse((object) => {
+    if (
+      !(object instanceof LineSegments) ||
+      object.userData.openCascadeSketchLine !== true ||
+      !(object.material instanceof LineBasicMaterial)
+    ) {
+      return
+    }
+    object.material.color.set(style.sketchLineColor)
+  })
+}
+
+function geometryForSketchLineSegment(segment: OpenCascadeSketchLineSegment) {
+  if (segment.points.length < 6) {
+    return undefined
+  }
+
+  const positions: number[] = []
+  for (let index = 0; index <= segment.points.length - 6; index += 3) {
+    positions.push(
+      segment.points[index],
+      segment.points[index + 1],
+      segment.points[index + 2],
+      segment.points[index + 3],
+      segment.points[index + 4],
+      segment.points[index + 5]
+    )
+  }
+  const geometry = new BufferGeometry()
+  geometry.setAttribute('position', new Float32BufferAttribute(positions, 3))
+  geometry.computeBoundingSphere()
+  return geometry
+}
+
 function geometryForTopologyGroup(
   solid: OpenCascadeTopologySolidMesh,
   group: OpenCascadeTopologyFaceGroup
@@ -935,10 +1147,20 @@ function geometryForTopologyGroup(
   return geometry
 }
 
-function resolveOpenCascadeTopologyHit(
+function resolveOpenCascadeHit(
   intersects: Intersection[]
 ): OpenCascadeResolvedHit | undefined {
   for (const intersection of intersects) {
+    const sketchLine = findOpenCascadeSketchLine(intersection.object)
+    if (sketchLine) {
+      const segment = sketchLine.userData.openCascadeSketchLineSegment as
+        | OpenCascadeSketchLineSegment
+        | undefined
+      if (segment) {
+        return { ...segment, hitType: 'sketchLine' }
+      }
+    }
+
     const mesh = findOpenCascadePickMesh(intersection.object)
     if (!mesh || intersection.faceIndex == null) {
       continue
@@ -956,8 +1178,22 @@ function resolveOpenCascadeTopologyHit(
         indexStart < candidate.start + candidate.count
     )
     if (group) {
-      return { ...group, solidId: solid.solidId }
+      return { ...group, hitType: 'topology', solidId: solid.solidId }
     }
+  }
+  return undefined
+}
+
+function findOpenCascadeSketchLine(object: unknown): LineSegments | undefined {
+  let current = object instanceof Object3D ? object : undefined
+  while (current) {
+    if (
+      current instanceof LineSegments &&
+      current.userData.openCascadeSketchLine === true
+    ) {
+      return current
+    }
+    current = current.parent || undefined
   }
   return undefined
 }
@@ -973,7 +1209,7 @@ function findOpenCascadePickMesh(object: unknown): Mesh | undefined {
   return undefined
 }
 
-function selectedOpenCascadeTopologyIds(selectionRanges: {
+function selectedOpenCascadeEntityIds(selectionRanges: {
   graphSelections: {
     artifact?: { id: string }
     engineEntityId?: string
@@ -1004,6 +1240,23 @@ function selectedOpenCascadeTopologyIds(selectionRanges: {
   return ids
 }
 
+function artifactForOpenCascadeHit(
+  hit: OpenCascadeResolvedHit,
+  artifactGraph: ArtifactGraph
+) {
+  if (hit.hitType === 'topology') {
+    return artifactGraph.get(hit.artifactId)
+  }
+
+  return (
+    artifactGraph.get(hit.artifactId) ||
+    Array.from(artifactGraph.values()).find(
+      (artifact) =>
+        artifact.type === 'segment' && artifact.edgeIds.includes(hit.segmentId)
+    )
+  )
+}
+
 function makeOpenCascadeLightRoot() {
   const lightRoot = new Group()
   lightRoot.name = OPEN_CASCADE_LIGHT_ROOT
@@ -1023,6 +1276,10 @@ function getOpenCascadeSceneStyle(
     edgeColor: getThemeColorForThreeJs(getOppositeTheme(resolvedTheme)),
     surfaceColor: resolvedTheme === Themes.Dark ? '#6f87ad' : '#8ea6c9',
     profileColor: resolvedTheme === Themes.Dark ? '#96d8bd' : '#2c8065',
+    sketchLineColor: getSegmentColor({
+      freedom: 'Fixed',
+      theme: getOppositeTheme(resolvedTheme),
+    }),
     selectionColor: getSegmentColor({
       isSelected: true,
       theme: resolvedTheme,
@@ -1134,7 +1391,8 @@ function disposeOpenCascadeModelRoot(modelRoot: Group) {
 
     if (
       object instanceof LineSegments &&
-      object.userData.openCascadeEdgeLines === true
+      (object.userData.openCascadeEdgeLines === true ||
+        object.userData.openCascadeSketchLine === true)
     ) {
       object.geometry.dispose()
       disposeMaterial(object.material)
@@ -1167,6 +1425,34 @@ export function getOpenCascadeObjectBounds(object: Object3D) {
   box.getCenter(center)
   box.getSize(size)
 
+  return { center, radius: Math.max(size.x, size.y, size.z, 1) }
+}
+
+export function getOpenCascadeSketchLineBounds(
+  sketchLines: OpenCascadeSketchLineMeshes
+) {
+  const box = new Box3()
+  let hasPoint = false
+  for (const segment of sketchLines.segments) {
+    for (let index = 0; index <= segment.points.length - 3; index += 3) {
+      box.expandByPoint(
+        new Vector3(
+          segment.points[index],
+          segment.points[index + 1],
+          segment.points[index + 2]
+        )
+      )
+      hasPoint = true
+    }
+  }
+  if (!hasPoint || box.isEmpty()) {
+    return undefined
+  }
+
+  const center = new Vector3()
+  const size = new Vector3()
+  box.getCenter(center)
+  box.getSize(size)
   return { center, radius: Math.max(size.x, size.y, size.z, 1) }
 }
 

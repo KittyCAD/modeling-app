@@ -41,6 +41,32 @@ triangleRegion = region(point = [0, 0], sketch = triangleSketch)
 loft001 = loft([triangleRegion, squareRegion])
 `
 
+export const OPEN_CASCADE_SKETCH_V2_RECTANGLE_KCL = `sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  line3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  line4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line1)
+  coincident([line1.start, ORIGIN])
+  distance([line1.start, line1.end]) == 10
+  equalLength([line4, line1])
+}
+`
+
+export const OPEN_CASCADE_SKETCH_V2_CIRCLE_KCL = `sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  radius(circle1) == 5
+}
+`
+
 export const OPEN_CASCADE_PROOF_FIXTURES = [
   {
     name: 'openCascadeProofFixture',
@@ -57,5 +83,13 @@ export const OPEN_CASCADE_PROOF_FIXTURES = [
   {
     name: 'openCascadeLoftProofFixture',
     code: OPEN_CASCADE_LOFT_KCL,
+  },
+  {
+    name: 'openCascadeSketchV2RectangleProofFixture',
+    code: OPEN_CASCADE_SKETCH_V2_RECTANGLE_KCL,
+  },
+  {
+    name: 'openCascadeSketchV2CircleProofFixture',
+    code: OPEN_CASCADE_SKETCH_V2_CIRCLE_KCL,
   },
 ]
