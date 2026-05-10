@@ -200,6 +200,9 @@ export const commandBarMachine = setup({
     'Execute command': ({ context, event }) => {
       const { selectedCommand } = context
       if (!selectedCommand) return
+      const cleanupRollbackEditSession = () => {
+        context.kclManager?.endOpenCascadeRollbackEdit().catch(reportRejection)
+      }
       if (
         (selectedCommand?.args && event.type === 'Submit command') ||
         event.type === 'xstate.done.actor.validateArguments'
@@ -212,26 +215,18 @@ export const commandBarMachine = setup({
             typeof argValue === 'function' ? argValue(context) : argValue
         }
         const result = selectedCommand?.onSubmit(resolvedArgs)
-        if (result) {
-          handleCommandSubmitResult(selectedCommand.name, result, () => {
-            context.kclManager
-              ?.endOpenCascadeRollbackEdit()
-              .catch(reportRejection)
-          })
-        }
+        handleCommandSubmitResult(
+          selectedCommand.name,
+          result,
+          cleanupRollbackEditSession
+        )
       } else {
         const result = selectedCommand?.onSubmit({ context, event })
-        if (result) {
-          handleCommandSubmitResult(selectedCommand.name, result, () => {
-            context.kclManager
-              ?.endOpenCascadeRollbackEdit()
-              .catch(reportRejection)
-          })
-        } else {
-          context.kclManager
-            ?.endOpenCascadeRollbackEdit()
-            .catch(reportRejection)
-        }
+        handleCommandSubmitResult(
+          selectedCommand.name,
+          result,
+          cleanupRollbackEditSession
+        )
       }
     },
     'Set review validation error': assign({
@@ -904,6 +899,10 @@ export const commandBarMachine = setup({
             ),
         }),
       ],
+    },
+
+    'Set kclManager': {
+      actions: ['Set kclManager'],
     },
   },
 })
