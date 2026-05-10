@@ -43,6 +43,11 @@ type PlaneState = {
   normal: Point3
 }
 
+type SketchOnFaceProvenance = {
+  parentFaceId: string
+  parentSolidId: string
+}
+
 type CircleState = {
   center: Point2
   radius: number
@@ -51,6 +56,7 @@ type CircleState = {
 
 type PathState = {
   planeId?: string
+  sketchOnFace?: SketchOnFaceProvenance
   pen?: Point3
   start?: Point3
   segments: PathSegmentState[]
@@ -73,6 +79,7 @@ type RegionState = {
   circle?: CircleState
   edgeEntries: PathEdgeEntry[]
   boundaryPoints?: Point3[]
+  sketchOnFace?: SketchOnFaceProvenance
 }
 
 type ArrangementRegionBoundarySegment = {
@@ -85,6 +92,7 @@ type ArrangementRegionState = {
   regionId: string
   planeId?: string
   parentPathId?: string
+  sketchOnFace?: SketchOnFaceProvenance
   wire?: any
   face?: any
   queryPoint: Point2
@@ -307,6 +315,7 @@ export class OpenCascadeCommandManager {
   private topologyMeshes = new Map<string, OpenCascadeTopologySolidMesh>()
   private extrudeTopologies = new Map<string, ExtrudeTopology>()
   private currentSketchPlaneId: string | undefined
+  private currentSketchOnFace: SketchOnFaceProvenance | undefined
 
   constructor() {
     latestOpenCascadeCommandManager = this
@@ -531,15 +540,26 @@ export class OpenCascadeCommandManager {
         return modeling(EMPTY_RESPONSE)
       case 'enable_sketch_mode':
         this.currentSketchPlaneId = cmd.entity_id
+        this.currentSketchOnFace = this.sketchOnFaceProvenanceForTopologyFace(
+          cmd.entity_id
+        )
+        if (this.currentSketchOnFace) {
+          const plane = this.planeStateForTopologyFace(cmd.entity_id)
+          if (plane) {
+            this.planes.set(cmd.entity_id, plane)
+          }
+        }
         return modeling(EMPTY_RESPONSE)
       case 'sketch_mode_disable':
         this.currentSketchPlaneId = undefined
+        this.currentSketchOnFace = undefined
         return modeling(EMPTY_RESPONSE)
       case 'get_sketch_mode_plane':
         return modeling(await this.getSketchModePlane())
       case 'start_path':
         this.paths.set(commandId, {
           planeId: this.currentSketchPlaneId,
+          sketchOnFace: this.currentSketchOnFace,
           segments: [],
         })
         this.markSketchChanged()
@@ -785,16 +805,43 @@ export class OpenCascadeCommandManager {
         planeId: region.planeId,
       }
     }
+    const shouldMerge =
+      cmd.body_type !== 'surface' &&
+      !isNewExtrudeMethod((cmd as { extrude_method?: unknown }).extrude_method)
+    const parentSolidId = shouldMerge
+      ? region.sketchOnFace?.parentSolidId
+      : undefined
+    const parentSolid = parentSolidId
+      ? this.solids.get(parentSolidId)
+      : undefined
+    const renderSolidId =
+      parentSolidId && parentSolid ? parentSolidId : commandId
+    const fusedShape =
+      parentSolidId && parentSolid
+        ? this.fuseShapes(parentSolid.shape, shape, oc)
+        : undefined
+
     this.registerExtrudeTopology(
       commandId,
       solid,
       region,
       prism,
       height,
-      normal
+      normal,
+      renderSolidId
     )
-    solid.brep = this.writeBrep(commandId, shape, oc)
-    this.solids.set(commandId, solid)
+    if (parentSolidId && parentSolid && fusedShape) {
+      const mergedSolid: SolidState = {
+        ...parentSolid,
+        shape: fusedShape,
+        sourceIds: Array.from(new Set([...parentSolid.sourceIds, cmd.target])),
+      }
+      mergedSolid.brep = this.writeBrep(parentSolidId, fusedShape, oc)
+      this.solids.set(parentSolidId, mergedSolid)
+    } else {
+      solid.brep = this.writeBrep(commandId, shape, oc)
+      this.solids.set(commandId, solid)
+    }
     this.latestShapeVersion.value += 1
 
     return { type: 'extrude', data: {} }
@@ -1232,6 +1279,7 @@ export class OpenCascadeCommandManager {
         planeId: arrangementRegion.planeId,
         edgeEntries: arrangementRegion.edgeEntries || [],
         boundaryPoints: arrangementRegion.points,
+        sketchOnFace: arrangementRegion.sketchOnFace,
       }
     }
     const pathId = this.pathAliases.get(targetId) || targetId
@@ -1282,6 +1330,7 @@ export class OpenCascadeCommandManager {
       planeId: path.planeId,
       circle: path.circle,
       edgeEntries,
+      sketchOnFace: path.sketchOnFace,
     }
     this.regions.set(commandId, region)
     this.profileShapes.set(commandId, region.face)
@@ -1306,6 +1355,7 @@ export class OpenCascadeCommandManager {
       planeId: arrangementRegion.planeId,
       edgeEntries: arrangementRegion.edgeEntries || [],
       boundaryPoints: arrangementRegion.points,
+      sketchOnFace: arrangementRegion.sketchOnFace,
     }
     this.regions.set(commandId, region)
     this.profileShapes.set(commandId, region.face)
@@ -1569,20 +1619,38 @@ export class OpenCascadeCommandManager {
     return solid
   }
 
+  private fuseShapes(
+    baseShape: any,
+    toolShape: any,
+    oc: OpenCascadeInstance
+  ): any {
+    const fuse = new oc.BRepAlgoAPI_Fuse_3(
+      baseShape,
+      toolShape,
+      new oc.Message_ProgressRange_1()
+    )
+    const isDone = callIfFunction(fuse, 'IsDone')
+    if (isDone === false) {
+      throw new Error('OpenCascade failed to merge extrude with parent solid')
+    }
+    return fuse.Shape()
+  }
+
   private registerExtrudeTopology(
     commandId: string,
     solid: SolidState,
     region: RegionState,
     prism: any,
     height: number,
-    normal: Point3
+    normal: Point3,
+    renderSolidId = commandId
   ) {
     const startCapId = solid.startCapId
     const endCapId = solid.endCapId
     const topology: ExtrudeTopology = {
       regionId: region.regionEdgeId,
       pathId: region.sourcePathId,
-      solidId: commandId,
+      solidId: renderSolidId,
       startCapId,
       endCapId,
       wallsBySourceEdgeId: new Map(),
@@ -1595,7 +1663,7 @@ export class OpenCascadeCommandManager {
     this.topologyEntries.set(startCapId, {
       topologyId: startCapId,
       artifactId: startCapId,
-      solidId: commandId,
+      solidId: renderSolidId,
       kind: 'face',
       role: 'startCap',
       shape: callIfFunction(prism, 'FirstShape_1'),
@@ -1603,7 +1671,7 @@ export class OpenCascadeCommandManager {
     this.topologyEntries.set(endCapId, {
       topologyId: endCapId,
       artifactId: endCapId,
-      solidId: commandId,
+      solidId: renderSolidId,
       kind: 'face',
       role: 'endCap',
       shape: callIfFunction(prism, 'LastShape_1'),
@@ -1635,7 +1703,7 @@ export class OpenCascadeCommandManager {
       this.topologyEntries.set(wallFaceId, {
         topologyId: wallFaceId,
         artifactId: wallFaceId,
-        solidId: commandId,
+        solidId: renderSolidId,
         kind: 'face',
         role: 'wall',
         shape: firstShapeFromList(generated),
@@ -1648,7 +1716,7 @@ export class OpenCascadeCommandManager {
         this.topologyEntries.set(topologyId, {
           topologyId,
           artifactId: topologyId,
-          solidId: commandId,
+          solidId: renderSolidId,
           kind: 'edge',
           role,
         })
@@ -1657,9 +1725,23 @@ export class OpenCascadeCommandManager {
 
     this.extrudeTopologies.set(region.regionEdgeId, topology)
     this.extrudeTopologies.set(commandId, topology)
+    this.extrudeTopologies.set(renderSolidId, topology)
+    const nextMesh = buildExtrudeTopologyMesh(
+      renderSolidId,
+      region,
+      height,
+      normal,
+      topology
+    )
+    const currentMesh =
+      renderSolidId !== commandId
+        ? this.topologyMeshes.get(renderSolidId)
+        : undefined
     this.topologyMeshes.set(
-      commandId,
-      buildExtrudeTopologyMesh(commandId, region, height, normal, topology)
+      renderSolidId,
+      currentMesh
+        ? mergeTopologyMeshes(renderSolidId, currentMesh, nextMesh)
+        : nextMesh
     )
     this.latestTopologyVersion.value += 1
   }
@@ -1808,6 +1890,47 @@ export class OpenCascadeCommandManager {
     throw new Error(`No OpenCascade sketch plane found for ${entityId}`)
   }
 
+  private sketchOnFaceProvenanceForTopologyFace(
+    topologyId: string
+  ): SketchOnFaceProvenance | undefined {
+    const entry = this.topologyEntries.get(topologyId)
+    if (entry?.kind === 'face') {
+      return {
+        parentFaceId: topologyId,
+        parentSolidId: entry.solidId,
+      }
+    }
+
+    for (const solid of this.topologyMeshes.values()) {
+      const group = solid.groups.find(
+        (group) =>
+          group.topologyId === topologyId || group.artifactId === topologyId
+      )
+      if (group) {
+        return {
+          parentFaceId: topologyId,
+          parentSolidId: solid.solidId,
+        }
+      }
+    }
+    return undefined
+  }
+
+  private planeStateForTopologyFace(
+    topologyId: string
+  ): PlaneState | undefined {
+    const facePlane = this.sketchModePlaneForTopologyFace(topologyId)
+    if (!facePlane) {
+      return undefined
+    }
+    return {
+      origin: facePlane.origin,
+      xAxis: facePlane.x_axis,
+      yAxis: facePlane.y_axis,
+      normal: facePlane.z_axis,
+    }
+  }
+
   private sketchModePlaneForTopologyFace(topologyId: string):
     | {
         origin: Point3
@@ -1858,6 +1981,7 @@ export class OpenCascadeCommandManager {
         regionId,
         planeId: region.planeId,
         parentPathId: region.sourcePathId,
+        sketchOnFace: region.sketchOnFace,
         wire: region.wire,
         face: region.face,
         queryPoint: region.queryPoint || queryPointForWorldPoints(points),
@@ -1888,9 +2012,12 @@ export class OpenCascadeCommandManager {
         continue
       }
       const shape = this.buildShapeForArrangementRegion(detectedRegion, oc)
+      const parentPathId = detectedRegion.parentPathId
+      const parentPath = parentPathId ? this.paths.get(parentPathId) : undefined
       nextRegions.set(detectedRegion.regionId, {
         ...detectedRegion,
         ...shape,
+        sketchOnFace: parentPath?.sketchOnFace,
       })
     }
 
@@ -1987,6 +2114,7 @@ export class OpenCascadeCommandManager {
     this.topologyMeshes.clear()
     this.extrudeTopologies.clear()
     this.currentSketchPlaneId = undefined
+    this.currentSketchOnFace = undefined
     this.latestExportError.value = undefined
     this.latestShapeVersion.value += 1
     this.latestProfileVersion.value += 1
@@ -2068,6 +2196,10 @@ function angleValueRadians(value: unknown): number {
   const angle = value as { unit?: unknown; value?: unknown }
   const raw = lengthValue(angle?.value)
   return angle?.unit === 'radians' ? raw : (raw * Math.PI) / 180
+}
+
+function isNewExtrudeMethod(method: unknown): boolean {
+  return typeof method === 'string' && method.toLowerCase() === 'new'
 }
 
 function localToWorld(point: Point3, plane?: PlaneState): Point3 {
@@ -2260,6 +2392,30 @@ function buildExtrudeTopologyMesh(
   }
 
   return { solidId, positions, indices, groups, edges }
+}
+
+function mergeTopologyMeshes(
+  solidId: string,
+  current: OpenCascadeTopologySolidMesh,
+  next: OpenCascadeTopologySolidMesh
+): OpenCascadeTopologySolidMesh {
+  const vertexOffset = current.positions.length / 3
+  return {
+    solidId,
+    positions: [...current.positions, ...next.positions],
+    indices: [
+      ...current.indices,
+      ...next.indices.map((index) => index + vertexOffset),
+    ],
+    groups: [
+      ...current.groups,
+      ...next.groups.map((group) => ({
+        ...group,
+        start: group.start + current.indices.length,
+      })),
+    ],
+    edges: [...current.edges, ...next.edges],
+  }
 }
 
 function regionMeshForArrangementRegion(

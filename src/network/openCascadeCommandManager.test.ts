@@ -10,6 +10,8 @@ import {
   OPEN_CASCADE_REVOLVE_KCL,
   OPEN_CASCADE_SKETCH_V2_CIRCLE_KCL,
   OPEN_CASCADE_SKETCH_V2_RECTANGLE_KCL,
+  OPEN_CASCADE_SKETCH_ON_FACE_MERGE_EXTRUDE_KCL,
+  OPEN_CASCADE_SKETCH_ON_FACE_NEW_EXTRUDE_KCL,
   OPEN_CASCADE_SWEEP_KCL,
 } from '@src/network/openCascadeProofFixture'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
@@ -211,6 +213,151 @@ describe('OpenCascadeCommandManager', () => {
     })
     const normal = faceResponse.resp.data.modeling_response.data.z_axis
     expect(Math.hypot(normal.x, normal.y, normal.z)).toBeCloseTo(1)
+  })
+
+  it('merges a default sketch-on-face extrude into its parent solid', async () => {
+    const manager = new OpenCascadeCommandManager()
+    await buildRectangleRegionInput(manager)
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: IDS.solid,
+      cmd: {
+        type: 'extrude',
+        target: IDS.region,
+        distance: 2,
+        extrude_method: 'new',
+        body_type: 'solid',
+      },
+    })
+    const endFaceId = manager
+      .exportLatestTopologyMeshes()
+      .solids[0].groups.find((group) => group.role === 'endCap')?.topologyId
+    expect(endFaceId).toBeTruthy()
+    if (!endFaceId) {
+      throw new Error('No end cap face id')
+    }
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-000000000090',
+      cmd: {
+        type: 'enable_sketch_mode',
+        entity_id: endFaceId,
+        adjust_camera: false,
+        animated: false,
+        ortho: false,
+      },
+    })
+    await buildRectangleOnActiveSketchPlane(manager, {
+      path: '00000000-0000-0000-0000-000000000091',
+      region: '00000000-0000-0000-0000-000000000092',
+      commandStart: 93,
+      min: { x: -0.5, y: -0.5 },
+      max: { x: 0.5, y: 0.5 },
+    })
+
+    const mergedExtrudeId = '00000000-0000-0000-0000-000000000099'
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: mergedExtrudeId,
+      cmd: {
+        type: 'extrude',
+        target: '00000000-0000-0000-0000-000000000092',
+        distance: 1,
+        body_type: 'solid',
+      },
+    })
+
+    expect(manager.getSolidCount()).toBe(1)
+    expect(manager.exportLastBrep()?.length).toBeGreaterThan(0)
+    const topologyMeshes = manager.exportLatestTopologyMeshes()
+    expect(topologyMeshes.solids).toHaveLength(1)
+    expect(topologyMeshes.solids[0].solidId).toBe(IDS.solid)
+    expect(
+      topologyMeshes.solids[0].groups.some(
+        (group) => group.topologyId === `${mergedExtrudeId.slice(0, 35)}2`
+      )
+    ).toBe(true)
+
+    const faceInfoResponse = await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-00000000009a',
+      cmd: {
+        type: 'solid3d_get_extrusion_face_info',
+        object_id: mergedExtrudeId,
+        edge_id: '00000000-0000-0000-0000-000000000095',
+      },
+    })
+    expect(
+      faceInfoResponse.resp.data.modeling_response.data.faces.map(
+        (face: { cap: string }) => face.cap
+      )
+    ).toEqual(['none', 'bottom', 'top'])
+  })
+
+  it('keeps a method NEW sketch-on-face extrude as a separate solid', async () => {
+    const manager = new OpenCascadeCommandManager()
+    await buildRectangleRegionInput(manager)
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: IDS.solid,
+      cmd: {
+        type: 'extrude',
+        target: IDS.region,
+        distance: 2,
+        extrude_method: 'new',
+        body_type: 'solid',
+      },
+    })
+    const endFaceId = manager
+      .exportLatestTopologyMeshes()
+      .solids[0].groups.find((group) => group.role === 'endCap')?.topologyId
+    expect(endFaceId).toBeTruthy()
+    if (!endFaceId) {
+      throw new Error('No end cap face id')
+    }
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000a0',
+      cmd: {
+        type: 'enable_sketch_mode',
+        entity_id: endFaceId,
+        adjust_camera: false,
+        animated: false,
+        ortho: false,
+      },
+    })
+    await buildRectangleOnActiveSketchPlane(manager, {
+      path: '00000000-0000-0000-0000-0000000000a1',
+      region: '00000000-0000-0000-0000-0000000000a2',
+      commandStart: 163,
+      min: { x: -0.5, y: -0.5 },
+      max: { x: 0.5, y: 0.5 },
+    })
+
+    const newExtrudeId = '00000000-0000-0000-0000-0000000000a9'
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: newExtrudeId,
+      cmd: {
+        type: 'extrude',
+        target: '00000000-0000-0000-0000-0000000000a2',
+        distance: 1,
+        extrude_method: 'new',
+        body_type: 'solid',
+      },
+    })
+
+    expect(manager.getSolidCount()).toBe(2)
+    const topologyMeshes = manager.exportLatestTopologyMeshes()
+    expect(topologyMeshes.solids.map((solid) => solid.solidId)).toEqual([
+      IDS.solid,
+      newExtrudeId,
+    ])
+    expect((await manager.exportLatestGlbBytes()).length).toBeGreaterThan(0)
   })
 
   it('detects a closed rectangle as an automatic pickable region', async () => {
@@ -430,6 +577,16 @@ describe('OpenCascadeCommandManager', () => {
     ['revolve', OPEN_CASCADE_REVOLVE_KCL, 'sketch001'],
     ['sweep', OPEN_CASCADE_SWEEP_KCL, 'profile001'],
     ['loft', OPEN_CASCADE_LOFT_KCL, 'loft001'],
+    [
+      'sketch-on-face-merge-extrude',
+      OPEN_CASCADE_SKETCH_ON_FACE_MERGE_EXTRUDE_KCL,
+      'mergedExtrude',
+    ],
+    [
+      'sketch-on-face-new-extrude',
+      OPEN_CASCADE_SKETCH_ON_FACE_NEW_EXTRUDE_KCL,
+      'newExtrude',
+    ],
   ])(
     'executes the %s KCL proof through WASM',
     async (_, code, variableName) => {
@@ -665,6 +822,91 @@ async function buildRectangleRegionInput(
       type: 'create_region_from_query_point',
       object_id: path,
       query_point: { x: 0, y: 0 },
+    },
+  })
+}
+
+async function buildRectangleOnActiveSketchPlane(
+  manager: OpenCascadeCommandManager,
+  options: {
+    path: string
+    region: string
+    commandStart: number
+    min: { x: number; y: number }
+    max: { x: number; y: number }
+  }
+) {
+  const commandId = (offset: number) =>
+    `00000000-0000-0000-0000-${String(options.commandStart + offset).padStart(
+      12,
+      '0'
+    )}`
+
+  await send(manager, IDS.request, {
+    type: 'modeling_cmd_batch_req',
+    requests: [
+      { cmd_id: options.path, cmd: { type: 'start_path' } },
+      {
+        cmd_id: commandId(0),
+        cmd: {
+          type: 'move_path_pen',
+          path: options.path,
+          to: { x: options.min.x, y: options.min.y, z: 0 },
+        },
+      },
+      {
+        cmd_id: commandId(1),
+        cmd: {
+          type: 'extend_path',
+          path: options.path,
+          segment: {
+            type: 'line',
+            end: { x: options.max.x, y: options.min.y, z: 0 },
+            relative: false,
+          },
+        },
+      },
+      {
+        cmd_id: commandId(2),
+        cmd: {
+          type: 'extend_path',
+          path: options.path,
+          segment: {
+            type: 'line',
+            end: { x: options.max.x, y: options.max.y, z: 0 },
+            relative: false,
+          },
+        },
+      },
+      {
+        cmd_id: commandId(3),
+        cmd: {
+          type: 'extend_path',
+          path: options.path,
+          segment: {
+            type: 'line',
+            end: { x: options.min.x, y: options.max.y, z: 0 },
+            relative: false,
+          },
+        },
+      },
+      {
+        cmd_id: commandId(4),
+        cmd: { type: 'close_path', path_id: options.path },
+      },
+    ],
+  })
+
+  await send(manager, IDS.request, {
+    type: 'modeling_cmd_req',
+    cmd_id: options.region,
+    cmd: {
+      type: 'create_region_from_query_point',
+      object_id: options.path,
+      query_point: {
+        x: (options.min.x + options.max.x) / 2,
+        y: (options.min.y + options.max.y) / 2,
+      },
     },
   })
 }

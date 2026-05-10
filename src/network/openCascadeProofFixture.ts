@@ -97,6 +97,41 @@ region001 = region(point = [8.1406479mm, 6.5000149mm], sketch = squareSketch)
 extrude001 = extrude(region001, length = 4)
 `
 
+const OPEN_CASCADE_SKETCH_ON_FACE_BASE = `baseSketch = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  line3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  line4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line1)
+  vertical(line2)
+}
+baseRegion = region(point = [5mm, 5mm], sketch = baseSketch)
+baseExtrude = extrude(baseRegion, length = 5)
+topSketch = sketch(on = startSketchOn(baseExtrude, face = END)) {
+  line5 = line(start = [var 2mm, var 2mm], end = [var 8mm, var 2mm])
+  line6 = line(start = [var 8mm, var 2mm], end = [var 8mm, var 8mm])
+  line7 = line(start = [var 8mm, var 8mm], end = [var 2mm, var 8mm])
+  line8 = line(start = [var 2mm, var 8mm], end = [var 2mm, var 2mm])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line7.start])
+  coincident([line7.end, line8.start])
+  coincident([line8.end, line5.start])
+  horizontal(line5)
+  vertical(line6)
+}
+topRegion = region(point = [5mm, 5mm], sketch = topSketch)
+`
+
+export const OPEN_CASCADE_SKETCH_ON_FACE_MERGE_EXTRUDE_KCL = `${OPEN_CASCADE_SKETCH_ON_FACE_BASE}mergedExtrude = extrude(topRegion, length = 3)
+`
+
+export const OPEN_CASCADE_SKETCH_ON_FACE_NEW_EXTRUDE_KCL = `${OPEN_CASCADE_SKETCH_ON_FACE_BASE}newExtrude = extrude(topRegion, length = 3, method = NEW)
+`
+
 export const OPEN_CASCADE_PROOF_FIXTURES = [
   {
     name: 'openCascadeProofFixture',
@@ -125,5 +160,13 @@ export const OPEN_CASCADE_PROOF_FIXTURES = [
   {
     name: 'openCascadeIntersectingRegionExtrudeProofFixture',
     code: OPEN_CASCADE_INTERSECTING_REGION_EXTRUDE_KCL,
+  },
+  {
+    name: 'openCascadeSketchOnFaceMergeExtrudeProofFixture',
+    code: OPEN_CASCADE_SKETCH_ON_FACE_MERGE_EXTRUDE_KCL,
+  },
+  {
+    name: 'openCascadeSketchOnFaceNewExtrudeProofFixture',
+    code: OPEN_CASCADE_SKETCH_ON_FACE_NEW_EXTRUDE_KCL,
   },
 ]
