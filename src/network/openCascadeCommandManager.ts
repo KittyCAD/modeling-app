@@ -215,6 +215,19 @@ export type OpenCascadeRegionMeshes = {
   regions: OpenCascadeRegionMesh[]
 }
 
+export type OpenCascadePlaneMesh = {
+  planeId: string
+  origin: Point3
+  xAxis: Point3
+  yAxis: Point3
+  normal: Point3
+}
+
+export type OpenCascadePlaneMeshes = {
+  version: number
+  planes: OpenCascadePlaneMesh[]
+}
+
 export type OpenCascadeVisibleSolidGlb = {
   solidId: string
   artifactIds: string[]
@@ -246,6 +259,7 @@ type ModelingExecutionResult =
 
 type OpenCascadeRenderState = {
   planes: Map<string, PlaneState>
+  renderablePlaneIds: Set<string>
   paths: Map<string, PathState>
   pathAliases: Map<string, string>
   regions: Map<string, RegionState>
@@ -344,12 +358,14 @@ export class OpenCascadeCommandManager {
   readonly latestTopologyVersion = signal(0)
   readonly latestSketchVersion = signal(0)
   readonly latestRegionVersion = signal(0)
+  readonly latestPlaneVersion = signal(0)
   readonly latestVisibilityVersion = signal(0)
   readonly latestSelectionFilter = signal<string[]>([
     ...DEFAULT_SELECTION_FILTER,
   ])
   readonly latestExportError = signal<string | undefined>(undefined)
   private planes = new Map<string, PlaneState>()
+  private renderablePlaneIds = new Set<string>()
   private paths = new Map<string, PathState>()
   private pathAliases = new Map<string, string>()
   private regions = new Map<string, RegionState>()
@@ -544,6 +560,29 @@ export class OpenCascadeCommandManager {
     }
   }
 
+  exportLatestPlaneMeshes(): OpenCascadePlaneMeshes {
+    const state = this.renderState()
+    const planes = state?.planes ?? this.planes
+    const renderablePlaneIds =
+      state?.renderablePlaneIds ?? this.renderablePlaneIds
+    const hiddenObjectIds = state?.hiddenObjectIds ?? this.hiddenObjectIds
+    return {
+      version: this.latestPlaneVersion.value,
+      planes: Array.from(planes.entries())
+        .filter(
+          ([planeId]) =>
+            renderablePlaneIds.has(planeId) && !hiddenObjectIds.has(planeId)
+        )
+        .map(([planeId, plane]) => ({
+          planeId,
+          origin: { ...plane.origin },
+          xAxis: { ...plane.xAxis },
+          yAxis: { ...plane.yAxis },
+          normal: { ...plane.normal },
+        })),
+    }
+  }
+
   isObjectHidden(id: string): boolean {
     return this.hiddenObjectIds.has(id)
   }
@@ -627,6 +666,8 @@ export class OpenCascadeCommandManager {
           yAxis: toPoint3(cmd.y_axis),
           normal: normalize(cross(toPoint3(cmd.x_axis), toPoint3(cmd.y_axis))),
         })
+        this.renderablePlaneIds.add(commandId)
+        this.latestPlaneVersion.value += 1
         return modeling(EMPTY_RESPONSE)
       case 'object_visible':
         this.setObjectVisibility(cmd.object_id, !cmd.hidden)
@@ -1546,6 +1587,9 @@ export class OpenCascadeCommandManager {
     if (this.solids.has(objectId)) {
       this.latestShapeVersion.value += 1
       this.latestTopologyVersion.value += 1
+    }
+    if (this.planes.has(objectId)) {
+      this.latestPlaneVersion.value += 1
     }
     this.latestProfileVersion.value += 1
     this.latestSketchVersion.value += 1
@@ -2789,6 +2833,7 @@ export class OpenCascadeCommandManager {
           { ...plane },
         ])
       ),
+      renderablePlaneIds: new Set(this.renderablePlaneIds),
       paths: new Map(
         Array.from(this.paths.entries()).map(([id, path]) => [
           id,
@@ -2854,12 +2899,14 @@ export class OpenCascadeCommandManager {
     this.latestShapeVersion.value += 1
     this.latestProfileVersion.value += 1
     this.latestTopologyVersion.value += 1
+    this.latestPlaneVersion.value += 1
     this.latestVisibilityVersion.value += 1
     this.markSketchChanged()
   }
 
   private clear() {
     this.planes.clear()
+    this.renderablePlaneIds.clear()
     this.paths.clear()
     this.pathAliases.clear()
     this.regions.clear()
@@ -2882,6 +2929,7 @@ export class OpenCascadeCommandManager {
     this.latestShapeVersion.value += 1
     this.latestProfileVersion.value += 1
     this.latestTopologyVersion.value += 1
+    this.latestPlaneVersion.value += 1
     this.latestVisibilityVersion.value += 1
     this.markSketchChanged()
   }

@@ -12,6 +12,7 @@ import {
   Vector3,
 } from 'three'
 import { beforeAll, describe, expect, it } from 'vitest'
+import { Themes } from '@src/lib/theme'
 
 let helpers: typeof import('./OpenCascadeThreeScene')
 
@@ -185,6 +186,49 @@ describe('OpenCascadeThreeScene helpers', () => {
     ).toEqual({
       name: 'XZ',
       id: 'plane-xz',
+    })
+  })
+
+  it('renders and resolves OpenCascade offset plane hits', () => {
+    const root = new Group()
+    helpers.rebuildOpenCascadeOffsetPlaneRoot(
+      root,
+      {
+        version: 1,
+        planes: [
+          {
+            planeId: 'offset-plane-1',
+            origin: { x: 0, y: 0, z: 5 },
+            xAxis: { x: 1, y: 0, z: 0 },
+            yAxis: { x: 0, y: 1, z: 0 },
+            normal: { x: 0, y: 0, z: 1 },
+          },
+        ],
+      },
+      new Set(),
+      undefined,
+      {
+        backgroundColor: 0xffffff,
+        edgeColor: 0,
+        surfaceColor: '#ffffff',
+        profileColor: '#ffffff',
+        sketchLineColor: 0,
+        selectionColor: 0xff00ff,
+        hoverColor: 0x00ff00,
+      },
+      Themes.Light
+    )
+
+    const group = root.getObjectByName(
+      'OPEN_CASCADE_OFFSET_PLANE_ROOT:offset-plane-1'
+    )
+    const mesh = group?.children.find((child) => child instanceof Mesh)
+
+    expect(group?.layers.isEnabled(2)).toBe(true)
+    expect(mesh?.layers.isEnabled(2)).toBe(true)
+    expect(helpers.resolveOpenCascadeHit([{ object: mesh } as never])).toEqual({
+      hitType: 'offsetPlane',
+      planeId: 'offset-plane-1',
     })
   })
 

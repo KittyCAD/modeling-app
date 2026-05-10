@@ -274,6 +274,10 @@ export class EngineCommandManagerProxy extends ConnectionManager {
     return this.openCascadeCommandManager.exportLatestSketchLineMeshes()
   }
 
+  exportLatestOpenCascadePlaneMeshes() {
+    return this.openCascadeCommandManager.exportLatestPlaneMeshes()
+  }
+
   async exportLatestOpenCascadeRegionMeshes() {
     return this.openCascadeCommandManager.exportLatestRegionMeshes()
   }

@@ -35,6 +35,48 @@ const IDS = {
 }
 
 describe('OpenCascadeCommandManager', () => {
+  it('exports visible make_plane commands as OpenCascade plane meshes', async () => {
+    const manager = new OpenCascadeCommandManager()
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: IDS.plane,
+      cmd: {
+        type: 'make_plane',
+        clobber: false,
+        origin: { x: 0, y: 0, z: 4 },
+        x_axis: { x: 1, y: 0, z: 0 },
+        y_axis: { x: 0, y: 0, z: 1 },
+        size: 10,
+      },
+    })
+
+    expect(manager.exportLatestPlaneMeshes()).toEqual({
+      version: 1,
+      planes: [
+        {
+          planeId: IDS.plane,
+          origin: { x: 0, y: 0, z: 4 },
+          xAxis: { x: 1, y: 0, z: 0 },
+          yAxis: { x: 0, y: 0, z: 1 },
+          normal: { x: 0, y: -1, z: 0 },
+        },
+      ],
+    })
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-00000000000b',
+      cmd: {
+        type: 'object_visible',
+        object_id: IDS.plane,
+        hidden: true,
+      },
+    })
+
+    expect(manager.exportLatestPlaneMeshes().planes).toHaveLength(0)
+  })
+
   it('builds a closed circular region, extrudes it, and exports BREP bytes', async () => {
     const manager = new OpenCascadeCommandManager()
 
