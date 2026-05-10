@@ -144,7 +144,7 @@ import {
   addAnnotationGdt,
   addParallelismGdt,
   addPerpendicularityGdt,
-  addDimensionGdt,
+  addDistanceGdt,
   addProfileGdt,
 } from '@src/lang/modifyAst/gdt'
 import {
@@ -548,7 +548,7 @@ export type ModelingMachineEvent =
   | { type: 'GDT Datum'; data: ModelingCommandSchema['GDT Datum'] }
   | { type: 'GDT Position'; data: ModelingCommandSchema['GDT Position'] }
   | { type: 'GDT Profile'; data: ModelingCommandSchema['GDT Profile'] }
-  | { type: 'GDT Dimension'; data: ModelingCommandSchema['GDT Dimension'] }
+  | { type: 'GDT Distance'; data: ModelingCommandSchema['GDT Distance'] }
   | {
       type: 'GDT Perpendicularity'
       data: ModelingCommandSchema['GDT Perpendicularity']
@@ -5321,13 +5321,13 @@ export const modelingMachine = setup({
         )
       }
     ),
-    gdtDimensionAstMod: fromPromise(
+    gdtDistanceAstMod: fromPromise(
       async ({
         input,
       }: {
         input:
           | {
-              data: ModelingCommandSchema['GDT Dimension'] | undefined
+              data: ModelingCommandSchema['GDT Distance'] | undefined
               kclManager: KclManager
               rustContext: RustContext
             }
@@ -5355,7 +5355,7 @@ export const modelingMachine = setup({
           astWithNewSetting = ast
         }
 
-        const result = addDimensionGdt({
+        const result = addDistanceGdt({
           ...input.data,
           ast: astWithNewSetting ?? input.kclManager.ast,
           artifactGraph: input.kclManager.artifactGraph,
@@ -6269,8 +6269,8 @@ export const modelingMachine = setup({
           target: 'Applying GDT Profile',
         },
 
-        'GDT Dimension': {
-          target: 'Applying GDT Dimension',
+        'GDT Distance': {
+          target: 'Applying GDT Distance',
         },
 
         'GDT Perpendicularity': {
@@ -8388,12 +8388,12 @@ export const modelingMachine = setup({
       },
     },
 
-    'Applying GDT Dimension': {
+    'Applying GDT Distance': {
       invoke: {
-        src: 'gdtDimensionAstMod',
-        id: 'gdtDimensionAstMod',
+        src: 'gdtDistanceAstMod',
+        id: 'gdtDistanceAstMod',
         input: ({ event, context }) => {
-          if (event.type !== 'GDT Dimension') return undefined
+          if (event.type !== 'GDT Distance') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,

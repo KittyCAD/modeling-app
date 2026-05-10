@@ -2093,14 +2093,14 @@ const prepareToEditGdtProfile: PrepareToEditCallback = async ({
   }
 }
 
-const prepareToEditGdtDimension: PrepareToEditCallback = async ({
+const prepareToEditGdtDistance: PrepareToEditCallback = async ({
   operation,
   rustContext,
   artifactGraph,
   code,
 }) => {
   const baseCommand = {
-    name: 'GDT Dimension',
+    name: 'GDT Distance',
     groupId: 'modeling',
   }
   if (operation.type !== 'StdLibCall') {
@@ -2136,7 +2136,7 @@ const prepareToEditGdtDimension: PrepareToEditCallback = async ({
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
 
-  const argDefaultValues: ModelingCommandSchema['GDT Dimension'] = {
+  const argDefaultValues: ModelingCommandSchema['GDT Distance'] = {
     edges,
     tolerance,
     precision,
@@ -2534,10 +2534,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'text',
     prepareToEdit: prepareToEditGdtAnnotation,
   },
-  'gdt::dimension': {
-    label: 'Dimension',
+  'gdt::distance': {
+    label: 'Distance',
     icon: 'dimension',
-    prepareToEdit: prepareToEditGdtDimension,
+    prepareToEdit: prepareToEditGdtDistance,
   },
   'gdt::profile': {
     label: 'Profile',

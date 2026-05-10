@@ -13,7 +13,7 @@ import {
   addAnnotationGdt,
   addParallelismGdt,
   addPerpendicularityGdt,
-  addDimensionGdt,
+  addDistanceGdt,
   addProfileGdt,
   getUsedDatumNames,
   getNextAvailableDatumName,
@@ -667,8 +667,8 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
     })
   })
 
-  describe('Testing addDimensionGdt', () => {
-    it('should add a dimension annotation to a selected edge', async () => {
+  describe('Testing addDistanceGdt', () => {
+    it('should add a distance annotation to a selected edge', async () => {
       const { artifactGraph, ast } = await executeCode(
         box,
         instanceInThisFile,
@@ -686,7 +686,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         rustContextInThisFile
       )
-      const result = addDimensionGdt({
+      const result = addDistanceGdt({
         ast,
         artifactGraph,
         edges: createSelectionFromArtifacts([edge], artifactGraph),
@@ -702,7 +702,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         throw newCode
       }
 
-      expect(newCode).toContain('gdt::dimension(')
+      expect(newCode).toContain('gdt::distance(')
       expect(newCode).toMatch(
         /edges = \[\s*getCommonEdge\(faces = \[[^\]]+\]\)\s*\]/
       )

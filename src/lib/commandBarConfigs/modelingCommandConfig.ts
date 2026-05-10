@@ -98,7 +98,7 @@ import {
   addAnnotationGdt,
   addParallelismGdt,
   addPerpendicularityGdt,
-  addDimensionGdt,
+  addDistanceGdt,
   addProfileGdt,
   getNextAvailableDatumName,
 } from '@src/lang/modifyAst/gdt'
@@ -467,7 +467,7 @@ export type ModelingCommandSchema = {
     fontPointSize?: KclCommandValue
     fontScale?: KclCommandValue
   }
-  'GDT Dimension': {
+  'GDT Distance': {
     nodeToEdit?: PathToNode
     edges: Selections
     tolerance: KclCommandValue
@@ -2944,8 +2944,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
-  'GDT Dimension': {
-    description: 'Add an MBD dimension annotation to edge lengths.',
+  'GDT Distance': {
+    description: 'Add an MBD distance annotation to edge lengths.',
     icon: 'dimension',
     needsReview: true,
     reviewValidation: async (context, modelingActor) => {
@@ -2958,8 +2958,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
-      const modRes = addDimensionGdt({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Dimension']),
+      const modRes = addDistanceGdt({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Distance']),
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
         wasmInstance: await context.wasmInstancePromise,

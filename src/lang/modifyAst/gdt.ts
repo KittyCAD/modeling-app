@@ -547,7 +547,7 @@ export function addProfileGdt({
   }
 }
 
-export function addDimensionGdt({
+export function addDistanceGdt({
   ast,
   artifactGraph,
   edges,
@@ -653,7 +653,7 @@ export function addDimensionGdt({
     labeledArgs.push(...styleResult.labeledArgs)
 
     const call = createCallExpressionStdLibKw(
-      'dimension',
+      'distance',
       null,
       labeledArgs,
       undefined,
@@ -675,7 +675,7 @@ export function addDimensionGdt({
   }
 
   if (!lastPathToNode) {
-    return new Error('Failed to create any gdt::dimension calls')
+    return new Error('Failed to create any gdt::distance calls')
   }
 
   return {

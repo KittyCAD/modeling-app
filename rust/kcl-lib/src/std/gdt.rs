@@ -263,7 +263,7 @@ pub async fn position(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     Ok(annotations.into())
 }
 
-pub async fn dimension(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let edges: Vec<EdgeReference> = args.get_kw_arg(
         "edges",
         &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
@@ -278,7 +278,7 @@ pub async fn dimension(exec_state: &mut ExecState, args: Args) -> Result<KclValu
     let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
     let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
 
-    let annotations = inner_dimension(
+    let annotations = inner_distance(
         edges,
         tolerance,
         precision,
@@ -654,7 +654,7 @@ async fn inner_annotation(
 }
 
 #[allow(clippy::too_many_arguments)]
-async fn inner_dimension(
+async fn inner_distance(
     edges: Vec<EdgeReference>,
     tolerance: TyF64,
     precision: Option<TyF64>,
@@ -683,7 +683,7 @@ async fn inner_dimension(
     let mut annotations = Vec::with_capacity(edges.len());
     for edge in &edges {
         let edge_id = edge.get_engine_id(exec_state, args)?;
-        create_basic_dimension_annotation(
+        create_basic_distance_annotation(
             edge_id,
             &tolerance,
             precision,
@@ -922,7 +922,7 @@ fn resolve_precision(precision: Option<TyF64>, args: &Args) -> Result<u32, KclEr
 }
 
 #[allow(clippy::too_many_arguments)]
-async fn create_basic_dimension_annotation(
+async fn create_basic_distance_annotation(
     entity_id: uuid::Uuid,
     tolerance: &TyF64,
     precision: u32,
