@@ -229,6 +229,8 @@ export function useNetworkStatus(engineCommandManager?: ConnectionManager) {
     }
 
     const onEngineAvailable = ({ detail: connection }: CustomEvent) => {
+      if (!connection) return
+
       connection.addEventListener(
         EngineConnectionEvents.PingPongChanged,
         onPingPongChange as EventListener

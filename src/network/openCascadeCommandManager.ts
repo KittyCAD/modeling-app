@@ -1,5 +1,7 @@
 import { encode as msgpackEncode } from '@msgpack/msgpack'
 import { signal } from '@preact/signals-core'
+import OpenCascadeMain from 'opencascade.js/dist/opencascade.full.js'
+import openCascadeWasmUrl from 'opencascade.js/dist/opencascade.full.wasm?url'
 import type {
   BatchResponse,
   ModelingCmd,
@@ -10,10 +12,10 @@ import type {
   WebSocketRequest,
   WebSocketResponse,
 } from '@kittycad/lib'
-import type { OpenCascadeInstance } from 'opencascade.js'
 
 type Point2 = { x: number; y: number }
 type Point3 = { x: number; y: number; z: number }
+type OpenCascadeInstance = any
 
 type PlaneState = {
   origin: Point3
@@ -61,16 +63,59 @@ let latestOpenCascadeCommandManager: OpenCascadeCommandManager | undefined
 async function initOpenCascade(): Promise<OpenCascadeInstance> {
   if (!openCascadePromise) {
     openCascadePromise = (async () => {
-      const module =
-        typeof process !== 'undefined' && Boolean(process.versions?.node)
-          ? await import('opencascade.js/dist/node.js')
-          : await import('opencascade.js')
-      const oc = await module.default()
+      const oc = shouldUseNodeOpenCascade()
+        ? await initOpenCascadeForNode()
+        : await initOpenCascadeFromFullJs()
       ;(globalThis as any).__zooOpenCascadeInstance = oc
       return oc
     })()
   }
   return openCascadePromise
+}
+
+async function initOpenCascadeForNode(): Promise<OpenCascadeInstance> {
+  const nodeEntry = 'opencascade.js/dist/node.js'
+  const module = await import(/* @vite-ignore */ nodeEntry)
+  return module.default()
+}
+
+async function initOpenCascadeFromFullJs(): Promise<OpenCascadeInstance> {
+  if (typeof window === 'undefined') {
+    throw new Error(
+      'OpenCascade.js execution is only supported in the browser Vite runtime'
+    )
+  }
+
+  return withBrowserOpenCascadeEnvironment(() =>
+    OpenCascadeMain({
+      locateFile: () => openCascadeWasmUrl,
+    })
+  )
+}
+
+function shouldUseNodeOpenCascade(): boolean {
+  return (
+    typeof process !== 'undefined' &&
+    Boolean(process.versions?.node) &&
+    (typeof window === 'undefined' || process.env.VITEST === 'true')
+  )
+}
+
+async function withBrowserOpenCascadeEnvironment<T>(
+  initialize: () => Promise<T>
+): Promise<T> {
+  const globalWithProcess = globalThis as any
+  const originalProcess = globalWithProcess.process
+
+  try {
+    globalWithProcess.process = undefined
+    const initialization = initialize()
+    globalWithProcess.process = originalProcess
+    return await initialization
+  } catch (error) {
+    globalWithProcess.process = originalProcess
+    throw error
+  }
 }
 
 export class OpenCascadeCommandManager {

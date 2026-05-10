@@ -11,6 +11,15 @@ import { configDefaults, defineConfig } from 'vitest/config'
 import { indexHtmlCsp } from './vite.base.config'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
+const openCascadeViteEntry = new URL(
+  './src/network/openCascadeViteEntry.ts',
+  import.meta.url
+).pathname
+const openCascadeNodeUnsupported = new URL(
+  './src/network/openCascadeNodeUnsupported.ts',
+  import.meta.url
+).pathname
+
 const publicAssetWarning =
   'Assets in public directory cannot be imported from JavaScript'
 const logger = createLogger()
@@ -79,17 +88,27 @@ export default defineConfig(({ command, mode }) => {
       outDir: 'build',
     },
     resolve: {
-      alias: {
-        '@kittycad/registry': '/packages/registry/src',
-        '@kittycad/codemirror-lsp-client':
-          '/packages/codemirror-lsp-client/src',
-        '@kittycad/codemirror-lang-kcl': '/packages/codemirror-lang-kcl/src',
-        '@rust': '/rust',
-        '@e2e': '/e2e',
-        '@src': '/src',
-        '@public': '/public',
-        '@root': '/',
-      },
+      alias: [
+        { find: /^opencascade\.js$/, replacement: openCascadeViteEntry },
+        {
+          find: /^opencascade\.js\/dist\/node\.js$/,
+          replacement: openCascadeNodeUnsupported,
+        },
+        { find: '@kittycad/registry', replacement: '/packages/registry/src' },
+        {
+          find: '@kittycad/codemirror-lsp-client',
+          replacement: '/packages/codemirror-lsp-client/src',
+        },
+        {
+          find: '@kittycad/codemirror-lang-kcl',
+          replacement: '/packages/codemirror-lang-kcl/src',
+        },
+        { find: '@rust', replacement: '/rust' },
+        { find: '@e2e', replacement: '/e2e' },
+        { find: '@src', replacement: '/src' },
+        { find: '@public', replacement: '/public' },
+        { find: '@root', replacement: '/' },
+      ],
     },
     plugins: [
       nodePolyfills({
@@ -114,6 +133,7 @@ export default defineConfig(({ command, mode }) => {
       runMillion && MillionLint.vite(),
     ],
     worker: {
+      format: 'es',
       plugins: () => [viteTsconfigPaths()],
     },
   }

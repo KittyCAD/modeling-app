@@ -22,61 +22,7 @@ describe('OpenCascadeCommandManager', () => {
   it('builds a closed circular region, extrudes it, and exports BREP bytes', async () => {
     const manager = new OpenCascadeCommandManager()
 
-    await send(manager, IDS.request, {
-      type: 'modeling_cmd_batch_req',
-      requests: [
-        {
-          cmd_id: IDS.plane,
-          cmd: {
-            type: 'make_plane',
-            clobber: false,
-            origin: { x: 0, y: 0, z: 0 },
-            x_axis: { x: 1, y: 0, z: 0 },
-            y_axis: { x: 0, y: 1, z: 0 },
-            size: 10,
-          },
-        },
-        {
-          cmd_id: '00000000-0000-0000-0000-000000000007',
-          cmd: { type: 'enable_sketch_mode', entity_id: IDS.plane },
-        },
-        {
-          cmd_id: IDS.path,
-          cmd: { type: 'start_path' },
-        },
-        {
-          cmd_id: '00000000-0000-0000-0000-000000000008',
-          cmd: {
-            type: 'move_path_pen',
-            path: IDS.path,
-            to: { x: 1, y: 0, z: 0 },
-          },
-        },
-        {
-          cmd_id: IDS.edge,
-          cmd: {
-            type: 'extend_path',
-            path: IDS.path,
-            segment: {
-              type: 'arc',
-              center: { x: 0, y: 0 },
-              radius: 1,
-              start: { unit: 'degrees', value: 0 },
-              end: { unit: 'degrees', value: 360 },
-              relative: false,
-            },
-          },
-        },
-        {
-          cmd_id: '00000000-0000-0000-0000-000000000009',
-          cmd: { type: 'close_path', path_id: IDS.path },
-        },
-        {
-          cmd_id: '00000000-0000-0000-0000-00000000000a',
-          cmd: { type: 'sketch_mode_disable' },
-        },
-      ],
-    })
+    await buildCircleRegionInput(manager)
 
     const regionResponse = await send(manager, IDS.request, {
       type: 'modeling_cmd_req',
@@ -153,6 +99,64 @@ describe('OpenCascadeCommandManager', () => {
     expect(glbBytes?.length).toBeGreaterThan(0)
   })
 })
+
+async function buildCircleRegionInput(manager: OpenCascadeCommandManager) {
+  await send(manager, IDS.request, {
+    type: 'modeling_cmd_batch_req',
+    requests: [
+      {
+        cmd_id: IDS.plane,
+        cmd: {
+          type: 'make_plane',
+          clobber: false,
+          origin: { x: 0, y: 0, z: 0 },
+          x_axis: { x: 1, y: 0, z: 0 },
+          y_axis: { x: 0, y: 1, z: 0 },
+          size: 10,
+        },
+      },
+      {
+        cmd_id: '00000000-0000-0000-0000-000000000007',
+        cmd: { type: 'enable_sketch_mode', entity_id: IDS.plane },
+      },
+      {
+        cmd_id: IDS.path,
+        cmd: { type: 'start_path' },
+      },
+      {
+        cmd_id: '00000000-0000-0000-0000-000000000008',
+        cmd: {
+          type: 'move_path_pen',
+          path: IDS.path,
+          to: { x: 1, y: 0, z: 0 },
+        },
+      },
+      {
+        cmd_id: IDS.edge,
+        cmd: {
+          type: 'extend_path',
+          path: IDS.path,
+          segment: {
+            type: 'arc',
+            center: { x: 0, y: 0 },
+            radius: 1,
+            start: { unit: 'degrees', value: 0 },
+            end: { unit: 'degrees', value: 360 },
+            relative: false,
+          },
+        },
+      },
+      {
+        cmd_id: '00000000-0000-0000-0000-000000000009',
+        cmd: { type: 'close_path', path_id: IDS.path },
+      },
+      {
+        cmd_id: '00000000-0000-0000-0000-00000000000a',
+        cmd: { type: 'sketch_mode_disable' },
+      },
+    ],
+  })
+}
 
 async function send(
   manager: OpenCascadeCommandManager,

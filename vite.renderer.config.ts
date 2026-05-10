@@ -8,6 +8,15 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 import { indexHtmlCsp, pluginExposeRenderer } from './vite.base.config'
 
+const openCascadeViteEntry = new URL(
+  './src/network/openCascadeViteEntry.ts',
+  import.meta.url
+).pathname
+const openCascadeNodeUnsupported = new URL(
+  './src/network/openCascadeNodeUnsupported.ts',
+  import.meta.url
+).pathname
+
 // https://vitejs.dev/config
 export default defineConfig((env) => {
   const forgeEnv = env as ConfigEnv<'renderer'>
@@ -40,14 +49,22 @@ export default defineConfig((env) => {
       }),
     ],
     worker: {
+      format: 'es',
       plugins: () => [viteTsconfigPaths()],
     },
     resolve: {
       preserveSymlinks: true,
-      alias: {
-        '@kittycad/codemirror-lsp-client':
-          '/packages/codemirror-lsp-client/src',
-      },
+      alias: [
+        { find: /^opencascade\.js$/, replacement: openCascadeViteEntry },
+        {
+          find: /^opencascade\.js\/dist\/node\.js$/,
+          replacement: openCascadeNodeUnsupported,
+        },
+        {
+          find: '@kittycad/codemirror-lsp-client',
+          replacement: '/packages/codemirror-lsp-client/src',
+        },
+      ],
     },
     clearScreen: false,
   } as UserConfig
