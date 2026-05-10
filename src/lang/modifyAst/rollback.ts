@@ -59,6 +59,21 @@ export function insertRollbackExitAfterRange(
   return `${before}${needsLeadingNewline ? '\n' : ''}exit()\n${after}`
 }
 
+export function insertRollbackExitBeforeRange(
+  code: string,
+  sourceRange: SourceRange
+): string {
+  const withoutExisting = removeRollbackExit(code)
+  const insertAt = startOfLineContainingUtf8Offset(
+    withoutExisting,
+    sourceRange[0]
+  )
+  const before = withoutExisting.slice(0, insertAt)
+  const after = withoutExisting.slice(insertAt)
+  const needsLeadingNewline = before.length > 0 && !before.endsWith('\n')
+  return `${before}${needsLeadingNewline ? '\n' : ''}exit()\n${after}`
+}
+
 export function moveRollbackExitAfterRange(
   code: string,
   sourceRange: SourceRange | undefined
@@ -67,6 +82,13 @@ export function moveRollbackExitAfterRange(
     return removeRollbackExit(code)
   }
   return insertRollbackExitAfterRange(code, sourceRange)
+}
+
+export function moveRollbackExitBeforeRange(
+  code: string,
+  sourceRange: SourceRange
+): string {
+  return insertRollbackExitBeforeRange(code, sourceRange)
 }
 
 export function ensureExperimentalFeaturesAllow(input: {
@@ -108,6 +130,12 @@ function endOfLineContainingUtf8Offset(code: string, utf8Offset: number) {
   const utf16Offset = toUtf16(utf8Offset, code)
   const nextNewline = code.indexOf('\n', utf16Offset)
   return nextNewline === -1 ? code.length : nextNewline + 1
+}
+
+function startOfLineContainingUtf8Offset(code: string, utf8Offset: number) {
+  const utf16Offset = toUtf16(utf8Offset, code)
+  const previousNewline = code.lastIndexOf('\n', Math.max(utf16Offset - 1, 0))
+  return previousNewline === -1 ? 0 : previousNewline + 1
 }
 
 function braceDelta(line: string) {

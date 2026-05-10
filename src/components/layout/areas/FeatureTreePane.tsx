@@ -80,6 +80,11 @@ type SystemDeps = Pick<Singletons, 'kclManager'> & {
 
 const UNRENDERED_EXECUTE_HOTKEY = 'mod+s'
 
+type RollbackPlacement =
+  | { type: 'before'; range: SourceRange }
+  | { type: 'after'; range: SourceRange }
+  | { type: 'bottom' }
+
 export function FeatureTreePane(props: AreaTypeComponentProps) {
   return (
     <LayoutPanel
@@ -215,8 +220,8 @@ export const FeatureTreePaneContents = memo(() => {
     : undefined
   const rollbackOffset = rollbackExit?.range[0]
   const [isDraggingRollback, setIsDraggingRollback] = useState(false)
-  const [rollbackPreviewRange, setRollbackPreviewRange] = useState<
-    SourceRange | undefined
+  const [rollbackPreviewPlacement, setRollbackPreviewPlacement] = useState<
+    RollbackPlacement | undefined
   >(undefined)
   const operationEntries = useMemo(
     () =>
@@ -234,31 +239,34 @@ export const FeatureTreePaneContents = memo(() => {
       }),
     [operationList]
   )
-  const actualRollbackRange = useMemo(
-    () => rollbackRangeForOffset(operationEntries, rollbackOffset),
+  const actualRollbackPlacement = useMemo(
+    () => rollbackPlacementForOffset(operationEntries, rollbackOffset),
     [operationEntries, rollbackOffset]
   )
-  const displayedRollbackRange = isDraggingRollback
-    ? rollbackPreviewRange
-    : actualRollbackRange
+  const displayedRollbackPlacement = isDraggingRollback
+    ? rollbackPreviewPlacement
+    : actualRollbackPlacement
+  const firstOperationRange = operationEntries.find(
+    (entry) => entry.itemRange !== undefined
+  )?.itemRange
   const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
 
   const startRollbackDrag = useCallback(
-    (event: DragEvent<HTMLElement>, range: SourceRange | undefined) => {
+    (event: DragEvent<HTMLElement>, placement: RollbackPlacement) => {
       event.dataTransfer.setData('application/zoo-rollback-bar', 'true')
       event.dataTransfer.effectAllowed = 'move'
       const dragImage = makeInvisibleDragImage()
       event.dataTransfer.setDragImage(dragImage, 0, 0)
       requestAnimationFrame(() => dragImage.remove())
       setIsDraggingRollback(true)
-      setRollbackPreviewRange(range)
+      setRollbackPreviewPlacement(placement)
     },
     []
   )
 
   const endRollbackDrag = useCallback(() => {
     setIsDraggingRollback(false)
-    setRollbackPreviewRange(undefined)
+    setRollbackPreviewPlacement(undefined)
   }, [])
 
   const moveRollbackPreviewToClosestSlot = useCallback(
@@ -273,21 +281,35 @@ export const FeatureTreePaneContents = memo(() => {
       event.preventDefault()
       const rect = event.currentTarget.getBoundingClientRect()
       const isUpperHalf = event.clientY < rect.top + rect.height / 2
-      setRollbackPreviewRange(isUpperHalf ? previousRange : itemRange)
+      setRollbackPreviewPlacement(
+        isUpperHalf
+          ? previousRange
+            ? { type: 'after', range: previousRange }
+            : itemRange
+              ? { type: 'before', range: itemRange }
+              : { type: 'bottom' }
+          : itemRange
+            ? { type: 'after', range: itemRange }
+            : { type: 'bottom' }
+      )
     },
     [isDraggingRollback]
   )
 
   const dropRollback = useCallback(
-    (event: DragEvent<HTMLElement>, range: SourceRange | undefined) => {
+    (event: DragEvent<HTMLElement>, placement: RollbackPlacement) => {
       if (!isDraggingRollback) {
         return
       }
       event.preventDefault()
-      kclManager
-        .moveOpenCascadeRollbackMarker(range)
-        .catch(reportRejection)
-        .finally(endRollbackDrag)
+      const move =
+        placement.type === 'bottom'
+          ? kclManager.moveOpenCascadeRollbackMarker()
+          : kclManager.moveOpenCascadeRollbackMarker(
+              placement.range,
+              placement.type
+            )
+      move.catch(reportRejection).finally(endRollbackDrag)
     },
     [endRollbackDrag, isDraggingRollback, kclManager]
   )
@@ -387,11 +409,43 @@ export const FeatureTreePaneContents = memo(() => {
                 </div>
               </div>
             )}
+            {isOpenCascade && firstOperationRange && (
+              <RollbackDropSlot
+                onDragOver={(event) => {
+                  if (!isDraggingRollback) return
+                  event.preventDefault()
+                  setRollbackPreviewPlacement({
+                    type: 'before',
+                    range: firstOperationRange,
+                  })
+                }}
+                onDrop={(event) =>
+                  dropRollback(event, {
+                    type: 'before',
+                    range: firstOperationRange,
+                  })
+                }
+              >
+                {displayedRollbackPlacement?.type === 'before' &&
+                  sourceRangesEqual(
+                    displayedRollbackPlacement.range,
+                    firstOperationRange
+                  ) && (
+                    <RollbackBar
+                      onDragStart={(event) =>
+                        startRollbackDrag(event, displayedRollbackPlacement)
+                      }
+                      onDragEnd={endRollbackDrag}
+                    />
+                  )}
+              </RollbackDropSlot>
+            )}
             {operationEntries.map(
               ({ opOrList, key, itemRange, previousRange }) => {
                 const shouldRenderRollbackAfter =
                   itemRange !== undefined &&
-                  sourceRangesEqual(itemRange, displayedRollbackRange)
+                  displayedRollbackPlacement?.type === 'after' &&
+                  sourceRangesEqual(itemRange, displayedRollbackPlacement.range)
                 const isBelowRollback =
                   rollbackOffset !== undefined &&
                   itemRange !== undefined &&
@@ -465,7 +519,10 @@ export const FeatureTreePaneContents = memo(() => {
                     onDrop={
                       isOpenCascade && itemRange
                         ? (event) => {
-                            dropRollback(event, rollbackPreviewRange)
+                            dropRollback(
+                              event,
+                              rollbackPreviewPlacement ?? { type: 'bottom' }
+                            )
                           }
                         : undefined
                     }
@@ -474,7 +531,10 @@ export const FeatureTreePaneContents = memo(() => {
                     {shouldRenderRollbackAfter && (
                       <RollbackBar
                         onDragStart={(event) =>
-                          startRollbackDrag(event, itemRange)
+                          startRollbackDrag(event, {
+                            type: 'after',
+                            range: itemRange,
+                          })
                         }
                         onDragEnd={endRollbackDrag}
                       />
@@ -483,20 +543,27 @@ export const FeatureTreePaneContents = memo(() => {
                 )
               }
             )}
-            {isOpenCascade &&
-              (displayedRollbackRange === undefined ||
-                rollbackOffset === undefined) && (
-                <RollbackBar
-                  onDragStart={(event) => startRollbackDrag(event, undefined)}
-                  onDragEnd={endRollbackDrag}
-                  onDragOver={(event) => {
-                    if (!isDraggingRollback) return
-                    event.preventDefault()
-                    setRollbackPreviewRange(undefined)
-                  }}
-                  onDrop={(event) => dropRollback(event, undefined)}
-                />
-              )}
+            {isOpenCascade && (
+              <RollbackDropSlot
+                onDragOver={(event) => {
+                  if (!isDraggingRollback) return
+                  event.preventDefault()
+                  setRollbackPreviewPlacement({ type: 'bottom' })
+                }}
+                onDrop={(event) => dropRollback(event, { type: 'bottom' })}
+              >
+                {(displayedRollbackPlacement === undefined ||
+                  displayedRollbackPlacement.type === 'bottom' ||
+                  rollbackOffset === undefined) && (
+                  <RollbackBar
+                    onDragStart={(event) =>
+                      startRollbackDrag(event, { type: 'bottom' })
+                    }
+                    onDragEnd={endRollbackDrag}
+                  />
+                )}
+              </RollbackDropSlot>
+            )}
           </>
         )}
       </section>
@@ -537,6 +604,22 @@ function RollbackBar({
       >
         Rollback bar
       </Tooltip>
+    </div>
+  )
+}
+
+function RollbackDropSlot({
+  children,
+  onDragOver,
+  onDrop,
+}: {
+  children?: ReactNode
+  onDragOver: (event: DragEvent<HTMLElement>) => void
+  onDrop: (event: DragEvent<HTMLElement>) => void
+}) {
+  return (
+    <div className="min-h-4" onDragOver={onDragOver} onDrop={onDrop}>
+      {children}
     </div>
   )
 }
@@ -588,18 +671,26 @@ function operationTreeItemRange(
   return 'sourceRange' in item ? item.sourceRange : undefined
 }
 
-function rollbackRangeForOffset(
+function rollbackPlacementForOffset(
   operationEntries: { itemRange: SourceRange | undefined }[],
   rollbackOffset: number | undefined
-): SourceRange | undefined {
+): RollbackPlacement | undefined {
   if (rollbackOffset === undefined) {
     return undefined
   }
-  return operationEntries
+  const ranges = operationEntries
     .map((entry) => entry.itemRange)
     .filter((range): range is SourceRange => range !== undefined)
+
+  const previousRange = ranges
     .filter((range) => range[1] <= rollbackOffset)
     .sort((a, b) => b[1] - a[1])[0]
+  if (previousRange) {
+    return { type: 'after', range: previousRange }
+  }
+
+  const firstRange = ranges.sort((a, b) => a[0] - b[0])[0]
+  return firstRange ? { type: 'before', range: firstRange } : { type: 'bottom' }
 }
 
 function sourceRangesEqual(

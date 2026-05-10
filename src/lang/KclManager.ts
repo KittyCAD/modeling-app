@@ -35,6 +35,7 @@ import {
 import {
   ensureExperimentalFeaturesAllow,
   moveRollbackExitAfterRange,
+  moveRollbackExitBeforeRange,
   removeRollbackExit,
   restoreExperimentalFeatures,
   type RollbackEditSession,
@@ -2249,12 +2250,18 @@ export class KclManager extends File {
     })
   }
 
-  async moveOpenCascadeRollbackMarker(sourceRange?: SourceRange) {
+  async moveOpenCascadeRollbackMarker(
+    sourceRange?: SourceRange,
+    placement: 'after' | 'before' = 'after'
+  ) {
     if (!this.isOpenCascadeEngineActive()) {
       return
     }
     const wasmInstance = await this.wasmInstancePromise
-    let nextCode = moveRollbackExitAfterRange(this.code, sourceRange)
+    let nextCode =
+      sourceRange && placement === 'before'
+        ? moveRollbackExitBeforeRange(this.code, sourceRange)
+        : moveRollbackExitAfterRange(this.code, sourceRange)
     if (sourceRange) {
       const previousExperimentalFeatures =
         this.fileSettings.experimentalFeatures ?? null
