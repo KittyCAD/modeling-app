@@ -318,9 +318,13 @@ export const systemIOMachineImpl = systemIOMachine.provide({
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
       async ({ input: context }: { input: SystemIOContext }) => {
-        return listRecentProjectsForCurrentEnvironment(
-          await context.wasmInstancePromise
-        )
+        try {
+          return await listRecentProjectsForCurrentEnvironment(
+            await context.wasmInstancePromise
+          )
+        } catch {
+          return []
+        }
       }
     ),
     [SystemIOMachineActors.createProject]: fromPromise(
