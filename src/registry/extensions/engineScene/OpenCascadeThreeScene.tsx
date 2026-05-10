@@ -1642,9 +1642,6 @@ function makeOpenCascadePlaneGuideTexture(label: string, color: string) {
     ctx.font = '700 112px sans-serif'
     ctx.textAlign = 'right'
     ctx.textBaseline = 'top'
-    ctx.lineWidth = 12
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.92)'
-    ctx.strokeText(label, canvas.width - 36, 30)
     ctx.fillStyle = color
     ctx.fillText(label, canvas.width - 36, 30)
   }
