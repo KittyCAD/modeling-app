@@ -638,6 +638,8 @@ export function updateSelectionBox({
       sketchSceneGroup.add(selectionBoxState.getSelectionBoxGroup()!)
       selectionBoxState.getSelectionBoxGroup()!.layers.set(SKETCH_LAYER)
       newSelectionBoxObject.layers.set(SKETCH_LAYER)
+    } else {
+      sceneInfra.scene.add(selectionBoxState.getSelectionBoxGroup()!)
     }
   }
 

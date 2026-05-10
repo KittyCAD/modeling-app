@@ -32,6 +32,16 @@ import {
 } from '@src/lib/theme'
 import { isArray } from '@src/lib/utils'
 import { getSegmentColor } from '@src/machines/sketchSolve/segmentsUtils'
+import type {
+  NonCodeSelection,
+  Selection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
+import {
+  type SelectionBoxVisualState,
+  removeSelectionBox,
+  updateSelectionBox,
+} from '@src/machines/sketchSolve/tools/moveTool/areaSelectUtils'
 import type { EngineCommandManagerProxy } from '@src/network/engineCommandManagerProxy'
 import type {
   OpenCascadeSketchLineMeshes,
@@ -79,6 +89,11 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Line2 } from 'three/examples/jsm/lines/Line2.js'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
+import {
+  type OpenCascadeAreaSelectionGeometry,
+  isOpenCascadeAreaSelectionMatch,
+  openCascadeAreaSelectionBox,
+} from './openCascadeAreaSelect'
 
 const OPEN_CASCADE_SOLID_ROOT = 'OPEN_CASCADE_SOLID_ROOT'
 const OPEN_CASCADE_PROFILE_ROOT = 'OPEN_CASCADE_PROFILE_ROOT'
@@ -174,6 +189,18 @@ export type OpenCascadeResolvedHit =
   | OpenCascadeResolvedOffsetPlaneHit
   | OpenCascadeResolvedBodyHit
 
+type OpenCascadeAreaSelectionCandidate = {
+  id: string
+  hit: OpenCascadeResolvedHit
+  geometry: OpenCascadeAreaSelectionGeometry
+}
+
+type OpenCascadeSelectionPayload = {
+  id: string
+  graphSelection?: Selection
+  otherSelection?: NonCodeSelection
+}
+
 export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
   useSignals()
   const { settings } = useApp()
@@ -214,6 +241,11 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
   const objectSelectionOnly =
     activeSelectionFilter.includes('object') &&
     activeSelectionFilter.every((filter) => filter === 'object')
+  const edgeSelectionOnly =
+    activeSelectionFilter.includes('edge') &&
+    activeSelectionFilter.every(
+      (filter) => filter === 'edge' || filter === 'face'
+    )
   const exportError = diagnostic || openCascadeManager.latestExportError.value
   const passiveProfilesVisible =
     !state.matches('Sketch') && !state.matches('sketchSolveMode')
@@ -958,6 +990,8 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     let hoveredRegionId: string | undefined
     let hoveredBodyId: string | undefined
     let hoveredOffsetPlaneId: string | undefined
+    const areaSelectionPreviewIds = new Set<string>()
+    const selectionBoxState = makeSelectionBoxVisualState()
     const isSelectingSketchPlane = state.matches('Sketch no face')
     const resolveHit = (intersects: Intersection[]) =>
       resolveOpenCascadeHit(intersects, {
@@ -1043,6 +1077,9 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       const selectedIds = selectedOpenCascadeEntityIds(
         state.context.selectionRanges
       )
+      for (const id of areaSelectionPreviewIds) {
+        selectedIds.add(id)
+      }
       engineCommandManager
         .exportLatestOpenCascadeRegionMeshes()
         .then((regionMeshes) => {
@@ -1093,6 +1130,86 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         )
       }
       sceneInfra.renderFrame()
+    }
+
+    const getAreaSelectionHits = async (
+      startPoint: Vector3,
+      currentPoint: Vector3
+    ) => {
+      const viewportSize = new Vector2(
+        sceneInfra.renderer.domElement.clientWidth,
+        sceneInfra.renderer.domElement.clientHeight
+      )
+      const box = openCascadeAreaSelectionBox({
+        startPoint,
+        currentPoint,
+        camera: sceneInfra.camControls.camera,
+        viewportSize,
+      })
+      const candidates = await buildOpenCascadeAreaSelectionCandidates({
+        scene,
+        topologyMeshes:
+          engineCommandManager.exportLatestOpenCascadeTopologyMeshes(),
+        regionMeshes:
+          await engineCommandManager.exportLatestOpenCascadeRegionMeshes(),
+        sketchLineMeshes:
+          engineCommandManager.exportLatestOpenCascadeSketchLineMeshes(),
+        objectSelectionOnly,
+        edgeSelectionOnly,
+      })
+      return candidates.filter((candidate) =>
+        isOpenCascadeAreaSelectionMatch({
+          geometry: candidate.geometry,
+          camera: sceneInfra.camControls.camera,
+          viewportSize,
+          boxMin: box.min,
+          boxMax: box.max,
+          mode: box.mode,
+        })
+      )
+    }
+
+    const updateAreaSelectionPreview = async (
+      startPoint: Vector3,
+      currentPoint: Vector3
+    ) => {
+      const hits = await getAreaSelectionHits(startPoint, currentPoint)
+      areaSelectionPreviewIds.clear()
+      for (const candidate of hits) {
+        areaSelectionPreviewIds.add(candidate.id)
+      }
+      updateHighlight()
+    }
+
+    const completeAreaSelection = async (
+      startPoint: Vector3,
+      currentPoint: Vector3,
+      event: MouseEvent
+    ) => {
+      const hits = await getAreaSelectionHits(startPoint, currentPoint)
+      areaSelectionPreviewIds.clear()
+      updateHighlight()
+
+      if (hits.length === 0 && (event.shiftKey || kclManager.isShiftDown)) {
+        return
+      }
+
+      const nextSelection = openCascadeSelectionsFromHits(
+        hits.map((candidate) => candidate.hit),
+        {
+          artifactGraph: kclManager.artifactGraph,
+          defaultPlanes: kclManager.rustContext.defaultPlanes,
+          currentSelection: state.context.selectionRanges,
+          append: event.shiftKey || kclManager.isShiftDown,
+        }
+      )
+      send({
+        type: 'Set selection',
+        data: {
+          selectionType: 'completeSelection',
+          selection: nextSelection,
+        },
+      })
     }
 
     const updateEdgeCandidates = (
@@ -1399,6 +1516,34 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
           },
         })
       },
+      onAreaSelectStart: ({ startPoint, currentPoint }) => {
+        updateSelectionBox({
+          startPoint3D: startPoint.threeD,
+          currentPoint3D: currentPoint.threeD,
+          sceneInfra,
+          selectionBoxState,
+        })
+      },
+      onAreaSelect: ({ startPoint, currentPoint }) => {
+        updateSelectionBox({
+          startPoint3D: startPoint.threeD,
+          currentPoint3D: currentPoint.threeD,
+          sceneInfra,
+          selectionBoxState,
+        })
+        updateAreaSelectionPreview(
+          startPoint.threeD,
+          currentPoint.threeD
+        ).catch((error) => console.warn(error))
+      },
+      onAreaSelectEnd: ({ startPoint, currentPoint, mouseEvent }) => {
+        removeSelectionBox(selectionBoxState)
+        completeAreaSelection(
+          startPoint.threeD,
+          currentPoint.threeD,
+          mouseEvent
+        ).catch((error) => console.warn(error))
+      },
     })
     sceneInfra.renderer.domElement.addEventListener('dblclick', onDoubleClick)
 
@@ -1414,6 +1559,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         ...sceneInfra.raycaster.params.Line,
         threshold: previousLineThreshold,
       }
+      removeSelectionBox(selectionBoxState)
       sceneInfra.resetMouseListeners()
     }
   }, [
@@ -1426,6 +1572,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     state.value,
     state.context.selectionRanges,
     objectSelectionOnly,
+    edgeSelectionOnly,
     useSketchSolveMode,
   ])
 
@@ -2611,6 +2758,300 @@ export function resolveOpenCascadeHit(
   return undefined
 }
 
+async function buildOpenCascadeAreaSelectionCandidates({
+  scene,
+  topologyMeshes,
+  regionMeshes,
+  sketchLineMeshes,
+  objectSelectionOnly,
+  edgeSelectionOnly,
+}: {
+  scene: Scene
+  topologyMeshes: OpenCascadeTopologyMeshes
+  regionMeshes: OpenCascadeRegionMeshes
+  sketchLineMeshes: OpenCascadeSketchLineMeshes
+  objectSelectionOnly: boolean
+  edgeSelectionOnly: boolean
+}): Promise<OpenCascadeAreaSelectionCandidate[]> {
+  if (objectSelectionOnly) {
+    return buildOpenCascadeBodyAreaSelectionCandidates(topologyMeshes)
+  }
+  if (edgeSelectionOnly) {
+    return buildOpenCascadeEdgeAreaSelectionCandidates(topologyMeshes)
+  }
+  return [
+    ...buildOpenCascadeTopologyAreaSelectionCandidates(topologyMeshes),
+    ...buildOpenCascadeRegionAreaSelectionCandidates(regionMeshes),
+    ...buildOpenCascadeSketchLineAreaSelectionCandidates(sketchLineMeshes),
+    ...buildOpenCascadePlaneAreaSelectionCandidates(scene),
+  ]
+}
+
+function buildOpenCascadeBodyAreaSelectionCandidates(
+  topologyMeshes: OpenCascadeTopologyMeshes
+): OpenCascadeAreaSelectionCandidate[] {
+  return topologyMeshes.solids.map((solid) => ({
+    id: solid.solidId,
+    hit: {
+      hitType: 'body',
+      solidId: solid.solidId,
+      artifactId: solid.artifactIds?.[0] || solid.solidId,
+      artifactIds: solid.artifactIds || [solid.solidId],
+    },
+    geometry: {
+      points: pointsFromFlatPositionArray(solid.positions),
+      triangles: trianglesFromIndexedGeometry(
+        solid.positions,
+        solid.indices,
+        0,
+        solid.indices.length
+      ),
+    },
+  }))
+}
+
+function buildOpenCascadeTopologyAreaSelectionCandidates(
+  topologyMeshes: OpenCascadeTopologyMeshes
+): OpenCascadeAreaSelectionCandidate[] {
+  const candidates: OpenCascadeAreaSelectionCandidate[] = []
+  for (const solid of topologyMeshes.solids) {
+    solid.groups.forEach((group, faceIndex) => {
+      candidates.push({
+        id: group.topologyId,
+        hit: {
+          ...group,
+          hitType: 'topology',
+          solidId: solid.solidId,
+          faceIndex,
+        },
+        geometry: {
+          points: pointsFromIndexedGeometry(
+            solid.positions,
+            solid.indices,
+            group.start,
+            group.count
+          ),
+          triangles: trianglesFromIndexedGeometry(
+            solid.positions,
+            solid.indices,
+            group.start,
+            group.count
+          ),
+        },
+      })
+    })
+  }
+  return candidates
+}
+
+function buildOpenCascadeEdgeAreaSelectionCandidates(
+  topologyMeshes: OpenCascadeTopologyMeshes
+): OpenCascadeAreaSelectionCandidate[] {
+  const candidates: OpenCascadeAreaSelectionCandidate[] = []
+  for (const solid of topologyMeshes.solids) {
+    for (const edge of solid.edges) {
+      const points = pointsFromFlatPositionArray(edge.points)
+      candidates.push({
+        id: edge.topologyId,
+        hit: {
+          ...edge,
+          hitType: 'edge',
+          solidId: solid.solidId,
+          parentFaceId: edge.faceIds[0],
+        },
+        geometry: {
+          points,
+          segments: contiguousSegments(points),
+        },
+      })
+    }
+  }
+  return candidates
+}
+
+function buildOpenCascadeRegionAreaSelectionCandidates(
+  regionMeshes: OpenCascadeRegionMeshes
+): OpenCascadeAreaSelectionCandidate[] {
+  const candidates: OpenCascadeAreaSelectionCandidate[] = []
+  for (const region of regionMeshes.regions) {
+    for (const group of region.groups) {
+      candidates.push({
+        id: group.regionId,
+        hit: {
+          ...group,
+          hitType: 'region',
+        },
+        geometry: {
+          points: pointsFromIndexedGeometry(
+            region.positions,
+            region.indices,
+            group.start,
+            group.count
+          ),
+          triangles: trianglesFromIndexedGeometry(
+            region.positions,
+            region.indices,
+            group.start,
+            group.count
+          ),
+        },
+      })
+    }
+  }
+  return candidates
+}
+
+function buildOpenCascadeSketchLineAreaSelectionCandidates(
+  sketchLineMeshes: OpenCascadeSketchLineMeshes
+): OpenCascadeAreaSelectionCandidate[] {
+  return sketchLineMeshes.segments.map((segment) => {
+    const points = pointsFromFlatPositionArray(segment.points)
+    return {
+      id: segment.segmentId,
+      hit: {
+        ...segment,
+        hitType: 'sketchLine',
+      },
+      geometry: {
+        points,
+        segments: contiguousSegments(points),
+      },
+    }
+  })
+}
+
+function buildOpenCascadePlaneAreaSelectionCandidates(scene: Scene) {
+  const candidates: OpenCascadeAreaSelectionCandidate[] = []
+  const seenDefaultPlanes = new Set<string>()
+  const seenOffsetPlanes = new Set<string>()
+  scene.traverse((object) => {
+    const defaultPlane = findOpenCascadeDefaultPlaneGuide(object)
+    if (defaultPlane && !seenDefaultPlanes.has(defaultPlane.planeKey)) {
+      const geometry = geometryForObjectBounds(object)
+      if (geometry) {
+        candidates.push({
+          id: defaultPlane.planeKey,
+          hit: defaultPlane,
+          geometry,
+        })
+        seenDefaultPlanes.add(defaultPlane.planeKey)
+      }
+      return
+    }
+
+    const offsetPlaneId = findOpenCascadeOffsetPlane(object)
+    if (offsetPlaneId && !seenOffsetPlanes.has(offsetPlaneId)) {
+      const geometry = geometryForObjectBounds(object)
+      if (geometry) {
+        candidates.push({
+          id: offsetPlaneId,
+          hit: {
+            hitType: 'offsetPlane',
+            planeId: offsetPlaneId,
+          },
+          geometry,
+        })
+        seenOffsetPlanes.add(offsetPlaneId)
+      }
+    }
+  })
+  return candidates
+}
+
+function pointsFromIndexedGeometry(
+  positions: number[],
+  indices: number[],
+  start: number,
+  count: number
+) {
+  const points: Vector3[] = []
+  for (let index = start; index < start + count; index += 1) {
+    points.push(pointFromFlatPositionArray(positions, indices[index]))
+  }
+  return points
+}
+
+function trianglesFromIndexedGeometry(
+  positions: number[],
+  indices: number[],
+  start: number,
+  count: number
+) {
+  const triangles: Array<[Vector3, Vector3, Vector3]> = []
+  for (let index = start; index + 2 < start + count; index += 3) {
+    triangles.push([
+      pointFromFlatPositionArray(positions, indices[index]),
+      pointFromFlatPositionArray(positions, indices[index + 1]),
+      pointFromFlatPositionArray(positions, indices[index + 2]),
+    ])
+  }
+  return triangles
+}
+
+function pointsFromFlatPositionArray(positions: number[]) {
+  const points: Vector3[] = []
+  for (let index = 0; index + 2 < positions.length; index += 3) {
+    points.push(
+      new Vector3(positions[index], positions[index + 1], positions[index + 2])
+    )
+  }
+  return points
+}
+
+function pointFromFlatPositionArray(positions: number[], vertexIndex: number) {
+  const offset = vertexIndex * 3
+  return new Vector3(
+    positions[offset] || 0,
+    positions[offset + 1] || 0,
+    positions[offset + 2] || 0
+  )
+}
+
+function contiguousSegments(points: Vector3[]) {
+  const segments: Array<[Vector3, Vector3]> = []
+  for (let index = 1; index < points.length; index += 1) {
+    segments.push([points[index - 1], points[index]])
+  }
+  return segments
+}
+
+function geometryForObjectBounds(
+  object: Object3D
+): OpenCascadeAreaSelectionGeometry | undefined {
+  const box = new Box3().setFromObject(object)
+  if (box.isEmpty()) {
+    return undefined
+  }
+  const { min, max } = box
+  const points = [
+    new Vector3(min.x, min.y, min.z),
+    new Vector3(max.x, min.y, min.z),
+    new Vector3(max.x, max.y, min.z),
+    new Vector3(min.x, max.y, min.z),
+    new Vector3(min.x, min.y, max.z),
+    new Vector3(max.x, min.y, max.z),
+    new Vector3(max.x, max.y, max.z),
+    new Vector3(min.x, max.y, max.z),
+  ]
+  return {
+    points,
+    segments: [
+      [points[0], points[1]],
+      [points[1], points[2]],
+      [points[2], points[3]],
+      [points[3], points[0]],
+      [points[4], points[5]],
+      [points[5], points[6]],
+      [points[6], points[7]],
+      [points[7], points[4]],
+      [points[0], points[4]],
+      [points[1], points[5]],
+      [points[2], points[6]],
+      [points[3], points[7]],
+    ],
+  }
+}
+
 function findOpenCascadeBodyVisual(object: unknown): Object3D | undefined {
   let current = object instanceof Object3D ? object : undefined
   while (current) {
@@ -2721,6 +3162,212 @@ export function openCascadeDefaultPlaneSelection(
   return {
     name: hit.plane,
     id,
+  }
+}
+
+function openCascadeSelectionsFromHits(
+  hits: OpenCascadeResolvedHit[],
+  {
+    artifactGraph,
+    defaultPlanes,
+    currentSelection,
+    append,
+  }: {
+    artifactGraph: ArtifactGraph
+    defaultPlanes: DefaultPlanes | null
+    currentSelection: Selections
+    append: boolean
+  }
+): Selections {
+  const payloads = hits
+    .map((hit) =>
+      openCascadeSelectionPayloadForHit(hit, artifactGraph, defaultPlanes)
+    )
+    .filter((payload): payload is OpenCascadeSelectionPayload =>
+      Boolean(payload)
+    )
+
+  const graphSelections = append ? [...currentSelection.graphSelections] : []
+  const otherSelections = append ? [...currentSelection.otherSelections] : []
+  const graphKeys = new Set(graphSelections.map(graphSelectionKey))
+  const otherKeys = new Set(otherSelections.map(nonCodeSelectionKey))
+
+  for (const payload of payloads) {
+    if (payload.graphSelection) {
+      const key = graphSelectionKey(payload.graphSelection)
+      if (!graphKeys.has(key)) {
+        graphSelections.push(payload.graphSelection)
+        graphKeys.add(key)
+      }
+      continue
+    }
+    if (payload.otherSelection) {
+      const key = nonCodeSelectionKey(payload.otherSelection)
+      if (!otherKeys.has(key)) {
+        otherSelections.push(payload.otherSelection)
+        otherKeys.add(key)
+      }
+    }
+  }
+
+  return { graphSelections, otherSelections }
+}
+
+function openCascadeSelectionPayloadForHit(
+  hit: OpenCascadeResolvedHit,
+  artifactGraph: ArtifactGraph,
+  defaultPlanes: DefaultPlanes | null
+): OpenCascadeSelectionPayload | undefined {
+  if (hit.hitType === 'defaultPlane') {
+    const selection = openCascadeDefaultPlaneSelection(hit, defaultPlanes)
+    return selection
+      ? {
+          id: selection.id,
+          otherSelection: selection,
+        }
+      : undefined
+  }
+
+  if (hit.hitType === 'region') {
+    const pathArtifact = hit.parentPathId
+      ? artifactGraph.get(hit.parentPathId)
+      : undefined
+    const sketch =
+      pathArtifact?.type === 'path'
+        ? getSketchBlockForPathArtifact(pathArtifact, artifactGraph)
+        : undefined
+    if (sketch) {
+      return {
+        id: hit.regionId,
+        otherSelection: {
+          type: 'engineRegion',
+          id: hit.regionId,
+          point: hit.queryPoint,
+          sketchId: sketch.id,
+        },
+      }
+    }
+  }
+
+  const artifact = artifactForOpenCascadeHit(hit, artifactGraph)
+  const codeRef = artifact
+    ? getCodeRefsByArtifactId(artifact.id, artifactGraph)?.[0]
+    : undefined
+  const engineEntityId = engineEntityIdForOpenCascadeHit(hit)
+  if (artifact && codeRef) {
+    return {
+      id: engineEntityId,
+      graphSelection: {
+        artifact,
+        codeRef,
+        engineEntityId,
+      },
+    }
+  }
+
+  return {
+    id: engineEntityId,
+    otherSelection: {
+      type: 'enginePrimitive',
+      entityId: engineEntityId,
+      parentEntityId: parentEntityIdForOpenCascadeHit(hit),
+      primitiveIndex: primitiveIndexForOpenCascadeHit(hit),
+      primitiveType: primitiveTypeForOpenCascadeHit(hit),
+    },
+  }
+}
+
+function engineEntityIdForOpenCascadeHit(hit: OpenCascadeResolvedHit) {
+  if (hit.hitType === 'topology') return hit.topologyId
+  if (hit.hitType === 'edge') return hit.topologyId
+  if (hit.hitType === 'region') return hit.regionId
+  if (hit.hitType === 'body') return hit.solidId
+  if (hit.hitType === 'offsetPlane') return hit.planeId
+  if (hit.hitType === 'defaultPlane') return hit.planeKey
+  return hit.segmentId
+}
+
+function parentEntityIdForOpenCascadeHit(hit: OpenCascadeResolvedHit) {
+  if (hit.hitType === 'topology') return hit.solidId
+  if (hit.hitType === 'edge') return hit.solidId
+  if (hit.hitType === 'region') return hit.parentPathId
+  if (hit.hitType === 'body') return hit.solidId
+  if (hit.hitType === 'offsetPlane') return hit.planeId
+  if (hit.hitType === 'defaultPlane') return hit.planeKey
+  return hit.pathId
+}
+
+function primitiveIndexForOpenCascadeHit(hit: OpenCascadeResolvedHit) {
+  if (hit.hitType === 'edge') return hit.edgeIndex
+  if (hit.hitType === 'topology') return hit.faceIndex
+  return 0
+}
+
+function primitiveTypeForOpenCascadeHit(hit: OpenCascadeResolvedHit) {
+  if (hit.hitType === 'topology') return hit.kind
+  if (hit.hitType === 'body') return 'object'
+  if (hit.hitType === 'edge' || hit.hitType === 'sketchLine') return 'edge'
+  return 'face'
+}
+
+function graphSelectionKey(selection: Selection) {
+  return (
+    selection.engineEntityId ||
+    selection.artifact?.id ||
+    `${selection.codeRef.range[0]}:${selection.codeRef.range[1]}`
+  )
+}
+
+function nonCodeSelectionKey(selection: NonCodeSelection) {
+  if (typeof selection === 'string') {
+    return selection
+  }
+  if ('type' in selection && selection.type === 'enginePrimitive') {
+    return `primitive:${selection.entityId}`
+  }
+  if ('type' in selection && selection.type === 'engineRegion') {
+    return `region:${selection.id}`
+  }
+  return `defaultPlane:${selection.id}`
+}
+
+function makeSelectionBoxVisualState(): SelectionBoxVisualState {
+  let selectionBoxObject: ReturnType<
+    SelectionBoxVisualState['getSelectionBoxObject']
+  > = null
+  let selectionBoxGroup: ReturnType<
+    SelectionBoxVisualState['getSelectionBoxGroup']
+  > = null
+  let labelsWrapper: HTMLElement | null = null
+  let boxDiv: HTMLElement | null = null
+  let verticalLine: HTMLElement | null = null
+  let horizontalLine: HTMLElement | null = null
+
+  return {
+    getSelectionBoxObject: () => selectionBoxObject,
+    setSelectionBoxObject: (value) => {
+      selectionBoxObject = value
+    },
+    getSelectionBoxGroup: () => selectionBoxGroup,
+    setSelectionBoxGroup: (value) => {
+      selectionBoxGroup = value
+    },
+    getLabelsWrapper: () => labelsWrapper,
+    setLabelsWrapper: (value) => {
+      labelsWrapper = value
+    },
+    getBoxDiv: () => boxDiv,
+    setBoxDiv: (value) => {
+      boxDiv = value
+    },
+    getVerticalLine: () => verticalLine,
+    setVerticalLine: (value) => {
+      verticalLine = value
+    },
+    getHorizontalLine: () => horizontalLine,
+    setHorizontalLine: (value) => {
+      horizontalLine = value
+    },
   }
 }
 
