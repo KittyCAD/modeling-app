@@ -128,6 +128,7 @@ type SolidState = {
   sideFaceId: string
   startCapId: string
   endCapId: string
+  provenance?: OpenCascadeEntityProvenance
   brep?: Uint8Array
   consumed?: boolean
   cylinder?: {
@@ -186,6 +187,7 @@ export type OpenCascadeTopologyEdgeLine = {
 export type OpenCascadeTopologySolidMesh = {
   solidId: string
   artifactIds?: string[]
+  provenance?: OpenCascadeEntityProvenance
   positions: number[]
   indices: number[]
   groups: OpenCascadeTopologyFaceGroup[]
@@ -249,7 +251,14 @@ export type OpenCascadePlaneMeshes = {
 export type OpenCascadeVisibleSolidGlb = {
   solidId: string
   artifactIds: string[]
+  provenance?: OpenCascadeEntityProvenance
   bytes: Uint8Array
+}
+
+export type OpenCascadeEntityProvenance = {
+  imported: boolean
+  sourceRange: SourceRange
+  moduleId: number
 }
 
 type ExtrudeTopology = {
@@ -456,9 +465,9 @@ export class OpenCascadeCommandManager {
   ): Promise<Uint8Array> {
     const range: SourceRange = JSON.parse(rangeStr)
     const command: WebSocketRequest = JSON.parse(commandStr)
-    JSON.parse(idToRangeStr)
+    const idToRange = parseIdToRangeMap(idToRangeStr)
 
-    const response = await this.executeRequest(id, command, range)
+    const response = await this.executeRequest(id, command, range, idToRange)
     return msgpackEncode(response)
   }
 
@@ -502,6 +511,7 @@ export class OpenCascadeCommandManager {
       const exports = visible.map(([id, solid]) => ({
         solidId: id,
         artifactIds: this.selectableSolidArtifactIds(id, solid),
+        provenance: cloneEntityProvenance(solid.provenance),
         bytes: this.writeGlb(id, solid.shape, oc),
       }))
       this.latestExportError.value = undefined
@@ -549,6 +559,9 @@ export class OpenCascadeCommandManager {
           artifactIds: this.selectableSolidArtifactIds(
             solid.solidId,
             solids.get(solid.solidId)
+          ),
+          provenance: cloneEntityProvenance(
+            solids.get(solid.solidId)?.provenance || solid.provenance
           ),
           positions: [...solid.positions],
           indices: [...solid.indices],
@@ -629,17 +642,19 @@ export class OpenCascadeCommandManager {
   private async executeRequest(
     id: string,
     request: WebSocketRequest,
-    range: SourceRange
+    range: SourceRange,
+    idToRange: Map<string, SourceRange>
   ): Promise<WebSocketResponse> {
     if (request.type === 'modeling_cmd_batch_req') {
       const responses: Record<string, BatchResponse> = {}
       for (const req of request.requests) {
+        const commandRange = sourceRangeForCommand(req.cmd_id, range, idToRange)
         const result = await this.executeModelingCommand(
           req.cmd_id,
           req.cmd,
-          range
+          commandRange
         )
-        this.recordCommandIfSceneMutating(req.cmd_id, req.cmd, range)
+        this.recordCommandIfSceneMutating(req.cmd_id, req.cmd, commandRange)
         if (result.kind === 'export') {
           throw new Error(
             'OpenCascade export cannot be returned inside a batch'
@@ -656,12 +671,21 @@ export class OpenCascadeCommandManager {
     }
 
     if (request.type === 'modeling_cmd_req') {
+      const commandRange = sourceRangeForCommand(
+        request.cmd_id,
+        range,
+        idToRange
+      )
       const result = await this.executeModelingCommand(
         request.cmd_id,
         request.cmd,
-        range
+        commandRange
       )
-      this.recordCommandIfSceneMutating(request.cmd_id, request.cmd, range)
+      this.recordCommandIfSceneMutating(
+        request.cmd_id,
+        request.cmd,
+        commandRange
+      )
       if (result.kind === 'export') {
         return this.success(id, result.response)
       }
@@ -778,13 +802,13 @@ export class OpenCascadeCommandManager {
       case 'loft':
         return modeling(await this.loft(commandId, cmd, range))
       case 'boolean_union':
-        return modeling(await this.booleanUnion(commandId, cmd))
+        return modeling(await this.booleanUnion(commandId, cmd, range))
       case 'boolean_subtract':
-        return modeling(await this.booleanSubtract(commandId, cmd))
+        return modeling(await this.booleanSubtract(commandId, cmd, range))
       case 'boolean_intersection':
-        return modeling(await this.booleanIntersection(commandId, cmd))
+        return modeling(await this.booleanIntersection(commandId, cmd, range))
       case 'boolean_imprint':
-        return modeling(await this.booleanImprint(commandId, cmd))
+        return modeling(await this.booleanImprint(commandId, cmd, range))
       case 'entity_linear_pattern_transform':
         return modeling(
           await this.linearPatternTransform(commandId, cmd, range)
@@ -1007,9 +1031,9 @@ export class OpenCascadeCommandManager {
   private async extrude(
     commandId: string,
     cmd: Extract<ModelingCmd, { type: 'extrude' }>,
-    _range: SourceRange
+    range: SourceRange
   ): Promise<OkModelingCmdResponse> {
-    const region = await this.regionForTarget(cmd.target, _range)
+    const region = await this.regionForTarget(cmd.target, range)
 
     const oc = await initOpenCascade()
     const height = lengthValue(cmd.distance)
@@ -1032,6 +1056,7 @@ export class OpenCascadeCommandManager {
       sideFaceId: `${commandId.slice(0, 35)}0`,
       startCapId: `${commandId.slice(0, 35)}1`,
       endCapId: `${commandId.slice(0, 35)}2`,
+      provenance: entityProvenanceForRange(range),
     }
     if (region.circle) {
       solid.cylinder = {
@@ -1078,6 +1103,7 @@ export class OpenCascadeCommandManager {
             region.regionEdgeId,
           ])
         ),
+        provenance: parentSolid.provenance || entityProvenanceForRange(range),
       }
       mergedSolid.brep = this.writeBrep(parentSolidId, fusedShape, oc)
       this.solids.set(parentSolidId, mergedSolid)
@@ -1115,7 +1141,7 @@ export class OpenCascadeCommandManager {
       false
     ).Shape()
 
-    this.storeSolid(commandId, shape, [cmd.target], oc)
+    this.storeSolid(commandId, shape, [cmd.target], oc, _range)
     return { type: 'revolve', data: {} }
   }
 
@@ -1135,7 +1161,7 @@ export class OpenCascadeCommandManager {
       profile
     ).Shape()
 
-    this.storeSolid(commandId, shape, [cmd.target, cmd.trajectory], oc)
+    this.storeSolid(commandId, shape, [cmd.target, cmd.trajectory], oc, range)
     return { type: 'sweep', data: {} }
   }
 
@@ -1162,13 +1188,14 @@ export class OpenCascadeCommandManager {
     loft.Build(new oc.Message_ProgressRange_1())
     const shape = loft.Shape()
 
-    this.storeSolid(commandId, shape, cmd.section_ids, oc)
+    this.storeSolid(commandId, shape, cmd.section_ids, oc, _range)
     return { type: 'loft', data: { solid_id: commandId } }
   }
 
   private async booleanUnion(
     commandId: string,
-    cmd: Extract<ModelingCmd, { type: 'boolean_union' }>
+    cmd: Extract<ModelingCmd, { type: 'boolean_union' }>,
+    range: SourceRange
   ): Promise<OkModelingCmdResponse> {
     const solidIds = [...((cmd as any).solid_ids || [])]
     const oc = await initOpenCascade()
@@ -1179,14 +1206,15 @@ export class OpenCascadeCommandManager {
       'union'
     )
 
-    this.storeSolid(commandId, shape, solidIds, oc)
+    this.storeSolid(commandId, shape, solidIds, oc, range)
     this.markSolidsConsumed(solidIds, new Set([commandId]))
     return booleanResponse('boolean_union')
   }
 
   private async booleanIntersection(
     commandId: string,
-    cmd: Extract<ModelingCmd, { type: 'boolean_intersection' }>
+    cmd: Extract<ModelingCmd, { type: 'boolean_intersection' }>,
+    range: SourceRange
   ): Promise<OkModelingCmdResponse> {
     const solidIds = [...((cmd as any).solid_ids || [])]
     const oc = await initOpenCascade()
@@ -1197,14 +1225,15 @@ export class OpenCascadeCommandManager {
       'intersection'
     )
 
-    this.storeSolid(commandId, shape, solidIds, oc)
+    this.storeSolid(commandId, shape, solidIds, oc, range)
     this.markSolidsConsumed(solidIds, new Set([commandId]))
     return booleanResponse('boolean_intersection')
   }
 
   private async booleanSubtract(
     commandId: string,
-    cmd: Extract<ModelingCmd, { type: 'boolean_subtract' }>
+    cmd: Extract<ModelingCmd, { type: 'boolean_subtract' }>,
+    range: SourceRange
   ): Promise<OkModelingCmdResponse> {
     const targetIds = [...((cmd as any).target_ids || [])]
     const toolIds = [...((cmd as any).tool_ids || [])]
@@ -1229,7 +1258,7 @@ export class OpenCascadeCommandManager {
       }
       const outputId = deriveBooleanSolidId(commandId, index)
       outputIds.push(outputId)
-      this.storeSolid(outputId, shape, [targetId, ...toolIds], oc)
+      this.storeSolid(outputId, shape, [targetId, ...toolIds], oc, range)
     }
 
     this.markSolidsConsumed([...targetIds, ...toolIds], new Set(outputIds))
@@ -1238,7 +1267,8 @@ export class OpenCascadeCommandManager {
 
   private async booleanImprint(
     commandId: string,
-    cmd: Extract<ModelingCmd, { type: 'boolean_imprint' }>
+    cmd: Extract<ModelingCmd, { type: 'boolean_imprint' }>,
+    range: SourceRange
   ): Promise<OkModelingCmdResponse> {
     const bodyIds = [...((cmd as any).body_ids || [])]
     const toolIds = [...((cmd as any).tool_ids || [])]
@@ -1264,7 +1294,13 @@ export class OpenCascadeCommandManager {
     }
     splitter.Build(new oc.Message_ProgressRange_1())
     this.throwIfBooleanFailed(splitter, 'split')
-    this.storeSolid(commandId, splitter.Shape(), [...bodyIds, ...toolIds], oc)
+    this.storeSolid(
+      commandId,
+      splitter.Shape(),
+      [...bodyIds, ...toolIds],
+      oc,
+      range
+    )
     this.markSolidsConsumed(
       [...bodyIds, ...((cmd as any).keep_tools === true ? [] : toolIds)],
       new Set([commandId])
@@ -2441,7 +2477,8 @@ export class OpenCascadeCommandManager {
     commandId: string,
     shape: any,
     sourceIds: string[],
-    oc: OpenCascadeInstance
+    oc: OpenCascadeInstance,
+    range?: SourceRange
   ): SolidState {
     const solid: SolidState = {
       shape,
@@ -2450,6 +2487,7 @@ export class OpenCascadeCommandManager {
       sideFaceId: `${commandId.slice(0, 35)}0`,
       startCapId: `${commandId.slice(0, 35)}1`,
       endCapId: `${commandId.slice(0, 35)}2`,
+      provenance: entityProvenanceForRange(range),
     }
     solid.brep = this.writeBrep(commandId, shape, oc)
     this.solids.set(commandId, solid)
@@ -2899,6 +2937,7 @@ export class OpenCascadeCommandManager {
       normal,
       topology
     )
+    nextMesh.provenance = cloneEntityProvenance(solid.provenance)
     const currentMesh =
       renderSolidId !== commandId
         ? this.topologyMeshes.get(renderSolidId)
@@ -3835,10 +3874,89 @@ function cloneArrangementRegionState(
   }
 }
 
+function parseIdToRangeMap(idToRangeStr: string): Map<string, SourceRange> {
+  if (!idToRangeStr) {
+    return new Map()
+  }
+  const parsed = JSON.parse(idToRangeStr) as Record<string, unknown>
+  return new Map(
+    Object.entries(parsed)
+      .map(([id, value]) => [id, sourceRangeFromJson(value)] as const)
+      .filter((entry): entry is readonly [string, SourceRange] =>
+        Boolean(entry[1])
+      )
+  )
+}
+
+function sourceRangeFromJson(value: unknown): SourceRange | undefined {
+  if (Array.isArray(value) && value.length >= 3) {
+    return [
+      Number(value[0]) || 0,
+      Number(value[1]) || 0,
+      Number(value[2]) || 0,
+    ] as unknown as SourceRange
+  }
+  if (value && typeof value === 'object') {
+    const range = value as {
+      start?: unknown
+      end?: unknown
+      moduleId?: unknown
+      module_id?: unknown
+    }
+    return [
+      Number(range.start) || 0,
+      Number(range.end) || 0,
+      Number(range.moduleId ?? range.module_id) || 0,
+    ] as unknown as SourceRange
+  }
+  return undefined
+}
+
+function sourceRangeForCommand(
+  commandId: string,
+  fallback: SourceRange,
+  idToRange: Map<string, SourceRange>
+): SourceRange {
+  return cloneSourceRange(idToRange.get(commandId) || fallback)
+}
+
+function cloneSourceRange(range: SourceRange): SourceRange {
+  const tuple = range as unknown as [number, number, number]
+  return [tuple[0] || 0, tuple[1] || 0, tuple[2] || 0] as unknown as SourceRange
+}
+
+function entityProvenanceForRange(
+  range: SourceRange | undefined
+): OpenCascadeEntityProvenance | undefined {
+  const tuple = range as unknown as [number, number, number] | undefined
+  const moduleId = tuple?.[2] || 0
+  if (moduleId <= 0 || !range) {
+    return undefined
+  }
+  return {
+    imported: true,
+    sourceRange: cloneSourceRange(range),
+    moduleId,
+  }
+}
+
+function cloneEntityProvenance(
+  provenance: OpenCascadeEntityProvenance | undefined
+): OpenCascadeEntityProvenance | undefined {
+  return provenance
+    ? {
+        imported: provenance.imported,
+        sourceRange: cloneSourceRange(provenance.sourceRange),
+        moduleId: provenance.moduleId,
+      }
+    : undefined
+}
+
 function cloneSolidState(solid: SolidState): SolidState {
   return {
     ...solid,
     sourceIds: [...solid.sourceIds],
+    provenance: cloneEntityProvenance(solid.provenance),
     brep: solid.brep ? new Uint8Array(solid.brep) : undefined,
     cylinder: solid.cylinder
       ? {
@@ -3872,6 +3990,7 @@ function cloneTopologySolidMesh(
   return {
     solidId: mesh.solidId,
     artifactIds: mesh.artifactIds ? [...mesh.artifactIds] : undefined,
+    provenance: cloneEntityProvenance(mesh.provenance),
     positions: [...mesh.positions],
     indices: [...mesh.indices],
     groups: mesh.groups.map((group) => ({ ...group })),
@@ -4167,6 +4286,12 @@ function mergeTopologyMeshes(
   const vertexOffset = current.positions.length / 3
   return {
     solidId,
+    artifactIds: current.artifactIds
+      ? [...current.artifactIds]
+      : next.artifactIds
+        ? [...next.artifactIds]
+        : undefined,
+    provenance: cloneEntityProvenance(current.provenance || next.provenance),
     positions: [...current.positions, ...next.positions],
     indices: [
       ...current.indices,

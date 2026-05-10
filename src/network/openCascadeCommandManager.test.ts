@@ -186,6 +186,42 @@ describe('OpenCascadeCommandManager', () => {
     expect(exportResponse.resp.data.files[0].contents.length).toBeGreaterThan(0)
   })
 
+  it('uses per-command source ranges so imported solids carry render provenance', async () => {
+    const manager = new OpenCascadeCommandManager()
+
+    await buildRectangleRegionInput(manager)
+
+    await send(
+      manager,
+      IDS.request,
+      {
+        type: 'modeling_cmd_batch_req',
+        requests: [
+          {
+            cmd_id: IDS.solid,
+            cmd: {
+              type: 'extrude',
+              target: IDS.region,
+              distance: 5,
+              extrude_method: 'new',
+              body_type: 'solid',
+            },
+          },
+        ],
+      },
+      JSON.stringify({ [IDS.solid]: [12, 34, 1] })
+    )
+
+    const [visibleSolid] = await manager.exportVisibleGlbBytes()
+    expect(visibleSolid.provenance).toEqual({
+      imported: true,
+      sourceRange: [12, 34, 1],
+      moduleId: 1,
+    })
+    const [topologySolid] = manager.exportLatestTopologyMeshes().solids
+    expect(topologySolid.provenance).toEqual(visibleSolid.provenance)
+  })
+
   it('builds a line-based closed region, extrudes it, and exports GLB bytes', async () => {
     const manager = new OpenCascadeCommandManager()
     await buildRectangleRegionInput(manager)
@@ -1798,13 +1834,14 @@ function boundsForFlattenedPoints(points: number[]) {
 async function send(
   manager: OpenCascadeCommandManager,
   requestId: string,
-  request: unknown
+  request: unknown,
+  idMap = ID_MAP
 ): Promise<any> {
   const encoded = await manager.sendModelingCommandFromWasm(
     requestId,
     RANGE,
     JSON.stringify(request),
-    ID_MAP
+    idMap
   )
 
   return msgpackDecode(encoded)

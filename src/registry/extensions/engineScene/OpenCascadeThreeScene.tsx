@@ -43,6 +43,7 @@ import type {
   OpenCascadeTopologyFaceGroup,
   OpenCascadeTopologyMeshes,
   OpenCascadeTopologySolidMesh,
+  OpenCascadeEntityProvenance,
 } from '@src/network/openCascadeCommandManager'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
@@ -601,6 +602,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
           return {
             solidId: solid.solidId,
             artifactIds: solid.artifactIds,
+            provenance: solid.provenance,
             scene: gltf.scene,
           }
         })
@@ -610,7 +612,12 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       disposeOpenCascadeModelRoot(modelRoot)
       for (const solid of loadedSolids) {
         solid.scene.name = `${OPEN_CASCADE_SOLID_ROOT}:${solid.solidId}`
-        tagOpenCascadeBodyVisuals(solid.scene, solid.solidId, solid.artifactIds)
+        tagOpenCascadeBodyVisuals(
+          solid.scene,
+          solid.solidId,
+          solid.artifactIds,
+          solid.provenance
+        )
         styleLoadedOpenCascadeMeshes(
           solid.scene,
           sceneStyleRef.current,
@@ -2862,10 +2869,12 @@ function styleLoadedOpenCascadeMeshes(
 function tagOpenCascadeBodyVisuals(
   root: Object3D,
   solidId: string,
-  artifactIds: string[]
+  artifactIds: string[],
+  provenance: OpenCascadeEntityProvenance | undefined
 ) {
   root.userData.openCascadeSolidId = solidId
   root.userData.openCascadeArtifactIds = artifactIds
+  root.userData.openCascadeProvenance = provenance
   root.layers.set(SKETCH_LAYER)
   root.traverse((object) => {
     if (!(object instanceof Mesh)) {
@@ -2874,6 +2883,7 @@ function tagOpenCascadeBodyVisuals(
     object.userData.openCascadeBodyVisual = true
     object.userData.openCascadeSolidId = solidId
     object.userData.openCascadeArtifactIds = artifactIds
+    object.userData.openCascadeProvenance = provenance
     object.layers.set(SKETCH_LAYER)
   })
 }
