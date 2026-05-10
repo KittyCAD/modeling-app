@@ -2296,6 +2296,7 @@ export class KclManager extends File {
       this.rollbackEditSession = undefined
       return
     }
+    this.rollbackEditSession = undefined
     const wasmInstance = await this.wasmInstancePromise
     let nextCode = removeRollbackExit(this.code)
     if (session.changedExperimentalFeatures) {
@@ -2313,7 +2314,6 @@ export class KclManager extends File {
     if (!ast) {
       return new Error('Could not remove rollback marker')
     }
-    this.rollbackEditSession = undefined
     this.updateCodeEditor(nextCode, {
       shouldExecute: true,
       shouldWriteToDisk: true,

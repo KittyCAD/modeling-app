@@ -713,6 +713,7 @@ export const commandBarMachine = setup({
         'Deselect command': {
           target: 'Selecting command',
           actions: [
+            'Cleanup rollback edit session',
             assign({
               selectedCommand: (_c, _e) => undefined,
             }),
@@ -774,13 +775,13 @@ export const commandBarMachine = setup({
   on: {
     Close: {
       target: '.Closed',
-      actions: ['Clear selected command', 'Cleanup rollback edit session'],
+      actions: ['Cleanup rollback edit session', 'Clear selected command'],
     },
 
     Clear: {
       target: '#Command Bar',
       reenter: false,
-      actions: ['Clear argument data'],
+      actions: ['Cleanup rollback edit session', 'Clear argument data'],
     },
 
     'Find and select command': {
