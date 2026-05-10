@@ -25,7 +25,7 @@ test(
     let targetDir = ''
     let externalCreatedProjectName = 'external-created-project-name'
 
-    await folderSetupFn(async (dir) => {
+    const { refreshRecentProjects } = await folderSetupFn(async (dir) => {
       targetDir = dir
       const myDir = path.join(dir, externalCreatedProjectName)
       await fs.mkdir(myDir, { recursive: true })
@@ -47,6 +47,7 @@ test(
     )
 
     externalCreatedProjectName += '1'
+    await refreshRecentProjects()
     await expect(projectLinks).toContainText(externalCreatedProjectName)
 
     await fs.rm(path.join(targetDir, externalCreatedProjectName), {
@@ -54,6 +55,7 @@ test(
       force: true,
     })
 
+    await refreshRecentProjects()
     await expect(projectLinks).toHaveCount(0)
   }
 )

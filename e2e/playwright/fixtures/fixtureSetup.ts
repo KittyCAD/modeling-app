@@ -9,7 +9,11 @@ import { _electron as electron } from '@playwright/test'
 
 import fs from 'node:fs'
 import path from 'path'
-import { SETTINGS_FILE_NAME, PROJECT_FOLDER } from '@src/lib/constants'
+import {
+  DEFAULT_PROJECT_KCL_FILE,
+  SETTINGS_FILE_NAME,
+  PROJECT_FOLDER,
+} from '@src/lib/constants'
 import type { DeepPartial } from '@src/lib/types'
 import fsp from 'fs/promises'
 
@@ -40,6 +44,94 @@ const TEST_PROJECT_SETTINGS =
   !isArray(TEST_SETTINGS.project)
     ? TEST_SETTINGS.project
     : undefined
+const TEST_ENVIRONMENT_NAME = process.env.VITE_ZOO_BASE_DOMAIN || 'dev.zoo.dev'
+
+const getTestEnvironmentConfigurationPath = (projectDirName: string) => {
+  return path.resolve(projectDirName, '..', `${TEST_ENVIRONMENT_NAME}.json`)
+}
+
+const projectDirectoryToRecentProject = async (
+  projectPath: string,
+  lastOpenedAt: number
+) => {
+  let kclFileCount = 0
+  let directoryCount = 0
+  let firstKclFilePath = ''
+  const stack = [projectPath]
+
+  while (stack.length > 0) {
+    const currentPath = stack.pop()
+    if (!currentPath) continue
+
+    const entries = await fsp.readdir(currentPath, { withFileTypes: true })
+    for (const entry of entries) {
+      if (entry.name.startsWith('.')) {
+        continue
+      }
+
+      const entryPath = path.join(currentPath, entry.name)
+      if (entry.isDirectory()) {
+        directoryCount += 1
+        stack.push(entryPath)
+      } else if (entry.name.endsWith('.kcl')) {
+        kclFileCount += 1
+        firstKclFilePath ||= entryPath
+      }
+    }
+  }
+
+  const defaultFilePath = path.join(projectPath, DEFAULT_PROJECT_KCL_FILE)
+  const defaultFileExists = fs.existsSync(defaultFilePath)
+
+  return {
+    path: projectPath,
+    name: path.basename(projectPath),
+    default_file: defaultFileExists
+      ? defaultFilePath
+      : firstKclFilePath || defaultFilePath,
+    kcl_file_count: kclFileCount,
+    directory_count: directoryCount,
+    last_opened_at: lastOpenedAt,
+  }
+}
+
+const seedRecentProjectsFromProjectDirectory = async (
+  projectDirName: string
+) => {
+  const entries = await fsp.readdir(projectDirName, { withFileTypes: true })
+  const projectDirectories = entries
+    .filter((entry) => entry.isDirectory() && !entry.name.startsWith('.'))
+    .map((entry) => path.join(projectDirName, entry.name))
+    .sort()
+
+  const now = Date.now()
+  const recentProjects = await Promise.all(
+    projectDirectories.map((projectPath, index) =>
+      projectDirectoryToRecentProject(projectPath, now - index)
+    )
+  )
+
+  const environmentConfigurationPath =
+    getTestEnvironmentConfigurationPath(projectDirName)
+  let existingEnvironmentConfiguration = {}
+  try {
+    existingEnvironmentConfiguration = JSON.parse(
+      await fsp.readFile(environmentConfigurationPath, 'utf-8')
+    )
+  } catch {
+    existingEnvironmentConfiguration = {}
+  }
+
+  await fsp.writeFile(
+    environmentConfigurationPath,
+    JSON.stringify({
+      domain: TEST_ENVIRONMENT_NAME,
+      token: '',
+      ...existingEnvironmentConfiguration,
+      recentProjects,
+    })
+  )
+}
 
 export class AuthenticatedApp {
   public readonly page: Page
@@ -87,7 +179,7 @@ export interface Fixtures {
   fs: ReturnType<typeof FsFixture>
   folderSetupFn: (
     cb: (dir: string) => Promise<void>
-  ) => Promise<{ dir: string }>
+  ) => Promise<{ dir: string; refreshRecentProjects: () => Promise<void> }>
 }
 
 export class ElectronZoo {
@@ -347,6 +439,7 @@ export class ElectronZoo {
       })
     }
     await fsp.writeFile(tempSettingsFilePath, settingsOverridesToml)
+    await seedRecentProjectsFromProjectDirectory(this.projectDirName)
   }
 }
 
@@ -458,19 +551,28 @@ const fixturesBasedOnProcessEnvPlatform = {
       const projects = await fs.getPath('documents')
       const projectDirPath = await fs.resolve(projects, PROJECT_FOLDER)
       ret = async function (fn: (dir: string) => Promise<void>) {
+        const refreshRecentProjects = async () => {
+          await page.reload()
+        }
         return fn(projectDirPath)
           .then(() => page.reload())
           .then(() => ({
             dir: projectDirPath,
+            refreshRecentProjects,
           }))
       }
     } else {
       const projectDirName = testInfo.outputPath('electron-test-projects-dir')
       ret = async function (fn: (dir: string) => Promise<void>) {
+        const refreshRecentProjects = async () => {
+          await seedRecentProjectsFromProjectDirectory(projectDirName)
+          await page.reload()
+        }
         return fn(projectDirName)
-          .then(() => page.reload())
+          .then(refreshRecentProjects)
           .then(() => ({
             dir: projectDirName,
+            refreshRecentProjects,
           }))
       }
     }
