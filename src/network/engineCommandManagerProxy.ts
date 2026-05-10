@@ -313,6 +313,21 @@ export class EngineCommandManagerProxy extends ConnectionManager {
       if (requestId !== this.openCascadePreviewRequestId) {
         return
       }
+      const visiblePreviewGlbs = await previewManager.exportVisibleGlbBytes()
+      const visiblePreviewSketchLines =
+        previewManager.exportLatestSketchLineMeshes()
+      const visiblePreviewPlanes = previewManager.exportLatestPlaneMeshes()
+      if (requestId !== this.openCascadePreviewRequestId) {
+        return
+      }
+      if (
+        visiblePreviewGlbs.length === 0 &&
+        visiblePreviewSketchLines.segments.length === 0 &&
+        visiblePreviewPlanes.planes.length === 0
+      ) {
+        this.latestOpenCascadePreviewStatus.value = 'ready'
+        return
+      }
       this.openCascadePreviewCommandManager = previewManager
       this.latestOpenCascadePreviewStatus.value = 'ready'
       this.latestOpenCascadePreviewVersion.value += 1
@@ -340,6 +355,14 @@ export class EngineCommandManagerProxy extends ConnectionManager {
 
   async exportVisibleOpenCascadePreviewGlbBytes() {
     return this.openCascadePreviewCommandManager.exportVisibleGlbBytes()
+  }
+
+  exportLatestOpenCascadePreviewSketchLineMeshes() {
+    return this.openCascadePreviewCommandManager.exportLatestSketchLineMeshes()
+  }
+
+  exportLatestOpenCascadePreviewPlaneMeshes() {
+    return this.openCascadePreviewCommandManager.exportLatestPlaneMeshes()
   }
 
   private createOpenCascadePreviewEngineManager(

@@ -5,6 +5,7 @@ import { ConnectionManager } from '@src/network/connectionManager'
 import { EngineCommandManagerProxy } from '@src/network/engineCommandManagerProxy'
 import {
   OPEN_CASCADE_CIRCLE_EXTRUDE_KCL,
+  OPEN_CASCADE_HELIX_KCL,
   OPEN_CASCADE_TRANSFORM_KCL,
 } from '@src/network/openCascadeProofFixture'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
@@ -164,5 +165,97 @@ describe('EngineCommandManagerProxy', () => {
     const previewGlbs = await proxy.exportVisibleOpenCascadePreviewGlbBytes()
     expect(previewGlbs).toHaveLength(1)
     expect(previewGlbs[0]?.bytes.length).toBeGreaterThan(0)
+  })
+
+  it('keeps the last renderable OpenCascade preview after an empty preview result', async () => {
+    const { engineCommandManager, instance, rustContext, settingsActor } =
+      await buildTheWorldAndNoEngineConnection()
+    const proxy = engineCommandManager as EngineCommandManagerProxy
+
+    await vi.waitFor(() =>
+      expect(settingsActor.getSnapshot().value).toBe('idle')
+    )
+    settingsActor.send({
+      type: 'set.modeling.engine',
+      data: { level: 'user', value: 'open_cascade' },
+      doNotPersist: true,
+    })
+
+    const solidAst = assertParse(OPEN_CASCADE_CIRCLE_EXTRUDE_KCL, instance)
+    await proxy.runOpenCascadePreviewAst(solidAst, rustContext, {
+      settings: { modeling: { engine: 'open_cascade' } },
+    })
+    const firstPreviewVersion = proxy.latestOpenCascadePreviewVersion.value
+    const firstPreviewGlbs =
+      await proxy.exportVisibleOpenCascadePreviewGlbBytes()
+    expect(firstPreviewGlbs).toHaveLength(1)
+
+    const emptyAst = assertParse('answer = 1', instance)
+    await proxy.runOpenCascadePreviewAst(emptyAst, rustContext, {
+      settings: { modeling: { engine: 'open_cascade' } },
+    })
+
+    expect(proxy.latestOpenCascadePreviewVersion.value).toBe(
+      firstPreviewVersion
+    )
+    const retainedPreviewGlbs =
+      await proxy.exportVisibleOpenCascadePreviewGlbBytes()
+    expect(retainedPreviewGlbs).toHaveLength(1)
+    expect(retainedPreviewGlbs[0]?.bytes.length).toBeGreaterThan(0)
+  })
+
+  it('keeps OpenCascade previews that render only sketch-line geometry', async () => {
+    const { engineCommandManager, instance, rustContext, settingsActor } =
+      await buildTheWorldAndNoEngineConnection()
+    const proxy = engineCommandManager as EngineCommandManagerProxy
+
+    await vi.waitFor(() =>
+      expect(settingsActor.getSnapshot().value).toBe('idle')
+    )
+    settingsActor.send({
+      type: 'set.modeling.engine',
+      data: { level: 'user', value: 'open_cascade' },
+      doNotPersist: true,
+    })
+
+    const ast = assertParse(OPEN_CASCADE_HELIX_KCL, instance)
+    await proxy.runOpenCascadePreviewAst(ast, rustContext, {
+      settings: { modeling: { engine: 'open_cascade' } },
+    })
+
+    expect(await proxy.exportVisibleOpenCascadePreviewGlbBytes()).toEqual([])
+    expect(
+      proxy.exportLatestOpenCascadePreviewSketchLineMeshes().segments.length
+    ).toBeGreaterThan(16)
+    expect(proxy.latestOpenCascadePreviewStatus.value).toBe('ready')
+  })
+
+  it('keeps OpenCascade previews that render only offset-plane geometry', async () => {
+    const { engineCommandManager, instance, rustContext, settingsActor } =
+      await buildTheWorldAndNoEngineConnection()
+    const proxy = engineCommandManager as EngineCommandManagerProxy
+
+    await vi.waitFor(() =>
+      expect(settingsActor.getSnapshot().value).toBe('idle')
+    )
+    settingsActor.send({
+      type: 'set.modeling.engine',
+      data: { level: 'user', value: 'open_cascade' },
+      doNotPersist: true,
+    })
+
+    const ast = assertParse('plane001 = offsetPlane(XY, offset = 1)', instance)
+    await proxy.runOpenCascadePreviewAst(ast, rustContext, {
+      settings: { modeling: { engine: 'open_cascade' } },
+    })
+
+    expect(await proxy.exportVisibleOpenCascadePreviewGlbBytes()).toEqual([])
+    expect(
+      proxy.exportLatestOpenCascadePreviewSketchLineMeshes().segments
+    ).toHaveLength(0)
+    expect(
+      proxy.exportLatestOpenCascadePreviewPlaneMeshes().planes
+    ).toHaveLength(1)
+    expect(proxy.latestOpenCascadePreviewStatus.value).toBe('ready')
   })
 })
