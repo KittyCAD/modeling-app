@@ -1040,22 +1040,23 @@ export class OpenCascadeCommandManager {
       return { type: 'extend_path', data: {} }
     }
 
-    if (
-      segmentType === 'arc_to' ||
-      segmentType === 'tangential_arc_to' ||
-      segmentType === 'tangential_arc'
-    ) {
-      const end = endpointFromSegment(start, segment)
-      path.segments.push({ id: commandId, type: 'line', start, end })
-      path.pen = end
+    if (segmentType !== 'arc') {
+      const arcSegment = arcSegmentFromPathCommand(
+        commandId,
+        path,
+        start,
+        segment,
+        segmentType
+      )
+      if (!arcSegment) {
+        throw new Error(
+          `OpenCascade proof does not support ${segmentType} sketch segments`
+        )
+      }
+      path.segments.push(arcSegment)
+      path.pen = arcSegment.end
       this.markSketchChanged()
       return { type: 'extend_path', data: {} }
-    }
-
-    if (segmentType !== 'arc') {
-      throw new Error(
-        `OpenCascade proof does not support ${segmentType} sketch segments`
-      )
     }
 
     const arcSegment = segment as Extract<PathSegment, { type: 'arc' }>
@@ -4886,19 +4887,382 @@ function toPoint3(point: unknown): Point3 {
 }
 
 function endpointFromSegment(start: Point3, segment: any): Point3 {
-  if (segment.type === 'tangential_arc') {
-    const radius = lengthValue(segment.radius)
-    const angle = angleValueRadians(segment.offset)
-    return {
-      x: start.x + radius * Math.cos(angle),
-      y: start.y + radius * Math.sin(angle),
-      z: start.z,
-    }
-  }
-
   const rawEnd = segment.end ?? segment.to
   const end = toPoint3(rawEnd)
   return segment.relative ? add(start, end) : end
+}
+
+function arcSegmentFromPathCommand(
+  commandId: string,
+  path: PathState,
+  start: Point3,
+  segment: any,
+  segmentType: string
+): Extract<PathSegmentState, { type: 'arc' }> | undefined {
+  if (segmentType === 'arc_to') {
+    return arcToSegment(commandId, start, segment)
+  }
+
+  if (segmentType === 'tangential_arc_to') {
+    return tangentialArcToSegment(commandId, path, start, segment)
+  }
+
+  if (segmentType === 'tangential_arc') {
+    return tangentialArcRadiusOffsetSegment(commandId, path, start, segment)
+  }
+
+  return undefined
+}
+
+function arcToSegment(
+  commandId: string,
+  start: Point3,
+  segment: any
+): Extract<PathSegmentState, { type: 'arc' }> {
+  const interiorRaw = toPoint3(segment.interior)
+  const endRaw = toPoint3(segment.end)
+  const interior = segment.relative ? add(start, interiorRaw) : interiorRaw
+  const end = segment.relative ? add(start, endRaw) : endRaw
+  const points: [Point2, Point2, Point2] = [
+    point3ToPoint2(start),
+    point3ToPoint2(interior),
+    point3ToPoint2(end),
+  ]
+  const center = circleCenterFromThreePoints(points[0], points[1], points[2])
+  const radius = distance2(center, points[0])
+  const ccw = polygonIsCcw(points) > 0
+  return createArcSegmentFromCenter(commandId, start, end, center, radius, ccw)
+}
+
+function tangentialArcToSegment(
+  commandId: string,
+  path: PathState,
+  start: Point3,
+  segment: any
+): Extract<PathSegmentState, { type: 'arc' }> {
+  const delta = toPoint3(segment.to)
+  const end = add(start, delta)
+  const tangentInfo = tangentialArcToInfo({
+    arcStartPoint: point3ToPoint2(start),
+    arcEndPoint: point3ToPoint2(end),
+    tanPreviousPoint: tangentialPreviousPoint(path, start),
+    obtuse: true,
+  })
+  if (!Number.isFinite(tangentInfo.center.x)) {
+    throw new Error(
+      'could not sketch tangential arc, because its center would be infinitely far away in the X direction'
+    )
+  }
+  if (!Number.isFinite(tangentInfo.center.y)) {
+    throw new Error(
+      'could not sketch tangential arc, because its center would be infinitely far away in the Y direction'
+    )
+  }
+  return createArcSegmentFromCenter(
+    commandId,
+    start,
+    end,
+    tangentInfo.center,
+    tangentInfo.radius,
+    tangentInfo.ccw
+  )
+}
+
+function tangentialArcRadiusOffsetSegment(
+  commandId: string,
+  path: PathState,
+  start: Point3,
+  segment: any
+): Extract<PathSegmentState, { type: 'arc' }> {
+  const radius = lengthValue(segment.radius)
+  const offset = angleValueRadians(segment.offset)
+  const tanPreviousPoint = tangentialPreviousPoint(path, start)
+  const previousEndTangent = Math.atan2(
+    start.y - tanPreviousPoint.y,
+    start.x - tanPreviousPoint.x
+  )
+  const ccw = offset > 0
+  const startAngle = previousEndTangent + (ccw ? -Math.PI / 2 : Math.PI / 2)
+  const endAngle = startAngle + offset
+  const { center, end } = arcCenterAndEnd(
+    point3ToPoint2(start),
+    startAngle,
+    endAngle,
+    radius
+  )
+  return {
+    id: commandId,
+    type: 'arc',
+    center,
+    radius,
+    startAngle,
+    endAngle,
+    fullCircle: Math.abs(endAngle - startAngle) >= Math.PI * 2 - 1e-6,
+    start,
+    end: { ...end, z: start.z },
+  }
+}
+
+function createArcSegmentFromCenter(
+  commandId: string,
+  start: Point3,
+  end: Point3,
+  center: Point2,
+  radius: number,
+  ccw: boolean
+): Extract<PathSegmentState, { type: 'arc' }> {
+  const startAngle = Math.atan2(start.y - center.y, start.x - center.x)
+  const rawEndAngle = Math.atan2(end.y - center.y, end.x - center.x)
+  const endAngle = orientArcEndAngle(startAngle, rawEndAngle, ccw)
+  return {
+    id: commandId,
+    type: 'arc',
+    center,
+    radius,
+    startAngle,
+    endAngle,
+    fullCircle: false,
+    start,
+    end,
+  }
+}
+
+function orientArcEndAngle(
+  startAngle: number,
+  endAngle: number,
+  ccw: boolean
+): number {
+  if (ccw) {
+    return endAngle < startAngle ? endAngle + Math.PI * 2 : endAngle
+  }
+  return endAngle > startAngle ? endAngle - Math.PI * 2 : endAngle
+}
+
+function tangentialPreviousPoint(path: PathState, start: Point3): Point2 {
+  const previousSegment = path.segments[path.segments.length - 1]
+  if (!previousSegment) {
+    return point3ToPoint2(path.start || start)
+  }
+
+  if (previousSegment.type === 'line') {
+    return point3ToPoint2(previousSegment.start)
+  }
+
+  return tangentPointFromPreviousArc(
+    previousSegment.center,
+    previousSegment.endAngle > previousSegment.startAngle,
+    point3ToPoint2(previousSegment.end)
+  )
+}
+
+function tangentPointFromPreviousArc(
+  lastArcCenter: Point2,
+  lastArcCcw: boolean,
+  lastArcEnd: Point2
+): Point2 {
+  const angleFromOldCenterToArcStart = angleBetweenPoints(
+    lastArcCenter,
+    lastArcEnd
+  )
+  const tangentialAngle =
+    angleFromOldCenterToArcStart + (lastArcCcw ? -Math.PI / 2 : Math.PI / 2)
+  return {
+    x: Math.cos(tangentialAngle) * 10 + lastArcEnd.x,
+    y: Math.sin(tangentialAngle) * 10 + lastArcEnd.y,
+  }
+}
+
+function tangentialArcToInfo({
+  arcStartPoint,
+  arcEndPoint,
+  tanPreviousPoint,
+  obtuse,
+}: {
+  arcStartPoint: Point2
+  arcEndPoint: Point2
+  tanPreviousPoint: Point2
+  obtuse: boolean
+}): { center: Point2; radius: number; ccw: boolean } {
+  const [, tangentialLinePerpSlope] = slopeAndPerpendicular(
+    tanPreviousPoint,
+    arcStartPoint
+  )
+  const midPoint = {
+    x: (arcStartPoint.x + arcEndPoint.x) / 2,
+    y: (arcStartPoint.y + arcEndPoint.y) / 2,
+  }
+  const slopeMidPointLine = slopeAndPerpendicular(arcStartPoint, midPoint)
+
+  let center: Point2
+  if (tangentialLinePerpSlope === slopeMidPointLine[0]) {
+    center = midPoint
+  } else {
+    center = intersectPointAndSlope(
+      midPoint,
+      slopeMidPointLine[1],
+      arcStartPoint,
+      tangentialLinePerpSlope
+    )
+  }
+  const radius = distance2(arcStartPoint, center)
+  const arcMidPoint = tangentialArcMidPoint(
+    center,
+    arcStartPoint,
+    arcEndPoint,
+    tanPreviousPoint,
+    radius,
+    obtuse
+  )
+  return {
+    center,
+    radius,
+    ccw: polygonIsCcw([arcStartPoint, arcMidPoint, arcEndPoint]) > 0,
+  }
+}
+
+function tangentialArcMidPoint(
+  center: Point2,
+  arcStartPoint: Point2,
+  arcEndPoint: Point2,
+  tanPreviousPoint: Point2,
+  radius: number,
+  obtuse: boolean
+): Point2 {
+  const angleFromCenterToArcStart = angleBetweenPoints(center, arcStartPoint)
+  const angleFromCenterToArcEnd = angleBetweenPoints(center, arcEndPoint)
+  const deltaAngle =
+    deltaRadians(angleFromCenterToArcStart, angleFromCenterToArcEnd) / 2 +
+    angleFromCenterToArcStart
+  const shortestArcMidPoint = {
+    x: Math.cos(deltaAngle) * radius + center.x,
+    y: Math.sin(deltaAngle) * radius + center.y,
+  }
+  const oppositeDelta = deltaAngle + Math.PI
+  const longestArcMidPoint = {
+    x: Math.cos(oppositeDelta) * radius + center.x,
+    y: Math.sin(oppositeDelta) * radius + center.y,
+  }
+  const originalDirection = polygonIsCcw([
+    tanPreviousPoint,
+    arcStartPoint,
+    arcEndPoint,
+  ])
+  const shortestDirection = polygonIsCcw([
+    arcStartPoint,
+    shortestArcMidPoint,
+    arcEndPoint,
+  ])
+  return originalDirection !== shortestDirection && obtuse
+    ? longestArcMidPoint
+    : shortestArcMidPoint
+}
+
+function circleCenterFromThreePoints(
+  p1: Point2,
+  p2: Point2,
+  p3: Point2
+): Point2 {
+  const d =
+    2 * (p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y))
+  if (Math.abs(d) < Number.EPSILON) {
+    return {
+      x: (p1.x + p2.x + p3.x) / 3,
+      y: (p1.y + p2.y + p3.y) / 3,
+    }
+  }
+
+  const p1Sq = p1.x * p1.x + p1.y * p1.y
+  const p2Sq = p2.x * p2.x + p2.y * p2.y
+  const p3Sq = p3.x * p3.x + p3.y * p3.y
+  return {
+    x: (p1Sq * (p2.y - p3.y) + p2Sq * (p3.y - p1.y) + p3Sq * (p1.y - p2.y)) / d,
+    y: (p1Sq * (p3.x - p2.x) + p2Sq * (p1.x - p3.x) + p3Sq * (p2.x - p1.x)) / d,
+  }
+}
+
+function arcCenterAndEnd(
+  from: Point2,
+  startAngle: number,
+  endAngle: number,
+  radius: number
+): { center: Point2; end: Point2 } {
+  const center = {
+    x: -(radius * Math.cos(startAngle) - from.x),
+    y: -(radius * Math.sin(startAngle) - from.y),
+  }
+  return {
+    center,
+    end: {
+      x: center.x + radius * Math.cos(endAngle),
+      y: center.y + radius * Math.sin(endAngle),
+    },
+  }
+}
+
+function slopeAndPerpendicular(start: Point2, end: Point2): [number, number] {
+  const slope =
+    start.x - end.x === 0
+      ? Number.POSITIVE_INFINITY
+      : (start.y - end.y) / (start.x - end.x)
+  const perpSlope = slope === Number.POSITIVE_INFINITY ? 0 : -1 / slope
+  return [slope, perpSlope]
+}
+
+function intersectPointAndSlope(
+  point1: Point2,
+  slope1: number,
+  point2: Point2,
+  slope2: number
+): Point2 {
+  const x =
+    Math.abs(slope1) === Number.POSITIVE_INFINITY
+      ? point1.x
+      : Math.abs(slope2) === Number.POSITIVE_INFINITY
+        ? point2.x
+        : (point2.y - slope2 * point2.x - point1.y + slope1 * point1.x) /
+          (slope1 - slope2)
+  const y =
+    Math.abs(slope1) !== Number.POSITIVE_INFINITY
+      ? slope1 * x - slope1 * point1.x + point1.y
+      : slope2 * x - slope2 * point2.x + point2.y
+  return { x, y }
+}
+
+function angleBetweenPoints(point1: Point2, point2: Point2): number {
+  const angle = Math.atan2(point2.y - point1.y, point2.x - point1.x)
+  return angle < 0 ? angle + Math.PI * 2 : angle
+}
+
+function deltaRadians(fromAngle: number, toAngle: number): number {
+  const normFrom = normalizeRadians(fromAngle)
+  const normTo = normalizeRadians(toAngle)
+  const provisional = normTo - normFrom
+  if (provisional > -Math.PI && provisional <= Math.PI) {
+    return provisional
+  }
+  if (provisional > Math.PI) {
+    return provisional - Math.PI * 2
+  }
+  if (provisional < -Math.PI) {
+    return provisional + Math.PI * 2
+  }
+  return provisional
+}
+
+function normalizeRadians(angle: number): number {
+  return ((angle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2)
+}
+
+function polygonIsCcw(points: Point2[]): number {
+  const sum = points.reduce((total, point, index) => {
+    const next = points[(index + 1) % points.length]
+    return total + (next.x + point.x) * (next.y - point.y)
+  }, 0)
+  return Math.sign(sum)
+}
+
+function distance2(a: Point2, b: Point2): number {
+  return Math.hypot(a.x - b.x, a.y - b.y)
 }
 
 function toGpPnt(point: Point3, oc: OpenCascadeInstance): any {

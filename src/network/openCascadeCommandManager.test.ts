@@ -1951,6 +1951,68 @@ fillet001 = fillet(solid001, tags = edge001, radius = 0.1)
       ).toBe(true)
     }
   )
+
+  it('renders V1 tangentialArc endAbsolute as a curve ending at the absolute point', async () => {
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(
+      `@settings(defaultLengthUnit = mm)
+
+sketch001 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0])
+  |> tangentialArc(endAbsolute = [20, 10])
+`,
+      instance
+    )
+
+    await rustContext.execute(ast, {
+      settings: { modeling: { engine: 'open_cascade' } },
+    })
+
+    const manager = OpenCascadeCommandManager.latestInstance()
+    const sketchSegments = manager?.exportLatestSketchLineMeshes().segments
+    expect(sketchSegments).toHaveLength(2)
+    const arcSegment = sketchSegments?.[1]
+    expect(arcSegment?.points.length).toBeGreaterThan(6)
+    expectPointToBeClose(
+      lastPointFromFlattenedPoints(arcSegment?.points || []),
+      {
+        x: 20,
+        y: 10,
+        z: 0,
+      }
+    )
+  })
+
+  it('renders V1 three-point arc as a curve', async () => {
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(
+      `@settings(defaultLengthUnit = mm)
+
+sketch001 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> arc(interiorAbsolute = [5, 5], endAbsolute = [10, 0])
+`,
+      instance
+    )
+
+    await rustContext.execute(ast, {
+      settings: { modeling: { engine: 'open_cascade' } },
+    })
+
+    const manager = OpenCascadeCommandManager.latestInstance()
+    const sketchSegments = manager?.exportLatestSketchLineMeshes().segments
+    expect(sketchSegments).toHaveLength(1)
+    expect(sketchSegments?.[0].points.length).toBeGreaterThan(6)
+    expectPointToBeClose(
+      lastPointFromFlattenedPoints(sketchSegments?.[0].points || []),
+      {
+        x: 10,
+        y: 0,
+        z: 0,
+      }
+    )
+  })
 })
 
 async function buildCircleRegionInput(manager: OpenCascadeCommandManager) {
@@ -2321,6 +2383,23 @@ function isUuidLike(value: string): boolean {
     value
   )
 }
+
+function lastPointFromFlattenedPoints(points: number[]) {
+  const lastIndex = points.length - 3
+  return {
+    x: points[lastIndex],
+    y: points[lastIndex + 1],
+    z: points[lastIndex + 2],
+  }
+}
+
+function expectPointToBeClose(actual: Point3Like, expected: Point3Like) {
+  expect(actual.x).toBeCloseTo(expected.x)
+  expect(actual.y).toBeCloseTo(expected.y)
+  expect(actual.z).toBeCloseTo(expected.z)
+}
+
+type Point3Like = { x: number; y: number; z: number }
 
 async function send(
   manager: OpenCascadeCommandManager,
