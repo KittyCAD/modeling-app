@@ -37,6 +37,22 @@ flowchart LR
   20["SweepEdge Adjacent"]
   21["SweepEdge Opposite"]
   22["SweepEdge Adjacent"]
+  23["Pattern Transform<br>[187, 275, 0]<br>Copies: 6<br>Faces: 36<br>Edges: 72"]
+    %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  24["Pattern Circular<br>[286, 430, 0]<br>Copies: 40<br>Faces: 240<br>Edges: 480"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  25["Pattern Circular<br>[286, 430, 0]<br>Copies: 40<br>Faces: 240<br>Edges: 480"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  26["Pattern Circular<br>[286, 430, 0]<br>Copies: 40<br>Faces: 240<br>Edges: 480"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  27["Pattern Circular<br>[286, 430, 0]<br>Copies: 40<br>Faces: 240<br>Edges: 480"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  28["Pattern Circular<br>[286, 430, 0]<br>Copies: 40<br>Faces: 240<br>Edges: 480"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  29["Pattern Circular<br>[286, 430, 0]<br>Copies: 40<br>Faces: 240<br>Edges: 480"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  30["Pattern Circular<br>[286, 430, 0]<br>Copies: 40<br>Faces: 240<br>Edges: 480"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -44,6 +60,8 @@ flowchart LR
   2 --- 6
   2 --- 7
   2 ---- 8
+  2 --- 23
+  2 --- 24
   3 --- 12
   3 x--> 13
   3 --- 21
@@ -74,6 +92,8 @@ flowchart LR
   8 --- 20
   8 --- 21
   8 --- 22
+  8 x--> 23
+  8 x--> 24
   9 --- 15
   9 --- 16
   18 <--x 9

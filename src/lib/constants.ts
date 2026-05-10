@@ -1,4 +1,4 @@
-import type { MlCopilotMode, WebSocketResponse } from '@kittycad/lib'
+import type { WebSocketResponse } from '@kittycad/lib'
 
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
@@ -24,6 +24,7 @@ export const PROJECT_FOLDER = 'zoo-design-studio-projects'
  * @link - https://zoo.dev/docs/kcl
  * */
 export const FILE_EXT = '.kcl'
+export const DEFAULT_KCL_VERSION = '2.0'
 /** Default file to open when a project is opened */
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
 /** Thumbnail file name */
@@ -65,6 +66,9 @@ export const KCL_DEFAULT_LENGTH = `5`
 
 /** The default KCL tolerance expression */
 export const KCL_DEFAULT_TOLERANCE = `0.1mm`
+
+/** The default KCL datum reference expression */
+export const KCL_DEFAULT_DATUM_REFS = `["A"]`
 
 /** The default KCL precision expression */
 export const KCL_DEFAULT_PRECISION = `3`
@@ -363,9 +367,6 @@ export const PENDING_COMMAND_TIMEOUT = 60_000
 
 /** Timeout in MS to save layout */
 export const LAYOUT_SAVE_THROTTLE = 500
-
-// Zookeeper input
-export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'thoughtful'
 
 // Default backface color
 export const DEFAULT_BACKFACE_COLOR = '#00D5FF'

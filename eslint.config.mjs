@@ -203,6 +203,16 @@ export default defineConfig([
     },
   },
   {
+    files: [
+      'src/registry/extensions/**/*.{ts,tsx}',
+      'src/registry/plugins/**/*.{ts,tsx}',
+    ],
+
+    rules: {
+      'no-restricted-imports': 'off',
+    },
+  },
+  {
     files: ['packages/**/*.{ts,tsx}', 'rust/**/*.ts'],
     extends: compat.extends(),
 

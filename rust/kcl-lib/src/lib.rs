@@ -91,6 +91,7 @@ mod wasm;
 
 pub use coredump::CoreDump;
 pub use engine::AsyncTasks;
+pub use engine::EngineBatchContext;
 pub use engine::EngineManager;
 pub use engine::EngineStats;
 pub use errors::BacktraceItem;
@@ -312,6 +313,13 @@ impl Program {
     ) -> Result<Self, KclError> {
         Ok(Self {
             ast: self.ast.change_default_units(length_units)?,
+            original_file_contents: self.original_file_contents.clone(),
+        })
+    }
+
+    pub fn change_kcl_version(&self, kcl_version: Option<String>) -> Result<Self, KclError> {
+        Ok(Self {
+            ast: self.ast.change_kcl_version(kcl_version)?,
             original_file_contents: self.original_file_contents.clone(),
         })
     }

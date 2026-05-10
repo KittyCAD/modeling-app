@@ -196,6 +196,7 @@ pub enum HideableGeometry {
     SolidSet(Vec<Solid>),
     SketchSet(Vec<Sketch>),
     HelixSet(Vec<Helix>),
+    GdtAnnotationSet(Vec<GdtAnnotation>),
 }
 
 impl From<HideableGeometry> for crate::execution::KclValue {
@@ -214,6 +215,21 @@ impl From<HideableGeometry> for crate::execution::KclValue {
                             .map(|s| crate::execution::KclValue::Solid { value: Box::new(s) })
                             .collect(),
                         ty: crate::execution::types::RuntimeType::solid(),
+                    }
+                }
+            }
+            HideableGeometry::GdtAnnotationSet(mut s) => {
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::GdtAnnotation { value: Box::new(s) }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: s
+                            .into_iter()
+                            .map(|s| crate::execution::KclValue::GdtAnnotation { value: Box::new(s) })
+                            .collect(),
+                        ty: crate::execution::types::RuntimeType::gdt(),
                     }
                 }
             }
@@ -260,6 +276,7 @@ impl HideableGeometry {
                 Ok(vec![id])
             }
             HideableGeometry::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
+            HideableGeometry::GdtAnnotationSet(s) => Ok(s.iter().map(|s| s.id).collect()),
             HideableGeometry::SketchSet(s) => Ok(s.iter().map(|s| s.id).collect()),
             HideableGeometry::HelixSet(s) => Ok(s.iter().map(|s| s.value).collect()),
         }
@@ -2317,9 +2334,19 @@ pub enum SketchConstraintKind {
     },
     Radius {
         points: [ConstrainablePoint2d; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
     },
     Diameter {
         points: [ConstrainablePoint2d; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
     },
     HorizontalDistance {
         points: [ConstrainablePoint2dOrOrigin; 2],
