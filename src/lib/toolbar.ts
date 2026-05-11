@@ -1248,12 +1248,24 @@ export function buildToolbarConfig(
             },
             {
               id: 'gdt-position',
-              onClick: () => {},
-              status: 'unavailable',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'GDT Position', groupId: 'modeling' },
+                }),
+              status: 'experimental',
               title: 'Position',
+              icon: 'gdtPosition',
               description:
                 'Controls location tolerance of holes, pins, and other features.',
-              links: [],
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-position'
+                  ),
+                },
+              ],
             },
             {
               id: 'gdt-perpendicularity',
@@ -1304,13 +1316,25 @@ export function buildToolbarConfig(
               ],
             },
             {
-              id: 'gdt-dimension',
-              onClick: () => {},
-              status: 'unavailable',
-              title: 'Dimension',
+              id: 'gdt-distance',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'GDT Distance', groupId: 'modeling' },
+                }),
+              status: 'experimental',
+              title: 'Distance',
+              icon: 'dimension',
               description:
-                'Adds size dimensions with manufacturing tolerances.',
-              links: [],
+                'Adds distance annotations to edge lengths or between two entities.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-distance'
+                  ),
+                },
+              ],
             },
             {
               id: 'gdt-annotation',
