@@ -1,8 +1,10 @@
 use kcl_error::SourceRange;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
+use kittycad_modeling_cmds::shared::AnnotationBasicDimension;
 use kittycad_modeling_cmds::shared::AnnotationFeatureControl;
 use kittycad_modeling_cmds::shared::AnnotationLineEnd;
+use kittycad_modeling_cmds::shared::AnnotationMbdBasicDimension;
 use kittycad_modeling_cmds::shared::AnnotationMbdControlFrame;
 use kittycad_modeling_cmds::shared::AnnotationOptions;
 use kittycad_modeling_cmds::shared::AnnotationType;
@@ -15,6 +17,7 @@ use crate::KclError;
 use crate::errors::KclErrorDetails;
 use crate::exec::KclValue;
 use crate::execution::ControlFlowKind;
+use crate::execution::Face;
 use crate::execution::GdtAnnotation;
 use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
@@ -25,6 +28,7 @@ use crate::execution::types::ArrayLen;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types as ast;
 use crate::std::Args;
+use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
 use crate::std::fillet::EdgeReference;
 use crate::std::sketch::ensure_sketch_plane_in_engine;
@@ -34,6 +38,57 @@ use crate::std::sketch::ensure_sketch_plane_in_engine;
 pub(crate) struct AnnotationStyle {
     pub font_point_size: Option<TyF64>,
     pub font_scale: Option<TyF64>,
+}
+
+#[derive(Debug, Clone)]
+enum DistanceEntity {
+    Face(Box<Face>),
+    TaggedFace(Box<TagIdentifier>),
+    Edge(EdgeReference),
+}
+
+#[derive(Debug, Clone, Copy)]
+struct DistanceEndpoint {
+    entity_id: uuid::Uuid,
+    entity_pos: KPoint2d<f64>,
+}
+
+impl DistanceEntity {
+    async fn to_endpoint(&self, exec_state: &mut ExecState, args: &Args) -> Result<DistanceEndpoint, KclError> {
+        match self {
+            DistanceEntity::Face(face) => Ok(DistanceEndpoint {
+                entity_id: face.id,
+                entity_pos: KPoint2d { x: 0.5, y: 0.5 },
+            }),
+            DistanceEntity::TaggedFace(face) => Ok(DistanceEndpoint {
+                entity_id: args.get_adjacent_face_to_tag(exec_state, face, false).await?,
+                entity_pos: KPoint2d { x: 0.5, y: 0.5 },
+            }),
+            DistanceEntity::Edge(edge) => Ok(DistanceEndpoint {
+                entity_id: edge.get_engine_id(exec_state, args)?,
+                entity_pos: KPoint2d { x: 0.5, y: 0.0 },
+            }),
+        }
+    }
+}
+
+impl<'a> FromKclValue<'a> for DistanceEntity {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Face { value } => Some(Self::Face(value.to_owned())),
+            KclValue::Uuid { value, .. } => Some(Self::Edge(EdgeReference::Uuid(*value))),
+            KclValue::TagIdentifier(value) => Some(Self::TaggedFace(value.to_owned())),
+            _ => None,
+        }
+    }
+}
+
+fn distance_entity_type() -> RuntimeType {
+    RuntimeType::Union(vec![
+        RuntimeType::face(),
+        RuntimeType::tagged_face(),
+        RuntimeType::edge(),
+    ])
 }
 
 pub async fn datum(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -200,6 +255,88 @@ pub async fn profile(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let annotations = inner_profile(
         edges,
         datums,
+        tolerance,
+        precision,
+        frame_position,
+        frame_plane,
+        leader_scale,
+        AnnotationStyle {
+            font_point_size,
+            font_scale,
+        },
+        exec_state,
+        &args,
+    )
+    .await?;
+    Ok(annotations.into())
+}
+
+pub async fn position(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let faces: Option<Vec<TagIdentifier>> = args.get_kw_arg_opt(
+        "faces",
+        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
+        "edges",
+        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let datums: Option<Vec<String>> = args.get_kw_arg_opt(
+        "datums",
+        &RuntimeType::Array(Box::new(RuntimeType::string()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
+    let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
+    let frame_position: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
+    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
+    let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
+    let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
+    let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
+
+    let annotations = inner_position(
+        faces.unwrap_or_default(),
+        edges.unwrap_or_default(),
+        tolerance,
+        datums,
+        precision,
+        frame_position,
+        frame_plane,
+        leader_scale,
+        AnnotationStyle {
+            font_point_size,
+            font_scale,
+        },
+        exec_state,
+        &args,
+    )
+    .await?;
+    Ok(annotations.into())
+}
+
+pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let from: Option<DistanceEntity> = args.get_kw_arg_opt("from", &distance_entity_type(), exec_state)?;
+    let to: Option<DistanceEntity> = args.get_kw_arg_opt("to", &distance_entity_type(), exec_state)?;
+    let edges: Option<Vec<EdgeReference>> = args.get_kw_arg_opt(
+        "edges",
+        &RuntimeType::Array(Box::new(RuntimeType::edge()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
+    let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
+    let frame_position: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
+    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
+    let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
+    let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
+    let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
+
+    let annotations = inner_distance(
+        from,
+        to,
+        edges.unwrap_or_default(),
         tolerance,
         precision,
         frame_position,
@@ -574,6 +711,104 @@ async fn inner_annotation(
 }
 
 #[allow(clippy::too_many_arguments)]
+async fn inner_distance(
+    from: Option<DistanceEntity>,
+    to: Option<DistanceEntity>,
+    edges: Vec<EdgeReference>,
+    tolerance: TyF64,
+    precision: Option<TyF64>,
+    frame_position: Option<[TyF64; 2]>,
+    frame_plane: Option<Plane>,
+    leader_scale: Option<TyF64>,
+    style: AnnotationStyle,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<GdtAnnotation>, KclError> {
+    let precision = resolve_precision(precision, args)?;
+    let mut frame_plane = if let Some(plane) = frame_plane {
+        plane
+    } else {
+        xy_plane(exec_state, args).await?
+    };
+    ensure_sketch_plane_in_engine(
+        &mut frame_plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
+
+    if from.is_some() || to.is_some() {
+        if !edges.is_empty() {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Distance cannot combine `from`/`to` with `edges`.".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+
+        let (Some(from), Some(to)) = (from, to) else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Distance requires both `from` and `to` when measuring between entities.".to_owned(),
+                vec![args.source_range],
+            )));
+        };
+
+        let from = from.to_endpoint(exec_state, args).await?;
+        let to = to.to_endpoint(exec_state, args).await?;
+        let mut annotations = Vec::with_capacity(1);
+        create_basic_distance_annotation(
+            from,
+            to,
+            &tolerance,
+            precision,
+            frame_position.as_ref(),
+            frame_plane.id,
+            leader_scale.as_ref(),
+            &style,
+            exec_state,
+            args,
+            &mut annotations,
+        )
+        .await?;
+        return Ok(annotations);
+    }
+
+    if edges.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Distance requires either `edges` or both `from` and `to`.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    let mut annotations = Vec::with_capacity(edges.len());
+    for edge in &edges {
+        let edge_id = edge.get_engine_id(exec_state, args)?;
+        create_basic_distance_annotation(
+            DistanceEndpoint {
+                entity_id: edge_id,
+                entity_pos: KPoint2d { x: 0.0, y: 0.0 },
+            },
+            DistanceEndpoint {
+                entity_id: edge_id,
+                entity_pos: KPoint2d { x: 1.0, y: 0.0 },
+            },
+            &tolerance,
+            precision,
+            frame_position.as_ref(),
+            frame_plane.id,
+            leader_scale.as_ref(),
+            &style,
+            exec_state,
+            args,
+            &mut annotations,
+        )
+        .await?;
+    }
+    Ok(annotations)
+}
+
+#[allow(clippy::too_many_arguments)]
 async fn inner_profile(
     edges: Vec<EdgeReference>,
     datums: Option<Vec<String>>,
@@ -608,6 +843,83 @@ async fn inner_profile(
         create_feature_control_annotation(
             edge_id,
             MbdSymbol::ProfileOfLine,
+            &tolerance,
+            &datums,
+            precision,
+            frame_position.as_ref(),
+            frame_plane.id,
+            leader_scale.as_ref(),
+            &style,
+            exec_state,
+            args,
+            &mut annotations,
+        )
+        .await?;
+    }
+    Ok(annotations)
+}
+
+#[allow(clippy::too_many_arguments)]
+async fn inner_position(
+    faces: Vec<TagIdentifier>,
+    edges: Vec<EdgeReference>,
+    tolerance: TyF64,
+    datums: Option<Vec<String>>,
+    precision: Option<TyF64>,
+    frame_position: Option<[TyF64; 2]>,
+    frame_plane: Option<Plane>,
+    leader_scale: Option<TyF64>,
+    style: AnnotationStyle,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<GdtAnnotation>, KclError> {
+    if faces.is_empty() && edges.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Position requires at least one face or edge.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    let precision = resolve_precision(precision, args)?;
+    let datums = resolve_datums(datums, args, "Position")?;
+    let mut frame_plane = if let Some(plane) = frame_plane {
+        plane
+    } else {
+        xy_plane(exec_state, args).await?
+    };
+    ensure_sketch_plane_in_engine(
+        &mut frame_plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
+
+    let mut annotations = Vec::with_capacity(faces.len() + edges.len());
+    for face in &faces {
+        let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
+        create_feature_control_annotation(
+            face_id,
+            MbdSymbol::Position,
+            &tolerance,
+            &datums,
+            precision,
+            frame_position.as_ref(),
+            frame_plane.id,
+            leader_scale.as_ref(),
+            &style,
+            exec_state,
+            args,
+            &mut annotations,
+        )
+        .await?;
+    }
+    for edge in &edges {
+        let edge_id = edge.get_engine_id(exec_state, args)?;
+        create_feature_control_annotation(
+            edge_id,
+            MbdSymbol::Position,
             &tolerance,
             &datums,
             precision,
@@ -715,6 +1027,66 @@ fn resolve_precision(precision: Option<TyF64>, args: &Args) -> Result<u32, KclEr
     } else {
         Ok(3)
     }
+}
+
+#[allow(clippy::too_many_arguments)]
+async fn create_basic_distance_annotation(
+    from: DistanceEndpoint,
+    to: DistanceEndpoint,
+    tolerance: &TyF64,
+    precision: u32,
+    frame_position: Option<&[TyF64; 2]>,
+    frame_plane_id: uuid::Uuid,
+    leader_scale: Option<&TyF64>,
+    style: &AnnotationStyle,
+    exec_state: &mut ExecState,
+    args: &Args,
+    annotations: &mut Vec<GdtAnnotation>,
+) -> Result<(), KclError> {
+    let meta = vec![Metadata::from(args.source_range)];
+    let annotation_id = exec_state.next_uuid();
+    let dimension = AnnotationBasicDimension::builder()
+        .from_entity_id(from.entity_id)
+        .from_entity_pos(from.entity_pos)
+        .to_entity_id(to.entity_id)
+        .to_entity_pos(to.entity_pos)
+        .dimension(
+            AnnotationMbdBasicDimension::builder()
+                .tolerance(tolerance.to_mm())
+                .build(),
+        )
+        .plane_id(frame_plane_id)
+        .offset(if let Some(offset) = frame_position {
+            KPoint2d {
+                x: offset[0].to_mm(),
+                y: offset[1].to_mm(),
+            }
+        } else {
+            KPoint2d { x: 100.0, y: 100.0 }
+        })
+        .precision(precision)
+        .font_scale(style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
+        .font_point_size(style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
+        .arrow_scale(leader_scale.map(|n| n.n as f32).unwrap_or(1.0))
+        .build();
+    let options = AnnotationOptions::builder().dimension(dimension).build();
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
+            ModelingCmd::from(
+                mcmd::NewAnnotation::builder()
+                    .options(options)
+                    .clobber(false)
+                    .annotation_type(AnnotationType::T3D)
+                    .build(),
+            ),
+        )
+        .await?;
+    annotations.push(GdtAnnotation {
+        id: annotation_id,
+        meta,
+    });
+    Ok(())
 }
 
 #[allow(clippy::too_many_arguments)]
