@@ -507,7 +507,7 @@ impl SketchApi for FrontendState {
         _version: Version,
         sketch: ObjectId,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
-        self.execute_mock_with_warm_starts(ctx, sketch, false).await
+        self.execute_mock_with_warm_starts(ctx, sketch, true).await
     }
 
     async fn new_sketch(
@@ -7902,6 +7902,48 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_point_with_var_ignores_stale_warm_starts() {
+        let initial_source = "\
+sketch(on = XY) {
+  point(at = [var 1, var 2])
+  point1 = point(at = [var 3, var 4])
+  point(at = [var 5, var 6])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        let outcome = frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point_id = *sketch.segments.get(1).unwrap();
+        frontend.update_sketch_var_warm_starts(sketch_id, &outcome);
+
+        let (src_delta, _scene_delta) = frontend
+            .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![point_id])
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  point(at = [var 1mm, var 2mm])
+  point(at = [var 5mm, var 6mm])
+}
+"
+        );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_delete_multiple_points() {
         let initial_source = "\
 sketch(on = XY) {
@@ -12270,6 +12312,56 @@ sketch(on = offsetPlane(XY, offset = width)) {
         assert_eq!(scene_delta.new_graph.objects.len(), initial_object_count);
 
         ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_mock_consumes_sketch_var_warm_starts() {
+        let initial_source = "\
+sketch(on = XY) {
+  point(at = [var 1mm, var 2mm])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        frontend
+            .sketch_var_warm_start_overrides
+            .insert(sketch_id, vec![5.0, 6.0]);
+
+        let mut cold_frontend = frontend.clone();
+        let (warm_src_delta, _) = frontend.execute_mock(&mock_ctx, version, sketch_id).await.unwrap();
+        let (cold_src_delta, _) = cold_frontend
+            .execute_mock_with_warm_starts(&mock_ctx, sketch_id, false)
+            .await
+            .unwrap();
+
+        assert_eq!(
+            warm_src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  point(at = [var 5mm, var 6mm])
+}
+"
+        );
+        assert_eq!(
+            cold_src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  point(at = [var 1mm, var 2mm])
+}
+"
+        );
+
         mock_ctx.close().await;
     }
 
