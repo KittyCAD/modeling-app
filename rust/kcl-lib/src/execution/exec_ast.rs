@@ -122,6 +122,57 @@ fn datum_point_from_constrainable(
     ))
 }
 
+fn push_fixed_origin_point(
+    sketch_block_state: &mut SketchBlockState,
+    sketch_var_ty: NumericType,
+    range: SourceRange,
+) -> Result<ezpz::datatypes::inputs::DatumPoint, KclError> {
+    let origin_x_id = sketch_block_state.next_sketch_var_id();
+    sketch_block_state.sketch_vars.push(KclValue::SketchVar {
+        value: Box::new(crate::execution::SketchVar {
+            id: origin_x_id,
+            initial_value: 0.0,
+            ty: sketch_var_ty,
+            meta: vec![],
+        }),
+    });
+    let origin_y_id = sketch_block_state.next_sketch_var_id();
+    sketch_block_state.sketch_vars.push(KclValue::SketchVar {
+        value: Box::new(crate::execution::SketchVar {
+            id: origin_y_id,
+            initial_value: 0.0,
+            ty: sketch_var_ty,
+            meta: vec![],
+        }),
+    });
+
+    sketch_block_state
+        .solver_constraints
+        .push(Constraint::Fixed(origin_x_id.to_constraint_id(range)?, 0.0));
+    sketch_block_state
+        .solver_constraints
+        .push(Constraint::Fixed(origin_y_id.to_constraint_id(range)?, 0.0));
+
+    Ok(ezpz::datatypes::inputs::DatumPoint::new_xy(
+        origin_x_id.to_constraint_id(range)?,
+        origin_y_id.to_constraint_id(range)?,
+    ))
+}
+
+fn datum_point_from_constrainable_or_origin(
+    sketch_block_state: &mut SketchBlockState,
+    sketch_var_ty: NumericType,
+    point: &crate::execution::ConstrainablePoint2dOrOrigin,
+    range: SourceRange,
+) -> Result<ezpz::datatypes::inputs::DatumPoint, KclError> {
+    match point {
+        crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => datum_point_from_constrainable(point, range),
+        crate::execution::ConstrainablePoint2dOrOrigin::Origin => {
+            push_fixed_origin_point(sketch_block_state, sketch_var_ty, range)
+        }
+    }
+}
+
 fn datum_line_from_constrainable(
     line: &crate::execution::ConstrainableLine2d,
     range: SourceRange,
@@ -170,6 +221,21 @@ fn constrainable_point_initial_position(
     ])
 }
 
+fn constrainable_point_or_origin_initial_position(
+    sketch_vars: &[KclValue],
+    point: &crate::execution::ConstrainablePoint2dOrOrigin,
+    exec_state: &mut ExecState,
+    range: SourceRange,
+    description: &str,
+) -> Result<[f64; 2], KclError> {
+    match point {
+        crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
+            constrainable_point_initial_position(sketch_vars, point, exec_state, range, description)
+        }
+        crate::execution::ConstrainablePoint2dOrOrigin::Origin => Ok([0.0, 0.0]),
+    }
+}
+
 // These helpers read the current sketch variable guesses so hidden support
 // geometry starts near the geometry the user selected. The visible constraint
 // value still comes from the KCL RHS. These initial values are only solver
@@ -198,12 +264,12 @@ fn constrainable_line_initial_positions(
 
 fn projected_point_on_line_initial_position(
     sketch_vars: &[KclValue],
-    point: &crate::execution::ConstrainablePoint2d,
+    point: &crate::execution::ConstrainablePoint2dOrOrigin,
     line: &crate::execution::ConstrainableLine2d,
     exec_state: &mut ExecState,
     range: SourceRange,
 ) -> Result<[f64; 2], KclError> {
-    let point = constrainable_point_initial_position(
+    let point = constrainable_point_or_origin_initial_position(
         sketch_vars,
         point,
         exec_state,
@@ -3614,7 +3680,6 @@ impl Node<BinaryExpression> {
                                 .clone();
                             let support_initial =
                                 projected_point_on_line_initial_position(&sketch_vars, point, line, exec_state, range)?;
-                            let solver_point = datum_point_from_constrainable(point, range)?;
                             let solver_line = datum_line_from_constrainable(line, range)?;
 
                             #[cfg(feature = "artifact-graph")]
@@ -3631,6 +3696,12 @@ impl Node<BinaryExpression> {
                             // selected point-to-support segment to be
                             // perpendicular and equal to the requested
                             // distance.
+                            let solver_point = datum_point_from_constrainable_or_origin(
+                                sketch_block_state,
+                                sketch_var_ty,
+                                point,
+                                range,
+                            )?;
                             let support_x_id = sketch_block_state.next_sketch_var_id();
                             sketch_block_state.sketch_vars.push(KclValue::SketchVar {
                                 value: Box::new(crate::execution::SketchVar {
@@ -3686,7 +3757,11 @@ impl Node<BinaryExpression> {
                                     return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                                 };
                                 let sketch_constraint = crate::front::Constraint::Distance(Distance {
-                                    points: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
+                                    points: input_object_ids
+                                        .iter()
+                                        .copied()
+                                        .map(|id| id.map_or(ConstraintSegment::ORIGIN, ConstraintSegment::from))
+                                        .collect(),
                                     distance: n.try_into().map_err(|_| {
                                         internal_err("Failed to convert distance units numeric suffix:", range)
                                     })?,
@@ -3745,7 +3820,7 @@ impl Node<BinaryExpression> {
                                 .clone();
                             let support_initial = projected_point_on_line_initial_position(
                                 &sketch_vars,
-                                &reference_point,
+                                &crate::execution::ConstrainablePoint2dOrOrigin::Point(reference_point.clone()),
                                 line1,
                                 exec_state,
                                 range,
@@ -3883,7 +3958,6 @@ impl Node<BinaryExpression> {
                                 })?
                                 .sketch_vars
                                 .clone();
-                            let target_point = datum_point_from_constrainable(point, range)?;
                             let circular =
                                 circular_distance_datums(&sketch_vars, center, start, end.as_ref(), exec_state, range)?;
 
@@ -3900,6 +3974,12 @@ impl Node<BinaryExpression> {
                             // circle tangency: a hidden circle centered on the
                             // point has radius equal to the requested distance
                             // and is tangent to the target arc/circle.
+                            let target_point = datum_point_from_constrainable_or_origin(
+                                sketch_block_state,
+                                sketch_var_ty,
+                                point,
+                                range,
+                            )?;
                             push_circular_distance_constraints(
                                 sketch_block_state,
                                 sketch_var_ty,
@@ -3925,7 +4005,11 @@ impl Node<BinaryExpression> {
                                     return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                                 };
                                 let sketch_constraint = crate::front::Constraint::Distance(Distance {
-                                    points: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
+                                    points: input_object_ids
+                                        .iter()
+                                        .copied()
+                                        .map(|id| id.map_or(ConstraintSegment::ORIGIN, ConstraintSegment::from))
+                                        .collect(),
                                     distance: n.try_into().map_err(|_| {
                                         internal_err("Failed to convert distance units numeric suffix:", range)
                                     })?,
@@ -3982,7 +4066,7 @@ impl Node<BinaryExpression> {
                                 .clone();
                             let support_initial = projected_point_on_line_initial_position(
                                 &sketch_vars,
-                                center,
+                                &crate::execution::ConstrainablePoint2dOrOrigin::Point(center.clone()),
                                 line,
                                 exec_state,
                                 range,

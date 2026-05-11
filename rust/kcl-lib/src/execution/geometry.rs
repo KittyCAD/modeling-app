@@ -2316,9 +2316,9 @@ pub enum SketchConstraintKind {
         label_position: Option<ApiPoint2d<Number>>,
     },
     PointLineDistance {
-        point: ConstrainablePoint2d,
+        point: ConstrainablePoint2dOrOrigin,
         line: ConstrainableLine2d,
-        input_object_ids: [ObjectId; 2],
+        input_object_ids: [Option<ObjectId>; 2],
         #[serde(rename = "labelPosition")]
         #[serde(skip_serializing_if = "Option::is_none")]
         #[ts(rename = "labelPosition")]
@@ -2336,11 +2336,11 @@ pub enum SketchConstraintKind {
         label_position: Option<ApiPoint2d<Number>>,
     },
     PointCircularDistance {
-        point: ConstrainablePoint2d,
+        point: ConstrainablePoint2dOrOrigin,
         center: ConstrainablePoint2d,
         start: ConstrainablePoint2d,
         end: Option<ConstrainablePoint2d>,
-        input_object_ids: [ObjectId; 2],
+        input_object_ids: [Option<ObjectId>; 2],
         #[serde(rename = "labelPosition")]
         #[serde(skip_serializing_if = "Option::is_none")]
         #[ts(rename = "labelPosition")]

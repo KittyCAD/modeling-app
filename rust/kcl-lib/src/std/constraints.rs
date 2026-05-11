@@ -2241,9 +2241,9 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                     Ok(KclValue::SketchConstraint {
                         value: Box::new(SketchConstraint {
                             kind: SketchConstraintKind::PointLineDistance {
-                                point,
+                                point: ConstrainablePoint2dOrOrigin::Point(point),
                                 line,
-                                input_object_ids: [unsolved0.object_id, unsolved1.object_id],
+                                input_object_ids: [Some(unsolved0.object_id), Some(unsolved1.object_id)],
                                 label_position,
                             },
                             meta: vec![args.source_range.into()],
@@ -2278,11 +2278,11 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                     Ok(KclValue::SketchConstraint {
                         value: Box::new(SketchConstraint {
                             kind: SketchConstraintKind::PointCircularDistance {
-                                point,
+                                point: ConstrainablePoint2dOrOrigin::Point(point),
                                 center,
                                 start,
                                 end,
-                                input_object_ids: [unsolved0.object_id, unsolved1.object_id],
+                                input_object_ids: [Some(unsolved0.object_id), Some(unsolved1.object_id)],
                                 label_position,
                             },
                             meta: vec![args.source_range.into()],
@@ -2385,37 +2385,70 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                     vec![args.source_range],
                 )));
             };
-            let UnsolvedSegmentKind::Point { position, .. } = &unsolved.kind else {
-                return Err(KclError::new_semantic(KclErrorDetails::new(
-                    "distance() arguments must be unsolved points or ORIGIN".to_owned(),
-                    vec![args.source_range],
-                )));
+            let segment_first = matches!((&point0, &point1), (KclValue::Segment { .. }, _));
+            let input_object_ids = if segment_first {
+                [Some(unsolved.object_id), None]
+            } else {
+                [None, Some(unsolved.object_id)]
             };
-            match (&position[0], &position[1]) {
-                (UnsolvedExpr::Unknown(point_x), UnsolvedExpr::Unknown(point_y)) => {
-                    let point = ConstrainablePoint2dOrOrigin::Point(ConstrainablePoint2d {
-                        vars: crate::front::Point2d {
-                            x: *point_x,
-                            y: *point_y,
-                        },
-                        object_id: unsolved.object_id,
-                    });
-                    let points = if matches!((&point0, &point1), (KclValue::Segment { .. }, _)) {
-                        [point, ConstrainablePoint2dOrOrigin::Origin]
-                    } else {
-                        [ConstrainablePoint2dOrOrigin::Origin, point]
-                    };
+            match &unsolved.kind {
+                UnsolvedSegmentKind::Point { position, .. } => match (&position[0], &position[1]) {
+                    (UnsolvedExpr::Unknown(point_x), UnsolvedExpr::Unknown(point_y)) => {
+                        let point = ConstrainablePoint2dOrOrigin::Point(ConstrainablePoint2d {
+                            vars: crate::front::Point2d {
+                                x: *point_x,
+                                y: *point_y,
+                            },
+                            object_id: unsolved.object_id,
+                        });
+                        let points = if segment_first {
+                            [point, ConstrainablePoint2dOrOrigin::Origin]
+                        } else {
+                            [ConstrainablePoint2dOrOrigin::Origin, point]
+                        };
+                        Ok(KclValue::SketchConstraint {
+                            value: Box::new(SketchConstraint {
+                                kind: SketchConstraintKind::Distance { points, label_position },
+                                meta: vec![args.source_range.into()],
+                            }),
+                        })
+                    }
+                    _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                        "unimplemented: distance() point arguments must be sketch vars in all coordinates".to_owned(),
+                        vec![args.source_range],
+                    ))),
+                },
+                UnsolvedSegmentKind::Line { .. } => {
+                    let line = constrainable_line_from_unsolved_segment(unsolved, "distance", args.source_range)?;
                     Ok(KclValue::SketchConstraint {
                         value: Box::new(SketchConstraint {
-                            kind: SketchConstraintKind::Distance { points, label_position },
+                            kind: SketchConstraintKind::PointLineDistance {
+                                point: ConstrainablePoint2dOrOrigin::Origin,
+                                line,
+                                input_object_ids,
+                                label_position,
+                            },
                             meta: vec![args.source_range.into()],
                         }),
                     })
                 }
-                _ => Err(KclError::new_semantic(KclErrorDetails::new(
-                    "unimplemented: distance() point arguments must be sketch vars in all coordinates".to_owned(),
-                    vec![args.source_range],
-                ))),
+                UnsolvedSegmentKind::Arc { .. } | UnsolvedSegmentKind::Circle { .. } => {
+                    let (center, start, end) =
+                        constrainable_circular_from_unsolved_segment(unsolved, "distance", args.source_range)?;
+                    Ok(KclValue::SketchConstraint {
+                        value: Box::new(SketchConstraint {
+                            kind: SketchConstraintKind::PointCircularDistance {
+                                point: ConstrainablePoint2dOrOrigin::Origin,
+                                center,
+                                start,
+                                end,
+                                input_object_ids,
+                                label_position,
+                            },
+                            meta: vec![args.source_range.into()],
+                        }),
+                    })
+                }
             }
         }
         _ => Err(KclError::new_semantic(KclErrorDetails::new(
