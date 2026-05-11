@@ -110,6 +110,31 @@ describe('KCL expression calculations', () => {
     expect(coercedActual.astNode).toBeDefined()
   })
 
+  it('formats string arrays when allowStringArrays is true', async () => {
+    const { rustContext } = await buildTheWorldAndNoEngineConnection()
+    const actual = await getCalculatedKclExpressionValue(
+      '["A", "B"]',
+      rustContext,
+      { allowArrays: true, allowStringArrays: true }
+    )
+    const coercedActual = actual as Exclude<typeof actual, Error | ParseResult>
+    expect(coercedActual).not.toHaveProperty('errors')
+    expect(coercedActual.valueAsString).toEqual('["A", "B"]')
+    expect(coercedActual.astNode).toBeDefined()
+  })
+
+  it('rejects string arrays without allowStringArrays', async () => {
+    const { rustContext } = await buildTheWorldAndNoEngineConnection()
+    const actual = await getCalculatedKclExpressionValue(
+      '["A", "B"]',
+      rustContext,
+      { allowArrays: true }
+    )
+    const coercedActual = actual as Exclude<typeof actual, Error | ParseResult>
+    expect(coercedActual.valueAsString).toEqual('NAN')
+    expect(coercedActual.astNode).toBeDefined()
+  })
+
   it('formats arrays with mixed numeric values (integers and floats) when allowArrays is true', async () => {
     const { rustContext } = await buildTheWorldAndNoEngineConnection()
     // Arrays different numeric types should work fine
