@@ -67,6 +67,9 @@ export const KCL_DEFAULT_LENGTH = `5`
 /** The default KCL tolerance expression */
 export const KCL_DEFAULT_TOLERANCE = `0.1mm`
 
+/** The default KCL datum reference expression */
+export const KCL_DEFAULT_DATUM_REFS = `["A"]`
+
 /** The default KCL precision expression */
 export const KCL_DEFAULT_PRECISION = `3`
 
