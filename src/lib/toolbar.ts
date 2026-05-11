@@ -6,11 +6,13 @@ import { createLiteral } from '@src/lang/create'
 import { isDesktop } from '@src/lib/isDesktop'
 import { useApp } from '@src/lib/boot'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import { selectSketchPlane } from '@src/lib/selections'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
   isEditingExistingSketch,
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { ConstraintToolName } from '@src/machines/sketchSolve/tools/constraintToolModel'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -24,6 +26,27 @@ export type ToolbarModeName =
 type ToolbarMode = {
   check: (state: StateFrom<typeof modelingMachine>) => boolean
   items: (ToolbarItem | ToolbarDropdown | 'break')[]
+}
+
+function getSelectedSketchTarget(selectionRanges: Selections): string | null {
+  const defaultPlane = selectionRanges.otherSelections.find(
+    (selection) => typeof selection === 'object' && 'name' in selection
+  )
+  if (defaultPlane) {
+    return defaultPlane.id
+  }
+
+  const planeSelection = selectionRanges.graphSelections.find((selection) => {
+    const artifact = selection.artifact
+    return (
+      artifact?.type === 'plane' ||
+      artifact?.type === 'wall' ||
+      artifact?.type === 'cap' ||
+      (artifact?.type === 'edgeCut' && artifact.subType === 'chamfer')
+    )
+  })
+
+  return planeSelection?.artifact?.id ?? null
 }
 
 // Load bearing logic for determining the items in the toolbar
@@ -475,10 +498,26 @@ export function buildToolbarConfig(
             const isSketchBlock = isSketchBlockSelected(
               modelingState.context.selectionRanges
             )
+            const selectedSketchTarget = getSelectedSketchTarget(
+              modelingState.context.selectionRanges
+            )
 
             // Don't force new sketch if we're in a sketch block or have a sketchBlock selected
             if ((editorHasFocus && sketchPathId) || isSketchBlock) {
               modelingSend({ type: 'Enter sketch' })
+            } else if (selectedSketchTarget) {
+              modelingSend({
+                type: 'Enter sketch',
+                data: {
+                  forceNewSketch: true,
+                  keepDefaultPlaneVisibility: true,
+                },
+              })
+              void selectSketchPlane(
+                selectedSketchTarget,
+                modelingState.context.store.useSketchSolveMode?.current,
+                modelingState.context.kclManager
+              )
             } else {
               // No sketch context - start new sketch
               modelingSend({
