@@ -781,12 +781,23 @@ export function addOffsetPlane({
   // 2. Prepare unlabeled and labeled arguments
   let planeExpr: Expr | undefined
   const enginePrimitives = getEnginePrimitiveFaceSelectionsFromSelection(plane)
+  const faceSelectionsFromPlaneOfFace =
+    getFaceSelectionsFromPlaneOfFaceSelections(plane, artifactGraph)
+  if (err(faceSelectionsFromPlaneOfFace)) return faceSelectionsFromPlaneOfFace
+  const facePlaneSelection = {
+    graphSelections: plane.graphSelections
+      .filter((sel) => sel.artifact?.type !== 'planeOfFace')
+      .concat(faceSelectionsFromPlaneOfFace),
+    otherSelections: plane.otherSelections,
+  }
   if (
     enginePrimitives.length > 0 ||
-    plane.graphSelections.some((sel) => isFaceArtifact(sel.artifact))
+    facePlaneSelection.graphSelections.some((sel) =>
+      isFaceArtifact(sel.artifact)
+    )
   ) {
     const result = buildSolidsAndFacesExprs(
-      plane,
+      facePlaneSelection,
       artifactGraph,
       modifiedAst,
       wasmInstance,
@@ -810,6 +821,7 @@ export function addOffsetPlane({
         modifiedAst,
         artifactGraph,
         wasmInstance,
+        pathToNode: mNodeToEdit,
       })
       if (err(result)) return result
       solidsExprs = deduplicateFaceExprs(solidsExprs.concat(result.solidsExprs))
@@ -826,9 +838,25 @@ export function addOffsetPlane({
       solidsExpr,
       facesExpr,
       modifiedAst,
+      pathToNode: mNodeToEdit,
     })
   } else {
     planeExpr = getSelectedPlaneAsNode(plane, variables, wasmInstance)
+    if (!planeExpr) {
+      const planeVars = getVariableExprsFromSelection(
+        plane,
+        artifactGraph,
+        modifiedAst,
+        wasmInstance,
+        mNodeToEdit
+      )
+      if (!err(planeVars) && planeVars.exprs.length === 1) {
+        const [planeVar] = planeVars.exprs
+        if (planeVar.type !== 'PipeSubstitution') {
+          planeExpr = planeVar
+        }
+      }
+    }
     if (!planeExpr) {
       return new Error('No plane found in the selection')
     }
@@ -1121,20 +1149,13 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
       otherSelections: [],
     }
   } else if (planeArtifact.type === 'planeOfFace') {
-    const faceArtifact = artifactGraph.get(planeArtifact.faceId)
-    if (faceArtifact && isFaceArtifact(faceArtifact)) {
-      const codeRef = getFaceCodeRef(faceArtifact)
-      if (!codeRef) {
-        return new Error("Couldn't retrieve code reference for face artifact")
-      }
-
+    const faceSelection = getFaceSelectionFromPlaneOfFace(
+      planeArtifact,
+      artifactGraph
+    )
+    if (!err(faceSelection)) {
       return {
-        graphSelections: [
-          {
-            artifact: faceArtifact,
-            codeRef,
-          },
-        ],
+        graphSelections: [faceSelection],
         otherSelections: [],
       }
     }
@@ -1205,11 +1226,13 @@ function insertFacePrimitiveVariablesAndOffsetPathToNode({
   modifiedAst,
   artifactGraph,
   wasmInstance,
+  pathToNode,
 }: {
   enginePrimitives: EnginePrimitiveSelection[]
   modifiedAst: Node<Program>
   artifactGraph: ArtifactGraph
   wasmInstance: ModuleType
+  pathToNode?: PathToNode
 }): Error | { solidsExprs: Expr[]; faceExprs: Expr[] } {
   if (enginePrimitives.length === 0) {
     return { solidsExprs: [], faceExprs: [] }
@@ -1226,7 +1249,10 @@ function insertFacePrimitiveVariablesAndOffsetPathToNode({
     ).values(),
   ]
 
-  let insertIndex = modifiedAst.body.length
+  let insertIndex =
+    pathToNode && typeof pathToNode[1]?.[0] === 'number'
+      ? pathToNode[1][0]
+      : modifiedAst.body.length
   const solidExprs: Expr[] = []
   const faceExprs: Expr[] = []
 
@@ -1305,7 +1331,8 @@ function insertFacePrimitiveVariablesAndOffsetPathToNode({
         variableIdentifierAst,
         insertIndex,
       },
-      modifiedAst
+      modifiedAst,
+      pathToNode
     )
     insertIndex++
     faceExprs.push(variableIdentifierAst)
@@ -1318,10 +1345,12 @@ function insertPlaneOfVariableAndOffsetPathToNode({
   solidsExpr,
   facesExpr,
   modifiedAst,
+  pathToNode,
 }: {
   solidsExpr: Expr | null
   facesExpr: Expr
   modifiedAst: Node<Program>
+  pathToNode?: PathToNode
 }) {
   const planeOfExpr = createCallExpressionStdLibKw('planeOf', solidsExpr, [
     createLabeledArg('face', facesExpr),
@@ -1342,9 +1371,13 @@ function insertPlaneOfVariableAndOffsetPathToNode({
         planeOfExpr
       ),
       variableIdentifierAst,
-      insertIndex: modifiedAst.body.length,
+      insertIndex:
+        pathToNode && typeof pathToNode[1]?.[0] === 'number'
+          ? pathToNode[1][0]
+          : modifiedAst.body.length,
     },
-    modifiedAst
+    modifiedAst,
+    pathToNode
   )
   return variableIdentifierAst
 }
@@ -1354,4 +1387,45 @@ function getEnginePrimitiveFaceSelectionsFromSelection(selection: Selections) {
     (s): s is EnginePrimitiveSelection =>
       isEnginePrimitiveSelection(s) && s.primitiveType === 'face'
   )
+}
+
+function getFaceSelectionsFromPlaneOfFaceSelections(
+  selection: Selections,
+  artifactGraph: ArtifactGraph
+): Selection[] | Error {
+  const selections: Selection[] = []
+  for (const planeSelection of selection.graphSelections) {
+    if (planeSelection.artifact?.type !== 'planeOfFace') {
+      continue
+    }
+
+    const faceSelection = getFaceSelectionFromPlaneOfFace(
+      planeSelection.artifact,
+      artifactGraph
+    )
+    if (err(faceSelection)) return faceSelection
+    selections.push(faceSelection)
+  }
+
+  return selections
+}
+
+function getFaceSelectionFromPlaneOfFace(
+  planeArtifact: Extract<Artifact, { type: 'planeOfFace' }>,
+  artifactGraph: ArtifactGraph
+): Selection | Error {
+  const faceArtifact = artifactGraph.get(planeArtifact.faceId)
+  if (!faceArtifact || !isFaceArtifact(faceArtifact)) {
+    return new Error("Couldn't retrieve face artifact from planeOfFace")
+  }
+
+  const codeRef = getFaceCodeRef(faceArtifact)
+  if (!codeRef) {
+    return new Error("Couldn't retrieve code reference for face artifact")
+  }
+
+  return {
+    artifact: faceArtifact,
+    codeRef,
+  }
 }
