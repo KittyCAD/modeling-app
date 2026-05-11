@@ -113,6 +113,9 @@ enum SketchVarUpdateMode {
     /// Serialize the settled solved values back into KCL. Used at interaction
     /// boundaries where source should represent the displayed sketch.
     CommitSolvedVars,
+    /// Serialize solved values back into KCL after solving from transient
+    /// warm-start state. Used at drag boundaries after preview edits.
+    CommitSolvedVarsFromWarmStart,
 }
 mod traverse;
 pub(crate) mod trim;
@@ -356,6 +359,27 @@ impl FrontendState {
         SketchApi::edit_segments(self, ctx, version, sketch, segments).await
     }
 
+    pub async fn edit_segments_commit_from_preview(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        segments: Vec<ExistingSegmentCtor>,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        self.next_sketch_var_update_mode = Some(SketchVarUpdateMode::CommitSolvedVarsFromWarmStart);
+        SketchApi::edit_segments(self, ctx, version, sketch, segments).await
+    }
+
+    pub async fn execute_mock_from_preview(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        let _ = version;
+        self.execute_mock_with_warm_starts(ctx, sketch, true).await
+    }
+
     fn sketch_mock_config(
         &self,
         sketch: ObjectId,
@@ -363,6 +387,7 @@ impl FrontendState {
         #[cfg_attr(not(feature = "artifact-graph"), allow(unused_variables))] segment_ids_edited: AhashIndexSet<
             ObjectId,
         >,
+        use_warm_starts: bool,
     ) -> MockConfig {
         let config = MockConfig {
             sketch_block_id: Some(sketch),
@@ -372,10 +397,39 @@ impl FrontendState {
             ..Default::default()
         };
 
-        match self.sketch_var_warm_start_overrides.get(&sketch) {
-            Some(overrides) => config.with_sketch_var_initial_guess_overrides(overrides.clone()),
-            None => config,
+        match (use_warm_starts, self.sketch_var_warm_start_overrides.get(&sketch)) {
+            (true, Some(overrides)) => config.with_sketch_var_initial_guess_overrides(overrides.clone()),
+            _ => config,
         }
+    }
+
+    async fn execute_mock_with_warm_starts(
+        &mut self,
+        ctx: &ExecutorContext,
+        sketch: ObjectId,
+        use_warm_starts: bool,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        let sketch_block_ref =
+            sketch_block_ref_from_id(&self.scene_graph, sketch).map_err(KclErrorWithOutputs::no_outputs)?;
+
+        let mut truncated_program = self.program.clone();
+        only_sketch_block(&mut truncated_program.ast, &sketch_block_ref, ChangeKind::None)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+
+        let mock_config = self.sketch_mock_config(sketch, true, Default::default(), use_warm_starts);
+        let run_outcome = ctx.run_mock(&truncated_program, &mock_config).await?;
+        let outcome = self.update_state_after_exec(run_outcome, true);
+        self.update_sketch_var_warm_starts(sketch, &outcome);
+        let new_source = self.commit_var_solutions_to_program(&outcome)?;
+
+        let src_delta = SourceDelta { text: new_source };
+        let scene_graph_delta = SceneGraphDelta {
+            new_graph: self.scene_graph.clone(),
+            new_objects: Default::default(),
+            invalidates_ids: false,
+            exec_outcome: outcome,
+        };
+        Ok((src_delta, scene_graph_delta))
     }
 
     fn update_sketch_var_warm_starts(&mut self, sketch: ObjectId, outcome: &ExecOutcome) {
@@ -453,29 +507,7 @@ impl SketchApi for FrontendState {
         _version: Version,
         sketch: ObjectId,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
-        let sketch_block_ref =
-            sketch_block_ref_from_id(&self.scene_graph, sketch).map_err(KclErrorWithOutputs::no_outputs)?;
-
-        let mut truncated_program = self.program.clone();
-        only_sketch_block(&mut truncated_program.ast, &sketch_block_ref, ChangeKind::None)
-            .map_err(KclErrorWithOutputs::no_outputs)?;
-
-        // Execute.
-        let mock_config = self.sketch_mock_config(sketch, true, Default::default());
-        let run_outcome = ctx.run_mock(&truncated_program, &mock_config).await?;
-        // update_state_after_exec must run before var_solutions are read.
-        let outcome = self.update_state_after_exec(run_outcome, true);
-        self.update_sketch_var_warm_starts(sketch, &outcome);
-        let new_source = self.commit_var_solutions_to_program(&outcome)?;
-
-        let src_delta = SourceDelta { text: new_source };
-        let scene_graph_delta = SceneGraphDelta {
-            new_graph: self.scene_graph.clone(),
-            new_objects: Default::default(),
-            invalidates_ids: false,
-            exec_outcome: outcome,
-        };
-        Ok((src_delta, scene_graph_delta))
+        self.execute_mock_with_warm_starts(ctx, sketch, false).await
     }
 
     async fn new_sketch(
@@ -2991,7 +3023,13 @@ impl FrontendState {
         };
 
         // Execute.
-        let mock_config = self.sketch_mock_config(sketch, is_delete, options.segment_ids_edited.clone());
+        let use_warm_starts = !is_delete
+            && matches!(
+                options.sketch_var_update_mode,
+                SketchVarUpdateMode::WarmStartOnly | SketchVarUpdateMode::CommitSolvedVarsFromWarmStart
+            );
+        let mock_config =
+            self.sketch_mock_config(sketch, is_delete, options.segment_ids_edited.clone(), use_warm_starts);
         let outcome = ctx.run_mock(&truncated_program, &mock_config).await?;
 
         // Uses freedom_analysis: is_delete
@@ -3000,7 +3038,9 @@ impl FrontendState {
 
         let new_source = match options.sketch_var_update_mode {
             SketchVarUpdateMode::WarmStartOnly => new_source,
-            SketchVarUpdateMode::CommitSolvedVars => self.commit_var_solutions_to_program(&outcome)?,
+            SketchVarUpdateMode::CommitSolvedVars | SketchVarUpdateMode::CommitSolvedVarsFromWarmStart => {
+                self.commit_var_solutions_to_program(&outcome)?
+            }
         };
 
         let src_delta = SourceDelta { text: new_source };
@@ -4236,7 +4276,7 @@ impl FrontendState {
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
         // Execute - if this fails, we haven't modified self yet, so state is safe
-        let mock_config = self.sketch_mock_config(sketch_id, true, Default::default());
+        let mock_config = self.sketch_mock_config(sketch_id, true, Default::default(), false);
         let outcome = ctx.run_mock(&truncated_program, &mock_config).await?;
 
         #[cfg(not(feature = "artifact-graph"))]
