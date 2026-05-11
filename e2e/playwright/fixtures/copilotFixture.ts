@@ -8,6 +8,9 @@ export class CopilotFixture {
   submitButton!: Locator
   placeHolderResponse!: Locator
   thinkingView!: Locator
+  cancelButton!: Locator
+  clearChatButton!: Locator
+  welcomeSection!: Locator
   modeButton!: Locator
 
   constructor(page: Page) {
@@ -23,6 +26,13 @@ export class CopilotFixture {
       'ml-response-chat-bubble-thinking'
     )
     this.thinkingView = this.page.getByTestId('ml-response-thinking-view')
+    this.cancelButton = this.page.getByTestId(
+      'ml-ephant-conversation-cancel-button'
+    )
+    this.clearChatButton = this.page.getByRole('button', { name: 'Clear chat' })
+    this.welcomeSection = this.page.getByTestId(
+      'ml-ephant-conversation-welcome-section'
+    )
 
     this.modeButton = this.page.getByTestId('ml-copilot-efforts-button')
   }

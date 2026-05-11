@@ -150,6 +150,7 @@ pub trait SketchApi {
 
     /// Batch operations for tail-cut trim: edit a segment, add coincident constraints,
     /// delete constraints, and execute once.
+    #[allow(clippy::too_many_arguments)]
     async fn batch_tail_cut_operations(
         &mut self,
         ctx: &ExecutorContext,
@@ -158,6 +159,7 @@ pub trait SketchApi {
         edit_segments: Vec<ExistingSegmentCtor>,
         add_constraints: Vec<Constraint>,
         delete_constraint_ids: Vec<ObjectId>,
+        additional_edited_segment_ids: Vec<ObjectId>,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 }
 
@@ -411,6 +413,11 @@ pub struct CircleCtor {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiConstraint")]
 #[serde(tag = "type")]
+// When adding a new constraint type, check trim compatibility. New constraints
+// can break trim in unexpected ways, especially when endpoints are edited,
+// segments are split, or constraints are migrated. Try the trim tool on sketches
+// using the new constraint, and talk to Kurt, Max, or a mechanical engineer if
+// the intended trim behavior is unclear.
 pub enum Constraint {
     Coincident(Coincident),
     Distance(Distance),
@@ -531,6 +538,11 @@ pub struct ConstraintSource {
 pub struct Radius {
     pub arc: ObjectId,
     pub radius: Number,
+    #[serde(rename = "labelPosition")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(rename = "labelPosition")]
+    #[ts(optional)]
+    pub label_position: Option<Point2d<Number>>,
     #[serde(default)]
     pub source: ConstraintSource,
 }
@@ -540,6 +552,11 @@ pub struct Radius {
 pub struct Diameter {
     pub arc: ObjectId,
     pub diameter: Number,
+    #[serde(rename = "labelPosition")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(rename = "labelPosition")]
+    #[ts(optional)]
+    pub label_position: Option<Point2d<Number>>,
     #[serde(default)]
     pub source: ConstraintSource,
 }

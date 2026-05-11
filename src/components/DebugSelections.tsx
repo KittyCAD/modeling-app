@@ -176,7 +176,9 @@ function getEntityIdsFromCmds(
   selectAdds.forEach((event) => {
     if ('cmd' in event && 'type' in event.cmd && 'entities' in event.cmd) {
       const entities = event.cmd.entities
-      ids = ids.concat(entities)
+      ids = ids.concat(
+        entities.filter((e): e is string => typeof e === 'string')
+      )
     }
   })
   return ids

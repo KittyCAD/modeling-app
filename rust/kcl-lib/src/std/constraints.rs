@@ -2481,7 +2481,7 @@ fn get_constraint_label_position(
 /// Used by both radius() and diameter() functions.
 fn create_circular_radius_constraint(
     segment: KclValue,
-    constraint_kind: fn([ConstrainablePoint2d; 2]) -> SketchConstraintKind,
+    constraint_kind: impl Fn([ConstrainablePoint2d; 2]) -> SketchConstraintKind,
     source_range: crate::SourceRange,
 ) -> Result<SketchConstraint, KclError> {
     // Create a dummy constraint to get its name for error messages
@@ -2579,10 +2579,14 @@ fn create_circular_radius_constraint(
 pub async fn radius(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let segment: KclValue =
         args.get_unlabeled_kw_arg("points", &RuntimeType::Primitive(PrimitiveType::Any), exec_state)?;
+    let label_position = get_constraint_label_position(exec_state, &args, "radius")?;
 
     create_circular_radius_constraint(
         segment,
-        |points| SketchConstraintKind::Radius { points },
+        |points| SketchConstraintKind::Radius {
+            points,
+            label_position: label_position.clone(),
+        },
         args.source_range,
     )
     .map(|constraint| KclValue::SketchConstraint {
@@ -2593,10 +2597,14 @@ pub async fn radius(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 pub async fn diameter(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let segment: KclValue =
         args.get_unlabeled_kw_arg("points", &RuntimeType::Primitive(PrimitiveType::Any), exec_state)?;
+    let label_position = get_constraint_label_position(exec_state, &args, "diameter")?;
 
     create_circular_radius_constraint(
         segment,
-        |points| SketchConstraintKind::Diameter { points },
+        |points| SketchConstraintKind::Diameter {
+            points,
+            label_position: label_position.clone(),
+        },
         args.source_range,
     )
     .map(|constraint| KclValue::SketchConstraint {
