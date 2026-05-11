@@ -89,6 +89,7 @@ pub mod walk;
 mod wasm;
 
 pub use engine::AsyncTasks;
+pub use engine::EngineBatchContext;
 pub use engine::EngineManager;
 pub use engine::EngineStats;
 pub use errors::BacktraceItem;

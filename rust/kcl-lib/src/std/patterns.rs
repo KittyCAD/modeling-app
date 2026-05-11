@@ -479,6 +479,7 @@ impl GeometryTrait for Solid {
     type Set = Vec<Solid>;
     fn set_id(&mut self, id: Uuid) {
         self.id = id;
+        self.value_id = id;
         // We need this for in extrude.rs when you sketch on face.
         if let Some(sketch) = self.sketch_mut() {
             sketch.id = id;
