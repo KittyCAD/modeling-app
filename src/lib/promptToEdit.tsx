@@ -93,7 +93,7 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
   const currentFilePrompt: SourceRangePrompt | null = activeFile
     ? {
         prompt:
-          'This is the file currently open in the editor. For ambiguous edit requests, treat this file as the default edit target and change it before other project files unless the user names a different file or cross-file updates are needed to keep the project consistent.',
+          'This is the file currently open in the editor. For ambiguous edit requests, treat this file as the default edit target and change it before other project files. Avoid assuming other files need the same edit just because they look similar or duplicated. Prefer updating other project files when the user names a different file or a concrete dependency such as an import, reference, or entrypoint wiring requires it.',
         range: convertAppRangeToApiRange(
           [0, currentFile.content.length, 0],
           currentFile.content
