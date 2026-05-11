@@ -3663,7 +3663,7 @@ impl FrontendState {
                 "Only lines can be constrained to meet at an angle: {line0_object:?}",
             )));
         };
-        let l0_ast = get_or_insert_ast_reference(new_ast, &line0_object.source.clone(), LINE_VARIABLE, None)?;
+        let l0_ast = self.line_id_to_ast_reference(l0_id, new_ast)?;
 
         let line1_object = self
             .scene_graph
@@ -3678,7 +3678,7 @@ impl FrontendState {
                 "Only lines can be constrained to meet at an angle: {line1_object:?}",
             )));
         };
-        let l1_ast = get_or_insert_ast_reference(new_ast, &line1_object.source.clone(), LINE_VARIABLE, None)?;
+        let l1_ast = self.line_id_to_ast_reference(l1_id, new_ast)?;
 
         // Create the angle() call.
         let angle_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
@@ -3831,7 +3831,7 @@ impl FrontendState {
             )));
         };
         let segment_ast = match midpoint_segment {
-            Segment::Line(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, "line", None)?,
+            Segment::Line(_) => self.line_id_to_ast_reference(midpoint.segment, new_ast)?,
             Segment::Arc(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, "arc", None)?,
             _ => {
                 return Err(KclError::refactor(format!(
@@ -4335,7 +4335,7 @@ impl FrontendState {
             )));
         };
         match segment {
-            Segment::Line(_) => get_or_insert_ast_reference(new_ast, &segment_object.source, LINE_VARIABLE, None),
+            Segment::Line(_) => self.line_id_to_ast_reference(segment_id, new_ast),
             _ => Err(KclError::refactor(format!(
                 "Symmetric axis must be a line, got {}",
                 segment.human_friendly_kind_with_article()
@@ -4380,7 +4380,7 @@ impl FrontendState {
                     )));
                 };
 
-                get_or_insert_ast_reference(new_ast, &line_object.source.clone(), LINE_VARIABLE, None)
+                self.line_id_to_ast_reference(*line_id, new_ast)
             })
             .collect::<Result<Vec<_>, _>>()?;
 
@@ -10953,6 +10953,103 @@ splineSketch = sketch(on = XY) {
         assert!(
             src_delta.text.contains("horizontal(controlPointSpline1.edges[0])"),
             "Expected horizontal constraint on spline edge, got: {}",
+            src_delta.text
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_control_point_spline_edge_angle() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+splineSketch = sketch(on = XY) {
+  controlPointSpline1 = controlPointSpline(points = [
+    [var 0mm, var 0mm],
+    [var 10mm, var 20mm],
+    [var 20mm, var 0mm],
+  ])
+
+  line1 = line(start = [var 40mm, var 0mm], end = [var 60mm, var 10mm])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let spline_id = sketch
+            .segments
+            .iter()
+            .copied()
+            .find(|seg_id| {
+                matches!(
+                    &frontend.scene_graph.objects[seg_id.0].kind,
+                    ObjectKind::Segment {
+                        segment: Segment::ControlPointSpline(_)
+                    }
+                )
+            })
+            .expect("Expected a control point spline segment in sketch");
+        let edge_id = frontend
+            .scene_graph
+            .objects
+            .iter()
+            .find_map(|obj| match &obj.kind {
+                ObjectKind::Segment {
+                    segment: Segment::Line(line),
+                } if line.owner == Some(spline_id) => Some(obj.id),
+                _ => None,
+            })
+            .expect("Expected an owned control-polygon edge");
+        let line1_id = frontend
+            .scene_graph
+            .objects
+            .iter()
+            .find_map(|obj| match &obj.kind {
+                ObjectKind::Segment {
+                    segment: Segment::Line(line),
+                } if line.owner.is_none() && obj.label == "line1" => Some(obj.id),
+                _ => None,
+            })
+            .or_else(|| {
+                sketch.segments.iter().copied().find(|seg_id| {
+                    matches!(
+                        &frontend.scene_graph.objects[seg_id.0].kind,
+                        ObjectKind::Segment {
+                            segment: Segment::Line(line),
+                        } if line.owner.is_none()
+                    )
+                })
+            })
+            .expect("Expected a standalone line segment in sketch");
+
+        let constraint = Constraint::Angle(Angle {
+            lines: vec![line1_id, edge_id],
+            angle: Number {
+                value: 30.0,
+                units: NumericSuffix::Deg,
+            },
+            source: Default::default(),
+        });
+        let (src_delta, _) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert!(
+            src_delta
+                .text
+                .contains("angle([line1, controlPointSpline1.edges[0]]) == 30deg"),
+            "Expected angle constraint on spline edge, got: {}",
             src_delta.text
         );
 
