@@ -133,6 +133,28 @@ describe('System IO Utils', () => {
     expect(preparedPayload?.filesToDelete).toEqual([])
   })
 
+  it('keeps the currently focused file as the navigation target after project-wide edits', () => {
+    const preparedPayload = prepareMlEphantNewFileRequest({
+      projectNameCurrentlyOpened: 'some-project',
+      fileFocusedOnInEditor: {
+        name: 'newFile.kcl',
+        path: '/some-project/newFile.kcl',
+        children: null,
+      },
+      toolOutput: {
+        status_code: 200,
+        type: 'edit_kcl_code',
+        project_name: 'some-project',
+        outputs: {
+          'main.kcl': 'width = 5',
+          'newFile.kcl': 'width = 10',
+        },
+      },
+    })
+
+    expect(preparedPayload?.requestedFileNameWithExtension).toBe('newFile.kcl')
+  })
+
   it('carries only explicit Zookeeper delete signals into edit requests', () => {
     const preparedPayload = prepareMlEphantNewFileRequest({
       projectNameCurrentlyOpened: 'some-project',
