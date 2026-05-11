@@ -11,7 +11,6 @@ import type {
   change_default_units as ChangeDefaultUnits,
   change_experimental_features as ChangeExperimentalFeatures,
   change_kcl_version as ChangeKclVersion,
-  coredump as CoreDump,
   default_app_settings as DefaultAppSettings,
   default_project_settings as DefaultProjectSettings,
   format_number_literal as FormatNumberLiteral,
@@ -86,9 +85,6 @@ export const get_tangential_arc_to_info: typeof GetTangentialArcToInfo = (
   ...args
 ) => {
   return getModule().get_tangential_arc_to_info(...args)
-}
-export const coredump: typeof CoreDump = (...args) => {
-  return getModule().coredump(...args)
 }
 export const default_app_settings: typeof DefaultAppSettings = (...args) => {
   return getModule().default_app_settings(...args)
