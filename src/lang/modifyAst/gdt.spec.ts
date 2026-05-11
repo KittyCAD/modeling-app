@@ -573,10 +573,10 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         kclManagerInThisFile
       )
       const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
+        (artifact) => artifact.type === 'segment'
       )
       if (!edge) {
-        throw new Error('Expected a sweep edge')
+        throw new Error('Expected a sketch segment')
       }
 
       const tolerance = await getKclCommandValue(
@@ -623,10 +623,10 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         (artifact) => artifact.type === 'cap'
       )
       const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
+        (artifact) => artifact.type === 'segment'
       )
       if (!face || !edge) {
-        throw new Error('Expected a cap face and sweep edge')
+        throw new Error('Expected a cap face and sketch segment')
       }
 
       const tolerance = await getKclCommandValue(
@@ -677,10 +677,10 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         (artifact) => artifact.type === 'cap'
       )
       const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
+        (artifact) => artifact.type === 'segment'
       )
       if (!face || !edge) {
-        throw new Error('Expected a cap face and sweep edge')
+        throw new Error('Expected a cap face and sketch segment')
       }
 
       const tolerance = await getKclCommandValue(

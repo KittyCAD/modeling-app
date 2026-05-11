@@ -77,17 +77,17 @@ export function createSelectionFromArtifacts(
 ): Selections {
   const graphSelections = artifacts.flatMap((artifact) => {
     const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
-    if (!codeRefs || codeRefs.length === 0) {
-      return []
-    }
+    const codeRef =
+      codeRefs?.[0] ?? ('codeRef' in artifact ? artifact.codeRef : undefined)
     return [
       {
+        artifact,
         entityRef: artifactToEntityRef(
           artifact.type,
           artifact.id,
           artifact.type === 'segment' ? artifact.pathId : undefined
         ),
-        codeRef: codeRefs[0],
+        codeRef,
       },
     ]
   })

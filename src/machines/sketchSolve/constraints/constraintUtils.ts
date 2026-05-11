@@ -115,6 +115,7 @@ export function getArcPoints(
 ) {
   if (isCircleSegment(arcObj)) {
     const startObj = objects[arcObj.kind.segment.start]
+    const centerObj = objects[arcObj.kind.segment.center]
     if (
       !isPointSegment(startObj) ||
       arcObj.kind.segment.ctor.type !== 'Circle'
@@ -123,8 +124,13 @@ export function getArcPoints(
     }
 
     const start = pointToCoords2d(startObj)
-    const centerX = exprToNumber(arcObj.kind.segment.ctor.center.x)
-    const centerY = exprToNumber(arcObj.kind.segment.ctor.center.y)
+    const centerCoords = isPointSegment(centerObj)
+      ? pointToCoords2d(centerObj)
+      : null
+    const centerX =
+      centerCoords?.[0] ?? exprToNumber(arcObj.kind.segment.ctor.center.x)
+    const centerY =
+      centerCoords?.[1] ?? exprToNumber(arcObj.kind.segment.ctor.center.y)
     if (centerX === null || centerY === null) {
       return null
     }

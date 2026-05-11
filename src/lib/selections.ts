@@ -1001,17 +1001,7 @@ export function handleSelectionBatch({
     engineEvents = setEngineEntitySelectionV2(entityReferences, systemDeps)
   } else {
     for (const s of selections.graphSelections) {
-      const resolved = resolveToCodeRef(s, artifactGraph)
-      const entityId =
-        s.entityRef && 'solid3d_id' in s.entityRef
-          ? s.entityRef.solid3d_id
-          : s.entityRef && 'solid2d_id' in s.entityRef
-            ? s.entityRef.solid2d_id
-            : s.entityRef && 'face_id' in s.entityRef
-              ? s.entityRef.face_id
-              : s.entityRef && 'plane_id' in s.entityRef
-                ? s.entityRef.plane_id
-                : resolved?.artifact?.id
+      const entityId = getEngineEntityIdForSelection(s, artifactGraph)
       if (!entityId) continue
 
       selectionToEngine.push({
@@ -1301,6 +1291,31 @@ function setEngineEntitySelectionV2(
       cmd_id: uuidv4(),
     },
   ]
+}
+
+function getEngineEntityIdForSelection(
+  selection: Selection,
+  artifactGraph: ArtifactGraph
+): string | undefined {
+  if (selection.engineEntityId) {
+    return selection.engineEntityId
+  }
+
+  const entityRef = selection.entityRef
+  if (entityRef) {
+    switch (entityRef.type) {
+      case 'solid3d':
+        return entityRef.solid3d_id
+      case 'solid2d':
+        return entityRef.solid2d_id
+      case 'face':
+        return entityRef.face_id
+      case 'plane':
+        return entityRef.plane_id
+    }
+  }
+
+  return resolveToCodeRef(selection, artifactGraph)?.artifact?.id
 }
 
 function getQueryEntityTypeWithPointData(
