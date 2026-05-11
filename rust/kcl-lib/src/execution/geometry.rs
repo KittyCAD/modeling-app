@@ -1152,6 +1152,10 @@ impl Sketch {
 pub struct Solid {
     /// The id of the solid.
     pub id: uuid::Uuid,
+    /// Internal KCL value generation. The engine may reuse `id` for a new value.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub value_id: uuid::Uuid,
     /// The artifact ID of the solid.  Unlike `id`, this doesn't change.
     pub artifact_id: ArtifactId,
     /// The extrude surfaces.
