@@ -10,13 +10,18 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_LAYER } from '@src/clientSideScene/sceneUtils'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import {
+  codeRefFromRange,
   getCodeRefsByArtifactId,
   getSketchBlockForArtifact,
   getSketchBlockForPathArtifact,
 } from '@src/lang/std/artifactGraph'
 import { createLiteral } from '@src/lang/create'
-import type { ArtifactGraph } from '@src/lang/wasm'
+import { updateModelingState } from '@src/lang/modelingWorkflows'
+import { updateGdtFramePosition } from '@src/lang/modifyAst/gdt'
+import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
+import { enterEditFlow } from '@src/lib/operations'
 import type { KclCommandValue } from '@src/lib/commandTypes'
+import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
 import { useApp, useSingletons } from '@src/lib/boot'
 import {
   type CameraAxisName,
@@ -58,6 +63,7 @@ import type {
   OpenCascadeSketchPointMeshes,
   OpenCascadePlaneMesh,
   OpenCascadePlaneMeshes,
+  OpenCascadeGdtAnnotation,
   OpenCascadeTopologyEdgeLine,
   OpenCascadeRegionFaceGroup,
   OpenCascadeRegionMeshes,
@@ -73,6 +79,7 @@ import {
   BackSide,
   Box3,
   BufferGeometry,
+  type Camera,
   CanvasTexture,
   Color,
   DirectionalLight,
@@ -109,6 +116,7 @@ import {
   OPEN_CASCADE_PREVIEW_HANDLE_ROOT,
   disposeOpenCascadePreviewHandles,
   findOpenCascadePreviewHandleIntersection,
+  rebuildOpenCascadePreviewHandleDebugRoot,
   rebuildOpenCascadePreviewHandleRoot,
   startOpenCascadePreviewHandleDrag,
   updateOpenCascadePreviewHandleScale,
@@ -125,11 +133,14 @@ const OPEN_CASCADE_REGION_PICK_ROOT = 'OPEN_CASCADE_REGION_PICK_ROOT'
 const OPEN_CASCADE_HIGHLIGHT_ROOT = 'OPEN_CASCADE_HIGHLIGHT_ROOT'
 const OPEN_CASCADE_SKETCH_LINE_ROOT = 'OPEN_CASCADE_SKETCH_LINE_ROOT'
 const OPEN_CASCADE_SKETCH_POINT_ROOT = 'OPEN_CASCADE_SKETCH_POINT_ROOT'
+const OPEN_CASCADE_GDT_ANNOTATION_ROOT = 'OPEN_CASCADE_GDT_ANNOTATION_ROOT'
 const OPEN_CASCADE_EDGE_CANDIDATE_ROOT = 'OPEN_CASCADE_EDGE_CANDIDATE_ROOT'
 const OPEN_CASCADE_SELECTED_EDGE_ROOT = 'OPEN_CASCADE_SELECTED_EDGE_ROOT'
 const OPEN_CASCADE_GUIDE_ROOT = 'OPEN_CASCADE_GUIDE_ROOT'
 const OPEN_CASCADE_OFFSET_PLANE_ROOT = 'OPEN_CASCADE_OFFSET_PLANE_ROOT'
 const OPEN_CASCADE_EDGE_LINES_NAME = 'open-cascade-edge-lines'
+const OPEN_CASCADE_PREVIEW_HANDLE_DEBUG_FLAG =
+  'OPEN_CASCADE_PREVIEW_HANDLE_DEBUG'
 const OPEN_CASCADE_ORIGIN_ID = 'open-cascade-origin'
 const OPEN_CASCADE_DEFAULT_PLANE_IDS = {
   xy: 'open-cascade-default-plane-xy',
@@ -146,6 +157,8 @@ const OPEN_CASCADE_ORIGIN_RADIUS_PX = 6
 const OPEN_CASCADE_ORIGIN_OUTLINE_RADIUS_PX = 8
 const OPEN_CASCADE_SKETCH_POINT_RADIUS_PX = 4
 const OPEN_CASCADE_SKETCH_POINT_HIT_RADIUS_PX = 9
+const OPEN_CASCADE_GDT_FRAME_HEIGHT_PX = 28
+const OPEN_CASCADE_GDT_FRAME_PADDING_PX = 10
 const OPEN_CASCADE_OFFSET_PLANE_SIZE_PX = 200
 const OPEN_CASCADE_HIGHLIGHT_POLYGON_OFFSET = -12
 const OPEN_CASCADE_HIGHLIGHT_NORMAL_OFFSET_RATIO = 0.0005
@@ -232,6 +245,10 @@ export type OpenCascadeResolvedBodyHit = {
   artifactIds: string[]
 }
 
+export type OpenCascadeResolvedGdtAnnotationHit = OpenCascadeGdtAnnotation & {
+  hitType: 'gdtAnnotation'
+}
+
 export type OpenCascadeResolvedHit =
   | OpenCascadeResolvedTopologyHit
   | OpenCascadeResolvedEdgeHit
@@ -241,6 +258,7 @@ export type OpenCascadeResolvedHit =
   | OpenCascadeResolvedDefaultPlaneHit
   | OpenCascadeResolvedOffsetPlaneHit
   | OpenCascadeResolvedBodyHit
+  | OpenCascadeResolvedGdtAnnotationHit
 
 type OpenCascadeAreaSelectionCandidate = {
   id: string
@@ -372,6 +390,8 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     sketchLineRoot.name = OPEN_CASCADE_SKETCH_LINE_ROOT
     const sketchPointRoot = new Group()
     sketchPointRoot.name = OPEN_CASCADE_SKETCH_POINT_ROOT
+    const gdtAnnotationRoot = new Group()
+    gdtAnnotationRoot.name = OPEN_CASCADE_GDT_ANNOTATION_ROOT
     const edgeCandidateRoot = new Group()
     edgeCandidateRoot.name = OPEN_CASCADE_EDGE_CANDIDATE_ROOT
     const selectedEdgeRoot = new Group()
@@ -391,6 +411,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       highlightRoot,
       sketchLineRoot,
       sketchPointRoot,
+      gdtAnnotationRoot,
       edgeCandidateRoot,
       selectedEdgeRoot,
       guideRoot,
@@ -418,6 +439,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       disposeOpenCascadeModelRoot(highlightRoot)
       disposeOpenCascadeModelRoot(sketchLineRoot)
       disposeOpenCascadeModelRoot(sketchPointRoot)
+      disposeOpenCascadeModelRoot(gdtAnnotationRoot)
       disposeOpenCascadeModelRoot(edgeCandidateRoot)
       disposeOpenCascadeModelRoot(selectedEdgeRoot)
       disposeOpenCascadeModelRoot(guideRoot)
@@ -432,6 +454,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         highlightRoot,
         sketchLineRoot,
         sketchPointRoot,
+        gdtAnnotationRoot,
         edgeCandidateRoot,
         selectedEdgeRoot,
         guideRoot,
@@ -457,12 +480,16 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     const sketchPointRoot = sceneInfra.scene.getObjectByName(
       OPEN_CASCADE_SKETCH_POINT_ROOT
     )
+    const gdtAnnotationRoot = sceneInfra.scene.getObjectByName(
+      OPEN_CASCADE_GDT_ANNOTATION_ROOT
+    )
     if (
       !(guideRoot instanceof Group) &&
       !(offsetPlaneRoot instanceof Group) &&
       !(previewRoot instanceof Group) &&
       !(previewHandleRoot instanceof Group) &&
-      !(sketchPointRoot instanceof Group)
+      !(sketchPointRoot instanceof Group) &&
+      !(gdtAnnotationRoot instanceof Group)
     ) {
       return
     }
@@ -486,6 +513,9 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       }
       if (sketchPointRoot instanceof Group) {
         updateOpenCascadeGuideScale(sketchPointRoot, sceneInfra)
+      }
+      if (gdtAnnotationRoot instanceof Group) {
+        updateOpenCascadeGuideScale(gdtAnnotationRoot, sceneInfra)
       }
       sceneInfra.renderFrame()
     }
@@ -904,6 +934,8 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         engineCommandManager.exportLatestOpenCascadePreviewSketchLineMeshes()
       const planeMeshes =
         engineCommandManager.exportLatestOpenCascadePreviewPlaneMeshes()
+      const previewHandleState =
+        engineCommandManager.exportLatestOpenCascadePreviewHandleState()
       if (cancelled) {
         return
       }
@@ -962,11 +994,12 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       )
       updateOpenCascadeGuideScale(previewRoot, sceneInfra)
       if (previewHandleRoot instanceof Group) {
-        rebuildOpenCascadePreviewHandleRoot({
+        rebuildOpenCascadePreviewHandlesForScene({
           root: previewHandleRoot,
           previewRoot,
           command: commandBarContextRef.current.selectedCommand,
           context: commandBarContextRef.current,
+          handleState: previewHandleState,
           camera: sceneInfra.camControls.camera,
           resolvedTheme,
           getClientSceneScaleFactor:
@@ -999,17 +1032,20 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     const previewHandleRoot = sceneInfra.scene.getObjectByName(
       OPEN_CASCADE_PREVIEW_HANDLE_ROOT
     )
+    const previewHandleState =
+      engineCommandManager.exportLatestOpenCascadePreviewHandleState()
     if (
       !(previewRoot instanceof Group) ||
       !(previewHandleRoot instanceof Group)
     ) {
       return
     }
-    rebuildOpenCascadePreviewHandleRoot({
+    rebuildOpenCascadePreviewHandlesForScene({
       root: previewHandleRoot,
       previewRoot,
       command: commandBarState.context.selectedCommand,
       context: commandBarState.context,
+      handleState: previewHandleState,
       camera: sceneInfra.camControls.camera,
       resolvedTheme,
       getClientSceneScaleFactor:
@@ -1108,6 +1144,9 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     const selectedEdgeRoot = sceneInfra.scene.getObjectByName(
       OPEN_CASCADE_SELECTED_EDGE_ROOT
     )
+    const gdtAnnotationRoot = sceneInfra.scene.getObjectByName(
+      OPEN_CASCADE_GDT_ANNOTATION_ROOT
+    )
     if (!(highlightRoot instanceof Group)) {
       return
     }
@@ -1167,6 +1206,18 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         sceneStyle
       )
     }
+    if (gdtAnnotationRoot instanceof Group) {
+      rebuildOpenCascadeGdtAnnotationRoot(
+        gdtAnnotationRoot,
+        engineCommandManager.exportLatestOpenCascadeGdtAnnotationMeshes()
+          .annotations,
+        selectedIds,
+        undefined,
+        sceneStyle,
+        resolvedTheme
+      )
+      updateOpenCascadeGuideScale(gdtAnnotationRoot, sceneInfra)
+    }
     sceneInfra.renderFrame()
     return () => {
       cancelled = true
@@ -1179,6 +1230,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     kclManager.sceneInfra,
     latestSceneGraphDelta,
     latestTopologyVersion,
+    latestVisibilityVersion,
     sceneStyle,
     settingsValues.modeling.defaultUnit.current,
     state.context.selectionRanges,
@@ -1354,7 +1406,19 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     let hoveredRegionId: string | undefined
     let hoveredBodyId: string | undefined
     let hoveredOffsetPlaneId: string | undefined
+    let hoveredGdtAnnotationId: string | undefined
     let activePreviewHandleDrag: OpenCascadePreviewHandleDragState | undefined
+    let activeGdtAnnotationDrag:
+      | {
+          annotation: OpenCascadeGdtAnnotation
+          object: Group
+          startClient: Vector2
+          startOffset: { x: number; y: number }
+          screenXAxis: Vector2
+          screenYAxis: Vector2
+          sceneScale: number
+        }
+      | undefined
     const areaSelectionPreviewIds = new Set<string>()
     const selectionBoxState = makeSelectionBoxVisualState()
     const isSelectingSketchPlane = state.matches('Sketch no face')
@@ -1442,6 +1506,21 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         })
         return
       }
+      const gdtAnnotation = findOpenCascadeGdtAnnotationFromIntersections(
+        sceneInfra.raycastRing(0, 1)
+      )?.userData.openCascadeGdtAnnotation as
+        | OpenCascadeGdtAnnotation
+        | undefined
+      if (gdtAnnotation) {
+        event.preventDefault()
+        event.stopPropagation()
+        enterOpenCascadeGdtAnnotationEditFlow({
+          annotation: gdtAnnotation,
+          kclManager,
+          commands,
+        }).catch((error) => console.warn(error))
+        return
+      }
       const hit = resolveHit(sceneInfra.raycastRing(0, 1))
       const sketchId = sketchIdForSketchEditHit(hit)
       if (!sketchId) {
@@ -1471,6 +1550,9 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       )
       const offsetPlaneRoot = scene.getObjectByName(
         OPEN_CASCADE_OFFSET_PLANE_ROOT
+      )
+      const gdtAnnotationRoot = scene.getObjectByName(
+        OPEN_CASCADE_GDT_ANNOTATION_ROOT
       )
       const selectedIds = selectedOpenCascadeEntityIds(
         state.context.selectionRanges
@@ -1543,6 +1625,20 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
           sceneStyleRef.current,
           resolvedTheme
         )
+      }
+      if (gdtAnnotationRoot instanceof Group) {
+        rebuildOpenCascadeGdtAnnotationRoot(
+          gdtAnnotationRoot,
+          engineCommandManager.exportLatestOpenCascadeGdtAnnotationMeshes()
+            .annotations,
+          selectedIds,
+          hoveredHit?.hitType === 'gdtAnnotation'
+            ? hoveredHit.annotationId
+            : undefined,
+          sceneStyleRef.current,
+          resolvedTheme
+        )
+        updateOpenCascadeGuideScale(gdtAnnotationRoot, sceneInfra)
       }
       sceneInfra.renderFrame()
     }
@@ -1675,6 +1771,89 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       sceneInfra.camControls.cameraChange.add(updateLinePickThreshold),
       sceneInfra.baseUnitChange.add(updateLinePickThreshold),
     ]
+    const updatePreviewHandleDrag = (mouseEvent: MouseEvent) => {
+      if (!activePreviewHandleDrag) {
+        return
+      }
+      const value = valueForOpenCascadePreviewHandleDrag(
+        activePreviewHandleDrag,
+        mouseEvent
+      )
+      const drag = activePreviewHandleDrag
+      kclManager.wasmInstancePromise
+        .then((wasmInstance) => {
+          commands.send({
+            type: 'Set preview handle argument',
+            data: {
+              [drag.handle.argumentName]:
+                kclCommandValueForOpenCascadePreviewHandle(
+                  value,
+                  drag.handle.kind,
+                  wasmInstance
+                ),
+            },
+          })
+        })
+        .catch((error) => console.warn(error))
+    }
+    const stopPreviewHandleWindowDrag = () => {
+      window.removeEventListener('mousemove', onPreviewHandleWindowDrag)
+      window.removeEventListener('mouseup', onPreviewHandleWindowDragEnd)
+      window.removeEventListener('mousemove', onGdtAnnotationWindowDrag)
+      window.removeEventListener('mouseup', onGdtAnnotationWindowDragEnd)
+    }
+    const onPreviewHandleWindowDrag = (mouseEvent: MouseEvent) => {
+      if (!activePreviewHandleDrag) {
+        stopPreviewHandleWindowDrag()
+        return
+      }
+      mouseEvent.preventDefault()
+      updatePreviewHandleDrag(mouseEvent)
+    }
+    const onPreviewHandleWindowDragEnd = (mouseEvent: MouseEvent) => {
+      if (activePreviewHandleDrag) {
+        mouseEvent.preventDefault()
+      }
+      activePreviewHandleDrag = undefined
+      stopPreviewHandleWindowDrag()
+    }
+    const startPreviewHandleWindowDrag = () => {
+      stopPreviewHandleWindowDrag()
+      window.addEventListener('mousemove', onPreviewHandleWindowDrag)
+      window.addEventListener('mouseup', onPreviewHandleWindowDragEnd)
+    }
+    const onGdtAnnotationWindowDrag = (mouseEvent: MouseEvent) => {
+      if (!activeGdtAnnotationDrag) {
+        stopPreviewHandleWindowDrag()
+        return
+      }
+      mouseEvent.preventDefault()
+      updateOpenCascadeGdtAnnotationDrag(
+        activeGdtAnnotationDrag,
+        mouseEvent,
+        sceneInfra
+      )
+    }
+    const onGdtAnnotationWindowDragEnd = (mouseEvent: MouseEvent) => {
+      if (!activeGdtAnnotationDrag) {
+        stopPreviewHandleWindowDrag()
+        return
+      }
+      mouseEvent.preventDefault()
+      const drag = activeGdtAnnotationDrag
+      activeGdtAnnotationDrag = undefined
+      stopPreviewHandleWindowDrag()
+      updateOpenCascadeGdtFramePositionInCode({
+        annotation: drag.annotation,
+        offset: currentOpenCascadeGdtAnnotationOffset(drag.object),
+        kclManager,
+      }).catch((error) => console.warn(error))
+    }
+    const startGdtAnnotationWindowDrag = () => {
+      stopPreviewHandleWindowDrag()
+      window.addEventListener('mousemove', onGdtAnnotationWindowDrag)
+      window.addEventListener('mouseup', onGdtAnnotationWindowDragEnd)
+    }
 
     sceneInfra.setCallbacks({
       onMouseDownSelection: (arg) => {
@@ -1701,38 +1880,48 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
                 : undefined
             ),
           })
+          if (activePreviewHandleDrag) {
+            mouseEvent?.preventDefault()
+            startPreviewHandleWindowDrag()
+          }
           return Boolean(activePreviewHandleDrag)
+        }
+        const gdtAnnotation =
+          findOpenCascadeGdtAnnotationFromIntersections(intersections)
+        if (gdtAnnotation && mouseEvent) {
+          activeGdtAnnotationDrag = startOpenCascadeGdtAnnotationDrag(
+            gdtAnnotation,
+            mouseEvent,
+            sceneInfra
+          )
+          mouseEvent.preventDefault()
+          startGdtAnnotationWindowDrag()
+          return true
         }
         const hit = resolveHit(intersections)
         return Boolean(hit)
       },
       onDrag: ({ mouseEvent }) => {
-        if (!activePreviewHandleDrag) {
-          return
-        }
-        const value = valueForOpenCascadePreviewHandleDrag(
-          activePreviewHandleDrag,
-          mouseEvent
+        updatePreviewHandleDrag(mouseEvent)
+        updateOpenCascadeGdtAnnotationDrag(
+          activeGdtAnnotationDrag,
+          mouseEvent,
+          sceneInfra
         )
-        const drag = activePreviewHandleDrag
-        kclManager.wasmInstancePromise
-          .then((wasmInstance) => {
-            commands.send({
-              type: 'Set preview handle argument',
-              data: {
-                [drag.handle.argumentName]:
-                  kclCommandValueForOpenCascadePreviewHandle(
-                    value,
-                    drag.handle.kind,
-                    wasmInstance
-                  ),
-              },
-            })
-          })
-          .catch((error) => console.warn(error))
       },
       onDragEnd: () => {
         activePreviewHandleDrag = undefined
+        stopPreviewHandleWindowDrag()
+        if (activeGdtAnnotationDrag) {
+          const drag = activeGdtAnnotationDrag
+          activeGdtAnnotationDrag = undefined
+          stopPreviewHandleWindowDrag()
+          updateOpenCascadeGdtFramePositionInCode({
+            annotation: drag.annotation,
+            offset: currentOpenCascadeGdtAnnotationOffset(drag.object),
+            kclManager,
+          }).catch((error) => console.warn(error))
+        }
       },
       onMove: ({ intersects }) => {
         const hit = resolveHit(intersects)
@@ -1748,6 +1937,8 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         const nextBodyId = hit?.hitType === 'body' ? hit.solidId : undefined
         const nextOffsetPlaneId =
           hit?.hitType === 'offsetPlane' ? hit.planeId : undefined
+        const nextGdtAnnotationId =
+          hit?.hitType === 'gdtAnnotation' ? hit.annotationId : undefined
         if (
           hoveredTopologyId === nextTopologyId &&
           hoveredEdgeId === nextEdgeId &&
@@ -1755,7 +1946,8 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
           hoveredSketchPointId === nextSketchPointId &&
           hoveredRegionId === nextRegionId &&
           hoveredBodyId === nextBodyId &&
-          hoveredOffsetPlaneId === nextOffsetPlaneId
+          hoveredOffsetPlaneId === nextOffsetPlaneId &&
+          hoveredGdtAnnotationId === nextGdtAnnotationId
         ) {
           return
         }
@@ -1766,6 +1958,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         hoveredRegionId = nextRegionId
         hoveredBodyId = nextBodyId
         hoveredOffsetPlaneId = nextOffsetPlaneId
+        hoveredGdtAnnotationId = nextGdtAnnotationId
         updateEdgeCandidates(hit)
         updateHighlight(hit)
       },
@@ -1783,6 +1976,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
           hoveredRegionId = undefined
           hoveredBodyId = undefined
           hoveredOffsetPlaneId = undefined
+          hoveredGdtAnnotationId = undefined
           const edgeCandidateRoot = scene.getObjectByName(
             OPEN_CASCADE_EDGE_CANDIDATE_ROOT
           )
@@ -1920,6 +2114,22 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
           }
           return
         }
+        if (hit.hitType === 'gdtAnnotation') {
+          send({
+            type: 'Set selection',
+            data: {
+              selectionType: 'singleCodeCursor',
+              selection: {
+                codeRef: codeRefFromRange(
+                  hit.sourceRange as unknown as SourceRange,
+                  kclManager.ast
+                ),
+                engineEntityId: hit.annotationId,
+              },
+            },
+          })
+          return
+        }
         const artifact = artifactForOpenCascadeHit(
           hit,
           kclManager.artifactGraph
@@ -2033,6 +2243,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     sceneInfra.renderer.domElement.addEventListener('dblclick', onDoubleClick)
 
     return () => {
+      stopPreviewHandleWindowDrag()
       sceneInfra.renderer.domElement.removeEventListener(
         'dblclick',
         onDoubleClick
@@ -2482,6 +2693,437 @@ function withAlpha(hexColor: string, alpha: number) {
   return `rgba(${Math.round(color.r * 255)}, ${Math.round(
     color.g * 255
   )}, ${Math.round(color.b * 255)}, ${alpha})`
+}
+
+function colorString(color: number, alpha: number) {
+  const c = new Color(color)
+  return `rgba(${Math.round(c.r * 255)}, ${Math.round(c.g * 255)}, ${Math.round(
+    c.b * 255
+  )}, ${alpha})`
+}
+
+function rebuildOpenCascadeGdtAnnotationRoot(
+  root: Group,
+  annotations: OpenCascadeGdtAnnotation[],
+  selectedIds: Set<string>,
+  hoveredAnnotationId: string | undefined,
+  style: OpenCascadeSceneStyle,
+  resolvedTheme: ResolvedTheme
+) {
+  disposeOpenCascadeModelRoot(root)
+  for (const annotation of annotations) {
+    root.add(
+      makeOpenCascadeGdtAnnotation({
+        annotation,
+        selected: selectedIds.has(annotation.annotationId),
+        hovered: hoveredAnnotationId === annotation.annotationId,
+        style,
+        resolvedTheme,
+      })
+    )
+  }
+}
+
+function makeOpenCascadeGdtAnnotation({
+  annotation,
+  selected,
+  hovered,
+  style,
+  resolvedTheme,
+}: {
+  annotation: OpenCascadeGdtAnnotation
+  selected: boolean
+  hovered: boolean
+  style: OpenCascadeSceneStyle
+  resolvedTheme: ResolvedTheme
+}) {
+  const root = new Group()
+  root.name = `${OPEN_CASCADE_GDT_ANNOTATION_ROOT}:${annotation.annotationId}`
+  root.userData.openCascadeGdtAnnotation = annotation
+
+  const frame = new Group()
+  frame.userData.openCascadeFixedScreenScale = true
+  frame.userData.openCascadeGdtAnnotation = annotation
+  frame.position.copy(openCascadeGdtFrameWorldPosition(annotation))
+  frame.quaternion.copy(
+    quaternionFromPlaneAxes(
+      point3ToVector(annotation.plane.xAxis),
+      point3ToVector(annotation.plane.yAxis)
+    )
+  )
+  frame.userData.openCascadeGdtFrameOffset = { ...annotation.offset }
+
+  const color =
+    selected || hovered
+      ? selected
+        ? style.selectionColor
+        : style.hoverColor
+      : resolvedTheme === 'dark'
+        ? 0xf5f0e8
+        : 0x141414
+  const frameWidth = Math.max(
+    64,
+    annotation.label.length * 11 + OPEN_CASCADE_GDT_FRAME_PADDING_PX * 2
+  )
+  const frameHeight = OPEN_CASCADE_GDT_FRAME_HEIGHT_PX
+  const frameMesh = new Mesh(
+    gdtFrameGeometry(frameWidth, frameHeight),
+    new MeshBasicMaterial({
+      map: gdtFrameTexture(annotation.label, color, frameWidth, frameHeight),
+      transparent: true,
+      depthTest: false,
+      depthWrite: false,
+      side: DoubleSide,
+    })
+  )
+  frameMesh.renderOrder = 101
+  frameMesh.userData.openCascadeGdtAnnotation = annotation
+  frame.add(frameMesh)
+
+  const hitMesh = new Mesh(
+    gdtFrameGeometry(frameWidth + 18, frameHeight + 18),
+    new MeshBasicMaterial({
+      color,
+      transparent: true,
+      opacity: 0.001,
+      depthTest: false,
+      depthWrite: false,
+      side: DoubleSide,
+    })
+  )
+  hitMesh.renderOrder = 102
+  hitMesh.userData.openCascadeGdtAnnotation = annotation
+  frame.add(hitMesh)
+
+  root.add(makeOpenCascadeGdtLeaderLine(annotation, color), frame)
+  return root
+}
+
+function gdtFrameGeometry(width: number, height: number) {
+  const geometry = new BufferGeometry()
+  geometry.setAttribute(
+    'position',
+    new Float32BufferAttribute(
+      [
+        0,
+        -height / 2,
+        0,
+        width,
+        -height / 2,
+        0,
+        width,
+        height / 2,
+        0,
+        0,
+        height / 2,
+        0,
+      ],
+      3
+    )
+  )
+  geometry.setAttribute(
+    'uv',
+    new Float32BufferAttribute([0, 0, 1, 0, 1, 1, 0, 1], 2)
+  )
+  geometry.setIndex([0, 1, 2, 0, 2, 3])
+  return geometry
+}
+
+function gdtFrameTexture(
+  label: string,
+  color: number,
+  width: number,
+  height: number
+) {
+  const pixelRatio = 3
+  const canvas = document.createElement('canvas')
+  canvas.width = Math.ceil(width * pixelRatio)
+  canvas.height = Math.ceil(height * pixelRatio)
+  const ctx = canvas.getContext('2d')
+  if (ctx) {
+    ctx.scale(pixelRatio, pixelRatio)
+    ctx.clearRect(0, 0, width, height)
+    ctx.fillStyle = 'rgba(255,255,255,0.68)'
+    ctx.fillRect(0, 0, width, height)
+    ctx.strokeStyle = colorString(color, 0.92)
+    ctx.lineWidth = 1.5
+    ctx.strokeRect(0.75, 0.75, width - 1.5, height - 1.5)
+    const cells = label.split('|')
+    const cellWidth = width / cells.length
+    for (let index = 1; index < cells.length; index += 1) {
+      ctx.beginPath()
+      ctx.moveTo(index * cellWidth, 0)
+      ctx.lineTo(index * cellWidth, height)
+      ctx.stroke()
+    }
+    ctx.fillStyle = colorString(color, 0.95)
+    ctx.font = '700 13px sans-serif'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    cells.forEach((cell, index) => {
+      ctx.fillText(cell.trim(), index * cellWidth + cellWidth / 2, height / 2)
+    })
+  }
+  const texture = new CanvasTexture(canvas)
+  texture.needsUpdate = true
+  return texture
+}
+
+function makeOpenCascadeGdtLeaderLine(
+  annotation: OpenCascadeGdtAnnotation,
+  color: number
+) {
+  const frame = openCascadeGdtFrameWorldPosition(annotation)
+  const geometry = new LineGeometry()
+  geometry.setPositions([
+    annotation.target.x,
+    annotation.target.y,
+    annotation.target.z,
+    frame.x,
+    frame.y,
+    frame.z,
+  ])
+  const material = new LineMaterial({
+    color,
+    linewidth: 1.5 * annotation.leaderScale,
+    transparent: true,
+    opacity: 0.9,
+    depthTest: false,
+    depthWrite: false,
+    worldUnits: false,
+  })
+  material.resolution.set(window.innerWidth || 1, window.innerHeight || 1)
+  const line = new Line2(geometry, material)
+  line.computeLineDistances()
+  line.renderOrder = 100
+  line.userData.openCascadeGdtAnnotation = annotation
+  return line
+}
+
+function openCascadeGdtFrameWorldPosition(
+  annotation: OpenCascadeGdtAnnotation
+) {
+  const origin = point3ToVector(annotation.plane.origin)
+  const xAxis = point3ToVector(annotation.plane.xAxis).normalize()
+  const yAxis = point3ToVector(annotation.plane.yAxis).normalize()
+  return origin
+    .add(xAxis.multiplyScalar(annotation.offset.x))
+    .add(yAxis.multiplyScalar(annotation.offset.y))
+}
+
+function findOpenCascadeGdtAnnotation(object: Object3D | null) {
+  let current: Object3D | null = object
+  while (current) {
+    if (current.userData.openCascadeGdtAnnotation) {
+      return current
+    }
+    current = current.parent
+  }
+  return undefined
+}
+
+function findOpenCascadeGdtAnnotationFromIntersections(
+  intersections: Intersection[]
+) {
+  for (const intersection of intersections) {
+    const annotation = findOpenCascadeGdtAnnotation(intersection.object)
+    if (annotation) {
+      return annotation
+    }
+  }
+  return undefined
+}
+
+function startOpenCascadeGdtAnnotationDrag(
+  object: Object3D,
+  mouseEvent: MouseEvent,
+  sceneInfra: SceneInfra
+) {
+  const frame = findOpenCascadeGdtAnnotationFrame(object)
+  const annotation = object.userData.openCascadeGdtAnnotation as
+    | OpenCascadeGdtAnnotation
+    | undefined
+  if (!frame || !annotation) {
+    return undefined
+  }
+  const screenOrigin = projectWorldToScreen(frame.position, sceneInfra)
+  const xAxis = point3ToVector(annotation.plane.xAxis).normalize()
+  const yAxis = point3ToVector(annotation.plane.yAxis).normalize()
+  const screenXAxis = projectWorldToScreen(
+    frame.position.clone().add(xAxis),
+    sceneInfra
+  ).sub(screenOrigin)
+  const screenYAxis = projectWorldToScreen(
+    frame.position.clone().add(yAxis),
+    sceneInfra
+  ).sub(screenOrigin)
+  normalizeScreenAxis(screenXAxis, new Vector2(1, 0))
+  normalizeScreenAxis(screenYAxis, new Vector2(0, -1))
+  return {
+    annotation,
+    object: frame,
+    leader: frame.parent?.children.find(
+      (child): child is Line2 =>
+        child instanceof Line2 && child.userData.openCascadeGdtAnnotation
+    ),
+    startClient: new Vector2(mouseEvent.clientX, mouseEvent.clientY),
+    startOffset: { ...annotation.offset },
+    screenXAxis,
+    screenYAxis,
+    sceneScale: sceneInfra.getClientSceneScaleFactor(frame),
+  }
+}
+
+function updateOpenCascadeGdtAnnotationDrag(
+  drag:
+    | {
+        annotation: OpenCascadeGdtAnnotation
+        object: Group
+        leader?: Line2
+        startClient: Vector2
+        startOffset: { x: number; y: number }
+        screenXAxis: Vector2
+        screenYAxis: Vector2
+        sceneScale: number
+      }
+    | undefined,
+  mouseEvent: MouseEvent,
+  sceneInfra: SceneInfra
+) {
+  if (!drag) {
+    return
+  }
+  const delta = new Vector2(mouseEvent.clientX, mouseEvent.clientY).sub(
+    drag.startClient
+  )
+  const nextOffset = {
+    x: drag.startOffset.x + delta.dot(drag.screenXAxis) * drag.sceneScale,
+    y: drag.startOffset.y + delta.dot(drag.screenYAxis) * drag.sceneScale,
+  }
+  drag.object.userData.openCascadeGdtFrameOffset = nextOffset
+  drag.object.position.copy(
+    openCascadeGdtFrameWorldPosition({
+      ...drag.annotation,
+      offset: nextOffset,
+    })
+  )
+  if (drag.leader) {
+    const frame = drag.object.position
+    drag.leader.geometry.dispose()
+    drag.leader.geometry = new LineGeometry()
+    drag.leader.geometry.setPositions([
+      drag.annotation.target.x,
+      drag.annotation.target.y,
+      drag.annotation.target.z,
+      frame.x,
+      frame.y,
+      frame.z,
+    ])
+    drag.leader.computeLineDistances()
+  }
+  sceneInfra.renderFrame()
+}
+
+function currentOpenCascadeGdtAnnotationOffset(object: Object3D) {
+  const offset = object.userData.openCascadeGdtFrameOffset as
+    | { x: number; y: number }
+    | undefined
+  return offset || { x: 100, y: 100 }
+}
+
+function findOpenCascadeGdtAnnotationFrame(object: Object3D | null) {
+  let current: Object3D | null = object
+  while (current) {
+    if (
+      current instanceof Group &&
+      current.userData.openCascadeFixedScreenScale === true &&
+      current.userData.openCascadeGdtAnnotation
+    ) {
+      return current
+    }
+    current = current.parent
+  }
+  return undefined
+}
+
+function projectWorldToScreen(point: Vector3, sceneInfra: SceneInfra) {
+  const rect = sceneInfra.renderer.domElement.getBoundingClientRect()
+  const projected = point.clone().project(sceneInfra.camControls.camera)
+  return new Vector2(
+    ((projected.x + 1) / 2) * rect.width,
+    ((1 - projected.y) / 2) * rect.height
+  )
+}
+
+function normalizeScreenAxis(axis: Vector2, fallback: Vector2) {
+  if (axis.lengthSq() < 1e-8) {
+    axis.copy(fallback)
+  } else {
+    axis.normalize()
+  }
+}
+
+async function updateOpenCascadeGdtFramePositionInCode({
+  annotation,
+  offset,
+  kclManager,
+}: {
+  annotation: OpenCascadeGdtAnnotation
+  offset: { x: number; y: number }
+  kclManager: ReturnType<typeof useSingletons>['kclManager']
+}) {
+  const wasmInstance = await kclManager.wasmInstancePromise
+  const modifiedAst = updateGdtFramePosition({
+    ast: kclManager.ast,
+    sourceRange: annotation.sourceRange as unknown as SourceRange,
+    framePosition: [
+      Math.round(offset.x * 1000) / 1000,
+      Math.round(offset.y * 1000) / 1000,
+    ],
+    wasmInstance,
+  })
+  if (modifiedAst instanceof Error) {
+    throw modifiedAst
+  }
+  await updateModelingState(modifiedAst, EXECUTION_TYPE_REAL, kclManager)
+}
+
+async function enterOpenCascadeGdtAnnotationEditFlow({
+  annotation,
+  kclManager,
+  commands,
+}: {
+  annotation: OpenCascadeGdtAnnotation
+  kclManager: ReturnType<typeof useSingletons>['kclManager']
+  commands: ReturnType<typeof useApp>['commands']
+}) {
+  const operation = kclManager.operations.find(
+    (candidate) =>
+      candidate.type === 'StdLibCall' &&
+      candidate.name.startsWith('gdt::') &&
+      sourceRangesOverlap(candidate.sourceRange, annotation.sourceRange)
+  )
+  if (!operation) {
+    throw new Error('Could not find GD&T operation to edit')
+  }
+  const result = await enterEditFlow({
+    operation,
+    code: kclManager.code,
+    artifactGraph: kclManager.artifactGraph,
+    rustContext: kclManager.rustContext,
+  })
+  if (result instanceof Error) {
+    throw result
+  }
+  commands.send(result)
+}
+
+function sourceRangesOverlap(left: unknown, right: unknown) {
+  const [leftStart, leftEnd, leftModule] = left as [number, number, number]
+  const [rightStart, rightEnd, rightModule] = right as [number, number, number]
+  return (
+    leftModule === rightModule && leftStart <= rightEnd && rightStart <= leftEnd
+  )
 }
 
 function numericCommandArgumentValue(value: unknown) {
@@ -3442,6 +4084,18 @@ export function resolveOpenCascadeHit(
 
   const defaultPlaneHits: OpenCascadeResolvedDefaultPlaneHit[] = []
   for (const intersection of intersects) {
+    const gdtAnnotation = options.objectSelectionOnly
+      ? undefined
+      : findOpenCascadeGdtAnnotation(intersection.object)
+    if (gdtAnnotation) {
+      const annotation = gdtAnnotation.userData.openCascadeGdtAnnotation as
+        | OpenCascadeGdtAnnotation
+        | undefined
+      if (annotation) {
+        return { ...annotation, hitType: 'gdtAnnotation' }
+      }
+    }
+
     if (options.includeDefaultPlanes) {
       const defaultPlane = findOpenCascadeDefaultPlaneGuide(intersection.object)
       if (defaultPlane) {
@@ -4109,6 +4763,7 @@ function engineEntityIdForOpenCascadeHit(hit: OpenCascadeResolvedHit) {
   if (hit.hitType === 'body') return hit.solidId
   if (hit.hitType === 'offsetPlane') return hit.planeId
   if (hit.hitType === 'defaultPlane') return hit.planeKey
+  if (hit.hitType === 'gdtAnnotation') return hit.annotationId
   if (hit.hitType === 'sketchPoint') return hit.pointId
   return hit.segmentId
 }
@@ -4120,6 +4775,7 @@ function parentEntityIdForOpenCascadeHit(hit: OpenCascadeResolvedHit) {
   if (hit.hitType === 'body') return hit.solidId
   if (hit.hitType === 'offsetPlane') return hit.planeId
   if (hit.hitType === 'defaultPlane') return hit.planeKey
+  if (hit.hitType === 'gdtAnnotation') return hit.entityId
   if (hit.hitType === 'sketchPoint') return hit.pathId
   return hit.pathId
 }
@@ -4297,6 +4953,9 @@ function artifactForOpenCascadeHit(
   }
   if (hit.hitType === 'offsetPlane') {
     return artifactGraph.get(hit.planeId)
+  }
+  if (hit.hitType === 'gdtAnnotation') {
+    return undefined
   }
   if (hit.hitType === 'edge') {
     return undefined
@@ -4652,6 +5311,10 @@ function disposeOpenCascadeModelRoot(modelRoot: Group) {
     ) {
       object.geometry.dispose()
       disposeMaterial(object.material)
+    }
+    if (object instanceof Line2 && object.userData.openCascadeGdtAnnotation) {
+      object.geometry.dispose()
+      disposeMaterial(object.material as Mesh['material'])
     }
   })
   modelRoot.clear()
@@ -5134,5 +5797,47 @@ function axisToDirection(axis: CameraAxisName) {
       return new Vector3(0, 0, 1)
     case '-z':
       return new Vector3(0, 0, -1)
+  }
+}
+
+function rebuildOpenCascadePreviewHandlesForScene({
+  root,
+  previewRoot,
+  command,
+  context,
+  handleState,
+  camera,
+  resolvedTheme,
+  getClientSceneScaleFactor,
+}: Parameters<typeof rebuildOpenCascadePreviewHandleRoot>[0]) {
+  if (isOpenCascadePreviewHandleDebugEnabled()) {
+    rebuildOpenCascadePreviewHandleDebugRoot({
+      root,
+      previewRoot,
+      camera,
+      getClientSceneScaleFactor,
+    })
+    return
+  }
+
+  rebuildOpenCascadePreviewHandleRoot({
+    root,
+    previewRoot,
+    command,
+    context,
+    handleState,
+    camera,
+    resolvedTheme,
+    getClientSceneScaleFactor,
+  })
+}
+
+export function isOpenCascadePreviewHandleDebugEnabled() {
+  try {
+    return (
+      localStorage.getItem(OPEN_CASCADE_PREVIEW_HANDLE_DEBUG_FLAG) === 'true'
+    )
+  } catch {
+    return false
   }
 }

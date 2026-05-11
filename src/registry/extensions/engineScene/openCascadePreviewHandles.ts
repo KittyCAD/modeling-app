@@ -2,6 +2,7 @@ import type {
   Command,
   KclCommandValue,
   OpenCascadePreviewHandleConfig,
+  OpenCascadePreviewHandleState,
 } from '@src/lib/commandTypes'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import {
@@ -13,7 +14,6 @@ import {
   DoubleSide,
   Float32BufferAttribute,
   Group,
-  LineBasicMaterial,
   LineSegments,
   Mesh,
   MeshBasicMaterial,
@@ -25,6 +25,9 @@ import {
   type Camera,
   type Intersection,
 } from 'three'
+import { Line2 } from 'three/examples/jsm/lines/Line2.js'
+import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
+import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
 
 export const OPEN_CASCADE_PREVIEW_HANDLE_ROOT =
   'OPEN_CASCADE_PREVIEW_HANDLE_ROOT'
@@ -34,6 +37,8 @@ const HANDLE_HEAD_RADIUS_PX = 7
 const HANDLE_HEAD_LENGTH_PX = 18
 const HANDLE_HIT_RADIUS_PX = 16
 const HANDLE_LABEL_OFFSET_PX = 22
+const HANDLE_STEM_WIDTH_PX = 4
+const DEBUG_HANDLE_COLOR = 0xff00ff
 
 export type OpenCascadePreviewHandleUserData = {
   openCascadePreviewHandle: true
@@ -57,6 +62,7 @@ export function rebuildOpenCascadePreviewHandleRoot({
   previewRoot,
   command,
   context,
+  handleState,
   camera,
   resolvedTheme,
   getClientSceneScaleFactor,
@@ -65,12 +71,14 @@ export function rebuildOpenCascadePreviewHandleRoot({
   previewRoot: Group
   command: Command | undefined
   context: CommandBarContext
+  handleState?: OpenCascadePreviewHandleState
   camera: Camera
   resolvedTheme: 'light' | 'dark'
   getClientSceneScaleFactor(target?: Mesh | Group | null): number
 }) {
   disposeOpenCascadePreviewHandles(root)
-  const configs = visiblePreviewHandleConfigs(command, context)
+  const args = previewHandleArgs(context, handleState)
+  const configs = visiblePreviewHandleConfigs(command, args, handleState)
   if (configs.length === 0 || previewRoot.children.length === 0) {
     return
   }
@@ -82,15 +90,14 @@ export function rebuildOpenCascadePreviewHandleRoot({
 
   const center = bounds.getCenter(new Vector3())
   const size = bounds.getSize(new Vector3())
-  const fallbackAxis = dominantAxis(size)
-  const handleColor = resolvedTheme === 'dark' ? 0xf5f0e8 : 0x141414
-  const args = {
-    ...context.argumentsToSubmit,
-    ...context.previewArgumentsToSubmit,
-  }
+  const themeHandleColor = resolvedTheme === 'dark' ? 0xf5f0e8 : 0x141414
 
   configs.forEach((config, index) => {
-    const axis = axisForConfig(config, args, fallbackAxis)
+    const axis = axisForConfig(
+      config,
+      args,
+      fallbackAxisForConfig(config, size)
+    )
     if (config.direction === 'negative') {
       axis.multiplyScalar(-1)
     }
@@ -102,11 +109,48 @@ export function rebuildOpenCascadePreviewHandleRoot({
       anchor,
       label: config.label || config.argumentName,
       value: currentValue,
-      color: handleColor,
+      color: config.color ?? themeHandleColor,
     })
     root.add(handle)
     updatePreviewHandleScale(handle, getClientSceneScaleFactor)
     orientLabelToCamera(handle, camera)
+  })
+}
+
+export function rebuildOpenCascadePreviewHandleDebugRoot({
+  root,
+  previewRoot,
+  camera,
+  getClientSceneScaleFactor,
+}: {
+  root: Group
+  previewRoot: Group
+  camera: Camera
+  getClientSceneScaleFactor(target?: Mesh | Group | null): number
+}) {
+  rebuildOpenCascadePreviewHandleRoot({
+    root,
+    previewRoot,
+    command: undefined,
+    context: {
+      argumentsToSubmit: {},
+      previewArgumentsToSubmit: {},
+    } as CommandBarContext,
+    handleState: {
+      handles: [
+        {
+          kind: 'linearDistance',
+          argumentName: 'length',
+          label: 'DEBUG',
+          fallbackAxis: 'smallestExtent',
+          color: DEBUG_HANDLE_COLOR,
+        },
+      ],
+      argumentsToSubmit: { length: 8 },
+    },
+    camera,
+    resolvedTheme: 'light',
+    getClientSceneScaleFactor,
   })
 }
 
@@ -193,7 +237,11 @@ export function valueForOpenCascadePreviewHandleDrag(
 
 export function disposeOpenCascadePreviewHandles(root: Group) {
   root.traverse((object) => {
-    if (object instanceof Mesh || object instanceof LineSegments) {
+    if (
+      object instanceof Mesh ||
+      object instanceof LineSegments ||
+      object instanceof Line2
+    ) {
       object.geometry.dispose()
       const material = object.material
       if (Array.isArray(material)) {
@@ -208,19 +256,32 @@ export function disposeOpenCascadePreviewHandles(root: Group) {
 
 function visiblePreviewHandleConfigs(
   command: Command | undefined,
-  context: CommandBarContext
+  args: Record<string, unknown>,
+  handleState?: OpenCascadePreviewHandleState
 ) {
-  const args = {
-    ...context.argumentsToSubmit,
-    ...context.previewArgumentsToSubmit,
-  }
-  return (command?.openCascadePreviewHandles || []).filter((config) => {
+  return (
+    handleState?.handles ||
+    command?.openCascadePreviewHandles ||
+    []
+  ).filter((config) => {
     if (!config.visibleWhenArgument) {
       return true
     }
     const value = args[config.visibleWhenArgument]
     return value !== undefined && value !== null && value !== ''
   })
+}
+
+function previewHandleArgs(
+  context: CommandBarContext,
+  handleState?: OpenCascadePreviewHandleState
+) {
+  return (
+    handleState?.argumentsToSubmit || {
+      ...context.argumentsToSubmit,
+      ...context.previewArgumentsToSubmit,
+    }
+  )
 }
 
 function makePreviewHandle({
@@ -285,21 +346,10 @@ function makePreviewHandle({
 }
 
 function makeArrowLine(color: number) {
-  const geometry = new BufferGeometry()
-  geometry.setAttribute(
-    'position',
-    new Float32BufferAttribute([0, 0, 0, HANDLE_LENGTH_PX, 0, 0], 3)
-  )
-  return new LineSegments(
-    geometry,
-    new LineBasicMaterial({
-      color,
-      depthTest: false,
-      depthWrite: false,
-      transparent: true,
-      opacity: 0.92,
-    })
-  )
+  const line = makeFatLine([0, 0, 0, HANDLE_LENGTH_PX, 0, 0], color)
+  line.name = `${OPEN_CASCADE_PREVIEW_HANDLE_ROOT}:stem`
+  line.renderOrder = 95
+  return line
 }
 
 function makeArcLine(color: number) {
@@ -319,18 +369,28 @@ function makeArcLine(color: number) {
       0
     )
   }
-  const geometry = new BufferGeometry()
-  geometry.setAttribute('position', new Float32BufferAttribute(points, 3))
-  return new LineSegments(
-    geometry,
-    new LineBasicMaterial({
-      color,
-      depthTest: false,
-      depthWrite: false,
-      transparent: true,
-      opacity: 0.92,
-    })
-  )
+  const line = makeFatLine(points, color)
+  line.name = `${OPEN_CASCADE_PREVIEW_HANDLE_ROOT}:stem`
+  line.renderOrder = 95
+  return line
+}
+
+function makeFatLine(points: number[], color: number) {
+  const geometry = new LineGeometry()
+  geometry.setPositions(points)
+  const material = new LineMaterial({
+    color,
+    linewidth: HANDLE_STEM_WIDTH_PX,
+    worldUnits: false,
+    transparent: true,
+    opacity: 0.92,
+    depthTest: false,
+    depthWrite: false,
+  })
+  material.resolution.set(window.innerWidth || 1, window.innerHeight || 1)
+  const line = new Line2(geometry, material)
+  line.computeLineDistances()
+  return line
 }
 
 function makeArrowHead(color: number, x: number) {
@@ -478,6 +538,15 @@ function axisForConfig(
   return fallbackAxis.clone()
 }
 
+function fallbackAxisForConfig(
+  config: OpenCascadePreviewHandleConfig,
+  size: Vector3
+) {
+  return config.fallbackAxis === 'smallestExtent'
+    ? smallestNonZeroAxis(size)
+    : dominantAxis(size)
+}
+
 function axisFromArgument(value: unknown) {
   if (value === 'X') return new Vector3(1, 0, 0)
   if (value === 'Y') return new Vector3(0, 1, 0)
@@ -495,6 +564,16 @@ function dominantAxis(size: Vector3) {
   if (size.x >= size.y && size.x >= size.z) return new Vector3(1, 0, 0)
   if (size.y >= size.x && size.y >= size.z) return new Vector3(0, 1, 0)
   return new Vector3(0, 0, 1)
+}
+
+function smallestNonZeroAxis(size: Vector3) {
+  const extents = [
+    { axis: new Vector3(1, 0, 0), size: Math.abs(size.x) },
+    { axis: new Vector3(0, 1, 0), size: Math.abs(size.y) },
+    { axis: new Vector3(0, 0, 1), size: Math.abs(size.z) },
+  ].filter((entry) => entry.size > 1e-6)
+  extents.sort((left, right) => left.size - right.size)
+  return extents[0]?.axis.clone() ?? new Vector3(1, 0, 0)
 }
 
 function numericArgumentValue(value: unknown) {
