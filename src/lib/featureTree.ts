@@ -1,30 +1,30 @@
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { KclManager } from '@src/lang/KclManager'
-import type { Operation } from '@rust/kcl-lib/bindings/Operation'
-import type { Artifact, ArtifactGraph, SourceRange } from '@src/lang/wasm'
-import type RustContext from '@src/lib/rustContext'
+import { sourceRangeToUtf16 } from '@src/lang/errors'
 import {
-  deletionErrorMessage,
   deleteSelectionPromise,
+  deletionErrorMessage,
 } from '@src/lang/modifyAst/deleteSelection'
 import { findOperationArtifact } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import { err } from '@src/lib/trap'
-import { type CommandBarActorType } from '@src/machines/commandBarMachine'
-import {
-  type EnterEditFlowProps,
-  enterEditFlow,
-  getHideOpByArtifactId,
-  type HideOperation,
-} from '@src/lib/operations'
 import {
   codeRefFromRange,
-  getArtifactsMatchingPathToNode,
   getArtifactFromRange,
+  getArtifactsMatchingPathToNode,
 } from '@src/lang/std/artifactGraph'
-import type { ActorRefFrom } from 'xstate'
+import type { Artifact, ArtifactGraph, SourceRange } from '@src/lang/wasm'
+import {
+  type EnterEditFlowProps,
+  type HideOperation,
+  enterEditFlow,
+  getHideOpByArtifactId,
+} from '@src/lib/operations'
+import type RustContext from '@src/lib/rustContext'
+import { err } from '@src/lib/trap'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type { modelingMachine } from '@src/machines/modelingMachine'
-import { sourceRangeToUtf16 } from '@src/lang/errors'
+import type { ActorRefFrom } from 'xstate'
 
 export interface FeatureTreeVisibilityState {
   canToggleVisibility: boolean
@@ -159,6 +159,36 @@ export function prepareEditCommand(
       })
       .catch(reject)
   })
+}
+
+export function getOperationForArtifact(input: {
+  artifact: Artifact | undefined
+  operations: Operation[]
+}): Operation | undefined {
+  if (!input.artifact || !('codeRef' in input.artifact)) {
+    return undefined
+  }
+  const { artifact } = input
+
+  return input.operations.find((operation) => {
+    if (!('sourceRange' in operation)) {
+      return false
+    }
+    return (
+      sourceRangesEqual(operation.sourceRange, artifact.codeRef.range) ||
+      (operation.type === 'StdLibCall' &&
+        operation.stdlibEntrySourceRange !== undefined &&
+        operation.stdlibEntrySourceRange !== null &&
+        sourceRangesEqual(
+          operation.stdlibEntrySourceRange,
+          artifact.codeRef.range
+        ))
+    )
+  })
+}
+
+function sourceRangesEqual(left: SourceRange, right: SourceRange) {
+  return left[0] === right[0] && left[1] === right[1] && left[2] === right[2]
 }
 
 export function sendSelectionEvent(

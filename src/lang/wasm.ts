@@ -20,7 +20,9 @@ import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfigu
 import type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 
+import type { Number } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
+import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 import { KCLError } from '@src/lang/errors'
 import {
   ARG_INDEX_FIELD,
@@ -34,14 +36,12 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type { Coords2d } from '@src/lang/util'
 import { isTopLevelModule } from '@src/lang/util'
+import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { Reason, err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import { distance2d } from '@src/lib/utils2d'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
-import type { Number } from '@rust/kcl-lib/bindings/FrontendApi'
-import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
@@ -50,6 +50,7 @@ export type {
   CodeRef,
   PrimitiveEdge as PrimitiveEdgeArtifact,
   EdgeCut,
+  GdtAnnotationArtifact,
   PrimitiveFace as PrimitiveFaceArtifact,
   Path as PathArtifact,
   Plane as PlaneArtifact,
@@ -140,8 +141,8 @@ export function defaultNodePath(): NodePath {
 const splitErrors = (
   input: CompilationIssue[]
 ): { errors: CompilationIssue[]; warnings: CompilationIssue[] } => {
-  let errors = []
-  let warnings = []
+  const errors = []
+  const warnings = []
   for (const i of input) {
     if (i.severity === 'Warning') {
       warnings.push(i)
@@ -199,7 +200,7 @@ export const parse = (
   try {
     const parsed: [Node<Program>, CompilationIssue[]] =
       instance.parse_wasm(code)
-    let errs = splitErrors(parsed[1])
+    const errs = splitErrors(parsed[1])
     return new ParseResult(parsed[0], errs.errors, errs.warnings)
   } catch (e: any) {
     // throw e

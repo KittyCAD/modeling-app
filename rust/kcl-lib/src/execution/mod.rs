@@ -16,6 +16,8 @@ pub use artifact::CapSubType;
 #[cfg(feature = "artifact-graph")]
 pub use artifact::CodeRef;
 #[cfg(feature = "artifact-graph")]
+pub use artifact::GdtAnnotationArtifact;
+#[cfg(feature = "artifact-graph")]
 pub use artifact::SketchBlock;
 #[cfg(feature = "artifact-graph")]
 pub use artifact::SketchBlockConstraint;

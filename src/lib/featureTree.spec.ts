@@ -2,8 +2,9 @@ import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 import { defaultNodePath } from '@src/lang/wasm'
 import type { Artifact, ArtifactGraph, SourceRange } from '@src/lang/wasm'
 import {
-  resolveFeatureTreeVisibility,
   type FeatureTreeVisibilityState,
+  getOperationForArtifact,
+  resolveFeatureTreeVisibility,
 } from '@src/lib/featureTree'
 import { describe, expect, it } from 'vitest'
 
@@ -32,6 +33,25 @@ function helixOperation(sourceRange: SourceRange): Operation {
   }
 }
 
+function gdtOperation(
+  sourceRange: SourceRange,
+  stdlibEntrySourceRange?: SourceRange
+): Operation {
+  const operation: Operation = {
+    type: 'StdLibCall',
+    name: 'gdt::flatness',
+    unlabeledArg: null,
+    labeledArgs: {},
+    nodePath: defaultNodePath(),
+    sourceRange,
+    isError: false,
+  }
+  if (stdlibEntrySourceRange) {
+    operation.stdlibEntrySourceRange = stdlibEntrySourceRange
+  }
+  return operation
+}
+
 function hideOperation(sourceRange: SourceRange, value: OpKclValue): Operation {
   return {
     type: 'StdLibCall',
@@ -44,6 +64,18 @@ function hideOperation(sourceRange: SourceRange, value: OpKclValue): Operation {
     nodePath: defaultNodePath(),
     sourceRange,
     isError: false,
+  }
+}
+
+function gdtAnnotationArtifact(id: string, sourceRange: SourceRange): Artifact {
+  return {
+    type: 'gdtAnnotation',
+    id,
+    codeRef: {
+      range: sourceRange,
+      nodePath: defaultNodePath(),
+      pathToNode: [],
+    },
   }
 }
 
@@ -110,6 +142,47 @@ function expectHidden(
   expect(visibilityState.hideOperation).toBeDefined()
   expect(visibilityState.targetArtifact).toBeDefined()
 }
+
+describe('getOperationForArtifact', () => {
+  it('resolves a GD&T annotation artifact to its source operation', () => {
+    const gdtRange = range(10, 80)
+    const operation = gdtOperation(gdtRange)
+    const artifact = gdtAnnotationArtifact('gdt-artifact', gdtRange)
+
+    expect(
+      getOperationForArtifact({
+        artifact,
+        operations: [operation],
+      })
+    ).toBe(operation)
+  })
+
+  it('resolves a GD&T annotation artifact via stdlib entry range', () => {
+    const declarationRange = range(0, 90)
+    const gdtRange = range(12, 89)
+    const operation = gdtOperation(declarationRange, gdtRange)
+    const artifact = gdtAnnotationArtifact('gdt-artifact', gdtRange)
+
+    expect(
+      getOperationForArtifact({
+        artifact,
+        operations: [operation],
+      })
+    ).toBe(operation)
+  })
+
+  it('does not resolve artifacts that do not point at an operation range', () => {
+    const operation = gdtOperation(range(10, 80))
+    const artifact = gdtAnnotationArtifact('gdt-artifact', range(90, 120))
+
+    expect(
+      getOperationForArtifact({
+        artifact,
+        operations: [operation],
+      })
+    ).toBeUndefined()
+  })
+})
 
 describe('resolveFeatureTreeVisibility', () => {
   it('resolves sketch visibility via artifact-id hide matching', () => {
