@@ -1,0 +1,52 @@
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
+  coincident([line1.start, ORIGIN])
+  horizontal([line1.end, ORIGIN])
+  line2 = line(start = [var 5mm, var 0mm], end = [var 2mm, var 2.73mm])
+  coincident([line2.start, line1.end])
+  line3 = line(start = [var 2mm, var 2.73mm], end = [var 5mm, var 2.73mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 5mm, var 2.73mm], end = [var 2mm, var 5.46mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 2mm, var 5.46mm], end = [var 5mm, var 5.46mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 5mm, var 5.46mm], end = [var 0mm, var 10mm])
+  coincident([line5.end, line6.start])
+  vertical([line6.end, ORIGIN])
+  line7 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 10mm])
+  coincident([line7.start, line1.start])
+  coincident([line7.end, line6.end])
+  distance([line1.start, line1.end]) == 5
+  distance([line7.start, line7.end]) == 10
+  horizontalDistance([line3.start, line5.start]) == 0mm
+  horizontal(line3)
+  horizontal(line5)
+  parallel([line2, line4])
+  parallel([line2, line6])
+  horizontalDistance([line2.start, line4.start]) == 0mm
+  horizontalDistance([line4.start, line6.start]) == 0mm
+  horizontalDistance([line7.start, line3.start]) == 2
+}
+hidden001 = hide(sketch001)
+region001 = region(point = [2.5mm, 0.0025mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 5)
+fillet001 = fillet(
+  extrude001,
+  tags = [
+    getCommonEdge(faces = [
+      region001.tags.line3,
+      region001.tags.line1
+    ]),
+    getCommonEdge(faces = [
+      region001.tags.line4,
+      region001.tags.line5
+    ]),
+    getCommonEdge(faces = [
+      region001.tags.line6,
+      region001.tags.line7
+    ])
+  ],
+  radius = 0.5,
+)
+solid001 = mirror3d(extrude001, across = YZ)
+solid002 = union([extrude001, solid001])
