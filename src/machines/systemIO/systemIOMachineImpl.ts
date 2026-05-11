@@ -290,7 +290,7 @@ const sharedBulkDeleteWorkflow = async ({
   return totalDeleted
 }
 
-export const buildBulkCreateNavigationResult = <T extends { message: string }>(
+const buildBulkCreateNavigationResult = <T extends { message: string }>(
   message: T,
   input: {
     requestedProjectName: string
