@@ -27,6 +27,7 @@ use uuid::Uuid;
 
 use crate::SourceRange;
 use crate::engine::AsyncTasks;
+use crate::engine::EngineBatchContext;
 use crate::engine::EngineManager;
 use crate::engine::EngineStats;
 use crate::errors::KclError;
@@ -51,8 +52,6 @@ pub struct EngineConnection {
     #[allow(dead_code)]
     tcp_read_handle: Arc<TcpReadHandle>,
     socket_health: Arc<RwLock<SocketHealth>>,
-    batch: Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>>,
-    batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
     ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>>,
 
     /// The default planes for the scene.
@@ -225,7 +224,7 @@ impl EngineConnection {
         tcp_write
             .send(WsMsg::Binary(msg.into()))
             .await
-            .map_err(|e| anyhow!("could not send json over websocket: {e}"))?;
+            .map_err(|e| anyhow!("could not send MsgPack over websocket: {e}"))?;
         Ok(())
     }
 
@@ -383,8 +382,6 @@ impl EngineConnection {
             responses: response_information,
             pending_errors,
             socket_health,
-            batch: Arc::new(RwLock::new(Vec::new())),
-            batch_end: Arc::new(RwLock::new(IndexMap::new())),
             ids_of_async_commands,
             default_planes: Default::default(),
             session_data,
@@ -397,14 +394,6 @@ impl EngineConnection {
 
 #[async_trait::async_trait]
 impl EngineManager for EngineConnection {
-    fn batch(&self) -> Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>> {
-        self.batch.clone()
-    }
-
-    fn batch_end(&self) -> Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>> {
-        self.batch_end.clone()
-    }
-
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>> {
         self.responses.responses.clone()
     }
@@ -446,11 +435,14 @@ impl EngineManager for EngineConnection {
 
     async fn clear_scene_post_hook(
         &self,
+        batch_context: &EngineBatchContext,
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
     ) -> Result<(), KclError> {
         // Remake the default planes, since they would have been removed after the scene was cleared.
-        let new_planes = self.new_default_planes(id_generator, source_range).await?;
+        let new_planes = self
+            .new_default_planes(batch_context, id_generator, source_range)
+            .await?;
         *self.default_planes.write().await = Some(new_planes);
 
         Ok(())

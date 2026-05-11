@@ -1,29 +1,163 @@
+import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
   clickElectronNativeMenuById,
+  clickElectronNativeMenuByIdForPage,
   findElectronNativeMenuById,
+  findElectronNativeMenuByIdForPage,
+  getElectronNativeMenuItemByIdForPage,
   openSettingsExpectLocator,
   openSettingsExpectText,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
+import type { Page } from '@playwright/test'
 
-async function expectNewWindowMenuItem(tronApp: ElectronZoo) {
-  const menuItem = await tronApp.electron.evaluate(({ app }) => {
-    const menu = app.applicationMenu?.getMenuItemById('File.New window')
-    if (!menu) return null
+declare global {
+  interface Window {
+    __nativeMenuEvents?: string[]
+    __removeNativeMenuListener?: () => void
+  }
+}
 
-    return {
-      accelerator: menu.accelerator,
-      label: menu.label,
-    }
-  })
+async function expectNewWindowMenuItem(
+  tronApp: ElectronZoo,
+  page = tronApp.page
+) {
+  const menuItem = await getElectronNativeMenuItemByIdForPage(
+    tronApp,
+    page,
+    'File.New window'
+  )
 
   expect(menuItem).toEqual({
     accelerator: 'CommandOrControl+Shift+N',
     label: 'New Window',
   })
 }
+
+async function installNativeMenuRecorder(page: Page) {
+  await page.evaluate(() => {
+    window.__removeNativeMenuListener?.()
+    window.__nativeMenuEvents = []
+
+    if (!window.electron) {
+      throw new Error('Electron is not available')
+    }
+
+    window.__removeNativeMenuListener = window.electron.menuOn((payload) => {
+      window.__nativeMenuEvents?.push(payload.menuLabel)
+    })
+  })
+}
+
+async function getNativeMenuEvents(page: Page) {
+  return page.evaluate(() => {
+    return window.__nativeMenuEvents ?? []
+  })
+}
+
+async function createModelingNativeMenu(page: Page) {
+  await page.evaluate(async () => {
+    if (!window.electron) {
+      throw new Error('Electron is not available')
+    }
+
+    await window.electron.createModelingPageMenu()
+  })
+}
+
+async function openCurrentUrlInNewElectronWindow(
+  tronApp: ElectronZoo,
+  page: Page
+) {
+  const newWindowPromise = tronApp.electron.waitForEvent('window')
+  await page.evaluate((url) => {
+    if (!window.electron) {
+      throw new Error('Electron is not available')
+    }
+
+    window.electron.openInNewWindow(url)
+  }, page.url())
+
+  const newWindow = await newWindowPromise
+  await newWindow.waitForLoadState('domcontentloaded')
+  await expect(newWindow.getByTestId('home-section')).toBeVisible()
+  return newWindow
+}
+
+test.describe(
+  'Native menu window routing',
+  { tag: ['@desktop', '@windows'] },
+  () => {
+    test.skip(
+      process.platform !== 'win32',
+      'Windows uses per-window native menus, and this guards that routing path.'
+    )
+
+    test('Design menu actions target only the clicked BrowserWindow', async ({
+      tronApp,
+      homePage,
+      page,
+    }) => {
+      if (!tronApp) {
+        throwTronAppMissing()
+        return
+      }
+
+      await page.reload()
+      await homePage.projectsLoaded()
+
+      const secondPage = await openCurrentUrlInNewElectronWindow(tronApp, page)
+
+      try {
+        await Promise.all([
+          installNativeMenuRecorder(page),
+          installNativeMenuRecorder(secondPage),
+        ])
+
+        await createModelingNativeMenu(page)
+        await createModelingNativeMenu(secondPage)
+
+        await findElectronNativeMenuByIdForPage(
+          tronApp,
+          page,
+          'Design.Start sketch'
+        )
+        await findElectronNativeMenuByIdForPage(
+          tronApp,
+          secondPage,
+          'Design.Start sketch'
+        )
+
+        await clickElectronNativeMenuByIdForPage(
+          tronApp,
+          page,
+          'Design.Start sketch'
+        )
+
+        await expect
+          .poll(() => getNativeMenuEvents(page))
+          .toEqual(['Design.Start sketch'])
+        await expect.poll(() => getNativeMenuEvents(secondPage)).toEqual([])
+
+        await clickElectronNativeMenuByIdForPage(
+          tronApp,
+          secondPage,
+          'Design.Start sketch'
+        )
+
+        await expect
+          .poll(() => getNativeMenuEvents(page))
+          .toEqual(['Design.Start sketch'])
+        await expect
+          .poll(() => getNativeMenuEvents(secondPage))
+          .toEqual(['Design.Start sketch'])
+      } finally {
+        await secondPage.close()
+      }
+    })
+  }
+)
 
 /**
  * Not all menu actions are tested. Some are default electron menu actions.
@@ -165,8 +299,6 @@ test.describe(
         await homePage.projectsLoaded()
         await homePage.isNativeFileMenuCreated()
         await clickElectronNativeMenuById(tronApp, 'Help.Report a bug')
-        // Core dump and refresh magic number timeout
-        await page.waitForTimeout(7000)
         await homePage.projectsLoaded()
       })
       await test.step('Home.Help.Replay onboarding tutorial', async () => {

@@ -196,6 +196,7 @@ pub enum HideableGeometry {
     SolidSet(Vec<Solid>),
     SketchSet(Vec<Sketch>),
     HelixSet(Vec<Helix>),
+    GdtAnnotationSet(Vec<GdtAnnotation>),
 }
 
 impl From<HideableGeometry> for crate::execution::KclValue {
@@ -214,6 +215,21 @@ impl From<HideableGeometry> for crate::execution::KclValue {
                             .map(|s| crate::execution::KclValue::Solid { value: Box::new(s) })
                             .collect(),
                         ty: crate::execution::types::RuntimeType::solid(),
+                    }
+                }
+            }
+            HideableGeometry::GdtAnnotationSet(mut s) => {
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::GdtAnnotation { value: Box::new(s) }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: s
+                            .into_iter()
+                            .map(|s| crate::execution::KclValue::GdtAnnotation { value: Box::new(s) })
+                            .collect(),
+                        ty: crate::execution::types::RuntimeType::gdt(),
                     }
                 }
             }
@@ -260,6 +276,7 @@ impl HideableGeometry {
                 Ok(vec![id])
             }
             HideableGeometry::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
+            HideableGeometry::GdtAnnotationSet(s) => Ok(s.iter().map(|s| s.id).collect()),
             HideableGeometry::SketchSet(s) => Ok(s.iter().map(|s| s.id).collect()),
             HideableGeometry::HelixSet(s) => Ok(s.iter().map(|s| s.value).collect()),
         }
@@ -1135,6 +1152,10 @@ impl Sketch {
 pub struct Solid {
     /// The id of the solid.
     pub id: uuid::Uuid,
+    /// Internal KCL value generation. The engine may reuse `id` for a new value.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub value_id: uuid::Uuid,
     /// The artifact ID of the solid.  Unlike `id`, this doesn't change.
     pub artifact_id: ArtifactId,
     /// The extrude surfaces.

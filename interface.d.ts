@@ -1,12 +1,12 @@
 import type { MachinesListing } from 'components/MachineManagerProvider'
 import 'electron'
-import type fs from 'node:fs/promises'
 import type { Stats } from 'fs'
+import type fs from 'node:fs/promises'
 import type path from 'path'
+import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
 import type { dialog, shell } from 'electron'
 import type { WebContentSendPayload } from 'menu/channels'
 import type { ZooLabel } from 'menu/roles'
-import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
 
 // Extend the interface with additional custom properties
 declare module 'electron' {
@@ -28,13 +28,6 @@ export interface IElectronAPI {
   save: typeof dialog.showSaveDialog
   openExternal: typeof shell.openExternal
   openInNewWindow: (name: string) => void
-  takeElectronWindowScreenshot: ({
-    width,
-    height,
-  }: {
-    width: number
-    height: number
-  }) => Promise<string>
   showInFolder: typeof shell.showItemInFolder
   pluginIpc: {
     invoke: <T>(channel: `plugin:${string}`, payload?: unknown) => Promise<T>
@@ -43,6 +36,7 @@ export interface IElectronAPI {
   startDeviceFlow: (host: string) => Promise<DeviceFlowAuthorization>
   /** Registered by first calling {@link startDeviceFlow}, which sets up the device flow handle */
   loginWithDeviceFlow: () => Promise<string>
+  cancelDeviceFlow: () => Promise<void>
   platform: typeof process.env.platform
   arch: typeof process.env.arch
   version: typeof process.env.version
@@ -71,7 +65,7 @@ export interface IElectronAPI {
   move: (
     source: string | URL,
     destination: string | URL
-  ) => Promise<void | Error>
+  ) => Promise<undefined | Error>
   rename: (prev: string, next: string) => Promise<undefined>
   packageJson: {
     name: string

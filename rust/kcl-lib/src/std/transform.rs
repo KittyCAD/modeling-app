@@ -473,6 +473,7 @@ pub async fn hide(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
             RuntimeType::solids(),
             RuntimeType::helices(),
             RuntimeType::imported(),
+            RuntimeType::gdts(),
         ]),
         exec_state,
     )?;
