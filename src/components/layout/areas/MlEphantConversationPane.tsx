@@ -63,6 +63,10 @@ export const MlEphantConversationPane = (props: {
   const isSubmittingFromQueue = useRef(false)
   const isClearingChat = useRef(false)
   const steeredId = useRef<string | null>(null)
+  const loaderFileRef = useRef(props.loaderFile)
+  useEffect(() => {
+    loaderFileRef.current = props.loaderFile
+  })
 
   let conversation = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.conversation
@@ -427,6 +431,7 @@ export const MlEphantConversationPane = (props: {
         ) {
           let project: Project = props.theProject
 
+          const currentLoaderFile = loaderFileRef.current
           void collectProjectFiles({
             selectedFileContents: props.kclManager.code,
             fileNames: props.kclManager.execState.filenames,
@@ -436,9 +441,9 @@ export const MlEphantConversationPane = (props: {
               type: MlEphantManagerStates.ContinueCheck,
               projectName: project.name,
               projectFiles,
-              activeFile: props.loaderFile
+              activeFile: currentLoaderFile
                 ? activeFileRelativeToProject({
-                    currentFileEntry: props.loaderFile,
+                    currentFileEntry: currentLoaderFile,
                     applicationProjectDirectory:
                       props.settings.app.projectDirectory.current,
                   })
