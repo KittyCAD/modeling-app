@@ -160,9 +160,7 @@ describe('System IO Utils', () => {
       },
     })
 
-    expect(preparedPayload?.requestedFileNameWithExtension).toBe(
-      '/newFile.kcl'
-    )
+    expect(preparedPayload?.requestedFileNameWithExtension).toBe('/newFile.kcl')
   })
 
   it('carries only explicit Zookeeper delete signals into edit requests', () => {
