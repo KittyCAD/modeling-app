@@ -85,6 +85,16 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "blend-tutorial/main.kcl",
+    "multipleFiles": false,
+    "title": "Blend Trim Operations",
+    "description": "Shows how to create a blend surface and use it for trim operations.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "categories": [
       "Medical"
     ],

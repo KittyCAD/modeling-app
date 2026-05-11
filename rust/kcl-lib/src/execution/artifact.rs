@@ -1562,6 +1562,59 @@ fn update_csg_input_artifacts(
     }
 }
 
+fn mirror_3d_artifact_updates(
+    artifacts: &IndexMap<ArtifactId, Artifact>,
+    original_solid_ids: &[Uuid],
+    face_edge_infos: &[kcmc::output::FaceEdgeInfo],
+    code_ref: CodeRef,
+    range: SourceRange,
+    cmd: &ModelingCmd,
+) -> Result<Vec<Artifact>, KclError> {
+    if original_solid_ids.len() != face_edge_infos.len() {
+        internal_error!(
+            range,
+            "EntityMirrorAcross response has different number face edge info than original mirrored solids: cmd={cmd:?}, face_edge_infos={face_edge_infos:?}"
+        );
+    }
+
+    let mut return_arr = Vec::new();
+    for (face_edge_info, original_solid_id) in face_edge_infos.iter().zip(original_solid_ids) {
+        let original_solid_id = ArtifactId::new(*original_solid_id);
+        let mirrored_solid_id = ArtifactId::new(face_edge_info.object_id);
+        let source_solid = match artifacts.get(&original_solid_id) {
+            Some(Artifact::Path(path)) => path.sweep_id.and_then(|sweep_id| artifacts.get(&sweep_id)).or_else(|| {
+                path.composite_solid_id
+                    .and_then(|composite_id| artifacts.get(&composite_id))
+            }),
+            source => source,
+        };
+        match source_solid {
+            Some(Artifact::Sweep(sweep)) => {
+                let mut mirrored_sweep = sweep.clone();
+                mirrored_sweep.id = mirrored_solid_id;
+                mirrored_sweep.surface_ids = face_edge_info.faces.iter().copied().map(ArtifactId::new).collect();
+                mirrored_sweep.edge_ids = face_edge_info.edges.iter().copied().map(ArtifactId::new).collect();
+                mirrored_sweep.code_ref = code_ref.clone();
+                mirrored_sweep.consumed = false;
+                mirrored_sweep.pattern_ids = Vec::new();
+                return_arr.push(Artifact::Sweep(mirrored_sweep));
+            }
+            Some(Artifact::CompositeSolid(composite)) => {
+                let mut mirrored_composite = composite.clone();
+                mirrored_composite.id = mirrored_solid_id;
+                mirrored_composite.code_ref = code_ref.clone();
+                mirrored_composite.consumed = false;
+                mirrored_composite.composite_solid_id = None;
+                mirrored_composite.pattern_ids = Vec::new();
+                return_arr.push(Artifact::CompositeSolid(mirrored_composite));
+            }
+            Some(_) | None => continue,
+        }
+    }
+
+    Ok(return_arr)
+}
+
 #[allow(clippy::too_many_arguments)]
 fn artifacts_to_update(
     artifacts: &IndexMap<ArtifactId, Artifact>,
@@ -1892,6 +1945,19 @@ fn artifacts_to_update(
                 face_edge_infos,
                 code_ref,
             ));
+        }
+        ModelingCmd::EntityMirrorAcross(kcmc::EntityMirrorAcross {
+            ids: original_solid_ids,
+            ..
+        }) => {
+            let face_edge_infos = match response {
+                Some(OkModelingCmdResponse::EntityMirrorAcross(resp)) => resp.entity_face_edge_ids.as_slice(),
+                _ => internal_error!(
+                    range,
+                    "EntityMirrorAcross response variant not handled: id={id:?}, cmd={cmd:?}, response={response:?}"
+                ),
+            };
+            return mirror_3d_artifact_updates(artifacts, original_solid_ids, face_edge_infos, code_ref, range, cmd);
         }
         ModelingCmd::EntityMirror(kcmc::EntityMirror {
             ids: original_path_ids, ..

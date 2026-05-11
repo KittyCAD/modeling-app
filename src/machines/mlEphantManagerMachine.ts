@@ -1414,10 +1414,12 @@ export const mlEphantManagerMachine = setup({
         target: S.Await,
         actions: [
           ({ context }) => {
+            // Close before clearing context so the live socket is still reachable.
             closeMlEphantWebSocket(context.ws)
           },
           assign(({ context }) => {
             if (context.abruptlyClosed) return {}
+            // A clean close should not leak connection state into the next chat.
             return {
               abruptlyClosed: false,
               conversation: undefined,
