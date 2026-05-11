@@ -4215,7 +4215,6 @@ impl FrontendState {
         // Uses MockConfig::default() which has freedom_analysis: true
         let outcome = self.update_state_after_exec(outcome, true);
         self.update_sketch_var_warm_starts(sketch_id, &outcome);
-        let new_source = self.commit_var_solutions_to_program(&outcome)?;
 
         let src_delta = SourceDelta { text: new_source };
         let scene_graph_delta = SceneGraphDelta {
@@ -9193,8 +9192,8 @@ sketch(on = XY) {
             // The lack indentation is a formatter bug.
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1.29mm, var 2.29mm])
-  point2 = point(at = [var 2.71mm, var 3.71mm])
+  point1 = point(at = [var 1, var 2])
+  point2 = point(at = [var 3, var 4])
   distance([point1, point2]) == 2mm
 }
 "
@@ -9262,8 +9261,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1.29mm, var 2.29mm])
-  point2 = point(at = [var 2.71mm, var 3.71mm])
+  point1 = point(at = [var 1, var 2])
+  point2 = point(at = [var 3, var 4])
   distance([point1, point2], labelPosition = [10mm, 11mm]) == 2mm
 }
 "
@@ -9350,8 +9349,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1mm, var 2mm])
-  point2 = point(at = [var 3mm, var 2mm])
+  point1 = point(at = [var 1, var 2])
+  point2 = point(at = [var 3, var 2])
   distance([point1, point2], labelPosition = [10mm, 11mm]) == 2mm
 }
 "
@@ -9574,8 +9573,8 @@ sketch(on = XY) {
             // The lack indentation is a formatter bug.
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1mm, var 2mm])
-  point2 = point(at = [var 3mm, var 4mm])
+  point1 = point(at = [var 1, var 2])
+  point2 = point(at = [var 3, var 4])
   horizontalDistance([point1, point2], labelPosition = [10mm, 11mm]) == 2mm
 }
 "
@@ -9867,8 +9866,8 @@ sketch(on = XY) {
             // The lack indentation is a formatter bug.
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1mm, var 2mm])
-  point2 = point(at = [var 3mm, var 4mm])
+  point1 = point(at = [var 1, var 2])
+  point2 = point(at = [var 3, var 4])
   verticalDistance([point1, point2], labelPosition = [10mm, 11mm]) == 2mm
 }
 "
