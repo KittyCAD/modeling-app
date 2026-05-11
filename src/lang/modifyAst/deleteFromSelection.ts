@@ -8,6 +8,7 @@ import {
   createLiteral,
   createObjectExpression,
 } from '@src/lang/create'
+import { deleteTopLevelStatement } from '@src/lang/modifyAst'
 import { deleteEdgeTreatment } from '@src/lang/modifyAst/edges'
 import {
   findPipesWithImportAlias,
@@ -162,6 +163,25 @@ export async function deleteFromSelection(
   }
 
   // Below is all AST-based deletion logic
+  const selectedBodyIndex = topLevelBodyIndex(selection.codeRef.pathToNode)
+  if (typeof selectedBodyIndex === 'number') {
+    const selectedBodyItem = astClone.body[selectedBodyIndex]
+    const selectedExpression =
+      selectedBodyItem?.type === 'ExpressionStatement'
+        ? selectedBodyItem.expression
+        : undefined
+    if (
+      selectedExpression?.type === 'CallExpressionKw' &&
+      selectedExpression.callee.path[0]?.name === 'gdt'
+    ) {
+      const deleteError = deleteTopLevelStatement(
+        astClone,
+        selection.codeRef.pathToNode
+      )
+      return err(deleteError) ? deleteError : finalizeDeletion(astClone)
+    }
+  }
+
   const varDec = getNodeFromPath<VariableDeclarator>(
     ast,
     selection?.codeRef?.pathToNode,

@@ -308,10 +308,32 @@ export function addHole({
     return result
   }
 
-  const { solidsExpr, facesExpr, pathIfPipe } = result
+  let { solidsExprs, facesExprs } = result
+  const { pathIfPipe } = result
   modifiedAst = result.modifiedAst
+  const enginePrimitives = face.otherSelections.filter(
+    (selection): selection is EnginePrimitiveSelection =>
+      isEnginePrimitiveSelection(selection) &&
+      selection.primitiveType === 'face'
+  )
+  if (enginePrimitives.length > 0) {
+    const result = insertFacePrimitiveVariablesAndOffsetPathToNode({
+      enginePrimitives,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(result)) return result
+    solidsExprs = deduplicateFaceExprs(solidsExprs.concat(result.solidsExprs))
+    facesExprs.push(...result.faceExprs)
+  }
+  const solidsExpr = createVariableExpressionsArray(solidsExprs)
+  const facesExpr = createVariableExpressionsArray(facesExprs)
   if (!facesExpr) {
     return new Error("Couldn't retrieve face from selection")
+  }
+  if (!solidsExpr) {
+    return new Error("Couldn't retrieve body from face selection")
   }
 
   // Extra args for createCallExpressionStdLibKw as we're calling functions from a module
@@ -1244,7 +1266,7 @@ export function buildSolidsAndFacesExprs(
 // Adds all the faceId calls needed in the AST so we can refer to them,
 // keeps track of their names as faces,
 // and gathers the corresponding solid expressions.
-function insertFacePrimitiveVariablesAndOffsetPathToNode({
+export function insertFacePrimitiveVariablesAndOffsetPathToNode({
   enginePrimitives,
   modifiedAst,
   artifactGraph,

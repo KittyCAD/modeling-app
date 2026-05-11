@@ -829,12 +829,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'extrude',
     needsReview: true,
     openCascadePreviewHandles: [
-      { kind: 'linearDistance', argumentName: 'length', label: 'Length' },
+      {
+        kind: 'linearDistance',
+        argumentName: 'length',
+        label: 'Length',
+        fallbackAxis: 'smallestExtent',
+      },
       {
         kind: 'linearDistance',
         argumentName: 'bidirectionalLength',
         label: 'Second length',
         direction: 'negative',
+        fallbackAxis: 'smallestExtent',
         visibleWhenArgument: 'bidirectionalLength',
       },
     ],
@@ -1351,7 +1357,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       face: {
         inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'edgeCut'],
+        selectionTypes: ['cap', 'wall', 'edgeCut', 'enginePrimitiveFace'],
         multiple: false,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -2891,7 +2897,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       faces: {
         inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'edgeCut'],
+        selectionTypes: ['cap', 'wall', 'edgeCut', 'enginePrimitiveFace'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -2973,7 +2979,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       faces: {
         inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'edgeCut'],
+        selectionTypes: ['cap', 'wall', 'edgeCut', 'enginePrimitiveFace'],
         multiple: false,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -3053,7 +3059,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       edges: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'sweepEdge'],
+        selectionTypes: ['segment', 'sweepEdge', 'enginePrimitiveEdge'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -3139,7 +3145,15 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       objects: {
         inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+        selectionTypes: [
+          'cap',
+          'wall',
+          'edgeCut',
+          'enginePrimitiveFace',
+          'segment',
+          'sweepEdge',
+          'enginePrimitiveEdge',
+        ],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -3225,7 +3239,15 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       objects: {
         inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+        selectionTypes: [
+          'cap',
+          'wall',
+          'edgeCut',
+          'enginePrimitiveFace',
+          'segment',
+          'sweepEdge',
+          'enginePrimitiveEdge',
+        ],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -3310,7 +3332,15 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       objects: {
         inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+        selectionTypes: [
+          'cap',
+          'wall',
+          'edgeCut',
+          'enginePrimitiveFace',
+          'segment',
+          'sweepEdge',
+          'enginePrimitiveEdge',
+        ],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),

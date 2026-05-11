@@ -58,8 +58,14 @@ export type OpenCascadePreviewHandleConfig = {
   label?: string
   direction?: 'positive' | 'negative'
   axisArgumentName?: string
+  fallbackAxis?: 'largestExtent' | 'smallestExtent'
+  color?: number
   visibleWhenArgument?: string
   min?: number
+}
+export type OpenCascadePreviewHandleState = {
+  handles: OpenCascadePreviewHandleConfig[]
+  argumentsToSubmit: Record<string, unknown>
 }
 export type CommandInputType = INPUT_TYPE[number]
 type CommandStatus = 'active' | 'development' | 'inactive' | 'experimental'

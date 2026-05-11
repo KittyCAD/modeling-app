@@ -16,6 +16,7 @@ import type { ActorRefFrom } from 'xstate'
 import { reportRejection } from '@src/lib/trap'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
+const OPEN_CASCADE_PREVIEW_DEBOUNCE_MS = 500
 let openCascadePreviewTimer: ReturnType<typeof setTimeout> | undefined
 
 export type CommandBarActorType = ActorRefFrom<typeof commandBarMachine>
@@ -978,7 +979,11 @@ function scheduleOpenCascadeCommandPreview(context: CommandBarContext) {
           previewAst,
           rustContext,
           jsAppSettings(rustContext.settingsActor),
-          kclManager.path
+          kclManager.path,
+          {
+            handles: selectedCommand.openCascadePreviewHandles || [],
+            argumentsToSubmit: previewContext.argumentsToSubmit,
+          }
         )
       })
       .catch((error) => {
@@ -988,7 +993,7 @@ function scheduleOpenCascadeCommandPreview(context: CommandBarContext) {
         }
         console.debug('OpenCascade preview failed', error)
       })
-  }, 250)
+  }, OPEN_CASCADE_PREVIEW_DEBOUNCE_MS)
 }
 
 function clearOpenCascadeCommandPreview(context: CommandBarContext) {

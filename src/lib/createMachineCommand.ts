@@ -132,6 +132,9 @@ export function createMachineCommand<
   if ('previewAst' in commandConfig) {
     command.previewAst = commandConfig.previewAst
   }
+  if ('openCascadePreviewHandles' in commandConfig) {
+    command.openCascadePreviewHandles = commandConfig.openCascadePreviewHandles
+  }
   if ('status' in commandConfig) {
     command.status = commandConfig.status
   }
