@@ -45,6 +45,7 @@ import type {
   Expr,
   PathToNode,
   Program,
+  VariableDeclaration,
 } from '@src/lang/wasm'
 import type { EdgeCutInfo, Selection } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
