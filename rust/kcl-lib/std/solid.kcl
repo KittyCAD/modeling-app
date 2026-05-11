@@ -1180,7 +1180,7 @@ export fn subtract(
   /// Defaults to false.
   @(deprecated_since = "2.0")
   legacyMethod?: bool,
-): [Solid; 1+] {}
+): [Solid] {}
 
 /// Set the appearance of a solid. This only works on solids, not sketches or individual paths.
 ///
