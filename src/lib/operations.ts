@@ -1953,6 +1953,98 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({
   }
 }
 
+const prepareToEditGdtPosition: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  artifactGraph,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'GDT Position',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const graphSelections: Selections['graphSelections'] = []
+  const facesArg = operation.labeledArgs?.['faces']
+  if (facesArg?.sourceRange) {
+    const faces = extractFaceSelections(artifactGraph, facesArg)
+    if ('error' in faces) {
+      return { reason: faces.error }
+    }
+    graphSelections.push(...faces)
+  }
+
+  const edgesArg = operation.labeledArgs?.['edges']
+  if (edgesArg?.sourceRange) {
+    graphSelections.push(
+      ...retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+        .graphSelections
+    )
+  }
+
+  if (graphSelections.length === 0) {
+    return { reason: 'Missing or invalid faces or edges argument' }
+  }
+
+  const tolerance = await extractKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if ('error' in tolerance) {
+    return { reason: tolerance.error }
+  }
+
+  const optionalArgs = await Promise.all([
+    extractKclArgument(code, operation, 'precision', rustContext),
+    extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
+    extractKclArgument(code, operation, 'fontPointSize', rustContext),
+    extractKclArgument(code, operation, 'fontScale', rustContext),
+  ])
+
+  const [precision, framePosition, leaderScale, fontPointSize, fontScale] =
+    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
+
+  const framePlane = extractStringArgument(code, operation, 'framePlane')
+  let datums: ModelingCommandSchema['GDT Position']['datums']
+  if (operation.labeledArgs?.['datums']?.sourceRange) {
+    const datumsResult = await extractKclArgument(
+      code,
+      operation,
+      'datums',
+      rustContext,
+      true
+    )
+    if ('error' in datumsResult) {
+      return { reason: datumsResult.error }
+    }
+    datums = datumsResult
+  }
+
+  const argDefaultValues: ModelingCommandSchema['GDT Position'] = {
+    objects: { graphSelections, otherSelections: [] },
+    datums,
+    tolerance,
+    precision,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontPointSize,
+    fontScale,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
 const prepareToEditGdtProfile: PrepareToEditCallback = async ({
   operation,
   rustContext,
@@ -2174,6 +2266,77 @@ const prepareToEditGdtParallelism: PrepareToEditCallback = async ({
   }
 }
 
+const prepareToEditGdtAnnotation: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  artifactGraph,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'GDT Annotation',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const graphSelections: Selections['graphSelections'] = []
+  const facesArg = operation.labeledArgs?.['faces']
+  if (facesArg?.sourceRange) {
+    const faces = extractFaceSelections(artifactGraph, facesArg)
+    if ('error' in faces) {
+      return { reason: faces.error }
+    }
+    graphSelections.push(...faces)
+  }
+
+  const edgesArg = operation.labeledArgs?.['edges']
+  if (edgesArg?.sourceRange) {
+    graphSelections.push(
+      ...retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+        .graphSelections
+    )
+  }
+
+  if (graphSelections.length === 0) {
+    return { reason: 'Missing or invalid faces or edges argument' }
+  }
+
+  const annotationRaw = extractStringArgument(code, operation, 'annotation')
+  if (!annotationRaw) {
+    return { reason: 'Missing or invalid annotation argument' }
+  }
+  const annotation = stripQuotes(annotationRaw)
+
+  const optionalArgs = await Promise.all([
+    extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
+    extractKclArgument(code, operation, 'fontPointSize', rustContext),
+    extractKclArgument(code, operation, 'fontScale', rustContext),
+  ])
+
+  const [framePosition, leaderScale, fontPointSize, fontScale] =
+    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
+
+  const framePlane = extractStringArgument(code, operation, 'framePlane')
+
+  const argDefaultValues: ModelingCommandSchema['GDT Annotation'] = {
+    objects: { graphSelections, otherSelections: [] },
+    annotation,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontPointSize,
+    fontScale,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
 const prepareToEditSplit: PrepareToEditCallback = async ({
   operation,
   artifactGraph,
@@ -2305,6 +2468,11 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'gdtFlatness',
     prepareToEdit: prepareToEditGdtFlatness,
   },
+  'gdt::position': {
+    label: 'Position',
+    icon: 'gdtPosition',
+    prepareToEdit: prepareToEditGdtPosition,
+  },
   'gdt::perpendicularity': {
     label: 'Perpendicularity',
     icon: 'perpendicular',
@@ -2314,6 +2482,11 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Parallelism',
     icon: 'parallel',
     prepareToEdit: prepareToEditGdtParallelism,
+  },
+  'gdt::annotation': {
+    label: 'Annotation',
+    icon: 'text',
+    prepareToEdit: prepareToEditGdtAnnotation,
   },
   'gdt::profile': {
     label: 'Profile',

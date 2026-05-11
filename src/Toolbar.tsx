@@ -973,10 +973,10 @@ const ToolbarItemTooltipRichContent = memo(
           )}
         </div>
         <p className="px-2 my-2 text-ch font-sans">{itemConfig.description}</p>
-        {itemConfig.extraNote && (
+        {itemConfig.extraInfo && (
           <p className="px-2 my-2 text-ch font-sans">
-            <span className="font-semibold">Note: </span>
-            {itemConfig.extraNote}
+            <span className="font-semibold">Info: </span>
+            {itemConfig.extraInfo}
           </p>
         )}
         {/* Add disabled reason if item is disabled */}
