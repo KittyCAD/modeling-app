@@ -15,18 +15,18 @@ import type {
 import { err } from '@src/lib/trap'
 
 export function activeFileRelativeToProject({
-  currentFile,
+  currentFileEntry,
   applicationProjectDirectory,
 }: {
-  currentFile: { entry?: FileEntry; content: string }
+  currentFileEntry?: FileEntry
   applicationProjectDirectory: string
 }): string | undefined {
-  if (!currentFile.entry) {
+  if (!currentFileEntry) {
     return undefined
   }
 
   const activeFile = parentPathRelativeToProject(
-    currentFile.entry.path,
+    currentFileEntry.path,
     applicationProjectDirectory
   )
   return activeFile || undefined
@@ -86,7 +86,7 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
   }
 
   const activeFile = activeFileRelativeToProject({
-    currentFile,
+    currentFileEntry: currentFile.entry,
     applicationProjectDirectory,
   })
 

@@ -1,6 +1,7 @@
-import fsZds from '@src/lib/fs-zds'
-import { fsZdsConstants } from '@src/lib/fs-zds/constants'
+import { newKclFile } from '@src/lang/project'
+import { DEFAULT_DEFAULT_LENGTH_UNIT, FILE_EXT } from '@src/lib/constants'
 import {
+  canReadWriteDirectory,
   createNewProjectDirectory,
   ensureProjectDirectoryExists,
   getAppSettingsFilePath,
@@ -8,11 +9,8 @@ import {
   mkdirOrNOOP,
   readAppSettingsFile,
   renameProjectDirectory,
-  canReadWriteDirectory,
   statIsDirectory,
 } from '@src/lib/desktop'
-import { newKclFile } from '@src/lang/project'
-import { DEFAULT_DEFAULT_LENGTH_UNIT, FILE_EXT } from '@src/lib/constants'
 import {
   doesProjectNameNeedInterpolated,
   getNextFileName,
@@ -20,12 +18,15 @@ import {
   getUniqueProjectName,
   interpolateProjectNameWithIndex,
 } from '@src/lib/desktopFS'
+import fsZds from '@src/lib/fs-zds'
+import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import {
   getProjectDirectoryFromKCLFilePath,
   getStringAfterLastSeparator,
   parentPathRelativeToProject,
 } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
+import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type {
@@ -38,13 +39,12 @@ import {
   NO_PROJECT_DIRECTORY,
   SystemIOMachineActors,
   SystemIOMachineEvents,
+  collectProjectFiles,
   jsonToMlConversations,
   mlConversationsToJson,
-  collectProjectFiles,
   normalizeKCLFileDeletePath,
 } from '@src/machines/systemIO/utils'
 import { fromPromise } from 'xstate'
-import { err, isErr } from '@src/lib/trap'
 
 const ML_CONVERSATIONS_FILE_NAME = 'ml-conversations.json'
 
@@ -288,6 +288,22 @@ const sharedBulkDeleteWorkflow = async ({
 
   // How many files we deleted successfully
   return totalDeleted
+}
+
+export const buildBulkCreateNavigationResult = <T extends { message: string }>(
+  message: T,
+  input: {
+    requestedProjectName: string
+    requestedFileNameWithExtension?: string
+    requestedSubRoute?: string
+  }
+) => {
+  return {
+    ...message,
+    projectName: input.requestedProjectName,
+    fileName: input.requestedFileNameWithExtension || '',
+    subRoute: input.requestedSubRoute || '',
+  }
 }
 
 export const systemIOMachineImpl = systemIOMachine.provide({
@@ -634,11 +650,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
 
           message.message += `, ${totalDeleted} deleted`
 
-          return {
-            ...message,
-            projectName: input.requestedProjectName,
-            subRoute: input.requestedSubRoute || '',
-          }
+          return buildBulkCreateNavigationResult(message, input)
         }
       ),
     [SystemIOMachineActors.bulkCreateKCLFilesAndNavigateToFile]: fromPromise(
@@ -662,12 +674,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             override: input.override,
           },
         })
-        return {
-          ...message,
-          projectName: input.requestedProjectName,
-          fileName: input.requestedFileNameWithExtension || '',
-          subRoute: input.requestedSubRoute || '',
-        }
+        return buildBulkCreateNavigationResult(message, input)
       }
     ),
     [SystemIOMachineActors.renameFolder]: fromPromise(async ({ input }) => {

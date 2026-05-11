@@ -10,7 +10,6 @@ import { assertEvent, assign, setup, fromPromise } from 'xstate'
 import { createActorContext } from '@xstate/react'
 import type { ActorRefFrom } from 'xstate'
 import type { KittyCadLibFile } from '@src/lib/promptToEditTypes'
-import type { KclFileMetaMap } from '@src/lib/promptToEditTypes'
 
 import {
   isCustomIconName,
@@ -979,7 +978,6 @@ export const mlEphantManagerMachine = setup({
       }
 
       const filesAsByteArrays: Record<string, number[]> = {}
-      const kclFilesMap: KclFileMetaMap = {}
       const files: KittyCadLibFile[] = []
 
       event.projectFiles.forEach((file) => {
@@ -988,7 +986,6 @@ export const mlEphantManagerMachine = setup({
           data = file.data
         } else {
           // file.type === 'kcl'
-          kclFilesMap[file.execStateFileNamesIndex] = file
           data = new Blob([file.fileContents], { type: 'text/kcl' })
         }
         files.push({

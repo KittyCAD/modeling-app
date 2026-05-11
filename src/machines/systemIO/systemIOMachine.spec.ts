@@ -1,18 +1,21 @@
 import path from 'node:path'
+import { App } from '@src/lib/app'
 import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
+import {
+  buildBulkCreateNavigationResult,
+  systemIOMachineImpl,
+} from '@src/machines/systemIO/systemIOMachineImpl'
 import {
   NO_PROJECT_DIRECTORY,
   SystemIOMachineActors,
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
-import { createActor, fromPromise, waitFor } from 'xstate'
-import { expect, describe, it, beforeEach } from 'vitest'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { App } from '@src/lib/app'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { createActor, fromPromise, waitFor } from 'xstate'
 
 let appInstanceInThisFile: App = null!
 let instanceInThisFile: ModuleType = null!
@@ -36,6 +39,27 @@ beforeEach(async () => {
 })
 
 describe('systemIOMachine - XState', () => {
+  describe('bulk create navigation', () => {
+    it('preserves the requested file when returning from bulk edit writes', () => {
+      expect(
+        buildBulkCreateNavigationResult(
+          {
+            message: 'Successfully overwrote 2 files, 0 deleted',
+          },
+          {
+            requestedProjectName: 'some-project',
+            requestedFileNameWithExtension: 'newFile.kcl',
+          }
+        )
+      ).toMatchObject({
+        message: 'Successfully overwrote 2 files, 0 deleted',
+        projectName: 'some-project',
+        fileName: 'newFile.kcl',
+        subRoute: '',
+      })
+    })
+  })
+
   describe('desktop', () => {
     describe('when initialized', () => {
       it('should contain the default context values', () => {

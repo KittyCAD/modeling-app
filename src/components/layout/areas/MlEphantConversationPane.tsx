@@ -438,10 +438,7 @@ export const MlEphantConversationPane = (props: {
               projectFiles,
               activeFile: props.loaderFile
                 ? activeFileRelativeToProject({
-                    currentFile: {
-                      entry: props.loaderFile,
-                      content: props.kclManager.code,
-                    },
+                    currentFileEntry: props.loaderFile,
                     applicationProjectDirectory:
                       props.settings.app.projectDirectory.current,
                   })
