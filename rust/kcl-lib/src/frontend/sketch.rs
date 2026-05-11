@@ -451,6 +451,11 @@ pub struct ControlPointSplineCtor {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiConstraint")]
 #[serde(tag = "type")]
+// When adding a new constraint type, check trim compatibility. New constraints
+// can break trim in unexpected ways, especially when endpoints are edited,
+// segments are split, or constraints are migrated. Try the trim tool on sketches
+// using the new constraint, and talk to Kurt, Max, or a mechanical engineer if
+// the intended trim behavior is unclear.
 pub enum Constraint {
     Coincident(Coincident),
     Distance(Distance),

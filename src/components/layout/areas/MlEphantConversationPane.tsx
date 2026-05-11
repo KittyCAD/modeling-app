@@ -6,6 +6,7 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 import {
   type SystemIOActor,
   SystemIOMachineEvents,
+  SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import {
   MlEphantConversation,
@@ -59,6 +60,7 @@ export const MlEphantConversationPane = (props: {
   )
   const [queue, setQueue] = useState<QueuedMessage[]>([])
   const isSubmittingFromQueue = useRef(false)
+  const isClearingChat = useRef(false)
   const steeredId = useRef<string | null>(null)
 
   let conversation = useSelector(props.mlEphantManagerActor, (actor) => {
@@ -240,26 +242,104 @@ export const MlEphantConversationPane = (props: {
   }
 
   const onClickClearChat = () => {
-    steeredId.current = null
-    setQueue([])
-    props.mlEphantManagerActor.send({
-      type: MlEphantManagerTransitions.ConversationClose,
-    })
-    const sub = props.mlEphantManagerActor.subscribe((next) => {
-      if (!next.matches(S.Await)) {
+    let closedConversation = props.mlEphantManagerActor
+      .getSnapshot()
+      .matches(S.Await)
+    let clearedConversationMapping = true
+    let sentDeleteConversationMapping = false
+    let startedFreshConversation = false
+    let sub: ReturnType<typeof props.mlEphantManagerActor.subscribe> | undefined
+    let systemIOSub:
+      | ReturnType<typeof props.systemIOActor.subscribe>
+      | undefined
+
+    const cleanupSubscriptions = () => {
+      sub?.unsubscribe()
+      systemIOSub?.unsubscribe()
+    }
+
+    const startFreshConversation = () => {
+      if (startedFreshConversation) {
         return
       }
-
+      startedFreshConversation = true
       props.mlEphantManagerActor.send({
         type: MlEphantManagerTransitions.CacheSetupAndConnect,
         refParentSend: props.mlEphantManagerActor.send,
         conversationId: undefined,
       })
-      sub.unsubscribe()
+      cleanupSubscriptions()
+    }
+
+    const maybeStartFreshConversation = () => {
+      if (!closedConversation || !clearedConversationMapping) {
+        return
+      }
+      startFreshConversation()
+    }
+
+    isClearingChat.current = true
+    steeredId.current = null
+    setQueue([])
+    const projectId = props.settings.meta.id.current
+    if (projectId !== undefined && projectId !== uuidNIL) {
+      clearedConversationMapping = false
+      const maybeDeleteConversationMapping = () => {
+        if (sentDeleteConversationMapping) {
+          return
+        }
+        if (
+          props.systemIOActor.getSnapshot().value !== SystemIOMachineStates.idle
+        ) {
+          return
+        }
+
+        sentDeleteConversationMapping = true
+        props.systemIOActor.send({
+          type: SystemIOMachineEvents.deleteMlEphantConversation,
+          data: {
+            projectId,
+          },
+        })
+      }
+
+      systemIOSub = props.systemIOActor.subscribe((next) => {
+        if (!sentDeleteConversationMapping) {
+          maybeDeleteConversationMapping()
+          return
+        }
+        if (next.value !== SystemIOMachineStates.idle) {
+          return
+        }
+
+        clearedConversationMapping = true
+        maybeStartFreshConversation()
+      })
+      maybeDeleteConversationMapping()
+    }
+    sub = props.mlEphantManagerActor.subscribe((next) => {
+      if (!next.matches(S.Await)) {
+        return
+      }
+
+      closedConversation = true
+      maybeStartFreshConversation()
     })
+    props.mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions.ConversationClose,
+    })
+
+    if (props.mlEphantManagerActor.getSnapshot().matches(S.Await)) {
+      closedConversation = true
+      maybeStartFreshConversation()
+    }
   }
 
   const tryToGetExchanges = () => {
+    if (isClearingChat.current) {
+      return
+    }
+
     const mlEphantConversations =
       props.systemIOActor.getSnapshot().context.mlEphantConversations
 
@@ -329,6 +409,14 @@ export const MlEphantConversationPane = (props: {
           }) || mlEphantManagerActorSnapshot.value === S.Await) === false
 
         const { context } = mlEphantManagerActorSnapshot
+
+        if (
+          isClearingChat.current &&
+          context.conversationId !== undefined &&
+          context.conversation !== undefined
+        ) {
+          isClearingChat.current = false
+        }
 
         if (
           mlEphantManagerActorSnapshot.matches(

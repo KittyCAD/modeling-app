@@ -183,12 +183,22 @@ export type UpdateSketchOutcomeEvent = {
      */
     debounceEditorUpdate?: boolean
     /**
+     * Defaults to true because most sketch-solve outcomes come from point/click
+     * tools whose Rust-generated sourceDelta is the new source of truth. Direct
+     * CodeMirror executions set this false: their sourceDelta is only the
+     * already-typed snapshot that produced the sceneGraphDelta, so replaying it
+     * back into CodeMirror later can overwrite newer user edits.
+     */
+    updateEditor?: boolean
+    /**
      * Defaults to true. Set to false to skip persisting to disk, which is useful
      * for high-frequency preview/drag updates.
      */
     writeToDisk?: boolean
     /**
-     * Defaults to the same value as `writeToDisk`.
+     * Defaults to the same value as `writeToDisk` when `updateEditor` is true.
+     * Ignored when `updateEditor` is false because there is no editor write to
+     * attach a history entry to.
      */
     addToHistory?: boolean
     checkpointId?: number | null
@@ -1319,13 +1329,21 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     ],
   }
 
-  const shouldWriteToDisk = event.data.writeToDisk !== false
-  const shouldAddToHistory = event.data.addToHistory ?? shouldWriteToDisk
+  const shouldUpdateEditor = event.data.updateEditor !== false
+  // Disk/history writes are coupled to editor writes here. When an outcome is
+  // derived from direct editor text, the file already follows the editor through
+  // the normal CodeMirror listener, and this async outcome may be older than the
+  // current document. Never let that snapshot become a second writer.
+  const shouldWriteToDisk =
+    shouldUpdateEditor && event.data.writeToDisk !== false
+  const shouldAddToHistory =
+    shouldUpdateEditor && (event.data.addToHistory ?? shouldWriteToDisk)
   const isCheckpointOnlyCommit =
     shouldAddToHistory &&
     event.data.checkpointId != null &&
     context.kclManager.code === event.data.sourceDelta.text
   const shouldDispatchSceneImmediately =
+    !shouldUpdateEditor ||
     context.kclManager.code !== event.data.sourceDelta.text ||
     isCheckpointOnlyCommit
 
@@ -1345,6 +1363,28 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
         effects: [] as StateEffect<unknown>[],
       }
     : additionalSpec
+
+  if (!shouldUpdateEditor) {
+    /*
+     * This is the direct CodeMirror edit path. The editor is already the source
+     * of truth, and KclManager has already checked that this async execution is
+     * still fresh before sending the event. Keep the derived scene/diagnostic
+     * state in sync, but do not write source text back through CodeMirror or
+     * disk. A source write here turns an old execution snapshot into an editor
+     * command, which is the exact stale overwrite bug this path prevents.
+     */
+    context.kclManager.syncSketchSolveOutcome(
+      event.data.sourceDelta.text,
+      sceneGraphDelta
+    )
+
+    return {
+      sketchExecOutcome: {
+        sourceDelta: event.data.sourceDelta,
+        sceneGraphDelta,
+      },
+    }
+  }
 
   // Update editor - debounce only if explicitly requested (e.g., for single-click that might be double-click)
   // This allows frequent updates (dragging handles) to be immediate, while others can be debounce

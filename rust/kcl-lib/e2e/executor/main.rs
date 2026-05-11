@@ -4,6 +4,7 @@ use kcl_lib::BacktraceItem;
 use kcl_lib::ExecError;
 use kcl_lib::ModuleId;
 use kcl_lib::SourceRange;
+use kcl_lib::test_server::execute;
 use kcl_lib::test_server::execute_and_export_step;
 use kcl_lib::test_server::execute_and_snapshot;
 use kcl_lib::test_server::execute_and_snapshot_no_auth;
@@ -443,7 +444,7 @@ async fn kcl_test_import_file_doesnt_exist() {
     let code = r#"import 'thing.obj'
 model = cube"#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(err.message(), "File `thing.obj` does not exist.");
@@ -526,7 +527,7 @@ async fn kcl_test_import_ext_doesnt_match() {
 import 'e2e/executor/inputs/cube.gltf'
 model = cube"#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(
@@ -1234,7 +1235,7 @@ secondSketch = startSketchOn(part001, face = '')
   |> extrude(length = 20)
 "#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(
@@ -1266,7 +1267,7 @@ extrusion = startSketchOn(XY)
   |> extrude(length = height)
 "#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     assert!(result.is_err());
     let expected_msg = "semantic: `h` is not an argument of `squareHole`";
     let err = result.unwrap_err().as_kcl_error().unwrap().get_message();
@@ -1594,7 +1595,7 @@ async fn kcl_test_duplicate_tags_should_error() {
 p = triangle(200)
 "#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(err.message(), "Cannot redefine `a`");
@@ -1685,7 +1686,7 @@ async fn kcl_test_angled_line_to_x_90() {
 example = extrude(exampleSketch, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(err.message(), "Cannot have an x constrained angle of 90 degrees");
@@ -1716,7 +1717,7 @@ async fn kcl_test_angled_line_to_x_270() {
 example = extrude(exampleSketch, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(err.message(), "Cannot have an x constrained angle of 270 degrees");
@@ -1747,7 +1748,7 @@ async fn kcl_test_angled_line_to_y_0() {
 example = extrude(exampleSketch, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(err.message(), "Cannot have a y constrained angle of 0 degrees");
@@ -1778,7 +1779,7 @@ async fn kcl_test_angled_line_to_y_180() {
 example = extrude(exampleSketch, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(err.message(), "Cannot have a y constrained angle of 180 degrees");
@@ -1809,7 +1810,7 @@ async fn kcl_test_angled_line_of_x_length_90() {
 extrusion = extrude(sketch001, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(err.message(), "Cannot have an x constrained angle of 90 degrees");
@@ -1840,7 +1841,7 @@ async fn kcl_test_angled_line_of_x_length_270() {
 extrusion = extrude(sketch001, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(err.message(), "Cannot have an x constrained angle of 270 degrees");
@@ -1873,7 +1874,7 @@ async fn kcl_test_angled_line_of_y_length_0() {
 example = extrude(exampleSketch, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(err.message(), "Cannot have a y constrained angle of 0 degrees");
@@ -1906,7 +1907,7 @@ async fn kcl_test_angled_line_of_y_length_180() {
 example = extrude(exampleSketch, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(err.message(), "Cannot have a y constrained angle of 180 degrees");
@@ -1939,7 +1940,7 @@ async fn kcl_test_angled_line_of_y_length_negative_180() {
 example = extrude(exampleSketch, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(err.message(), "Cannot have a y constrained angle of 180 degrees");
@@ -1967,7 +1968,7 @@ async fn kcl_test_error_inside_fn_also_has_source_range_of_call_site() {
 someFunction('INVALID')
 "#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(
@@ -2030,7 +2031,7 @@ async fn kcl_test_error_no_csg_overlap() {
     // user configures it to.
     let code = kcl_input!("no_csg_overlap");
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     // The error message should be meaningful.

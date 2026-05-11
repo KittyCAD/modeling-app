@@ -76,7 +76,8 @@ pub(crate) const WARN_CSG_NO_INTERSECTION: &str = "csgNoIntersection";
 pub(crate) const WARN_UNNECESSARY_CLOSE: &str = "unnecessaryClose";
 pub(crate) const WARN_UNUSED_TAGS: &str = "unusedTags";
 pub(crate) const WARN_NOT_YET_SUPPORTED: &str = "notYetSupported";
-pub(super) const WARN_VALUES: [&str; 12] = [
+pub(crate) const WARN_OVER_CONSTRAINED_SKETCH: &str = "overConstrainedSketch";
+pub(super) const WARN_VALUES: [&str; 13] = [
     WARN_UNKNOWN_UNITS,
     WARN_ANGLE_UNITS,
     WARN_UNKNOWN_ATTR,
@@ -89,6 +90,7 @@ pub(super) const WARN_VALUES: [&str; 12] = [
     WARN_UNNECESSARY_CLOSE,
     WARN_NOT_YET_SUPPORTED,
     WARN_CSG_NO_INTERSECTION,
+    WARN_OVER_CONSTRAINED_SKETCH,
 ];
 
 #[derive(Clone, Copy, Eq, PartialEq, Debug, Deserialize, Serialize, ts_rs::TS)]

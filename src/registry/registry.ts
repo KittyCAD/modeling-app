@@ -1,25 +1,39 @@
-import type { RegistryItem } from '@kittycad/registry'
+import { Slot, type RegistryItem } from '@kittycad/registry'
 
-type PluginModule = {
+type RegistryItemModule = {
   default?: RegistryItem
   order?: number
 }
 
-const pluginModules: Record<string, PluginModule> = import.meta.glob(
-  './plugins/*/index.ts',
-  {
+const bundledRegistryItemModules: Record<string, RegistryItemModule> =
+  import.meta.glob(['./extensions/*/index.ts', './plugins/*/index.ts'], {
     eager: true,
-  }
-)
+  })
 
-// Core app plugins discovered from src/registry/plugins/*/index.ts.
-// Keep ordering deterministic so adding folders does not create unstable load order.
-export const coreRegistryItems: RegistryItem[] = Object.entries(pluginModules)
+export const appRegistryServicesSlot = new Slot()
+
+const bundledRegistryItemKindOrder = (path: string) =>
+  path.includes('/plugins/') ? 1 : 0
+
+// Core app registry items discovered from src/registry/extensions/*/index.ts
+// and src/registry/plugins/*/index.ts.
+//
+// Extensions are always-on app infrastructure. Plugins are user-visible,
+// runtime-toggleable bundles that may depend on extension contracts.
+export const coreRegistryItems: RegistryItem[] = Object.entries(
+  bundledRegistryItemModules
+)
   .map(([path, mod]) => ({
     path,
+    kindOrder: bundledRegistryItemKindOrder(path),
     order: mod.order ?? 0,
-    plugin: mod.default,
+    item: mod.default,
   }))
-  .filter((entry) => entry.plugin !== undefined)
-  .sort((a, b) => a.order - b.order || a.path.localeCompare(b.path))
-  .map((entry) => entry.plugin as RegistryItem)
+  .filter((entry) => entry.item !== undefined)
+  .sort(
+    (a, b) =>
+      a.kindOrder - b.kindOrder ||
+      a.order - b.order ||
+      a.path.localeCompare(b.path)
+  )
+  .map((entry) => entry.item as RegistryItem)

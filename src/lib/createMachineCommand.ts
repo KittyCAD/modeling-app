@@ -217,6 +217,10 @@ export function buildCommandArgument<
     return {
       inputType: arg.inputType,
       allowArrays: arg.allowArrays,
+      allowStringArrays: arg.allowStringArrays,
+      allowUncalculated: arg.allowUncalculated,
+      inputToKclValue: arg.inputToKclValue,
+      kclValueToInput: arg.kclValueToInput,
       createVariable: arg.createVariable,
       variableName: arg.variableName,
       defaultValue: arg.defaultValue,
