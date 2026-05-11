@@ -84,6 +84,11 @@ impl MirrorAcross3d {
                 backtrace: Default::default(),
                 message: "Cannot use a circle as an axis".to_owned(),
             })),
+            SegmentKind::ControlPointSpline { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use a control point spline as an axis".to_owned(),
+            })),
         }
     }
 }
