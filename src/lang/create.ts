@@ -65,7 +65,12 @@ function createRawStr(
   // For strings, include double quotes in raw so they're preserved during unparse
   // Escape backslashes and double quotes to create valid KCL string literals
   if (typeof value === 'string') {
-    const escaped = value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
+    const escaped = value
+      .replace(/\\/g, '\\\\')
+      .replace(/\n/g, '\\n')
+      .replace(/\r/g, '\\r')
+      .replace(/\t/g, '\\t')
+      .replace(/"/g, '\\"')
     return `"${escaped}"`
   }
 

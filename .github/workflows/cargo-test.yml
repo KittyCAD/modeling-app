@@ -251,7 +251,7 @@ jobs:
         with:
           cache: false # Configured below.
           rustflags: '' # Use .cargo/config.toml
-      - uses: taiki-e/install-action@cf525cb33f51aca27cd6fa02034117ab963ff9f1
+      - uses: taiki-e/install-action@b5fddbb5361bce8a06fb168c9d403a6cc552b084
         with:
           tool: wasm-pack
       - name: Rust Cache
