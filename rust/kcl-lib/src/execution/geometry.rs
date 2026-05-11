@@ -1933,9 +1933,7 @@ fn linear_distance(
     [x0, y0]: &[f64; 2],
     [x1, y1]: &[f64; 2]
 ) -> f64 {
-    let y_sq = (y1 - y0).powi(2);
-    let x_sq = (x1 - x0).powi(2);
-    (y_sq + x_sq).sqrt()
+    libm::hypot(y1 - y0, x1 - x0)
 }
 
 /// An extrude surface.
