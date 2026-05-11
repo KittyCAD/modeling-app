@@ -6,6 +6,7 @@ import { decode as msgpackDecode } from '@msgpack/msgpack'
 import { signal } from '@preact/signals-core'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
+import type { OpenCascadePreviewHandleState } from '@src/lib/commandTypes'
 import type RustContext from '@src/lib/rustContext'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
 import type { DeepPartial } from '@src/lib/types'
@@ -18,6 +19,12 @@ import {
   type OpenCascadeManagerLike,
   shouldUseOpenCascadeWorker,
 } from '@src/network/openCascadeWorkerClient'
+import type {
+  OpenCascadePlaneMeshes,
+  OpenCascadeGdtAnnotationMeshes,
+  OpenCascadeSketchLineMeshes,
+  OpenCascadeVisibleSolidGlb,
+} from '@src/network/openCascadeCommandManager'
 import type { ManagerTearDown } from '@src/network/utils'
 import {
   EngineCommandManagerEvents,
@@ -38,6 +45,19 @@ export class EngineCommandManagerProxy extends ConnectionManager {
   })
   private openCascadePreviewRoutingManager: OpenCascadeManagerLike | undefined
   private openCascadePreviewRequestId = 0
+  private openCascadePreviewRunQueue: Promise<void> = Promise.resolve()
+  private openCascadePreviewGlbs: OpenCascadeVisibleSolidGlb[] = []
+  private openCascadePreviewSketchLines: OpenCascadeSketchLineMeshes = {
+    version: 0,
+    segments: [],
+  }
+  private openCascadePreviewPlanes: OpenCascadePlaneMeshes = {
+    version: 0,
+    planes: [],
+  }
+  private openCascadePreviewHandleState:
+    | OpenCascadePreviewHandleState
+    | undefined
 
   get currentEngine() {
     return this.settings.engine
@@ -292,21 +312,50 @@ export class EngineCommandManagerProxy extends ConnectionManager {
     ast: Node<Program>,
     rustContext: RustContext,
     settings: DeepPartial<Configuration>,
-    path?: string
+    path?: string,
+    handleState?: OpenCascadePreviewHandleState
   ) {
     if (!this.isOpenCascade) {
       return
     }
 
     const requestId = ++this.openCascadePreviewRequestId
-    const previewManager = createOpenCascadeManager({
-      registerLatest: false,
-    })
+    this.latestOpenCascadePreviewStatus.value = 'running'
+    this.openCascadePreviewRunQueue = this.openCascadePreviewRunQueue
+      .catch(() => undefined)
+      .then(() =>
+        this.runQueuedOpenCascadePreviewAst(
+          requestId,
+          ast,
+          rustContext,
+          settings,
+          path,
+          handleState
+        )
+      )
+    return this.openCascadePreviewRunQueue
+  }
+
+  private async runQueuedOpenCascadePreviewAst(
+    requestId: number,
+    ast: Node<Program>,
+    rustContext: RustContext,
+    settings: DeepPartial<Configuration>,
+    path?: string,
+    handleState?: OpenCascadePreviewHandleState
+  ) {
+    if (requestId !== this.openCascadePreviewRequestId) {
+      return
+    }
+    const previewManager = this.openCascadePreviewCommandManager
     const previewEngineManager =
       this.createOpenCascadePreviewEngineManager(previewManager)
     this.openCascadePreviewRoutingManager = previewManager
-    this.latestOpenCascadePreviewStatus.value = 'running'
     try {
+      await previewManager.startNewSession()
+      if (requestId !== this.openCascadePreviewRequestId) {
+        return
+      }
       await rustContext.executePreviewWithEngineManager(
         ast,
         settings,
@@ -332,8 +381,10 @@ export class EngineCommandManagerProxy extends ConnectionManager {
         this.latestOpenCascadePreviewStatus.value = 'ready'
         return
       }
-      this.openCascadePreviewCommandManager.dispose?.()
-      this.openCascadePreviewCommandManager = previewManager
+      this.openCascadePreviewGlbs = visiblePreviewGlbs
+      this.openCascadePreviewSketchLines = visiblePreviewSketchLines
+      this.openCascadePreviewPlanes = visiblePreviewPlanes
+      this.openCascadePreviewHandleState = handleState
       this.latestOpenCascadePreviewStatus.value = 'ready'
       this.latestOpenCascadePreviewVersion.value += 1
     } catch (error) {
@@ -345,34 +396,40 @@ export class EngineCommandManagerProxy extends ConnectionManager {
       if (this.openCascadePreviewRoutingManager === previewManager) {
         this.openCascadePreviewRoutingManager = undefined
       }
-      if (this.openCascadePreviewCommandManager !== previewManager) {
-        previewManager.dispose?.()
-      }
     }
   }
 
   clearOpenCascadePreview() {
     this.openCascadePreviewRequestId += 1
-    this.openCascadePreviewRoutingManager?.dispose?.()
     this.openCascadePreviewRoutingManager = undefined
-    this.openCascadePreviewCommandManager.dispose?.()
-    this.openCascadePreviewCommandManager = createOpenCascadeManager({
-      registerLatest: false,
-    })
+    this.openCascadePreviewGlbs = []
+    this.openCascadePreviewSketchLines = {
+      version: this.openCascadePreviewSketchLines.version + 1,
+      segments: [],
+    }
+    this.openCascadePreviewPlanes = {
+      version: this.openCascadePreviewPlanes.version + 1,
+      planes: [],
+    }
+    this.openCascadePreviewHandleState = undefined
     this.latestOpenCascadePreviewStatus.value = 'idle'
     this.latestOpenCascadePreviewVersion.value += 1
   }
 
   async exportVisibleOpenCascadePreviewGlbBytes() {
-    return this.openCascadePreviewCommandManager.exportVisibleGlbBytes()
+    return this.openCascadePreviewGlbs
   }
 
   exportLatestOpenCascadePreviewSketchLineMeshes() {
-    return this.openCascadePreviewCommandManager.exportLatestSketchLineMeshes()
+    return this.openCascadePreviewSketchLines
   }
 
   exportLatestOpenCascadePreviewPlaneMeshes() {
-    return this.openCascadePreviewCommandManager.exportLatestPlaneMeshes()
+    return this.openCascadePreviewPlanes
+  }
+
+  exportLatestOpenCascadePreviewHandleState() {
+    return this.openCascadePreviewHandleState
   }
 
   private createOpenCascadePreviewEngineManager(
@@ -451,6 +508,10 @@ export class EngineCommandManagerProxy extends ConnectionManager {
 
   exportLatestOpenCascadePlaneMeshes() {
     return this.openCascadeCommandManager.exportLatestPlaneMeshes()
+  }
+
+  exportLatestOpenCascadeGdtAnnotationMeshes(): OpenCascadeGdtAnnotationMeshes {
+    return this.openCascadeCommandManager.exportLatestGdtAnnotationMeshes()
   }
 
   async exportLatestOpenCascadeRegionMeshes() {

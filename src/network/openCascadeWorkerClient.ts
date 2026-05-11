@@ -3,6 +3,7 @@ import { signal, type Signal } from '@preact/signals-core'
 import type {
   OpenCascadePlaneMesh,
   OpenCascadePlaneMeshes,
+  OpenCascadeGdtAnnotationMeshes,
   OpenCascadeRegionMeshes,
   OpenCascadeRenderSnapshot,
   OpenCascadeSketchLineMeshes,
@@ -33,6 +34,17 @@ type PendingRequest = {
   reject: (error: Error) => void
 }
 
+const activeOpenCascadeWorkerClients = new Set<OpenCascadeWorkerClient>()
+
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => {
+    for (const client of activeOpenCascadeWorkerClients) {
+      client.dispose()
+    }
+    activeOpenCascadeWorkerClients.clear()
+  })
+}
+
 const EMPTY_SNAPSHOT: OpenCascadeRenderSnapshot = {
   versions: {
     shape: 0,
@@ -49,6 +61,7 @@ const EMPTY_SNAPSHOT: OpenCascadeRenderSnapshot = {
   topologyMeshes: { version: 0, solids: [] },
   sketchLineMeshes: { version: 0, segments: [] },
   planeMeshes: { version: 0, planes: [] },
+  gdtAnnotationMeshes: { version: 0, annotations: [] },
   regionMeshes: { version: 0, regions: [] },
   pathPlanes: {},
   pathVisibility: {},
@@ -94,6 +107,7 @@ export type OpenCascadeManagerLike = {
   exportOpenCascadePathPlane(pathId: string): OpenCascadePlaneMesh | undefined
   isPathVisible(pathId: string): boolean
   exportLatestPlaneMeshes(): OpenCascadePlaneMeshes
+  exportLatestGdtAnnotationMeshes(): OpenCascadeGdtAnnotationMeshes
   isObjectHidden(id: string): boolean
   exportLatestRegionMeshes(): Promise<OpenCascadeRegionMeshes>
   exportRenderSnapshot?(): Promise<OpenCascadeRenderSnapshot>
@@ -129,6 +143,7 @@ export class OpenCascadeWorkerClient implements OpenCascadeManagerLike {
   private pendingRequests = new Map<number, PendingRequest>()
   private snapshot = EMPTY_SNAPSHOT
   private hiddenObjectIds = new Set<string>()
+  private disposed = false
 
   constructor() {
     this.worker = new Worker(
@@ -137,9 +152,15 @@ export class OpenCascadeWorkerClient implements OpenCascadeManagerLike {
     )
     this.worker.addEventListener('message', this.handleWorkerMessage)
     this.worker.addEventListener('error', this.handleWorkerError)
+    activeOpenCascadeWorkerClients.add(this)
   }
 
   dispose() {
+    if (this.disposed) {
+      return
+    }
+    this.disposed = true
+    activeOpenCascadeWorkerClients.delete(this)
     this.worker.removeEventListener('message', this.handleWorkerMessage)
     this.worker.removeEventListener('error', this.handleWorkerError)
     for (const request of this.pendingRequests.values()) {
@@ -247,6 +268,10 @@ export class OpenCascadeWorkerClient implements OpenCascadeManagerLike {
     return this.snapshot.planeMeshes
   }
 
+  exportLatestGdtAnnotationMeshes(): OpenCascadeGdtAnnotationMeshes {
+    return this.snapshot.gdtAnnotationMeshes
+  }
+
   isObjectHidden(id: string): boolean {
     return this.hiddenObjectIds.has(id)
   }
@@ -260,6 +285,9 @@ export class OpenCascadeWorkerClient implements OpenCascadeManagerLike {
   }
 
   private request<T>(method: string, args: unknown[] = []): Promise<T> {
+    if (this.disposed) {
+      return Promise.reject(new Error('OpenCascade worker was disposed'))
+    }
     const id = this.nextRequestId++
     return new Promise<T>((resolve, reject) => {
       this.pendingRequests.set(id, {
@@ -317,6 +345,8 @@ export class OpenCascadeWorkerClient implements OpenCascadeManagerLike {
       sketchLineMeshes:
         snapshot.sketchLineMeshes ?? this.snapshot.sketchLineMeshes,
       planeMeshes: snapshot.planeMeshes ?? this.snapshot.planeMeshes,
+      gdtAnnotationMeshes:
+        snapshot.gdtAnnotationMeshes ?? this.snapshot.gdtAnnotationMeshes,
       regionMeshes: snapshot.regionMeshes ?? this.snapshot.regionMeshes,
       pathPlanes: snapshot.pathPlanes ?? this.snapshot.pathPlanes,
       pathVisibility: snapshot.pathVisibility ?? this.snapshot.pathVisibility,
@@ -450,6 +480,13 @@ export class OpenCascadeMainThreadClient implements OpenCascadeManagerLike {
 
   exportLatestPlaneMeshes(): OpenCascadePlaneMeshes {
     return this.manager?.exportLatestPlaneMeshes() ?? EMPTY_SNAPSHOT.planeMeshes
+  }
+
+  exportLatestGdtAnnotationMeshes(): OpenCascadeGdtAnnotationMeshes {
+    return (
+      this.manager?.exportLatestGdtAnnotationMeshes() ??
+      EMPTY_SNAPSHOT.gdtAnnotationMeshes
+    )
   }
 
   isObjectHidden(id: string): boolean {

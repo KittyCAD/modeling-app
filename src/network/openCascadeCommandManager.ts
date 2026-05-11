@@ -275,6 +275,29 @@ export type OpenCascadePlaneMeshes = {
   planes: OpenCascadePlaneMesh[]
 }
 
+export type OpenCascadeGdtAnnotation = {
+  annotationId: string
+  entityId: string
+  planeId: string
+  offset: Point2
+  target: Point3
+  plane: OpenCascadePlaneMesh
+  sourceRange: SourceRange
+  label: string
+  kind: 'datum' | 'featureControl' | 'annotation'
+  symbol?: string
+  tolerance?: number
+  datums: string[]
+  fontPointSize: number
+  fontScale: number
+  leaderScale: number
+}
+
+export type OpenCascadeGdtAnnotationMeshes = {
+  version: number
+  annotations: OpenCascadeGdtAnnotation[]
+}
+
 export type OpenCascadeVisibleSolidGlb = {
   solidId: string
   bodyType: 'solid' | 'surface'
@@ -301,6 +324,7 @@ export type OpenCascadeRenderSnapshot = {
   topologyMeshes: OpenCascadeTopologyMeshes
   sketchLineMeshes: OpenCascadeSketchLineMeshes
   planeMeshes: OpenCascadePlaneMeshes
+  gdtAnnotationMeshes: OpenCascadeGdtAnnotationMeshes
   regionMeshes: OpenCascadeRegionMeshes
   pathPlanes: Record<string, OpenCascadePlaneMesh>
   pathVisibility: Record<string, boolean>
@@ -350,6 +374,7 @@ type OpenCascadeRenderState = {
   topologyEntries: Map<string, OpenCascadeTopologyEntry>
   topologyMeshes: Map<string, OpenCascadeTopologySolidMesh>
   extrudeTopologies: Map<string, ExtrudeTopology>
+  gdtAnnotations: Map<string, OpenCascadeGdtAnnotation>
 }
 
 type OpenCascadeDagNode = {
@@ -457,6 +482,7 @@ export class OpenCascadeCommandManager {
   private topologyEntries = new Map<string, OpenCascadeTopologyEntry>()
   private topologyMeshes = new Map<string, OpenCascadeTopologySolidMesh>()
   private extrudeTopologies = new Map<string, ExtrudeTopology>()
+  private gdtAnnotations = new Map<string, OpenCascadeGdtAnnotation>()
   private currentSketchPlaneId: string | undefined
   private currentSketchOnFace: SketchOnFaceProvenance | undefined
   private dagNodes = new Map<string, OpenCascadeDagNode>()
@@ -705,6 +731,18 @@ export class OpenCascadeCommandManager {
     }
   }
 
+  exportLatestGdtAnnotationMeshes(): OpenCascadeGdtAnnotationMeshes {
+    const state = this.renderState()
+    const annotations = state?.gdtAnnotations ?? this.gdtAnnotations
+    const hiddenObjectIds = state?.hiddenObjectIds ?? this.hiddenObjectIds
+    return {
+      version: this.latestVisibilityVersion.value,
+      annotations: Array.from(annotations.values())
+        .filter((annotation) => !hiddenObjectIds.has(annotation.annotationId))
+        .map((annotation) => cloneGdtAnnotation(annotation)),
+    }
+  }
+
   isObjectHidden(id: string): boolean {
     return this.hiddenObjectIds.has(id)
   }
@@ -763,6 +801,7 @@ export class OpenCascadeCommandManager {
       topologyMeshes: this.exportLatestTopologyMeshes(),
       sketchLineMeshes: this.exportLatestSketchLineMeshes(),
       planeMeshes: this.exportLatestPlaneMeshes(),
+      gdtAnnotationMeshes: this.exportLatestGdtAnnotationMeshes(),
       regionMeshes: await this.exportLatestRegionMeshes(),
       pathPlanes,
       pathVisibility,
@@ -885,6 +924,8 @@ export class OpenCascadeCommandManager {
       case 'default_camera_set_perspective':
       case 'default_camera_perspective_settings':
         return modeling(EMPTY_RESPONSE)
+      case 'new_annotation':
+        return modeling(this.newAnnotation(commandId, cmd, range))
       case 'enable_sketch_mode':
         this.currentSketchPlaneId = cmd.entity_id
         if (this.planes.has(cmd.entity_id)) {
@@ -1031,6 +1072,156 @@ export class OpenCascadeCommandManager {
       return
     }
     this.recordDagNode(commandId, range)
+  }
+
+  private newAnnotation(
+    commandId: string,
+    cmd: ModelingCmd,
+    range: SourceRange
+  ): OkModelingCmdResponse {
+    const featureControl = (cmd as any).options?.feature_control
+    if (!featureControl) {
+      return EMPTY_RESPONSE
+    }
+    const annotation = this.gdtAnnotationFromFeatureControl(
+      commandId,
+      featureControl,
+      range
+    )
+    if (annotation) {
+      this.gdtAnnotations.set(commandId, annotation)
+      this.latestVisibilityVersion.value += 1
+    }
+    return EMPTY_RESPONSE
+  }
+
+  private gdtAnnotationFromFeatureControl(
+    annotationId: string,
+    featureControl: any,
+    range: SourceRange
+  ): OpenCascadeGdtAnnotation | undefined {
+    const entityId = String(featureControl.entity_id || '')
+    if (!entityId) {
+      return undefined
+    }
+    const planeId = String(featureControl.plane_id || '')
+    const plane = this.openCascadePlaneMeshForId(planeId)
+    if (!plane) {
+      return undefined
+    }
+    const target = this.annotationTargetForEntity(entityId)
+    if (!target) {
+      return undefined
+    }
+    const controlFrame = featureControl.control_frame
+    const definedDatum = featureControl.defined_datum
+    const prefix = featureControl.prefix
+    const tolerance =
+      typeof controlFrame?.tolerance === 'number'
+        ? controlFrame.tolerance
+        : undefined
+    const datums = [
+      controlFrame?.primary_datum,
+      controlFrame?.secondary_datum,
+      controlFrame?.tertiary_datum,
+    ]
+      .filter((datum): datum is string => typeof datum === 'string')
+      .map((datum) => datum.toUpperCase())
+    const symbol =
+      typeof controlFrame?.symbol === 'string' ? controlFrame.symbol : undefined
+    const kind = definedDatum
+      ? 'datum'
+      : prefix
+        ? 'annotation'
+        : 'featureControl'
+    return {
+      annotationId,
+      entityId,
+      planeId,
+      offset: {
+        x: Number(featureControl.offset?.x ?? 100),
+        y: Number(featureControl.offset?.y ?? 100),
+      },
+      target,
+      plane,
+      sourceRange: structuredClone(range),
+      label: annotationLabel({
+        kind,
+        datum: definedDatum,
+        prefix,
+        symbol,
+        tolerance,
+        precision: Number(featureControl.precision ?? 3),
+        datums,
+      }),
+      kind,
+      symbol,
+      tolerance,
+      datums,
+      fontPointSize: Number(featureControl.font_point_size ?? 36),
+      fontScale: Number(featureControl.font_scale ?? 1),
+      leaderScale: Number(featureControl.leader_scale ?? 1),
+    }
+  }
+
+  private openCascadePlaneMeshForId(
+    planeId: string
+  ): OpenCascadePlaneMesh | undefined {
+    const plane = this.planes.get(planeId)
+    if (plane) {
+      return {
+        planeId,
+        origin: { ...plane.origin },
+        xAxis: { ...plane.xAxis },
+        yAxis: { ...plane.yAxis },
+        normal: { ...plane.normal },
+      }
+    }
+    return {
+      planeId: planeId || 'open-cascade-gdt-default-xy',
+      origin: { x: 0, y: 0, z: 0 },
+      xAxis: { x: 1, y: 0, z: 0 },
+      yAxis: { x: 0, y: 1, z: 0 },
+      normal: { x: 0, y: 0, z: 1 },
+    }
+  }
+
+  private annotationTargetForEntity(entityId: string): Point3 | undefined {
+    const faceEntry = this.topologyEntries.get(entityId)
+    if (faceEntry?.kind === 'edge' && faceEntry.points?.length) {
+      return averagePackedPoints(faceEntry.points)
+    }
+    const topologyMeshes = this.exportLatestTopologyMeshes()
+    for (const solid of topologyMeshes.solids) {
+      const faceGroup = solid.groups.find(
+        (group) =>
+          group.topologyId === entityId || group.artifactId === entityId
+      )
+      if (faceGroup) {
+        const points: number[] = []
+        for (
+          let index = faceGroup.start;
+          index < faceGroup.start + faceGroup.count;
+          index += 1
+        ) {
+          const vertexIndex = solid.indices[index]
+          points.push(
+            solid.positions[vertexIndex * 3] ?? 0,
+            solid.positions[vertexIndex * 3 + 1] ?? 0,
+            solid.positions[vertexIndex * 3 + 2] ?? 0
+          )
+        }
+        return averagePackedPoints(points)
+      }
+      const edge = solid.edges.find(
+        (candidate) =>
+          candidate.topologyId === entityId || candidate.artifactId === entityId
+      )
+      if (edge) {
+        return averagePackedPoints(edge.points)
+      }
+    }
+    return undefined
   }
 
   private extendPath(
@@ -1288,15 +1479,19 @@ export class OpenCascadeCommandManager {
       : undefined
     const renderSolidId =
       parentSolidId && parentSolid ? parentSolidId : commandId
-    const fusedShape =
+    const cutsParentSolid =
+      parentSolidId !== undefined && parentSolid !== undefined && height < 0
+    const mergedParentShape =
       parentSolidId && parentSolid
-        ? this.fuseShapes(parentSolid.shape, shape, oc)
+        ? cutsParentSolid
+          ? this.booleanPair('subtract', parentSolid.shape, shape, oc)
+          : this.fuseShapes(parentSolid.shape, shape, oc)
         : undefined
 
-    if (parentSolidId && parentSolid && fusedShape) {
+    if (parentSolidId && parentSolid && mergedParentShape) {
       const mergedSolid: SolidState = {
         ...parentSolid,
-        shape: fusedShape,
+        shape: mergedParentShape,
         sourceIds: Array.from(
           new Set([
             ...parentSolid.sourceIds,
@@ -1307,7 +1502,7 @@ export class OpenCascadeCommandManager {
         ),
         provenance: parentSolid.provenance || entityProvenanceForRange(range),
       }
-      mergedSolid.brep = this.writeBrep(parentSolidId, fusedShape, oc)
+      mergedSolid.brep = this.writeBrep(parentSolidId, mergedParentShape, oc)
       this.solids.set(parentSolidId, mergedSolid)
       this.registerGenericTopologyForSolid(parentSolidId, mergedSolid, oc)
       this.registerExtrudeTopology(
@@ -4295,6 +4490,12 @@ export class OpenCascadeCommandManager {
           cloneExtrudeTopology(topology),
         ])
       ),
+      gdtAnnotations: new Map(
+        Array.from(this.gdtAnnotations.entries()).map(([id, annotation]) => [
+          id,
+          cloneGdtAnnotation(annotation),
+        ])
+      ),
     }
   }
 
@@ -4334,6 +4535,7 @@ export class OpenCascadeCommandManager {
     this.topologyEntries.clear()
     this.topologyMeshes.clear()
     this.extrudeTopologies.clear()
+    this.gdtAnnotations.clear()
     this.dagNodes.clear()
     this.currentDagNodeId = undefined
     this.activeRollbackNodeId = undefined
@@ -4934,6 +5136,109 @@ function cloneExtrudeTopology(topology: ExtrudeTopology): ExtrudeTopology {
     ),
     commonEdgesByFacePair: new Map(topology.commonEdgesByFacePair),
   }
+}
+
+function cloneGdtAnnotation(
+  annotation: OpenCascadeGdtAnnotation
+): OpenCascadeGdtAnnotation {
+  return {
+    ...annotation,
+    offset: { ...annotation.offset },
+    target: { ...annotation.target },
+    plane: {
+      planeId: annotation.plane.planeId,
+      origin: { ...annotation.plane.origin },
+      xAxis: { ...annotation.plane.xAxis },
+      yAxis: { ...annotation.plane.yAxis },
+      normal: { ...annotation.plane.normal },
+    },
+    sourceRange: cloneSourceRange(annotation.sourceRange),
+    datums: [...annotation.datums],
+  }
+}
+
+function annotationLabel({
+  kind,
+  datum,
+  prefix,
+  symbol,
+  tolerance,
+  precision,
+  datums,
+}: {
+  kind: OpenCascadeGdtAnnotation['kind']
+  datum?: string | null
+  prefix?: string | null
+  symbol?: string
+  tolerance?: number
+  precision: number
+  datums: string[]
+}) {
+  if (kind === 'datum') {
+    return `[${String(datum || '').toUpperCase()}]`
+  }
+  if (kind === 'annotation') {
+    return String(prefix || '')
+  }
+  const parts = [gdtSymbolLabel(symbol)]
+  if (typeof tolerance === 'number') {
+    parts.push(tolerance.toFixed(Math.max(0, precision)))
+  }
+  parts.push(...datums)
+  return parts.filter(Boolean).join(' | ')
+}
+
+function gdtSymbolLabel(symbol: string | undefined) {
+  const key = symbol?.toLowerCase().replace(/[_\s-]/g, '')
+  switch (key) {
+    case 'flat':
+    case 'flatness':
+      return '⏥'
+    case 'parallel':
+    case 'parallelism':
+      return '∥'
+    case 'perpendicular':
+    case 'perpendicularity':
+      return '⊥'
+    case 'profile':
+    case 'profileofline':
+      return '⌒'
+    case 'profileofsurface':
+    case 'surfaceprofile':
+      return '⌓'
+    case 'position':
+      return '⌖'
+    case 'runout':
+      return '↗'
+    case 'totalrunout':
+      return '↗↗'
+    case 'cylindricity':
+      return '⌭'
+    case 'roundness':
+      return '○'
+    case 'straightness':
+      return '—'
+    case 'angularity':
+      return '∠'
+    default:
+      return symbol || 'GDT'
+  }
+}
+
+function averagePackedPoints(points: number[]): Point3 {
+  let x = 0
+  let y = 0
+  let z = 0
+  const count = Math.floor(points.length / 3)
+  if (count === 0) {
+    return { x: 0, y: 0, z: 0 }
+  }
+  for (let index = 0; index < points.length; index += 3) {
+    x += points[index] ?? 0
+    y += points[index + 1] ?? 0
+    z += points[index + 2] ?? 0
+  }
+  return { x: x / count, y: y / count, z: z / count }
 }
 
 function toPoint3(point: unknown): Point3 {

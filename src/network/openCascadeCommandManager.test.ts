@@ -227,6 +227,102 @@ describe('OpenCascadeCommandManager', () => {
     expect(exportResponse.resp.data.files[0].contents.length).toBeGreaterThan(0)
   })
 
+  it('records GD&T annotations against OpenCascade faces', async () => {
+    const manager = new OpenCascadeCommandManager()
+
+    await buildCircleRegionInput(manager)
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: IDS.region,
+      cmd: {
+        type: 'create_region_from_query_point',
+        object_id: IDS.path,
+        point: { x: 0, y: 0 },
+      },
+    })
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: IDS.solid,
+      cmd: {
+        type: 'extrude',
+        target: IDS.region,
+        distance: 5,
+        extrude_method: 'new',
+        body_type: 'solid',
+      },
+    })
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: IDS.plane,
+      cmd: {
+        type: 'make_plane',
+        clobber: false,
+        origin: { x: 0, y: 0, z: 0 },
+        x_axis: { x: 1, y: 0, z: 0 },
+        y_axis: { x: 0, y: 1, z: 0 },
+        size: 10,
+      },
+    })
+    const endCapId = manager
+      .exportLatestTopologyMeshes()
+      .solids[0].groups.find((group) => group.role === 'endCap')?.topologyId
+    expect(endCapId).toBeTruthy()
+    if (!endCapId) {
+      throw new Error('No circular extrusion end cap id')
+    }
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000a1',
+      cmd: {
+        type: 'new_annotation',
+        clobber: false,
+        annotation_type: 't3d',
+        options: {
+          feature_control: {
+            entity_id: endCapId,
+            entity_pos: { x: 0.5, y: 0.5 },
+            leader_type: 'dot',
+            plane_id: IDS.plane,
+            offset: { x: 40, y: 50 },
+            precision: 2,
+            font_scale: 1,
+            font_point_size: 36,
+            leader_scale: 1,
+            control_frame: {
+              symbol: 'flatness',
+              tolerance: 0.25,
+            },
+          },
+        },
+      },
+    })
+
+    const annotations = manager.exportLatestGdtAnnotationMeshes().annotations
+    expect(annotations).toHaveLength(1)
+    expect(annotations[0]).toMatchObject({
+      annotationId: '00000000-0000-0000-0000-0000000000a1',
+      entityId: endCapId,
+      planeId: IDS.plane,
+      offset: { x: 40, y: 50 },
+      target: { z: 5 },
+      label: '⏥ | 0.25',
+    })
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000a2',
+      cmd: {
+        type: 'object_visible',
+        object_id: '00000000-0000-0000-0000-0000000000a1',
+        hidden: true,
+      },
+    })
+    expect(manager.exportLatestGdtAnnotationMeshes().annotations).toHaveLength(
+      0
+    )
+  })
+
   it('exports visible OpenCascade solids as STEP, STL, OBJ, and PLY', async () => {
     const manager = new OpenCascadeCommandManager()
 
@@ -1499,6 +1595,65 @@ part002 = startSketchOn(XY)
         (face: { cap: string }) => face.cap
       )
     ).toEqual(['none', 'bottom', 'top'])
+  })
+
+  it('cuts the parent solid for default negative sketch-on-face extrudes', async () => {
+    const manager = new OpenCascadeCommandManager()
+    await buildRectangleRegionInput(manager)
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: IDS.solid,
+      cmd: {
+        type: 'extrude',
+        target: IDS.region,
+        distance: 2,
+        extrude_method: 'new',
+        body_type: 'solid',
+      },
+    })
+    const beforeVolume = await getVolume(manager, IDS.solid)
+    const endFaceId = manager
+      .exportLatestTopologyMeshes()
+      .solids[0].groups.find((group) => group.role === 'endCap')?.topologyId
+    expect(endFaceId).toBeTruthy()
+    if (!endFaceId) {
+      throw new Error('No end cap face id')
+    }
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000a0',
+      cmd: {
+        type: 'enable_sketch_mode',
+        entity_id: endFaceId,
+        adjust_camera: false,
+        animated: false,
+        ortho: false,
+      },
+    })
+    await buildRectangleOnActiveSketchPlane(manager, {
+      path: '00000000-0000-0000-0000-0000000000a1',
+      region: '00000000-0000-0000-0000-0000000000a2',
+      commandStart: 160,
+      min: { x: -0.5, y: -0.5 },
+      max: { x: 0.5, y: 0.5 },
+    })
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-0000000000a9',
+      cmd: {
+        type: 'extrude',
+        target: '00000000-0000-0000-0000-0000000000a2',
+        distance: -1,
+        body_type: 'solid',
+      },
+    })
+
+    expect(manager.getSolidCount()).toBe(1)
+    const afterVolume = await getVolume(manager, IDS.solid)
+    expect(afterVolume).toBeLessThan(beforeVolume)
   })
 
   it('keeps a method NEW sketch-on-face extrude as a separate solid', async () => {

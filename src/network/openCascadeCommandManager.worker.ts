@@ -11,6 +11,7 @@ type WorkerRequest = {
 const manager = new OpenCascadeCommandManager({ registerLatest: false })
 let mutationQueue: Promise<unknown> = Promise.resolve()
 let lastSnapshot: OpenCascadeRenderSnapshot | undefined
+let snapshotTimer: ReturnType<typeof setTimeout> | undefined
 
 self.addEventListener('message', (event: MessageEvent<WorkerRequest>) => {
   const message = event.data
@@ -25,11 +26,12 @@ void postSnapshot()
 
 async function handleRequest(message: WorkerRequest) {
   try {
-    const result = mutatesScene(message.method)
+    const rawResult = mutatesScene(message.method)
       ? await enqueueMutation(() =>
           handleMethod(message.method, message.args || [])
         )
       : await handleExport(message.method, message.args || [])
+    const result = sanitizeWorkerResult(rawResult)
     const response = {
       type: 'response',
       id: message.id,
@@ -47,6 +49,23 @@ async function handleRequest(message: WorkerRequest) {
   }
 }
 
+function sanitizeWorkerResult(value: unknown): unknown {
+  if (value instanceof Uint8Array) {
+    return value.slice()
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => sanitizeWorkerResult(item))
+  }
+  if (!value || typeof value !== 'object') {
+    return value
+  }
+  const result: Record<string, unknown> = {}
+  for (const [key, child] of Object.entries(value)) {
+    result[key] = sanitizeWorkerResult(child)
+  }
+  return result
+}
+
 function postResponse(message: unknown, transfer: Transferable[]) {
   const workerSelf = self as unknown as {
     postMessage(message: unknown, transfer: Transferable[]): void
@@ -56,8 +75,22 @@ function postResponse(message: unknown, transfer: Transferable[]) {
 
 function enqueueMutation<T>(fn: () => Promise<T>): Promise<T> {
   const next = mutationQueue.then(fn, fn)
-  mutationQueue = next.then(() => postSnapshot()).catch(() => undefined)
+  mutationQueue = next
+    .then(() => {
+      scheduleSnapshot()
+    })
+    .catch(() => undefined)
   return next
+}
+
+function scheduleSnapshot() {
+  if (snapshotTimer) {
+    return
+  }
+  snapshotTimer = setTimeout(() => {
+    snapshotTimer = undefined
+    void postSnapshot().catch(() => undefined)
+  }, 50)
 }
 
 async function handleExport(method: string, args: unknown[]): Promise<unknown> {
@@ -149,6 +182,9 @@ function snapshotPatch(
     snapshot.versions.plane !== previous.versions.plane
   ) {
     patch.planeMeshes = snapshot.planeMeshes
+  }
+  if (visibilityChanged) {
+    patch.gdtAnnotationMeshes = snapshot.gdtAnnotationMeshes
   }
   if (
     visibilityChanged ||
