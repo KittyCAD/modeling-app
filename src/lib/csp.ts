@@ -8,10 +8,7 @@ import { app, protocol } from 'electron'
 import mime from 'mime-types'
 
 import { ENVIRONMENT_FILE_NAME } from '@src/lib/constants'
-import {
-  getAppFolderNameFromBuild,
-  isStagingOrDebugAppBuild,
-} from '@src/lib/appFolderName'
+import { getAppFolderNameFromBuild } from '@src/lib/appFolderName'
 
 const CSP_META_REGEX =
   /<meta\b[^>]*http-equiv=["']Content-Security-Policy["'][^>]*>/gi
@@ -53,10 +50,10 @@ const getEnvironmentFolderName = () => {
   })
 }
 
-const isStagingOrDebugBuild = isStagingOrDebugAppBuild({
-  packageName: packageJSON.name,
-  packageVersion: packageJSON.version,
-})
+const isStagingOrDebugBuild =
+  packageJSON.name.includes('-staging') ||
+  packageJSON.version === '0.0.0' ||
+  packageJSON.version === 'dev'
 
 const getTestSettingsPathForCsp = () => {
   if (process.env.NODE_ENV !== 'test') return undefined
