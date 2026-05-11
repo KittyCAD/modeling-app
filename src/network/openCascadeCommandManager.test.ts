@@ -1514,6 +1514,38 @@ part002 = startSketchOn(XY)
     })
     const normal = faceResponse.resp.data.modeling_response.data.z_axis
     expect(Math.hypot(normal.x, normal.y, normal.z)).toBeCloseTo(1)
+
+    const endFaceId = manager
+      .exportLatestTopologyMeshes()
+      .solids[0].groups.find((group) => group.role === 'endCap')?.topologyId
+    expect(endFaceId).toBeTruthy()
+    if (!endFaceId) {
+      throw new Error('No end cap face id')
+    }
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-000000000066',
+      cmd: {
+        type: 'enable_sketch_mode',
+        entity_id: endFaceId,
+        adjust_camera: false,
+        animated: false,
+        ortho: false,
+      },
+    })
+    const endFaceResponse = await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-000000000067',
+      cmd: { type: 'get_sketch_mode_plane' },
+    })
+    const endFacePlane = endFaceResponse.resp.data.modeling_response.data
+    expect(endFacePlane.origin).toEqual({ x: 0, y: 0, z: 2 })
+    expect(endFacePlane.x_axis.x).toBeCloseTo(1)
+    expect(endFacePlane.x_axis.y).toBeCloseTo(0)
+    expect(endFacePlane.x_axis.z).toBeCloseTo(0)
+    expect(endFacePlane.y_axis.x).toBeCloseTo(0)
+    expect(endFacePlane.y_axis.y).toBeCloseTo(1)
+    expect(endFacePlane.y_axis.z).toBeCloseTo(0)
   })
 
   it('merges a default sketch-on-face extrude into its parent solid', async () => {

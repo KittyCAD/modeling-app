@@ -4272,9 +4272,9 @@ export class OpenCascadeCommandManager {
       if (!arePointsCoplanar(points, origin, normal)) {
         continue
       }
-      const yAxis = stableFaceYAxis(points, normal)
+      const yAxis = absoluteFaceYAxis(normal)
       return {
-        origin,
+        origin: absolutePlaneOrigin(origin, normal),
         x_axis: normalize(cross(yAxis, normal)),
         y_axis: yAxis,
         z_axis: normal,
@@ -6208,14 +6208,17 @@ function arePointsCoplanar(
   )
 }
 
-function stableFaceYAxis(points: Point3[], normal: Point3): Point3 {
-  for (let index = 0; index < points.length - 1; index += 1) {
-    const edge = add(points[index + 1], scale(points[index], -1))
-    const projected = add(edge, scale(normal, -dot(edge, normal)))
-    const axis = normalize(projected)
-    if (Math.hypot(axis.x, axis.y, axis.z) > 0.5) {
-      return axis
-    }
+function absolutePlaneOrigin(pointOnPlane: Point3, normal: Point3): Point3 {
+  return scale(normal, dot(pointOnPlane, normal))
+}
+
+function absoluteFaceYAxis(normal: Point3): Point3 {
+  const preferred =
+    Math.abs(normal.z) > 0.75 ? { x: 0, y: 1, z: 0 } : { x: 0, y: 0, z: 1 }
+  const projected = add(preferred, scale(normal, -dot(preferred, normal)))
+  const axis = normalize(projected)
+  if (Math.hypot(axis.x, axis.y, axis.z) > 0.5) {
+    return axis
   }
   return orthonormalBasis(normal).y
 }
