@@ -2336,6 +2336,64 @@ pub enum SketchConstraintKind {
         #[ts(optional)]
         label_position: Option<ApiPoint2d<Number>>,
     },
+    PointLineDistance {
+        point: ConstrainablePoint2dOrOrigin,
+        line: ConstrainableLine2d,
+        input_object_ids: [Option<ObjectId>; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
+    },
+    LineLineDistance {
+        line0: ConstrainableLine2d,
+        line1: ConstrainableLine2d,
+        input_object_ids: [ObjectId; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
+    },
+    PointCircularDistance {
+        point: ConstrainablePoint2dOrOrigin,
+        center: ConstrainablePoint2d,
+        start: ConstrainablePoint2d,
+        end: Option<ConstrainablePoint2d>,
+        input_object_ids: [Option<ObjectId>; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
+    },
+    LineCircularDistance {
+        line: ConstrainableLine2d,
+        center: ConstrainablePoint2d,
+        start: ConstrainablePoint2d,
+        end: Option<ConstrainablePoint2d>,
+        input_object_ids: [ObjectId; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
+    },
+    CircularCircularDistance {
+        center0: ConstrainablePoint2d,
+        start0: ConstrainablePoint2d,
+        end0: Option<ConstrainablePoint2d>,
+        center1: ConstrainablePoint2d,
+        start1: ConstrainablePoint2d,
+        end1: Option<ConstrainablePoint2d>,
+        input_object_ids: [ObjectId; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
+    },
     Radius {
         points: [ConstrainablePoint2d; 2],
         #[serde(rename = "labelPosition")]
@@ -2375,6 +2433,11 @@ impl SketchConstraintKind {
         match self {
             SketchConstraintKind::Angle { .. } => "angle",
             SketchConstraintKind::Distance { .. } => "distance",
+            SketchConstraintKind::PointLineDistance { .. } => "distance",
+            SketchConstraintKind::LineLineDistance { .. } => "distance",
+            SketchConstraintKind::PointCircularDistance { .. } => "distance",
+            SketchConstraintKind::LineCircularDistance { .. } => "distance",
+            SketchConstraintKind::CircularCircularDistance { .. } => "distance",
             SketchConstraintKind::Radius { .. } => "radius",
             SketchConstraintKind::Diameter { .. } => "diameter",
             SketchConstraintKind::HorizontalDistance { .. } => "horizontalDistance",
