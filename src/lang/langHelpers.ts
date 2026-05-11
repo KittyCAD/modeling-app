@@ -19,6 +19,7 @@ import { emptyExecState, kclLint } from '@src/lang/wasm'
 import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings, userHasFeature } from '@src/lib/settings/settingsUtils'
+import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/network/utils'
 import type { EditorView } from 'codemirror'
@@ -53,14 +54,37 @@ export async function executeAst({
       execState,
       isInterrupted: false,
     }
-  } catch (e: any) {
+  } catch (e) {
     return handleExecuteError(e)
   }
 }
 
 export const executeAstMock = executeAstMockImpl
 
-function handleExecuteError(e: any): ExecutionResult {
+function getFirstExecutionErrorMessage(e: unknown): string | undefined {
+  if (!isArray(e)) return undefined
+  const firstErrorResult = e[0]
+  if (
+    !firstErrorResult ||
+    typeof firstErrorResult !== 'object' ||
+    !('errors' in firstErrorResult) ||
+    !isArray(firstErrorResult.errors)
+  ) {
+    return undefined
+  }
+  const firstError = firstErrorResult.errors[0]
+  if (
+    !firstError ||
+    typeof firstError !== 'object' ||
+    !('message' in firstError) ||
+    typeof firstError.message !== 'string'
+  ) {
+    return undefined
+  }
+  return firstError.message
+}
+
+function handleExecuteError(e: unknown): ExecutionResult {
   let isInterrupted = false
 
   if (e instanceof KCLError) {
@@ -87,23 +111,21 @@ function handleExecuteError(e: any): ExecutionResult {
       isInterrupted,
     }
   } else {
-    if (e && e.length > 0 && e[0].errors && e[0].errors.length > 0) {
-      if (
-        e[0].errors[0].message.includes(
+    const executionErrorMessage = getFirstExecutionErrorMessage(e)
+    if (executionErrorMessage) {
+      isInterrupted =
+        executionErrorMessage.includes(
           'no connection to send on, connection manager called tearDown()'
         ) ||
-        e[0].errors[0].message.includes(
+        executionErrorMessage.includes(
           'Failed to wait for promise from send modeling command'
         ) ||
-        e[0].errors[0].message.includes(REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE)
-      ) {
-        isInterrupted = true
-      }
+        executionErrorMessage.includes(REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE)
     }
 
     console.log(e)
     return {
-      logs: [e],
+      logs: [String(e)],
       errors: [],
       execState: emptyExecState(),
       isInterrupted,
@@ -120,7 +142,7 @@ export async function lintAst({
   directTagFilletMetadata,
   artifactGraph,
 }: {
-  ast: Program
+  ast: Node<Program>
   sourceCode: string
   instance: ModuleType
   rustContext?: RustContext
@@ -133,7 +155,6 @@ export async function lintAst({
       kclLint(ast, instance),
       userHasFeature(ENABLE_Z0006_LINT_FLAG, false),
     ])
-
     // Filter out Z0005 if sketch solve mode is not enabled
     // Only show Z0005 when useSketchSolveMode setting is enabled
     let shouldShowZ0005 = false
@@ -213,7 +234,7 @@ export async function lintAst({
     })
 
     return await Promise.all(diagnosticsPromises)
-  } catch (e: any) {
+  } catch (e) {
     console.log(e)
     return []
   }

@@ -1,6 +1,7 @@
 import type { Diagnostic } from '@codemirror/lint'
 import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
 import type { Discovered } from '@rust/kcl-lib/bindings/Discovered'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { toUtf16 } from '@src/lang/errors'
 import { refactorZ0006Unified } from '@src/lang/modifyAst/edges'
@@ -18,7 +19,7 @@ import type { EditorView } from 'codemirror'
 
 type RefactorLintActionsParams = {
   lint: Discovered
-  ast: Program
+  ast: Node<Program>
   sourceCode: string
   instance: ModuleType
   rustContext?: RustContext

@@ -56,7 +56,6 @@ import type {
   EdgeRefactorMeta,
   Expr,
   ExpressionStatement,
-  Name,
   PathToNode,
   Program,
   SegmentArtifact,
@@ -71,10 +70,8 @@ import {
   isEnginePrimitiveSelection,
 } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
-import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
-  EdgeRefFromOpArgs,
   EnginePrimitiveSelection,
   Selection,
   Selections,
@@ -1077,13 +1074,13 @@ export function createEdgeRefObjectExpression(
   }
 }
 
-const DEPRECATED_EDGE_STDLIB = [
+const DEPRECATED_EDGE_STDLIB: readonly string[] = [
   'getOppositeEdge',
   'getNextAdjacentEdge',
   'getPreviousAdjacentEdge',
   'getCommonEdge',
   'edgeId',
-] as const
+]
 
 function isFilletOrChamfer(callee: string): boolean {
   return callee === 'fillet' || callee === 'chamfer'
@@ -1098,16 +1095,19 @@ function isExtrude(callee: string): boolean {
 }
 
 function isDeprecatedEdgeStdlib(calleeName: string | undefined): boolean {
-  return Boolean(
-    calleeName &&
-      (DEPRECATED_EDGE_STDLIB as readonly string[]).includes(calleeName)
-  )
+  return Boolean(calleeName && DEPRECATED_EDGE_STDLIB.includes(calleeName))
+}
+
+function getLabelName(arg: Node<CallExpressionKw>['arguments'][number]) {
+  return arg.label?.name
+}
+
+function getCalleeName(call: Node<CallExpressionKw>): string | undefined {
+  return call.callee.name.name
 }
 
 function getTagsElementsFromCall(call: Node<CallExpressionKw>): Expr[] | null {
-  const tagsArg = call.arguments?.find(
-    (a) => (a.label as { name?: string })?.name === 'tags'
-  )
+  const tagsArg = call.arguments?.find((a) => getLabelName(a) === 'tags')
   if (!tagsArg?.arg) return null
   if (tagsArg.arg.type === 'ArrayExpression')
     return tagsArg.arg.elements ?? null
@@ -1116,9 +1116,7 @@ function getTagsElementsFromCall(call: Node<CallExpressionKw>): Expr[] | null {
 
 function getExistingEdgeRefsFromCall(call: Node<CallExpressionKw>): Expr[] {
   const edgeRefsArg = call.arguments?.find(
-    (a) =>
-      (a.label as { name?: string })?.name === 'edges' ||
-      (a.label as { name?: string })?.name === 'edgeRefs'
+    (a) => getLabelName(a) === 'edges' || getLabelName(a) === 'edgeRefs'
   )
   if (!edgeRefsArg?.arg || edgeRefsArg.arg.type !== 'ArrayExpression') return []
   return edgeRefsArg.arg.elements ?? []
@@ -1132,19 +1130,21 @@ function getExistingEdgeRefsFromCall(call: Node<CallExpressionKw>): Expr[] {
 function getTagsBaseFromTagElement(el: Expr): Expr | null {
   const inner = getCallFromExpr(el)
   if (!inner) return null
-  const calleeName = (inner.callee as { name?: { name?: string } })?.name?.name
+  const calleeName = getCalleeName(inner)
   if (!isDeprecatedEdgeStdlib(calleeName)) {
     return null
   }
   const firstArg = inner.unlabeled ?? null
   if (!firstArg || firstArg.type !== 'MemberExpression') return null
-  const outerMem = firstArg as { object: Expr; property: Expr }
-  if (outerMem.object.type !== 'MemberExpression') return null
-  const innerMem = outerMem.object as { object: Expr; property: Expr }
-  const propName = (innerMem.property as { name?: { name?: string } })?.name
-    ?.name
+  const outerMember = firstArg
+  if (outerMember.object.type !== 'MemberExpression') return null
+  const innerMember = outerMember.object
+  const propName =
+    innerMember.property.type === 'Name'
+      ? innerMember.property.name.name
+      : undefined
   if (propName !== 'tags') return null
-  return innerMem.object
+  return innerMember.object
 }
 
 function findDeprecatedEdgeStdlibCallForVariable(
@@ -1158,7 +1158,7 @@ function findDeprecatedEdgeStdlibCallForVariable(
     const call = getCallFromExpr(item.declaration.init)
     if (!call) continue
 
-    const calleeName = (call.callee as { name?: { name?: string } })?.name?.name
+    const calleeName = getCalleeName(call)
     if (!isDeprecatedEdgeStdlib(calleeName)) {
       continue
     }
@@ -1179,17 +1179,10 @@ function callSourceRangeMatches(
   moduleId: number
 ): boolean {
   const sr = meta.callSourceRange
-  if (isArray(sr))
-    return (
-      Number(sr[0]) === start &&
-      Number(sr[1]) === end &&
-      (Number((sr as [number, number, number])[2]) ?? 0) === moduleId
-    )
-  const s = sr as { start?: number; end?: number; moduleId?: number }
   return (
-    Number(s.start ?? 0) === start &&
-    Number(s.end ?? 0) === end &&
-    (Number(s.moduleId) ?? 0) === moduleId
+    Number(sr[0]) === start &&
+    Number(sr[1]) === end &&
+    Number(sr[2] ?? 0) === moduleId
   )
 }
 
@@ -1199,14 +1192,7 @@ function sourceRangeMatch(
   end: number,
   moduleId: number
 ): boolean {
-  const sr = meta.sourceRange
-  const metaStart = isArray(sr)
-    ? sr[0]
-    : ((sr as { start?: number }).start ?? 0)
-  const metaEnd = isArray(sr) ? sr[1] : ((sr as { end?: number }).end ?? 0)
-  const metaModuleId = isArray(sr)
-    ? (sr[2] ?? 0)
-    : ((sr as { moduleId?: number }).moduleId ?? 0)
+  const [metaStart, metaEnd, metaModuleId = 0] = meta.sourceRange
   return metaModuleId === moduleId && metaStart === start && metaEnd === end
 }
 
@@ -1241,7 +1227,7 @@ function walkExpr(
   if (!expr || typeof expr !== 'object') return
 
   if (expr.type === 'PipeExpression') {
-    for (const bodyExpr of (expr as { body?: Expr[] }).body ?? []) {
+    for (const bodyExpr of expr.body ?? []) {
       visitExpr(bodyExpr, visitor, options, pathPrefix)
     }
     return
@@ -1250,7 +1236,7 @@ function walkExpr(
   const callExpr = options.resolveWrappedCalls
     ? getCallFromExpr(expr)
     : expr.type === 'CallExpressionKw'
-      ? (expr as Node<CallExpressionKw>)
+      ? expr
       : null
   if (callExpr) {
     if (options.includeCallUnlabeled && callExpr.unlabeled) {
@@ -1298,12 +1284,7 @@ function visitProgramExpressions(
 ): void {
   const body = program.body ?? []
   for (let statementIndex = 0; statementIndex < body.length; statementIndex++) {
-    const item = body[statementIndex] as {
-      type?: string
-      declaration?: { init?: Expr }
-      expression?: Expr
-      argument?: Expr
-    }
+    const item = body[statementIndex]
     const pathPrefix: PathToNode = [
       ['body', ''],
       [statementIndex, 'index'],
@@ -1347,8 +1328,8 @@ function findFilletChamferCallsToFixUnified(
       walk(expr)
       return
     }
-    const call = expr as Node<CallExpressionKw>
-    const calleeName = (call.callee as { name?: { name?: string } })?.name?.name
+    const call = expr
+    const calleeName = getCalleeName(call)
     if (!calleeName || !isFilletOrChamfer(calleeName)) {
       walk(expr)
       return
@@ -1367,16 +1348,10 @@ function findFilletChamferCallsToFixUnified(
 
         const inner = getCallFromExpr(el)
         if (inner) {
-          const innerCallee = (inner.callee as { name?: { name?: string } })
-            ?.name?.name
+          const innerCallee = getCalleeName(inner)
           if (isDeprecatedEdgeStdlib(innerCallee)) {
             const meta = edgeRefactorMetadata.find((m) =>
-              sourceRangeMatch(
-                m,
-                inner.start,
-                inner.end,
-                (inner as { module_id?: number }).module_id ?? 0
-              )
+              sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
             )
             if (meta) {
               orderedPayloads.push({
@@ -1386,8 +1361,8 @@ function findFilletChamferCallsToFixUnified(
             }
           }
         } else if (el.type === 'Name') {
-          const tagName = (el as Node<Name>).name?.name ?? ''
-          const moduleId = (call as { module_id?: number }).module_id ?? 0
+          const tagName = el.name.name
+          const moduleId = call.moduleId
           const directMeta = directTagFilletMetadata.find((m) =>
             callSourceRangeMatches(m, call.start, call.end, moduleId)
           )
@@ -1408,14 +1383,12 @@ function findFilletChamferCallsToFixUnified(
               tagsBaseExpr = deprecatedCall.tagsBaseExpr
             }
 
-            const deprecatedCallModuleId =
-              (deprecatedCall.call as { module_id?: number }).module_id ?? 0
             const meta = edgeRefactorMetadata.find((m) =>
               sourceRangeMatch(
                 m,
                 deprecatedCall.call.start,
                 deprecatedCall.call.end,
-                deprecatedCallModuleId
+                deprecatedCall.call.moduleId
               )
             )
             if (meta) {
@@ -1430,7 +1403,7 @@ function findFilletChamferCallsToFixUnified(
     }
 
     if (orderedPayloads.length > 0 || existingEdgeRefExprs.length > 0) {
-      const moduleId = (call as { module_id?: number }).module_id ?? 0
+      const moduleId = call.moduleId
       results.push({
         range: [call.start, call.end, moduleId],
         orderedPayloads,
@@ -1461,28 +1434,18 @@ interface ExtrudeToCallToFix {
   pathToCall?: PathToNode
 }
 
-/** Get CallExpressionKw from Expr whether inline (expr.type) or Rust externally-tagged (expr.CallExpressionKw). */
 function getCallFromExpr(expr: Expr): Node<CallExpressionKw> | null {
   if (!expr || typeof expr !== 'object') return null
-  const o = expr as Record<string, unknown>
-  if (o.type === 'CallExpressionKw') return o as Node<CallExpressionKw>
-  const inner = o.CallExpressionKw
-  return inner && typeof inner === 'object'
-    ? (inner as Node<CallExpressionKw>)
-    : null
+  if (expr.type === 'CallExpressionKw') return expr
+  return null
 }
 
-/** Path to the concrete CallExpressionKw node for inline or externally-tagged Expr shapes. */
 function getCallPathFromExpr(
   expr: Expr,
   pathPrefix?: PathToNode
 ): PathToNode | undefined {
-  if (!pathPrefix || pathPrefix.length === 0) return undefined
-  const o = expr as Record<string, unknown>
-  if (o?.type === 'CallExpressionKw') return [...pathPrefix]
-  if (o?.CallExpressionKw && typeof o.CallExpressionKw === 'object') {
-    return [...pathPrefix, ['CallExpressionKw', '']]
-  }
+  if (!pathPrefix?.length) return undefined
+  if (expr.type === 'CallExpressionKw') return [...pathPrefix]
   return undefined
 }
 
@@ -1500,7 +1463,7 @@ export function findRevolveHelixCallsToFix(
       return
     }
     const callPath = getCallPathFromExpr(expr, pathPrefix)
-    const calleeName = (call.callee as { name?: { name?: string } })?.name?.name
+    const calleeName = getCalleeName(call)
     if (!calleeName || !isRevolveOrHelix(calleeName)) {
       walk(expr)
       return
@@ -1511,21 +1474,21 @@ export function findRevolveHelixCallsToFix(
       walk(expr)
       return
     }
-    const innerCallee = (inner.callee as { name?: { name?: string } })?.name
-      ?.name
+    const innerCallee = getCalleeName(inner)
     if (!isDeprecatedEdgeStdlib(innerCallee)) {
       walk(expr)
       return
     }
-    const innerStart = Number((inner as { start?: number }).start ?? 0)
-    const innerEnd = Number((inner as { end?: number }).end ?? 0)
-    const innerModuleId = (inner as { module_id?: number }).module_id ?? 0
+
+    const innerStart = inner.start
+    const innerEnd = inner.end
+    const innerModuleId = inner.moduleId
     const meta = edgeRefactorMetadata.find((m) =>
       sourceRangeMatch(m, innerStart, innerEnd, innerModuleId)
     )
-    const moduleId = (call as { module_id?: number }).module_id ?? 0
-    const callStart = Number((call as { start?: number }).start ?? 0)
-    const callEnd = Number((call as { end?: number }).end ?? 0)
+    const moduleId = call.moduleId
+    const callStart = call.start
+    const callEnd = call.end
     if (meta) {
       results.push({
         range: [callStart, callEnd, moduleId],
@@ -1546,9 +1509,7 @@ export function findRevolveHelixCallsToFix(
 
 /** findKwArg for a call's arguments. */
 function findToArg(call: Node<CallExpressionKw>): Expr | null {
-  const arg = call.arguments?.find(
-    (a) => (a.label as { name?: string })?.name === 'to'
-  )
+  const arg = call.arguments?.find((a) => getLabelName(a) === 'to')
   return arg?.arg ?? null
 }
 
@@ -1569,7 +1530,7 @@ export function findExtrudeToCallsToFix(
       return
     }
     const callPath = getCallPathFromExpr(expr, pathPrefix)
-    const calleeName = (call.callee as { name?: { name?: string } })?.name?.name
+    const calleeName = getCalleeName(call)
     if (!calleeName || !isExtrude(calleeName)) {
       walk(expr)
       return
@@ -1580,21 +1541,21 @@ export function findExtrudeToCallsToFix(
       walk(expr)
       return
     }
-    const innerCallee = (inner.callee as { name?: { name?: string } })?.name
-      ?.name
+    const innerCallee = getCalleeName(inner)
     if (!isDeprecatedEdgeStdlib(innerCallee)) {
       walk(expr)
       return
     }
-    const innerStart = Number((inner as { start?: number }).start ?? 0)
-    const innerEnd = Number((inner as { end?: number }).end ?? 0)
-    const innerModuleId = (inner as { module_id?: number }).module_id ?? 0
+
+    const innerStart = inner.start
+    const innerEnd = inner.end
+    const innerModuleId = inner.moduleId
     const meta = edgeRefactorMetadata.find((m) =>
       sourceRangeMatch(m, innerStart, innerEnd, innerModuleId)
     )
-    const moduleId = (call as { module_id?: number }).module_id ?? 0
-    const callStart = Number((call as { start?: number }).start ?? 0)
-    const callEnd = Number((call as { end?: number }).end ?? 0)
+    const moduleId = call.moduleId
+    const callStart = call.start
+    const callEnd = call.end
     if (meta) {
       results.push({
         range: [callStart, callEnd, moduleId],
@@ -1626,16 +1587,6 @@ function refactorRevolveHelixAxisToEdgeRefInPlace(
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
 ): Node<Program> {
-  const resolveCallNode = (node: unknown): Node<CallExpressionKw> | null => {
-    if (!node || typeof node !== 'object') return null
-    const n = node as Record<string, unknown>
-    if (n.type === 'CallExpressionKw') return n as Node<CallExpressionKw>
-    const wrapped = n.CallExpressionKw
-    return wrapped && typeof wrapped === 'object'
-      ? (wrapped as Node<CallExpressionKw>)
-      : null
-  }
-
   if (toFix.length === 0) return modifiedAst
   for (let i = 0; i < toFix.length; i++) {
     const { faceIds, pathToCall } = toFix[i]
@@ -1648,17 +1599,16 @@ function refactorRevolveHelixAxisToEdgeRefInPlace(
     )
     if (err(result)) continue
     modifiedAst = result.modifiedAst
-    const nodeResult = getNodeFromPath(modifiedAst, path, wasmInstance, [
-      'CallExpressionKw',
-    ])
+    const nodeResult = getNodeFromPath<Node<CallExpressionKw>>(
+      modifiedAst,
+      path,
+      wasmInstance,
+      ['CallExpressionKw']
+    )
     if (err(nodeResult)) continue
-    const callNode = resolveCallNode(nodeResult.node)
-    if (!callNode) continue
-    const args = callNode.arguments ?? []
-    const newArgs = args.filter(
-      (a) =>
-        (a.label as { name?: string })?.name !== 'axis' &&
-        (a.label as { name?: string })?.name !== 'axis'
+    const callNode = nodeResult.node
+    const newArgs = (callNode.arguments ?? []).filter(
+      (a) => getLabelName(a) !== 'axis'
     )
     newArgs.push(createLabeledArg('axis', result.expr))
     callNode.arguments = newArgs
@@ -1677,16 +1627,6 @@ function refactorExtrudeToToEdgeSpecifierInPlace(
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
 ): Node<Program> {
-  const resolveCallNode = (node: unknown): Node<CallExpressionKw> | null => {
-    if (!node || typeof node !== 'object') return null
-    const n = node as Record<string, unknown>
-    if (n.type === 'CallExpressionKw') return n as Node<CallExpressionKw>
-    const wrapped = n.CallExpressionKw
-    return wrapped && typeof wrapped === 'object'
-      ? (wrapped as Node<CallExpressionKw>)
-      : null
-  }
-
   if (toFix.length === 0) return modifiedAst
   for (let i = 0; i < toFix.length; i++) {
     const { faceIds, pathToCall } = toFix[i]
@@ -1699,15 +1639,16 @@ function refactorExtrudeToToEdgeSpecifierInPlace(
     )
     if (err(result)) continue
     modifiedAst = result.modifiedAst
-    const nodeResult = getNodeFromPath(modifiedAst, path, wasmInstance, [
-      'CallExpressionKw',
-    ])
+    const nodeResult = getNodeFromPath<Node<CallExpressionKw>>(
+      modifiedAst,
+      path,
+      wasmInstance,
+      ['CallExpressionKw']
+    )
     if (err(nodeResult)) continue
-    const callNode = resolveCallNode(nodeResult.node)
-    if (!callNode) continue
-    const args = callNode.arguments ?? []
-    const newArgs = args.filter(
-      (a) => (a.label as { name?: string })?.name !== 'to'
+    const callNode = nodeResult.node
+    const newArgs = (callNode.arguments ?? []).filter(
+      (a) => getLabelName(a) !== 'to'
     )
     newArgs.push(createLabeledArg('to', result.expr))
     callNode.arguments = newArgs
@@ -1733,7 +1674,7 @@ function isNodeProgram(ast: Program): ast is Node<Program> {
  * Returns refactored source or Error if nothing to fix.
  */
 export function refactorZ0006Unified(
-  ast: Program,
+  ast: Node<Program>,
   edgeRefactorMetadata: EdgeRefactorMeta[],
   directTagFilletMetadata: DirectTagFilletMeta[],
   artifactGraph: ArtifactGraph,
@@ -1777,11 +1718,14 @@ export function refactorZ0006Unified(
       edgeRefExprs.push(result.expr)
       modifiedAst = result.modifiedAst
     }
-    const nodeResult = getNodeFromPath(modifiedAst, path, wasmInstance, [
-      'CallExpressionKw',
-    ])
+    const nodeResult = getNodeFromPath<Node<CallExpressionKw>>(
+      modifiedAst,
+      path,
+      wasmInstance,
+      ['CallExpressionKw']
+    )
     if (err(nodeResult)) continue
-    const callNode = nodeResult.node as Node<CallExpressionKw>
+    const callNode = nodeResult.node
     if (hasExistingEdgeRefs) {
       const existing = getExistingEdgeRefsFromCall(callNode)
       edgeRefExprs.push(...existing)
@@ -1790,9 +1734,9 @@ export function refactorZ0006Unified(
     const args = callNode.arguments ?? []
     const newArgs = args.filter(
       (a) =>
-        (a.label as { name?: string })?.name !== 'tags' &&
-        (a.label as { name?: string })?.name !== 'edges' &&
-        (a.label as { name?: string })?.name !== 'edgeRefs'
+        getLabelName(a) !== 'tags' &&
+        getLabelName(a) !== 'edges' &&
+        getLabelName(a) !== 'edgeRefs'
     )
     newArgs.push(createLabeledArg('edges', createArrayExpression(edgeRefExprs)))
     callNode.arguments = newArgs
@@ -2817,8 +2761,7 @@ function findEdgeArtifactFromFaceIds(
   const faceIdSet = new Set(faceIds)
   for (const [, artifact] of artifactGraph) {
     if (artifact.type !== 'segment') continue
-    const commonIds = (artifact as { commonSurfaceIds?: string[] })
-      .commonSurfaceIds
+    const commonIds = artifact.commonSurfaceIds
     if (!commonIds?.length) continue
     const commonSet = new Set(commonIds)
     if (
@@ -2849,21 +2792,15 @@ export function retrieveEdgeSelectionsFromEdgeRefs(
 
   for (const item of edgeRefItems) {
     if (item.type !== 'Object' || !item.value) continue
-    const value = item.value as EdgeRefFromOpArgs
     // Selection recovery only needs the primary graph edge so edit/delete flows
     // can reselect an operation in the scene. `endFaces` and `index` refine how
     // the engine resolves ambiguous edge specifiers, but they are not needed to
     // recover the editable artifact from the current artifact graph.
-    const facesProp = (value.sideFaces ?? value.side_faces) as
-      | OpKclValue
-      | undefined
-    if (!facesProp || facesProp.type !== 'Array') continue
-    const faceValues = facesProp.value ?? []
-    const faceIds: string[] = []
-    for (const v of faceValues) {
-      const id = faceRefToArtifactId(v)
-      if (id) faceIds.push(id)
-    }
+    const facesProp = item.value.sideFaces
+    if (facesProp?.type !== 'Array') continue
+    const faceIds = facesProp.value
+      .map(faceRefToArtifactId)
+      .filter((id): id is string => Boolean(id))
     if (faceIds.length < 2) continue
     const edgeArtifact = findEdgeArtifactFromFaceIds(faceIds, artifactGraph)
     if (!edgeArtifact) continue
@@ -2887,16 +2824,12 @@ export function retrieveEdgeSelectionsFromSingleEdgeRef(
   if (edgeRefArg.value.type !== 'Object' || !edgeRefArg.value.value) {
     return new Error('edgeRef argument is not an object')
   }
-  const value = edgeRefArg.value.value as EdgeRefFromOpArgs
-
   // Selection recovery intentionally uses only side faces. `endFaces` and
   // `index` are engine disambiguators for executing the edge specifier, while
   // this path only needs to map the stdlib argument back to a selectable graph
   // artifact for editing.
-  const facesProp = (value.sideFaces ?? value.side_faces) as
-    | OpKclValue
-    | undefined
-  if (!facesProp || facesProp.type !== 'Array') {
+  const facesProp = edgeRefArg.value.value.sideFaces
+  if (facesProp?.type !== 'Array') {
     return new Error('edgeRef has no sideFaces array')
   }
   const faceValues = facesProp.value ?? []
