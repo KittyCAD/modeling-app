@@ -12,8 +12,12 @@ Functions for working with geometric dimensioning and tolerancing (GD&T). This c
 
 ## Functions and constants
 
+* [`gdt::annotation`](/docs/kcl-std-sketch-solve/functions/std-gdt-annotation)
 * [`gdt::datum`](/docs/kcl-std-sketch-solve/functions/std-gdt-datum)
+* [`gdt::distance`](/docs/kcl-std-sketch-solve/functions/std-gdt-distance)
 * [`gdt::flatness`](/docs/kcl-std-sketch-solve/functions/std-gdt-flatness)
+* [`gdt::parallelism`](/docs/kcl-std-sketch-solve/functions/std-gdt-parallelism)
 * [`gdt::perpendicularity`](/docs/kcl-std-sketch-solve/functions/std-gdt-perpendicularity)
+* [`gdt::position`](/docs/kcl-std-sketch-solve/functions/std-gdt-position)
 * [`gdt::profile`](/docs/kcl-std-sketch-solve/functions/std-gdt-profile)
 
