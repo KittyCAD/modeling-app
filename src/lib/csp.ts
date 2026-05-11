@@ -8,7 +8,10 @@ import { app, protocol } from 'electron'
 import mime from 'mime-types'
 
 import { ENVIRONMENT_FILE_NAME } from '@src/lib/constants'
-import { getAppFolderNameFromBuild } from '@src/lib/appFolderName'
+import {
+  STAGING_BUILD_SUFFIX,
+  getAppFolderNameFromBuild,
+} from '@src/lib/appFolderName'
 
 const CSP_META_REGEX =
   /<meta\b[^>]*http-equiv=["']Content-Security-Policy["'][^>]*>/gi
@@ -51,7 +54,7 @@ const getEnvironmentFolderName = () => {
 }
 
 const isStagingOrDebugBuild =
-  packageJSON.name.includes('-staging') ||
+  packageJSON.name.includes(STAGING_BUILD_SUFFIX) ||
   packageJSON.version === '0.0.0' ||
   packageJSON.version === 'dev'
 
