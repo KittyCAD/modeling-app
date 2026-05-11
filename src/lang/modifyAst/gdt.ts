@@ -33,6 +33,20 @@ function isProfileEdgeArtifact(
   return artifact?.type === 'segment' || artifact?.type === 'sweepEdge'
 }
 
+function resolveSelectionsForTags(
+  selections: Selections,
+  artifactGraph: ArtifactGraph,
+  artifactPredicate: (
+    artifact: Selections['graphSelections'][number]['artifact']
+  ) => boolean
+): ResolvedGraphSelection[] {
+  return selections.graphSelections.flatMap((selection) => {
+    const resolved = resolveToCodeRef(selection, artifactGraph)
+    if (!resolved || !artifactPredicate(resolved.artifact)) return []
+    return [resolved]
+  })
+}
+
 /**
  * Adds flatness GD&T annotation(s) to the AST.
  * Creates one gdt::flatness call for each selected face.
@@ -256,11 +270,15 @@ export function addPositionGdt({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  const faceSelections = objects.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
+  const faceSelections = resolveSelectionsForTags(
+    objects,
+    artifactGraph,
+    isFaceArtifact
   )
-  const edgeSelections = objects.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
+  const edgeSelections = resolveSelectionsForTags(
+    objects,
+    artifactGraph,
+    isProfileEdgeArtifact
   )
 
   if (faceSelections.length === 0 && edgeSelections.length === 0) {
@@ -593,11 +611,15 @@ export function addPerpendicularityGdt({
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   let modifiedAst = structuredClone(ast)
 
-  const faceSelections = objects.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
+  const faceSelections = resolveSelectionsForTags(
+    objects,
+    artifactGraph,
+    isFaceArtifact
   )
-  const edgeSelections = objects.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
+  const edgeSelections = resolveSelectionsForTags(
+    objects,
+    artifactGraph,
+    isProfileEdgeArtifact
   )
 
   if (faceSelections.length === 0 && edgeSelections.length === 0) {
@@ -785,11 +807,15 @@ export function addParallelismGdt({
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   let modifiedAst = structuredClone(ast)
 
-  const faceSelections = objects.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
+  const faceSelections = resolveSelectionsForTags(
+    objects,
+    artifactGraph,
+    isFaceArtifact
   )
-  const edgeSelections = objects.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
+  const edgeSelections = resolveSelectionsForTags(
+    objects,
+    artifactGraph,
+    isProfileEdgeArtifact
   )
 
   if (faceSelections.length === 0 && edgeSelections.length === 0) {
@@ -973,11 +999,15 @@ export function addAnnotationGdt({
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   let modifiedAst = structuredClone(ast)
 
-  const faceSelections = objects.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
+  const faceSelections = resolveSelectionsForTags(
+    objects,
+    artifactGraph,
+    isFaceArtifact
   )
-  const edgeSelections = objects.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
+  const edgeSelections = resolveSelectionsForTags(
+    objects,
+    artifactGraph,
+    isProfileEdgeArtifact
   )
 
   if (faceSelections.length === 0 && edgeSelections.length === 0) {

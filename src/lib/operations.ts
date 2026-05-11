@@ -202,6 +202,20 @@ function extractFaceSelections(
   return graphSelections
 }
 
+function extractEdgeSelections(
+  artifactGraph: ArtifactGraph,
+  edgesArg: NonNullable<StdLibCallOp['labeledArgs'][string]>
+): Selections | { error: string } {
+  const edgeSelections = retrieveEdgeSelectionsFromEdgeRefs(
+    edgesArg,
+    artifactGraph
+  )
+  if (err(edgeSelections)) {
+    return { error: edgeSelections.message }
+  }
+  return edgeSelections
+}
+
 function extractStringArgument(
   code: string,
   operation: StdLibCallOp,
@@ -2182,10 +2196,11 @@ const prepareToEditGdtPosition: PrepareToEditCallback = async ({
 
   const edgesArg = operation.labeledArgs?.['edges']
   if (edgesArg?.sourceRange) {
-    graphSelections.push(
-      ...retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
-        .graphSelections
-    )
+    const edges = extractEdgeSelections(artifactGraph, edgesArg)
+    if ('error' in edges) {
+      return { reason: edges.error }
+    }
+    graphSelections.push(...edges.graphSelections)
   }
 
   if (graphSelections.length === 0) {
@@ -2267,11 +2282,10 @@ const prepareToEditGdtProfile: PrepareToEditCallback = async ({
     return { reason: 'Missing or invalid edges argument' }
   }
 
-  const edges = retrieveEdgeSelectionsFromOpArgs(
-    undefined,
-    edgesArg,
-    artifactGraph
-  )
+  const edges = extractEdgeSelections(artifactGraph, edgesArg)
+  if ('error' in edges) {
+    return { reason: edges.error }
+  }
   const tolerance = await extractKclArgument(
     code,
     operation,
@@ -2341,10 +2355,11 @@ const prepareToEditGdtPerpendicularity: PrepareToEditCallback = async ({
 
   const edgesArg = operation.labeledArgs?.['edges']
   if (edgesArg?.sourceRange) {
-    graphSelections.push(
-      ...retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
-        .graphSelections
-    )
+    const edges = extractEdgeSelections(artifactGraph, edgesArg)
+    if ('error' in edges) {
+      return { reason: edges.error }
+    }
+    graphSelections.push(...edges.graphSelections)
   }
 
   if (graphSelections.length === 0) {
@@ -2420,10 +2435,11 @@ const prepareToEditGdtParallelism: PrepareToEditCallback = async ({
 
   const edgesArg = operation.labeledArgs?.['edges']
   if (edgesArg?.sourceRange) {
-    graphSelections.push(
-      ...retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
-        .graphSelections
-    )
+    const edges = extractEdgeSelections(artifactGraph, edgesArg)
+    if ('error' in edges) {
+      return { reason: edges.error }
+    }
+    graphSelections.push(...edges.graphSelections)
   }
 
   if (graphSelections.length === 0) {
@@ -2499,10 +2515,11 @@ const prepareToEditGdtAnnotation: PrepareToEditCallback = async ({
 
   const edgesArg = operation.labeledArgs?.['edges']
   if (edgesArg?.sourceRange) {
-    graphSelections.push(
-      ...retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
-        .graphSelections
-    )
+    const edges = extractEdgeSelections(artifactGraph, edgesArg)
+    if ('error' in edges) {
+      return { reason: edges.error }
+    }
+    graphSelections.push(...edges.graphSelections)
   }
 
   if (graphSelections.length === 0) {
