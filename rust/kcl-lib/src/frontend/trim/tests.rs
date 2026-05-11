@@ -2893,7 +2893,6 @@ async fn get_objects_from_kcl(kcl_code: &str) -> Vec<crate::frontend::api::Objec
     let mut scene_graph = frontend.scene_graph.clone();
 
     // If scene graph is empty, try to get objects from exec_outcome.scene_objects
-    // (this is only available when artifact-graph feature is enabled)
     if scene_graph.objects.is_empty() && !exec_outcome.scene_objects.is_empty() {
         scene_graph.objects = exec_outcome.scene_objects;
     }
@@ -3002,7 +3001,6 @@ const RECT_ARC_LINE5_TRIM_BASE_KCL: &str = r#"sketch001 = sketch(on = YZ) {
 
 /// Tests for `get_trim_spawn_terminations` function.
 /// These tests mirror the TypeScript tests in `trimToolImpl.spec.ts`.
-/// Note: These tests require the `artifact-graph` feature to be enabled to access scene objects.
 mod get_trim_spawn_terminations_tests {
     use kittycad_modeling_cmds::units::UnitLength;
 
