@@ -37,7 +37,6 @@ function ModelingArea() {
   return (
     <div
       id={MODELING_AREA_CONTAINER_ID}
-      ref={boundingRef}
       className="relative z-0 min-w-64 flex flex-col flex-1 items-center overflow-hidden"
     >
       <Toolbar />
