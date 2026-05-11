@@ -1,4 +1,5 @@
 use std::cell::Cell;
+use std::cell::RefCell;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::collections::VecDeque;
@@ -85,6 +86,7 @@ use crate::id::IncIdGenerator;
 use crate::parsing::ast::types as ast;
 use crate::pretty::NumericSuffix;
 use crate::std::constraints::LinesAtAngleKind;
+use crate::walk::Node;
 use crate::walk::NodeMut;
 use crate::walk::Visitable;
 
@@ -419,7 +421,7 @@ impl FrontendState {
         let mock_config = self.sketch_mock_config(sketch, true, Default::default(), use_warm_starts);
         let run_outcome = ctx.run_mock(&truncated_program, &mock_config).await?;
         let outcome = self.update_state_after_exec(run_outcome, true);
-        self.update_sketch_var_warm_starts(sketch, &outcome);
+        self.replace_sketch_var_warm_starts(sketch, &outcome);
         let new_source = self.commit_var_solutions_to_program(&outcome)?;
 
         let src_delta = SourceDelta { text: new_source };
@@ -432,18 +434,127 @@ impl FrontendState {
         Ok((src_delta, scene_graph_delta))
     }
 
-    fn update_sketch_var_warm_starts(&mut self, sketch: ObjectId, outcome: &ExecOutcome) {
+    fn replace_sketch_var_warm_starts(&mut self, sketch: ObjectId, outcome: &ExecOutcome) {
         #[cfg(feature = "artifact-graph")]
         {
-            self.sketch_var_warm_start_overrides.insert(
-                sketch,
-                outcome.var_solutions.iter().map(|(_, value)| value.value).collect(),
-            );
+            let solution_by_range = outcome
+                .var_solutions
+                .iter()
+                .map(|(range, value)| (*range, value.value))
+                .collect::<HashMap<_, _>>();
+            let values = self
+                .sketch_var_initial_guesses_from_program(sketch, &solution_by_range)
+                .unwrap_or_else(|| outcome.var_solutions.iter().map(|(_, value)| value.value).collect());
+            self.sketch_var_warm_start_overrides.insert(sketch, values);
         }
         #[cfg(not(feature = "artifact-graph"))]
         {
             let _ = (sketch, outcome);
         }
+    }
+
+    fn merge_committed_edit_sketch_var_warm_starts(
+        &mut self,
+        sketch: ObjectId,
+        outcome: &ExecOutcome,
+        segment_ids_edited: &AhashIndexSet<ObjectId>,
+    ) {
+        #[cfg(feature = "artifact-graph")]
+        {
+            let solution_by_range = outcome
+                .var_solutions
+                .iter()
+                .map(|(range, value)| (*range, value.value))
+                .collect::<HashMap<_, _>>();
+            let previous = self.sketch_var_warm_start_overrides.get(&sketch).cloned();
+            let Some(source_values) = self.sketch_var_source_values_from_program(sketch) else {
+                self.replace_sketch_var_warm_starts(sketch, outcome);
+                return;
+            };
+            let edited_var_indices = self.edited_sketch_var_indices(&source_values, segment_ids_edited);
+            let values = source_values
+                .into_iter()
+                .enumerate()
+                .map(|(index, (range, source_value))| {
+                    if edited_var_indices.contains(&index) || !solution_by_range.contains_key(&range) {
+                        source_value
+                    } else {
+                        previous
+                            .as_ref()
+                            .and_then(|values| values.get(index))
+                            .copied()
+                            .unwrap_or(source_value)
+                    }
+                })
+                .collect();
+            self.sketch_var_warm_start_overrides.insert(sketch, values);
+        }
+        #[cfg(not(feature = "artifact-graph"))]
+        {
+            let _ = (sketch, outcome, segment_ids_edited);
+        }
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    fn edited_sketch_var_indices(
+        &self,
+        source_values: &[(SourceRange, f64)],
+        segment_ids_edited: &AhashIndexSet<ObjectId>,
+    ) -> HashSet<usize> {
+        let edited_ranges = segment_ids_edited
+            .iter()
+            .filter_map(|segment_id| self.scene_graph.objects.get(segment_id.0))
+            .filter_map(|object| source_ref_primary_range(&object.source))
+            .collect::<Vec<_>>();
+
+        source_values
+            .iter()
+            .enumerate()
+            .filter_map(|(index, (range, _))| {
+                edited_ranges
+                    .iter()
+                    .any(|edited_range| edited_range.contains_range(range))
+                    .then_some(index)
+            })
+            .collect()
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    fn sketch_var_initial_guesses_from_program(
+        &self,
+        sketch: ObjectId,
+        solution_by_range: &HashMap<SourceRange, f64>,
+    ) -> Option<Vec<f64>> {
+        self.sketch_var_source_values_from_program(sketch).map(|source_values| {
+            source_values
+                .into_iter()
+                .map(|(range, source_value)| solution_by_range.get(&range).copied().unwrap_or(source_value))
+                .collect()
+        })
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    fn sketch_var_source_values_from_program(&self, sketch: ObjectId) -> Option<Vec<(SourceRange, f64)>> {
+        let sketch_range = source_ref_primary_range(&self.scene_graph.objects.get(sketch.0)?.source)?;
+        let values = RefCell::new(Vec::new());
+        crate::walk::walk(&self.program.ast, |node| -> anyhow::Result<bool> {
+            let Node::SketchVar(sketch_var) = node else {
+                return Ok(true);
+            };
+            let Some(initial) = sketch_var.initial.as_ref() else {
+                return Ok(true);
+            };
+            let range = initial.as_source_range();
+            if sketch_range.contains_range(&range) {
+                values
+                    .borrow_mut()
+                    .push((range, sketch_var_initial_value_in_solver_units(initial)));
+            }
+            Ok(true)
+        })
+        .ok()?;
+        let values = values.into_inner();
+        (!values.is_empty()).then_some(values)
     }
 
     fn update_single_sketch_var_warm_starts(&mut self, outcome: &ExecOutcome) {
@@ -455,7 +566,7 @@ impl FrontendState {
             return;
         };
         if sketch_ids.next().is_none() {
-            self.update_sketch_var_warm_starts(sketch_id, outcome);
+            self.replace_sketch_var_warm_starts(sketch_id, outcome);
         }
     }
 
@@ -665,7 +776,7 @@ impl SketchApi for FrontendState {
 
         // MockConfig::default() has freedom_analysis: true
         let outcome = self.update_state_after_exec(outcome, true);
-        self.update_sketch_var_warm_starts(sketch, &outcome);
+        self.replace_sketch_var_warm_starts(sketch, &outcome);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -3034,7 +3145,14 @@ impl FrontendState {
 
         // Uses freedom_analysis: is_delete
         let outcome = self.update_state_after_exec(outcome, is_delete);
-        self.update_sketch_var_warm_starts(sketch, &outcome);
+        match options.sketch_var_update_mode {
+            SketchVarUpdateMode::CommitSolvedVars => {
+                self.merge_committed_edit_sketch_var_warm_starts(sketch, &outcome, &options.segment_ids_edited);
+            }
+            SketchVarUpdateMode::WarmStartOnly | SketchVarUpdateMode::CommitSolvedVarsFromWarmStart => {
+                self.replace_sketch_var_warm_starts(sketch, &outcome);
+            }
+        }
 
         let new_source = match options.sketch_var_update_mode {
             SketchVarUpdateMode::WarmStartOnly => new_source,
@@ -4303,7 +4421,7 @@ impl FrontendState {
 
         // Uses MockConfig::default() which has freedom_analysis: true
         let outcome = self.update_state_after_exec(outcome, true);
-        self.update_sketch_var_warm_starts(sketch_id, &outcome);
+        self.replace_sketch_var_warm_starts(sketch_id, &outcome);
 
         let src_delta = SourceDelta { text: new_source };
         let scene_graph_delta = SceneGraphDelta {
@@ -5856,6 +5974,25 @@ fn to_source_number(number: Number) -> anyhow::Result<ast::NumericLiteral> {
         raw: format_number_literal(number.value, number.units, None)?,
         digest: None,
     })
+}
+
+fn sketch_var_initial_value_in_solver_units(number: &ast::Node<ast::NumericLiteral>) -> f64 {
+    let unit = match number.suffix {
+        NumericSuffix::Cm => UnitLength::Centimeters,
+        NumericSuffix::M => UnitLength::Meters,
+        NumericSuffix::Inch => UnitLength::Inches,
+        NumericSuffix::Ft => UnitLength::Feet,
+        NumericSuffix::Yd => UnitLength::Yards,
+        _ => UnitLength::Millimeters,
+    };
+    crate::execution::types::adjust_length(unit, number.value, UnitLength::Millimeters).0
+}
+
+fn source_ref_primary_range(source: &SourceRef) -> Option<SourceRange> {
+    match source {
+        SourceRef::Simple { range, .. } => Some(*range),
+        SourceRef::BackTrace { ranges } => ranges.first().map(|(range, _)| *range),
+    }
 }
 
 pub(crate) fn ast_name_expr(name: String) -> ast::Expr {
@@ -7924,7 +8061,7 @@ sketch(on = XY) {
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
         let point_id = *sketch.segments.get(1).unwrap();
-        frontend.update_sketch_var_warm_starts(sketch_id, &outcome);
+        frontend.replace_sketch_var_warm_starts(sketch_id, &outcome);
 
         let (src_delta, _scene_delta) = frontend
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![point_id])
@@ -12361,6 +12498,72 @@ sketch(on = XY) {
 }
 "
         );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_committed_edit_merges_edited_vars_into_existing_warm_starts() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])
+  line2 = line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line1.start])
+  equalLength([line3, line1])
+  equalLength([line1, line2])
+  distance([line1.start, line1.end]) == 4mm
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        let outcome = frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point_id = *sketch.segments.first().unwrap();
+        frontend.replace_sketch_var_warm_starts(sketch_id, &outcome);
+        let previous_warm_starts = frontend
+            .sketch_var_warm_start_overrides
+            .get(&sketch_id)
+            .expect("Expected initial warm starts")
+            .clone();
+
+        let segments = vec![ExistingSegmentCtor {
+            id: point_id,
+            ctor: SegmentCtor::Point(PointCtor {
+                position: Point2d {
+                    x: Expr::Var(Number {
+                        value: 1.0,
+                        units: NumericSuffix::Mm,
+                    }),
+                    y: Expr::Var(Number {
+                        value: 2.0,
+                        units: NumericSuffix::Mm,
+                    }),
+                },
+            }),
+        }];
+        frontend
+            .edit_segments(&mock_ctx, version, sketch_id, segments)
+            .await
+            .unwrap();
+        let warm_starts = frontend
+            .sketch_var_warm_start_overrides
+            .get(&sketch_id)
+            .expect("Expected warm starts for edited sketch");
+
+        assert_eq!(&warm_starts[0..4], &[1.0, 2.0, 1.28, -0.78]);
+        assert_eq!(&warm_starts[4..], &previous_warm_starts[4..]);
 
         mock_ctx.close().await;
     }
