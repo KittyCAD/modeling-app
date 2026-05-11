@@ -28,7 +28,7 @@ import {
 } from '@src/lib/operations'
 import { isArray, isOverlap, stripQuotes, uuidv4 } from '@src/lib/utils'
 import type { DefaultPlaneStr } from '@src/lib/planes'
-import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
+import { selectSketchPlane } from '@src/lib/selections'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { err, isErr, reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
