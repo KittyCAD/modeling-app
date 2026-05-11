@@ -1260,6 +1260,20 @@ export async function openSettingsExpectLocator(page: Page, selector: string) {
   await expect(settingsLocator).toBeVisible()
 }
 
+export async function expectKeybindingsSettingsVisible(page: Page) {
+  const settings = page.getByTestId('settings-dialog-panel')
+  await expect(settings).toBeVisible()
+  await expect(
+    settings.getByRole('button', { name: 'Add keybinding' })
+  ).toBeVisible()
+  await expect(
+    settings.getByRole('columnheader', { name: 'Action' })
+  ).toBeVisible()
+  await expect(
+    settings.getByRole('columnheader', { name: 'Keystrokes' })
+  ).toBeVisible()
+}
+
 /**
  * A developer helper function to make playwright send all the console logs to stdout
  * Call this within your E2E test and pass in the page or the tronApp to get as many
