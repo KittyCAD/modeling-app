@@ -205,9 +205,13 @@ function CommandBarHeaderFooter({
                           )
                         ) : arg.inputType === 'kcl' &&
                           (argValue as KclCommandValue).valueCalculated ? (
-                          roundOffWithUnits(
-                            (argValue as KclCommandValue).valueCalculated,
-                            4
+                          arg.valueSummary ? (
+                            arg.valueSummary(argValue as KclCommandValue)
+                          ) : (
+                            roundOffWithUnits(
+                              (argValue as KclCommandValue).valueCalculated,
+                              4
+                            )
                           )
                         ) : arg.inputType === 'vector3d' ? (
                           (argValue as KclCommandValue).valueCalculated
