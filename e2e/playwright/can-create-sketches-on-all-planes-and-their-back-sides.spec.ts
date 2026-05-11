@@ -76,7 +76,7 @@ test.describe(
 
       await expect(editor.codeContent).toContainText(
         new RegExp(
-          `@settings\\(defaultLengthUnit = in\\)sketch001 = startSketchOn\\(${escapeRegExp(plane)}\\)|@settings\\(defaultLengthUnit = in\\)sketch001 = sketch\\(on = ${escapeRegExp(plane)}\\) \\{\\}`
+          `@settings\\(defaultLengthUnit = in(?:, kclVersion = 2\\.0)?\\)sketch001 = startSketchOn\\(${escapeRegExp(plane)}\\)|@settings\\(defaultLengthUnit = in(?:, kclVersion = 2\\.0)?\\)sketch001 = sketch\\(on = ${escapeRegExp(plane)}\\) \\{\\}`
         )
       )
     }
