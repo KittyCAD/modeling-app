@@ -1423,6 +1423,9 @@ impl Node<SketchBlock> {
                     debug_assert!(false, "{}", &message);
                     return Err(internal_err(message, self));
                 };
+                let initial_guess = exec_state
+                    .sketch_var_initial_guess_override(sketch_var.id)
+                    .unwrap_or(initial_guess);
                 Ok((constraint_id, initial_guess))
             })
             .collect::<Result<Vec<_>, KclError>>()?;

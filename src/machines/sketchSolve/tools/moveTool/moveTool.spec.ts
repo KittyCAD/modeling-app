@@ -712,6 +712,7 @@ describe('createOnDragCallback', () => {
         sceneGraphDelta,
         writeToDisk: false,
         suppressExecOutcomeIssues: true,
+        suppressFreedomConflictColoring: true,
       })
       expect(setIsSolveInProgress).toHaveBeenCalledWith(true)
       expect(setIsSolveInProgress).toHaveBeenCalledWith(false)
@@ -838,6 +839,7 @@ describe('createOnDragCallback', () => {
         sceneGraphDelta: updatedSceneGraphDelta,
         writeToDisk: false,
         suppressExecOutcomeIssues: true,
+        suppressFreedomConflictColoring: true,
       })
     }
   )
@@ -2608,6 +2610,7 @@ describe('createOnDragCallback', () => {
       ...result,
       writeToDisk: false,
       suppressExecOutcomeIssues: true,
+      suppressFreedomConflictColoring: true,
     })
   })
 
@@ -2743,6 +2746,7 @@ describe('createOnDragCallback', () => {
       invalidDelta.exec_outcome
     )
     expect(outcome?.suppressExecOutcomeIssues).toBe(true)
+    expect(outcome?.suppressFreedomConflictColoring).toBe(true)
   })
 
   it('should not send event when edit fails to prevent invalid state updates', async () => {

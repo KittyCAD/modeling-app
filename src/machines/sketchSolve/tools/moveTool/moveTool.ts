@@ -1078,6 +1078,7 @@ export function createOnDragCallback({
     sceneGraphDelta: SceneGraphDelta
     writeToDisk?: boolean
     suppressExecOutcomeIssues?: boolean
+    suppressFreedomConflictColoring?: boolean
   }) => void
   getDefaultLengthUnit: () => UnitLength | undefined
   getJsAppSettings: () => Promise<DeepPartial<Configuration>>
@@ -1152,6 +1153,7 @@ export function createOnDragCallback({
             ...result,
             writeToDisk: false,
             suppressExecOutcomeIssues: true,
+            suppressFreedomConflictColoring: true,
           })
           await new Promise((resolve) => requestAnimationFrame(resolve))
         }
@@ -1312,6 +1314,7 @@ export function createOnDragCallback({
             ...result,
             writeToDisk: false,
             suppressExecOutcomeIssues: true,
+            suppressFreedomConflictColoring: true,
           })
         } else {
           const fallbackOutcome =
@@ -1336,6 +1339,7 @@ export function createOnDragCallback({
               : result),
             writeToDisk: false,
             suppressExecOutcomeIssues: true,
+            suppressFreedomConflictColoring: true,
           })
         }
         await new Promise((resolve) => requestAnimationFrame(resolve))
@@ -2135,6 +2139,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
             sceneGraphDelta: outcome.sceneGraphDelta,
             writeToDisk: false,
             suppressExecOutcomeIssues: outcome.suppressExecOutcomeIssues,
+            suppressFreedomConflictColoring:
+              outcome.suppressFreedomConflictColoring,
           },
         })
       },
