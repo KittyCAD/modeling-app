@@ -1354,10 +1354,8 @@ extrude001 = extrude(sketch001, length = -12, tagEnd = $capEnd001)
 fillet03 = fillet(extrude001, radius = 5, edges = [{ sideFaces = [seg01, capEnd001] }])
 fillet(extrude001, radius = 5, edges = [{ sideFaces = [seg02, capEnd001] }])
 `
-    const firstPipedFilletDeclaration =
-      'fillet(radius = 5, tags = [seg01])'
-    const secondPipedFilletDeclaration =
-      'fillet(radius = 5, tags = [seg02])'
+    const firstPipedFilletDeclaration = 'fillet(radius = 5, tags = [seg01])'
+    const secondPipedFilletDeclaration = 'fillet(radius = 5, tags = [seg02])'
     const standaloneAssignedFilletDeclaration =
       'fillet03 = fillet(extrude001, radius = 5, edges = [{ sideFaces = [seg01, capEnd001] }])'
     const standaloneUnassignedFilletDeclaration =
@@ -1420,7 +1418,9 @@ fillet(extrude001, radius = 5, edges = [{ sideFaces = [seg02, capEnd001] }])
         await editor.replaceCode('', standaloneFilletCode)
         await scene.settled(cmdBar)
         await editor.expectEditor.toContain(standaloneAssignedFilletDeclaration)
-        await editor.expectEditor.toContain(standaloneUnassignedFilletDeclaration)
+        await editor.expectEditor.toContain(
+          standaloneUnassignedFilletDeclaration
+        )
       })
 
       await test.step('Delete standalone assigned fillet via feature tree selection', async () => {
@@ -1837,7 +1837,7 @@ box = extrude(profile, length = 30)`
 
       // When translate opens with a segment selected, it should coerce to the parent body
       // The segment belongs to the 'profile' path, which is extruded into 'box'
-      // So the selection should coerce from segment to path (body)
+      // So the selection should coerce from segment to sweep (body)
       await cmdBar.expectState({
         commandName: 'Translate',
         currentArgKey: 'objects',
@@ -1849,8 +1849,8 @@ box = extrude(profile, length = 30)`
         stage: 'arguments',
       })
 
-      await expect(page.getByText('1 path selected')).toBeVisible()
-      await expect(toolbar.selectionStatus).toContainText('1 path')
+      await expect(page.getByText('1 sweep selected')).toBeVisible()
+      await expect(toolbar.selectionStatus).toContainText('1 edge')
     })
 
     await test.step('Complete command flow', async () => {
@@ -1859,7 +1859,7 @@ box = extrude(profile, length = 30)`
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: '1 path',
+            Objects: '1 sweep',
           },
           commandName: 'Translate',
           reviewValidationError:
@@ -1874,7 +1874,7 @@ box = extrude(profile, length = 30)`
           currentArgKey: 'x',
           currentArgValue: '0',
           headerArguments: {
-            Objects: '1 path',
+            Objects: '1 sweep',
             X: '',
           },
           highlightedHeaderArg: 'x',
@@ -1888,7 +1888,7 @@ box = extrude(profile, length = 30)`
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: '1 path',
+            Objects: '1 sweep',
             X: '50',
           },
           commandName: 'Translate',

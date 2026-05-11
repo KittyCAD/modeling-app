@@ -903,7 +903,7 @@ foreign
           currentArgKey: 'variableName',
           currentArgValue: '',
           headerArguments: {
-            Objects: '1 path',
+            Objects: '1 sweep',
             VariableName: '',
           },
           highlightedHeaderArg: 'variableName',
@@ -913,7 +913,7 @@ foreign
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: '1 path',
+            Objects: '1 sweep',
             VariableName: 'clone001',
           },
           commandName: 'Clone',

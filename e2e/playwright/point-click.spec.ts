@@ -1640,9 +1640,12 @@ fillet(extrude001, radius = 5, edges = [{ sideFaces = [region001.tags.line2, cap
         await page.keyboard.insertText(standaloneFilletCode)
         await scene.settled(cmdBar)
         await editor.expectEditor.toContain(standaloneAssignedFilletDeclaration)
-        await editor.expectEditor.toContain(standaloneUnassignedFilletDeclaration, {
-          shouldNormalise: true,
-        })
+        await editor.expectEditor.toContain(
+          standaloneUnassignedFilletDeclaration,
+          {
+            shouldNormalise: true,
+          }
+        )
       })
 
       await test.step('Delete standalone assigned fillet via feature tree selection', async () => {
@@ -2171,10 +2174,15 @@ chamfer(extrude001, length = 5, edges = [{ sideFaces = [region001.tags.line2, ca
         await page.keyboard.press('ControlOrMeta+A')
         await page.keyboard.insertText(standaloneChamferCode)
         await scene.settled(cmdBar)
-        await editor.expectEditor.toContain(standaloneAssignedChamferDeclaration)
-        await editor.expectEditor.toContain(standaloneUnassignedChamferDeclaration, {
-          shouldNormalise: true,
-        })
+        await editor.expectEditor.toContain(
+          standaloneAssignedChamferDeclaration
+        )
+        await editor.expectEditor.toContain(
+          standaloneUnassignedChamferDeclaration,
+          {
+            shouldNormalise: true,
+          }
+        )
       })
 
       await test.step('Delete standalone assigned chamfer via feature tree selection', async () => {
@@ -2927,7 +2935,7 @@ extrude001 = extrude(region001, length = 5, bodyType = SURFACE)`
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          Surface: '1 path',
+          Surface: '1 sweep',
         },
         commandName: 'Flip Surface',
       })
@@ -3005,7 +3013,7 @@ extrude002 = extrude(sketch002.line1, length = 5, bodyType = SURFACE)`
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          Selection: '2 paths',
+          Selection: '2 sweeps',
         },
         commandName: 'Join Surfaces',
       })
@@ -3078,7 +3086,7 @@ extrude001 = extrude(region001, length = 1)`
         currentArgKey: 'color',
         currentArgValue: '',
         headerArguments: {
-          Objects: '1 path',
+          Objects: '1 sweep',
           Color: '',
         },
         highlightedHeaderArg: 'color',
@@ -3089,7 +3097,7 @@ extrude001 = extrude(region001, length = 1)`
       await cmdBar.expectState({
         commandName: 'Appearance',
         headerArguments: {
-          Objects: '1 path',
+          Objects: '1 sweep',
           Color: '#ff0000',
         },
         stage: 'review',
@@ -3214,7 +3222,7 @@ solid001 = extrude(region001, length = 5)`
             currentArgKey: 'instances',
             currentArgValue: KCL_DEFAULT_INSTANCES,
             headerArguments: {
-              Solids: '1 path',
+              Solids: '1 sweep',
               Instances: '',
               Axis: '',
               Center: '',
@@ -3233,7 +3241,7 @@ solid001 = extrude(region001, length = 5)`
             currentArgKey: 'axis',
             currentArgValue: '',
             headerArguments: {
-              Solids: '1 path',
+              Solids: '1 sweep',
               Instances: '8',
               Axis: '',
               Center: '',
@@ -3251,7 +3259,7 @@ solid001 = extrude(region001, length = 5)`
             currentArgKey: 'center',
             currentArgValue: '[0, 0, 0]',
             headerArguments: {
-              Solids: '1 path',
+              Solids: '1 sweep',
               Instances: '8',
               Axis: 'Y',
               Center: '',
@@ -3268,7 +3276,7 @@ solid001 = extrude(region001, length = 5)`
             stage: 'review',
             commandName: 'Pattern Circular 3D',
             headerArguments: {
-              Solids: '1 path',
+              Solids: '1 sweep',
               Instances: '8',
               Axis: 'Y',
               Center: '[5, 0, 0]',
@@ -3286,7 +3294,7 @@ solid001 = extrude(region001, length = 5)`
             currentArgKey: 'arcDegrees',
             currentArgValue: '360deg',
             headerArguments: {
-              Solids: '1 path',
+              Solids: '1 sweep',
               Instances: '8',
               Axis: 'Y',
               Center: '[5, 0, 0]',
@@ -3302,7 +3310,7 @@ solid001 = extrude(region001, length = 5)`
             stage: 'review',
             commandName: 'Pattern Circular 3D',
             headerArguments: {
-              Solids: '1 path',
+              Solids: '1 sweep',
               Instances: '8',
               Axis: 'Y',
               Center: '[5, 0, 0]',
@@ -3319,7 +3327,7 @@ solid001 = extrude(region001, length = 5)`
             currentArgKey: 'rotateDuplicates',
             currentArgValue: '',
             headerArguments: {
-              Solids: '1 path',
+              Solids: '1 sweep',
               Instances: '8',
               Axis: 'Y',
               Center: '[5, 0, 0]',
@@ -3335,7 +3343,7 @@ solid001 = extrude(region001, length = 5)`
             stage: 'review',
             commandName: 'Pattern Circular 3D',
             headerArguments: {
-              Solids: '1 path',
+              Solids: '1 sweep',
               Instances: '8',
               Axis: 'Y',
               Center: '[5, 0, 0]',
@@ -3353,7 +3361,7 @@ solid001 = extrude(region001, length = 5)`
             currentArgKey: 'useOriginal',
             currentArgValue: '',
             headerArguments: {
-              Solids: '1 path',
+              Solids: '1 sweep',
               Instances: '8',
               Axis: 'Y',
               Center: '[5, 0, 0]',
@@ -3370,7 +3378,7 @@ solid001 = extrude(region001, length = 5)`
             stage: 'review',
             commandName: 'Pattern Circular 3D',
             headerArguments: {
-              Solids: '1 path',
+              Solids: '1 sweep',
               Instances: '8',
               Axis: 'Y',
               Center: '[5, 0, 0]',
@@ -3731,7 +3739,7 @@ solid001 = extrude(region001, length = 5)`
             currentArgKey: 'instances',
             currentArgValue: KCL_DEFAULT_INSTANCES,
             headerArguments: {
-              Solids: '1 path',
+              Solids: '1 sweep',
               Instances: '',
               Distance: '',
               Axis: '',
@@ -3750,7 +3758,7 @@ solid001 = extrude(region001, length = 5)`
             currentArgKey: 'distance',
             currentArgValue: KCL_DEFAULT_LENGTH,
             headerArguments: {
-              Solids: '1 path',
+              Solids: '1 sweep',
               Instances: '6',
               Distance: '',
               Axis: '',
@@ -3769,7 +3777,7 @@ solid001 = extrude(region001, length = 5)`
             currentArgKey: 'axis',
             currentArgValue: '',
             headerArguments: {
-              Solids: '1 path',
+              Solids: '1 sweep',
               Instances: '6',
               Distance: '8',
               Axis: '',
@@ -3788,7 +3796,7 @@ solid001 = extrude(region001, length = 5)`
             currentArgKey: 'useOriginal',
             currentArgValue: '',
             headerArguments: {
-              Solids: '1 path',
+              Solids: '1 sweep',
               Instances: '6',
               Distance: '8',
               Axis: 'Y',
@@ -3803,7 +3811,7 @@ solid001 = extrude(region001, length = 5)`
             stage: 'review',
             commandName: 'Pattern Linear 3D',
             headerArguments: {
-              Solids: '1 path',
+              Solids: '1 sweep',
               Instances: '6',
               Distance: '8',
               Axis: 'Y',
@@ -3817,7 +3825,7 @@ solid001 = extrude(region001, length = 5)`
             stage: 'review',
             commandName: 'Pattern Linear 3D',
             headerArguments: {
-              Solids: '1 path',
+              Solids: '1 sweep',
               Instances: '6',
               Distance: '8',
               Axis: 'Y',
