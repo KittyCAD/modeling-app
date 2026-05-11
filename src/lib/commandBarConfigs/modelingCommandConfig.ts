@@ -458,7 +458,7 @@ export type ModelingCommandSchema = {
   'GDT Profile': {
     nodeToEdit?: PathToNode
     edges: Selections
-    datums?: string
+    datums?: KclCommandValue
     tolerance: KclCommandValue
     precision?: KclCommandValue
     framePosition?: KclCommandValue
@@ -481,7 +481,7 @@ export type ModelingCommandSchema = {
   'GDT Perpendicularity': {
     nodeToEdit?: PathToNode
     objects: Selections
-    datums?: string
+    datums?: KclCommandValue
     tolerance: KclCommandValue
     precision?: KclCommandValue
     framePosition?: KclCommandValue
@@ -493,7 +493,7 @@ export type ModelingCommandSchema = {
   'GDT Parallelism': {
     nodeToEdit?: PathToNode
     objects: Selections
-    datums?: string
+    datums?: KclCommandValue
     tolerance: KclCommandValue
     precision?: KclCommandValue
     framePosition?: KclCommandValue
@@ -2899,7 +2899,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       datums: {
-        inputType: 'string',
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_DATUM_REFS,
+        allowArrays: true,
+        allowStringArrays: true,
+        allowUncalculated: true,
+        inputToKclValue: datumInputToKclArray,
+        kclValueToInput: kclDatumArrayToInput,
+        valueSummary: summarizeDatumKclValue,
         required: false,
       },
       tolerance: {
@@ -3071,7 +3078,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       datums: {
-        inputType: 'string',
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_DATUM_REFS,
+        allowArrays: true,
+        allowStringArrays: true,
+        allowUncalculated: true,
+        inputToKclValue: datumInputToKclArray,
+        kclValueToInput: kclDatumArrayToInput,
+        valueSummary: summarizeDatumKclValue,
         required: false,
       },
       tolerance: {
@@ -3157,7 +3171,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       datums: {
-        inputType: 'string',
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_DATUM_REFS,
+        allowArrays: true,
+        allowStringArrays: true,
+        allowUncalculated: true,
+        inputToKclValue: datumInputToKclArray,
+        kclValueToInput: kclDatumArrayToInput,
+        valueSummary: summarizeDatumKclValue,
         required: false,
       },
       tolerance: {
