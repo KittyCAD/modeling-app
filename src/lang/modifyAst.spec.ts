@@ -23,6 +23,7 @@ import {
   sketchOnExtrudedFace,
   splitPipedProfile,
 } from '@src/lang/modifyAst'
+import { sketchBlockOnExtrudedFace } from '@src/lang/modifyAst/legacySketchFace'
 import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 import { giveSketchFnCallTag } from '@src/lang/modifyAst/giveSketchFnCallTag'
 import {
@@ -32,7 +33,7 @@ import {
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
-import { codeRefFromRange } from '@src/lang/std/artifactGraph'
+import { codeRefFromRange, getFaceCodeRef } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import type { Identifier, Literal } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
@@ -1230,5 +1231,100 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     const newCode = recast(ast, instanceInThisFile)
     expect(newCode).toContain(code)
     expect(newCode).toContain(`extrude001 = extrude(profile001, length = 5)`)
+  })
+
+  describe('temporary legacy sketch-on-face helpers', () => {
+    test('sketchBlockOnExtrudedFace tags the legacy wall segment and inserts a sketch block', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-3.5, -2.23])
+  |> line(end = [4.53, 5.73])
+  |> line(end = [5.18, -3.74])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 5)
+`
+      const ast = assertParse(code, instanceInThisFile)
+      const { artifactGraph } = await enginelessExecutor(
+        ast,
+        rustContextInThisFile
+      )
+      const segmentSnippet =
+        'line(endAbsolute = [profileStartX(%), profileStartY(%)])'
+      const segmentPathToNode = getNodePathFromSourceRange(ast, [
+        code.indexOf(segmentSnippet),
+        code.indexOf(segmentSnippet) + segmentSnippet.length,
+        0,
+      ])
+      const segmentArtifact = [...artifactGraph.values()].find(
+        (artifact): artifact is Extract<Artifact, { type: 'segment' }> =>
+          artifact.type === 'segment' &&
+          artifact.codeRef.pathToNode.at(-1)?.[0] ===
+            segmentPathToNode.at(-1)?.[0]
+      )
+      expect(segmentArtifact).toBeDefined()
+
+      const extrudeSnippet = 'extrude(profile001, length = 5)'
+      const extrudePathToNode = getNodePathFromSourceRange(ast, [
+        code.indexOf(extrudeSnippet),
+        code.indexOf(extrudeSnippet) + extrudeSnippet.length,
+        0,
+      ])
+      const sweepArtifact = [...artifactGraph.values()].find(
+        (artifact): artifact is Extract<Artifact, { type: 'sweep' }> =>
+          artifact.type === 'sweep' &&
+          artifact.codeRef.pathToNode.at(-1)?.[0] ===
+            extrudePathToNode.at(-1)?.[0]
+      )
+      expect(sweepArtifact).toBeDefined()
+
+      const legacyWall: Extract<Artifact, { type: 'wall' }> = {
+        type: 'wall',
+        id: 'legacy-wall-1',
+        cmdId: 'cmd-1',
+        segId: segmentArtifact!.id,
+        edgeCutEdgeIds: [],
+        pathIds: [],
+        sweepId: sweepArtifact!.id,
+        faceCodeRef: {
+          range: [0, 0, 0],
+          pathToNode: extrudePathToNode,
+          nodePath: { steps: [] },
+        },
+      }
+      artifactGraph.set(legacyWall.id, legacyWall)
+      const legacyWallCodeRef = getFaceCodeRef(legacyWall)
+      expect(legacyWallCodeRef).not.toBeNull()
+
+      const result = sketchBlockOnExtrudedFace(
+        ast,
+        {
+          artifact: legacyWall,
+          codeRef: legacyWallCodeRef!,
+        },
+        segmentPathToNode,
+        extrudePathToNode,
+        artifactGraph,
+        instanceInThisFile
+      )
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        'line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)'
+      )
+      expect(newCode).toContain(
+        `extrude001 = extrude(profile001, length = 5)
+sketch002 = sketch(on = faceOf(extrude001, face = seg01)) {
+}`
+      )
+
+      const insertedSketchBlock = getNodeFromPath<any>(
+        result.modifiedAst,
+        result.pathToNode,
+        instanceInThisFile
+      )
+      if (err(insertedSketchBlock)) throw insertedSketchBlock
+      expect(insertedSketchBlock.node.type).toBe('SketchBlock')
+    })
   })
 })

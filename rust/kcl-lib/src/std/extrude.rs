@@ -53,7 +53,7 @@ use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
 use crate::std::args::FromKclValue;
 use crate::std::axis_or_reference::Point3dAxis3dOrGeometryReference;
-use crate::std::sketch2::create_segments_in_engine;
+use crate::std::solver::create_segments_in_engine;
 
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -430,7 +430,10 @@ async fn inner_extrude(
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
                             .target(sketch_or_face_id.into())
-                            .reference(ExtrudeReference::EntityReference { entity_id: plane_id })
+                            .reference(ExtrudeReference::EntityReference {
+                                entity_id: Some(plane_id),
+                                entity_reference: None,
+                            })
                             .extrude_method(extrude_method)
                             .body_type(body_type)
                             .build(),
@@ -441,7 +444,10 @@ async fn inner_extrude(
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
                             .target(sketch_or_face_id.into())
-                            .reference(ExtrudeReference::EntityReference { entity_id: edge_id })
+                            .reference(ExtrudeReference::EntityReference {
+                                entity_id: Some(edge_id),
+                                entity_reference: None,
+                            })
                             .extrude_method(extrude_method)
                             .body_type(body_type)
                             .build(),
@@ -452,7 +458,10 @@ async fn inner_extrude(
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
                             .target(sketch_or_face_id.into())
-                            .reference(ExtrudeReference::EntityReference { entity_id: face_id })
+                            .reference(ExtrudeReference::EntityReference {
+                                entity_id: Some(face_id),
+                                entity_reference: None,
+                            })
                             .extrude_method(extrude_method)
                             .body_type(body_type)
                             .build(),
@@ -462,7 +471,8 @@ async fn inner_extrude(
                     mcmd::ExtrudeToReference::builder()
                         .target(sketch_or_face_id.into())
                         .reference(ExtrudeReference::EntityReference {
-                            entity_id: sketch_ref.id,
+                            entity_id: Some(sketch_ref.id),
+                            entity_reference: None,
                         })
                         .extrude_method(extrude_method)
                         .body_type(body_type)
@@ -471,7 +481,10 @@ async fn inner_extrude(
                 Point3dAxis3dOrGeometryReference::Solid(solid) => ModelingCmd::from(
                     mcmd::ExtrudeToReference::builder()
                         .target(sketch_or_face_id.into())
-                        .reference(ExtrudeReference::EntityReference { entity_id: solid.id })
+                        .reference(ExtrudeReference::EntityReference {
+                            entity_id: Some(solid.id),
+                            entity_reference: None,
+                        })
                         .extrude_method(extrude_method)
                         .body_type(body_type)
                         .build(),
@@ -483,7 +496,8 @@ async fn inner_extrude(
                         mcmd::ExtrudeToReference::builder()
                             .target(sketch_or_face_id.into())
                             .reference(ExtrudeReference::EntityReference {
-                                entity_id: tagged_edge_or_face_id,
+                                entity_id: Some(tagged_edge_or_face_id),
+                                entity_reference: None,
                             })
                             .extrude_method(extrude_method)
                             .body_type(body_type)
@@ -524,7 +538,7 @@ async fn inner_extrude(
                 let solid_id = match face_tag.geometry() {
                     Some(crate::execution::Geometry::Solid(solid)) => solid.id,
                     Some(crate::execution::Geometry::Sketch(sketch)) => match sketch.on {
-                        SketchSurface::Face(face) => face.solid.id,
+                        SketchSurface::Face(face) => face.parent_solid.solid_id,
                         SketchSurface::Plane(_) => sketch.id,
                     },
                     None => face_id,
@@ -658,7 +672,7 @@ pub(crate) async fn do_post_extrude<'a>(
             if let SketchSurface::Face(ref face) = sketch.on {
                 // If we're merging into an existing body, then assign the existing body's ID,
                 // because the variable binding for this solid won't be its own object, it's just modifying the original one.
-                sketch.id = face.solid.sketch_id().unwrap_or(face.solid.id);
+                sketch.id = face.parent_solid.sketch_or_solid_id();
             }
         }
         (ExtrudeMethod::New, BeingExtruded::Face { .. }) => {
@@ -674,7 +688,7 @@ pub(crate) async fn do_post_extrude<'a>(
             if let SketchSurface::Face(ref face) = sketch.on {
                 // If we're merging into an existing body, then assign the existing body's ID,
                 // because the variable binding for this solid won't be its own object, it's just modifying the original one.
-                sketch.id = face.solid.sketch_id().unwrap_or(face.solid.id);
+                sketch.id = face.parent_solid.sketch_or_solid_id();
             }
         }
         (other, _) => {
@@ -864,14 +878,6 @@ pub(crate) async fn do_post_extrude<'a>(
     let meta = sketch.meta.clone();
     let units = sketch.units;
     let id = sketch.id;
-    // let creator = match &sketch.on {
-    //     SketchSurface::Plane(_) => SolidCreator::Sketch(sketch),
-    //     SketchSurface::Face(face) => SolidCreator::Face(CreatorFace {
-    //         face_id: face.id,
-    //         solid_id: face.solid.id,
-    //         sketch,
-    //     }),
-    // };
     let creator = match being_extruded {
         BeingExtruded::Sketch => SolidCreator::Sketch(sketch),
         BeingExtruded::Face { face_id, solid_id } => SolidCreator::Face(CreatorFace {
@@ -883,6 +889,7 @@ pub(crate) async fn do_post_extrude<'a>(
 
     Ok(Solid {
         id,
+        value_id: extrude_cmd_id.into(),
         artifact_id: extrude_cmd_id,
         value: new_value,
         meta,

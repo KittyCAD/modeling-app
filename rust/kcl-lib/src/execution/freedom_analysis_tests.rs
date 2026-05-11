@@ -14,6 +14,7 @@ async fn run_with_freedom_analysis(kcl: &str) -> Vec<(ObjectId, Freedom)> {
 
     let exec_ctxt = ExecutorContext {
         engine: Arc::new(Box::new(EngineConnection::new().unwrap())),
+        engine_batch: crate::engine::EngineBatchContext::default(),
         fs: Arc::new(crate::fs::FileManager::new()),
         settings: ExecutorSettings::default(),
         context_type: ContextType::Mock,
@@ -179,8 +180,6 @@ async fn test_freedom_analysis_with_zero_constraints() {
     // This test verifies the fix for the bug where segments with no constraints
     // incorrectly showed as Fixed (white) instead of Free (blue).
     let kcl = r#"
-@settings(experimentalFeatures = allow)
-
 sketch(on = YZ) {
   line1 = line(start = [var 1.32mm, var -1.93mm], end = [var 6.08mm, var 2.51mm])
   line2 = line(start = [var -5.98mm, var 3.5mm], end = [var -8.52mm, var -1.59mm])

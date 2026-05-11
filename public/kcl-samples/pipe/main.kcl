@@ -6,17 +6,27 @@
 @settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Define parameters
-pipeInnerDiameter = 2.0
 pipeOuterDiameter = 2.375
+pipeInnerDiameter = 2.0
+pipeThickness = (pipeOuterDiameter - pipeInnerDiameter) / 2
 pipeLength = 6
 
-// Create the pipe base
-pipeBase = startSketchOn(XZ)
-  |> circle(center = [0, 0], radius = pipeOuterDiameter / 2)
-  |> extrude(length = pipeLength)
+pipeSection = sketch(on = XZ) {
+  circle1 = circle(start = [var 0.95in, var 0in], center = [var 0in, var 0in])
+  radius(circle1) == pipeOuterDiameter / 2
+  circle2 = circle(start = [var 1.71in, var 0.38in], center = [var 0in, var 0in])
+  radius(circle2) == pipeInnerDiameter / 2
+  coincident([circle2.center, ORIGIN])
+  coincident([circle1.center, ORIGIN])
+}
 
-// Extrude a hole through the length of the pipe
-pipe = startSketchOn(pipeBase, face = END)
-  |> circle(center = [0, 0], radius = pipeInnerDiameter / 2)
-  |> extrude(length = -pipeLength)
+ringRegion = region(
+  point = [
+    (pipeInnerDiameter + pipeThickness) / 2,
+    0
+  ],
+  sketch = pipeSection,
+)
+pipeBody = extrude(ringRegion, length = -pipeLength, symmetric = true)
   |> appearance(color = "#a24ed0")
+hide(pipeSection)

@@ -33,6 +33,15 @@ description: Artifact commands bike-hub-washer.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -81,11 +90,11 @@ description: Artifact commands bike-hub-washer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2.0,
+            "x": 9.8,
             "y": 0.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -98,11 +107,11 @@ description: Artifact commands bike-hub-washer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
+            "x": 9.8,
             "y": -2.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -115,11 +124,28 @@ description: Artifact commands bike-hub-washer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2.0,
+            "x": 11.8,
+            "y": -2.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 11.8,
             "y": 0.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -132,28 +158,11 @@ description: Artifact commands bike-hub-washer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 2.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 2.7,
+            "x": 14.5,
             "y": 0.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -166,11 +175,11 @@ description: Artifact commands bike-hub-washer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
+            "x": 14.5,
             "y": 1.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -181,14 +190,34 @@ description: Artifact commands bike-hub-washer.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": 12.5,
-            "y": 4.0,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": 30.3,
+            "y": 13.699999999999998
+          },
+          "radius": 20.271408436514715,
+          "start": {
+            "unit": "degrees",
+            "value": -141.20776722166204
           },
           "end": {
-            "x": 11.0,
+            "unit": "degrees",
+            "value": -162.1907212463252
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 9.8,
             "y": 7.5,
             "z": 0.0
           },
@@ -205,59 +234,8 @@ description: Artifact commands bike-hub-washer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1.2,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 0.0,
-            "y": -3.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -2.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "relative": true
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 7.800000000000001,
-            "y": 0.0,
+            "x": 9.8,
+            "y": 4.5,
             "z": 0.0
           },
           "relative": false
@@ -273,11 +251,11 @@ description: Artifact commands bike-hub-washer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 3.0,
-            "y": 0.0,
+            "x": 7.8,
+            "y": 4.5,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -302,8 +280,21 @@ description: Artifact commands bike-hub-washer.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -356,31 +347,6 @@ description: Artifact commands bike-hub-washer.kcl
         "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "make_plane",
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "x_axis": {
-          "x": -1.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "y_axis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        },
-        "size": 60.0,
-        "clobber": false,
-        "hide": true
       }
     }
   ]

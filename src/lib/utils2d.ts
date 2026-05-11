@@ -29,12 +29,19 @@ export function polar2d(
   ]
 }
 
+// Returns the signed direction angle from center to point in radians.
+// This is the angle between the vector that goes from center to point and the positive X axis, [1, 0].
+// The returned value is in the range [-PI, PI].
+export function getPolarAngle2d(center: Coords2d, point: Coords2d): number {
+  return Math.atan2(point[1] - center[1], point[0] - center[0])
+}
+
 // Returns the signed angle between 2 2D vectors in radians.
 // The order of parameter matters:
 // getSignedAngleBetweenVec(a, b) = 2 * PI - getSignedAngleBetweenVec(b, a).
 // The returned value is in the range [-PI, PI].
 //
-// Note: utils/getAngle return the unsigned angle.
+// Note: utils/getAngle returns a signed direction angle in degrees.
 export function getSignedAngleBetweenVec(a: Coords2d, b: Coords2d) {
   // cross = |a||b| sin(theta)
   // dot = |a||b| cos(theta)
@@ -44,11 +51,24 @@ export function getSignedAngleBetweenVec(a: Coords2d, b: Coords2d) {
   return Math.atan2(cross2d(a, b), dot2d(a, b))
 }
 
+// Returns the unsigned minor angle between 2 2D vectors in radians.
+// The returned value is in the range [0, PI], or 0 if either vector is zero.
 export function getMinorAngleBetweenVec(a: Coords2d, b: Coords2d) {
   const length_a = length2d(a)
   const length_b = length2d(b)
   if (length_a === 0 || length_b === 0) return 0
   return Math.acos(dot2d(a, b) / length_a / length_b)
+}
+
+// Returns true when 2 vectors are parallel or anti-parallel within the given angular tolerance.
+export function isParallel(
+  a: Coords2d,
+  b: Coords2d,
+  epsilonRadians = 1e-8
+): boolean {
+  const denominator = length2d(a) * length2d(b)
+  if (denominator === 0) return false
+  return Math.abs(cross2d(a, b) / denominator) < Math.sin(epsilonRadians)
 }
 
 export function addVec(a: Coords2d, b: Coords2d): Coords2d {

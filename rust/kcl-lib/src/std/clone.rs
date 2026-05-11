@@ -86,6 +86,7 @@ async fn inner_clone(
 
                 let mut new_solid = solid.clone();
                 new_solid.id = new_id;
+                new_solid.value_id = new_id;
                 if let Some(sketch) = new_solid.sketch_mut() {
                     sketch.original_id = new_id;
                 }
@@ -181,7 +182,7 @@ async fn fix_tags_and_references(
                     start: start_tag.as_ref(),
                     end: end_tag.as_ref(),
                 },
-                kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+                kittycad_modeling_cmds::shared::ExtrudeMethod::New,
                 exec_state,
                 args,
                 None,

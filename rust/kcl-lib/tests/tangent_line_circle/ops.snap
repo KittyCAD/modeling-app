@@ -180,6 +180,134 @@ description: Operations executed tangent_line_circle.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "fixed",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": -10.0,
+                  "ty": {
+                    "mm": null,
+                    "type": "Known",
+                    "type": "Length"
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "mm": null,
+                    "type": "Known",
+                    "type": "Length"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 2
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "fixed",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": 10.0,
+                  "ty": {
+                    "mm": null,
+                    "type": "Known",
+                    "type": "Length"
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "mm": null,
+                    "type": "Known",
+                    "type": "Length"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 3
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "radius",
       "unlabeledArg": {
         "value": {
@@ -205,7 +333,7 @@ description: Operations executed tangent_line_circle.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 6
+            "index": 4
           },
           {
             "type": "ExpressionStatementExpr"
@@ -252,7 +380,7 @@ description: Operations executed tangent_line_circle.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 9
+            "index": 7
           },
           {
             "type": "ExpressionStatementExpr"
@@ -379,7 +507,7 @@ description: Operations executed tangent_line_circle.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 21
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -403,7 +531,7 @@ description: Operations executed tangent_line_circle.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -427,7 +555,7 @@ description: Operations executed tangent_line_circle.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -451,7 +579,7 @@ description: Operations executed tangent_line_circle.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -475,7 +603,7 @@ description: Operations executed tangent_line_circle.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -499,7 +627,7 @@ description: Operations executed tangent_line_circle.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -523,7 +651,7 @@ description: Operations executed tangent_line_circle.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -547,7 +675,7 @@ description: Operations executed tangent_line_circle.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"

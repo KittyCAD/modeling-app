@@ -14,6 +14,8 @@ use crate::errors::KclErrorDetails;
 use crate::exec::Sketch;
 use crate::execution::AbstractSegment;
 use crate::execution::BodyType;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ConstraintKind;
 use crate::execution::ControlFlowKind;
 use crate::execution::EarlyReturn;
 use crate::execution::EnvironmentRef;
@@ -40,6 +42,7 @@ use crate::execution::UnsolvedExpr;
 use crate::execution::UnsolvedSegment;
 use crate::execution::UnsolvedSegmentKind;
 use crate::execution::annotations;
+use crate::execution::annotations::FnAttrs;
 use crate::execution::cad_op::OpKclValue;
 use crate::execution::control_continue;
 use crate::execution::early_return;
@@ -50,6 +53,8 @@ use crate::execution::kcl_value::KclFunctionSourceParams;
 use crate::execution::kcl_value::TypeDef;
 use crate::execution::memory::SKETCH_PREFIX;
 use crate::execution::memory::{self};
+#[cfg(feature = "artifact-graph")]
+use crate::execution::sketch_constraint_status_for_sketch;
 use crate::execution::sketch_solve::FreedomAnalysis;
 use crate::execution::sketch_solve::Solved;
 use crate::execution::sketch_solve::create_segment_scene_objects;
@@ -99,12 +104,13 @@ use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::Type;
 use crate::parsing::ast::types::UnaryExpression;
 use crate::parsing::ast::types::UnaryOperator;
+use crate::std::StdFnProps;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
 use crate::std::shapes::SketchOrSurface;
 use crate::std::sketch::ensure_sketch_plane_in_engine;
-use crate::std::sketch2::SOLVER_CONVERGENCE_TOLERANCE;
-use crate::std::sketch2::create_segments_in_engine;
+use crate::std::solver::SOLVER_CONVERGENCE_TOLERANCE;
+use crate::std::solver::create_segments_in_engine;
 
 fn internal_err(message: impl Into<String>, range: impl Into<SourceRange>) -> KclError {
     KclError::new_internal(KclErrorDetails::new(message.into(), vec![range.into()]))
@@ -862,6 +868,13 @@ impl ExecutorContext {
                 Ok(id)
             }
             ImportPath::Std { .. } => {
+                if resolved_path.is_solver_module() && exec_state.mod_local.sketch_block.is_none() {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!("The `{resolved_path}` module is only available inside sketch blocks."),
+                        vec![source_range],
+                    )));
+                }
+
                 if let Some(id) = exec_state.id_for_module(resolved_path) {
                     return Ok(id);
                 }
@@ -1048,11 +1061,18 @@ impl ExecutorContext {
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
             Expr::FunctionExpression(function_expression) => {
                 let attrs = annotations::get_fn_attrs(annotations, metadata.source_range)?;
-                let experimental = attrs.map(|a| a.experimental).unwrap_or_default();
-                let is_std = matches!(&exec_state.mod_local.path, ModulePath::Std { .. });
+                let experimental = attrs
+                    .as_ref()
+                    .map(|a| a.experimental)
+                    // Use the default for the field, not the bool type.
+                    .unwrap_or_else(|| FnAttrs::default().experimental);
 
                 // Check the KCL @(feature_tree = ) annotation.
-                let include_in_feature_tree = attrs.unwrap_or_default().include_in_feature_tree;
+                let include_in_feature_tree = attrs
+                    .as_ref()
+                    .map(|a| a.include_in_feature_tree)
+                    // Use the default for the field, not the bool type.
+                    .unwrap_or_else(|| FnAttrs::default().include_in_feature_tree);
                 let (mut closure, placeholder_env_ref) = if let Some(attrs) = attrs
                     && (attrs.impl_ == annotations::Impl::Rust
                         || attrs.impl_ == annotations::Impl::RustConstrainable
@@ -1074,6 +1094,10 @@ impl ExecutorContext {
                         )));
                     }
                 } else {
+                    let std_props = function_expression
+                        .name_str()
+                        .and_then(|name| exec_state.mod_local.path.build_std_fully_qualified_name(name))
+                        .map(|name| StdFnProps::default(&name));
                     // Snapshotting memory here is crucial for semantics so that we close
                     // over variables. Variables defined lexically later shouldn't
                     // be available to the function body.
@@ -1091,7 +1115,7 @@ impl ExecutorContext {
                                 function_expression.clone(),
                                 env_ref,
                                 KclFunctionSourceParams {
-                                    is_std,
+                                    std_props,
                                     experimental,
                                     include_in_feature_tree,
                                 },
@@ -1253,22 +1277,26 @@ impl Node<SketchBlock> {
         };
         #[cfg(not(feature = "artifact-graph"))]
         let _ = on_object_id;
-        #[cfg(not(feature = "artifact-graph"))]
-        let _ = sketch_id;
         #[cfg(feature = "artifact-graph")]
         let sketch_ctor_on = sketch_on_frontend_plane(&self.arguments, on_object_id);
         #[cfg(feature = "artifact-graph")]
-        {
+        let sketch_block_artifact_id = {
             use crate::execution::Artifact;
             use crate::execution::ArtifactId;
             use crate::execution::CodeRef;
             use crate::execution::SketchBlock;
+            use crate::front::Plane;
             use crate::front::SourceRef;
 
             let on_object = exec_state.mod_local.artifacts.scene_object_by_id(on_object_id);
 
             // Get the plane artifact ID so that we can do an exclusive borrow.
             let plane_artifact_id = on_object.map(|object| object.artifact_id);
+
+            let standard_plane = match &sketch_ctor_on {
+                Plane::Default(plane) => Some(*plane),
+                Plane::Object(_) => None,
+            };
 
             let artifact_id = ArtifactId::from(exec_state.next_uuid());
             // Create the sketch scene object and replace its placeholder.
@@ -1287,29 +1315,32 @@ impl Node<SketchBlock> {
             };
             exec_state.set_scene_object(sketch_scene_object);
 
-            // Create and add the sketch block artifact
+            // Create and add the sketch block artifact.
             exec_state.add_artifact(Artifact::SketchBlock(SketchBlock {
                 id: artifact_id,
+                standard_plane,
                 plane_id: plane_artifact_id,
+                // Fill this in later once we create the path. We can't just add
+                // the artifact later because order relative to constraint
+                // artifacts is significant.
+                path_id: None,
                 code_ref: CodeRef::placeholder(range),
                 sketch_id,
             }));
-        }
+            artifact_id
+        };
 
         let (return_result, variables, sketch_block_state) = {
             // Don't early return until the stack frame is popped!
             self.prep_mem(exec_state.mut_stack().snapshot(), exec_state);
 
             // Track that we're executing a sketch block.
-            #[cfg(feature = "artifact-graph")]
             let initial_sketch_block_state = {
                 SketchBlockState {
                     sketch_id: Some(sketch_id),
                     ..Default::default()
                 }
             };
-            #[cfg(not(feature = "artifact-graph"))]
-            let initial_sketch_block_state = SketchBlockState::default();
 
             let original_value = exec_state.mod_local.sketch_block.replace(initial_sketch_block_state);
 
@@ -1535,6 +1566,23 @@ impl Node<SketchBlock> {
         )
         .await?;
 
+        #[cfg(feature = "artifact-graph")]
+        {
+            use crate::execution::Artifact;
+            // We now have enough information to fill in the path.
+            if let Some(sketch_artifact_id) = sketch.as_ref().map(|s| s.artifact_id) {
+                if let Some(Artifact::SketchBlock(sketch_block_artifact)) =
+                    exec_state.artifact_mut(sketch_block_artifact_id)
+                {
+                    sketch_block_artifact.path_id = Some(sketch_artifact_id);
+                } else {
+                    let message = "Sketch block artifact not found, so path couldn't be linked to it".to_owned();
+                    debug_assert!(false, "{message}");
+                    return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
+                }
+            }
+        }
+
         // Substitute solutions back into sketch variables. This time, collect
         // all the variables in the sketch block. The set of variables may have
         // overlap with the objects sent to the engine, but it isn't necessarily
@@ -1589,6 +1637,35 @@ impl Node<SketchBlock> {
                 node_path: NodePath::placeholder(),
                 source_range: range,
             });
+
+            // Warn if the sketch has conflicting constraints. Skip this when
+            // freedom analysis didn't run (e.g., during dragging), because the
+            // freedom values on points are stale defaults in that case.
+            if exec_state.mod_local.freedom_analysis {
+                let status = {
+                    let scene_objects = &exec_state.mod_local.artifacts.scene_objects;
+                    scene_objects
+                        .get(sketch_id.0)
+                        .and_then(|obj| sketch_constraint_status_for_sketch(scene_objects, obj))
+                };
+                if let Some(status) = status
+                    && status.status == ConstraintKind::OverConstrained
+                {
+                    let description = if status.conflict_count == 1 {
+                        "segment has"
+                    } else {
+                        "segments have"
+                    };
+                    let message = format!(
+                        "Sketch is over-constrained: {} {description} conflicting constraints",
+                        status.conflict_count,
+                    );
+                    exec_state.warn(
+                        CompilationIssue::err(range, message),
+                        annotations::WARN_OVER_CONSTRAINED_SKETCH,
+                    );
+                }
+            }
         }
 
         let properties = self.sketch_properties(sketch, variables);
@@ -1757,7 +1834,7 @@ impl Node<SketchBlock> {
         ctx: &ExecutorContext,
         source_range: SourceRange,
     ) -> Result<(), KclError> {
-        let path = vec!["std".to_owned(), "sketch2".to_owned()];
+        let path = vec!["std".to_owned(), "solver".to_owned()];
         let resolved_path = ModulePath::from_std_import_path(&path)?;
         let module_id = ctx
             .open_module(&ImportPath::Std { path }, &[], &resolved_path, exec_state, source_range)
@@ -3114,20 +3191,13 @@ impl Node<BinaryExpression> {
                                 );
                             }
                         }
-                        SketchConstraintKind::Distance { points } => {
+                        SketchConstraintKind::Distance { points, label_position } => {
+                            #[cfg(not(feature = "artifact-graph"))]
+                            let _ = label_position;
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];
-                            let solver_pt0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
-                                p0.vars.x.to_constraint_id(range)?,
-                                p0.vars.y.to_constraint_id(range)?,
-                            );
-                            let solver_pt1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
-                                p1.vars.x.to_constraint_id(range)?,
-                                p1.vars.y.to_constraint_id(range)?,
-                            );
-                            let solver_constraint = Constraint::Distance(solver_pt0, solver_pt1, n.n);
-
+                            let sketch_var_ty = solver_numeric_type(exec_state);
                             #[cfg(feature = "artifact-graph")]
                             let constraint_id = exec_state.next_object_id();
                             let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
@@ -3136,7 +3206,78 @@ impl Node<BinaryExpression> {
                                 debug_assert!(false, "{}", &message);
                                 return Err(internal_err(message, self));
                             };
-                            sketch_block_state.solver_constraints.push(solver_constraint);
+                            match (p0, p1) {
+                                (
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Point(p0),
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Point(p1),
+                                ) => {
+                                    let solver_pt0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                        p0.vars.x.to_constraint_id(range)?,
+                                        p0.vars.y.to_constraint_id(range)?,
+                                    );
+                                    let solver_pt1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                        p1.vars.x.to_constraint_id(range)?,
+                                        p1.vars.y.to_constraint_id(range)?,
+                                    );
+                                    sketch_block_state
+                                        .solver_constraints
+                                        .push(Constraint::Distance(solver_pt0, solver_pt1, n.n));
+                                }
+                                (
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Point(point),
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Origin,
+                                )
+                                | (
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Origin,
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Point(point),
+                                ) => {
+                                    let origin_x_id = sketch_block_state.next_sketch_var_id();
+                                    sketch_block_state.sketch_vars.push(KclValue::SketchVar {
+                                        value: Box::new(crate::execution::SketchVar {
+                                            id: origin_x_id,
+                                            initial_value: 0.0,
+                                            ty: sketch_var_ty,
+                                            meta: vec![],
+                                        }),
+                                    });
+                                    let origin_y_id = sketch_block_state.next_sketch_var_id();
+                                    sketch_block_state.sketch_vars.push(KclValue::SketchVar {
+                                        value: Box::new(crate::execution::SketchVar {
+                                            id: origin_y_id,
+                                            initial_value: 0.0,
+                                            ty: sketch_var_ty,
+                                            meta: vec![],
+                                        }),
+                                    });
+                                    let origin_x = origin_x_id.to_constraint_id(range)?;
+                                    let origin_y = origin_y_id.to_constraint_id(range)?;
+                                    sketch_block_state
+                                        .solver_constraints
+                                        .push(Constraint::Fixed(origin_x, 0.0));
+                                    sketch_block_state
+                                        .solver_constraints
+                                        .push(Constraint::Fixed(origin_y, 0.0));
+                                    let solver_point = ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                        point.vars.x.to_constraint_id(range)?,
+                                        point.vars.y.to_constraint_id(range)?,
+                                    );
+                                    let origin_point = ezpz::datatypes::inputs::DatumPoint::new_xy(origin_x, origin_y);
+                                    sketch_block_state.solver_constraints.push(Constraint::Distance(
+                                        solver_point,
+                                        origin_point,
+                                        n.n,
+                                    ));
+                                }
+                                (
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Origin,
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Origin,
+                                ) => {
+                                    return Err(internal_err(
+                                        "distance() cannot constrain ORIGIN against ORIGIN".to_owned(),
+                                        range,
+                                    ));
+                                }
+                            }
                             #[cfg(feature = "artifact-graph")]
                             {
                                 use crate::execution::Artifact;
@@ -3145,6 +3286,7 @@ impl Node<BinaryExpression> {
                                 use crate::execution::SketchBlockConstraintType;
                                 use crate::front::Distance;
                                 use crate::front::SourceRef;
+                                use crate::frontend::sketch::ConstraintSegment;
 
                                 let Some(sketch_id) = sketch_block_state.sketch_id else {
                                     let message = "Sketch id missing for constraint artifact".to_owned();
@@ -3152,10 +3294,28 @@ impl Node<BinaryExpression> {
                                     return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                                 };
                                 let sketch_constraint = crate::front::Constraint::Distance(Distance {
-                                    points: vec![p0.object_id, p1.object_id],
+                                    points: vec![
+                                        match p0 {
+                                            crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
+                                                ConstraintSegment::from(point.object_id)
+                                            }
+                                            crate::execution::ConstrainablePoint2dOrOrigin::Origin => {
+                                                ConstraintSegment::ORIGIN
+                                            }
+                                        },
+                                        match p1 {
+                                            crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
+                                                ConstraintSegment::from(point.object_id)
+                                            }
+                                            crate::execution::ConstrainablePoint2dOrOrigin::Origin => {
+                                                ConstraintSegment::ORIGIN
+                                            }
+                                        },
+                                    ],
                                     distance: n.try_into().map_err(|_| {
                                         internal_err("Failed to convert distance units numeric suffix:", range)
                                     })?,
+                                    label_position: label_position.clone(),
                                     source,
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);
@@ -3182,7 +3342,7 @@ impl Node<BinaryExpression> {
                                 );
                             }
                         }
-                        SketchConstraintKind::Radius { points } | SketchConstraintKind::Diameter { points } => {
+                        SketchConstraintKind::Radius { .. } | SketchConstraintKind::Diameter { .. } => {
                             #[derive(Clone, Copy)]
                             enum CircularSegmentConstraintTarget {
                                 Arc {
@@ -3223,6 +3383,17 @@ impl Node<BinaryExpression> {
                                     })
                             }
 
+                            let (points, label_position) = match &constraint.kind {
+                                SketchConstraintKind::Radius { points, label_position } => {
+                                    (points, label_position.clone())
+                                }
+                                SketchConstraintKind::Diameter { points, label_position } => {
+                                    (points, label_position.clone())
+                                }
+                                _ => unreachable!(),
+                            };
+                            #[cfg(not(feature = "artifact-graph"))]
+                            let _ = &label_position;
                             let range = self.as_source_range();
                             let center = &points[0];
                             let start = &points[1];
@@ -3313,7 +3484,7 @@ impl Node<BinaryExpression> {
                                         sketch_var_initial_value(&sketch_vars, center.vars.y, exec_state, range)?;
 
                                     // Get the hypotenuse between the two points, the radius
-                                    let radius_initial_value = (start_x - center_x).hypot(start_y - center_y);
+                                    let radius_initial_value = libm::hypot(start_x - center_x, start_y - center_y);
 
                                     let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
                                         let message =
@@ -3374,6 +3545,7 @@ impl Node<BinaryExpression> {
                                         diameter: n.try_into().map_err(|_| {
                                             internal_err("Failed to convert diameter units numeric suffix:", range)
                                         })?,
+                                        label_position,
                                         source,
                                     })
                                 } else {
@@ -3383,6 +3555,7 @@ impl Node<BinaryExpression> {
                                         radius: n.try_into().map_err(|_| {
                                             internal_err("Failed to convert radius units numeric suffix:", range)
                                         })?,
+                                        label_position,
                                         source,
                                     })
                                 };
@@ -3413,23 +3586,12 @@ impl Node<BinaryExpression> {
                                 );
                             }
                         }
-                        SketchConstraintKind::HorizontalDistance { points } => {
+                        SketchConstraintKind::HorizontalDistance { points, label_position } => {
+                            #[cfg(not(feature = "artifact-graph"))]
+                            let _ = label_position;
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];
-                            let solver_pt0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
-                                p0.vars.x.to_constraint_id(range)?,
-                                p0.vars.y.to_constraint_id(range)?,
-                            );
-                            let solver_pt1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
-                                p1.vars.x.to_constraint_id(range)?,
-                                p1.vars.y.to_constraint_id(range)?,
-                            );
-                            // Horizontal distance: p1.x - p0.x = n
-                            // Note: EZPZ's HorizontalDistance(p0, p1, d) means p0.x - p1.x = d
-                            // So we swap the points to get p1.x - p0.x = n
-                            let solver_constraint = ezpz::Constraint::HorizontalDistance(solver_pt1, solver_pt0, n.n);
-
                             #[cfg(feature = "artifact-graph")]
                             let constraint_id = exec_state.next_object_id();
                             let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
@@ -3438,7 +3600,51 @@ impl Node<BinaryExpression> {
                                 debug_assert!(false, "{}", &message);
                                 return Err(internal_err(message, self));
                             };
-                            sketch_block_state.solver_constraints.push(solver_constraint);
+                            match (p0, p1) {
+                                (
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Point(p0),
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Point(p1),
+                                ) => {
+                                    let solver_pt0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                        p0.vars.x.to_constraint_id(range)?,
+                                        p0.vars.y.to_constraint_id(range)?,
+                                    );
+                                    let solver_pt1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                        p1.vars.x.to_constraint_id(range)?,
+                                        p1.vars.y.to_constraint_id(range)?,
+                                    );
+                                    sketch_block_state
+                                        .solver_constraints
+                                        .push(ezpz::Constraint::HorizontalDistance(solver_pt1, solver_pt0, n.n));
+                                }
+                                (
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Point(point),
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Origin,
+                                ) => {
+                                    // horizontalDistance([point, ORIGIN]) == n means 0 - point.x = n, so point.x = -n.
+                                    sketch_block_state
+                                        .solver_constraints
+                                        .push(ezpz::Constraint::Fixed(point.vars.x.to_constraint_id(range)?, -n.n));
+                                }
+                                (
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Origin,
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Point(point),
+                                ) => {
+                                    // horizontalDistance([ORIGIN, point]) == n means point.x - 0 = n, so point.x = n.
+                                    sketch_block_state
+                                        .solver_constraints
+                                        .push(ezpz::Constraint::Fixed(point.vars.x.to_constraint_id(range)?, n.n));
+                                }
+                                (
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Origin,
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Origin,
+                                ) => {
+                                    return Err(internal_err(
+                                        "horizontalDistance() cannot constrain ORIGIN against ORIGIN".to_owned(),
+                                        range,
+                                    ));
+                                }
+                            }
                             #[cfg(feature = "artifact-graph")]
                             {
                                 use crate::execution::Artifact;
@@ -3447,12 +3653,31 @@ impl Node<BinaryExpression> {
                                 use crate::execution::SketchBlockConstraintType;
                                 use crate::front::Distance;
                                 use crate::front::SourceRef;
+                                use crate::frontend::sketch::ConstraintSegment;
 
                                 let constraint = crate::front::Constraint::HorizontalDistance(Distance {
-                                    points: vec![p0.object_id, p1.object_id],
+                                    points: vec![
+                                        match p0 {
+                                            crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
+                                                ConstraintSegment::from(point.object_id)
+                                            }
+                                            crate::execution::ConstrainablePoint2dOrOrigin::Origin => {
+                                                ConstraintSegment::ORIGIN
+                                            }
+                                        },
+                                        match p1 {
+                                            crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
+                                                ConstraintSegment::from(point.object_id)
+                                            }
+                                            crate::execution::ConstrainablePoint2dOrOrigin::Origin => {
+                                                ConstraintSegment::ORIGIN
+                                            }
+                                        },
+                                    ],
                                     distance: n.try_into().map_err(|_| {
                                         internal_err("Failed to convert distance units numeric suffix:", range)
                                     })?,
+                                    label_position: label_position.clone(),
                                     source,
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);
@@ -3482,23 +3707,12 @@ impl Node<BinaryExpression> {
                                 );
                             }
                         }
-                        SketchConstraintKind::VerticalDistance { points } => {
+                        SketchConstraintKind::VerticalDistance { points, label_position } => {
+                            #[cfg(not(feature = "artifact-graph"))]
+                            let _ = label_position;
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];
-                            let solver_pt0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
-                                p0.vars.x.to_constraint_id(range)?,
-                                p0.vars.y.to_constraint_id(range)?,
-                            );
-                            let solver_pt1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
-                                p1.vars.x.to_constraint_id(range)?,
-                                p1.vars.y.to_constraint_id(range)?,
-                            );
-                            // Vertical distance: p1.y - p0.y = n
-                            // Note: EZPZ's VerticalDistance(p0, p1, d) means p0.y - p1.y = d
-                            // So we swap the points to get p1.y - p0.y = n
-                            let solver_constraint = ezpz::Constraint::VerticalDistance(solver_pt1, solver_pt0, n.n);
-
                             #[cfg(feature = "artifact-graph")]
                             let constraint_id = exec_state.next_object_id();
                             let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
@@ -3507,7 +3721,49 @@ impl Node<BinaryExpression> {
                                 debug_assert!(false, "{}", &message);
                                 return Err(internal_err(message, self));
                             };
-                            sketch_block_state.solver_constraints.push(solver_constraint);
+                            match (p0, p1) {
+                                (
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Point(p0),
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Point(p1),
+                                ) => {
+                                    let solver_pt0 = ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                        p0.vars.x.to_constraint_id(range)?,
+                                        p0.vars.y.to_constraint_id(range)?,
+                                    );
+                                    let solver_pt1 = ezpz::datatypes::inputs::DatumPoint::new_xy(
+                                        p1.vars.x.to_constraint_id(range)?,
+                                        p1.vars.y.to_constraint_id(range)?,
+                                    );
+                                    sketch_block_state
+                                        .solver_constraints
+                                        .push(ezpz::Constraint::VerticalDistance(solver_pt1, solver_pt0, n.n));
+                                }
+                                (
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Point(point),
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Origin,
+                                ) => {
+                                    sketch_block_state
+                                        .solver_constraints
+                                        .push(ezpz::Constraint::Fixed(point.vars.y.to_constraint_id(range)?, -n.n));
+                                }
+                                (
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Origin,
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Point(point),
+                                ) => {
+                                    sketch_block_state
+                                        .solver_constraints
+                                        .push(ezpz::Constraint::Fixed(point.vars.y.to_constraint_id(range)?, n.n));
+                                }
+                                (
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Origin,
+                                    crate::execution::ConstrainablePoint2dOrOrigin::Origin,
+                                ) => {
+                                    return Err(internal_err(
+                                        "verticalDistance() cannot constrain ORIGIN against ORIGIN".to_owned(),
+                                        range,
+                                    ));
+                                }
+                            }
                             #[cfg(feature = "artifact-graph")]
                             {
                                 use crate::execution::Artifact;
@@ -3516,12 +3772,31 @@ impl Node<BinaryExpression> {
                                 use crate::execution::SketchBlockConstraintType;
                                 use crate::front::Distance;
                                 use crate::front::SourceRef;
+                                use crate::frontend::sketch::ConstraintSegment;
 
                                 let constraint = crate::front::Constraint::VerticalDistance(Distance {
-                                    points: vec![p0.object_id, p1.object_id],
+                                    points: vec![
+                                        match p0 {
+                                            crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
+                                                ConstraintSegment::from(point.object_id)
+                                            }
+                                            crate::execution::ConstrainablePoint2dOrOrigin::Origin => {
+                                                ConstraintSegment::ORIGIN
+                                            }
+                                        },
+                                        match p1 {
+                                            crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
+                                                ConstraintSegment::from(point.object_id)
+                                            }
+                                            crate::execution::ConstrainablePoint2dOrOrigin::Origin => {
+                                                ConstraintSegment::ORIGIN
+                                            }
+                                        },
+                                    ],
                                     distance: n.try_into().map_err(|_| {
                                         internal_err("Failed to convert distance units numeric suffix:", range)
                                     })?,
+                                    label_position: label_position.clone(),
                                     source,
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);
@@ -4436,6 +4711,7 @@ d = b + c
                     })
                     .unwrap(),
             )),
+            engine_batch: crate::engine::EngineBatchContext::default(),
             fs: Arc::new(crate::fs::FileManager::new()),
             settings: ExecutorSettings {
                 project_directory: Some(crate::TypedPath(tmpdir.path().into())),
@@ -4779,7 +5055,6 @@ a = PI * 2
     #[tokio::test(flavor = "multi_thread")]
     async fn sketch_block_unqualified_functions_use_sketch2() {
         let ast = r#"
-@settings(experimentalFeatures = allow)
 s = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
   line2 = line(start = [var 1mm, var 0mm], end = [var 1mm, var 1mm])
@@ -4803,6 +5078,25 @@ s = sketch(on = XY) {
         // sketch block fields.
         assert!(!value.contains_key("line"));
         assert!(!value.contains_key("coincident"));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn solver_module_is_not_available_outside_sketch_blocks() {
+        let err = parse_execute("a = solver::ORIGIN").await.unwrap_err();
+        assert!(err.message().contains("solver"), "Error message: '{}'", err.message());
+
+        let err = parse_execute(
+            r#"@settings(experimentalFeatures = allow)
+
+import "std::solver""#,
+        )
+        .await
+        .unwrap_err();
+        assert!(
+            err.message().contains("only available inside sketch blocks"),
+            "Error message: '{}'",
+            err.message()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]

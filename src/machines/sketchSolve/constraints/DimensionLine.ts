@@ -1,15 +1,15 @@
 import type { ApiObject, Number } from '@rust/kcl-lib/bindings/FrontendApi'
 
 import {
-  CanvasTexture,
-  Group,
-  Mesh,
-  Sprite,
-  SpriteMaterial,
-  Color,
-  Vector3,
-  type Vector3 as Vector3Type,
-} from 'three'
+  DISTANCE_CONSTRAINT_ARROW,
+  DISTANCE_CONSTRAINT_BODY,
+  DISTANCE_CONSTRAINT_LABEL,
+} from '@src/clientSideScene/sceneConstants'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { FUNCTION_ICON_PATH } from '@src/components/CustomIcon'
+import type { Coords2d } from '@src/lang/util'
+import { Themes, getResolvedTheme } from '@src/lib/theme'
+import type { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
 import {
   CONSTRAINT_TYPE,
   isConstraintWithSource,
@@ -19,18 +19,18 @@ import type {
   ConstraintObject,
   SpriteLabel,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
-import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
-import type { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
-import { Line2 } from 'three/examples/jsm/lines/Line2'
 import {
-  DISTANCE_CONSTRAINT_BODY,
-  DISTANCE_CONSTRAINT_ARROW,
-  DISTANCE_CONSTRAINT_LABEL,
-} from '@src/clientSideScene/sceneConstants'
-import { getResolvedTheme, Themes } from '@src/lib/theme'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { FUNCTION_ICON_PATH } from '@src/components/CustomIcon'
-import type { Coords2d } from '@src/lang/util'
+  CanvasTexture,
+  Color,
+  Group,
+  Mesh,
+  Sprite,
+  SpriteMaterial,
+  Vector3,
+  type Vector3 as Vector3Type,
+} from 'three'
+import { Line2 } from 'three/examples/jsm/lines/Line2'
+import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
 
 // "f" function icon SVG path (from CustomIcon), scaled from 20x20 viewbox
 const FUNCTION_ICON_SIZE = 36
@@ -69,17 +69,21 @@ export function createDimensionLine(
   const materials = resources.materials
 
   const lineGeom1 = new LineGeometry()
-  lineGeom1.setPositions([0, 0, 0, 100, 100, 0])
   const line1 = new Line2(lineGeom1, materials.default.line)
   line1.userData.type = DISTANCE_CONSTRAINT_BODY
   line1.userData.hitObjects = 'auto'
+  line1.userData.segmentStart = new Vector3()
+  line1.userData.segmentEnd = new Vector3()
+  updateConstraintLinePositions(line1, [0, 0, 0, 100, 100, 0])
   group.add(line1)
 
   const lineGeom2 = new LineGeometry()
-  lineGeom2.setPositions([0, 0, 0, 100, 100, 0])
   const line2 = new Line2(lineGeom2, materials.default.line)
   line2.userData.type = DISTANCE_CONSTRAINT_BODY
   line2.userData.hitObjects = 'auto'
+  line2.userData.segmentStart = new Vector3()
+  line2.userData.segmentEnd = new Vector3()
+  updateConstraintLinePositions(line2, [0, 0, 0, 100, 100, 0])
   group.add(line2)
 
   // Arrow tip is at origin, so position directly at start/end
@@ -115,13 +119,14 @@ export function updateDimensionLine(
   scale: number,
   sceneInfra: SceneInfra,
   distance: Number,
-  isDiameter = false
+  isDiameter = false,
+  labelPosition?: Vector3Type
 ) {
   const dimensionLengthPx = start.distanceTo(end) / scale
   const lineCenter = start.clone().lerp(end, 0.5)
   const collapsedAxis = getCollapsedZeroDistanceAxis(obj, distance)
   const dir = collapsedAxis ?? end.clone().sub(start).normalize()
-  const labelCenter = isDiameter
+  const autoLabelCenter = isDiameter
     ? lineCenter.clone().add(
         dir
           .clone()
@@ -137,6 +142,7 @@ export function updateDimensionLine(
             )
           )
       : lineCenter
+  const labelCenter = labelPosition ?? autoLabelCenter
 
   const label = group.children.find(isSpriteLabel)
   if (label) {
@@ -145,13 +151,18 @@ export function updateDimensionLine(
     label.position.copy(labelCenter)
   }
 
-  if (dimensionLengthPx < DIMENSION_HIDE_THRESHOLD_PX && !collapsedAxis) {
+  if (
+    dimensionLengthPx < DIMENSION_HIDE_THRESHOLD_PX &&
+    !collapsedAxis &&
+    !labelPosition
+  ) {
     group.visible = false
     return
   }
 
   group.visible = true
   const showLabel =
+    labelPosition !== undefined ||
     collapsedAxis !== null ||
     dimensionLengthPx >= DIMENSION_LABEL_HIDE_THRESHOLD_PX
   let labelTextWidthPx = 0
@@ -177,10 +188,17 @@ export function updateDimensionLine(
     }
   }
 
-  // Main constraint lines with optional gap. Diameter labels are offset off-line, so keep no gap.
-  const halfGap = showLabel && !isDiameter ? labelTextWidthPx * 0.5 * scale : 0
-  const gapStart = lineCenter.clone().sub(dir.clone().multiplyScalar(halfGap))
-  const gapEnd = lineCenter.clone().add(dir.clone().multiplyScalar(halfGap))
+  // Main constraint lines with optional gap. Automatic diameter labels are
+  // offset off-line, so only explicit diameter label positions get a gap.
+  const hasExplicitLabelPosition = labelPosition !== undefined
+  const halfGap =
+    showLabel && (!isDiameter || hasExplicitLabelPosition)
+      ? labelTextWidthPx * 0.5 * scale
+      : 0
+  const gapCenter =
+    isDiameter && !hasExplicitLabelPosition ? lineCenter : labelCenter
+  const gapStart = gapCenter.clone().sub(dir.clone().multiplyScalar(halfGap))
+  const gapEnd = gapCenter.clone().add(dir.clone().multiplyScalar(halfGap))
   const maxEndInset = Math.max(
     0,
     Math.min(start.distanceTo(gapStart), gapEnd.distanceTo(end))
@@ -205,7 +223,7 @@ export function updateDimensionLine(
 
   if (collapsedAxis) {
     updateCollapsedDimensionLine(
-      lineCenter,
+      labelPosition ?? lineCenter,
       collapsedAxis,
       line1,
       line2,
@@ -216,15 +234,52 @@ export function updateDimensionLine(
     return
   }
 
-  line1.geometry.setPositions([
-    lineStart.x,
-    lineStart.y,
-    0,
-    gapStart.x,
-    gapStart.y,
-    0,
-  ])
-  line2.geometry.setPositions([gapEnd.x, gapEnd.y, 0, lineEnd.x, lineEnd.y, 0])
+  const lineStartT = lineStart.clone().sub(start).dot(dir)
+  const lineEndT = lineEnd.clone().sub(start).dot(dir)
+  const gapCenterT = gapCenter.clone().sub(start).dot(dir)
+  const lineMinT = Math.min(lineStartT, lineEndT)
+  const lineMaxT = Math.max(lineStartT, lineEndT)
+  const labelBeforeLine = labelPosition !== undefined && gapCenterT < lineMinT
+  const labelAfterLine = labelPosition !== undefined && gapCenterT > lineMaxT
+
+  if (labelBeforeLine) {
+    updateConstraintLinePositions(line1, [
+      gapEnd.x,
+      gapEnd.y,
+      0,
+      lineEnd.x,
+      lineEnd.y,
+      0,
+    ])
+    line2.visible = false
+  } else if (labelAfterLine) {
+    updateConstraintLinePositions(line1, [
+      lineStart.x,
+      lineStart.y,
+      0,
+      gapStart.x,
+      gapStart.y,
+      0,
+    ])
+    line2.visible = false
+  } else {
+    updateConstraintLinePositions(line1, [
+      lineStart.x,
+      lineStart.y,
+      0,
+      gapStart.x,
+      gapStart.y,
+      0,
+    ])
+    updateConstraintLinePositions(line2, [
+      gapEnd.x,
+      gapEnd.y,
+      0,
+      lineEnd.x,
+      lineEnd.y,
+      0,
+    ])
+  }
 
   // Arrows
   const angle = Math.atan2(dir.y, dir.x) // TODO
@@ -279,7 +334,7 @@ function updateCollapsedDimensionLine(
     .clone()
     .add(markerDir.clone().multiplyScalar(markerHalfLength))
 
-  line1.geometry.setPositions([
+  updateConstraintLinePositions(line1, [
     markerStart.x,
     markerStart.y,
     0,
@@ -297,6 +352,27 @@ function updateCollapsedDimensionLine(
   arrow2.position.copy(center)
   arrow2.rotation.z = angle + Math.PI / 2
   arrow2.scale.setScalar(scale)
+}
+
+export function updateConstraintLinePositions(
+  line: Line2,
+  positions: number[]
+) {
+  const segmentStart =
+    line.userData.segmentStart instanceof Vector3
+      ? line.userData.segmentStart
+      : new Vector3()
+  const segmentEnd =
+    line.userData.segmentEnd instanceof Vector3
+      ? line.userData.segmentEnd
+      : new Vector3()
+  segmentStart.set(positions[0] ?? 0, positions[1] ?? 0, positions[2] ?? 0)
+  segmentEnd.set(positions[3] ?? 0, positions[4] ?? 0, positions[5] ?? 0)
+  line.userData.segmentStart = segmentStart
+  line.userData.segmentEnd = segmentEnd
+  line.geometry.setPositions(positions)
+  line.geometry.computeBoundingSphere()
+  line.computeLineDistances()
 }
 
 export function updateLabel(

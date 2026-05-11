@@ -2,7 +2,6 @@ import type { ArtifactGraph as RustArtifactGraph } from '@rust/kcl-lib/bindings/
 import type { ArtifactId } from '@rust/kcl-lib/bindings/ArtifactId'
 import type { CompilationIssue } from '@rust/kcl-lib/bindings/CompilationIssue'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-import type { CoreDumpInfo } from '@rust/kcl-lib/bindings/CoreDumpInfo'
 import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import type { Discovered } from '@rust/kcl-lib/bindings/Discovered'
 import type { ExecOutcome as RustExecOutcome } from '@rust/kcl-lib/bindings/ExecOutcome'
@@ -35,7 +34,6 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type { Coords2d } from '@src/lang/util'
 import { isTopLevelModule } from '@src/lang/util'
-import type { CoreDumpManager } from '@src/lib/coredump'
 import { Reason, err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
@@ -712,23 +710,6 @@ export function getTangentialArcToInfo({
   }
 }
 
-export async function coreDump(
-  coreDumpManager: CoreDumpManager,
-  wasmInstancePromise: Promise<ModuleType>
-): Promise<CoreDumpInfo> {
-  try {
-    console.warn('CoreDump: Initializing core dump')
-    const wasmInstance = await wasmInstancePromise
-    const dump: CoreDumpInfo = await wasmInstance.coredump(coreDumpManager)
-    console.log('CoreDump: final coredump', dump)
-    console.log('CoreDump: final coredump JSON', JSON.stringify(dump))
-    return dump
-  } catch (e: any) {
-    console.error('CoreDump: error', e)
-    return Promise.reject(new Error(`Error getting core dump: ${e}`))
-  }
-}
-
 export function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
   const pathToNode: PathToNode = []
   for (const step of nodePath.steps) {
@@ -965,6 +946,23 @@ export function changeDefaultUnits(
 }
 
 /**
+ * Change the KCL version setting for the kcl file.
+ * @returns the new kcl string with the updated settings.
+ */
+export function changeKclVersion(
+  kcl: string,
+  version: string | null,
+  wasmInstance: ModuleType
+): string | Error {
+  try {
+    return wasmInstance.change_kcl_version(kcl, JSON.stringify(version))
+  } catch (e) {
+    console.error('Caught error changing kcl settings', e)
+    return new Error('Caught error changing kcl settings', { cause: e })
+  }
+}
+
+/**
  * Change the meta settings for the kcl file.
  * @returns the new kcl string with the updated settings.
  */
@@ -1009,6 +1007,10 @@ export function isKclEmptyOrOnlySettings(
  */
 export function getKclVersion(wasmInstance: ModuleType): string {
   return wasmInstance.get_kcl_version()
+}
+
+export function getSketchCheckpointLimit(wasmInstance: ModuleType): number {
+  return wasmInstance.sketch_checkpoint_limit()
 }
 
 /**

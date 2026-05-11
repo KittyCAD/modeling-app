@@ -1,5 +1,3 @@
-@settings(experimentalFeatures = allow)
-
 s = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 3.88mm, var 0mm])
   line2 = line(start = [var 3.88mm, var 0mm], end = [var 0.92mm, var 4.67mm])

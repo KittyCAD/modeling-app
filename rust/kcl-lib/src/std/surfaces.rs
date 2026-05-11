@@ -17,6 +17,7 @@ use kittycad_modeling_cmds::{self as kcmc};
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::BoundedEdge;
+use crate::execution::ConsumedSolidOperation;
 use crate::execution::ExecState;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
@@ -29,6 +30,7 @@ use crate::std::Args;
 use crate::std::DEFAULT_TOLERANCE_MM;
 use crate::std::args::TyF64;
 use crate::std::sketch::FaceTag;
+use crate::std::solid_consumption::record_consumed_solids;
 
 /// Flips the orientation of a surface, swapping which side is the front and which is the reverse.
 pub async fn flip_surface(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -298,6 +300,7 @@ async fn inner_blend(edges: Vec<BoundedEdge>, exec_state: &mut ExecState, args: 
 
     let solid = Solid {
         id,
+        value_id: id,
         artifact_id: id.into(),
         value: vec![],
         creator: SolidCreator::Procedural,
@@ -362,6 +365,7 @@ async fn inner_join(
 
         let solid = Solid {
             id: body_out_id,
+            value_id: body_out_id,
             artifact_id: body_out_id.into(),
             value: vec![],
             creator: SolidCreator::Procedural,
@@ -372,6 +376,12 @@ async fn inner_join(
             sectional: false,
             meta: vec![args.source_range.into()],
         };
+        record_consumed_solids(
+            exec_state,
+            &selection,
+            ConsumedSolidOperation::JoinSurfaces,
+            std::slice::from_ref(&solid),
+        );
         Ok(solid)
     }
 }

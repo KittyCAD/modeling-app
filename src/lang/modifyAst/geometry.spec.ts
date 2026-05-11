@@ -286,9 +286,7 @@ helix001 = helix(
     })
 
     it('should add a standalone call on sweep edge selection from region-based extrude', async () => {
-      const code = `@settings(experimentalFeatures = allow)
-
-sketch001 = sketch(on = XZ) {
+      const code = `sketch001 = sketch(on = XZ) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 100mm])
   line2 = line(start = [var 0mm, var 100mm], end = [var 100mm, var 0mm])
   coincident([line1.end, line2.start])

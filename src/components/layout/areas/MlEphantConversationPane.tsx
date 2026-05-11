@@ -6,11 +6,13 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 import {
   type SystemIOActor,
   SystemIOMachineEvents,
+  SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import {
   MlEphantConversation,
   type QueuedMessage,
 } from '@src/components/MlEphantConversation'
+import { MlEphantConversationWelcome } from '@src/components/MlEphantConversationWelcome'
 import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
   MlEphantManagerStates,
@@ -21,11 +23,11 @@ import { S } from '@src/machines/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import type { FileEntry, Project } from '@src/lib/project'
 import { useSelector } from '@xstate/react'
-import type { MlCopilotMode } from '@kittycad/lib'
 import { useSearchParams } from 'react-router-dom'
 import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
-import { type useModelingContext } from '@src/hooks/useModelingContext'
+import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { SnapshotFrom } from 'xstate'
+import type { MlCopilotModeId } from '@src/machines/mlEphantManagerMachine'
 
 type MlEphantConversationPaneUser = {
   block_message?: string
@@ -48,7 +50,8 @@ export const MlEphantConversationPane = (props: {
   loaderFile: FileEntry | undefined
   settings: SettingsType
   user?: MlEphantConversationPaneUser
-  onMlCopilotModeChange?: (mode: MlCopilotMode) => void
+  showMakeathonAnnouncement?: boolean
+  onMlCopilotModeChange?: (mode: MlCopilotModeId | undefined) => void
 }) => {
   const [defaultPrompt, setDefaultPrompt] = useState('')
   const [searchParams, setSearchParams] = useSearchParams()
@@ -57,6 +60,7 @@ export const MlEphantConversationPane = (props: {
   )
   const [queue, setQueue] = useState<QueuedMessage[]>([])
   const isSubmittingFromQueue = useRef(false)
+  const isClearingChat = useRef(false)
   const steeredId = useRef<string | null>(null)
 
   let conversation = useSelector(props.mlEphantManagerActor, (actor) => {
@@ -71,6 +75,16 @@ export const MlEphantConversationPane = (props: {
     props.mlEphantManagerActor,
     awaitingResponseSelector
   )
+  const modeOptions = useSelector(props.mlEphantManagerActor, (actor) => {
+    return actor.context.modeOptions
+  })
+  const defaultMode = useSelector(props.mlEphantManagerActor, (actor) => {
+    return actor.context.defaultMode
+  })
+  const initialMlCopilotMode =
+    props.settings.app.zookeeperMode.project ??
+    props.settings.app.zookeeperMode.user ??
+    defaultMode
 
   if (
     props.mlEphantManagerActor.getSnapshot().matches(S.Await) &&
@@ -81,7 +95,7 @@ export const MlEphantConversationPane = (props: {
 
   const onProcess = async (
     request: string,
-    mode: MlCopilotMode,
+    mode: MlCopilotModeId | undefined,
     attachments: File[]
   ) => {
     if (props.theProject === undefined) {
@@ -93,7 +107,7 @@ export const MlEphantConversationPane = (props: {
       return
     }
 
-    let project: Project = props.theProject
+    const project: Project = props.theProject
 
     const projectFiles = await collectProjectFiles({
       selectedFileContents: props.kclManager.code,
@@ -117,7 +131,6 @@ export const MlEphantConversationPane = (props: {
       selections: props.contextModeling.selectionRanges,
       artifactGraph: props.kclManager.artifactGraph,
       mode,
-      sketch_solve: props.settings.modeling.useSketchSolveMode?.current,
       additionalFiles: attachments,
     })
 
@@ -144,7 +157,7 @@ export const MlEphantConversationPane = (props: {
 
   const onProcessOrQueue = (
     request: string,
-    mode: MlCopilotMode,
+    mode: MlCopilotModeId | undefined,
     attachments: File[]
   ) => {
     if (isPromptRunning || isSubmittingFromQueue.current) {
@@ -229,26 +242,104 @@ export const MlEphantConversationPane = (props: {
   }
 
   const onClickClearChat = () => {
-    steeredId.current = null
-    setQueue([])
-    props.mlEphantManagerActor.send({
-      type: MlEphantManagerTransitions.ConversationClose,
-    })
-    const sub = props.mlEphantManagerActor.subscribe((next) => {
-      if (!next.matches(S.Await)) {
+    let closedConversation = props.mlEphantManagerActor
+      .getSnapshot()
+      .matches(S.Await)
+    let clearedConversationMapping = true
+    let sentDeleteConversationMapping = false
+    let startedFreshConversation = false
+    let sub: ReturnType<typeof props.mlEphantManagerActor.subscribe> | undefined
+    let systemIOSub:
+      | ReturnType<typeof props.systemIOActor.subscribe>
+      | undefined
+
+    const cleanupSubscriptions = () => {
+      sub?.unsubscribe()
+      systemIOSub?.unsubscribe()
+    }
+
+    const startFreshConversation = () => {
+      if (startedFreshConversation) {
         return
       }
-
+      startedFreshConversation = true
       props.mlEphantManagerActor.send({
         type: MlEphantManagerTransitions.CacheSetupAndConnect,
         refParentSend: props.mlEphantManagerActor.send,
         conversationId: undefined,
       })
-      sub.unsubscribe()
+      cleanupSubscriptions()
+    }
+
+    const maybeStartFreshConversation = () => {
+      if (!closedConversation || !clearedConversationMapping) {
+        return
+      }
+      startFreshConversation()
+    }
+
+    isClearingChat.current = true
+    steeredId.current = null
+    setQueue([])
+    const projectId = props.settings.meta.id.current
+    if (projectId !== undefined && projectId !== uuidNIL) {
+      clearedConversationMapping = false
+      const maybeDeleteConversationMapping = () => {
+        if (sentDeleteConversationMapping) {
+          return
+        }
+        if (
+          props.systemIOActor.getSnapshot().value !== SystemIOMachineStates.idle
+        ) {
+          return
+        }
+
+        sentDeleteConversationMapping = true
+        props.systemIOActor.send({
+          type: SystemIOMachineEvents.deleteMlEphantConversation,
+          data: {
+            projectId,
+          },
+        })
+      }
+
+      systemIOSub = props.systemIOActor.subscribe((next) => {
+        if (!sentDeleteConversationMapping) {
+          maybeDeleteConversationMapping()
+          return
+        }
+        if (next.value !== SystemIOMachineStates.idle) {
+          return
+        }
+
+        clearedConversationMapping = true
+        maybeStartFreshConversation()
+      })
+      maybeDeleteConversationMapping()
+    }
+    sub = props.mlEphantManagerActor.subscribe((next) => {
+      if (!next.matches(S.Await)) {
+        return
+      }
+
+      closedConversation = true
+      maybeStartFreshConversation()
     })
+    props.mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions.ConversationClose,
+    })
+
+    if (props.mlEphantManagerActor.getSnapshot().matches(S.Await)) {
+      closedConversation = true
+      maybeStartFreshConversation()
+    }
   }
 
   const tryToGetExchanges = () => {
+    if (isClearingChat.current) {
+      return
+    }
+
     const mlEphantConversations =
       props.systemIOActor.getSnapshot().context.mlEphantConversations
 
@@ -320,6 +411,14 @@ export const MlEphantConversationPane = (props: {
         const { context } = mlEphantManagerActorSnapshot
 
         if (
+          isClearingChat.current &&
+          context.conversationId !== undefined &&
+          context.conversation !== undefined
+        ) {
+          isClearingChat.current = false
+        }
+
+        if (
           mlEphantManagerActorSnapshot.matches(
             MlEphantManagerStates.WaitForContinueCheck
           ) &&
@@ -366,7 +465,7 @@ export const MlEphantConversationPane = (props: {
       subscriptionMlEphantManagerActor.unsubscribe()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [props.settings.meta.id.current])
+  }, [props.settings.meta.id.current, props.theProject?.path])
 
   // We watch the URL for a query parameter to set the defaultPrompt
   // for the conversation.
@@ -391,9 +490,14 @@ export const MlEphantConversationPane = (props: {
         { type: 'selections', data: props.contextModeling.selectionRanges },
       ]}
       conversation={conversation}
+      welcomeMessage={
+        // Replace this local component with a remote-authored content source
+        // later. `MlEphantConversation` already handles placement and ordering.
+        <MlEphantConversationWelcome />
+      }
       onProcess={(
         request: string,
-        mode: MlCopilotMode,
+        mode: MlCopilotModeId | undefined,
         attachments: File[]
       ) => {
         onProcessOrQueue(request, mode, attachments)
@@ -409,10 +513,13 @@ export const MlEphantConversationPane = (props: {
       onRemoveFromQueue={onRemoveFromQueue}
       onSteer={onSteer}
       userAvatarSrc={props.user?.image}
+      showMakeathonAnnouncement={props.showMakeathonAnnouncement}
       blockedReason={userBlockedOnPaymentReason}
       defaultPrompt={defaultPrompt}
-      initialMlCopilotMode={props.settings.app.zookeeperMode.current}
+      initialMlCopilotMode={initialMlCopilotMode}
       onMlCopilotModeChange={props.onMlCopilotModeChange}
+      modeOptions={modeOptions}
+      modeScopeKey={props.theProject?.path}
     />
   )
 }

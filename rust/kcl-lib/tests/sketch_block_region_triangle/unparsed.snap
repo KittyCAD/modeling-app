@@ -2,8 +2,6 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing sketch_block_region_triangle.kcl
 ---
-@settings(experimentalFeatures = allow)
-
 s = sketch(on = XY) {
   line1 = line(start = [var -0.05mm, var -0.01mm], end = [var 3.88mm, var 0.81mm])
   line2 = line(start = [var 3.88mm, var 0.81mm], end = [var 0.92mm, var 4.67mm])

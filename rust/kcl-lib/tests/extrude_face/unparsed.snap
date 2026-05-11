@@ -12,9 +12,9 @@ triangle = extrude(profile001, length = 1)
 
 // Add a red box to the side.
 extrude(
-       c,
-       length = 4,
-       hideSeams = false,
-       method = NEW,
-     )
+  c,
+  length = 4,
+  hideSeams = false,
+  method = NEW,
+)
   |> appearance(color = "#ff0000")

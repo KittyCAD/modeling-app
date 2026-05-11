@@ -1,0 +1,65 @@
+// 90° Flanged Pipe Elbow
+// Quarter‑turn elbow with two bolt‑up flanges used to join 94 × 71 mm pipe in industrial fluid systems.
+// Categories: Manufacturing, Construction
+
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+// Parameters
+elbowBendAngleDegrees = 90 // sweep magnitude in degrees
+elbowCenterlineBendRadius = 63 // bend centerline radius R
+pipeOuterDiameter = 94
+pipeInnerDiameter = 71
+
+flangeOuterDiameter = 120
+flangeThickness = 20
+flangeBoreInnerDiameter = 71 // same as pipe inner diameter
+boltCircleDiameter = 107
+boltHoleDiameter = 10
+boltHoleCount = 16
+
+// Derived values
+pipeOuterRadius = pipeOuterDiameter / 2
+pipeInnerRadius = pipeInnerDiameter / 2
+boltCircleRadius = boltCircleDiameter / 2
+boltHoleRadius = boltHoleDiameter / 2
+
+// Elbow: quarter‑torus by revolving an annulus on XY about the global Y axis
+elbowSketch = startSketchOn(XY)
+elbowOuterCircle = circle(elbowSketch, center = [elbowCenterlineBendRadius, 0], radius = pipeOuterRadius)
+elbowInnerCircle = circle(elbowSketch, center = [elbowCenterlineBendRadius, 0], radius = pipeInnerRadius)
+elbowAnnulusProfile = elbowOuterCircle
+  |> subtract2d(tool = elbowInnerCircle)
+
+// Note: sign chosen to match current, verified orientation; do not change without intent
+elbowBody = revolve(elbowAnnulusProfile, axis = Y, angle = -elbowBendAngleDegrees)
+
+// Flanges: create one prototype (vertical on YZ), then clone and place the horizontal one using global rotations
+verticalFlangeSketchOnYz = startSketchOn(-YZ)
+verticalFlangeOuterCircle = circle(verticalFlangeSketchOnYz, center = [0, elbowCenterlineBendRadius], radius = flangeOuterDiameter / 2)
+verticalFlangeBoreCircle = circle(verticalFlangeSketchOnYz, center = [0, elbowCenterlineBendRadius], radius = flangeBoreInnerDiameter / 2)
+verticalFlangeBoltHoleSeed = circle(
+  verticalFlangeSketchOnYz,
+  center = [
+    boltCircleRadius,
+    elbowCenterlineBendRadius
+  ],
+  radius = boltHoleRadius,
+)
+verticalFlangeBoltHolePattern = patternCircular2d(
+  verticalFlangeBoltHoleSeed,
+  instances = boltHoleCount,
+  center = [0, elbowCenterlineBendRadius],
+  arcDegrees = 360,
+  rotateDuplicates = false,
+)
+verticalFlangeProfile = verticalFlangeOuterCircle
+  |> subtract2d(tool = [
+       verticalFlangeBoreCircle,
+       verticalFlangeBoltHolePattern
+     ])
+verticalFlange = extrude(verticalFlangeProfile, length = flangeThickness, method = NEW)
+
+// Horizontal flange is a clone of the vertical flange; use global rotations only for robust placement
+horizontalFlange = clone(verticalFlange)
+  |> rotate(axis = Y, angle = -90deg, global = true) // move to XY, face −Z
+  |> rotate(axis = Z, angle = 180deg, global = true) // clock to +X location

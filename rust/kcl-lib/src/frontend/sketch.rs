@@ -123,6 +123,16 @@ pub trait SketchApi {
         value_expression: String,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
+    async fn edit_distance_constraint_label_position(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        constraint_id: ObjectId,
+        label_position: Point2d<Number>,
+        anchor_segment_ids: Vec<ObjectId>,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
+
     /// Batch operations for split segment: edit segments, add constraints, delete objects.
     /// All operations are applied to a single AST and execute_after_edit is called once at the end.
     /// new_segment_info contains the IDs from the segment(s) added in a previous step.
@@ -140,6 +150,7 @@ pub trait SketchApi {
 
     /// Batch operations for tail-cut trim: edit a segment, add coincident constraints,
     /// delete constraints, and execute once.
+    #[allow(clippy::too_many_arguments)]
     async fn batch_tail_cut_operations(
         &mut self,
         ctx: &ExecutorContext,
@@ -148,6 +159,7 @@ pub trait SketchApi {
         edit_segments: Vec<ExistingSegmentCtor>,
         add_constraints: Vec<Constraint>,
         delete_constraint_ids: Vec<ObjectId>,
+        additional_edited_segment_ids: Vec<ObjectId>,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 }
 
@@ -178,6 +190,13 @@ pub struct Point {
     pub owner: Option<ObjectId>,
     pub freedom: Freedom,
     pub constraints: Vec<ObjectId>,
+}
+
+impl Point {
+    /// The freedom of this point.
+    pub fn freedom(&self) -> Freedom {
+        self.freedom
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -213,6 +232,32 @@ pub enum Segment {
     Circle(Circle),
 }
 
+impl Segment {
+    /// What kind of geometry is this (point, line, arc, etc)
+    /// Suitable for use in user-facing messages.
+    pub fn human_friendly_kind_with_article(&self) -> &'static str {
+        match self {
+            Self::Point(_) => "a Point",
+            Self::Line(_) => "a Line",
+            Self::Arc(_) => "an Arc",
+            Self::Circle(_) => "a Circle",
+        }
+    }
+
+    /// Compute the overall freedom of this segment. For geometry types (Line,
+    /// Arc, Circle) this looks up and merges the freedom of their constituent
+    /// points. For points, returns the point's own freedom directly.
+    /// Returns `None` if a required point lookup failed.
+    pub fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Option<Freedom> {
+        match self {
+            Self::Point(p) => Some(p.freedom()),
+            Self::Line(l) => l.freedom(&lookup),
+            Self::Arc(a) => a.freedom(&lookup),
+            Self::Circle(c) => c.freedom(&lookup),
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct ExistingSegmentCtor {
@@ -228,6 +273,19 @@ pub enum SegmentCtor {
     Line(LineCtor),
     Arc(ArcCtor),
     Circle(CircleCtor),
+}
+
+impl SegmentCtor {
+    /// What kind of geometry is this (point, line, arc, etc)
+    /// Suitable for use in user-facing messages.
+    pub fn human_friendly_kind_with_article(&self) -> &'static str {
+        match self {
+            Self::Point(_) => "a Point constructor",
+            Self::Line(_) => "a Line constructor",
+            Self::Arc(_) => "an Arc constructor",
+            Self::Circle(_) => "a Circle constructor",
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -257,6 +315,16 @@ pub struct Line {
     // (Or because they are the (locked) start/end of the segment).
     pub ctor_applicable: bool,
     pub construction: bool,
+}
+
+impl Line {
+    /// Compute the overall freedom of this line by merging the freedom of its
+    /// start and end points. Returns `None` if a point lookup failed.
+    pub fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Option<Freedom> {
+        let start = lookup(self.start)?;
+        let end = lookup(self.end)?;
+        Some(start.merge(end))
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -289,6 +357,17 @@ pub struct Arc {
     pub construction: bool,
 }
 
+impl Arc {
+    /// Compute the overall freedom of this arc by merging the freedom of its
+    /// start, end, and center points. Returns `None` if a point lookup failed.
+    pub fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Option<Freedom> {
+        let start = lookup(self.start)?;
+        let end = lookup(self.end)?;
+        let center = lookup(self.center)?;
+        Some(start.merge(end).merge(center))
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct ArcCtor {
@@ -311,6 +390,16 @@ pub struct Circle {
     pub construction: bool,
 }
 
+impl Circle {
+    /// Compute the overall freedom of this circle by merging the freedom of its
+    /// start and center points. Returns `None` if a point lookup failed.
+    pub fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Option<Freedom> {
+        let start = lookup(self.start)?;
+        let center = lookup(self.center)?;
+        Some(start.merge(center))
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct CircleCtor {
@@ -324,19 +413,27 @@ pub struct CircleCtor {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiConstraint")]
 #[serde(tag = "type")]
+// When adding a new constraint type, check trim compatibility. New constraints
+// can break trim in unexpected ways, especially when endpoints are edited,
+// segments are split, or constraints are migrated. Try the trim tool on sketches
+// using the new constraint, and talk to Kurt, Max, or a mechanical engineer if
+// the intended trim behavior is unclear.
 pub enum Constraint {
     Coincident(Coincident),
     Distance(Distance),
     Angle(Angle),
     Diameter(Diameter),
+    EqualRadius(EqualRadius),
     Fixed(Fixed),
     HorizontalDistance(Distance),
     VerticalDistance(Distance),
     Horizontal(Horizontal),
     LinesEqualLength(LinesEqualLength),
+    Midpoint(Midpoint),
     Parallel(Parallel),
     Perpendicular(Perpendicular),
     Radius(Radius),
+    Symmetric(Symmetric),
     Tangent(Tangent),
     Vertical(Vertical),
 }
@@ -344,7 +441,7 @@ pub enum Constraint {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Coincident {
-    pub segments: Vec<CoincidentSegment>,
+    pub segments: Vec<ConstraintSegment>,
 }
 
 impl Coincident {
@@ -352,16 +449,16 @@ impl Coincident {
         self.segments
             .iter()
             .filter_map(|segment| match segment {
-                CoincidentSegment::Segment(id) => Some(*id),
-                CoincidentSegment::Origin(_) => None,
+                ConstraintSegment::Segment(id) => Some(*id),
+                ConstraintSegment::Origin(_) => None,
             })
             .collect()
     }
 
     pub fn segment_ids(&self) -> impl Iterator<Item = ObjectId> + '_ {
         self.segments.iter().filter_map(|segment| match segment {
-            CoincidentSegment::Segment(id) => Some(*id),
-            CoincidentSegment::Origin(_) => None,
+            ConstraintSegment::Segment(id) => Some(*id),
+            ConstraintSegment::Origin(_) => None,
         })
     }
 
@@ -373,12 +470,12 @@ impl Coincident {
 #[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 #[serde(untagged)]
-pub enum CoincidentSegment {
+pub enum ConstraintSegment {
     Segment(ObjectId),
     Origin(OriginLiteral),
 }
 
-impl CoincidentSegment {
+impl ConstraintSegment {
     pub const ORIGIN: Self = Self::Origin(OriginLiteral::Origin);
 }
 
@@ -389,7 +486,7 @@ pub enum OriginLiteral {
     Origin,
 }
 
-impl From<ObjectId> for CoincidentSegment {
+impl From<ObjectId> for ConstraintSegment {
     fn from(value: ObjectId) -> Self {
         Self::Segment(value)
     }
@@ -398,9 +495,27 @@ impl From<ObjectId> for CoincidentSegment {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Distance {
-    pub points: Vec<ObjectId>,
+    pub points: Vec<ConstraintSegment>,
     pub distance: Number,
+    #[serde(rename = "labelPosition")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(rename = "labelPosition")]
+    #[ts(optional)]
+    pub label_position: Option<Point2d<Number>>,
     pub source: ConstraintSource,
+}
+
+impl Distance {
+    pub fn point_ids(&self) -> impl Iterator<Item = ObjectId> + '_ {
+        self.points.iter().filter_map(|point| match point {
+            ConstraintSegment::Segment(id) => Some(*id),
+            ConstraintSegment::Origin(_) => None,
+        })
+    }
+
+    pub fn contains_point(&self, point_id: ObjectId) -> bool {
+        self.point_ids().any(|id| id == point_id)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -423,6 +538,11 @@ pub struct ConstraintSource {
 pub struct Radius {
     pub arc: ObjectId,
     pub radius: Number,
+    #[serde(rename = "labelPosition")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(rename = "labelPosition")]
+    #[ts(optional)]
+    pub label_position: Option<Point2d<Number>>,
     #[serde(default)]
     pub source: ConstraintSource,
 }
@@ -432,8 +552,19 @@ pub struct Radius {
 pub struct Diameter {
     pub arc: ObjectId,
     pub diameter: Number,
+    #[serde(rename = "labelPosition")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(rename = "labelPosition")]
+    #[ts(optional)]
+    pub label_position: Option<Point2d<Number>>,
     #[serde(default)]
     pub source: ConstraintSource,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", optional_fields)]
+pub struct EqualRadius {
+    pub input: Vec<ObjectId>,
 }
 
 /// Multiple fixed constraints, allowing callers to add fixed constraints on
@@ -454,8 +585,10 @@ pub struct FixedPoint {
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
-pub struct Horizontal {
-    pub line: ObjectId,
+#[serde(untagged)]
+pub enum Horizontal {
+    Line { line: ObjectId },
+    Points { points: Vec<ConstraintSegment> },
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -466,8 +599,18 @@ pub struct LinesEqualLength {
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
-pub struct Vertical {
-    pub line: ObjectId,
+pub struct Midpoint {
+    pub point: ObjectId,
+    #[serde(alias = "line")]
+    pub segment: ObjectId,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(untagged)]
+pub enum Vertical {
+    Line { line: ObjectId },
+    Points { points: Vec<ConstraintSegment> },
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -480,6 +623,13 @@ pub struct Parallel {
 #[ts(export, export_to = "FrontendApi.ts", optional_fields)]
 pub struct Perpendicular {
     pub lines: Vec<ObjectId>,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", optional_fields)]
+pub struct Symmetric {
+    pub input: Vec<ObjectId>,
+    pub axis: ObjectId,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

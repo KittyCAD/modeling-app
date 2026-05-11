@@ -6,7 +6,6 @@ import {
 } from 'react-router-dom'
 import { type SnapshotFrom, waitFor, type ActorRefFrom } from 'xstate'
 
-import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 import { ActionButton } from '@src/components/ActionButton'
 import onboardingWorkflowAiHeadset from '@src/assets/onboarding-workflow-ai-headset.png'
 import onboardingWorkflowKitt from '@src/assets/onboarding-workflow-kitt.png'
@@ -20,8 +19,9 @@ import {
   ONBOARDING_PROJECT_NAME,
   ONBOARDING_TOAST_ID,
 } from '@src/lib/constants'
-import { fanParts } from '@src/lib/exampleKcl'
+import { coldPlateParts } from '@src/lib/exampleKcl'
 import {
+  type OnboardingStatus,
   type OnboardingPath,
   isOnboardingPath,
   onboardingPaths,
@@ -340,12 +340,12 @@ export function acceptOnboarding(deps: OnboardingUtilDeps) {
     : deps.onboardingStatus
 
   /**
-   * Bulk create the assembly and navigate to the project
+   * Bulk create the tutorial sample and navigate to the project.
    */
   deps.systemIOActor.send({
     type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
     data: {
-      files: fanParts.map((part) => ({
+      files: coldPlateParts.map((part) => ({
         requestedProjectName: ONBOARDING_PROJECT_NAME,
         ...part,
       })),

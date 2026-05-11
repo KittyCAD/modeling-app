@@ -29,6 +29,7 @@ export enum SystemIOMachineActors {
   deleteKCLFile = 'delete kcl delete',
   bulkCreateKCLFiles = 'bulk create kcl files',
   bulkCreateKCLFilesAndNavigateToProject = 'bulk create kcl files and navigate to project',
+  bulkImportProjectFilesAndNavigateToFile = 'bulk import project files and navigate to file',
   bulkCreateKCLFilesAndNavigateToFile = 'bulk create kcl files and navigate to file',
   bulkCreateAndDeleteKCLFilesAndNavigateToFile = 'bulk create and delete kcl files and navigate to file',
   renameFolder = 'renameFolder',
@@ -60,6 +61,7 @@ export enum SystemIOMachineStates {
   deletingKCLFile = 'deletingKCLFile',
   bulkCreatingKCLFiles = 'bulkCreatingKCLFiles',
   bulkCreatingKCLFilesAndNavigateToProject = 'bulkCreatingKCLFilesAndNavigateToProject',
+  bulkImportingProjectFilesAndNavigateToFile = 'bulkImportingProjectFilesAndNavigateToFile',
   bulkCreateAndDeletingKCLFilesAndNavigateToFile = 'bulk create and deleting kcl files and navigate to file',
   bulkCreatingKCLFilesAndNavigateToFile = 'bulkCreatingKCLFilesAndNavigateToFile',
   renamingFolder = 'renamingFolder',
@@ -101,6 +103,7 @@ export enum SystemIOMachineEvents {
   deleteKCLFile = 'delete kcl file',
   bulkCreateKCLFiles = 'bulk create kcl files',
   bulkCreateKCLFilesAndNavigateToProject = 'bulk create kcl files and navigate to project',
+  bulkImportProjectFilesAndNavigateToFile = 'bulk import project files and navigate to file',
   bulkCreateKCLFilesAndNavigateToFile = 'bulk create kcl files and navigate to file',
   done_bulkCreateKCLFilesAndNavigateToFile = donePrefix +
     'bulk create kcl files and navigate to file',
@@ -129,6 +132,7 @@ export enum SystemIOMachineEvents {
   done_getMlEphantConversations = donePrefix + 'get ml-ephant conversations',
   saveMlEphantConversations = 'save ml-ephant conversations',
   done_saveMlEphantConversations = donePrefix + 'save ml-ephant conversations',
+  deleteMlEphantConversation = 'delete ml-ephant conversation',
 }
 
 export enum SystemIOMachineActions {
@@ -197,6 +201,19 @@ export type RequestedKCLFile = {
   requestedProjectName: string
   requestedFileName: string
   requestedCode: string
+}
+
+export type RequestedKCLFileDelete = {
+  requestedFileName: string
+}
+
+export const normalizeKCLFileDeletePath = (filePath: string) =>
+  filePath.replaceAll('\\', '/')
+
+export type RequestedProjectFile = {
+  requestedProjectName: string
+  requestedFileName: string
+  requestedData: Uint8Array<ArrayBuffer>
 }
 
 export const waitForIdleState = async ({
@@ -374,6 +391,7 @@ export const prepareMlEphantNewFileRequest = ({
   toolOutput,
   projectNameCurrentlyOpened,
   fileFocusedOnInEditor,
+  filesToDelete = [],
 }: MlEphantNewFileRequestProps) => {
   if (
     toolOutput.type !== 'text_to_cad' &&
@@ -401,6 +419,7 @@ export const prepareMlEphantNewFileRequest = ({
 
   return {
     files: requestedFiles,
+    filesToDelete,
     requestedProjectName: projectNameCurrentlyOpened,
     requestedFileNameWithExtension: targetFilePathRelativeToProjectDir ?? '',
   }

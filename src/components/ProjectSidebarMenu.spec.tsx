@@ -1,9 +1,18 @@
 import { render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
+import { afterEach, expect, describe, test, vi } from 'vitest'
+
+import type { FileEntry, Project } from '@src/lib/project'
+
+vi.mock('@src/hooks/useAbsoluteFilePath', () => ({
+  useAbsoluteFilePath: () => undefined,
+}))
 
 import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
-import type { Project } from '@src/lib/project'
-import { expect, describe, test } from 'vitest'
+
+afterEach(() => {
+  vi.restoreAllMocks()
+})
 
 const now = Date.now()
 const projectWellFormed = {
@@ -30,6 +39,12 @@ const projectWellFormed = {
   default_file: '/some/path/Simple Box/main.kcl',
 } satisfies Project
 
+const nestedFile = {
+  name: 'nested-part.kcl',
+  path: '/some/path/Simple Box/parts/generated/nested-part.kcl',
+  children: null,
+} satisfies FileEntry
+
 describe('ProjectSidebarMenu tests', () => {
   test('Disables popover menu by default', () => {
     render(
@@ -40,6 +55,41 @@ describe('ProjectSidebarMenu tests', () => {
 
     expect(screen.getByTestId('project-name')).toHaveTextContent(
       projectWellFormed.name
+    )
+  })
+
+  test('Shows the full project-relative file path in the breadcrumb', () => {
+    render(
+      <BrowserRouter>
+        <ProjectSidebarMenu
+          enableMenu
+          project={projectWellFormed}
+          file={nestedFile}
+        />
+      </BrowserRouter>
+    )
+
+    expect(screen.getByTestId('app-header-file-name')).toHaveTextContent(
+      'parts / generated / nested-part.kcl'
+    )
+  })
+
+  test('Shows the full breadcrumb tooltip when the path is truncated', async () => {
+    vi.spyOn(HTMLElement.prototype, 'scrollWidth', 'get').mockReturnValue(200)
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(100)
+
+    render(
+      <BrowserRouter>
+        <ProjectSidebarMenu
+          enableMenu
+          project={projectWellFormed}
+          file={nestedFile}
+        />
+      </BrowserRouter>
+    )
+
+    expect(await screen.findByRole('tooltip')).toHaveTextContent(
+      'Simple Box / parts / generated / nested-part.kcl'
     )
   })
 })

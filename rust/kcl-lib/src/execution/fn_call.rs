@@ -31,6 +31,7 @@ use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::CallExpressionKw;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Type;
+use crate::std::solid_consumption::validate_value_not_consumed;
 
 #[derive(Debug, Clone)]
 pub struct Args<Status: ArgsStatus = Desugared> {
@@ -288,6 +289,22 @@ impl FunctionSource {
                 ),
                 annotations::WARN_DEPRECATED,
             );
+        } else if let Some(since) = &self.deprecated_since
+            && annotations::version_ge(&exec_state.mod_local.settings.kcl_version, since)
+        {
+            exec_state.warn(
+                CompilationIssue::err(
+                    callsite,
+                    format!(
+                        "{} is deprecated as of KCL {since}. See the docs for a recommended replacement.",
+                        match &fn_name {
+                            Some(n) => format!("`{n}`"),
+                            None => "This function".to_owned(),
+                        }
+                    ),
+                ),
+                annotations::WARN_DEPRECATED,
+            );
         }
         if self.experimental {
             exec_state.warn_experimental(
@@ -301,17 +318,35 @@ impl FunctionSource {
 
         let args = type_check_params_kw(fn_name.as_deref(), self, args, exec_state)?;
 
-        // Warn if experimental arguments are used after desugaring.
+        // Warn if experimental or deprecated arguments are used after desugaring.
         for (label, arg) in &args.labeled {
-            if let Some(param) = self.named_args.get(label.as_str())
-                && param.experimental
-            {
+            let Some(param) = self.named_args.get(label.as_str()) else {
+                continue;
+            };
+            if param.experimental {
                 exec_state.warn_experimental(
                     &match &fn_name {
                         Some(f) => format!("`{f}({label})`"),
                         None => label.to_owned(),
                     },
                     arg.source_range,
+                );
+            }
+            if let Some(since) = &param.deprecated_since
+                && annotations::version_ge(&exec_state.mod_local.settings.kcl_version, since)
+            {
+                let qualified = match &fn_name {
+                    Some(f) => format!("`{f}({label})`"),
+                    None => format!("`{label}`"),
+                };
+                exec_state.warn(
+                    CompilationIssue::err(
+                        arg.source_range,
+                        format!(
+                            "{qualified} is deprecated as of KCL {since}. See the docs for a recommended replacement."
+                        ),
+                    ),
+                    annotations::WARN_DEPRECATED,
                 );
             }
         }
@@ -330,7 +365,7 @@ impl FunctionSource {
         // Do add operations if the KCL being executed is
         // user-defined, or the calling code is user-defined,
         // because that's relevant to the user.
-        let would_trace_stdlib_internals = exec_state.mod_local.inside_stdlib && self.is_std;
+        let would_trace_stdlib_internals = exec_state.mod_local.inside_stdlib && self.is_std();
         // self.include_in_feature_tree is set by the KCL annotation `@(feature_tree = true)`.
         let should_track_operation = !would_trace_stdlib_internals && self.include_in_feature_tree;
         let op = if should_track_operation {
@@ -341,7 +376,7 @@ impl FunctionSource {
                 .collect();
 
             // If you're calling a stdlib function, track that call as an operation.
-            if self.is_std {
+            if self.is_std() {
                 Some(Operation::StdLibCall {
                     name: fn_name.clone().unwrap_or_else(|| "unknown function".to_owned()),
                     unlabeled_arg: args
@@ -376,7 +411,7 @@ impl FunctionSource {
 
         let is_calling_into_stdlib = match &self.body {
             FunctionBody::Rust(_) => true,
-            FunctionBody::Kcl(_) => self.is_std,
+            FunctionBody::Kcl(_) => self.is_std(),
         };
         let is_crossing_into_stdlib = is_calling_into_stdlib && !exec_state.mod_local.inside_stdlib;
         let is_crossing_out_of_stdlib = !is_calling_into_stdlib && exec_state.mod_local.inside_stdlib;
@@ -462,7 +497,7 @@ impl FunctionSource {
             Err(e) => Err(e),
         };
 
-        if self.is_std
+        if self.is_std()
             && let Ok(Some(result)) = &mut result
         {
             update_memory_for_tags_of_geometry(result, exec_state)?;
@@ -481,17 +516,53 @@ impl FunctionBody {
     }
 }
 
+fn originates_from_sketch_block(value: &KclValue) -> bool {
+    match value {
+        KclValue::Uuid { .. } => false,
+        KclValue::Bool { .. } => false,
+        KclValue::Number { .. } => false,
+        KclValue::String { .. } => false,
+        KclValue::SketchVar { .. } => true,
+        KclValue::SketchConstraint { .. } => true,
+        KclValue::Tuple { value, .. } => value.iter().all(originates_from_sketch_block),
+        KclValue::HomArray { value, .. } => value.iter().all(originates_from_sketch_block),
+        // TODO: sketch block result should return true.
+        KclValue::Object { value, .. } => value.values().all(originates_from_sketch_block),
+        KclValue::TagIdentifier(_) => false,
+        KclValue::TagDeclarator(_) => false,
+        KclValue::GdtAnnotation { .. } => false,
+        KclValue::Plane { .. } => false,
+        KclValue::Face { .. } => false,
+        KclValue::BoundedEdge { .. } => false,
+        KclValue::Segment { .. } => true,
+        KclValue::Sketch { value: sketch } => sketch.origin_sketch_id.is_some(),
+        KclValue::Solid { value: solid } => solid
+            .sketch()
+            .map(|sketch| sketch.origin_sketch_id.is_some())
+            .unwrap_or(false),
+        KclValue::Helix { .. } => false,
+        KclValue::ImportedGeometry(_) => false,
+        KclValue::Function { .. } => false,
+        KclValue::Module { .. } => false,
+        KclValue::Type { .. } => false,
+        KclValue::KclNone { .. } => false,
+    }
+}
+
 fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut ExecState) -> Result<(), KclError> {
+    let is_sketch_block = originates_from_sketch_block(&*result);
     // If the return result is a sketch or solid, we want to update the
     // memory for the tags of the group.
     // TODO: This could probably be done in a better way, but as of now this was my only idea
     // and it works.
     match result {
-        KclValue::Sketch { value } => {
+        KclValue::Sketch { value } if !is_sketch_block => {
             for (name, tag) in value.tags.iter() {
                 if exec_state.stack().cur_frame_contains(name) {
                     exec_state.mut_stack().update(name, |v, _| {
-                        v.as_mut_tag().unwrap().merge_info(tag);
+                        if let Some(existing_tag) = v.as_mut_tag() {
+                            existing_tag.merge_info(tag);
+                        }
                     });
                 } else {
                     exec_state
@@ -526,7 +597,9 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                 }
                 if let Some(tag) = v.get_tag() {
                     // Get the past tag and update it.
+                    let mut is_part_of_sketch = false;
                     let tag_id = if let Some(t) = sketch.tags.get(&tag.name) {
+                        is_part_of_sketch = true;
                         let mut t = t.clone();
                         let Some(info) = t.get_cur_info() else {
                             return Err(KclError::new_internal(KclErrorDetails::new(
@@ -566,9 +639,20 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
 
                     if exec_state.stack().cur_frame_contains(&tag.name) {
                         exec_state.mut_stack().update(&tag.name, |v, _| {
-                            v.as_mut_tag().unwrap().merge_info(&tag_id);
+                            if let Some(existing_tag) = v.as_mut_tag() {
+                                existing_tag.merge_info(&tag_id);
+                            }
                         });
-                    } else {
+                    } else if !is_sketch_block || !is_part_of_sketch {
+                        // The above condition is saying that we add a tag to
+                        // the stack in either of these cases:
+                        //
+                        // 1. It originates from a legacy sketch v1.
+                        //
+                        // 2. It originates from a sketch block and it's not
+                        // part of the sketch. Instead, it's part of the solid,
+                        // as in tagging a cap face `extrude(tagEnd, tagStart)`
+                        // or chamfer face `chamfer(tag)`.
                         exec_state
                             .mut_stack()
                             .add(
@@ -826,6 +910,7 @@ fn type_check_params_kw(
         match fn_def.named_args.get(&label) {
             Some(NamedParam {
                 experimental: _,
+                deprecated_since: _,
                 default_value: def,
                 ty,
             }) => {
@@ -875,6 +960,13 @@ fn type_check_params_kw(
             }
         }
     }
+
+    result
+        .unlabeled
+        .iter()
+        .map(|(_, arg)| arg)
+        .chain(result.labeled.values())
+        .try_for_each(|arg| validate_value_not_consumed(&arg.value, exec_state, arg.source_range))?;
 
     Ok(result)
 }
@@ -997,6 +1089,7 @@ mod test {
         fn opt_param(s: &'static str) -> Parameter {
             Parameter {
                 experimental: false,
+                deprecated_since: None,
                 identifier: ident(s),
                 param_type: None,
                 default_value: Some(DefaultParamVal::none()),
@@ -1007,6 +1100,7 @@ mod test {
         fn req_param(s: &'static str) -> Parameter {
             Parameter {
                 experimental: false,
+                deprecated_since: None,
                 identifier: ident(s),
                 param_type: None,
                 default_value: None,
@@ -1087,7 +1181,7 @@ mod test {
                 Box::new(func_expr),
                 EnvironmentRef::dummy(),
                 crate::execution::kcl_value::KclFunctionSourceParams {
-                    is_std: false,
+                    std_props: None,
                     experimental: false,
                     include_in_feature_tree: false,
                 },
@@ -1101,6 +1195,7 @@ mod test {
                 .collect::<IndexMap<_, _>>();
             let exec_ctxt = ExecutorContext {
                 engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+                engine_batch: crate::engine::EngineBatchContext::default(),
                 fs: Arc::new(crate::fs::FileManager::new()),
                 settings: Default::default(),
                 context_type: ContextType::Mock,

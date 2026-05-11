@@ -48,7 +48,7 @@ export fn toYards(@num: number(Length)): number(yd) {
 
 /// Converts a number to radians from its current units.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
@@ -67,7 +67,7 @@ export fn toRadians(@num: number(Angle)): number(rad) {
 
 /// Converts a number to degrees from its current units.
 ///
-/// ```
+/// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(

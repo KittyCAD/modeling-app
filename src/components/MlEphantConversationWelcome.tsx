@@ -1,0 +1,112 @@
+import type { PropsWithChildren, ReactNode } from 'react'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { isDesktop } from '@src/lib/isDesktop'
+
+/**
+ * Local authoring surface for the MlEphant welcome message.
+ *
+ * When this content needs to come from a remote source, resolve that content
+ * before rendering `MlEphantConversation` and pass it through the
+ * `welcomeMessage` prop. That keeps the conversation layout logic unchanged
+ * while swapping the content source.
+ */
+export const MlEphantConversationWelcome = () => {
+  return (
+    <div data-testid="ml-ephant-conversation-welcome" className="px-4 py-3">
+      <div className="bg-img-mel w-16 h-16 rounded mb-4" />
+      <h2 className="text-lg font-semibold my-2">
+        Hello there, I’m Zookeeper.
+      </h2>
+      <p className="text-2 text-sm">
+        I'm here to help you create and edit real, parametric CAD geometry
+        through incremental, structured commands.
+      </p>
+
+      <WelcomeItem
+        graphic={
+          <video
+            className="w-16 h-16 object-cover object-center"
+            muted
+            autoPlay
+            loop
+          >
+            <source src={`${isDesktop() ? '.' : ''}/mlephant-idle-1.webm`} />
+          </video>
+        }
+        heading="Ask me anything"
+      >
+        <p>
+          From designing parts to giving manufacturing feedback, I’m ready to
+          help.
+        </p>
+      </WelcomeItem>
+      <WelcomeItem
+        graphic={
+          <video
+            className="w-16 h-16 object-cover object-center"
+            muted
+            autoPlay
+            loop
+          >
+            <source src={`${isDesktop() ? '.' : ''}/mlephant-idle-2.webm`} />
+          </video>
+        }
+        heading="Turn thoughts into geometry"
+      >
+        <p>
+          I create structured, fully editable geometry by building features step
+          by step.
+        </p>
+      </WelcomeItem>
+      <WelcomeItem
+        graphic={
+          <video
+            className="w-16 h-16 object-cover object-center"
+            muted
+            autoPlay
+            loop
+          >
+            <source src={`${isDesktop() ? '.' : ''}/mlephant-idle-3.webm`} />
+          </video>
+        }
+        heading="Supplemental analysis"
+      >
+        <p>
+          Beyond geometry creation, I can help you with model-derived properties
+          like center of mass, volume, and surface area.
+        </p>
+      </WelcomeItem>
+      <WelcomeItem
+        graphic={
+          <CustomIcon
+            name="paperclip"
+            className="w-8 h-8 m-4 text-2 flex-none"
+          />
+        }
+        heading="Upload your image to work from real references"
+      >
+        <p>
+          Upload an image and I’ll interpret it, extract intent, and help you
+          design or improve the geometry step by step.
+        </p>
+      </WelcomeItem>
+    </div>
+  )
+}
+
+interface WelcomeItemProps extends PropsWithChildren {
+  graphic: ReactNode
+  heading: string
+}
+
+function WelcomeItem(props: WelcomeItemProps) {
+  return (
+    <div className="flex gap-4 my-4">
+      {props.graphic}
+      <div>
+        <h2 className="text-2 font-semibold text-sm">{props.heading}</h2>
+        <div className="text-3 text-sm">{props.children}</div>
+      </div>
+    </div>
+  )
+}

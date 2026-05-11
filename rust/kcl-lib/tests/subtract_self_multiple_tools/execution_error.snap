@@ -4,7 +4,8 @@ description: Error from executing subtract_self_multiple_tools.kcl
 ---
 KCL Engine error
 
-  × engine: Each UUID in brepIds must refer to a valid Solid3D.
+  × engine: Each UUID in brepIds must refer to a valid Solid3D. This often
+  │ occurs when the referenced body was consumed by another operation.
     ╭─[14:12]
  13 │ 
  14 │ fullPart = subtract(part001, tools = [part001, part002])
@@ -14,7 +15,9 @@ KCL Engine error
     ╰────
   ╰─▶ KCL Engine error
       
-        × engine: Each UUID in brepIds must refer to a valid Solid3D.
+        × engine: Each UUID in brepIds must refer to a valid Solid3D. This
+        │ often occurs when the referenced body was consumed by another
+        │ operation.
           ╭─[14:12]
        13 │
        14 │ fullPart = subtract(part001, tools = [part001, part002])

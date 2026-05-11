@@ -134,7 +134,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
 
     // Check the toast appeared
     await expect(
-      page.getByText(`Set show debug panel to "false" for this project`)
+      page.getByText(`Set show panel to "false" for this project`)
     ).toBeVisible()
     // Check that the visibility changed
     await expect(paneSelector).not.toBeVisible()
@@ -365,12 +365,15 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     scene,
     cmdBar,
     toolbar,
+    context,
   }) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, `sketch001 = startSketchOn(XZ)`)
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
-    const sketchButton = toolbar.startSketchBtn
     const cmdBarButton = page.getByRole('button', { name: 'Commands' })
     const rectangleToolCommand = page.getByRole('option', {
       name: 'rectangle',
@@ -390,13 +393,19 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
       name: 'arc Tangential Arc',
     })
 
-    // Start a sketch
-    await sketchButton.click()
-
-    await page.mouse.click(700, 200)
+    // Enter a sketch
+    const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
+    await op.dblclick()
     await toolbar.waitUntilSketchingReady()
 
+    await page.mouse.click(700, 200)
+    await expect(toolbar.exitSketchBtn).toBeVisible()
+
     // Switch between sketch tools via the command bar
+    if ((await lineToolButton.getAttribute('aria-pressed')) !== 'true') {
+      await cmdBarButton.click()
+      await lineToolCommand.click()
+    }
     await expect(lineToolButton).toHaveAttribute('aria-pressed', 'true')
     await cmdBarButton.click()
     await rectangleToolCommand.click()
@@ -802,7 +811,7 @@ export exported = 2`,
       currentArgKey: 'length',
       currentArgValue: '5',
       headerArguments: {
-        Profiles: '1 profile',
+        Profiles: '1 edge',
         Length: '5',
       },
       highlightedHeaderArg: 'length',
@@ -813,7 +822,7 @@ export exported = 2`,
       stage: 'review',
       commandName: 'Extrude',
       headerArguments: {
-        Profiles: '1 profile',
+        Profiles: '1 edge',
         Length: '5',
       },
     })
@@ -825,7 +834,7 @@ export exported = 2`,
       currentArgKey: 'bodyType',
       currentArgValue: '',
       headerArguments: {
-        Profiles: '1 profile',
+        Profiles: '1 edge',
         Length: '5',
         BodyType: '',
       },
@@ -836,7 +845,7 @@ export exported = 2`,
       stage: 'review',
       commandName: 'Extrude',
       headerArguments: {
-        Profiles: '1 profile',
+        Profiles: '1 edge',
         Length: '5',
         BodyType: 'SOLID',
       },
@@ -849,7 +858,7 @@ export exported = 2`,
       currentArgKey: 'method',
       currentArgValue: '',
       headerArguments: {
-        Profiles: '1 profile',
+        Profiles: '1 edge',
         Length: '5',
         BodyType: 'SOLID',
         Method: '',
@@ -865,7 +874,7 @@ export exported = 2`,
       currentArgKey: 'bodyType',
       currentArgValue: '',
       headerArguments: {
-        Profiles: '1 profile',
+        Profiles: '1 edge',
         Length: '5',
         BodyType: 'SOLID',
       },
@@ -879,7 +888,7 @@ export exported = 2`,
       currentArgKey: 'length',
       currentArgValue: '5',
       headerArguments: {
-        Profiles: '1 profile',
+        Profiles: '1 edge',
         Length: '5',
         BodyType: 'SOLID',
       },
@@ -893,7 +902,7 @@ export exported = 2`,
       currentArgKey: 'sketches',
       currentArgValue: '',
       headerArguments: {
-        Profiles: '1 profile',
+        Profiles: '1 edge',
         Length: '5',
         BodyType: 'SOLID',
       },

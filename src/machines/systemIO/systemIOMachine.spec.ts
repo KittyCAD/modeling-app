@@ -1,12 +1,14 @@
 import path from 'node:path'
 import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
+import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
   NO_PROJECT_DIRECTORY,
+  SystemIOMachineActors,
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
-import { createActor, waitFor } from 'xstate'
+import { createActor, fromPromise, waitFor } from 'xstate'
 import { expect, describe, it, beforeEach } from 'vitest'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -89,6 +91,49 @@ describe('systemIOMachine - XState', () => {
         const context = actor.getSnapshot().context
         expect(context.folders).toStrictEqual([])
       })
+      it('should accept project imports while reading folders', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => new Promise(() => {})),
+              [SystemIOMachineActors.bulkImportProjectFilesAndNavigateToFile]:
+                fromPromise(async () => new Promise(() => {})),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.readingFolders)
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.bulkImportProjectFilesAndNavigateToFile,
+            data: {
+              files: [],
+              requestedProjectName: 'shared-project',
+            },
+          })
+
+          await waitFor(actor, (state) =>
+            state.matches(
+              SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile
+            )
+          )
+        } finally {
+          actor.stop()
+        }
+      })
     })
     describe('when setting project directory path', () => {
       it('should set new project directory path', async () => {
@@ -107,6 +152,53 @@ describe('systemIOMachine - XState', () => {
         })
         let context = actor.getSnapshot().context
         expect(context.projectDirectoryPath).toBe(kclSamplesPath)
+      })
+      it('should accept project imports while checking read/write access', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.checkReadWrite]: fromPromise(
+                async () => new Promise(() => {})
+              ),
+              [SystemIOMachineActors.bulkImportProjectFilesAndNavigateToFile]:
+                fromPromise(async () => new Promise(() => {})),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: {
+              requestedProjectDirectoryPath: 'public/kcl-samples',
+            },
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.checkingReadWrite)
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.bulkImportProjectFilesAndNavigateToFile,
+            data: {
+              files: [],
+              requestedProjectName: 'shared-project',
+            },
+          })
+
+          await waitFor(actor, (state) =>
+            state.matches(
+              SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile
+            )
+          )
+        } finally {
+          actor.stop()
+        }
       })
     })
     describe('when setting default project folder name', () => {

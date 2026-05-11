@@ -7,7 +7,7 @@ import { getResolvedTheme, Themes } from '@src/lib/theme'
 import { RENDER_ORDER } from '@src/machines/sketchSolve/renderOrder'
 
 export const SKETCH_SOLVE_ORIGIN_SPRITE = 'sketch-solve-origin-sprite'
-type OriginSpriteState = 'default' | 'hovered'
+type OriginSpriteState = 'default' | 'hovered' | 'selected'
 
 const ORIGIN_SPRITE_SIZE_PX = 10
 
@@ -49,10 +49,6 @@ function getOriginSprite(
     return existingObject
   }
 
-  if (existingObject) {
-    sketchSolveGroup.remove(existingObject)
-  }
-
   const resolvedSpriteState = spriteState ?? 'default'
   const sprite = new Sprite(
     new SpriteMaterial({
@@ -74,7 +70,13 @@ function getOriginSprite(
 }
 
 function getOriginSpriteState(sprite: Sprite): OriginSpriteState {
-  return sprite.userData.originSpriteState === 'hovered' ? 'hovered' : 'default'
+  if (sprite.userData.originSpriteState === 'hovered') {
+    return 'hovered'
+  }
+  if (sprite.userData.originSpriteState === 'selected') {
+    return 'selected'
+  }
+  return 'default'
 }
 
 function getOriginTexture(
@@ -111,8 +113,12 @@ export function createSketchSolveOriginSpriteSvgDataUrl(
   const backgroundFill = theme === Themes.Dark ? '#FAFAFA' : '#1E1E1E'
   const originColor =
     spriteState === 'hovered'
-      ? `rgb(${SKETCH_SELECTION_RGB.join(', ')})`
-      : '#D9D9D9'
+      ? `rgb(${SKETCH_SELECTION_RGB.map((val) => Math.min(255, Math.round(val * 1.1))).join(', ')})`
+      : spriteState === 'selected'
+        ? `rgb(${SKETCH_SELECTION_RGB.join(', ')})`
+        : theme === Themes.Light
+          ? '#D9D9D9'
+          : '#121212'
   const svg = `
     <svg
       xmlns="http://www.w3.org/2000/svg"

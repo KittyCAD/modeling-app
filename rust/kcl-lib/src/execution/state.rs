@@ -3,6 +3,7 @@ use std::collections::BTreeMap;
 use std::str::FromStr;
 use std::sync::Arc;
 
+use ahash::AHashMap;
 use anyhow::Result;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds::units::UnitAngle;
@@ -93,6 +94,23 @@ pub(super) struct GlobalState {
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub(crate) enum ConstraintKey {
+    LineCircle([usize; 10]),
+    CircleCircle([usize; 12]),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum TangencyMode {
+    LineCircle(ezpz::LineSide),
+    CircleCircle(ezpz::CircleSide),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ConstraintState {
+    Tangency(TangencyMode),
+}
+
 #[cfg(feature = "artifact-graph")]
 #[derive(Debug, Clone, Default)]
 pub(super) struct ArtifactState {
@@ -119,6 +137,9 @@ pub struct ModuleArtifactState {
     pub unprocessed_commands: Vec<ArtifactCommand>,
     /// Outgoing engine commands.
     pub commands: Vec<ArtifactCommand>,
+    /// Incoming engine commands.
+    #[cfg(feature = "snapshot-engine-responses")]
+    pub responses: IndexMap<Uuid, kittycad_modeling_cmds::websocket::WebSocketResponse>,
     /// Operations that have been performed in execution order, for display in
     /// the Feature Tree.
     pub operations: Vec<Operation>,
@@ -180,15 +201,122 @@ pub(super) struct ModuleState {
     pub(super) path: ModulePath,
     /// Artifacts for only this module.
     pub artifacts: ModuleArtifactState,
+    /// Sticky per-constraint state persisted across sketch-mode mock solves.
+    /// Maps from sketch block ID to a map for that sketch.
+    /// Then the inner map is per constraint (in that sketch block) to its state.
+    pub constraint_state: IndexMap<ObjectId, IndexMap<ConstraintKey, ConstraintState>>,
 
     pub(super) allowed_warnings: Vec<&'static str>,
     pub(super) denied_warnings: Vec<&'static str>,
+
+    /// Map from consumed solid values to information about the operation that
+    /// consumed them. Populated by operations that destroy their inputs so that
+    /// subsequent attempts to use a consumed solid produce a clear KCL-level
+    /// error rather than a cryptic engine error.
+    pub(super) consumed_solids: AHashMap<ConsumedSolidKey, ConsumedSolidInfo>,
+    /// Defensive map from consumed engine UUID to consumption info.
+    /// Rust code may create a `Solid` with a consumed `engine_id` and a
+    /// different `instance_id` that was not recorded in `consumed_solids`. When
+    /// the exact key lookup misses, this map lets us reject that solid by
+    /// `engine_id`, unless the key is a recorded operation output.
+    pub(super) consumed_solid_ids: AHashMap<Uuid, ConsumedSolidInfo>,
+}
+
+/// Internal identity for one runtime KCL solid value.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub(crate) struct ConsumedSolidKey {
+    /// The engine body UUID.
+    engine_id: Uuid,
+    /// Distinguishes this KCL runtime instance from other values that may reuse
+    /// the same engine body UUID.
+    instance_id: Uuid,
+}
+
+impl ConsumedSolidKey {
+    pub(crate) fn new(engine_id: Uuid, instance_id: Uuid) -> Self {
+        Self { engine_id, instance_id }
+    }
+
+    pub(crate) fn engine_id(&self) -> Uuid {
+        self.engine_id
+    }
+
+    pub(crate) fn instance_id(&self) -> Uuid {
+        self.instance_id
+    }
+}
+
+/// Information about a solid value that was consumed by an operation.
+/// Stored in `ModuleState.consumed_solids` so subsequent attempts to use the
+/// solid produce a clear error pointing at the operation that consumed it.
+#[derive(Debug, Clone)]
+pub(crate) struct ConsumedSolidInfo {
+    /// The operation that consumed the solid.
+    operation: ConsumedSolidOperation,
+    /// First returned solid value, used only for replacement suggestions in
+    /// error messages. When present, this key is also included in
+    /// `returned_solid_keys`.
+    suggested_replacement_key: Option<ConsumedSolidKey>,
+    /// All solid values returned by that operation. This is used as the
+    /// allow-list for returned solids that reuse a consumed engine UUID.
+    returned_solid_keys: Vec<ConsumedSolidKey>,
+}
+
+impl ConsumedSolidInfo {
+    pub(crate) fn new(operation: ConsumedSolidOperation, returned_solid_keys: Vec<ConsumedSolidKey>) -> Self {
+        Self {
+            operation,
+            suggested_replacement_key: returned_solid_keys.first().copied(),
+            returned_solid_keys,
+        }
+    }
+
+    pub(crate) fn operation(&self) -> ConsumedSolidOperation {
+        self.operation
+    }
+
+    pub(crate) fn suggested_replacement_key(&self) -> Option<ConsumedSolidKey> {
+        self.suggested_replacement_key
+    }
+
+    pub(crate) fn should_report_reused_engine_id_as_consumed(&self, key: ConsumedSolidKey) -> bool {
+        !self.returned_solid_keys.contains(&key)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ConsumedSolidOperation {
+    Union,
+    Intersect,
+    Subtract,
+    Split,
+    JoinSurfaces,
+}
+
+impl ConsumedSolidOperation {
+    pub(crate) fn indefinite_article(self) -> &'static str {
+        match self {
+            Self::Intersect => "an",
+            Self::Union | Self::Subtract | Self::Split | Self::JoinSurfaces => "a",
+        }
+    }
+}
+
+impl std::fmt::Display for ConsumedSolidOperation {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Union => f.write_str("union"),
+            Self::Intersect => f.write_str("intersect"),
+            Self::Subtract => f.write_str("subtract"),
+            Self::Split => f.write_str("split"),
+            Self::JoinSurfaces => f.write_str("joinSurfaces"),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Default)]
 pub(crate) struct SketchBlockState {
     pub sketch_vars: Vec<KclValue>,
-    #[cfg(feature = "artifact-graph")]
     pub sketch_id: Option<ObjectId>,
     #[cfg(feature = "artifact-graph")]
     pub sketch_constraints: Vec<ObjectId>,
@@ -314,6 +442,13 @@ impl ExecState {
         }
     }
 
+    #[cfg(all(feature = "artifact-graph", feature = "snapshot-engine-responses"))]
+    pub(crate) fn take_root_module_responses(
+        &mut self,
+    ) -> IndexMap<Uuid, kittycad_modeling_cmds::websocket::WebSocketResponse> {
+        std::mem::take(&mut self.global.root_module_artifacts.responses)
+    }
+
     pub(crate) fn stack(&self) -> &Stack {
         &self.mod_local.stack
     }
@@ -368,6 +503,21 @@ impl ExecState {
 
     pub fn peek_object_id(&self) -> ObjectId {
         ObjectId(self.mod_local.artifacts.object_id_generator.peek_id())
+    }
+
+    pub(crate) fn constraint_state(&self, sketch_block_id: ObjectId, key: &ConstraintKey) -> Option<ConstraintState> {
+        let map = self.mod_local.constraint_state.get(&sketch_block_id)?;
+        map.get(key).copied()
+    }
+
+    pub(crate) fn set_constraint_state(
+        &mut self,
+        sketch_block_id: ObjectId,
+        key: ConstraintKey,
+        state: ConstraintState,
+    ) {
+        let map = self.mod_local.constraint_state.entry(sketch_block_id).or_default();
+        map.insert(key, state);
     }
 
     #[cfg(feature = "artifact-graph")]
@@ -441,6 +591,10 @@ impl ExecState {
         self.mod_local.sketch_block.as_mut()
     }
 
+    pub(crate) fn sketch_block(&mut self) -> Option<&SketchBlockState> {
+        self.mod_local.sketch_block.as_ref()
+    }
+
     pub fn next_uuid(&mut self) -> Uuid {
         self.mod_local.id_generator.next_uuid()
     }
@@ -454,10 +608,80 @@ impl ExecState {
         &mut self.mod_local.id_generator
     }
 
+    /// Record that a solid value has been consumed by a CSG boolean operation.
+    pub(crate) fn mark_solid_consumed(&mut self, consumed_key: ConsumedSolidKey, info: ConsumedSolidInfo) {
+        self.mod_local.consumed_solids.insert(consumed_key, info);
+    }
+
+    /// Record that an engine body UUID has been consumed by a CSG boolean
+    /// operation.
+    pub(crate) fn mark_solid_id_consumed(&mut self, consumed_id: Uuid, info: ConsumedSolidInfo) {
+        self.mod_local.consumed_solid_ids.insert(consumed_id, info);
+    }
+
+    /// Look up whether a solid value was consumed by a previous CSG boolean
+    /// operation.
+    pub(crate) fn check_solid_consumed(&self, key: &ConsumedSolidKey) -> Option<&ConsumedSolidInfo> {
+        self.mod_local.consumed_solids.get(key)
+    }
+
+    /// Look up whether an engine body UUID was consumed by a previous CSG
+    /// boolean operation.
+    pub(crate) fn check_solid_id_consumed(&self, id: &Uuid) -> Option<&ConsumedSolidInfo> {
+        self.mod_local.consumed_solid_ids.get(id)
+    }
+
+    /// Follow direct replacement links until we find the latest known output.
+    /// Used only on error paths so diagnostics can suggest the current solid.
+    pub(crate) fn latest_consumed_output(
+        &self,
+        suggested_replacement_key: Option<ConsumedSolidKey>,
+    ) -> Option<ConsumedSolidKey> {
+        let mut latest = suggested_replacement_key?;
+        let mut seen = AhashIndexSet::default();
+
+        while seen.insert(latest) {
+            let Some(next) = self
+                .mod_local
+                .consumed_solids
+                .get(&latest)
+                .and_then(|info| info.suggested_replacement_key())
+            else {
+                break;
+            };
+            latest = next;
+        }
+
+        Some(latest)
+    }
+
+    /// Search the live environment for the name of a variable holding a Solid
+    /// (or an array of Solids) whose value identity matches `target_key`. Used only on
+    /// error paths to recover variable names for diagnostics.
+    pub(crate) fn find_var_name_for_solid_key(&self, target_key: ConsumedSolidKey) -> Option<String> {
+        fn contains_solid_key(value: &KclValue, target_key: ConsumedSolidKey) -> bool {
+            match value {
+                KclValue::Solid { value } => {
+                    value.id == target_key.engine_id() && value.value_id == target_key.instance_id()
+                }
+                KclValue::HomArray { value, .. } => value.iter().any(|v| contains_solid_key(v, target_key)),
+                _ => false,
+            }
+        }
+        self.mod_local
+            .stack
+            .find_var_name_in_all_envs(|value| contains_solid_key(value, target_key))
+    }
+
     #[cfg(feature = "artifact-graph")]
     pub(crate) fn add_artifact(&mut self, artifact: Artifact) {
         let id = artifact.id();
         self.mod_local.artifacts.artifacts.insert(id, artifact);
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) fn artifact_mut(&mut self, id: ArtifactId) -> Option<&mut Artifact> {
+        self.mod_local.artifacts.artifacts.get_mut(&id)
     }
 
     pub(crate) fn push_op(&mut self, op: Operation) {
@@ -664,6 +888,12 @@ impl ExecState {
             &self.global.module_infos,
         );
 
+        #[cfg(feature = "snapshot-engine-responses")]
+        {
+            // Store engine responses for debugging.
+            self.global.root_module_artifacts.responses.extend(new_responses);
+        }
+
         let artifact_graph = graph_result?;
         self.global.artifacts.graph = artifact_graph;
 
@@ -677,6 +907,33 @@ impl ExecState {
         _program: NodeRef<'_, crate::parsing::ast::types::Program>,
     ) -> Result<(), KclError> {
         Ok(())
+    }
+
+    pub(crate) fn kcl_version(&self) -> KclVersion {
+        self.mod_local.settings.kcl_version.parse().unwrap_or_default()
+    }
+}
+
+#[derive(Default)]
+pub enum KclVersion {
+    #[default]
+    V1,
+    V2,
+}
+
+impl FromStr for KclVersion {
+    type Err = KclError;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        match s {
+            "1" | "1.0" | "1.0.0" => Ok(Self::V1),
+            "2" | "2.0" | "2.0.0" => Ok(Self::V2),
+            other => Err(KclError::new_semantic(KclErrorDetails {
+                source_ranges: Default::default(),
+                backtrace: Default::default(),
+                message: format!("Unrecognized version {other}. Valid versions are 1.0 and 2.0"),
+            })),
+        }
     }
 }
 
@@ -881,8 +1138,11 @@ impl ModuleState {
             sketch_mode,
             freedom_analysis,
             artifacts: Default::default(),
+            constraint_state: Default::default(),
             allowed_warnings: Vec::new(),
             denied_warnings: Vec::new(),
+            consumed_solids: AHashMap::default(),
+            consumed_solid_ids: AHashMap::default(),
             inside_stdlib: false,
         }
     }
