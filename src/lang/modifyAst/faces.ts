@@ -912,7 +912,11 @@ export function getPlaneExprFromSelection({
     }
   }
 
-  let planeExpr = getSelectedPlaneAsNode(plane, variables, wasmInstance)
+  let planeExpr: Expr | undefined = getSelectedPlaneAsNode(
+    plane,
+    variables,
+    wasmInstance
+  )
   if (!planeExpr) {
     const planeVars = getVariableExprsFromSelection(
       plane,
