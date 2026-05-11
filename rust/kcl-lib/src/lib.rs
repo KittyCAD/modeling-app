@@ -57,7 +57,6 @@ macro_rules! eprint {
 static ALLOC: dhat::Alloc = dhat::Alloc;
 
 pub mod collections;
-mod coredump;
 mod docs;
 mod engine;
 mod errors;
@@ -89,8 +88,8 @@ pub mod walk;
 #[cfg(target_arch = "wasm32")]
 mod wasm;
 
-pub use coredump::CoreDump;
 pub use engine::AsyncTasks;
+pub use engine::EngineBatchContext;
 pub use engine::EngineManager;
 pub use engine::EngineStats;
 pub use errors::BacktraceItem;
@@ -157,8 +156,6 @@ pub mod exec {
 
 #[cfg(target_arch = "wasm32")]
 pub mod wasm_engine {
-    pub use crate::coredump::wasm::CoreDumpManager;
-    pub use crate::coredump::wasm::CoreDumper;
     pub use crate::engine::conn_wasm::EngineCommandManager;
     pub use crate::engine::conn_wasm::EngineConnection;
     pub use crate::engine::conn_wasm::ResponseContext;
@@ -312,6 +309,13 @@ impl Program {
     ) -> Result<Self, KclError> {
         Ok(Self {
             ast: self.ast.change_default_units(length_units)?,
+            original_file_contents: self.original_file_contents.clone(),
+        })
+    }
+
+    pub fn change_kcl_version(&self, kcl_version: Option<String>) -> Result<Self, KclError> {
+        Ok(Self {
+            ast: self.ast.change_kcl_version(kcl_version)?,
             original_file_contents: self.original_file_contents.clone(),
         })
     }

@@ -188,9 +188,15 @@ export function updateDimensionLine(
     }
   }
 
-  // Main constraint lines with optional gap. Diameter labels are offset off-line, so keep no gap.
-  const halfGap = showLabel && !isDiameter ? labelTextWidthPx * 0.5 * scale : 0
-  const gapCenter = isDiameter ? lineCenter : labelCenter
+  // Main constraint lines with optional gap. Automatic diameter labels are
+  // offset off-line, so only explicit diameter label positions get a gap.
+  const hasExplicitLabelPosition = labelPosition !== undefined
+  const halfGap =
+    showLabel && (!isDiameter || hasExplicitLabelPosition)
+      ? labelTextWidthPx * 0.5 * scale
+      : 0
+  const gapCenter =
+    isDiameter && !hasExplicitLabelPosition ? lineCenter : labelCenter
   const gapStart = gapCenter.clone().sub(dir.clone().multiplyScalar(halfGap))
   const gapEnd = gapCenter.clone().add(dir.clone().multiplyScalar(halfGap))
   const maxEndInset = Math.max(

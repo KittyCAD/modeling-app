@@ -212,24 +212,79 @@ pub(super) struct ModuleState {
     pub(super) allowed_warnings: Vec<&'static str>,
     pub(super) denied_warnings: Vec<&'static str>,
 
-    /// Map from consumed solid UUIDs to information about the operation that
+    /// Map from consumed solid values to information about the operation that
     /// consumed them. Populated by operations that destroy their inputs so that
     /// subsequent attempts to use a consumed solid produce a clear KCL-level
     /// error rather than a cryptic engine error.
-    pub(super) consumed_solids: AHashMap<Uuid, ConsumedSolidInfo>,
+    pub(super) consumed_solids: AHashMap<ConsumedSolidKey, ConsumedSolidInfo>,
+    /// Defensive map from consumed engine UUID to consumption info.
+    /// Rust code may create a `Solid` with a consumed `engine_id` and a
+    /// different `instance_id` that was not recorded in `consumed_solids`. When
+    /// the exact key lookup misses, this map lets us reject that solid by
+    /// `engine_id`, unless the key is a recorded operation output.
+    pub(super) consumed_solid_ids: AHashMap<Uuid, ConsumedSolidInfo>,
 }
 
-/// Information about a solid that was consumed by an operation.
+/// Internal identity for one runtime KCL solid value.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub(crate) struct ConsumedSolidKey {
+    /// The engine body UUID.
+    engine_id: Uuid,
+    /// Distinguishes this KCL runtime instance from other values that may reuse
+    /// the same engine body UUID.
+    instance_id: Uuid,
+}
+
+impl ConsumedSolidKey {
+    pub(crate) fn new(engine_id: Uuid, instance_id: Uuid) -> Self {
+        Self { engine_id, instance_id }
+    }
+
+    pub(crate) fn engine_id(&self) -> Uuid {
+        self.engine_id
+    }
+
+    pub(crate) fn instance_id(&self) -> Uuid {
+        self.instance_id
+    }
+}
+
+/// Information about a solid value that was consumed by an operation.
 /// Stored in `ModuleState.consumed_solids` so subsequent attempts to use the
 /// solid produce a clear error pointing at the operation that consumed it.
 #[derive(Debug, Clone)]
 pub(crate) struct ConsumedSolidInfo {
     /// The operation that consumed the solid.
-    pub operation: ConsumedSolidOperation,
-    /// The UUID of the result solid produced by that operation, when this
-    /// consumed solid has a direct replacement. Used to suggest a replacement
-    /// variable in the error message.
-    pub output_solid_id: Option<Uuid>,
+    operation: ConsumedSolidOperation,
+    /// First returned solid value, used only for replacement suggestions in
+    /// error messages. When present, this key is also included in
+    /// `returned_solid_keys`.
+    suggested_replacement_key: Option<ConsumedSolidKey>,
+    /// All solid values returned by that operation. This is used as the
+    /// allow-list for returned solids that reuse a consumed engine UUID.
+    returned_solid_keys: Vec<ConsumedSolidKey>,
+}
+
+impl ConsumedSolidInfo {
+    pub(crate) fn new(operation: ConsumedSolidOperation, returned_solid_keys: Vec<ConsumedSolidKey>) -> Self {
+        Self {
+            operation,
+            suggested_replacement_key: returned_solid_keys.first().copied(),
+            returned_solid_keys,
+        }
+    }
+
+    pub(crate) fn operation(&self) -> ConsumedSolidOperation {
+        self.operation
+    }
+
+    pub(crate) fn suggested_replacement_key(&self) -> Option<ConsumedSolidKey> {
+        self.suggested_replacement_key
+    }
+
+    pub(crate) fn should_report_reused_engine_id_as_consumed(&self, key: ConsumedSolidKey) -> bool {
+        !self.returned_solid_keys.contains(&key)
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -564,21 +619,36 @@ impl ExecState {
         &mut self.mod_local.id_generator
     }
 
-    /// Record that a solid UUID has been consumed by a CSG boolean operation.
-    pub(crate) fn mark_solid_consumed(&mut self, consumed_id: Uuid, info: ConsumedSolidInfo) {
-        self.mod_local.consumed_solids.insert(consumed_id, info);
+    /// Record that a solid value has been consumed by a CSG boolean operation.
+    pub(crate) fn mark_solid_consumed(&mut self, consumed_key: ConsumedSolidKey, info: ConsumedSolidInfo) {
+        self.mod_local.consumed_solids.insert(consumed_key, info);
     }
 
-    /// Look up whether a solid UUID was consumed by a previous CSG boolean
-    /// operation. Returns the consumption info if so, or `None` otherwise.
-    pub(crate) fn check_solid_consumed(&self, id: &Uuid) -> Option<&ConsumedSolidInfo> {
-        self.mod_local.consumed_solids.get(id)
+    /// Record that an engine body UUID has been consumed by a CSG boolean
+    /// operation.
+    pub(crate) fn mark_solid_id_consumed(&mut self, consumed_id: Uuid, info: ConsumedSolidInfo) {
+        self.mod_local.consumed_solid_ids.insert(consumed_id, info);
+    }
+
+    /// Look up whether a solid value was consumed by a previous CSG boolean
+    /// operation.
+    pub(crate) fn check_solid_consumed(&self, key: &ConsumedSolidKey) -> Option<&ConsumedSolidInfo> {
+        self.mod_local.consumed_solids.get(key)
+    }
+
+    /// Look up whether an engine body UUID was consumed by a previous CSG
+    /// boolean operation.
+    pub(crate) fn check_solid_id_consumed(&self, id: &Uuid) -> Option<&ConsumedSolidInfo> {
+        self.mod_local.consumed_solid_ids.get(id)
     }
 
     /// Follow direct replacement links until we find the latest known output.
     /// Used only on error paths so diagnostics can suggest the current solid.
-    pub(crate) fn latest_consumed_output(&self, output_solid_id: Option<Uuid>) -> Option<Uuid> {
-        let mut latest = output_solid_id?;
+    pub(crate) fn latest_consumed_output(
+        &self,
+        suggested_replacement_key: Option<ConsumedSolidKey>,
+    ) -> Option<ConsumedSolidKey> {
+        let mut latest = suggested_replacement_key?;
         let mut seen = AhashIndexSet::default();
 
         while seen.insert(latest) {
@@ -586,7 +656,7 @@ impl ExecState {
                 .mod_local
                 .consumed_solids
                 .get(&latest)
-                .and_then(|info| info.output_solid_id)
+                .and_then(|info| info.suggested_replacement_key())
             else {
                 break;
             };
@@ -597,19 +667,21 @@ impl ExecState {
     }
 
     /// Search the live environment for the name of a variable holding a Solid
-    /// (or an array of Solids) whose id matches `target_id`. Used only on
+    /// (or an array of Solids) whose value identity matches `target_key`. Used only on
     /// error paths to recover variable names for diagnostics.
-    pub(crate) fn find_var_name_for_solid_id(&self, target_id: Uuid) -> Option<String> {
-        fn contains_solid_id(value: &KclValue, target_id: Uuid) -> bool {
+    pub(crate) fn find_var_name_for_solid_key(&self, target_key: ConsumedSolidKey) -> Option<String> {
+        fn contains_solid_key(value: &KclValue, target_key: ConsumedSolidKey) -> bool {
             match value {
-                KclValue::Solid { value } => value.id == target_id,
-                KclValue::HomArray { value, .. } => value.iter().any(|v| contains_solid_id(v, target_id)),
+                KclValue::Solid { value } => {
+                    value.id == target_key.engine_id() && value.value_id == target_key.instance_id()
+                }
+                KclValue::HomArray { value, .. } => value.iter().any(|v| contains_solid_key(v, target_key)),
                 _ => false,
             }
         }
         self.mod_local
             .stack
-            .find_var_name_in_all_envs(|value| contains_solid_id(value, target_id))
+            .find_var_name_in_all_envs(|value| contains_solid_key(value, target_key))
     }
 
     #[cfg(feature = "artifact-graph")]
@@ -847,6 +919,33 @@ impl ExecState {
     ) -> Result<(), KclError> {
         Ok(())
     }
+
+    pub(crate) fn kcl_version(&self) -> KclVersion {
+        self.mod_local.settings.kcl_version.parse().unwrap_or_default()
+    }
+}
+
+#[derive(Default)]
+pub enum KclVersion {
+    #[default]
+    V1,
+    V2,
+}
+
+impl FromStr for KclVersion {
+    type Err = KclError;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        match s {
+            "1" | "1.0" | "1.0.0" => Ok(Self::V1),
+            "2" | "2.0" | "2.0.0" => Ok(Self::V2),
+            other => Err(KclError::new_semantic(KclErrorDetails {
+                source_ranges: Default::default(),
+                backtrace: Default::default(),
+                message: format!("Unrecognized version {other}. Valid versions are 1.0 and 2.0"),
+            })),
+        }
+    }
 }
 
 impl GlobalState {
@@ -1059,6 +1158,7 @@ impl ModuleState {
             allowed_warnings: Vec::new(),
             denied_warnings: Vec::new(),
             consumed_solids: AHashMap::default(),
+            consumed_solid_ids: AHashMap::default(),
             inside_stdlib: false,
         }
     }

@@ -32,9 +32,16 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { Artifact, ArtifactId } from '@src/lang/std/artifactGraph'
 
+import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
+import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
+import type { KclManager } from '@src/lang/KclManager'
 import {
   getCapCodeRef,
   getCodeRefsByArtifactId,
+  getPatternArtifactForCopyId,
   getSketchBlockForPathArtifact,
   getSweepFromSuspectedSweepSurface,
   getWallCodeRef,
@@ -60,9 +67,6 @@ import {
 } from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
-import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { err, isErr } from '@src/lib/trap'
 import {
   getNormalisedCoordinates,
@@ -72,22 +76,19 @@ import {
   mmToBaseUnit,
   uuidv4,
 } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
 import type {
   DefaultPlane,
   EnginePrimitiveSelection,
+  EngineRegionSelection,
   ExtrudeFacePlane,
   OffsetPlane,
-  EngineRegionSelection,
 } from '@src/machines/modelingSharedTypes'
-import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import toast from 'react-hot-toast'
-import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
-import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
-import type { KclManager } from '@src/lang/KclManager'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import toast from 'react-hot-toast'
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -276,7 +277,10 @@ export async function getEventForSelectWithPoint(
     }
   }
 
-  let _artifact = artifactGraph.get(data.entity_id)
+  const selectedEngineEntityId = data.entity_id
+  let _artifact =
+    artifactGraph.get(selectedEngineEntityId) ??
+    getPatternArtifactForCopyId(selectedEngineEntityId, artifactGraph)
   if (!_artifact) {
     // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
 
@@ -321,7 +325,7 @@ export async function getEventForSelectWithPoint(
       data: { selectionType: 'singleCodeCursor' },
     }
   }
-  const codeRefs = getCodeRefsByArtifactId(data.entity_id, artifactGraph)
+  const codeRefs = getCodeRefsByArtifactId(_artifact.id, artifactGraph)
   if (_artifact && codeRefs) {
     return {
       type: 'Set selection',
@@ -330,6 +334,7 @@ export async function getEventForSelectWithPoint(
         selection: {
           artifact: _artifact,
           codeRef: codeRefs[0],
+          engineEntityId: selectedEngineEntityId,
         },
       },
     }
@@ -436,15 +441,19 @@ export function handleSelectionBatch({
   const ranges: ReturnType<typeof EditorSelection.cursor>[] = []
   const selectionToEngine: SelectionToEngine[] = []
 
-  selections.graphSelections.forEach(({ artifact }) => {
-    if (artifact?.id) {
+  selections.graphSelections.forEach((selection) => {
+    const engineIds = getEngineEntityIdsForSelection(selection)
+    engineIds.forEach((id) => {
+      const range =
+        getCodeRefsByArtifactId(
+          selection.artifact?.id || '',
+          artifactGraph
+        )?.[0]?.range || defaultSourceRange()
       selectionToEngine.push({
-        id: artifact?.id,
-        range:
-          getCodeRefsByArtifactId(artifact.id, artifactGraph)?.[0].range ||
-          defaultSourceRange(),
+        id,
+        range,
       })
-    }
+    })
   })
   selections.otherSelections.forEach((s) => {
     if (isEnginePrimitiveSelection(s)) {
@@ -958,7 +967,9 @@ function getBestCandidates(
     }
 
     // Other valid artifact types
-    if (['plane', 'cap', 'wall', 'sweep'].includes(entry.artifact.type)) {
+    if (
+      ['plane', 'cap', 'wall', 'sweep', 'pattern'].includes(entry.artifact.type)
+    ) {
       return [entry]
     }
   }
@@ -973,6 +984,29 @@ function createSelectionToEngine(
     ...(candidateId && { id: candidateId }),
     range: selection.codeRef.range,
   }
+}
+
+function getEngineEntityIdsForSelection(selection: Selection): ArtifactId[] {
+  if (selection.engineEntityId) {
+    return [selection.engineEntityId]
+  }
+
+  const artifact = selection.artifact
+  if (!artifact?.id) {
+    return []
+  }
+
+  if (artifact.type !== 'pattern') {
+    return [artifact.id]
+  }
+
+  return [
+    ...new Set([
+      ...artifact.copyIds,
+      ...artifact.copyFaceIds,
+      ...artifact.copyEdgeIds,
+    ]),
+  ]
 }
 
 export function codeToIdSelections(
@@ -998,7 +1032,10 @@ export function codeToIdSelections(
 
       // Direct artifact case
       if (selection.artifact?.id) {
-        return [createSelectionToEngine(selection, selection.artifact.id)]
+        const engineIds = getEngineEntityIdsForSelection(selection)
+        return engineIds.length
+          ? engineIds.map((id) => createSelectionToEngine(selection, id))
+          : [createSelectionToEngine(selection)]
       }
 
       // Find matching artifacts by code range overlap
@@ -1011,9 +1048,15 @@ export function codeToIdSelections(
         artifactGraph
       )
       if (bestCandidates.length) {
-        return bestCandidates.map((entry) =>
-          createSelectionToEngine(selection, entry.id)
-        )
+        return bestCandidates.flatMap((entry) => {
+          const engineIds = getEngineEntityIdsForSelection({
+            ...selection,
+            artifact: entry.artifact,
+          })
+          return engineIds.length
+            ? engineIds.map((id) => createSelectionToEngine(selection, id))
+            : [createSelectionToEngine(selection, entry.id)]
+        })
       }
 
       return [createSelectionToEngine(selection)]
