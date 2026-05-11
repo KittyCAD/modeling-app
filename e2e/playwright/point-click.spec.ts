@@ -37,6 +37,8 @@ test.describe('Point-and-click tests', { tag: '@desktop' }, () => {
         currentArgValue: 'width',
         headerArguments: {
           Length: '5',
+          TagEnd: 'capEnd001',
+          TagStart: 'capStart001',
         },
         highlightedHeaderArg: 'length',
         commandName: 'Extrude',
@@ -47,11 +49,16 @@ test.describe('Point-and-click tests', { tag: '@desktop' }, () => {
         stage: 'review',
         headerArguments: {
           Length: '4.999in',
+          TagEnd: 'capEnd001',
+          TagStart: 'capStart001',
         },
+        reviewValidationError: undefined,
         commandName: 'Extrude',
       })
       await cmdBar.progressCmdBar()
-      await editor.expectEditor.toContain('extrude(length = width - 0.001in)')
+      await editor.expectEditor.toContain(
+        'extrude(length = width - 0.001in, tagStart = $capStart001, tagEnd = $capEnd001)'
+      )
     })
 
     await test.step(`Edit second extrude via feature tree`, async () => {
@@ -607,7 +614,7 @@ extrude001 = extrude(region001, length = 100)`
       await editor.expectEditor.toContain(
         `
         helix001 = helix(
-          axis = { sideFaces = [region001.tags.line3, capEnd001] },
+          axis = { sideFaces = [capEnd001, region001.tags.line3] },
           revolutions = 20,
           angleStart = 0,
           radius = 1,
@@ -680,7 +687,7 @@ extrude001 = extrude(region001, length = 100)`
       await editor.expectEditor.toContain(
         `
         helix001 = helix(
-          axis = { sideFaces = [region001.tags.line3, capEnd001] },
+          axis = { sideFaces = [capEnd001, region001.tags.line3] },
           revolutions = 20,
           angleStart = 0,
           radius = 5,
@@ -968,7 +975,7 @@ hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
     const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[capEnd001,region001.tags.line2]}], radius=5,)`
-    const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,capStart001]}], radius=5,)`
+    const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[capStart001,region001.tags.line2]}], radius=5,)`
 
     // Locators
     // TODO: find a way to not have hardcoded pixel values for region edges and sweepEdges
@@ -1548,13 +1555,33 @@ extrude001 = extrude(region001, length = -12)
   |> fillet(radius = 5, tags = [region001.tags.line2]) // fillet02
 fillet03 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.line1)])
 fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.line2)])`
+    const standaloneFilletCode = `sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -12mm, var -6mm], end = [var -12mm, var 6mm])
+  line2 = line(start = [var -12mm, var 6mm], end = [var 12mm, var 6mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 12mm, var 6mm], end = [var 12mm, var -6mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 12mm, var -6mm], end = [var -12mm, var -6mm])
+  coincident([line3.end, line4.start])
+}
+hide(sketch001)
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+extrude001 = extrude(region001, length = -12, tagEnd = $capEnd001)
+fillet03 = fillet(extrude001, radius = 5, edges = [{ sideFaces = [region001.tags.line1, capEnd001] }])
+fillet(extrude001, radius = 5, edges = [{ sideFaces = [region001.tags.line2, capEnd001] }])`
     const firstPipedFilletDeclaration =
       'fillet(radius = 5, tags = [region001.tags.line1])'
     const secondPipedFilletDeclaration =
       'fillet(radius = 5, tags = [region001.tags.line2])'
     const standaloneAssignedFilletDeclaration =
-      'fillet03 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.line1)])'
+      'fillet03 = fillet(extrude001, radius = 5, edges = [{ sideFaces = [region001.tags.line1, capEnd001] }])'
     const standaloneUnassignedFilletDeclaration =
+      'fillet(extrude001, radius = 5, edges = [{ sideFaces = [region001.tags.line2, capEnd001] }])'
+    const formattedStandaloneUnassignedFilletDeclaration =
+      'fillet(extrude001, radius = 5, edges = [{ sideFaces = [region001.tags.line2, capEnd001] }],)'
+    const legacyStandaloneAssignedFilletDeclaration =
+      'fillet03 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.line1)])'
+    const legacyStandaloneUnassignedFilletDeclaration =
       'fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.line2)])'
 
     // Setup
@@ -1579,10 +1606,10 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.line2)])`
           await editor.expectEditor.toContain(firstPipedFilletDeclaration)
           await editor.expectEditor.toContain(secondPipedFilletDeclaration)
           await editor.expectEditor.toContain(
-            standaloneAssignedFilletDeclaration
+            legacyStandaloneAssignedFilletDeclaration
           )
           await editor.expectEditor.toContain(
-            standaloneUnassignedFilletDeclaration
+            legacyStandaloneUnassignedFilletDeclaration
           )
         })
         await test.step('Delete piped fillet', async () => {
@@ -1596,13 +1623,25 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.line2)])`
         })
         await test.step('Verify piped fillet is deleted but other fillets are not (in the editor)', async () => {
           await editor.expectEditor.not.toContain(firstPipedFilletDeclaration)
-          await editor.expectEditor.toContain(secondPipedFilletDeclaration)
+          await editor.expectEditor.not.toContain(secondPipedFilletDeclaration)
           await editor.expectEditor.toContain(
-            standaloneAssignedFilletDeclaration
+            legacyStandaloneAssignedFilletDeclaration
           )
           await editor.expectEditor.toContain(
-            standaloneUnassignedFilletDeclaration
+            legacyStandaloneUnassignedFilletDeclaration
           )
+        })
+      })
+
+      await test.step('Load standalone fillets using new edge syntax', async () => {
+        await editor.openPane()
+        await editor.codeContent.click()
+        await page.keyboard.press('ControlOrMeta+A')
+        await page.keyboard.insertText(standaloneFilletCode)
+        await scene.settled(cmdBar)
+        await editor.expectEditor.toContain(standaloneAssignedFilletDeclaration)
+        await editor.expectEditor.toContain(standaloneUnassignedFilletDeclaration, {
+          shouldNormalise: true,
         })
       })
 
@@ -1617,12 +1656,13 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.line2)])`
           await scene.settled(cmdBar)
         })
         await test.step('Verify standalone assigned fillet is deleted but other two fillets are not (in the editor)', async () => {
-          await editor.expectEditor.toContain(secondPipedFilletDeclaration)
+          await editor.expectEditor.not.toContain(secondPipedFilletDeclaration)
           await editor.expectEditor.not.toContain(
             standaloneAssignedFilletDeclaration
           )
           await editor.expectEditor.toContain(
-            standaloneUnassignedFilletDeclaration
+            formattedStandaloneUnassignedFilletDeclaration,
+            { shouldNormalise: true }
           )
         })
       })
@@ -1638,9 +1678,10 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.line2)])`
           await scene.settled(cmdBar)
         })
         await test.step('Verify standalone unassigned fillet is deleted but other fillet is not (in the editor)', async () => {
-          await editor.expectEditor.toContain(secondPipedFilletDeclaration)
+          await editor.expectEditor.not.toContain(secondPipedFilletDeclaration)
           await editor.expectEditor.not.toContain(
-            standaloneUnassignedFilletDeclaration
+            formattedStandaloneUnassignedFilletDeclaration,
+            { shouldNormalise: true }
           )
         })
       })
@@ -1744,7 +1785,7 @@ extrude001 = extrude(region001, length = 5)`
 
       expect(normalizedCode).toContain('fillet001=fillet(extrude001,')
       expect(normalizedCode).toContain(
-        'edges=[{sideFaces=[region001.tags.line1,region001.tags.line3]}]'
+        'edges=[{sideFaces=[region001.tags.line3,region001.tags.line1]}]'
       )
       expect(normalizedCode).toContain('radius=1000,')
       expect(normalizedCode).not.toContain('tags=[')
@@ -1776,7 +1817,7 @@ hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
     const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, edges=[{sideFaces=[region001.tags.line2,capEnd001]}], length=5,)`
-    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, edges=[{sideFaces=[region001.tags.line2,capStart001]}], length=5,)`
+    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, edges=[{sideFaces=[capStart001,region001.tags.line2]}], length=5,)`
 
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
@@ -2040,13 +2081,35 @@ extrude001 = extrude(region001, length = -12)
   |> chamfer(length = 5, tags = [region001.tags.line2]) // chamfer02
 chamfer03 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(region001.tags.line1)])
 chamfer(extrude001, length = 5, tags = [getOppositeEdge(region001.tags.line2)])`
+    const standaloneChamferCode = `@settings(defaultLengthUnit = in)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -12in, var -6in], end = [var -12in, var 6in])
+  line2 = line(start = [var -12in, var 6in], end = [var 12in, var 6in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 12in, var 6in], end = [var 12in, var -6in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 12in, var -6in], end = [var -12in, var -6in])
+  coincident([line3.end, line4.start])
+}
+hide(sketch001)
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+extrude001 = extrude(region001, length = -12, tagEnd = $capEnd001)
+chamfer03 = chamfer(extrude001, length = 5, edges = [{ sideFaces = [region001.tags.line1, capEnd001] }])
+chamfer(extrude001, length = 5, edges = [{ sideFaces = [region001.tags.line2, capEnd001] }])`
     const firstPipedChamferDeclaration =
       'chamfer(length = 5, tags = [region001.tags.line1])'
     const secondPipedChamferDeclaration =
       'chamfer(length = 5, tags = [region001.tags.line2])'
     const standaloneAssignedChamferDeclaration =
-      'chamfer03 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(region001.tags.line1)])'
+      'chamfer03 = chamfer(extrude001, length = 5, edges = [{ sideFaces = [region001.tags.line1, capEnd001] }])'
     const standaloneUnassignedChamferDeclaration =
+      'chamfer(extrude001, length = 5, edges = [{ sideFaces = [region001.tags.line2, capEnd001] }])'
+    const formattedStandaloneUnassignedChamferDeclaration =
+      'chamfer(extrude001, length = 5, edges = [{ sideFaces = [region001.tags.line2, capEnd001] }],)'
+    const legacyStandaloneAssignedChamferDeclaration =
+      'chamfer03 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(region001.tags.line1)])'
+    const legacyStandaloneUnassignedChamferDeclaration =
       'chamfer(extrude001, length = 5, tags = [getOppositeEdge(region001.tags.line2)])'
 
     // Setup
@@ -2072,10 +2135,10 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(region001.tags.line2)])`
           await editor.expectEditor.toContain(firstPipedChamferDeclaration)
           await editor.expectEditor.toContain(secondPipedChamferDeclaration)
           await editor.expectEditor.toContain(
-            standaloneAssignedChamferDeclaration
+            legacyStandaloneAssignedChamferDeclaration
           )
           await editor.expectEditor.toContain(
-            standaloneUnassignedChamferDeclaration
+            legacyStandaloneUnassignedChamferDeclaration
           )
         })
         await test.step('Delete piped chamfer', async () => {
@@ -2092,13 +2155,25 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(region001.tags.line2)])`
         })
         await test.step('Verify piped chamfer is deleted but other chamfers are not (in the editor)', async () => {
           await editor.expectEditor.not.toContain(firstPipedChamferDeclaration)
-          await editor.expectEditor.toContain(secondPipedChamferDeclaration)
+          await editor.expectEditor.not.toContain(secondPipedChamferDeclaration)
           await editor.expectEditor.toContain(
-            standaloneAssignedChamferDeclaration
+            legacyStandaloneAssignedChamferDeclaration
           )
           await editor.expectEditor.toContain(
-            standaloneUnassignedChamferDeclaration
+            legacyStandaloneUnassignedChamferDeclaration
           )
+        })
+      })
+
+      await test.step('Load standalone chamfers using new edge syntax', async () => {
+        await editor.openPane()
+        await editor.codeContent.click()
+        await page.keyboard.press('ControlOrMeta+A')
+        await page.keyboard.insertText(standaloneChamferCode)
+        await scene.settled(cmdBar)
+        await editor.expectEditor.toContain(standaloneAssignedChamferDeclaration)
+        await editor.expectEditor.toContain(standaloneUnassignedChamferDeclaration, {
+          shouldNormalise: true,
         })
       })
 
@@ -2114,12 +2189,13 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(region001.tags.line2)])`
           await scene.settled(cmdBar)
         })
         await test.step('Verify standalone assigned chamfer is deleted but other two chamfers are not (in the editor)', async () => {
-          await editor.expectEditor.toContain(secondPipedChamferDeclaration)
+          await editor.expectEditor.not.toContain(secondPipedChamferDeclaration)
           await editor.expectEditor.not.toContain(
             standaloneAssignedChamferDeclaration
           )
           await editor.expectEditor.toContain(
-            standaloneUnassignedChamferDeclaration
+            formattedStandaloneUnassignedChamferDeclaration,
+            { shouldNormalise: true }
           )
         })
       })
@@ -2136,9 +2212,10 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(region001.tags.line2)])`
           await scene.settled(cmdBar)
         })
         await test.step('Verify standalone unassigned chamfer is deleted but piped chamfer is not (in the editor)', async () => {
-          await editor.expectEditor.toContain(secondPipedChamferDeclaration)
+          await editor.expectEditor.not.toContain(secondPipedChamferDeclaration)
           await editor.expectEditor.not.toContain(
-            standaloneUnassignedChamferDeclaration
+            formattedStandaloneUnassignedChamferDeclaration,
+            { shouldNormalise: true }
           )
         })
       })

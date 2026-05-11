@@ -413,6 +413,8 @@ export class SceneFixture {
 
     await closeOnboardingModalIfPresent(this.page)
 
+    await this.connectionEstablished()
+
     // If the caller expects a KCL error, don't wait for the sketch button to enable.
     if (!expectError) {
       await expect(this.startEditSketchBtn).not.toBeDisabled({
@@ -420,7 +422,6 @@ export class SceneFixture {
       })
     }
     await expect(this.startEditSketchBtn).toBeVisible()
-    await expect(this.engineConnectionsSpinner).not.toBeVisible()
 
     await cmdBar.openCmdBar()
     await cmdBar.chooseCommand('Settings · debug · show panel')
