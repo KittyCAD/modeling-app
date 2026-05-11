@@ -1,26 +1,26 @@
+import ms from 'ms'
+import { decode as msgpackDecode } from '@msgpack/msgpack'
+import { withMlephantWebSocketURL } from '@src/lib/withBaseURL'
 import type {
   MlCopilotClientMessage,
-  MlCopilotFile,
   MlCopilotServerMessage,
+  MlCopilotFile,
 } from '@kittycad/lib'
-import { decode as msgpackDecode } from '@msgpack/msgpack'
+import { assertEvent, assign, setup, fromPromise } from 'xstate'
+import { createActorContext } from '@xstate/react'
+import type { ActorRefFrom } from 'xstate'
 import type { KittyCadLibFile } from '@src/lib/promptToEditTypes'
 import type { KclFileMetaMap } from '@src/lib/promptToEditTypes'
-import { withMlephantWebSocketURL } from '@src/lib/withBaseURL'
-import { createActorContext } from '@xstate/react'
-import ms from 'ms'
-import { assertEvent, assign, fromPromise, setup } from 'xstate'
-import type { ActorRefFrom } from 'xstate'
 
 import {
-  type CustomIconName,
   isCustomIconName,
+  type CustomIconName,
 } from '@src/components/CustomIcon'
 
 import { isArray } from '@src/lib/utils'
 
-import { getKclVersion } from '@src/lib/kclVersion'
 import { S, transitions } from '@src/machines/utils'
+import { getKclVersion } from '@src/lib/kclVersion'
 
 import { Socket } from '@src/lib/socket'
 
@@ -28,9 +28,9 @@ import { Socket } from '@src/lib/socket'
 // import { MockSocket } from '@src/mocks/copilot'
 
 import type { ArtifactGraph } from '@src/lang/wasm'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
-import type { Selections } from '@src/machines/modelingSharedTypes'
 
 import { constructMultiFileIterationRequestWithPromptHelpers } from '@src/lib/promptToEdit'
 
