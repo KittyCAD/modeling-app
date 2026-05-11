@@ -33,6 +33,7 @@ import { reportRejection } from '@src/lib/trap'
 import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
 import { hexToRgba } from '@src/lib/utils'
+import { userHasFeature } from '@src/lib/settings/settingsUtils'
 
 /**
  * A setting that can be set at the user or project level
@@ -763,6 +764,21 @@ function createCoreSettings() {
       includeSettings: new Setting<boolean>({
         defaultValue: true,
         description: 'Whether to include settings in the command bar.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
+      /**
+       * Whether to use the modeling dialog flow for modeling commands.
+       */
+      modelingDialogs: new Setting<boolean>({
+        defaultValue: false,
+        hideOnLevel: 'project',
+        hideOnPlatform: async () =>
+          (await userHasFeature('modeling_dialogs', false)) ? null : 'both',
+        description:
+          'Whether to use the modeling dialog flow for modeling commands.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',

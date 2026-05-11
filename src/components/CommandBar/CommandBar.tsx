@@ -17,12 +17,15 @@ import { COMMAND_PALETTE_HOTKEY } from '@src/components/CommandBar/constants'
 
 export const CommandBar = () => {
   const { pathname } = useLocation()
-  const { commands: cmd, project } = useApp()
+  const { commands: cmd, project, settings } = useApp()
+  const settingsValues = settings.useSettings()
   const commandBarState = cmd.useState()
   const {
     context: { selectedCommand, currentArgument, commands },
   } = commandBarState
-  const isModelingDialogCommand = selectedCommand?.groupId === 'modeling'
+  const isModelingDialogCommand =
+    settingsValues.commandBar.modelingDialogs.current === true &&
+    selectedCommand?.groupId === 'modeling'
 
   // The command palette used to have light dismiss behavior, but we've decided
   // it's not a great fit for workflows where the user may want to review other

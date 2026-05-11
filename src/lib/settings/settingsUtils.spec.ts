@@ -210,6 +210,7 @@ describe('project settings serialization regression', () => {
         },
         commandBar: {
           includeSettings: false,
+          modelingDialogs: true,
         },
         textEditor: {
           textWrapping: false,
@@ -246,6 +247,7 @@ describe('project settings serialization regression', () => {
     expect(serializedToml).toContain('default_project_name = "plugin-template"')
     expect(serializedToml).toContain('[settings.command_bar]')
     expect(serializedToml).toContain('include_settings = false')
+    expect(serializedToml).toContain('modeling_dialogs = true')
     expect(serializedToml).toContain('[settings.text_editor]')
     expect(serializedToml).toContain('text_wrapping = false')
     expect(serializedToml).toContain('blinking_cursor = false')
@@ -275,6 +277,7 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.modeling?.minorGridsPerMajor).toBe(5)
     expect(parsedPayload.modeling?.snapsPerMinor).toBe(3)
     expect(parsedPayload.commandBar?.includeSettings).toBe(false)
+    expect(parsedPayload.commandBar?.modelingDialogs).toBe(true)
     expect(parsedPayload.textEditor?.textWrapping).toBe(false)
     expect(parsedPayload.textEditor?.blinkingCursor).toBe(false)
     expect(parsedPayload.layout?.configs?.default.version).toBe('v2')
