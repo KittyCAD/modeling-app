@@ -195,6 +195,12 @@ impl EditDeleteKind {
     }
 }
 
+struct ExecuteAfterEditOptions {
+    segment_ids_edited: AhashIndexSet<ObjectId>,
+    edit_kind: EditDeleteKind,
+    sketch_var_update_mode: SketchVarUpdateMode,
+}
+
 #[derive(Debug, Clone, Copy)]
 enum ChangeKind {
     Add,
@@ -333,7 +339,7 @@ impl FrontendState {
         self.sketch_checkpoints.clear();
     }
 
-    fn clear_sketch_var_warm_starts(&mut self) {
+    pub(crate) fn clear_sketch_var_warm_starts(&mut self) {
         self.sketch_var_warm_start_overrides.clear();
     }
 
@@ -870,9 +876,11 @@ impl SketchApi for FrontendState {
             ctx,
             sketch,
             sketch_block_ref,
-            segment_ids_edited,
-            EditDeleteKind::Edit,
-            SketchVarUpdateMode::WarmStartOnly,
+            ExecuteAfterEditOptions {
+                segment_ids_edited,
+                edit_kind: EditDeleteKind::Edit,
+                sketch_var_update_mode: SketchVarUpdateMode::WarmStartOnly,
+            },
             &mut new_ast,
         )
         .await
@@ -1043,9 +1051,11 @@ impl SketchApi for FrontendState {
             ctx,
             sketch,
             sketch_block_ref,
-            Default::default(),
-            EditDeleteKind::DeleteNonSketch,
-            SketchVarUpdateMode::CommitSolvedVars,
+            ExecuteAfterEditOptions {
+                segment_ids_edited: Default::default(),
+                edit_kind: EditDeleteKind::DeleteNonSketch,
+                sketch_var_update_mode: SketchVarUpdateMode::CommitSolvedVars,
+            },
             &mut new_ast,
         )
         .await
@@ -1305,9 +1315,11 @@ impl SketchApi for FrontendState {
             ctx,
             sketch,
             sketch_block_ref,
-            Default::default(),
-            EditDeleteKind::Edit,
-            SketchVarUpdateMode::CommitSolvedVars,
+            ExecuteAfterEditOptions {
+                segment_ids_edited: Default::default(),
+                edit_kind: EditDeleteKind::Edit,
+                sketch_var_update_mode: SketchVarUpdateMode::CommitSolvedVars,
+            },
             &mut new_ast,
         )
         .await
@@ -1361,9 +1373,11 @@ impl SketchApi for FrontendState {
             ctx,
             sketch,
             sketch_block_ref,
-            anchor_segment_ids.into_iter().collect(),
-            EditDeleteKind::Edit,
-            SketchVarUpdateMode::WarmStartOnly,
+            ExecuteAfterEditOptions {
+                segment_ids_edited: anchor_segment_ids.into_iter().collect(),
+                edit_kind: EditDeleteKind::Edit,
+                sketch_var_update_mode: SketchVarUpdateMode::WarmStartOnly,
+            },
             &mut new_ast,
         )
         .await
@@ -1520,9 +1534,11 @@ impl SketchApi for FrontendState {
                 ctx,
                 sketch,
                 sketch_block_ref,
-                segment_ids_edited,
-                EditDeleteKind::Edit,
-                SketchVarUpdateMode::CommitSolvedVars,
+                ExecuteAfterEditOptions {
+                    segment_ids_edited,
+                    edit_kind: EditDeleteKind::Edit,
+                    sketch_var_update_mode: SketchVarUpdateMode::CommitSolvedVars,
+                },
                 &mut new_ast,
             )
             .await?;
@@ -1606,9 +1622,11 @@ impl SketchApi for FrontendState {
                 ctx,
                 sketch,
                 sketch_block_ref,
-                segment_ids_edited,
-                EditDeleteKind::Edit,
-                SketchVarUpdateMode::CommitSolvedVars,
+                ExecuteAfterEditOptions {
+                    segment_ids_edited,
+                    edit_kind: EditDeleteKind::Edit,
+                    sketch_var_update_mode: SketchVarUpdateMode::CommitSolvedVars,
+                },
                 &mut new_ast,
             )
             .await?;
@@ -2904,9 +2922,7 @@ impl FrontendState {
         ctx: &ExecutorContext,
         sketch: ObjectId,
         sketch_block_ref: AstNodeRef,
-        segment_ids_edited: AhashIndexSet<ObjectId>,
-        edit_kind: EditDeleteKind,
-        sketch_var_update_mode: SketchVarUpdateMode,
+        options: ExecuteAfterEditOptions,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
         // Convert to string source to create real source ranges.
@@ -2929,27 +2945,27 @@ impl FrontendState {
         self.program = new_program.clone();
 
         // Truncate after the sketch block for mock execution.
-        let is_delete = edit_kind.is_delete();
+        let is_delete = options.edit_kind.is_delete();
         let truncated_program = {
             let mut truncated_program = new_program;
             only_sketch_block(
                 &mut truncated_program.ast,
                 &sketch_block_ref,
-                edit_kind.to_change_kind(),
+                options.edit_kind.to_change_kind(),
             )
             .map_err(KclErrorWithOutputs::no_outputs)?;
             truncated_program
         };
 
         // Execute.
-        let mock_config = self.sketch_mock_config(sketch, is_delete, segment_ids_edited.clone());
+        let mock_config = self.sketch_mock_config(sketch, is_delete, options.segment_ids_edited.clone());
         let outcome = ctx.run_mock(&truncated_program, &mock_config).await?;
 
         // Uses freedom_analysis: is_delete
         let outcome = self.update_state_after_exec(outcome, is_delete);
         self.update_sketch_var_warm_starts(sketch, &outcome);
 
-        let new_source = match sketch_var_update_mode {
+        let new_source = match options.sketch_var_update_mode {
             SketchVarUpdateMode::WarmStartOnly => new_source,
             SketchVarUpdateMode::CommitSolvedVars => self.commit_var_solutions_to_program(&outcome)?,
         };
