@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import {
-  getAppFolderNameFromBuild,
-  isStagingOrDebugAppBuild,
-} from '@src/lib/appFolderName'
+import { getAppFolderNameFromBuild } from '@src/lib/appFolderName'
 
 type AppFolderNameFromBuildCase = {
   name: string
@@ -73,39 +70,4 @@ describe('getAppFolderNameFromBuild', () => {
   it.each(cases)('$name', ({ input, expected }) => {
     expect(getAppFolderNameFromBuild(input)).toBe(expected)
   })
-})
-
-describe('isStagingOrDebugAppBuild', () => {
-  it.each([
-    {
-      packageName: 'zoo-modeling-app',
-      packageVersion: '1.2.3',
-      expected: false,
-    },
-    {
-      packageName: 'zoo-modeling-app-staging',
-      packageVersion: '1.2.3',
-      expected: true,
-    },
-    {
-      packageName: 'zoo-modeling-app',
-      packageVersion: '0.0.0',
-      expected: true,
-    },
-    {
-      packageName: 'zoo-modeling-app',
-      packageVersion: 'dev',
-      expected: true,
-    },
-  ])(
-    'returns $expected for $packageName@$packageVersion',
-    ({ packageName, packageVersion, expected }) => {
-      expect(
-        isStagingOrDebugAppBuild({
-          packageName,
-          packageVersion,
-        })
-      ).toBe(expected)
-    }
-  )
 })
