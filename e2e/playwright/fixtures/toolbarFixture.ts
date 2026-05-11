@@ -223,7 +223,11 @@ export class ToolbarFixture {
    * Opens file by it's name
    */
   openFile = async (fileName: string) => {
-    await this.filePane.getByText(fileName).click()
+    const fileTreeItem = this.page
+      .getByTestId('file-pane-scroll-container')
+      .getByRole('treeitem', { name: fileName, exact: true })
+    await expect(fileTreeItem).toBeVisible()
+    await fileTreeItem.click()
   }
   ensureFolderOpen = async (folder: Locator, open: boolean) => {
     const expanded = await folder.getAttribute('aria-expanded')
@@ -266,7 +270,11 @@ export class ToolbarFixture {
     await this.page.getByTestId(operationTestId).click()
   }
   selectSurface = async (
-    operation: 'blend-surface' | 'flip-surface' | 'delete-face'
+    operation:
+      | 'blend-surface'
+      | 'flip-surface'
+      | 'join-surfaces'
+      | 'delete-face'
   ) => {
     await this.page
       .getByRole('button', { name: 'caret down surface: open menu' })

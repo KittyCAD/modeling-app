@@ -1,5 +1,4 @@
 import { Combobox } from '@headlessui/react'
-import decamelize from 'decamelize'
 import Fuse from 'fuse.js'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -10,7 +9,10 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { interactionMap } from '@src/lib/settings/initialKeybindings'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import { useApp } from '@src/lib/boot'
-import { hiddenOnPlatform } from '@src/lib/settings/settingsUtils'
+import {
+  hiddenOnPlatform,
+  formatSettingsLabel,
+} from '@src/lib/settings/settingsUtils'
 
 type ExtendedSettingsLevel = SettingsLevel | 'keybindings'
 
@@ -47,10 +49,10 @@ export function SettingsSearchBar() {
                 (l) => s.hideOnLevel !== l && !hiddenOnPlatform(s, isDesktop())
               )
               .map((l) => ({
-                category: decamelize(category, { separator: ' ' }),
+                category: formatSettingsLabel(category),
                 name: settingName,
                 description: s.description ?? '',
-                displayName: decamelize(settingName, { separator: ' ' }),
+                displayName: formatSettingsLabel(settingName),
                 level: l,
               }))
           })
@@ -113,9 +115,7 @@ export function SettingsSearchBar() {
               className="flex flex-col items-start gap-2 px-4 py-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90"
             >
               <p className="flex-grow text-base capitalize m-0 leading-none">
-                {option.level} ·{' '}
-                {decamelize(option.category, { separator: ' ' })} ·{' '}
-                {option.displayName}
+                {option.level} · {option.category} · {option.displayName}
               </p>
               {option.description && (
                 <p className="text-xs leading-tight text-chalkboard-70 dark:text-chalkboard-50">

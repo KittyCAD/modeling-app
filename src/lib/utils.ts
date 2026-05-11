@@ -3,7 +3,7 @@ import type { AsyncFn } from '@src/lib/types'
 import { v4 } from 'uuid'
 import type { AnyMachineSnapshot } from 'xstate'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import type { RgbaColor } from '@src/lib/settings/settingsTypes'
+import type { BaseUnit, RgbaColor } from '@src/lib/settings/settingsTypes'
 
 export const uuidv4 = v4
 
@@ -114,9 +114,13 @@ export function getLength(a: [number, number], b: [number, number]): number {
   return Math.sqrt(x * x + y * y)
 }
 
+export function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max)
+}
+
 /**
  * Calculates the angle in degrees between two vectors in 2D.
- * The angle is normalized to the range [-180, 180].
+ * The angle is normalized to the range (-180, 180].
  *
  * @param a The first vector as a tuple [x, y].
  * @param b The second vector as a tuple [x, y].
@@ -125,6 +129,9 @@ export function getLength(a: [number, number], b: [number, number]): number {
 export function getAngle(a: [number, number], b: [number, number]): number {
   const x = b[0] - a[0]
   const y = b[1] - a[1]
+  // Note that this normalization is only meaningful in edge-cases and could
+  // potentially be removed.
+  // It turns -180 into 180, so makes the output [-180, 180] -> (-180, 180].
   return normaliseAngle((Math.atan2(y, x) * 180) / Math.PI)
 }
 
@@ -377,6 +384,44 @@ export function simulateOnMouseDragMatch(text: string) {
 export function roundOff(num: number, precision: number = 2): number {
   const x = Math.pow(10, precision)
   return Math.round(num * x) / x
+}
+
+export function baseUnitToMm(baseUnit: BaseUnit): number {
+  switch (baseUnit) {
+    case 'mm':
+      return 1
+    case 'cm':
+      return 10
+    case 'm':
+      return 1000
+    case 'in':
+      return 25.4
+    case 'ft':
+      return 304.8
+    case 'yd':
+      return 914.4
+  }
+
+  const _exhaustiveCheck: never = baseUnit
+  console.error(`Unsupported base unit: ${String(_exhaustiveCheck)}`)
+  return Number.NaN
+}
+
+export function mmToBaseUnit(
+  value: number,
+  decimalPlaces: number,
+  baseUnit: BaseUnit
+): number {
+  const mmPerBaseUnit = baseUnitToMm(baseUnit)
+  const valueInBaseUnit = value / mmPerBaseUnit
+
+  // Prepare input for toFixed
+  let digits = Math.trunc(decimalPlaces)
+  if (!Number.isFinite(digits) || digits < 0) digits = 0
+  if (digits > 100) digits = 100
+
+  const roundedValue = Number(valueInBaseUnit.toFixed(digits))
+  return Object.is(roundedValue, -0) ? 0 : roundedValue
 }
 
 export function roundOffWithUnits(

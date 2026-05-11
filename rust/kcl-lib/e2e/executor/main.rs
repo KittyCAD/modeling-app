@@ -1,9 +1,13 @@
 mod cache;
 
-use kcl_lib::{
-    BacktraceItem, ExecError, ModuleId, SourceRange,
-    test_server::{execute_and_export_step, execute_and_snapshot, execute_and_snapshot_no_auth},
-};
+use kcl_lib::BacktraceItem;
+use kcl_lib::ExecError;
+use kcl_lib::ModuleId;
+use kcl_lib::SourceRange;
+use kcl_lib::test_server::execute;
+use kcl_lib::test_server::execute_and_export_step;
+use kcl_lib::test_server::execute_and_snapshot;
+use kcl_lib::test_server::execute_and_snapshot_no_auth;
 
 /// The minimum permissible difference between asserted twenty-twenty images.
 /// i.e. how different the current model snapshot can be from the previous saved one.
@@ -440,7 +444,7 @@ async fn kcl_test_import_file_doesnt_exist() {
     let code = r#"import 'thing.obj'
 model = cube"#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(err.message(), "File `thing.obj` does not exist.");
@@ -523,7 +527,7 @@ async fn kcl_test_import_ext_doesnt_match() {
 import 'e2e/executor/inputs/cube.gltf'
 model = cube"#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(
@@ -1231,7 +1235,7 @@ secondSketch = startSketchOn(part001, face = '')
   |> extrude(length = 20)
 "#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(
@@ -1263,7 +1267,7 @@ extrusion = startSketchOn(XY)
   |> extrude(length = height)
 "#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     assert!(result.is_err());
     let expected_msg = "semantic: `h` is not an argument of `squareHole`";
     let err = result.unwrap_err().as_kcl_error().unwrap().get_message();
@@ -1591,7 +1595,7 @@ async fn kcl_test_duplicate_tags_should_error() {
 p = triangle(200)
 "#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(err.message(), "Cannot redefine `a`");
@@ -1682,7 +1686,7 @@ async fn kcl_test_angled_line_to_x_90() {
 example = extrude(exampleSketch, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(err.message(), "Cannot have an x constrained angle of 90 degrees");
@@ -1713,7 +1717,7 @@ async fn kcl_test_angled_line_to_x_270() {
 example = extrude(exampleSketch, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(err.message(), "Cannot have an x constrained angle of 270 degrees");
@@ -1744,7 +1748,7 @@ async fn kcl_test_angled_line_to_y_0() {
 example = extrude(exampleSketch, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(err.message(), "Cannot have a y constrained angle of 0 degrees");
@@ -1775,7 +1779,7 @@ async fn kcl_test_angled_line_to_y_180() {
 example = extrude(exampleSketch, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(err.message(), "Cannot have a y constrained angle of 180 degrees");
@@ -1806,7 +1810,7 @@ async fn kcl_test_angled_line_of_x_length_90() {
 extrusion = extrude(sketch001, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(err.message(), "Cannot have an x constrained angle of 90 degrees");
@@ -1837,7 +1841,7 @@ async fn kcl_test_angled_line_of_x_length_270() {
 extrusion = extrude(sketch001, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(err.message(), "Cannot have an x constrained angle of 270 degrees");
@@ -1870,7 +1874,7 @@ async fn kcl_test_angled_line_of_y_length_0() {
 example = extrude(exampleSketch, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(err.message(), "Cannot have a y constrained angle of 0 degrees");
@@ -1903,7 +1907,7 @@ async fn kcl_test_angled_line_of_y_length_180() {
 example = extrude(exampleSketch, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(err.message(), "Cannot have a y constrained angle of 180 degrees");
@@ -1936,7 +1940,7 @@ async fn kcl_test_angled_line_of_y_length_negative_180() {
 example = extrude(exampleSketch, length = 10)
 "#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(err.message(), "Cannot have a y constrained angle of 180 degrees");
@@ -1964,7 +1968,7 @@ async fn kcl_test_error_inside_fn_also_has_source_range_of_call_site() {
 someFunction('INVALID')
 "#;
 
-    let result = execute_and_snapshot(code, None).await;
+    let result = execute(code, None).await;
     let err = result.unwrap_err();
     let err = err.as_kcl_error().unwrap();
     assert_eq!(
@@ -2021,6 +2025,24 @@ async fn kcl_test_error_no_auth_websocket() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_error_no_csg_overlap() {
+    // Test that if you do a CSG operation where the bodies don't have any overlap,
+    // you get a warning about it. That warning can be upgraded to an error, if the
+    // user configures it to.
+    let code = kcl_input!("no_csg_overlap");
+
+    let result = execute(code, None).await;
+    let err = result.unwrap_err();
+    let err = err.as_kcl_error().unwrap();
+    // The error message should be meaningful.
+    assert!(
+        err.message().contains("The bodies in this subtraction had no overlap"),
+        "actual: {}",
+        err.message()
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_ensure_nothing_left_in_batch_single_file() {
     let code = r#"@settings(defaultLengthUnit = in)
 // Set units in inches (in)
@@ -2043,8 +2065,7 @@ sketch000 = startSketchOn(XY)
     ctx.run(&program, &mut exec_state).await.unwrap();
 
     // Ensure nothing is left in the batch
-    assert!(ctx.engine.batch().read().await.is_empty());
-    assert!(ctx.engine.batch_end().read().await.is_empty());
+    assert!(ctx.engine_batch.is_empty().await);
 
     ctx.close().await;
 }
@@ -2066,8 +2087,7 @@ async fn kcl_test_ensure_nothing_left_in_batch_multi_file() {
     ctx.run(&program, &mut exec_state).await.unwrap();
 
     // Ensure nothing is left in the batch
-    assert!(ctx.engine.batch().read().await.is_empty());
-    assert!(ctx.engine.batch_end().read().await.is_empty());
+    assert!(ctx.engine_batch.is_empty().await);
 
     ctx.close().await;
 }
@@ -2107,4 +2127,12 @@ async fn kcl_test_exporting_step_file() {
             std::str::from_utf8(&file.contents).unwrap(),
         );
     }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_gear_with_units() {
+    // This tests export like how we do it in cli and kcl.py.
+    let code = kcl_input!("gear_units");
+
+    let (_, _, _files) = execute_and_export_step(code, None).await.unwrap();
 }

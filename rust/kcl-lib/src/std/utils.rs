@@ -1,6 +1,8 @@
-use std::f64::consts::{PI, TAU};
+use std::f64::consts::PI;
+use std::f64::consts::TAU;
 
-use kittycad_modeling_cmds::{shared::Angle, units::UnitLength};
+use kittycad_modeling_cmds::shared::Angle;
+use kittycad_modeling_cmds::units::UnitLength;
 
 use super::args::TyF64;
 use crate::execution::types::NumericType;
@@ -248,7 +250,10 @@ mod tests {
     use approx::assert_relative_eq;
     use pretty_assertions::assert_eq;
 
-    use super::{Angle, calculate_circle_center, get_x_component, get_y_component};
+    use super::Angle;
+    use super::calculate_circle_center;
+    use super::get_x_component;
+    use super::get_y_component;
 
     static EACH_QUAD: [(i32, [i32; 2]); 12] = [
         (-315, [1, 1]),

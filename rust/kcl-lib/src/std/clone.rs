@@ -2,25 +2,30 @@
 
 use std::collections::HashMap;
 
-use kcmc::{
-    ModelingCmd, each_cmd as mcmd, ok_response::OkModelingCmdResponse, shared::BodyType,
-    websocket::OkWebSocketResponseData,
-};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::ok_response::OkModelingCmdResponse;
+use kcmc::shared::BodyType;
+use kcmc::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::{self as kcmc};
 
 use super::extrude::do_post_extrude;
-use crate::{
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        ExecState, ExtrudeSurface, GeometryWithImportedGeometry, KclValue, ModelingCmdMeta, Sketch, Solid,
-        types::{ArrayLen, PrimitiveType, RuntimeType},
-    },
-    parsing::ast::types::TagNode,
-    std::{
-        Args,
-        extrude::{BeingExtruded, NamedCapTags},
-    },
-};
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::ExecState;
+use crate::execution::ExtrudeSurface;
+use crate::execution::GeometryWithImportedGeometry;
+use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Sketch;
+use crate::execution::Solid;
+use crate::execution::types::ArrayLen;
+use crate::execution::types::PrimitiveType;
+use crate::execution::types::RuntimeType;
+use crate::parsing::ast::types::TagNode;
+use crate::std::Args;
+use crate::std::extrude::BeingExtruded;
+use crate::std::extrude::NamedCapTags;
 
 type Result<T> = std::result::Result<T, KclError>;
 
@@ -81,6 +86,7 @@ async fn inner_clone(
 
                 let mut new_solid = solid.clone();
                 new_solid.id = new_id;
+                new_solid.value_id = new_id;
                 if let Some(sketch) = new_solid.sketch_mut() {
                     sketch.original_id = new_id;
                 }
@@ -176,7 +182,7 @@ async fn fix_tags_and_references(
                     start: start_tag.as_ref(),
                     end: end_tag.as_ref(),
                 },
-                kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+                kittycad_modeling_cmds::shared::ExtrudeMethod::New,
                 exec_state,
                 args,
                 None,
@@ -350,7 +356,8 @@ fn get_named_cap_tags(solid: &Solid) -> (Option<TagNode>, Option<TagNode>) {
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::{assert_eq, assert_ne};
+    use pretty_assertions::assert_eq;
+    use pretty_assertions::assert_ne;
 
     use crate::exec::KclValue;
 

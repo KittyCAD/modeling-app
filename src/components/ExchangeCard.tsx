@@ -43,10 +43,10 @@ export const ButtonCopy = (props: IButtonCopyProps) => (
       }
       navigator.clipboard.writeText(props.content).then(
         () => {
-          toast.success('Copied response to clipboard')
+          toast.success('Copied response to clipboard.')
         },
         () => {
-          toast.error('Failed to copy response to clipboard')
+          toast.error('Failed to copy response to clipboard.')
         }
       )
     }}
@@ -196,6 +196,8 @@ type RequestCardProps = Exchange['request'] & {
   userAvatar?: ReactNode
 }
 
+const MAX_VISIBLE_ATTACHMENTS = 2
+
 const hasVisibleChildren = (children: ReactNode) => {
   return (
     (children instanceof Array && children.length > 0) ||
@@ -236,19 +238,60 @@ export const ChatBubble = (props: {
 }
 
 export const RequestCard = (props: RequestCardProps) => {
+  const [showAllAttachments, setShowAllAttachments] = useState(false)
+
   if (!isMlCopilotUserRequest(props)) {
     return null
   }
 
+  const additionalFiles = props.additional_files ?? []
+  const hasHiddenAttachments = additionalFiles.length > MAX_VISIBLE_ATTACHMENTS
+  const visibleAttachments = showAllAttachments
+    ? additionalFiles
+    : additionalFiles.slice(0, MAX_VISIBLE_ATTACHMENTS)
+
   return (
-    <ChatBubble
-      side={'right'}
-      userAvatar={props.userAvatar}
-      dataTestId="ml-request-chat-bubble"
-      className="pt-2 pb-2"
-    >
-      {props.content}
-    </ChatBubble>
+    <>
+      <ChatBubble
+        side={'right'}
+        userAvatar={props.userAvatar}
+        dataTestId="ml-request-chat-bubble"
+        className="pt-2 pb-2"
+      >
+        {props.content}
+      </ChatBubble>
+      {additionalFiles.length > 0 && (
+        <div className="flex justify-end pr-9">
+          <div
+            className="flex flex-col items-end gap-1"
+            data-testid="ml-request-chat-bubble-attachments"
+          >
+            <div className="w-full text-right text-xs font-medium text-chalkboard-70 dark:text-chalkboard-40">
+              Attachments
+            </div>
+            {visibleAttachments.map((file, index) => (
+              <div
+                key={`${file.name}-${index}`}
+                className="flex items-center gap-1 rounded-sm border border-chalkboard-30 dark:border-chalkboard-70 px-2 py-1 text-xs"
+              >
+                <CustomIcon name="paperclip" className="w-3 h-3 shrink-0" />
+                <span className="min-w-0 truncate">{file.name}</span>
+              </div>
+            ))}
+            {hasHiddenAttachments && (
+              <button
+                type="button"
+                onClick={() => setShowAllAttachments(!showAllAttachments)}
+                className="pt-1 pb-1 text-xs"
+                aria-expanded={showAllAttachments}
+              >
+                {showAllAttachments ? '- collapse' : '+ more'}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   )
 }
 

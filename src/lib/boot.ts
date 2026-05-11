@@ -1,6 +1,5 @@
 import { App } from '@src/lib/app'
 import React from 'react'
-
 import { isPlaywright } from '@src/lib/isPlaywright'
 import {
   moduleFsViaModuleImport,

@@ -2,8 +2,10 @@ use std::fs;
 
 use convert_case::Casing;
 use proc_macro::TokenStream;
-use quote::{format_ident, quote};
-use syn::{LitStr, parse_macro_input};
+use quote::format_ident;
+use quote::quote;
+use syn::LitStr;
+use syn::parse_macro_input;
 
 /// A macro that generates test functions for each directory within a given path.
 /// To be included the test directory must have a main.kcl file.

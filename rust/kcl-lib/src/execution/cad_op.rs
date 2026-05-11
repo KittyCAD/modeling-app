@@ -1,8 +1,14 @@
 use indexmap::IndexMap;
 use serde::Serialize;
 
-use super::{ArtifactId, KclValue, types::NumericType};
-use crate::{ModuleId, NodePath, SourceRange, front::ObjectId, parsing::ast::types::ItemVisibility};
+use super::ArtifactId;
+use super::KclValue;
+use super::types::NumericType;
+use crate::ModuleId;
+use crate::NodePath;
+use crate::SourceRange;
+use crate::front::ObjectId;
+use crate::parsing::ast::types::ItemVisibility;
 
 /// A CAD modeling operation for display in the feature tree, AKA operations
 /// timeline.

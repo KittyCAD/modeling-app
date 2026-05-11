@@ -1,4 +1,3 @@
-import decamelize from 'decamelize'
 import type { ActorRefFrom, AnyStateMachine } from 'xstate'
 
 import type {
@@ -17,7 +16,10 @@ import type {
 } from '@src/lib/settings/settingsTypes'
 import type { PathValue } from '@src/lib/types'
 import type { settingsMachine } from '@src/machines/settingsMachine'
-import { hiddenOnPlatform } from '@src/lib/settings/settingsUtils'
+import {
+  hiddenOnPlatform,
+  formatSettingsLabel,
+} from '@src/lib/settings/settingsUtils'
 
 // An array of the paths to all of the settings that have commandConfigs
 export const settingsWithCommandConfigs = (s: SettingsType) =>
@@ -113,9 +115,10 @@ export function createSettingsCommand({ type, actor }: CreateSettingsArgs) {
 
   const command: Command = {
     name: type,
-    displayName: `Settings · ${decamelize(type.replaceAll('.', ' · '), {
-      separator: ' ',
-    })}`,
+    displayName: `Settings · ${type
+      .split('.')
+      .map((segment) => formatSettingsLabel(segment))
+      .join(' · ')}`,
     description: setting.description,
     groupId: 'settings',
     icon: 'settings',

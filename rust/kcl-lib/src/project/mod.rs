@@ -5,7 +5,13 @@ use std::sync::Arc;
 use indexmap::IndexMap;
 use tokio::sync::RwLock;
 
-use crate::front::{Error, FileId, LifecycleApi, ProjectId, Result, SceneGraph, Version};
+use crate::front::Error;
+use crate::front::FileId;
+use crate::front::LifecycleApi;
+use crate::front::ProjectId;
+use crate::front::Result;
+use crate::front::SceneGraph;
+use crate::front::Version;
 
 #[derive(Debug, Clone)]
 pub struct Project {

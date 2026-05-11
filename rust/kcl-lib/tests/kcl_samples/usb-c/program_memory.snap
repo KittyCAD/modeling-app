@@ -3,6 +3,168 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing usb-c.kcl
 ---
 {
+  "__sketch_101_on": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "Custom",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0,
+        "units": null
+      }
+    }
+  },
+  "__sketch_115_on": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 114,
+      "origin": {
+        "x": -14.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      }
+    }
+  },
+  "__sketch_18_on": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 17,
+      "origin": {
+        "x": 1.0499999999999994,
+        "y": 0.0,
+        "z": 0.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      }
+    }
+  },
+  "__sketch_1_on": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "Custom",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      }
+    }
+  },
+  "__sketch_35_on": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "Custom",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      }
+    }
+  },
   "cable": {
     "type": "Solid",
     "value": {
@@ -14,7 +176,14 @@ description: Variables in memory after executing usb-c.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 5832,
+            "end": 5839,
+            "moduleId": 0,
+            "start": 5832,
+            "type": "TagDeclarator",
+            "value": "circle1"
+          },
           "type": "extrudeArc"
         }
       ],
@@ -38,7 +207,14 @@ description: Variables in memory after executing usb-c.kcl
               0.0
             ],
             "radius": 1.9,
-            "tag": null,
+            "tag": {
+              "commentStart": 5832,
+              "end": 5839,
+              "moduleId": 0,
+              "start": 5832,
+              "type": "TagDeclarator",
+              "value": "circle1"
+            },
             "to": [
               1.9,
               0.0
@@ -51,7 +227,7 @@ description: Variables in memory after executing usb-c.kcl
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "kind": "Custom",
-          "objectId": 5,
+          "objectId": 114,
           "origin": {
             "x": -14.0,
             "y": 0.0,
@@ -94,20 +270,22 @@ description: Variables in memory after executing usb-c.kcl
             "sourceRange": []
           }
         },
+        "tags": {
+          "circle1": {
+            "type": "TagIdentifier",
+            "value": "circle1"
+          }
+        },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": null,
+      "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
-  },
-  "cableBend": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "cableBend"
   },
   "cableBendRadius": {
     "type": "Number",
@@ -128,133 +306,560 @@ description: Variables in memory after executing usb-c.kcl
     }
   },
   "cablePath": {
-    "type": "Sketch",
+    "type": "Object",
     "value": {
-      "type": "Sketch",
-      "id": "[uuid]",
-      "paths": [
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -14.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            -26.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "ccw": false,
-          "center": [
-            -25.999999999999996,
-            22.0
-          ],
-          "from": [
-            -26.0,
-            0.0
-          ],
-          "tag": {
-            "commentStart": 3918,
-            "end": 3928,
-            "moduleId": 0,
-            "start": 3918,
-            "type": "TagDeclarator",
-            "value": "cableBend"
-          },
-          "to": [
-            -44.02134497435782,
-            9.381318400276985
-          ],
-          "type": "TangentialArc",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -44.02134497435782,
-            9.381318400276985
-          ],
-          "tag": null,
-          "to": [
-            -73.84731966461221,
-            51.97722470330456
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        }
-      ],
-      "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
-        "kind": "XZ",
-        "objectId": 4,
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": "mm"
-        },
-        "type": "plane",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": -1.0,
-          "z": 0.0,
-          "units": null
+      "arc2": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 108,
+                "kind": {
+                  "arc": {
+                    "start": [
+                      {
+                        "n": -44.020076370255246,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 9.379946516596016,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": -26.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.00009323314408526243,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center": [
+                      {
+                        "n": -25.999847283457626,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 21.999920494010798,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -44.02,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 9.38,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -26.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": -26.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 22.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 105,
+                    "end_object_id": 106,
+                    "center_object_id": 107,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "center_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 100,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": -1.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "arc2"
+                }
+              }
+            }
+          }
         }
       },
-      "start": {
-        "from": [
-          -14.0,
-          0.0
-        ],
-        "to": [
-          -14.0,
-          0.0
-        ],
-        "units": "mm",
-        "tag": null,
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": []
+      "line1": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 104,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": -14.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": -26.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.00009323314399202928,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -14.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -26.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 102,
+                    "end_object_id": 103,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 100,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": -1.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line1"
+                }
+              }
+            }
+          }
         }
       },
-      "tags": {
-        "cableBend": {
-          "type": "TagIdentifier",
-          "value": "cableBend"
+      "line3": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 112,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": -44.020076370255175,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 9.37994651659607,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": -73.85,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 51.98,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -44.02,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 9.38,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -73.85,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 51.98,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 110,
+                    "end_object_id": 111,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 100,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": -1.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line3"
+                }
+              }
+            }
+          }
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "units": "mm",
-      "isClosed": "no"
-    }
+      "meta": {
+        "type": "Object",
+        "value": {
+          "sketch": {
+            "type": "Sketch",
+            "value": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -14.0,
+                    0.0
+                  ],
+                  "tag": {
+                    "commentStart": 5360,
+                    "end": 5365,
+                    "moduleId": 0,
+                    "start": 5360,
+                    "type": "TagDeclarator",
+                    "value": "line1"
+                  },
+                  "to": [
+                    -26.0,
+                    0.00009323314399202928
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": false,
+                  "center": [
+                    -25.999847283457623,
+                    21.999920494010706
+                  ],
+                  "from": [
+                    -26.0,
+                    0.00009323314399202928
+                  ],
+                  "radius": 21.99982726139677,
+                  "tag": {
+                    "commentStart": 5433,
+                    "end": 5437,
+                    "moduleId": 0,
+                    "start": 5433,
+                    "type": "TagDeclarator",
+                    "value": "arc2"
+                  },
+                  "to": [
+                    -44.0200763702553,
+                    9.379946516595883
+                  ],
+                  "type": "Arc",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -44.0200763702553,
+                    9.379946516595883
+                  ],
+                  "tag": {
+                    "commentStart": 5578,
+                    "end": 5583,
+                    "moduleId": 0,
+                    "start": 5578,
+                    "type": "TagDeclarator",
+                    "value": "line3"
+                  },
+                  "to": [
+                    -73.85,
+                    51.98
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                }
+              ],
+              "on": {
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 100,
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": "mm"
+                },
+                "type": "plane",
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
+                  "units": null
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": -1.0,
+                  "z": 0.0,
+                  "units": null
+                }
+              },
+              "start": {
+                "from": [
+                  -14.0,
+                  0.0
+                ],
+                "to": [
+                  -14.0,
+                  0.0
+                ],
+                "units": "mm",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "tags": {
+                "arc2": {
+                  "type": "TagIdentifier",
+                  "value": "arc2"
+                },
+                "line1": {
+                  "type": "TagIdentifier",
+                  "value": "line1"
+                },
+                "line3": {
+                  "type": "TagIdentifier",
+                  "value": "line3"
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "mm",
+              "isClosed": "no"
+            }
+          }
+        },
+        "constrainable": false
+      }
+    },
+    "constrainable": false
   },
   "cableRadius": {
     "type": "Number",
@@ -274,506 +879,15 @@ description: Variables in memory after executing usb-c.kcl
       "angle": "degrees"
     }
   },
-  "cavityBody": {
-    "type": "Solid",
-    "value": {
-      "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1941,
-            "end": 1954,
-            "moduleId": 0,
-            "start": 1941,
-            "type": "TagDeclarator",
-            "value": "cavityEdge01"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1995,
-            "end": 2008,
-            "moduleId": 0,
-            "start": 1995,
-            "type": "TagDeclarator",
-            "value": "cavityEdge02"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 2049,
-            "end": 2062,
-            "moduleId": 0,
-            "start": 2049,
-            "type": "TagDeclarator",
-            "value": "cavityEdge03"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 2081,
-            "end": 2094,
-            "moduleId": 0,
-            "start": 2081,
-            "type": "TagDeclarator",
-            "value": "cavityEdge04"
-          },
-          "type": "extrudePlane"
-        }
-      ],
-      "sketch": {
-        "creatorType": "sketch",
-        "type": "Sketch",
-        "id": "[uuid]",
-        "paths": [
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -3.9000000000000004,
-              -1.0
-            ],
-            "tag": {
-              "commentStart": 1941,
-              "end": 1954,
-              "moduleId": 0,
-              "start": 1941,
-              "type": "TagDeclarator",
-              "value": "cavityEdge01"
-            },
-            "to": [
-              3.9000000000000004,
-              -1.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              3.9000000000000004,
-              -1.0
-            ],
-            "tag": {
-              "commentStart": 1995,
-              "end": 2008,
-              "moduleId": 0,
-              "start": 1995,
-              "type": "TagDeclarator",
-              "value": "cavityEdge02"
-            },
-            "to": [
-              3.9000000000000004,
-              1.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              3.9000000000000004,
-              1.0
-            ],
-            "tag": {
-              "commentStart": 2049,
-              "end": 2062,
-              "moduleId": 0,
-              "start": 2049,
-              "type": "TagDeclarator",
-              "value": "cavityEdge03"
-            },
-            "to": [
-              -3.9000000000000004,
-              1.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -3.9000000000000004,
-              1.0
-            ],
-            "tag": {
-              "commentStart": 2081,
-              "end": 2094,
-              "moduleId": 0,
-              "start": 2081,
-              "type": "TagDeclarator",
-              "value": "cavityEdge04"
-            },
-            "to": [
-              -3.9000000000000004,
-              -1.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          }
-        ],
-        "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
-          "kind": "Custom",
-          "objectId": 1,
-          "origin": {
-            "x": 0.9,
-            "y": 0.0,
-            "z": 0.0,
-            "units": "mm"
-          },
-          "type": "plane",
-          "xAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": null
-          },
-          "zAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": null
-          }
-        },
-        "start": {
-          "from": [
-            -3.9000000000000004,
-            -1.0
-          ],
-          "to": [
-            -3.9000000000000004,
-            -1.0
-          ],
-          "units": "mm",
-          "tag": null,
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          }
-        },
-        "tags": {
-          "cavityEdge01": {
-            "type": "TagIdentifier",
-            "value": "cavityEdge01"
-          },
-          "cavityEdge02": {
-            "type": "TagIdentifier",
-            "value": "cavityEdge02"
-          },
-          "cavityEdge03": {
-            "type": "TagIdentifier",
-            "value": "cavityEdge03"
-          },
-          "cavityEdge04": {
-            "type": "TagIdentifier",
-            "value": "cavityEdge04"
-          }
-        },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
-      },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
-      "edgeCuts": [
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 0.55,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 0.55,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 0.55,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 0.55,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        }
-      ],
-      "units": "mm",
-      "sectional": false
-    }
+  "capEnd001": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "capEnd001"
   },
-  "cavityEdge01": {
+  "capStart001": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "cavityEdge01"
-  },
-  "cavityEdge02": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "cavityEdge02"
-  },
-  "cavityEdge03": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "cavityEdge03"
-  },
-  "cavityEdge04": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "cavityEdge04"
-  },
-  "cavityLength": {
-    "type": "Number",
-    "value": 6.1,
-    "ty": {
-      "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
-    }
-  },
-  "cavityProfile": {
-    "type": "Sketch",
-    "value": {
-      "type": "Sketch",
-      "id": "[uuid]",
-      "paths": [
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -3.9000000000000004,
-            -1.0
-          ],
-          "tag": {
-            "commentStart": 1941,
-            "end": 1954,
-            "moduleId": 0,
-            "start": 1941,
-            "type": "TagDeclarator",
-            "value": "cavityEdge01"
-          },
-          "to": [
-            3.9000000000000004,
-            -1.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            3.9000000000000004,
-            -1.0
-          ],
-          "tag": {
-            "commentStart": 1995,
-            "end": 2008,
-            "moduleId": 0,
-            "start": 1995,
-            "type": "TagDeclarator",
-            "value": "cavityEdge02"
-          },
-          "to": [
-            3.9000000000000004,
-            1.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            3.9000000000000004,
-            1.0
-          ],
-          "tag": {
-            "commentStart": 2049,
-            "end": 2062,
-            "moduleId": 0,
-            "start": 2049,
-            "type": "TagDeclarator",
-            "value": "cavityEdge03"
-          },
-          "to": [
-            -3.9000000000000004,
-            1.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -3.9000000000000004,
-            1.0
-          ],
-          "tag": {
-            "commentStart": 2081,
-            "end": 2094,
-            "moduleId": 0,
-            "start": 2081,
-            "type": "TagDeclarator",
-            "value": "cavityEdge04"
-          },
-          "to": [
-            -3.9000000000000004,
-            -1.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        }
-      ],
-      "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
-        "kind": "Custom",
-        "objectId": 1,
-        "origin": {
-          "x": 0.9,
-          "y": 0.0,
-          "z": 0.0,
-          "units": "mm"
-        },
-        "type": "plane",
-        "xAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
-        },
-        "zAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        }
-      },
-      "start": {
-        "from": [
-          -3.9000000000000004,
-          -1.0
-        ],
-        "to": [
-          -3.9000000000000004,
-          -1.0
-        ],
-        "units": "mm",
-        "tag": null,
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": []
-        }
-      },
-      "tags": {
-        "cavityEdge01": {
-          "type": "TagIdentifier",
-          "value": "cavityEdge01"
-        },
-        "cavityEdge02": {
-          "type": "TagIdentifier",
-          "value": "cavityEdge02"
-        },
-        "cavityEdge03": {
-          "type": "TagIdentifier",
-          "value": "cavityEdge03"
-        },
-        "cavityEdge04": {
-          "type": "TagIdentifier",
-          "value": "cavityEdge04"
-        }
-      },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "units": "mm"
-    }
+    "value": "capStart001"
   },
   "frontCutOvertravel": {
     "type": "Number",
@@ -796,12 +910,12 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3088,
-            "end": 3102,
+            "commentStart": 3247,
+            "end": 3252,
             "moduleId": 0,
-            "start": 3088,
+            "start": 3247,
             "type": "TagDeclarator",
-            "value": "housingEdge01"
+            "value": "line2"
           },
           "type": "extrudePlane"
         },
@@ -810,12 +924,26 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3145,
-            "end": 3159,
+            "commentStart": 3366,
+            "end": 3370,
             "moduleId": 0,
-            "start": 3145,
+            "start": 3366,
             "type": "TagDeclarator",
-            "value": "housingEdge02"
+            "value": "arc1"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 3546,
+            "end": 3551,
+            "moduleId": 0,
+            "start": 3546,
+            "type": "TagDeclarator",
+            "value": "line3"
           },
           "type": "extrudePlane"
         },
@@ -824,12 +952,26 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3202,
-            "end": 3216,
+            "commentStart": 3666,
+            "end": 3670,
             "moduleId": 0,
-            "start": 3202,
+            "start": 3666,
             "type": "TagDeclarator",
-            "value": "housingEdge03"
+            "value": "arc2"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 3843,
+            "end": 3848,
+            "moduleId": 0,
+            "start": 3843,
+            "type": "TagDeclarator",
+            "value": "line4"
           },
           "type": "extrudePlane"
         },
@@ -838,12 +980,54 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3235,
-            "end": 3249,
+            "commentStart": 3963,
+            "end": 3967,
             "moduleId": 0,
-            "start": 3235,
+            "start": 3963,
             "type": "TagDeclarator",
-            "value": "housingEdge04"
+            "value": "arc3"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 4143,
+            "end": 4148,
+            "moduleId": 0,
+            "start": 4143,
+            "type": "TagDeclarator",
+            "value": "line5"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 4265,
+            "end": 4269,
+            "moduleId": 0,
+            "start": 4265,
+            "type": "TagDeclarator",
+            "value": "arc4"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 4448,
+            "end": 4453,
+            "moduleId": 0,
+            "start": 4448,
+            "type": "TagDeclarator",
+            "value": "line6"
           },
           "type": "extrudePlane"
         }
@@ -859,20 +1043,20 @@ description: Variables in memory after executing usb-c.kcl
               "sourceRange": []
             },
             "from": [
-              -6.0,
-              -2.3
+              -0.00000000000018741355216480233,
+              -2.7930526779796474
             ],
             "tag": {
-              "commentStart": 3088,
-              "end": 3102,
+              "commentStart": 3247,
+              "end": 3252,
               "moduleId": 0,
-              "start": 3088,
+              "start": 3247,
               "type": "TagDeclarator",
-              "value": "housingEdge01"
+              "value": "line2"
             },
             "to": [
-              6.0,
-              -2.3
+              4.400092255786426,
+              -2.793052677979611
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -882,21 +1066,51 @@ description: Variables in memory after executing usb-c.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "from": [
-              6.0,
-              -2.3
+            "ccw": true,
+            "center": [
+              4.399964528429169,
+              -1.1930526824048928
             ],
+            "from": [
+              4.400092255786426,
+              -2.793052677979611
+            ],
+            "radius": 1.60000000067293,
             "tag": {
-              "commentStart": 3145,
-              "end": 3159,
+              "commentStart": 3366,
+              "end": 3370,
               "moduleId": 0,
-              "start": 3145,
+              "start": 3366,
               "type": "TagDeclarator",
-              "value": "housingEdge02"
+              "value": "arc1"
             },
             "to": [
-              6.0,
-              2.3
+              5.999964526960038,
+              -1.1931354748860588
+            ],
+            "type": "Arc",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              5.999964526960038,
+              -1.1931354748860588
+            ],
+            "tag": {
+              "commentStart": 3546,
+              "end": 3551,
+              "moduleId": 0,
+              "start": 3546,
+              "type": "TagDeclarator",
+              "value": "line3"
+            },
+            "to": [
+              5.999964527376074,
+              1.3942434952429417
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -906,21 +1120,51 @@ description: Variables in memory after executing usb-c.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "from": [
-              6.0,
-              2.3
+            "ccw": true,
+            "center": [
+              4.39996452800475,
+              1.3941938794393745
             ],
+            "from": [
+              5.999964527376074,
+              1.3942434952429417
+            ],
+            "radius": 1.6000000001406138,
             "tag": {
-              "commentStart": 3202,
-              "end": 3216,
+              "commentStart": 3666,
+              "end": 3670,
               "moduleId": 0,
-              "start": 3202,
+              "start": 3666,
               "type": "TagDeclarator",
-              "value": "housingEdge03"
+              "value": "arc2"
             },
             "to": [
-              -6.0,
-              2.3
+              4.385931815871892,
+              2.9941323418310253
+            ],
+            "type": "Arc",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              4.385931815871892,
+              2.9941323418310253
+            ],
+            "tag": {
+              "commentStart": 3843,
+              "end": 3848,
+              "moduleId": 0,
+              "start": 3843,
+              "type": "TagDeclarator",
+              "value": "line4"
+            },
+            "to": [
+              -4.41399613935175,
+              2.9177419240134674
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -930,21 +1174,105 @@ description: Variables in memory after executing usb-c.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "from": [
-              -6.0,
-              2.3
+            "ccw": true,
+            "center": [
+              -4.400035474338019,
+              1.3178028313455594
             ],
+            "from": [
+              -4.41399613935175,
+              2.9177419240134674
+            ],
+            "radius": 1.6000000001295733,
             "tag": {
-              "commentStart": 3235,
-              "end": 3249,
+              "commentStart": 3963,
+              "end": 3967,
               "moduleId": 0,
-              "start": 3235,
+              "start": 3963,
               "type": "TagDeclarator",
-              "value": "housingEdge04"
+              "value": "arc3"
             },
             "to": [
-              -6.0,
-              -2.3
+              -6.000035472342528,
+              1.3178852946963202
+            ],
+            "type": "Arc",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -6.000035472342528,
+              1.3178852946963202
+            ],
+            "tag": {
+              "commentStart": 4143,
+              "end": 4148,
+              "moduleId": 0,
+              "start": 4143,
+              "type": "TagDeclarator",
+              "value": "line5"
+            },
+            "to": [
+              -6.000035473219524,
+              -1.1931280782145917
+            ],
+            "type": "ToPoint",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -4.400035474708854,
+              -1.1930526780753805
+            ],
+            "from": [
+              -6.000035473219524,
+              -1.1931280782145917
+            ],
+            "radius": 1.6000000002872885,
+            "tag": {
+              "commentStart": 4265,
+              "end": 4269,
+              "moduleId": 0,
+              "start": 4265,
+              "type": "TagDeclarator",
+              "value": "arc4"
+            },
+            "to": [
+              -4.400092256382845,
+              -2.7930526773551194
+            ],
+            "type": "Arc",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -4.400092256382845,
+              -2.7930526773551194
+            ],
+            "tag": {
+              "commentStart": 4448,
+              "end": 4453,
+              "moduleId": 0,
+              "start": 4448,
+              "type": "TagDeclarator",
+              "value": "line6"
+            },
+            "to": [
+              -0.00000000000028112032946425494,
+              -2.7930526779796456
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -953,8 +1281,8 @@ description: Variables in memory after executing usb-c.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "YZ",
-          "objectId": 3,
+          "kind": "Custom",
+          "objectId": 34,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -983,12 +1311,12 @@ description: Variables in memory after executing usb-c.kcl
         },
         "start": {
           "from": [
-            -6.0,
-            -2.3
+            0.0,
+            0.0
           ],
           "to": [
-            -6.0,
-            -2.3
+            0.0,
+            0.0
           ],
           "units": "mm",
           "tag": null,
@@ -998,87 +1326,54 @@ description: Variables in memory after executing usb-c.kcl
           }
         },
         "tags": {
-          "housingEdge01": {
+          "arc1": {
             "type": "TagIdentifier",
-            "value": "housingEdge01"
+            "value": "arc1"
           },
-          "housingEdge02": {
+          "arc2": {
             "type": "TagIdentifier",
-            "value": "housingEdge02"
+            "value": "arc2"
           },
-          "housingEdge03": {
+          "arc3": {
             "type": "TagIdentifier",
-            "value": "housingEdge03"
+            "value": "arc3"
           },
-          "housingEdge04": {
+          "arc4": {
             "type": "TagIdentifier",
-            "value": "housingEdge04"
+            "value": "arc4"
+          },
+          "line1": {
+            "type": "TagIdentifier",
+            "value": "line1"
+          },
+          "line2": {
+            "type": "TagIdentifier",
+            "value": "line2"
+          },
+          "line3": {
+            "type": "TagIdentifier",
+            "value": "line3"
+          },
+          "line4": {
+            "type": "TagIdentifier",
+            "value": "line4"
+          },
+          "line5": {
+            "type": "TagIdentifier",
+            "value": "line5"
+          },
+          "line6": {
+            "type": "TagIdentifier",
+            "value": "line6"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "edgeCuts": [
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 1.6,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 1.6,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 1.6,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 1.6,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        }
-      ],
       "units": "mm",
       "sectional": false
     }
@@ -1091,26 +1386,6 @@ description: Variables in memory after executing usb-c.kcl
       "len": "mm",
       "angle": "degrees"
     }
-  },
-  "housingEdge01": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "housingEdge01"
-  },
-  "housingEdge02": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "housingEdge02"
-  },
-  "housingEdge03": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "housingEdge03"
-  },
-  "housingEdge04": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "housingEdge04"
   },
   "housingHeight": {
     "type": "Number",
@@ -1131,6 +1406,1730 @@ description: Variables in memory after executing usb-c.kcl
     }
   },
   "housingProfile": {
+    "type": "Object",
+    "value": {
+      "arc1": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 48,
+                "kind": {
+                  "arc": {
+                    "start": [
+                      {
+                        "n": 4.400092255786283,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -2.7930526762095647,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 5.999964526674648,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -1.1931354731159978,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center": [
+                      {
+                        "n": 4.399964528429026,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -1.1930526806348465,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 5.43,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -2.32,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 5.93,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -1.82,
+                          "units": "Mm"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 5.43,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -1.82,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 45,
+                    "end_object_id": 46,
+                    "center_object_id": 47,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "center_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 34,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "arc1"
+                }
+              }
+            }
+          }
+        }
+      },
+      "arc2": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 58,
+                "kind": {
+                  "arc": {
+                    "start": [
+                      {
+                        "n": 5.999964527124451,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.394243495242936,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 4.385931815593701,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.9941323448601946,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center": [
+                      {
+                        "n": 4.399964527753127,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.3941938794393687,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 5.93,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.82,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 5.43,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.32,
+                          "units": "Mm"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 5.43,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.82,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 55,
+                    "end_object_id": 56,
+                    "center_object_id": 57,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "center_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 34,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "arc2"
+                }
+              }
+            }
+          }
+        }
+      },
+      "arc3": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 68,
+                "kind": {
+                  "arc": {
+                    "start": [
+                      {
+                        "n": -4.413996139346692,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.9177419234327084,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": -6.000035472477312,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.3178852941155683,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center": [
+                      {
+                        "n": -4.400035474332961,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.3178028307648004,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -5.44,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.35,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -6.08,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.72,
+                          "units": "Mm"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": -5.45,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.72,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 65,
+                    "end_object_id": 66,
+                    "center_object_id": 67,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "center_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 34,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "arc3"
+                }
+              }
+            }
+          }
+        }
+      },
+      "arc4": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 78,
+                "kind": {
+                  "arc": {
+                    "start": [
+                      {
+                        "n": -6.000035472623785,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -1.193128078214572,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": -4.400092255787126,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -2.793052677915876,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center": [
+                      {
+                        "n": -4.400035474113116,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -1.193052678075361,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -6.08,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -1.67,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -5.43,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -2.32,
+                          "units": "Mm"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": -5.43,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -1.67,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 75,
+                    "end_object_id": 76,
+                    "center_object_id": 77,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "center_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 34,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "arc4"
+                }
+              }
+            }
+          }
+        }
+      },
+      "line1": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 38,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": -0.00000000000018741355216480233,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -2.7930526779796474,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -2.32,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 36,
+                    "end_object_id": 37,
+                    "start_freedom": "Fixed",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 34,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line1"
+                }
+              }
+            }
+          }
+        }
+      },
+      "line2": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 43,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": -0.0000000000002811203267862502,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -2.793052677979659,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 4.400092255786426,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -2.793052677979611,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -2.32,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 5.43,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -2.32,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 41,
+                    "end_object_id": 42,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 34,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line2"
+                }
+              }
+            }
+          }
+        }
+      },
+      "line3": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 53,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": 5.999964527376233,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -1.193135473116024,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 5.999964527376074,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.3942434952429417,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 5.93,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -1.82,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 5.93,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.82,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 51,
+                    "end_object_id": 52,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 34,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line3"
+                }
+              }
+            }
+          }
+        }
+      },
+      "line4": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 63,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": 4.385931815582678,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.9941323461190716,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": -4.41399613935175,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.9177419240134674,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 5.43,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.32,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -5.44,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.35,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 61,
+                    "end_object_id": 62,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 34,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line4"
+                }
+              }
+            }
+          }
+        }
+      },
+      "line5": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 73,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": -6.00003547321954,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.3178852941155943,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": -6.000035473219524,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -1.1931280782145917,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -6.08,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.72,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -6.08,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -1.67,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 71,
+                    "end_object_id": 72,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 34,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line5"
+                }
+              }
+            }
+          }
+        }
+      },
+      "line6": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 83,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": -4.40009225578708,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -2.7930526779796527,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": -0.00000000000028112032946425494,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -2.7930526779796456,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -5.43,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -2.32,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -2.32,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 81,
+                    "end_object_id": 82,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 34,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line6"
+                }
+              }
+            }
+          }
+        }
+      },
+      "meta": {
+        "type": "Object",
+        "value": {
+          "sketch": {
+            "type": "Sketch",
+            "value": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    0.0,
+                    0.0
+                  ],
+                  "tag": {
+                    "commentStart": 3089,
+                    "end": 3094,
+                    "moduleId": 0,
+                    "start": 3089,
+                    "type": "TagDeclarator",
+                    "value": "line1"
+                  },
+                  "to": [
+                    -0.00000000000018741355216480233,
+                    -2.7930526779796474
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -0.00000000000018741355216480233,
+                    -2.7930526779796474
+                  ],
+                  "tag": {
+                    "commentStart": 3247,
+                    "end": 3252,
+                    "moduleId": 0,
+                    "start": 3247,
+                    "type": "TagDeclarator",
+                    "value": "line2"
+                  },
+                  "to": [
+                    4.400092255786426,
+                    -2.793052677979611
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    4.399964528429169,
+                    -1.1930526824048928
+                  ],
+                  "from": [
+                    4.400092255786426,
+                    -2.793052677979611
+                  ],
+                  "radius": 1.60000000067293,
+                  "tag": {
+                    "commentStart": 3366,
+                    "end": 3370,
+                    "moduleId": 0,
+                    "start": 3366,
+                    "type": "TagDeclarator",
+                    "value": "arc1"
+                  },
+                  "to": [
+                    5.999964526960038,
+                    -1.1931354748860588
+                  ],
+                  "type": "Arc",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    5.999964526960038,
+                    -1.1931354748860588
+                  ],
+                  "tag": {
+                    "commentStart": 3546,
+                    "end": 3551,
+                    "moduleId": 0,
+                    "start": 3546,
+                    "type": "TagDeclarator",
+                    "value": "line3"
+                  },
+                  "to": [
+                    5.999964527376074,
+                    1.3942434952429417
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    4.39996452800475,
+                    1.3941938794393745
+                  ],
+                  "from": [
+                    5.999964527376074,
+                    1.3942434952429417
+                  ],
+                  "radius": 1.6000000001406138,
+                  "tag": {
+                    "commentStart": 3666,
+                    "end": 3670,
+                    "moduleId": 0,
+                    "start": 3666,
+                    "type": "TagDeclarator",
+                    "value": "arc2"
+                  },
+                  "to": [
+                    4.385931815871892,
+                    2.9941323418310253
+                  ],
+                  "type": "Arc",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    4.385931815871892,
+                    2.9941323418310253
+                  ],
+                  "tag": {
+                    "commentStart": 3843,
+                    "end": 3848,
+                    "moduleId": 0,
+                    "start": 3843,
+                    "type": "TagDeclarator",
+                    "value": "line4"
+                  },
+                  "to": [
+                    -4.41399613935175,
+                    2.9177419240134674
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    -4.400035474338019,
+                    1.3178028313455594
+                  ],
+                  "from": [
+                    -4.41399613935175,
+                    2.9177419240134674
+                  ],
+                  "radius": 1.6000000001295733,
+                  "tag": {
+                    "commentStart": 3963,
+                    "end": 3967,
+                    "moduleId": 0,
+                    "start": 3963,
+                    "type": "TagDeclarator",
+                    "value": "arc3"
+                  },
+                  "to": [
+                    -6.000035472342528,
+                    1.3178852946963202
+                  ],
+                  "type": "Arc",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -6.000035472342528,
+                    1.3178852946963202
+                  ],
+                  "tag": {
+                    "commentStart": 4143,
+                    "end": 4148,
+                    "moduleId": 0,
+                    "start": 4143,
+                    "type": "TagDeclarator",
+                    "value": "line5"
+                  },
+                  "to": [
+                    -6.000035473219524,
+                    -1.1931280782145917
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    -4.400035474708854,
+                    -1.1930526780753805
+                  ],
+                  "from": [
+                    -6.000035473219524,
+                    -1.1931280782145917
+                  ],
+                  "radius": 1.6000000002872885,
+                  "tag": {
+                    "commentStart": 4265,
+                    "end": 4269,
+                    "moduleId": 0,
+                    "start": 4265,
+                    "type": "TagDeclarator",
+                    "value": "arc4"
+                  },
+                  "to": [
+                    -4.400092256382845,
+                    -2.7930526773551194
+                  ],
+                  "type": "Arc",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -4.400092256382845,
+                    -2.7930526773551194
+                  ],
+                  "tag": {
+                    "commentStart": 4448,
+                    "end": 4453,
+                    "moduleId": 0,
+                    "start": 4448,
+                    "type": "TagDeclarator",
+                    "value": "line6"
+                  },
+                  "to": [
+                    -0.00000000000028112032946425494,
+                    -2.7930526779796456
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                }
+              ],
+              "on": {
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 34,
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": "mm"
+                },
+                "type": "plane",
+                "xAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
+                  "units": null
+                },
+                "zAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                }
+              },
+              "start": {
+                "from": [
+                  0.0,
+                  0.0
+                ],
+                "to": [
+                  0.0,
+                  0.0
+                ],
+                "units": "mm",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "tags": {
+                "arc1": {
+                  "type": "TagIdentifier",
+                  "value": "arc1"
+                },
+                "arc2": {
+                  "type": "TagIdentifier",
+                  "value": "arc2"
+                },
+                "arc3": {
+                  "type": "TagIdentifier",
+                  "value": "arc3"
+                },
+                "arc4": {
+                  "type": "TagIdentifier",
+                  "value": "arc4"
+                },
+                "line1": {
+                  "type": "TagIdentifier",
+                  "value": "line1"
+                },
+                "line2": {
+                  "type": "TagIdentifier",
+                  "value": "line2"
+                },
+                "line3": {
+                  "type": "TagIdentifier",
+                  "value": "line3"
+                },
+                "line4": {
+                  "type": "TagIdentifier",
+                  "value": "line4"
+                },
+                "line5": {
+                  "type": "TagIdentifier",
+                  "value": "line5"
+                },
+                "line6": {
+                  "type": "TagIdentifier",
+                  "value": "line6"
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "mm",
+              "isClosed": "no"
+            }
+          }
+        },
+        "constrainable": false
+      }
+    },
+    "constrainable": false
+  },
+  "housingWidth": {
+    "type": "Number",
+    "value": 12.0,
+    "ty": {
+      "type": "Default",
+      "len": "mm",
+      "angle": "degrees"
+    }
+  },
+  "rearWall": {
+    "type": "Number",
+    "value": 0.9,
+    "ty": {
+      "type": "Default",
+      "len": "mm",
+      "angle": "degrees"
+    }
+  },
+  "region001": {
     "type": "Sketch",
     "value": {
       "type": "Sketch",
@@ -1142,20 +3141,20 @@ description: Variables in memory after executing usb-c.kcl
             "sourceRange": []
           },
           "from": [
-            -6.0,
-            -2.3
+            -4.2,
+            -1.3
           ],
           "tag": {
-            "commentStart": 3088,
-            "end": 3102,
+            "commentStart": 901,
+            "end": 906,
             "moduleId": 0,
-            "start": 3088,
+            "start": 901,
             "type": "TagDeclarator",
-            "value": "housingEdge01"
+            "value": "line1"
           },
           "to": [
-            6.0,
-            -2.3
+            4.2,
+            -1.3
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1166,20 +3165,20 @@ description: Variables in memory after executing usb-c.kcl
             "sourceRange": []
           },
           "from": [
-            6.0,
-            -2.3
+            4.2,
+            -1.3
           ],
           "tag": {
-            "commentStart": 3145,
-            "end": 3159,
+            "commentStart": 981,
+            "end": 986,
             "moduleId": 0,
-            "start": 3145,
+            "start": 981,
             "type": "TagDeclarator",
-            "value": "housingEdge02"
+            "value": "line2"
           },
           "to": [
-            6.0,
-            2.3
+            4.2,
+            1.3
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1190,20 +3189,20 @@ description: Variables in memory after executing usb-c.kcl
             "sourceRange": []
           },
           "from": [
-            6.0,
-            2.3
+            4.2,
+            1.3
           ],
           "tag": {
-            "commentStart": 3202,
-            "end": 3216,
+            "commentStart": 1098,
+            "end": 1103,
             "moduleId": 0,
-            "start": 3202,
+            "start": 1098,
             "type": "TagDeclarator",
-            "value": "housingEdge03"
+            "value": "line3"
           },
           "to": [
-            -6.0,
-            2.3
+            -4.2,
+            1.3
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1214,20 +3213,20 @@ description: Variables in memory after executing usb-c.kcl
             "sourceRange": []
           },
           "from": [
-            -6.0,
-            2.3
+            -4.2,
+            1.3
           ],
           "tag": {
-            "commentStart": 3235,
-            "end": 3249,
+            "commentStart": 1215,
+            "end": 1220,
             "moduleId": 0,
-            "start": 3235,
+            "start": 1215,
             "type": "TagDeclarator",
-            "value": "housingEdge04"
+            "value": "line4"
           },
           "to": [
-            -6.0,
-            -2.3
+            -4.2,
+            -1.3
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1236,8 +3235,8 @@ description: Variables in memory after executing usb-c.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "YZ",
-        "objectId": 3,
+        "kind": "Custom",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1266,12 +3265,12 @@ description: Variables in memory after executing usb-c.kcl
       },
       "start": {
         "from": [
-          -6.0,
-          -2.3
+          -4.2,
+          -1.3
         ],
         "to": [
-          -6.0,
-          -2.3
+          -4.2,
+          -1.3
         ],
         "units": "mm",
         "tag": null,
@@ -1281,71 +3280,647 @@ description: Variables in memory after executing usb-c.kcl
         }
       },
       "tags": {
-        "housingEdge01": {
+        "capEnd001": {
           "type": "TagIdentifier",
-          "value": "housingEdge01"
+          "value": "capEnd001"
         },
-        "housingEdge02": {
+        "capStart001": {
           "type": "TagIdentifier",
-          "value": "housingEdge02"
+          "value": "capStart001"
         },
-        "housingEdge03": {
+        "line1": {
           "type": "TagIdentifier",
-          "value": "housingEdge03"
+          "value": "line1"
         },
-        "housingEdge04": {
+        "line2": {
           "type": "TagIdentifier",
-          "value": "housingEdge04"
+          "value": "line2"
+        },
+        "line3": {
+          "type": "TagIdentifier",
+          "value": "line3"
+        },
+        "line4": {
+          "type": "TagIdentifier",
+          "value": "line4"
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
-  "housingWidth": {
-    "type": "Number",
-    "value": 12.0,
-    "ty": {
-      "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+  "region003": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -3.3,
+            -0.4
+          ],
+          "tag": {
+            "commentStart": 2388,
+            "end": 2393,
+            "moduleId": 0,
+            "start": 2388,
+            "type": "TagDeclarator",
+            "value": "line1"
+          },
+          "to": [
+            3.3,
+            -0.4
+          ],
+          "type": "ToPoint",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            3.3,
+            -0.4
+          ],
+          "tag": {
+            "commentStart": 2468,
+            "end": 2473,
+            "moduleId": 0,
+            "start": 2468,
+            "type": "TagDeclarator",
+            "value": "line2"
+          },
+          "to": [
+            3.3,
+            0.4
+          ],
+          "type": "ToPoint",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            3.3,
+            0.4
+          ],
+          "tag": {
+            "commentStart": 2585,
+            "end": 2590,
+            "moduleId": 0,
+            "start": 2585,
+            "type": "TagDeclarator",
+            "value": "line3"
+          },
+          "to": [
+            -3.3,
+            0.4
+          ],
+          "type": "ToPoint",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -3.3,
+            0.4
+          ],
+          "tag": {
+            "commentStart": 2702,
+            "end": 2707,
+            "moduleId": 0,
+            "start": 2702,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
+          "to": [
+            -3.3,
+            -0.4
+          ],
+          "type": "ToPoint",
+          "units": "mm"
+        }
+      ],
+      "on": {
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 17,
+        "origin": {
+          "x": 1.0499999999999994,
+          "y": 0.0,
+          "z": 0.0,
+          "units": "mm"
+        },
+        "type": "plane",
+        "xAxis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0,
+          "units": null
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": null
+        },
+        "zAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": null
+        }
+      },
+      "start": {
+        "from": [
+          -3.3,
+          -0.4
+        ],
+        "to": [
+          -3.3,
+          -0.4
+        ],
+        "units": "mm",
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": []
+        }
+      },
+      "tags": {
+        "line1": {
+          "type": "TagIdentifier",
+          "value": "line1"
+        },
+        "line2": {
+          "type": "TagIdentifier",
+          "value": "line2"
+        },
+        "line3": {
+          "type": "TagIdentifier",
+          "value": "line3"
+        },
+        "line4": {
+          "type": "TagIdentifier",
+          "value": "line4"
+        }
+      },
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
+      "units": "mm"
     }
   },
-  "innerCornerRadius": {
-    "type": "Number",
-    "value": 0.55,
-    "ty": {
-      "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+  "region004": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -0.00000000000018741355216480233,
+            -2.7930526779796474
+          ],
+          "tag": {
+            "commentStart": 3247,
+            "end": 3252,
+            "moduleId": 0,
+            "start": 3247,
+            "type": "TagDeclarator",
+            "value": "line2"
+          },
+          "to": [
+            4.400092255786426,
+            -2.793052677979611
+          ],
+          "type": "ToPoint",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            4.399964528429169,
+            -1.1930526824048928
+          ],
+          "from": [
+            4.400092255786426,
+            -2.793052677979611
+          ],
+          "radius": 1.60000000067293,
+          "tag": {
+            "commentStart": 3366,
+            "end": 3370,
+            "moduleId": 0,
+            "start": 3366,
+            "type": "TagDeclarator",
+            "value": "arc1"
+          },
+          "to": [
+            5.999964526960038,
+            -1.1931354748860588
+          ],
+          "type": "Arc",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            5.999964526960038,
+            -1.1931354748860588
+          ],
+          "tag": {
+            "commentStart": 3546,
+            "end": 3551,
+            "moduleId": 0,
+            "start": 3546,
+            "type": "TagDeclarator",
+            "value": "line3"
+          },
+          "to": [
+            5.999964527376074,
+            1.3942434952429417
+          ],
+          "type": "ToPoint",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            4.39996452800475,
+            1.3941938794393745
+          ],
+          "from": [
+            5.999964527376074,
+            1.3942434952429417
+          ],
+          "radius": 1.6000000001406138,
+          "tag": {
+            "commentStart": 3666,
+            "end": 3670,
+            "moduleId": 0,
+            "start": 3666,
+            "type": "TagDeclarator",
+            "value": "arc2"
+          },
+          "to": [
+            4.385931815871892,
+            2.9941323418310253
+          ],
+          "type": "Arc",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            4.385931815871892,
+            2.9941323418310253
+          ],
+          "tag": {
+            "commentStart": 3843,
+            "end": 3848,
+            "moduleId": 0,
+            "start": 3843,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
+          "to": [
+            -4.41399613935175,
+            2.9177419240134674
+          ],
+          "type": "ToPoint",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -4.400035474338019,
+            1.3178028313455594
+          ],
+          "from": [
+            -4.41399613935175,
+            2.9177419240134674
+          ],
+          "radius": 1.6000000001295733,
+          "tag": {
+            "commentStart": 3963,
+            "end": 3967,
+            "moduleId": 0,
+            "start": 3963,
+            "type": "TagDeclarator",
+            "value": "arc3"
+          },
+          "to": [
+            -6.000035472342528,
+            1.3178852946963202
+          ],
+          "type": "Arc",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -6.000035472342528,
+            1.3178852946963202
+          ],
+          "tag": {
+            "commentStart": 4143,
+            "end": 4148,
+            "moduleId": 0,
+            "start": 4143,
+            "type": "TagDeclarator",
+            "value": "line5"
+          },
+          "to": [
+            -6.000035473219524,
+            -1.1931280782145917
+          ],
+          "type": "ToPoint",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -4.400035474708854,
+            -1.1930526780753805
+          ],
+          "from": [
+            -6.000035473219524,
+            -1.1931280782145917
+          ],
+          "radius": 1.6000000002872885,
+          "tag": {
+            "commentStart": 4265,
+            "end": 4269,
+            "moduleId": 0,
+            "start": 4265,
+            "type": "TagDeclarator",
+            "value": "arc4"
+          },
+          "to": [
+            -4.400092256382845,
+            -2.7930526773551194
+          ],
+          "type": "Arc",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -4.400092256382845,
+            -2.7930526773551194
+          ],
+          "tag": {
+            "commentStart": 4448,
+            "end": 4453,
+            "moduleId": 0,
+            "start": 4448,
+            "type": "TagDeclarator",
+            "value": "line6"
+          },
+          "to": [
+            -0.00000000000028112032946425494,
+            -2.7930526779796456
+          ],
+          "type": "ToPoint",
+          "units": "mm"
+        }
+      ],
+      "on": {
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 34,
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": "mm"
+        },
+        "type": "plane",
+        "xAxis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0,
+          "units": null
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": null
+        },
+        "zAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": null
+        }
+      },
+      "start": {
+        "from": [
+          0.0,
+          0.0
+        ],
+        "to": [
+          0.0,
+          0.0
+        ],
+        "units": "mm",
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": []
+        }
+      },
+      "tags": {
+        "arc1": {
+          "type": "TagIdentifier",
+          "value": "arc1"
+        },
+        "arc2": {
+          "type": "TagIdentifier",
+          "value": "arc2"
+        },
+        "arc3": {
+          "type": "TagIdentifier",
+          "value": "arc3"
+        },
+        "arc4": {
+          "type": "TagIdentifier",
+          "value": "arc4"
+        },
+        "line1": {
+          "type": "TagIdentifier",
+          "value": "line1"
+        },
+        "line2": {
+          "type": "TagIdentifier",
+          "value": "line2"
+        },
+        "line3": {
+          "type": "TagIdentifier",
+          "value": "line3"
+        },
+        "line4": {
+          "type": "TagIdentifier",
+          "value": "line4"
+        },
+        "line5": {
+          "type": "TagIdentifier",
+          "value": "line5"
+        },
+        "line6": {
+          "type": "TagIdentifier",
+          "value": "line6"
+        }
+      },
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
+      "units": "mm"
     }
   },
-  "innerHeight": {
-    "type": "Number",
-    "value": 2.0,
-    "ty": {
-      "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
-    }
-  },
-  "innerWidth": {
-    "type": "Number",
-    "value": 7.800000000000001,
-    "ty": {
-      "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
-    }
-  },
-  "rearWall": {
-    "type": "Number",
-    "value": 0.9,
-    "ty": {
-      "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+  "region005": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.0,
+            0.0
+          ],
+          "from": [
+            1.9,
+            0.0
+          ],
+          "radius": 1.9,
+          "tag": {
+            "commentStart": 5832,
+            "end": 5839,
+            "moduleId": 0,
+            "start": 5832,
+            "type": "TagDeclarator",
+            "value": "circle1"
+          },
+          "to": [
+            1.9,
+            0.0
+          ],
+          "type": "Circle",
+          "units": "mm"
+        }
+      ],
+      "on": {
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 114,
+        "origin": {
+          "x": -14.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": "mm"
+        },
+        "type": "plane",
+        "xAxis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0,
+          "units": null
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": null
+        },
+        "zAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": null
+        }
+      },
+      "start": {
+        "from": [
+          1.9,
+          0.0
+        ],
+        "to": [
+          1.9,
+          0.0
+        ],
+        "units": "mm",
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": []
+        }
+      },
+      "tags": {
+        "circle1": {
+          "type": "TagIdentifier",
+          "value": "circle1"
+        }
+      },
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
+      "units": "mm"
     }
   },
   "shell": {
@@ -1360,12 +3935,12 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1225,
-            "end": 1237,
+            "commentStart": 901,
+            "end": 906,
             "moduleId": 0,
-            "start": 1225,
+            "start": 901,
             "type": "TagDeclarator",
-            "value": "shellEdge01"
+            "value": "line1"
           },
           "type": "extrudePlane"
         },
@@ -1374,12 +3949,12 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1278,
-            "end": 1290,
+            "commentStart": 981,
+            "end": 986,
             "moduleId": 0,
-            "start": 1278,
+            "start": 981,
             "type": "TagDeclarator",
-            "value": "shellEdge02"
+            "value": "line2"
           },
           "type": "extrudePlane"
         },
@@ -1388,12 +3963,12 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1331,
-            "end": 1343,
+            "commentStart": 1098,
+            "end": 1103,
             "moduleId": 0,
-            "start": 1331,
+            "start": 1098,
             "type": "TagDeclarator",
-            "value": "shellEdge03"
+            "value": "line3"
           },
           "type": "extrudePlane"
         },
@@ -1402,12 +3977,40 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1362,
-            "end": 1374,
+            "commentStart": 1215,
+            "end": 1220,
             "moduleId": 0,
-            "start": 1362,
+            "start": 1215,
             "type": "TagDeclarator",
-            "value": "shellEdge04"
+            "value": "line4"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1538,
+            "end": 1550,
+            "moduleId": 0,
+            "start": 1538,
+            "type": "TagDeclarator",
+            "value": "capStart001"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1513,
+            "end": 1523,
+            "moduleId": 0,
+            "start": 1513,
+            "type": "TagDeclarator",
+            "value": "capEnd001"
           },
           "type": "extrudePlane"
         }
@@ -1427,12 +4030,12 @@ description: Variables in memory after executing usb-c.kcl
               -1.3
             ],
             "tag": {
-              "commentStart": 1225,
-              "end": 1237,
+              "commentStart": 901,
+              "end": 906,
               "moduleId": 0,
-              "start": 1225,
+              "start": 901,
               "type": "TagDeclarator",
-              "value": "shellEdge01"
+              "value": "line1"
             },
             "to": [
               4.2,
@@ -1451,12 +4054,12 @@ description: Variables in memory after executing usb-c.kcl
               -1.3
             ],
             "tag": {
-              "commentStart": 1278,
-              "end": 1290,
+              "commentStart": 981,
+              "end": 986,
               "moduleId": 0,
-              "start": 1278,
+              "start": 981,
               "type": "TagDeclarator",
-              "value": "shellEdge02"
+              "value": "line2"
             },
             "to": [
               4.2,
@@ -1475,12 +4078,12 @@ description: Variables in memory after executing usb-c.kcl
               1.3
             ],
             "tag": {
-              "commentStart": 1331,
-              "end": 1343,
+              "commentStart": 1098,
+              "end": 1103,
               "moduleId": 0,
-              "start": 1331,
+              "start": 1098,
               "type": "TagDeclarator",
-              "value": "shellEdge03"
+              "value": "line3"
             },
             "to": [
               -4.2,
@@ -1499,12 +4102,12 @@ description: Variables in memory after executing usb-c.kcl
               1.3
             ],
             "tag": {
-              "commentStart": 1362,
-              "end": 1374,
+              "commentStart": 1215,
+              "end": 1220,
               "moduleId": 0,
-              "start": 1362,
+              "start": 1215,
               "type": "TagDeclarator",
-              "value": "shellEdge04"
+              "value": "line4"
             },
             "to": [
               -4.2,
@@ -1517,7 +4120,7 @@ description: Variables in memory after executing usb-c.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "YZ",
+          "kind": "Custom",
           "objectId": 0,
           "origin": {
             "x": 0.0,
@@ -1562,25 +4165,34 @@ description: Variables in memory after executing usb-c.kcl
           }
         },
         "tags": {
-          "shellEdge01": {
+          "capEnd001": {
             "type": "TagIdentifier",
-            "value": "shellEdge01"
+            "value": "capEnd001"
           },
-          "shellEdge02": {
+          "capStart001": {
             "type": "TagIdentifier",
-            "value": "shellEdge02"
+            "value": "capStart001"
           },
-          "shellEdge03": {
+          "line1": {
             "type": "TagIdentifier",
-            "value": "shellEdge03"
+            "value": "line1"
           },
-          "shellEdge04": {
+          "line2": {
             "type": "TagIdentifier",
-            "value": "shellEdge04"
+            "value": "line2"
+          },
+          "line3": {
+            "type": "TagIdentifier",
+            "value": "line3"
+          },
+          "line4": {
+            "type": "TagIdentifier",
+            "value": "line4"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -1659,12 +4271,12 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1225,
-            "end": 1237,
+            "commentStart": 901,
+            "end": 906,
             "moduleId": 0,
-            "start": 1225,
+            "start": 901,
             "type": "TagDeclarator",
-            "value": "shellEdge01"
+            "value": "line1"
           },
           "type": "extrudePlane"
         },
@@ -1673,12 +4285,12 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1278,
-            "end": 1290,
+            "commentStart": 981,
+            "end": 986,
             "moduleId": 0,
-            "start": 1278,
+            "start": 981,
             "type": "TagDeclarator",
-            "value": "shellEdge02"
+            "value": "line2"
           },
           "type": "extrudePlane"
         },
@@ -1687,12 +4299,12 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1331,
-            "end": 1343,
+            "commentStart": 1098,
+            "end": 1103,
             "moduleId": 0,
-            "start": 1331,
+            "start": 1098,
             "type": "TagDeclarator",
-            "value": "shellEdge03"
+            "value": "line3"
           },
           "type": "extrudePlane"
         },
@@ -1701,12 +4313,40 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1362,
-            "end": 1374,
+            "commentStart": 1215,
+            "end": 1220,
             "moduleId": 0,
-            "start": 1362,
+            "start": 1215,
             "type": "TagDeclarator",
-            "value": "shellEdge04"
+            "value": "line4"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1538,
+            "end": 1550,
+            "moduleId": 0,
+            "start": 1538,
+            "type": "TagDeclarator",
+            "value": "capStart001"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1513,
+            "end": 1523,
+            "moduleId": 0,
+            "start": 1513,
+            "type": "TagDeclarator",
+            "value": "capEnd001"
           },
           "type": "extrudePlane"
         }
@@ -1726,12 +4366,12 @@ description: Variables in memory after executing usb-c.kcl
               -1.3
             ],
             "tag": {
-              "commentStart": 1225,
-              "end": 1237,
+              "commentStart": 901,
+              "end": 906,
               "moduleId": 0,
-              "start": 1225,
+              "start": 901,
               "type": "TagDeclarator",
-              "value": "shellEdge01"
+              "value": "line1"
             },
             "to": [
               4.2,
@@ -1750,12 +4390,12 @@ description: Variables in memory after executing usb-c.kcl
               -1.3
             ],
             "tag": {
-              "commentStart": 1278,
-              "end": 1290,
+              "commentStart": 981,
+              "end": 986,
               "moduleId": 0,
-              "start": 1278,
+              "start": 981,
               "type": "TagDeclarator",
-              "value": "shellEdge02"
+              "value": "line2"
             },
             "to": [
               4.2,
@@ -1774,12 +4414,12 @@ description: Variables in memory after executing usb-c.kcl
               1.3
             ],
             "tag": {
-              "commentStart": 1331,
-              "end": 1343,
+              "commentStart": 1098,
+              "end": 1103,
               "moduleId": 0,
-              "start": 1331,
+              "start": 1098,
               "type": "TagDeclarator",
-              "value": "shellEdge03"
+              "value": "line3"
             },
             "to": [
               -4.2,
@@ -1798,12 +4438,12 @@ description: Variables in memory after executing usb-c.kcl
               1.3
             ],
             "tag": {
-              "commentStart": 1362,
-              "end": 1374,
+              "commentStart": 1215,
+              "end": 1220,
               "moduleId": 0,
-              "start": 1362,
+              "start": 1215,
               "type": "TagDeclarator",
-              "value": "shellEdge04"
+              "value": "line4"
             },
             "to": [
               -4.2,
@@ -1816,7 +4456,7 @@ description: Variables in memory after executing usb-c.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "YZ",
+          "kind": "Custom",
           "objectId": 0,
           "origin": {
             "x": 0.0,
@@ -1861,25 +4501,34 @@ description: Variables in memory after executing usb-c.kcl
           }
         },
         "tags": {
-          "shellEdge01": {
+          "capEnd001": {
             "type": "TagIdentifier",
-            "value": "shellEdge01"
+            "value": "capEnd001"
           },
-          "shellEdge02": {
+          "capStart001": {
             "type": "TagIdentifier",
-            "value": "shellEdge02"
+            "value": "capStart001"
           },
-          "shellEdge03": {
+          "line1": {
             "type": "TagIdentifier",
-            "value": "shellEdge03"
+            "value": "line1"
           },
-          "shellEdge04": {
+          "line2": {
             "type": "TagIdentifier",
-            "value": "shellEdge04"
+            "value": "line2"
+          },
+          "line3": {
+            "type": "TagIdentifier",
+            "value": "line3"
+          },
+          "line4": {
+            "type": "TagIdentifier",
+            "value": "line4"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",
@@ -1955,26 +4604,6 @@ description: Variables in memory after executing usb-c.kcl
       "angle": "degrees"
     }
   },
-  "shellEdge01": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "shellEdge01"
-  },
-  "shellEdge02": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "shellEdge02"
-  },
-  "shellEdge03": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "shellEdge03"
-  },
-  "shellEdge04": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "shellEdge04"
-  },
   "shellHeight": {
     "type": "Number",
     "value": 2.6,
@@ -1994,177 +4623,670 @@ description: Variables in memory after executing usb-c.kcl
     }
   },
   "shellProfile": {
-    "type": "Sketch",
+    "type": "Object",
     "value": {
-      "type": "Sketch",
-      "id": "[uuid]",
-      "paths": [
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -4.2,
-            -1.3
-          ],
-          "tag": {
-            "commentStart": 1225,
-            "end": 1237,
-            "moduleId": 0,
-            "start": 1225,
-            "type": "TagDeclarator",
-            "value": "shellEdge01"
-          },
-          "to": [
-            4.2,
-            -1.3
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            4.2,
-            -1.3
-          ],
-          "tag": {
-            "commentStart": 1278,
-            "end": 1290,
-            "moduleId": 0,
-            "start": 1278,
-            "type": "TagDeclarator",
-            "value": "shellEdge02"
-          },
-          "to": [
-            4.2,
-            1.3
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            4.2,
-            1.3
-          ],
-          "tag": {
-            "commentStart": 1331,
-            "end": 1343,
-            "moduleId": 0,
-            "start": 1331,
-            "type": "TagDeclarator",
-            "value": "shellEdge03"
-          },
-          "to": [
-            -4.2,
-            1.3
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -4.2,
-            1.3
-          ],
-          "tag": {
-            "commentStart": 1362,
-            "end": 1374,
-            "moduleId": 0,
-            "start": 1362,
-            "type": "TagDeclarator",
-            "value": "shellEdge04"
-          },
-          "to": [
-            -4.2,
-            -1.3
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        }
-      ],
-      "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
-        "kind": "YZ",
-        "objectId": 0,
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": "mm"
-        },
-        "type": "plane",
-        "xAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
-        },
-        "zAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
+      "line1": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 4,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": -4.2,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -1.3,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 4.2,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -1.3,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -4.2,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -1.3,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 4.2,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -1.3,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 2,
+                    "end_object_id": 3,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line1"
+                }
+              }
+            }
+          }
         }
       },
-      "start": {
-        "from": [
-          -4.2,
-          -1.3
-        ],
-        "to": [
-          -4.2,
-          -1.3
-        ],
-        "units": "mm",
-        "tag": null,
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": []
+      "line2": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 7,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": 4.2,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -1.3,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 4.2,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.3,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 4.2,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -1.3,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 4.2,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.3,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 5,
+                    "end_object_id": 6,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line2"
+                }
+              }
+            }
+          }
         }
       },
-      "tags": {
-        "shellEdge01": {
-          "type": "TagIdentifier",
-          "value": "shellEdge01"
-        },
-        "shellEdge02": {
-          "type": "TagIdentifier",
-          "value": "shellEdge02"
-        },
-        "shellEdge03": {
-          "type": "TagIdentifier",
-          "value": "shellEdge03"
-        },
-        "shellEdge04": {
-          "type": "TagIdentifier",
-          "value": "shellEdge04"
+      "line3": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 11,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": 4.2,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.3,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": -4.2,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.3,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 4.2,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.3,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -4.2,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.3,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 9,
+                    "end_object_id": 10,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line3"
+                }
+              }
+            }
+          }
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "units": "mm"
-    }
+      "line4": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 15,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": -4.2,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.3,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": -4.2,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -1.3,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -4.2,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.3,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -4.2,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -1.3,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 13,
+                    "end_object_id": 14,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line4"
+                }
+              }
+            }
+          }
+        }
+      },
+      "meta": {
+        "type": "Object",
+        "value": {
+          "sketch": {
+            "type": "Sketch",
+            "value": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -4.2,
+                    -1.3
+                  ],
+                  "tag": {
+                    "commentStart": 901,
+                    "end": 906,
+                    "moduleId": 0,
+                    "start": 901,
+                    "type": "TagDeclarator",
+                    "value": "line1"
+                  },
+                  "to": [
+                    4.2,
+                    -1.3
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    4.2,
+                    -1.3
+                  ],
+                  "tag": {
+                    "commentStart": 981,
+                    "end": 986,
+                    "moduleId": 0,
+                    "start": 981,
+                    "type": "TagDeclarator",
+                    "value": "line2"
+                  },
+                  "to": [
+                    4.2,
+                    1.3
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    4.2,
+                    1.3
+                  ],
+                  "tag": {
+                    "commentStart": 1098,
+                    "end": 1103,
+                    "moduleId": 0,
+                    "start": 1098,
+                    "type": "TagDeclarator",
+                    "value": "line3"
+                  },
+                  "to": [
+                    -4.2,
+                    1.3
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -4.2,
+                    1.3
+                  ],
+                  "tag": {
+                    "commentStart": 1215,
+                    "end": 1220,
+                    "moduleId": 0,
+                    "start": 1215,
+                    "type": "TagDeclarator",
+                    "value": "line4"
+                  },
+                  "to": [
+                    -4.2,
+                    -1.3
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                }
+              ],
+              "on": {
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 0,
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": "mm"
+                },
+                "type": "plane",
+                "xAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
+                  "units": null
+                },
+                "zAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                }
+              },
+              "start": {
+                "from": [
+                  -4.2,
+                  -1.3
+                ],
+                "to": [
+                  -4.2,
+                  -1.3
+                ],
+                "units": "mm",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "tags": {
+                "line1": {
+                  "type": "TagIdentifier",
+                  "value": "line1"
+                },
+                "line2": {
+                  "type": "TagIdentifier",
+                  "value": "line2"
+                },
+                "line3": {
+                  "type": "TagIdentifier",
+                  "value": "line3"
+                },
+                "line4": {
+                  "type": "TagIdentifier",
+                  "value": "line4"
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "mm",
+              "isClosed": "implicitly"
+            }
+          }
+        },
+        "constrainable": false
+      }
+    },
+    "constrainable": false
   },
   "shellWall": {
     "type": "Number",
@@ -2184,6 +5306,900 @@ description: Variables in memory after executing usb-c.kcl
       "angle": "degrees"
     }
   },
+  "sketch001": {
+    "type": "Object",
+    "value": {
+      "line1": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 21,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": -3.3,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.4,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 3.3,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.4,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -3.3,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.4,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.3,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.4,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 19,
+                    "end_object_id": 20,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 17,
+                  "origin": {
+                    "x": 1.0499999999999994,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line1"
+                }
+              }
+            }
+          }
+        }
+      },
+      "line2": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 24,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": 3.3,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.4,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 3.3,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.4,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.3,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.4,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.3,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.4,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 22,
+                    "end_object_id": 23,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 17,
+                  "origin": {
+                    "x": 1.0499999999999994,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line2"
+                }
+              }
+            }
+          }
+        }
+      },
+      "line3": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 28,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": 3.3,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.4,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": -3.3,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.4,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.3,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.4,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -3.3,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.4,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 26,
+                    "end_object_id": 27,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 17,
+                  "origin": {
+                    "x": 1.0499999999999994,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line3"
+                }
+              }
+            }
+          }
+        }
+      },
+      "line4": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 32,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": -3.3,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.4,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": -3.3,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.4,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -3.3,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.4,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -3.3,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.4,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 30,
+                    "end_object_id": 31,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 17,
+                  "origin": {
+                    "x": 1.0499999999999994,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line4"
+                }
+              }
+            }
+          }
+        }
+      },
+      "meta": {
+        "type": "Object",
+        "value": {
+          "sketch": {
+            "type": "Sketch",
+            "value": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -3.3,
+                    -0.4
+                  ],
+                  "tag": {
+                    "commentStart": 2388,
+                    "end": 2393,
+                    "moduleId": 0,
+                    "start": 2388,
+                    "type": "TagDeclarator",
+                    "value": "line1"
+                  },
+                  "to": [
+                    3.3,
+                    -0.4
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    3.3,
+                    -0.4
+                  ],
+                  "tag": {
+                    "commentStart": 2468,
+                    "end": 2473,
+                    "moduleId": 0,
+                    "start": 2468,
+                    "type": "TagDeclarator",
+                    "value": "line2"
+                  },
+                  "to": [
+                    3.3,
+                    0.4
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    3.3,
+                    0.4
+                  ],
+                  "tag": {
+                    "commentStart": 2585,
+                    "end": 2590,
+                    "moduleId": 0,
+                    "start": 2585,
+                    "type": "TagDeclarator",
+                    "value": "line3"
+                  },
+                  "to": [
+                    -3.3,
+                    0.4
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -3.3,
+                    0.4
+                  ],
+                  "tag": {
+                    "commentStart": 2702,
+                    "end": 2707,
+                    "moduleId": 0,
+                    "start": 2702,
+                    "type": "TagDeclarator",
+                    "value": "line4"
+                  },
+                  "to": [
+                    -3.3,
+                    -0.4
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                }
+              ],
+              "on": {
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 17,
+                "origin": {
+                  "x": 1.0499999999999994,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": "mm"
+                },
+                "type": "plane",
+                "xAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
+                  "units": null
+                },
+                "zAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                }
+              },
+              "start": {
+                "from": [
+                  -3.3,
+                  -0.4
+                ],
+                "to": [
+                  -3.3,
+                  -0.4
+                ],
+                "units": "mm",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "tags": {
+                "line1": {
+                  "type": "TagIdentifier",
+                  "value": "line1"
+                },
+                "line2": {
+                  "type": "TagIdentifier",
+                  "value": "line2"
+                },
+                "line3": {
+                  "type": "TagIdentifier",
+                  "value": "line3"
+                },
+                "line4": {
+                  "type": "TagIdentifier",
+                  "value": "line4"
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "mm",
+              "isClosed": "implicitly"
+            }
+          }
+        },
+        "constrainable": false
+      }
+    },
+    "constrainable": false
+  },
+  "sketch002": {
+    "type": "Object",
+    "value": {
+      "circle1": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 118,
+                "kind": {
+                  "circle": {
+                    "start": [
+                      {
+                        "n": 1.9,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.9,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 116,
+                    "center_object_id": 117,
+                    "start_freedom": "Free",
+                    "center_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 114,
+                  "origin": {
+                    "x": -14.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "circle1"
+                }
+              }
+            }
+          }
+        }
+      },
+      "meta": {
+        "type": "Object",
+        "value": {
+          "sketch": {
+            "type": "Sketch",
+            "value": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    0.0,
+                    0.0
+                  ],
+                  "from": [
+                    1.9,
+                    0.0
+                  ],
+                  "radius": 1.9,
+                  "tag": {
+                    "commentStart": 5832,
+                    "end": 5839,
+                    "moduleId": 0,
+                    "start": 5832,
+                    "type": "TagDeclarator",
+                    "value": "circle1"
+                  },
+                  "to": [
+                    1.9,
+                    0.0
+                  ],
+                  "type": "Circle",
+                  "units": "mm"
+                }
+              ],
+              "on": {
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 114,
+                "origin": {
+                  "x": -14.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": "mm"
+                },
+                "type": "plane",
+                "xAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
+                  "units": null
+                },
+                "zAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                }
+              },
+              "start": {
+                "from": [
+                  1.9,
+                  0.0
+                ],
+                "to": [
+                  1.9,
+                  0.0
+                ],
+                "units": "mm",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "tags": {
+                "circle1": {
+                  "type": "TagIdentifier",
+                  "value": "circle1"
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "mm",
+              "isClosed": "no"
+            }
+          }
+        },
+        "constrainable": false
+      }
+    },
+    "constrainable": false
+  },
   "tongue": {
     "type": "Solid",
     "value": {
@@ -2195,28 +6211,56 @@ description: Variables in memory after executing usb-c.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 2388,
+            "end": 2393,
+            "moduleId": 0,
+            "start": 2388,
+            "type": "TagDeclarator",
+            "value": "line1"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 2468,
+            "end": 2473,
+            "moduleId": 0,
+            "start": 2468,
+            "type": "TagDeclarator",
+            "value": "line2"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 2585,
+            "end": 2590,
+            "moduleId": 0,
+            "start": 2585,
+            "type": "TagDeclarator",
+            "value": "line3"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 2702,
+            "end": 2707,
+            "moduleId": 0,
+            "start": 2702,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
           "type": "extrudePlane"
         }
       ],
@@ -2234,7 +6278,14 @@ description: Variables in memory after executing usb-c.kcl
               -3.3,
               -0.4
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 2388,
+              "end": 2393,
+              "moduleId": 0,
+              "start": 2388,
+              "type": "TagDeclarator",
+              "value": "line1"
+            },
             "to": [
               3.3,
               -0.4
@@ -2251,7 +6302,14 @@ description: Variables in memory after executing usb-c.kcl
               3.3,
               -0.4
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 2468,
+              "end": 2473,
+              "moduleId": 0,
+              "start": 2468,
+              "type": "TagDeclarator",
+              "value": "line2"
+            },
             "to": [
               3.3,
               0.4
@@ -2268,7 +6326,14 @@ description: Variables in memory after executing usb-c.kcl
               3.3,
               0.4
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 2585,
+              "end": 2590,
+              "moduleId": 0,
+              "start": 2585,
+              "type": "TagDeclarator",
+              "value": "line3"
+            },
             "to": [
               -3.3,
               0.4
@@ -2285,7 +6350,14 @@ description: Variables in memory after executing usb-c.kcl
               -3.3,
               0.4
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 2702,
+              "end": 2707,
+              "moduleId": 0,
+              "start": 2702,
+              "type": "TagDeclarator",
+              "value": "line4"
+            },
             "to": [
               -3.3,
               -0.4
@@ -2298,7 +6370,7 @@ description: Variables in memory after executing usb-c.kcl
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "kind": "Custom",
-          "objectId": 2,
+          "objectId": 17,
           "origin": {
             "x": 1.0499999999999994,
             "y": 0.0,
@@ -2341,8 +6413,27 @@ description: Variables in memory after executing usb-c.kcl
             "sourceRange": []
           }
         },
+        "tags": {
+          "line1": {
+            "type": "TagIdentifier",
+            "value": "line1"
+          },
+          "line2": {
+            "type": "TagIdentifier",
+            "value": "line2"
+          },
+          "line3": {
+            "type": "TagIdentifier",
+            "value": "line3"
+          },
+          "line4": {
+            "type": "TagIdentifier",
+            "value": "line4"
+          }
+        },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "mm"
       },
       "startCapId": "[uuid]",

@@ -1,7 +1,8 @@
 //! Utility functions for working with ropes and positions.
 
 use ropey::Rope;
-use tower_lsp::lsp_types::{Diagnostic, Position};
+use tower_lsp::lsp_types::Diagnostic;
+use tower_lsp::lsp_types::Position;
 
 pub fn position_to_offset(position: Position, rope: &Rope) -> Option<usize> {
     Some(rope.try_line_to_char(position.line as usize).ok()? + position.character as usize)

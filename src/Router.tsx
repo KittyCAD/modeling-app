@@ -15,7 +15,7 @@ import ModelingPageProvider from '@src/components/ModelingPageProvider'
 import { NetworkContext } from '@src/hooks/useNetworkContext'
 import { useNetworkStatus } from '@src/hooks/useNetworkStatus'
 import { coreDump } from '@src/lang/wasm'
-import { CoreDumpManager } from '@src/lib/coredump'
+import { CoreDumpManager, submitCoreDumpSupportTicket } from '@src/lib/coredump'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
@@ -32,6 +32,8 @@ import { TestLayout } from '@src/lib/layout/TestLayout'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import Loading from '@src/components/Loading'
 import { MachineApiController } from '@src/components/MachineApiController'
+import { routesValueSpec } from '@src/registry/contracts/routes'
+import { useSignals } from '@preact/signals-react/runtime'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -40,9 +42,11 @@ const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
  * @returns RouterProvider
  */
 export const Router = () => {
+  useSignals()
   const app = useApp()
   const { kclManager } = useSingletons()
   const networkStatus = useNetworkStatus(kclManager.engineCommandManager)
+  const routesProvidedByRegistry = app.registry.signal(routesValueSpec).value
   const router = useMemo(
     () =>
       createRouter([
@@ -130,10 +134,6 @@ export const Router = () => {
                   path: makeUrlPathRelative(PATHS.SETTINGS),
                   element: <Settings />,
                 },
-                {
-                  path: makeUrlPathRelative(PATHS.TELEMETRY),
-                  element: <Telemetry />,
-                },
               ],
             },
             {
@@ -150,10 +150,11 @@ export const Router = () => {
                   },
                 ]
               : []),
+            ...routesProvidedByRegistry,
           ],
         },
       ]),
-    [app]
+    [app, routesProvidedByRegistry]
   )
 
   return (
@@ -168,21 +169,30 @@ function CoreDump() {
   const { auth } = useApp()
   const { kclManager } = useSingletons()
   const token = auth.useToken()
+  const user = auth.useUser()
   const coreDumpManager = useMemo(
-    () => new CoreDumpManager(kclManager, token),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    []
+    () => new CoreDumpManager(kclManager),
+    [kclManager]
   )
   useHotkeyWrapper(
     ['mod + shift + period'],
     () => {
       toast
         .promise(
-          coreDump(coreDumpManager, kclManager.wasmInstancePromise, true),
+          coreDump(coreDumpManager, kclManager.wasmInstancePromise).then(
+            async (dump) => {
+              await submitCoreDumpSupportTicket({
+                dump,
+                token,
+                user,
+              })
+              return dump
+            }
+          ),
           {
-            loading: 'Starting core dump...',
-            success: 'Core dump completed successfully',
-            error: 'Error while exporting core dump',
+            loading: 'Submitting support ticket...',
+            success: 'Support ticket created successfully.',
+            error: 'Error while creating support ticket.',
           },
           {
             success: {

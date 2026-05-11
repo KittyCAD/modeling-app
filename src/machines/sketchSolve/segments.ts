@@ -30,11 +30,16 @@ import {
 import { KCL_DEFAULT_COLOR } from '@src/lib/constants'
 import { hasProperty, isArray } from '@src/lib/utils'
 // Import and re-export pure utility functions
-import { getSegmentColor } from '@src/machines/sketchSolve/segmentsUtils'
+import {
+  getPointSegmentScale,
+  getSegmentColor,
+  getSegmentLineWidth,
+} from '@src/machines/sketchSolve/segmentsUtils'
 import {
   setupConstructionLineDashShader,
   setupConstructionArcDashShader,
 } from '@src/machines/sketchSolve/constructionDashShader'
+import { RENDER_ORDER } from '@src/machines/sketchSolve/renderOrder'
 import type { Freedom } from '@rust/kcl-lib/bindings/FrontendApi'
 import { ConstraintBuilder } from '@src/machines/sketchSolve/constraints/ConstraintBuilder'
 import { createArcPositions } from '@src/machines/sketchSolve/arcPositions'
@@ -140,31 +145,31 @@ export const ARC_SEGMENT_BODY = 'ARC_SEGMENT_BODY'
 export const ARC_PREVIEW_CIRCLE = 'arc-preview-circle'
 export const POINT_SEGMENT_BODY = 'POINT_SEGMENT_BODY'
 export const POINT_SEGMENT_RADIUS = 3
-const POINT_SEGMENT_BODY_RENDER_ORDER = 10
-const HOVERED_POINT_SEGMENT_BODY_RENDER_ORDER = 11
 const MAX_POINT_SEGMENT_DOM_HANDLES = 100
 
 interface CreateSegmentArgs {
   input: SegmentCtor
-  theme: Themes
   id: number
-  scale: number
-  isDraft: boolean
   isConstruction: boolean
-  freedom?: Freedom | null
+}
+
+export type SegmentRenderState = {
+  selected: boolean
+  hovered: boolean
+  secondaryHovered: boolean
+  hoverColor?: number
+  draft: boolean
+  construction: boolean
 }
 
 interface UpdateSegmentArgs {
   input: SegmentCtor
   theme: Themes
-  id: number
   scale: number
   group: Group
-  selectedIds: Array<number>
-  hoveredId: number | null
-  isDraft: boolean
-  isConstruction: boolean
-  freedom?: Freedom | null
+  state: SegmentRenderState
+  hasSolveErrors: boolean
+  freedom: Freedom | null
 }
 
 /**
@@ -215,10 +220,14 @@ export interface SketchEntityUtils {
 class PointSegmentDOM implements SketchEntityUtils {
   private static createdHandleCount = 0
 
+  static resetCreatedHandleCount() {
+    PointSegmentDOM.createdHandleCount = 0
+  }
+
   private createPointHtml(segmentId: number) {
     // Keep only the minimal DOM structure required by tests.
     // The element stays in the DOM for query-based tests but is hidden/inert in production.
-    const [handleDiv, innerCircle] = htmlHelper`
+    const [handleDiv] = htmlHelper`
       <div
           data-segment_id="${String(segmentId)}"
           ${{ key: 'handle', value: SKETCH_POINT_HANDLE }}
@@ -230,8 +239,6 @@ class PointSegmentDOM implements SketchEntityUtils {
           "
           >
           <div
-            ${{ key: 'id', value: 'inner-circle' }}
-            data-point-inner-circle="true"
             style="
               position: absolute;
               top: 50%;
@@ -244,7 +251,7 @@ class PointSegmentDOM implements SketchEntityUtils {
           ></div>
         </div>
       `
-    return { handleDiv, innerCircle }
+    return { handleDiv }
   }
 
   init = (args: CreateSegmentArgs) => {
@@ -269,22 +276,6 @@ class PointSegmentDOM implements SketchEntityUtils {
       segmentGroup.add(cssObject)
       PointSegmentDOM.createdHandleCount += 1
     }
-
-    // Store freedom in userData for later access
-    segmentGroup.userData.freedom = args.freedom ?? null
-
-    this.update({
-      input: args.input,
-      theme: args.theme,
-      id: args.id,
-      scale: args.scale,
-      group: segmentGroup,
-      selectedIds: [],
-      hoveredId: null,
-      isDraft: args.isDraft,
-      isConstruction: args.isConstruction,
-      freedom: args.freedom,
-    })
     return segmentGroup
   }
 
@@ -292,7 +283,7 @@ class PointSegmentDOM implements SketchEntityUtils {
     if (args.input.type !== 'Point') {
       return new Error('Invalid input type for PointSegment')
     }
-    const { input, group, scale, isDraft, isConstruction } = args
+    const { input, group, scale } = args
     const { x, y } = input.position
     if (!(hasNumericValue(x) && hasNumericValue(y))) {
       return new Error('Invalid position values for PointSegment')
@@ -301,15 +292,12 @@ class PointSegmentDOM implements SketchEntityUtils {
     const handle = group.getObjectByName('handle')
     if (handle instanceof CSS2DObject) {
       handle.position.set(x.value / scale, y.value / scale, 0)
-      const el = handle.element
-      const freedom = args.freedom ?? group.userData.freedom ?? null
-      group.userData.freedom = freedom
-      group.userData.isDraft = isDraft
-      group.userData.isConstruction = isConstruction
-      el.dataset.isDraft = String(isDraft)
-      el.dataset.freedom = freedom ?? ''
     }
   }
+}
+
+export function resetSketchSolvePointHandleCount() {
+  PointSegmentDOM.resetCreatedHandleCount()
 }
 
 class PointSegment implements SketchEntityUtils {
@@ -336,23 +324,10 @@ class PointSegment implements SketchEntityUtils {
     )
     pointBody.userData.type = POINT_SEGMENT_BODY
     pointBody.name = POINT_SEGMENT_BODY
-    pointBody.renderOrder = POINT_SEGMENT_BODY_RENDER_ORDER
+    pointBody.renderOrder = RENDER_ORDER.POINT_SEGMENT_BODY
     pointBody.layers.set(SKETCH_LAYER)
     segmentGroup.add(pointBody)
     segmentGroup.userData.type = SEGMENT_TYPE_POINT
-
-    this.update({
-      input: args.input,
-      theme: args.theme,
-      id: args.id,
-      scale: args.scale,
-      group: segmentGroup,
-      selectedIds: [],
-      hoveredId: null,
-      isDraft: args.isDraft,
-      isConstruction: args.isConstruction,
-      freedom: args.freedom,
-    })
 
     return segmentGroup
   }
@@ -362,16 +337,7 @@ class PointSegment implements SketchEntityUtils {
       return new Error('Invalid input type for PointSegment')
     }
 
-    const {
-      input,
-      group,
-      scale,
-      selectedIds,
-      hoveredId,
-      id,
-      isDraft,
-      isConstruction,
-    } = args
+    const { input, group, scale, state, theme } = args
     const { x, y } = input.position
     if (!(hasNumericValue(x) && hasNumericValue(y))) {
       return new Error('Invalid position values for PointSegment')
@@ -390,24 +356,27 @@ class PointSegment implements SketchEntityUtils {
       return
     }
     pointBody.position.set(x.value / scale, y.value / scale, 0)
+    pointBody.scale.setScalar(
+      getPointSegmentScale({
+        isHovered: state.hovered,
+        isSecondaryHovered: state.secondaryHovered,
+      })
+    )
 
-    const isSelected = selectedIds.includes(id)
-    const isHovered = hoveredId === id
-    const freedom = args.freedom ?? group.userData.freedom ?? null
-
-    group.userData.freedom = freedom
-    group.userData.isDraft = isDraft
-    group.userData.isConstruction = isConstruction
+    const freedom = args.freedom
     group.userData.type = SEGMENT_TYPE_POINT
 
-    pointBody.renderOrder = isHovered
-      ? HOVERED_POINT_SEGMENT_BODY_RENDER_ORDER
-      : POINT_SEGMENT_BODY_RENDER_ORDER
+    pointBody.renderOrder = state.hovered
+      ? RENDER_ORDER.HOVERED_POINT_SEGMENT_BODY
+      : RENDER_ORDER.POINT_SEGMENT_BODY
     this.updatePointColors(pointBody, {
-      isSelected,
-      isHovered,
-      isDraft,
+      isSelected: state.selected,
+      isHovered: state.hovered,
+      hoverColor: state.hoverColor,
+      isDraft: state.draft,
+      hasSolveErrors: args.hasSolveErrors,
       freedom,
+      theme,
     })
   }
 
@@ -416,13 +385,19 @@ class PointSegment implements SketchEntityUtils {
     {
       isSelected,
       isHovered,
+      hoverColor,
       isDraft,
+      hasSolveErrors,
       freedom,
+      theme,
     }: {
       isSelected: boolean
       isHovered: boolean
+      hoverColor?: number
       isDraft: boolean
+      hasSolveErrors?: boolean
       freedom?: Freedom | null
+      theme: Themes
     }
   ): void {
     if (!(mesh.material instanceof MeshBasicMaterial)) {
@@ -432,8 +407,11 @@ class PointSegment implements SketchEntityUtils {
     const color = getSegmentColor({
       isDraft,
       isHovered,
+      hoverColor,
       isSelected,
+      hasSolveErrors,
       freedom,
+      theme,
     })
     mesh.material.color.set(color)
   }
@@ -447,13 +425,21 @@ class LineSegment implements SketchEntityUtils {
     mesh: Line2,
     isSelected: boolean,
     isHovered: boolean,
+    secondaryHovered: boolean,
+    hoverColor: number | undefined,
     isDraft: boolean,
+    theme: Themes,
+    hasSolveErrors?: boolean,
     freedom?: Freedom | null
   ): void {
     updateLineMaterial(mesh.material, {
       isSelected,
       isHovered,
+      secondaryHovered,
+      hoverColor,
       isDraft,
+      theme,
+      hasSolveErrors,
       freedom,
     })
   }
@@ -507,43 +493,16 @@ class LineSegment implements SketchEntityUtils {
     segmentGroup.name = id.toString()
     segmentGroup.userData = {
       type: SEGMENT_TYPE_LINE,
-      isDraft: args.isDraft,
-      isConstruction: args.isConstruction,
     }
 
     segmentGroup.add(mesh)
-
-    // Store freedom in userData
-    segmentGroup.userData.freedom = args.freedom ?? null
-
-    this.update({
-      input: input,
-      theme: args.theme,
-      id: id,
-      scale: args.scale,
-      group: segmentGroup,
-      selectedIds: [],
-      hoveredId: null,
-      isDraft: args.isDraft,
-      isConstruction: args.isConstruction,
-      freedom: args.freedom,
-    })
-
     return segmentGroup
   }
   update(args: UpdateSegmentArgs) {
     if (args.input.type !== 'Line') {
       return new Error('Invalid input type for PointSegment')
     }
-    const {
-      input,
-      group,
-      id,
-      selectedIds,
-      hoveredId,
-      isDraft,
-      isConstruction,
-    } = args
+    const { input, group, state, theme } = args
     if (
       !(
         hasNumericValue(input.start.x) &&
@@ -573,26 +532,17 @@ class LineSegment implements SketchEntityUtils {
     ])
     geometry.computeBoundingSphere()
 
-    // Update mesh color based on selection
-    const isSelected = selectedIds.includes(id)
-    // Check if this segment is currently hovered (stored in userData)
-    const isHovered = hoveredId === id
-    // Get freedom from args or group userData
-    const freedom = args.freedom ?? group.userData.freedom ?? null
-    // Check previous draft and construction state BEFORE updating it
-    const previousIsConstruction = group.userData.isConstruction === true
-    const constructionChanged = previousIsConstruction !== isConstruction
-    // Update userData for consistency
-    group.userData.freedom = freedom
-    group.userData.isDraft = isDraft
-    group.userData.isConstruction = isConstruction
+    const freedom = args.freedom
 
     if (straightSegmentBody.material instanceof LineMaterial) {
-      straightSegmentBody.material.dashed = isConstruction
+      const previousIsConstruction =
+        straightSegmentBody.material.dashed === true
+      const constructionChanged = previousIsConstruction !== state.construction
+      straightSegmentBody.material.dashed = state.construction
 
       // If construction state changed, we need to set up or remove the custom shader
       if (constructionChanged) {
-        if (isConstruction) {
+        if (state.construction) {
           // Switching to construction: set up the custom shader
           const lineStart = new Vector3(
             input.start.x.value,
@@ -618,7 +568,7 @@ class LineSegment implements SketchEntityUtils {
             straightSegmentBody.material.program = null
           }
         }
-      } else if (isConstruction) {
+      } else if (state.construction) {
         // Construction state didn't change but we're in construction mode: just update uniforms
         const lineStart = new Vector3(
           input.start.x.value,
@@ -654,9 +604,13 @@ class LineSegment implements SketchEntityUtils {
 
     this.updateLineColors(
       straightSegmentBody,
-      isSelected,
-      isHovered,
-      isDraft,
+      state.selected,
+      state.hovered,
+      state.secondaryHovered,
+      state.hoverColor,
+      state.draft,
+      theme,
+      args.hasSolveErrors,
       freedom
     )
   }
@@ -741,13 +695,21 @@ class ArcSegment implements SketchEntityUtils {
     mesh: Line2,
     isSelected: boolean,
     isHovered: boolean,
+    secondaryHovered: boolean,
+    hoverColor: number | undefined,
     isDraft: boolean,
+    theme: Themes,
+    hasSolveErrors?: boolean,
     freedom?: Freedom | null
   ): void {
     updateLineMaterial(mesh.material, {
       isSelected,
       isHovered,
+      secondaryHovered,
+      hoverColor,
       isDraft,
+      theme,
+      hasSolveErrors,
       freedom,
     })
   }
@@ -862,41 +824,14 @@ class ArcSegment implements SketchEntityUtils {
     segmentGroup.name = id.toString()
     segmentGroup.userData = {
       type: SEGMENT_TYPE_ARC,
-      isDraft: args.isDraft,
-      isConstruction: args.isConstruction,
     }
 
     segmentGroup.add(mesh)
-
-    // Store freedom in userData
-    segmentGroup.userData.freedom = args.freedom ?? null
-
-    this.update({
-      input: input,
-      theme: args.theme,
-      id: id,
-      scale: args.scale,
-      group: segmentGroup,
-      selectedIds: [],
-      hoveredId: null,
-      isDraft: args.isDraft,
-      isConstruction: args.isConstruction,
-      freedom: args.freedom,
-    })
-
     return segmentGroup
   }
 
   update(args: UpdateSegmentArgs) {
-    const {
-      input,
-      group,
-      id,
-      selectedIds,
-      hoveredId,
-      isDraft,
-      isConstruction,
-    } = args
+    const { input, group, state, theme } = args
     const arcData = this.extractArcData(input)
     if (arcData instanceof Error) {
       return arcData
@@ -929,26 +864,16 @@ class ArcSegment implements SketchEntityUtils {
     arcSegmentBody.material.linewidth =
       SEGMENT_WIDTH_PX * window.devicePixelRatio
 
-    // Update mesh color based on selection
-    const isSelected = selectedIds.includes(id)
-    // Check if this segment is currently hovered (stored in userData)
-    const isHovered = hoveredId === id
-    // Get freedom from args or group userData
-    const freedom = args.freedom ?? group.userData.freedom ?? null
-    // Check previous draft and construction state BEFORE updating it
-    const previousIsConstruction = group.userData.isConstruction === true
-    const constructionChanged = previousIsConstruction !== isConstruction
-    // Update userData for consistency
-    group.userData.freedom = freedom
-    group.userData.isDraft = isDraft
-    group.userData.isConstruction = isConstruction
+    const freedom = args.freedom
 
     if (arcSegmentBody.material instanceof LineMaterial) {
-      arcSegmentBody.material.dashed = isConstruction
+      const previousIsConstruction = arcSegmentBody.material.dashed === true
+      const constructionChanged = previousIsConstruction !== state.construction
+      arcSegmentBody.material.dashed = state.construction
 
       // If construction state changed, we need to set up or remove the custom shader
       if (constructionChanged) {
-        if (isConstruction) {
+        if (state.construction) {
           // Switching to construction: set up the custom shader
           const arcCenter = new Vector3(centerX, centerY, 0)
           const arcStart = new Vector3(arcData.startX, arcData.startY, 0)
@@ -972,7 +897,7 @@ class ArcSegment implements SketchEntityUtils {
             arcSegmentBody.material.program = null
           }
         }
-      } else if (isConstruction) {
+      } else if (state.construction) {
         // Construction state didn't change but we're in construction mode: just update uniforms
         const arcCenter = new Vector3(centerX, centerY, 0)
         const arcStart = new Vector3(arcData.startX, arcData.startY, 0)
@@ -1010,11 +935,210 @@ class ArcSegment implements SketchEntityUtils {
 
     this.updateArcColors(
       arcSegmentBody,
-      isSelected,
-      isHovered,
-      isDraft,
+      state.selected,
+      state.hovered,
+      state.secondaryHovered,
+      state.hoverColor,
+      state.draft,
+      theme,
+      args.hasSolveErrors,
       freedom
     )
+  }
+}
+
+class CircleSegment implements SketchEntityUtils {
+  private extractCircleData(input: SegmentCtor):
+    | Error
+    | {
+        centerX: number
+        centerY: number
+        startX: number
+        startY: number
+        radius: number
+        startAngle: number
+        endAngle: number
+      } {
+    if (input.type !== 'Circle') {
+      return new Error('Invalid input type for CircleSegment')
+    }
+
+    if (
+      !(
+        hasNumericValue(input.center.x) &&
+        hasNumericValue(input.center.y) &&
+        hasNumericValue(input.start.x) &&
+        hasNumericValue(input.start.y)
+      )
+    ) {
+      return new Error('Invalid position values for CircleSegment')
+    }
+
+    const centerX = input.center.x.value
+    const centerY = input.center.y.value
+    const startX = input.start.x.value
+    const startY = input.start.y.value
+    const radius = Math.hypot(startX - centerX, startY - centerY)
+    const startAngle = Math.atan2(startY - centerY, startX - centerX)
+
+    return {
+      centerX,
+      centerY,
+      startX,
+      startY,
+      radius,
+      startAngle,
+      endAngle: startAngle + Math.PI * 2,
+    }
+  }
+
+  init = (args: CreateSegmentArgs) => {
+    const { input, id } = args
+    const circleData = this.extractCircleData(input)
+    if (circleData instanceof Error) {
+      return circleData
+    }
+
+    const segmentGroup = new Group()
+    const geometry = new LineGeometry()
+    const material = new LineMaterial({
+      color: KCL_DEFAULT_COLOR,
+      linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
+      dashed: args.isConstruction,
+      dashSize: 8,
+      gapSize: 6,
+      worldUnits: false,
+      resolution: new Vector2(window.innerWidth, window.innerHeight),
+    })
+
+    if (args.isConstruction) {
+      const circleCenter = new Vector3(
+        circleData.centerX,
+        circleData.centerY,
+        0
+      )
+      const circleStart = new Vector3(circleData.startX, circleData.startY, 0)
+      setupConstructionArcDashShader(
+        material,
+        circleCenter,
+        circleStart,
+        circleData.startAngle,
+        circleData.endAngle
+      )
+    }
+
+    const mesh = new Line2(geometry, material)
+
+    mesh.userData.type = ARC_SEGMENT_BODY
+    mesh.name = ARC_SEGMENT_BODY
+    segmentGroup.name = id.toString()
+    segmentGroup.userData = {
+      type: SEGMENT_TYPE_ARC,
+    }
+    segmentGroup.add(mesh)
+
+    return segmentGroup
+  }
+
+  update(args: UpdateSegmentArgs) {
+    const { input, group, state, theme } = args
+    const circleData = this.extractCircleData(input)
+    if (circleData instanceof Error) {
+      return circleData
+    }
+
+    const { centerX, centerY, radius, startAngle, endAngle, startX, startY } =
+      circleData
+
+    const circleSegmentBody = group.children.find(
+      (child) => child.userData.type === ARC_SEGMENT_BODY
+    )
+    if (!(circleSegmentBody instanceof Line2)) {
+      console.error('No circle segment body found in group')
+      return
+    }
+
+    circleSegmentBody.geometry.setPositions(
+      createArcPositions({
+        center: [centerX, centerY],
+        radius,
+        startAngle,
+        endAngle,
+        ccw: true,
+      })
+    )
+    circleSegmentBody.geometry.computeBoundingSphere()
+    circleSegmentBody.material.linewidth =
+      SEGMENT_WIDTH_PX * window.devicePixelRatio
+
+    const freedom = args.freedom
+
+    if (circleSegmentBody.material instanceof LineMaterial) {
+      const previousIsConstruction = circleSegmentBody.material.dashed === true
+      const constructionChanged = previousIsConstruction !== state.construction
+      circleSegmentBody.material.dashed = state.construction
+
+      if (constructionChanged) {
+        if (state.construction) {
+          setupConstructionArcDashShader(
+            circleSegmentBody.material,
+            new Vector3(centerX, centerY, 0),
+            new Vector3(startX, startY, 0),
+            startAngle,
+            endAngle
+          )
+        } else {
+          removeCustomShaderProperties(circleSegmentBody.material)
+        }
+        circleSegmentBody.material.needsUpdate = true
+        const program = getMaterialProgram(circleSegmentBody.material)
+        if (program !== null && program !== undefined) {
+          if (hasProperty(circleSegmentBody.material, 'program')) {
+            circleSegmentBody.material.program = null
+          }
+        }
+      } else if (state.construction) {
+        const uniforms = getMaterialUniforms(circleSegmentBody.material)
+        if (uniforms) {
+          if (uniforms.uArcCenter) {
+            uniforms.uArcCenter.value = new Vector3(centerX, centerY, 0)
+          }
+          if (uniforms.uArcStart) {
+            uniforms.uArcStart.value = new Vector3(startX, startY, 0)
+          }
+          if (uniforms.uArcStartAngle) {
+            uniforms.uArcStartAngle.value = startAngle
+          }
+          if (uniforms.uArcEndAngle) {
+            uniforms.uArcEndAngle.value = endAngle
+          }
+        }
+      }
+
+      circleSegmentBody.material.worldUnits = false
+      if (!circleSegmentBody.material.resolution) {
+        circleSegmentBody.material.resolution = new Vector2(
+          window.innerWidth,
+          window.innerHeight
+        )
+      } else {
+        circleSegmentBody.material.resolution.set(
+          window.innerWidth,
+          window.innerHeight
+        )
+      }
+    }
+
+    updateLineMaterial(circleSegmentBody.material, {
+      isSelected: state.selected,
+      isHovered: state.hovered,
+      secondaryHovered: state.secondaryHovered,
+      hoverColor: state.hoverColor,
+      isDraft: state.draft,
+      theme,
+      hasSolveErrors: args.hasSolveErrors,
+      freedom,
+    })
   }
 }
 
@@ -1023,12 +1147,20 @@ function updateLineMaterial(
   {
     isSelected,
     isHovered,
+    secondaryHovered,
+    hoverColor,
     isDraft,
+    theme,
+    hasSolveErrors,
     freedom,
   }: {
     isSelected: boolean
     isHovered: boolean
+    secondaryHovered: boolean
+    hoverColor?: number
     isDraft: boolean
+    theme: Themes
+    hasSolveErrors?: boolean
     freedom?: Freedom | null
   }
 ) {
@@ -1037,10 +1169,17 @@ function updateLineMaterial(
   const color = getSegmentColor({
     isDraft,
     isHovered,
+    hoverColor,
     isSelected,
+    theme,
+    hasSolveErrors,
     freedom,
   })
   material.color.set(color)
+  material.linewidth = getSegmentLineWidth({
+    isHovered,
+    isSecondaryHovered: secondaryHovered,
+  })
 }
 
 /**
@@ -1063,13 +1202,12 @@ function updateLineMaterial(
  *
  * @example
  * ```ts
- * const [outerDiv, innerDiv] = htmlHelper`
+ * const [outerDiv] = htmlHelper`
  *   <div ${{key: 'segment_id', value: '123'}} style="width: 30px;">
- *     <div ${{key: 'id', value: 'inner-circle'}} style="width: 6px;"></div>
+ *     <div style="width: 6px;"></div>
  *   </div>
  * `
  * // outerDiv has data-segment_id="123"
- * // innerDiv has data-id="inner-circle"
  * ```
  *
  * @example
@@ -1122,5 +1260,6 @@ export const segmentUtilsMap = {
   PointSegment: new PointSegment(),
   LineSegment: new LineSegment(),
   ArcSegment: new ArcSegment(),
+  CircleSegment: new CircleSegment(),
   Constraint: new ConstraintBuilder(),
 }

@@ -15,6 +15,9 @@ export enum AreaType {
   Diff = 'diff',
 }
 
+export type AreaTypeId = string
+export type AreaLibrary = Record<AreaTypeId, AreaTypeDefinition>
+
 export type AreaTypeComponentProps = {
   areaConfig: Omit<AreaTypeDefinition, 'Component'>
   layout: Layout
@@ -49,6 +52,9 @@ export enum ActionType {
   CommandBar = 'openCommandBar',
   Share = 'share',
 }
+
+export type ActionTypeId = string
+export type ActionLibrary = Record<ActionTypeId, ActionTypeDefinition>
 
 export type ActionTypeDefinition = {
   execute: () => void
@@ -95,7 +101,7 @@ export type SplitLayout = BaseLayout &
   }
 export type Action = HasIdAndLabel &
   WithIcon & {
-    actionType: ActionType
+    actionType: ActionTypeId
   }
 export type PaneChild = Layout & WithIcon
 export type PaneChildCssOverrides = Partial<{
@@ -121,9 +127,50 @@ export interface Closeable {
 }
 export type SimpleLayout = BaseLayout & {
   type: LayoutType.Simple
-  areaType: AreaType
+  areaType: AreaTypeId
 }
 export type Layout = SimpleLayout | SplitLayout | PaneLayout
+
+export type LayoutContributionPlacement = {
+  targetPaneId: string
+  position?: 'start' | 'end'
+  beforeId?: string
+  afterId?: string
+  index?: number
+}
+
+export type LayoutAreaContribution = {
+  id: string
+  kind: 'area'
+  pane: PaneChild
+  placement: LayoutContributionPlacement
+  initiallyOpen?: boolean
+}
+
+export type LayoutActionContribution = {
+  id: string
+  kind: 'action'
+  action: Action
+  placement: LayoutContributionPlacement
+}
+
+export type LayoutContribution =
+  | LayoutAreaContribution
+  | LayoutActionContribution
+
+export type LayoutContributionResult = {
+  applied: boolean
+  reason?: 'already-present' | 'target-not-found' | 'invalid-target' | 'applied'
+}
+
+export type LayoutService = {
+  applyContribution: (
+    contribution: LayoutContribution
+  ) => LayoutContributionResult
+  applyContributions: (
+    contributions: readonly LayoutContribution[]
+  ) => LayoutContributionResult[]
+}
 
 type LayoutVersion = `v${number}`
 
@@ -133,6 +180,8 @@ export type LayoutWithMetadata = {
   /** We don't know if this is valid yet */
   layout: Layout
 }
+
+export type LayoutsWithMetadata = Record<string, LayoutWithMetadata>
 
 export type LayoutMigrationMap = Map<string, LayoutMigration>
 

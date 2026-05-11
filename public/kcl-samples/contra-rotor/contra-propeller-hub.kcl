@@ -1,0 +1,88 @@
+// Propeller Hub
+// Hub with a spline interior
+// Categories: Aerospace
+
+@settings(defaultLengthUnit = mm)
+
+// Hub parameters
+bladeCount = 5
+bladeDiameter = 2500
+hubDiameter = 200
+hubThickness = 150
+
+// Spline shaft inputs
+toothWidth = 30 // todo: set to 10 after engine bugfix
+toothHeight = 6
+shaftDiameter = 148
+
+// Spline shaft mounting parameters
+toothAngleDeg = (toothWidth / shaftDiameter * 360 / PI): deg
+toothCount = round(180deg / toothAngleDeg)
+
+// Create a central hub with a spline interior
+hubSketch = sketch(on = XZ) {
+  circle1 = circle(start = [var 78.03mm, var 62.54mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  circle2 = circle(start = [var 50.02mm, var -15.96mm], center = [var 0mm, var 0mm])
+  coincident([circle2.center, circle1.center])
+  radius(circle2) == shaftDiameter / 2
+  radius(circle1) == hubDiameter / 2
+}
+hubRegion = region(point = [shaftDiameter * 0.6, 0mm], sketch = hubSketch)
+hubBodyRough = extrude(
+  hubRegion,
+  length = hubThickness,
+  symmetric = true,
+  tagEnd = $capEnd001,
+  tagStart = $capStart001,
+)
+hiddenHubSketch = hide(hubSketch)
+hubFillets = fillet(
+  hubBodyRough,
+  tags = [
+    getCommonEdge(faces = [hubRegion.tags.circle1, capEnd001]),
+    getCommonEdge(faces = [hubRegion.tags.circle1, capStart001])
+  ],
+  radius = hubThickness / 10,
+)
+
+// Sketch the spline mounting interface
+toothSketch = sketch(on = XZ) {
+  arc1 = arc(start = [var 16.11mm, var 78.36mm], end = [var -16.11mm, var 78.36mm], center = [var 0mm, var 0mm])
+  coincident([arc1.center, ORIGIN])
+  line1 = line(start = [var 0mm, var 0mm], end = [var 16.11mm, var 78.36mm])
+  coincident([line1.start, arc1.center])
+  coincident([line1.end, arc1.start])
+  line2 = line(start = [var 0mm, var 0mm], end = [var -16.11mm, var 78.36mm])
+  angle([line1, line2]) == toothAngleDeg
+  coincident([arc1.end, line2.end])
+  coincident([line2.start, line1.start])
+  line3 = line(start = [var -16.11mm, var 78.36mm], end = [var 0mm, var 78.36mm], construction = true)
+  coincident([line3.start, line2.end])
+  line4 = line(start = [var 0mm, var 78.36mm], end = [var 16.11mm, var 78.36mm], construction = true)
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.end])
+  line5 = line(start = [var 0mm, var 78.36mm], end = [var 0mm, var 0mm], construction = true)
+  coincident([line5.start, line4.start])
+  coincident([line5.end, line1.start])
+  horizontal(line3)
+  horizontal(line4)
+  vertical(line5)
+  equalLength([line3, line4])
+  distance([line2.start, line2.end]) == shaftDiameter / 2 + toothHeight
+}
+
+toothRegion = region(segments = [toothSketch.line1])
+toothBody = extrude(toothRegion, length = hubThickness * 1.1, symmetric = true)
+  |> rotate(axis = Y, angle = toothAngleDeg)
+hiddenToothSketch = hide(toothSketch)
+
+teethTools = patternCircular3d(
+  toothBody,
+  instances = toothCount,
+  axis = Y,
+  center = [0, 0, 0],
+)
+
+hubWithTeeth = subtract([hubBodyRough], tools = [teethTools])
+  |> appearance(color = "#e88811", metalness = 10, roughness = 80)

@@ -1,4 +1,7 @@
 import { signal } from '@preact/signals-react'
+import { FileMeta } from '@src/lib/types'
+
+type HistorySource = 'CodeEdit' | 'Zookeeper'
 
 export interface HistoryEntry {
   type: string
@@ -7,12 +10,14 @@ export interface HistoryEntry {
   right: string
   left: string
   wroteToDisk: boolean
+  source: HistorySource
 }
 
 export class History {
   public entries = signal<HistoryEntry[]>([])
   public lastEntrySelected = signal<HistoryEntry | null>(null)
   private _maxLength = 100
+  public filesCachedFromPrompt = signal<FileMeta[]>([])
   constructor() {}
 
   get maxLength() {

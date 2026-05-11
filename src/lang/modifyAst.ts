@@ -55,7 +55,10 @@ import type {
   KclExpression,
   KclExpressionWithVariable,
 } from '@src/lib/commandTypes'
-import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
+import {
+  DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES,
+  KCL_DEFAULT_CONSTANT_PREFIXES,
+} from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 
 import { ARG_AT } from '@src/lang/constants'
@@ -1102,12 +1105,13 @@ export function insertRegionVariablesAndOffsetPathToNode({
       return new Error('Region point coordinates are invalid')
     }
 
+    const decimals = DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES
     const regionExpr = createCallExpressionStdLibKw('region', null, [
       createLabeledArg(
         'point',
         createArrayExpression([
-          createLiteral(x, wasmInstance, unitSuffix),
-          createLiteral(y, wasmInstance, unitSuffix),
+          createLiteral(x, wasmInstance, unitSuffix, decimals),
+          createLiteral(y, wasmInstance, unitSuffix, decimals),
         ])
       ),
       createLabeledArg('sketch', createLocalName(sketchVarName)),

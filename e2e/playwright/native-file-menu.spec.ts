@@ -1,11 +1,163 @@
+import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
   clickElectronNativeMenuById,
+  clickElectronNativeMenuByIdForPage,
   findElectronNativeMenuById,
+  findElectronNativeMenuByIdForPage,
+  getElectronNativeMenuItemByIdForPage,
   openSettingsExpectLocator,
   openSettingsExpectText,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import type { Page } from '@playwright/test'
+
+declare global {
+  interface Window {
+    __nativeMenuEvents?: string[]
+    __removeNativeMenuListener?: () => void
+  }
+}
+
+async function expectNewWindowMenuItem(
+  tronApp: ElectronZoo,
+  page = tronApp.page
+) {
+  const menuItem = await getElectronNativeMenuItemByIdForPage(
+    tronApp,
+    page,
+    'File.New window'
+  )
+
+  expect(menuItem).toEqual({
+    accelerator: 'CommandOrControl+Shift+N',
+    label: 'New Window',
+  })
+}
+
+async function installNativeMenuRecorder(page: Page) {
+  await page.evaluate(() => {
+    window.__removeNativeMenuListener?.()
+    window.__nativeMenuEvents = []
+
+    if (!window.electron) {
+      throw new Error('Electron is not available')
+    }
+
+    window.__removeNativeMenuListener = window.electron.menuOn((payload) => {
+      window.__nativeMenuEvents?.push(payload.menuLabel)
+    })
+  })
+}
+
+async function getNativeMenuEvents(page: Page) {
+  return page.evaluate(() => {
+    return window.__nativeMenuEvents ?? []
+  })
+}
+
+async function createModelingNativeMenu(page: Page) {
+  await page.evaluate(async () => {
+    if (!window.electron) {
+      throw new Error('Electron is not available')
+    }
+
+    await window.electron.createModelingPageMenu()
+  })
+}
+
+async function openCurrentUrlInNewElectronWindow(
+  tronApp: ElectronZoo,
+  page: Page
+) {
+  const newWindowPromise = tronApp.electron.waitForEvent('window')
+  await page.evaluate((url) => {
+    if (!window.electron) {
+      throw new Error('Electron is not available')
+    }
+
+    window.electron.openInNewWindow(url)
+  }, page.url())
+
+  const newWindow = await newWindowPromise
+  await newWindow.waitForLoadState('domcontentloaded')
+  await expect(newWindow.getByTestId('home-section')).toBeVisible()
+  return newWindow
+}
+
+test.describe(
+  'Native menu window routing',
+  { tag: ['@desktop', '@windows'] },
+  () => {
+    test.skip(
+      process.platform !== 'win32',
+      'Windows uses per-window native menus, and this guards that routing path.'
+    )
+
+    test('Design menu actions target only the clicked BrowserWindow', async ({
+      tronApp,
+      homePage,
+      page,
+    }) => {
+      if (!tronApp) {
+        throwTronAppMissing()
+        return
+      }
+
+      await page.reload()
+      await homePage.projectsLoaded()
+
+      const secondPage = await openCurrentUrlInNewElectronWindow(tronApp, page)
+
+      try {
+        await Promise.all([
+          installNativeMenuRecorder(page),
+          installNativeMenuRecorder(secondPage),
+        ])
+
+        await createModelingNativeMenu(page)
+        await createModelingNativeMenu(secondPage)
+
+        await findElectronNativeMenuByIdForPage(
+          tronApp,
+          page,
+          'Design.Start sketch'
+        )
+        await findElectronNativeMenuByIdForPage(
+          tronApp,
+          secondPage,
+          'Design.Start sketch'
+        )
+
+        await clickElectronNativeMenuByIdForPage(
+          tronApp,
+          page,
+          'Design.Start sketch'
+        )
+
+        await expect
+          .poll(() => getNativeMenuEvents(page))
+          .toEqual(['Design.Start sketch'])
+        await expect.poll(() => getNativeMenuEvents(secondPage)).toEqual([])
+
+        await clickElectronNativeMenuByIdForPage(
+          tronApp,
+          secondPage,
+          'Design.Start sketch'
+        )
+
+        await expect
+          .poll(() => getNativeMenuEvents(page))
+          .toEqual(['Design.Start sketch'])
+        await expect
+          .poll(() => getNativeMenuEvents(secondPage))
+          .toEqual(['Design.Start sketch'])
+      } finally {
+        await secondPage.close()
+      }
+    })
+  }
+)
 
 /**
  * Not all menu actions are tested. Some are default electron menu actions.
@@ -18,6 +170,26 @@ test.describe(
     test('Home page', async ({ tronApp, cmdBar, page, homePage }) => {
       if (!tronApp) throw new Error('tronApp is missing.')
 
+      await test.step('Home.File.New window', async () => {
+        await page.reload()
+        await homePage.projectsLoaded()
+        await homePage.isNativeFileMenuCreated()
+        await expectNewWindowMenuItem(tronApp)
+
+        const windowCountBefore = tronApp.electron.windows().length
+        const newWindowPromise = tronApp.electron.waitForEvent('window')
+        await clickElectronNativeMenuById(tronApp, 'File.New window')
+        const newWindow = await newWindowPromise
+
+        await expect
+          .poll(() => tronApp.electron.windows().length)
+          .toBe(windowCountBefore + 1)
+
+        await newWindow.close()
+        await expect
+          .poll(() => tronApp.electron.windows().length)
+          .toBe(windowCountBefore)
+      })
       await test.step('Home.File.Create project', async () => {
         await page.reload()
         await homePage.projectsLoaded()
@@ -167,6 +339,10 @@ test.describe(
       await scene.connectionEstablished()
       await scene.isNativeFileMenuCreated()
 
+      await test.step('Modeling.File.New window', async () => {
+        await expectNewWindowMenuItem(tronApp)
+        await findElectronNativeMenuById(tronApp, 'File.New window')
+      })
       await test.step('Modeling.File.Create project', async () => {
         await page.waitForTimeout(250)
         await clickElectronNativeMenuById(tronApp, 'File.Create project')
@@ -258,7 +434,7 @@ test.describe(
       await test.step('Modeling.View.Orthographic view', async () => {
         await clickElectronNativeMenuById(tronApp, 'View.Orthographic view')
         const textToCheck =
-          'Set camera projection to "orthographic" as a user default'
+          'Set camera projection to "orthographic" as a user default.'
         const toast = page.locator('[data-rht-toaster]')
         // Let the previous toast clear
         await expect(toast).toHaveText(textToCheck)
@@ -267,7 +443,7 @@ test.describe(
         await page.waitForTimeout(250)
         await clickElectronNativeMenuById(tronApp, 'View.Perspective view')
         const textToCheck =
-          'Set camera projection to "perspective" as a user default'
+          'Set camera projection to "perspective" as a user default.'
         const toast = page.locator('[data-rht-toaster]')
         await expect(toast).toHaveText(textToCheck)
       })

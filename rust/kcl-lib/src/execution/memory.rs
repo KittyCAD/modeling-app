@@ -202,26 +202,24 @@
 //! must be safe if the env is in either state, so even if the transition happens at the same time
 //! as the storage modification, it is ok.
 
-use std::{
-    cell::UnsafeCell,
-    fmt,
-    pin::Pin,
-    sync::{
-        Arc,
-        atomic::{AtomicBool, AtomicUsize, Ordering},
-    },
-};
+use std::cell::UnsafeCell;
+use std::fmt;
+use std::pin::Pin;
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
 
 use anyhow::Result;
 use env::Environment;
 use indexmap::IndexMap;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
-use crate::{
-    SourceRange,
-    errors::{KclError, KclErrorDetails},
-    execution::KclValue,
-};
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::KclValue;
 
 /// The distinguished name of the return value of a function.
 pub(crate) const RETURN_NAME: &str = "__return";
@@ -750,6 +748,33 @@ impl Stack {
         self.memory.find_all_in_env(env, |_| true, self.id)
     }
 
+    /// Search the current environment and all environments in the call stack
+    /// for a variable whose value satisfies the predicate. Returns the name of
+    /// the first matching variable found, or `None` if no match.
+    ///
+    /// Used on error paths to recover variable names for diagnostics; not
+    /// performance-critical.
+    pub(crate) fn find_var_name_in_all_envs(&self, pred: impl Fn(&KclValue) -> bool) -> Option<String> {
+        if !self.current_env.skip_env() {
+            for (name, value) in self.find_all_in_env(self.current_env) {
+                if pred(value) {
+                    return Some(name.clone());
+                }
+            }
+        }
+        for env in self.call_stack.iter().rev() {
+            if env.skip_env() {
+                continue;
+            }
+            for (name, value) in self.find_all_in_env(*env) {
+                if pred(value) {
+                    return Some(name.clone());
+                }
+            }
+        }
+        None
+    }
+
     /// Walk all values accessible from any environment in the call stack.
     ///
     /// This may include duplicate values or different versions of a value known by the same key,
@@ -1106,7 +1131,8 @@ mod env {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::execution::{kcl_value::FunctionSource, types::NumericType};
+    use crate::execution::kcl_value::FunctionSource;
+    use crate::execution::types::NumericType;
 
     fn sr() -> SourceRange {
         SourceRange::default()
@@ -1360,7 +1386,7 @@ mod test {
                     crate::parsing::ast::types::FunctionExpression::dummy(),
                     sn2,
                     crate::execution::kcl_value::KclFunctionSourceParams {
-                        is_std: false,
+                        std_props: None,
                         experimental: false,
                         include_in_feature_tree: false,
                     },

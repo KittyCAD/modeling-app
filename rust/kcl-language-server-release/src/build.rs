@@ -1,15 +1,17 @@
-use std::{
-    env,
-    fs::File,
-    io::{self, BufWriter},
-    path::{Path, PathBuf},
-};
+use std::env;
+use std::fs::File;
+use std::io::BufWriter;
+use std::io::{self};
+use std::path::Path;
+use std::path::PathBuf;
 
 use anyhow::Result;
 use clap::Parser;
-use flate2::{Compression, write::GzEncoder};
+use flate2::Compression;
+use flate2::write::GzEncoder;
 use time::OffsetDateTime;
-use xshell::{Shell, cmd};
+use xshell::Shell;
+use xshell::cmd;
 use zip::ZipWriter;
 
 /// A subcommand for building and packaging a release.

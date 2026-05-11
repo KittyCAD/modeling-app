@@ -1,25 +1,50 @@
-use std::{fmt, str::FromStr};
+use std::fmt;
+use std::str::FromStr;
 
 use indexmap::IndexMap;
 use regex::Regex;
-use tower_lsp::lsp_types::{
-    CompletionItem, CompletionItemKind, CompletionItemLabelDetails, Documentation, InsertTextFormat, MarkupContent,
-    MarkupKind, ParameterInformation, ParameterLabel, SignatureHelp, SignatureInformation,
-};
+use tower_lsp::lsp_types::CompletionItem;
+use tower_lsp::lsp_types::CompletionItemKind;
+use tower_lsp::lsp_types::CompletionItemLabelDetails;
+use tower_lsp::lsp_types::Documentation;
+use tower_lsp::lsp_types::InsertTextFormat;
+use tower_lsp::lsp_types::MarkupContent;
+use tower_lsp::lsp_types::MarkupKind;
+use tower_lsp::lsp_types::ParameterInformation;
+use tower_lsp::lsp_types::ParameterLabel;
+use tower_lsp::lsp_types::SignatureHelp;
+use tower_lsp::lsp_types::SignatureInformation;
 
-use crate::{
-    ModuleId,
-    execution::annotations,
-    parsing::{
-        ast::types::{
-            Annotation, Expr, ImportSelector, ItemVisibility, LiteralValue, Node, NonCodeValue, VariableKind,
-        },
-        token::NumericSuffix,
-    },
-};
+use crate::ModuleId;
+use crate::execution::annotations;
+use crate::execution::annotations::VersionConstraint;
+use crate::parsing::ast::types::Annotation;
+use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::ImportSelector;
+use crate::parsing::ast::types::ItemVisibility;
+use crate::parsing::ast::types::LiteralValue;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::NonCodeValue;
+use crate::parsing::ast::types::VariableKind;
+use crate::parsing::token::NumericSuffix;
 
 pub fn walk_prelude() -> ModData {
     visit_module("prelude", "", WalkForNames::All).unwrap()
+}
+
+pub fn walk_stdlib() -> ModData {
+    let mut stdlib = walk_prelude();
+
+    #[expect(clippy::single_element_loop)]
+    for module_name in ["solver"] {
+        let mut module = visit_module(module_name, &format!("{module_name}::"), WalkForNames::All).unwrap();
+        module.preferred_name = module_name.to_owned();
+        stdlib
+            .children
+            .insert(format!("M:{}", module.qual_name), DocData::Mod(module));
+    }
+
+    stdlib
 }
 
 #[derive(Clone, Debug)]
@@ -53,27 +78,28 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
         .parse_errs_as_err()
         .unwrap();
 
-    // TODO handle examples; use with_comments
     let mut summary = String::new();
     let mut description = None;
     for n in &parsed.non_code_meta.start_nodes {
         match &n.value {
             NonCodeValue::BlockComment { value, .. } if value.starts_with('/') => {
-                let line = value[1..].trim();
-                if line.is_empty() {
+                let rest = &value[1..];
+                if rest.trim().is_empty() {
                     match &mut description {
                         None => description = Some(String::new()),
-                        Some(d) => d.push_str("\n\n"),
+                        Some(d) => d.push('\n'),
                     }
                 } else {
+                    let line = rest.trim_end();
+                    let line = line.strip_prefix(' ').unwrap_or(line);
                     match &mut description {
                         None => {
-                            summary.push_str(line);
+                            summary.push_str(line.trim());
                             summary.push(' ');
                         }
                         Some(d) => {
                             d.push_str(line);
-                            d.push(' ');
+                            d.push('\n');
                         }
                     }
                 }
@@ -177,6 +203,7 @@ pub enum DocData {
 }
 
 impl DocData {
+    #[cfg(test)]
     pub fn name(&self) -> &str {
         match self {
             DocData::Fn(f) => &f.name,
@@ -186,7 +213,6 @@ impl DocData {
         }
     }
 
-    #[allow(dead_code)]
     pub fn preferred_name(&self) -> &str {
         match self {
             DocData::Fn(f) => &f.preferred_name,
@@ -216,28 +242,37 @@ impl DocData {
         }
     }
 
-    #[allow(dead_code)]
-    pub fn file_name(&self) -> String {
+    /// The effective documentation category, considering any `doc_category` override.
+    #[cfg(test)]
+    pub fn doc_category(&self) -> DocCategory {
         match self {
-            DocData::Fn(f) => format!("functions/{}", f.qual_name.replace("::", "-")),
-            DocData::Const(c) => format!("consts/{}", c.qual_name.replace("::", "-")),
-            DocData::Ty(t) => format!("types/{}", t.qual_name.replace("::", "-")),
-            DocData::Mod(m) => format!("modules/{}", m.qual_name.replace("::", "-")),
+            DocData::Fn(f) => f.properties.doc_category.unwrap_or(DocCategory::Functions),
+            DocData::Const(c) => c.properties.doc_category.unwrap_or(DocCategory::Constants),
+            DocData::Ty(t) => t.properties.doc_category.unwrap_or(DocCategory::Types),
+            DocData::Mod(_) => DocCategory::Modules,
         }
     }
 
-    #[allow(dead_code)]
+    #[cfg(test)]
+    pub fn file_name(&self) -> String {
+        format!(
+            "{}/{}",
+            self.doc_category().file_prefix(),
+            self.qual_name().replace("::", "-")
+        )
+    }
+
+    #[cfg(test)]
     pub fn example_name(&self) -> String {
-        match self {
-            DocData::Fn(f) => format!("fn_{}", f.qual_name.replace("::", "-")),
-            DocData::Const(c) => format!("const_{}", c.qual_name.replace("::", "-")),
-            DocData::Ty(t) => format!("ty_{}", t.qual_name.replace("::", "-")),
-            DocData::Mod(_) => unimplemented!(),
-        }
+        format!(
+            "{}_{}",
+            self.doc_category().example_prefix(),
+            self.qual_name().replace("::", "-")
+        )
     }
 
     /// The path to the module through which the item is accessed, e.g., `std::sketch`
-    #[allow(dead_code)]
+    #[cfg(test)]
     pub fn mod_name(&self) -> String {
         let q = match self {
             DocData::Fn(f) => &f.qual_name,
@@ -253,7 +288,7 @@ impl DocData {
         q[0..q.rfind("::").unwrap()].to_owned()
     }
 
-    #[allow(dead_code)]
+    #[cfg(test)]
     pub fn hide(&self) -> bool {
         match self {
             DocData::Fn(f) => f.properties.doc_hidden || f.properties.deprecated,
@@ -315,7 +350,7 @@ impl DocData {
         }
     }
 
-    #[allow(dead_code)]
+    #[cfg(test)]
     pub(super) fn summary(&self) -> Option<&String> {
         match self {
             DocData::Fn(f) => f.summary.as_ref(),
@@ -328,6 +363,9 @@ impl DocData {
 
 #[derive(Debug, Clone)]
 pub struct ConstData {
+    // TODO (#11345) Only read via DocData::name() in test code; removing requires updating ~30 test call sites.
+    // Also uses of name (like PI) will need special treatment
+    #[allow(dead_code)]
     pub name: String,
     /// How the const is indexed, etc.
     pub preferred_name: String,
@@ -388,9 +426,11 @@ impl ConstData {
             properties: Properties {
                 exported: !var.visibility.is_default(),
                 deprecated: false,
+                deprecated_since: None,
                 experimental: false,
                 doc_hidden: false,
                 impl_kind: annotations::Impl::Kcl,
+                doc_category: None,
             },
             summary: None,
             description: None,
@@ -419,7 +459,11 @@ impl ConstData {
                 detail: self.value.clone(),
                 description: None,
             }),
-            kind: Some(CompletionItemKind::CONSTANT),
+            kind: self
+                .properties
+                .doc_category
+                .map(DocCategory::to_completion_item_kind)
+                .or(Some(CompletionItemKind::CONSTANT)),
             detail: Some(detail),
             documentation: self.short_docs().map(|s| {
                 Documentation::MarkupContent(MarkupContent {
@@ -448,6 +492,7 @@ impl ConstData {
 pub struct ModData {
     pub name: String,
     /// How the module is indexed, etc.
+    #[allow(dead_code)]
     pub preferred_name: String,
     /// The fully qualified name.
     pub qual_name: String,
@@ -479,14 +524,16 @@ impl ModData {
             properties: Properties {
                 exported: false,
                 deprecated: false,
+                deprecated_since: None,
                 experimental: false,
                 doc_hidden: false,
                 impl_kind: Default::default(),
+                doc_category: None,
             },
         }
     }
 
-    #[allow(dead_code)]
+    #[cfg(test)]
     pub fn find_by_name(&self, name: &str) -> Option<&DocData> {
         if let Some(result) = self
             .children
@@ -568,9 +615,11 @@ impl FnData {
             properties: Properties {
                 exported: !var.visibility.is_default(),
                 deprecated: false,
+                deprecated_since: None,
                 experimental: false,
                 doc_hidden: false,
                 impl_kind: annotations::Impl::Kcl,
+                doc_category: None,
             },
             summary: None,
             description: None,
@@ -621,7 +670,11 @@ impl FnData {
                 detail: Some(self.fn_signature()),
                 description: None,
             }),
-            kind: Some(CompletionItemKind::FUNCTION),
+            kind: self
+                .properties
+                .doc_category
+                .map(DocCategory::to_completion_item_kind)
+                .or(Some(CompletionItemKind::FUNCTION)),
             detail: Some(self.qual_name.clone()),
             documentation: self.short_docs().map(|s| {
                 Documentation::MarkupContent(MarkupContent {
@@ -700,22 +753,106 @@ impl FnData {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DocCategory {
+    Functions,
+    Constants,
+    Modules,
+    Types,
+}
+
+impl DocCategory {
+    fn from_str(s: &str) -> Option<Self> {
+        match s {
+            "functions" => Some(DocCategory::Functions),
+            "consts" => Some(DocCategory::Constants),
+            "modules" => Some(DocCategory::Modules),
+            "types" => Some(DocCategory::Types),
+            _ => None,
+        }
+    }
+
+    #[cfg(test)]
+    fn file_prefix(self) -> &'static str {
+        match self {
+            DocCategory::Functions => "functions",
+            DocCategory::Constants => "consts",
+            DocCategory::Modules => "modules",
+            DocCategory::Types => "types",
+        }
+    }
+
+    #[cfg(test)]
+    fn example_prefix(self) -> &'static str {
+        match self {
+            DocCategory::Functions => "fn",
+            DocCategory::Constants => "const",
+            DocCategory::Modules => "module",
+            DocCategory::Types => "ty",
+        }
+    }
+
+    fn to_completion_item_kind(self) -> CompletionItemKind {
+        match self {
+            DocCategory::Functions => CompletionItemKind::FUNCTION,
+            DocCategory::Constants => CompletionItemKind::CONSTANT,
+            DocCategory::Types => CompletionItemKind::STRUCT,
+            DocCategory::Modules => CompletionItemKind::MODULE,
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Properties {
     pub deprecated: bool,
+    /// Constraint on the KCL version at or after which this item is deprecated,
+    /// e.g. "2.0".
+    pub deprecated_since: Option<VersionConstraint>,
     pub experimental: bool,
     pub doc_hidden: bool,
     #[allow(dead_code)]
     pub exported: bool,
     pub impl_kind: annotations::Impl,
+    pub doc_category: Option<DocCategory>,
 }
 
-#[allow(dead_code)]
+#[derive(Debug, Clone)]
+pub enum ExampleSketchSyntax {
+    SketchSyntaxAgnostic,
+    Legacy,
+    SketchSolve,
+}
+
+impl ExampleSketchSyntax {
+    fn from_attr(attr: &str) -> Option<Self> {
+        match attr {
+            "sketchSyntaxAgnostic" => Some(Self::SketchSyntaxAgnostic),
+            "legacy" | "legacySketch" | "legacySketchSyntax" | "old" | "oldSketchSyntax" => Some(Self::Legacy),
+            "sketchSolve" | "sketch_solve" | "new" | "newSketchSyntax" | "sketchSolveSyntax" => Some(Self::SketchSolve),
+            _ => None,
+        }
+    }
+
+    fn infer_from_source(source: &str) -> Self {
+        if source.contains("sketch(on =") {
+            Self::SketchSolve
+        } else if source.contains("startSketchOn") || source.contains("startProfile") {
+            Self::Legacy
+        } else {
+            Self::SketchSyntaxAgnostic
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct ExampleProperties {
+    #[allow(dead_code)]
     pub norun: bool,
+    #[allow(dead_code)]
     pub no3d: bool,
     pub inline: bool,
+    pub sketch_syntax: ExampleSketchSyntax,
+    pub sketch_syntax_explicit: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -733,6 +870,8 @@ pub struct ArgData {
     pub docs: Option<String>,
     /// If given, LSP should use these as completion items.
     pub snippet_array: Option<Vec<String>>,
+    /// Constraint on the KCL version at or after which this argument is deprecated.
+    pub deprecated_since: Option<VersionConstraint>,
 }
 
 impl fmt::Display for ArgData {
@@ -770,6 +909,7 @@ impl ArgData {
             } else {
                 ArgKind::Special
             },
+            deprecated_since: arg.deprecated_since.clone(),
         };
 
         for attr in &arg.identifier.outer_attrs {
@@ -867,8 +1007,12 @@ impl ArgData {
                     index + 2
                 ),
             )),
-            Some("Axis2d | Edge") | Some("Axis3d | Edge") => Some((index, format!(r#"{label}${{{index}:X}}"#))),
-            Some("Sketch") | Some("Sketch | Helix") => Some((index, format!(r#"{label}${{{index}:sketch000}}"#))),
+            Some("Axis2d | Edge | Segment") | Some("Axis3d | Edge | Segment") => {
+                Some((index, format!(r#"{label}${{{index}:X}}"#)))
+            }
+            Some("Sketch") | Some("Sketch | Helix") | Some("Sketch | Helix | [Segment; 1+]") => {
+                Some((index, format!(r#"{label}${{{index}:sketch000}}"#)))
+            }
             Some("Edge") => Some((index, format!(r#"{label}${{{index}:tag_or_edge_fn}}"#))),
             Some("[Edge; 1+]") => Some((index, format!(r#"{label}[${{{index}:tag_or_edge_fn}}]"#))),
             Some("Plane") | Some("Solid | Plane") => Some((index, format!(r#"{label}${{{index}:XY}}"#))),
@@ -909,7 +1053,6 @@ impl ArgData {
 }
 
 impl ArgKind {
-    #[allow(dead_code)]
     pub fn required(self) -> bool {
         match self {
             ArgKind::Special => true,
@@ -957,9 +1100,11 @@ impl TyData {
             properties: Properties {
                 exported: !ty.visibility.is_default(),
                 deprecated: false,
+                deprecated_since: None,
                 experimental: false,
                 doc_hidden: false,
                 impl_kind: annotations::Impl::Kcl,
+                doc_category: None,
             },
             alias: ty.alias.as_ref().map(|t| t.to_string()),
             summary: None,
@@ -969,7 +1114,6 @@ impl TyData {
         }
     }
 
-    #[allow(dead_code)]
     pub fn qual_name(&self) -> &str {
         if self.properties.impl_kind == annotations::Impl::Primitive {
             &self.name
@@ -993,7 +1137,11 @@ impl TyData {
                 detail: Some(format!("type {} = {t}", self.name)),
                 description: None,
             }),
-            kind: Some(CompletionItemKind::FUNCTION),
+            kind: self
+                .properties
+                .doc_category
+                .map(DocCategory::to_completion_item_kind)
+                .or(Some(CompletionItemKind::STRUCT)),
             detail: Some(self.qual_name().to_owned()),
             documentation: self.short_docs().map(|s| {
                 Documentation::MarkupContent(MarkupContent {
@@ -1018,7 +1166,7 @@ impl TyData {
     }
 }
 
-fn remove_md_links(s: &str) -> String {
+pub(super) fn remove_md_links(s: &str) -> String {
     let re = Regex::new(r"\[([^\]]*)\]\([^\)]*\)").unwrap();
     re.replace_all(s, "$1").to_string()
 }
@@ -1031,9 +1179,11 @@ trait ApplyMeta {
         examples: Vec<(String, ExampleProperties)>,
     );
     fn deprecated(&mut self, deprecated: bool);
+    fn deprecated_since(&mut self, deprecated_since: Option<VersionConstraint>);
     fn experimental(&mut self, experimental: bool);
     fn doc_hidden(&mut self, doc_hidden: bool);
     fn impl_kind(&mut self, impl_kind: annotations::Impl);
+    fn doc_category(&mut self, doc_category: DocCategory);
 
     fn with_comments(&mut self, comments: &[String]) {
         if comments.iter().all(|s| s.is_empty()) {
@@ -1053,7 +1203,10 @@ trait ApplyMeta {
         }) {
             #[allow(clippy::manual_strip)]
             if l.starts_with("```") {
-                if let Some((e, p)) = example {
+                if let Some((e, mut p)) = example {
+                    if !p.sketch_syntax_explicit {
+                        p.sketch_syntax = ExampleSketchSyntax::infer_from_source(&e);
+                    }
                     if p.inline {
                         description.as_mut().unwrap().push_str("```\n");
                     } else {
@@ -1065,15 +1218,31 @@ trait ApplyMeta {
                     let mut inline = false;
                     let mut norun = false;
                     let mut no3d = false;
+                    let mut sketch_syntax = ExampleSketchSyntax::SketchSyntaxAgnostic;
+                    let mut sketch_syntax_explicit = false;
                     for a in args {
                         match a.trim() {
                             "inline" => inline = true,
                             "norun" | "no_run" => norun = true,
                             "no3d" | "no_3d" => no3d = true,
-                            _ => {}
+                            other => {
+                                if let Some(tag) = ExampleSketchSyntax::from_attr(other) {
+                                    sketch_syntax = tag;
+                                    sketch_syntax_explicit = true;
+                                }
+                            }
                         }
                     }
-                    example = Some((String::new(), ExampleProperties { norun, no3d, inline }));
+                    example = Some((
+                        String::new(),
+                        ExampleProperties {
+                            norun,
+                            no3d,
+                            inline,
+                            sketch_syntax,
+                            sketch_syntax_explicit,
+                        },
+                    ));
 
                     if inline {
                         description.as_mut().unwrap().push_str("```js\n");
@@ -1154,6 +1323,13 @@ trait ApplyMeta {
                                 self.deprecated(b);
                             }
                         }
+                        annotations::DEPRECATED_SINCE => {
+                            if let Some(s) = p.value.literal_str()
+                                && let Some(v) = VersionConstraint::parse(s)
+                            {
+                                self.deprecated_since(Some(v));
+                            }
+                        }
                         annotations::EXPERIMENTAL => {
                             if let Some(b) = p.value.literal_bool() {
                                 self.experimental(b);
@@ -1162,6 +1338,13 @@ trait ApplyMeta {
                         "doc_hidden" => {
                             if let Some(b) = p.value.literal_bool() {
                                 self.doc_hidden(b);
+                            }
+                        }
+                        annotations::DOC_CATEGORY => {
+                            if let Some(s) = p.value.literal_str()
+                                && let Some(cat) = DocCategory::from_str(s)
+                            {
+                                self.doc_category(cat);
                             }
                         }
                         _ => {}
@@ -1188,6 +1371,10 @@ impl ApplyMeta for ConstData {
         self.properties.deprecated = deprecated;
     }
 
+    fn deprecated_since(&mut self, deprecated_since: Option<VersionConstraint>) {
+        self.properties.deprecated_since = deprecated_since;
+    }
+
     fn experimental(&mut self, experimental: bool) {
         self.properties.experimental = experimental;
     }
@@ -1197,6 +1384,10 @@ impl ApplyMeta for ConstData {
     }
 
     fn impl_kind(&mut self, _impl_kind: annotations::Impl) {}
+
+    fn doc_category(&mut self, doc_category: DocCategory) {
+        self.properties.doc_category = Some(doc_category);
+    }
 }
 
 impl ApplyMeta for FnData {
@@ -1215,6 +1406,10 @@ impl ApplyMeta for FnData {
         self.properties.deprecated = deprecated;
     }
 
+    fn deprecated_since(&mut self, deprecated_since: Option<VersionConstraint>) {
+        self.properties.deprecated_since = deprecated_since;
+    }
+
     fn experimental(&mut self, experimental: bool) {
         self.properties.experimental = experimental;
     }
@@ -1225,6 +1420,10 @@ impl ApplyMeta for FnData {
 
     fn impl_kind(&mut self, impl_kind: annotations::Impl) {
         self.properties.impl_kind = impl_kind;
+    }
+
+    fn doc_category(&mut self, doc_category: DocCategory) {
+        self.properties.doc_category = Some(doc_category);
     }
 }
 
@@ -1244,6 +1443,10 @@ impl ApplyMeta for ModData {
         assert!(!deprecated);
     }
 
+    fn deprecated_since(&mut self, deprecated_since: Option<VersionConstraint>) {
+        assert!(deprecated_since.is_none());
+    }
+
     fn experimental(&mut self, experimental: bool) {
         self.properties.experimental = experimental;
     }
@@ -1253,6 +1456,10 @@ impl ApplyMeta for ModData {
     }
 
     fn impl_kind(&mut self, _: annotations::Impl) {}
+
+    fn doc_category(&mut self, _: DocCategory) {
+        panic!("doc_category is not supported for modules");
+    }
 }
 
 impl ApplyMeta for TyData {
@@ -1271,6 +1478,10 @@ impl ApplyMeta for TyData {
         self.properties.deprecated = deprecated;
     }
 
+    fn deprecated_since(&mut self, deprecated_since: Option<VersionConstraint>) {
+        self.properties.deprecated_since = deprecated_since;
+    }
+
     fn experimental(&mut self, experimental: bool) {
         self.properties.experimental = experimental;
     }
@@ -1281,6 +1492,10 @@ impl ApplyMeta for TyData {
 
     fn impl_kind(&mut self, impl_kind: annotations::Impl) {
         self.properties.impl_kind = impl_kind;
+    }
+
+    fn doc_category(&mut self, doc_category: DocCategory) {
+        self.properties.doc_category = Some(doc_category);
     }
 }
 
@@ -1306,6 +1521,10 @@ impl ApplyMeta for ArgData {
         unreachable!();
     }
 
+    fn deprecated_since(&mut self, _deprecated_since: Option<VersionConstraint>) {
+        unreachable!();
+    }
+
     fn experimental(&mut self, _experimental: bool) {
         unreachable!();
     }
@@ -1317,13 +1536,19 @@ impl ApplyMeta for ArgData {
     fn impl_kind(&mut self, _impl_kind: annotations::Impl) {
         unreachable!();
     }
+
+    fn doc_category(&mut self, _doc_category: DocCategory) {
+        unreachable!();
+    }
 }
 
 #[cfg(test)]
 mod test {
-    use std::path::{Path, PathBuf};
+    use std::path::Path;
+    use std::path::PathBuf;
 
-    use kcl_derive_docs::{for_all_example_test, for_each_example_test};
+    use kcl_derive_docs::for_all_example_test;
+    use kcl_derive_docs::for_each_example_test;
 
     use super::*;
 
@@ -1339,7 +1564,7 @@ mod test {
 
     #[test]
     fn smoke() {
-        let result = walk_prelude();
+        let result = walk_stdlib();
         if let DocData::Const(d) = result.find_by_name("PI").unwrap()
             && d.name == "PI"
         {
@@ -1351,6 +1576,15 @@ mod test {
             return;
         }
         panic!("didn't find PI");
+    }
+
+    #[test]
+    fn walk_stdlib_includes_solver_without_exposing_it_in_prelude() {
+        let prelude = walk_prelude();
+        assert!(prelude.find_by_name("coincident").is_none());
+
+        let stdlib = walk_stdlib();
+        assert!(matches!(stdlib.find_by_name("coincident"), Some(DocData::Fn(_))));
     }
 
     #[test]
@@ -1393,7 +1627,7 @@ mod test {
             }
         }
 
-        let data = walk_prelude();
+        let data = walk_stdlib();
 
         check_mod(&data);
         for m in data.children.values() {
@@ -1406,7 +1640,7 @@ mod test {
     #[for_each_example_test]
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_examples() {
-        let std = walk_prelude();
+        let std = walk_stdlib();
 
         let names = NAME.split('-');
         let mut mods: Vec<_> = names.collect();

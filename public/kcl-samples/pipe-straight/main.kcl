@@ -4,45 +4,66 @@
 
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
-faceToFaceLength = 165
-flangeOutsideDiameter = 120
+pipeOutsideDiameter = 90
+pipeWallThickness = 10
+
+flangeOutsideDiameter = 130
 flangeThickness = 20
-pipeOutsideDiameterScale = 0.78
-requestedWallThicknessFraction = 0.12
+
 boltHoleCount = 16
-nominalBoltHoleDiameter = 14
-boltHoleDiameterScale = 0.70
+boltHoleDiameter = 12
+boltCircleDiameter = pipeOutsideDiameter + (flangeOutsideDiameter - pipeOutsideDiameter) / 2
 
-pipeOutsideDiameter = pipeOutsideDiameterScale * flangeOutsideDiameter
-pipeWallThickness = requestedWallThicknessFraction * pipeOutsideDiameter
 pipeInsideDiameter = pipeOutsideDiameter - (2 * pipeWallThickness)
-boltCircleDiameter = (pipeOutsideDiameter + flangeOutsideDiameter) / 2
-boltCircleRadius = boltCircleDiameter / 2
-finalBoltHoleDiameter = nominalBoltHoleDiameter * boltHoleDiameterScale
-pipeLengthBetweenFlangeInnerFaces = faceToFaceLength - (2 * flangeThickness)
+flangeInsideDiameter = pipeInsideDiameter
+pipeLength = 150
 
-pipeRingSketch = startSketchOn(YZ)
-pipeOuterCircle = circle(pipeRingSketch, center = [0, 0], radius = pipeOutsideDiameter / 2)
-pipeInnerCircle = circle(pipeRingSketch, center = [0, 0], radius = pipeInsideDiameter / 2)
-pipeSectionSketch = subtract2d(pipeOuterCircle, tool = pipeInnerCircle)
-pipeBody = extrude(pipeSectionSketch, length = pipeLengthBetweenFlangeInnerFaces, symmetric = true)
-
-flangeSketch = startSketchOn(YZ)
-flangeOuterCircle = circle(flangeSketch, center = [0, 0], radius = flangeOutsideDiameter / 2)
-flangeBoreCircle = circle(flangeSketch, center = [0, 0], radius = pipeInsideDiameter / 2)
-flangeRingProfile = subtract2d(flangeOuterCircle, tool = flangeBoreCircle)
-seedBoltHole = circle(flangeSketch, center = [0, boltCircleRadius], diameter = finalBoltHoleDiameter)
-boltHolesRing = patternCircular2d(
-  [seedBoltHole],
-  instances = boltHoleCount,
-  center = [0, 0],
-  arcDegrees = 360deg,
-  rotateDuplicates = false,
+pipeSectionSketch = sketch(on = YZ) {
+  pipeOuterCircle = circle(start = [var 43.63mm, var 16.93mm], center = [var 0mm, var 0mm])
+  coincident([pipeOuterCircle.center, ORIGIN])
+  pipeInnerCircle = circle(start = [var 31.64mm, var -16.26mm], center = [var 0mm, var 0mm])
+  coincident([pipeInnerCircle.center, ORIGIN])
+  radius(pipeOuterCircle) == pipeOutsideDiameter / 2
+  radius(pipeInnerCircle) == pipeInsideDiameter / 2
+}
+pipeRegion = region(
+  point = [
+    (pipeInsideDiameter + pipeWallThickness) / 2,
+    0
+  ],
+  sketch = pipeSectionSketch,
 )
-flangePerforatedProfile = subtract2d(flangeRingProfile, tool = boltHolesRing)
-baseFlange = extrude(flangePerforatedProfile, length = flangeThickness, method = NEW)
+pipeBody = extrude(pipeRegion, length = pipeLength, symmetric = true)
+hide(pipeSectionSketch)
 
-rightEndFlange = baseFlange
-  |> translate(x = faceToFaceLength / 2 - flangeThickness, global = true)
+flangeSketch = sketch(on = YZ) {
+  flangeOuterCircle = circle(start = [var 43.63mm, var 16.93mm], center = [var 0mm, var 0mm])
+  coincident([flangeOuterCircle.center, ORIGIN])
+  flangeInnerCircle = circle(start = [var 31.64mm, var -16.26mm], center = [var 0mm, var 0mm])
+  coincident([flangeInnerCircle.center, ORIGIN])
+  radius(flangeOuterCircle) == flangeOutsideDiameter / 2
+  radius(flangeInnerCircle) == flangeInsideDiameter / 2
+}
+flangeRegion = region(point = [(flangeInsideDiameter + 10) / 2, 0], sketch = flangeSketch)
+flangeBody = extrude(flangeRegion, length = flangeThickness, symmetric = true)
+hide(flangeSketch)
+
+boltHoleSketch = sketch(on = YZ) {
+  circle1 = circle(start = [var 57.02mm, var 4.06mm], center = [var 52.5mm, var 0.11mm])
+  line1 = line(start = [var 52.07mm, var 0mm], end = [var 0mm, var 0mm], construction = true)
+  coincident([line1.start, circle1.center])
+  coincident([line1.end, ORIGIN])
+  horizontal(line1)
+  radius(circle1) == boltHoleDiameter / 2
+  horizontalDistance([line1.end, line1.start]) == boltCircleDiameter / 2
+}
+boltRegion = region(segments = [boltHoleSketch.circle1])
+boltHoleBody = extrude(boltRegion, length = flangeThickness, symmetric = true)
+boltHoleBodies = patternCircular3d(boltHoleBody, instances = boltHoleCount, axis = X)
+flangeBodyWithHoles = subtract([flangeBody], tools = [boltHoleBodies])
+hide(boltHoleSketch)
+
+rightEndFlange = flangeBodyWithHoles
+  |> translate(x = (pipeLength + flangeThickness) / 2, global = true)
 leftEndFlange = clone(rightEndFlange)
   |> rotate(axis = Y, angle = 180deg)

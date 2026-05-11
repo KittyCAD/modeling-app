@@ -1,35 +1,56 @@
-use std::{
-    f64::consts::TAU,
-    ops::{Add, AddAssign, Mul, Sub, SubAssign},
-};
+use std::f64::consts::TAU;
+use std::ops::Add;
+use std::ops::AddAssign;
+use std::ops::Mul;
+use std::ops::Sub;
+use std::ops::SubAssign;
 
 use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_error::SourceRange;
-use kittycad_modeling_cmds::{
-    self as kcmc, ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, units::UnitLength, websocket::ModelingCmdReq,
-};
-use parse_display::{Display, FromStr};
-use serde::{Deserialize, Serialize};
+use kittycad_modeling_cmds::ModelingCmd;
+use kittycad_modeling_cmds::each_cmd as mcmd;
+use kittycad_modeling_cmds::length_unit::LengthUnit;
+use kittycad_modeling_cmds::units::UnitLength;
+use kittycad_modeling_cmds::websocket::ModelingCmdReq;
+use kittycad_modeling_cmds::{self as kcmc};
+use parse_display::Display;
+use parse_display::FromStr;
+use serde::Deserialize;
+use serde::Serialize;
 use uuid::Uuid;
 
-use crate::{
-    engine::{DEFAULT_PLANE_INFO, PlaneName},
-    errors::{KclError, KclErrorDetails},
-    exec::KclValue,
-    execution::{
-        ArtifactId, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier,
-        normalize_to_solver_distance_unit,
-        types::{NumericType, adjust_length},
-    },
-    front::{ArcCtor, CircleCtor, Freedom, LineCtor, ObjectId, PointCtor},
-    parsing::ast::types::{Node, NodeRef, TagDeclarator, TagNode},
-    std::{
-        Args,
-        args::TyF64,
-        sketch::{FaceTag, PlaneData},
-    },
-};
+use crate::NodePath;
+use crate::engine::DEFAULT_PLANE_INFO;
+use crate::engine::PlaneName;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::exec::KclValue;
+use crate::execution::ArtifactId;
+use crate::execution::ExecState;
+use crate::execution::ExecutorContext;
+use crate::execution::Metadata;
+use crate::execution::TagEngineInfo;
+use crate::execution::TagIdentifier;
+use crate::execution::normalize_to_solver_distance_unit;
+use crate::execution::types::NumericType;
+use crate::execution::types::adjust_length;
+use crate::front::ArcCtor;
+use crate::front::CircleCtor;
+use crate::front::Freedom;
+use crate::front::LineCtor;
+use crate::front::Number;
+use crate::front::ObjectId;
+use crate::front::Point2d as ApiPoint2d;
+use crate::front::PointCtor;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::NodeRef;
+use crate::parsing::ast::types::TagDeclarator;
+use crate::parsing::ast::types::TagNode;
+use crate::std::Args;
+use crate::std::args::TyF64;
+use crate::std::sketch::FaceTag;
+use crate::std::sketch::PlaneData;
 
 type Point3D = kcmc::shared::Point3d<f64>;
 
@@ -173,11 +194,9 @@ impl ImportedGeometry {
 pub enum HideableGeometry {
     ImportedGeometry(Box<ImportedGeometry>),
     SolidSet(Vec<Solid>),
+    SketchSet(Vec<Sketch>),
     HelixSet(Vec<Helix>),
-    // TODO: Sketches should be groups of profiles that relate to a plane,
-    // Not the plane itself. Until then, sketches nor profiles ("Sketches" in Rust)
-    // are not hideable.
-    // SketchSet(Vec<Sketch>),
+    GdtAnnotationSet(Vec<GdtAnnotation>),
 }
 
 impl From<HideableGeometry> for crate::execution::KclValue {
@@ -196,6 +215,36 @@ impl From<HideableGeometry> for crate::execution::KclValue {
                             .map(|s| crate::execution::KclValue::Solid { value: Box::new(s) })
                             .collect(),
                         ty: crate::execution::types::RuntimeType::solid(),
+                    }
+                }
+            }
+            HideableGeometry::GdtAnnotationSet(mut s) => {
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::GdtAnnotation { value: Box::new(s) }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: s
+                            .into_iter()
+                            .map(|s| crate::execution::KclValue::GdtAnnotation { value: Box::new(s) })
+                            .collect(),
+                        ty: crate::execution::types::RuntimeType::gdt(),
+                    }
+                }
+            }
+            HideableGeometry::SketchSet(mut s) => {
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Sketch { value: Box::new(s) }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: s
+                            .into_iter()
+                            .map(|s| crate::execution::KclValue::Sketch { value: Box::new(s) })
+                            .collect(),
+                        ty: crate::execution::types::RuntimeType::sketch(),
                     }
                 }
             }
@@ -227,6 +276,8 @@ impl HideableGeometry {
                 Ok(vec![id])
             }
             HideableGeometry::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
+            HideableGeometry::GdtAnnotationSet(s) => Ok(s.iter().map(|s| s.id).collect()),
+            HideableGeometry::SketchSet(s) => Ok(s.iter().map(|s| s.id).collect()),
             HideableGeometry::HelixSet(s) => Ok(s.iter().map(|s| s.value).collect()),
         }
     }
@@ -711,10 +762,30 @@ pub struct Face {
     /// What should the face's Y axis be?
     pub y_axis: Point3d,
     /// The solid the face is on.
-    pub solid: Box<Solid>,
+    pub parent_solid: FaceParentSolid,
     pub units: UnitLength,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
+}
+
+/// The limited subset of a face's parent solid needed by face-backed sketches.
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct FaceParentSolid {
+    /// Which solid does this face belong to?
+    pub solid_id: Uuid,
+    /// ID of the sketch which created this solid, if any.
+    pub creator_sketch_id: Option<Uuid>,
+    /// Pending edge cut IDs that may need to be flushed before referencing the face.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub edge_cut_ids: Vec<Uuid>,
+}
+
+impl FaceParentSolid {
+    pub(crate) fn sketch_or_solid_id(&self) -> Uuid {
+        self.creator_sketch_id.unwrap_or(self.solid_id)
+    }
 }
 
 /// A bounded edge.
@@ -778,12 +849,23 @@ pub struct Sketch {
     pub artifact_id: ArtifactId,
     #[ts(skip)]
     pub original_id: uuid::Uuid,
+    /// If this sketch represents a region created from `region()`, the origin
+    /// sketch ID is the ID of the sketch block it was created from. None,
+    /// otherwise. This field corresponds to the `origin_path_id` of the `Path`
+    /// artifact.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(skip)]
+    pub origin_sketch_id: Option<uuid::Uuid>,
     /// If the sketch includes a mirror.
     #[serde(skip)]
     pub mirror: Option<uuid::Uuid>,
     /// If the sketch is a clone of another sketch.
     #[serde(skip)]
     pub clone: Option<uuid::Uuid>,
+    /// Synthetic pen-jump paths inserted to replay disconnected segment selections.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub synthetic_jump_path_ids: Vec<uuid::Uuid>,
     pub units: UnitLength,
     /// Metadata.
     #[serde(skip)]
@@ -1070,6 +1152,10 @@ impl Sketch {
 pub struct Solid {
     /// The id of the solid.
     pub id: uuid::Uuid,
+    /// Internal KCL value generation. The engine may reuse `id` for a new value.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub value_id: uuid::Uuid,
     /// The artifact ID of the solid.  Unlike `id`, this doesn't change.
     pub artifact_id: ArtifactId,
     /// The extrude surfaces.
@@ -1144,6 +1230,16 @@ impl Solid {
 
     pub(crate) fn get_all_edge_cut_ids(&self) -> impl Iterator<Item = uuid::Uuid> + '_ {
         self.edge_cuts.iter().map(|foc| foc.id())
+    }
+}
+
+impl From<&Solid> for FaceParentSolid {
+    fn from(solid: &Solid) -> Self {
+        Self {
+            solid_id: solid.id,
+            creator_sketch_id: solid.sketch_id(),
+            edge_cut_ids: solid.get_all_edge_cut_ids().collect(),
+        }
     }
 }
 
@@ -1750,21 +1846,21 @@ impl Path {
         n.map(|n| TyF64::new(n, self.get_base().units.into()))
     }
 
-    pub fn get_base_mut(&mut self) -> Option<&mut BasePath> {
+    pub fn get_base_mut(&mut self) -> &mut BasePath {
         match self {
-            Path::ToPoint { base } => Some(base),
-            Path::Horizontal { base, .. } => Some(base),
-            Path::AngledLineTo { base, .. } => Some(base),
-            Path::Base { base } => Some(base),
-            Path::TangentialArcTo { base, .. } => Some(base),
-            Path::TangentialArc { base, .. } => Some(base),
-            Path::Circle { base, .. } => Some(base),
-            Path::CircleThreePoint { base, .. } => Some(base),
-            Path::Arc { base, .. } => Some(base),
-            Path::ArcThreePoint { base, .. } => Some(base),
-            Path::Ellipse { base, .. } => Some(base),
-            Path::Conic { base, .. } => Some(base),
-            Path::Bezier { base, .. } => Some(base),
+            Path::ToPoint { base } => base,
+            Path::Horizontal { base, .. } => base,
+            Path::AngledLineTo { base, .. } => base,
+            Path::Base { base } => base,
+            Path::TangentialArcTo { base, .. } => base,
+            Path::TangentialArc { base, .. } => base,
+            Path::Circle { base, .. } => base,
+            Path::CircleThreePoint { base, .. } => base,
+            Path::Arc { base, .. } => base,
+            Path::ArcThreePoint { base, .. } => base,
+            Path::Ellipse { base, .. } => base,
+            Path::Conic { base, .. } => base,
+            Path::Bezier { base, .. } => base,
         }
     }
 
@@ -1961,6 +2057,8 @@ impl ExtrudeSurface {
 pub struct SketchVarId(pub usize);
 
 impl SketchVarId {
+    pub const INVALID: Self = Self(usize::MAX);
+
     pub fn to_constraint_id(self, range: SourceRange) -> Result<ezpz::Id, KclError> {
         self.0.try_into().map_err(|_| {
             KclError::new_type(KclErrorDetails::new(
@@ -2036,6 +2134,13 @@ pub struct ConstrainablePoint2d {
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Geometry.ts")]
+pub enum ConstrainablePoint2dOrOrigin {
+    Point(ConstrainablePoint2d),
+    Origin,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct ConstrainableLine2d {
     pub vars: [crate::front::Point2d<SketchVarId>; 2],
@@ -2052,6 +2157,8 @@ pub struct UnsolvedSegment {
     pub kind: UnsolvedSegmentKind,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tag: Option<TagIdentifier>,
+    #[serde(skip)]
+    pub node_path: Option<NodePath>,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
@@ -2092,6 +2199,19 @@ pub enum UnsolvedSegmentKind {
     },
 }
 
+impl UnsolvedSegmentKind {
+    /// What kind of object is this (point, line, arc, etc)
+    /// Suitable for use in user-facing messages.
+    pub fn human_friendly_kind_with_article(&self) -> &'static str {
+        match self {
+            Self::Point { .. } => "a Point",
+            Self::Line { .. } => "a Line",
+            Self::Arc { .. } => "an Arc",
+            Self::Circle { .. } => "a Circle",
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
@@ -2107,6 +2227,8 @@ pub struct Segment {
     pub sketch: Option<Sketch>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tag: Option<TagIdentifier>,
+    #[serde(skip)]
+    pub node_path: Option<NodePath>,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
@@ -2207,19 +2329,44 @@ pub enum SketchConstraintKind {
         line1: ConstrainableLine2d,
     },
     Distance {
-        points: [ConstrainablePoint2d; 2],
+        points: [ConstrainablePoint2dOrOrigin; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
     },
     Radius {
         points: [ConstrainablePoint2d; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
     },
     Diameter {
         points: [ConstrainablePoint2d; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
     },
     HorizontalDistance {
-        points: [ConstrainablePoint2d; 2],
+        points: [ConstrainablePoint2dOrOrigin; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
     },
     VerticalDistance {
-        points: [ConstrainablePoint2d; 2],
+        points: [ConstrainablePoint2dOrOrigin; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
     },
 }
 

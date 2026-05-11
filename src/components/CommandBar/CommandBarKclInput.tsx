@@ -142,11 +142,15 @@ function CommandBarKclInput({
     arg.name,
     previouslySetValue,
   ])
-  const initialValue = useMemo(
-    () => previouslySetValue?.valueText || defaultValue || '',
-    [previouslySetValue, defaultValue]
-  )
+  const initialValue = useMemo(() => {
+    const kclValue = previouslySetValue?.valueText || defaultValue || ''
+    return arg.kclValueToInput ? arg.kclValueToInput(kclValue) : kclValue
+  }, [arg, previouslySetValue, defaultValue])
   const [value, setValue] = useState(initialValue)
+  const kclValue = useMemo(
+    () => (arg.inputToKclValue ? arg.inputToKclValue(value) : value),
+    [arg, value]
+  )
   const [createNewVariable, setCreateNewVariable] = useState(
     (typeof previouslySetValue === 'object' &&
       'variableName' in previouslySetValue) ||
@@ -164,7 +168,11 @@ function CommandBarKclInput({
   const editorRef = useRef<HTMLDivElement>(null)
 
   const allowArrays = arg.allowArrays ?? false
-  const options = useMemo(() => ({ allowArrays }), [allowArrays])
+  const allowStringArrays = arg.allowStringArrays ?? false
+  const options = useMemo(
+    () => ({ allowArrays, allowStringArrays }),
+    [allowArrays, allowStringArrays]
+  )
 
   const {
     calcResult,
@@ -176,7 +184,7 @@ function CommandBarKclInput({
     prevVariables,
     isExecuting,
   } = useCalculateKclExpression({
-    value,
+    value: kclValue,
     initialVariableName,
     sourceRange: sourceRangeForPrevVariables,
     selectionRanges,
@@ -274,21 +282,30 @@ function CommandBarKclInput({
   }, [arg, editorRef, initialValue])
 
   useEffect(() => {
+    const canUseUncalculatedValue =
+      Boolean(arg.allowUncalculated) && valueNode !== null
     setCanSubmit(
-      calcResult !== 'NAN' &&
+      (calcResult !== 'NAN' || canUseUncalculatedValue) &&
         (!createNewVariable || isNewVariableNameUnique) &&
         !isExecuting
     )
-  }, [calcResult, createNewVariable, isNewVariableNameUnique, isExecuting])
+  }, [
+    arg.allowUncalculated,
+    calcResult,
+    createNewVariable,
+    isNewVariableNameUnique,
+    isExecuting,
+    valueNode,
+  ])
 
   function handleSubmit(e?: React.FormEvent<HTMLFormElement>) {
     e?.preventDefault()
     if (!canSubmit || valueNode === null) {
       // Gotcha: Our application can attempt to submit a command value before the command bar kcl input is ready. Notify the scene and user.
       if (!canSubmit) {
-        toast.error('Unable to submit command')
+        toast.error('Unable to submit command.')
       } else if (valueNode === null) {
-        toast.error('Unable to submit undefined command value')
+        toast.error('Unable to submit undefined command value.')
       }
       return
     }
@@ -297,7 +314,7 @@ function CommandBarKclInput({
       createNewVariable
         ? ({
             valueAst: valueNode,
-            valueText: value,
+            valueText: kclValue,
             valueCalculated: calcResult,
             variableName: newVariableName,
             insertIndex: newVariableInsertIndex,
@@ -309,7 +326,7 @@ function CommandBarKclInput({
           } satisfies KclCommandValue)
         : ({
             valueAst: valueNode,
-            valueText: value,
+            valueText: kclValue,
             valueCalculated: calcResult,
           } satisfies KclCommandValue)
     )
@@ -347,6 +364,12 @@ function CommandBarKclInput({
         >
           {isExecuting === true || !calcResult ? (
             <Spinner className="text-inherit w-4 h-4" />
+          ) : arg.valueSummary && valueNode ? (
+            arg.valueSummary({
+              valueAst: valueNode,
+              valueText: kclValue,
+              valueCalculated: calcResult,
+            } as KclCommandValue)
           ) : calcResult === 'NAN' ? (
             "Can't calculate"
           ) : (

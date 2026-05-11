@@ -8,7 +8,7 @@ import { getAngleDiff } from '@src/lib/utils'
 import {
   getArcPoints,
   getLinePoints,
-  isArcSegment,
+  isArcLikeSegment,
   isLineSegment,
   isPointSegment,
   pointToCoords2d,
@@ -23,6 +23,7 @@ import {
   Vector2,
 } from 'three'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
+import { TAU } from '@src/lib/utils2d'
 
 export const AREA_SELECT_BORDER_WIDTH = 2
 export const LINE_EXTENSION_SIZE = 12
@@ -720,11 +721,23 @@ export function removeSelectionBox(
 function getContainedArcPoints(
   center: Coords2d,
   start: Coords2d,
-  end: Coords2d
+  end: Coords2d,
+  isCircle = false
 ): Coords2d[] {
   const radius = Math.hypot(start[0] - center[0], start[1] - center[1])
   if (radius === 0) {
     return [start, end]
+  }
+
+  if (isCircle) {
+    return [
+      start,
+      end,
+      [center[0] + radius, center[1]],
+      [center[0], center[1] + radius],
+      [center[0] - radius, center[1]],
+      [center[0], center[1] - radius],
+    ]
   }
 
   const startAngle = Math.atan2(start[1] - center[1], start[0] - center[0])
@@ -749,7 +762,8 @@ function doesArcIntersectBox(
   start: Coords2d,
   end: Coords2d,
   boxMin: Coords2d,
-  boxMax: Coords2d
+  boxMax: Coords2d,
+  isCircle = false
 ): boolean {
   if (
     isPointInBox(start, boxMin, boxMax) ||
@@ -765,7 +779,7 @@ function doesArcIntersectBox(
 
   const startAngle = Math.atan2(start[1] - center[1], start[0] - center[0])
   const endAngle = Math.atan2(end[1] - center[1], end[0] - center[0])
-  const sweepAngle = getAngleDiff(startAngle, endAngle, true)
+  const sweepAngle = isCircle ? TAU : getAngleDiff(startAngle, endAngle, true)
   const epsilon = 1e-9
 
   const isPointOnArc = (x: number, y: number): boolean => {
@@ -776,6 +790,10 @@ function doesArcIntersectBox(
       y > boxMax[1] + epsilon
     ) {
       return false
+    }
+
+    if (isCircle) {
+      return true
     }
 
     const angle = Math.atan2(y - center[1], x - center[0])
@@ -865,14 +883,15 @@ export function findContainedSegments(
       return
     }
 
-    if (isArcSegment(apiObject)) {
+    if (isArcLikeSegment(apiObject)) {
       const arcPoints = getArcPoints(apiObject, objects)
       if (
         arcPoints &&
         getContainedArcPoints(
           arcPoints.center,
           arcPoints.start,
-          arcPoints.end
+          arcPoints.end,
+          arcPoints.isCircle
         ).every((point) => isPointInBox(point, boxMin, boxMax))
       ) {
         containedIds.push(apiObject.id)
@@ -936,7 +955,7 @@ export function findIntersectingSegments(
       return
     }
 
-    if (isArcSegment(apiObject)) {
+    if (isArcLikeSegment(apiObject)) {
       const arcPoints = getArcPoints(apiObject, objects)
       if (
         arcPoints &&
@@ -945,7 +964,8 @@ export function findIntersectingSegments(
           arcPoints.start,
           arcPoints.end,
           boxMin,
-          boxMax
+          boxMax,
+          arcPoints.isCircle
         )
       ) {
         intersectingIds.push(apiObject.id)

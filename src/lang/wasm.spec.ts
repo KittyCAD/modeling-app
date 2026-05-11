@@ -78,6 +78,12 @@ it('formats numbers with units', () => {
   expect(formatNumberLiteral(1, 'Inch', instanceInThisFile)).toEqual('1in')
   expect(formatNumberLiteral(0.5, 'Mm', instanceInThisFile)).toEqual('0.5mm')
   expect(formatNumberLiteral(-0.5, 'Mm', instanceInThisFile)).toEqual('-0.5mm')
+  expect(formatNumberLiteral(-0.123, 'Mm', instanceInThisFile, 1)).toEqual(
+    '-0.1mm'
+  )
+  expect(formatNumberLiteral(-0.12345, 'Mm', instanceInThisFile, 4)).toEqual(
+    '-0.1235mm'
+  )
   expect(formatNumberLiteral(1, 'Unknown', instanceInThisFile)).toEqual(
     new Error('Error formatting number literal: value=1, suffix=Unknown')
   )
@@ -240,6 +246,16 @@ describe('relevantFileExtensions', () => {
       const actual = relevantFileExtensions(instanceInThisFile).some(
         (extension) => {
           return extension === 'stl'
+        }
+      )
+      expect(actual).toBe(expected)
+    })
+
+    it('contains md', () => {
+      const expected = true
+      const actual = relevantFileExtensions(instanceInThisFile).some(
+        (extension) => {
+          return extension === 'md'
         }
       )
       expect(actual).toBe(expected)

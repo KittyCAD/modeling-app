@@ -9,38 +9,42 @@ pub mod conn_mock;
 #[cfg(feature = "engine")]
 pub mod conn_wasm;
 
-use std::{
-    collections::HashMap,
-    sync::{
-        Arc,
-        atomic::{AtomicUsize, Ordering},
-    },
-};
+use std::collections::HashMap;
+use std::sync::Arc;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
 
 pub use async_tasks::AsyncTasks;
 use indexmap::IndexMap;
-use kcmc::{
-    ModelingCmd, each_cmd as mcmd,
-    length_unit::LengthUnit,
-    ok_response::OkModelingCmdResponse,
-    shared::Color,
-    websocket::{
-        BatchResponse, ModelingBatch, ModelingCmdReq, ModelingSessionData, OkWebSocketResponseData, WebSocketRequest,
-        WebSocketResponse,
-    },
-};
-use kittycad_modeling_cmds::{self as kcmc, units::UnitLength};
-use parse_display::{Display, FromStr};
-use serde::{Deserialize, Serialize};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::ok_response::OkModelingCmdResponse;
+use kcmc::shared::Color;
+use kcmc::websocket::BatchResponse;
+use kcmc::websocket::ModelingBatch;
+use kcmc::websocket::ModelingCmdReq;
+use kcmc::websocket::ModelingSessionData;
+use kcmc::websocket::OkWebSocketResponseData;
+use kcmc::websocket::WebSocketRequest;
+use kcmc::websocket::WebSocketResponse;
+use kittycad_modeling_cmds::units::UnitLength;
+use kittycad_modeling_cmds::{self as kcmc};
+use parse_display::Display;
+use parse_display::FromStr;
+use serde::Deserialize;
+use serde::Serialize;
 use tokio::sync::RwLock;
 use uuid::Uuid;
 use web_time::Instant;
 
-use crate::{
-    SourceRange,
-    errors::{KclError, KclErrorDetails},
-    execution::{DefaultPlanes, IdGenerator, PlaneInfo, Point3d},
-};
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::DefaultPlanes;
+use crate::execution::IdGenerator;
+use crate::execution::PlaneInfo;
+use crate::execution::Point3d;
 
 lazy_static::lazy_static! {
     pub static ref GRID_OBJECT_ID: uuid::Uuid = uuid::Uuid::parse_str("cfa78409-653d-4c26-96f1-7c45fb784840").unwrap();
@@ -102,7 +106,77 @@ lazy_static::lazy_static! {
                     z_axis: Point3d::new(-1.0,  0.0, 0.0, None),
                 },
             ),
-        ]);
+    ]);
+}
+
+/// Per-execution buffer for modeling commands that must preserve temporal order.
+///
+/// A single execution can enqueue commands whose source ranges come from multiple
+/// modules. The ownership boundary is the execution task carrying this context,
+/// not the module id embedded in a source range.
+#[derive(Debug, Clone)]
+pub struct EngineBatchContext {
+    batch: Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>>,
+    batch_end: Arc<RwLock<IndexMap<Uuid, (WebSocketRequest, SourceRange)>>>,
+}
+
+impl Default for EngineBatchContext {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl EngineBatchContext {
+    pub fn new() -> Self {
+        Self {
+            batch: Arc::new(RwLock::new(Vec::new())),
+            batch_end: Arc::new(RwLock::new(IndexMap::new())),
+        }
+    }
+
+    pub async fn is_empty(&self) -> bool {
+        self.batch.read().await.is_empty() && self.batch_end.read().await.is_empty()
+    }
+
+    async fn clear(&self) {
+        self.batch.write().await.clear();
+        self.batch_end.write().await.clear();
+    }
+
+    async fn push(&self, req: WebSocketRequest, source_range: SourceRange) {
+        self.batch.write().await.push((req, source_range));
+    }
+
+    async fn extend(&self, requests: Vec<(WebSocketRequest, SourceRange)>) {
+        self.batch.write().await.extend(requests);
+    }
+
+    async fn insert_end(&self, id: Uuid, req: WebSocketRequest, source_range: SourceRange) {
+        self.batch_end.write().await.insert(id, (req, source_range));
+    }
+
+    pub(crate) async fn move_batch_end_to_batch(&self, ids: Vec<Uuid>) {
+        let mut moved = Vec::new();
+        {
+            let mut batch_end = self.batch_end.write().await;
+            for id in ids {
+                let Some(item) = batch_end.shift_remove(&id) else {
+                    continue;
+                };
+                moved.push(item);
+            }
+        }
+
+        self.extend(moved).await;
+    }
+
+    async fn take_batch(&self) -> Vec<(WebSocketRequest, SourceRange)> {
+        std::mem::take(&mut *self.batch.write().await)
+    }
+
+    async fn take_batch_end(&self) -> IndexMap<Uuid, (WebSocketRequest, SourceRange)> {
+        std::mem::take(&mut *self.batch_end.write().await)
+    }
 }
 
 #[derive(Default, Debug)]
@@ -122,12 +196,6 @@ impl Clone for EngineStats {
 
 #[async_trait::async_trait]
 pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
-    /// Get the batch of commands to be sent to the engine.
-    fn batch(&self) -> Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>>;
-
-    /// Get the batch of end commands to be sent to the engine.
-    fn batch_end(&self) -> Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>;
-
     /// Get the command responses from the engine.
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>;
 
@@ -136,16 +204,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
     /// Get the async tasks we are waiting for.
     fn async_tasks(&self) -> AsyncTasks;
-
-    /// Take the batch of commands that have accumulated so far and clear them.
-    async fn take_batch(&self) -> Vec<(WebSocketRequest, SourceRange)> {
-        std::mem::take(&mut *self.batch().write().await)
-    }
-
-    /// Take the batch of end commands that have accumulated so far and clear them.
-    async fn take_batch_end(&self) -> IndexMap<Uuid, (WebSocketRequest, SourceRange)> {
-        std::mem::take(&mut *self.batch_end().write().await)
-    }
 
     /// Take the ids of async commands that have accumulated so far and clear them.
     async fn take_ids_of_async_commands(&self) -> IndexMap<Uuid, SourceRange> {
@@ -165,6 +223,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Get the default planes, creating them if they don't exist.
     async fn default_planes(
         &self,
+        batch_context: &EngineBatchContext,
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
     ) -> Result<DefaultPlanes, KclError> {
@@ -175,7 +234,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             }
         } // drop the read lock
 
-        let new_planes = self.new_default_planes(id_generator, source_range).await?;
+        let new_planes = self
+            .new_default_planes(batch_context, id_generator, source_range)
+            .await?;
         *self.get_default_planes().write().await = Some(new_planes.clone());
 
         Ok(new_planes)
@@ -185,13 +246,13 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// (These really only apply to wasm for now).
     async fn clear_scene_post_hook(
         &self,
+        batch_context: &EngineBatchContext,
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
     ) -> Result<(), crate::errors::KclError>;
 
-    async fn clear_queues(&self) {
-        self.batch().write().await.clear();
-        self.batch_end().write().await.clear();
+    async fn clear_queues(&self, batch_context: &EngineBatchContext) {
+        batch_context.clear().await;
         self.ids_of_async_commands().write().await.clear();
         self.async_tasks().clear().await;
     }
@@ -222,13 +283,15 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
     async fn clear_scene(
         &self,
+        batch_context: &EngineBatchContext,
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
     ) -> Result<(), crate::errors::KclError> {
         // Clear any batched commands leftover from previous scenes.
-        self.clear_queues().await;
+        self.clear_queues(batch_context).await;
 
         self.batch_modeling_cmd(
+            batch_context,
             id_generator.next_uuid(),
             source_range,
             &ModelingCmd::SceneClearAll(mcmd::SceneClearAll::default()),
@@ -237,10 +300,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
         // Flush the batch queue, so clear is run right away.
         // Otherwise the hooks below won't work.
-        self.flush_batch(false, source_range).await?;
+        self.flush_batch(batch_context, false, source_range).await?;
 
         // Do the after clear scene hook.
-        self.clear_scene_post_hook(id_generator, source_range).await?;
+        self.clear_scene_post_hook(batch_context, id_generator, source_range)
+            .await?;
 
         Ok(())
     }
@@ -297,7 +361,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     }
 
     /// Ensure ALL async commands have been completed.
-    async fn ensure_async_commands_completed(&self) -> Result<(), KclError> {
+    async fn ensure_async_commands_completed(&self, batch_context: &EngineBatchContext) -> Result<(), KclError> {
         // Check if all async commands have been completed.
         let ids = self.take_ids_of_async_commands().await;
 
@@ -319,7 +383,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         }
 
         // Flush the batch to make sure nothing remains.
-        self.flush_batch(true, SourceRange::default()).await?;
+        self.flush_batch(batch_context, true, SourceRange::default()).await?;
 
         Ok(())
     }
@@ -327,11 +391,13 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Set the visibility of edges.
     async fn set_edge_visibility(
         &self,
+        batch_context: &EngineBatchContext,
         visible: bool,
         source_range: SourceRange,
         id_generator: &mut IdGenerator,
     ) -> Result<(), crate::errors::KclError> {
         self.batch_modeling_cmd(
+            batch_context,
             id_generator.next_uuid(),
             source_range,
             &ModelingCmd::from(mcmd::EdgeLinesVisible::builder().hidden(!visible).build()),
@@ -344,24 +410,31 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Re-run the command to apply the settings.
     async fn reapply_settings(
         &self,
+        batch_context: &EngineBatchContext,
         settings: &crate::ExecutorSettings,
         source_range: SourceRange,
         id_generator: &mut IdGenerator,
         grid_scale_unit: GridScaleBehavior,
     ) -> Result<(), crate::errors::KclError> {
         // Set the edge visibility.
-        self.set_edge_visibility(settings.highlight_edges, source_range, id_generator)
+        self.set_edge_visibility(batch_context, settings.highlight_edges, source_range, id_generator)
             .await?;
 
         // Send the command to show the grid.
 
-        self.modify_grid(!settings.show_grid, grid_scale_unit, source_range, id_generator)
-            .await?;
+        self.modify_grid(
+            batch_context,
+            !settings.show_grid,
+            grid_scale_unit,
+            source_range,
+            id_generator,
+        )
+        .await?;
 
         // We do not have commands for changing ssao on the fly.
 
         // Flush the batch queue, so the settings are applied right away.
-        self.flush_batch(false, source_range).await?;
+        self.flush_batch(batch_context, false, source_range).await?;
 
         Ok(())
     }
@@ -369,6 +442,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     // Add a modeling command to the batch but don't fire it right away.
     async fn batch_modeling_cmd(
         &self,
+        batch_context: &EngineBatchContext,
         id: uuid::Uuid,
         source_range: SourceRange,
         cmd: &ModelingCmd,
@@ -379,7 +453,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         });
 
         // Add cmd to the batch.
-        self.batch().write().await.push((req, source_range));
+        batch_context.push(req, source_range).await;
         self.stats().commands_batched.fetch_add(1, Ordering::Relaxed);
 
         Ok(())
@@ -391,6 +465,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     // if specific commands are run before others.
     async fn batch_modeling_cmds(
         &self,
+        batch_context: &EngineBatchContext,
         source_range: SourceRange,
         cmds: &[ModelingCmdReq],
     ) -> Result<(), crate::errors::KclError> {
@@ -402,7 +477,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.stats()
             .commands_batched
             .fetch_add(extended_cmds.len(), Ordering::Relaxed);
-        self.batch().write().await.extend(extended_cmds);
+        batch_context.extend(extended_cmds).await;
 
         Ok(())
     }
@@ -412,6 +487,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// engine will eat the ID and we can't reference it for other commands.
     async fn batch_end_cmd(
         &self,
+        batch_context: &EngineBatchContext,
         id: uuid::Uuid,
         source_range: SourceRange,
         cmd: &ModelingCmd,
@@ -422,7 +498,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         });
 
         // Add cmd to the batch end.
-        self.batch_end().write().await.insert(id, (req, source_range));
+        batch_context.insert_end(id, req, source_range).await;
         self.stats().commands_batched.fetch_add(1, Ordering::Relaxed);
         Ok(())
     }
@@ -430,11 +506,12 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Send the modeling cmd and wait for the response.
     async fn send_modeling_cmd(
         &self,
+        batch_context: &EngineBatchContext,
         id: uuid::Uuid,
         source_range: SourceRange,
         cmd: &ModelingCmd,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
-        let mut requests = self.take_batch().await.clone();
+        let mut requests = batch_context.take_batch().await;
 
         // Add the command to the batch.
         requests.push((
@@ -587,17 +664,18 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Force flush the batch queue.
     async fn flush_batch(
         &self,
+        batch_context: &EngineBatchContext,
         // Whether or not to flush the end commands as well.
         // We only do this at the very end of the file.
         batch_end: bool,
         source_range: SourceRange,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
         let all_requests = if batch_end {
-            let mut requests = self.take_batch().await.clone();
-            requests.extend(self.take_batch_end().await.values().cloned());
+            let mut requests = batch_context.take_batch().await;
+            requests.extend(batch_context.take_batch_end().await.values().cloned());
             requests
         } else {
-            self.take_batch().await
+            batch_context.take_batch().await
         };
 
         self.run_batch(all_requests, source_range).await
@@ -605,6 +683,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
     async fn make_default_plane(
         &self,
+        batch_context: &EngineBatchContext,
         plane_id: uuid::Uuid,
         info: &PlaneInfo,
         color: Option<Color>,
@@ -615,6 +694,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         let default_size = 100.0;
 
         self.batch_modeling_cmd(
+            batch_context,
             plane_id,
             source_range,
             &ModelingCmd::from(
@@ -633,6 +713,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         if let Some(color) = color {
             // Set the color.
             self.batch_modeling_cmd(
+                batch_context,
                 id_generator.next_uuid(),
                 source_range,
                 &ModelingCmd::from(mcmd::PlaneSetColor::builder().color(color).plane_id(plane_id).build()),
@@ -645,6 +726,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
     async fn new_default_planes(
         &self,
+        batch_context: &EngineBatchContext,
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
     ) -> Result<DefaultPlanes, KclError> {
@@ -681,13 +763,13 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             })?;
             planes.insert(
                 name,
-                self.make_default_plane(plane_id, info, color, source_range, id_generator)
+                self.make_default_plane(batch_context, plane_id, info, color, source_range, id_generator)
                     .await?,
             );
         }
 
         // Flush the batch queue, so these planes are created right away.
-        self.flush_batch(false, source_range).await?;
+        self.flush_batch(batch_context, false, source_range).await?;
 
         Ok(DefaultPlanes {
             xy: planes[&PlaneName::Xy],
@@ -785,6 +867,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
     async fn modify_grid(
         &self,
+        batch_context: &EngineBatchContext,
         hidden: bool,
         grid_scale_behavior: GridScaleBehavior,
         source_range: SourceRange,
@@ -792,6 +875,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     ) -> Result<(), KclError> {
         // Hide/show the grid.
         self.batch_modeling_cmd(
+            batch_context,
             id_generator.next_uuid(),
             source_range,
             &ModelingCmd::from(
@@ -804,6 +888,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         .await?;
 
         self.batch_modeling_cmd(
+            batch_context,
             id_generator.next_uuid(),
             source_range,
             &grid_scale_behavior.into_modeling_cmd(),
@@ -812,6 +897,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
         // Hide/show the grid scale text.
         self.batch_modeling_cmd(
+            batch_context,
             id_generator.next_uuid(),
             source_range,
             &ModelingCmd::from(

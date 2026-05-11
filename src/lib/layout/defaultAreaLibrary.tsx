@@ -2,10 +2,10 @@ import { useApp, useSingletons } from '@src/lib/boot'
 import { ConnectionStream } from '@src/components/ConnectionStream'
 import Gizmo from '@src/components/gizmo/Gizmo'
 import { Toolbar } from '@src/Toolbar'
-import type { AreaType, AreaTypeDefinition } from '@src/lib/layout/types'
+import type { AreaLibrary, AreaTypeDefinition } from '@src/lib/layout/types'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import type { MouseEventHandler } from 'react'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { ProjectExplorerPane } from '@src/components/layout/areas/ProjectExplorerPane'
@@ -17,16 +17,71 @@ import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
 import { BodiesPane } from '@src/components/layout/areas/BodiesPane'
 import { useSignals } from '@preact/signals-react/runtime'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { DEFAULT_SKETCH_SOLVE_STREAM_DIMMING } from '@src/clientSideScene/ClientSideSceneComp'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { layoutAreaLibraryValueSpec } from '@src/registry/contracts/layout'
 import { DiffView } from '@src/components/DiffView/DiffView'
 import { HistoryView } from '@src/components/DiffView/HistoryView'
 
 function ModelingArea() {
   const { auth } = useApp()
+  const { state, send } = useModelingContext()
   const authToken = auth.useToken()
+  const [sketchSolveStreamDimming, setSketchSolveStreamDimming] = useState(
+    DEFAULT_SKETCH_SOLVE_STREAM_DIMMING
+  )
+  const showNonVisualConstraints = state.context.showNonVisualConstraints
+  const streamVisibilityPercent = Math.round(
+    (1 - sketchSolveStreamDimming) * 100
+  )
   return (
     <div className="relative z-0 min-w-64 flex flex-col flex-1 items-center overflow-hidden">
       <Toolbar />
-      <ConnectionStream authToken={authToken} />
+      <ConnectionStream
+        authToken={authToken}
+        sketchSolveStreamDimming={sketchSolveStreamDimming}
+      />
+      {state.matches('sketchSolveMode') && (
+        <div className="absolute bottom-2 left-2 z-10 flex items-end gap-2 pointer-events-auto">
+          <div className="px-2 py-1 border border-chalkboard-20 dark:border-chalkboard-80 rounded bg-chalkboard-10/80 dark:bg-chalkboard-100/80 backdrop-blur-sm">
+            <div className="text-[10px] text-chalkboard-70 dark:text-chalkboard-40">
+              Background Opacity
+            </div>
+            <input
+              aria-label="Sketch background opacity"
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              value={streamVisibilityPercent}
+              onChange={(e) => {
+                const nextVisibilityPercent = Number(e.target.value)
+                setSketchSolveStreamDimming((100 - nextVisibilityPercent) / 100)
+              }}
+              className="w-32 cursor-pointer"
+            />
+          </div>
+          <button
+            type="button"
+            aria-pressed={showNonVisualConstraints}
+            aria-label="Toggle non-visual constraints"
+            title="Show constraints"
+            onClick={() => send({ type: 'toggle non-visual constraints' })}
+            className={`h-8 px-2 rounded border text-xs flex items-center gap-1.5 backdrop-blur-sm ${
+              showNonVisualConstraints
+                ? 'bg-primary text-chalkboard-10 border-primary'
+                : 'bg-chalkboard-10/80 dark:bg-chalkboard-100/80 border-chalkboard-20 dark:border-chalkboard-80'
+            }`}
+          >
+            <CustomIcon
+              name={showNonVisualConstraints ? 'eyeOpen' : 'eyeCrossedOut'}
+              className="w-4 h-4"
+            />
+            Constraints
+          </button>
+        </div>
+      )}
       <div className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
         <Gizmo />
       </div>
@@ -34,15 +89,14 @@ function ModelingArea() {
   )
 }
 
-/**
- * For now we have strict area types but in future
- * we should make it possible to register your own in an extension.
- */
 export const useDefaultAreaLibrary = () => {
   useSignals()
-  const { settings, layout } = useApp()
+  const { settings, layout, registry } = useApp()
   const { kclManager } = useSingletons()
   const getSettings = settings.get
+  const registeredAreaLibrary = registry.signal(
+    layoutAreaLibraryValueSpec
+  ).value
   const onCodeNotificationClick: MouseEventHandler = useCallback(
     (e) => {
       e.preventDefault()
@@ -137,13 +191,19 @@ export const useDefaultAreaLibrary = () => {
           shortcut: 'Shift + H',
           Component: HistoryView,
         },
+        diff: {
+          hide: () => false,
+          shortcut: 'Shift + I',
+          Component: DiffView,
+        },
         debug: {
-          hide: () => getSettings().app.showDebugPanel.current === false,
+          hide: () => getSettings().debug.showPanel.current === false,
           shortcut: 'Shift + D',
           Component: DebugPane,
         },
-      } satisfies Record<AreaType, AreaTypeDefinition>),
-    [getSettings, kclManager, onCodeNotificationClick]
+        ...registeredAreaLibrary,
+      } satisfies AreaLibrary),
+    [getSettings, kclManager, onCodeNotificationClick, registeredAreaLibrary]
   )
 }
 
@@ -168,4 +228,4 @@ export const testAreaLibrary = Object.freeze({
   logs: testArea('Logs'),
   variables: testArea('Variables'),
   debug: testArea('Debug'),
-} satisfies Record<AreaType, AreaTypeDefinition>)
+} satisfies AreaLibrary)

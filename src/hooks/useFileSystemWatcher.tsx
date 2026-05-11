@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-
+import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
@@ -15,8 +15,15 @@ type Path = string
 
 export const useFileSystemWatcher = (
   callback: (eventType: string, path: Path) => Promise<void>,
-  paths: Path[]
+  providedPaths: Path[]
 ): void => {
+  const paths = providedPaths.filter((p) => {
+    const isValid = p !== '' && p !== fsZds.sep
+    if (!isValid) {
+      console.trace(`Invalid path passed into useFileSystemWatcher: ${p}`)
+    }
+    return isValid
+  })
   // Used to track this instance of useFileSystemWatcher.
   // Assign to ref so it doesn't change between renders.
   const key = useRef(uuidv4())

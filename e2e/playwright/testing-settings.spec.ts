@@ -22,7 +22,7 @@ import {
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import type { UnitLength } from '@kittycad/lib/dist/types/src'
-import { uuidv4 } from '@src/lib/utils'
+import { isArray, uuidv4 } from '@src/lib/utils'
 
 const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
   const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
@@ -78,9 +78,14 @@ test.describe(
         expect(storedSettings.settings?.modeling?.mouse_controls).toBe('zoo')
         // Commenting this out because tests need this to be set to work properly.
         // expect(storedSettings.settings?.app?.project_directory).toBe('')
-        expect(storedSettings.settings?.project?.default_project_name).toBe(
-          'untitled'
-        )
+        const projectSettings = storedSettings.settings?.project
+        expect(
+          projectSettings &&
+            typeof projectSettings === 'object' &&
+            !isArray(projectSettings)
+            ? projectSettings.default_project_name
+            : undefined
+        ).toBe('untitled')
       }
     )
 
@@ -347,7 +352,7 @@ test.describe(
 
         await createProject({ name: 'project-000', page })
 
-        const changeShowDebugPanelFs = async (show_debug_panel: boolean) => {
+        const changeShowDebugPanelFs = async (showPanel: boolean) => {
           const tempSettingsFilePath = join(
             projectDirName,
             'project-000',
@@ -357,8 +362,8 @@ test.describe(
             tempSettingsFilePath,
             settingsToToml({
               settings: {
-                app: {
-                  show_debug_panel,
+                debug: {
+                  show_panel: showPanel,
                 },
                 // TODO: make sure this isn't just working around a bug
                 // where the existing data wouldn't be preserved?
@@ -591,7 +596,7 @@ test.describe(
             })
             await button.click()
             const toastMessage = page.getByText(
-              `Updated per-file units to ${unitOfMeasure}`
+              `Updated per-file units to ${unitOfMeasure}.`
             )
             await expect(toastMessage).toBeVisible()
           }
@@ -704,6 +709,7 @@ test.describe(
         const toolbar = page.locator('menu').filter({ hasText: 'Start Sketch' })
 
         await test.step(`Test setup`, async () => {
+          await page.emulateMedia({ colorScheme: 'light' })
           await page.setBodyDimensions({ width: 1200, height: 500 })
           await homePage.goToModelingScene()
           await u.waitForPageLoad()
@@ -821,6 +827,7 @@ test.describe(
       `Change inline units setting`,
       { tag: ['@macos', '@windows'] },
       async ({ page, homePage, editor, folderSetupFn }) => {
+        const u = await getUtils(page)
         const initialInlineUnits = 'yd'
         const editedInlineUnits = { short: 'mm', long: 'Millimeters' }
         const inlineSettingsString = (s: string) =>
@@ -847,22 +854,25 @@ test.describe(
 
         await test.step(`Manually write inline settings`, async () => {
           await editor.openPane()
+          // Clear debug logs so expectCmdLog waits for executeAst from this edit, not a prior run.
+          await u.openDebugPanel()
+          await u.clearCommandLogs()
+          await u.closeDebugPanel()
           await editor.replaceCode(
             `fn cube`,
             `${inlineSettingsString(initialInlineUnits)}
 fn cube`
           )
+          await u.openDebugPanel()
+          await u.expectCmdLog('[data-message-type="execution-done"]', 20_000)
+          await u.closeDebugPanel()
           await expect(unitsIndicator).toContainText(initialInlineUnits)
         })
 
         await test.step(`Change units setting via lower-right control`, async () => {
           await unitsIndicator.click()
           await unitsChangeButton(editedInlineUnits.long).click()
-          await expect(
-            page.getByText(
-              `Updated per-file units to ${editedInlineUnits.short}`
-            )
-          ).toBeVisible()
+          await expect(unitsIndicator).toContainText(editedInlineUnits.short)
         })
       }
     )

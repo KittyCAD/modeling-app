@@ -1,0 +1,550 @@
+import { topLevelRange } from '@src/lang/util'
+import {
+  sendToActorIfActive,
+  updateHoveredId,
+  updateSelectedCodeHighlight,
+  updateSelectedIds,
+  updateSelectedIdsFromCodeSelection,
+  updateSketchOutcome,
+} from '@src/machines/sketchSolve/sketchSolveImpl'
+import {
+  createLineApiObject,
+  createPointApiObject,
+  createSceneGraphDelta,
+} from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
+import toast from 'react-hot-toast'
+import { describe, expect, test, vi } from 'vitest'
+
+function createSketchApiObject(id: number) {
+  return {
+    id,
+    kind: {
+      type: 'Sketch',
+      args: { on: { default: 'xy' } },
+      constraints: [],
+      plane: 8,
+      segments: [],
+    },
+    label: '',
+    comments: '',
+    artifact_id: '0',
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
+  } as const
+}
+
+// This has to be an integration test because sketchSolveImpl has a dependency tracing back to WASM,
+// even though this function doesn't directly use it.
+describe('updateSelectedIds', () => {
+  test('replaces the existing selection when requested', () => {
+    const result = updateSelectedIds({
+      context: {
+        selectedIds: [3, 4, 10],
+        duringAreaSelectIds: [],
+      },
+      event: {
+        type: 'update selected ids',
+        data: {
+          selectedIds: [10],
+          replaceExistingSelection: true,
+        },
+      },
+    } as any)
+
+    expect(result.selectedIds).toEqual([10])
+  })
+})
+
+describe('updateSelectedIdsFromCodeSelection', () => {
+  test('selects current-sketch objects whose source overlaps the editor selection', () => {
+    const sketch = createSketchApiObject(0)
+    const childPoint = createPointApiObject({ id: 1, owner: 2 })
+    childPoint.source = {
+      type: 'Simple',
+      range: [10, 20, 0],
+      node_path: null,
+    }
+    const line = createLineApiObject({ id: 2, start: 1, end: 4 })
+    line.source = { type: 'Simple', range: [10, 20, 0], node_path: null }
+    const standalonePoint = createPointApiObject({ id: 3 })
+    standalonePoint.source = {
+      type: 'Simple',
+      range: [30, 40, 0],
+      node_path: null,
+    }
+
+    const result = updateSelectedIdsFromCodeSelection({
+      context: {
+        sketchId: 0,
+        selectedIds: [99],
+        duringAreaSelectIds: [100],
+        sketchExecOutcome: {
+          sceneGraphDelta: createSceneGraphDelta([
+            sketch as any,
+            childPoint,
+            line,
+            standalonePoint,
+          ]),
+        },
+      },
+      event: {
+        type: 'update selected ids from code selection',
+        data: {
+          ranges: [topLevelRange(15, 15), topLevelRange(35, 36)],
+        },
+      },
+    } as any)
+
+    expect(result.selectedIds).toEqual([2, 3])
+    expect(result.duringAreaSelectIds).toEqual([])
+  })
+})
+
+describe('updateSelectedCodeHighlight', () => {
+  test('dispatches cursor selections at selected sketch object source ranges', () => {
+    const dispatch = vi.fn()
+    const firstLine = createLineApiObject({ id: 2, start: 0, end: 1 })
+    firstLine.source = { type: 'Simple', range: [40, 102, 0], node_path: null }
+    const secondLine = createLineApiObject({ id: 5, start: 1, end: 3 })
+    secondLine.source = {
+      type: 'Simple',
+      range: [113, 177, 0],
+      node_path: null,
+    }
+
+    updateSelectedCodeHighlight({
+      context: {
+        selectedIds: [5, 2],
+        duringAreaSelectIds: [],
+        sketchExecOutcome: {
+          sceneGraphDelta: createSceneGraphDelta([firstLine, secondLine]),
+        },
+        kclManager: {
+          code: 'x'.repeat(200),
+          editorView: { dispatch },
+        },
+      },
+    } as unknown as Parameters<typeof updateSelectedCodeHighlight>[0])
+
+    expect(
+      dispatch.mock.calls[0][0].selection.ranges.map(
+        ({
+          from,
+          to,
+          empty,
+        }: { from: number; to: number; empty: boolean }) => ({
+          from,
+          to,
+          empty,
+        })
+      )
+    ).toEqual([
+      { from: 102, to: 102, empty: true },
+      { from: 177, to: 177, empty: true },
+    ])
+  })
+
+  test('uses the child point source range for selected child points', () => {
+    const dispatch = vi.fn()
+    const point = createPointApiObject({ id: 2, owner: 5 })
+    point.source = {
+      type: 'Simple',
+      range: [113, 177, 0],
+      node_path: null,
+    }
+    const ownerLine = createLineApiObject({ id: 5, start: 2, end: 3 })
+    ownerLine.source = { type: 'Simple', range: [10, 20, 0], node_path: null }
+
+    updateSelectedCodeHighlight({
+      context: {
+        selectedIds: [2],
+        duringAreaSelectIds: [],
+        sketchExecOutcome: {
+          sceneGraphDelta: createSceneGraphDelta([point, ownerLine]),
+        },
+        kclManager: {
+          code: 'x'.repeat(200),
+          editorView: { dispatch },
+        },
+      },
+    } as unknown as Parameters<typeof updateSelectedCodeHighlight>[0])
+
+    expect(dispatch.mock.calls[0][0].selection.ranges[0]).toMatchObject({
+      from: 177,
+      to: 177,
+      empty: true,
+    })
+  })
+})
+
+describe('sendToActorIfActive', () => {
+  test('sends when the actor is active', () => {
+    const send = vi.fn()
+    const actor = {
+      getSnapshot: () => ({ status: 'active' as const }),
+      send,
+    }
+
+    const didSend = sendToActorIfActive(actor as any, { type: 'ping' })
+
+    expect(didSend).toBe(true)
+    expect(send).toHaveBeenCalledWith({ type: 'ping' })
+  })
+
+  test('does not send when the actor has stopped', () => {
+    const send = vi.fn()
+    const actor = {
+      getSnapshot: () => ({ status: 'stopped' as const }),
+      send,
+    }
+
+    const didSend = sendToActorIfActive(actor as any, { type: 'ping' })
+
+    expect(didSend).toBe(false)
+    expect(send).not.toHaveBeenCalled()
+  })
+})
+
+describe('updateHoveredId', () => {
+  test('highlights the hovered sketch object source range', () => {
+    const setHighlightRange = vi.fn()
+    const line = createLineApiObject({ id: 2, start: 0, end: 1 })
+    line.source = { type: 'Simple', range: [10, 20, 0], node_path: null }
+
+    const result = updateHoveredId({
+      context: {
+        sketchExecOutcome: {
+          sceneGraphDelta: createSceneGraphDelta([line]),
+        },
+        kclManager: {
+          setHighlightRange,
+        },
+      },
+      event: {
+        type: 'update hovered id',
+        data: { hoveredId: 2 },
+      },
+    } as unknown as Parameters<typeof updateHoveredId>[0])
+
+    expect(result.hoveredId).toBe(2)
+    expect(setHighlightRange).toHaveBeenCalledWith([[10, 20, 0]])
+  })
+
+  test('highlights all ranges for a backtrace source ref', () => {
+    const setHighlightRange = vi.fn()
+    const line = createLineApiObject({ id: 2, start: 0, end: 1 })
+    line.source = {
+      type: 'BackTrace',
+      ranges: [
+        [[10, 20, 0], null],
+        [[30, 40, 0], null],
+      ],
+    }
+
+    updateHoveredId({
+      context: {
+        sketchExecOutcome: {
+          sceneGraphDelta: createSceneGraphDelta([line]),
+        },
+        kclManager: {
+          setHighlightRange,
+        },
+      },
+      event: {
+        type: 'update hovered id',
+        data: { hoveredId: 2 },
+      },
+    } as unknown as Parameters<typeof updateHoveredId>[0])
+
+    expect(setHighlightRange).toHaveBeenCalledWith([
+      [10, 20, 0],
+      [30, 40, 0],
+    ])
+  })
+
+  test('uses the child point source range for hovered child points', () => {
+    const setHighlightRange = vi.fn()
+    const point = createPointApiObject({ id: 2, owner: 5 })
+    point.source = {
+      type: 'Simple',
+      range: [113, 177, 0],
+      node_path: null,
+    }
+    const ownerLine = createLineApiObject({ id: 5, start: 2, end: 3 })
+    ownerLine.source = { type: 'Simple', range: [10, 20, 0], node_path: null }
+
+    updateHoveredId({
+      context: {
+        sketchExecOutcome: {
+          sceneGraphDelta: createSceneGraphDelta([point, ownerLine]),
+        },
+        kclManager: {
+          setHighlightRange,
+        },
+      },
+      event: {
+        type: 'update hovered id',
+        data: { hoveredId: 2 },
+      },
+    } as unknown as Parameters<typeof updateHoveredId>[0])
+
+    expect(setHighlightRange).toHaveBeenCalledWith([[113, 177, 0]])
+  })
+
+  test('clears the code highlight when no object is hovered', () => {
+    const setHighlightRange = vi.fn()
+
+    const result = updateHoveredId({
+      context: {
+        sketchExecOutcome: {
+          sceneGraphDelta: createSceneGraphDelta([]),
+        },
+        kclManager: {
+          setHighlightRange,
+        },
+      },
+      event: {
+        type: 'update hovered id',
+        data: { hoveredId: null },
+      },
+    } as unknown as Parameters<typeof updateHoveredId>[0])
+
+    expect(result.hoveredId).toBeNull()
+    expect(setHighlightRange).toHaveBeenCalledWith([])
+  })
+})
+
+describe('updateSketchOutcome', () => {
+  test('syncs sketch solve operations into KclManager after an immediate editor update', () => {
+    const setSketchSolveDiagnostics = vi.fn()
+    const dispatch = vi.fn()
+    const updateCodeEditor = vi.fn()
+    const syncSketchSolveOutcome = vi.fn()
+    const sceneGraphDelta = createSceneGraphDelta([])
+
+    updateSketchOutcome({
+      context: {
+        kclManager: {
+          code: 'old code',
+          dispatch,
+          setSketchSolveDiagnostics,
+          updateCodeEditor,
+          syncSketchSolveOutcome,
+        },
+        selectedIds: [],
+        duringAreaSelectIds: [],
+      },
+      event: {
+        type: 'update sketch outcome',
+        data: {
+          sourceDelta: { text: 'new code' },
+          sceneGraphDelta,
+        },
+      },
+    } as any)
+
+    expect(updateCodeEditor).toHaveBeenCalledWith(
+      'new code',
+      {
+        shouldExecute: false,
+        shouldWriteToDisk: true,
+        shouldAddToHistory: true,
+      },
+      expect.any(Object)
+    )
+    expect(syncSketchSolveOutcome).toHaveBeenCalledWith(
+      'new code',
+      sceneGraphDelta
+    )
+    expect(updateCodeEditor.mock.invocationCallOrder[0]).toBeLessThan(
+      syncSketchSolveOutcome.mock.invocationCallOrder[0]
+    )
+  })
+
+  test('does not rewrite the editor for direct CodeMirror execution outcomes', () => {
+    const setSketchSolveDiagnostics = vi.fn()
+    const dispatch = vi.fn()
+    const updateCodeEditor = vi.fn()
+    const syncSketchSolveOutcome = vi.fn()
+    const sceneGraphDelta = createSceneGraphDelta([])
+
+    updateSketchOutcome({
+      context: {
+        kclManager: {
+          code: 'newer editor code',
+          dispatch,
+          setSketchSolveDiagnostics,
+          updateCodeEditor,
+          syncSketchSolveOutcome,
+        },
+        selectedIds: [],
+        duringAreaSelectIds: [],
+      },
+      event: {
+        type: 'update sketch outcome',
+        data: {
+          sourceDelta: { text: 'executed editor snapshot' },
+          sceneGraphDelta,
+          updateEditor: false,
+          writeToDisk: false,
+          addToHistory: false,
+        },
+      },
+    } as unknown as Parameters<typeof updateSketchOutcome>[0])
+
+    expect(dispatch).toHaveBeenCalledTimes(1)
+    expect(updateCodeEditor).not.toHaveBeenCalled()
+    expect(syncSketchSolveOutcome).toHaveBeenCalledWith(
+      'executed editor snapshot',
+      sceneGraphDelta
+    )
+  })
+
+  test('syncs sketch solve operations only when the debounced editor update runs', () => {
+    vi.useFakeTimers()
+    try {
+      const setSketchSolveDiagnostics = vi.fn()
+      const dispatch = vi.fn()
+      const updateCodeEditor = vi.fn()
+      const syncSketchSolveOutcome = vi.fn()
+      const sceneGraphDelta = createSceneGraphDelta([])
+
+      updateSketchOutcome({
+        context: {
+          kclManager: {
+            code: 'old code',
+            dispatch,
+            setSketchSolveDiagnostics,
+            updateCodeEditor,
+            syncSketchSolveOutcome,
+          },
+          selectedIds: [],
+          duringAreaSelectIds: [],
+        },
+        event: {
+          type: 'update sketch outcome',
+          data: {
+            sourceDelta: { text: 'new code' },
+            sceneGraphDelta,
+            debounceEditorUpdate: true,
+          },
+        },
+      } as any)
+
+      expect(updateCodeEditor).not.toHaveBeenCalled()
+      expect(syncSketchSolveOutcome).not.toHaveBeenCalled()
+
+      vi.advanceTimersByTime(200)
+
+      expect(updateCodeEditor).toHaveBeenCalled()
+      expect(syncSketchSolveOutcome).toHaveBeenCalledWith(
+        'new code',
+        sceneGraphDelta
+      )
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  test('dispatches the scene update immediately for same-code checkpoint commits', () => {
+    const setSketchSolveDiagnostics = vi.fn()
+    const dispatch = vi.fn()
+    const updateCodeEditor = vi.fn()
+    const syncSketchSolveOutcome = vi.fn()
+    const sceneGraphDelta = createSceneGraphDelta([])
+
+    updateSketchOutcome({
+      context: {
+        kclManager: {
+          code: 'last good preview',
+          dispatch,
+          setSketchSolveDiagnostics,
+          updateCodeEditor,
+          syncSketchSolveOutcome,
+        },
+        selectedIds: [],
+        duringAreaSelectIds: [],
+      },
+      event: {
+        type: 'update sketch outcome',
+        data: {
+          sourceDelta: { text: 'last good preview' },
+          sceneGraphDelta,
+          checkpointId: 42,
+        },
+      },
+    } as any)
+
+    expect(dispatch).toHaveBeenCalledTimes(1)
+    expect(updateCodeEditor).toHaveBeenCalledWith(
+      'last good preview',
+      {
+        shouldExecute: false,
+        shouldWriteToDisk: true,
+        shouldAddToHistory: true,
+      },
+      expect.objectContaining({
+        sketchCheckpointId: 42,
+        effects: [],
+      })
+    )
+    expect(syncSketchSolveOutcome).toHaveBeenCalledWith(
+      'last good preview',
+      sceneGraphDelta
+    )
+  })
+
+  test('suppresses preview toasts while preserving exec outcome issues', () => {
+    const toastErrorSpy = vi.spyOn(toast, 'error').mockImplementation(() => '')
+    try {
+      const setSketchSolveDiagnostics = vi.fn()
+      const dispatch = vi.fn()
+      const updateCodeEditor = vi.fn()
+      const syncSketchSolveOutcome = vi.fn()
+      const sceneGraphDelta = createSceneGraphDelta([])
+      sceneGraphDelta.exec_outcome.issues = [
+        {
+          message: 'Overlapping geometry',
+          severity: 'Warning',
+          sourceRange: [0, 0, 0],
+        } as any,
+      ]
+
+      const result = updateSketchOutcome({
+        context: {
+          kclManager: {
+            code: 'old code',
+            dispatch,
+            setSketchSolveDiagnostics,
+            updateCodeEditor,
+            syncSketchSolveOutcome,
+          },
+          selectedIds: [],
+          duringAreaSelectIds: [],
+        },
+        event: {
+          type: 'update sketch outcome',
+          data: {
+            sourceDelta: { text: 'new code' },
+            sceneGraphDelta,
+            suppressExecOutcomeIssues: true,
+          },
+        },
+      } as any)
+
+      expect(toastErrorSpy).not.toHaveBeenCalled()
+      expect(
+        result.sketchExecOutcome?.sceneGraphDelta.exec_outcome.issues
+      ).toEqual(sceneGraphDelta.exec_outcome.issues)
+      expect(setSketchSolveDiagnostics).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            message: 'Overlapping geometry',
+            severity: 'warning',
+          }),
+        ])
+      )
+    } finally {
+      toastErrorSpy.mockRestore()
+    }
+  })
+})

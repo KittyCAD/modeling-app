@@ -1,5 +1,10 @@
-use kittycad_modeling_cmds::{self as kcmc, ok_response::output as mout, units::*};
-use pyo3::{PyResult, exceptions::PyException, pyclass, pymethods};
+use kittycad_modeling_cmds::ok_response::output as mout;
+use kittycad_modeling_cmds::units::*;
+use kittycad_modeling_cmds::{self as kcmc};
+use pyo3::PyResult;
+use pyo3::exceptions::PyException;
+use pyo3::pyclass;
+use pyo3::pymethods;
 
 use crate::bridge::bounding_box::BoundingBoxResponse;
 

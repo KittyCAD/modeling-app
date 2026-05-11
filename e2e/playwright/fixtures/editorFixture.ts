@@ -181,13 +181,30 @@ export class EditorFixture {
 
     let code = (await Promise.all(lines.map((c) => c.textContent()))).join('\n')
     if (!findCode) {
-      // nuke everything
       code = replaceCode
     } else {
-      if (!lines) return
       code = code.replace(findCode, replaceCode)
     }
     await this.codeContent.fill(code)
+  }
+  replaceCodeByTyping = async (findCode: string, replaceCode: string) => {
+    if (!(await this.checkIfPaneIsOpen())) {
+      await this.openPane()
+    }
+    await this.page.evaluate(
+      ({ findCode, replaceCode }) => {
+        const editorView = window.kclManager.editorView
+        const currentCode = editorView.state.doc.toString()
+        const from = currentCode.indexOf(findCode)
+        if (from === -1) {
+          throw new Error(`Could not find code to replace: ${findCode}`)
+        }
+        editorView.dispatch({
+          changes: { from, to: from + findCode.length, insert: replaceCode },
+        })
+      },
+      { findCode, replaceCode }
+    )
   }
   checkIfPaneIsOpen() {
     return checkIfPaneIsOpen(this.page, this.paneButtonTestId)

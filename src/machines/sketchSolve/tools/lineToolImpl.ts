@@ -1,57 +1,65 @@
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type RustContext from '@src/lib/rustContext'
 import type {
+  ApiObject,
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclManager'
-import {
-  type ActionArgs,
-  type AssignArgs,
-  type ProvidedActor,
-  type DoneActorEvent,
-} from 'xstate'
-import { roundOff } from '@src/lib/utils'
+import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
+import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
-import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { roundOff } from '@src/lib/utils'
 import {
+  clearToolSnappingState,
+  getBestSnappingCandidate,
+  sendHoveredSnappingCandidate,
+  updateToolSnappingPreview,
+} from '@src/machines/sketchSolve/tools/toolSnappingUtils'
+import {
+  getCoincidentCluster,
   isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
+import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
+import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
+import {
+  type ActionArgs,
+  type AssignArgs,
+  type DoneActorEvent,
+  type ProvidedActor,
+} from 'xstate'
 
 export const TOOL_ID = 'Line tool'
 export const CONFIRMING_DIMENSIONS = 'Confirming dimensions'
-export const ADDING_POINT = `xstate.done.actor.0.${TOOL_ID}.Adding point`
-export const CONFIRMING_DIMENSIONS_EVENT = `xstate.done.actor.0.${TOOL_ID}.${CONFIRMING_DIMENSIONS}`
 
 export type ToolEvents =
   | BaseToolEvent
-
-  // because the single click will still fire before the double click, we have to have a way of
-  // doing the single click action (creating a new segment chained to the old one) but then catch this
-  // and reverse it if a double click is detected
-  | { type: 'set pending double click' }
+  | { type: 'finish line chain' }
+  | { type: 'start next draft line'; data: [number, number] }
   | {
-      type: typeof ADDING_POINT | typeof CONFIRMING_DIMENSIONS_EVENT
+      type:
+        | `xstate.done.actor.0.${typeof TOOL_ID}.Adding point`
+        | `xstate.done.actor.0.${typeof TOOL_ID}.${typeof CONFIRMING_DIMENSIONS}`
       output: {
         kclSource: SourceDelta
         sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
       }
     }
 
 export type ToolContext = {
   draftPointId?: number
-  lastLineEndPointId?: number
-  isDoubleClick?: boolean
-  pendingDoubleClick?: boolean
   pendingSketchOutcome?: {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
+    checkpointId?: number | null
+    // If present, the next draft line should chain from this committed point.
+    // When double-clicking or snapping to a target it becomes undefined to stop chaining.
+    lastPointId?: number
   }
   deleteFromEscape?: boolean // Track if deletion was triggered by escape (vs unequip)
-  sceneGraphDelta: SceneGraphDelta
   sceneInfra: SceneInfra
   rustContext: RustContext
   kclManager: KclManager
@@ -67,6 +75,39 @@ type ToolAssignArgs<TActor extends ProvidedActor = any> = AssignArgs<
   TActor
 >
 
+// Don't snap to the current draft point and the opposite point's cluster.
+function getSnappingExcludedPointIds(
+  objects: ApiObject[],
+  draftPointId?: number
+) {
+  const excludedPointIds = new Set<number>()
+  if (draftPointId === undefined) {
+    return excludedPointIds
+  }
+
+  excludedPointIds.add(draftPointId)
+
+  const draftLine = objects.find(
+    (obj) =>
+      isLineSegment(obj) &&
+      (obj.kind.segment.start === draftPointId ||
+        obj.kind.segment.end === draftPointId)
+  )
+
+  if (isLineSegment(draftLine)) {
+    const fixedPointId =
+      draftLine.kind.segment.start === draftPointId
+        ? draftLine.kind.segment.end
+        : draftLine.kind.segment.start
+
+    getCoincidentCluster(fixedPointId, objects).forEach((pointId) => {
+      excludedPointIds.add(pointId)
+    })
+  }
+
+  return excludedPointIds
+}
+
 ////////////// --Actions-- //////////////////
 
 export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
@@ -76,7 +117,24 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
       if (!args || !context.draftPointId) return
       const twoD = args.intersectionPoint?.twoD
       if (twoD && !isEditInProgress) {
-        // Send the add point event with the clicked coordinates
+        const mousePosition = [twoD.x, twoD.y] as Coords2d
+        const snappingCandidate = getBestSnappingCandidate({
+          self,
+          sceneInfra: context.sceneInfra,
+          sketchId: context.sketchId,
+          mousePosition,
+          mouseEvent: args.mouseEvent,
+          getExcludedPointIds: (currentSketchObjects) =>
+            getSnappingExcludedPointIds(
+              currentSketchObjects,
+              context.draftPointId
+            ),
+        })
+        sendHoveredSnappingCandidate(self, snappingCandidate)
+        updateToolSnappingPreview({
+          sceneInfra: context.sceneInfra,
+          target: snappingCandidate,
+        })
 
         const units = baseUnitToNumericSuffix(
           context.kclManager.fileSettings.defaultLengthUnit
@@ -122,6 +180,7 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
           await new Promise((resolve) => requestAnimationFrame(resolve))
         } catch (err) {
           console.error('failed to edit segment', err)
+          toastSketchSolveError(err)
         } finally {
           isEditInProgress = false
         }
@@ -131,18 +190,26 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
       if (!args || !context.draftPointId) return
       const twoD = args.intersectionPoint?.twoD
       if (twoD) {
-        const isDoubleClick = args.mouseEvent.detail === 2
-        // Set pending double-click flag immediately if detected
-        if (isDoubleClick) {
-          self.send({
-            type: 'set pending double click',
-          })
-        }
+        const mousePosition = [twoD.x, twoD.y] as Coords2d
+        const snappingCandidate = getBestSnappingCandidate({
+          self,
+          sceneInfra: context.sceneInfra,
+          sketchId: context.sketchId,
+          mousePosition,
+          mouseEvent: args.mouseEvent,
+          excludedPointIds: getSnappingExcludedPointIds(
+            self._parent?.getSnapshot?.()?.context?.sketchExecOutcome
+              ?.sceneGraphDelta?.new_graph?.objects ?? [],
+            context.draftPointId
+          ),
+        })
+        const [x, y] = snappingCandidate?.position ?? mousePosition
         self.send({
           type: 'add point',
-          data: [twoD.x, twoD.y],
+          data: [x, y],
           id: context.draftPointId,
-          isDoubleClick,
+          snapTarget: snappingCandidate?.target,
+          isDoubleClick: args.mouseEvent.detail === 2,
         })
       }
     },
@@ -157,26 +224,87 @@ export function addPointListener({ self, context }: ToolActionArgs) {
 
       const twoD = args.intersectionPoint?.twoD
       if (twoD) {
-        const isDoubleClick = args.mouseEvent.detail === 2
-        // If it's a double-click, set the flag immediately BEFORE sending the event
-        // This ensures any pending operations from the first click will be cancelled
-        if (isDoubleClick) {
-          // Send the flag-setting event first, synchronously
-          self.send({ type: 'set pending double click' })
-        }
-        // Send the add point event with the clicked coordinates
+        const mousePosition = [twoD.x, twoD.y] as Coords2d
+        const snappingCandidate = getBestSnappingCandidate({
+          self,
+          sceneInfra: context.sceneInfra,
+          sketchId: context.sketchId,
+          mousePosition,
+          mouseEvent: args.mouseEvent,
+          getExcludedPointIds: (currentSketchObjects) =>
+            getSnappingExcludedPointIds(
+              currentSketchObjects,
+              context.draftPointId
+            ),
+        })
+        const [x, y] = snappingCandidate?.position ?? mousePosition
         self.send({
           type: 'add point',
-          data: [twoD.x, twoD.y],
-          isDoubleClick,
+          data: [x, y],
+          snapTarget: snappingCandidate?.target,
         })
       }
     },
-    onMove: () => {},
+    onMove: (args) => {
+      const twoD = args?.intersectionPoint?.twoD
+      if (!twoD) {
+        clearToolSnappingState({
+          self,
+          sceneInfra: context.sceneInfra,
+        })
+        return
+      }
+
+      const snappingCandidate = getBestSnappingCandidate({
+        self,
+        sceneInfra: context.sceneInfra,
+        sketchId: context.sketchId,
+        mousePosition: [twoD.x, twoD.y],
+        mouseEvent: args.mouseEvent,
+        getExcludedPointIds: (currentSketchObjects) =>
+          getSnappingExcludedPointIds(
+            currentSketchObjects,
+            context.draftPointId
+          ),
+      })
+      sendHoveredSnappingCandidate(self, snappingCandidate)
+      updateToolSnappingPreview({
+        sceneInfra: context.sceneInfra,
+        target: snappingCandidate,
+      })
+    },
   })
 }
 
-export function removePointListener({ context }: ToolActionArgs) {
+export function addNextDraftLineListener({ self, context }: ToolActionArgs) {
+  let hasStartedNextDraftLine = false
+  context.sceneInfra.setCallbacks({
+    onClick: (args) => {
+      if (!args || args.mouseEvent.which !== 1) return
+      if (args.mouseEvent.detail === 2) {
+        self.send({ type: 'finish line chain' })
+      }
+    },
+    onMove: (args) => {
+      if (hasStartedNextDraftLine) return
+
+      const twoD = args?.intersectionPoint?.twoD
+      if (!twoD) return
+
+      hasStartedNextDraftLine = true
+      self.send({
+        type: 'start next draft line',
+        data: [twoD.x, twoD.y],
+      })
+    },
+  })
+}
+
+export function removePointListener({ context, self }: ToolActionArgs) {
+  clearToolSnappingState({
+    self,
+    sceneInfra: context.sceneInfra,
+  })
   // Reset callbacks to remove the onClick and onMove listeners
   context.sceneInfra.setCallbacks({
     onClick: () => {},
@@ -185,41 +313,14 @@ export function removePointListener({ context }: ToolActionArgs) {
 }
 
 export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
-  if (
-    event.type !== ADDING_POINT &&
-    event.type !== CONFIRMING_DIMENSIONS_EVENT
-  ) {
-    // Handle delete result or other events
-    if ('output' in event && event.output) {
-      const output = event.output as {
-        kclSource?: SourceDelta
-        sceneGraphDelta?: SceneGraphDelta
-        error?: string
-      }
-
-      if (output.error) {
-        return {}
-      }
-
-      // Send result to parent if we have valid data
-      if (output.kclSource && output.sceneGraphDelta) {
-        const sendData: SketchSolveMachineEvent = {
-          type: 'update sketch outcome',
-          data: {
-            sourceDelta: output.kclSource,
-            sceneGraphDelta: output.sceneGraphDelta,
-          },
-        }
-        self._parent?.send(sendData)
-      }
-    }
+  if (!('output' in event) || !event.output) {
     return {}
   }
 
-  // Check if the output has a newLineEndPointId (from modAndSolve when chaining)
   const output = event.output as {
     kclSource?: SourceDelta
     sceneGraphDelta?: SceneGraphDelta
+    checkpointId?: number | null
     newLineEndPointId?: number
     newlyAddedEntities?: {
       segmentIds: Array<number>
@@ -233,29 +334,20 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
     return {}
   }
 
-  // Don't send result to parent here - we'll send it after checking double-click flag
-  // This prevents editor flicker by only updating once we know if we're keeping or deleting
-
-  // If we have a newLineEndPointId from chaining, use that as the draftPointId
-  if (output.newLineEndPointId !== undefined) {
-    // Find the line segment to get its end point ID for tracking
-    const lineId = [...output.sceneGraphDelta!.new_objects]
-      .reverse()
-      .find((objId) => {
-        const obj = output.sceneGraphDelta!.new_graph.objects[objId]
-        return isLineSegment(obj)
-      })
-
-    let lastLineEndPointId: number | undefined
-    if (lineId !== undefined) {
-      const lineObj = output.sceneGraphDelta!.new_graph.objects[lineId]
-      if (isLineSegment(lineObj)) {
-        // The end point ID is stored in the Line segment
-        lastLineEndPointId = lineObj.kind.segment.end
-      }
+  if (output.kclSource && output.sceneGraphDelta) {
+    const sendData: SketchSolveMachineEvent = {
+      type: 'update sketch outcome',
+      data: {
+        sourceDelta: output.kclSource,
+        sceneGraphDelta: output.sceneGraphDelta,
+        writeToDisk: false,
+        checkpointId: output.checkpointId ?? null,
+      },
     }
+    self._parent?.send(sendData)
+  }
 
-    // Send draft entities to parent if they exist (from chaining)
+  if (output.newLineEndPointId !== undefined) {
     if (output.newlyAddedEntities) {
       const sendData: SketchSolveMachineEvent = {
         type: 'set draft entities',
@@ -266,8 +358,6 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
 
     return {
       draftPointId: output.newLineEndPointId,
-      lastLineEndPointId,
-      sceneGraphDelta: output.sceneGraphDelta,
     }
   }
 
@@ -282,7 +372,6 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
   // The last point ID is the end point of the newly created line
   const pointId = pointIds[pointIds.length - 1]
 
-  // Find the line segment to get its end point ID
   const lineId = [...(output.sceneGraphDelta?.new_objects || [])]
     .reverse()
     .find((objId) => {
@@ -290,30 +379,18 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
       return isLineSegment(obj)
     })
 
-  let lastLineEndPointId: number | undefined
-  if (lineId !== undefined && output.sceneGraphDelta) {
-    const lineObj = output.sceneGraphDelta.new_graph.objects[lineId]
-    if (isLineSegment(lineObj)) {
-      // The end point ID is stored in the Line segment
-      lastLineEndPointId = lineObj.kind.segment.end
+  const entitiesToTrack = output.newlyAddedEntities ?? {
+    segmentIds: [] as Array<number>,
+    constraintIds: [] as Array<number>,
+  }
+
+  if (!output.newlyAddedEntities) {
+    if (pointIds.length > 0 && output.sceneGraphDelta) {
+      entitiesToTrack.segmentIds.push(...pointIds)
     }
-  }
-
-  // Track entities created in first point creation for potential deletion on unequip
-  const entitiesToTrack: {
-    segmentIds: Array<number>
-    constraintIds: Array<number>
-  } = {
-    segmentIds: [],
-    constraintIds: [],
-  }
-
-  // Add point IDs and line ID to tracking
-  if (pointIds.length > 0 && output.sceneGraphDelta) {
-    entitiesToTrack.segmentIds.push(...pointIds)
-  }
-  if (lineId !== undefined) {
-    entitiesToTrack.segmentIds.push(lineId)
+    if (lineId !== undefined) {
+      entitiesToTrack.segmentIds.push(lineId)
+    }
   }
 
   // Send draft entities to parent for tracking
@@ -328,8 +405,6 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
   if (pointId !== undefined && output.sceneGraphDelta) {
     return {
       draftPointId: pointId,
-      lastLineEndPointId,
-      sceneGraphDelta: output.sceneGraphDelta,
     }
   }
   return {}
@@ -337,40 +412,25 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
 
 export function storePendingSketchOutcome({
   event,
-  self,
 }: {
   event: DoneActorEvent<{
     kclSource?: SourceDelta
     sceneGraphDelta?: SceneGraphDelta
-    newLineEndPointId?: number
-    newlyAddedEntities?: {
-      segmentIds: Array<number>
-      constraintIds: Array<number>
-    }
+    checkpointId?: number | null
+    lastPointId?: number
     error?: string
   }>
-  self: ToolActionArgs['self']
 }) {
   const output = event.output
 
   const result: Partial<ToolContext> = {}
 
-  // Send draft entities to parent for tracking
-  if (output.newlyAddedEntities) {
-    const sendData: SketchSolveMachineEvent = {
-      type: 'set draft entities',
-      data: output.newlyAddedEntities,
-    }
-    self._parent?.send(sendData)
-  }
-
-  // Store the result, but DON'T send it yet - we'll check the flag in 'check double click' state
-  // The key insight: if pendingDoubleClick is already true (set by the second click),
-  // we should delete this result instead of sending it
   if (output.kclSource && output.sceneGraphDelta && !output.error) {
     result.pendingSketchOutcome = {
       kclSource: output.kclSource,
       sceneGraphDelta: output.sceneGraphDelta,
+      checkpointId: output.checkpointId ?? null,
+      lastPointId: output.lastPointId,
     }
   }
 
@@ -378,78 +438,19 @@ export function storePendingSketchOutcome({
 }
 
 export function sendStoredResultToParent({ context, self }: ToolActionArgs) {
-  // Send the stored result to parent (with new entities)
-  // Note: We only reach this action if pendingDoubleClick is false (the guard above routes
-  // double-clicks to the delete path). The debounceEditorUpdate flag allows the parent to
-  // cancel this update if a subsequent double-click is detected within the debounce window.
   if (context.pendingSketchOutcome) {
     const sendData: SketchSolveMachineEvent = {
       type: 'update sketch outcome',
       data: {
         sourceDelta: context.pendingSketchOutcome.kclSource,
         sceneGraphDelta: context.pendingSketchOutcome.sceneGraphDelta,
-        debounceEditorUpdate: true,
         writeToDisk: true,
+        checkpointId: context.pendingSketchOutcome.checkpointId ?? null,
       },
     }
     self._parent?.send(sendData)
     const clearData: SketchSolveMachineEvent = { type: 'clear draft entities' }
     self._parent?.send(clearData)
-  }
-  return {}
-}
-
-export function sendDeleteResultToParentWithDebounce({
-  event,
-  self,
-}: {
-  event: DoneActorEvent<{
-    kclSource?: SourceDelta
-    sceneGraphDelta?: SceneGraphDelta
-  }>
-  self: ToolActionArgs['self']
-}) {
-  // Send the delete result to parent (this removes the entities)
-  if (event.output) {
-    const output = event.output
-    if (output.kclSource && output.sceneGraphDelta) {
-      const sendData: SketchSolveMachineEvent = {
-        type: 'update sketch outcome',
-        data: {
-          sourceDelta: output.kclSource,
-          sceneGraphDelta: output.sceneGraphDelta,
-          debounceEditorUpdate: true,
-        },
-      }
-      self._parent?.send(sendData)
-    }
-  }
-  return {}
-}
-
-export function sendDeleteResultToParent({
-  event,
-  self,
-}: {
-  event: DoneActorEvent<{
-    kclSource?: SourceDelta
-    sceneGraphDelta?: SceneGraphDelta
-  }>
-  self: ToolActionArgs['self']
-}) {
-  // Send the delete result to parent
-  if (event.output) {
-    const output = event.output
-    if (output.kclSource && output.sceneGraphDelta) {
-      const sendData: SketchSolveMachineEvent = {
-        type: 'update sketch outcome',
-        data: {
-          sourceDelta: output.kclSource,
-          sceneGraphDelta: output.sceneGraphDelta,
-        },
-      }
-      self._parent?.send(sendData)
-    }
   }
   return {}
 }

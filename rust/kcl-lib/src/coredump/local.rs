@@ -22,16 +22,6 @@ impl Default for CoreDumper {
 
 #[async_trait::async_trait(?Send)]
 impl CoreDump for CoreDumper {
-    fn token(&self) -> Result<String> {
-        Ok(std::env::var("ZOO_API_TOKEN")
-            .or_else(|_| std::env::var("KITTYCAD_API_TOKEN"))
-            .unwrap_or_default())
-    }
-
-    fn base_api_url(&self) -> Result<String> {
-        Ok("https://api.zoo.dev".to_string())
-    }
-
     fn version(&self) -> Result<String> {
         Ok(env!("CARGO_PKG_VERSION").to_string())
     }
@@ -60,10 +50,5 @@ impl CoreDump for CoreDumper {
 
     async fn get_client_state(&self) -> Result<JValue> {
         Ok(JValue::default())
-    }
-
-    async fn screenshot(&self) -> Result<String> {
-        // Take a screenshot of the engine.
-        todo!()
     }
 }

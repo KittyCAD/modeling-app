@@ -118,13 +118,14 @@ export const DiffView = (props: AreaTypeComponentProps) => {
     settingsValues.app.projectDirectory.current
   const { kclLSP } = useLspContext()
   const lastEntrySelected = kclManager.history.lastEntrySelected.value
+  console.log('LAST SELECTED ENTRY!', lastEntrySelected)
 
   useEffect(() => {
     if (!lastEntrySelected) return
-    if (!mergeView.current) {
-      console.warn('unable to find merge view')
-      return
-    }
+    // if (!mergeView.current) {
+    // console.warn('unable to find merge view')
+    // return
+    // }
     setDiff(
       editor,
       mergeView,

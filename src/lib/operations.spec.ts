@@ -15,11 +15,13 @@ import {
 } from '@src/lang/wasm'
 import {
   filterOperations,
+  getHideOpForArtifact,
   getOperationVariableName,
   groupSketchBlockOperations,
   groupOperationTypeStreaks,
 } from '@src/lib/operations'
 import { expect, describe, it } from 'vitest'
+import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
 
 function stdlib(name: string): Operation {
   return {
@@ -31,6 +33,48 @@ function stdlib(name: string): Operation {
     sourceRange: defaultSourceRange(),
     isError: false,
   }
+}
+
+function hideOperation(searchId: string): Operation {
+  return {
+    type: 'StdLibCall',
+    name: 'hide',
+    unlabeledArg: {
+      sourceRange: defaultSourceRange(),
+      value: {
+        type: 'Solid',
+        value: { artifactId: searchId },
+      },
+    },
+    labeledArgs: {},
+    nodePath: defaultNodePath(),
+    sourceRange: defaultSourceRange(),
+    isError: false,
+  }
+}
+
+function compositeSolidArtifact(
+  id: string,
+  sourceRange: SourceRange,
+  nodePath: NodePath = defaultNodePath()
+): Artifact {
+  return {
+    type: 'compositeSolid',
+    id,
+    consumed: false,
+    subType: 'subtract',
+    solidIds: [],
+    toolIds: [],
+    codeRef: {
+      range: sourceRange,
+      nodePath,
+      pathToNode: [],
+    },
+  }
+}
+
+function toArtifactGraph(artifacts: Artifact[]): ArtifactGraph {
+  return new Map(artifacts.map((artifact) => [artifact.id, artifact]))
 }
 
 function stdlibInSketchBlock(name: string, index = 0): Operation {
@@ -50,7 +94,7 @@ function stdlibInSketchBlock(name: string, index = 0): Operation {
           type: 'ExpressionStatementExpr',
         },
         {
-          type: 'SketchBlock',
+          type: 'SketchBlockBody',
         },
       ],
     },
@@ -98,6 +142,65 @@ function moduleEnd(): Operation {
 }
 
 describe('operations.test.ts', () => {
+  describe('body visibility operations', () => {
+    it('finds a hide operation by direct artifact id', () => {
+      const artifact = compositeSolidArtifact('body-artifact', [0, 10, 0])
+      const hideOp = hideOperation('body-artifact')
+
+      const result = getHideOpForArtifact({
+        operations: [hideOp],
+        artifact,
+        artifactGraph: toArtifactGraph([artifact]),
+      })
+
+      expect(result).toBe(hideOp)
+    })
+
+    it('finds a hide operation for equivalent boolean result artifacts', () => {
+      const sourceRange: SourceRange = [0, 24, 0]
+      const nodePath = defaultNodePath()
+      const hiddenArtifact = compositeSolidArtifact(
+        'hidden-result-artifact',
+        sourceRange,
+        nodePath
+      )
+      const bodyRowArtifact = compositeSolidArtifact(
+        'body-row-artifact',
+        sourceRange,
+        nodePath
+      )
+      const hideOp = hideOperation(hiddenArtifact.id)
+
+      const result = getHideOpForArtifact({
+        operations: [hideOp],
+        artifact: bodyRowArtifact,
+        artifactGraph: toArtifactGraph([hiddenArtifact, bodyRowArtifact]),
+      })
+
+      expect(result).toBe(hideOp)
+    })
+
+    it('does not find a hide operation for a different boolean operation', () => {
+      const hiddenArtifact = compositeSolidArtifact(
+        'hidden-result-artifact',
+        [0, 24, 0]
+      )
+      const visibleArtifact = compositeSolidArtifact(
+        'visible-result-artifact',
+        [30, 54, 0]
+      )
+      const hideOp = hideOperation(hiddenArtifact.id)
+
+      const result = getHideOpForArtifact({
+        operations: [hideOp],
+        artifact: visibleArtifact,
+        artifactGraph: toArtifactGraph([hiddenArtifact, visibleArtifact]),
+      })
+
+      expect(result).toBeUndefined()
+    })
+  })
+
   describe('operations filtering', () => {
     it('drops stdlib operations inside a user-defined function call', async () => {
       const operations = [
@@ -295,6 +398,71 @@ describe('operations.test.ts', () => {
       const program = assertParse(code, instance)
       const variableName = getOperationVariableName(op, program, instance)
       expect(variableName).toBeUndefined()
+    })
+    it('finds variable names for operations inside a sketch block', async () => {
+      const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
+      const code = `sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var -13.64mm, var 7.86mm], end = [var 0mm, var 18.94mm])
+  horizontalDistance([line1.end, ORIGIN]) == 0mm
+  line2 = line(start = [var -12.18mm, var -3.65mm], end = [var -13.64mm, var 7.86mm])
+  coincident([line2.end, line1.start])
+  point2 = point(at = [var 7.65mm, var 18.08mm])
+  point1 = point(at = [var 9.37mm, var 7.94mm])
+  verticalDistance([point1, point2]) == 0mm
+  circle1 = circle(start = [var 10.57mm, var 2.96mm], center = [var 10.49mm, var 0mm])
+  arc1 = arc(start = [var 1.04mm, var -8.29mm], end = [var -3.62mm, var -5.28mm], center = [var -3.42mm, var -10.09mm])
+  coincident([arc1.end, line2.start])
+}
+`
+      const program = assertParse(code, instance)
+
+      const cases = [
+        {
+          name: 'line',
+          target:
+            'line(start = [var -13.64mm, var 7.86mm], end = [var 0mm, var 18.94mm])',
+          expected: 'line1',
+        },
+        {
+          name: 'line',
+          target:
+            'line(start = [var -12.18mm, var -3.65mm], end = [var -13.64mm, var 7.86mm])',
+          expected: 'line2',
+        },
+        {
+          name: 'point',
+          target: 'point(at = [var 7.65mm, var 18.08mm])',
+          expected: 'point2',
+        },
+        {
+          name: 'point',
+          target: 'point(at = [var 9.37mm, var 7.94mm])',
+          expected: 'point1',
+        },
+        {
+          name: 'arc',
+          target:
+            'arc(start = [var 1.04mm, var -8.29mm], end = [var -3.62mm, var -5.28mm], center = [var -3.42mm, var -10.09mm])',
+          expected: 'arc1',
+        },
+        {
+          name: 'circle',
+          target:
+            'circle(start = [var 10.57mm, var 2.96mm], center = [var 10.49mm, var 0mm])',
+          expected: 'circle1',
+        },
+      ] as const
+
+      for (const testCase of cases) {
+        const op = stdlib(testCase.name)
+        if (op.type !== 'StdLibCall') {
+          throw new Error('Expected operation to be a StdLibCall')
+        }
+        op.nodePath = await buildNodePath(code, testCase.target, instance)
+
+        const variableName = getOperationVariableName(op, program, instance)
+        expect(variableName).toBe(testCase.expected)
+      }
     })
   })
 

@@ -1,35 +1,68 @@
 #[cfg(feature = "artifact-graph")]
 use std::collections::BTreeMap;
-use std::{str::FromStr, sync::Arc};
+use std::str::FromStr;
+use std::sync::Arc;
 
+use ahash::AHashMap;
 use anyhow::Result;
 use indexmap::IndexMap;
-use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
-use serde::{Deserialize, Serialize};
+use kittycad_modeling_cmds::units::UnitAngle;
+use kittycad_modeling_cmds::units::UnitLength;
+use serde::Deserialize;
+use serde::Serialize;
 use uuid::Uuid;
 
-use crate::{
-    CompilationError, EngineManager, ExecutorContext, KclErrorWithOutputs, MockConfig, SourceRange,
-    collections::AhashIndexSet,
-    errors::{KclError, KclErrorDetails, Severity},
-    exec::DefaultPlanes,
-    execution::{
-        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, SketchVarId, UnsolvedSegment, annotations,
-        cad_op::Operation,
-        id_generator::IdGenerator,
-        memory::{ProgramMemory, Stack},
-        types::NumericType,
-    },
-    front::{Object, ObjectId},
-    modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
-    parsing::ast::types::{Annotation, NodeRef, TagNode},
-};
+use crate::CompilationIssue;
+use crate::EngineManager;
+use crate::ExecutorContext;
+use crate::KclErrorWithOutputs;
+use crate::MockConfig;
 #[cfg(feature = "artifact-graph")]
-use crate::{
-    execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, ProgramLookup, sketch_solve::Solved},
-    front::Number,
-    id::IncIdGenerator,
-};
+use crate::NodePath;
+use crate::SourceRange;
+use crate::collections::AhashIndexSet;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::errors::Severity;
+use crate::exec::DefaultPlanes;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::Artifact;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ArtifactCommand;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ArtifactGraph;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ArtifactId;
+use crate::execution::EnvironmentRef;
+use crate::execution::ExecOutcome;
+use crate::execution::ExecutorSettings;
+use crate::execution::KclValue;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ProgramLookup;
+use crate::execution::SketchVarId;
+use crate::execution::UnsolvedSegment;
+use crate::execution::annotations;
+use crate::execution::cad_op::Operation;
+use crate::execution::id_generator::IdGenerator;
+use crate::execution::memory::ProgramMemory;
+use crate::execution::memory::Stack;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::sketch_solve::Solved;
+use crate::execution::types::NumericType;
+#[cfg(feature = "artifact-graph")]
+use crate::front::Number;
+use crate::front::Object;
+use crate::front::ObjectId;
+use crate::id::IncIdGenerator;
+use crate::modules::ModuleId;
+use crate::modules::ModuleInfo;
+use crate::modules::ModuleLoader;
+use crate::modules::ModulePath;
+use crate::modules::ModuleRepr;
+use crate::modules::ModuleSource;
+use crate::parsing::ast::types::Annotation;
+use crate::parsing::ast::types::NodeRef;
+use crate::parsing::ast::types::TagNode;
 
 /// State for executing a program.
 #[derive(Debug, Clone)]
@@ -51,7 +84,7 @@ pub(super) struct GlobalState {
     /// Module loader.
     pub mod_loader: ModuleLoader,
     /// Errors and warnings.
-    pub errors: Vec<CompilationError>,
+    pub issues: Vec<CompilationIssue>,
     /// Global artifacts that represent the entire program.
     pub artifacts: ArtifactState,
     /// Artifacts for only the root module.
@@ -59,6 +92,23 @@ pub(super) struct GlobalState {
     /// The segments that were edited that triggered this execution.
     #[cfg(feature = "artifact-graph")]
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub(crate) enum ConstraintKey {
+    LineCircle([usize; 10]),
+    CircleCircle([usize; 12]),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum TangencyMode {
+    LineCircle(ezpz::LineSide),
+    CircleCircle(ezpz::CircleSide),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ConstraintState {
+    Tangency(TangencyMode),
 }
 
 #[cfg(feature = "artifact-graph")]
@@ -87,6 +137,9 @@ pub struct ModuleArtifactState {
     pub unprocessed_commands: Vec<ArtifactCommand>,
     /// Outgoing engine commands.
     pub commands: Vec<ArtifactCommand>,
+    /// Incoming engine commands.
+    #[cfg(feature = "snapshot-engine-responses")]
+    pub responses: IndexMap<Uuid, kittycad_modeling_cmds::websocket::WebSocketResponse>,
     /// Operations that have been performed in execution order, for display in
     /// the Feature Tree.
     pub operations: Vec<Operation>,
@@ -105,7 +158,10 @@ pub struct ModuleArtifactState {
 
 #[cfg(not(feature = "artifact-graph"))]
 #[derive(Debug, Clone, Default, PartialEq, Serialize)]
-pub struct ModuleArtifactState {}
+pub struct ModuleArtifactState {
+    /// [`ObjectId`] generator.
+    pub object_id_generator: IncIdGenerator<usize>,
+}
 
 #[derive(Debug, Clone)]
 pub(super) struct ModuleState {
@@ -145,15 +201,122 @@ pub(super) struct ModuleState {
     pub(super) path: ModulePath,
     /// Artifacts for only this module.
     pub artifacts: ModuleArtifactState,
+    /// Sticky per-constraint state persisted across sketch-mode mock solves.
+    /// Maps from sketch block ID to a map for that sketch.
+    /// Then the inner map is per constraint (in that sketch block) to its state.
+    pub constraint_state: IndexMap<ObjectId, IndexMap<ConstraintKey, ConstraintState>>,
 
     pub(super) allowed_warnings: Vec<&'static str>,
     pub(super) denied_warnings: Vec<&'static str>,
+
+    /// Map from consumed solid values to information about the operation that
+    /// consumed them. Populated by operations that destroy their inputs so that
+    /// subsequent attempts to use a consumed solid produce a clear KCL-level
+    /// error rather than a cryptic engine error.
+    pub(super) consumed_solids: AHashMap<ConsumedSolidKey, ConsumedSolidInfo>,
+    /// Defensive map from consumed engine UUID to consumption info.
+    /// Rust code may create a `Solid` with a consumed `engine_id` and a
+    /// different `instance_id` that was not recorded in `consumed_solids`. When
+    /// the exact key lookup misses, this map lets us reject that solid by
+    /// `engine_id`, unless the key is a recorded operation output.
+    pub(super) consumed_solid_ids: AHashMap<Uuid, ConsumedSolidInfo>,
+}
+
+/// Internal identity for one runtime KCL solid value.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub(crate) struct ConsumedSolidKey {
+    /// The engine body UUID.
+    engine_id: Uuid,
+    /// Distinguishes this KCL runtime instance from other values that may reuse
+    /// the same engine body UUID.
+    instance_id: Uuid,
+}
+
+impl ConsumedSolidKey {
+    pub(crate) fn new(engine_id: Uuid, instance_id: Uuid) -> Self {
+        Self { engine_id, instance_id }
+    }
+
+    pub(crate) fn engine_id(&self) -> Uuid {
+        self.engine_id
+    }
+
+    pub(crate) fn instance_id(&self) -> Uuid {
+        self.instance_id
+    }
+}
+
+/// Information about a solid value that was consumed by an operation.
+/// Stored in `ModuleState.consumed_solids` so subsequent attempts to use the
+/// solid produce a clear error pointing at the operation that consumed it.
+#[derive(Debug, Clone)]
+pub(crate) struct ConsumedSolidInfo {
+    /// The operation that consumed the solid.
+    operation: ConsumedSolidOperation,
+    /// First returned solid value, used only for replacement suggestions in
+    /// error messages. When present, this key is also included in
+    /// `returned_solid_keys`.
+    suggested_replacement_key: Option<ConsumedSolidKey>,
+    /// All solid values returned by that operation. This is used as the
+    /// allow-list for returned solids that reuse a consumed engine UUID.
+    returned_solid_keys: Vec<ConsumedSolidKey>,
+}
+
+impl ConsumedSolidInfo {
+    pub(crate) fn new(operation: ConsumedSolidOperation, returned_solid_keys: Vec<ConsumedSolidKey>) -> Self {
+        Self {
+            operation,
+            suggested_replacement_key: returned_solid_keys.first().copied(),
+            returned_solid_keys,
+        }
+    }
+
+    pub(crate) fn operation(&self) -> ConsumedSolidOperation {
+        self.operation
+    }
+
+    pub(crate) fn suggested_replacement_key(&self) -> Option<ConsumedSolidKey> {
+        self.suggested_replacement_key
+    }
+
+    pub(crate) fn should_report_reused_engine_id_as_consumed(&self, key: ConsumedSolidKey) -> bool {
+        !self.returned_solid_keys.contains(&key)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ConsumedSolidOperation {
+    Union,
+    Intersect,
+    Subtract,
+    Split,
+    JoinSurfaces,
+}
+
+impl ConsumedSolidOperation {
+    pub(crate) fn indefinite_article(self) -> &'static str {
+        match self {
+            Self::Intersect => "an",
+            Self::Union | Self::Subtract | Self::Split | Self::JoinSurfaces => "a",
+        }
+    }
+}
+
+impl std::fmt::Display for ConsumedSolidOperation {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Union => f.write_str("union"),
+            Self::Intersect => f.write_str("intersect"),
+            Self::Subtract => f.write_str("subtract"),
+            Self::Split => f.write_str("split"),
+            Self::JoinSurfaces => f.write_str("joinSurfaces"),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Default)]
 pub(crate) struct SketchBlockState {
     pub sketch_vars: Vec<KclValue>,
-    #[cfg(feature = "artifact-graph")]
     pub sketch_id: Option<ObjectId>,
     #[cfg(feature = "artifact-graph")]
     pub sketch_constraints: Vec<ObjectId>,
@@ -204,12 +367,12 @@ impl ExecState {
     }
 
     /// Log a non-fatal error.
-    pub fn err(&mut self, e: CompilationError) {
-        self.global.errors.push(e);
+    pub fn err(&mut self, e: CompilationIssue) {
+        self.global.issues.push(e);
     }
 
     /// Log a warning.
-    pub fn warn(&mut self, mut e: CompilationError, name: &'static str) {
+    pub fn warn(&mut self, mut e: CompilationIssue, name: &'static str) {
         debug_assert!(annotations::WARN_VALUES.contains(&name));
 
         if self.mod_local.allowed_warnings.contains(&name) {
@@ -222,14 +385,14 @@ impl ExecState {
             e.severity = Severity::Warning;
         }
 
-        self.global.errors.push(e);
+        self.global.issues.push(e);
     }
 
     pub fn warn_experimental(&mut self, feature_name: &str, source_range: SourceRange) {
         let Some(severity) = self.mod_local.settings.experimental_features.severity() else {
             return;
         };
-        let error = CompilationError {
+        let error = CompilationIssue {
             source_range,
             message: format!("Use of {feature_name} is experimental and may change or be removed."),
             suggestion: None,
@@ -237,11 +400,11 @@ impl ExecState {
             tag: crate::errors::Tag::None,
         };
 
-        self.global.errors.push(error);
+        self.global.issues.push(error);
     }
 
     pub fn clear_units_warnings(&mut self, source_range: &SourceRange) {
-        self.global.errors = std::mem::take(&mut self.global.errors)
+        self.global.issues = std::mem::take(&mut self.global.issues)
             .into_iter()
             .filter(|e| {
                 e.severity != Severity::Warning
@@ -251,8 +414,8 @@ impl ExecState {
             .collect();
     }
 
-    pub fn errors(&self) -> &[CompilationError] {
-        &self.global.errors
+    pub fn issues(&self) -> &[CompilationIssue] {
+        &self.global.issues
     }
 
     /// Convert to execution outcome when running in WebAssembly.  We want to
@@ -274,9 +437,16 @@ impl ExecState {
             source_range_to_object: self.global.root_module_artifacts.source_range_to_object,
             #[cfg(feature = "artifact-graph")]
             var_solutions: self.global.root_module_artifacts.var_solutions,
-            errors: self.global.errors,
+            issues: self.global.issues,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         }
+    }
+
+    #[cfg(all(feature = "artifact-graph", feature = "snapshot-engine-responses"))]
+    pub(crate) fn take_root_module_responses(
+        &mut self,
+    ) -> IndexMap<Uuid, kittycad_modeling_cmds::websocket::WebSocketResponse> {
+        std::mem::take(&mut self.global.root_module_artifacts.responses)
     }
 
     pub(crate) fn stack(&self) -> &Stack {
@@ -327,28 +497,27 @@ impl ExecState {
             }
     }
 
-    #[cfg(not(feature = "artifact-graph"))]
-    pub fn next_object_id(&mut self) -> ObjectId {
-        // The return value should only ever be used when the feature is
-        // enabled,
-        ObjectId(0)
-    }
-
-    #[cfg(feature = "artifact-graph")]
     pub fn next_object_id(&mut self) -> ObjectId {
         ObjectId(self.mod_local.artifacts.object_id_generator.next_id())
     }
 
-    #[cfg(not(feature = "artifact-graph"))]
-    pub fn peek_object_id(&self) -> ObjectId {
-        // The return value should only ever be used when the feature is
-        // enabled,
-        ObjectId(0)
-    }
-
-    #[cfg(feature = "artifact-graph")]
     pub fn peek_object_id(&self) -> ObjectId {
         ObjectId(self.mod_local.artifacts.object_id_generator.peek_id())
+    }
+
+    pub(crate) fn constraint_state(&self, sketch_block_id: ObjectId, key: &ConstraintKey) -> Option<ConstraintState> {
+        let map = self.mod_local.constraint_state.get(&sketch_block_id)?;
+        map.get(key).copied()
+    }
+
+    pub(crate) fn set_constraint_state(
+        &mut self,
+        sketch_block_id: ObjectId,
+        key: ConstraintKey,
+        state: ConstraintState,
+    ) {
+        let map = self.mod_local.constraint_state.entry(sketch_block_id).or_default();
+        map.insert(key, state);
     }
 
     #[cfg(feature = "artifact-graph")]
@@ -373,12 +542,17 @@ impl ExecState {
     /// Add a placeholder scene object. This is useful when we need to reserve
     /// an ID before we have all the information to create the full object.
     #[cfg(feature = "artifact-graph")]
-    pub fn add_placeholder_scene_object(&mut self, id: ObjectId, source_range: SourceRange) -> ObjectId {
+    pub fn add_placeholder_scene_object(
+        &mut self,
+        id: ObjectId,
+        source_range: SourceRange,
+        node_path: Option<NodePath>,
+    ) -> ObjectId {
         debug_assert!(id.0 == self.mod_local.artifacts.scene_objects.len());
         self.mod_local
             .artifacts
             .scene_objects
-            .push(Object::placeholder(id, source_range));
+            .push(Object::placeholder(id, source_range, node_path));
         self.mod_local.artifacts.source_range_to_object.insert(source_range, id);
         id
     }
@@ -417,6 +591,10 @@ impl ExecState {
         self.mod_local.sketch_block.as_mut()
     }
 
+    pub(crate) fn sketch_block(&mut self) -> Option<&SketchBlockState> {
+        self.mod_local.sketch_block.as_ref()
+    }
+
     pub fn next_uuid(&mut self) -> Uuid {
         self.mod_local.id_generator.next_uuid()
     }
@@ -430,10 +608,80 @@ impl ExecState {
         &mut self.mod_local.id_generator
     }
 
+    /// Record that a solid value has been consumed by a CSG boolean operation.
+    pub(crate) fn mark_solid_consumed(&mut self, consumed_key: ConsumedSolidKey, info: ConsumedSolidInfo) {
+        self.mod_local.consumed_solids.insert(consumed_key, info);
+    }
+
+    /// Record that an engine body UUID has been consumed by a CSG boolean
+    /// operation.
+    pub(crate) fn mark_solid_id_consumed(&mut self, consumed_id: Uuid, info: ConsumedSolidInfo) {
+        self.mod_local.consumed_solid_ids.insert(consumed_id, info);
+    }
+
+    /// Look up whether a solid value was consumed by a previous CSG boolean
+    /// operation.
+    pub(crate) fn check_solid_consumed(&self, key: &ConsumedSolidKey) -> Option<&ConsumedSolidInfo> {
+        self.mod_local.consumed_solids.get(key)
+    }
+
+    /// Look up whether an engine body UUID was consumed by a previous CSG
+    /// boolean operation.
+    pub(crate) fn check_solid_id_consumed(&self, id: &Uuid) -> Option<&ConsumedSolidInfo> {
+        self.mod_local.consumed_solid_ids.get(id)
+    }
+
+    /// Follow direct replacement links until we find the latest known output.
+    /// Used only on error paths so diagnostics can suggest the current solid.
+    pub(crate) fn latest_consumed_output(
+        &self,
+        suggested_replacement_key: Option<ConsumedSolidKey>,
+    ) -> Option<ConsumedSolidKey> {
+        let mut latest = suggested_replacement_key?;
+        let mut seen = AhashIndexSet::default();
+
+        while seen.insert(latest) {
+            let Some(next) = self
+                .mod_local
+                .consumed_solids
+                .get(&latest)
+                .and_then(|info| info.suggested_replacement_key())
+            else {
+                break;
+            };
+            latest = next;
+        }
+
+        Some(latest)
+    }
+
+    /// Search the live environment for the name of a variable holding a Solid
+    /// (or an array of Solids) whose value identity matches `target_key`. Used only on
+    /// error paths to recover variable names for diagnostics.
+    pub(crate) fn find_var_name_for_solid_key(&self, target_key: ConsumedSolidKey) -> Option<String> {
+        fn contains_solid_key(value: &KclValue, target_key: ConsumedSolidKey) -> bool {
+            match value {
+                KclValue::Solid { value } => {
+                    value.id == target_key.engine_id() && value.value_id == target_key.instance_id()
+                }
+                KclValue::HomArray { value, .. } => value.iter().any(|v| contains_solid_key(v, target_key)),
+                _ => false,
+            }
+        }
+        self.mod_local
+            .stack
+            .find_var_name_in_all_envs(|value| contains_solid_key(value, target_key))
+    }
+
     #[cfg(feature = "artifact-graph")]
     pub(crate) fn add_artifact(&mut self, artifact: Artifact) {
         let id = artifact.id();
         self.mod_local.artifacts.artifacts.insert(id, artifact);
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) fn artifact_mut(&mut self, id: ArtifactId) -> Option<&mut Artifact> {
+        self.mod_local.artifacts.artifacts.get_mut(&id)
     }
 
     pub(crate) fn push_op(&mut self, op: Operation) {
@@ -558,7 +806,7 @@ impl ExecState {
 
         KclErrorWithOutputs::new(
             error,
-            self.errors().to_vec(),
+            self.issues().to_vec(),
             main_ref
                 .map(|main_ref| self.mod_local.variables(main_ref))
                 .unwrap_or_default(),
@@ -619,7 +867,12 @@ impl ExecState {
 
         // Move the artifacts into ExecState global to simplify cache
         // management.
-        self.global.artifacts.artifacts.extend(new_exec_artifacts);
+        for (id, exec_artifact) in new_exec_artifacts {
+            // Only insert if it wasn't already present. We don't want to
+            // overwrite what was previously there. We haven't filled in node
+            // paths yet.
+            self.global.artifacts.artifacts.entry(id).or_insert(exec_artifact);
+        }
 
         let initial_graph = self.global.artifacts.graph.clone();
 
@@ -635,6 +888,12 @@ impl ExecState {
             &self.global.module_infos,
         );
 
+        #[cfg(feature = "snapshot-engine-responses")]
+        {
+            // Store engine responses for debugging.
+            self.global.root_module_artifacts.responses.extend(new_responses);
+        }
+
         let artifact_graph = graph_result?;
         self.global.artifacts.graph = artifact_graph;
 
@@ -649,6 +908,33 @@ impl ExecState {
     ) -> Result<(), KclError> {
         Ok(())
     }
+
+    pub(crate) fn kcl_version(&self) -> KclVersion {
+        self.mod_local.settings.kcl_version.parse().unwrap_or_default()
+    }
+}
+
+#[derive(Default)]
+pub enum KclVersion {
+    #[default]
+    V1,
+    V2,
+}
+
+impl FromStr for KclVersion {
+    type Err = KclError;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        match s {
+            "1" | "1.0" | "1.0.0" => Ok(Self::V1),
+            "2" | "2.0" | "2.0.0" => Ok(Self::V2),
+            other => Err(KclError::new_semantic(KclErrorDetails {
+                source_ranges: Default::default(),
+                backtrace: Default::default(),
+                message: format!("Unrecognized version {other}. Valid versions are 1.0 and 2.0"),
+            })),
+        }
+    }
 }
 
 impl GlobalState {
@@ -661,7 +947,7 @@ impl GlobalState {
             artifacts: Default::default(),
             root_module_artifacts: Default::default(),
             mod_loader: Default::default(),
-            errors: Default::default(),
+            issues: Default::default(),
             id_to_source: Default::default(),
             #[cfg(feature = "artifact-graph")]
             segment_ids_edited,
@@ -740,13 +1026,13 @@ impl ModuleArtifactState {
             );
 
             match &object.source {
-                crate::front::SourceRef::Simple { range } => {
+                crate::front::SourceRef::Simple { range, node_path: _ } => {
                     self.source_range_to_object.insert(*range, object.id);
                 }
                 crate::front::SourceRef::BackTrace { ranges } => {
                     // Don't map the entire backtrace, only the most specific
                     // range.
-                    if let Some(range) = ranges.first() {
+                    if let Some((range, _)) = ranges.first() {
                         self.source_range_to_object.insert(*range, object.id);
                     }
                 }
@@ -852,8 +1138,11 @@ impl ModuleState {
             sketch_mode,
             freedom_analysis,
             artifacts: Default::default(),
+            constraint_state: Default::default(),
             allowed_warnings: Vec::new(),
             denied_warnings: Vec::new(),
+            consumed_solids: AHashMap::default(),
+            consumed_solid_ids: AHashMap::default(),
             inside_stdlib: false,
         }
     }
@@ -1001,18 +1290,25 @@ mod tests {
     use uuid::Uuid;
 
     use super::ModuleArtifactState;
-    use crate::{
-        SourceRange,
-        execution::ArtifactId,
-        front::{Object, ObjectId, ObjectKind, Plane, SourceRef},
-    };
+    use crate::NodePath;
+    use crate::SourceRange;
+    use crate::execution::ArtifactId;
+    use crate::front::Object;
+    use crate::front::ObjectId;
+    use crate::front::ObjectKind;
+    use crate::front::Plane;
+    use crate::front::SourceRef;
 
     #[test]
     fn restore_scene_objects_rebuilds_lookup_maps() {
         let plane_artifact_id = ArtifactId::new(Uuid::from_u128(1));
         let sketch_artifact_id = ArtifactId::new(Uuid::from_u128(2));
         let plane_range = SourceRange::from([1, 4, 0]);
-        let sketch_ranges = vec![SourceRange::from([5, 9, 0]), SourceRange::from([10, 12, 0])];
+        let plane_node_path = Some(NodePath::placeholder());
+        let sketch_ranges = vec![
+            (SourceRange::from([5, 9, 0]), None),
+            (SourceRange::from([10, 12, 0]), None),
+        ];
         let cached_objects = vec![
             Object {
                 id: ObjectId(0),
@@ -1020,7 +1316,7 @@ mod tests {
                 label: Default::default(),
                 comments: Default::default(),
                 artifact_id: plane_artifact_id,
-                source: SourceRef::Simple { range: plane_range },
+                source: SourceRef::new(plane_range, plane_node_path),
             },
             Object {
                 id: ObjectId(1),
@@ -1032,7 +1328,7 @@ mod tests {
                     ranges: sketch_ranges.clone(),
                 },
             },
-            Object::placeholder(ObjectId(2), SourceRange::from([13, 14, 0])),
+            Object::placeholder(ObjectId(2), SourceRange::from([13, 14, 0]), None),
         ];
 
         let mut artifacts = ModuleArtifactState::default();
@@ -1053,10 +1349,10 @@ mod tests {
         );
         assert_eq!(artifacts.source_range_to_object.get(&plane_range), Some(&ObjectId(0)));
         assert_eq!(
-            artifacts.source_range_to_object.get(&sketch_ranges[0]),
+            artifacts.source_range_to_object.get(&sketch_ranges[0].0),
             Some(&ObjectId(1))
         );
         // We don't map all the ranges in a backtrace.
-        assert_eq!(artifacts.source_range_to_object.get(&sketch_ranges[1]), None);
+        assert_eq!(artifacts.source_range_to_object.get(&sketch_ranges[1].0), None);
     }
 }

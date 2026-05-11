@@ -12,8 +12,10 @@ extend-exclude = [
   ".package-lock.json",
   "**/package-lock.json",
   "openapi/*.json",
+  "**/*.snap",
   "packages/codemirror-lang-kcl/test/all.test.ts",
   "public/kcl-samples",
+  "public/kcl-samples-legacy",
   "public/sketch-solve-samples",
   "rust/kcl-lib/tests/kcl_samples",
   "tsconfig.tsbuildinfo",
@@ -38,4 +40,5 @@ extend-ignore-identifiers-re = [
 ]
 extend-ignore-re = [
   "@xstate-layout .*",
+  "ZOO_MAGIC_STRING_TRIGGER_MOCK_REPLY_[A-F0-9]+",
 ]

@@ -1,4 +1,4 @@
-import type { MlCopilotMode, WebSocketResponse } from '@kittycad/lib'
+import type { WebSocketResponse } from '@kittycad/lib'
 
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
@@ -24,6 +24,7 @@ export const PROJECT_FOLDER = 'zoo-design-studio-projects'
  * @link - https://zoo.dev/docs/kcl
  * */
 export const FILE_EXT = '.kcl'
+export const DEFAULT_KCL_VERSION = '2.0'
 /** Default file to open when a project is opened */
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
 /** Thumbnail file name */
@@ -47,6 +48,7 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   REVOLVE: 'revolve',
   PLANE: 'plane',
   HELIX: 'helix',
+  GEAR: 'gear',
   CLONE: 'clone',
   HIDDEN: 'hidden',
   SOLID: 'solid',
@@ -64,6 +66,9 @@ export const KCL_DEFAULT_LENGTH = `5`
 
 /** The default KCL tolerance expression */
 export const KCL_DEFAULT_TOLERANCE = `0.1mm`
+
+/** The default KCL datum reference expression */
+export const KCL_DEFAULT_DATUM_REFS = `["A"]`
 
 /** The default KCL precision expression */
 export const KCL_DEFAULT_PRECISION = `3`
@@ -103,6 +108,33 @@ export function packRgbToColor(rgb: number[]): number {
 }
 /** The sketch mode revamp selection rgb values as HEX */
 export const SKETCH_SELECTION_COLOR = packRgbToColor(SKETCH_SELECTION_RGB)
+/** The sketch mode revamp highlight rgb values */
+export const SKETCH_HIGHLIGHT_RGB = SKETCH_SELECTION_RGB.map((val) =>
+  Math.round(val * 0.7)
+)
+/** The sketch mode revamp highlight rgb values as HEX */
+export const SKETCH_HIGHLIGHT_COLOR = packRgbToColor(SKETCH_HIGHLIGHT_RGB)
+/** The sketch mode revamp highlight for secondary items (like a symmetry axis) as RGB */
+export const SKETCH_HIGHLIGHT_SECONDARY_RGB = [3, 231, 182]
+/** The sketch mode revamp highlight for secondary items (like a symmetry axis) as HEX */
+export const SKETCH_HIGHLIGHT_SECONDARY_COLOR = packRgbToColor(
+  SKETCH_HIGHLIGHT_SECONDARY_RGB
+)
+
+/** Corresponding engine selections and highlights */
+export const SYSTEM_SELECTION_COLOR = {
+  r: SKETCH_SELECTION_RGB[0] / 255,
+  g: SKETCH_SELECTION_RGB[1] / 255,
+  b: SKETCH_SELECTION_RGB[2] / 255,
+  a: 1,
+}
+
+export const SYSTEM_HIGHLIGHT_COLOR = {
+  r: SKETCH_HIGHLIGHT_RGB[0] / 255,
+  g: SKETCH_HIGHLIGHT_RGB[1] / 255,
+  b: SKETCH_HIGHLIGHT_RGB[2] / 255,
+  a: 1,
+}
 
 /** Sketch Solve file version, to be implemented https://github.com/KittyCAD/modeling-app/issues/9280 **/
 export const SKETCH_FILE_VERSION = 0
@@ -147,24 +179,21 @@ export const EXECUTE_AST_INTERRUPT_ERROR_MESSAGE = JSON.stringify(
 /** The messages that appear for exporting toasts */
 export const EXPORT_TOAST_MESSAGES = {
   START: 'Exporting...',
-  SUCCESS: 'Exported successfully',
-  FAILED: 'Export failed',
+  SUCCESS: 'Exported successfully.',
+  FAILED: 'Export failed.',
 }
 
 /** The messages that appear for "make" command toasts */
 export const MAKE_TOAST_MESSAGES = {
   START: 'Starting print...',
-  NO_MACHINES: 'No machines available',
-  NO_MACHINE_API_IP: 'No machine api ip available',
-  NO_CURRENT_MACHINE: 'No current machine available',
-  NO_MACHINE_ID: 'No machine id available',
-  NO_NAME: 'No name provided',
-  ERROR_STARTING_PRINT: 'Error while starting print',
-  SUCCESS: 'Started print successfully',
+  NO_MACHINES: 'No machines available.',
+  NO_MACHINE_API_IP: 'No machine api ip available.',
+  NO_CURRENT_MACHINE: 'No current machine available.',
+  NO_MACHINE_ID: 'No machine id available.',
+  NO_NAME: 'No name provided.',
+  ERROR_STARTING_PRINT: 'Error while starting print.',
+  SUCCESS: 'Started print successfully.',
 }
-
-/** Toast id for the app auto-updater toast */
-export const AUTO_UPDATER_TOAST_ID = 'auto-updater-toast'
 
 /** Toast id for the insert foreign part toast */
 export const INSERT_FOREIGN_TOAST_ID = 'insert-foreign-toast'
@@ -222,6 +251,13 @@ export const ASK_TO_OPEN_QUERY_PARAM = 'ask-open-desktop'
 export const DEFAULT_DEFAULT_LENGTH_UNIT: UnitLength = 'mm'
 
 /**
+ * Number of decimal places used when converting engine millimeter values
+ * to the active length unit for selection points.
+ * Sibling to rust/kcl-lib/src/std/mod.rs#DEFAULT_TOLERANCE_MM
+ */
+export const DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES = 7
+
+/**
  * When no annotation is in the KCL file to specify the defaults
  */
 export const DEFAULT_EXPERIMENTAL_FEATURES: WarningLevel = {
@@ -264,6 +300,8 @@ export const CMD_NAME_QUERY_PARAM = 'cmd'
 export const CMD_GROUP_QUERY_PARAM = 'groupId'
 /** A query parameter that manually sets the engine pool the frontend should use. */
 export const POOL_QUERY_PARAM = 'pool'
+/** A query parameter containing the project ID to open inside the app. */
+export const PROJECT_ID_QUERY_PARAM = 'project-id'
 /** A query parameter to create a file
  * @deprecated: supporting old share links with this. For new command URLs, use "cmd"
  */
@@ -329,9 +367,6 @@ export const PENDING_COMMAND_TIMEOUT = 60_000
 
 /** Timeout in MS to save layout */
 export const LAYOUT_SAVE_THROTTLE = 500
-
-// Zookeeper input
-export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'fast'
 
 // Default backface color
 export const DEFAULT_BACKFACE_COLOR = '#00D5FF'

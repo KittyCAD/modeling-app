@@ -1,7 +1,11 @@
 import fsZds from '@src/lib/fs-zds'
 import { useLspContext } from '@src/components/LspProvider'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
-import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
+import {
+  ASK_TO_OPEN_QUERY_PARAM,
+  EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
+  PROJECT_ID_QUERY_PARAM,
+} from '@src/lib/constants'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import {
   PATHS,
@@ -24,6 +28,7 @@ import {
 } from '@src/machines/systemIO/hooks'
 import {
   NO_PROJECT_DIRECTORY,
+  RequestedKCLFile,
   SystemIOMachineEvents,
   SystemIOMachineStates,
   prepareMlEphantNewFileRequest,
@@ -31,9 +36,10 @@ import {
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
+import { getAppSettingsFilePath } from '@src/lib/desktop'
 
 export function SystemIOMachineLogicListener() {
-  const { auth, billing, settings, systemIOActor } = useApp()
+  const { auth, billing, settings, systemIOActor, project } = useApp()
   const { kclManager } = useSingletons()
   // We gotta stop with this pattern. It doesn't scale. "Eager hook creation"
   const requestedProjectName = useRequestedProjectName()
@@ -105,8 +111,15 @@ export function SystemIOMachineLogicListener() {
     kclManager.isExecuting = false
 
     const url = new URL(location.href)
-    url.searchParams.delete('ask-open-desktop')
-    void navigate(requestedPath + '?' + url.searchParams.toString())
+    url.searchParams.delete(ASK_TO_OPEN_QUERY_PARAM)
+    if (
+      lastOperation ===
+      SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile
+    ) {
+      url.searchParams.delete(PROJECT_ID_QUERY_PARAM)
+    }
+    const search = url.searchParams.toString()
+    void navigate(requestedPath + (search ? `?${search}` : ''))
   }
 
   /**
@@ -125,6 +138,7 @@ export function SystemIOMachineLogicListener() {
       const isCreating = [
         SystemIOMachineStates.creatingProject,
         SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToProject,
+        SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile,
         SystemIOMachineStates.importFileFromURL,
       ].includes(lastOperation)
       const isHomeAndNotCreating = pathname === PATHS.HOME && !isCreating
@@ -170,7 +184,7 @@ export function SystemIOMachineLogicListener() {
       )
       const projectPathWithoutSpecificKCLFile = joinOSPaths(
         projectDirectoryPath,
-        requestedProjectName.name
+        requestedFileName.project
       )
       const requestedPath = joinRouterPaths(
         PATHS.FILE,
@@ -257,15 +271,50 @@ export function SystemIOMachineLogicListener() {
     billing.actor,
     token,
     kclManager.engineCommandManager,
-    (props) => {
+    async (props) => {
       const payload = prepareMlEphantNewFileRequest(props)
-
+      const hash: { [key: string]: string } = {}
+      kclManager.history.filesCachedFromPrompt.value.forEach((f) => {
+        if (f.type === 'kcl') {
+          hash[f.absPath] = f.fileContents
+        }
+      })
       if (payload) {
+        payload.files.forEach((p) => {
+          const key = fsZds.join(
+            settingsValues.app.projectDirectory.current,
+            p.requestedProjectName,
+            p.requestedFileName
+          )
+          const editor = project?.findEditor(key)
+
+          if (editor) {
+            const code = hash[key]
+            const requestedCode = p.requestedCode
+            kclManager.history.entries.value = [
+              {
+                type: '',
+                date: new Date(),
+                absoluteFilePath: key || 'Missing filename.',
+                right: requestedCode,
+                left: code,
+                wroteToDisk: true,
+                source: 'Zookeeper',
+              },
+              ...kclManager.history.entries.value,
+            ]
+          }
+        })
+
+        payload.filesToDelete.forEach((p) => {})
+
         kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
+
         systemIOActor.send({
           type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
           data: {
             files: payload.files,
+            filesToDelete: payload.filesToDelete,
             override: true,
             // Gotcha: Both are called "project name" and "file name", but one of them
             // has to include the project-relative file path between the two.

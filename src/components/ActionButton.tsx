@@ -29,8 +29,12 @@ type ActionButtonAsLink = BaseActionButtonProps &
   }
 
 type ActionButtonAsExternal = BaseActionButtonProps &
-  Omit<LinkProps, keyof BaseActionButtonProps> & {
+  Omit<
+    React.AnchorHTMLAttributes<HTMLAnchorElement>,
+    keyof BaseActionButtonProps | 'href'
+  > & {
     Element: 'externalLink'
+    to: string
   }
 
 type ActionButtonAsElement = BaseActionButtonProps &
@@ -116,18 +120,18 @@ export const ActionButton = forwardRef((props: ActionButtonProps, ref) => {
         ...rest
       } = props
       return (
-        <Link
+        <a
           ref={ref as ForwardedRef<HTMLAnchorElement>}
-          to={to || PATHS.INDEX}
+          href={to || PATHS.INDEX}
           className={classNames}
-          onClick={openExternalBrowserIfDesktop(to as string)}
+          onClick={openExternalBrowserIfDesktop(to)}
           {...rest}
           target="_blank"
         >
           {iconStart && <ActionIcon {...iconStart} />}
           {children}
           {iconEnd && <ActionIcon {...iconEnd} />}
-        </Link>
+        </a>
       )
     }
     default: {

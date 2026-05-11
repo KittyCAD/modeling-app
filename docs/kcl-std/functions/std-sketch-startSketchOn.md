@@ -5,6 +5,8 @@ excerpt: "Start a new 2-dimensional sketch on a specific plane or face."
 layout: manual
 ---
 
+**WARNING:** This function is deprecated as of KCL 2.0.
+
 Start a new 2-dimensional sketch on a specific plane or face.
 
 ```kcl
@@ -16,6 +18,9 @@ startSketchOn(
   normalOffset?: number(Length),
 ): Plane | Face
 ```
+
+This is part of sketch v1 and is deprecated in favor of
+[sketch-solve](/docs/kcl-std/modules/std-solver).
 
 ### Sketch on Face Behavior
 
@@ -314,11 +319,11 @@ example002 = extrude(exampleSketch002, length = 5)
 
 ```kcl
 a1 = startSketchOn({
-       origin = { x = 0, y = 0, z = 0 },
-       xAxis = { x = 1, y = 0, z = 0 },
-       yAxis = { x = 0, y = 1, z = 0 },
-       zAxis = { x = 0, y = 0, z = 1 }
-     })
+  origin = { x = 0, y = 0, z = 0 },
+  xAxis = { x = 1, y = 0, z = 0 },
+  yAxis = { x = 0, y = 1, z = 0 },
+  zAxis = { x = 0, y = 0, z = 1 }
+})
   |> startProfile(at = [0, 0])
   |> line(end = [100.0, 0])
   |> yLine(length = -100.0)
@@ -370,6 +375,50 @@ subtract(cube001, tools = cube002)
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-startSketchOn6.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+baseProfile = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
+  line2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])
+  line3 = line(start = [var 6mm, var 4mm], end = [var 0mm, var 4mm])
+  line4 = line(start = [var 0mm, var 4mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+}
+
+baseRegion = region(point = [3mm, 2mm], sketch = baseProfile)
+block = extrude(baseRegion, length = 4mm, tagEnd = $top)
+
+sideSketch = startSketchOn(block, face = top)
+  |> startProfile(at = [0.5mm, 0.5mm])
+  |> line(end = [2mm, 0mm])
+  |> line(end = [0mm, 1mm])
+  |> line(end = [-2mm, 0mm])
+  |> close()
+
+tower = extrude(sideSketch, length = 1mm)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the startSketchOn function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-startSketchOn7_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-startSketchOn7.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

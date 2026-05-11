@@ -1,5 +1,4 @@
 import {
-  history,
   invertedEffects,
   isolateHistory,
   redo,
@@ -15,6 +14,7 @@ import {
 } from '@codemirror/state'
 
 import { EditorView } from 'codemirror'
+import { createHistoryExtension } from '@src/editor/historyConfig'
 
 /** Any EditorView that wants to be a local history target must use this extension compartment */
 export const localHistoryTarget = new Compartment()
@@ -64,7 +64,7 @@ export class HistoryView {
     this.editorView = new EditorView({
       extensions: [
         // Placing this in a compartment allows us to clear history at runtime
-        this.historyCompartment.of([history()]),
+        this.historyCompartment.of([createHistoryExtension()]),
         globalHistory.of([]),
         ...extensions,
       ],
@@ -150,9 +150,11 @@ export class HistoryView {
       for (const tr of vu.transactions) {
         for (const e of tr.effects) {
           if (e.is(globalHistoryRequest)) {
-            e.value.request === 'undo'
-              ? undo(e.value.historySource)
-              : redo(e.value.historySource)
+            if (e.value.request === 'undo') {
+              undo(e.value.historySource)
+            } else {
+              redo(e.value.historySource)
+            }
           }
         }
       }

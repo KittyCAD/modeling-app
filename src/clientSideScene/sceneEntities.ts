@@ -361,7 +361,7 @@ export class SceneEntities {
         sceneInfra: this.sceneInfra,
         wasmInstance,
       })
-      callBack && !err(callBack) && callbacks.push(callBack)
+      if (callBack && !err(callBack)) callbacks.push(callBack)
       if (segment.name === PROFILE_START) {
         segment.scale.set(factor, factor, factor)
         const startProfileCallBack: () => SegmentOverlayPayload | null = () => {
@@ -463,8 +463,9 @@ export class SceneEntities {
     yAxisMesh?.scale.set(factor, 1, 1)
 
     this.axisGroup.add(xAxisMesh, yAxisMesh, gridRenderer)
-    this.currentSketchQuaternion &&
+    if (this.currentSketchQuaternion) {
       this.axisGroup.setRotationFromQuaternion(this.currentSketchQuaternion)
+    }
 
     this.axisGroup.userData = { type: AXIS_GROUP }
     this.axisGroup.name = AXIS_GROUP
@@ -558,7 +559,7 @@ export class SceneEntities {
     const draftPointGroup = new Group()
     this.draftPointGroups.push(draftPointGroup)
     draftPointGroup.name = DRAFT_POINT_GROUP
-    origin && draftPointGroup.position.set(...origin)
+    if (origin) draftPointGroup.position.set(...origin)
     if (!yAxis) {
       console.error('No sketch quaternion or sketch details found')
       return
@@ -769,7 +770,7 @@ export class SceneEntities {
           return
         } else if (currentTool === 'tangentialArc') {
           toast.error(
-            'Tangential Arc must continue an existing profile, please click on the last segment of the profile'
+            'Tangential Arc must continue an existing profile, please click on the last segment of the profile.'
           )
           return
         }
@@ -804,6 +805,11 @@ export class SceneEntities {
         const { modifiedAst } = inserted
 
         await this.kclManager.updateAst(modifiedAst, false)
+        await this.kclManager.updateEditorWithAstAndWriteToFile(modifiedAst, {
+          shouldAddToHistory: false,
+          shouldWriteToDisk: false,
+          allowProgrammaticDocumentChanges: true,
+        })
 
         // Now perform the caller-specified action
         afterClick(args, {
@@ -860,7 +866,7 @@ export class SceneEntities {
     })
 
     const group = new Group()
-    position && group.position.set(...position)
+    if (position) group.position.set(...position)
     group.userData = {
       type: SKETCH_GROUP_SEGMENTS,
       pathToNode: sketchEntryNodePath,
@@ -1059,7 +1065,7 @@ export class SceneEntities {
     this.intersectionPlane.setRotationFromQuaternion(
       this.currentSketchQuaternion
     )
-    position && this.intersectionPlane.position.set(...position)
+    if (position) this.intersectionPlane.position.set(...position)
     this.sceneInfra.scene.add(group)
 
     // sceneInfra/onMouseMove may call raycastRing() before the next render call,
@@ -1462,6 +1468,11 @@ export class SceneEntities {
     // do a quick mock execution to get the program memory up-to-date
     const didReParse = await this.kclManager.executeAstMock(_ast)
     if (err(didReParse)) return didReParse
+    await this.kclManager.updateEditorWithAstAndWriteToFile(_ast, {
+      shouldAddToHistory: false,
+      shouldWriteToDisk: false,
+      allowProgrammaticDocumentChanges: true,
+    })
 
     const justCreatedNode = getNodeFromPath<VariableDeclaration>(
       _ast,
@@ -1683,6 +1694,11 @@ export class SceneEntities {
 
     // do a quick mock execution to get the program memory up-to-date
     await this.kclManager.executeAstMock(_ast)
+    await this.kclManager.updateEditorWithAstAndWriteToFile(_ast, {
+      shouldAddToHistory: false,
+      shouldWriteToDisk: false,
+      allowProgrammaticDocumentChanges: true,
+    })
 
     const justCreatedNode = getNodeFromPath<VariableDeclaration>(
       _ast,
@@ -1908,6 +1924,11 @@ export class SceneEntities {
     // do a quick mock execution to get the program memory up-to-date
     const didReParse = await this.kclManager.executeAstMock(_ast)
     if (err(didReParse)) return didReParse
+    await this.kclManager.updateEditorWithAstAndWriteToFile(_ast, {
+      shouldAddToHistory: false,
+      shouldWriteToDisk: false,
+      allowProgrammaticDocumentChanges: true,
+    })
 
     const { truncatedAst } = await this.setupSketch({
       sketchEntryNodePath: updatedEntryNodePath,
@@ -2122,6 +2143,11 @@ export class SceneEntities {
     // do a quick mock execution to get the program memory up-to-date
     const didReParse = await this.kclManager.executeAstMock(_ast)
     if (err(didReParse)) return didReParse
+    await this.kclManager.updateEditorWithAstAndWriteToFile(_ast, {
+      shouldAddToHistory: false,
+      shouldWriteToDisk: false,
+      allowProgrammaticDocumentChanges: true,
+    })
 
     const index = sg.paths.length // because we've added a new segment that's not in the memory yet
     const draftExpressionsIndices = { start: index, end: index }
@@ -2347,6 +2373,11 @@ export class SceneEntities {
     // do a quick mock execution to get the program memory up-to-date
     const didReParse = await this.kclManager.executeAstMock(_ast)
     if (err(didReParse)) return didReParse
+    await this.kclManager.updateEditorWithAstAndWriteToFile(_ast, {
+      shouldAddToHistory: false,
+      shouldWriteToDisk: false,
+      allowProgrammaticDocumentChanges: true,
+    })
 
     const index = sg.paths.length // because we've added a new segment that's not in the memory yet
     const draftExpressionsIndices = { start: index, end: index }
@@ -2618,6 +2649,11 @@ export class SceneEntities {
     // do a quick mock execution to get the program memory up-to-date
     const didReParse = await this.kclManager.executeAstMock(_ast)
     if (err(didReParse)) return didReParse
+    await this.kclManager.updateEditorWithAstAndWriteToFile(_ast, {
+      shouldAddToHistory: false,
+      shouldWriteToDisk: false,
+      allowProgrammaticDocumentChanges: true,
+    })
 
     const { truncatedAst } = await this.setupSketch({
       sketchEntryNodePath: updatedEntryNodePath,
@@ -3836,7 +3872,7 @@ export class SceneEntities {
             }
           }
 
-          update &&
+          if (update) {
             update({
               prevSegment: parent.userData.prevSegment,
               input,
@@ -3845,6 +3881,7 @@ export class SceneEntities {
               sceneInfra: this.sceneInfra,
               wasmInstance,
             })
+          }
           return
         }
         this.kclManager.setHighlightRange([defaultSourceRange()])
@@ -3908,7 +3945,7 @@ export class SceneEntities {
             }
           }
 
-          update &&
+          if (update) {
             update({
               prevSegment: parent.userData.prevSegment,
               input,
@@ -3917,6 +3954,7 @@ export class SceneEntities {
               sceneInfra: this.sceneInfra,
               wasmInstance: await this.kclManager.wasmInstancePromise,
             })
+          }
         }
         const isSelected = parent?.userData?.isSelected
         colorSegment(

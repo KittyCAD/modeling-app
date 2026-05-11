@@ -115,7 +115,12 @@ function CommandBarHeaderFooter({
                 selectedCommand.icon && (
                   <CustomIcon name={selectedCommand.icon} className="w-5 h-5" />
                 )}
-              <span data-testid="command-name">
+              <span
+                data-testid="command-name"
+                className={
+                  selectedCommand.groupId === 'settings' ? 'capitalize' : ''
+                }
+              >
                 {selectedCommand.displayName || selectedCommand.name}
               </span>
               {selectedCommand.status === 'experimental' ? (
@@ -200,9 +205,13 @@ function CommandBarHeaderFooter({
                           )
                         ) : arg.inputType === 'kcl' &&
                           (argValue as KclCommandValue).valueCalculated ? (
-                          roundOffWithUnits(
-                            (argValue as KclCommandValue).valueCalculated,
-                            4
+                          arg.valueSummary ? (
+                            arg.valueSummary(argValue as KclCommandValue)
+                          ) : (
+                            roundOffWithUnits(
+                              (argValue as KclCommandValue).valueCalculated,
+                              4
+                            )
                           )
                         ) : arg.inputType === 'vector3d' ? (
                           (argValue as KclCommandValue).valueCalculated

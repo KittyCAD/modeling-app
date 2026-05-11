@@ -10,6 +10,7 @@ import type {
   base64_decode as Base64Decode,
   change_default_units as ChangeDefaultUnits,
   change_experimental_features as ChangeExperimentalFeatures,
+  change_kcl_version as ChangeKclVersion,
   coredump as CoreDump,
   default_app_settings as DefaultAppSettings,
   default_project_settings as DefaultProjectSettings,
@@ -32,6 +33,7 @@ import type {
   relevant_file_extensions as RelevantFileExtensions,
   serialize_configuration as SerializeConfiguration,
   serialize_project_configuration as SerializeProjectConfiguration,
+  sketch_checkpoint_limit as SketchCheckpointLimit,
 } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
@@ -113,6 +115,9 @@ export const kcl_settings: typeof KclSettings = (...args) => {
 export const change_default_units: typeof ChangeDefaultUnits = (...args) => {
   return getModule().change_default_units(...args)
 }
+export const change_kcl_version: typeof ChangeKclVersion = (...args) => {
+  return getModule().change_kcl_version(...args)
+}
 export const change_experimental_features: typeof ChangeExperimentalFeatures = (
   ...args
 ) => {
@@ -140,4 +145,7 @@ export const import_file_extensions: typeof ImportFileExtensions = () => {
 }
 export const relevant_file_extensions: typeof RelevantFileExtensions = () => {
   return getModule().relevant_file_extensions()
+}
+export const sketch_checkpoint_limit: typeof SketchCheckpointLimit = () => {
+  return getModule().sketch_checkpoint_limit()
 }

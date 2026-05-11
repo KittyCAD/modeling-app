@@ -1,21 +1,20 @@
 import type { EntityType, Point2d } from '@kittycad/lib'
-import type { MachineManager } from '@src/lib/MachineManager'
-import type { PathToNode } from '@src/lang/wasm'
-import type { Artifact, ArtifactId, CodeRef } from '@src/lang/std/artifactGraph'
-import type { DefaultPlaneStr } from '@src/lib/planes'
-import type { Coords2d } from '@src/lang/util'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
-import type { Setting } from '@src/lib/settings/initialSettings'
-import type { ToolbarModeName } from '@src/lib/toolbar'
-import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveImpl'
-import type { KclManager } from '@src/lang/KclManager'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type RustContext from '@src/lib/rustContext'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { BaseUnit } from '@src/lib/settings/settingsTypes'
-import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import type { KclManager } from '@src/lang/KclManager'
+import type { Artifact, ArtifactId, CodeRef } from '@src/lang/std/artifactGraph'
+import type { Coords2d } from '@src/lang/util'
+import type { PathToNode } from '@src/lang/wasm'
+import type { MachineManager } from '@src/lib/MachineManager'
+import type { DefaultPlaneStr } from '@src/lib/planes'
 import type { Project } from '@src/lib/project'
+import type RustContext from '@src/lib/rustContext'
+import type { Setting } from '@src/lib/settings/initialSettings'
+import type { BaseUnit } from '@src/lib/settings/settingsTypes'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveImpl'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
@@ -33,7 +32,7 @@ export type EnginePrimitiveSelection = {
 }
 
 export interface EngineRegionSelection {
-  type: 'region'
+  type: 'engineRegion'
   id: string
   point: Point2d
   sketchId: ArtifactId
@@ -48,6 +47,8 @@ export type NonCodeSelection =
 export interface Selection {
   artifact?: Artifact
   codeRef: CodeRef
+  engineEntityId?: ArtifactId
+  patternIndex?: number
 }
 
 export type Selections = {
@@ -239,8 +240,10 @@ export type ModelingMachineInput = {
   store?: Store
 }
 export type ModelingMachineInternalContext = {
-  currentMode: ToolbarModeName
   currentTool: SketchTool
+  // This is duplicated state from sketch-solve for now,
+  // long term plan is to have sketchSolve machine a sibling of modelingMachine
+  showNonVisualConstraints: boolean
   toastId: string | null
   selection: string[]
   selectionRanges: Selections
@@ -263,7 +266,6 @@ export type ModelingMachineInternalContext = {
   // TODO are these both used?
   sketchSolveTool: EquipTool | null
   sketchSolveToolName: EquipTool | null
-  forceSketchSolveMode?: boolean
 }
 export type ModelingMachineContext = ModelingMachineInput &
   ModelingMachineInternalContext

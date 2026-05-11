@@ -53,10 +53,12 @@ jobs:
           cd rust
           cargo codspeed build
       - name: Run the benchmarks
-        uses: CodSpeedHQ/action@v3
+        uses: CodSpeedHQ/action@v4.14.0
         with:
+          mode: simulation
           working-directory: rust
           run: cargo codspeed run
           token: ${{ secrets.CODSPEED_TOKEN }}
         env:
           ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
+          ZOO_HOST: https://api.dev.zoo.dev

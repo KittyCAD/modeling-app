@@ -1,21 +1,25 @@
 //! Standard library appearance.
 
 use anyhow::Result;
-use kcl_error::CompilationError;
-use kcmc::{ModelingCmd, each_cmd as mcmd};
-use kittycad_modeling_cmds::{self as kcmc, shared::Color};
+use kcl_error::CompilationIssue;
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kittycad_modeling_cmds::shared::Color;
+use kittycad_modeling_cmds::{self as kcmc};
 use regex::Regex;
 use rgba_simple::Hex;
 
 use super::args::TyF64;
-use crate::{
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        ExecState, KclValue, ModelingCmdMeta, SolidOrImportedGeometry, annotations,
-        types::{ArrayLen, RuntimeType},
-    },
-    std::Args,
-};
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::ExecState;
+use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::SolidOrImportedGeometry;
+use crate::execution::annotations;
+use crate::execution::types::ArrayLen;
+use crate::execution::types::RuntimeType;
+use crate::std::Args;
 
 lazy_static::lazy_static! {
     static ref HEX_REGEX: Regex = Regex::new(r"^#[0-9a-fA-F]{6}$").unwrap();
@@ -116,7 +120,7 @@ async fn inner_appearance(
             }
             if zero_one_range.contains(&x) && x != 0.0 {
                 exec_state.warn(
-                        CompilationError::err(args.source_range, "This looks like you're setting a property to a number between 0 and 1, but the property should be between 0 and 100.".to_string()),
+                        CompilationIssue::err(args.source_range, "This looks like you're setting a property to a number between 0 and 1, but the property should be between 0 and 100.".to_string()),
                         annotations::WARN_SHOULD_BE_PERCENTAGE,
                     );
             }

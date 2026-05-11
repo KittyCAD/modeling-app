@@ -8,4 +8,5 @@ export {
 } from '@src/lib/layout/configs'
 export * from '@src/lib/layout/utils'
 export * from '@src/lib/layout/types'
+export * from '@src/lib/layout/service'
 export { LayoutRootNode } from '@src/lib/layout/components'

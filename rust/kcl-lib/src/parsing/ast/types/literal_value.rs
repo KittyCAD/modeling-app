@@ -1,12 +1,13 @@
-use std::{fmt, str::FromStr};
+use std::fmt;
+use std::str::FromStr;
 
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
 use super::Node;
-use crate::parsing::{
-    ast::types::{Expr, Literal},
-    token::NumericSuffix,
-};
+use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::Literal;
+use crate::parsing::token::NumericSuffix;
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]

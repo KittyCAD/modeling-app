@@ -50,11 +50,12 @@ export type CommandInputType = INPUT_TYPE[number]
 type CommandStatus = 'active' | 'development' | 'inactive' | 'experimental'
 export type CommandSelectionType =
   | Artifact['type']
+  | 'pathRegion'
   | 'primitiveFace'
   | 'primitiveEdge'
   | 'enginePrimitiveFace'
   | 'enginePrimitiveEdge'
-  | 'region'
+  | 'engineRegion'
 export type FileFilter = {
   name: string
   extensions: string[]
@@ -97,7 +98,7 @@ export type Command<
     machineActor?: ActorRefFrom<T>
   ) => Promise<undefined | Error>
   machineActor?: Actor<T>
-  onSubmit: (data?: CommandSchema, wasmInstance?: ModuleType) => void
+  onSubmit: (data?: CommandSchema, wasmInstance?: ModuleType) => unknown
   onCancel?: () => void
   args?: {
     [ArgName in keyof CommandSchema]: CommandArgument<CommandSchema[ArgName], T>
@@ -211,6 +212,10 @@ export type CommandArgumentConfig<
   | {
       inputType: 'kcl'
       allowArrays?: boolean
+      allowStringArrays?: boolean
+      allowUncalculated?: boolean
+      inputToKclValue?: (value: string) => string
+      kclValueToInput?: (value: string) => string
       createVariable?: 'byDefault' | 'force' | 'disallow'
       variableName?:
         | string
@@ -399,6 +404,10 @@ export type CommandArgument<
   | {
       inputType: 'kcl'
       allowArrays?: boolean
+      allowStringArrays?: boolean
+      allowUncalculated?: boolean
+      inputToKclValue?: (value: string) => string
+      kclValueToInput?: (value: string) => string
       createVariable?: 'byDefault' | 'force' | 'disallow'
       variableName?:
         | string

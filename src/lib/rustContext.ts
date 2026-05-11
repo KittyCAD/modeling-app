@@ -11,12 +11,14 @@ import type {
   ApiFile,
   ApiFileId,
   ApiObjectId,
+  ApiPoint2d,
   ApiProjectId,
   ApiVersion,
   ExistingSegmentCtor,
+  Number,
   SceneGraphDelta,
   SegmentCtor,
-  SetProgramOutcome,
+  SetProgramOutcome as RustSetProgramOutcome,
   SketchCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -36,7 +38,7 @@ import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 import type { ConnectionManager } from '@src/network/connectionManager'
-import { Signal } from '@src/lib/signal'
+import { Signal as LegacySignal } from '@src/lib/signal'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import {
   getSettingsFromActorContext,
@@ -47,7 +49,7 @@ export default class RustContext {
   private rustInstance: ModuleType | null = null
   private ctxInstance: Context | null = null
   private _defaultPlanes: DefaultPlanes | null = null
-  public readonly planesCreated = new Signal()
+  public readonly planesCreated = new LegacySignal()
 
   constructor(
     public readonly wasmInstancePromise: Promise<ModuleType>,
@@ -68,7 +70,6 @@ export default class RustContext {
       this.engineCommandManager,
       projectFsManager
     )
-    this.rustInstance
 
     return ctxInstance
   }
@@ -139,14 +140,14 @@ export default class RustContext {
     const instance = await this._checkContextInstance()
 
     try {
-      const result = await instance.execute(
+      const result: SceneGraphDelta = await instance.execute(
         JSON.stringify(node),
         path,
         JSON.stringify(settings)
       )
-      // Set the default planes, safe to call after execute.
-      const outcome = execStateFromRust(result)
+      const outcome = execStateFromRust(result.exec_outcome)
 
+      // Set the default planes, safe to call after execute.
       this.setDefaultPlanes(outcome.defaultPlanes)
 
       // Return the result.
@@ -204,8 +205,11 @@ export default class RustContext {
     }
   }
 
-  async waitForAllEngineCommands() {
-    await this.engineCommandManager.waitForAllCommands()
+  /**
+   * Wait for all modeling commands sent to the engine
+   */
+  async waitForAllEngineModelingCommands() {
+    await this.engineCommandManager.waitForAllModelingCommands()
   }
 
   get defaultPlanes() {
@@ -297,14 +301,27 @@ export default class RustContext {
     const instance = await this._checkContextInstance()
 
     try {
-      const result: SetProgramOutcome = await instance.hack_set_program(
+      const result: RustSetProgramOutcome & {
+        checkpointId?: bigint | number | null
+      } = await instance.hack_set_program(
         JSON.stringify(program_ast),
         JSON.stringify(settings)
       )
-      return result
+      if (result.type !== 'Success') {
+        return result
+      }
+
+      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+      if (checkpointId instanceof Error) {
+        return Promise.reject(checkpointId)
+      }
+
+      return {
+        ...result,
+        checkpointId,
+      }
     } catch (e: any) {
-      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
-      const err = { message: e }
+      const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
   }
@@ -316,26 +333,30 @@ export default class RustContext {
   async sketchExecuteMock(
     version: ApiVersion,
     sketch: ApiObjectId
-  ): Promise<{
-    kclSource: SourceDelta
-    sceneGraphDelta: SceneGraphDelta
-  }> {
+  ): Promise<SketchMutationResult> {
     const instance = await this._checkContextInstance()
 
     try {
-      const result: [SourceDelta, SceneGraphDelta] =
-        await instance.sketch_execute_mock(
-          JSON.stringify(version),
-          JSON.stringify(sketch),
-          JSON.stringify(jsAppSettings(this.settingsActor))
-        )
+      const result: {
+        sourceDelta: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
+      } = await instance.sketch_execute_mock(
+        JSON.stringify(version),
+        JSON.stringify(sketch),
+        JSON.stringify(jsAppSettings(this.settingsActor))
+      )
+      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+      if (checkpointId instanceof Error) {
+        return Promise.reject(checkpointId)
+      }
       return {
-        kclSource: result[0],
-        sceneGraphDelta: result[1],
+        kclSource: result.sourceDelta,
+        sceneGraphDelta: result.sceneGraphDelta,
+        checkpointId,
       }
     } catch (e: any) {
-      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
-      const err = { message: e }
+      const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
   }
@@ -347,30 +368,34 @@ export default class RustContext {
     version: ApiVersion,
     sketchArgs: SketchCtor,
     settings: DeepPartial<Configuration>
-  ): Promise<{
-    kclSource: SourceDelta
-    sceneGraphDelta: SceneGraphDelta
-    sketchId: ApiObjectId
-  }> {
+  ): Promise<NewSketchResult> {
     const instance = await this._checkContextInstance()
 
     try {
-      const result: [SourceDelta, SceneGraphDelta, ApiObjectId] =
-        await instance.new_sketch(
-          JSON.stringify(project),
-          JSON.stringify(file),
-          JSON.stringify(version),
-          JSON.stringify(sketchArgs),
-          JSON.stringify(settings)
-        )
+      const result: {
+        sourceDelta: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+        sketchId: ApiObjectId
+        checkpointId?: number | null
+      } = await instance.new_sketch(
+        JSON.stringify(project),
+        JSON.stringify(file),
+        JSON.stringify(version),
+        JSON.stringify(sketchArgs),
+        JSON.stringify(settings)
+      )
+      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+      if (checkpointId instanceof Error) {
+        return Promise.reject(checkpointId)
+      }
       return {
-        kclSource: result[0],
-        sceneGraphDelta: result[1],
-        sketchId: result[2],
+        kclSource: result.sourceDelta,
+        sceneGraphDelta: result.sceneGraphDelta,
+        sketchId: result.sketchId,
+        checkpointId,
       }
     } catch (e: any) {
-      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
-      const err = { message: e }
+      const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
   }
@@ -382,21 +407,30 @@ export default class RustContext {
     version: ApiVersion,
     sketch: ApiObjectId,
     settings: DeepPartial<Configuration>
-  ): Promise<SceneGraphDelta> {
+  ): Promise<EditSketchResult> {
     const instance = await this._checkContextInstance()
 
     try {
-      const result: SceneGraphDelta = await instance.edit_sketch(
+      const result: {
+        sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
+      } = await instance.edit_sketch(
         JSON.stringify(project),
         JSON.stringify(file),
         JSON.stringify(version),
         JSON.stringify(sketch),
         JSON.stringify(settings)
       )
-      return result
+      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+      if (checkpointId instanceof Error) {
+        return Promise.reject(checkpointId)
+      }
+      return {
+        sceneGraphDelta: result.sceneGraphDelta,
+        checkpointId,
+      }
     } catch (e: any) {
-      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
-      const err = { message: e }
+      const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
   }
@@ -416,8 +450,7 @@ export default class RustContext {
       )
       return result
     } catch (e: any) {
-      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
-      const err = { message: e }
+      const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
   }
@@ -445,8 +478,7 @@ export default class RustContext {
         sceneGraphDelta: result[1],
       }
     } catch (e: any) {
-      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
-      const err = { message: e }
+      const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
   }
@@ -457,28 +489,35 @@ export default class RustContext {
     sketch: ApiObjectId,
     segment: SegmentCtor,
     label: string | undefined,
-    settings: DeepPartial<Configuration>
-  ): Promise<{
-    kclSource: SourceDelta
-    sceneGraphDelta: SceneGraphDelta
-  }> {
+    settings: DeepPartial<Configuration>,
+    createCheckpoint = false
+  ): Promise<SketchMutationResult> {
     const instance = await this._checkContextInstance()
 
     try {
-      const result: [SourceDelta, SceneGraphDelta] = await instance.add_segment(
+      const result: {
+        sourceDelta: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
+      } = await instance.add_segment(
         JSON.stringify(version),
         JSON.stringify(sketch),
         JSON.stringify(segment),
         label,
-        JSON.stringify(settings)
+        JSON.stringify(settings),
+        createCheckpoint
       )
+      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+      if (checkpointId instanceof Error) {
+        return Promise.reject(checkpointId)
+      }
       return {
-        kclSource: result[0],
-        sceneGraphDelta: result[1],
+        kclSource: result.sourceDelta,
+        sceneGraphDelta: result.sceneGraphDelta,
+        checkpointId,
       }
     } catch (e: any) {
-      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
-      const err = { message: e }
+      const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
   }
@@ -488,28 +527,34 @@ export default class RustContext {
     version: ApiVersion,
     sketch: ApiObjectId,
     segments: ExistingSegmentCtor[],
-    settings: DeepPartial<Configuration>
-  ): Promise<{
-    kclSource: SourceDelta
-    sceneGraphDelta: SceneGraphDelta
-  }> {
+    settings: DeepPartial<Configuration>,
+    createCheckpoint = false
+  ): Promise<SketchMutationResult> {
     const instance = await this._checkContextInstance()
 
     try {
-      const result: [SourceDelta, SceneGraphDelta] =
-        await instance.edit_segments(
-          JSON.stringify(version),
-          JSON.stringify(sketch),
-          JSON.stringify(segments),
-          JSON.stringify(settings)
-        )
+      const result: {
+        sourceDelta: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
+      } = await instance.edit_segments(
+        JSON.stringify(version),
+        JSON.stringify(sketch),
+        JSON.stringify(segments),
+        JSON.stringify(settings),
+        createCheckpoint
+      )
+      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+      if (checkpointId instanceof Error) {
+        return Promise.reject(checkpointId)
+      }
       return {
-        kclSource: result[0],
-        sceneGraphDelta: result[1],
+        kclSource: result.sourceDelta,
+        sceneGraphDelta: result.sceneGraphDelta,
+        checkpointId,
       }
     } catch (e: any) {
-      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
-      const err = { message: e }
+      const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
   }
@@ -520,29 +565,35 @@ export default class RustContext {
     sketch: ApiObjectId,
     constraintIds: ApiObjectId[],
     segmentIds: ApiObjectId[],
-    settings: DeepPartial<Configuration>
-  ): Promise<{
-    kclSource: SourceDelta
-    sceneGraphDelta: SceneGraphDelta
-  }> {
+    settings: DeepPartial<Configuration>,
+    createCheckpoint = false
+  ): Promise<SketchMutationResult> {
     const instance = await this._checkContextInstance()
 
     try {
-      const result: [SourceDelta, SceneGraphDelta] =
-        await instance.delete_objects(
-          JSON.stringify(version),
-          JSON.stringify(sketch),
-          JSON.stringify(constraintIds),
-          JSON.stringify(segmentIds),
-          JSON.stringify(settings)
-        )
+      const result: {
+        sourceDelta: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
+      } = await instance.delete_objects(
+        JSON.stringify(version),
+        JSON.stringify(sketch),
+        JSON.stringify(constraintIds),
+        JSON.stringify(segmentIds),
+        JSON.stringify(settings),
+        createCheckpoint
+      )
+      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+      if (checkpointId instanceof Error) {
+        return Promise.reject(checkpointId)
+      }
       return {
-        kclSource: result[0],
-        sceneGraphDelta: result[1],
+        kclSource: result.sourceDelta,
+        sceneGraphDelta: result.sceneGraphDelta,
+        checkpointId,
       }
     } catch (e: any) {
-      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
-      const err = { message: e }
+      const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
   }
@@ -552,28 +603,34 @@ export default class RustContext {
     version: ApiVersion,
     sketch: ApiObjectId,
     constraint: ApiConstraint,
-    settings: DeepPartial<Configuration>
-  ): Promise<{
-    kclSource: SourceDelta
-    sceneGraphDelta: SceneGraphDelta
-  }> {
+    settings: DeepPartial<Configuration>,
+    createCheckpoint = false
+  ): Promise<SketchMutationResult> {
     const instance = await this._checkContextInstance()
 
     try {
-      const result: [SourceDelta, SceneGraphDelta] =
-        await instance.add_constraint(
-          JSON.stringify(version),
-          JSON.stringify(sketch),
-          JSON.stringify(constraint),
-          JSON.stringify(settings)
-        )
+      const result: {
+        sourceDelta: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
+      } = await instance.add_constraint(
+        JSON.stringify(version),
+        JSON.stringify(sketch),
+        JSON.stringify(constraint),
+        JSON.stringify(settings),
+        createCheckpoint
+      )
+      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+      if (checkpointId instanceof Error) {
+        return Promise.reject(checkpointId)
+      }
       return {
-        kclSource: result[0],
-        sceneGraphDelta: result[1],
+        kclSource: result.sourceDelta,
+        sceneGraphDelta: result.sceneGraphDelta,
+        checkpointId,
       }
     } catch (e: any) {
-      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
-      const err = { message: e }
+      const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
   }
@@ -584,29 +641,75 @@ export default class RustContext {
     sketch: ApiObjectId,
     constraintId: ApiObjectId,
     valueExpression: string,
-    settings: DeepPartial<Configuration>
-  ): Promise<{
-    kclSource: SourceDelta
-    sceneGraphDelta: SceneGraphDelta
-  }> {
+    settings: DeepPartial<Configuration>,
+    createCheckpoint = false
+  ): Promise<SketchMutationResult> {
     const instance = await this._checkContextInstance()
 
     try {
-      const result: [SourceDelta, SceneGraphDelta] =
-        await instance.edit_constraint(
-          JSON.stringify(version),
-          JSON.stringify(sketch),
-          JSON.stringify(constraintId),
-          valueExpression,
-          JSON.stringify(settings)
-        )
+      const result: {
+        sourceDelta: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
+      } = await instance.edit_constraint(
+        JSON.stringify(version),
+        JSON.stringify(sketch),
+        JSON.stringify(constraintId),
+        valueExpression,
+        JSON.stringify(settings),
+        createCheckpoint
+      )
+      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+      if (checkpointId instanceof Error) {
+        return Promise.reject(checkpointId)
+      }
       return {
-        kclSource: result[0],
-        sceneGraphDelta: result[1],
+        kclSource: result.sourceDelta,
+        sceneGraphDelta: result.sceneGraphDelta,
+        checkpointId,
       }
     } catch (e: any) {
-      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
-      const err = { message: e }
+      const err = errFromErrWithOutputs(e)
+      return Promise.reject(err)
+    }
+  }
+
+  async editDistanceConstraintLabelPosition(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    constraintId: ApiObjectId,
+    labelPosition: ApiPoint2d<Number>,
+    settings: DeepPartial<Configuration>,
+    createCheckpoint = false,
+    anchorSegmentIds: ApiObjectId[] = []
+  ): Promise<SketchMutationResult> {
+    const instance = await this._checkContextInstance()
+
+    try {
+      const result: {
+        sourceDelta: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
+      } = await instance.edit_distance_constraint_label_position(
+        JSON.stringify(version),
+        JSON.stringify(sketch),
+        JSON.stringify(constraintId),
+        JSON.stringify(labelPosition),
+        JSON.stringify(settings),
+        createCheckpoint,
+        JSON.stringify(anchorSegmentIds)
+      )
+      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+      if (checkpointId instanceof Error) {
+        return Promise.reject(checkpointId)
+      }
+      return {
+        kclSource: result.sourceDelta,
+        sceneGraphDelta: result.sceneGraphDelta,
+        checkpointId,
+      }
+    } catch (e: any) {
+      const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
   }
@@ -618,29 +721,66 @@ export default class RustContext {
     previousSegmentEndPointId: ApiObjectId,
     segment: SegmentCtor,
     label: string | undefined,
-    settings: DeepPartial<Configuration>
-  ): Promise<{
-    kclSource: SourceDelta
-    sceneGraphDelta: SceneGraphDelta
-  }> {
+    settings: DeepPartial<Configuration>,
+    createCheckpoint = false
+  ): Promise<SketchMutationResult> {
     const instance = await this._checkContextInstance()
 
     try {
-      const result: [SourceDelta, SceneGraphDelta] =
-        await instance.chain_segment(
-          JSON.stringify(version),
-          JSON.stringify(sketch),
-          JSON.stringify(previousSegmentEndPointId),
-          JSON.stringify(segment),
-          label,
-          JSON.stringify(settings)
-        )
+      const result: {
+        sourceDelta: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
+      } = await instance.chain_segment(
+        JSON.stringify(version),
+        JSON.stringify(sketch),
+        JSON.stringify(previousSegmentEndPointId),
+        JSON.stringify(segment),
+        label,
+        JSON.stringify(settings),
+        createCheckpoint
+      )
+      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+      if (checkpointId instanceof Error) {
+        return Promise.reject(checkpointId)
+      }
       return {
-        kclSource: result[0],
-        sceneGraphDelta: result[1],
+        kclSource: result.sourceDelta,
+        sceneGraphDelta: result.sceneGraphDelta,
+        checkpointId,
       }
     } catch (e: any) {
-      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
+      const err = errFromErrWithOutputs(e)
+      return Promise.reject(err)
+    }
+  }
+
+  async restoreSketchCheckpoint(
+    checkpointId: number
+  ): Promise<RestoreSketchCheckpointResult> {
+    const instance = await this._checkContextInstance()
+
+    try {
+      const result: {
+        sourceDelta: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+      } = await instance.restore_sketch_checkpoint(JSON.stringify(checkpointId))
+      return {
+        kclSource: result.sourceDelta,
+        sceneGraphDelta: result.sceneGraphDelta,
+      }
+    } catch (e: any) {
+      const err = { message: e }
+      return Promise.reject(err)
+    }
+  }
+
+  async clearSketchCheckpoints(): Promise<void> {
+    const instance = await this._checkContextInstance()
+
+    try {
+      await instance.clear_sketch_checkpoints()
+    } catch (e: any) {
       const err = { message: e }
       return Promise.reject(err)
     }
@@ -656,6 +796,7 @@ export default class RustContext {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
     operationsPerformed: boolean
+    checkpointId?: number | null
   }> {
     const instance = await this._checkContextInstance()
 
@@ -668,20 +809,25 @@ export default class RustContext {
         source_delta: SourceDelta
         scene_graph_delta: SceneGraphDelta
         operations_performed: boolean
+        checkpoint_id?: number | null
       } = await instance.execute_trim(
         JSON.stringify(version),
         JSON.stringify(sketch),
         flattenedPoints,
         JSON.stringify(settings)
       )
+      const checkpointId = normalizeSketchCheckpointId(result.checkpoint_id)
+      if (checkpointId instanceof Error) {
+        return Promise.reject(checkpointId)
+      }
       return {
         kclSource: result.source_delta,
         sceneGraphDelta: result.scene_graph_delta,
         operationsPerformed: result.operations_performed,
+        checkpointId,
       }
     } catch (e: any) {
-      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
-      const err = { message: e }
+      const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
     }
   }
@@ -703,4 +849,49 @@ export default class RustContext {
       this.ctxInstance = null
     }
   }
+}
+
+function normalizeSketchCheckpointId(
+  checkpointId: bigint | number | null | undefined
+): number | null | undefined | Error {
+  if (checkpointId == null) return checkpointId
+  if (typeof checkpointId === 'number') return checkpointId
+
+  const normalized = Number(checkpointId)
+  if (!Number.isSafeInteger(normalized)) {
+    return new Error(
+      `Sketch checkpoint id is outside the safe integer range: ${checkpointId.toString()}`
+    )
+  }
+
+  return normalized
+}
+
+type SketchMutationResult = {
+  kclSource: SourceDelta
+  sceneGraphDelta: SceneGraphDelta
+  checkpointId?: number | null
+}
+
+type SetProgramOutcome =
+  | (Omit<
+      Extract<RustSetProgramOutcome, { type: 'Success' }>,
+      'checkpointId'
+    > & {
+      checkpointId?: number | null
+    })
+  | Exclude<RustSetProgramOutcome, { type: 'Success' }>
+
+type NewSketchResult = SketchMutationResult & {
+  sketchId: ApiObjectId
+}
+
+type EditSketchResult = {
+  sceneGraphDelta: SceneGraphDelta
+  checkpointId?: number | null
+}
+
+type RestoreSketchCheckpointResult = {
+  kclSource: SourceDelta
+  sceneGraphDelta: SceneGraphDelta
 }

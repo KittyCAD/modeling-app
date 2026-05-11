@@ -1,0 +1,48 @@
+// Helical Gear Utility
+// Generates an involute helical gear solid
+// Categories: Mechanical
+
+// Declare units
+@settings(defaultLengthUnit = mm)
+
+// Gear generator
+export fn helicalGear(nTeeth, helixAngle, bore) {
+  // Gear parameters
+  gearModule = 16.0
+  pressureAngle = 20deg
+  gearHeight = 100
+  pitchDiameter = gearModule * nTeeth
+  addendum = gearModule
+  dedendum = 1.25 * gearModule
+  baseDiameter = pitchDiameter * cos(pressureAngle)
+  tipDiameter = pitchDiameter + 2 * gearModule
+
+  // Gear solid
+  gear = startSketchOn(XZ)
+    |> startProfile(at = polar(angle = 0, length = baseDiameter / 2))
+    |> involuteCircular(
+         startDiameter = baseDiameter,
+         endDiameter = tipDiameter,
+         angle = 0,
+         tag = $seg01,
+       )
+    |> line(endAbsolute = polar(angle = 160deg / nTeeth, length = tipDiameter / 2))
+    |> involuteCircular(
+         startDiameter = baseDiameter,
+         endDiameter = tipDiameter,
+         angle = -(4 * atan(segEndY(seg01) / segEndX(seg01))),
+         reverse = true,
+       )
+    |> line(endAbsolute = polar(angle = 360deg / nTeeth, length = baseDiameter / 2))
+    |> patternCircular2d(
+         instances = nTeeth,
+         center = [0, 0],
+         arcDegrees = 360deg,
+         rotateDuplicates = true,
+       )
+    |> close()
+    |> subtract2d(tool = circle(diameter = bore))
+    |> extrude(length = gearHeight, twistAngle = (360 * gearHeight * tan(helixAngle) / (PI * pitchDiameter)): deg, twistAngleStep = 0)
+
+  return gear
+}

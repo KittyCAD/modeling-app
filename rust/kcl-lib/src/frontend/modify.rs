@@ -1,6 +1,12 @@
 use std::collections::HashSet;
 
-use crate::parsing::ast::types::{BinaryPart, BodyItem, CodeBlock, Expr, ImportSelector};
+use crate::front::Error as ApiError;
+use crate::front::Result as ApiResult;
+use crate::parsing::ast::types::BinaryPart;
+use crate::parsing::ast::types::BodyItem;
+use crate::parsing::ast::types::CodeBlock;
+use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::ImportSelector;
 
 /// Find all defined names in the given code block. This ignores names defined
 /// by glob imports.
@@ -159,11 +165,11 @@ fn find_defined_names_binary_part(expr: &BinaryPart, defined_names: &mut HashSet
     }
 }
 
-pub(super) fn next_free_name(prefix: &str, taken_names: &HashSet<String>) -> anyhow::Result<String> {
+pub(super) fn next_free_name(prefix: &str, taken_names: &HashSet<String>) -> ApiResult<String> {
     next_free_name_using_padding(prefix, taken_names, 0)
 }
 
-pub(crate) fn next_free_name_with_padding(prefix: &str, taken_names: &HashSet<String>) -> anyhow::Result<String> {
+pub(crate) fn next_free_name_with_padding(prefix: &str, taken_names: &HashSet<String>) -> ApiResult<String> {
     next_free_name_using_max_and_padding(prefix, taken_names, 999, 3)
 }
 
@@ -171,15 +177,11 @@ pub(super) fn next_free_name_using_padding(
     prefix: &str,
     taken_names: &HashSet<String>,
     padding: usize,
-) -> anyhow::Result<String> {
+) -> ApiResult<String> {
     next_free_name_using_max_and_padding(prefix, taken_names, 999, padding)
 }
 
-pub(crate) fn next_free_name_using_max(
-    prefix: &str,
-    taken_names: &HashSet<String>,
-    max: u16,
-) -> anyhow::Result<String> {
+pub(crate) fn next_free_name_using_max(prefix: &str, taken_names: &HashSet<String>, max: u16) -> ApiResult<String> {
     next_free_name_using_max_and_padding(prefix, taken_names, max, 0)
 }
 
@@ -188,7 +190,7 @@ fn next_free_name_using_max_and_padding(
     taken_names: &HashSet<String>,
     mut max: u16,
     padding: usize,
-) -> anyhow::Result<String> {
+) -> ApiResult<String> {
     if max == u16::MAX {
         // Prevent overflow.
         max = u16::MAX - 1;
@@ -205,16 +207,18 @@ fn next_free_name_using_max_and_padding(
         }
         index += 1;
     }
-    Err(anyhow::anyhow!(
-        "Could not find a free name with prefix '{prefix}' after maximum tries."
-    ))
+    Err(ApiError {
+        msg: format!("Could not find a free name with prefix '{prefix}' after maximum tries."),
+    })
 }
 
 #[cfg(test)]
 mod tests {
     use std::collections::HashSet;
 
-    use super::{next_free_name, next_free_name_using_max, next_free_name_using_padding};
+    use super::next_free_name;
+    use super::next_free_name_using_max;
+    use super::next_free_name_using_padding;
 
     #[test]
     fn next_free_name_defaults_to_no_padding() {

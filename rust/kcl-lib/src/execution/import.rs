@@ -1,28 +1,32 @@
 use std::str::FromStr;
 
 use anyhow::Result;
-use kcmc::{
-    ImportFile, ModelingCmd,
-    coord::{KITTYCAD, System},
-    each_cmd as mcmd,
-    format::InputFormat3d,
-    shared::FileImportFormat,
-    units::UnitLength,
-};
+use kcmc::ImportFile;
+use kcmc::ModelingCmd;
+use kcmc::coord::KITTYCAD;
+use kcmc::coord::System;
+use kcmc::each_cmd as mcmd;
+use kcmc::format::InputFormat3d;
+use kcmc::shared::FileImportFormat;
+use kcmc::units::UnitLength;
 use kittycad_modeling_cmds as kcmc;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 use uuid::Uuid;
 
-use crate::{
-    SourceRange,
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        ExecState, ExecutorContext, ImportedGeometry, ModelingCmdMeta, annotations, typed_path::TypedPath,
-        types::length_from_str,
-    },
-    fs::FileSystem,
-    parsing::ast::types::{Annotation, Node},
-};
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::ExecState;
+use crate::execution::ExecutorContext;
+use crate::execution::ImportedGeometry;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::annotations;
+use crate::execution::typed_path::TypedPath;
+use crate::execution::types::length_from_str;
+use crate::fs::FileSystem;
+use crate::parsing::ast::types::Annotation;
+use crate::parsing::ast::types::Node;
 
 // Zoo co-ordinate system.
 //

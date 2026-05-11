@@ -1,7 +1,8 @@
-import decamelize from 'decamelize'
-
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
-import { shouldHideSetting } from '@src/lib/settings/settingsUtils'
+import {
+  formatSettingsLabel,
+  shouldHideSetting,
+} from '@src/lib/settings/settingsUtils'
 import { useApp } from '@src/lib/boot'
 
 interface SettingsSectionsListProps {
@@ -39,7 +40,7 @@ export function SettingsSectionsList({
           }
           className="capitalize text-left border-none px-1"
         >
-          {decamelize(category, { separator: ' ' })}
+          {formatSettingsLabel(category)}
         </button>
       ))}
       <button

@@ -8,7 +8,11 @@ import type {
 
 // Index artifacts in an ordered list for binary search
 export type ArtifactEntry = { artifact: Artifact; id: ArtifactId }
-/** Index artifacts by their codeRef range, ordered by start position */
+/**
+ * Index artifacts by their codeRef range, ordered by start position.
+ * TODO: update ArtifactIndex to be an [interval tree](https://en.wikipedia.org/wiki/Interval_tree#cite_note-Schmidt2009-2),
+ * so that overlap queries can be done in O(log n) time
+ */
 export type ArtifactIndex = Array<{
   range: SourceRange
   entry: ArtifactEntry

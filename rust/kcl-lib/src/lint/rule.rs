@@ -1,16 +1,20 @@
 use anyhow::Result;
 #[cfg(feature = "pyo3")]
-use pyo3_stub_gen::{inventory, type_info::PyEnumInfo};
+use pyo3_stub_gen::inventory;
+#[cfg(feature = "pyo3")]
+use pyo3_stub_gen::type_info::PyEnumInfo;
 use serde::Serialize;
-use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
+use tower_lsp::lsp_types::Diagnostic;
+use tower_lsp::lsp_types::DiagnosticSeverity;
 
-use crate::{
-    SourceRange,
-    errors::Suggestion,
-    lsp::{IntoDiagnostic, ToLspRange, to_lsp_edit},
-    parsing::ast::types::{Node as AstNode, Program},
-    walk::Node,
-};
+use crate::SourceRange;
+use crate::errors::Suggestion;
+use crate::lsp::IntoDiagnostic;
+use crate::lsp::ToLspRange;
+use crate::lsp::to_lsp_edit;
+use crate::parsing::ast::types::Node as AstNode;
+use crate::parsing::ast::types::Program;
+use crate::walk::Node;
 
 /// Check the provided AST for any found rule violations.
 ///
@@ -320,7 +324,13 @@ macro_rules! finding {
 }
 pub(crate) use finding;
 #[cfg(test)]
-pub(crate) use test::{assert_finding, assert_no_finding, test_finding, test_no_finding};
+pub(crate) use test::assert_finding;
+#[cfg(test)]
+pub(crate) use test::assert_no_finding;
+#[cfg(test)]
+pub(crate) use test::test_finding;
+#[cfg(test)]
+pub(crate) use test::test_no_finding;
 
 #[cfg(test)]
 mod test {

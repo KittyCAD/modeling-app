@@ -1,15 +1,15 @@
 ---
 title: "extrude"
 subtitle: "Function in std::sketch"
-excerpt: "Extend a 2-dimensional sketch through a third dimension in order to create new 3-dimensional volume, or if extruded into an existing volume, cut into an existing solid."
+excerpt: "Extend a 2-dimensional sketch or individual segment of a sketch through a third dimension to create a new 3-dimensional volume or surface, or if extruded into an existing volume, cut into an existing solid."
 layout: manual
 ---
 
-Extend a 2-dimensional sketch through a third dimension in order to create new 3-dimensional volume, or if extruded into an existing volume, cut into an existing solid.
+Extend a 2-dimensional sketch or individual segment of a sketch through a third dimension to create a new 3-dimensional volume or surface, or if extruded into an existing volume, cut into an existing solid.
 
 ```kcl
 extrude(
-  @sketches: [Sketch | Face | TaggedFace; 1+],
+  @sketches: [Sketch | Face | TaggedFace | Segment; 1+],
   length?: number(Length),
   to?: Point3d | Axis3d | Plane | Edge | Face | Sketch | Solid | TaggedEdge | TaggedFace,
   symmetric?: bool,
@@ -37,7 +37,7 @@ can change this behavior by using the `method` parameter. See
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketches` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Face`](/docs/kcl-std/types/std-types-Face) or [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace); 1+] | Which sketch or sketches should be extruded. | Yes |
+| `sketches` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Face`](/docs/kcl-std/types/std-types-Face) or [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) or [`Segment`](/docs/kcl-std/types/std-types-Segment); 1+] | Which sketch or sketches should be extruded. | Yes |
 | `length` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | How far to extrude the given sketches. Incompatible with `to`. | No |
 | `to` | [`Point3d`](/docs/kcl-std/types/std-types-Point3d) or [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d) or [`Plane`](/docs/kcl-std/types/std-types-Plane) or [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`Face`](/docs/kcl-std/types/std-types-Face) or [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Solid`](/docs/kcl-std/types/std-types-Solid) or [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) or [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) | Reference to extrude to. Incompatible with `length` and `twistAngle`. | No |
 | `symmetric` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch. | No |
@@ -351,11 +351,11 @@ profile001 = startProfile(sketch001, at = [-5, 0])
   |> close()
   |> extrude(length = 5)
 extrude(
-       seg01,
-       length = 2,
-       method = MERGE,
-       hideSeams = false,
-     )
+  seg01,
+  length = 2,
+  method = MERGE,
+  hideSeams = false,
+)
   // if hideSeams=true, the seam still shows because the edges of the coplanar faces are not colinear
   |> appearance(color = "#ff0000")
 
@@ -369,11 +369,11 @@ profile002 = startProfile(sketch002, at = [-1, 0])
   |> close()
   |> extrude(length = 5)
 extrude(
-       seg02,
-       length = 2,
-       method = NEW,
-       hideSeams = false,
-     )
+  seg02,
+  length = 2,
+  method = NEW,
+  hideSeams = false,
+)
   // if hideSeams=true, the seam still shows because the resulting extrusion is a separate object
   |> appearance(color = "#00ff00")
 
@@ -387,11 +387,11 @@ profile003 = startProfile(sketch003, at = [1, 0])
   |> close()
   |> extrude(length = 5)
 extrude(
-       seg03,
-       length = 2,
-       method = MERGE,
-       hideSeams = true,
-     )
+  seg03,
+  length = 2,
+  method = MERGE,
+  hideSeams = true,
+)
   |> appearance(color = "#0000ff")
 
 ```
@@ -422,11 +422,11 @@ cube = extrude(profile001, length = 1)
 
 // Extrude a red box from one of the triangle's side faces.
 box = extrude(
-       c,
-       length = 4,
-       hideSeams = false,
-       method = NEW,
-     )
+  c,
+  length = 4,
+  hideSeams = false,
+  method = NEW,
+)
   |> appearance(color = "#ff0000")
 
 ```
@@ -502,6 +502,84 @@ extrude(closedProfile, length = 5, bodyType = SURFACE)
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude12.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+profile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
+  edge2 = line(start = [var 5mm, var 0mm], end = [var 5mm, var 3mm])
+  edge3 = line(start = [var 5mm, var 3mm], end = [var 0mm, var 3mm])
+  edge4 = line(start = [var 0mm, var 3mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+  horizontal(edge1)
+  vertical(edge2)
+  horizontal(edge3)
+  vertical(edge4)
+}
+
+solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 5)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the extrude function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude13_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude13.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+// Sketch some disconnected lines in a sketch block.
+originalSketch = sketch(on = YZ) {
+  line1 = line(start = [var -5.33mm, var 3.69mm], end = [var -5.93mm, var -2.59mm])
+  line2 = line(start = [var -0.9mm, var 0.63mm], end = [var 4.01mm, var 0.68mm])
+}
+
+// Surface extrudes of sketch blocks let you extrude any lines.
+extrude(
+  [
+    originalSketch.line1,
+    originalSketch.line2
+  ],
+  length = 1,
+  bodyType = SURFACE,
+)
+
+// Surface extrudes of sketch blocks are non-destructive: they leave the original sketch
+// in place. So we can add another extrude of the same lines, in a different direction.
+extrude(
+  [
+    originalSketch.line1,
+    originalSketch.line2
+  ],
+  length = -1,
+  bodyType = SURFACE,
+)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the extrude function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude14_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude14.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

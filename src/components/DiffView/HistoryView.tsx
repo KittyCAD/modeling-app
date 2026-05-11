@@ -11,42 +11,14 @@ import { useLoaderData } from 'react-router-dom'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { useApp, useSingletons } from '@src/lib/boot'
 
-function timeSince(date: Date) {
-  const now = new Date()
-  // @ts-expect-error: You can subtract two dates.
-  const seconds = Math.floor((now - date) / 1000)
-  let interval = seconds / 31536000
-  if (interval > 1) {
-    return Math.floor(interval) + ' years'
-  }
-  interval = seconds / 2592000
-  if (interval > 1) {
-    return Math.floor(interval) + ' months'
-  }
-  interval = seconds / 86400
-  if (interval > 1) {
-    return Math.floor(interval) + ' days'
-  }
-  interval = seconds / 3600
-  if (interval > 1) {
-    return Math.floor(interval) + ' hours'
-  }
-  interval = seconds / 60
-  if (interval > 1) {
-    return Math.floor(interval) + ' minutes'
-  }
-  return Math.floor(seconds) + ' seconds'
-}
-
 export const HistoryView = (props: AreaTypeComponentProps) => {
   useSignals()
   const { kclManager } = useSingletons()
   const { settings, project } = useApp()
   const settingsValues = settings.useSettings()
-  const theValue = kclManager.history.entries.value
+  const theValue = kclManager?.history?.entries?.value || []
   const applicationProjectDirectory =
     settingsValues.app.projectDirectory.current
-  console.log(theValue)
   return (
     <LayoutPanel
       title={props.layout.label}
@@ -89,9 +61,10 @@ export const HistoryView = (props: AreaTypeComponentProps) => {
                     className={`px-2 h-5 flex flex-row items-center justify-between text-xs cursor-pointer -outline-offset-1 hover:outline hover:outline-1 hover:bg-gray-300/50 hover:bg-gray-300/50`}
                     role="button"
                     tabIndex="0"
-                    onClick={() =>
-                      (kclManager.history.lastEntrySelected.value = e)
-                    }
+                    onClick={() => {
+                      console.log('SELECTED!', e)
+                      kclManager.history.lastEntrySelected.value = e
+                    }}
                   >
                     <div className="flex flex-row items-center">
                       <CustomIcon
@@ -111,7 +84,10 @@ export const HistoryView = (props: AreaTypeComponentProps) => {
                       </span>
                     )}
                     <span className="text-ellipsis whitespace-nowrap px-2">
-                      {timeSince(e.date)} ago ({month} {dayOfMonth}, {year} at{' '}
+                      {e.source}
+                    </span>
+                    <span className="text-ellipsis whitespace-nowrap px-2">
+                      ({month} {dayOfMonth}, {year} at{' '}
                       {e.date.toLocaleTimeString()})
                     </span>
                   </div>

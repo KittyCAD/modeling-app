@@ -11,6 +11,7 @@ import type { Object3D } from 'three'
 import { Mesh } from 'three'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { PlaneName } from '@rust/kcl-lib/bindings/PlaneName'
 
 import {
   EXTRA_SEGMENT_HANDLE,
@@ -24,15 +25,24 @@ import {
   getEdgeCutMeta,
   getLastVariable,
   getNodeFromPath,
+  getSettingsAnnotation,
   isSingleCursorInPipe,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { Artifact, ArtifactId } from '@src/lang/std/artifactGraph'
 
+import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
+import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
+import type { KclManager } from '@src/lang/KclManager'
 import {
   getCapCodeRef,
   getCodeRefsByArtifactId,
+  getPatternArtifactForCopyId,
+  getSketchBlockForPathArtifact,
   getSweepFromSuspectedSweepSurface,
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
@@ -51,35 +61,34 @@ import type {
   CommandArgument,
   CommandSelectionType,
 } from '@src/lib/commandTypes'
+import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES,
+} from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
-import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { err } from '@src/lib/trap'
+import { err, isErr } from '@src/lib/trap'
 import {
   getNormalisedCoordinates,
   isArray,
   isNonNullable,
   isOverlap,
+  mmToBaseUnit,
   uuidv4,
 } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
 import type {
   DefaultPlane,
   EnginePrimitiveSelection,
+  EngineRegionSelection,
   ExtrudeFacePlane,
   OffsetPlane,
-  EngineRegionSelection,
 } from '@src/machines/modelingSharedTypes'
-import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import toast from 'react-hot-toast'
-import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
-import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
-import isEqual from 'react-fast-compare'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import toast from 'react-hot-toast'
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -120,16 +129,28 @@ async function getRegionQueryPointForRegion(
   return queryPointResponse.data.query_point
 }
 
-async function getEngineRegionSelectionFromEntity(
+export async function getEngineRegionSelectionFromEntity(
   regionEntityId: string,
   artifactGraph: ArtifactGraph,
-  engineCommandManager: ConnectionManager
+  ast: Node<Program>,
+  engineCommandManager: ConnectionManager,
+  wasmInstance: ModuleType
 ): Promise<EngineRegionSelection | null> {
-  const point = await getRegionQueryPointForRegion(
+  const queryPointMm = await getRegionQueryPointForRegion(
     regionEntityId,
     engineCommandManager
   )
-  if (!point) return null
+  if (!queryPointMm) return null
+  const decimals = DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES
+  const settings = getSettingsAnnotation(ast, wasmInstance)
+  const lengthUnit =
+    !isErr(settings) && settings.defaultLengthUnit
+      ? settings.defaultLengthUnit
+      : DEFAULT_DEFAULT_LENGTH_UNIT
+  const point: Point2d = {
+    x: mmToBaseUnit(queryPointMm.x, decimals, lengthUnit),
+    y: mmToBaseUnit(queryPointMm.y, decimals, lengthUnit),
+  }
 
   const parentEntityId = await getParentEntityIdForEntity(
     regionEntityId,
@@ -140,18 +161,11 @@ async function getEngineRegionSelectionFromEntity(
   const path = artifactGraph.get(parentEntityId)
   if (!path || path.type !== 'path') return null
 
-  // TODO: update this once we have a way to map a Path back to its SketchBlock artifact directly
-  const sketch = artifactGraph
-    .values()
-    .find(
-      (a) =>
-        a.type === 'sketchBlock' &&
-        isEqual(a.codeRef.pathToNode, path.codeRef.pathToNode)
-    )
+  const sketch = getSketchBlockForPathArtifact(path, artifactGraph)
   if (!sketch) return null
 
   return {
-    type: 'region',
+    type: 'engineRegion',
     id: regionEntityId,
     point,
     sketchId: sketch.id,
@@ -209,22 +223,25 @@ export function isEngineRegionSelection(
   return (
     typeof selection === 'object' &&
     'type' in selection &&
-    selection.type === 'region'
+    selection.type === 'engineRegion'
   )
 }
 
 export async function getEventForSelectWithPoint(
   { data }: Extract<OkModelingCmdResponse, { type: 'select_with_point' }>,
   {
-    artifactGraph,
     engineCommandManager,
+    kclManager,
     rustContext,
+    wasmInstance,
   }: {
-    artifactGraph: ArtifactGraph
     engineCommandManager: ConnectionManager
+    kclManager: KclManager
     rustContext: RustContext
+    wasmInstance: ModuleType
   }
 ): Promise<ModelingMachineEvent | null> {
+  const { ast, artifactGraph } = kclManager
   if (!data?.entity_id) {
     return {
       type: 'Set selection',
@@ -260,7 +277,10 @@ export async function getEventForSelectWithPoint(
     }
   }
 
-  let _artifact = artifactGraph.get(data.entity_id)
+  const selectedEngineEntityId = data.entity_id
+  let _artifact =
+    artifactGraph.get(selectedEngineEntityId) ??
+    getPatternArtifactForCopyId(selectedEngineEntityId, artifactGraph)
   if (!_artifact) {
     // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
 
@@ -268,7 +288,9 @@ export async function getEventForSelectWithPoint(
     const regionSelection = await getEngineRegionSelectionFromEntity(
       data.entity_id,
       artifactGraph,
-      engineCommandManager
+      ast,
+      engineCommandManager,
+      wasmInstance
     )
     if (regionSelection) {
       return {
@@ -303,7 +325,7 @@ export async function getEventForSelectWithPoint(
       data: { selectionType: 'singleCodeCursor' },
     }
   }
-  const codeRefs = getCodeRefsByArtifactId(data.entity_id, artifactGraph)
+  const codeRefs = getCodeRefsByArtifactId(_artifact.id, artifactGraph)
   if (_artifact && codeRefs) {
     return {
       type: 'Set selection',
@@ -312,6 +334,7 @@ export async function getEventForSelectWithPoint(
         selection: {
           artifact: _artifact,
           codeRef: codeRefs[0],
+          engineEntityId: selectedEngineEntityId,
         },
       },
     }
@@ -418,14 +441,19 @@ export function handleSelectionBatch({
   const ranges: ReturnType<typeof EditorSelection.cursor>[] = []
   const selectionToEngine: SelectionToEngine[] = []
 
-  selections.graphSelections.forEach(({ artifact }) => {
-    artifact?.id &&
+  selections.graphSelections.forEach((selection) => {
+    const engineIds = getEngineEntityIdsForSelection(selection)
+    engineIds.forEach((id) => {
+      const range =
+        getCodeRefsByArtifactId(
+          selection.artifact?.id || '',
+          artifactGraph
+        )?.[0]?.range || defaultSourceRange()
       selectionToEngine.push({
-        id: artifact?.id,
-        range:
-          getCodeRefsByArtifactId(artifact.id, artifactGraph)?.[0].range ||
-          defaultSourceRange(),
+        id,
+        range,
       })
+    })
   })
   selections.otherSelections.forEach((s) => {
     if (isEnginePrimitiveSelection(s)) {
@@ -614,7 +642,7 @@ function updateSceneObjectColors(
       ? SEGMENT_BLUE
       : segmentGroup?.userData?.baseColor || 0xffffff
     segmentGroup.traverse((child) => {
-      child instanceof Mesh && child.material.color.set(color)
+      if (child instanceof Mesh) child.material.color.set(color)
     })
     // This is only needed if we want the extra segment to be blue when selected, even if it's still hovered
     updateExtraSegments(segmentGroup, 'selected', groupHasCursor)
@@ -716,7 +744,7 @@ export function getSelectionCountByType(
     if (typeof selection === 'string') {
       incrementOrInitializeSelectionType('other')
     } else if (isEngineRegionSelection(selection)) {
-      incrementOrInitializeSelectionType('region')
+      incrementOrInitializeSelectionType('engineRegion')
     } else if ('name' in selection) {
       incrementOrInitializeSelectionType('plane')
     } else if (
@@ -756,6 +784,14 @@ export function getSelectionCountByType(
         return
       }
     }
+    // Intercept subtypes here. Would have to think of a better way to scale this
+    if (
+      graphSelection.artifact.type === 'path' &&
+      graphSelection.artifact.subType === 'region'
+    ) {
+      incrementOrInitializeSelectionType('pathRegion')
+      return
+    }
     incrementOrInitializeSelectionType(graphSelection.artifact.type)
   })
 
@@ -769,14 +805,22 @@ export function getSelectionTypeDisplayText(
   const selectionsByType = getSelectionCountByType(ast, selection)
   if (selectionsByType === 'none') return null
 
-  return [...selectionsByType.entries()]
-    .map(
-      // Hack for showing "face" instead of "extrude-wall" in command bar text
-      ([type, count]) =>
-        `${count} ${type.replace('wall', 'face').replace('solid2d', 'profile')}${
-          count > 1 ? 's' : ''
-        }`
-    )
+  const semanticSelectionsByType = [...selectionsByType.entries()].reduce(
+    (semanticSelectionsByType, [type, count]) => {
+      const semanticType =
+        type === 'other' ? undefined : getSemanticEntityForSelectionType(type)
+      const displayType = semanticType ?? type
+      semanticSelectionsByType.set(
+        displayType,
+        (semanticSelectionsByType.get(displayType) || 0) + count
+      )
+      return semanticSelectionsByType
+    },
+    new Map<string, number>()
+  )
+
+  return [...semanticSelectionsByType.entries()]
+    .map(([type, count]) => `${count} ${type}${count > 1 ? 's' : ''}`)
     .join(', ')
 }
 
@@ -851,6 +895,11 @@ export function findLastRangeStartingBefore(
   return resultIndex
 }
 
+/**
+ * Runs in O(n) time.
+ * TODO: update ArtifactIndex to be an [interval tree](https://en.wikipedia.org/wiki/Interval_tree#cite_note-Schmidt2009-2),
+ * then make this run sub-linear by using that to query for overlaps.
+ */
 function findOverlappingArtifactsFromIndex(
   selection: Selection,
   index: ArtifactIndex
@@ -863,19 +912,8 @@ function findOverlappingArtifactsFromIndex(
   const selectionRange = selection.codeRef.range
   const results: ArtifactEntry[] = []
 
-  // Binary search to find the last range where range[0] < selectionRange[0]
-  // This search does not take into consideration the end range, so it's possible
-  // the index it finds dose not have any overlap (depending on the end range)
-  // but it's main purpose is to act as a starting point for the linear part of the search
-  // so a tiny loss in efficiency is acceptable to keep the code simple
-  const startIndex = findLastRangeStartingBefore(index, selectionRange[0])
-
-  // Check all potential overlaps from the found position
-  for (let i = startIndex; i < index.length; i++) {
+  for (let i = 0; i < index.length; i++) {
     const { range, entry } = index[i]
-    // Stop if we've gone past possible overlaps
-    if (range[0] > selectionRange[1]) break
-
     if (isOverlap(range, selectionRange)) {
       results.push(entry)
     }
@@ -884,49 +922,58 @@ function findOverlappingArtifactsFromIndex(
   return results
 }
 
-function getBestCandidate(
+function getBestCandidates(
   entries: ArtifactEntry[],
   artifactGraph: ArtifactGraph
-): ArtifactEntry | undefined {
+): ArtifactEntry[] {
   if (!entries.length) {
-    return undefined
+    return []
   }
+
+  const overlappingRegions = entries.filter(
+    (entry) =>
+      entry.artifact.type === 'path' && entry.artifact.subType === 'region'
+  )
+  if (overlappingRegions.length) {
+    return overlappingRegions
+  }
+
+  const overlappingSegments = entries.filter(
+    (entry) => entry.artifact.type === 'segment'
+  )
+  if (overlappingSegments.length) {
+    return overlappingSegments
+  }
+
   const sketchBlock = entries.find(
     (entry) => entry.artifact.type === 'sketchBlock'
   )
   if (sketchBlock) {
-    return sketchBlock
+    return [sketchBlock]
   }
 
   for (const entry of entries) {
-    // Segments take precedence
-    if (entry.artifact.type === 'segment') {
-      return entry
-    }
-
     // Handle paths and their solid2d references
     if (entry.artifact.type === 'path') {
       const solid2dId = entry.artifact.solid2dId
       if (!solid2dId) {
-        return entry
+        return [entry]
       }
       const solid2d = artifactGraph.get(solid2dId)
       if (solid2d?.type === 'solid2d') {
-        return { id: solid2dId, artifact: solid2d }
+        return [{ id: solid2dId, artifact: solid2d }]
       }
       continue
     }
 
     // Other valid artifact types
     if (
-      ['plane', 'cap', 'wall', 'sweep', 'sketchBlock'].includes(
-        entry.artifact.type
-      )
+      ['plane', 'cap', 'wall', 'sweep', 'pattern'].includes(entry.artifact.type)
     ) {
-      return entry
+      return [entry]
     }
   }
-  return undefined
+  return []
 }
 
 function createSelectionToEngine(
@@ -937,6 +984,29 @@ function createSelectionToEngine(
     ...(candidateId && { id: candidateId }),
     range: selection.codeRef.range,
   }
+}
+
+function getEngineEntityIdsForSelection(selection: Selection): ArtifactId[] {
+  if (selection.engineEntityId) {
+    return [selection.engineEntityId]
+  }
+
+  const artifact = selection.artifact
+  if (!artifact?.id) {
+    return []
+  }
+
+  if (artifact.type !== 'pattern') {
+    return [artifact.id]
+  }
+
+  return [
+    ...new Set([
+      ...artifact.copyIds,
+      ...artifact.copyFaceIds,
+      ...artifact.copyEdgeIds,
+    ]),
+  ]
 }
 
 export function codeToIdSelections(
@@ -962,7 +1032,10 @@ export function codeToIdSelections(
 
       // Direct artifact case
       if (selection.artifact?.id) {
-        return [createSelectionToEngine(selection, selection.artifact.id)]
+        const engineIds = getEngineEntityIdsForSelection(selection)
+        return engineIds.length
+          ? engineIds.map((id) => createSelectionToEngine(selection, id))
+          : [createSelectionToEngine(selection)]
       }
 
       // Find matching artifacts by code range overlap
@@ -970,9 +1043,23 @@ export function codeToIdSelections(
         selection,
         artifactIndex
       )
-      const bestCandidate = getBestCandidate(overlappingEntries, artifactGraph)
+      const bestCandidates = getBestCandidates(
+        overlappingEntries,
+        artifactGraph
+      )
+      if (bestCandidates.length) {
+        return bestCandidates.flatMap((entry) => {
+          const engineIds = getEngineEntityIdsForSelection({
+            ...selection,
+            artifact: entry.artifact,
+          })
+          return engineIds.length
+            ? engineIds.map((id) => createSelectionToEngine(selection, id))
+            : [createSelectionToEngine(selection, entry.id)]
+        })
+      }
 
-      return [createSelectionToEngine(selection, bestCandidate?.id)]
+      return [createSelectionToEngine(selection)]
     })
     .filter(isNonNullable)
 }
@@ -1081,7 +1168,8 @@ const semanticEntityNames: {
   [key: string]: Array<CommandSelectionType | 'defaultPlane'>
 } = {
   face: ['wall', 'cap', 'primitiveFace', 'enginePrimitiveFace'],
-  profile: ['solid2d', 'region'],
+  profile: ['solid2d'],
+  region: ['pathRegion', 'engineRegion'],
   edge: [
     'segment',
     'sweepEdge',
@@ -1093,16 +1181,25 @@ const semanticEntityNames: {
   plane: ['defaultPlane'],
 }
 
+function getSemanticEntityForSelectionType(
+  selectionType: CommandSelectionType | 'defaultPlane'
+): string | undefined {
+  for (const [entity, entityTypes] of Object.entries(semanticEntityNames)) {
+    if (entityTypes.includes(selectionType)) {
+      return entity
+    }
+  }
+}
+
 /** Convert selections to a human-readable format */
 export function getSemanticSelectionType(
   selectionType: CommandSelectionType[]
 ) {
-  const semanticSelectionType = new Set()
+  const semanticSelectionType = new Set<string>()
   for (const type of selectionType) {
-    for (const [entity, entityTypes] of Object.entries(semanticEntityNames)) {
-      if (entityTypes.includes(type)) {
-        semanticSelectionType.add(entity)
-      }
+    const semanticType = getSemanticEntityForSelectionType(type)
+    if (semanticType) {
+      semanticSelectionType.add(semanticType)
     }
   }
 
@@ -1186,40 +1283,67 @@ export function getDefaultSketchPlaneData(
     yAxis,
   }
 }
+
+const defaultPlaneDataByName: Record<
+  PlaneName,
+  Omit<DefaultPlane, 'type' | 'planeId'>
+> = {
+  xy: { plane: 'XY', zAxis: [0, 0, 1], yAxis: [0, 1, 0] },
+  negXy: { plane: '-XY', zAxis: [0, 0, -1], yAxis: [0, 1, 0] },
+  xz: { plane: 'XZ', zAxis: [0, -1, 0], yAxis: [0, 0, 1] },
+  negXz: { plane: '-XZ', zAxis: [0, 1, 0], yAxis: [0, 0, 1] },
+  yz: { plane: 'YZ', zAxis: [1, 0, 0], yAxis: [0, 0, 1] },
+  negYz: { plane: '-YZ', zAxis: [-1, 0, 0], yAxis: [0, 0, 1] },
+}
+
 export async function getPlaneDataFromSketchBlock(
   sketchBlock: Extract<Artifact, { type: 'sketchBlock' }>,
   artifactGraph: ArtifactGraph,
   systemDeps: {
     rustContext: RustContext
     sceneInfra: SceneInfra
+    sceneEntitiesManager: SceneEntities
+    ast: Node<Program>
+    execState: ExecState
+    wasmInstance: ModuleType
   }
 ): Promise<DefaultPlane | OffsetPlane | ExtrudeFacePlane | null> {
-  // TODO this function is stubbed out for now since sketchBlocks really only work on default planes
-  // and I don't think we have enough info or the sketchBlock.planeId is wrong, so it just default to the
-  // XY no matter what for now
+  // Similar logic to selectSketchPlane but for a sketchBlock artifact.
+  if (sketchBlock.standardPlane && systemDeps.rustContext.defaultPlanes) {
+    return {
+      type: 'defaultPlane',
+      planeId: systemDeps.rustContext.defaultPlanes[sketchBlock.standardPlane],
+      ...defaultPlaneDataByName[sketchBlock.standardPlane],
+    }
+  }
 
-  // Similar logic to selectSketchPlane but for a sketchBlock artifact
   if (!sketchBlock.planeId) {
     return null
   }
 
-  // Try to get the artifact from the graph
-  const _artifact = artifactGraph.get(sketchBlock.planeId)
+  const artifact = artifactGraph.get(sketchBlock.planeId)
+  const offsetResult = await getOffsetSketchPlaneData(artifact, {
+    sceneEntitiesManager: systemDeps.sceneEntitiesManager,
+    sceneInfra: systemDeps.sceneInfra,
+  })
+  if (!isErr(offsetResult) && offsetResult) {
+    return offsetResult
+  }
 
-  // Use the default XY plane.
-  // This is a temporary solution while we determine the proper approach for default planes
-  if (true) {
-    const defaultPlanes = systemDeps.rustContext.defaultPlanes
-    if (defaultPlanes?.xy) {
-      const defaultResult = getDefaultSketchPlaneData(
-        defaultPlanes.xy,
-        systemDeps
-      )
-      if (!err(defaultResult) && defaultResult) {
-        return defaultResult
-      }
+  const sweepFaceSelected = await selectionBodyFace(
+    sketchBlock.planeId,
+    artifactGraph,
+    systemDeps.ast,
+    systemDeps.execState,
+    {
+      wasmInstance: systemDeps.wasmInstance,
+      rustContext: systemDeps.rustContext,
+      sceneInfra: systemDeps.sceneInfra,
+      sceneEntitiesManager: systemDeps.sceneEntitiesManager,
     }
-    return null
+  )
+  if (sweepFaceSelected) {
+    return sweepFaceSelected
   }
 
   return null
@@ -1312,8 +1436,7 @@ export async function getOffsetSketchPlaneData(
       pathToNode: artifact.codeRef.pathToNode,
       negated,
     }
-  } catch (err) {
-    console.error(err)
+  } catch {
     return new Error('Error getting face details')
   }
 }
@@ -1327,7 +1450,7 @@ export async function selectOffsetSketchPlane(
 ): Promise<Error | boolean> {
   const { sceneInfra } = systemDeps
   const result = await getOffsetSketchPlaneData(artifact, systemDeps)
-  if (err(result) || result === false) return result
+  if (isErr(result) || result === false) return result
 
   try {
     sceneInfra.modelingSend({
@@ -1358,7 +1481,7 @@ export async function selectionBodyFace(
     planeOrFaceId,
     systemDeps
   )
-  if (!err(defaultSketchPlaneSelected) && defaultSketchPlaneSelected) {
+  if (!isErr(defaultSketchPlaneSelected) && defaultSketchPlaneSelected) {
     return
   }
 
@@ -1367,7 +1490,7 @@ export async function selectionBodyFace(
     artifact,
     systemDeps
   )
-  if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
+  if (!isErr(offsetPlaneSelected) && offsetPlaneSelected) {
     return
   }
 
@@ -1391,7 +1514,7 @@ export async function selectionBodyFace(
       } else if (maybeImportNode.node.path.type === 'Foreign') {
         showSketchOnImportToast(maybeImportNode.node.path.path)
       } else if (maybeImportNode.node.path.type === 'Std') {
-        toast.error("can't sketch on this face")
+        toast.error("Can't sketch on this face.")
       } else {
         // force tsc error if more cases are added
         const _exhaustiveCheck: never = maybeImportNode.node.path

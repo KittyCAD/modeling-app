@@ -461,7 +461,9 @@ export function addHide({
 
   // 2. Prepare unlabeled arguments
   // Map the selection into a list of kcl expressions to be passed as unlabelled argument
-  const lastChildLookup = objects.graphSelections[0].artifact?.type !== 'helix'
+  const artifact = objects.graphSelections[0].artifact
+  const lastChildLookup =
+    artifact?.type !== 'helix' && artifact?.type !== 'sketchBlock'
   const vars = getVariableExprsFromSelection(
     objects,
     artifactGraph,

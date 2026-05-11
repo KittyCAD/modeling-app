@@ -9,9 +9,9 @@ import {
   useSearchParams,
 } from 'react-router-dom'
 
+import { BillingDialog } from '@kittycad/react-shared'
 import { ActionButton } from '@src/components/ActionButton'
 import { AppHeader } from '@src/components/AppHeader'
-import { BillingDialog } from '@kittycad/react-shared'
 import Loading from '@src/components/Loading'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import ProjectCard from '@src/components/ProjectCard/ProjectCard'
@@ -19,19 +19,27 @@ import {
   ProjectSearchBar,
   useProjectSearch,
 } from '@src/components/ProjectSearchBar'
+import { SketchSolveAnnouncement } from '@src/components/SketchSolveAnnouncements'
 import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import {
   defaultGlobalStatusBarItems,
   defaultLocalStatusBarItems,
 } from '@src/components/StatusBar/defaultStatusBarItems'
 import Tooltip from '@src/components/Tooltip'
+import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
+import {
+  autoUpdateDownloadProgressSignal,
+  autoUpdateReadySignal,
+} from '@src/lib/autoUpdate'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
 import {
   getNextSearchParams,
   getSortFunction,
@@ -45,22 +53,20 @@ import {
   useFolders,
   useState as useSystemIOState,
 } from '@src/machines/systemIO/hooks'
+import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
+import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import {
   acceptOnboarding,
   needsToOnboard,
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
-import { useApp, useSingletons } from '@src/lib/boot'
-import type { SettingsType } from '@src/lib/settings/initialSettings'
-import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { ActorRefFrom } from 'xstate'
 import { waitFor } from 'xstate'
-import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -70,7 +76,8 @@ type ReadWriteProjectState = {
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
-  const { auth, billing, commands, settings, systemIOActor } = useApp()
+  const { auth, billing, commands, settings, systemIOActor, registry } =
+    useApp()
   const { kclManager } = useSingletons()
   const executingPath = useAbsoluteFilePath()
   const settingsActor = settings.actor
@@ -105,6 +112,8 @@ const Home = () => {
   }, [])
 
   const location = useLocation()
+  const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
+  const autoUpdateReady = autoUpdateReadySignal.value
   const settingsValues = settings.useSettings()
   const machineApiEnabled = settingsValues.app.machineApi.current
   const onboardingStatus = settingsValues.app.onboardingStatus.current
@@ -356,6 +365,11 @@ const Home = () => {
                 </div>
               </li>
             )}
+            {settingsValues.modeling.useSketchSolveMode.current && (
+              <li className="contents">
+                <SketchSolveAnnouncement />
+              </li>
+            )}
             <li className="contents">
               <ActionButton
                 Element="externalLink"
@@ -402,7 +416,14 @@ const Home = () => {
       <StatusBar
         globalItems={[
           ...(isDesktop() && machineApiEnabled ? [networkMachineStatus] : []),
-          ...defaultGlobalStatusBarItems({ location, filePath: undefined }),
+          ...defaultGlobalStatusBarItems({
+            autoUpdateDownloadProgress,
+            autoUpdateReady,
+            onRestartToUpdate: () => {
+              window.electron?.appRestart()
+            },
+          }),
+          ...registry.signal(statusBarGlobalItemsValueSpec).value,
         ]}
         localItems={defaultLocalStatusBarItems}
       />
@@ -592,7 +613,7 @@ function handleRenameProject(
     )
 
     if (typeof newProjectName === 'string' && newProjectName.startsWith('.')) {
-      toast.error('Project names cannot start with a dot (.)')
+      toast.error('Project names cannot start with a period.')
       return
     }
 

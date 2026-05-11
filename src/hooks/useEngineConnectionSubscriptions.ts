@@ -14,7 +14,8 @@ import type { KclManager } from '@src/lang/KclManager'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
-  const { engineCommandManager, kclManager, rustContext } = context
+  const { engineCommandManager, kclManager, rustContext, wasmInstance } =
+    context
   const stateRef = useRef(state)
   stateRef.current = state
 
@@ -47,13 +48,29 @@ export function useEngineConnectionSubscriptions() {
       event: 'select_with_point',
       callback: (engineEvent) => {
         ;(async () => {
-          if (stateRef.current.matches('Sketch no face')) return
+          if (
+            stateRef.current.matches('Sketch no face') ||
+            // Ignore select_with_point in sketch solve: without this selection is overridden
+            // and breaks multiple line highlights
+            stateRef.current.matches('sketchSolveMode')
+          ) {
+            return
+          }
           const event = await getEventForSelectWithPoint(engineEvent, {
-            rustContext,
-            artifactGraph: kclManager.artifactGraph,
             engineCommandManager,
+            kclManager,
+            rustContext,
+            wasmInstance,
           })
-          event && send(event)
+          // Check state again, in case we went into sketch mode before getEventForSelectWithPoint returned.
+          // This is probably rare, but we do go into sketch mode on double click.
+          if (
+            stateRef.current.matches('Sketch no face') ||
+            stateRef.current.matches('sketchSolveMode')
+          ) {
+            return
+          }
+          if (event) send(event)
         })().catch(reportRejection)
       },
     })
@@ -67,6 +84,7 @@ export function useEngineConnectionSubscriptions() {
     send,
     engineCommandManager,
     rustContext,
+    wasmInstance,
   ])
 
   useEffect(() => {
@@ -78,8 +96,7 @@ export function useEngineConnectionSubscriptions() {
         ? ({ data }) => {
             void selectSketchPlane(
               data.entity_id,
-              context.store.useSketchSolveMode?.current ||
-                context.forceSketchSolveMode,
+              context.store.useSketchSolveMode?.current,
               kclManager
             )
           }
@@ -88,7 +105,6 @@ export function useEngineConnectionSubscriptions() {
     return unSub
   }, [
     context.store.useSketchSolveMode,
-    context.forceSketchSolveMode,
     state,
     kclManager,
     rustContext,
