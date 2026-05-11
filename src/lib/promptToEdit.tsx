@@ -70,7 +70,7 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
   const kclFilesMap: KclFileMetaMap = {}
   const files: KittyCadLibFile[] = []
 
-  for (const file of projectFiles) {
+  projectFiles.forEach((file) => {
     let data: Blob
     if (file.type === 'other') {
       data = file.data
@@ -83,17 +83,18 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
       name: file.relPath,
       data,
     })
-  }
+  })
 
   const activeFile = activeFileRelativeToProject({
     currentFileEntry: currentFile.entry,
     applicationProjectDirectory,
   })
 
+  // Way to patch in supplying the currently-opened file without updating the API.
+  // TODO: update the API to support currently-opened files as other parts of the payload
   const currentFilePrompt: SourceRangePrompt | null = activeFile
     ? {
-        prompt:
-          'This is the file currently open in the editor. For ambiguous edit requests, treat this file as the default edit target and change it before other project files. Avoid assuming other files need the same edit just because they look similar or duplicated. Prefer updating other project files when the user names a different file or a concrete dependency such as an import, reference, or entrypoint wiring requires it.',
+        prompt: 'This is the active file',
         range: convertAppRangeToApiRange(
           [0, currentFile.content.length, 0],
           currentFile.content
@@ -149,7 +150,7 @@ See later source ranges for more context.`,
           range: convertAppRangeToApiRange(selection.codeRef.range, code),
           file: filePath,
         })
-        const sweep = getArtifactOfTypes(
+        let sweep = getArtifactOfTypes(
           { key: artifact.sweepId, types: ['sweep'] },
           artifactGraph
         )
@@ -169,7 +170,7 @@ But it's also worth bearing in mind that the user may have intended to select th
           range: convertAppRangeToApiRange(selection.codeRef.range, code),
           file: filePath,
         })
-        const sweep = getArtifactOfTypes(
+        let sweep = getArtifactOfTypes(
           { key: artifact.sweepId, types: ['sweep'] },
           artifactGraph
         )
@@ -196,7 +197,7 @@ See later source ranges for more context. about the sweep`,
           range: convertAppRangeToApiRange(selection.codeRef.range, code),
           file: filePath,
         })
-        const sweep = getArtifactOfTypes(
+        let sweep = getArtifactOfTypes(
           { key: artifact.sweepId, types: ['sweep'] },
           artifactGraph
         )
@@ -224,7 +225,7 @@ See later source ranges for more context. about the sweep`,
             range: convertAppRangeToApiRange(selection.codeRef.range, code),
             file: filePath,
           })
-          const path = getArtifactOfTypes(
+          let path = getArtifactOfTypes(
             { key: artifact.pathId, types: ['path'] },
             artifactGraph
           )
@@ -259,19 +260,23 @@ See later source ranges for more context. about the sweep`,
   if (currentFilePrompt !== null) {
     ranges.push(currentFilePrompt)
   }
-  const payload = {
+  let payload = {
     body: {
       prompt,
+      conversation_id: conversationId,
       source_ranges: ranges,
       project_name:
         projectName !== '' && projectName !== 'browser'
           ? projectName
           : undefined,
       kcl_version: kclVersion,
-      ...(conversationId ? { conversation_id: conversationId } : {}),
     },
     files,
     activeFile,
+  }
+
+  if (!conversationId) {
+    delete payload.body.conversation_id
   }
 
   return payload

@@ -51,8 +51,9 @@ describe('constructMultiFileIterationRequestWithPromptHelpers', () => {
     expect(request.activeFile).toBe('newFile.kcl')
     const sourceRanges = request.body.source_ranges
     expect(sourceRanges).toHaveLength(1)
-    expect(sourceRanges?.[0]).toMatchObject({ file: 'newFile.kcl' })
-    expect(sourceRanges?.[0]?.prompt).toContain('default edit target')
-    expect(sourceRanges?.[0]?.prompt).toContain('before other project files')
+    expect(sourceRanges?.[0]).toMatchObject({
+      file: 'newFile.kcl',
+      prompt: 'This is the active file',
+    })
   })
 })
