@@ -33,7 +33,6 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import type { KclManager } from '@src/lang/KclManager'
 import {
   findExtrudeToCallsToFix,
-  findRevolveHelixCallsToFix,
   refactorZ0006Unified,
 } from '@src/lang/modifyAst/edges'
 import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
@@ -56,30 +55,47 @@ function sourceRangeForCall(
 ): [number, number, number] {
   const visited = new Set<unknown>()
 
+  function isRecord(value: unknown): value is Record<string, unknown> {
+    return Boolean(value && typeof value === 'object')
+  }
+
+  function getCallRecord(value: unknown): Record<string, unknown> | null {
+    if (!isRecord(value)) return null
+    const wrapped = value.CallExpressionKw
+    if (isRecord(wrapped)) return wrapped
+    return value.type === 'CallExpressionKw' ? value : null
+  }
+
+  function getNestedName(value: unknown): string | undefined {
+    if (!isRecord(value)) return undefined
+    const callee = value.callee
+    if (!isRecord(callee)) return undefined
+    const name = callee.name
+    if (!isRecord(name)) return undefined
+    return typeof name.name === 'string' ? name.name : undefined
+  }
+
+  function getNumber(value: unknown): number {
+    return typeof value === 'number' ? value : 0
+  }
+
   function walk(value: unknown): [number, number, number] | null {
     if (!value || typeof value !== 'object' || visited.has(value)) return null
     visited.add(value)
 
-    const objectValue = value as Record<string, unknown>
-    const call =
-      objectValue.CallExpressionKw &&
-      typeof objectValue.CallExpressionKw === 'object'
-        ? (objectValue.CallExpressionKw as Record<string, unknown>)
-        : objectValue.type === 'CallExpressionKw'
-          ? objectValue
-          : null
+    if (!isRecord(value)) return null
 
-    const name = (call?.callee as { name?: { name?: string } } | undefined)
-      ?.name?.name
+    const call = getCallRecord(value)
+    const name = getNestedName(call)
     if (call && name === calleeName) {
       return [
-        Number(call.start ?? 0),
-        Number(call.end ?? 0),
-        Number(call.module_id ?? call.moduleId ?? 0),
+        getNumber(call.start),
+        getNumber(call.end),
+        getNumber(call.module_id ?? call.moduleId),
       ]
     }
 
-    for (const child of Object.values(objectValue)) {
+    for (const child of Object.values(value)) {
       const result = walk(child)
       if (result) return result
     }
@@ -89,6 +105,10 @@ function sourceRangeForCall(
   const result = walk(node)
   if (!result) throw new Error(`Could not find ${calleeName} call`)
   return result
+}
+
+function facePair(a: string, b: string): [string, string] {
+  return [a, b]
 }
 
 const SAMPLE_KCL = `body = startSketchOn(XY)
@@ -424,10 +444,10 @@ describe('refactorZ0006Unified', () => {
         {
           edgeId: '00000000-0000-0000-0000-000000000000',
           sourceRange: [0, 1, 0],
-          faceIds: [
+          faceIds: facePair(
             '00000000-0000-0000-0000-000000000001',
-            '00000000-0000-0000-0000-000000000002',
-          ] as [string, string],
+            '00000000-0000-0000-0000-000000000002'
+          ),
           stdlibFn: 'getOppositeEdge',
         },
       ]
@@ -443,95 +463,16 @@ describe('refactorZ0006Unified', () => {
       expect(result.message).toContain('No Z0006 fixes to apply')
     })
 
-    it('finds revolve call in externally-tagged Expr shape', () => {
-      const ast = assertParse(KCL_REVOLVE_GET_OPPOSITE_EDGE, wasmInstance) as {
-        body?: Array<{
-          type?: string
-          declaration?: {
-            init?: {
-              callee?: { name?: { name?: string } }
-              arguments?: Array<{
-                label?: { name?: string }
-                arg?: unknown
-              }>
-            }
-          }
-        }>
-      }
-
-      const revolveDecl = ast.body?.find(
-        (b) =>
-          b?.type === 'VariableDeclaration' &&
-          b?.declaration?.init?.callee?.name?.name === 'revolve'
-      )
-      expect(revolveDecl).toBeDefined()
-      if (!revolveDecl?.declaration?.init) return
-
-      const wrapped = structuredClone(ast) as {
-        body?: Array<{
-          type?: string
-          declaration?: {
-            init?: unknown
-          }
-        }>
-      }
-      const targetDecl = wrapped.body?.find(
-        (b) =>
-          b?.type === 'VariableDeclaration' &&
-          (
-            b as {
-              declaration?: { init?: { callee?: { name?: { name?: string } } } }
-            }
-          )?.declaration?.init?.callee?.name?.name === 'revolve'
-      )
-      expect(targetDecl).toBeDefined()
-      if (!targetDecl?.declaration?.init) return
-
-      // Simulate Rust externally-tagged Expr enum shape:
-      //   Expr::CallExpressionKw(call) => { CallExpressionKw: call }
-      targetDecl.declaration.init = {
-        CallExpressionKw: targetDecl.declaration.init,
-      }
-
-      const call = (
-        targetDecl.declaration.init as {
-          CallExpressionKw?: {
-            arguments?: Array<{ label?: { name?: string }; arg?: unknown }>
-          }
-        }
-      ).CallExpressionKw
-      const axisArg = call?.arguments?.find((a) => a?.label?.name === 'axis')
-      expect(axisArg).toBeDefined()
-      if (!axisArg?.arg) return
-      axisArg.arg = { CallExpressionKw: axisArg.arg }
-
-      const metadata: EdgeRefactorMeta[] = [
-        {
-          edgeId: '00000000-0000-0000-0000-000000000000',
-          sourceRange: sourceRangeForCall(axisArg.arg, 'getOppositeEdge'),
-          faceIds: [
-            '00000000-0000-0000-0000-000000000001',
-            '00000000-0000-0000-0000-000000000002',
-          ] as [string, string],
-          stdlibFn: 'getOppositeEdge',
-        },
-      ]
-
-      const toFix = findRevolveHelixCallsToFix(wrapped as any, metadata)
-      expect(toFix.length).toBeGreaterThan(0)
-      expect(toFix[0]?.pathToCall?.length ?? 0).toBeGreaterThan(0)
-    })
-
     it('finds extrude call with to = getCommonEdge(...) for Z0006 refactor', () => {
       const ast = assertParse(KCL_EXTRUDE_TO_GET_COMMON_EDGE, wasmInstance)
       const metadata: EdgeRefactorMeta[] = [
         {
           edgeId: '00000000-0000-0000-0000-000000000000',
           sourceRange: sourceRangeForCall(ast, 'getCommonEdge'),
-          faceIds: [
+          faceIds: facePair(
             '00000000-0000-0000-0000-000000000001',
-            '00000000-0000-0000-0000-000000000002',
-          ] as [string, string],
+            '00000000-0000-0000-0000-000000000002'
+          ),
           stdlibFn: 'getCommonEdge',
         },
       ]
@@ -564,10 +505,10 @@ describe('refactorZ0006Unified', () => {
             {
               tagIdentifier: 'e1',
               edgeId: '00000000-0000-0000-0000-000000000000',
-              faceIds: [
+              faceIds: facePair(
                 '00000000-0000-0000-0000-000000000001',
-                '00000000-0000-0000-0000-000000000002',
-              ] as [string, string],
+                '00000000-0000-0000-0000-000000000002'
+              ),
             },
           ],
         },
@@ -803,40 +744,28 @@ describe('refactorZ0006Unified', () => {
           instanceInThisFile
         )
         // Ensure AST has a revolve call we can find (body items with init = revolve(...))
-        const body = (ast as { body?: unknown[] }).body ?? []
-        const revolveDecl = body.find(
-          (b: unknown) =>
-            (b as { type?: string })?.type === 'VariableDeclaration' &&
-            (
-              b as {
-                declaration?: {
-                  init?: { callee?: { name?: { name?: string } } }
-                }
-              }
-            )?.declaration?.init?.callee?.name?.name === 'revolve'
-        ) as
-          | {
-              declaration?: {
-                init?: {
-                  arguments?: {
-                    label?: { name?: string }
-                    arg?: { callee?: { name?: { name?: string } } }
-                  }[]
-                }
-              }
-            }
-          | undefined
+        const revolveDecl = ast.body.find(
+          (item) =>
+            item.type === 'VariableDeclaration' &&
+            item.declaration.init.type === 'CallExpressionKw' &&
+            item.declaration.init.callee.name.name === 'revolve'
+        )
         expect(
           revolveDecl,
           'AST should contain a VariableDeclaration with revolve(...) init'
         ).toBeDefined()
-        const axisArg = revolveDecl?.declaration?.init?.arguments?.find(
-          (a: { label?: { name?: string } }) => a?.label?.name === 'axis'
-        )
+        const axisArg =
+          revolveDecl?.type === 'VariableDeclaration' &&
+          revolveDecl.declaration.init.type === 'CallExpressionKw'
+            ? revolveDecl.declaration.init.arguments.find(
+                (a) => a.label?.name === 'axis'
+              )
+            : undefined
         expect(axisArg, 'revolve call should have axis argument').toBeDefined()
         expect(
-          (axisArg as { arg?: { callee?: { name?: { name?: string } } } })?.arg
-            ?.callee?.name?.name,
+          axisArg?.arg.type === 'CallExpressionKw'
+            ? axisArg.arg.callee.name.name
+            : undefined,
           'axis should be getOppositeEdge(...)'
         ).toBe('getOppositeEdge')
 

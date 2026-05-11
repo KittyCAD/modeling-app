@@ -41,5 +41,5 @@ export const toolTips: Array<ToolTip> = [
 ]
 
 export function isToolTip(value: string): value is ToolTip {
-  return toolTips.includes(value as ToolTip)
+  return toolTips.some((toolTip) => toolTip === value)
 }

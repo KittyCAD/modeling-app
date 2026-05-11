@@ -989,10 +989,7 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
       } else {
         return new Error('Bad direction vector for axis')
       }
-    } else if (
-      'sideFaces' in axisValue.value ||
-      'side_faces' in axisValue.value
-    ) {
+    } else if ('sideFaces' in axisValue.value) {
       axisOrEdge = 'Edge'
       const edgeSelection = retrieveEdgeSelectionsFromSingleEdgeRef(
         opArg,

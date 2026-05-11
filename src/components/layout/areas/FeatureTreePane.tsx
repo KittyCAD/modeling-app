@@ -11,7 +11,6 @@ import {
   findOperationArtifact,
   findOperationPlaneArtifact,
   isOffsetPlane,
-  type StdLibCallOp,
 } from '@src/lang/queryAst'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
@@ -184,11 +183,14 @@ export const FeatureTreePaneContents = memo(() => {
 
   // If there are engine errors we show the successful operations
   // Errors return an operation list, so use the longest one if there are multiple
-  const longestErrorOperationList = kclManager.errors.reduce((acc, error) => {
-    return error.operations && error.operations.length > acc.length
-      ? error.operations
-      : acc
-  }, [] as Operation[])
+  const longestErrorOperationList = kclManager.errors.reduce<Operation[]>(
+    (acc, error) => {
+      return error.operations && error.operations.length > acc.length
+        ? error.operations
+        : acc
+    },
+    []
+  )
 
   const unfilteredOperationList = !hasParseErrors
     ? !kclManager.errors.length
@@ -734,11 +736,7 @@ const OperationItem = ({
 
       void selectOperation()
         .then(async () => {
-          const op = item as {
-            type: string
-            name?: string
-            sourceRange?: unknown
-          }
+          const op = item
           const needsZ0006FixBeforeEdit =
             ENABLE_Z0006_AUTO_FIX_BEFORE_FEATURE_TREE_EDIT &&
             op.type === 'StdLibCall' &&
@@ -748,7 +746,7 @@ const OperationItem = ({
               op.name === 'revolve' ||
               op.name === 'helix')
 
-          let operationToEdit: typeof item = item
+          let operationToEdit: Operation = item
           if (needsZ0006FixBeforeEdit) {
             const applied =
               await systemDeps.kclManager.applyZ0006FixBeforeEdit()
@@ -757,27 +755,25 @@ const OperationItem = ({
                 systemDeps.kclManager.lastSuccessfulOperations.find(
                   (candidate: Operation) =>
                     candidate.type === 'StdLibCall' &&
-                    (candidate as { name?: string }).name === op.name
+                    candidate.name === op.name
                 )
               if (nextOp) {
-                operationToEdit = nextOp as typeof item
+                operationToEdit = nextOp
               }
             }
           }
 
-          const opToEdit = operationToEdit as {
-            sourceRange?: unknown
-            type?: string
-          }
+          const opToEdit = operationToEdit
           const artifactForEdit =
             operationToEdit !== item
               ? (() => {
                   if (
+                    'sourceRange' in opToEdit &&
                     opToEdit.sourceRange != null &&
                     isArray(opToEdit.sourceRange) &&
                     opToEdit.sourceRange.length >= 2
                   ) {
-                    const sr = opToEdit.sourceRange as number[]
+                    const sr = opToEdit.sourceRange
                     const range: SourceRange = [sr[0], sr[1], sr[2] ?? 0]
                     const fromRange = getArtifactFromRange(
                       range,
@@ -788,7 +784,7 @@ const OperationItem = ({
                   if (opToEdit.type === 'StdLibCall') {
                     return (
                       findOperationArtifact(
-                        operationToEdit as StdLibCallOp,
+                        opToEdit,
                         systemDeps.kclManager.artifactGraph
                       ) ?? undefined
                     )

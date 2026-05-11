@@ -1026,7 +1026,7 @@ export class KclManager extends File {
 
     const instance = await this.wasmInstancePromise
     const newSource = refactorZ0006Unified(
-      this.ast as Program,
+      this.ast,
       execState.edgeRefactorMetadata ?? [],
       execState.directTagFilletMetadata ?? [],
       this.artifactGraph,
