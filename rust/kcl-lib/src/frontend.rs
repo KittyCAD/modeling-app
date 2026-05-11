@@ -234,6 +234,7 @@ pub struct FrontendState {
     /// the previous solution without treating those solved guesses as committed
     /// source text.
     sketch_var_warm_start_overrides: HashMap<ObjectId, Vec<f64>>,
+    next_sketch_var_update_mode: Option<SketchVarUpdateMode>,
     sketch_checkpoints: VecDeque<SketchCheckpoint>,
     sketch_checkpoint_id_gen: IncIdGenerator<u64>,
 }
@@ -258,6 +259,7 @@ impl FrontendState {
             },
             point_freedom_cache: HashMap::new(),
             sketch_var_warm_start_overrides: HashMap::new(),
+            next_sketch_var_update_mode: None,
             sketch_checkpoints: VecDeque::new(),
             sketch_checkpoint_id_gen: IncIdGenerator::new(1),
         }
@@ -343,6 +345,17 @@ impl FrontendState {
         self.sketch_var_warm_start_overrides.clear();
     }
 
+    pub async fn edit_segments_for_preview(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        segments: Vec<ExistingSegmentCtor>,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        self.next_sketch_var_update_mode = Some(SketchVarUpdateMode::WarmStartOnly);
+        SketchApi::edit_segments(self, ctx, version, sketch, segments).await
+    }
+
     fn sketch_mock_config(
         &self,
         sketch: ObjectId,
@@ -376,6 +389,19 @@ impl FrontendState {
         #[cfg(not(feature = "artifact-graph"))]
         {
             let _ = (sketch, outcome);
+        }
+    }
+
+    fn update_single_sketch_var_warm_starts(&mut self, outcome: &ExecOutcome) {
+        let mut sketch_ids = self.scene_graph.objects.iter().filter_map(|object| match object.kind {
+            ObjectKind::Sketch(_) => Some(object.id),
+            _ => None,
+        });
+        let Some(sketch_id) = sketch_ids.next() else {
+            return;
+        };
+        if sketch_ids.next().is_none() {
+            self.update_sketch_var_warm_starts(sketch_id, outcome);
         }
     }
 
@@ -607,6 +633,7 @@ impl SketchApi for FrontendState {
 
         // MockConfig::default() has freedom_analysis: true
         let outcome = self.update_state_after_exec(outcome, true);
+        self.update_sketch_var_warm_starts(sketch, &outcome);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -700,6 +727,10 @@ impl SketchApi for FrontendState {
         segments: Vec<ExistingSegmentCtor>,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
+        let sketch_var_update_mode = self
+            .next_sketch_var_update_mode
+            .take()
+            .unwrap_or(SketchVarUpdateMode::CommitSolvedVars);
         let sketch_block_ref =
             sketch_block_ref_from_id(&self.scene_graph, sketch).map_err(KclErrorWithOutputs::no_outputs)?;
 
@@ -879,7 +910,7 @@ impl SketchApi for FrontendState {
             ExecuteAfterEditOptions {
                 segment_ids_edited,
                 edit_kind: EditDeleteKind::Edit,
-                sketch_var_update_mode: SketchVarUpdateMode::WarmStartOnly,
+                sketch_var_update_mode,
             },
             &mut new_ast,
         )
@@ -1660,6 +1691,7 @@ impl FrontendState {
         match ctx.run_with_caching(program).await {
             Ok(outcome) => {
                 let outcome = self.update_state_after_exec(outcome, true);
+                self.update_single_sketch_var_warm_starts(&outcome);
                 let checkpoint_id = self
                     .create_sketch_checkpoint(outcome.clone())
                     .await
@@ -1698,6 +1730,7 @@ impl FrontendState {
         match ctx.run_with_caching(program).await {
             Ok(outcome) => {
                 let outcome = self.update_state_after_exec(outcome, true);
+                self.update_single_sketch_var_warm_starts(&outcome);
                 Ok(SceneGraphDelta {
                     new_graph: self.scene_graph.clone(),
                     exec_outcome: outcome,

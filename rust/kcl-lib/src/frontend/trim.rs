@@ -4552,7 +4552,7 @@ pub(crate) async fn execute_trim_operations_simple(
                             };
 
                             frontend
-                                .edit_segments(ctx, version, sketch_id, vec![segment_to_edit])
+                                .edit_segments_for_preview(ctx, version, sketch_id, vec![segment_to_edit])
                                 .await
                                 .map_err(|e| format!("Failed to edit segment: {}", e.error.message()))
                         }
@@ -4564,7 +4564,7 @@ pub(crate) async fn execute_trim_operations_simple(
                         };
 
                         frontend
-                            .edit_segments(ctx, version, sketch_id, vec![segment_to_edit])
+                            .edit_segments_for_preview(ctx, version, sketch_id, vec![segment_to_edit])
                             .await
                             .map_err(|e| format!("Failed to edit segment: {}", e.error.message()))
                     }
@@ -4576,7 +4576,7 @@ pub(crate) async fn execute_trim_operations_simple(
                     };
 
                     frontend
-                        .edit_segments(ctx, version, sketch_id, vec![segment_to_edit])
+                        .edit_segments_for_preview(ctx, version, sketch_id, vec![segment_to_edit])
                         .await
                         .map_err(|e| format!("Failed to edit segment: {}", e.error.message()))
                 }
@@ -5199,7 +5199,7 @@ pub(crate) async fn execute_trim_operations_simple(
                 };
 
                 let (_edit_source_delta, edit_scene_graph_delta) = frontend
-                    .edit_segments(
+                    .edit_segments_for_preview(
                         ctx,
                         version,
                         sketch_id,
