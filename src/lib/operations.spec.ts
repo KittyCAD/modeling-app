@@ -1,10 +1,10 @@
+import { join } from 'path'
 import type { NodePath } from '@rust/kcl-lib/bindings/NodePath'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import { topLevelRange } from '@src/lang/util'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
-import { join } from 'path'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
 
 import {
@@ -13,15 +13,16 @@ import {
   defaultNodePath,
   nodePathFromRange,
 } from '@src/lang/wasm'
+import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
 import {
   filterOperations,
   getHideOpForArtifact,
+  getOperationIcon,
   getOperationVariableName,
-  groupSketchBlockOperations,
   groupOperationTypeStreaks,
+  groupSketchBlockOperations,
 } from '@src/lib/operations'
-import { expect, describe, it } from 'vitest'
-import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
+import { describe, expect, it } from 'vitest'
 
 function stdlib(name: string): Operation {
   return {
@@ -141,7 +142,33 @@ function moduleEnd(): Operation {
   }
 }
 
+function componentInstance(name: string, isDefault: boolean): Operation {
+  return {
+    type: 'GroupBegin',
+    group: {
+      type: 'ComponentInstance',
+      name,
+      definitionSourceRange: defaultSourceRange(),
+      isDefault,
+      labeledArgs: {},
+    },
+    nodePath: defaultNodePath(),
+    sourceRange: defaultSourceRange(),
+  }
+}
+
 describe('operations.test.ts', () => {
+  describe('operation icons', () => {
+    it('distinguishes component definitions from override instances', () => {
+      expect(getOperationIcon(componentInstance('tooth', true))).toBe(
+        'componentDefinition'
+      )
+      expect(getOperationIcon(componentInstance('tooth', false))).toBe(
+        'componentInstance'
+      )
+    })
+  })
+
   describe('body visibility operations', () => {
     it('finds a hide operation by direct artifact id', () => {
       const artifact = compositeSolidArtifact('body-artifact', [0, 10, 0])

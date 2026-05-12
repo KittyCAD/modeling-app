@@ -3109,7 +3109,7 @@ export function getOperationIcon(op: Operation): CustomIconName {
         return 'function'
       }
       if (op.group.type === 'ComponentInstance') {
-        return 'make-variable'
+        return op.group.isDefault ? 'componentDefinition' : 'componentInstance'
       }
       return 'make-variable'
     case 'SketchSolve':
