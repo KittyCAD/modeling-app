@@ -103,7 +103,10 @@ import {
   startSketchOnDefault,
   splitPipedProfile,
 } from '@src/lang/modifyAst'
-import { sketchBlockOnExtrudedFace } from '@src/lang/modifyAst/legacySketchFace'
+import {
+  sketchBlockOnExtrudeCap,
+  sketchBlockOnExtrudedFace,
+} from '@src/lang/modifyAst/legacySketchFace'
 import {
   addIntersect,
   addSplit,
@@ -3702,6 +3705,54 @@ export const modelingMachine = setup({
           )
 
           if (!selectedSceneObject) {
+            if (
+              isOpenCascadeEngine(engineCommandManager) &&
+              result.type === 'extrudeFace' &&
+              result.faceInfo.type === 'cap'
+            ) {
+              const sketchBlock = sketchBlockOnExtrudeCap(
+                kclManager.ast,
+                result.extrudePathToNode,
+                result.faceInfo.subType,
+                wasmInstance
+              )
+              if (err(sketchBlock)) {
+                return reject(sketchBlock)
+              }
+
+              await updateModelingState(
+                sketchBlock.modifiedAst,
+                EXECUTION_TYPE_REAL,
+                kclManager,
+                {
+                  focusPath: [sketchBlock.pathToNode],
+                }
+              )
+
+              const sketchBlockArtifact = getSketchBlockArtifactForPathToNode(
+                sketchBlock.pathToNode,
+                kclManager.artifactGraph
+              )
+              if (!sketchBlockArtifact) {
+                return reject(
+                  new Error(
+                    'Could not find the generated sketch block artifact.'
+                  )
+                )
+              }
+
+              return enterSketchSolveFromSketchBlockArtifact({
+                sketchBlockArtifact,
+                kclManager,
+                rustContext,
+                engineCommandManager,
+                defaultUnit,
+                store,
+                projectRef,
+                wasmInstance,
+              })
+            }
+
             const selectedArtifactId =
               result.type === 'extrudeFace' ? result.faceId : result.planeId
             return reject(

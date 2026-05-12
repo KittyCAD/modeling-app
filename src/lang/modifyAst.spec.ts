@@ -23,7 +23,10 @@ import {
   sketchOnExtrudedFace,
   splitPipedProfile,
 } from '@src/lang/modifyAst'
-import { sketchBlockOnExtrudedFace } from '@src/lang/modifyAst/legacySketchFace'
+import {
+  sketchBlockOnExtrudeCap,
+  sketchBlockOnExtrudedFace,
+} from '@src/lang/modifyAst/legacySketchFace'
 import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 import { giveSketchFnCallTag } from '@src/lang/modifyAst/giveSketchFnCallTag'
 import {
@@ -1315,6 +1318,47 @@ extrude001 = extrude(profile001, length = 5)
       expect(newCode).toContain(
         `extrude001 = extrude(profile001, length = 5)
 sketch002 = sketch(on = faceOf(extrude001, face = seg01)) {
+}`
+      )
+
+      const insertedSketchBlock = getNodeFromPath<any>(
+        result.modifiedAst,
+        result.pathToNode,
+        instanceInThisFile
+      )
+      if (err(insertedSketchBlock)) throw insertedSketchBlock
+      expect(insertedSketchBlock.node.type).toBe('SketchBlock')
+    })
+
+    test('sketchBlockOnExtrudeCap inserts a sketch block on the selected cap', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-3.5, -2.23])
+  |> line(end = [4.53, 5.73])
+  |> line(end = [5.18, -3.74])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 5)
+`
+      const ast = assertParse(code, instanceInThisFile)
+      const extrudeSnippet = 'extrude(profile001, length = 5)'
+      const extrudePathToNode = getNodePathFromSourceRange(ast, [
+        code.indexOf(extrudeSnippet),
+        code.indexOf(extrudeSnippet) + extrudeSnippet.length,
+        0,
+      ])
+
+      const result = sketchBlockOnExtrudeCap(
+        ast,
+        extrudePathToNode,
+        'end',
+        instanceInThisFile
+      )
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `extrude001 = extrude(profile001, length = 5)
+sketch002 = sketch(on = faceOf(extrude001, face = END)) {
 }`
       )
 
