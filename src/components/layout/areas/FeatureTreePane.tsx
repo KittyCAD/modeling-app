@@ -368,6 +368,19 @@ function renderFeatureTreeItem(
   return <OperationItem key={key} item={item} {...operationProps} />
 }
 
+function FeatureTreeDisclosureControl() {
+  return (
+    <Disclosure.Button className="reset !p-1 !border-transparent hover:!bg-2 focus-visible:outline focus-visible:outline-1 focus-visible:outline-primary">
+      <CustomIcon
+        name="caretDown"
+        className="w-4 h-4 block -rotate-90 ui-open:rotate-0 ui-open:transform"
+        aria-hidden
+      />
+      <span className="sr-only">Toggle children</span>
+    </Disclosure.Button>
+  )
+}
+
 export const FeatureTreePaneContents = memo(() => {
   useSignals()
   const app = useApp()
@@ -601,30 +614,17 @@ function SketchBlockOperationGroup({
 
   return (
     <Disclosure>
-      <div className="flex items-start gap-1">
-        <Disclosure.Button
-          data-testid="sketchblock-group-caret"
-          className="reset !px-0 !py-1 self-stretch !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25"
-        >
-          <CustomIcon
-            name="caretDown"
-            className="w-4 h-4 block -rotate-90 ui-open:rotate-0 ui-open:transform"
-            aria-hidden
-          />
-        </Disclosure.Button>
-        <div className="flex-1 min-w-0">
-          <OperationItem
-            item={parentItem}
-            code={code}
-            isStaleReference={isStaleReference}
-            sketchNoFace={sketchNoFace}
-            systemDeps={systemDeps}
-            modelingActor={modelingActor}
-            engineCommandManager={engineCommandManager}
-            onSelect={onSelect}
-          />
-        </div>
-      </div>
+      <OperationItem
+        item={parentItem}
+        code={code}
+        isStaleReference={isStaleReference}
+        sketchNoFace={sketchNoFace}
+        systemDeps={systemDeps}
+        modelingActor={modelingActor}
+        engineCommandManager={engineCommandManager}
+        onSelect={onSelect}
+        disclosureControl={<FeatureTreeDisclosureControl />}
+      />
       <Disclosure.Panel>
         <div className="border-l b-4 ml-6">
           {childItems.map((item) => {
@@ -672,16 +672,11 @@ function OperationItemGroup({
 }: Omit<OperationProps, 'item'> & { items: Operation[] }) {
   return (
     <Disclosure>
-      <Disclosure.Button className="reset w-full min-w-[0px] !px-1 flex items-center gap-2 text-left text-base !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25">
-        <CustomIcon
-          name="caretDown"
-          className="w-6 h-6 block self-start -rotate-90 ui-open:rotate-0 ui-open:transform"
-          aria-hidden
-        />
-        <span className="text-sm flex-1">
-          {items.length} {getOpTypeLabel(items[0].type)}s
-        </span>
-      </Disclosure.Button>
+      <OperationItemWrapper
+        icon={getOperationIcon(items[0])}
+        name={`${items.length} ${getOpTypeLabel(items[0].type)}s`}
+        DisclosureControl={<FeatureTreeDisclosureControl />}
+      />
       <Disclosure.Panel as="ul" className="border-b b-4">
         <div className="border-l b-4 ml-4">
           {items.map((op) => {
@@ -725,27 +720,17 @@ function ComponentOperationGroup({
 
   return (
     <Disclosure>
-      <div className="flex items-start gap-1">
-        <Disclosure.Button className="reset !px-0 !py-1 self-stretch !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25">
-          <CustomIcon
-            name="caretDown"
-            className="w-4 h-4 block -rotate-90 ui-open:rotate-0 ui-open:transform"
-            aria-hidden
-          />
-        </Disclosure.Button>
-        <div className="flex-1 min-w-0">
-          <OperationItem
-            item={group.component}
-            code={code}
-            isStaleReference={isStaleReference}
-            sketchNoFace={sketchNoFace}
-            systemDeps={systemDeps}
-            modelingActor={modelingActor}
-            engineCommandManager={engineCommandManager}
-            onSelect={onSelect}
-          />
-        </div>
-      </div>
+      <OperationItem
+        item={group.component}
+        code={code}
+        isStaleReference={isStaleReference}
+        sketchNoFace={sketchNoFace}
+        systemDeps={systemDeps}
+        modelingActor={modelingActor}
+        engineCommandManager={engineCommandManager}
+        onSelect={onSelect}
+        disclosureControl={<FeatureTreeDisclosureControl />}
+      />
       {(overrides.length > 0 || group.children.length > 0) && (
         <Disclosure.Panel>
           <div className="border-l b-4 ml-6">
@@ -921,6 +906,7 @@ const OperationItemWrapper = memo(
     customSuffix,
     className,
     Tooltip,
+    DisclosureControl,
     size = 'default',
     ...props
   }: Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
@@ -931,6 +917,7 @@ const OperationItemWrapper = memo(
     errors?: Diagnostic[]
     onContextMenu?: (e: MouseEvent) => void
     Tooltip?: ReactNode
+    DisclosureControl?: ReactNode
     isSelected?: boolean
     size?: 'default' | 'sm'
   } & OpValueProps) => {
@@ -939,6 +926,7 @@ const OperationItemWrapper = memo(
         {...props}
         icon={icon}
         size={size}
+        DisclosureControl={DisclosureControl}
         LabelSecondary={
           <>
             {variableName && valueDetail ? (
@@ -1008,6 +996,7 @@ interface OperationProps {
   modelingActor: ReturnType<typeof useModelingContext>['actor']
   onSelect: (sourceRange: SourceRange, artifact?: Artifact) => void
   size?: 'default' | 'sm'
+  disclosureControl?: ReactNode
 }
 /**
  * A button with an icon, name, and context menu
@@ -1023,6 +1012,7 @@ const OperationItem = ({
   modelingActor,
   engineCommandManager,
   size,
+  disclosureControl,
 }: OperationProps) => {
   useSignals()
   const { layout } = useApp()
@@ -1596,6 +1586,7 @@ const OperationItem = ({
           />
         </Tooltip>
       }
+      DisclosureControl={disclosureControl}
       menuItems={menuItems}
       onClick={
         isStaleReference

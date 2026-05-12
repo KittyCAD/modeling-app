@@ -1,7 +1,7 @@
-import type { ReactNode, ComponentProps } from 'react'
-import { useRef } from 'react'
 import { ContextMenu } from '@src/components/ContextMenu'
-import { type CustomIconName, CustomIcon } from '@src/components/CustomIcon'
+import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
+import type { ComponentProps, ReactNode } from 'react'
+import { useRef } from 'react'
 
 export function RowItemWithIconMenuAndToggle({
   icon,
@@ -9,6 +9,7 @@ export function RowItemWithIconMenuAndToggle({
   LabelSecondary,
   Warning,
   Tooltip,
+  DisclosureControl,
   Toggle,
   menuItems,
   isSelected,
@@ -19,6 +20,7 @@ export function RowItemWithIconMenuAndToggle({
   LabelSecondary?: ReactNode
   Warning?: ReactNode
   Tooltip?: ReactNode
+  DisclosureControl?: ReactNode
   Toggle?: ReactNode
   menuItems?: ComponentProps<typeof ContextMenu>['items']
   // The button element has onContextMenu already but the type is too narrow
@@ -53,6 +55,7 @@ export function RowItemWithIconMenuAndToggle({
         {Warning ?? null}
         {Tooltip ?? null}
       </button>
+      {DisclosureControl ?? null}
       {Toggle ?? null}
       {menuItems ? (
         <ContextMenu
