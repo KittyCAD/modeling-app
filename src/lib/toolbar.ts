@@ -1001,6 +1001,7 @@ export function buildToolbarConfig(
           icon: 'plus',
           status: 'experimental',
           title: 'Create Component',
+          hotkey: 'mod+shift+k',
           description: 'Wrap the selected geometry into a reusable component.',
           links: [
             {
@@ -1016,7 +1017,7 @@ export function buildToolbarConfig(
               type: 'Find and select command',
               data: { name: 'Insert', groupId: 'code' },
             }),
-          hotkey: 'I',
+          hotkey: 'shift+I',
           icon: 'import',
           status: 'available',
           title: 'Insert',

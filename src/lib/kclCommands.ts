@@ -1367,7 +1367,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       description: 'Wrap the selected top-level operation into a component.',
       icon: 'plus',
       groupId: 'code',
-      needsReview: true,
+      needsReview: false,
       reviewValidation: async () => {
         if (commandProps.kclManager.isExecuting) {
           return new Error(EXECUTING_MESSAGE)
