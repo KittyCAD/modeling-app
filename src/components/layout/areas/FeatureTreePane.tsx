@@ -606,7 +606,7 @@ function VariableTooltipContents({
       </p>
     </div>
   ) : type === 'GroupBegin' ? (
-    <>{`Function call of ${name} named ${variableName}`}</>
+    <>{`${name}${variableName ? ` named ${variableName}` : ''}`}</>
   ) : (
     <>{`${variableName ? '' : 'Unnamed '}${name}${variableName ? ` named ${variableName}` : ''}`}</>
   )
@@ -712,6 +712,17 @@ const OperationItem = ({
   )
 
   const enterEditFlow = useCallback(() => {
+    if (item.type === 'GroupBegin' && item.group.type === 'ComponentInstance') {
+      const componentRange = item.group.definitionSourceRange
+      componentRange[1] = componentRange[0]
+      const l = layout.signal.value
+      if (!isCodePaneOpen(l)) {
+        openCodePane(l, layout.set)
+      }
+      selectOperation(componentRange).catch(reportRejection)
+      return
+    }
+
     if (
       item.type === 'StdLibCall' ||
       item.type === 'VariableDeclaration' ||
@@ -734,6 +745,9 @@ const OperationItem = ({
   }, [
     item,
     commandBarActor,
+    layout.set,
+    layout.signal.value,
+    selectOperation,
     systemDeps.kclManager.artifactGraph,
     systemDeps.kclManager.code,
     systemDeps.rustContext,
@@ -744,7 +758,9 @@ const OperationItem = ({
       .then(() => {
         if (
           item.type === 'StdLibCall' ||
-          (item.type === 'GroupBegin' && item.group.type === 'FunctionCall')
+          (item.type === 'GroupBegin' &&
+            (item.group.type === 'FunctionCall' ||
+              item.group.type === 'ComponentInstance'))
         ) {
           commandBarActor.send({
             type: 'Find and select command',
@@ -889,6 +905,30 @@ const OperationItem = ({
                   </ContextMenuItem>,
                 ]
               : []),
+            ...(item.type === 'GroupBegin' &&
+            item.group.type === 'ComponentInstance'
+              ? [
+                  <ContextMenuItem
+                    onClick={() => {
+                      if (item.type !== 'GroupBegin') {
+                        return
+                      }
+                      if (item.group.type !== 'ComponentInstance') {
+                        return
+                      }
+                      const componentRange = item.group.definitionSourceRange
+                      componentRange[1] = componentRange[0]
+                      const l = layout.signal.value
+                      if (!isCodePaneOpen(l)) {
+                        openCodePane(l, layout.set)
+                      }
+                      selectOperation(componentRange).catch(reportRejection)
+                    }}
+                  >
+                    View component definition
+                  </ContextMenuItem>,
+                ]
+              : []),
             ...(isOffsetPlane(item)
               ? [
                   <ContextMenuItem onClick={startSketchOnOffsetPlane}>
@@ -944,10 +984,13 @@ const OperationItem = ({
               : []),
             ...(item.type === 'StdLibCall' ||
             item.type === 'VariableDeclaration' ||
+            (item.type === 'GroupBegin' &&
+              item.group.type === 'ComponentInstance') ||
             item.type === 'SketchSolve'
               ? [
                   <ContextMenuItem
                     disabled={
+                      item.type !== 'GroupBegin' &&
                       item.type !== 'VariableDeclaration' &&
                       item.type !== 'SketchSolve' &&
                       stdLibMap[item.name]?.prepareToEdit === undefined
@@ -960,13 +1003,16 @@ const OperationItem = ({
                 ]
               : []),
             ...(item.type === 'StdLibCall' ||
-            (item.type === 'GroupBegin' && item.group.type === 'FunctionCall')
+            (item.type === 'GroupBegin' &&
+              (item.group.type === 'FunctionCall' ||
+                item.group.type === 'ComponentInstance'))
               ? [
                   <ContextMenuItem
                     disabled={
                       !(
                         (item.type === 'GroupBegin' &&
-                          item.group.type === 'FunctionCall') ||
+                          (item.group.type === 'FunctionCall' ||
+                            item.group.type === 'ComponentInstance')) ||
                         (item.type === 'StdLibCall' &&
                           stdLibMap[item.name]?.supportsAppearance)
                       )

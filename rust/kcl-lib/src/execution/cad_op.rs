@@ -139,6 +139,22 @@ pub enum Group {
         /// The labeled keyword arguments to the function.
         labeled_args: IndexMap<String, OpArg>,
     },
+    /// A component instance, either the default instance emitted by the
+    /// assigned component definition or an override call.
+    #[serde(rename_all = "camelCase")]
+    ComponentInstance {
+        /// The assigned component name.
+        name: String,
+        /// The location of the component definition so that there's enough
+        /// info to go to its definition.
+        definition_source_range: SourceRange,
+        /// True for the default instance emitted by the component declaration.
+        is_default: bool,
+        /// The effective labeled arguments for this instance. Values supplied
+        /// at the call site use the call argument source range; omitted values
+        /// use the component default source range.
+        labeled_args: IndexMap<String, OpArg>,
+    },
     /// A whole-module import use.
     #[allow(dead_code)]
     #[serde(rename_all = "camelCase")]

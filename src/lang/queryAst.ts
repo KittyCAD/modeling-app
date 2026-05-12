@@ -2,6 +2,7 @@ import type { FunctionExpression } from '@rust/kcl-lib/bindings/FunctionExpressi
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
+import type { ComponentBlock } from '@rust/kcl-lib/bindings/ComponentBlock'
 import {
   createLiteral,
   createLocalName,
@@ -1101,15 +1102,19 @@ export function getVariableNameFromNodePath(
     return undefined
   }
 
-  const call = getNodeFromPath<CallExpressionKw | SketchBlock>(
+  const call = getNodeFromPath<CallExpressionKw | SketchBlock | ComponentBlock>(
     program,
     pathToNode,
     wasmInstance,
-    ['CallExpressionKw', 'SketchBlock']
+    ['CallExpressionKw', 'SketchBlock', 'ComponentBlock']
   )
   if (
     err(call) ||
-    !(call.node.type === 'CallExpressionKw' || call.node.type === 'SketchBlock')
+    !(
+      call.node.type === 'CallExpressionKw' ||
+      call.node.type === 'SketchBlock' ||
+      call.node.type === 'ComponentBlock'
+    )
   ) {
     return undefined
   }

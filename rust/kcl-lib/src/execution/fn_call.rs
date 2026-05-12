@@ -34,6 +34,13 @@ use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Type;
 use crate::std::solid_consumption::validate_value_not_consumed;
 
+#[derive(Clone, Debug)]
+pub(crate) struct ComponentInstanceMeta {
+    pub(crate) name: String,
+    pub(crate) definition_source_range: SourceRange,
+    pub(crate) is_default: bool,
+}
+
 #[derive(Debug, Clone)]
 pub struct Args<Status: ArgsStatus = Desugared> {
     /// Name of the function these args are being passed into.
@@ -215,9 +222,21 @@ impl Node<CallExpressionKw> {
         );
 
         if let Some(component_src) = func.as_component() {
-            let return_value = call_component_kw(component_src, exec_state, ctx, args, callsite, true)
-                .await
-                .map_err(|e| e.add_unwind_location(Some(fn_name.name.name.clone()), callsite))?;
+            let return_value = call_component_kw(
+                component_src,
+                exec_state,
+                ctx,
+                args,
+                callsite,
+                true,
+                Some(ComponentInstanceMeta {
+                    name: fn_name.name.name.clone(),
+                    definition_source_range: component_src.ast.as_source_range(),
+                    is_default: false,
+                }),
+            )
+            .await
+            .map_err(|e| e.add_unwind_location(Some(fn_name.name.name.clone()), callsite))?;
             return Ok(return_value.continue_());
         }
 
@@ -265,9 +284,11 @@ pub(crate) async fn call_component_kw(
     args: Args<Sugary>,
     source_range: SourceRange,
     require_override: bool,
+    instance_meta: Option<ComponentInstanceMeta>,
 ) -> Result<KclValue, KclError> {
     exec_state.mut_stack().push_new_env_for_call(component.memory);
 
+    let mut op_labeled_args = IndexMap::new();
     for default_arg in &component.arguments {
         let Some(label) = &default_arg.label else {
             exec_state.mut_stack().pop_env();
@@ -277,8 +298,8 @@ pub(crate) async fn call_component_kw(
             )));
         };
 
-        let value = if let Some(arg) = args.labeled.get(&label.name) {
-            arg.value.clone()
+        let (value, arg_source_range) = if let Some(arg) = args.labeled.get(&label.name) {
+            (arg.value.clone(), arg.source_range)
         } else {
             let metadata = Metadata {
                 source_range: SourceRange::from(&default_arg.arg),
@@ -286,22 +307,28 @@ pub(crate) async fn call_component_kw(
             let value_cf = ctx
                 .execute_expr(&default_arg.arg, exec_state, &metadata, &[], StatementKind::Expression)
                 .await;
-            match value_cf {
+            let value = match value_cf {
                 Ok(value_cf) => value_cf.into_value(),
                 Err(err) => {
                     exec_state.mut_stack().pop_env();
                     return Err(err);
                 }
-            }
+            };
+            (value, metadata.source_range)
         };
 
-        if let Err(err) = exec_state
-            .mut_stack()
-            .add(label.name.clone(), value, SourceRange::from(&default_arg.arg))
+        if let Err(err) =
+            exec_state
+                .mut_stack()
+                .add(label.name.clone(), value.clone(), SourceRange::from(&default_arg.arg))
         {
             exec_state.mut_stack().pop_env();
             return Err(err);
         }
+        op_labeled_args.insert(
+            label.name.clone(),
+            OpArg::new(OpKclValue::from(&value), arg_source_range),
+        );
     }
 
     for (name, arg) in args.labeled.iter() {
@@ -335,6 +362,19 @@ pub(crate) async fn call_component_kw(
         )));
     }
 
+    if let Some(meta) = &instance_meta {
+        exec_state.push_op(Operation::GroupBegin {
+            group: Group::ComponentInstance {
+                name: meta.name.clone(),
+                definition_source_range: meta.definition_source_range,
+                is_default: meta.is_default,
+                labeled_args: op_labeled_args,
+            },
+            node_path: NodePath::placeholder(),
+            source_range,
+        });
+    }
+
     let result = ctx.exec_block(&component.body, exec_state, BodyType::Block).await;
     let result = result.and_then(|cf| {
         if let Some(cf) = cf
@@ -357,6 +397,9 @@ pub(crate) async fn call_component_kw(
                 )
             })
     });
+    if instance_meta.is_some() {
+        exec_state.push_op(Operation::GroupEnd);
+    }
     exec_state.mut_stack().pop_env();
     result
 }

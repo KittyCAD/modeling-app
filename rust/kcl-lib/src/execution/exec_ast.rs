@@ -49,6 +49,7 @@ use crate::execution::control_continue;
 use crate::execution::early_return;
 use crate::execution::fn_call::Arg;
 use crate::execution::fn_call::Args;
+use crate::execution::fn_call::ComponentInstanceMeta;
 use crate::execution::fn_call::call_component_kw;
 use crate::execution::kcl_value::ComponentSource;
 use crate::execution::kcl_value::FunctionSource;
@@ -1526,7 +1527,13 @@ impl ExecutorContext {
             }
             Expr::AscribedExpression(expr) => expr.get_result(exec_state, self).await?,
             Expr::SketchBlock(expr) => expr.get_result(exec_state, self).await?,
-            Expr::ComponentBlock(expr) => expr.get_result(exec_state, self).await?,
+            Expr::ComponentBlock(expr) => {
+                let component_name = match statement_kind {
+                    StatementKind::Declaration { name } => Some(name),
+                    StatementKind::Expression => None,
+                };
+                expr.get_result(exec_state, self, component_name).await?
+            }
             Expr::SketchVar(expr) => expr.get_result(exec_state, self).await?.continue_(),
         };
         Ok(item)
@@ -2197,6 +2204,7 @@ impl Node<ComponentBlock> {
         &self,
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
+        component_name: Option<&str>,
     ) -> Result<KclValueControlFlow, KclError> {
         let metadata = Metadata {
             source_range: SourceRange::from(self),
@@ -2216,8 +2224,20 @@ impl Node<ComponentBlock> {
             ctx.clone(),
             Some(ComponentBlock::CALLEE_NAME.to_owned()),
         );
-        let default_value =
-            call_component_kw(&component_src, exec_state, ctx, args, metadata.source_range, false).await?;
+        let default_value = call_component_kw(
+            &component_src,
+            exec_state,
+            ctx,
+            args,
+            metadata.source_range,
+            false,
+            component_name.map(|name| ComponentInstanceMeta {
+                name: name.to_owned(),
+                definition_source_range: metadata.source_range,
+                is_default: true,
+            }),
+        )
+        .await?;
 
         Ok(KclValue::Component {
             value: Box::new(component_src),
@@ -5627,6 +5647,69 @@ afterBareReference = mySurfaceLine.end
         assert_eq!(get_number("overrideEnd"), 7.0);
         assert_eq!(get_number("overrideLengthOnly"), 11.0);
         assert_eq!(get_number("afterBareReference"), 6.0);
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn assigned_component_tracks_default_and_override_instances() {
+        let program = r#"
+mySurfaceLine = component(start = 1, length = 5) {
+  return {
+    end = start + length
+  }
+}
+
+mySurfaceLine
+override = mySurfaceLine(start = 2)
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let operations = result.exec_state.global.root_module_artifacts.operations;
+        assert_eq!(
+            operations.len(),
+            4,
+            "expected default and override component groups, got {operations:#?}"
+        );
+
+        match &operations[0] {
+            Operation::GroupBegin {
+                group:
+                    crate::execution::cad_op::Group::ComponentInstance {
+                        name,
+                        is_default,
+                        labeled_args,
+                        ..
+                    },
+                ..
+            } => {
+                assert_eq!(name, "mySurfaceLine");
+                assert!(*is_default);
+                assert!(labeled_args.contains_key("start"));
+                assert!(labeled_args.contains_key("length"));
+            }
+            op => panic!("expected default component group, got {op:#?}"),
+        }
+        assert!(matches!(operations[1], Operation::GroupEnd));
+
+        match &operations[2] {
+            Operation::GroupBegin {
+                group:
+                    crate::execution::cad_op::Group::ComponentInstance {
+                        name,
+                        is_default,
+                        labeled_args,
+                        ..
+                    },
+                ..
+            } => {
+                assert_eq!(name, "mySurfaceLine");
+                assert!(!*is_default);
+                assert!(labeled_args.contains_key("start"));
+                assert!(labeled_args.contains_key("length"));
+            }
+            op => panic!("expected override component group, got {op:#?}"),
+        }
+        assert!(matches!(operations[3], Operation::GroupEnd));
     }
 
     #[tokio::test(flavor = "multi_thread")]

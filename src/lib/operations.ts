@@ -2930,6 +2930,8 @@ export function getOperationLabel(op: Operation): string {
     case 'GroupBegin':
       if (op.group.type === 'FunctionCall') {
         return op.group.name ?? 'anonymous'
+      } else if (op.group.type === 'ComponentInstance') {
+        return op.group.name
       } else if (op.group.type === 'ModuleInstance') {
         return op.group.name
       } else {
@@ -3106,6 +3108,9 @@ export function getOperationIcon(op: Operation): CustomIconName {
       if (op.group.type === 'FunctionCall') {
         return 'function'
       }
+      if (op.group.type === 'ComponentInstance') {
+        return 'make-variable'
+      }
       return 'make-variable'
     case 'SketchSolve':
       return 'sketch'
@@ -3165,6 +3170,7 @@ export function getOperationVariableName(
     op.type !== 'StdLibCall' &&
     op.type !== 'SketchSolve' &&
     !(op.type === 'GroupBegin' && op.group.type === 'FunctionCall') &&
+    !(op.type === 'GroupBegin' && op.group.type === 'ComponentInstance') &&
     !(op.type === 'GroupBegin' && op.group.type === 'ModuleInstance')
   ) {
     return undefined
@@ -3257,7 +3263,8 @@ function isNotUserFunctionWithNoOperations(
   return operations.filter((op, index) => {
     if (
       op.type === 'GroupBegin' &&
-      op.group.type === 'FunctionCall' &&
+      (op.group.type === 'FunctionCall' ||
+        op.group.type === 'ComponentInstance') &&
       // If this is a "begin" at the end of the array, it's preserved.
       index < operations.length - 1 &&
       operations[index + 1].type === 'GroupEnd'
@@ -3269,7 +3276,8 @@ function isNotUserFunctionWithNoOperations(
       // If this is an "end" at the beginning of the array, it's preserved.
       previousOp !== undefined &&
       previousOp.type === 'GroupBegin' &&
-      previousOp.group.type === 'FunctionCall'
+      (previousOp.group.type === 'FunctionCall' ||
+        previousOp.group.type === 'ComponentInstance')
     )
       return false
 
