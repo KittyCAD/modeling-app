@@ -16,9 +16,17 @@ use crate::ExecState;
 use crate::KclError;
 use crate::errors::KclErrorDetails;
 use crate::exec::KclValue;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::Artifact;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ArtifactId;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::CodeRef;
 use crate::execution::ControlFlowKind;
 use crate::execution::Face;
 use crate::execution::GdtAnnotation;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::GdtAnnotationArtifact;
 use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Plane;
@@ -52,6 +60,14 @@ enum DistanceEntity {
 struct DistanceEndpoint {
     entity_id: uuid::Uuid,
     entity_pos: KPoint2d<f64>,
+}
+
+#[cfg(feature = "artifact-graph")]
+fn add_gdt_annotation_artifact(exec_state: &mut ExecState, args: &Args, annotation_id: uuid::Uuid) {
+    exec_state.add_artifact(Artifact::GdtAnnotation(GdtAnnotationArtifact {
+        id: ArtifactId::new(annotation_id),
+        code_ref: CodeRef::placeholder(args.source_range),
+    }));
 }
 
 impl DistanceEntity {
@@ -190,6 +206,8 @@ async fn inner_datum(
             ),
         )
         .await?;
+    #[cfg(feature = "artifact-graph")]
+    add_gdt_annotation_artifact(exec_state, args, annotation_id);
     Ok(GdtAnnotation {
         id: annotation_id,
         meta,
@@ -975,6 +993,8 @@ async fn inner_flatness(
                 ),
             )
             .await?;
+        #[cfg(feature = "artifact-graph")]
+        add_gdt_annotation_artifact(exec_state, args, annotation_id);
         annotations.push(GdtAnnotation {
             id: annotation_id,
             meta,
@@ -1051,6 +1071,8 @@ async fn create_basic_distance_annotation(
             ),
         )
         .await?;
+    #[cfg(feature = "artifact-graph")]
+    add_gdt_annotation_artifact(exec_state, args, annotation_id);
     annotations.push(GdtAnnotation {
         id: annotation_id,
         meta,
@@ -1108,6 +1130,8 @@ async fn create_feature_control_annotation(
             ),
         )
         .await?;
+    #[cfg(feature = "artifact-graph")]
+    add_gdt_annotation_artifact(exec_state, args, annotation_id);
     annotations.push(GdtAnnotation {
         id: annotation_id,
         meta,
@@ -1161,6 +1185,8 @@ async fn create_annotation(
             ),
         )
         .await?;
+    #[cfg(feature = "artifact-graph")]
+    add_gdt_annotation_artifact(exec_state, args, annotation_id);
     annotations.push(GdtAnnotation {
         id: annotation_id,
         meta,
