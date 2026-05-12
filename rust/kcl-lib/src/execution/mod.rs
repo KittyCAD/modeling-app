@@ -893,6 +893,9 @@ impl ExecutorSettings {
 }
 
 impl ExecutorContext {
+    const STALE_SKETCH_MEMORY_MESSAGE_PREFIX: &'static str =
+        "Cached scene objects length is less than expected length from cached object ID generator";
+
     /// Create a new live executor context from an engine and file manager.
     pub fn new_with_engine_and_fs(
         engine: Arc<Box<dyn EngineManager>>,
@@ -1154,11 +1157,11 @@ impl ExecutorContext {
                     .restore_scene_objects(scene_objects);
             } else {
                 let message = format!(
-                    "Cached scene objects length {} is less than expected length from cached object ID generator {}",
+                    "{}: cached length {}, expected length {}",
+                    Self::STALE_SKETCH_MEMORY_MESSAGE_PREFIX,
                     mem.scene_objects.len(),
                     len
                 );
-                debug_assert!(false, "{message}");
                 return Err(KclErrorWithOutputs::no_outputs(KclError::new_internal(
                     KclErrorDetails::new(message, vec![SourceRange::synthetic()]),
                 )));
@@ -1182,7 +1185,15 @@ impl ExecutorContext {
         let mut exec_state = ExecState::new_mock(self, mock_config);
         if use_prev_memory {
             match cache::read_old_memory().await {
-                Some(mem) => Self::restore_mock_memory(&mut exec_state, mem, mock_config)?,
+                Some(mem) => {
+                    if let Err(error) = Self::restore_mock_memory(&mut exec_state, mem, mock_config) {
+                        if !Self::is_stale_sketch_memory_error(&error) {
+                            return Err(error);
+                        }
+                        exec_state = ExecState::new_mock(self, mock_config);
+                        self.prepare_mem(&mut exec_state).await?;
+                    }
+                }
                 None => self.prepare_mem(&mut exec_state).await?,
             }
         } else {
@@ -1222,6 +1233,13 @@ impl ExecutorContext {
         cache::write_old_memory(state).await;
 
         Ok(outcome)
+    }
+
+    fn is_stale_sketch_memory_error(error: &KclErrorWithOutputs) -> bool {
+        error
+            .error
+            .message()
+            .starts_with(Self::STALE_SKETCH_MEMORY_MESSAGE_PREFIX)
     }
 
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
@@ -3452,6 +3470,34 @@ solid7 = extrude(r7, length = width)
         assert_eq!(refreshed_memory.scene_objects, baseline_memory.scene_objects);
         assert_eq!(refreshed_memory.path_to_source_id, baseline_memory.path_to_source_id);
         assert_eq!(refreshed_memory.id_to_source, baseline_memory.id_to_source);
+
+        cache::bust_cache().await;
+        clear_mem_cache().await;
+        ctx.close().await;
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn run_mock_recovers_from_stale_sketch_scene_object_cache() {
+        cache::bust_cache().await;
+        clear_mem_cache().await;
+
+        let ctx = ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(
+            r#"sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+}
+"#,
+        )
+        .unwrap();
+        let mock_config = MockConfig::new_sketch_mode(ObjectId(1));
+
+        cache::write_old_memory(cache::SketchModeState::new_for_tests()).await;
+        let result = ctx.run_mock(&program, &mock_config).await;
+
+        if let Err(error) = result {
+            panic!("expected stale sketch memory to be ignored, got {error:?}");
+        }
 
         cache::bust_cache().await;
         clear_mem_cache().await;
