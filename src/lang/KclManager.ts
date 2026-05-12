@@ -644,8 +644,7 @@ export class File extends EventTarget {
 
   /** Allows environments to swap their implementation of these IO-interfacing functions */
   static ioImplementations = {
-    read: (path: string) => {
-      fsZds.readFile(path, 'utf8')
+    read: (path: string): Promise<string> => {
       return new Promise(async (resolve, reject) => {
         try {
           const text = await fsZds.readFile(path, 'utf8')
