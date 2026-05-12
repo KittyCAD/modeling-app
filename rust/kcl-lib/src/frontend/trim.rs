@@ -15,6 +15,7 @@ use crate::frontend::sketch::ConstraintSegment;
 use crate::frontend::sketch::Segment;
 use crate::frontend::sketch::SegmentCtor;
 use crate::pretty::NumericSuffix;
+use crate::util::MathExt;
 
 #[cfg(test)]
 mod tests;
@@ -1581,9 +1582,9 @@ fn curve_contains_point(curve: CurveHandle, point: Coords2d, epsilon: f64) -> bo
             .center
             .is_some_and(|center| is_point_on_arc(point, center, curve.start, curve.end, epsilon)),
         (CurveKind::Circular, CurveDomain::Closed) => curve.center.is_some_and(|center| {
-            let radius = curve
-                .radius
-                .unwrap_or_else(|| ((curve.start.x - center.x).powi(2) + (curve.start.y - center.y).powi(2)).sqrt());
+            let radius = curve.radius.unwrap_or_else(|| {
+                ((curve.start.x - center.x).squared() + (curve.start.y - center.y).squared()).sqrt()
+            });
             is_point_on_circle(point, center, radius, epsilon)
         }),
         (CurveKind::Line, CurveDomain::Closed) => false,
@@ -1616,9 +1617,9 @@ fn curve_line_segment_intersections(
             let Some(center) = curve.center else {
                 return Vec::new();
             };
-            let radius = curve
-                .radius
-                .unwrap_or_else(|| ((curve.start.x - center.x).powi(2) + (curve.start.y - center.y).powi(2)).sqrt());
+            let radius = curve.radius.unwrap_or_else(|| {
+                ((curve.start.x - center.x).squared() + (curve.start.y - center.y).squared()).sqrt()
+            });
             line_circle_intersections(line_start, line_end, center, radius, epsilon)
         }
         (CurveKind::Line, CurveDomain::Closed) => Vec::new(),
@@ -1660,7 +1661,7 @@ fn curve_curve_intersections(curve: CurveHandle, other: CurveHandle, epsilon: f6
                 return Vec::new();
             };
             let other_radius = other.radius.unwrap_or_else(|| {
-                ((other.start.x - other_center.x).powi(2) + (other.start.y - other_center.y).powi(2)).sqrt()
+                ((other.start.x - other_center.x).squared() + (other.start.y - other_center.y).squared()).sqrt()
             });
             line_circle_intersections(curve.start, curve.end, other_center, other_radius, epsilon)
                 .into_iter()
@@ -1695,7 +1696,7 @@ fn curve_curve_intersections(curve: CurveHandle, other: CurveHandle, epsilon: f6
                 return Vec::new();
             };
             let other_radius = other.radius.unwrap_or_else(|| {
-                ((other.start.x - other_center.x).powi(2) + (other.start.y - other_center.y).powi(2)).sqrt()
+                ((other.start.x - other_center.x).squared() + (other.start.y - other_center.y).squared()).sqrt()
             });
             circle_arc_intersections(
                 other_center,
@@ -1711,7 +1712,7 @@ fn curve_curve_intersections(curve: CurveHandle, other: CurveHandle, epsilon: f6
                 return Vec::new();
             };
             let curve_radius = curve.radius.unwrap_or_else(|| {
-                ((curve.start.x - curve_center.x).powi(2) + (curve.start.y - curve_center.y).powi(2)).sqrt()
+                ((curve.start.x - curve_center.x).squared() + (curve.start.y - curve_center.y).squared()).sqrt()
             });
             line_circle_intersections(other.start, other.end, curve_center, curve_radius, epsilon)
                 .into_iter()
@@ -1723,7 +1724,7 @@ fn curve_curve_intersections(curve: CurveHandle, other: CurveHandle, epsilon: f6
                 return Vec::new();
             };
             let curve_radius = curve.radius.unwrap_or_else(|| {
-                ((curve.start.x - curve_center.x).powi(2) + (curve.start.y - curve_center.y).powi(2)).sqrt()
+                ((curve.start.x - curve_center.x).squared() + (curve.start.y - curve_center.y).squared()).sqrt()
             });
             circle_arc_intersections(
                 curve_center,
@@ -1739,10 +1740,10 @@ fn curve_curve_intersections(curve: CurveHandle, other: CurveHandle, epsilon: f6
                 return Vec::new();
             };
             let curve_radius = curve.radius.unwrap_or_else(|| {
-                ((curve.start.x - curve_center.x).powi(2) + (curve.start.y - curve_center.y).powi(2)).sqrt()
+                ((curve.start.x - curve_center.x).squared() + (curve.start.y - curve_center.y).squared()).sqrt()
             });
             let other_radius = other.radius.unwrap_or_else(|| {
-                ((other.start.x - other_center.x).powi(2) + (other.start.y - other_center.y).powi(2)).sqrt()
+                ((other.start.x - other_center.x).squared() + (other.start.y - other_center.y).squared()).sqrt()
             });
             circle_circle_intersections(curve_center, curve_radius, other_center, other_radius, epsilon)
         }
@@ -2253,8 +2254,8 @@ fn find_termination_in_direction(
             let is_other_seg_endpoint = segment_endpoint_points(intersecting_seg, objects, default_unit)
                 .into_iter()
                 .any(|(_, endpoint)| {
-                    let dist_to_endpoint = ((closest_candidate.point.x - endpoint.x).powi(2)
-                        + (closest_candidate.point.y - endpoint.y).powi(2))
+                    let dist_to_endpoint = ((closest_candidate.point.x - endpoint.x).squared()
+                        + (closest_candidate.point.y - endpoint.y).squared())
                     .sqrt();
                     dist_to_endpoint < endpoint_epsilon
                 });
@@ -3366,8 +3367,8 @@ pub(crate) fn build_trim_plan(
         {
             let endpoint_is_at_intersection = get_point_coords_from_native(objects, point_id, default_unit)
                 .is_some_and(|point_coords| {
-                    ((point_coords.x - intersection_coords.x).powi(2)
-                        + (point_coords.y - intersection_coords.y).powi(2))
+                    ((point_coords.x - intersection_coords.x).squared()
+                        + (point_coords.y - intersection_coords.y).squared())
                     .sqrt()
                         <= EPSILON_POINT_ON_SEGMENT * 1000.0
                 });
