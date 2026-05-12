@@ -202,6 +202,8 @@ type DirectSketchHistoryMarker = {
   entryId: number
 }
 
+type ZookeeperHistoryCommand = 'undo' | 'redo'
+
 type MinimalDocumentChange = {
   from: number
   to: number
@@ -261,6 +263,7 @@ const syntheticHistoryCommitEffect =
   StateEffect.define<SyntheticHistoryCommit>()
 const directSketchHistoryMarkerEffect =
   StateEffect.define<DirectSketchHistoryMarker>()
+const zookeeperHistoryEffect = StateEffect.define<ZookeeperHistoryCommand>()
 
 // Each of our singletons has dependencies on _other_ singletons, so importing
 // can easily become cyclic. Each will have its own Singletons type.
@@ -719,6 +722,10 @@ export class KclManager extends File {
   private sketchCheckpointLimit = FALLBACK_SKETCH_CHECKPOINT_LIMIT
   private lastExecutedCode: string = ''
   lastSuccessfulCode: string = ''
+  private pendingZookeeperHistoryEntry = false
+  private zookeeperHistoryReplayHandler?: (
+    command: ZookeeperHistoryCommand
+  ) => void
   get code(): string {
     return this.editorView.state.doc.toString()
   }
@@ -1639,6 +1646,32 @@ export class KclManager extends File {
     return [applySketchCheckpointHistory, undoableSketchCheckpointHistory]
   })()
 
+  private zookeeperHistoryExtension = (() => {
+    const applyZookeeperHistory = EditorView.updateListener.of((vu) => {
+      for (const tr of vu.transactions) {
+        if (!tr.isUserEvent('undo') && !tr.isUserEvent('redo')) continue
+
+        for (const effect of tr.effects) {
+          if (!effect.is(zookeeperHistoryEffect)) continue
+          this.zookeeperHistoryReplayHandler?.(effect.value)
+        }
+      }
+    })
+
+    const undoableZookeeperHistory = invertedEffects.of((tr) => {
+      const found: StateEffect<unknown>[] = []
+      for (const effect of tr.effects) {
+        if (!effect.is(zookeeperHistoryEffect)) continue
+        found.push(
+          zookeeperHistoryEffect.of(effect.value === 'undo' ? 'redo' : 'undo')
+        )
+      }
+      return found
+    })
+
+    return [applyZookeeperHistory, undoableZookeeperHistory]
+  })()
+
   private createEditorExtensions() {
     const shouldAutomaticallyRender = this.getAutomaticallyRenderSetting()
     this._automaticallyRenderEnabled = shouldAutomaticallyRender
@@ -1739,7 +1772,10 @@ export class KclManager extends File {
       getSettings
     )
 
-    this._globalHistoryView = new HistoryView([fsHistoryExtension()])
+    this._globalHistoryView = new HistoryView([
+      fsHistoryExtension(),
+      this.zookeeperHistoryExtension,
+    ])
     this._editorView = this.createEditorView(initialCode)
     this.settingsSubscription = this.systemDeps.settings.subscribe(() => {
       this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
@@ -2683,6 +2719,28 @@ export class KclManager extends File {
   addGlobalHistoryEvent(spec: TransactionSpecNoChanges) {
     this._globalHistoryView.dispatch(spec)
   }
+  setZookeeperHistoryReplayHandler(
+    handler?: (command: ZookeeperHistoryCommand) => void
+  ) {
+    this.zookeeperHistoryReplayHandler = handler
+  }
+  markPendingZookeeperHistoryEntry() {
+    this.pendingZookeeperHistoryEntry = true
+  }
+  commitPendingZookeeperHistoryEntry() {
+    if (!this.pendingZookeeperHistoryEntry) return
+    this.pendingZookeeperHistoryEntry = false
+    this.addZookeeperHistoryEntry()
+  }
+  addZookeeperHistoryEntry() {
+    this._globalHistoryView.dispatch({
+      annotations: [
+        Transaction.addToHistory.of(true),
+        isolateHistory.of('full'),
+      ],
+      effects: [zookeeperHistoryEffect.of('redo')],
+    })
+  }
   undo() {
     this._globalHistoryView.undo(this._editorView)
   }
@@ -2707,6 +2765,7 @@ export class KclManager extends File {
     })
   }
   clearGlobalHistory() {
+    this.pendingZookeeperHistoryEntry = false
     this._globalHistoryView.dispatch(
       {
         effects: [this._globalHistoryView.historyCompartment.reconfigure([])],

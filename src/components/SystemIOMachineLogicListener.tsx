@@ -273,6 +273,9 @@ export function SystemIOMachineLogicListener() {
       const payload = prepareMlEphantNewFileRequest(props)
 
       if (payload) {
+        if (props.shouldAddZookeeperHistoryEntry) {
+          kclManager.markPendingZookeeperHistoryEntry()
+        }
         kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
         systemIOActor.send({
           type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,

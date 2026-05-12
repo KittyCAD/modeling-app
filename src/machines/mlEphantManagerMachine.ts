@@ -63,9 +63,17 @@ type MlCopilotProjectContextRequest = Extract<
   active_file?: string
 }
 
+type MlCopilotZookeeperHistoryRequest = {
+  type: 'system'
+  command: 'zookeeper_undo' | 'zookeeper_redo'
+  project_name: string
+  current_files: Record<string, number[]>
+}
+
 type MlCopilotClientMessageWithDiscoveredMode =
   | Exclude<MlCopilotClientMessage, { type: 'user' }>
   | MlCopilotUserRequest
+  | MlCopilotZookeeperHistoryRequest
 
 type MlCopilotClientMessageUser<T = MlCopilotClientMessageWithDiscoveredMode> =
   T extends {
@@ -172,6 +180,8 @@ export enum MlEphantManagerStates {
 
 export enum MlEphantManagerTransitions {
   MessageSend = 'message-send',
+  ZookeeperUndo = 'zookeeper-undo',
+  ZookeeperRedo = 'zookeeper-redo',
   ResponseReceive = 'response-receive',
   ModesReceive = 'modes-receive',
   ConversationClose = 'conversation-close',
@@ -214,6 +224,13 @@ export type MlEphantManagerEvents =
       artifactGraph: ArtifactGraph
       mode?: MlCopilotModeId
       additionalFiles?: File[]
+    }
+  | {
+      type:
+        | MlEphantManagerTransitions.ZookeeperUndo
+        | MlEphantManagerTransitions.ZookeeperRedo
+      projectName: string
+      projectFiles: FileMeta[]
     }
   | {
       type: MlEphantManagerStates.ContinueCheck
@@ -374,6 +391,32 @@ async function toMlCopilotFile(file: File): Promise<MlCopilotFile> {
   }
 }
 
+async function projectFilesToByteArrays(
+  projectFiles: FileMeta[]
+): Promise<Record<string, number[]>> {
+  const files: KittyCadLibFile[] = projectFiles.map((file) => {
+    if (file.type === 'other') {
+      return {
+        name: file.relPath,
+        data: file.data,
+      }
+    }
+
+    return {
+      name: file.relPath,
+      data: new Blob([file.fileContents], { type: 'text/kcl' }),
+    }
+  })
+
+  const filesAsByteArrays: Record<string, number[]> = {}
+  for (const file of files) {
+    filesAsByteArrays[file.name] = Array.from(
+      new Uint8Array(await file.data.arrayBuffer())
+    )
+  }
+  return filesAsByteArrays
+}
+
 export const MlEphantConversationToMarkdown = (
   conversation?: Conversation
 ): string => {
@@ -501,6 +544,46 @@ const hasBeenInterruptedOnLast = (exchanges: Exchange[]) => {
 type XSInput<T> = {
   input: { event: Extract<MlEphantManagerEvents, { type: T }> } & {
     context: MlEphantManagerContext
+  }
+}
+
+async function sendZookeeperHistoryRequest(
+  args: XSInput<
+    | MlEphantManagerTransitions.ZookeeperUndo
+    | MlEphantManagerTransitions.ZookeeperRedo
+  >
+): Promise<Partial<MlEphantManagerContext>> {
+  const { context, event } = args.input
+  if (!isPresent<WebSocket>(context.ws))
+    return Promise.reject(new Error('WebSocket not present'))
+  if (!isPresent<Conversation>(context.conversation))
+    return Promise.reject(new Error('Conversation not present'))
+
+  const request: MlCopilotZookeeperHistoryRequest = {
+    type: 'system',
+    command:
+      event.type === MlEphantManagerTransitions.ZookeeperUndo
+        ? 'zookeeper_undo'
+        : 'zookeeper_redo',
+    project_name: event.projectName,
+    current_files: await projectFilesToByteArrays(event.projectFiles),
+  }
+
+  context.ws.send(JSON.stringify(request))
+
+  const conversation: Conversation = {
+    exchanges: Array.from(context.conversation.exchanges),
+  }
+
+  conversation.exchanges.push({
+    request,
+    responses: [],
+    deltasAggregated: '',
+  })
+
+  return {
+    conversation,
+    projectNameCurrentlyOpened: event.projectName,
   }
 }
 
@@ -977,28 +1060,9 @@ export const mlEphantManagerMachine = setup({
         }
       }
 
-      const filesAsByteArrays: Record<string, number[]> = {}
-      const files: KittyCadLibFile[] = []
-
-      event.projectFiles.forEach((file) => {
-        let data: Blob
-        if (file.type === 'other') {
-          data = file.data
-        } else {
-          // file.type === 'kcl'
-          data = new Blob([file.fileContents], { type: 'text/kcl' })
-        }
-        files.push({
-          name: file.relPath,
-          data,
-        })
-      })
-
-      for (let file of files) {
-        filesAsByteArrays[file.name] = Array.from(
-          new Uint8Array(await file.data.arrayBuffer())
-        )
-      }
+      const filesAsByteArrays = await projectFilesToByteArrays(
+        event.projectFiles
+      )
 
       const requestProjectContext: MlCopilotProjectContextRequest = {
         type: 'project_context',
@@ -1056,6 +1120,12 @@ export const mlEphantManagerMachine = setup({
 
       return {}
     }),
+    [MlEphantManagerTransitions.ZookeeperUndo]: fromPromise(
+      sendZookeeperHistoryRequest
+    ),
+    [MlEphantManagerTransitions.ZookeeperRedo]: fromPromise(
+      sendZookeeperHistoryRequest
+    ),
   },
 }).createMachine({
   initial: S.Await,
@@ -1331,6 +1401,8 @@ export const mlEphantManagerMachine = setup({
             [S.Await]: {
               on: transitions([
                 MlEphantManagerTransitions.MessageSend,
+                MlEphantManagerTransitions.ZookeeperUndo,
+                MlEphantManagerTransitions.ZookeeperRedo,
                 MlEphantManagerTransitions.Cancel,
                 MlEphantManagerTransitions.Interrupt,
                 MlEphantManagerTransitions.ConversationClose,
@@ -1355,6 +1427,56 @@ export const mlEphantManagerMachine = setup({
                   }
                 },
                 src: MlEphantManagerTransitions.MessageSend,
+                onDone: {
+                  target: S.Await,
+                  actions: [
+                    assign(({ event, context }) => ({
+                      ...event.output,
+                      awaitingResponse: true,
+                      pendingBackendShutdown: context.pendingBackendShutdown,
+                    })),
+                  ],
+                },
+                onError: { target: S.Await, actions: ['toastError'] },
+              },
+            },
+            [MlEphantManagerTransitions.ZookeeperUndo]: {
+              invoke: {
+                input: (args) => {
+                  assertEvent(args.event, [
+                    MlEphantManagerTransitions.ZookeeperUndo,
+                  ])
+                  return {
+                    event: args.event,
+                    context: args.context,
+                  }
+                },
+                src: MlEphantManagerTransitions.ZookeeperUndo,
+                onDone: {
+                  target: S.Await,
+                  actions: [
+                    assign(({ event, context }) => ({
+                      ...event.output,
+                      awaitingResponse: true,
+                      pendingBackendShutdown: context.pendingBackendShutdown,
+                    })),
+                  ],
+                },
+                onError: { target: S.Await, actions: ['toastError'] },
+              },
+            },
+            [MlEphantManagerTransitions.ZookeeperRedo]: {
+              invoke: {
+                input: (args) => {
+                  assertEvent(args.event, [
+                    MlEphantManagerTransitions.ZookeeperRedo,
+                  ])
+                  return {
+                    event: args.event,
+                    context: args.context,
+                  }
+                },
+                src: MlEphantManagerTransitions.ZookeeperRedo,
                 onDone: {
                   target: S.Await,
                   actions: [
