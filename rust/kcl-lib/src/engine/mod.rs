@@ -5,6 +5,9 @@ pub mod async_tasks;
 #[cfg(feature = "engine")]
 pub mod conn;
 pub mod conn_mock;
+#[cfg(not(target_arch = "wasm32"))]
+#[cfg(feature = "engine")]
+pub mod conn_occt;
 #[cfg(target_arch = "wasm32")]
 #[cfg(feature = "engine")]
 pub mod conn_wasm;

@@ -4,8 +4,6 @@
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
-#[cfg(not(target_arch = "wasm32"))]
-use anyhow::anyhow;
 use anyhow::Result;
 #[cfg(feature = "artifact-graph")]
 pub use artifact::Artifact;
@@ -931,9 +929,9 @@ impl ExecutorContext {
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
         if matches!(settings.engine, crate::settings::types::ModelingEngine::OpenCascade) {
-            return Err(anyhow!(
-                "The open_cascade modeling engine is only supported by the WASM executor"
-            ));
+            let engine: Arc<Box<dyn EngineManager>> =
+                Arc::new(Box::new(crate::engine::conn_occt::EngineConnection::new()?));
+            return Ok(Self::new_with_engine(engine, settings));
         }
 
         let pr = std::env::var("ZOO_ENGINE_PR").ok().and_then(|s| s.parse().ok());
@@ -1038,6 +1036,12 @@ impl ExecutorContext {
         token: Option<String>,
         engine_addr: Option<String>,
     ) -> Result<Self> {
+        if matches!(settings.engine, crate::settings::types::ModelingEngine::OpenCascade) {
+            let engine: Arc<Box<dyn EngineManager>> =
+                Arc::new(Box::new(crate::engine::conn_occt::EngineConnection::new()?));
+            return Ok(Self::new_with_engine(engine, settings));
+        }
+
         // Create the client.
         let client = crate::engine::new_zoo_client(token, engine_addr)?;
 
@@ -3918,5 +3922,22 @@ sketch001 = sketch(on = XY) {
 }
 "#;
         parse_execute(code).await.unwrap();
+    }
+
+    #[cfg(all(not(target_arch = "wasm32"), feature = "engine"))]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_open_cascade_executor_uses_native_backend_without_zoo_connection() {
+        let ctx = ExecutorContext::new_with_client(
+            ExecutorSettings {
+                engine: crate::settings::types::ModelingEngine::OpenCascade,
+                ..Default::default()
+            },
+            None,
+            Some("https://example.invalid".to_owned()),
+        )
+        .await
+        .unwrap();
+
+        assert_eq!(ctx.settings.engine, crate::settings::types::ModelingEngine::OpenCascade);
     }
 }

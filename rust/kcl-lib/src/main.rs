@@ -5,6 +5,7 @@ use std::io::Read;
 use kcl_lib::ExecState;
 use kcl_lib::ExecutorContext;
 use kcl_lib::ExecutorSettings;
+use kcl_lib::ModelingEngine;
 use kcl_lib::Program;
 
 // An extremely simple script, definitely not to be released or used for anything important, but
@@ -16,7 +17,26 @@ use kcl_lib::Program;
 async fn main() {
     let mut args = env::args();
     args.next();
-    let mut filename = args.next().unwrap_or_else(|| "main.kcl".to_owned());
+    let mut filename = "main.kcl".to_owned();
+    let mut engine = ModelingEngine::default();
+
+    while let Some(arg) = args.next() {
+        match arg.as_str() {
+            "--engine" => {
+                let value = args
+                    .next()
+                    .unwrap_or_else(|| panic!("--engine requires one of: zoo, open_cascade, open-cascade"));
+                engine = value
+                    .replace('-', "_")
+                    .parse()
+                    .unwrap_or_else(|_| panic!("unsupported engine {value:?}; expected zoo or open_cascade"));
+            }
+            _ => {
+                filename = arg;
+            }
+        }
+    }
+
     if !filename.ends_with(".kcl") {
         if !filename.ends_with('/') && !filename.ends_with('\\') {
             filename += "/";
@@ -40,6 +60,7 @@ async fn main() {
     let ctx = ExecutorContext::new_with_client(
         ExecutorSettings {
             project_directory,
+            engine,
             ..Default::default()
         },
         None,

@@ -178,6 +178,11 @@ pub mod native_engine {
     pub use crate::engine::conn::EngineConnection;
 }
 
+#[cfg(not(target_arch = "wasm32"))]
+pub mod native_occt_engine {
+    pub use crate::engine::conn_occt::EngineConnection;
+}
+
 pub mod std_utils {
     pub use crate::std::utils::TangentialArcInfoInput;
     pub use crate::std::utils::get_tangential_arc_to_info;
