@@ -36,6 +36,13 @@ type ModelingDialogField = {
   options: CommandArgumentOption<unknown>[]
 }
 
+type SelectionListItem = {
+  key: string
+  source: 'graphSelections' | 'otherSelections'
+  index: number
+  label: string
+}
+
 const MODELING_DIALOG_TOOLBAR_GAP_PX = 8
 
 function getToolbarBottomOffset(wrapper: HTMLElement | null): number {
@@ -139,6 +146,46 @@ function selectionSummary(
 ): string {
   if (!selection) return 'No selection captured'
   return getSelectionTypeDisplayText(ast as never, selection) ?? 'No selection'
+}
+
+function getSelectionItemLabel(ast: unknown, selection: Selections): string {
+  const summary = selectionSummary(ast, selection).replace(/^1\s+/, '')
+  return summary.charAt(0).toUpperCase() + summary.slice(1)
+}
+
+function getSelectionListItems(
+  ast: unknown,
+  selection: Selections | undefined
+): SelectionListItem[] {
+  if (!selection) return []
+
+  const items: SelectionListItem[] = []
+
+  selection.graphSelections.forEach((graphSelection, index) => {
+    items.push({
+      key: `graph-${index}`,
+      source: 'graphSelections',
+      index,
+      label: getSelectionItemLabel(ast, {
+        graphSelections: [graphSelection],
+        otherSelections: [],
+      }),
+    })
+  })
+
+  selection.otherSelections.forEach((otherSelection, index) => {
+    items.push({
+      key: `other-${index}`,
+      source: 'otherSelections',
+      index,
+      label: getSelectionItemLabel(ast, {
+        graphSelections: [],
+        otherSelections: [otherSelection],
+      }),
+    })
+  })
+
+  return items
 }
 
 export function ModelingDialog() {
@@ -346,6 +393,48 @@ export function ModelingDialog() {
       setActiveSelectionArgName(argName)
     },
     [commands]
+  )
+
+  const removeDraftSelection = useCallback(
+    (
+      argName: string,
+      source: SelectionListItem['source'],
+      selectionIndex: number
+    ) => {
+      setDraftValues((prev) => {
+        const selection = prev[argName]
+        if (!selection || typeof selection !== 'object') return prev
+
+        const graphSelections = isArray(
+          (selection as Partial<Selections>).graphSelections
+        )
+          ? (selection as Selections).graphSelections
+          : []
+        const otherSelections = isArray(
+          (selection as Partial<Selections>).otherSelections
+        )
+          ? (selection as Selections).otherSelections
+          : []
+        const nextSelection: Selections = {
+          graphSelections:
+            source === 'graphSelections'
+              ? graphSelections.filter((_, index) => index !== selectionIndex)
+              : graphSelections,
+          otherSelections:
+            source === 'otherSelections'
+              ? otherSelections.filter((_, index) => index !== selectionIndex)
+              : otherSelections,
+        }
+
+        return {
+          ...prev,
+          [argName]: isSelectionValueEmpty(nextSelection)
+            ? undefined
+            : nextSelection,
+        }
+      })
+    },
+    []
   )
 
   useEffect(() => {
@@ -654,19 +743,66 @@ export function ModelingDialog() {
                   )
                     ? undefined
                     : selectionRanges
+                  const capturedSelectionItems = getSelectionListItems(
+                    kclManager.astSignal.value,
+                    capturedSelection
+                  )
                   return (
                     <div key={key} className="flex flex-col gap-2">
                       <span className="text-xs font-medium leading-tight">
                         {label}
                         {isRequired ? ' *' : ''}
                       </span>
-                      <p className="my-0 text-xs leading-tight text-chalkboard-70 dark:text-chalkboard-40">
-                        Captured:{' '}
-                        {selectionSummary(
-                          kclManager.astSignal.value,
-                          capturedSelection
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[10px] uppercase leading-tight text-chalkboard-60 dark:text-chalkboard-40">
+                          Captured
+                        </span>
+                        {capturedSelectionItems.length > 0 ? (
+                          <ol className="my-0 flex list-none flex-col gap-1 p-0">
+                            {capturedSelectionItems.map((item, index) => (
+                              <li
+                                key={item.key}
+                                className="flex min-w-0 items-center justify-between gap-2 rounded-sm border border-chalkboard-20 bg-chalkboard-10/50 px-2 py-1 dark:border-chalkboard-70 dark:bg-chalkboard-90/50"
+                              >
+                                <span className="min-w-0 truncate text-xs leading-tight text-chalkboard-80 dark:text-chalkboard-20">
+                                  <span className="mr-1 text-[10px] text-chalkboard-60 dark:text-chalkboard-40">
+                                    #{index + 1}
+                                  </span>
+                                  {item.label}
+                                </span>
+                                <ActionButton
+                                  Element="button"
+                                  type="button"
+                                  tabIndex={0}
+                                  className="w-fit shrink-0 !p-0 rounded-sm border-none bg-transparent hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80"
+                                  iconStart={{
+                                    icon: 'trash',
+                                    bgClassName: '!bg-transparent p-0',
+                                    iconClassName:
+                                      'h-4 w-4 text-chalkboard-60 group-hover:text-destroy-80 dark:text-chalkboard-40 dark:group-hover:text-destroy-40',
+                                  }}
+                                  onClick={() =>
+                                    removeDraftSelection(
+                                      argName,
+                                      item.source,
+                                      item.index
+                                    )
+                                  }
+                                  aria-label={`Remove selection ${index + 1}`}
+                                >
+                                  <Tooltip position="bottom">
+                                    Remove selection
+                                  </Tooltip>
+                                </ActionButton>
+                              </li>
+                            ))}
+                          </ol>
+                        ) : (
+                          <p className="my-0 text-xs leading-tight text-chalkboard-70 dark:text-chalkboard-40">
+                            No selection captured
+                          </p>
                         )}
-                      </p>
+                      </div>
                       {isSelecting && (
                         <p className="my-0 text-[10px] leading-tight text-primary dark:text-primary">
                           Selecting now:{' '}
