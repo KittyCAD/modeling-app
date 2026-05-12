@@ -547,12 +547,18 @@ type XSInput<T> = {
   }
 }
 
-async function sendZookeeperHistoryRequest(
+type ZookeeperHistoryRequestOutput = {
+  conversation: Conversation
+  projectNameCurrentlyOpened: string
+  zookeeperHistoryRequest: MlCopilotZookeeperHistoryRequest
+}
+
+async function prepareZookeeperHistoryRequest(
   args: XSInput<
     | MlEphantManagerTransitions.ZookeeperUndo
     | MlEphantManagerTransitions.ZookeeperRedo
   >
-): Promise<Partial<MlEphantManagerContext>> {
+): Promise<ZookeeperHistoryRequestOutput> {
   const { context, event } = args.input
   if (!isPresent<WebSocket>(context.ws))
     return Promise.reject(new Error('WebSocket not present'))
@@ -569,8 +575,6 @@ async function sendZookeeperHistoryRequest(
     current_files: await projectFilesToByteArrays(event.projectFiles),
   }
 
-  context.ws.send(JSON.stringify(request))
-
   const conversation: Conversation = {
     exchanges: Array.from(context.conversation.exchanges),
   }
@@ -584,6 +588,7 @@ async function sendZookeeperHistoryRequest(
   return {
     conversation,
     projectNameCurrentlyOpened: event.projectName,
+    zookeeperHistoryRequest: request,
   }
 }
 
@@ -666,6 +671,16 @@ export const mlEphantManagerMachine = setup({
         )
         context.ws?.close()
       }
+    },
+    sendPreparedZookeeperHistoryRequest: ({ context, event }) => {
+      if (!('output' in event)) {
+        return
+      }
+      const output = event.output as Partial<ZookeeperHistoryRequestOutput>
+      if (output.zookeeperHistoryRequest === undefined) {
+        return
+      }
+      context.ws?.send(JSON.stringify(output.zookeeperHistoryRequest))
     },
     cacheSetup: assign({
       conversationId: ({ event }) => {
@@ -1121,10 +1136,10 @@ export const mlEphantManagerMachine = setup({
       return {}
     }),
     [MlEphantManagerTransitions.ZookeeperUndo]: fromPromise(
-      sendZookeeperHistoryRequest
+      prepareZookeeperHistoryRequest
     ),
     [MlEphantManagerTransitions.ZookeeperRedo]: fromPromise(
-      sendZookeeperHistoryRequest
+      prepareZookeeperHistoryRequest
     ),
   },
 }).createMachine({
@@ -1456,10 +1471,13 @@ export const mlEphantManagerMachine = setup({
                   target: S.Await,
                   actions: [
                     assign(({ event, context }) => ({
-                      ...event.output,
+                      conversation: event.output.conversation,
+                      projectNameCurrentlyOpened:
+                        event.output.projectNameCurrentlyOpened,
                       awaitingResponse: true,
                       pendingBackendShutdown: context.pendingBackendShutdown,
                     })),
+                    'sendPreparedZookeeperHistoryRequest',
                   ],
                 },
                 onError: { target: S.Await, actions: ['toastError'] },
@@ -1481,10 +1499,13 @@ export const mlEphantManagerMachine = setup({
                   target: S.Await,
                   actions: [
                     assign(({ event, context }) => ({
-                      ...event.output,
+                      conversation: event.output.conversation,
+                      projectNameCurrentlyOpened:
+                        event.output.projectNameCurrentlyOpened,
                       awaitingResponse: true,
                       pendingBackendShutdown: context.pendingBackendShutdown,
                     })),
+                    'sendPreparedZookeeperHistoryRequest',
                   ],
                 },
                 onError: { target: S.Await, actions: ['toastError'] },
