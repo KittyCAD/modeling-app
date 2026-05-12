@@ -599,6 +599,18 @@ const summarizeDatumKclValue = (value?: KclCommandValue) =>
       )
     : ''
 
+const datumsProps = {
+  inputType: 'kcl',
+  defaultValue: KCL_DEFAULT_DATUM_REFS,
+  allowArrays: true,
+  allowStringArrays: true,
+  allowUncalculated: true,
+  inputToKclValue: datumInputToKclArray,
+  kclValueToInput: kclDatumArrayToInput,
+  valueSummary: summarizeDatumKclValue,
+  required: false,
+} satisfies CommandArgumentConfig<KclCommandValue, ModelingMachineContext>
+
 export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   typeof modelingMachine,
   ModelingCommandSchema
@@ -2806,15 +2818,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       datums: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_DATUM_REFS,
-        allowArrays: true,
-        allowStringArrays: true,
-        allowUncalculated: true,
-        inputToKclValue: datumInputToKclArray,
-        kclValueToInput: kclDatumArrayToInput,
-        valueSummary: summarizeDatumKclValue,
-        required: false,
+        ...datumsProps,
       },
       tolerance: {
         inputType: 'kcl',
@@ -2899,15 +2903,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       datums: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_DATUM_REFS,
-        allowArrays: true,
-        allowStringArrays: true,
-        allowUncalculated: true,
-        inputToKclValue: datumInputToKclArray,
-        kclValueToInput: kclDatumArrayToInput,
-        valueSummary: summarizeDatumKclValue,
-        required: false,
+        ...datumsProps,
       },
       tolerance: {
         inputType: 'kcl',
@@ -3078,15 +3074,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       datums: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_DATUM_REFS,
-        allowArrays: true,
-        allowStringArrays: true,
-        allowUncalculated: true,
-        inputToKclValue: datumInputToKclArray,
-        kclValueToInput: kclDatumArrayToInput,
-        valueSummary: summarizeDatumKclValue,
-        required: false,
+        ...datumsProps,
       },
       tolerance: {
         inputType: 'kcl',
@@ -3171,15 +3159,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       datums: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_DATUM_REFS,
-        allowArrays: true,
-        allowStringArrays: true,
-        allowUncalculated: true,
-        inputToKclValue: datumInputToKclArray,
-        kclValueToInput: kclDatumArrayToInput,
-        valueSummary: summarizeDatumKclValue,
-        required: false,
+        ...datumsProps,
       },
       tolerance: {
         inputType: 'kcl',
