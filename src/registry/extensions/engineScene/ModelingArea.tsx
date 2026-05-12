@@ -99,6 +99,7 @@ function OpenCascadeModelingArea() {
   const { kclManager } = useSingletons()
   const settingsValues = settings.useSettings()
   const [diagnostic, setDiagnostic] = useState<string | undefined>()
+  const [renderMode, setRenderMode] = useState(false)
   const executionCounterRef = useRef(0)
   const sceneWrapperRef = useRef<HTMLDivElement>(null)
   const contextMenuPointerDownRef = useRef<{
@@ -213,7 +214,7 @@ function OpenCascadeModelingArea() {
       onContextMenu={(e) => e.preventDefault()}
       onContextMenuCapture={(e) => e.preventDefault()}
     >
-      <Toolbar />
+      {!renderMode && <Toolbar />}
       <ClientSideScene
         cameraControls={settingsValues.modeling.mouseControls.current}
         enableTouchControls={
@@ -221,7 +222,11 @@ function OpenCascadeModelingArea() {
         }
         sharedRendererMode="open_cascade"
       />
-      <OpenCascadeThreeScene diagnostic={diagnostic} />
+      <OpenCascadeThreeScene
+        diagnostic={diagnostic}
+        renderMode={renderMode}
+        onRenderModeChange={setRenderMode}
+      />
       <ViewControlContextMenu
         event="pointerup"
         guard={viewControlContextMenuGuard}

@@ -57,6 +57,7 @@ import {
 } from '@src/machines/sketchSolve/tools/moveTool/areaSelectUtils'
 import type { EngineCommandManagerProxy } from '@src/network/engineCommandManagerProxy'
 import type {
+  OpenCascadeAppearance,
   OpenCascadeSketchLineMeshes,
   OpenCascadeSketchLineSegment,
   OpenCascadeSketchPoint,
@@ -85,8 +86,10 @@ import {
   DirectionalLight,
   DoubleSide,
   EdgesGeometry,
+  EquirectangularReflectionMapping,
   Float32BufferAttribute,
   Group,
+  HemisphereLight,
   type Intersection,
   LineBasicMaterial,
   LineSegments,
@@ -96,10 +99,15 @@ import {
   MeshStandardMaterial,
   Object3D,
   OrthographicCamera,
+  PlaneGeometry,
   type PerspectiveCamera,
   Quaternion,
+  ACESFilmicToneMapping,
+  NoToneMapping,
   type Scene,
+  ShadowMaterial,
   SphereGeometry,
+  SRGBColorSpace,
   Vector2,
   Vector3,
 } from 'three'
@@ -138,6 +146,7 @@ const OPEN_CASCADE_EDGE_CANDIDATE_ROOT = 'OPEN_CASCADE_EDGE_CANDIDATE_ROOT'
 const OPEN_CASCADE_SELECTED_EDGE_ROOT = 'OPEN_CASCADE_SELECTED_EDGE_ROOT'
 const OPEN_CASCADE_GUIDE_ROOT = 'OPEN_CASCADE_GUIDE_ROOT'
 const OPEN_CASCADE_OFFSET_PLANE_ROOT = 'OPEN_CASCADE_OFFSET_PLANE_ROOT'
+const OPEN_CASCADE_RENDER_STAGE_ROOT = 'OPEN_CASCADE_RENDER_STAGE_ROOT'
 const OPEN_CASCADE_EDGE_LINES_NAME = 'open-cascade-edge-lines'
 const OPEN_CASCADE_PREVIEW_HANDLE_DEBUG_FLAG =
   'OPEN_CASCADE_PREVIEW_HANDLE_DEBUG'
@@ -190,6 +199,15 @@ type OpenCascadeSelectionFilterFlags = {
   bodies: boolean
   edges: boolean
   sketches: boolean
+}
+
+type OpenCascadeRenderPreset = 'studio' | 'polished' | 'matte'
+
+type OpenCascadeRenderSettings = {
+  preset: OpenCascadeRenderPreset
+  exposure: number
+  environmentIntensity: number
+  floor: boolean
 }
 
 interface OpenCascadeSceneStyle {
@@ -272,7 +290,15 @@ type OpenCascadeSelectionPayload = {
   otherSelection?: NonCodeSelection
 }
 
-export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
+export function OpenCascadeThreeScene({
+  diagnostic,
+  renderMode,
+  onRenderModeChange,
+}: {
+  diagnostic?: string
+  renderMode: boolean
+  onRenderModeChange: (enabled: boolean) => void
+}) {
   useSignals()
   const { commands, settings } = useApp()
   const { kclManager } = useSingletons()
@@ -302,6 +328,13 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
   const hasFramedEmptySceneRef = useRef(false)
   const [ready, setReady] = useState(false)
   const [stage, setStage] = useState('waiting')
+  const [renderSettings, setRenderSettings] =
+    useState<OpenCascadeRenderSettings>({
+      preset: 'studio',
+      exposure: 1.05,
+      environmentIntensity: 1.2,
+      floor: true,
+    })
   const engineCommandManager =
     kclManager.engineCommandManager as EngineCommandManagerProxy
   const openCascadeManager = engineCommandManager.openCascadeCommandManager
@@ -329,7 +362,8 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     !selectionFilterFlags.sketches
   const exportError = diagnostic || openCascadeManager.latestExportError.value
   const isSketchSolveMode = state.matches('sketchSolveMode')
-  const passiveProfilesVisible = !state.matches('Sketch') && !isSketchSolveMode
+  const passiveProfilesVisible =
+    !renderMode && !state.matches('Sketch') && !isSketchSolveMode
   const useSketchSolveMode =
     state.context.store.useSketchSolveMode?.current === true
   const isExecuting = kclManager.isExecuting
@@ -400,6 +434,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
     const offsetPlaneRoot = new Group()
     offsetPlaneRoot.name = OPEN_CASCADE_OFFSET_PLANE_ROOT
     const lightRoot = makeOpenCascadeLightRoot()
+    const renderStageRoot = makeOpenCascadeRenderStageRoot()
 
     scene.add(
       solidRoot,
@@ -416,7 +451,8 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       selectedEdgeRoot,
       guideRoot,
       offsetPlaneRoot,
-      lightRoot
+      lightRoot,
+      renderStageRoot
     )
     updateOpenCascadeGuideScale(guideRoot, sceneInfra)
     updateOpenCascadeGuideScale(offsetPlaneRoot, sceneInfra)
@@ -444,6 +480,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
       disposeOpenCascadeModelRoot(selectedEdgeRoot)
       disposeOpenCascadeModelRoot(guideRoot)
       disposeOpenCascadeModelRoot(offsetPlaneRoot)
+      disposeOpenCascadeModelRoot(renderStageRoot)
       scene.remove(
         solidRoot,
         previewRoot,
@@ -459,7 +496,8 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
         selectedEdgeRoot,
         guideRoot,
         offsetPlaneRoot,
-        lightRoot
+        lightRoot,
+        renderStageRoot
       )
       sceneInfra.renderFrame()
     }
@@ -668,6 +706,28 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
   ])
 
   useEffect(() => {
+    const sceneInfra = kclManager.sceneInfra
+    const environmentTexture = renderMode
+      ? makeOpenCascadeRenderEnvironmentTexture(renderSettings.preset)
+      : undefined
+
+    applyOpenCascadeRenderMode({
+      sceneInfra,
+      style: sceneStyle,
+      renderMode,
+      settings: renderSettings,
+      modelRadius: modelRadiusRef.current,
+      modelCenter: modelCenterRef.current,
+      environmentTexture,
+    })
+    sceneInfra.renderFrame()
+
+    return () => {
+      environmentTexture?.dispose()
+    }
+  }, [kclManager.sceneInfra, renderMode, renderSettings, sceneStyle])
+
+  useEffect(() => {
     const profileRoot = kclManager.sceneInfra.scene.getObjectByName(
       OPEN_CASCADE_PROFILE_ROOT
     )
@@ -823,6 +883,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
           return {
             solidId: solid.solidId,
             bodyType: solid.bodyType,
+            appearance: solid.appearance,
             artifactIds: solid.artifactIds,
             provenance: solid.provenance,
             suppressMeshEdges: solid.suppressMeshEdges,
@@ -839,6 +900,7 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
           solid.scene,
           solid.solidId,
           solid.bodyType,
+          solid.appearance,
           solid.artifactIds,
           solid.provenance
         )
@@ -2378,20 +2440,162 @@ export function OpenCascadeThreeScene({ diagnostic }: { diagnostic?: string }) {
           {exportError}
         </div>
       )}
-      <OpenCascadeSelectionFilterControls
-        flags={selectionFilterFlags}
-        onChange={(nextFlags) =>
-          setOpenCascadeSelectionFilter(
-            openCascadeSelectionFilterFromFlags(nextFlags)
-          )
-        }
-        onReset={() =>
-          setOpenCascadeSelectionFilter([
-            ...OPEN_CASCADE_DEFAULT_SELECTION_FILTER,
-          ])
-        }
+      <OpenCascadeRenderModeToggle
+        enabled={renderMode}
+        onChange={onRenderModeChange}
       />
+      {renderMode ? (
+        <OpenCascadeRenderControls
+          settings={renderSettings}
+          onChange={setRenderSettings}
+        />
+      ) : (
+        <OpenCascadeSelectionFilterControls
+          flags={selectionFilterFlags}
+          onChange={(nextFlags) =>
+            setOpenCascadeSelectionFilter(
+              openCascadeSelectionFilterFromFlags(nextFlags)
+            )
+          }
+          onReset={() =>
+            setOpenCascadeSelectionFilter([
+              ...OPEN_CASCADE_DEFAULT_SELECTION_FILTER,
+            ])
+          }
+        />
+      )}
     </div>
+  )
+}
+
+function OpenCascadeRenderModeToggle({
+  enabled,
+  onChange,
+}: {
+  enabled: boolean
+  onChange: (enabled: boolean) => void
+}) {
+  return (
+    <div className="pointer-events-auto absolute bottom-[7.25rem] right-3 rounded border border-chalkboard-30 bg-chalkboard-10/90 p-1 text-xs text-chalkboard-90 shadow-sm backdrop-blur-sm dark:border-chalkboard-80 dark:bg-chalkboard-100/90 dark:text-chalkboard-20">
+      <button
+        type="button"
+        aria-pressed={!enabled}
+        onClick={() => onChange(false)}
+        className={`rounded px-2 py-1 ${
+          !enabled
+            ? 'bg-primary text-chalkboard-10'
+            : 'text-chalkboard-70 hover:bg-chalkboard-20 dark:text-chalkboard-40 dark:hover:bg-chalkboard-90'
+        }`}
+      >
+        CAD
+      </button>
+      <button
+        type="button"
+        aria-pressed={enabled}
+        onClick={() => onChange(true)}
+        className={`rounded px-2 py-1 ${
+          enabled
+            ? 'bg-primary text-chalkboard-10'
+            : 'text-chalkboard-70 hover:bg-chalkboard-20 dark:text-chalkboard-40 dark:hover:bg-chalkboard-90'
+        }`}
+      >
+        Render
+      </button>
+    </div>
+  )
+}
+
+function OpenCascadeRenderControls({
+  settings,
+  onChange,
+}: {
+  settings: OpenCascadeRenderSettings
+  onChange: (settings: OpenCascadeRenderSettings) => void
+}) {
+  const update = (patch: Partial<OpenCascadeRenderSettings>) =>
+    onChange({ ...settings, ...patch })
+
+  return (
+    <div className="pointer-events-auto absolute bottom-3 left-3 flex max-w-[min(36rem,calc(100vw-2rem))] flex-wrap items-center gap-3 rounded border border-chalkboard-30 bg-chalkboard-10/90 px-3 py-2 text-xs text-chalkboard-90 shadow-sm backdrop-blur-sm dark:border-chalkboard-80 dark:bg-chalkboard-100/90 dark:text-chalkboard-20">
+      <span className="text-[10px] uppercase tracking-wide text-chalkboard-60 dark:text-chalkboard-50">
+        Render
+      </span>
+      <label className="flex items-center gap-1.5">
+        <span>Preset</span>
+        <select
+          value={settings.preset}
+          onChange={(event) =>
+            update({
+              preset: event.currentTarget.value as OpenCascadeRenderPreset,
+            })
+          }
+          className="rounded border border-chalkboard-30 bg-chalkboard-10 px-1.5 py-1 text-xs dark:border-chalkboard-70 dark:bg-chalkboard-90"
+        >
+          <option value="studio">Studio</option>
+          <option value="polished">Polished</option>
+          <option value="matte">Matte</option>
+        </select>
+      </label>
+      <OpenCascadeRenderSlider
+        label="Exposure"
+        min={0.6}
+        max={1.8}
+        step={0.05}
+        value={settings.exposure}
+        onChange={(exposure) => update({ exposure })}
+      />
+      <OpenCascadeRenderSlider
+        label="Environment"
+        min={0}
+        max={2.5}
+        step={0.05}
+        value={settings.environmentIntensity}
+        onChange={(environmentIntensity) => update({ environmentIntensity })}
+      />
+      <label className="flex cursor-pointer items-center gap-1.5">
+        <input
+          type="checkbox"
+          checked={settings.floor}
+          onChange={(event) => update({ floor: event.currentTarget.checked })}
+          className="h-3 w-3"
+        />
+        Floor
+      </label>
+    </div>
+  )
+}
+
+function OpenCascadeRenderSlider({
+  label,
+  min,
+  max,
+  step,
+  value,
+  onChange,
+}: {
+  label: string
+  min: number
+  max: number
+  step: number
+  value: number
+  onChange: (value: number) => void
+}) {
+  return (
+    <label className="flex items-center gap-1.5">
+      <span>{label}</span>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(event) => onChange(Number(event.currentTarget.value))}
+        className="w-24 cursor-pointer"
+      />
+      <span className="w-8 text-right tabular-nums text-chalkboard-60 dark:text-chalkboard-50">
+        {value.toFixed(2)}
+      </span>
+    </label>
   )
 }
 
@@ -4977,11 +5181,305 @@ function makeOpenCascadeLightRoot() {
   const lightRoot = new Group()
   lightRoot.name = OPEN_CASCADE_LIGHT_ROOT
   const key = new DirectionalLight('#ffffff', 2.8)
+  key.name = 'open-cascade-key-light'
   key.position.set(5, -6, 8)
   const fill = new DirectionalLight('#c8d7ff', 1.0)
+  fill.name = 'open-cascade-fill-light'
   fill.position.set(-5, 4, 5)
-  lightRoot.add(key, fill)
+  const sky = new HemisphereLight('#d8e8ff', '#5f6470', 0)
+  sky.name = 'open-cascade-render-sky-light'
+  lightRoot.add(key, fill, sky)
   return lightRoot
+}
+
+function makeOpenCascadeRenderStageRoot() {
+  const root = new Group()
+  root.name = OPEN_CASCADE_RENDER_STAGE_ROOT
+  const floor = new Mesh(
+    new PlaneGeometry(1, 1),
+    new ShadowMaterial({
+      color: '#000000',
+      opacity: 0.22,
+      transparent: true,
+    })
+  )
+  floor.name = 'open-cascade-render-floor'
+  floor.receiveShadow = true
+  root.add(floor)
+  root.visible = false
+  return root
+}
+
+function applyOpenCascadeRenderMode({
+  sceneInfra,
+  style,
+  renderMode,
+  settings,
+  modelRadius,
+  modelCenter,
+  environmentTexture,
+}: {
+  sceneInfra: SceneInfra
+  style: OpenCascadeSceneStyle
+  renderMode: boolean
+  settings: OpenCascadeRenderSettings
+  modelRadius: number
+  modelCenter: Vector3
+  environmentTexture?: CanvasTexture
+}) {
+  const { scene, renderer } = sceneInfra
+  const solidRoot = scene.getObjectByName(OPEN_CASCADE_SOLID_ROOT)
+  const lightRoot = scene.getObjectByName(OPEN_CASCADE_LIGHT_ROOT)
+  const renderStageRoot = scene.getObjectByName(OPEN_CASCADE_RENDER_STAGE_ROOT)
+
+  renderer.toneMapping = renderMode ? ACESFilmicToneMapping : NoToneMapping
+  renderer.toneMappingExposure = renderMode ? settings.exposure : 1
+  renderer.outputColorSpace = SRGBColorSpace
+  renderer.shadowMap.enabled = renderMode
+
+  scene.environment = renderMode ? environmentTexture || null : null
+  ;(scene as Scene & { environmentIntensity?: number }).environmentIntensity =
+    renderMode ? settings.environmentIntensity : 1
+  scene.background = new Color(
+    renderMode ? renderBackgroundColor(settings.preset) : style.backgroundColor
+  )
+
+  applyOpenCascadeChromeVisibility(scene, !renderMode)
+
+  if (lightRoot instanceof Group) {
+    updateOpenCascadeRenderLights(lightRoot, renderMode, settings)
+  }
+  if (renderStageRoot instanceof Group) {
+    updateOpenCascadeRenderStage(
+      renderStageRoot,
+      renderMode && settings.floor,
+      modelCenter,
+      modelRadius
+    )
+  }
+  if (solidRoot instanceof Group) {
+    solidRoot.traverse((object) => {
+      if (
+        object instanceof LineSegments &&
+        object.userData.openCascadeEdgeLines === true
+      ) {
+        setOpenCascadeRenderHidden(object, renderMode)
+      }
+      if (!(object instanceof Mesh)) {
+        return
+      }
+      object.castShadow =
+        renderMode && object.userData.openCascadeBackfaceVisual !== true
+      object.receiveShadow = renderMode
+      if (renderMode) {
+        updateOpenCascadeRenderMaterial(object, style, settings)
+      } else if (object.userData.openCascadeBackfaceVisual !== true) {
+        updateOpenCascadeBodyMeshMaterial(object, style)
+      }
+    })
+  }
+}
+
+function applyOpenCascadeChromeVisibility(scene: Scene, visible: boolean) {
+  for (const rootName of [
+    OPEN_CASCADE_PROFILE_ROOT,
+    OPEN_CASCADE_PICK_ROOT,
+    OPEN_CASCADE_REGION_PICK_ROOT,
+    OPEN_CASCADE_HIGHLIGHT_ROOT,
+    OPEN_CASCADE_SKETCH_LINE_ROOT,
+    OPEN_CASCADE_SKETCH_POINT_ROOT,
+    OPEN_CASCADE_EDGE_CANDIDATE_ROOT,
+    OPEN_CASCADE_SELECTED_EDGE_ROOT,
+    OPEN_CASCADE_GUIDE_ROOT,
+    OPEN_CASCADE_OFFSET_PLANE_ROOT,
+    OPEN_CASCADE_GDT_ANNOTATION_ROOT,
+    OPEN_CASCADE_PREVIEW_ROOT,
+    OPEN_CASCADE_PREVIEW_HANDLE_ROOT,
+  ]) {
+    const root = scene.getObjectByName(rootName)
+    if (root) {
+      setOpenCascadeRenderHidden(root, !visible)
+    }
+  }
+}
+
+function setOpenCascadeRenderHidden(object: Object3D, hidden: boolean) {
+  const previousVisibleKey = 'openCascadeRenderPreviousVisible'
+  if (hidden) {
+    if (object.userData[previousVisibleKey] === undefined) {
+      object.userData[previousVisibleKey] = object.visible
+    }
+    object.visible = false
+    return
+  }
+
+  const previousVisible = object.userData[previousVisibleKey]
+  if (typeof previousVisible === 'boolean') {
+    object.visible = previousVisible
+    delete object.userData[previousVisibleKey]
+  }
+}
+
+function updateOpenCascadeRenderLights(
+  lightRoot: Group,
+  renderMode: boolean,
+  settings: OpenCascadeRenderSettings
+) {
+  const key = lightRoot.getObjectByName('open-cascade-key-light')
+  const fill = lightRoot.getObjectByName('open-cascade-fill-light')
+  const sky = lightRoot.getObjectByName('open-cascade-render-sky-light')
+  if (key instanceof DirectionalLight) {
+    key.intensity = renderMode ? 6.5 * settings.exposure : 2.8
+    key.castShadow = renderMode
+    key.shadow.mapSize.set(2048, 2048)
+    key.shadow.camera.near = 0.1
+    key.shadow.camera.far = 1000
+    key.shadow.camera.left = -80
+    key.shadow.camera.right = 80
+    key.shadow.camera.top = 80
+    key.shadow.camera.bottom = -80
+  }
+  if (fill instanceof DirectionalLight) {
+    fill.intensity = renderMode ? 1.7 : 1.0
+    fill.castShadow = false
+  }
+  if (sky instanceof HemisphereLight) {
+    sky.intensity = renderMode ? 1.05 : 0
+  }
+}
+
+function updateOpenCascadeRenderStage(
+  root: Group,
+  visible: boolean,
+  modelCenter: Vector3,
+  modelRadius: number
+) {
+  root.visible = visible
+  const floor = root.children.find(
+    (child): child is Mesh => child instanceof Mesh
+  )
+  if (!floor) {
+    return
+  }
+  const radius = Math.max(modelRadius, 1)
+  floor.scale.setScalar(radius * 4)
+  floor.position.set(
+    modelCenter.x,
+    modelCenter.y,
+    modelCenter.z - radius * 0.55
+  )
+}
+
+function makeOpenCascadeRenderEnvironmentTexture(
+  preset: OpenCascadeRenderPreset
+) {
+  const canvas = document.createElement('canvas')
+  canvas.width = 512
+  canvas.height = 256
+  const context = canvas.getContext('2d')
+  if (context) {
+    const gradient = context.createLinearGradient(
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    )
+    if (preset === 'polished') {
+      gradient.addColorStop(0, '#f7fbff')
+      gradient.addColorStop(0.45, '#9fb7d8')
+      gradient.addColorStop(1, '#151821')
+    } else if (preset === 'matte') {
+      gradient.addColorStop(0, '#f4eee3')
+      gradient.addColorStop(0.52, '#b9c0bd')
+      gradient.addColorStop(1, '#262a2c')
+    } else {
+      gradient.addColorStop(0, '#eff6ff')
+      gradient.addColorStop(0.5, '#8da3c2')
+      gradient.addColorStop(1, '#1b2230')
+    }
+    context.fillStyle = gradient
+    context.fillRect(0, 0, canvas.width, canvas.height)
+    context.fillStyle = 'rgba(255,255,255,0.28)'
+    context.fillRect(canvas.width * 0.08, 0, canvas.width * 0.22, canvas.height)
+    context.fillStyle = 'rgba(255,255,255,0.18)'
+    context.fillRect(canvas.width * 0.66, 0, canvas.width * 0.12, canvas.height)
+  }
+  const texture = new CanvasTexture(canvas)
+  texture.mapping = EquirectangularReflectionMapping
+  texture.colorSpace = SRGBColorSpace
+  return texture
+}
+
+function renderBackgroundColor(preset: OpenCascadeRenderPreset) {
+  if (preset === 'polished') {
+    return 0xdfe6ef
+  }
+  if (preset === 'matte') {
+    return 0xe6e1d8
+  }
+  return 0xe8edf5
+}
+
+function updateOpenCascadeRenderMaterial(
+  mesh: Mesh,
+  style: OpenCascadeSceneStyle,
+  settings: OpenCascadeRenderSettings
+) {
+  const appearance = openCascadeAppearanceForMesh(mesh)
+  if (mesh.userData.openCascadeBackfaceVisual === true) {
+    updateOpenCascadeMeshMaterial(
+      mesh,
+      style.backfaceColor ||
+        appearance?.color ||
+        colorNumberToCss(style.edgeColor),
+      appearance?.roughness ?? 0.82,
+      appearance?.metalness ?? 0,
+      appearance ? Math.max(appearance.opacity * 0.72, 0) : 0.72
+    )
+    return
+  }
+  const material = renderMaterialForPreset(settings, appearance)
+  disposeMaterial(mesh.material)
+  mesh.material = material
+}
+
+function renderMaterialForPreset(
+  settings: OpenCascadeRenderSettings,
+  appearance: OpenCascadeAppearance | undefined
+) {
+  const opacity = appearance?.opacity ?? 1
+  if (settings.preset === 'polished') {
+    return new MeshStandardMaterial({
+      color: appearance?.color || '#b8bec8',
+      roughness: appearance?.roughness ?? 0.18,
+      metalness: appearance?.metalness ?? 0.72,
+      transparent: opacity < 1,
+      opacity,
+      envMapIntensity: settings.environmentIntensity,
+    })
+  }
+  if (settings.preset === 'matte') {
+    return new MeshStandardMaterial({
+      color: appearance?.color || '#c6c0b3',
+      roughness: appearance?.roughness ?? 0.78,
+      metalness: appearance?.metalness ?? 0.05,
+      transparent: opacity < 1,
+      opacity,
+      envMapIntensity: settings.environmentIntensity * 0.45,
+    })
+  }
+  return new MeshStandardMaterial({
+    color: appearance?.color || '#9da9b8',
+    roughness: appearance?.roughness ?? 0.34,
+    metalness: appearance?.metalness ?? 0.28,
+    transparent: opacity < 1,
+    opacity,
+    envMapIntensity: settings.environmentIntensity * 0.75,
+  })
+}
+
+function colorNumberToCss(color: number) {
+  return `#${color.toString(16).padStart(6, '0')}`
 }
 
 function getOpenCascadeSceneStyle(
@@ -5195,11 +5693,13 @@ function tagOpenCascadeBodyVisuals(
   root: Object3D,
   solidId: string,
   bodyType: 'solid' | 'surface',
+  appearance: OpenCascadeAppearance | undefined,
   artifactIds: string[],
   provenance: OpenCascadeEntityProvenance | undefined
 ) {
   root.userData.openCascadeSolidId = solidId
   root.userData.openCascadeBodyType = bodyType
+  root.userData.openCascadeAppearance = appearance
   root.userData.openCascadeArtifactIds = artifactIds
   root.userData.openCascadeProvenance = provenance
   root.layers.set(SKETCH_LAYER)
@@ -5210,6 +5710,7 @@ function tagOpenCascadeBodyVisuals(
     object.userData.openCascadeBodyVisual = true
     object.userData.openCascadeSolidId = solidId
     object.userData.openCascadeBodyType = bodyType
+    object.userData.openCascadeAppearance = appearance
     object.userData.openCascadeArtifactIds = artifactIds
     object.userData.openCascadeProvenance = provenance
     object.layers.set(SKETCH_LAYER)
@@ -5252,7 +5753,14 @@ function updateOpenCascadeBodyMeshMaterial(
   mesh: Mesh,
   style: OpenCascadeSceneStyle
 ) {
-  updateOpenCascadeMeshMaterial(mesh, style.surfaceColor, 0.58, 0.04)
+  const appearance = openCascadeAppearanceForMesh(mesh)
+  updateOpenCascadeMeshMaterial(
+    mesh,
+    appearance?.color || style.surfaceColor,
+    appearance?.roughness ?? 0.58,
+    appearance?.metalness ?? 0.04,
+    appearance?.opacity ?? 0.96
+  )
   if (mesh.userData.openCascadeBodyType === 'surface') {
     ensureOpenCascadeBackfaceMesh(mesh, style)
   } else {
@@ -5265,20 +5773,33 @@ function ensureOpenCascadeBackfaceMesh(
   style: OpenCascadeSceneStyle
 ) {
   removeOpenCascadeBackfaceMeshes(mesh)
+  const appearance = openCascadeAppearanceForMesh(mesh)
   const material = new MeshStandardMaterial({
-    color: style.backfaceColor || style.edgeColor,
-    roughness: 0.58,
-    metalness: 0.04,
+    color:
+      style.backfaceColor ||
+      appearance?.color ||
+      colorNumberToCss(style.edgeColor),
+    roughness: appearance?.roughness ?? 0.58,
+    metalness: appearance?.metalness ?? 0.04,
     transparent: true,
-    opacity: 0.96,
+    opacity: appearance?.opacity ?? 0.96,
     depthWrite: true,
     side: BackSide,
   })
   const backfaceMesh = new Mesh(mesh.geometry.clone(), material)
   backfaceMesh.name = `${mesh.name || 'open-cascade-surface'}:backface`
   backfaceMesh.userData.openCascadeBackfaceVisual = true
+  backfaceMesh.userData.openCascadeAppearance = appearance
   backfaceMesh.layers.set(SKETCH_LAYER)
   mesh.add(backfaceMesh)
+}
+
+function openCascadeAppearanceForMesh(
+  mesh: Mesh
+): OpenCascadeAppearance | undefined {
+  return mesh.userData.openCascadeAppearance as
+    | OpenCascadeAppearance
+    | undefined
 }
 
 function removeOpenCascadeBackfaceMeshes(mesh: Mesh) {
@@ -5339,9 +5860,17 @@ function openCascadeVisibleSolidSignature(
   return solids
     .map(
       (solid) =>
-        `${solid.solidId}:${solid.bodyType}:${hashBytes32(solid.bytes)}`
+        `${solid.solidId}:${solid.bodyType}:${appearanceSignature(
+          solid.appearance
+        )}:${hashBytes32(solid.bytes)}`
     )
     .join('|')
+}
+
+function appearanceSignature(appearance: OpenCascadeAppearance | undefined) {
+  return appearance
+    ? `${appearance.color}:${appearance.opacity}:${appearance.metalness}:${appearance.roughness}:${appearance.ambientOcclusion}`
+    : ''
 }
 
 function hashBytes32(bytes: Uint8Array): string {
