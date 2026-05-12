@@ -1056,8 +1056,11 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           inputType: 'options',
           required: true,
           options: () => {
+            const currentComponents = componentDefinitions(
+              commandProps.kclManager
+            )
             const providedOptions: { name: string; value: string }[] =
-              components.map((component) => ({
+              currentComponents.map((component) => ({
                 name: `Component: ${component.name}`,
                 value: `${INSERT_COMPONENT_PREFIX}${component.name}`,
               }))
@@ -1161,7 +1164,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
 
         if (target.startsWith(INSERT_COMPONENT_PREFIX)) {
           const componentName = target.slice(INSERT_COMPONENT_PREFIX.length)
-          const component = components.find(
+          const component = componentDefinitions(commandProps.kclManager).find(
             (component) => component.name === componentName
           )
           if (!component) {

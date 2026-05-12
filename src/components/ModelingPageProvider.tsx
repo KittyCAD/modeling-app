@@ -1,19 +1,19 @@
 import React, { use, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
+import { useSignals } from '@preact/signals-react/runtime'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useMenuListener } from '@src/hooks/useMenu'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { createNamedViewsCommand } from '@src/lib/commandBarConfigs/namedViewsConfig'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
+import { createStandardViewsCommands } from '@src/lib/commandBarConfigs/standardViewsConfig'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
+import fsZds from '@src/lib/fs-zds'
 import { kclCommands } from '@src/lib/kclCommands'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
-import { useApp, useSingletons } from '@src/lib/boot'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
-import { createStandardViewsCommands } from '@src/lib/commandBarConfigs/standardViewsConfig'
-import fsZds from '@src/lib/fs-zds'
-import { useSignals } from '@preact/signals-react/runtime'
 
 /**
  * FileMachineProvider moved to ModelingPageProvider.
@@ -37,6 +37,7 @@ export const ModelingPageProvider = ({
   const settingsActor = settings.actor
   const projectIORef = project?.projectIORefSignal
   const file = project?.executingFileEntry.value
+  const editorCode = project?.executingEditor.value?.state.doc.toString() ?? ''
   const filePath = useAbsoluteFilePath()
 
   useEffect(() => {
@@ -176,7 +177,7 @@ export const ModelingPageProvider = ({
       projectData: {
         project: projectIORef?.value,
         file,
-        code: project?.executingEditor.value?.state.doc.toString() ?? '',
+        code: editorCode,
       },
       kclManager,
       settings: {
@@ -190,7 +191,7 @@ export const ModelingPageProvider = ({
       wasmInstance,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclManager, project, file])
+  }, [kclManager, project, file, editorCode])
 
   useEffect(() => {
     commands.send({

@@ -4,9 +4,10 @@ import {
   addParameterToComponentSource,
   componentKclValueOptionsForAst,
   deleteParameterFromComponentSource,
+  kclCommands,
   renameParameterInComponentSource,
 } from '@src/lib/kclCommands'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 function rangeOf(code: string, value: string, fromIndex = 0) {
   const start = code.indexOf(value, fromIndex)
@@ -321,6 +322,85 @@ mySurfaceLine = component(
 )`)
     expect(newCode).toContain(
       'extrude001 = extrude(sketch001.line1, length = length'
+    )
+  })
+})
+
+describe('Insert command components', () => {
+  it('reads component targets from the current AST when an existing command is invoked', async () => {
+    const emptyAst = {
+      type: 'Program',
+      start: 0,
+      end: 0,
+      body: [],
+    } as unknown as Node<Program>
+    const kclManager = {
+      ast: emptyAst,
+      code: '',
+      fileSettings: {},
+      isExecuting: false,
+      safeParse: vi.fn().mockResolvedValue(emptyAst),
+      updateCodeEditor: vi.fn(),
+      variables: {},
+      wasmInstancePromise: Promise.resolve({}),
+    }
+    const commands = kclCommands({
+      authToken: '',
+      isRestrictedToOrg: false,
+      kclManager: kclManager as never,
+      password: undefined,
+      project: undefined,
+      projectData: { code: '' },
+      settings: { defaultUnit: 'mm' },
+      specialPropsForInsertCommand: { providedOptions: [] },
+      systemIOActor: {
+        getSnapshot: () => ({ context: {} }),
+      } as never,
+      wasmInstance: {} as never,
+    })
+    const insert = commands.find((command) => command.name === 'Insert')
+    if (
+      !insert ||
+      !insert.args ||
+      !('target' in insert.args) ||
+      insert.args.target.inputType !== 'options'
+    ) {
+      throw new Error('Insert command not found')
+    }
+
+    const code = `mySurfaceLine = component() {
+  extrude001 = extrude(length = 5)
+  return extrude001
+}
+`
+    kclManager.code = code
+    kclManager.ast = componentAst({
+      code,
+      componentName: 'mySurfaceLine',
+      values: [],
+    })
+
+    const options =
+      typeof insert.args.target.options === 'function'
+        ? insert.args.target.options(
+            { argumentsToSubmit: {} } as never,
+            undefined
+          )
+        : insert.args.target.options
+
+    expect(options).toContainEqual({
+      name: 'Component: mySurfaceLine',
+      value: 'component:mySurfaceLine',
+    })
+
+    await insert.onSubmit?.({
+      target: 'component:mySurfaceLine',
+      localName: 'surfaceB',
+    })
+
+    expect(kclManager.updateCodeEditor).toHaveBeenCalledWith(
+      `${code.trimEnd()}\nsurfaceB = clone(mySurfaceLine)\n`,
+      expect.objectContaining({ shouldExecute: true })
     )
   })
 })
