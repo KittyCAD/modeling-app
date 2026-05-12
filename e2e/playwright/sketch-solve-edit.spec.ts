@@ -197,7 +197,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
 
     await test.step('Enter sketch edit mode from feature tree', async () => {
-      await toolbar.editSketch(0)
+      await toolbar.editSketch(1)
       await expect(toolbar.exitSketchBtn).toBeEnabled()
     })
 
