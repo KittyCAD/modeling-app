@@ -8,8 +8,6 @@ lint:
     cargo clippy --workspace --all-targets --all-features -- -D warnings
     # Default features.
     cargo clippy -p kcl-lib --all-targets -- -D warnings
-    # Minimal features that actually still build.
-    cargo clippy -p kcl-lib --all-targets --no-default-features --features engine,cli -- -D warnings
 
 lint-fix:
     cargo clippy --workspace --all-targets --all-features --fix

@@ -769,6 +769,10 @@ class UnitVolume(Enum):
     r"""
     The valid types of volume units.
     """
+    CubicMillimeters = ...
+    r"""
+    Cubic millimeters (mm³)
+    """
     CubicCentimeters = ...
     r"""
     Cubic centimeters (cc or cm³) <https://en.wikipedia.org/wiki/Cubic_centimeter>
