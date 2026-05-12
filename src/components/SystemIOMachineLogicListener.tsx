@@ -289,7 +289,13 @@ export function SystemIOMachineLogicListener() {
           .then((openedEditors) => {
             openedEditors.forEach((editor, index) => {
               const requestedCode = payload.files[index].requestedCode
-              editor.updateCodeEditor(requestedCode)
+              editor.updateCodeEditor(requestedCode, {
+                shouldExecute: false,
+                shouldClearHistory: false,
+                shouldAddToHistory: true,
+                shouldWriteToDisk: true,
+                shouldResetCamera: false,
+              })
             })
           })
           .catch((error) => {
