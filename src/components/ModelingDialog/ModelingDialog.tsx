@@ -386,6 +386,9 @@ export function ModelingDialog() {
   const isCheckingArguments = commandBarState.matches(
     'Checking Arguments for Dialog'
   )
+  const submitDisabled = isSubmitting || isCheckingArguments
+  const submitBgClassName = submitDisabled ? '!bg-3' : '!bg-primary'
+  const submitIconClassName = submitDisabled ? '!text-3' : '!text-chalkboard-10'
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -839,15 +842,15 @@ export function ModelingDialog() {
               Element="button"
               type="submit"
               tabIndex={0}
-              className="w-fit !p-0 rounded-sm hover:brightness-110 hover:shadow focus:outline-current bg-primary border-primary text-chalkboard-10"
-              disabled={isSubmitting || isCheckingArguments}
+              className={`w-fit !p-0 rounded-sm hover:brightness-110 hover:shadow focus:outline-current ${submitBgClassName}`}
+              disabled={submitDisabled}
               iconEnd={{
                 icon: 'checkmark',
-                bgClassName: 'p-1 rounded-sm bg-primary',
-                iconClassName: 'text-chalkboard-10',
+                bgClassName: `p-1 rounded-sm ${submitBgClassName}`,
+                iconClassName: submitIconClassName,
               }}
             >
-              <span className="pl-1.5 pr-1 text-xs">
+              <span className={`pl-2 ${submitIconClassName}`}>
                 {isCheckingArguments ? 'Submitting...' : 'Submit'}
               </span>
             </ActionButton>
