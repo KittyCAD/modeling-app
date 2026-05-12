@@ -36,6 +36,17 @@ function findConstraintsDropdown() {
   )
 }
 
+function findModelingToolbarItem(id: string) {
+  const items = buildToolbarConfig({
+    send: () => {},
+  }).modeling.items
+
+  return items.find(
+    (item): item is Extract<(typeof items)[number], { id: string }> =>
+      item !== 'break' && typeof item !== 'string' && item.id === id
+  )
+}
+
 describe('toolbar state helpers', () => {
   test('keeps the sketch solve toolbar visible while animating into sketch solve', () => {
     expect(
@@ -131,6 +142,23 @@ describe('toolbar state helpers', () => {
       perpendicularConstraintTool: 'perpendicular',
       fixedConstraintTool: 'fix',
     })
+  })
+
+  test('exposes component creation next to insert without disabling insert', () => {
+    const toolbarConfig = buildToolbarConfig({
+      send: () => {},
+    })
+    const modelingIds = toolbarConfig.modeling.items
+      .filter((item) => item !== 'break' && typeof item !== 'string')
+      .map((item) => item.id)
+
+    expect(modelingIds.indexOf('create-component')).toBe(
+      modelingIds.indexOf('insert') - 1
+    )
+
+    const insertItem = findModelingToolbarItem('insert')
+    expect(insertItem).toBeDefined()
+    expect(insertItem && 'disabled' in insertItem).toBe(false)
   })
 
   test('keeps the sketch-solve constraints dropdown on its default visible items before use', () => {

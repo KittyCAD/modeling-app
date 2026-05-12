@@ -3,7 +3,6 @@ import { useMemo } from 'react'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
-import { isDesktop } from '@src/lib/isDesktop'
 import { useApp } from '@src/lib/boot'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { modelingMachine } from '@src/machines/modelingMachine'
@@ -993,6 +992,24 @@ export function buildToolbarConfig(
         },
         'break',
         {
+          id: 'create-component',
+          onClick: () =>
+            commands.send({
+              type: 'Find and select command',
+              data: { name: 'component.create', groupId: 'code' },
+            }),
+          icon: 'plus',
+          status: 'experimental',
+          title: 'Create Component',
+          description: 'Wrap the selected geometry into a reusable component.',
+          links: [
+            {
+              label: 'API docs',
+              url: withSiteBaseURL('/docs/kcl-lang/modules'),
+            },
+          ],
+        },
+        {
           id: 'insert',
           onClick: () =>
             commands.send({
@@ -1002,9 +1019,9 @@ export function buildToolbarConfig(
           hotkey: 'I',
           icon: 'import',
           status: 'available',
-          disabled: () => !isDesktop(),
           title: 'Insert',
-          description: 'Insert from a file in the current project directory.',
+          description:
+            'Insert a component from this file or a file from the current project directory.',
           links: [
             {
               label: 'API docs',

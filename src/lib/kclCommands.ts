@@ -1,6 +1,7 @@
 import type { UnitLength } from '@kittycad/lib'
 import toast from 'react-hot-toast'
 
+import type { BodyItem } from '@rust/kcl-lib/bindings/BodyItem'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { KclManager } from '@src/lang/KclManager'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
@@ -20,7 +21,12 @@ import {
   recast,
 } from '@src/lang/wasm'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
-import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
+import type {
+  Command,
+  CommandArgument,
+  CommandArgumentOption,
+  KclCommandValue,
+} from '@src/lib/commandTypes'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_EXPERIMENTAL_FEATURES,
@@ -28,6 +34,7 @@ import {
 } from '@src/lib/constants'
 import { getPathFilenameInVariableCase } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
+import { isDesktop } from '@src/lib/isDesktop'
 import { copyFileShareLink } from '@src/lib/links'
 import type { Project } from '@src/lib/project'
 import { baseUnitsUnion, warningLevels } from '@src/lib/settings/settingsTypes'
@@ -60,8 +67,165 @@ interface KclCommandConfig {
 const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
 const EXECUTING_MESSAGE =
   'Cannot run command while code is executing. Please try again later.'
+const INSERT_FILE_PREFIX = 'file:'
+const INSERT_COMPONENT_PREFIX = 'component:'
+
+type ComponentParam = {
+  name: string
+  defaultCode: string
+}
+
+type ComponentDefinition = {
+  name: string
+  params: ComponentParam[]
+}
+
+function variableNameExists(kclManager: KclManager, name: string): boolean {
+  return kclManager.ast.body.some(
+    (item) =>
+      item.type === 'VariableDeclaration' && item.declaration.id.name === name
+  )
+}
+
+function nextAvailableVariableName(kclManager: KclManager, baseName: string) {
+  if (!variableNameExists(kclManager, baseName)) return baseName
+
+  let index = 2
+  while (variableNameExists(kclManager, `${baseName}${index}`)) {
+    index++
+  }
+  return `${baseName}${index}`
+}
+
+function componentDefinitions(kclManager: KclManager): ComponentDefinition[] {
+  return kclManager.ast.body.flatMap((item) => {
+    if (
+      item.type !== 'VariableDeclaration' ||
+      item.declaration.init.type !== 'ComponentBlock'
+    ) {
+      return []
+    }
+
+    const params = item.declaration.init.arguments.flatMap((arg) => {
+      if (!arg.label) return []
+      return {
+        name: arg.label.name,
+        defaultCode: kclManager.code.slice(arg.arg.start, arg.arg.end),
+      }
+    })
+    return {
+      name: item.declaration.id.name,
+      params,
+    }
+  })
+}
+
+function selectedTopLevelBodyItems(kclManager: KclManager): BodyItem[] {
+  const selectedRanges = kclManager.selectionRanges.graphSelections.flatMap(
+    (selection) => {
+      const range = selection.codeRef.range
+      if (range[0] === undefined || range[1] === undefined) return []
+      return [[range[0], range[1]] as const]
+    }
+  )
+
+  return kclManager.ast.body.filter((item) =>
+    selectedRanges.some(
+      ([start, end]) => item.start <= start && item.end >= end
+    )
+  )
+}
+
+function createComponentFromSelection(
+  kclManager: KclManager,
+  componentName: string
+): string | Error {
+  if (variableNameExists(kclManager, componentName)) {
+    return new Error(`A variable named ${componentName} already exists.`)
+  }
+
+  const selectedItems = selectedTopLevelBodyItems(kclManager)
+  if (selectedItems.length === 0) {
+    return new Error('Select one or more top-level operations first.')
+  }
+
+  const bodyIndexes = selectedItems.map((item) =>
+    kclManager.ast.body.findIndex((candidate) => candidate === item)
+  )
+  const minIndex = Math.min(...bodyIndexes)
+  const maxIndex = Math.max(...bodyIndexes)
+  if (maxIndex - minIndex + 1 !== selectedItems.length) {
+    return new Error(
+      'Create Component currently requires a contiguous selection.'
+    )
+  }
+
+  const orderedItems = [...selectedItems].sort(
+    (left, right) => left.start - right.start
+  )
+  const lastItem = orderedItems[orderedItems.length - 1]
+  if (lastItem.type !== 'VariableDeclaration') {
+    return new Error(
+      'The last selected operation must assign a value that can be returned.'
+    )
+  }
+
+  const returnName = lastItem.declaration.id.name
+  const bodyCode = orderedItems
+    .map((item) => kclManager.code.slice(item.start, item.end))
+    .join('\n')
+    .split('\n')
+    .map((line) => (line.length > 0 ? `  ${line}` : line))
+    .join('\n')
+  const replacement = `${componentName} = component() {\n${bodyCode}\n  return ${returnName}\n}`
+  const start = orderedItems[0].start
+  const end = orderedItems[orderedItems.length - 1].end
+  return (
+    kclManager.code.slice(0, start) + replacement + kclManager.code.slice(end)
+  )
+}
+
+function insertComponentInstanceSource(
+  localName: string,
+  component: ComponentDefinition,
+  overrides: Record<string, KclCommandValue | undefined>
+) {
+  const overrideArgs = component.params.flatMap((param) => {
+    const override = overrides[param.name]
+    if (!override || override.valueText.trim() === param.defaultCode.trim()) {
+      return []
+    }
+    return `${param.name} = ${override.valueText}`
+  })
+  const expression =
+    overrideArgs.length > 0
+      ? `${component.name}(${overrideArgs.join(', ')})`
+      : `clone(${component.name})`
+
+  return `${localName} = ${expression}`
+}
 
 export function kclCommands(commandProps: KclCommandConfig): Command[] {
+  const components = componentDefinitions(commandProps.kclManager)
+  const componentOverrideArgs = Object.fromEntries(
+    components.flatMap((component) =>
+      component.params.map((param) => [
+        `componentOverride:${component.name}:${param.name}`,
+        {
+          displayName: param.name,
+          inputType: 'kcl',
+          required: false,
+          skip: false,
+          hidden: (context: { argumentsToSubmit: Record<string, unknown> }) =>
+            context.argumentsToSubmit.target !==
+            `${INSERT_COMPONENT_PREFIX}${component.name}`,
+          defaultValue: param.defaultCode,
+          createVariable: 'disallow',
+        } satisfies CommandArgument<KclCommandValue>,
+      ])
+    )
+  )
+
   return [
     {
       name: 'set-file-units',
@@ -189,10 +353,10 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
     },
     {
       name: 'Insert',
-      description: 'Insert from a file in the current project directory',
+      description:
+        'Insert a component from this file or a file from the current project directory',
       icon: 'import',
       groupId: 'code',
-      hide: 'web',
       needsReview: true,
       reviewValidation: async () => {
         if (commandProps.kclManager.isExecuting) {
@@ -200,11 +364,20 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         }
       },
       args: {
-        path: {
+        target: {
           inputType: 'options',
           required: true,
           options: () => {
-            const providedOptions: { name: string; value: string }[] = []
+            const providedOptions: { name: string; value: string }[] =
+              components.map((component) => ({
+                name: `Component: ${component.name}`,
+                value: `${INSERT_COMPONENT_PREFIX}${component.name}`,
+              }))
+
+            if (!isDesktop()) {
+              return providedOptions
+            }
+
             const context = commandProps.systemIOActor.getSnapshot().context
             const projectName = commandProps.project?.name
             const sep = fsZds.sep
@@ -218,19 +391,26 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
               })
               importableFiles.forEach((file) => {
                 providedOptions.push({
-                  name: file.replaceAll(sep, '/'),
-                  value: file.replaceAll(sep, '/'),
+                  name: `File: ${file.replaceAll(sep, '/')}`,
+                  value: `${INSERT_FILE_PREFIX}${file.replaceAll(sep, '/')}`,
                 })
               })
             }
             return providedOptions
           },
           validation: async ({ data }) => {
+            if (typeof data !== 'string') {
+              return 'Select a component or file to insert.'
+            }
+            if (data.startsWith(INSERT_COMPONENT_PREFIX)) {
+              return true
+            }
+            const path = data.slice(INSERT_FILE_PREFIX.length)
             const importExists = commandProps.kclManager.ast.body.find(
               (n) =>
                 n.type === 'ImportStatement' &&
-                ((n.path.type === 'Kcl' && n.path.filename === data.path) ||
-                  (n.path.type === 'Foreign' && n.path.path === data.path))
+                ((n.path.type === 'Kcl' && n.path.filename === path) ||
+                  (n.path.type === 'Foreign' && n.path.path === path))
             )
             if (importExists) {
               return 'This file is already imported, use the Clone command instead.'
@@ -244,31 +424,99 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           inputType: 'string',
           required: true,
           defaultValue: (context: CommandBarContext) => {
-            if (!context.argumentsToSubmit['path']) {
+            const target = context.argumentsToSubmit.target
+            if (typeof target !== 'string') {
               return
             }
 
-            const path = context.argumentsToSubmit['path'] as string
+            if (target.startsWith(INSERT_COMPONENT_PREFIX)) {
+              const componentName = target.slice(INSERT_COMPONENT_PREFIX.length)
+              return nextAvailableVariableName(
+                commandProps.kclManager,
+                `${componentName}Instance`
+              )
+            }
+
+            const path = target.slice(INSERT_FILE_PREFIX.length)
             return getPathFilenameInVariableCase(path)
           },
           validation: async ({ data }) => {
-            const variableExists =
-              commandProps.kclManager.variables['__mod_' + data.localName]
-            if (variableExists) {
+            const variableName =
+              typeof data === 'string' ? data : data?.localName
+            if (
+              typeof variableName !== 'string' ||
+              variableName.trim().length === 0
+            ) {
+              return 'Variable name is required.'
+            }
+            if (
+              variableNameExists(commandProps.kclManager, variableName) ||
+              commandProps.kclManager.variables['__mod_' + variableName]
+            ) {
               return 'This variable name is already in use.'
             }
 
             return true
           },
         },
+        ...componentOverrideArgs,
       },
-      onSubmit: (data) => {
+      onSubmit: async (data) => {
         if (!data) {
           return new Error(NO_INPUT_PROVIDED_MESSAGE)
         }
 
+        const { target, localName } = data
+        if (typeof target !== 'string' || typeof localName !== 'string') {
+          return new Error(NO_INPUT_PROVIDED_MESSAGE)
+        }
+
+        if (target.startsWith(INSERT_COMPONENT_PREFIX)) {
+          const componentName = target.slice(INSERT_COMPONENT_PREFIX.length)
+          const component = components.find(
+            (component) => component.name === componentName
+          )
+          if (!component) {
+            return new Error(`Could not find component ${componentName}.`)
+          }
+
+          const overrides: Record<string, KclCommandValue | undefined> = {}
+          for (const param of component.params) {
+            const key = `componentOverride:${component.name}:${param.name}`
+            const override = data[key]
+            if (
+              override &&
+              typeof override === 'object' &&
+              'valueText' in override
+            ) {
+              overrides[param.name] = override as KclCommandValue
+            }
+          }
+
+          const insertion = insertComponentInstanceSource(
+            localName,
+            component,
+            overrides
+          )
+          const newCode = `${commandProps.kclManager.code.trimEnd()}\n${insertion}\n`
+          const parsed = await commandProps.kclManager.safeParse(
+            newCode,
+            commandProps.kclManager.wasmInstancePromise
+          )
+          if (!parsed) {
+            return new Error('Failed to insert component instance.')
+          }
+
+          commandProps.kclManager.updateCodeEditor(newCode, {
+            shouldExecute: true,
+            shouldWriteToDisk: true,
+            shouldAddToHistory: true,
+          })
+          return
+        }
+
         const ast = commandProps.kclManager.ast
-        const { path, localName } = data
+        const path = target.slice(INSERT_FILE_PREFIX.length)
         const { modifiedAst, pathToNode } = addModuleImport({
           ast,
           path,
@@ -283,6 +531,62 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             skipErrorsOnMockExecution: true,
           }
         ).catch(reportRejection)
+      },
+    },
+    {
+      name: 'component.create',
+      displayName: 'Create Component',
+      description: 'Wrap the selected top-level operation into a component.',
+      icon: 'plus',
+      groupId: 'code',
+      needsReview: true,
+      reviewValidation: async () => {
+        if (commandProps.kclManager.isExecuting) {
+          return new Error(EXECUTING_MESSAGE)
+        }
+      },
+      args: {
+        componentName: {
+          inputType: 'string',
+          required: true,
+          defaultValue: () =>
+            nextAvailableVariableName(commandProps.kclManager, 'myComponent'),
+          validation: async ({ data }) => {
+            if (typeof data !== 'string' || data.trim().length === 0) {
+              return 'Component name is required.'
+            }
+            if (variableNameExists(commandProps.kclManager, data)) {
+              return 'This variable name is already in use.'
+            }
+            return true
+          },
+        },
+      },
+      onSubmit: async (data) => {
+        if (!data || typeof data.componentName !== 'string') {
+          return new Error(NO_INPUT_PROVIDED_MESSAGE)
+        }
+
+        const newCode = createComponentFromSelection(
+          commandProps.kclManager,
+          data.componentName
+        )
+        if (newCode instanceof Error) {
+          return newCode
+        }
+        const parsed = await commandProps.kclManager.safeParse(
+          newCode,
+          commandProps.kclManager.wasmInstancePromise
+        )
+        if (!parsed) {
+          return new Error('Failed to create component from selection.')
+        }
+
+        commandProps.kclManager.updateCodeEditor(newCode, {
+          shouldExecute: true,
+          shouldWriteToDisk: true,
+          shouldAddToHistory: true,
+        })
       },
     },
     {

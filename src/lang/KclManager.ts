@@ -2503,6 +2503,9 @@ export class KclManager extends File {
     this._selectionRanges = selectionRanges
     this._selectionRangesSignal.value = selectionRanges
   }
+  get selectionRanges() {
+    return this._selectionRanges
+  }
   set modelingSend(send: (eventInfo: ModelingMachineEvent) => void) {
     this._modelingSend = send
   }
