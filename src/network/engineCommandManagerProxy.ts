@@ -1,27 +1,27 @@
 import type { WebSocketResponse } from '@kittycad/lib'
+import { signal } from '@preact/signals-core'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
-import { signal } from '@preact/signals-core'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { OpenCascadePreviewHandleState } from '@src/lib/commandTypes'
-import type RustContext from '@src/lib/rustContext'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
-import type { DeepPartial } from '@src/lib/types'
+import type RustContext from '@src/lib/rustContext'
 import { reportRejection } from '@src/lib/trap'
+import type { DeepPartial } from '@src/lib/types'
 import { uuidv4 } from '@src/lib/utils'
 import { ConnectionManager } from '@src/network/connectionManager'
-import { type OpenCascadeManagerLike } from '@src/network/openCascadeWorkerClient'
 import {
   OcctWasmTransport,
   createDefaultOcctWasmCommandCore,
 } from '@src/network/occtWasmTransport'
 import type {
-  OpenCascadePlaneMeshes,
   OpenCascadeGdtAnnotationMeshes,
+  OpenCascadePlaneMeshes,
   OpenCascadeSketchLineMeshes,
   OpenCascadeVisibleSolidGlb,
 } from '@src/network/openCascadeCommandManager'
+import type { OpenCascadeManagerLike } from '@src/network/openCascadeWorkerClient'
 import type { ManagerTearDown } from '@src/network/utils'
 import {
   EngineCommandManagerEvents,
@@ -31,18 +31,19 @@ import {
 
 type StartArgs = Parameters<ConnectionManager['start']>[0]
 
+export type EngineCommandManagerProxyDeps = {
+  createOpenCascadeTransport?: typeof createOpenCascadeTransport
+}
+
 export class EngineCommandManagerProxy extends ConnectionManager {
-  readonly openCascadeTransport = createOpenCascadeTransport()
-  readonly openCascadeCommandManager = this.openCascadeTransport.commandCore
+  readonly openCascadeTransport: OcctWasmTransport
+  readonly openCascadeCommandManager: OpenCascadeManagerLike
   readonly latestOpenCascadePreviewVersion = signal(0)
   readonly latestOpenCascadePreviewStatus = signal<
     'idle' | 'running' | 'ready' | 'error'
   >('idle')
-  private openCascadePreviewTransport = createOpenCascadeTransport({
-    registerLatest: false,
-  })
-  private openCascadePreviewCommandManager =
-    this.openCascadePreviewTransport.commandCore
+  private openCascadePreviewTransport: OcctWasmTransport
+  private openCascadePreviewCommandManager: OpenCascadeManagerLike
   private openCascadePreviewRoutingManager: OpenCascadeManagerLike | undefined
   private openCascadePreviewRequestId = 0
   private openCascadePreviewRunQueue: Promise<void> = Promise.resolve()
@@ -58,6 +59,22 @@ export class EngineCommandManagerProxy extends ConnectionManager {
   private openCascadePreviewHandleState:
     | OpenCascadePreviewHandleState
     | undefined
+
+  constructor(
+    systemDeps: ConstructorParameters<typeof ConnectionManager>[0],
+    deps: EngineCommandManagerProxyDeps = {}
+  ) {
+    super(systemDeps)
+    const createTransport =
+      deps.createOpenCascadeTransport ?? createOpenCascadeTransport
+    this.openCascadeTransport = createTransport()
+    this.openCascadeCommandManager = this.openCascadeTransport.commandCore
+    this.openCascadePreviewTransport = createTransport({
+      registerLatest: false,
+    })
+    this.openCascadePreviewCommandManager =
+      this.openCascadePreviewTransport.commandCore
+  }
 
   get currentEngine() {
     return this.settings.engine
@@ -254,7 +271,7 @@ export class EngineCommandManagerProxy extends ConnectionManager {
     )
   }
 
-  waitForAllModelingCommands() {
+  waitForAllModelingCommands(): Promise<[WebSocketResponse][]> {
     if (this.isOpenCascade) {
       return this.openCascadeTransport.waitForAllModelingCommands()
     }
@@ -378,7 +395,7 @@ export class EngineCommandManagerProxy extends ConnectionManager {
       if (requestId === this.openCascadePreviewRequestId) {
         this.latestOpenCascadePreviewStatus.value = 'error'
       }
-      throw error
+      return Promise.reject(error)
     } finally {
       if (this.openCascadePreviewRoutingManager === previewManager) {
         this.openCascadePreviewRoutingManager = undefined

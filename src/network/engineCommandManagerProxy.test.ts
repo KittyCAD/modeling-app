@@ -1,14 +1,14 @@
 import { decode as msgpackDecode } from '@msgpack/msgpack'
-import { describe, expect, it, vi } from 'vitest'
 import { assertParse } from '@src/lang/wasm'
 import { ConnectionManager } from '@src/network/connectionManager'
-import { EngineCommandManagerProxy } from '@src/network/engineCommandManagerProxy'
+import type { EngineCommandManagerProxy } from '@src/network/engineCommandManagerProxy'
 import {
   OPEN_CASCADE_CIRCLE_EXTRUDE_KCL,
   OPEN_CASCADE_HELIX_KCL,
   OPEN_CASCADE_TRANSFORM_KCL,
 } from '@src/network/openCascadeProofFixture'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+import { describe, expect, it, vi } from 'vitest'
 
 const RANGE = JSON.stringify([0, 0, 0])
 const ID_MAP = '{}'
@@ -71,7 +71,8 @@ describe('EngineCommandManagerProxy', () => {
       }),
       ID_MAP
     )
-    const response = msgpackDecode(encoded!)
+    expect(encoded).toBeDefined()
+    const response = msgpackDecode(encoded as Uint8Array)
 
     expect(response).toMatchObject({
       success: true,

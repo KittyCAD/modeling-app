@@ -3,13 +3,17 @@ import { decode as msgpackDecode } from '@msgpack/msgpack'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import { uuidv4 } from '@src/lib/utils'
+import type { EngineTransport } from '@src/network/engineTransport'
+import {
+  OcctWasmCommandCoreAdapter,
+  type OcctWasmCoreModuleFactory,
+} from '@src/network/occtWasmCommandCore'
 import {
   OpenCascadeMainThreadClient,
-  OpenCascadeWorkerClient,
   type OpenCascadeManagerLike,
+  OpenCascadeWorkerClient,
   shouldUseOpenCascadeWorker,
 } from '@src/network/openCascadeWorkerClient'
-import type { EngineTransport } from '@src/network/engineTransport'
 import type { ManagerTearDown } from '@src/network/utils'
 
 export type OcctWasmCommandCore = OpenCascadeManagerLike
@@ -107,15 +111,58 @@ export class OcctWasmTransport implements EngineTransport {
     return msgpackDecode(encoded) as WebSocketResponse
   }
 
-  waitForAllModelingCommands() {
+  waitForAllModelingCommands(): Promise<[WebSocketResponse][]> {
+    const waitForAllModelingCommands = (
+      this.commandCore as {
+        waitForAllModelingCommands?: () => Promise<[WebSocketResponse][]>
+      }
+    ).waitForAllModelingCommands
+    if (waitForAllModelingCommands) {
+      return waitForAllModelingCommands.call(this.commandCore)
+    }
+
     return Promise.resolve([])
   }
 }
 
 export function createDefaultOcctWasmCommandCore(options?: {
   registerLatest?: boolean
+  customModuleFactory?: OcctWasmCoreModuleFactory
 }): OcctWasmCommandCore {
+  if (options?.customModuleFactory || shouldUseCustomOcctWasmCore()) {
+    return new OcctWasmCommandCoreAdapter(
+      options?.customModuleFactory ?? loadConfiguredOcctWasmCoreModule
+    )
+  }
+
   return shouldUseOpenCascadeWorker()
     ? new OpenCascadeWorkerClient()
     : new OpenCascadeMainThreadClient(options)
+}
+
+function shouldUseCustomOcctWasmCore() {
+  return import.meta.env.VITE_USE_CUSTOM_OCCT_WASM === 'true'
+}
+
+async function loadConfiguredOcctWasmCoreModule() {
+  const moduleUrl = import.meta.env.VITE_OCCT_WASM_CORE_URL
+  if (!moduleUrl) {
+    return Promise.reject(
+      new Error(
+        'VITE_USE_CUSTOM_OCCT_WASM is enabled but VITE_OCCT_WASM_CORE_URL is not set'
+      )
+    )
+  }
+
+  const imported = await import(/* @vite-ignore */ moduleUrl)
+  const factory = imported.default ?? imported.createOcctWasmCoreModule
+  if (typeof factory !== 'function') {
+    return Promise.reject(
+      new Error(
+        'Configured OCCT WASM core module must export default or createOcctWasmCoreModule'
+      )
+    )
+  }
+
+  return factory()
 }
