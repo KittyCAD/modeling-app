@@ -23,8 +23,7 @@ Passing an empty `name` clears any name previously assigned to that face
 or edge.
 
 Names may contain only ASCII alphanumeric characters and ASCII punctuation.
-The maximum length is 1024 characters. A zero-length name is equivalent to
-no name being set.
+The maximum length is 1024 characters.
 
 ### Arguments
 
