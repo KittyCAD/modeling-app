@@ -65,6 +65,8 @@ import {
   isModelingResponse,
 } from '@src/lib/kcSdkGuards'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import type { EngineTransport } from '@src/network/engineTransport'
+import { ZooWebSocketTransport } from '@src/network/zooWebSocketTransport'
 
 export type ConnectionSystemDeps = {
   settingsActor: SettingsActorType
@@ -97,6 +99,7 @@ export class ConnectionManager extends EventTarget {
   commandLogs: CommandLog[] = []
 
   connection: Connection | undefined
+  protected transport: EngineTransport | undefined
   private readonly systemDeps: ConnectionSystemDeps
 
   streamDimensions = {
@@ -206,7 +209,7 @@ export class ConnectionManager extends EventTarget {
     const handleMessage = this.createMessageHandler(rustContext)
 
     const url = this.generateWebsocketURL()
-    this.connection = new Connection({
+    const transport = new ZooWebSocketTransport({
       url,
       token,
       handleOnDataChannelMessage: this.handleOnDataChannelMessage.bind(this),
@@ -215,6 +218,8 @@ export class ConnectionManager extends EventTarget {
       callbackOnUnitTestingConnection,
       handleMessage,
     })
+    this.transport = transport
+    this.connection = transport.connection
 
     // Nothing more to do when using a lite engine initialization
     if (callbackOnUnitTestingConnection) {
@@ -240,7 +245,7 @@ export class ConnectionManager extends EventTarget {
       })
     )
 
-    await this.connection.connect()
+    await transport.connect()
 
     // Moved from ondatachannelopen in RTCPeerConnection.
     this.inSequence = 1
@@ -1088,6 +1093,7 @@ export class ConnectionManager extends EventTarget {
     this.removeAllEventListeners()
     this.connection?.disconnectAll()
     this.connection = undefined
+    this.transport = undefined
 
     // It is possible all connections never even started, but we still want
     // to signal to the whole application we are "offline".

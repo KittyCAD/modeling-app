@@ -2,9 +2,7 @@ import type { WebSocketResponse } from '@kittycad/lib'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
-import { decode as msgpackDecode } from '@msgpack/msgpack'
 import { signal } from '@preact/signals-core'
-import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { OpenCascadePreviewHandleState } from '@src/lib/commandTypes'
 import type RustContext from '@src/lib/rustContext'
@@ -13,12 +11,11 @@ import type { DeepPartial } from '@src/lib/types'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import { ConnectionManager } from '@src/network/connectionManager'
+import { type OpenCascadeManagerLike } from '@src/network/openCascadeWorkerClient'
 import {
-  OpenCascadeMainThreadClient,
-  OpenCascadeWorkerClient,
-  type OpenCascadeManagerLike,
-  shouldUseOpenCascadeWorker,
-} from '@src/network/openCascadeWorkerClient'
+  OcctWasmTransport,
+  createDefaultOcctWasmCommandCore,
+} from '@src/network/occtWasmTransport'
 import type {
   OpenCascadePlaneMeshes,
   OpenCascadeGdtAnnotationMeshes,
@@ -35,14 +32,17 @@ import {
 type StartArgs = Parameters<ConnectionManager['start']>[0]
 
 export class EngineCommandManagerProxy extends ConnectionManager {
-  readonly openCascadeCommandManager = createOpenCascadeManager()
+  readonly openCascadeTransport = createOpenCascadeTransport()
+  readonly openCascadeCommandManager = this.openCascadeTransport.commandCore
   readonly latestOpenCascadePreviewVersion = signal(0)
   readonly latestOpenCascadePreviewStatus = signal<
     'idle' | 'running' | 'ready' | 'error'
   >('idle')
-  private openCascadePreviewCommandManager = createOpenCascadeManager({
+  private openCascadePreviewTransport = createOpenCascadeTransport({
     registerLatest: false,
   })
+  private openCascadePreviewCommandManager =
+    this.openCascadePreviewTransport.commandCore
   private openCascadePreviewRoutingManager: OpenCascadeManagerLike | undefined
   private openCascadePreviewRequestId = 0
   private openCascadePreviewRunQueue: Promise<void> = Promise.resolve()
@@ -99,8 +99,7 @@ export class EngineCommandManagerProxy extends ConnectionManager {
         },
       })
     )
-    args.setStreamIsReady(true)
-    args.callbackOnUnitTestingConnection?.('auth success')
+    await this.openCascadeTransport.start(args)
   }
 
   tearDown(options?: ManagerTearDown) {
@@ -110,6 +109,7 @@ export class EngineCommandManagerProxy extends ConnectionManager {
 
     this.rejectAllPendingCommands()
     this.removeAllEventListeners()
+    this.openCascadeTransport.tearDown(options)
     this.started = false
     this.dispatchEvent(new CustomEvent(EngineCommandManagerEvents.Offline, {}))
   }
@@ -120,7 +120,7 @@ export class EngineCommandManagerProxy extends ConnectionManager {
     }
 
     this.responseMap = {}
-    await this.openCascadeCommandManager.startNewSession()
+    await this.openCascadeTransport.startNewSession()
     this.clearOpenCascadePreview()
   }
 
@@ -129,7 +129,7 @@ export class EngineCommandManagerProxy extends ConnectionManager {
       return false
     }
 
-    return this.openCascadeCommandManager.recordRollbackMarker(sourceRange)
+    return this.openCascadeTransport.recordRollbackMarker(sourceRange)
   }
 
   async setTheme(...args: Parameters<ConnectionManager['setTheme']>) {
@@ -195,17 +195,8 @@ export class EngineCommandManagerProxy extends ConnectionManager {
     }
 
     try {
-      const manager =
-        this.openCascadePreviewRoutingManager || this.openCascadeCommandManager
-      const encoded = await manager.sendModelingCommandFromWasm(
-        (command as { cmd_id?: string; batch_id?: string }).cmd_id ||
-          (command as { batch_id?: string }).batch_id ||
-          uuidv4(),
-        JSON.stringify(defaultSourceRange()),
-        JSON.stringify(command),
-        '{}'
-      )
-      return msgpackDecode(encoded) as WebSocketResponse
+      const transport = this.activeOpenCascadeTransport()
+      return await transport.sendSceneCommand(command)
     } catch (error) {
       console.warn(error)
       return null
@@ -231,9 +222,7 @@ export class EngineCommandManagerProxy extends ConnectionManager {
       return new Error(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
     }
 
-    const manager =
-      this.openCascadePreviewRoutingManager || this.openCascadeCommandManager
-    manager
+    this.activeOpenCascadeTransport()
       .sendModelingCommandFromWasm(id, rangeStr, commandStr, idToRangeStr)
       .catch(reportRejection)
   }
@@ -257,9 +246,7 @@ export class EngineCommandManagerProxy extends ConnectionManager {
       return Promise.reject(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
     }
 
-    const manager =
-      this.openCascadePreviewRoutingManager || this.openCascadeCommandManager
-    return manager.sendModelingCommandFromWasm(
+    return this.activeOpenCascadeTransport().sendModelingCommandFromWasm(
       id,
       rangeStr,
       commandStr,
@@ -269,7 +256,7 @@ export class EngineCommandManagerProxy extends ConnectionManager {
 
   waitForAllModelingCommands() {
     if (this.isOpenCascade) {
-      return Promise.resolve([])
+      return this.openCascadeTransport.waitForAllModelingCommands()
     }
 
     return super.waitForAllModelingCommands()
@@ -435,6 +422,11 @@ export class EngineCommandManagerProxy extends ConnectionManager {
   private createOpenCascadePreviewEngineManager(
     manager: OpenCascadeManagerLike
   ) {
+    const transport =
+      manager === this.openCascadePreviewTransport.commandCore
+        ? this.openCascadePreviewTransport
+        : new OcctWasmTransport(manager)
+
     return {
       currentEngine: 'open_cascade',
       isOpenCascade: true,
@@ -446,7 +438,7 @@ export class EngineCommandManagerProxy extends ConnectionManager {
         commandStr: string,
         idToRangeStr: string
       ) =>
-        manager.fireModelingCommandFromWasm(
+        transport.fireModelingCommandFromWasm(
           id,
           rangeStr,
           commandStr,
@@ -458,7 +450,7 @@ export class EngineCommandManagerProxy extends ConnectionManager {
         commandStr: string,
         idToRangeStr: string
       ) =>
-        manager.sendModelingCommandFromWasm(
+        transport.sendModelingCommandFromWasm(
           id,
           rangeStr,
           commandStr,
@@ -472,18 +464,16 @@ export class EngineCommandManagerProxy extends ConnectionManager {
           return null
         }
 
-        const encoded = await manager.sendModelingCommandFromWasm(
-          (command as { cmd_id?: string; batch_id?: string }).cmd_id ||
-            (command as { batch_id?: string }).batch_id ||
-            uuidv4(),
-          JSON.stringify(defaultSourceRange()),
-          JSON.stringify(command),
-          '{}'
-        )
-        return msgpackDecode(encoded) as WebSocketResponse
+        return transport.sendSceneCommand(command)
       },
-      waitForAllModelingCommands: () => Promise.resolve([]),
+      waitForAllModelingCommands: () => transport.waitForAllModelingCommands(),
     }
+  }
+
+  private activeOpenCascadeTransport() {
+    return this.openCascadePreviewRoutingManager
+      ? this.openCascadePreviewTransport
+      : this.openCascadeTransport
   }
 
   async exportLatestOpenCascadeProfileGlbBytes() {
@@ -535,10 +525,8 @@ export class EngineCommandManagerProxy extends ConnectionManager {
   }
 }
 
-function createOpenCascadeManager(options?: {
+function createOpenCascadeTransport(options?: {
   registerLatest?: boolean
-}): OpenCascadeManagerLike {
-  return shouldUseOpenCascadeWorker()
-    ? new OpenCascadeWorkerClient()
-    : new OpenCascadeMainThreadClient(options)
+}): OcctWasmTransport {
+  return new OcctWasmTransport(createDefaultOcctWasmCommandCore(options))
 }
