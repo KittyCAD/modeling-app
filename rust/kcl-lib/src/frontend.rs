@@ -4391,47 +4391,72 @@ fn only_sketch_block_from_range(
             ChangeKind::None => r1.module_id() == r2.module_id() && r1.start() == r2.start() && r1.end() == r2.end(),
         }
     };
-    let mut found = false;
-    for item in ast.body.iter_mut() {
-        match item {
-            ast::BodyItem::ImportStatement(_) => {}
-            ast::BodyItem::ExpressionStatement(node) => {
-                if matches_range(SourceRange::from(&*node))
-                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.expression
-                {
-                    sketch_block.is_being_edited = true;
-                    found = true;
-                    break;
-                }
-            }
-            ast::BodyItem::VariableDeclaration(node) => {
-                if matches_range(SourceRange::from(&node.declaration.init))
-                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.declaration.init
-                {
-                    sketch_block.is_being_edited = true;
-                    found = true;
-                    break;
-                }
-            }
-            ast::BodyItem::TypeDeclaration(_) => {}
-            ast::BodyItem::ReturnStatement(node) => {
-                if matches_range(SourceRange::from(&node.argument))
-                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.argument
-                {
-                    sketch_block.is_being_edited = true;
-                    found = true;
-                    break;
-                }
-            }
-        }
-    }
-    if !found {
+    if !mark_sketch_block_in_body_by_range(&mut ast.body, &matches_range) {
         return Err(KclError::refactor(format!(
             "Sketch block source range not found in AST: {sketch_block_range:?}, edit_kind={edit_kind:?}"
         )));
     }
 
     Ok(())
+}
+
+fn mark_sketch_block_in_body_by_range(
+    body: &mut [ast::BodyItem],
+    matches_range: &impl Fn(SourceRange) -> bool,
+) -> bool {
+    body.iter_mut()
+        .any(|item| mark_sketch_block_in_body_item_by_range(item, matches_range))
+}
+
+fn mark_sketch_block_in_body_item_by_range(
+    item: &mut ast::BodyItem,
+    matches_range: &impl Fn(SourceRange) -> bool,
+) -> bool {
+    match item {
+        ast::BodyItem::ImportStatement(_) | ast::BodyItem::TypeDeclaration(_) => false,
+        ast::BodyItem::ExpressionStatement(node) => {
+            if matches_range(SourceRange::from(&*node))
+                && let ast::Expr::SketchBlock(sketch_block) = &mut node.expression
+            {
+                sketch_block.is_being_edited = true;
+                return true;
+            }
+            mark_sketch_block_in_expr_by_range(&mut node.expression, matches_range)
+        }
+        ast::BodyItem::VariableDeclaration(node) => {
+            mark_sketch_block_in_expr_by_range(&mut node.declaration.init, matches_range)
+        }
+        ast::BodyItem::ReturnStatement(node) => mark_sketch_block_in_expr_by_range(&mut node.argument, matches_range),
+    }
+}
+
+fn mark_sketch_block_in_expr_by_range(expr: &mut ast::Expr, matches_range: &impl Fn(SourceRange) -> bool) -> bool {
+    match expr {
+        ast::Expr::SketchBlock(sketch_block) => {
+            if matches_range(SourceRange::from(&**sketch_block)) {
+                sketch_block.is_being_edited = true;
+                return true;
+            }
+            mark_sketch_block_in_body_by_range(&mut sketch_block.body.items, matches_range)
+        }
+        ast::Expr::ComponentBlock(component) => {
+            mark_sketch_block_in_body_by_range(&mut component.body.items, matches_range)
+        }
+        ast::Expr::FunctionExpression(function) => {
+            mark_sketch_block_in_body_by_range(&mut function.body.body, matches_range)
+        }
+        ast::Expr::PipeExpression(pipe) => pipe
+            .body
+            .iter_mut()
+            .any(|expr| mark_sketch_block_in_expr_by_range(expr, matches_range)),
+        ast::Expr::LabelledExpression(labelled) => {
+            mark_sketch_block_in_expr_by_range(&mut labelled.expr, matches_range)
+        }
+        ast::Expr::AscribedExpression(ascribed) => {
+            mark_sketch_block_in_expr_by_range(&mut ascribed.expr, matches_range)
+        }
+        _ => false,
+    }
 }
 
 fn only_sketch_block(
@@ -4450,60 +4475,68 @@ fn only_sketch_block(
         );
         return only_sketch_block_from_range(ast, sketch_block_ref.range, edit_kind);
     };
-    let mut found = false;
-    for item in ast.body.iter_mut() {
-        match item {
-            ast::BodyItem::ImportStatement(_) => {}
-            ast::BodyItem::ExpressionStatement(node) => {
-                // Check the statement.
-                if let Some(node_path) = &node.node_path
-                    && node_path == target_node_path
-                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.expression
-                {
-                    sketch_block.is_being_edited = true;
-                    found = true;
-                    break;
-                }
-                // Check the expression.
-                if let Some(node_path) = node.expression.node_path()
-                    && node_path == target_node_path
-                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.expression
-                {
-                    sketch_block.is_being_edited = true;
-                    found = true;
-                    break;
-                }
-            }
-            ast::BodyItem::VariableDeclaration(node) => {
-                if let Some(node_path) = node.declaration.init.node_path()
-                    && node_path == target_node_path
-                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.declaration.init
-                {
-                    sketch_block.is_being_edited = true;
-                    found = true;
-                    break;
-                }
-            }
-            ast::BodyItem::TypeDeclaration(_) => {}
-            ast::BodyItem::ReturnStatement(node) => {
-                if let Some(node_path) = node.argument.node_path()
-                    && node_path == target_node_path
-                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.argument
-                {
-                    sketch_block.is_being_edited = true;
-                    found = true;
-                    break;
-                }
-            }
-        }
-    }
-    if !found {
+    if !mark_sketch_block_in_body_by_node_path(&mut ast.body, target_node_path) {
         return Err(KclError::refactor(format!(
             "Sketch block node path not found in AST: {sketch_block_ref:?}, edit_kind={edit_kind:?}"
         )));
     }
 
     Ok(())
+}
+
+fn mark_sketch_block_in_body_by_node_path(body: &mut [ast::BodyItem], target_node_path: &ast::NodePath) -> bool {
+    body.iter_mut()
+        .any(|item| mark_sketch_block_in_body_item_by_node_path(item, target_node_path))
+}
+
+fn mark_sketch_block_in_body_item_by_node_path(item: &mut ast::BodyItem, target_node_path: &ast::NodePath) -> bool {
+    match item {
+        ast::BodyItem::ImportStatement(_) | ast::BodyItem::TypeDeclaration(_) => false,
+        ast::BodyItem::ExpressionStatement(node) => {
+            if node.node_path.as_ref() == Some(target_node_path)
+                && let ast::Expr::SketchBlock(sketch_block) = &mut node.expression
+            {
+                sketch_block.is_being_edited = true;
+                return true;
+            }
+            mark_sketch_block_in_expr_by_node_path(&mut node.expression, target_node_path)
+        }
+        ast::BodyItem::VariableDeclaration(node) => {
+            mark_sketch_block_in_expr_by_node_path(&mut node.declaration.init, target_node_path)
+        }
+        ast::BodyItem::ReturnStatement(node) => {
+            mark_sketch_block_in_expr_by_node_path(&mut node.argument, target_node_path)
+        }
+    }
+}
+
+fn mark_sketch_block_in_expr_by_node_path(expr: &mut ast::Expr, target_node_path: &ast::NodePath) -> bool {
+    match expr {
+        ast::Expr::SketchBlock(sketch_block) => {
+            if sketch_block.node_path.as_ref() == Some(target_node_path) {
+                sketch_block.is_being_edited = true;
+                return true;
+            }
+            mark_sketch_block_in_body_by_node_path(&mut sketch_block.body.items, target_node_path)
+        }
+        ast::Expr::ComponentBlock(component) => {
+            mark_sketch_block_in_body_by_node_path(&mut component.body.items, target_node_path)
+        }
+        ast::Expr::FunctionExpression(function) => {
+            mark_sketch_block_in_body_by_node_path(&mut function.body.body, target_node_path)
+        }
+        ast::Expr::PipeExpression(pipe) => pipe
+            .body
+            .iter_mut()
+            .any(|expr| mark_sketch_block_in_expr_by_node_path(expr, target_node_path)),
+        ast::Expr::LabelledExpression(labelled) => {
+            mark_sketch_block_in_expr_by_node_path(&mut labelled.expr, target_node_path)
+        }
+        ast::Expr::AscribedExpression(ascribed) => {
+            mark_sketch_block_in_expr_by_node_path(&mut ascribed.expr, target_node_path)
+        }
+        _ => false,
+    }
 }
 
 fn sketch_on_ast_expr(
@@ -5976,6 +6009,75 @@ mod tests {
             }
         }
         None
+    }
+
+    fn nested_component_sketch_ref(program: &ast::Node<ast::Program>) -> AstNodeRef {
+        let ast::BodyItem::VariableDeclaration(component_decl) = &program.body[0] else {
+            panic!("Expected component variable declaration");
+        };
+        let ast::Expr::ComponentBlock(component_block) = &component_decl.declaration.init else {
+            panic!("Expected component block");
+        };
+        let ast::BodyItem::VariableDeclaration(sketch_decl) = &component_block.body.items[0] else {
+            panic!("Expected nested sketch variable declaration");
+        };
+        let ast::Expr::SketchBlock(sketch_block) = &sketch_decl.declaration.init else {
+            panic!("Expected nested sketch block");
+        };
+        AstNodeRef::from(&**sketch_block)
+    }
+
+    fn nested_component_sketch_is_being_edited(program: &ast::Node<ast::Program>) -> bool {
+        let ast::BodyItem::VariableDeclaration(component_decl) = &program.body[0] else {
+            panic!("Expected component variable declaration");
+        };
+        let ast::Expr::ComponentBlock(component_block) = &component_decl.declaration.init else {
+            panic!("Expected component block");
+        };
+        let ast::BodyItem::VariableDeclaration(sketch_decl) = &component_block.body.items[0] else {
+            panic!("Expected nested sketch variable declaration");
+        };
+        let ast::Expr::SketchBlock(sketch_block) = &sketch_decl.declaration.init else {
+            panic!("Expected nested sketch block");
+        };
+        sketch_block.is_being_edited
+    }
+
+    #[test]
+    fn test_only_sketch_block_finds_sketch_inside_component_by_node_path() {
+        let source = r#"part = component() {
+  sketch001 = sketch(on = XY) {
+    line1 = line(start = [var 0, var 0], end = [var 1, var 0])
+  }
+  return sketch001
+}
+"#;
+
+        let mut program = Program::parse(source).unwrap().0.unwrap();
+        let sketch_ref = nested_component_sketch_ref(&program.ast);
+
+        only_sketch_block(&mut program.ast, &sketch_ref, ChangeKind::None).unwrap();
+
+        assert!(nested_component_sketch_is_being_edited(&program.ast));
+    }
+
+    #[test]
+    fn test_only_sketch_block_finds_sketch_inside_component_by_range_fallback() {
+        let source = r#"part = component() {
+  sketch001 = sketch(on = XY) {
+    line1 = line(start = [var 0, var 0], end = [var 1, var 0])
+  }
+  return sketch001
+}
+"#;
+
+        let mut program = Program::parse(source).unwrap().0.unwrap();
+        let mut sketch_ref = nested_component_sketch_ref(&program.ast);
+        sketch_ref.node_path = None;
+
+        only_sketch_block(&mut program.ast, &sketch_ref, ChangeKind::None).unwrap();
+
+        assert!(nested_component_sketch_is_being_edited(&program.ast));
     }
 
     #[test]
