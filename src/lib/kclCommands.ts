@@ -42,6 +42,7 @@ import type { Project } from '@src/lib/project'
 import { baseUnitsUnion, warningLevels } from '@src/lib/settings/settingsTypes'
 import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
+import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import { listAllImportFilesWithinProject } from '@src/machines/systemIO/snapshotContext'
@@ -217,7 +218,7 @@ export function componentKclValueOptionsForAst(
 
   function visit(value: unknown, parentKey?: string) {
     if (!value || typeof value !== 'object') return
-    if (Array.isArray(value)) {
+    if (isArray(value)) {
       value.forEach((child) => visit(child, parentKey))
       return
     }

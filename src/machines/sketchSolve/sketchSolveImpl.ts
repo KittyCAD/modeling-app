@@ -58,6 +58,7 @@ import {
   isInvisibleConstraintObject,
 } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
 import { updateOriginSprite } from '@src/machines/sketchSolve/originSprite'
+import { rewriteComponentParameterSketchSolveSource } from '@src/machines/sketchSolve/componentParameterWriteback'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
 import {
@@ -1217,6 +1218,7 @@ const debouncedEditorUpdate = deferredCallback(
     text,
     kclManager,
     sceneGraphDelta,
+    shouldExecute,
     shouldWriteToDisk,
     shouldAddToHistory,
     spec,
@@ -1224,6 +1226,7 @@ const debouncedEditorUpdate = deferredCallback(
     text: string
     kclManager: KclManager
     sceneGraphDelta: SceneGraphDelta
+    shouldExecute: boolean
     shouldWriteToDisk: boolean
     shouldAddToHistory: boolean
     spec: { effects: StateEffect<unknown>[] }
@@ -1233,7 +1236,7 @@ const debouncedEditorUpdate = deferredCallback(
       {
         shouldWriteToDisk,
         shouldAddToHistory,
-        shouldExecute: false,
+        shouldExecute,
       },
       spec
     )
@@ -1245,7 +1248,10 @@ const debouncedEditorUpdate = deferredCallback(
 export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
   assertEvent(event, 'update sketch outcome')
 
-  if (!event.data.sourceDelta) {
+  const shouldUpdateEditor = event.data.updateEditor !== false
+  const sourceDelta = event.data.sourceDelta
+
+  if (!sourceDelta) {
     console.error(
       'updateSketchOutcome: ERROR - No sourceDelta provided',
       event.data
@@ -1254,11 +1260,25 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     throw new Error('updateSketchOutcome: event.data must contain sourceDelta')
   }
 
+  const rewrittenComponentSource = shouldUpdateEditor
+    ? rewriteComponentParameterSketchSolveSource({
+        ast: context.kclManager.ast,
+        code: context.kclManager.code,
+        editedCode: sourceDelta.text,
+        operations: context.kclManager.operations,
+        sketchId: context.sketchId,
+      })
+    : null
+  const sourceDeltaForEditor = rewrittenComponentSource
+    ? { ...sourceDelta, text: rewrittenComponentSource }
+    : sourceDelta
+  const shouldExecuteEditorUpdate = Boolean(rewrittenComponentSource)
+
   const sceneGraphDelta = event.data.sceneGraphDelta
 
   const sketchSolveDiagnostics = compilationIssuesToDiagnostics(
     getSketchSolveExecOutcomeIssues(sceneGraphDelta),
-    event.data.sourceDelta.text
+    sourceDeltaForEditor.text
   )
   context.kclManager.setSketchSolveDiagnostics(sketchSolveDiagnostics)
   if (!event.data.suppressExecOutcomeIssues) {
@@ -1284,7 +1304,6 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     ],
   }
 
-  const shouldUpdateEditor = event.data.updateEditor !== false
   // Disk/history writes are coupled to editor writes here. When an outcome is
   // derived from direct editor text, the file already follows the editor through
   // the normal CodeMirror listener, and this async outcome may be older than the
@@ -1296,10 +1315,10 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
   const isCheckpointOnlyCommit =
     shouldAddToHistory &&
     event.data.checkpointId != null &&
-    context.kclManager.code === event.data.sourceDelta.text
+    context.kclManager.code === sourceDeltaForEditor.text
   const shouldDispatchSceneImmediately =
     !shouldUpdateEditor ||
-    context.kclManager.code !== event.data.sourceDelta.text ||
+    context.kclManager.code !== sourceDeltaForEditor.text ||
     isCheckpointOnlyCommit
 
   if (shouldDispatchSceneImmediately) {
@@ -1329,13 +1348,13 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
      * command, which is the exact stale overwrite bug this path prevents.
      */
     context.kclManager.syncSketchSolveOutcome(
-      event.data.sourceDelta.text,
+      sourceDeltaForEditor.text,
       sceneGraphDelta
     )
 
     return {
       sketchExecOutcome: {
-        sourceDelta: event.data.sourceDelta,
+        sourceDelta: sourceDeltaForEditor,
         sceneGraphDelta,
       },
     }
@@ -1351,9 +1370,10 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     // by calling the debounced function again with new text before the delay expires
     // If a new update comes in within 200ms, the previous one is cancelled
     debouncedEditorUpdate({
-      text: event.data.sourceDelta.text,
+      text: sourceDeltaForEditor.text,
       kclManager: context.kclManager,
       sceneGraphDelta,
+      shouldExecute: shouldExecuteEditorUpdate,
       shouldWriteToDisk,
       shouldAddToHistory,
       spec: editorAdditionalSpec,
@@ -1361,23 +1381,23 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
   } else {
     // Update editor immediately - no debounce for frequent updates like onMove
     context.kclManager.updateCodeEditor(
-      event.data.sourceDelta.text,
+      sourceDeltaForEditor.text,
       {
-        shouldExecute: false,
+        shouldExecute: shouldExecuteEditorUpdate,
         shouldWriteToDisk,
         shouldAddToHistory,
       },
       editorAdditionalSpec
     )
     context.kclManager.syncSketchSolveOutcome(
-      event.data.sourceDelta.text,
+      sourceDeltaForEditor.text,
       sceneGraphDelta
     )
   }
 
   return {
     sketchExecOutcome: {
-      sourceDelta: event.data.sourceDelta,
+      sourceDelta: sourceDeltaForEditor,
       sceneGraphDelta,
     },
   }
