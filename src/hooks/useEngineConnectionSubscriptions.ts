@@ -209,7 +209,11 @@ export function useEngineConnectionSubscriptions() {
           }
 
           if (planeId) {
-            void selectSketchPlane(planeId, true, kclManager)
+            void selectSketchPlane(
+              planeId,
+              context.store.useNewSketchMode?.current,
+              kclManager
+            )
           }
           return
         }
@@ -240,7 +244,7 @@ export function useEngineConnectionSubscriptions() {
     }
   }, [
     context?.sketchEnginePathId,
-    context.store.useSketchSolveMode,
+    context.store.useNewSketchMode,
     kclManager,
     send,
     engineCommandManager,
@@ -255,7 +259,11 @@ export function useEngineConnectionSubscriptions() {
       event: 'select_with_point',
       callback: state.matches('Sketch no face')
         ? ({ data }) => {
-            void selectSketchPlane(data.entity_id, true, kclManager)
+            void selectSketchPlane(
+              data.entity_id,
+              context.store.useSketchSolveMode?.current,
+              kclManager
+            )
           }
         : () => {},
     })
@@ -289,7 +297,7 @@ export async function selectSketchPlane(
     if (!kclManager) return
     if (!planeOrFaceId) return
 
-    if (useSketchSolveMode !== false) {
+    if (useSketchSolveMode) {
       kclManager.sceneInfra.modelingSend({
         type: 'Select sketch solve plane',
         data: planeOrFaceId,

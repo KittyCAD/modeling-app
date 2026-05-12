@@ -1496,10 +1496,7 @@ export function isSketchBlockSelected(
   const resolved = resolveToCodeRef(first, artifactGraph)
   const artifact = resolved?.artifact
   return (
-    (artifact?.type === 'sketchBlock' &&
-      typeof artifact.sketchId === 'number') ||
-    artifact?.type === 'startSketchOnFace' ||
-    artifact?.type === 'startSketchOnPlane'
+    artifact?.type === 'sketchBlock' && typeof artifact.sketchId === 'number'
   )
 }
 

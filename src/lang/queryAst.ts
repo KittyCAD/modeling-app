@@ -68,13 +68,6 @@ import type { Plane } from '@rust/kcl-lib/bindings/Artifact'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
 import type { OpArg, Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { SketchBlock } from '@rust/kcl-lib/bindings/SketchBlock'
-
-function getCodeRefNodePath(codeRef: CodeRef): unknown {
-  if ('nodePath' in codeRef) {
-    return codeRef.nodePath
-  }
-  return undefined
-}
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { EntityReference } from '@kittycad/lib'
@@ -1807,35 +1800,15 @@ export function findOperationArtifact(
 ) {
   const nodePath = JSON.stringify(operation.nodePath)
   const opRange = operation.sourceRange
-  if (operation.name === 'startSketchOn') {
-    const byNodePathAndRange = artifactGraph
-      .values()
-      .toArray()
-      .find((a) => {
-        if (
-          a.type !== 'startSketchOnFace' &&
-          a.type !== 'startSketchOnPlane' &&
-          a.type !== 'sketchBlock'
-        ) {
-          return false
-        }
-        const cr = getFaceCodeRef(a)
-        return (
-          cr != null &&
-          JSON.stringify(getCodeRefNodePath(cr)) === nodePath &&
-          cr.range?.every((v, i) => v === opRange[i])
-        )
-      })
-    if (byNodePathAndRange) return byNodePathAndRange
-  }
   const byNodePathAndRange = artifactGraph
     .values()
     .toArray()
     .find((a) => {
       const cr = getFaceCodeRef(a)
+      const crWithNodePath = cr as { nodePath?: unknown } | null
       return (
         cr != null &&
-        JSON.stringify(getCodeRefNodePath(cr)) === nodePath &&
+        JSON.stringify(crWithNodePath?.nodePath) === nodePath &&
         cr.range?.every((v, i) => v === opRange[i])
       )
     })
@@ -1892,13 +1865,6 @@ export function findOperationArtifact(
     .values()
     .toArray()
     .find((a) => {
-      if (
-        a.type !== 'startSketchOnFace' &&
-        a.type !== 'startSketchOnPlane' &&
-        a.type !== 'sketchBlock'
-      ) {
-        return false
-      }
       const cr = getFaceCodeRef(a)
       return (
         cr != null &&
@@ -1917,13 +1883,6 @@ export function findOperationArtifact(
     .values()
     .toArray()
     .find((a) => {
-      if (
-        a.type !== 'startSketchOnFace' &&
-        a.type !== 'startSketchOnPlane' &&
-        a.type !== 'sketchBlock'
-      ) {
-        return false
-      }
       const cr = getFaceCodeRef(a)
       if (!cr?.range || cr.range.length < 2 || opStart < 0 || opEnd < 0)
         return false
@@ -1936,9 +1895,7 @@ export function findOperationArtifact(
     .toArray()
     .filter(
       (a) =>
-        (a.type === 'startSketchOnFace' ||
-          a.type === 'startSketchOnPlane' ||
-          a.type === 'sketchBlock') &&
+        (a.type === 'startSketchOnFace' || a.type === 'sketchBlock') &&
         getFaceCodeRef(a)?.range != null &&
         getFaceCodeRef(a)!.range.length >= 2
     )

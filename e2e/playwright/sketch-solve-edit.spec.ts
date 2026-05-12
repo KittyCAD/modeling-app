@@ -2220,29 +2220,17 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 hidden001 = hide(sketch001)
 region001 = region(point = [0.025mm, -1.9875mm], sketch = sketch001)
 extrude001 = extrude(region001, length = 5)`
-    const userSettingsToml = settingsToToml({
-      settings: {
-        ...TEST_SETTINGS,
-        modeling: {
-          ...TEST_SETTINGS.modeling,
-          use_sketch_solve_mode: true,
-        },
-      },
-    })
     const [clickCenter] = scene.makeMouseHelpers(0.5, 0.5, {
       format: 'ratio',
     })
 
     await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
       await context.addInitScript(
-        async ({ code, settingsKey, settingsToml }) => {
+        async ({ code }) => {
           localStorage.setItem('persistCode', code)
-          localStorage.setItem(settingsKey, settingsToml)
         },
         {
           code,
-          settingsKey: TEST_SETTINGS_KEY,
-          settingsToml: userSettingsToml,
         }
       )
 
@@ -2260,8 +2248,10 @@ extrude001 = extrude(region001, length = 5)`
     await test.step('Expect sketch on end cap', async () => {
       await expect(toolbar.exitSketchBtn).toBeEnabled()
       await editor.expectEditor.toContain(
-        `face001 = faceOf(extrude001, face = END)
-sketch002 = sketch(on = face001) {}`,
+        `
+        face001 = faceOf(extrude001, face = END)
+        sketch002 = sketch(on = face001) {
+        }`,
         { shouldNormalise: true }
       )
     })
@@ -2280,25 +2270,17 @@ sketch002 = sketch(on = face001) {}`,
 hidden001 = hide(sketch001)
 region001 = region(point = [0.025mm, -1.9875mm], sketch = sketch001)
 extrude001 = extrude(region001, length = 5)`
-    const userSettingsToml = settingsToToml({
-      settings: {
-        ...TEST_SETTINGS,
-        modeling: {
-          ...TEST_SETTINGS.modeling,
-          use_sketch_solve_mode: true,
-        },
-      },
+    const [clickAboveCenter] = scene.makeMouseHelpers(0.5, 0.35, {
+      format: 'ratio',
     })
+
     await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
       await context.addInitScript(
-        async ({ code, settingsKey, settingsToml }) => {
+        async ({ code }) => {
           localStorage.setItem('persistCode', code)
-          localStorage.setItem(settingsKey, settingsToml)
         },
         {
           code,
-          settingsKey: TEST_SETTINGS_KEY,
-          settingsToml: userSettingsToml,
         }
       )
 
@@ -2306,30 +2288,22 @@ extrude001 = extrude(region001, length = 5)`
 
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
-      await scene.moveCameraTo({ x: -20, y: -20, z: 5 })
     })
 
-    await test.step('Start sketch and click wall face', async () => {
+    await test.step('Start sketch and click top face', async () => {
       await toolbar.startSketchPlaneSelection()
-      await page.mouse.click(860, 500)
+      await clickAboveCenter()
     })
 
     await test.step('Expect sketch on wall', async () => {
       await expect(toolbar.exitSketchBtn).toBeEnabled()
       await editor.expectEditor.toContain(
-        `face001 = faceOf(extrude001, face = region001.tags.line2)
-sketch002 = sketch(on = face001) {}`,
+        `
+        face001 = faceOf(extrude001, face = region001.tags.line4)
+        sketch002 = sketch(on = face001){
+        }`,
         { shouldNormalise: true }
       )
-    })
-
-    await test.step('Re-enter the wall sketch from the feature tree', async () => {
-      await toolbar.exitSketch()
-      await toolbar.editSketch(0)
-      await expect(toolbar.exitSketchBtn).toBeEnabled()
-      await editor.expectEditor.not.toContain('sketch003', {
-        shouldNormalise: true,
-      })
     })
   })
 })
