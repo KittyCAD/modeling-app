@@ -31,71 +31,6 @@ type ToolbarMode = {
   items: (ToolbarItem | ToolbarDropdown | 'break')[]
 }
 
-function getSelectedSketchTarget(selectionRanges: Selections): string | null {
-  return getSelectedSketchTargetInfo(selectionRanges)?.id ?? null
-}
-
-function getSelectedSketchTargetInfo(
-  selectionRanges: Selections,
-  kclManager?: StateFrom<typeof modelingMachine>['context']['kclManager']
-): {
-  id: string
-  title: string
-} | null {
-  const defaultPlane = getSelectedDefaultPlane(selectionRanges)
-  if (defaultPlane) {
-    const defaultPlaneData =
-      kclManager &&
-      getDefaultSketchPlaneData(defaultPlane.id, {
-        rustContext: kclManager.rustContext,
-        sceneInfra: kclManager.sceneInfra,
-      })
-    const planeName =
-      defaultPlaneData && !(defaultPlaneData instanceof Error)
-        ? defaultPlaneData.plane
-        : formatDefaultPlaneName(defaultPlane.name)
-
-    return {
-      id: defaultPlane.id,
-      title: `Start Sketch on ${planeName}`,
-    }
-  }
-
-  const planeSelection = selectionRanges.graphSelections.find((selection) => {
-    const artifact = selection.artifact
-    return (
-      artifact?.type === 'plane' ||
-      artifact?.type === 'wall' ||
-      artifact?.type === 'cap' ||
-      (artifact?.type === 'edgeCut' && artifact.subType === 'chamfer')
-    )
-  })
-  const artifact = planeSelection?.artifact
-  if (!artifact?.id) return null
-
-  return {
-    id: artifact.id,
-    title:
-      artifact.type === 'plane'
-        ? 'Start Sketch on plane'
-        : 'Start Sketch on face',
-  }
-}
-
-function getSelectedDefaultPlane(selectionRanges: Selections) {
-  return selectionRanges.otherSelections.find(
-    (selection) => typeof selection === 'object' && 'name' in selection
-  )
-}
-
-function formatDefaultPlaneName(name: string): string {
-  if (name.startsWith('neg')) {
-    return `-${name.slice(3).toUpperCase()}`
-  }
-
-  return name.toUpperCase()
-}
-
 // Load bearing logic for determining the items in the toolbar
 // Based on the state of the modeling machine determine what toolbar should be rendered
 export const modelingMachineStateToToolbarModeName = (
@@ -545,9 +480,11 @@ export function buildToolbarConfig(
             const isSketchBlock = isSketchBlockSelected(
               modelingState.context.selectionRanges
             )
-            const selectedSketchTarget = getSelectedSketchTarget(
-              modelingState.context.selectionRanges
-            )
+            const selectedSketchTarget =
+              getSelectedSketchTarget(
+                modelingState.context.selectionRanges,
+                modelingState.context.kclManager
+              )?.id ?? null
 
             // Don't force new sketch if we're in a sketch block or have a sketchBlock selected
             if ((editorHasFocus && sketchPathId) || isSketchBlock) {
@@ -584,7 +521,7 @@ export function buildToolbarConfig(
               return 'Edit Sketch'
             }
 
-            const selectedSketchTarget = getSelectedSketchTargetInfo(
+            const selectedSketchTarget = getSelectedSketchTarget(
               modelingState.context.selectionRanges,
               modelingState.context.kclManager
             )
@@ -2311,6 +2248,54 @@ export function buildToolbarConfig(
         },
       ],
     },
+  }
+}
+
+function getSelectedSketchTarget(
+  selectionRanges: Selections,
+  kclManager: StateFrom<typeof modelingMachine>['context']['kclManager']
+): {
+  id: string
+  title: string
+} | null {
+  const defaultPlane = selectionRanges.otherSelections.find(
+    (selection) => typeof selection === 'object' && 'name' in selection
+  )
+  if (defaultPlane) {
+    const defaultPlaneData = getDefaultSketchPlaneData(defaultPlane.id, {
+      rustContext: kclManager.rustContext,
+      sceneInfra: kclManager.sceneInfra,
+    })
+    if (!defaultPlaneData || defaultPlaneData instanceof Error) {
+      return null
+    }
+
+    return {
+      id: defaultPlane.id,
+      title: `Start Sketch on ${defaultPlaneData.plane}`,
+    }
+  }
+
+  const planeSelection = selectionRanges.graphSelections.find((selection) => {
+    const artifact = selection.artifact
+    return (
+      artifact?.type === 'plane' ||
+      artifact?.type === 'wall' ||
+      artifact?.type === 'cap' ||
+      (artifact?.type === 'edgeCut' && artifact.subType === 'chamfer')
+    )
+  })
+  const artifact = planeSelection?.artifact
+  if (!artifact?.id) {
+    return null
+  }
+
+  return {
+    id: artifact.id,
+    title:
+      artifact.type === 'plane'
+        ? 'Start Sketch on plane'
+        : 'Start Sketch on face',
   }
 }
 
