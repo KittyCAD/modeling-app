@@ -1,4 +1,8 @@
-import type { WebSocketRequest, WebSocketResponse } from '@kittycad/lib'
+import type {
+  BatchResponse,
+  WebSocketRequest,
+  WebSocketResponse,
+} from '@kittycad/lib'
 import {
   decode as msgpackDecode,
   encode as msgpackEncode,
@@ -33,9 +37,25 @@ export type OcctWasmCoreModule = {
   exportLatestProfileGlbBytes?(): Uint8Array | Promise<Uint8Array>
 }
 
+type EmscriptenOcctCommandCoreModule = {
+  ccall: (
+    ident: string,
+    returnType: 'number' | 'string' | null,
+    argTypes: string[],
+    args: unknown[]
+  ) => number | string | null
+  UTF8ToString: (ptr: number) => string
+}
+
+type OcctWasmCoreModuleFactoryFn = () =>
+  | OcctWasmCoreModule
+  | EmscriptenOcctCommandCoreModule
+  | Promise<OcctWasmCoreModule | EmscriptenOcctCommandCoreModule>
+
 export type OcctWasmCoreModuleFactory =
   | OcctWasmCoreModule
-  | (() => OcctWasmCoreModule | Promise<OcctWasmCoreModule>)
+  | EmscriptenOcctCommandCoreModule
+  | OcctWasmCoreModuleFactoryFn
 
 export class OcctWasmCommandCoreAdapter implements OpenCascadeManagerLike {
   readonly latestShapeVersion = signal(0)
@@ -201,6 +221,10 @@ export class OcctWasmCommandCoreAdapter implements OpenCascadeManagerLike {
       typeof this.moduleFactory === 'function'
         ? this.moduleFactory()
         : this.moduleFactory
+    ).then((module) =>
+      isEmscriptenOcctCommandCoreModule(module)
+        ? createOcctWasmModuleFromEmscripten(module)
+        : module
     )
     return this.modulePromise
   }
@@ -238,6 +262,69 @@ export function createProtocolOnlyOcctWasmModule(): OcctWasmCoreModule {
   return new ProtocolOnlyOcctWasmModule()
 }
 
+export function createOcctWasmModuleFromEmscripten(
+  module: EmscriptenOcctCommandCoreModule
+): OcctWasmCoreModule {
+  return new EmscriptenOcctWasmModule(module)
+}
+
+function isEmscriptenOcctCommandCoreModule(
+  module: OcctWasmCoreModule | EmscriptenOcctCommandCoreModule
+): module is EmscriptenOcctCommandCoreModule {
+  return 'ccall' in module && typeof module.ccall === 'function'
+}
+
+class EmscriptenOcctWasmModule implements OcctWasmCoreModule {
+  constructor(private readonly module: EmscriptenOcctCommandCoreModule) {}
+
+  startNewSession() {
+    this.callCoreJson('zoo_occt_core_start_new_session', [])
+  }
+
+  recordRollbackMarker(rangeStr: string) {
+    const response = this.callCoreJson('zoo_occt_core_record_rollback_marker', [
+      rangeStr,
+    ])
+    return response.ok === true
+  }
+
+  handleModelingCommand({
+    requestId,
+    requestJson,
+  }: {
+    requestId: string
+    requestJson: string
+  }): WebSocketResponse {
+    const response = this.callCoreJson(
+      'zoo_occt_core_handle_modeling_command',
+      [requestId, requestJson]
+    )
+    if (response.ok !== true) {
+      return unsupportedResponse(
+        requestId,
+        response.commandType || 'unknown_command'
+      )
+    }
+
+    return successResponseForRequest(requestId, JSON.parse(requestJson))
+  }
+
+  private callCoreJson(
+    name: string,
+    args: string[]
+  ): { ok?: boolean; commandType?: string } {
+    const ptr = this.module.ccall(
+      name,
+      'number',
+      args.map(() => 'string'),
+      args
+    ) as number
+    const json = this.module.UTF8ToString(ptr)
+    this.module.ccall('zoo_occt_core_free', null, ['number'], [ptr])
+    return JSON.parse(json) as { ok?: boolean; commandType?: string }
+  }
+}
+
 class ProtocolOnlyOcctWasmModule implements OcctWasmCoreModule {
   async startNewSession() {}
 
@@ -265,16 +352,40 @@ class ProtocolOnlyOcctWasmModule implements OcctWasmCoreModule {
       return unsupportedResponse(requestId, unsupportedCommandType)
     }
 
+    return successResponseForRequest(requestId, request)
+  }
+}
+
+function successResponseForRequest(
+  requestId: string,
+  request: WebSocketRequest
+): WebSocketResponse {
+  if (request.type === 'modeling_cmd_batch_req') {
+    const responses: Record<string, BatchResponse> = {}
+    for (const item of request.requests) {
+      responses[item.cmd_id] = {
+        response: { type: 'empty' },
+      }
+    }
     return {
       success: true,
       request_id: requestId,
       resp: {
-        type: 'modeling',
-        data: {
-          modeling_response: { type: 'empty' },
-        },
+        type: 'modeling_batch',
+        data: { responses },
       },
     }
+  }
+
+  return {
+    success: true,
+    request_id: requestId,
+    resp: {
+      type: 'modeling',
+      data: {
+        modeling_response: { type: 'empty' },
+      },
+    },
   }
 }
 

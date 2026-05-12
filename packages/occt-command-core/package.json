@@ -1,0 +1,9 @@
+{
+  "name": "@zoo/occt-command-core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:wasm": "./scripts/build-wasm.sh"
+  }
+}

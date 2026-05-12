@@ -2393,6 +2393,7 @@ dependencies = [
  "async-recursion",
  "async-trait",
  "base64",
+ "cc",
  "chrono",
  "clap",
  "console_error_panic_hook",

@@ -12,6 +12,7 @@
   "main": ".vite/build/main.js",
   "license": "MIT",
   "workspaces": [
+    "packages/occt-command-core",
     "packages/registry",
     "packages/codemirror-lang-kcl",
     "packages/codemirror-lsp-client",
@@ -97,6 +98,7 @@
     "build:wasm-dev": "npm run build:wasm:dev",
     "build:wasm:dev": "./scripts/build-wasm-dev.sh",
     "build:wasm:dev:windows": "powershell -ExecutionPolicy Bypass -File ./scripts/build-wasm-dev.ps1",
+    "build:occt-wasm": "npm --workspace @zoo/occt-command-core run build:wasm",
     "pretest": "npm run remove-importmeta",
     "tsc": "tsc",
     "playwright": "playwright",

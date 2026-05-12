@@ -3,6 +3,7 @@ name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
 version = "0.2.151"
 edition = "2024"
+build = "build.rs"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
 authors = ["Jess Frazelle", "Adam Chalmers", "KittyCAD, Inc"]
@@ -156,6 +157,9 @@ miette = { version = "7.6.0", features = ["fancy"] }
 pretty_assertions = "1.4.1"
 tokio = { version = "1.52.1", features = ["rt-multi-thread", "macros", "time"] }
 twenty-twenty = "0.8.3"
+
+[build-dependencies]
+cc = "1.2.46"
 
 [lints]
 workspace = true
