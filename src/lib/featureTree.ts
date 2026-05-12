@@ -8,6 +8,7 @@ import {
 } from '@src/lang/modifyAst/deleteSelection'
 import { findOperationArtifact } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { sourceRangeContains } from '@src/lang/sourceRange'
 import {
   codeRefFromRange,
   getArtifactFromRange,
@@ -175,20 +176,16 @@ export function getOperationForArtifact(input: {
       return false
     }
     return (
-      sourceRangesEqual(operation.sourceRange, artifact.codeRef.range) ||
+      sourceRangeContains(operation.sourceRange, artifact.codeRef.range) ||
       (operation.type === 'StdLibCall' &&
         operation.stdlibEntrySourceRange !== undefined &&
         operation.stdlibEntrySourceRange !== null &&
-        sourceRangesEqual(
+        sourceRangeContains(
           operation.stdlibEntrySourceRange,
           artifact.codeRef.range
         ))
     )
   })
-}
-
-function sourceRangesEqual(left: SourceRange, right: SourceRange) {
-  return left[0] === right[0] && left[1] === right[1] && left[2] === right[2]
 }
 
 export function sendSelectionEvent(

@@ -8,8 +8,8 @@ import {
 } from '@src/lib/featureTree'
 import { describe, expect, it } from 'vitest'
 
-function range(start: number, end: number): SourceRange {
-  return [start, end, 0]
+function range(start: number, end: number, moduleId = 0): SourceRange {
+  return [start, end, moduleId]
 }
 
 function sketchSolveOperation(sourceRange: SourceRange): Operation {
@@ -144,10 +144,10 @@ function expectHidden(
 }
 
 describe('getOperationForArtifact', () => {
-  it('resolves a GD&T annotation artifact to its source operation', () => {
+  it('resolves a GD&T annotation artifact contained by its source operation', () => {
     const gdtRange = range(10, 80)
     const operation = gdtOperation(gdtRange)
-    const artifact = gdtAnnotationArtifact('gdt-artifact', gdtRange)
+    const artifact = gdtAnnotationArtifact('gdt-artifact', range(20, 70))
 
     expect(
       getOperationForArtifact({
@@ -158,7 +158,7 @@ describe('getOperationForArtifact', () => {
   })
 
   it('resolves a GD&T annotation artifact via stdlib entry range', () => {
-    const declarationRange = range(0, 90)
+    const declarationRange = range(0, 90, 1)
     const gdtRange = range(12, 89)
     const operation = gdtOperation(declarationRange, gdtRange)
     const artifact = gdtAnnotationArtifact('gdt-artifact', gdtRange)
@@ -174,6 +174,18 @@ describe('getOperationForArtifact', () => {
   it('does not resolve artifacts that do not point at an operation range', () => {
     const operation = gdtOperation(range(10, 80))
     const artifact = gdtAnnotationArtifact('gdt-artifact', range(90, 120))
+
+    expect(
+      getOperationForArtifact({
+        artifact,
+        operations: [operation],
+      })
+    ).toBeUndefined()
+  })
+
+  it('does not resolve artifacts in another module id', () => {
+    const operation = gdtOperation(range(10, 80))
+    const artifact = gdtAnnotationArtifact('gdt-artifact', range(10, 80, 1))
 
     expect(
       getOperationForArtifact({
