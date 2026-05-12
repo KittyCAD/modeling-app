@@ -86,6 +86,7 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
     match mod_name {
         "prelude" => Some(include_str!("../std/prelude.kcl")),
         "gdt" => Some(include_str!("../std/gdt.kcl")),
+        "mbd" => Some(include_str!("../std/mbd.kcl")),
         "math" => Some(include_str!("../std/math.kcl")),
         "runtime" => Some(include_str!("../std/runtime.kcl")),
         "sketch" => Some(include_str!("../std/sketch.kcl")),

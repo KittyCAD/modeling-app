@@ -13,9 +13,11 @@ use uuid::Uuid;
 
 use crate::CompilationIssue;
 use crate::EngineManager;
+use crate::EntityKind;
 use crate::ExecutorContext;
 use crate::KclErrorWithOutputs;
 use crate::MockConfig;
+use crate::NamedEntity;
 use crate::NodePath;
 use crate::SourceRange;
 use crate::collections::AhashIndexSet;
@@ -141,6 +143,10 @@ pub struct ModuleArtifactState {
     pub artifact_id_to_scene_object: IndexMap<ArtifactId, ObjectId>,
     /// Solutions for sketch variables.
     pub var_solutions: Vec<(SourceRange, Number)>,
+    /// Map from engine UUID to a user-assigned name for a face or edge. Names
+    /// are set by `mbd::name`. When the same UUID is named more than once
+    /// within the module, the last name wins.
+    pub entity_names: IndexMap<Uuid, NamedEntity>,
 }
 
 #[derive(Debug, Clone)]
@@ -402,6 +408,24 @@ impl ExecState {
     /// reduce the amount of data that crosses the WASM boundary as much as
     /// possible.
     pub async fn into_exec_outcome(self, main_ref: EnvironmentRef, ctx: &ExecutorContext) -> ExecOutcome {
+        // Merge entity_names from all imported modules first (in module load
+        // order), then from the root module last so root names win.
+        // `IndexMap::extend` updates values in-place when keys collide, so this
+        // gives last-writer-wins semantics.
+        let mut entity_names: IndexMap<Uuid, crate::execution::NamedEntity> = IndexMap::new();
+        for module in self.global.module_infos.values() {
+            match &module.repr {
+                ModuleRepr::Kcl(_, Some(outcome)) => {
+                    entity_names.extend(outcome.artifacts.entity_names.iter().map(|(k, v)| (*k, v.clone())));
+                }
+                ModuleRepr::Foreign(_, Some((_, module_artifacts))) => {
+                    entity_names.extend(module_artifacts.entity_names.iter().map(|(k, v)| (*k, v.clone())));
+                }
+                ModuleRepr::Root | ModuleRepr::Kcl(_, None) | ModuleRepr::Foreign(_, None) | ModuleRepr::Dummy => {}
+            }
+        }
+        entity_names.extend(self.global.root_module_artifacts.entity_names.clone());
+
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
         ExecOutcome {
@@ -414,6 +438,7 @@ impl ExecState {
             var_solutions: self.global.root_module_artifacts.var_solutions,
             issues: self.global.issues,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
+            entity_names,
         }
     }
 
@@ -571,6 +596,24 @@ impl ExecState {
 
     pub fn next_uuid(&mut self) -> Uuid {
         self.mod_local.id_generator.next_uuid()
+    }
+
+    /// Assign a user-visible name to the face or edge identified by `uuid`.
+    /// When the same UUID is named more than once within a module, the last
+    /// name wins. Names are stored per-module and merged into the final
+    /// `ExecOutcome`.
+    pub(crate) fn set_entity_name(&mut self, uuid: Uuid, name: String, kind: EntityKind) {
+        // `IndexMap::insert` overwrites the value while keeping the key's
+        // existing position, giving last-writer-wins semantics.
+        self.mod_local
+            .artifacts
+            .entity_names
+            .insert(uuid, crate::execution::NamedEntity { name, kind });
+    }
+
+    /// Clear any user-visible name previously assigned to `uuid`.
+    pub(crate) fn remove_entity_name(&mut self, uuid: &Uuid) {
+        self.mod_local.artifacts.entity_names.shift_remove(uuid);
     }
 
     pub fn next_artifact_id(&mut self) -> ArtifactId {
@@ -952,6 +995,7 @@ impl ModuleArtifactState {
         self.unprocessed_commands.clear();
         self.commands.clear();
         self.operations.clear();
+        self.entity_names.clear();
     }
 
     pub(crate) fn restore_scene_objects(&mut self, scene_objects: &[Object]) {
@@ -1001,6 +1045,10 @@ impl ModuleArtifactState {
         self.artifact_id_to_scene_object
             .extend(other.artifact_id_to_scene_object);
         self.var_solutions.extend(other.var_solutions);
+        // `IndexMap::extend` updates the value when the key already exists,
+        // preserving the existing position. This gives us last-name-wins
+        // semantics for repeated names of the same UUID.
+        self.entity_names.extend(other.entity_names);
     }
 
     // Move unprocessed artifact commands so that we don't try to process them

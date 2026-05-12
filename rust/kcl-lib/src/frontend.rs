@@ -1930,6 +1930,7 @@ impl FrontendState {
             var_solutions,
             issues: non_fatal,
             default_planes,
+            entity_names: Default::default(),
         })
     }
 
