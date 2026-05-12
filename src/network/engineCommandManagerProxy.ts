@@ -10,7 +10,10 @@ import type RustContext from '@src/lib/rustContext'
 import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { uuidv4 } from '@src/lib/utils'
-import { ConnectionManager } from '@src/network/connectionManager'
+import {
+  ConnectionManager,
+  type ModelingCommandResponses,
+} from '@src/network/connectionManager'
 import {
   OcctWasmTransport,
   createDefaultOcctWasmCommandCore,
@@ -271,7 +274,7 @@ export class EngineCommandManagerProxy extends ConnectionManager {
     )
   }
 
-  waitForAllModelingCommands(): Promise<[WebSocketResponse][]> {
+  waitForAllModelingCommands(): Promise<ModelingCommandResponses> {
     if (this.isOpenCascade) {
       return this.openCascadeTransport.waitForAllModelingCommands()
     }

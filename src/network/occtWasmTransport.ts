@@ -3,6 +3,7 @@ import { decode as msgpackDecode } from '@msgpack/msgpack'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import { uuidv4 } from '@src/lib/utils'
+import type { ModelingCommandResponses } from '@src/network/connectionManager'
 import type { EngineTransport } from '@src/network/engineTransport'
 import {
   OcctWasmCommandCoreAdapter,
@@ -111,17 +112,10 @@ export class OcctWasmTransport implements EngineTransport {
     return msgpackDecode(encoded) as WebSocketResponse
   }
 
-  waitForAllModelingCommands(): Promise<[WebSocketResponse][]> {
-    const waitForAllModelingCommands = (
-      this.commandCore as {
-        waitForAllModelingCommands?: () => Promise<[WebSocketResponse][]>
-      }
-    ).waitForAllModelingCommands
-    if (waitForAllModelingCommands) {
-      return waitForAllModelingCommands.call(this.commandCore)
-    }
-
-    return Promise.resolve([])
+  waitForAllModelingCommands(): Promise<ModelingCommandResponses> {
+    return (
+      this.commandCore.waitForAllModelingCommands?.() ?? Promise.resolve([])
+    )
   }
 }
 

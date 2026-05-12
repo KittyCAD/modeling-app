@@ -1,5 +1,5 @@
 import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
-import { Connection } from '@src/network/connection'
+import type { Connection } from '@src/network/connection'
 import {
   darkModeMatcher,
   getOppositeTheme,
@@ -67,6 +67,8 @@ import {
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { EngineTransport } from '@src/network/engineTransport'
 import { ZooWebSocketTransport } from '@src/network/zooWebSocketTransport'
+
+export type ModelingCommandResponses = [WebSocketResponse][]
 
 export type ConnectionSystemDeps = {
   settingsActor: SettingsActorType
@@ -1375,7 +1377,7 @@ export class ConnectionManager extends EventTarget {
   /**
    * Wait for all modeling commands. Do not wait for scene commands.
    */
-  waitForAllModelingCommands() {
+  waitForAllModelingCommands(): Promise<ModelingCommandResponses> {
     const modelingPendingCommands = Object.values(this.pendingCommands).filter(
       (pending) => !pending.isSceneCommand
     )

@@ -5,6 +5,7 @@ import {
 } from '@msgpack/msgpack'
 import { signal } from '@preact/signals-core'
 import { isArray } from '@src/lib/utils'
+import type { ModelingCommandResponses } from '@src/network/connectionManager'
 import type {
   OpenCascadeGdtAnnotationMeshes,
   OpenCascadePlaneMesh,
@@ -103,7 +104,7 @@ export class OcctWasmCommandCoreAdapter implements OpenCascadeManagerLike {
     return pending
   }
 
-  async waitForAllModelingCommands(): Promise<[WebSocketResponse][]> {
+  async waitForAllModelingCommands(): Promise<ModelingCommandResponses> {
     const encodedResponses = await Promise.all([...this.pendingCommands])
     return encodedResponses.map((encodedResponse) => [
       msgpackDecode(encodedResponse) as WebSocketResponse,

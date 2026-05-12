@@ -1,5 +1,6 @@
 import { encode as msgpackEncode } from '@msgpack/msgpack'
 import { signal, type Signal } from '@preact/signals-core'
+import type { ModelingCommandResponses } from '@src/network/connectionManager'
 import type {
   OpenCascadePlaneMesh,
   OpenCascadePlaneMeshes,
@@ -96,6 +97,7 @@ export type OpenCascadeManagerLike = {
     commandStr: string,
     idToRangeStr: string
   ): Promise<Uint8Array>
+  waitForAllModelingCommands?(): Promise<ModelingCommandResponses>
   getSolidCount(): number
   exportLastBrep?(): Uint8Array | undefined
   exportLastBrepBytes?(): Promise<Uint8Array>
