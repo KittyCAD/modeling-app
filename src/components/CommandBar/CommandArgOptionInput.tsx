@@ -4,14 +4,27 @@ import Fuse from 'fuse.js'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { AnyStateMachine, StateFrom } from 'xstate'
 
+import { useApp } from '@src/lib/boot'
 import type {
   CommandArgument,
   CommandArgumentOption,
 } from '@src/lib/commandTypes'
-import { useApp } from '@src/lib/boot'
 
 const contextSelector = (snapshot: StateFrom<AnyStateMachine> | undefined) =>
   snapshot?.context
+
+function OptionLabel({ option }: { option: CommandArgumentOption<unknown> }) {
+  if (!option.label) {
+    return <>{option.name}</>
+  }
+
+  if (typeof option.label === 'function') {
+    const Label = option.label
+    return <Label option={option} />
+  }
+
+  return <>{option.label}</>
+}
 
 function CommandArgOptionInput({
   arg,
@@ -186,21 +199,21 @@ function CommandArgOptionInput({
               shouldSubmitOnChange.current = true
             }}
           >
-            {filteredOptions?.map((option) => (
+            {filteredOptions?.map((option, index) => (
               <Combobox.Option
-                key={option.name}
+                key={`${option.name}-${index}`}
                 value={option}
                 disabled={option.disabled}
                 className="flex items-center gap-2 px-4 py-1 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90"
               >
                 <p
-                  className={`flex-grow ${
+                  className={`flex-grow min-w-0 ${
                     (option.disabled &&
                       'text-chalkboard-70 dark:text-chalkboard-50 cursor-not-allowed') ||
                     ''
                   }`}
                 >
-                  {option.name}
+                  <OptionLabel option={option} />
                 </p>
                 {option.value === currentOption?.value && (
                   <small className="text-chalkboard-70 dark:text-chalkboard-50">

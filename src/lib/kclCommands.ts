@@ -1,4 +1,5 @@
 import type { UnitLength } from '@kittycad/lib'
+import { createElement } from 'react'
 import toast from 'react-hot-toast'
 
 import type { BodyItem } from '@rust/kcl-lib/bindings/BodyItem'
@@ -92,6 +93,12 @@ export type ComponentKclValueOption = {
 
 type ComponentParameterOption = {
   name: string
+}
+
+type ComponentKclValueContext = {
+  before: string
+  value: string
+  after: string
 }
 
 function isComponentParameterOption(
@@ -192,16 +199,67 @@ function isExpressionNode(node: unknown): node is Expr {
   )
 }
 
-function componentLineContext(
+function shortenStart(text: string, maxLength: number) {
+  if (text.length <= maxLength) return text
+  return `...${text.slice(text.length - maxLength)}`
+}
+
+function shortenEnd(text: string, maxLength: number) {
+  if (text.length <= maxLength) return text
+  return `${text.slice(0, maxLength)}...`
+}
+
+function componentLineContextParts(
   code: string,
   option: ComponentKclValueOption
-): string {
+): ComponentKclValueContext {
   const lineStart = code.lastIndexOf('\n', option.start - 1) + 1
   const lineEndIndex = code.indexOf('\n', option.end)
   const lineEnd = lineEndIndex === -1 ? code.length : lineEndIndex
   const before = code.slice(lineStart, option.start).trimStart()
   const after = code.slice(option.end, lineEnd).trimEnd()
-  return `${before}[[${option.valueText}]]${after}`
+  return {
+    before: shortenStart(before, 24),
+    value: option.valueText,
+    after: shortenEnd(after, 32),
+  }
+}
+
+function componentLineContext(
+  code: string,
+  option: ComponentKclValueOption
+): string {
+  const { before, value, after } = componentLineContextParts(code, option)
+  return `${before}${value}${after}`
+}
+
+function componentLineContextLabel(
+  code: string,
+  option: ComponentKclValueOption
+) {
+  const { before, value, after } = componentLineContextParts(code, option)
+  return createElement(
+    'span',
+    { className: 'block truncate font-mono text-xs' },
+    createElement(
+      'span',
+      { className: 'text-chalkboard-60 dark:text-chalkboard-50' },
+      before
+    ),
+    createElement(
+      'span',
+      {
+        className:
+          'rounded bg-primary/10 px-1 font-semibold text-chalkboard-10 dark:text-chalkboard-10',
+      },
+      value
+    ),
+    createElement(
+      'span',
+      { className: 'text-chalkboard-60 dark:text-chalkboard-50' },
+      after
+    )
+  )
 }
 
 function indentationAt(code: string, index: number) {
@@ -292,6 +350,7 @@ function componentKclValueOptions(
     componentName
   ).map((option) => ({
     name: componentLineContext(kclManager.code, option),
+    label: componentLineContextLabel(kclManager.code, option),
     value: option,
   }))
 }

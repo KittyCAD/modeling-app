@@ -1,5 +1,5 @@
 import type { EntityType } from '@kittycad/lib'
-import type { ReactNode } from 'react'
+import type { ComponentType, ReactNode } from 'react'
 import type {
   Actor,
   ActorRefFrom,
@@ -13,12 +13,12 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { Expr, Name, VariableDeclaration } from '@src/lang/wasm'
+import type { MachineManager } from '@src/lib/MachineManager'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   CommandBarContext,
   commandBarMachine,
 } from '@src/machines/commandBarMachine'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { MachineManager } from '@src/lib/MachineManager'
 
 type Icon = CustomIconName
 const _TARGETS = ['both', 'web', 'desktop'] as const
@@ -523,8 +523,13 @@ export type CommandArgumentWithName<
   name: string
 }
 
+export type CommandArgumentOptionLabel<A> =
+  | ReactNode
+  | ComponentType<{ option: CommandArgumentOption<A> }>
+
 export type CommandArgumentOption<A> = {
   name: string
+  label?: CommandArgumentOptionLabel<A>
   isCurrent?: boolean
   disabled?: boolean
   value: A
