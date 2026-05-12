@@ -2603,10 +2603,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "kittycad-modeling-cmds"
-version = "0.2.195"
+name = "kittycad-measurements"
+version = "0.11.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "adea5e242fa7d56bc95a51df88654b5fe26d06f0f62b6619e3732440ec7d42e3"
+checksum = "7412b22b064c31f34dcc35097a1c2d16dd73c4d2f7bf1b059d39eed9accfc332"
+dependencies = [
+ "libm",
+]
+
+[[package]]
+name = "kittycad-modeling-cmds"
+version = "0.2.196"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5896de9faa7d6d4ac85f7d6599432a9d442edd843843e62fd5cc6026356462b9"
 dependencies = [
  "anyhow",
  "bon",
@@ -2616,9 +2625,9 @@ dependencies = [
  "enum-iterator-derive",
  "euler",
  "http 1.4.0",
+ "kittycad-measurements",
  "kittycad-modeling-cmds-macros",
  "kittycad-unit-conversion-derive",
- "measurements",
  "parse-display",
  "parse-display-derive",
  "pyo3",
