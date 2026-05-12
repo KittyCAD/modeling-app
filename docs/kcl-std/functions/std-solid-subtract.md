@@ -13,7 +13,7 @@ subtract(
   tools: [Solid],
   tolerance?: number(Length),
   legacyMethod?: bool,
-): [Solid; 1+]
+): [Solid]
 ```
 
 Performs a bool subtraction operation, removing the volume of one or more
@@ -33,7 +33,7 @@ and complex multi-body part modeling.
 
 ### Returns
 
-[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+]
+[[`Solid`](/docs/kcl-std/types/std-types-Solid)]
 
 
 ### Examples

@@ -547,6 +547,185 @@ export function addProfileGdt({
   }
 }
 
+export function addDistanceGdt({
+  ast,
+  artifactGraph,
+  objects,
+  edges,
+  tolerance,
+  wasmInstance,
+  precision,
+  framePosition,
+  framePlane,
+  leaderScale,
+  fontPointSize,
+  fontScale,
+  nodeToEdit,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  objects?: Selections
+  edges?: Selections
+  tolerance: KclCommandValue
+  wasmInstance: ModuleType
+  precision?: KclCommandValue
+  framePosition?: KclCommandValue
+  framePlane?: KclCommandValue | string
+  leaderScale?: KclCommandValue
+  fontPointSize?: KclCommandValue
+  fontScale?: KclCommandValue
+  nodeToEdit?: PathToNode
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  let modifiedAst = structuredClone(ast)
+  const selections = objects ?? edges
+
+  if (!selections) {
+    return new Error(
+      'No selections found. Select one edge for an edge length, or exactly two faces or edges for a distance.'
+    )
+  }
+
+  const targetSelections = selections.graphSelections.filter(
+    (selection) =>
+      isFaceArtifact(selection.artifact) ||
+      isProfileEdgeArtifact(selection.artifact)
+  )
+  if (targetSelections.length === 0) {
+    return new Error(
+      'No valid selections found. Select one edge, or exactly two faces or edges.'
+    )
+  }
+
+  const targets: Array<{ kind: 'face' | 'edge'; expr: Expr }> = []
+  for (const selection of targetSelections) {
+    const tagResult = modifyAstWithTagsForSelection(
+      modifiedAst,
+      selection,
+      artifactGraph,
+      wasmInstance
+    )
+    if (err(tagResult)) {
+      console.warn('Failed to add tags for distance selection', tagResult)
+      continue
+    }
+
+    modifiedAst = tagResult.modifiedAst
+
+    if (isFaceArtifact(selection.artifact)) {
+      targets.push({ kind: 'face', expr: tagResult.exprs[0] })
+    } else {
+      if (tagResult.exprs.length < 2) {
+        console.warn(
+          'Edge selection did not resolve to enough faces',
+          tagResult
+        )
+        continue
+      }
+
+      targets.push({
+        kind: 'edge',
+        expr: createCallExpressionStdLibKw('getCommonEdge', null, [
+          createLabeledArg('faces', createArrayExpression(tagResult.exprs)),
+        ]),
+      })
+    }
+  }
+
+  if (targets.length === 0) {
+    return new Error('No valid distance targets could be generated')
+  }
+
+  if (targets.length === 1 && targets[0].kind !== 'edge') {
+    return new Error(
+      'A single distance selection must be an edge. Select two faces or edges to measure between entities.'
+    )
+  }
+
+  const allTargetsAreEdges = targets.every((target) => target.kind === 'edge')
+
+  if (targets.length > 2 && !allTargetsAreEdges) {
+    return new Error(
+      'Select one or more edges for edge lengths, or exactly two faces or edges for a distance.'
+    )
+  }
+
+  if ('variableName' in tolerance && tolerance.variableName) {
+    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, nodeToEdit)
+  }
+  if (precision && 'variableName' in precision && precision.variableName) {
+    insertVariableAndOffsetPathToNode(precision, modifiedAst, nodeToEdit)
+  }
+
+  const styleResult = processGdtStyleParameters({
+    modifiedAst,
+    nodeToEdit,
+    wasmInstance,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontPointSize,
+    fontScale,
+  })
+  if (err(styleResult)) {
+    return styleResult
+  }
+
+  const edgeLengthExprs =
+    targets.length === 1 || targets.length > 2
+      ? deduplicateFaceExprs(targets.map((target) => target.expr))
+      : []
+
+  if (
+    (targets.length === 1 || targets.length > 2) &&
+    edgeLengthExprs.length === 0
+  ) {
+    return new Error('No valid edge expressions could be generated')
+  }
+
+  const labeledArgs =
+    edgeLengthExprs.length > 0
+      ? [
+          createLabeledArg('edges', createArrayExpression(edgeLengthExprs)),
+          createLabeledArg('tolerance', valueOrVariable(tolerance)),
+        ]
+      : [
+          createLabeledArg('from', targets[0].expr),
+          createLabeledArg('to', targets[1].expr),
+          createLabeledArg('tolerance', valueOrVariable(tolerance)),
+        ]
+
+  if (precision !== undefined) {
+    labeledArgs.push(createLabeledArg('precision', valueOrVariable(precision)))
+  }
+
+  labeledArgs.push(...styleResult.labeledArgs)
+
+  const call = createCallExpressionStdLibKw(
+    'distance',
+    null,
+    labeledArgs,
+    undefined,
+    [createIdentifier('gdt')]
+  )
+
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
+    call,
+    pathToEdit: nodeToEdit,
+    pathIfNewPipe: undefined,
+    variableIfNewDecl: undefined,
+    wasmInstance,
+  })
+  if (err(pathToNode)) {
+    return pathToNode
+  }
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
 export function addPerpendicularityGdt({
   ast,
   artifactGraph,
