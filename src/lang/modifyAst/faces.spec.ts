@@ -1795,6 +1795,61 @@ plane002 = offsetPlane(plane003, offset = 3)`)
       await enginelessExecutor(editResult.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add an offset plane call on an existing primitive face variable', async () => {
+      const code = `sketch001 = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> angledLine(angle = 0deg, length = 30, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 30)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = 30)
+shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)
+face001 = faceId(extrude001, index = 6)`
+      const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const primitiveFace = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'primitiveFace'
+      )
+      if (!primitiveFace || primitiveFace.type !== 'primitiveFace') {
+        throw new Error('Expected primitiveFace artifact')
+      }
+      const plane: Selections = {
+        graphSelections: [
+          {
+            artifact: primitiveFace,
+            codeRef: primitiveFace.codeRef,
+          },
+        ],
+        otherSelections: [],
+      }
+      const offset = (await stringToKclExpression(
+        '2',
+        rustContextInThisFile
+      )) as KclCommandValue
+
+      const result = addOffsetPlane({
+        ast,
+        artifactGraph,
+        variables,
+        plane,
+        offset,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`${code}
+plane001 = planeOf(extrude001, face = face001)
+plane002 = offsetPlane(plane001, offset = 2)`)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add an offset plane call on chamfer face and allow edits', async () => {
       const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(
         boxWithOneTagAndChamfer,
