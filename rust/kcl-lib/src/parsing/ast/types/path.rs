@@ -1,18 +1,11 @@
 use serde::Serialize;
 
-#[cfg(feature = "artifact-graph")]
 use super::BinaryPart;
-#[cfg(feature = "artifact-graph")]
 use super::BodyItem;
-#[cfg(feature = "artifact-graph")]
 use super::Expr;
-#[cfg(feature = "artifact-graph")]
 use crate::SourceRange;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::ProgramLookup;
-#[cfg(feature = "artifact-graph")]
 use crate::parsing::ast::types::Node;
-#[cfg(feature = "artifact-graph")]
 use crate::parsing::ast::types::Program;
 
 /// A traversal path through the AST to a node.
@@ -83,7 +76,6 @@ impl NodePath {
         Self::default()
     }
 
-    #[cfg(feature = "artifact-graph")]
     pub(crate) fn fill_placeholder(&mut self, programs: &ProgramLookup, cached_body_items: usize, range: SourceRange) {
         if !self.is_empty() {
             return;
@@ -93,7 +85,6 @@ impl NodePath {
 
     /// Given a program and a [`SourceRange`], return the path to the node that
     /// contains the range.
-    #[cfg(feature = "artifact-graph")]
     pub(crate) fn from_range(
         programs: &crate::execution::ProgramLookup,
         cached_body_items: usize,
@@ -103,7 +94,6 @@ impl NodePath {
         Self::from_body(&program.body, cached_body_items, range, NodePath::default())
     }
 
-    #[cfg(feature = "artifact-graph")]
     fn from_body(
         body: &[BodyItem],
         cached_body_items: usize,
@@ -122,7 +112,6 @@ impl NodePath {
         None
     }
 
-    #[cfg(feature = "artifact-graph")]
     fn from_body_item(body_item: &BodyItem, range: SourceRange, mut path: NodePath) -> Option<NodePath> {
         match body_item {
             BodyItem::ImportStatement(node) => match &node.selector {
@@ -176,7 +165,6 @@ impl NodePath {
         Some(path)
     }
 
-    #[cfg(feature = "artifact-graph")]
     fn from_expr(expr: &Expr, range: SourceRange, mut path: NodePath) -> Option<NodePath> {
         match expr {
             Expr::Literal(node) => {
@@ -388,7 +376,6 @@ impl NodePath {
         self.steps.is_empty()
     }
 
-    #[cfg(feature = "artifact-graph")]
     fn push(&mut self, step: Step) {
         self.steps.push(step);
     }
@@ -396,7 +383,6 @@ impl NodePath {
 
 /// Given a program and a [`SourceRange`], return the path to the node that
 /// contains the range.
-#[cfg(feature = "artifact-graph")]
 pub(crate) fn fill_node_paths(program: &mut Node<Program>) {
     for (i, item) in program.body.iter_mut().enumerate() {
         let mut path = NodePath::default();
@@ -405,7 +391,6 @@ pub(crate) fn fill_node_paths(program: &mut Node<Program>) {
     }
 }
 
-#[cfg(feature = "artifact-graph")]
 fn fill_node_paths_body_item(item: &mut BodyItem, mut path: NodePath) {
     match item {
         BodyItem::ImportStatement(node) => {
@@ -435,7 +420,6 @@ fn fill_node_paths_body_item(item: &mut BodyItem, mut path: NodePath) {
     }
 }
 
-#[cfg(feature = "artifact-graph")]
 fn fill_node_paths_expr(expr: &mut Expr, mut path: NodePath) {
     match expr {
         Expr::Literal(node) => {
@@ -609,7 +593,6 @@ fn fill_node_paths_expr(expr: &mut Expr, mut path: NodePath) {
     }
 }
 
-#[cfg(feature = "artifact-graph")]
 fn fill_node_paths_body(body: &mut [BodyItem], path: NodePath) {
     for (i, item) in body.iter_mut().enumerate() {
         let mut item_path = path.clone();
@@ -618,7 +601,6 @@ fn fill_node_paths_body(body: &mut [BodyItem], path: NodePath) {
     }
 }
 
-#[cfg(feature = "artifact-graph")]
 fn fill_node_paths_binary_part(part: &mut BinaryPart, mut path: NodePath) {
     match part {
         BinaryPart::Literal(node) => {
@@ -729,7 +711,7 @@ fn fill_node_paths_binary_part(part: &mut BinaryPart, mut path: NodePath) {
     }
 }
 
-#[cfg(all(test, feature = "artifact-graph"))]
+#[cfg(test)]
 mod tests {
     use super::*;
     use crate::ModuleId;

@@ -99,7 +99,6 @@ use crate::parsing::ast::types::UnaryOperator;
 use crate::parsing::ast::types::VariableDeclaration;
 use crate::parsing::ast::types::VariableDeclarator;
 use crate::parsing::ast::types::VariableKind;
-#[cfg(feature = "artifact-graph")]
 use crate::parsing::ast::types::fill_node_paths;
 use crate::parsing::math::BinaryExpressionToken;
 use crate::parsing::token::RESERVED_SKETCH_BLOCK_WORDS;
@@ -145,7 +144,6 @@ pub fn run_parser(i: TokenSlice) -> super::ParseResult {
             None
         }
     };
-    #[cfg(feature = "artifact-graph")]
     let ast = {
         let mut ast = ast;
         if let Some(ast) = &mut ast {
