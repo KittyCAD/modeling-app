@@ -26,6 +26,43 @@ function OptionLabel({ option }: { option: CommandArgumentOption<unknown> }) {
   return <>{option.label}</>
 }
 
+function optionValueKey(value: unknown) {
+  if (value === null || value === undefined) {
+    return String(value)
+  }
+  if (['string', 'number', 'boolean'].includes(typeof value)) {
+    return String(value)
+  }
+  if (
+    typeof value === 'object' &&
+    'start' in value &&
+    'end' in value &&
+    'valueText' in value
+  ) {
+    const rangedValue = value as {
+      start: unknown
+      end: unknown
+      valueText: unknown
+    }
+    return `${rangedValue.start}:${rangedValue.end}:${rangedValue.valueText}`
+  }
+  if (
+    typeof value === 'object' &&
+    'name' in value &&
+    typeof value.name === 'string'
+  ) {
+    return value.name
+  }
+  return ''
+}
+
+function optionKey(option: CommandArgumentOption<unknown> | null) {
+  if (!option) {
+    return ''
+  }
+  return `${option.name}:${optionValueKey(option.value)}`
+}
+
 function CommandArgOptionInput({
   arg,
   argName,
@@ -147,6 +184,7 @@ function CommandArgOptionInput({
         value={selectedOption}
         onChange={handleSelectOption}
         name="options"
+        by={(left, right) => optionKey(left) === optionKey(right)}
       >
         <div className="flex items-center mx-4 mt-4 mb-2">
           <label
