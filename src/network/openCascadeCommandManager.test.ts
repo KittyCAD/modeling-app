@@ -2,6 +2,7 @@ import { decode as msgpackDecode } from '@msgpack/msgpack'
 import { describe, expect, it, vi } from 'vitest'
 
 import { assertParse } from '@src/lang/wasm'
+import { getBodiesFromArtifactGraph } from '@src/lang/std/artifactGraph'
 import { OpenCascadeCommandManager } from '@src/network/openCascadeCommandManager'
 import {
   OPEN_CASCADE_BOOLEAN_INTERSECT_KCL,
@@ -1546,6 +1547,38 @@ part002 = startSketchOn(XY)
       '00000000-0000-0000-0000-0000000000d6',
       '00000000-0000-0000-0000-0000000000d9',
     ])
+  })
+
+  it('exports split surface pieces as separate visible bodies', async () => {
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(
+      `@settings(experimentalFeatures = allow)
+sketch002 = sketch(on = -YZ) {
+  arc(start = [var 2.86mm, var 4.3mm], end = [var -1.76mm, var 0.46mm], center = [var 2.61mm, var -0.09mm])
+}
+extrude002 = extrude(sketch002, length = 10, bodyType = SURFACE)
+sketch003 = sketch(on = XY) {
+  arc(start = [var 1.14mm, var 4.95mm], end = [var -2.3mm, var -4.63mm], center = [var 2.45mm, var -0.93mm])
+}
+extrude001 = extrude(sketch003, length = 5, bodyType = SURFACE)
+split001 = split(extrude002, tools = extrude001)
+`,
+      instance
+    )
+
+    const execState = await rustContext.execute(ast, {
+      settings: { modeling: { engine: 'open_cascade' } },
+    })
+
+    expect(execState.variables.split001?.type).toBe('HomArray')
+    expect(getBodiesFromArtifactGraph(execState.artifactGraph)).toHaveLength(2)
+    const manager = OpenCascadeCommandManager.latestInstance()
+    const visible = await manager?.exportVisibleGlbBytes()
+    expect(visible?.map((solid) => solid.bodyType)).toEqual([
+      'surface',
+      'surface',
+    ])
+    expect(manager?.exportLatestTopologyMeshes().solids).toHaveLength(2)
   })
 
   it('returns sketch mode plane details for default planes and extrude faces', async () => {

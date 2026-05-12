@@ -1768,13 +1768,37 @@ export class OpenCascadeCommandManager {
     }
     splitter.Build(new oc.Message_ProgressRange_1())
     this.throwIfBooleanFailed(splitter, 'split')
-    this.storeSolid(
-      commandId,
-      splitter.Shape(),
-      [...bodyIds, ...toolIds],
-      oc,
-      range
+    const splitShape = splitter.Shape()
+    const bodyTypes = bodyIds.map(
+      (bodyId) => this.requireSolid(bodyId).bodyType || 'solid'
     )
+    const shouldSeparateSurfaceBodies =
+      (cmd as any).separate_bodies === true &&
+      bodyTypes.length > 0 &&
+      bodyTypes.every((bodyType) => bodyType === 'surface')
+    if (shouldSeparateSurfaceBodies) {
+      const surfacePieces = this.surfacePiecesFromSplitShape(splitShape, oc)
+      if (surfacePieces.length > 1) {
+        const outputIds = surfacePieces.map((shape, index) => {
+          const outputId = deriveBooleanSolidId(commandId, index)
+          this.storeSolid(
+            outputId,
+            shape,
+            [...bodyIds, ...toolIds],
+            oc,
+            range,
+            'surface'
+          )
+          return outputId
+        })
+        this.markSolidsConsumed(
+          [...bodyIds, ...((cmd as any).keep_tools === true ? [] : toolIds)],
+          new Set(outputIds)
+        )
+        return booleanResponse('boolean_imprint', outputIds.slice(1))
+      }
+    }
+    this.storeSolid(commandId, splitShape, [...bodyIds, ...toolIds], oc, range)
     this.markSolidsConsumed(
       [...bodyIds, ...((cmd as any).keep_tools === true ? [] : toolIds)],
       new Set([commandId])
@@ -3554,6 +3578,22 @@ export class OpenCascadeCommandManager {
       list.Append_1(shape)
     }
     return list
+  }
+
+  private surfacePiecesFromSplitShape(
+    shape: any,
+    oc: OpenCascadeInstance
+  ): any[] {
+    const pieces: any[] = []
+    const explorer = new oc.TopExp_Explorer_2(
+      shape,
+      oc.TopAbs_ShapeEnum.TopAbs_FACE,
+      oc.TopAbs_ShapeEnum.TopAbs_SHAPE
+    )
+    for (; explorer.More(); explorer.Next()) {
+      pieces.push(oc.TopoDS.Face_1(explorer.Current()))
+    }
+    return pieces
   }
 
   private requireSolid(solidId: string): SolidState {
