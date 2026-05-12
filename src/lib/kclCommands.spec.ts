@@ -182,6 +182,11 @@ function topLevelExpression(code: string, source: string) {
     type: 'ExpressionStatement',
     start,
     end,
+    expression: {
+      type: 'CallExpressionKw',
+      start,
+      end,
+    },
   }
 }
 
@@ -308,6 +313,41 @@ extrude001 = extrude(sketch001, length = 5)
   extrude001 = extrude(sketch001, length = 5)
   return extrude001
 }`)
+  })
+
+  it('turns the final selected expression into the component return statement', () => {
+    const code = `sketch001 = startSketchOn(XY)
+extrude(sketch001, length = 5)
+`
+    const sketch = topLevelVariable(code, 'sketch001')
+    const extrude = topLevelExpression(code, 'extrude(sketch001, length = 5)')
+    const newCode = createComponentFromSelection(
+      {
+        ast: {
+          type: 'Program',
+          start: 0,
+          end: code.length,
+          body: [sketch, extrude],
+        },
+        code,
+        selectionRanges: {
+          graphSelections: [
+            { codeRef: { range: [sketch.start, sketch.end, 0] } },
+            { codeRef: { range: [extrude.start, extrude.end, 0] } },
+          ],
+        },
+      } as never,
+      'myComponent'
+    )
+
+    expect(newCode).not.toBeInstanceOf(Error)
+    expect(newCode).toContain(`myComponent = component() {
+  sketch001 = startSketchOn(XY)
+  return extrude(sketch001, length = 5)
+}`)
+    expect(newCode).not.toContain(
+      'extrude(sketch001, length = 5)\n  return extrude'
+    )
   })
 })
 

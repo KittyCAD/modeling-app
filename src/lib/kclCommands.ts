@@ -972,20 +972,36 @@ export function createComponentFromSelection(
   const maxIndex = Math.max(...bodyIndexes)
   const orderedItems = kclManager.ast.body.slice(minIndex, maxIndex + 1)
   const lastItem = orderedItems[orderedItems.length - 1]
-  if (lastItem.type !== 'VariableDeclaration') {
-    return new Error(
-      'The last selected operation must assign a value that can be returned.'
-    )
+
+  const returnStatement =
+    lastItem.type === 'VariableDeclaration'
+      ? `return ${lastItem.declaration.id.name}`
+      : lastItem.type === 'ExpressionStatement'
+        ? `return ${kclManager.code.slice(
+            lastItem.expression.start,
+            lastItem.expression.end
+          )}`
+        : lastItem.type === 'ReturnStatement'
+          ? kclManager.code.slice(lastItem.start, lastItem.end)
+          : null
+
+  if (!returnStatement) {
+    return new Error('The last selected operation must produce a return value.')
   }
 
-  const returnName = lastItem.declaration.id.name
-  const bodyCode = orderedItems
-    .map((item) => kclManager.code.slice(item.start, item.end))
+  const bodyItems =
+    lastItem.type === 'ExpressionStatement'
+      ? orderedItems.slice(0, orderedItems.length - 1)
+      : orderedItems
+  const bodyCode = [
+    ...bodyItems.map((item) => kclManager.code.slice(item.start, item.end)),
+    returnStatement,
+  ]
     .join('\n')
     .split('\n')
     .map((line) => (line.length > 0 ? `  ${line}` : line))
     .join('\n')
-  const replacement = `${componentName} = component() {\n${bodyCode}\n  return ${returnName}\n}`
+  const replacement = `${componentName} = component() {\n${bodyCode}\n}`
   const start = orderedItems[0].start
   const end = orderedItems[orderedItems.length - 1].end
   return (
