@@ -8,10 +8,7 @@ import {
 } from 'react'
 import toast from 'react-hot-toast'
 
-import { ActionButton } from '@src/components/ActionButton'
-import { CustomIcon } from '@src/components/CustomIcon'
 import { MarkdownText } from '@src/components/MarkdownText'
-import Tooltip from '@src/components/Tooltip'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { isKclCommandValue } from '@src/lib/commandUtils'
 import type {
@@ -26,7 +23,13 @@ import { isArray } from '@src/lib/utils'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { Draggable } from '@kittycad/ui-components'
+import {
+  ArgumentField,
+  DialogHeader,
+  Draggable,
+  type SelectionListItem,
+  SubmitButton,
+} from '@kittycad/ui-components'
 
 type ModelingDialogField = {
   argName: string
@@ -36,11 +39,9 @@ type ModelingDialogField = {
   options: CommandArgumentOption<unknown>[]
 }
 
-type SelectionListItem = {
-  key: string
+type CapturedSelectionListItem = SelectionListItem & {
   source: 'graphSelections' | 'otherSelections'
   index: number
-  label: string
 }
 
 const MODELING_DIALOG_TOOLBAR_GAP_PX = 8
@@ -81,13 +82,6 @@ function shouldResolveDefaultValue(
   isRequired: boolean
 ): boolean {
   return isRequired || !!arg.prepopulate || !!arg.skip
-}
-
-function isOptionValueEqual(a: unknown, b: unknown): boolean {
-  if (typeof a === 'object' && typeof b === 'object' && a && b) {
-    return JSON.stringify(a) === JSON.stringify(b)
-  }
-  return a === b
 }
 
 function resolveContextValue(
@@ -156,14 +150,14 @@ function getSelectionItemLabel(ast: unknown, selection: Selections): string {
 function getSelectionListItems(
   ast: unknown,
   selection: Selections | undefined
-): SelectionListItem[] {
+): CapturedSelectionListItem[] {
   if (!selection) return []
 
-  const items: SelectionListItem[] = []
+  const items: CapturedSelectionListItem[] = []
 
   selection.graphSelections.forEach((graphSelection, index) => {
     items.push({
-      key: `graph-${index}`,
+      id: `graph-${index}`,
       source: 'graphSelections',
       index,
       label: getSelectionItemLabel(ast, {
@@ -175,7 +169,7 @@ function getSelectionListItems(
 
   selection.otherSelections.forEach((otherSelection, index) => {
     items.push({
-      key: `other-${index}`,
+      id: `other-${index}`,
       source: 'otherSelections',
       index,
       label: getSelectionItemLabel(ast, {
@@ -398,7 +392,7 @@ export function ModelingDialog() {
   const removeDraftSelection = useCallback(
     (
       argName: string,
-      source: SelectionListItem['source'],
+      source: CapturedSelectionListItem['source'],
       selectionIndex: number
     ) => {
       setDraftValues((prev) => {
@@ -475,9 +469,6 @@ export function ModelingDialog() {
   const isCheckingArguments = commandBarState.matches(
     'Checking Arguments for Dialog'
   )
-  const submitDisabled = isSubmitting || isCheckingArguments
-  const submitBgClassName = submitDisabled ? '!bg-3' : '!bg-primary'
-  const submitIconClassName = submitDisabled ? '!text-3' : '!text-chalkboard-10'
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -595,31 +586,12 @@ export function ModelingDialog() {
         data-testid="modeling-dialog"
         style={{ maxHeight: `calc(100vh - ${dialogTopOffset + 16}px)` }}
         Handle={
-          <div className="flex items-center gap-1.5 px-3 py-1.5 border-b border-chalkboard-20 dark:border-chalkboard-70 cursor-move select-none">
-            <CustomIcon
-              name="three-dots"
-              className="w-3.5 h-3.5 text-chalkboard-60 dark:text-chalkboard-40"
-            />
-            <span className="text-xs uppercase tracking-wide text-chalkboard-60 dark:text-chalkboard-40">
-              {selectedCommand.displayName || selectedCommand.name}
-            </span>
-          </div>
+          <DialogHeader
+            title={selectedCommand.displayName || selectedCommand.name}
+            onClose={() => commands.send({ type: 'Close' })}
+          />
         }
       >
-        <button
-          data-testid="command-bar-close-button"
-          onClick={() => commands.send({ type: 'Close' })}
-          className="group m-0 p-0 border-none bg-transparent hover:bg-transparent !absolute right-2 top-2"
-          type="button"
-        >
-          <CustomIcon
-            name="close"
-            className="w-4 h-4 rounded-sm bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
-          />
-          <Tooltip position="bottom">
-            Cancel <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">esc</kbd>
-          </Tooltip>
-        </button>
         <form
           onSubmit={(event) => {
             void handleSubmit(event)
@@ -637,332 +609,60 @@ export function ModelingDialog() {
               .filter((field) => !field.isHidden)
               .map(({ argName, arg, isRequired, options }) => {
                 const key = `${argName}-${arg.inputType}`
-                const label = arg.displayName || argName
                 const value = draftValues[argName]
 
-                if (arg.inputType === 'options') {
-                  const selectedIndex = options.findIndex((option) =>
-                    isOptionValueEqual(option.value, value)
-                  )
-
-                  return (
-                    <label key={key} className="flex flex-col gap-1">
-                      <span className="text-xs font-medium leading-tight">
-                        {label}
-                        {isRequired ? ' *' : ''}
-                      </span>
-                      <select
-                        value={selectedIndex >= 0 ? String(selectedIndex) : ''}
-                        onChange={(event) => {
-                          const rawIndex = event.target.value
-                          const nextValue =
-                            rawIndex === ''
-                              ? undefined
-                              : options[Number(rawIndex)]?.value
-                          setDraftValues((prev) => ({
-                            ...prev,
-                            [argName]: nextValue,
-                          }))
-                        }}
-                        className="w-full rounded border border-chalkboard-30 bg-transparent px-2 py-1.5 text-xs leading-tight"
-                      >
-                        <option value="" disabled={isRequired}>
-                          {isRequired ? 'Select an option' : 'Optional'}
-                        </option>
-                        {options.map((option, index) => (
-                          <option
-                            key={`${argName}-${String(option.name)}-${index}`}
-                            value={String(index)}
-                            disabled={option.disabled}
-                          >
-                            {option.name}
-                          </option>
-                        ))}
-                      </select>
-                      {arg.description && (
-                        <MarkdownText
-                          text={arg.description}
-                          className="text-[10px] leading-tight text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown"
-                        />
-                      )}
-                    </label>
-                  )
-                }
-
-                if (arg.inputType === 'boolean') {
-                  const boolValue =
-                    value === true ? 'true' : value === false ? 'false' : ''
-                  return (
-                    <label key={key} className="flex flex-col gap-1">
-                      <span className="text-xs font-medium leading-tight">
-                        {label}
-                        {isRequired ? ' *' : ''}
-                      </span>
-                      <select
-                        value={boolValue}
-                        onChange={(event) => {
-                          const nextValue =
-                            event.target.value === ''
-                              ? undefined
-                              : event.target.value === 'true'
-                          setDraftValues((prev) => ({
-                            ...prev,
-                            [argName]: nextValue,
-                          }))
-                        }}
-                        className="w-full rounded border border-chalkboard-30 bg-transparent px-2 py-1.5 text-xs leading-tight"
-                      >
-                        <option value="" disabled={isRequired}>
-                          {isRequired ? 'Select true or false' : 'Optional'}
-                        </option>
-                        <option value="true">True</option>
-                        <option value="false">False</option>
-                      </select>
-                      {arg.description && (
-                        <MarkdownText
-                          text={arg.description}
-                          className="text-[10px] leading-tight text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown"
-                        />
-                      )}
-                    </label>
-                  )
-                }
-
-                if (
-                  arg.inputType === 'selection' ||
-                  arg.inputType === 'selectionMixed'
-                ) {
-                  const capturedSelection =
-                    (draftValues[argName] as Selections | undefined) &&
-                    !isSelectionValueEmpty(draftValues[argName])
-                      ? (draftValues[argName] as Selections)
-                      : undefined
-                  const isSelecting = activeSelectionArgName === argName
-                  const currentSelection = isSelectionValueEmpty(
-                    selectionRanges
-                  )
-                    ? undefined
-                    : selectionRanges
-                  const capturedSelectionItems = getSelectionListItems(
-                    kclManager.astSignal.value,
-                    capturedSelection
-                  )
-                  return (
-                    <div key={key} className="flex flex-col gap-2">
-                      <span className="text-xs font-medium leading-tight">
-                        {label}
-                        {isRequired ? ' *' : ''}
-                      </span>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[10px] uppercase leading-tight text-chalkboard-60 dark:text-chalkboard-40">
-                          Captured
-                        </span>
-                        {capturedSelectionItems.length > 0 ? (
-                          <ol className="my-0 flex list-none flex-col gap-1 p-0">
-                            {capturedSelectionItems.map((item, index) => (
-                              <li
-                                key={item.key}
-                                className="flex min-w-0 items-center justify-between gap-2 rounded-sm border border-chalkboard-20 bg-chalkboard-10/50 px-2 py-1 dark:border-chalkboard-70 dark:bg-chalkboard-90/50"
-                              >
-                                <span className="min-w-0 truncate text-xs leading-tight text-chalkboard-80 dark:text-chalkboard-20">
-                                  <span className="mr-1 text-[10px] text-chalkboard-60 dark:text-chalkboard-40">
-                                    #{index + 1}
-                                  </span>
-                                  {item.label}
-                                </span>
-                                <ActionButton
-                                  Element="button"
-                                  type="button"
-                                  tabIndex={0}
-                                  className="w-fit shrink-0 !p-0 rounded-sm border-none bg-transparent hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80"
-                                  iconStart={{
-                                    icon: 'trash',
-                                    bgClassName: '!bg-transparent p-0',
-                                    iconClassName:
-                                      'h-4 w-4 text-chalkboard-60 group-hover:text-destroy-80 dark:text-chalkboard-40 dark:group-hover:text-destroy-40',
-                                  }}
-                                  onClick={() =>
-                                    removeDraftSelection(
-                                      argName,
-                                      item.source,
-                                      item.index
-                                    )
-                                  }
-                                  aria-label={`Remove selection ${index + 1}`}
-                                >
-                                  <Tooltip position="bottom">
-                                    Remove selection
-                                  </Tooltip>
-                                </ActionButton>
-                              </li>
-                            ))}
-                          </ol>
-                        ) : (
-                          <p className="my-0 text-xs leading-tight text-chalkboard-70 dark:text-chalkboard-40">
-                            No selection captured
-                          </p>
-                        )}
-                      </div>
-                      {isSelecting && (
-                        <p className="my-0 text-[10px] leading-tight text-primary dark:text-primary">
-                          Selecting now:{' '}
-                          {selectionSummary(
-                            kclManager.astSignal.value,
-                            currentSelection
-                          )}
-                        </p>
-                      )}
-                      <div>
-                        <ActionButton
-                          Element="button"
-                          type="button"
-                          tabIndex={0}
-                          onClick={() => {
-                            if (isSelecting) {
-                              setActiveSelectionArgName(null)
-                              return
-                            }
-                            startSelectingArgument(argName, arg)
-                          }}
-                          className="px-2 py-1 text-xs"
-                        >
-                          {isSelecting ? 'Stop Selecting' : 'Select'}
-                        </ActionButton>
-                      </div>
-                      {arg.description && (
-                        <MarkdownText
-                          text={arg.description}
-                          className="text-[10px] leading-tight text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown"
-                        />
-                      )}
-                    </div>
-                  )
-                }
-
-                if (arg.inputType === 'text') {
-                  return (
-                    <label key={key} className="flex flex-col gap-1">
-                      <span className="text-xs font-medium leading-tight">
-                        {label}
-                        {isRequired ? ' *' : ''}
-                      </span>
-                      <textarea
-                        value={typeof value === 'string' ? value : ''}
-                        onChange={(event) =>
-                          setDraftValues((prev) => ({
-                            ...prev,
-                            [argName]: event.target.value,
-                          }))
-                        }
-                        className="min-h-16 w-full rounded border border-chalkboard-30 bg-transparent px-2 py-1.5 text-xs leading-tight"
-                        placeholder={label}
-                      />
-                      {arg.description && (
-                        <MarkdownText
-                          text={arg.description}
-                          className="text-[10px] leading-tight text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown"
-                        />
-                      )}
-                    </label>
-                  )
-                }
-
-                if (
-                  arg.inputType === 'kcl' ||
-                  arg.inputType === 'vector2d' ||
-                  arg.inputType === 'vector3d'
-                ) {
-                  return (
-                    <label key={key} className="flex flex-col gap-1">
-                      <span className="text-xs font-medium leading-tight">
-                        {label}
-                        {isRequired ? ' *' : ''}
-                      </span>
-                      <input
-                        type="text"
-                        value={typeof value === 'string' ? value : ''}
-                        onChange={(event) =>
-                          setDraftValues((prev) => ({
-                            ...prev,
-                            [argName]: event.target.value,
-                          }))
-                        }
-                        className="w-full rounded border border-chalkboard-30 bg-transparent px-2 py-1.5 text-xs leading-tight"
-                        placeholder={
-                          arg.inputType === 'vector2d'
-                            ? '[x, y]'
-                            : arg.inputType === 'vector3d'
-                              ? '[x, y, z]'
-                              : label
-                        }
-                      />
-                      {arg.description && (
-                        <MarkdownText
-                          text={arg.description}
-                          className="text-[10px] leading-tight text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown"
-                        />
-                      )}
-                    </label>
-                  )
-                }
-
-                if (arg.inputType === 'color') {
-                  const colorValue =
-                    typeof value === 'string' && value.startsWith('#')
-                      ? value
-                      : '#ffffff'
-                  return (
-                    <label key={key} className="flex flex-col gap-1">
-                      <span className="text-xs font-medium leading-tight">
-                        {label}
-                        {isRequired ? ' *' : ''}
-                      </span>
-                      <input
-                        type="color"
-                        value={colorValue}
-                        onChange={(event) =>
-                          setDraftValues((prev) => ({
-                            ...prev,
-                            [argName]: event.target.value,
-                          }))
-                        }
-                        className="h-8 w-full rounded border border-chalkboard-30 bg-transparent"
-                      />
-                      {arg.description && (
-                        <MarkdownText
-                          text={arg.description}
-                          className="text-[10px] leading-tight text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown"
-                        />
-                      )}
-                    </label>
-                  )
-                }
-
+                const capturedSelection =
+                  (arg.inputType === 'selection' ||
+                    arg.inputType === 'selectionMixed') &&
+                  (draftValues[argName] as Selections | undefined) &&
+                  !isSelectionValueEmpty(draftValues[argName])
+                    ? (draftValues[argName] as Selections)
+                    : undefined
+                const isSelecting = activeSelectionArgName === argName
+                const currentSelection = isSelectionValueEmpty(selectionRanges)
+                  ? undefined
+                  : selectionRanges
+                const capturedSelectionItems = getSelectionListItems(
+                  kclManager.astSignal.value,
+                  capturedSelection
+                )
                 return (
-                  <label key={key} className="flex flex-col gap-1">
-                    <span className="text-xs font-medium leading-tight">
-                      {label}
-                      {isRequired ? ' *' : ''}
-                    </span>
-                    <input
-                      type="text"
-                      value={typeof value === 'string' ? value : ''}
-                      onChange={(event) =>
-                        setDraftValues((prev) => ({
-                          ...prev,
-                          [argName]: event.target.value,
-                        }))
-                      }
-                      className="w-full rounded border border-chalkboard-30 bg-transparent px-2 py-1.5 text-xs leading-tight"
-                      placeholder={label}
-                    />
-                    {arg.description && (
-                      <MarkdownText
-                        text={arg.description}
-                        className="text-[10px] leading-tight text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown"
-                      />
+                  <ArgumentField
+                    key={key}
+                    name={argName}
+                    inputType={arg.inputType}
+                    label={arg.displayName || argName}
+                    description={
+                      arg.description ? (
+                        <MarkdownText
+                          text={arg.description}
+                          className="text-[10px] leading-tight text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown"
+                        />
+                      ) : undefined
+                    }
+                    isRequired={isRequired}
+                    options={options}
+                    value={value}
+                    selectionItems={capturedSelectionItems}
+                    isSelecting={isSelecting}
+                    currentSelectionLabel={selectionSummary(
+                      kclManager.astSignal.value,
+                      currentSelection
                     )}
-                  </label>
+                    onChange={(nextValue) =>
+                      setDraftValues((prev) => ({
+                        ...prev,
+                        [argName]: nextValue,
+                      }))
+                    }
+                    onStartSelecting={() =>
+                      startSelectingArgument(argName, arg)
+                    }
+                    onStopSelecting={() => setActiveSelectionArgName(null)}
+                    onRemoveSelection={(item) =>
+                      removeDraftSelection(argName, item.source, item.index)
+                    }
+                  />
                 )
               })}
           </div>
@@ -974,22 +674,10 @@ export function ModelingDialog() {
           )}
 
           <div className="mt-3 flex shrink-0 items-center justify-end gap-1.5">
-            <ActionButton
-              Element="button"
-              type="submit"
-              tabIndex={0}
-              className={`w-fit !p-0 rounded-sm hover:brightness-110 hover:shadow focus:outline-current ${submitBgClassName}`}
-              disabled={submitDisabled}
-              iconEnd={{
-                icon: 'checkmark',
-                bgClassName: `p-1 rounded-sm ${submitBgClassName}`,
-                iconClassName: submitIconClassName,
-              }}
-            >
-              <span className={`pl-2 ${submitIconClassName}`}>
-                {isCheckingArguments ? 'Submitting...' : 'Submit'}
-              </span>
-            </ActionButton>
+            <SubmitButton
+              disabled={isSubmitting}
+              isChecking={isCheckingArguments}
+            />
           </div>
         </form>
       </Draggable>
