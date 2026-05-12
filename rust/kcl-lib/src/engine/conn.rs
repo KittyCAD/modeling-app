@@ -163,9 +163,8 @@ impl EngineConnection {
         heartbeats: Option<u64>,
     ) {
         let heartbeats = heartbeats.unwrap_or_default();
-        // heartbeat every u64::MAX seconds is spiritually the same as never sending heartbeat.
-        // also Tokio panics if interval = 0, so treat that as "no heartbeats".
-        let period_seconds = if heartbeats == 0 { u64::MAX } else { heartbeats };
+        let send_heartbeats = heartbeats != 0;
+        let period_seconds = if heartbeats == 0 { 5 * 60 } else { heartbeats };
         let period = Duration::from_secs(period_seconds);
         let mut heartbeats_stream = tokio::time::interval(period);
 
@@ -204,7 +203,7 @@ impl EngineConnection {
                 }
 
                 // Send heartbeats periodically.
-                _ = heartbeats_stream.tick() => {
+                _ = heartbeats_stream.tick(), if send_heartbeats => {
                     // Send a heartbeat.
                     let res = Self::inner_send_to_engine(WebSocketRequest::Ping {}, &mut tcp_write).await;
                     // We don't really care if a heartbeat fails, we'll just try again soon.
