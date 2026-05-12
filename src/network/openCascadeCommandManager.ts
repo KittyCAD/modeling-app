@@ -3352,10 +3352,12 @@ export class OpenCascadeCommandManager {
       plane
     )
     const normal = plane?.normal || { x: 0, y: 0, z: 1 }
+    const xAxis = plane?.xAxis || { x: 1, y: 0, z: 0 }
     const circle = new oc.gp_Circ_2(
-      new oc.gp_Ax2_3(
+      new oc.gp_Ax2_2(
         toGpPnt(center, oc),
-        new oc.gp_Dir_4(normal.x, normal.y, normal.z)
+        toGpDir(normal, oc),
+        toGpDir(xAxis, oc)
       ),
       segment.radius
     )
@@ -5631,6 +5633,11 @@ function distance2(a: Point2, b: Point2): number {
 
 function toGpPnt(point: Point3, oc: OpenCascadeInstance): any {
   return new oc.gp_Pnt_3(point.x, point.y, point.z)
+}
+
+function toGpDir(vector: Point3, oc: OpenCascadeInstance): any {
+  const direction = normalize(vector)
+  return new oc.gp_Dir_4(direction.x, direction.y, direction.z)
 }
 
 function lengthValue(value: unknown): number {

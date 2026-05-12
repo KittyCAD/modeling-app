@@ -884,6 +884,100 @@ part002 = startSketchOn(XY)
     expect((await manager.exportLatestGlbBytes()).length).toBeGreaterThan(0)
   })
 
+  it('keeps surface arc extrudes aligned to signed sketch planes', async () => {
+    const manager = new OpenCascadeCommandManager()
+    const center = { x: 2.61, y: -0.09 }
+    const start = { x: 2.86, y: 4.3, z: 0 }
+    const end = { x: -1.76, y: 0.46, z: 0 }
+    const radius = Math.hypot(start.x - center.x, start.y - center.y)
+    const startAngle = Math.atan2(start.y - center.y, start.x - center.x)
+    const endAngle = Math.atan2(end.y - center.y, end.x - center.x)
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_batch_req',
+      requests: [
+        {
+          cmd_id: IDS.plane,
+          cmd: {
+            type: 'make_plane',
+            clobber: false,
+            origin: { x: 0, y: 0, z: 0 },
+            x_axis: { x: 0, y: -1, z: 0 },
+            y_axis: { x: 0, y: 0, z: 1 },
+            size: 10,
+          },
+        },
+        {
+          cmd_id: '00000000-0000-0000-0000-0000000000e8',
+          cmd: { type: 'enable_sketch_mode', entity_id: IDS.plane },
+        },
+        {
+          cmd_id: IDS.path,
+          cmd: { type: 'start_path' },
+        },
+        {
+          cmd_id: IDS.edge,
+          cmd: {
+            type: 'extend_path',
+            path: IDS.path,
+            segment: {
+              type: 'arc',
+              center,
+              radius,
+              start: { unit: 'radians', value: startAngle },
+              end: { unit: 'radians', value: endAngle },
+              relative: false,
+            },
+          },
+        },
+      ],
+    })
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: IDS.solid,
+      cmd: {
+        type: 'extrude',
+        target: IDS.path,
+        distance: 10,
+        extrude_method: 'new',
+        body_type: 'surface',
+      },
+    })
+
+    const arcEnd = {
+      x: center.x + radius * Math.cos(endAngle),
+      y: center.y + radius * Math.sin(endAngle),
+      z: 0,
+    }
+    const expectedStart = { x: 0, y: -start.x, z: start.y }
+    const expectedEnd = { x: 0, y: -arcEnd.x, z: arcEnd.y }
+    const sketchPoints =
+      manager.exportLatestSketchLineMeshes().segments[0].points
+    expect(
+      distanceToClosestFlattenedPoint(sketchPoints, expectedStart)
+    ).toBeLessThan(1e-6)
+    expect(
+      distanceToClosestFlattenedPoint(sketchPoints, expectedEnd)
+    ).toBeLessThan(1e-6)
+
+    const topologyPoints = manager
+      .exportLatestTopologyMeshes()
+      .solids[0].edges.flatMap((edge) => edge.points)
+    expect(
+      distanceToClosestFlattenedPoint(topologyPoints, expectedStart)
+    ).toBeLessThan(1e-5)
+    expect(
+      distanceToClosestFlattenedPoint(topologyPoints, expectedEnd)
+    ).toBeLessThan(1e-5)
+    expect(
+      distanceToClosestFlattenedPoint(topologyPoints, {
+        ...expectedStart,
+        x: -10,
+      })
+    ).toBeLessThan(1e-5)
+  })
+
   it('deletes faces into a surface body and can flip and join it', async () => {
     const manager = new OpenCascadeCommandManager()
     await buildRectangleRegionInput(manager)
@@ -2679,6 +2773,24 @@ function boundsForFlattenedPoints(points: number[]) {
     bounds.max.z = Math.max(bounds.max.z, points[index + 2])
   }
   return bounds
+}
+
+function distanceToClosestFlattenedPoint(
+  points: number[],
+  expected: Point3Like
+) {
+  let minimum = Number.POSITIVE_INFINITY
+  for (let index = 0; index < points.length; index += 3) {
+    minimum = Math.min(
+      minimum,
+      Math.hypot(
+        points[index] - expected.x,
+        points[index + 1] - expected.y,
+        points[index + 2] - expected.z
+      )
+    )
+  }
+  return minimum
 }
 
 function isUuidLike(value: string): boolean {
