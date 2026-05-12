@@ -3192,7 +3192,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       annotation: {
         inputType: 'text',
-        defaultValue: 'Break all sharp edges',
+        defaultValue: 'BREAK ALL SHARP EDGES',
         required: true,
       },
       framePosition: {
