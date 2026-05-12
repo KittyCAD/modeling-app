@@ -419,8 +419,12 @@ export const commandBarMachine = setup({
             return reject(`Unable to validate, wrong argument`)
           }
 
-          const data = input.event.data
+          const submittedData = input.event.data
           const argName = context.currentArgument?.name
+          const data =
+            argName && argName in submittedData
+              ? submittedData[argName]
+              : submittedData
           const selectedCommand = context?.selectedCommand
           const machineContext =
             selectedCommand?.machineActor?.getSnapshot().context
@@ -440,7 +444,7 @@ export const commandBarMachine = setup({
               .validation({ context, data, machineContext })
               .then((result) => {
                 if (typeof result === 'boolean' && result === true) {
-                  return resolve(data)
+                  return resolve(submittedData)
                 } else {
                   // validation failed
                   if (typeof result === 'string') {
@@ -461,7 +465,7 @@ export const commandBarMachine = setup({
               })
           } else {
             // Missing several requirements for validate argument, just bypass
-            return resolve(data)
+            return resolve(submittedData)
           }
         })
       }
