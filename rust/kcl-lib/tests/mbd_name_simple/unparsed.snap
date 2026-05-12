@@ -2,7 +2,7 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing mbd_name_simple.kcl
 ---
-@settings(kclVersion = 2.0, experimentalFeatures = allow)
+@settings(kclVersion = 2.0)
 
 blockProfile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
