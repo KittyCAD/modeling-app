@@ -1,40 +1,40 @@
-import { useAppState } from '@src/AppState'
+import type { MouseEventHandler } from 'react'
+import { use, useCallback, useMemo, useRef, useState } from 'react'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
-import Loading from '@src/components/Loading'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
-import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
-import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
-import { useOnPageIdle } from '@src/hooks/network/useOnPageIdle'
-import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
-import { useOnPageResize } from '@src/hooks/network/useOnPageResize'
-import { useOnPeerConnectionClose } from '@src/hooks/network/useOnPeerConnectionClose'
-import { useOnVitestEngineOnline } from '@src/hooks/network/useOnVitestEngineOnline'
-import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
-import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
-import { useTryConnect } from '@src/hooks/network/useTryConnect'
-import { useModelingContext } from '@src/hooks/useModelingContext'
+import { btnName } from '@src/lib/cameraControls'
+import { err, reportRejection } from '@src/lib/trap'
+import Loading from '@src/components/Loading'
+import { useAppState } from '@src/AppState'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
-import {
-  getArtifactOfTypes,
-  getSketchBlockForArtifact,
-} from '@src/lang/std/artifactGraph'
-import { useApp, useSingletons } from '@src/lib/boot'
-import { btnName } from '@src/lib/cameraControls'
-import { EngineDebugger } from '@src/lib/debugger'
-import {
-  getOperationForArtifact,
-  prepareEditCommand,
-} from '@src/lib/featureTree'
-import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
+import { useModelingContext } from '@src/hooks/useModelingContext'
 import {
   getEngineRegionSelectionFromEntity,
   sendSelectEventToEngine,
 } from '@src/lib/selections'
-import { Themes, getResolvedTheme } from '@src/lib/theme'
-import { err, reportRejection } from '@src/lib/trap'
-import type { MouseEventHandler } from 'react'
-import { use, useCallback, useMemo, useRef, useState } from 'react'
+import {
+  getArtifactOfTypes,
+  getSketchBlockForArtifact,
+} from '@src/lang/std/artifactGraph'
+import {
+  getOperationForArtifact,
+  prepareEditCommand,
+} from '@src/lib/featureTree'
+import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
+import { useOnPageResize } from '@src/hooks/network/useOnPageResize'
+import { useOnPageIdle } from '@src/hooks/network/useOnPageIdle'
+import { useTryConnect } from '@src/hooks/network/useTryConnect'
+import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
+import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
+import { useOnPeerConnectionClose } from '@src/hooks/network/useOnPeerConnectionClose'
+import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
+import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
+import { useOnVitestEngineOnline } from '@src/hooks/network/useOnVitestEngineOnline'
+import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
+import { EngineDebugger } from '@src/lib/debugger'
+import { getResolvedTheme, Themes } from '@src/lib/theme'
 
 const TIME_TO_CONNECT = 30_000
 
