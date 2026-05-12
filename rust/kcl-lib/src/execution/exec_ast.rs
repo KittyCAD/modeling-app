@@ -4820,7 +4820,7 @@ impl Node<BinaryExpression> {
                 KclValue::Number { value: l % r, meta, ty }
             }
             BinaryOperator::Pow => KclValue::Number {
-                value: left.n.powf(right.n),
+                value: libm::pow(left.n, right.n),
                 meta,
                 ty: exec_state.current_default_units(),
             },
