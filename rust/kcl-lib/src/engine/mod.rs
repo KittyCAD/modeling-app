@@ -1,6 +1,8 @@
 //! Functions for managing engine communications.
 
 pub mod async_tasks;
+#[cfg(all(not(target_arch = "wasm32"), feature = "cadrum-occt"))]
+pub mod cadrum_kernel;
 #[cfg(not(target_arch = "wasm32"))]
 #[cfg(feature = "engine")]
 pub mod conn;

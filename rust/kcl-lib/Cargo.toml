@@ -31,6 +31,8 @@ default = ["cli", "engine", "artifact-graph"]
 artifact-graph = []
 benchmark-execution = []
 cli = ["dep:clap", "kittycad/clap"]
+cadrum-occt = ["dep:cadrum"]
+cadrum-occt-source-build = ["cadrum-occt", "cadrum/source-build"]
 dhat-heap = ["dep:dhat"]
 # For the lsp server, when run with stdout for rpc we want to disable println.
 # This is used for editor extensions that use the lsp server.
@@ -49,6 +51,7 @@ anyhow = { workspace = true, features = ["backtrace"] }
 async-recursion = "1.1.1"
 async-trait = { workspace = true }
 base64 = "0.22.1"
+cadrum = { version = "0.7.6", default-features = false, optional = true }
 chrono = "0.4.44"
 clap = { version = "4.6.1", default-features = false, optional = true, features = [
   "std",

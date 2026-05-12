@@ -23,7 +23,6 @@ fn main() {
             "TKPrim",
             "TKBRep",
             "TKTopAlgo",
-            "TKGProp",
             "TKGeomBase",
             "TKG3d",
             "TKG2d",

@@ -47,7 +47,12 @@ export type OcctCommandCoreGeometryState = {
   geometryBackend: 'native_occt' | 'protocol_geometry'
   nativeOcct: boolean
   shapeCount: number
-  shapes: Array<{ kind: string; volume: number }>
+  shapes: Array<{
+    commandId: string
+    kind: string
+    bodyType: 'solid' | 'surface' | string
+    volume: number
+  }>
 }
 
 type EmscriptenOcctCommandCoreModule = {
