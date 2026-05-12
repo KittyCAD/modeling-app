@@ -108,6 +108,8 @@ ex. `just overwrite-sim-test-sample angle-gauge`
 [![gallows-bracket](screenshots/gallows-bracket.png)](gallows-bracket/main.kcl)
 #### [gas-impeller](gas-impeller/main.kcl) ([screenshot](screenshots/gas-impeller.png))
 [![gas-impeller](screenshots/gas-impeller.png)](gas-impeller/main.kcl)
+#### [gdt-tutorial](gdt-tutorial/main.kcl) ([screenshot](screenshots/gdt-tutorial.png))
+[![gdt-tutorial](screenshots/gdt-tutorial.png)](gdt-tutorial/main.kcl)
 #### [gear-rack](gear-rack/main.kcl) ([screenshot](screenshots/gear-rack.png))
 [![gear-rack](screenshots/gear-rack.png)](gear-rack/main.kcl)
 #### [gingerbread-man](gingerbread-man/main.kcl) ([screenshot](screenshots/gingerbread-man.png))
