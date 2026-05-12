@@ -2,6 +2,7 @@ mod camel_case;
 mod chained_profiles;
 mod default_plane;
 mod empty_component_call;
+mod geometry_fn_should_be_component;
 mod offset_plane;
 
 pub use camel_case::Z0001;
@@ -13,5 +14,7 @@ pub use default_plane::Z0002;
 pub use default_plane::lint_should_be_default_plane;
 pub use empty_component_call::Z0006;
 pub use empty_component_call::lint_empty_component_calls;
+pub use geometry_fn_should_be_component::Z0007;
+pub use geometry_fn_should_be_component::lint_geometry_fns_should_be_components;
 pub use offset_plane::Z0003;
 pub use offset_plane::lint_should_be_offset_plane;

@@ -418,6 +418,7 @@ impl Node<Program> {
             crate::lint::checks::lint_should_be_offset_plane,
             crate::lint::checks::lint_profiles_should_not_be_chained,
             crate::lint::checks::lint_empty_component_calls,
+            crate::lint::checks::lint_geometry_fns_should_be_components,
         ];
 
         let mut findings = vec![];
