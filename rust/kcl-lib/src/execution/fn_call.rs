@@ -41,6 +41,32 @@ pub(crate) struct ComponentInstanceMeta {
     pub(crate) is_default: bool,
 }
 
+fn is_sketch_on_cache_binding(name: &str) -> bool {
+    name.starts_with(memory::SKETCH_PREFIX) && name.ends_with("_on")
+}
+
+fn pop_component_env_preserving_sketch_on_cache(
+    exec_state: &mut ExecState,
+    source_range: SourceRange,
+) -> Result<(), KclError> {
+    let sketch_on_cache_bindings = exec_state
+        .stack()
+        .find_all_in_current_env()
+        .filter(|(name, _)| is_sketch_on_cache_binding(name))
+        .map(|(name, value)| (name.clone(), value.clone()))
+        .collect::<Vec<_>>();
+
+    exec_state.mut_stack().pop_env();
+
+    for (name, value) in sketch_on_cache_bindings {
+        if !exec_state.stack().cur_frame_contains(&name) {
+            exec_state.mut_stack().add(name, value, source_range)?;
+        }
+    }
+
+    Ok(())
+}
+
 #[derive(Debug, Clone)]
 pub struct Args<Status: ArgsStatus = Desugared> {
     /// Name of the function these args are being passed into.
@@ -400,7 +426,7 @@ pub(crate) async fn call_component_kw(
     if instance_meta.is_some() {
         exec_state.push_op(Operation::GroupEnd);
     }
-    exec_state.mut_stack().pop_env();
+    pop_component_env_preserving_sketch_on_cache(exec_state, source_range)?;
     result
 }
 

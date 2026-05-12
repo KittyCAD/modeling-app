@@ -6080,6 +6080,48 @@ mod tests {
         assert!(nested_component_sketch_is_being_edited(&program.ast));
     }
 
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_sketch_inside_component_reuses_cached_on_expression() {
+        clear_mem_cache().await;
+
+        let source = r#"part = component() {
+  sketch001 = sketch(on = XY) {
+    line1 = line(start = [var 0, var 0], end = [var 1, var 0])
+  }
+  return sketch001
+}
+"#;
+        let program = Program::parse(source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_engine(
+            std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            Default::default(),
+        );
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+        let project_id = ProjectId(0);
+        let file_id = FileId(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let initial_object_count = frontend.scene_graph.objects.len();
+        let sketch_id = find_first_sketch_object(&frontend.scene_graph)
+            .expect("Expected component sketch object to exist")
+            .id;
+
+        let scene_delta = frontend
+            .edit_sketch(&mock_ctx, project_id, file_id, version, sketch_id)
+            .await
+            .unwrap();
+
+        assert_eq!(scene_delta.new_graph.sketch_mode, Some(sketch_id));
+        assert_eq!(scene_delta.new_graph.objects.len(), initial_object_count);
+
+        clear_mem_cache().await;
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
     #[test]
     fn test_region_name_from_sweep_variable_supports_sweep_kinds() {
         let source = "\
@@ -11199,7 +11241,10 @@ sketch(on = XY) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
 
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_with_engine(
+            std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            Default::default(),
+        );
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
@@ -12046,7 +12091,10 @@ sketch(on = offsetPlane(XY, offset = width)) {
         let program = Program::parse(initial_source).unwrap().0.unwrap();
 
         let mut frontend = FrontendState::new();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_with_engine(
+            std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            Default::default(),
+        );
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
         let project_id = ProjectId(0);
