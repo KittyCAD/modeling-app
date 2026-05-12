@@ -20,20 +20,26 @@
 /// The maximum length is 1024 characters. A zero-length name is equivalent to
 /// no name being set.
 ///
-/// ```kcl,no3d,legacySketch
-/// @settings(experimentalFeatures = allow)
+/// ```kcl,sketchSolve
+/// boxProfile = sketch(on = XY) {
+///   edge1 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
+///   edge2 = line(start = [var 5mm, var 0mm], end = [var 5mm, var 5mm])
+///   edge3 = line(start = [var 5mm, var 5mm], end = [var 0mm, var 5mm])
+///   edge4 = line(start = [var 0mm, var 5mm], end = [var 0mm, var 0mm])
+///   coincident([edge1.end, edge2.start])
+///   coincident([edge2.end, edge3.start])
+///   coincident([edge3.end, edge4.start])
+///   coincident([edge4.end, edge1.start])
+///   horizontal(edge1)
+///   vertical(edge2)
+///   horizontal(edge3)
+///   vertical(edge4)
+/// }
 ///
-/// startSketchOn(XY)
-///   |> startProfile(at = [0, 0])
-///   |> line(end = [10, 0], tag = $side)
-///   |> line(end = [0, 10])
-///   |> line(end = [-10, 0])
-///   |> line(end = [0, -10])
-///   |> close()
-///   |> extrude(length = 5, tagEnd = $top)
-///
+/// boxRegion = region(point = [2mm, 2mm], sketch = boxProfile)
+/// box = extrude(boxRegion, length = 4mm, tagEnd = $top)
 /// mbd::name(face = top, name = "mounting-face")
-/// mbd::name(edge = getCommonEdge(faces = [side, top]), name = "front_top_edge")
+/// mbd::name(edge = getCommonEdge(faces = [boxRegion.tags.edge1, top]), name = "front_top_edge")
 /// ```
 @(impl = std_rust)
 export fn name(
