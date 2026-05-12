@@ -1279,6 +1279,10 @@ impl KclValue {
         convert_units: bool,
         exec_state: &mut ExecState,
     ) -> Result<KclValue, CoercionError> {
+        if let KclValue::Component { default_value, .. } = self {
+            return default_value.coerce(ty, convert_units, exec_state);
+        }
+
         match self {
             KclValue::Tuple { value, .. }
                 if value.len() == 1

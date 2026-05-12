@@ -5649,6 +5649,34 @@ afterBareReference = mySurfaceLine.end
         assert_eq!(get_number("afterBareReference"), 6.0);
     }
 
+    #[tokio::test(flavor = "multi_thread")]
+    async fn assigned_component_default_output_coerces_as_its_return_value() {
+        let program = r#"
+tooth = component() {
+  toothSketch = startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(end = [1, 0])
+    |> line(end = [0, 1])
+    |> close()
+    |> extrude(length = 1)
+  return toothSketch
+}
+
+teeth = tooth
+  |> patternLinear3d(axis = [1, 0, 0], distance = 1, instances = 2)
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let teeth = result
+            .exec_state
+            .stack()
+            .memory
+            .get_from("teeth", result.mem_env, SourceRange::default(), 0)
+            .unwrap();
+
+        assert!(teeth.has_type(&RuntimeType::solids()));
+    }
+
     #[cfg(feature = "artifact-graph")]
     #[tokio::test(flavor = "multi_thread")]
     async fn assigned_component_tracks_default_and_override_instances() {
