@@ -945,10 +945,6 @@ async fn inner_pattern_circular_3d(
 
     let starting_solids = solids;
 
-    if args.ctx.context_type == crate::execution::ContextType::Mock {
-        return Ok(starting_solids);
-    }
-
     let mut solids = Vec::new();
     let center = center.unwrap_or(POINT_ZERO_ZERO_ZERO);
     let data = CircularPattern3dData {
