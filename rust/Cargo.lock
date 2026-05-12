@@ -2453,6 +2453,7 @@ dependencies = [
  "miette",
  "mime_guess",
  "nalgebra-glm",
+ "num-traits 0.2.19",
  "parse-display",
  "pretty_assertions",
  "pyo3",
