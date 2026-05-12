@@ -9,21 +9,21 @@
 /// This is part of model-based definition (MBD).
 ///
 /// ```kcl,no3d,legacySketch
-/// width = 5in
+/// width = 5
 ///
 /// startSketchOn(XY)
-///   |> startProfile(at = [0in, 0in])
-///   |> line(end = [width, 0in], tag = $side1)
-///   |> line(end = [0in, width], tag = $side2)
-///   |> line(end = [-width, 0in], tag = $side3)
-///   |> line(end = [0in, -width], tag = $side4)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [width, 0], tag = $side1)
+///   |> line(end = [0, width], tag = $side2)
+///   |> line(end = [-width, 0], tag = $side3)
+///   |> line(end = [0, -width], tag = $side4)
 ///   |> close()
-///   |> extrude(length = width, tagStart = $bottom, tagEnd = $top)
+///   |> extrude(length = 5, tagStart = $bottom, tagEnd = $top)
 ///
 /// gdt::datum(
 ///   face = side2,
 ///   name = "A",
-///   framePosition = [width, 0in],
+///   framePosition = [5, 0],
 ///   framePlane = XZ,
 /// )
 /// ```
