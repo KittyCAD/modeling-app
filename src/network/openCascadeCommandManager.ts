@@ -1387,33 +1387,27 @@ export class OpenCascadeCommandManager {
       const height = lengthValue(cmd.distance)
       const plane = this.planeForTarget(cmd.target)
       const normal = plane?.normal || { x: 0, y: 0, z: 1 }
+      const oppositeHeight = oppositeLengthValue((cmd as any).opposite, height)
+      const prismDistance =
+        oppositeHeight !== undefined ? height - oppositeHeight : height
       const prism = new oc.BRepPrimAPI_MakePrism_1(
         profile.wire,
         new oc.gp_Vec_4(
-          normal.x * height,
-          normal.y * height,
-          normal.z * height
+          normal.x * prismDistance,
+          normal.y * prismDistance,
+          normal.z * prismDistance
         ),
         false,
         true
       )
-      const oppositeHeight = oppositeLengthValue((cmd as any).opposite, height)
-      const oppositePrism =
+      const shape =
         oppositeHeight !== undefined
-          ? new oc.BRepPrimAPI_MakePrism_1(
-              profile.wire,
-              new oc.gp_Vec_4(
-                normal.x * oppositeHeight,
-                normal.y * oppositeHeight,
-                normal.z * oppositeHeight
-              ),
-              false,
-              true
+          ? this.translateShape(
+              prism.Shape(),
+              scale(normal, oppositeHeight),
+              oc
             )
-          : undefined
-      const shape = oppositePrism
-        ? this.fuseShapes(prism.Shape(), oppositePrism.Shape(), oc)
-        : prism.Shape()
+          : prism.Shape()
       this.storeSolid(commandId, shape, [cmd.target], oc, range, 'surface')
       return { type: 'extrude', data: {} }
     }
@@ -1424,29 +1418,23 @@ export class OpenCascadeCommandManager {
     const height = lengthValue(cmd.distance)
     const plane = region.planeId ? this.planes.get(region.planeId) : undefined
     const normal = plane?.normal || { x: 0, y: 0, z: 1 }
+    const oppositeHeight = oppositeLengthValue((cmd as any).opposite, height)
+    const prismDistance =
+      oppositeHeight !== undefined ? height - oppositeHeight : height
     const prism = new oc.BRepPrimAPI_MakePrism_1(
       region.face,
-      new oc.gp_Vec_4(normal.x * height, normal.y * height, normal.z * height),
+      new oc.gp_Vec_4(
+        normal.x * prismDistance,
+        normal.y * prismDistance,
+        normal.z * prismDistance
+      ),
       false,
       true
     )
-    const oppositeHeight = oppositeLengthValue((cmd as any).opposite, height)
-    const oppositePrism =
+    const shape =
       oppositeHeight !== undefined
-        ? new oc.BRepPrimAPI_MakePrism_1(
-            region.face,
-            new oc.gp_Vec_4(
-              normal.x * oppositeHeight,
-              normal.y * oppositeHeight,
-              normal.z * oppositeHeight
-            ),
-            false,
-            true
-          )
-        : undefined
-    const shape = oppositePrism
-      ? this.fuseShapes(prism.Shape(), oppositePrism.Shape(), oc)
-      : prism.Shape()
+        ? this.translateShape(prism.Shape(), scale(normal, oppositeHeight), oc)
+        : prism.Shape()
 
     const solid: SolidState = {
       shape,
@@ -1510,9 +1498,11 @@ export class OpenCascadeCommandManager {
         solid,
         region,
         prism,
-        height,
+        prismDistance,
         normal,
-        renderSolidId
+        renderSolidId,
+        oppositeHeight || 0,
+        oc
       )
     } else {
       this.registerExtrudeTopology(
@@ -1520,9 +1510,11 @@ export class OpenCascadeCommandManager {
         solid,
         region,
         prism,
-        height,
+        prismDistance,
         normal,
-        renderSolidId
+        renderSolidId,
+        oppositeHeight || 0,
+        oc
       )
       solid.brep = this.writeBrep(commandId, shape, oc)
       this.solids.set(commandId, solid)
@@ -1559,34 +1551,24 @@ export class OpenCascadeCommandManager {
     const angle = isSymmetricOpposite((cmd as any).opposite)
       ? rawAngle / 2
       : rawAngle
+    const oppositeAngle = oppositeAngleValueRadians(
+      (cmd as any).opposite,
+      angle
+    )
+    const sweepAngle =
+      oppositeAngle !== undefined ? angle - oppositeAngle : angle
     const primaryShape = new oc.BRepPrimAPI_MakeRevol_1(
       profile,
       new oc.gp_Ax1_2(
         new oc.gp_Pnt_3(origin.x, origin.y, origin.z),
         new oc.gp_Dir_4(axis.x, axis.y, axis.z)
       ),
-      angle,
+      sweepAngle,
       false
     ).Shape()
-    const oppositeAngle = oppositeAngleValueRadians(
-      (cmd as any).opposite,
-      angle
-    )
     const shape =
       oppositeAngle !== undefined
-        ? this.fuseShapes(
-            primaryShape,
-            new oc.BRepPrimAPI_MakeRevol_1(
-              profile,
-              new oc.gp_Ax1_2(
-                new oc.gp_Pnt_3(origin.x, origin.y, origin.z),
-                new oc.gp_Dir_4(axis.x, axis.y, axis.z)
-              ),
-              oppositeAngle,
-              false
-            ).Shape(),
-            oc
-          )
+        ? this.rotateShape(primaryShape, origin, axis, oppositeAngle, oc)
         : primaryShape
 
     const suppressRevolveInteriorEdges =
@@ -2891,12 +2873,43 @@ export class OpenCascadeCommandManager {
       return shape
     }
 
-    const trsf = new oc.gp_Trsf()
+    const trsf = new oc.gp_Trsf_1()
     if (yUp) {
       trsf.SetValues(scale, 0, 0, 0, 0, 0, scale, 0, 0, -scale, 0, 0)
     } else {
       trsf.SetScale(new oc.gp_Pnt_3(0, 0, 0), scale)
     }
+    return new oc.BRepBuilderAPI_Transform_2(shape, trsf, true).Shape()
+  }
+
+  private translateShape(
+    shape: any,
+    vector: Point3,
+    oc: OpenCascadeInstance
+  ): any {
+    if (Math.hypot(vector.x, vector.y, vector.z) < 1e-9) {
+      return shape
+    }
+    const trsf = new oc.gp_Trsf_1()
+    trsf.SetTranslation_1(new oc.gp_Vec_4(vector.x, vector.y, vector.z))
+    return new oc.BRepBuilderAPI_Transform_2(shape, trsf, true).Shape()
+  }
+
+  private rotateShape(
+    shape: any,
+    origin: Point3,
+    axis: Point3,
+    angle: number,
+    oc: OpenCascadeInstance
+  ): any {
+    if (Math.abs(angle) < 1e-9) {
+      return shape
+    }
+    const trsf = new oc.gp_Trsf_1()
+    trsf.SetRotation_1(
+      new oc.gp_Ax1_2(toGpPnt(origin, oc), toGpDir(axis, oc)),
+      angle
+    )
     return new oc.BRepBuilderAPI_Transform_2(shape, trsf, true).Shape()
   }
 
@@ -3487,7 +3500,21 @@ export class OpenCascadeCommandManager {
     toolShape: any,
     oc: OpenCascadeInstance
   ): any {
-    return this.booleanPair('merge extrude', baseShape, toolShape, oc)
+    return this.unifySameDomainShape(
+      this.booleanPair('merge extrude', baseShape, toolShape, oc),
+      oc
+    )
+  }
+
+  private unifySameDomainShape(shape: any, oc: OpenCascadeInstance): any {
+    if (typeof oc.ShapeUpgrade_UnifySameDomain_2 !== 'function') {
+      return shape
+    }
+    const unify = new oc.ShapeUpgrade_UnifySameDomain_2(shape, true, true, true)
+    unify.AllowInternalEdges(false)
+    unify.SetSafeInputMode(true)
+    unify.Build()
+    return unify.Shape()
   }
 
   private foldBooleanShapes(
@@ -3933,8 +3960,15 @@ export class OpenCascadeCommandManager {
     prism: any,
     height: number,
     normal: Point3,
-    renderSolidId = commandId
+    renderSolidId = commandId,
+    startOffset = 0,
+    oc?: OpenCascadeInstance
   ) {
+    const offsetVector = scale(normal, startOffset)
+    const transformTopologyShape = (shape: any) =>
+      shape && oc && Math.abs(startOffset) > 1e-9
+        ? this.translateShape(shape, offsetVector, oc)
+        : shape
     const startCapId = solid.startCapId
     const endCapId = solid.endCapId
     const topology: ExtrudeTopology = {
@@ -3956,7 +3990,7 @@ export class OpenCascadeCommandManager {
       solidId: renderSolidId,
       kind: 'face',
       role: 'startCap',
-      shape: callIfFunction(prism, 'FirstShape_1'),
+      shape: transformTopologyShape(callIfFunction(prism, 'FirstShape_1')),
     })
     this.topologyEntries.set(endCapId, {
       topologyId: endCapId,
@@ -3964,7 +3998,7 @@ export class OpenCascadeCommandManager {
       solidId: renderSolidId,
       kind: 'face',
       role: 'endCap',
-      shape: callIfFunction(prism, 'LastShape_1'),
+      shape: transformTopologyShape(callIfFunction(prism, 'LastShape_1')),
     })
 
     for (const [index, entry] of region.edgeEntries.entries()) {
@@ -3996,7 +4030,7 @@ export class OpenCascadeCommandManager {
         solidId: renderSolidId,
         kind: 'face',
         role: 'wall',
-        shape: firstShapeFromList(generated),
+        shape: transformTopologyShape(firstShapeFromList(generated)),
       })
       for (const [topologyId, role] of [
         [oppositeEdgeId, 'oppositeEdge'],
@@ -4021,7 +4055,8 @@ export class OpenCascadeCommandManager {
       region,
       height,
       normal,
-      topology
+      topology,
+      startOffset
     )
     nextMesh.provenance = cloneEntityProvenance(solid.provenance)
     const currentMesh =
@@ -6010,7 +6045,8 @@ function buildExtrudeTopologyMesh(
   region: RegionState,
   height: number,
   normal: Point3,
-  topology: ExtrudeTopology
+  topology: ExtrudeTopology,
+  startOffset = 0
 ): OpenCascadeTopologySolidMesh {
   const positions: number[] = []
   const indices: number[] = []
@@ -6037,13 +6073,16 @@ function buildExtrudeTopologyMesh(
   }
   const boundary =
     region.boundaryPoints || orderedBoundaryPoints(region.edgeEntries)
-  const topBoundary = boundary.map((point) => add(point, scale(normal, height)))
+  const offsetVector = scale(normal, startOffset)
+  const sweepVector = scale(normal, height)
+  const startBoundary = boundary.map((point) => add(point, offsetVector))
+  const topBoundary = startBoundary.map((point) => add(point, sweepVector))
 
   addCapGroup({
     positions,
     indices,
     groups,
-    points: boundary,
+    points: startBoundary,
     topologyId: topology.startCapId,
     role: 'startCap',
     reverse: true,
@@ -6066,10 +6105,10 @@ function buildExtrudeTopologyMesh(
 
     const groupStart = indices.length
     for (let index = 0; index < entry.points.length - 1; index += 1) {
-      const bottomA = entry.points[index]
-      const bottomB = entry.points[index + 1]
-      const topA = add(bottomA, scale(normal, height))
-      const topB = add(bottomB, scale(normal, height))
+      const bottomA = add(entry.points[index], offsetVector)
+      const bottomB = add(entry.points[index + 1], offsetVector)
+      const topA = add(bottomA, sweepVector)
+      const topB = add(bottomB, sweepVector)
       addQuad(positions, indices, bottomA, bottomB, topB, topA)
     }
     groups.push({
@@ -6087,21 +6126,21 @@ function buildExtrudeTopologyMesh(
     )
     const previousAdjacentEdgeId =
       topology.previousAdjacentEdgesBySourceEdgeId.get(entry.id)
-    pushEdge(nextAdjacentEdgeId, 'adjacentEdge', entry.points, [
+    const startPoints = entry.points.map((point) => add(point, offsetVector))
+    const endPoints = startPoints.map((point) => add(point, sweepVector))
+    pushEdge(nextAdjacentEdgeId, 'adjacentEdge', startPoints, [
       wallFaceId,
       topology.startCapId,
     ])
-    pushEdge(
-      oppositeEdgeId,
-      'oppositeEdge',
-      entry.points.map((point) => add(point, scale(normal, height))),
-      [wallFaceId, topology.endCapId]
-    )
-    const start = entry.points[0]
+    pushEdge(oppositeEdgeId, 'oppositeEdge', endPoints, [
+      wallFaceId,
+      topology.endCapId,
+    ])
+    const start = startPoints[0]
     pushEdge(
       previousAdjacentEdgeId,
       'adjacentEdge',
-      [start, add(start, scale(normal, height))],
+      [start, add(start, sweepVector)],
       [wallFaceId]
     )
   }

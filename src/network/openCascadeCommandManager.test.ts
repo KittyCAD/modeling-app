@@ -469,7 +469,7 @@ describe('OpenCascadeCommandManager', () => {
     expect((await manager.exportLatestGlbBytes()).length).toBeGreaterThan(0)
   })
 
-  it('builds symmetric and bidirectional OpenCascade extrudes as opposing fused prisms', async () => {
+  it('builds symmetric and bidirectional OpenCascade extrudes across one continuous span', async () => {
     const extrudeVolume = async (opposite?: unknown) => {
       const manager = new OpenCascadeCommandManager()
       await buildRectangleRegionInput(manager)
@@ -498,6 +498,43 @@ describe('OpenCascadeCommandManager', () => {
     expect(symmetricVolume).toBeLessThan(oneWayVolume * 2.1)
     expect(bidirectionalVolume).toBeGreaterThan(oneWayVolume * 1.4)
     expect(bidirectionalVolume).toBeLessThan(oneWayVolume * 1.6)
+  })
+
+  it('unifies same-domain faces across the source profile for opposite OpenCascade surface extrudes', async () => {
+    const surfaceTopology = async (opposite?: unknown) => {
+      const manager = new OpenCascadeCommandManager()
+      await buildOpenLineInput(manager)
+      await send(manager, IDS.request, {
+        type: 'modeling_cmd_req',
+        cmd_id: IDS.solid,
+        cmd: {
+          type: 'extrude',
+          target: IDS.path,
+          distance: 2,
+          extrude_method: 'new',
+          body_type: 'surface',
+          ...(opposite === undefined ? {} : { opposite }),
+        },
+      })
+      expect(manager.getSolidCount()).toBe(1)
+      expect((await manager.exportLatestGlbBytes()).length).toBeGreaterThan(0)
+      const mesh = manager.exportLatestTopologyMeshes().solids[0]
+      return {
+        faceCount: mesh.groups.length,
+        firstNormal: firstTriangleNormal(mesh),
+      }
+    }
+
+    const oneWay = await surfaceTopology()
+    const symmetric = await surfaceTopology('Symmetric')
+    const bidirectional = await surfaceTopology({ Other: 1 })
+
+    expect(symmetric.faceCount).toBe(1)
+    expect(bidirectional.faceCount).toBe(1)
+    expect(dot(symmetric.firstNormal, oneWay.firstNormal)).toBeGreaterThan(0.9)
+    expect(dot(bidirectional.firstNormal, oneWay.firstNormal)).toBeGreaterThan(
+      0.9
+    )
   })
 
   it('treats symmetric OpenCascade revolve angle as the full included angle', async () => {
@@ -537,6 +574,38 @@ describe('OpenCascadeCommandManager', () => {
     expect(symmetricVolume).toBeLessThan(oneWayVolume * 1.1)
     expect(bidirectionalVolume).toBeGreaterThan(oneWayVolume * 1.4)
     expect(bidirectionalVolume).toBeLessThan(oneWayVolume * 1.6)
+  })
+
+  it('unifies same-domain faces across the source profile for opposite OpenCascade surface revolves', async () => {
+    const surfaceFaceCount = async (opposite?: unknown) => {
+      const manager = new OpenCascadeCommandManager()
+      await buildOpenLineInput(manager)
+      await send(manager, IDS.request, {
+        type: 'modeling_cmd_req',
+        cmd_id: IDS.solid,
+        cmd: {
+          type: 'revolve',
+          target: IDS.path,
+          origin: { x: 0, y: 0, z: 0 },
+          axis: { x: 0, y: 1, z: 0 },
+          axis_is_2d: true,
+          angle: { unit: 'degrees', value: 90 },
+          tolerance: 1e-7,
+          opposite: opposite ?? 'None',
+          body_type: 'surface',
+        },
+      })
+      expect(manager.getSolidCount()).toBe(1)
+      expect((await manager.exportLatestGlbBytes()).length).toBeGreaterThan(0)
+      return manager.exportLatestTopologyMeshes().solids[0].groups.length
+    }
+
+    expect(await surfaceFaceCount('Symmetric')).toBe(1)
+    expect(
+      await surfaceFaceCount({
+        Other: { unit: 'degrees', value: 45 },
+      })
+    ).toBe(1)
   })
 
   it('executes past an OpenCascade rollback marker while exporting pre-marker render state', async () => {
@@ -2436,13 +2505,13 @@ plateRevolve = startSketchOn(YZ)
     expect(manager?.getSolidCount()).toBe(1)
     const visibleSolids = await manager?.exportVisibleGlbBytes()
     expect(visibleSolids).toHaveLength(1)
-    expect(visibleSolids?.[0].suppressMeshEdges).toBe(true)
+    expect(visibleSolids?.[0].suppressMeshEdges).toBe(false)
     expect(
       manager
         ?.exportLatestTopologyMeshes()
         .solids[0].edges.some((edge) => edge.suppressed)
     ).toBe(false)
-  })
+  }, 15000)
 })
 
 async function buildCircleRegionInput(manager: OpenCascadeCommandManager) {
@@ -2617,6 +2686,46 @@ async function buildRectangleRegionInput(
       object_id: path,
       query_point: { x: 0, y: 0 },
     },
+  })
+}
+
+async function buildOpenLineInput(manager: OpenCascadeCommandManager) {
+  await send(manager, IDS.request, {
+    type: 'modeling_cmd_batch_req',
+    requests: [
+      {
+        cmd_id: IDS.plane,
+        cmd: {
+          type: 'make_plane',
+          clobber: false,
+          origin: { x: 0, y: 0, z: 0 },
+          x_axis: { x: 1, y: 0, z: 0 },
+          y_axis: { x: 0, y: 1, z: 0 },
+          size: 10,
+        },
+      },
+      {
+        cmd_id: '00000000-0000-0000-0000-000000000210',
+        cmd: { type: 'enable_sketch_mode', entity_id: IDS.plane },
+      },
+      { cmd_id: IDS.path, cmd: { type: 'start_path' } },
+      {
+        cmd_id: '00000000-0000-0000-0000-000000000211',
+        cmd: { type: 'move_path_pen', path: IDS.path, to: { x: 2, y: 0 } },
+      },
+      {
+        cmd_id: IDS.edge,
+        cmd: {
+          type: 'extend_path',
+          path: IDS.path,
+          segment: {
+            type: 'line',
+            end: { x: 3, y: 1 },
+            relative: false,
+          },
+        },
+      },
+    ],
   })
 }
 
@@ -2806,6 +2915,50 @@ function boundsForFlattenedPoints(points: number[]) {
     bounds.max.z = Math.max(bounds.max.z, points[index + 2])
   }
   return bounds
+}
+
+function firstTriangleNormal(mesh: { positions: number[]; indices: number[] }) {
+  const a = pointAtIndex(mesh, mesh.indices[0])
+  const b = pointAtIndex(mesh, mesh.indices[1])
+  const c = pointAtIndex(mesh, mesh.indices[2])
+  return normalizeVector(cross(subtract(b, a), subtract(c, a)))
+}
+
+function pointAtIndex(
+  mesh: { positions: number[] },
+  vertexIndex: number
+): Point3Like {
+  const offset = vertexIndex * 3
+  return {
+    x: mesh.positions[offset],
+    y: mesh.positions[offset + 1],
+    z: mesh.positions[offset + 2],
+  }
+}
+
+function subtract(a: Point3Like, b: Point3Like): Point3Like {
+  return { x: a.x - b.x, y: a.y - b.y, z: a.z - b.z }
+}
+
+function cross(a: Point3Like, b: Point3Like): Point3Like {
+  return {
+    x: a.y * b.z - a.z * b.y,
+    y: a.z * b.x - a.x * b.z,
+    z: a.x * b.y - a.y * b.x,
+  }
+}
+
+function normalizeVector(vector: Point3Like): Point3Like {
+  const length = Math.hypot(vector.x, vector.y, vector.z) || 1
+  return {
+    x: vector.x / length,
+    y: vector.y / length,
+    z: vector.z / length,
+  }
+}
+
+function dot(a: Point3Like, b: Point3Like) {
+  return a.x * b.x + a.y * b.y + a.z * b.z
 }
 
 function distanceToClosestFlattenedPoint(
