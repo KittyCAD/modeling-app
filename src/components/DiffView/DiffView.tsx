@@ -121,10 +121,6 @@ export const DiffView = (props: AreaTypeComponentProps) => {
 
   useEffect(() => {
     if (!lastEntrySelected) return
-    // if (!mergeView.current) {
-    // console.warn('unable to find merge view')
-    // return
-    // }
     setDiff(
       editor,
       mergeView,
