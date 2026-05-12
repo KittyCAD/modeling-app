@@ -474,6 +474,7 @@ sketch001 = extrude(region001, length = -12)`
         commandName: 'Offset plane',
       })
       await toolbar.selectDefaultPlane('Front plane')
+      await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'offset',
