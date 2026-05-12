@@ -37,7 +37,8 @@ export const ModelingPageProvider = ({
   const settingsActor = settings.actor
   const projectIORef = project?.projectIORefSignal
   const file = project?.executingFileEntry.value
-  const editorCode = project?.executingEditor.value?.state.doc.toString() ?? ''
+  const editorCode = kclManager.codeSignal.value
+  const ast = kclManager.astSignal.value
   const filePath = useAbsoluteFilePath()
 
   useEffect(() => {
@@ -191,7 +192,7 @@ export const ModelingPageProvider = ({
       wasmInstance,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclManager, project, file, editorCode])
+  }, [kclManager, project, file, editorCode, ast])
 
   useEffect(() => {
     commands.send({
