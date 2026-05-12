@@ -84,7 +84,10 @@ async function getKclCommandValue(
   instance: ModuleType,
   rustContext: RustContext
 ) {
-  const result = await stringToKclExpression(value, rustContext)
+  const result = await stringToKclExpression(value, rustContext, {
+    allowArrays: true,
+    allowStringArrays: true,
+  })
   if (err(result) || 'errors' in result) {
     throw new Error('Failed to create KCL expression')
   }
@@ -585,11 +588,16 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         rustContextInThisFile
       )
+      const datums = await getKclCommandValue(
+        '["A", "B"]',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
       const result = addProfileGdt({
         ast,
         artifactGraph,
         edges: createSelectionFromArtifacts([edge], artifactGraph),
-        datums: 'A, B',
+        datums,
         tolerance,
         wasmInstance: instanceInThisFile,
       })
@@ -909,11 +917,16 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         rustContextInThisFile
       )
+      const datums = await getKclCommandValue(
+        '["A", "B"]',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
       const result = addPerpendicularityGdt({
         ast,
         artifactGraph,
         objects: createSelectionFromArtifacts([face, edge], artifactGraph),
-        datums: 'A, B',
+        datums,
         tolerance,
         wasmInstance: instanceInThisFile,
       })
@@ -957,13 +970,18 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         rustContextInThisFile
       )
+      const datums = await getKclCommandValue(
+        '["A", "B"]',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
 
       const result = addParallelismGdt({
         ast,
         artifactGraph,
         objects,
         tolerance,
-        datums: 'A, B',
+        datums,
         wasmInstance: instanceInThisFile,
       })
       if (err(result)) {

@@ -416,7 +416,7 @@ export function addProfileGdt({
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   edges: Selections
-  datums?: string
+  datums?: KclCommandValue
   tolerance: KclCommandValue
   wasmInstance: ModuleType
   precision?: KclCommandValue
@@ -473,6 +473,9 @@ export function addProfileGdt({
   if ('variableName' in tolerance && tolerance.variableName) {
     insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
   }
+  if (datums && 'variableName' in datums && datums.variableName) {
+    insertVariableAndOffsetPathToNode(datums, modifiedAst, nodeToEdit)
+  }
   if (precision && 'variableName' in precision && precision.variableName) {
     insertVariableAndOffsetPathToNode(precision, modifiedAst, mNodeToEdit)
   }
@@ -499,16 +502,8 @@ export function addProfileGdt({
 
     labeledArgs.push(createLabeledArg('tolerance', valueOrVariable(tolerance)))
 
-    const datumNames = parseDatumNames(datums)
-    if (datumNames.length > 0) {
-      labeledArgs.push(
-        createLabeledArg(
-          'datums',
-          createArrayExpression(
-            datumNames.map((datum) => createLiteral(datum, wasmInstance))
-          )
-        )
-      )
+    if (datums) {
+      labeledArgs.push(createLabeledArg('datums', valueOrVariable(datums)))
     }
 
     if (precision !== undefined) {
@@ -749,7 +744,7 @@ export function addPerpendicularityGdt({
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   objects: Selections
-  datums?: string
+  datums?: KclCommandValue
   tolerance: KclCommandValue
   wasmInstance: ModuleType
   precision?: KclCommandValue
@@ -826,6 +821,9 @@ export function addPerpendicularityGdt({
   if ('variableName' in tolerance && tolerance.variableName) {
     insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
   }
+  if (datums && 'variableName' in datums && datums.variableName) {
+    insertVariableAndOffsetPathToNode(datums, modifiedAst, nodeToEdit)
+  }
   if (precision && 'variableName' in precision && precision.variableName) {
     insertVariableAndOffsetPathToNode(precision, modifiedAst, mNodeToEdit)
   }
@@ -844,7 +842,6 @@ export function addPerpendicularityGdt({
     return styleResult
   }
 
-  const datumNames = parseDatumNames(datums)
   let lastPathToNode: PathToNode | undefined
 
   const createPerpendicularityCall = (
@@ -856,15 +853,8 @@ export function addPerpendicularityGdt({
       createLabeledArg('tolerance', valueOrVariable(tolerance)),
     ]
 
-    if (datumNames.length > 0) {
-      labeledArgs.push(
-        createLabeledArg(
-          'datums',
-          createArrayExpression(
-            datumNames.map((datum) => createLiteral(datum, wasmInstance))
-          )
-        )
-      )
+    if (datums) {
+      labeledArgs.push(createLabeledArg('datums', valueOrVariable(datums)))
     }
 
     if (precision !== undefined) {
@@ -942,7 +932,7 @@ export function addParallelismGdt({
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   objects: Selections
-  datums?: string
+  datums?: KclCommandValue
   tolerance: KclCommandValue
   wasmInstance: ModuleType
   precision?: KclCommandValue
@@ -1019,6 +1009,9 @@ export function addParallelismGdt({
   if ('variableName' in tolerance && tolerance.variableName) {
     insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
   }
+  if (datums && 'variableName' in datums && datums.variableName) {
+    insertVariableAndOffsetPathToNode(datums, modifiedAst, nodeToEdit)
+  }
   if (precision && 'variableName' in precision && precision.variableName) {
     insertVariableAndOffsetPathToNode(precision, modifiedAst, mNodeToEdit)
   }
@@ -1037,7 +1030,6 @@ export function addParallelismGdt({
     return styleResult
   }
 
-  const datumNames = parseDatumNames(datums)
   let lastPathToNode: PathToNode | undefined
 
   const createParallelismCall = (
@@ -1049,15 +1041,8 @@ export function addParallelismGdt({
       createLabeledArg('tolerance', valueOrVariable(tolerance)),
     ]
 
-    if (datumNames.length > 0) {
-      labeledArgs.push(
-        createLabeledArg(
-          'datums',
-          createArrayExpression(
-            datumNames.map((datum) => createLiteral(datum, wasmInstance))
-          )
-        )
-      )
+    if (datums) {
+      labeledArgs.push(createLabeledArg('datums', valueOrVariable(datums)))
     }
 
     if (precision !== undefined) {
@@ -1480,13 +1465,6 @@ export function getNextAvailableDatumName(ast?: Node<Program>): string {
   }
 
   return fallback
-}
-
-function parseDatumNames(datums?: string): string[] {
-  return (datums ?? '')
-    .split(',')
-    .map((datum) => datum.trim())
-    .filter(Boolean)
 }
 
 /**
