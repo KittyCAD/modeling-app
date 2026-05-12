@@ -12,6 +12,7 @@ export type KclFileMetaMap = {
 export interface PromptToEditRequest {
   body: TextToCadMultiFileIterationBody
   files: KittyCadLibFile[]
+  activeFile?: string
 }
 
 export interface ConstructRequestArgs {
