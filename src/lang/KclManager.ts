@@ -645,17 +645,19 @@ export class File extends EventTarget {
   /** Allows environments to swap their implementation of these IO-interfacing functions */
   static ioImplementations = {
     read: (path: string): Promise<string> => {
-      return new Promise(async (resolve, reject) => {
-        try {
-          const text = await fsZds.readFile(path, 'utf8')
-          resolve(text)
-        } catch (err) {
-          if (err.message.includes('ENOENT')) {
-            resolve('')
-          } else {
-            reject(err)
-          }
-        }
+      return new Promise((resolve, reject) => {
+        fsZds
+          .readFile(path, 'utf8')
+          .then((text) => {
+            resolve(text)
+          })
+          .catch((err) => {
+            if (err.message.includes('ENOENT')) {
+              resolve('')
+            } else {
+              reject(err)
+            }
+          })
       })
     },
     write: (path: string, content: string) =>
