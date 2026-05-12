@@ -101,7 +101,7 @@ function OpenCascadeModelingArea() {
   const [diagnostic, setDiagnostic] = useState<string | undefined>()
   const executionCounterRef = useRef(0)
   const sceneWrapperRef = useRef<HTMLDivElement>(null)
-  const contextMenuMouseDownRef = useRef<{
+  const contextMenuPointerDownRef = useRef<{
     x: number
     y: number
     moved: boolean
@@ -111,22 +111,22 @@ function OpenCascadeModelingArea() {
   const viewControlContextMenuGuard: (e: MouseEvent) => boolean = useCallback(
     (e: MouseEvent) => {
       const rightClick = btnName(e).right
-      const clickState = contextMenuMouseDownRef.current
+      const clickState = contextMenuPointerDownRef.current
       const shouldOpen = Boolean(rightClick && clickState && !clickState.moved)
-      contextMenuMouseDownRef.current = null
+      contextMenuPointerDownRef.current = null
       return shouldOpen
     },
     []
   )
 
-  const updateContextMenuGesture = useCallback((event: React.MouseEvent) => {
-    if (!contextMenuMouseDownRef.current) {
+  const updateContextMenuGesture = useCallback((event: React.PointerEvent) => {
+    if (!contextMenuPointerDownRef.current) {
       return
     }
-    const deltaX = event.clientX - contextMenuMouseDownRef.current.x
-    const deltaY = event.clientY - contextMenuMouseDownRef.current.y
+    const deltaX = event.clientX - contextMenuPointerDownRef.current.x
+    const deltaY = event.clientY - contextMenuPointerDownRef.current.y
     if (Math.hypot(deltaX, deltaY) > 4) {
-      contextMenuMouseDownRef.current.moved = true
+      contextMenuPointerDownRef.current.moved = true
     }
   }, [])
 
@@ -200,16 +200,16 @@ function OpenCascadeModelingArea() {
     <div
       ref={sceneWrapperRef}
       className="relative z-0 min-w-64 flex flex-col flex-1 items-center overflow-hidden"
-      onMouseDownCapture={(event) => {
+      onPointerDownCapture={(event) => {
         if (btnName(event.nativeEvent).right) {
-          contextMenuMouseDownRef.current = {
+          contextMenuPointerDownRef.current = {
             x: event.clientX,
             y: event.clientY,
             moved: false,
           }
         }
       }}
-      onMouseMoveCapture={updateContextMenuGesture}
+      onPointerMoveCapture={updateContextMenuGesture}
       onContextMenu={(e) => e.preventDefault()}
       onContextMenuCapture={(e) => e.preventDefault()}
     >
@@ -223,7 +223,7 @@ function OpenCascadeModelingArea() {
       />
       <OpenCascadeThreeScene diagnostic={diagnostic} />
       <ViewControlContextMenu
-        event="mouseup"
+        event="pointerup"
         guard={viewControlContextMenuGuard}
         menuTargetElement={sceneWrapperRef}
       />

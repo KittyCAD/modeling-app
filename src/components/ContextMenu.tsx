@@ -22,7 +22,7 @@ export interface ContextMenuProps
   items?: React.ReactElement[]
   menuTargetElement?: RefObject<HTMLElement | null>
   guard?: (e: globalThis.MouseEvent) => boolean
-  event?: 'contextmenu' | 'mouseup'
+  event?: 'contextmenu' | 'mouseup' | 'pointerup'
   callback?: (event: globalThis.MouseEvent) => void
 }
 
