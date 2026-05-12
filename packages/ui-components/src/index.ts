@@ -1,8 +1,17 @@
+export { AdvancedSection } from './components/AdvancedSection/AdvancedSection'
+export type { AdvancedSectionProps } from './components/AdvancedSection/AdvancedSection'
+export { ArgumentGroup } from './components/ArgumentGroup/ArgumentGroup'
+export type { ArgumentGroupProps } from './components/ArgumentGroup/ArgumentGroup'
 export { Draggable } from './components/Draggable/Draggable'
 export type {
   DraggableProps,
   DraggableSide,
 } from './components/Draggable/Draggable'
+export { ChoiceGroup } from './components/ChoiceGroup/ChoiceGroup'
+export type {
+  ChoiceGroupOption,
+  ChoiceGroupProps,
+} from './components/ChoiceGroup/ChoiceGroup'
 export { ArgumentField } from './components/ArgumentField/ArgumentField'
 export type {
   ArgumentFieldInputType,

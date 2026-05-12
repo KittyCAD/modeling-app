@@ -34,6 +34,7 @@ type FieldPreviewProps = {
   description?: string
   initialSelectionItems?: SelectionListItem[]
   initialSelecting?: boolean
+  controlStyle?: 'select' | 'segmented'
 }
 
 const meta = {
@@ -82,6 +83,7 @@ function FieldPreview({
   description,
   initialSelectionItems = [],
   initialSelecting = false,
+  controlStyle,
 }: FieldPreviewProps) {
   const [value, setValue] = useState(initialValue)
   const [items, setItems] = useState(initialSelectionItems)
@@ -94,8 +96,12 @@ function FieldPreview({
       label={label}
       isRequired={isRequired}
       options={options}
+      controlStyle={controlStyle}
       value={value}
       selectionItems={items}
+      selectionHeading="Selected"
+      selectionEmptyLabel="Select profiles or faces"
+      selectionHint="Multiple selections are accepted."
       isSelecting={isSelecting}
       currentSelectionLabel="1 face, 1 edge"
       description={
@@ -103,12 +109,12 @@ function FieldPreview({
       }
       onChange={setValue}
       onStartSelecting={() => setIsSelecting(true)}
-      onStopSelecting={() => setIsSelecting(false)}
       onRemoveSelection={(itemToRemove) =>
         setItems((currentItems) =>
           currentItems.filter((item) => item.id !== itemToRemove.id)
         )
       }
+      onClearSelection={() => setItems([])}
     />
   )
 }
@@ -127,6 +133,20 @@ export const Options: Story = {
   ),
 }
 
+export const SegmentedOptions: Story = {
+  render: () => (
+    <FieldPreview
+      name="mode"
+      inputType="options"
+      label="Mode"
+      initialValue="add"
+      options={modeOptions}
+      controlStyle="segmented"
+      description="Choose how the generated geometry should be combined."
+    />
+  ),
+}
+
 export const BooleanField: Story = {
   render: () => (
     <FieldPreview
@@ -134,6 +154,7 @@ export const BooleanField: Story = {
       inputType="boolean"
       label="Keep original"
       initialValue={true}
+      controlStyle="segmented"
       description="Controls whether the source body remains after the operation."
     />
   ),

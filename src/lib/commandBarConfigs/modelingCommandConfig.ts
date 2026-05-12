@@ -865,6 +865,31 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Pull a sketch into 3D along its normal or perpendicular.',
     icon: 'extrude',
     needsReview: true,
+    dialogLayout: {
+      groups: [
+        {
+          id: 'selection',
+          title: 'Selection',
+          description: 'Choose the profiles or faces to extrude.',
+        },
+        {
+          id: 'extent',
+          title: 'Extent',
+          description: 'Set distance, direction, and termination selections.',
+        },
+        {
+          id: 'operation',
+          title: 'Operation',
+          description: 'Choose the generated body behavior.',
+        },
+        {
+          id: 'advanced',
+          title: 'Advanced',
+          description: 'Tags, twist, seams, and lower-level method controls.',
+          collapsible: true,
+        },
+      ],
+    },
     reviewValidation: async (context, modelingActor) => {
       if (!modelingActor) {
         return new Error('modelingMachine not found')
@@ -896,6 +921,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
+        dialog: {
+          group: 'selection',
+          selectionHeading: 'Profiles',
+          selectionEmptyLabel: 'Select profiles or faces',
+          selectionHint: 'Pick sketch regions, sketch segments, or faces.',
+        },
         selectionTypes: [
           'solid2d',
           'segment',
@@ -911,6 +942,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       length: {
         displayName: 'Length',
         inputType: 'kcl',
+        dialog: {
+          group: 'extent',
+        },
         defaultValue: KCL_DEFAULT_LENGTH,
         required: false,
         prepopulate: true,
@@ -918,6 +952,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       to: {
         displayName: 'To',
         inputType: 'selection',
+        dialog: {
+          group: 'extent',
+          selectionHeading: 'To',
+          selectionEmptyLabel: 'Optional terminating face',
+          selectionHint: 'Use this for an up-to-face style extent.',
+        },
         // TODO: add edgeCut during https://github.com/KittyCAD/modeling-app/issues/8831
         selectionTypes: ['cap', 'wall'],
         clearSelectionFirst: true,
@@ -928,43 +968,69 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       symmetric: {
         displayName: 'Symmetric',
         inputType: 'boolean',
+        dialog: {
+          group: 'extent',
+          controlStyle: 'segmented',
+        },
         required: false,
       },
       bidirectionalLength: {
         displayName: 'Bidirectional Length',
         inputType: 'kcl',
+        dialog: {
+          group: 'extent',
+        },
         required: false,
       },
       tagStart: {
         displayName: 'Tag Start',
         inputType: 'tagDeclarator',
+        dialog: {
+          group: 'advanced',
+        },
         required: false,
         // TODO: add validation like for Clone command
       },
       tagEnd: {
         displayName: 'Tag End',
         inputType: 'tagDeclarator',
+        dialog: {
+          group: 'advanced',
+        },
         required: false,
       },
       twistAngle: {
         displayName: 'Twist Angle',
         inputType: 'kcl',
+        dialog: {
+          group: 'advanced',
+        },
         required: false,
       },
       twistAngleStep: {
         displayName: 'Twist Angle Step',
         inputType: 'kcl',
+        dialog: {
+          group: 'advanced',
+        },
         required: false,
       },
       twistCenter: {
         displayName: 'Twist Center',
         inputType: 'vector2d',
+        dialog: {
+          group: 'advanced',
+        },
         required: false,
         defaultValue: KCL_DEFAULT_ORIGIN_2D,
       },
       method: {
         displayName: 'Method',
         inputType: 'options',
+        dialog: {
+          group: 'advanced',
+          controlStyle: 'segmented',
+        },
         required: false,
         options: KCL_PRELUDE_EXTRUDE_METHOD_VALUES.map((value) => ({
           name: capitaliseFC(value.toLowerCase()),
@@ -974,11 +1040,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       hideSeams: {
         displayName: 'Hide Seams',
         inputType: 'boolean',
+        dialog: {
+          group: 'advanced',
+          controlStyle: 'segmented',
+        },
         required: false,
       },
       bodyType: {
         displayName: 'Body Type',
         inputType: 'options',
+        dialog: {
+          group: 'operation',
+          controlStyle: 'segmented',
+        },
         required: false,
         options: kclBodyTypeOptions,
       },

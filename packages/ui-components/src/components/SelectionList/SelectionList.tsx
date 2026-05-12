@@ -10,6 +10,9 @@ export type SelectionListProps<Item extends SelectionListItem> = {
   onRemove: (item: Item) => void
   heading?: ReactNode
   emptyLabel?: ReactNode
+  hint?: ReactNode
+  isActive?: boolean
+  onClear?: () => void
 }
 
 function TrashIcon() {
@@ -34,12 +37,45 @@ export function SelectionList<Item extends SelectionListItem>({
   onRemove,
   heading = 'Captured',
   emptyLabel = 'No selection captured',
+  hint,
+  isActive = false,
+  onClear,
 }: SelectionListProps<Item>) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-[10px] uppercase leading-tight text-chalkboard-60 dark:text-chalkboard-40">
-        {heading}
-      </span>
+      <div className="flex min-w-0 items-center justify-between gap-2">
+        <span className="flex min-w-0 items-center gap-1.5 text-[10px] uppercase leading-tight text-chalkboard-60 dark:text-chalkboard-40">
+          <span className="truncate">{heading}</span>
+          <span
+            className={[
+              'rounded-sm px-1 py-px text-[9px] leading-none',
+              isActive
+                ? 'bg-primary text-chalkboard-10'
+                : 'bg-chalkboard-20 text-chalkboard-70 dark:bg-chalkboard-80 dark:text-chalkboard-30',
+            ].join(' ')}
+          >
+            {items.length}
+          </span>
+        </span>
+        {items.length > 0 && onClear && (
+          <button
+            type="button"
+            className="pointer-events-auto m-0 rounded-sm border-none bg-transparent px-1 py-0 text-[10px] leading-tight text-chalkboard-60 hover:bg-chalkboard-20 hover:text-destroy-80 dark:text-chalkboard-40 dark:hover:bg-chalkboard-80 dark:hover:text-destroy-40"
+            onClick={(event) => {
+              event.stopPropagation()
+              onClear()
+            }}
+            onFocus={(event) => event.stopPropagation()}
+          >
+            Clear
+          </button>
+        )}
+      </div>
+      {hint && (
+        <p className="my-0 text-[10px] leading-tight text-chalkboard-60 dark:text-chalkboard-40">
+          {hint}
+        </p>
+      )}
       {items.length > 0 ? (
         <ol className="my-0 flex list-none flex-col gap-1 p-0">
           {items.map((item, index) => (
@@ -55,8 +91,12 @@ export function SelectionList<Item extends SelectionListItem>({
               </span>
               <button
                 type="button"
-                className="group m-0 flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border-none bg-transparent p-0 text-chalkboard-60 hover:bg-chalkboard-20 hover:text-destroy-80 dark:text-chalkboard-40 dark:hover:bg-chalkboard-80 dark:hover:text-destroy-40"
-                onClick={() => onRemove(item)}
+                className="pointer-events-auto group m-0 flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border-none bg-transparent p-0 text-chalkboard-60 hover:bg-chalkboard-20 hover:text-destroy-80 dark:text-chalkboard-40 dark:hover:bg-chalkboard-80 dark:hover:text-destroy-40"
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onRemove(item)
+                }}
+                onFocus={(event) => event.stopPropagation()}
                 aria-label={`Remove selection ${index + 1}`}
                 title="Remove selection"
               >

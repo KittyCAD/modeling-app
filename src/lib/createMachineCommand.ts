@@ -132,6 +132,9 @@ export function createMachineCommand<
   if ('status' in commandConfig) {
     command.status = commandConfig.status
   }
+  if ('dialogLayout' in commandConfig) {
+    command.dialogLayout = commandConfig.dialogLayout
+  }
 
   return command
 }
@@ -178,6 +181,7 @@ export function buildCommandArgument<
     skip: arg.skip,
     machineActor,
     valueSummary: arg.valueSummary,
+    dialog: arg.dialog,
   } satisfies Omit<CommandArgument<O, T>, 'inputType'>
 
   if (arg.inputType === 'options') {

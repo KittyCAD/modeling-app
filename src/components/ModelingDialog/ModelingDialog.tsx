@@ -14,6 +14,7 @@ import { isKclCommandValue } from '@src/lib/commandUtils'
 import type {
   CommandArgument,
   CommandArgumentOption,
+  CommandDialogGroup,
 } from '@src/lib/commandTypes'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { MODELING_AREA_CONTAINER_ID } from '@src/lib/layout/modelingArea'
@@ -24,7 +25,9 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
+  AdvancedSection,
   ArgumentField,
+  ArgumentGroup,
   DialogHeader,
   Draggable,
   type SelectionListItem,
@@ -39,12 +42,26 @@ type ModelingDialogField = {
   options: CommandArgumentOption<unknown>[]
 }
 
+type ResolvedModelingDialogGroup = CommandDialogGroup & {
+  fields: ModelingDialogField[]
+}
+
 type CapturedSelectionListItem = SelectionListItem & {
   source: 'graphSelections' | 'otherSelections'
   index: number
 }
 
 const MODELING_DIALOG_TOOLBAR_GAP_PX = 8
+const DEFAULT_DIALOG_GROUP_ID = 'parameters'
+const EMPTY_SELECTION: Selections = {
+  graphSelections: [],
+  otherSelections: [],
+}
+
+const DEFAULT_DIALOG_GROUP: CommandDialogGroup = {
+  id: DEFAULT_DIALOG_GROUP_ID,
+  title: 'Parameters',
+}
 
 function getToolbarBottomOffset(wrapper: HTMLElement | null): number {
   if (typeof window === 'undefined') return 0
@@ -75,6 +92,103 @@ function isSelectionValueEmpty(value: unknown): boolean {
     : []
 
   return graphSelections.length === 0 && otherSelections.length === 0
+}
+
+function removeSelectionItem(
+  value: unknown,
+  source: CapturedSelectionListItem['source'],
+  selectionIndex: number
+): Selections | undefined {
+  if (!value || typeof value !== 'object') return undefined
+
+  const graphSelections = isArray(
+    (value as Partial<Selections>).graphSelections
+  )
+    ? (value as Selections).graphSelections
+    : []
+  const otherSelections = isArray(
+    (value as Partial<Selections>).otherSelections
+  )
+    ? (value as Selections).otherSelections
+    : []
+  const nextSelection: Selections = {
+    graphSelections:
+      source === 'graphSelections'
+        ? graphSelections.filter((_, index) => index !== selectionIndex)
+        : graphSelections,
+    otherSelections:
+      source === 'otherSelections'
+        ? otherSelections.filter((_, index) => index !== selectionIndex)
+        : otherSelections,
+  }
+
+  return isSelectionValueEmpty(nextSelection) ? undefined : nextSelection
+}
+
+function hasMeaningfulDialogValue(value: unknown): boolean {
+  if (value === undefined || value === null || value === '') return false
+  if (typeof value === 'boolean') return true
+  if (isArray(value)) return value.length > 0
+  if (typeof value === 'object') {
+    return !isSelectionValueEmpty(value)
+  }
+  return true
+}
+
+function toTitleCase(value: string): string {
+  return value
+    .replace(/[-_]/g, ' ')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/\b\w/g, (match) => match.toUpperCase())
+}
+
+function resolveDialogGroups(
+  fields: ModelingDialogField[],
+  groups: CommandDialogGroup[] | undefined,
+  draftValues: Record<string, unknown>
+): ResolvedModelingDialogGroup[] {
+  if (!groups?.length) return []
+
+  const groupMap = new Map<string, ResolvedModelingDialogGroup>()
+  const orderedGroups: ResolvedModelingDialogGroup[] = []
+
+  for (const group of groups) {
+    const resolvedGroup = {
+      ...group,
+      fields: [],
+    }
+    groupMap.set(group.id, resolvedGroup)
+    orderedGroups.push(resolvedGroup)
+  }
+
+  for (const field of fields) {
+    const groupId = field.arg.dialog?.group || DEFAULT_DIALOG_GROUP_ID
+    let group = groupMap.get(groupId)
+
+    if (!group) {
+      group = {
+        ...(groupId === DEFAULT_DIALOG_GROUP_ID
+          ? DEFAULT_DIALOG_GROUP
+          : { id: groupId, title: toTitleCase(groupId) }),
+        fields: [],
+      }
+      groupMap.set(groupId, group)
+      orderedGroups.push(group)
+    }
+
+    group.fields.push(field)
+  }
+
+  return orderedGroups
+    .filter((group) => group.fields.length > 0)
+    .map((group) => ({
+      ...group,
+      defaultOpen:
+        group.defaultOpen ||
+        group.fields.some((field) =>
+          hasMeaningfulDialogValue(draftValues[field.argName])
+        ),
+    }))
 }
 
 function shouldResolveDefaultValue(
@@ -187,6 +301,7 @@ export function ModelingDialog() {
   const { kclManager } = useSingletons()
   const {
     context: { selectionRanges },
+    send: modelingSend,
   } = useModelingContext()
   const commandBarState = commands.useState()
   const {
@@ -198,6 +313,7 @@ export function ModelingDialog() {
   const [activeSelectionArgName, setActiveSelectionArgName] = useState<
     string | null
   >(null)
+  const pendingSelectionSyncArgNameRef = useRef<string | null>(null)
   const [didAutoEnableSelection, setDidAutoEnableSelection] = useState(false)
   const dialogPositioningRef = useRef<HTMLDivElement>(null)
   const [dialogTopOffset, setDialogTopOffset] = useState(() =>
@@ -329,8 +445,11 @@ export function ModelingDialog() {
   }, [selectedCommand])
 
   useEffect(() => {
-    if (!activeSelectionArgName || !selectedCommand?.args) return
-    const arg = selectedCommand.args[activeSelectionArgName]
+    const syncSelectionArgName =
+      pendingSelectionSyncArgNameRef.current ?? activeSelectionArgName
+
+    if (!syncSelectionArgName || !selectedCommand?.args) return
+    const arg = selectedCommand.args[syncSelectionArgName]
     if (
       !arg ||
       (arg.inputType !== 'selection' && arg.inputType !== 'selectionMixed')
@@ -341,9 +460,10 @@ export function ModelingDialog() {
     const nextSelection = isSelectionValueEmpty(selectionRanges)
       ? undefined
       : structuredClone(selectionRanges)
+    pendingSelectionSyncArgNameRef.current = null
     setDraftValues((prev) => ({
       ...prev,
-      [activeSelectionArgName]: nextSelection,
+      [syncSelectionArgName]: nextSelection,
     }))
   }, [activeSelectionArgName, selectionRanges, selectedCommand?.args])
 
@@ -395,40 +515,46 @@ export function ModelingDialog() {
       source: CapturedSelectionListItem['source'],
       selectionIndex: number
     ) => {
-      setDraftValues((prev) => {
-        const selection = prev[argName]
-        if (!selection || typeof selection !== 'object') return prev
+      const nextSelection = removeSelectionItem(
+        draftValues[argName],
+        source,
+        selectionIndex
+      )
 
-        const graphSelections = isArray(
-          (selection as Partial<Selections>).graphSelections
-        )
-          ? (selection as Selections).graphSelections
-          : []
-        const otherSelections = isArray(
-          (selection as Partial<Selections>).otherSelections
-        )
-          ? (selection as Selections).otherSelections
-          : []
-        const nextSelection: Selections = {
-          graphSelections:
-            source === 'graphSelections'
-              ? graphSelections.filter((_, index) => index !== selectionIndex)
-              : graphSelections,
-          otherSelections:
-            source === 'otherSelections'
-              ? otherSelections.filter((_, index) => index !== selectionIndex)
-              : otherSelections,
-        }
-
-        return {
-          ...prev,
-          [argName]: isSelectionValueEmpty(nextSelection)
-            ? undefined
-            : nextSelection,
-        }
+      setDraftValues((prev) => ({
+        ...prev,
+        [argName]: nextSelection,
+      }))
+      pendingSelectionSyncArgNameRef.current = argName
+      setActiveSelectionArgName(argName)
+      modelingSend({
+        type: 'Set selection',
+        data: {
+          selectionType: 'completeSelection',
+          selection: nextSelection ?? EMPTY_SELECTION,
+        },
       })
     },
-    []
+    [draftValues, modelingSend]
+  )
+
+  const clearDraftSelection = useCallback(
+    (argName: string) => {
+      setDraftValues((prev) => ({
+        ...prev,
+        [argName]: undefined,
+      }))
+      pendingSelectionSyncArgNameRef.current = argName
+      setActiveSelectionArgName(argName)
+      modelingSend({
+        type: 'Set selection',
+        data: {
+          selectionType: 'completeSelection',
+          selection: EMPTY_SELECTION,
+        },
+      })
+    },
+    [modelingSend]
   )
 
   useEffect(() => {
@@ -468,6 +594,13 @@ export function ModelingDialog() {
 
   const isCheckingArguments = commandBarState.matches(
     'Checking Arguments for Dialog'
+  )
+
+  const visibleFields = fields.filter((field) => !field.isHidden)
+  const groupedFields = resolveDialogGroups(
+    visibleFields,
+    selectedCommand.dialogLayout?.groups,
+    draftValues
   )
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -573,6 +706,76 @@ export function ModelingDialog() {
     }
   }
 
+  function renderField({
+    argName,
+    arg,
+    isRequired,
+    options,
+  }: ModelingDialogField) {
+    const key = `${argName}-${arg.inputType}`
+    const value = draftValues[argName]
+
+    const capturedSelection =
+      (arg.inputType === 'selection' || arg.inputType === 'selectionMixed') &&
+      (draftValues[argName] as Selections | undefined) &&
+      !isSelectionValueEmpty(draftValues[argName])
+        ? (draftValues[argName] as Selections)
+        : undefined
+    const isSelecting = activeSelectionArgName === argName
+    const currentSelection = isSelectionValueEmpty(selectionRanges)
+      ? undefined
+      : selectionRanges
+    const capturedSelectionItems = getSelectionListItems(
+      kclManager.astSignal.value,
+      capturedSelection
+    )
+
+    return (
+      <ArgumentField
+        key={key}
+        name={argName}
+        inputType={arg.inputType}
+        label={arg.displayName || argName}
+        description={
+          arg.description ? (
+            <MarkdownText
+              text={arg.description}
+              className="text-[10px] leading-tight text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown"
+            />
+          ) : undefined
+        }
+        isRequired={isRequired}
+        options={options}
+        controlStyle={arg.dialog?.controlStyle}
+        value={value}
+        selectionItems={capturedSelectionItems}
+        selectionHeading={arg.dialog?.selectionHeading || arg.displayName}
+        selectionEmptyLabel={arg.dialog?.selectionEmptyLabel}
+        selectionHint={arg.dialog?.selectionHint}
+        isSelecting={isSelecting}
+        currentSelectionLabel={selectionSummary(
+          kclManager.astSignal.value,
+          currentSelection
+        )}
+        onChange={(nextValue) =>
+          setDraftValues((prev) => ({
+            ...prev,
+            [argName]: nextValue,
+          }))
+        }
+        onStartSelecting={() => startSelectingArgument(argName, arg)}
+        onRemoveSelection={(item) => {
+          startSelectingArgument(argName, arg)
+          removeDraftSelection(argName, item.source, item.index)
+        }}
+        onClearSelection={() => {
+          startSelectingArgument(argName, arg)
+          clearDraftSelection(argName)
+        }}
+      />
+    )
+  }
+
   return (
     <div
       ref={dialogPositioningRef}
@@ -604,67 +807,29 @@ export function ModelingDialog() {
             </p>
           )}
 
-          <div className="flex min-h-0 flex-col gap-2.5 overflow-y-auto pr-1">
-            {fields
-              .filter((field) => !field.isHidden)
-              .map(({ argName, arg, isRequired, options }) => {
-                const key = `${argName}-${arg.inputType}`
-                const value = draftValues[argName]
-
-                const capturedSelection =
-                  (arg.inputType === 'selection' ||
-                    arg.inputType === 'selectionMixed') &&
-                  (draftValues[argName] as Selections | undefined) &&
-                  !isSelectionValueEmpty(draftValues[argName])
-                    ? (draftValues[argName] as Selections)
-                    : undefined
-                const isSelecting = activeSelectionArgName === argName
-                const currentSelection = isSelectionValueEmpty(selectionRanges)
-                  ? undefined
-                  : selectionRanges
-                const capturedSelectionItems = getSelectionListItems(
-                  kclManager.astSignal.value,
-                  capturedSelection
+          <div className="flex min-h-0 flex-col gap-3 overflow-y-auto pr-1">
+            {groupedFields.length > 0
+              ? groupedFields.map((group) =>
+                  group.collapsible ? (
+                    <AdvancedSection
+                      key={group.id}
+                      title={group.title}
+                      description={group.description}
+                      defaultOpen={group.defaultOpen}
+                    >
+                      {group.fields.map(renderField)}
+                    </AdvancedSection>
+                  ) : (
+                    <ArgumentGroup
+                      key={group.id}
+                      title={group.title}
+                      description={group.description}
+                    >
+                      {group.fields.map(renderField)}
+                    </ArgumentGroup>
+                  )
                 )
-                return (
-                  <ArgumentField
-                    key={key}
-                    name={argName}
-                    inputType={arg.inputType}
-                    label={arg.displayName || argName}
-                    description={
-                      arg.description ? (
-                        <MarkdownText
-                          text={arg.description}
-                          className="text-[10px] leading-tight text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown"
-                        />
-                      ) : undefined
-                    }
-                    isRequired={isRequired}
-                    options={options}
-                    value={value}
-                    selectionItems={capturedSelectionItems}
-                    isSelecting={isSelecting}
-                    currentSelectionLabel={selectionSummary(
-                      kclManager.astSignal.value,
-                      currentSelection
-                    )}
-                    onChange={(nextValue) =>
-                      setDraftValues((prev) => ({
-                        ...prev,
-                        [argName]: nextValue,
-                      }))
-                    }
-                    onStartSelecting={() =>
-                      startSelectingArgument(argName, arg)
-                    }
-                    onStopSelecting={() => setActiveSelectionArgName(null)}
-                    onRemoveSelection={(item) =>
-                      removeDraftSelection(argName, item.source, item.index)
-                    }
-                  />
-                )
-              })}
+              : visibleFields.map(renderField)}
           </div>
 
           {reviewValidationError && (

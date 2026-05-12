@@ -43,19 +43,26 @@ type Story = StoryObj<typeof meta>
 
 function StatefulSelectionList({
   initialItems,
+  isActive = false,
 }: {
   initialItems: SelectionListItem[]
+  isActive?: boolean
 }) {
   const [items, setItems] = useState(initialItems)
 
   return (
     <SelectionList
+      heading="Profiles"
+      emptyLabel="Select profiles or faces"
+      hint="Pick from the scene to add to this collector."
       items={items}
+      isActive={isActive}
       onRemove={(itemToRemove) =>
         setItems((currentItems) =>
           currentItems.filter((item) => item.id !== itemToRemove.id)
         )
       }
+      onClear={() => setItems([])}
     />
   )
 }
@@ -69,6 +76,10 @@ export const Empty: Story = {
 
 export const Captured: Story = {
   render: () => <StatefulSelectionList initialItems={sampleItems} />,
+}
+
+export const ActiveCollector: Story = {
+  render: () => <StatefulSelectionList initialItems={sampleItems} isActive />,
 }
 
 export const LongLabels: Story = {

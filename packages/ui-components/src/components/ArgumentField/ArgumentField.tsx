@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { ChoiceGroup } from '../ChoiceGroup/ChoiceGroup'
 import {
   SelectionList,
   type SelectionListItem,
@@ -35,12 +36,16 @@ export type ArgumentFieldProps<Item extends SelectionListItem> = {
   options?: ArgumentFieldOption[]
   value: unknown
   selectionItems?: Item[]
+  selectionHeading?: ReactNode
+  selectionEmptyLabel?: ReactNode
+  selectionHint?: ReactNode
   currentSelectionLabel?: ReactNode
   isSelecting?: boolean
+  controlStyle?: 'select' | 'segmented'
   onChange: (value: unknown) => void
   onStartSelecting?: () => void
-  onStopSelecting?: () => void
   onRemoveSelection?: (item: Item) => void
+  onClearSelection?: () => void
 }
 
 function isOptionValueEqual(a: unknown, b: unknown): boolean {
@@ -66,17 +71,42 @@ export function ArgumentField<Item extends SelectionListItem>({
   options = [],
   value,
   selectionItems = [],
+  selectionHeading,
+  selectionEmptyLabel,
+  selectionHint,
   currentSelectionLabel,
   isSelecting = false,
+  controlStyle = 'select',
   onChange,
   onStartSelecting,
-  onStopSelecting,
   onRemoveSelection,
+  onClearSelection,
 }: ArgumentFieldProps<Item>) {
   if (inputType === 'options') {
     const selectedIndex = options.findIndex((option) =>
       isOptionValueEqual(option.value, value)
     )
+
+    if (controlStyle === 'segmented') {
+      return (
+        <div className="flex flex-col gap-1">
+          <span className="text-xs font-medium leading-tight">
+            {label}
+            {isRequired ? ' *' : ''}
+          </span>
+          <ChoiceGroup
+            name={name}
+            value={value}
+            options={options}
+            onChange={onChange}
+            isValueEqual={isOptionValueEqual}
+            allowDeselect={!isRequired}
+            ariaLabel={typeof label === 'string' ? label : name}
+          />
+          <FieldDescription description={description} />
+        </div>
+      )
+    }
 
     return (
       <label className="flex flex-col gap-1">
@@ -114,6 +144,29 @@ export function ArgumentField<Item extends SelectionListItem>({
 
   if (inputType === 'boolean') {
     const boolValue = value === true ? 'true' : value === false ? 'false' : ''
+    if (controlStyle === 'segmented') {
+      return (
+        <div className="flex flex-col gap-1">
+          <span className="text-xs font-medium leading-tight">
+            {label}
+            {isRequired ? ' *' : ''}
+          </span>
+          <ChoiceGroup
+            name={name}
+            value={value === true || value === false ? value : undefined}
+            options={[
+              { name: 'On', value: true },
+              { name: 'Off', value: false },
+            ]}
+            onChange={onChange}
+            allowDeselect={!isRequired}
+            ariaLabel={typeof label === 'string' ? label : name}
+          />
+          <FieldDescription description={description} />
+        </div>
+      )
+    }
+
     return (
       <label className="flex flex-col gap-1">
         <span className="text-xs font-medium leading-tight">
@@ -143,36 +196,52 @@ export function ArgumentField<Item extends SelectionListItem>({
   }
 
   if (inputType === 'selection' || inputType === 'selectionMixed') {
+    const activateCollector = () => {
+      if (!isSelecting) {
+        onStartSelecting?.()
+      }
+    }
+
     return (
       <div className="flex flex-col gap-2">
         <span className="text-xs font-medium leading-tight">
           {label}
           {isRequired ? ' *' : ''}
         </span>
-        <SelectionList
-          items={selectionItems}
-          onRemove={(item) => onRemoveSelection?.(item)}
-        />
-        {isSelecting && currentSelectionLabel && (
-          <p className="my-0 text-[10px] leading-tight text-primary dark:text-primary">
-            Selecting now: {currentSelectionLabel}
-          </p>
-        )}
-        <div>
+        <div
+          className={[
+            'relative rounded-sm border p-2 transition-colors',
+            isSelecting
+              ? 'border-primary bg-primary/10 ring-1 ring-primary dark:bg-primary/15'
+              : 'border-chalkboard-20 bg-chalkboard-10/40 hover:border-chalkboard-40 hover:bg-chalkboard-10 dark:border-chalkboard-70 dark:bg-chalkboard-100/40 dark:hover:border-chalkboard-50 dark:hover:bg-chalkboard-90/60',
+          ].join(' ')}
+        >
           <button
             type="button"
-            tabIndex={0}
-            onClick={() => {
-              if (isSelecting) {
-                onStopSelecting?.()
-                return
-              }
-              onStartSelecting?.()
-            }}
-            className="px-2 py-1 text-xs"
-          >
-            {isSelecting ? 'Stop Selecting' : 'Select'}
-          </button>
+            aria-pressed={isSelecting}
+            aria-label={
+              typeof label === 'string' ? `Select ${label}` : `Select ${name}`
+            }
+            onClick={activateCollector}
+            onFocus={activateCollector}
+            className="absolute inset-0 z-0 m-0 h-full w-full cursor-pointer rounded-sm border-0 bg-transparent p-0 focus:outline-current"
+          />
+          <div className="pointer-events-none relative z-10">
+            <SelectionList
+              items={selectionItems}
+              onRemove={(item) => onRemoveSelection?.(item)}
+              heading={selectionHeading}
+              emptyLabel={selectionEmptyLabel}
+              hint={selectionHint}
+              isActive={isSelecting}
+              onClear={onClearSelection}
+            />
+            {isSelecting && currentSelectionLabel && (
+              <p className="my-1 mb-0 text-[10px] leading-tight text-primary dark:text-primary">
+                Selecting now: {currentSelectionLabel}
+              </p>
+            )}
+          </div>
         </div>
         <FieldDescription description={description} />
       </div>

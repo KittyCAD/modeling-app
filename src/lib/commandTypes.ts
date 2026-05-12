@@ -11,14 +11,14 @@ import type {
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
+import type { MachineManager } from '@src/lib/MachineManager'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { Expr, Name, VariableDeclaration } from '@src/lang/wasm'
 import type {
   CommandBarContext,
   commandBarMachine,
 } from '@src/machines/commandBarMachine'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { MachineManager } from '@src/lib/MachineManager'
 
 type Icon = CustomIconName
 const _TARGETS = ['both', 'web', 'desktop'] as const
@@ -48,6 +48,23 @@ export interface KclExpressionWithVariable extends KclExpression {
 export type KclCommandValue = KclExpression | KclExpressionWithVariable
 export type CommandInputType = INPUT_TYPE[number]
 type CommandStatus = 'active' | 'development' | 'inactive' | 'experimental'
+export type CommandDialogGroup = {
+  id: string
+  title: string
+  description?: string
+  collapsible?: boolean
+  defaultOpen?: boolean
+}
+export type CommandDialogLayout = {
+  groups: CommandDialogGroup[]
+}
+export type CommandArgumentDialogConfig = {
+  group?: string
+  controlStyle?: 'select' | 'segmented'
+  selectionHeading?: string
+  selectionEmptyLabel?: string
+  selectionHint?: string
+}
 export type CommandSelectionType =
   | Artifact['type']
   | 'pathRegion'
@@ -111,6 +128,7 @@ export type Command<
   disabled?: boolean
   status?: CommandStatus
   mlBranding?: boolean
+  dialogLayout?: CommandDialogLayout
 }
 
 export type CommandConfig<
@@ -158,6 +176,7 @@ export type CommandArgumentConfig<
    *  the command bar's header
    */
   valueSummary?: (value: OutputType) => string
+  dialog?: CommandArgumentDialogConfig
 } & (
   | {
       inputType: 'options'
@@ -348,6 +367,7 @@ export type CommandArgument<
    *  the command bar's header
    */
   valueSummary?: (value: OutputType, wasmInstance?: ModuleType) => string
+  dialog?: CommandArgumentDialogConfig
 } & (
   | {
       inputType: Extract<CommandInputType, 'options'>
