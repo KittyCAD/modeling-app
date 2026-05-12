@@ -164,12 +164,14 @@ export function prepareEditCommand(
 export function sendSelectionEvent(
   input: {
     sourceRange: SourceRange
+    artifact?: Artifact
     kclManager: KclManager
     modelingSend: ActorRefFrom<typeof modelingMachine>['send']
   },
   convertRangeToUtf16 = false
 ) {
   const artifact =
+    input.artifact ??
     getArtifactFromRange(input.sourceRange, input.kclManager.artifactGraph) ??
     undefined
 

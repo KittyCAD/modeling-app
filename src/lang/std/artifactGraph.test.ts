@@ -201,6 +201,58 @@ describe('coerceSelectionsToBody', () => {
     )
   })
 
+  it('should resolve a sketchBlock from a contained segment code range', () => {
+    const artifactGraph: ArtifactGraph = new Map()
+
+    const sketchBlock: Extract<Artifact, { type: 'sketchBlock' }> = {
+      type: 'sketchBlock',
+      id: 'sketch-block-1',
+      codeRef: {
+        range: [10, 100, 0],
+        pathToNode: [['sketch001', '']],
+        nodePath: { steps: [] },
+      },
+      planeId: 'plane-1',
+      sketchId: 7,
+    }
+
+    const path: Artifact = {
+      type: 'path',
+      subType: 'sketch',
+      id: 'path-1',
+      codeRef: {
+        range: [20, 90, 0],
+        pathToNode: [['sketch001.line1', '']],
+        nodePath: { steps: [] },
+      },
+      planeId: 'plane-1',
+      segIds: ['segment-1'],
+      trajectorySweepId: null,
+      consumed: false,
+    }
+
+    const segment: Artifact = {
+      type: 'segment',
+      id: 'segment-1',
+      pathId: 'path-1',
+      edgeIds: [],
+      commonSurfaceIds: [],
+      codeRef: {
+        range: [30, 80, 0],
+        pathToNode: [['sketch001.line1', '']],
+        nodePath: { steps: [] },
+      },
+    }
+
+    artifactGraph.set(sketchBlock.id, sketchBlock)
+    artifactGraph.set(path.id, path)
+    artifactGraph.set(segment.id, segment)
+
+    expect(getSketchBlockForArtifact(segment, artifactGraph)?.id).toBe(
+      'sketch-block-1'
+    )
+  })
+
   it('should pass through path artifact unchanged', () => {
     const artifactGraph: ArtifactGraph = new Map()
 

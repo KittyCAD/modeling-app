@@ -900,12 +900,48 @@ export function getSketchBlockForArtifact(
       artifactGraph
     )
     if (err(path)) {
-      return undefined
+      return getSketchBlockForArtifactCodeRef(artifact, artifactGraph)
     }
-    return getSketchBlockForPathArtifact(path, artifactGraph)
+    return (
+      getSketchBlockForPathArtifact(path, artifactGraph) ??
+      getSketchBlockForArtifactCodeRef(path, artifactGraph)
+    )
   }
 
-  return undefined
+  return getSketchBlockForArtifactCodeRef(artifact, artifactGraph)
+}
+
+function getSketchBlockForArtifactCodeRef(
+  artifact: Artifact,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'sketchBlock' }> | undefined {
+  const codeRef = getFaceCodeRef(artifact)
+  if (!codeRef) {
+    return undefined
+  }
+
+  const exactPathMatch = getSketchBlockArtifactForPathToNode(
+    codeRef.pathToNode,
+    artifactGraph
+  )
+  if (exactPathMatch) {
+    return exactPathMatch
+  }
+
+  return [...artifactGraph.values()]
+    .filter(
+      (candidate): candidate is Extract<Artifact, { type: 'sketchBlock' }> =>
+        candidate.type === 'sketchBlock' &&
+        candidate.codeRef.range[2] === codeRef.range[2] &&
+        candidate.codeRef.range[0] <= codeRef.range[0] &&
+        candidate.codeRef.range[1] >= codeRef.range[1]
+    )
+    .sort(
+      (left, right) =>
+        left.codeRef.range[1] -
+        left.codeRef.range[0] -
+        (right.codeRef.range[1] - right.codeRef.range[0])
+    )[0]
 }
 
 /**

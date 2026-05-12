@@ -12,13 +12,11 @@ import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import {
-  filterOperations,
   getOperationCalculatedDisplay,
   getOperationIcon,
   getOperationLabel,
   getOperationVariableName,
   getOpTypeLabel,
-  getSketchBlockOperationKey,
   groupSketchBlockOperations,
   onHide,
   groupOperationTypeStreaks,
@@ -32,7 +30,12 @@ import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { err, isErr, reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
-import { base64Decode, type SourceRange } from '@src/lang/wasm'
+import {
+  base64Decode,
+  type Artifact,
+  type ArtifactGraph,
+  type SourceRange,
+} from '@src/lang/wasm'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
 import {
@@ -79,6 +82,148 @@ type SystemDeps = Pick<Singletons, 'kclManager'> & {
 
 const UNRENDERED_EXECUTE_HOTKEY = 'mod+s'
 
+type GroupBeginOperation = Extract<Operation, { type: 'GroupBegin' }>
+type ComponentInstanceGroup = Extract<
+  GroupBeginOperation['group'],
+  { type: 'ComponentInstance' }
+>
+type ComponentInstanceOperation = GroupBeginOperation & {
+  group: ComponentInstanceGroup
+}
+type FeatureTreeItem =
+  | Operation
+  | Operation[]
+  | {
+      type: 'ComponentOperationGroup'
+      component: ComponentInstanceOperation
+      children: FeatureTreeItem[]
+    }
+
+function isComponentOperationGroup(
+  item: FeatureTreeItem
+): item is Extract<FeatureTreeItem, { type: 'ComponentOperationGroup' }> {
+  return !isArray(item) && item.type === 'ComponentOperationGroup'
+}
+
+function collectGroupOperations(
+  operations: Operation[],
+  startIndex: number
+): { children: Operation[]; endIndex: number; closed: boolean } {
+  const children: Operation[] = []
+  let depth = 0
+
+  for (let index = startIndex; index < operations.length; index++) {
+    const operation = operations[index]
+    if (operation.type === 'GroupEnd') {
+      if (depth === 0) {
+        return { children, endIndex: index, closed: true }
+      }
+      depth--
+      children.push(operation)
+      continue
+    }
+
+    if (operation.type === 'GroupBegin') {
+      depth++
+    }
+    children.push(operation)
+  }
+
+  return {
+    children,
+    endIndex: Math.max(startIndex - 1, 0),
+    closed: false,
+  }
+}
+
+function groupFeatureTreeItems(items: FeatureTreeItem[]): FeatureTreeItem[] {
+  const groupedItems: FeatureTreeItem[] = []
+  let operationBuffer: Operation[] = []
+
+  function flushOperations() {
+    if (operationBuffer.length === 0) {
+      return
+    }
+    groupedItems.push(
+      ...groupSketchBlockOperations(
+        groupOperationTypeStreaks(operationBuffer, ['VariableDeclaration'])
+      )
+    )
+    operationBuffer = []
+  }
+
+  for (const item of items) {
+    if (isComponentOperationGroup(item)) {
+      flushOperations()
+      groupedItems.push(item)
+    } else if (isArray(item)) {
+      flushOperations()
+      groupedItems.push(item)
+    } else {
+      operationBuffer.push(item)
+    }
+  }
+
+  flushOperations()
+  return groupedItems
+}
+
+function buildFeatureTreeItems(operations: Operation[]): FeatureTreeItem[] {
+  const items: FeatureTreeItem[] = []
+
+  for (let index = 0; index < operations.length; index++) {
+    const operation = operations[index]
+    if (operation.type === 'GroupEnd') {
+      continue
+    }
+    if (operation.type === 'StdLibCall' && operation.name === 'hide') {
+      continue
+    }
+
+    if (operation.type === 'GroupBegin') {
+      const group = collectGroupOperations(operations, index + 1)
+      if (operation.group.type === 'ComponentInstance') {
+        items.push({
+          type: 'ComponentOperationGroup',
+          component: operation as ComponentInstanceOperation,
+          children: buildFeatureTreeItems(group.children),
+        })
+      } else if (
+        operation.group.type === 'ModuleInstance' ||
+        !group.closed ||
+        group.children.some((child) => child.type !== 'GroupEnd')
+      ) {
+        items.push(operation)
+      }
+
+      index = group.endIndex
+      continue
+    }
+
+    items.push(operation)
+  }
+
+  return groupFeatureTreeItems(items)
+}
+
+function getArtifactForFeatureTreeOperation(
+  item: Operation,
+  artifactGraph: ArtifactGraph
+): Artifact | undefined {
+  if (item.type === 'SketchSolve') {
+    return [...artifactGraph.values()].find(
+      (artifact) =>
+        artifact.type === 'sketchBlock' && artifact.sketchId === item.sketchId
+    )
+  }
+
+  if ('sourceRange' in item) {
+    return getArtifactFromRange(item.sourceRange, artifactGraph) ?? undefined
+  }
+
+  return undefined
+}
+
 export function FeatureTreePane(props: AreaTypeComponentProps) {
   return (
     <LayoutPanel
@@ -118,6 +263,54 @@ function openCodePane(layout: Layout, setLayout: (l: Layout) => void) {
   )
 }
 
+function featureTreeItemKey(item: FeatureTreeItem): string {
+  if (isComponentOperationGroup(item)) {
+    return `component-${item.component.group.name}-${
+      item.component.group.isDefault ? 'default' : 'instance'
+    }-${item.component.sourceRange[0]}`
+  }
+  if (!isArray(item)) {
+    return `${item.type}-${
+      'name' in item ? item.name : 'anonymous'
+    }-${'sourceRange' in item ? item.sourceRange[0] : 'start'}`
+  }
+
+  const first = item[0]
+  const last = item[item.length - 1]
+  return `group-${
+    first?.type ?? 'unknown'
+  }-${first && 'sourceRange' in first ? first.sourceRange[0] : 'start'}-${
+    last && 'sourceRange' in last ? last.sourceRange[1] : 'end'
+  }`
+}
+
+function renderFeatureTreeItem(
+  props: Omit<OperationProps, 'item'> & {
+    item: FeatureTreeItem
+  }
+) {
+  const { item, ...operationProps } = props
+  const key = featureTreeItemKey(item)
+
+  if (isComponentOperationGroup(item)) {
+    return (
+      <ComponentOperationGroup key={key} group={item} {...operationProps} />
+    )
+  }
+
+  if (isArray(item) && isSketchBlockOperationGroup(item)) {
+    return (
+      <SketchBlockOperationGroup key={key} items={item} {...operationProps} />
+    )
+  }
+
+  if (isArray(item)) {
+    return <OperationItemGroup key={key} items={item} {...operationProps} />
+  }
+
+  return <OperationItem key={key} item={item} {...operationProps} />
+}
+
 export const FeatureTreePaneContents = memo(() => {
   useSignals()
   const app = useApp()
@@ -148,9 +341,10 @@ export const FeatureTreePaneContents = memo(() => {
   )
 
   const selectOperation = useCallback(
-    (sourceRange: SourceRange) => {
+    (sourceRange: SourceRange, artifact?: Artifact) => {
       sendSelectionEvent({
         sourceRange: sourceRangeToUtf16(sourceRange, kclManager.code),
+        artifact,
         kclManager,
         modelingSend,
       })
@@ -198,11 +392,7 @@ export const FeatureTreePaneContents = memo(() => {
     hasParseErrors || disableModelingForUnrenderedChanges
 
   // We filter out operations that are not useful to show in the feature tree
-  const operationList = groupSketchBlockOperations(
-    groupOperationTypeStreaks(filterOperations(unfilteredOperationList), [
-      'VariableDeclaration',
-    ])
-  )
+  const operationList = buildFeatureTreeItems(unfilteredOperationList)
   const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
 
   function goToError() {
@@ -300,66 +490,18 @@ export const FeatureTreePaneContents = memo(() => {
                 </div>
               </div>
             )}
-            {operationList.map((opOrList) => {
-              const key = (() => {
-                if (!isArray(opOrList)) {
-                  return `${opOrList.type}-${
-                    'name' in opOrList ? opOrList.name : 'anonymous'
-                  }-${'sourceRange' in opOrList ? opOrList.sourceRange[0] : 'start'}`
-                }
-                const first = opOrList[0]
-                const last = opOrList[opOrList.length - 1]
-                return `group-${
-                  first?.type ?? 'unknown'
-                }-${first && 'sourceRange' in first ? first.sourceRange[0] : 'start'}-${
-                  last && 'sourceRange' in last ? last.sourceRange[1] : 'end'
-                }`
-              })()
-
-              if (isArray(opOrList) && isSketchBlockOperationGroup(opOrList)) {
-                const sketchGroupKey =
-                  getSketchBlockOperationKey(opOrList[0]) ?? key
-                return (
-                  <SketchBlockOperationGroup
-                    key={sketchGroupKey}
-                    items={opOrList}
-                    code={operationsCode}
-                    isStaleReference={isReadOnlyFeatureTree}
-                    sketchNoFace={sketchNoFace}
-                    systemDeps={systemDeps}
-                    modelingActor={modelingActor}
-                    engineCommandManager={engineCommandManager}
-                    onSelect={selectOperation}
-                  />
-                )
-              }
-
-              return isArray(opOrList) ? (
-                <OperationItemGroup
-                  key={key}
-                  items={opOrList}
-                  code={operationsCode}
-                  isStaleReference={isReadOnlyFeatureTree}
-                  sketchNoFace={sketchNoFace}
-                  systemDeps={systemDeps}
-                  modelingActor={modelingActor}
-                  engineCommandManager={engineCommandManager}
-                  onSelect={selectOperation}
-                />
-              ) : (
-                <OperationItem
-                  key={key}
-                  item={opOrList}
-                  code={operationsCode}
-                  isStaleReference={isReadOnlyFeatureTree}
-                  sketchNoFace={sketchNoFace}
-                  systemDeps={systemDeps}
-                  modelingActor={modelingActor}
-                  engineCommandManager={engineCommandManager}
-                  onSelect={selectOperation}
-                />
-              )
-            })}
+            {operationList.map((item) =>
+              renderFeatureTreeItem({
+                item,
+                code: operationsCode,
+                isStaleReference: isReadOnlyFeatureTree,
+                sketchNoFace,
+                systemDeps,
+                modelingActor,
+                engineCommandManager,
+                onSelect: selectOperation,
+              })
+            )}
           </>
         )}
       </section>
@@ -510,6 +652,64 @@ function OperationItemGroup({
   )
 }
 
+function ComponentOperationGroup({
+  group,
+  code,
+  isStaleReference,
+  sketchNoFace,
+  systemDeps,
+  modelingActor,
+  engineCommandManager,
+  onSelect,
+}: Omit<OperationProps, 'item'> & {
+  group: Extract<FeatureTreeItem, { type: 'ComponentOperationGroup' }>
+}) {
+  return (
+    <Disclosure>
+      <div className="flex items-start gap-1">
+        <Disclosure.Button className="reset !px-0 !py-1 self-stretch !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25">
+          <CustomIcon
+            name="caretDown"
+            className="w-4 h-4 block -rotate-90 ui-open:rotate-0 ui-open:transform"
+            aria-hidden
+          />
+        </Disclosure.Button>
+        <div className="flex-1 min-w-0">
+          <OperationItem
+            item={group.component}
+            code={code}
+            isStaleReference={isStaleReference}
+            sketchNoFace={sketchNoFace}
+            systemDeps={systemDeps}
+            modelingActor={modelingActor}
+            engineCommandManager={engineCommandManager}
+            onSelect={onSelect}
+          />
+        </div>
+      </div>
+      {group.children.length > 0 && (
+        <Disclosure.Panel>
+          <div className="border-l b-4 ml-6">
+            {group.children.map((item) =>
+              renderFeatureTreeItem({
+                item,
+                code,
+                isStaleReference,
+                sketchNoFace,
+                systemDeps,
+                modelingActor,
+                engineCommandManager,
+                onSelect,
+                size: 'sm',
+              })
+            )}
+          </div>
+        </Disclosure.Panel>
+      )}
+    </Disclosure>
+  )
+}
+
 type OpValueProps = {
   name: string
   type?: Operation['type']
@@ -620,7 +820,7 @@ interface OperationProps {
   systemDeps: SystemDeps
   engineCommandManager: ConnectionManager
   modelingActor: ReturnType<typeof useModelingContext>['actor']
-  onSelect: (sourceRange: SourceRange) => void
+  onSelect: (sourceRange: SourceRange, artifact?: Artifact) => void
   size?: 'default' | 'sm'
 }
 /**
@@ -705,7 +905,10 @@ const OperationItem = ({
         if (item.type === 'GroupEnd') {
           return
         }
-        onSelect(sourceRangeFromRust(item.sourceRange))
+        onSelect(
+          sourceRangeFromRust(item.sourceRange),
+          getArtifactForFeatureTreeOperation(item, kclManager.artifactGraph)
+        )
       }
     },
     [sketchNoFace, onSelect, item, kclManager, useSketchSolveMode]
@@ -728,11 +931,10 @@ const OperationItem = ({
       item.type === 'VariableDeclaration' ||
       item.type === 'SketchSolve'
     ) {
-      const artifact =
-        getArtifactFromRange(
-          item.sourceRange,
-          systemDeps.kclManager.artifactGraph
-        ) ?? undefined
+      const artifact = getArtifactForFeatureTreeOperation(
+        item,
+        systemDeps.kclManager.artifactGraph
+      )
       prepareEditCommand({
         artifactGraph: systemDeps.kclManager.artifactGraph,
         code: systemDeps.kclManager.code,
@@ -830,9 +1032,10 @@ const OperationItem = ({
       item.type === 'VariableDeclaration' ||
       item.type === 'SketchSolve'
     ) {
-      const maybeArtifact =
-        getArtifactFromRange(item.sourceRange, kclManager.artifactGraph) ??
-        undefined
+      const maybeArtifact = getArtifactForFeatureTreeOperation(
+        item,
+        kclManager.artifactGraph
+      )
       sendDeleteCommand({
         artifact: maybeArtifact,
         targetSourceRange: item.sourceRange,
