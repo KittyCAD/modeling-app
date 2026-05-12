@@ -56,12 +56,12 @@ pub struct Snapshot3d {
 pub async fn execute_and_snapshot_3d(code: &str, current_file: Option<PathBuf>) -> Result<Snapshot3d, ExecError> {
     let ctx = new_context(true, current_file).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
-    let image = do_execute_and_snapshot(&ctx, program)
-        .await
-        .map(|(_, _, snap)| snap)
-        .map_err(|err| err.error)?;
+    let (mut exec_state, _, image) = do_execute_and_snapshot(&ctx, program).await.map_err(|err| err.error)?;
     let gltf_res = ctx
-        .export(kittycad_modeling_cmds::format::OutputFormat3d::Gltf(Default::default()))
+        .export(
+            &mut exec_state,
+            kittycad_modeling_cmds::format::OutputFormat3d::Gltf(Default::default()),
+        )
         .await;
     let gltf = match gltf_res {
         Err(err) if err.message() == "Nothing to export" => Vec::new(),
@@ -92,7 +92,7 @@ pub async fn execute_and_snapshot_ast(
     ExecErrorWithState,
 > {
     let ctx = new_context(true, current_file).await?;
-    let (exec_state, env, img) = match do_execute_and_snapshot(&ctx, ast).await {
+    let (mut exec_state, env, img) = match do_execute_and_snapshot(&ctx, ast).await {
         Ok((exec_state, env_ref, img)) => (exec_state, env_ref, img),
         Err(err) => {
             // If there was an error executing the program, return it.
@@ -103,7 +103,7 @@ pub async fn execute_and_snapshot_ast(
     };
     let mut step = None;
     if with_export_step {
-        let files = match ctx.export_step(true).await {
+        let files = match ctx.export_step(&mut exec_state, true).await {
             Ok(f) => f,
             Err(err) => {
                 // Close the context to avoid any resource leaks.
@@ -247,7 +247,7 @@ pub async fn execute_and_export_step(
         }
     }
 
-    let files = match ctx.export_step(true).await {
+    let files = match ctx.export_step(&mut exec_state, true).await {
         Ok(f) => f,
         Err(err) => {
             return Err(ExecErrorWithState::new(

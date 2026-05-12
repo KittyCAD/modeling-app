@@ -2615,8 +2615,6 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds"
 version = "0.2.196"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5896de9faa7d6d4ac85f7d6599432a9d442edd843843e62fd5cc6026356462b9"
 dependencies = [
  "anyhow",
  "bon",
@@ -2626,6 +2624,7 @@ dependencies = [
  "enum-iterator-derive",
  "euler",
  "http 1.4.0",
+ "indexmap 2.14.0",
  "kittycad-measurements",
  "kittycad-modeling-cmds-macros",
  "kittycad-unit-conversion-derive",
@@ -2644,8 +2643,6 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.13"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eb4ba190f74f6d32f4607ecac4bdebd4a935d4943b8ca8369305e6e7a59b5976"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -2656,8 +2653,6 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.14"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "743b6533d1848de67e3455a28614a2b7896807ab0d3358ccd3ea1863de3c4e6b"
 dependencies = [
  "proc-macro2",
  "quote",
