@@ -1,31 +1,31 @@
-import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { KclManager } from '@src/lang/KclManager'
-import { sourceRangeToUtf16 } from '@src/lang/errors'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { Artifact, ArtifactGraph, SourceRange } from '@src/lang/wasm'
+import type RustContext from '@src/lib/rustContext'
 import {
-  deleteSelectionPromise,
   deletionErrorMessage,
+  deleteSelectionPromise,
 } from '@src/lang/modifyAst/deleteSelection'
 import { findOperationArtifact } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { sourceRangeContains } from '@src/lang/sourceRange'
-import {
-  codeRefFromRange,
-  getArtifactFromRange,
-  getArtifactsMatchingPathToNode,
-} from '@src/lang/std/artifactGraph'
-import type { Artifact, ArtifactGraph, SourceRange } from '@src/lang/wasm'
+import { err } from '@src/lib/trap'
+import { type CommandBarActorType } from '@src/machines/commandBarMachine'
 import {
   type EnterEditFlowProps,
-  type HideOperation,
   enterEditFlow,
   getHideOpByArtifactId,
+  type HideOperation,
 } from '@src/lib/operations'
-import type RustContext from '@src/lib/rustContext'
-import { err } from '@src/lib/trap'
-import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import type { modelingMachine } from '@src/machines/modelingMachine'
+import {
+  codeRefFromRange,
+  getArtifactsMatchingPathToNode,
+  getArtifactFromRange,
+} from '@src/lang/std/artifactGraph'
 import type { ActorRefFrom } from 'xstate'
+import type { modelingMachine } from '@src/machines/modelingMachine'
+import { sourceRangeToUtf16 } from '@src/lang/errors'
 
 export interface FeatureTreeVisibilityState {
   canToggleVisibility: boolean
