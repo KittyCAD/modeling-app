@@ -182,7 +182,7 @@ pub fn lint_geometry_fns_should_be_components(node: Node, prog: &AstNode<Program
         return Ok(vec![]);
     };
 
-    let Some((geometry_name, geometry_range)) = first_geometry_in_function(function) else {
+    let Some((geometry_name, _geometry_range)) = first_geometry_in_function(function) else {
         return Ok(vec![]);
     };
 
@@ -201,7 +201,7 @@ pub fn lint_geometry_fns_should_be_components(node: Node, prog: &AstNode<Program
             "function `{}` produces geometry with `{geometry_name}`",
             var_decl.name()
         ),
-        geometry_range,
+        var_decl.declaration.id.as_source_range(),
         suggestion,
     )])
 }
@@ -227,6 +227,7 @@ surfaceB = makeSurface(length = 2)
         let lints = prog.lint(lint_geometry_fns_should_be_components).unwrap();
         let lint = lints.iter().find(|lint| lint.finding == Z0007).unwrap();
 
+        assert_eq!(&kcl[lint.pos.start()..lint.pos.end()], "makeSurface");
         assert!(lint.suggestion.is_some());
         assert_eq!(
             lint.apply_suggestion(kcl).unwrap(),
@@ -284,6 +285,23 @@ surfaceB = makeSurface(2)
         let lint = lints.iter().find(|lint| lint.finding == Z0007).unwrap();
 
         assert!(lint.suggestion.is_none());
+    }
+
+    #[test]
+    fn z0007_reports_on_function_name_not_first_geometry_call() {
+        let kcl = r#"fn tooth() {
+  toothSketch = startSketchOn(XY)
+    |> startProfile(at = [-length / 2 + 0.567672, minHeight])
+    |> close()
+    |> extrude(length = width)
+  return toothSketch
+}
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let lints = prog.lint(lint_geometry_fns_should_be_components).unwrap();
+        let lint = lints.iter().find(|lint| lint.finding == Z0007).unwrap();
+
+        assert_eq!(&kcl[lint.pos.start()..lint.pos.end()], "tooth");
     }
 
     #[test]
