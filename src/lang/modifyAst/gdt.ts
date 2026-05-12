@@ -77,6 +77,7 @@ export function addFlatnessGdt({
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // Clone the AST to avoid mutating the original
   let modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   // Filter to only include face selections
   const faceSelections = faces.graphSelections.filter((selection) =>
@@ -127,16 +128,16 @@ export function addFlatnessGdt({
 
   // Insert variables for tolerance and precision parameters
   if ('variableName' in tolerance && tolerance.variableName) {
-    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
   }
   if (precision && 'variableName' in precision && precision.variableName) {
-    insertVariableAndOffsetPathToNode(precision, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(precision, modifiedAst, mNodeToEdit)
   }
 
   // Process common GDT style parameters
   const styleResult = processGdtStyleParameters({
     modifiedAst,
-    nodeToEdit,
+    nodeToEdit: mNodeToEdit,
     wasmInstance,
     framePosition,
     framePlane,
@@ -188,7 +189,7 @@ export function addFlatnessGdt({
     const pathToNode = setCallInAst({
       ast: modifiedAst,
       call,
-      pathToEdit: nodeToEdit,
+      pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined, // GDT annotations don't pipe
       variableIfNewDecl: undefined, // Creates expression statement at the end
       wasmInstance,
@@ -322,7 +323,9 @@ export function addPositionGdt({
     fontPointSize,
     fontScale,
   })
-  if (err(styleResult)) return styleResult
+  if (err(styleResult)) {
+    return styleResult
+  }
 
   let lastPathToNode: PathToNode | undefined
   const createPositionCall = (
@@ -413,7 +416,7 @@ export function addProfileGdt({
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   edges: Selections
-  datums?: string
+  datums?: KclCommandValue
   tolerance: KclCommandValue
   wasmInstance: ModuleType
   precision?: KclCommandValue
@@ -425,6 +428,7 @@ export function addProfileGdt({
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   let modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   const edgeSelections = edges.graphSelections.filter((selection) =>
     isProfileEdgeArtifact(selection.artifact)
@@ -467,15 +471,18 @@ export function addProfileGdt({
   }
 
   if ('variableName' in tolerance && tolerance.variableName) {
-    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
+  }
+  if (datums && 'variableName' in datums && datums.variableName) {
+    insertVariableAndOffsetPathToNode(datums, modifiedAst, nodeToEdit)
   }
   if (precision && 'variableName' in precision && precision.variableName) {
-    insertVariableAndOffsetPathToNode(precision, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(precision, modifiedAst, mNodeToEdit)
   }
 
   const styleResult = processGdtStyleParameters({
     modifiedAst,
-    nodeToEdit,
+    nodeToEdit: mNodeToEdit,
     wasmInstance,
     framePosition,
     framePlane,
@@ -495,16 +502,8 @@ export function addProfileGdt({
 
     labeledArgs.push(createLabeledArg('tolerance', valueOrVariable(tolerance)))
 
-    const datumNames = parseDatumNames(datums)
-    if (datumNames.length > 0) {
-      labeledArgs.push(
-        createLabeledArg(
-          'datums',
-          createArrayExpression(
-            datumNames.map((datum) => createLiteral(datum, wasmInstance))
-          )
-        )
-      )
+    if (datums) {
+      labeledArgs.push(createLabeledArg('datums', valueOrVariable(datums)))
     }
 
     if (precision !== undefined) {
@@ -526,7 +525,7 @@ export function addProfileGdt({
     const pathToNode = setCallInAst({
       ast: modifiedAst,
       call,
-      pathToEdit: nodeToEdit,
+      pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
       variableIfNewDecl: undefined,
       wasmInstance,
@@ -577,6 +576,7 @@ export function addDistanceGdt({
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   let modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
   const selections = objects ?? edges
 
   if (!selections) {
@@ -650,15 +650,15 @@ export function addDistanceGdt({
   }
 
   if ('variableName' in tolerance && tolerance.variableName) {
-    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
   }
   if (precision && 'variableName' in precision && precision.variableName) {
-    insertVariableAndOffsetPathToNode(precision, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(precision, modifiedAst, mNodeToEdit)
   }
 
   const styleResult = processGdtStyleParameters({
     modifiedAst,
-    nodeToEdit,
+    nodeToEdit: mNodeToEdit,
     wasmInstance,
     framePosition,
     framePlane,
@@ -711,7 +711,7 @@ export function addDistanceGdt({
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
-    pathToEdit: nodeToEdit,
+    pathToEdit: mNodeToEdit,
     pathIfNewPipe: undefined,
     variableIfNewDecl: undefined,
     wasmInstance,
@@ -744,7 +744,7 @@ export function addPerpendicularityGdt({
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   objects: Selections
-  datums?: string
+  datums?: KclCommandValue
   tolerance: KclCommandValue
   wasmInstance: ModuleType
   precision?: KclCommandValue
@@ -756,6 +756,7 @@ export function addPerpendicularityGdt({
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   let modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   const faceSelections = objects.graphSelections.filter((selection) =>
     isFaceArtifact(selection.artifact)
@@ -818,15 +819,18 @@ export function addPerpendicularityGdt({
   }
 
   if ('variableName' in tolerance && tolerance.variableName) {
-    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
+  }
+  if (datums && 'variableName' in datums && datums.variableName) {
+    insertVariableAndOffsetPathToNode(datums, modifiedAst, nodeToEdit)
   }
   if (precision && 'variableName' in precision && precision.variableName) {
-    insertVariableAndOffsetPathToNode(precision, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(precision, modifiedAst, mNodeToEdit)
   }
 
   const styleResult = processGdtStyleParameters({
     modifiedAst,
-    nodeToEdit,
+    nodeToEdit: mNodeToEdit,
     wasmInstance,
     framePosition,
     framePlane,
@@ -838,7 +842,6 @@ export function addPerpendicularityGdt({
     return styleResult
   }
 
-  const datumNames = parseDatumNames(datums)
   let lastPathToNode: PathToNode | undefined
 
   const createPerpendicularityCall = (
@@ -850,15 +853,8 @@ export function addPerpendicularityGdt({
       createLabeledArg('tolerance', valueOrVariable(tolerance)),
     ]
 
-    if (datumNames.length > 0) {
-      labeledArgs.push(
-        createLabeledArg(
-          'datums',
-          createArrayExpression(
-            datumNames.map((datum) => createLiteral(datum, wasmInstance))
-          )
-        )
-      )
+    if (datums) {
+      labeledArgs.push(createLabeledArg('datums', valueOrVariable(datums)))
     }
 
     if (precision !== undefined) {
@@ -882,7 +878,7 @@ export function addPerpendicularityGdt({
     const pathToNode = setCallInAst({
       ast: modifiedAst,
       call: createPerpendicularityCall('faces', faceExpr),
-      pathToEdit: nodeToEdit,
+      pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
       variableIfNewDecl: undefined,
       wasmInstance,
@@ -897,7 +893,7 @@ export function addPerpendicularityGdt({
     const pathToNode = setCallInAst({
       ast: modifiedAst,
       call: createPerpendicularityCall('edges', edgeExpr),
-      pathToEdit: nodeToEdit,
+      pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
       variableIfNewDecl: undefined,
       wasmInstance,
@@ -936,7 +932,7 @@ export function addParallelismGdt({
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   objects: Selections
-  datums?: string
+  datums?: KclCommandValue
   tolerance: KclCommandValue
   wasmInstance: ModuleType
   precision?: KclCommandValue
@@ -948,6 +944,7 @@ export function addParallelismGdt({
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   let modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   const faceSelections = objects.graphSelections.filter((selection) =>
     isFaceArtifact(selection.artifact)
@@ -1010,15 +1007,18 @@ export function addParallelismGdt({
   }
 
   if ('variableName' in tolerance && tolerance.variableName) {
-    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
+  }
+  if (datums && 'variableName' in datums && datums.variableName) {
+    insertVariableAndOffsetPathToNode(datums, modifiedAst, nodeToEdit)
   }
   if (precision && 'variableName' in precision && precision.variableName) {
-    insertVariableAndOffsetPathToNode(precision, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(precision, modifiedAst, mNodeToEdit)
   }
 
   const styleResult = processGdtStyleParameters({
     modifiedAst,
-    nodeToEdit,
+    nodeToEdit: mNodeToEdit,
     wasmInstance,
     framePosition,
     framePlane,
@@ -1030,7 +1030,6 @@ export function addParallelismGdt({
     return styleResult
   }
 
-  const datumNames = parseDatumNames(datums)
   let lastPathToNode: PathToNode | undefined
 
   const createParallelismCall = (
@@ -1042,15 +1041,8 @@ export function addParallelismGdt({
       createLabeledArg('tolerance', valueOrVariable(tolerance)),
     ]
 
-    if (datumNames.length > 0) {
-      labeledArgs.push(
-        createLabeledArg(
-          'datums',
-          createArrayExpression(
-            datumNames.map((datum) => createLiteral(datum, wasmInstance))
-          )
-        )
-      )
+    if (datums) {
+      labeledArgs.push(createLabeledArg('datums', valueOrVariable(datums)))
     }
 
     if (precision !== undefined) {
@@ -1074,7 +1066,7 @@ export function addParallelismGdt({
     const pathToNode = setCallInAst({
       ast: modifiedAst,
       call: createParallelismCall('faces', faceExpr),
-      pathToEdit: nodeToEdit,
+      pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
       variableIfNewDecl: undefined,
       wasmInstance,
@@ -1089,7 +1081,7 @@ export function addParallelismGdt({
     const pathToNode = setCallInAst({
       ast: modifiedAst,
       call: createParallelismCall('edges', edgeExpr),
-      pathToEdit: nodeToEdit,
+      pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
       variableIfNewDecl: undefined,
       wasmInstance,
@@ -1136,6 +1128,7 @@ export function addAnnotationGdt({
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   let modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   const faceSelections = objects.graphSelections.filter((selection) =>
     isFaceArtifact(selection.artifact)
@@ -1199,7 +1192,7 @@ export function addAnnotationGdt({
 
   const styleResult = processGdtStyleParameters({
     modifiedAst,
-    nodeToEdit,
+    nodeToEdit: mNodeToEdit,
     wasmInstance,
     framePosition,
     framePlane,
@@ -1232,7 +1225,7 @@ export function addAnnotationGdt({
     const pathToNode = setCallInAst({
       ast: modifiedAst,
       call: createAnnotationCall('faces', faceExpr),
-      pathToEdit: nodeToEdit,
+      pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
       variableIfNewDecl: undefined,
       wasmInstance,
@@ -1247,7 +1240,7 @@ export function addAnnotationGdt({
     const pathToNode = setCallInAst({
       ast: modifiedAst,
       call: createAnnotationCall('edges', edgeExpr),
-      pathToEdit: nodeToEdit,
+      pathToEdit: mNodeToEdit,
       pathIfNewPipe: undefined,
       variableIfNewDecl: undefined,
       wasmInstance,
@@ -1472,13 +1465,6 @@ export function getNextAvailableDatumName(ast?: Node<Program>): string {
   }
 
   return fallback
-}
-
-function parseDatumNames(datums?: string): string[] {
-  return (datums ?? '')
-    .split(',')
-    .map((datum) => datum.trim())
-    .filter(Boolean)
 }
 
 /**
