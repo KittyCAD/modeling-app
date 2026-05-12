@@ -1,4 +1,5 @@
 import type { KclManager } from '@src/lang/KclManager'
+import type { MachineManager } from '@src/lib/MachineManager'
 import type {
   Command,
   CommandArgument,
@@ -7,13 +8,12 @@ import type {
 } from '@src/lib/commandTypes'
 import { getCommandArgumentKclValuesOnly } from '@src/lib/commandUtils'
 import { isDesktop } from '@src/lib/isDesktop'
-import type { MachineManager } from '@src/lib/MachineManager'
 import { err } from '@src/lib/trap'
+import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import toast from 'react-hot-toast'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 import type { ActorRefFrom } from 'xstate'
-import { reportRejection } from '@src/lib/trap'
 
 export type CommandBarActorType = ActorRefFrom<typeof commandBarMachine>
 
@@ -50,6 +50,43 @@ function handleCommandSubmitResult(commandName: string, result: unknown) {
   if (result instanceof Error) {
     toast.error(result.message)
   }
+}
+
+function optionValuesEqual(optionValue: unknown, argValue: unknown) {
+  if (
+    optionValue &&
+    argValue &&
+    typeof optionValue === 'object' &&
+    typeof argValue === 'object'
+  ) {
+    if (
+      'start' in optionValue &&
+      'end' in optionValue &&
+      'valueText' in optionValue &&
+      'start' in argValue &&
+      'end' in argValue &&
+      'valueText' in argValue
+    ) {
+      return (
+        optionValue.start === argValue.start &&
+        optionValue.end === argValue.end &&
+        optionValue.valueText === argValue.valueText
+      )
+    }
+
+    if (
+      'name' in optionValue &&
+      'name' in argValue &&
+      typeof optionValue.name === 'string' &&
+      typeof argValue.name === 'string'
+    ) {
+      return optionValue.name === argValue.name
+    }
+
+    return JSON.stringify(optionValue) === JSON.stringify(argValue)
+  }
+
+  return optionValue === argValue
 }
 
 export type CommandBarInput = {
@@ -519,18 +556,7 @@ export const commandBarMachine = setup({
                       argConfig.machineActor?.getSnapshot().context
                     )
                   : argConfig.options
-              ).some((o) => {
-                // Objects are only equal by reference in JavaScript, so we compare stringified values.
-                // GOTCHA: this means that JS class instances will behave badly as option arg values I believe.
-                if (
-                  typeof o.value === 'object' &&
-                  typeof argValue === 'object'
-                ) {
-                  return JSON.stringify(o.value) === JSON.stringify(argValue)
-                } else {
-                  return o.value === argValue
-                }
-              })
+              ).some((o) => optionValuesEqual(o.value, argValue))
 
             if (
               hasMismatchedDefaultValueType ||

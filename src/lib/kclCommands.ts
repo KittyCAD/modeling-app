@@ -895,6 +895,7 @@ function insertComponentInstanceSource(
 
 export function kclCommands(commandProps: KclCommandConfig): Command[] {
   const components = componentDefinitions(commandProps.kclManager)
+  const currentComponents = () => componentDefinitions(commandProps.kclManager)
   const componentOverrideArgs = Object.fromEntries(
     components.flatMap((component) =>
       component.params.map((param) => [
@@ -1293,7 +1294,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           inputType: 'options',
           required: true,
           options: () =>
-            components.map((component) => ({
+            currentComponents().map((component) => ({
               name: component.name,
               value: component.name,
             })),
@@ -1301,7 +1302,9 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             if (typeof data !== 'string') {
               return 'Select a component.'
             }
-            if (!components.some((component) => component.name === data)) {
+            if (
+              !currentComponents().some((component) => component.name === data)
+            ) {
               return `Could not find component ${data}.`
             }
             return true
@@ -1351,7 +1354,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             if (typeof componentName !== 'string') {
               return 'Select a component first.'
             }
-            const component = components.find(
+            const component = currentComponents().find(
               (component) => component.name === componentName
             )
             if (
@@ -1428,7 +1431,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           inputType: 'options',
           required: true,
           options: () =>
-            components.map((component) => ({
+            currentComponents().map((component) => ({
               name: component.name,
               value: component.name,
             })),
@@ -1436,7 +1439,9 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             if (typeof data !== 'string') {
               return 'Select a component.'
             }
-            if (!components.some((component) => component.name === data)) {
+            if (
+              !currentComponents().some((component) => component.name === data)
+            ) {
               return `Could not find component ${data}.`
             }
             return true
@@ -1452,7 +1457,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             if (typeof componentName !== 'string') {
               return []
             }
-            return componentParameterOptions(components, componentName)
+            return componentParameterOptions(currentComponents(), componentName)
           },
           validation: async ({ data }) => {
             if (!isComponentParameterOption(data)) {
@@ -1481,7 +1486,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             if (!isComponentParameterOption(parameter)) {
               return 'Select a parameter first.'
             }
-            const component = components.find(
+            const component = currentComponents().find(
               (component) => component.name === componentName
             )
             if (component?.params.some((param) => param.name === data)) {
@@ -1554,7 +1559,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           inputType: 'options',
           required: true,
           options: () =>
-            components.map((component) => ({
+            currentComponents().map((component) => ({
               name: component.name,
               value: component.name,
             })),
@@ -1562,7 +1567,9 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             if (typeof data !== 'string') {
               return 'Select a component.'
             }
-            if (!components.some((component) => component.name === data)) {
+            if (
+              !currentComponents().some((component) => component.name === data)
+            ) {
               return `Could not find component ${data}.`
             }
             return true
@@ -1578,7 +1585,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             if (typeof componentName !== 'string') {
               return []
             }
-            return componentParameterOptions(components, componentName)
+            return componentParameterOptions(currentComponents(), componentName)
           },
           validation: async ({ data }) => {
             if (!isComponentParameterOption(data)) {

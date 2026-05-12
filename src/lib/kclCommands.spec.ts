@@ -405,6 +405,97 @@ describe('Insert command components', () => {
   })
 })
 
+describe('Component parameter commands', () => {
+  it('reads add-parameter component options from the current AST when an existing command is invoked', async () => {
+    const emptyAst = {
+      type: 'Program',
+      start: 0,
+      end: 0,
+      body: [],
+    } as unknown as Node<Program>
+    const kclManager = {
+      ast: emptyAst,
+      code: '',
+      fileSettings: {},
+      isExecuting: false,
+      safeParse: vi.fn().mockImplementation(async () => kclManager.ast),
+      updateCodeEditor: vi.fn(),
+      variables: {},
+      wasmInstancePromise: Promise.resolve({}),
+    }
+    const commands = kclCommands({
+      authToken: '',
+      isRestrictedToOrg: false,
+      kclManager: kclManager as never,
+      password: undefined,
+      project: undefined,
+      projectData: { code: '' },
+      settings: { defaultUnit: 'mm' },
+      specialPropsForInsertCommand: { providedOptions: [] },
+      systemIOActor: {
+        getSnapshot: () => ({ context: {} }),
+      } as never,
+      wasmInstance: {} as never,
+    })
+    const addParameter = commands.find(
+      (command) => command.name === 'component.addParameter'
+    )
+    if (
+      !addParameter ||
+      !addParameter.args ||
+      addParameter.args.componentName.inputType !== 'options' ||
+      addParameter.args.value.inputType !== 'options'
+    ) {
+      throw new Error('Add component parameter command not found')
+    }
+
+    const code = `mySurfaceLine = component() {
+  extrude001 = extrude(length = 5)
+  return extrude001
+}
+`
+    const length = rangeOf(code, '5', code.indexOf('length = 5'))
+    kclManager.code = code
+    kclManager.ast = componentAst({
+      code,
+      componentName: 'mySurfaceLine',
+      values: [length],
+    })
+
+    const componentOptions =
+      typeof addParameter.args.componentName.options === 'function'
+        ? addParameter.args.componentName.options(
+            { argumentsToSubmit: {} } as never,
+            undefined
+          )
+        : addParameter.args.componentName.options
+    expect(componentOptions).toContainEqual({
+      name: 'mySurfaceLine',
+      value: 'mySurfaceLine',
+    })
+
+    const valueOptions =
+      typeof addParameter.args.value.options === 'function'
+        ? addParameter.args.value.options(
+            { argumentsToSubmit: { componentName: 'mySurfaceLine' } } as never,
+            undefined
+          )
+        : addParameter.args.value.options
+    expect(valueOptions.map((option) => option.value)).toContainEqual(length)
+
+    await addParameter.onSubmit?.({
+      componentName: 'mySurfaceLine',
+      value: length,
+      parameterName: 'length',
+    })
+
+    expect(kclManager.updateCodeEditor).toHaveBeenCalledWith(
+      expect.stringContaining('mySurfaceLine = component(length = 5)'),
+      expect.objectContaining({ shouldExecute: true })
+    )
+  })
+})
+
 describe('component parameter edit codemods', () => {
   it('renames a parameter in the signature, direct body references, and override calls', () => {
     const code = `@settings(experimentalFeatures = allow)
