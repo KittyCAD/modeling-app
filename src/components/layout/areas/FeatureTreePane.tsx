@@ -1143,6 +1143,10 @@ const DefaultPlanes = ({
   const { rustContext, sceneInfra, kclManager } = systemDeps
   const { state: modelingState, send } = useModelingContext()
   const sketchNoFace = modelingState.matches('Sketch no face')
+  const selectedDefaultPlaneId =
+    modelingState.context.selectionRanges.otherSelections.find(
+      (selection) => typeof selection === 'object' && 'name' in selection
+    )?.id
 
   const onClickPlane = useCallback(
     (planeId: string) => {
@@ -1229,6 +1233,7 @@ const DefaultPlanes = ({
           icon={'plane'}
           name={plane.name}
           disabled={disabled}
+          isSelected={selectedDefaultPlaneId === plane.id}
           onClick={disabled ? undefined : () => onClickPlane(plane.id)}
           menuItems={
             disabled
