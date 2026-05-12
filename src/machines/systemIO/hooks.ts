@@ -148,7 +148,6 @@ export const useWatchForNewFileRequestsFromMlEphant = (
           return response.reasoning.file_name
         })
       )
-      console.log('LAST ID!', lastId)
 
       fn({
         toolOutput: lastResponse.tool_output.result,

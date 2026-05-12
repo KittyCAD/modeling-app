@@ -42,7 +42,6 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { showWarningToast } from '@src/components/ToastWarning'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { kcl } from '@kittycad/codemirror-lang-kcl'
 
 const isFileExplorerEntryOpened = (
   rows: { [key: string]: boolean },
@@ -547,8 +546,8 @@ export const ProjectExplorer = ({
           },
           onDoubleClick: onRowDoubleClicked
             ? (domIndex: number) => {
-              onRowDoubleClicked(child, domIndex)
-            }
+                onRowDoubleClicked(child, domIndex)
+              }
             : undefined,
           onOpen: () => {
             const newOpenedRows = { ...openedRowsRef.current }
@@ -569,7 +568,6 @@ export const ProjectExplorer = ({
 
             const shouldWeNavigate =
               file?.path?.startsWith(child.path) && canNavigate
-
 
             if (shouldWeNavigate && file && file.path) {
               const src = child.path
@@ -775,7 +773,7 @@ export const ProjectExplorer = ({
               (event?.target &&
                 'value' in event.target &&
                 event.target.value) ||
-              ''
+                ''
             )
             if (!requestedName) {
               // user pressed esc
@@ -819,7 +817,7 @@ export const ProjectExplorer = ({
                       parentPathRelativeToProject(
                         file?.path?.replace(oldPath, newPath),
                         overrideApplicationProjectDirectory ||
-                        applicationProjectDirectory
+                          applicationProjectDirectory
                       )
                     systemIOActor.send({
                       type: SystemIOMachineEvents.renameFolderAndNavigateToFile,
@@ -873,7 +871,7 @@ export const ProjectExplorer = ({
                   fileNameForcedWithOriginalExt
                 ),
                 overrideApplicationProjectDirectory ||
-                applicationProjectDirectory
+                  applicationProjectDirectory
               )
 
               if (row.isFake) {
@@ -1140,11 +1138,13 @@ export const ProjectExplorer = ({
       ref={projectExplorerRef}
     >
       <div
-        className={`overflow-auto absolute pb-12 inset-0 transition-all duration-150 ${activeIndex === -1 ? 'border-sky-500' : ''
-          } ${isExternalDragOver && !highlightedEntry
+        className={`overflow-auto absolute pb-12 inset-0 transition-all duration-150 ${
+          activeIndex === -1 ? 'border-sky-500' : ''
+        } ${
+          isExternalDragOver && !highlightedEntry
             ? 'ring-2 ring-inset ring-blue-500 bg-blue-500/5'
             : ''
-          }`}
+        }`}
         data-testid="file-pane-scroll-container"
         tabIndex={0}
         role="tree"

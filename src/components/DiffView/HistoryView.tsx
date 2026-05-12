@@ -1,16 +1,12 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import {
   getProjectDirectoryFromKCLFilePath,
-  parentPathRelativeToApplicationDirectory,
   parentPathRelativeToProject,
 } from '@src/lib/paths'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
-import type { IndexLoaderData } from '@src/lib/types'
-import { useLoaderData } from 'react-router-dom'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { historyFormatter } from '@src/lib/History'
 
 export const HistoryView = (props: AreaTypeComponentProps) => {
   useSignals()
@@ -48,10 +44,6 @@ export const HistoryView = (props: AreaTypeComponentProps) => {
                   e.absoluteFilePath,
                   applicationProjectDirectory
                 )
-                const projectPath = parentPathRelativeToApplicationDirectory(
-                  e.absoluteFilePath,
-                  applicationProjectDirectory
-                )
                 const month = e.date.toLocaleString('default', {
                   month: 'long',
                 })
@@ -81,7 +73,7 @@ export const HistoryView = (props: AreaTypeComponentProps) => {
                     )}
                     {e.source === 'Zookeeper' && (
                       <span className="text-ellipsis whitespace-nowrap px-2">
-                        {historyFormatter(e.source)}
+                        {e.source}
                       </span>
                     )}
                     {e.deleted && (

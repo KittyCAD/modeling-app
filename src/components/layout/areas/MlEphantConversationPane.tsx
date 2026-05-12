@@ -1,7 +1,7 @@
 import { reportRejection } from '@src/lib/trap'
 import { NIL as uuidNIL } from 'uuid'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import { KclManager } from '@src/lang/KclManager'
+import type { KclManager } from '@src/lang/KclManager'
 import { useEffect, useState, useRef, useCallback } from 'react'
 import {
   type SystemIOActor,

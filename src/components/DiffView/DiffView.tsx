@@ -32,7 +32,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { ActionButton } from '@src/components/ActionButton'
 import { reportRejection } from '@src/lib/trap'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { SettingsType } from '@src/lib/settings/initialSettings'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
 
 function setDiff(
   editorRef: React.RefObject<HTMLDivElement | null>,
@@ -129,7 +129,7 @@ export const DiffView = (props: AreaTypeComponentProps) => {
       kclLSP,
       settingsActor
     )
-  }, [lastEntrySelected, kclLSP])
+  }, [lastEntrySelected, kclLSP, settingsActor])
 
   useEffect(() => {
     return () => {
@@ -137,7 +137,7 @@ export const DiffView = (props: AreaTypeComponentProps) => {
       kclManager.history.lastEntrySelected.value = null
       cleanUp(mergeView)
     }
-  }, [])
+  }, [kclManager.history.lastEntrySelected])
   return (
     <LayoutPanel
       title={props.layout.label}
