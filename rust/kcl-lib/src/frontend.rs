@@ -12677,47 +12677,15 @@ sketch2 = sketch(on = XY) {
             .await
             .unwrap();
         // Only the first sketch block changes.
-        assert_eq!(
+        pretty_assertions::assert_eq!(
+            "// Cube that requires the engine.\nwidth = 2\nsketch001 = startSketchOn(XY)\nprofile001 = startProfile(sketch001, at = [0, 0])\n  |> yLine(length = width, tag = $seg1)\n  |> xLine(length = width)\n  |> yLine(length = -width)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nextrude001 = extrude(profile001, length = width)\n\n// Get a value that requires the engine.\nx = segLen(seg1)\n\n// Triangle with side length 2*x.\nsketch(on = XY) {\n  line1 = line(start = [var 1mm, var 2mm], end = [var 2.32mm, var -1.78mm])\n  line2 = line(start = [var 2.32mm, var -1.78mm], end = [var -1.61mm, var -1.03mm])\n  coincident([line1.end, line2.start])\n  line3 = line(start = [var -1.61mm, var -1.03mm], end = [var 1mm, var 2mm])\n  coincident([line2.end, line3.start])\n  coincident([line3.end, line1.start])\n  equalLength([line3, line1])\n  equalLength([line1, line2])\n  distance([line1.start, line1.end]) == 2 * x\n}\n\n// Line segment with length x.\nsketch2 = sketch(on = XY) {\n  line1 = line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])\n  distance([line1.start, line1.end]) == x\n}\n",
             src_delta.text.as_str(),
-            "\
-// Cube that requires the engine.
-width = 2
-sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> yLine(length = width, tag = $seg1)
-  |> xLine(length = width)
-  |> yLine(length = -width)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(profile001, length = width)
-
-// Get a value that requires the engine.
-x = segLen(seg1)
-
-// Triangle with side length 2*x.
-sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 1.28mm, var -0.78mm])
-  line2 = line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
-  coincident([line2.end, line3.start])
-  coincident([line3.end, line1.start])
-  equalLength([line3, line1])
-  equalLength([line1, line2])
-  distance([line1.start, line1.end]) == 2 * x
-}
-
-// Line segment with length x.
-sketch2 = sketch(on = XY) {
-  line1 = line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])
-  distance([line1.start, line1.end]) == x}
-"
         );
 
         // Execute mock to simulate drag end.
         let (src_delta, _) = frontend.execute_mock(&mock_ctx, version, sketch1_id).await.unwrap();
         // Only the first sketch block changes.
-        assert_eq!(
+        pretty_assertions::assert_eq!(
             src_delta.text.as_str(),
             "\
 // Cube that requires the engine.
@@ -12736,7 +12704,7 @@ x = segLen(seg1)
 
 // Triangle with side length 2*x.
 sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 2.32mm, var -1.78mm])
+  line1 = line(start = [var 2mm, var 2mm], end = [var 2.32mm, var -1.78mm])
   line2 = line(start = [var 2.32mm, var -1.78mm], end = [var -1.61mm, var -1.03mm])
   coincident([line1.end, line2.start])
   line3 = line(start = [var -1.61mm, var -1.03mm], end = [var 1mm, var 2mm])
@@ -12762,7 +12730,7 @@ sketch2 = sketch(on = XY) {
         // - sketch on=XY cached
         // - Sketch block 5
         let scene = frontend.exit_sketch(&ctx, version, sketch1_id).await.unwrap();
-        assert_eq!(scene.objects.len(), 30, "{:#?}", scene.objects);
+        pretty_assertions::assert_eq!(scene.objects.len(), 30, "{:#?}", scene.objects);
 
         // Edit the second sketch.
         //
@@ -12775,7 +12743,7 @@ sketch2 = sketch(on = XY) {
             .edit_sketch(&mock_ctx, project_id, file_id, version, sketch2_id)
             .await
             .unwrap();
-        assert_eq!(
+        pretty_assertions::assert_eq!(
             scene_delta.new_graph.objects.len(),
             24,
             "{:#?}",
@@ -12804,8 +12772,7 @@ sketch2 = sketch(on = XY) {
             .await
             .unwrap();
         // Only the second sketch block changes.
-        assert_eq!(
-            src_delta.text.as_str(),
+        pretty_assertions::assert_eq!(
             "\
 // Cube that requires the engine.
 width = 2
@@ -12823,10 +12790,10 @@ x = segLen(seg1)
 
 // Triangle with side length 2*x.
 sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 1.28mm, var -0.78mm])
-  line2 = line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
+  line1 = line(start = [var 2mm, var 2mm], end = [var 2.32mm, var -1.78mm])
+  line2 = line(start = [var 2.32mm, var -1.78mm], end = [var -1.61mm, var -1.03mm])
   coincident([line1.end, line2.start])
-  line3 = line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
+  line3 = line(start = [var -1.61mm, var -1.03mm], end = [var 1mm, var 2mm])
   coincident([line2.end, line3.start])
   coincident([line3.end, line1.start])
   equalLength([line3, line1])
@@ -12839,14 +12806,14 @@ sketch2 = sketch(on = XY) {
   line1 = line(start = [var 3mm, var 4mm], end = [var 2.32mm, var 2.12mm])
   distance([line1.start, line1.end]) == x
 }
-"
+",
+            src_delta.text.as_str(),
         );
 
         // Execute mock to simulate drag end.
         let (src_delta, _) = frontend.execute_mock(&mock_ctx, version, sketch2_id).await.unwrap();
         // Only the second sketch block changes.
-        assert_eq!(
-            src_delta.text.as_str(),
+        pretty_assertions::assert_eq!(
             "\
 // Cube that requires the engine.
 width = 2
@@ -12864,10 +12831,10 @@ x = segLen(seg1)
 
 // Triangle with side length 2*x.
 sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 1.28mm, var -0.78mm])
-  line2 = line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
+  line1 = line(start = [var 2mm, var 2mm], end = [var 2.32mm, var -1.78mm])
+  line2 = line(start = [var 2.32mm, var -1.78mm], end = [var -1.61mm, var -1.03mm])
   coincident([line1.end, line2.start])
-  line3 = line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
+  line3 = line(start = [var -1.61mm, var -1.03mm], end = [var 1mm, var 2mm])
   coincident([line2.end, line3.start])
   coincident([line3.end, line1.start])
   equalLength([line3, line1])
@@ -12877,10 +12844,11 @@ sketch(on = XY) {
 
 // Line segment with length x.
 sketch2 = sketch(on = XY) {
-  line1 = line(start = [var 3mm, var 4mm], end = [var 1.28mm, var -0.78mm])
+  line1 = line(start = [var 2.12mm, var 4mm], end = [var 2.32mm, var 2.12mm])
   distance([line1.start, line1.end]) == x
 }
-"
+",
+            src_delta.text.as_str(),
         );
 
         ctx.close().await;
