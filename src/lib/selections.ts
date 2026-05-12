@@ -80,6 +80,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
 import type {
   DefaultPlane,
+  DefaultPlaneSelection,
   EnginePrimitiveSelection,
   EngineRegionSelection,
   ExtrudeFacePlane,
@@ -507,6 +508,18 @@ type SelectionToEngine = {
   range: SourceRange
 }
 
+export function isDefaultPlaneSelection(
+  selection: Selections['otherSelections'][number]
+): selection is DefaultPlaneSelection {
+  return (
+    typeof selection === 'object' && selection !== null && 'name' in selection
+  )
+}
+
+export function getSelectedDefaultPlane(selectionRanges: Selections) {
+  return selectionRanges.otherSelections.find(isDefaultPlaneSelection)
+}
+
 export function processCodeMirrorRanges({
   codeMirrorRanges,
   selectionRanges,
@@ -745,7 +758,7 @@ export function getSelectionCountByType(
       incrementOrInitializeSelectionType('other')
     } else if (isEngineRegionSelection(selection)) {
       incrementOrInitializeSelectionType('engineRegion')
-    } else if ('name' in selection) {
+    } else if (isDefaultPlaneSelection(selection)) {
       incrementOrInitializeSelectionType('plane')
     } else if (
       selection.type === 'enginePrimitive' &&

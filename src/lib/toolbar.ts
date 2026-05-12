@@ -8,6 +8,7 @@ import { useApp } from '@src/lib/boot'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import {
   getDefaultSketchPlaneData,
+  getSelectedDefaultPlane,
   selectSketchPlane,
 } from '@src/lib/selections'
 import type { modelingMachine } from '@src/machines/modelingMachine'
@@ -2258,9 +2259,7 @@ function getSelectedSketchTarget(
   id: string
   title: string
 } | null {
-  const defaultPlane = selectionRanges.otherSelections.find(
-    (selection) => typeof selection === 'object' && 'name' in selection
-  )
+  const defaultPlane = getSelectedDefaultPlane(selectionRanges)
   if (defaultPlane) {
     const defaultPlaneData = getDefaultSketchPlaneData(defaultPlane.id, {
       rustContext: kclManager.rustContext,
