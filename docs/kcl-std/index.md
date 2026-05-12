@@ -77,6 +77,8 @@ layout: manual
   * [`sin`](/docs/kcl-std/functions/std-math-sin)
   * [`sqrt`](/docs/kcl-std/functions/std-math-sqrt)
   * [`tan`](/docs/kcl-std/functions/std-math-tan)
+* [**std::mbd**](/docs/kcl-std/modules/std-mbd)
+  * [`mbd::name`](/docs/kcl-std/functions/std-mbd-name)
 * [**std::runtime**](/docs/kcl-std/modules/std-runtime)
   * [`exit`](/docs/kcl-std/functions/std-runtime-exit)
 * [**std::sketch**](/docs/kcl-std/modules/std-sketch)
