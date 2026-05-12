@@ -32,12 +32,9 @@ use crate::NodePath;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::exec::PlaneKind;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::Artifact;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::ArtifactId;
 use crate::execution::BasePath;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::CodeRef;
 use crate::execution::ExecState;
 use crate::execution::GeoMeta;
@@ -58,9 +55,7 @@ use crate::execution::SegmentKind;
 use crate::execution::Sketch;
 use crate::execution::SketchSurface;
 use crate::execution::Solid;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::StartSketchOnFace;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::StartSketchOnPlane;
 use crate::execution::TagIdentifier;
 use crate::execution::annotations;
@@ -68,6 +63,7 @@ use crate::execution::types::ArrayLen;
 use crate::execution::types::NumericType;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
+use crate::front::SourceRef;
 use crate::parsing::ast::types::TagNode;
 use crate::std::CircularDirection;
 use crate::std::EQUAL_POINTS_DIST_EPSILON;
@@ -1008,15 +1004,12 @@ async fn inner_start_sketch_on(
                 Ok(SketchSurface::Plane(plane))
             } else {
                 // Create artifact used only by the UI, not the engine.
-                #[cfg(feature = "artifact-graph")]
-                {
-                    let id = exec_state.next_uuid();
-                    exec_state.add_artifact(Artifact::StartSketchOnPlane(StartSketchOnPlane {
-                        id: ArtifactId::from(id),
-                        plane_id: plane.artifact_id,
-                        code_ref: CodeRef::placeholder(args.source_range),
-                    }));
-                }
+                let id = exec_state.next_uuid();
+                exec_state.add_artifact(Artifact::StartSketchOnPlane(StartSketchOnPlane {
+                    id: ArtifactId::from(id),
+                    plane_id: plane.artifact_id,
+                    code_ref: CodeRef::placeholder(args.source_range),
+                }));
 
                 Ok(SketchSurface::Plane(plane))
             }
@@ -1089,30 +1082,24 @@ async fn inner_start_sketch_on(
                 let plane = make_sketch_plane_from_orientation(plane_data, exec_state, args).await?;
 
                 // Create artifact used only by the UI, not the engine.
-                #[cfg(feature = "artifact-graph")]
-                {
-                    let id = exec_state.next_uuid();
-                    exec_state.add_artifact(Artifact::StartSketchOnPlane(StartSketchOnPlane {
-                        id: ArtifactId::from(id),
-                        plane_id: plane.artifact_id,
-                        code_ref: CodeRef::placeholder(args.source_range),
-                    }));
-                }
+                let id = exec_state.next_uuid();
+                exec_state.add_artifact(Artifact::StartSketchOnPlane(StartSketchOnPlane {
+                    id: ArtifactId::from(id),
+                    plane_id: plane.artifact_id,
+                    code_ref: CodeRef::placeholder(args.source_range),
+                }));
 
                 Ok(SketchSurface::Plane(plane))
             } else {
                 let face = make_face(solid, tag, exec_state, args).await?;
 
-                #[cfg(feature = "artifact-graph")]
-                {
-                    // Create artifact used only by the UI, not the engine.
-                    let id = exec_state.next_uuid();
-                    exec_state.add_artifact(Artifact::StartSketchOnFace(StartSketchOnFace {
-                        id: ArtifactId::from(id),
-                        face_id: face.artifact_id,
-                        code_ref: CodeRef::placeholder(args.source_range),
-                    }));
-                }
+                // Create artifact used only by the UI, not the engine.
+                let id = exec_state.next_uuid();
+                exec_state.add_artifact(Artifact::StartSketchOnFace(StartSketchOnFace {
+                    id: ArtifactId::from(id),
+                    face_id: face.artifact_id,
+                    code_ref: CodeRef::placeholder(args.source_range),
+                }));
 
                 Ok(SketchSurface::Face(face))
             }
@@ -1160,12 +1147,9 @@ pub async fn ensure_sketch_plane_in_engine(
     if plane.is_initialized() {
         return Ok(());
     }
-    #[cfg(feature = "artifact-graph")]
-    {
-        if let Some(existing_object_id) = exec_state.scene_object_id_by_artifact_id(ArtifactId::new(plane.id)) {
-            plane.object_id = Some(existing_object_id);
-            return Ok(());
-        }
+    if let Some(existing_object_id) = exec_state.scene_object_id_by_artifact_id(ArtifactId::new(plane.id)) {
+        plane.object_id = Some(existing_object_id);
+        return Ok(());
     }
 
     // Regenerate the plane's UUID using the current module's IdGenerator so
@@ -1207,22 +1191,15 @@ pub async fn ensure_sketch_plane_in_engine(
         )
         .await?;
     let plane_object_id = exec_state.next_object_id();
-    #[cfg(not(feature = "artifact-graph"))]
-    let _ = node_path;
-    #[cfg(feature = "artifact-graph")]
-    {
-        use crate::front::SourceRef;
-
-        let plane_object = crate::front::Object {
-            id: plane_object_id,
-            kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
-            label: Default::default(),
-            comments: Default::default(),
-            artifact_id: ArtifactId::new(plane.id),
-            source: SourceRef::new(source_range, node_path.clone()),
-        };
-        exec_state.add_scene_object(plane_object, source_range);
-    }
+    let plane_object = crate::front::Object {
+        id: plane_object_id,
+        kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
+        label: Default::default(),
+        comments: Default::default(),
+        artifact_id: ArtifactId::new(plane.id),
+        source: SourceRef::new(source_range, node_path.clone()),
+    };
+    exec_state.add_scene_object(plane_object, source_range);
     plane.object_id = Some(plane_object_id);
 
     Ok(())
