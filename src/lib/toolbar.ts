@@ -6,7 +6,10 @@ import { createLiteral } from '@src/lang/create'
 import { isDesktop } from '@src/lib/isDesktop'
 import { useApp } from '@src/lib/boot'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import { selectSketchPlane } from '@src/lib/selections'
+import {
+  getDefaultSketchPlaneData,
+  selectSketchPlane,
+} from '@src/lib/selections'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
   isEditingExistingSketch,
@@ -29,11 +32,33 @@ type ToolbarMode = {
 }
 
 function getSelectedSketchTarget(selectionRanges: Selections): string | null {
-  const defaultPlane = selectionRanges.otherSelections.find(
-    (selection) => typeof selection === 'object' && 'name' in selection
-  )
+  return getSelectedSketchTargetInfo(selectionRanges)?.id ?? null
+}
+
+function getSelectedSketchTargetInfo(
+  selectionRanges: Selections,
+  kclManager?: StateFrom<typeof modelingMachine>['context']['kclManager']
+): {
+  id: string
+  title: string
+} | null {
+  const defaultPlane = getSelectedDefaultPlane(selectionRanges)
   if (defaultPlane) {
-    return defaultPlane.id
+    const defaultPlaneData =
+      kclManager &&
+      getDefaultSketchPlaneData(defaultPlane.id, {
+        rustContext: kclManager.rustContext,
+        sceneInfra: kclManager.sceneInfra,
+      })
+    const planeName =
+      defaultPlaneData && !(defaultPlaneData instanceof Error)
+        ? defaultPlaneData.plane
+        : formatDefaultPlaneName(defaultPlane.name)
+
+    return {
+      id: defaultPlane.id,
+      title: `Start Sketch on ${planeName}`,
+    }
   }
 
   const planeSelection = selectionRanges.graphSelections.find((selection) => {
@@ -45,8 +70,30 @@ function getSelectedSketchTarget(selectionRanges: Selections): string | null {
       (artifact?.type === 'edgeCut' && artifact.subType === 'chamfer')
     )
   })
+  const artifact = planeSelection?.artifact
+  if (!artifact?.id) return null
 
-  return planeSelection?.artifact?.id ?? null
+  return {
+    id: artifact.id,
+    title:
+      artifact.type === 'plane'
+        ? 'Start Sketch on plane'
+        : 'Start Sketch on face',
+  }
+}
+
+function getSelectedDefaultPlane(selectionRanges: Selections) {
+  return selectionRanges.otherSelections.find(
+    (selection) => typeof selection === 'object' && 'name' in selection
+  )
+}
+
+function formatDefaultPlaneName(name: string): string {
+  if (name.startsWith('neg')) {
+    return `-${name.slice(3).toUpperCase()}`
+  }
+
+  return name.toUpperCase()
 }
 
 // Load bearing logic for determining the items in the toolbar
@@ -535,9 +582,17 @@ export function buildToolbarConfig(
 
             if ((editorHasFocus && sketchPathId) || isSketchBlock) {
               return 'Edit Sketch'
-            } else {
-              return 'Start Sketch'
             }
+
+            const selectedSketchTarget = getSelectedSketchTargetInfo(
+              modelingState.context.selectionRanges,
+              modelingState.context.kclManager
+            )
+            if (selectedSketchTarget) {
+              return selectedSketchTarget.title
+            }
+
+            return 'Start Sketch'
           },
           showTitle: true,
           hotkey: 'S',
