@@ -469,6 +469,13 @@ export function handleSelectionBatch({
         id: s.id,
         range: defaultSourceRange(),
       })
+      return
+    }
+    if (isDefaultPlaneSelection(s)) {
+      selectionToEngine.push({
+        id: s.id,
+        range: defaultSourceRange(),
+      })
     }
   })
   const engineEvents: WebSocketRequest[] = resetAndSetEngineEntitySelectionCmds(

@@ -1921,6 +1921,27 @@ export const modelingMachine = setup({
               otherSelections: [setSelections.selection],
             }
           }
+
+          if (setSelections.selectionType === 'defaultPlaneSelection') {
+            const { engineEvents } = handleSelectionBatch({
+              selections,
+              artifactGraph: kclManager.artifactGraph,
+              code: kclManager.code,
+              ast: kclManager.ast,
+              systemDeps: {
+                engineCommandManager,
+                sceneEntitiesManager: kclManager.sceneEntitiesManager,
+                wasmInstance,
+              },
+            })
+
+            engineEvents?.forEach((event) => {
+              engineCommandManager
+                .sendSceneCommand(event)
+                .catch(reportRejection)
+            })
+          }
+
           return {
             selectionRanges: selections,
           }
