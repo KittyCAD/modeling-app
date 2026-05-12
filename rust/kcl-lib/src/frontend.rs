@@ -18,11 +18,8 @@ use crate::KclError;
 use crate::KclErrorWithOutputs;
 use crate::Program;
 use crate::collections::AhashIndexSet;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::Artifact;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::ArtifactGraph;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::CapSubType;
 use crate::execution::MockConfig;
 use crate::execution::SKETCH_BLOCK_PARAM_ON;
@@ -1907,15 +1904,10 @@ impl FrontendState {
             error,
             mut non_fatal,
             variables,
-            #[cfg(feature = "artifact-graph")]
             operations,
-            #[cfg(feature = "artifact-graph")]
             artifact_graph,
-            #[cfg(feature = "artifact-graph")]
             scene_objects,
-            #[cfg(feature = "artifact-graph")]
             source_range_to_object,
-            #[cfg(feature = "artifact-graph")]
             var_solutions,
             filenames,
             default_planes,
@@ -1931,15 +1923,10 @@ impl FrontendState {
         Ok(ExecOutcome {
             variables,
             filenames,
-            #[cfg(feature = "artifact-graph")]
             operations,
-            #[cfg(feature = "artifact-graph")]
             artifact_graph,
-            #[cfg(feature = "artifact-graph")]
             scene_objects,
-            #[cfg(feature = "artifact-graph")]
             source_range_to_object,
-            #[cfg(feature = "artifact-graph")]
             var_solutions,
             issues: non_fatal,
             default_planes,
@@ -2015,8 +2002,6 @@ impl FrontendState {
                 "Source range of point not found in sketch block: {sketch_block_ref:?}; {err:?}"
             )))
         })?;
-        #[cfg(not(feature = "artifact-graph"))]
-        let _ = point_node_ref;
 
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
@@ -2034,9 +2019,6 @@ impl FrontendState {
             )
             .await?;
 
-        #[cfg(not(feature = "artifact-graph"))]
-        let new_object_ids = Vec::new();
-        #[cfg(feature = "artifact-graph")]
         let new_object_ids = {
             let make_err =
                 |msg: String| KclErrorWithOutputs::from_error_outcome(KclError::refactor(msg), outcome.clone());
@@ -2156,8 +2138,6 @@ impl FrontendState {
                 "Source range of line not found in sketch block: {sketch_block_ref:?}; {err:?}"
             )))
         })?;
-        #[cfg(not(feature = "artifact-graph"))]
-        let _ = line_node_ref;
 
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
@@ -2175,9 +2155,6 @@ impl FrontendState {
             )
             .await?;
 
-        #[cfg(not(feature = "artifact-graph"))]
-        let new_object_ids = Vec::new();
-        #[cfg(feature = "artifact-graph")]
         let new_object_ids = {
             let make_err =
                 |msg: String| KclErrorWithOutputs::from_error_outcome(KclError::refactor(msg), outcome.clone());
@@ -2302,8 +2279,6 @@ impl FrontendState {
                 "Source range of arc not found in sketch block: {sketch_block_ref:?}; {err:?}"
             )))
         })?;
-        #[cfg(not(feature = "artifact-graph"))]
-        let _ = arc_node_ref;
 
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
@@ -2321,9 +2296,6 @@ impl FrontendState {
             )
             .await?;
 
-        #[cfg(not(feature = "artifact-graph"))]
-        let new_object_ids = Vec::new();
-        #[cfg(feature = "artifact-graph")]
         let new_object_ids = {
             let make_err =
                 |msg: String| KclErrorWithOutputs::from_error_outcome(KclError::refactor(msg), outcome.clone());
@@ -2446,8 +2418,6 @@ impl FrontendState {
                 "Source range of circle not found in sketch block: {sketch_block_ref:?}; {err:?}"
             )))
         })?;
-        #[cfg(not(feature = "artifact-graph"))]
-        let _ = circle_node_ref;
 
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
@@ -2465,9 +2435,6 @@ impl FrontendState {
             )
             .await?;
 
-        #[cfg(not(feature = "artifact-graph"))]
-        let new_object_ids = Vec::new();
-        #[cfg(feature = "artifact-graph")]
         let new_object_ids = {
             let make_err =
                 |msg: String| KclErrorWithOutputs::from_error_outcome(KclError::refactor(msg), outcome.clone());
@@ -4364,7 +4331,7 @@ impl FrontendState {
         &mut self,
         ctx: &ExecutorContext,
         sketch_id: ObjectId,
-        #[cfg_attr(not(feature = "artifact-graph"), allow(unused_variables))] sketch_block_ref: AstNodeRef,
+        sketch_block_ref: AstNodeRef,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
         // Convert to string source to create real source ranges.
@@ -4382,7 +4349,6 @@ impl FrontendState {
                 "No AST produced after adding constraint".to_string(),
             )));
         };
-        #[cfg(feature = "artifact-graph")]
         let constraint_node_ref = find_sketch_block_added_item(&new_program.ast, &sketch_block_ref).map_err(|err| {
             KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
                 "Source range of new constraint not found in sketch block: {sketch_block_ref:?}; {err:?}"
@@ -4399,9 +4365,6 @@ impl FrontendState {
         let mock_config = self.sketch_mock_config(sketch_id, true, Default::default(), false);
         let outcome = ctx.run_mock(&truncated_program, &mock_config).await?;
 
-        #[cfg(not(feature = "artifact-graph"))]
-        let new_object_ids = Vec::new();
-        #[cfg(feature = "artifact-graph")]
         let new_object_ids = {
             // Extract the constraint ID from the execution outcome using source_range_to_object
             let constraint_id = outcome
@@ -4573,94 +4536,86 @@ impl FrontendState {
     }
 
     fn update_state_after_exec(&mut self, outcome: ExecOutcome, freedom_analysis_ran: bool) -> ExecOutcome {
-        #[cfg(not(feature = "artifact-graph"))]
-        {
-            let _ = freedom_analysis_ran; // Only used when artifact-graph feature is enabled
-            outcome
-        }
-        #[cfg(feature = "artifact-graph")]
-        {
-            let mut outcome = outcome;
-            let mut new_objects = std::mem::take(&mut outcome.scene_objects);
+        let mut outcome = outcome;
+        let mut new_objects = std::mem::take(&mut outcome.scene_objects);
 
-            if freedom_analysis_ran {
-                // When freedom analysis ran, replace the cache entirely with new values
-                // Don't merge with old values since IDs might have changed
-                self.point_freedom_cache.clear();
-                for new_obj in &new_objects {
-                    if let ObjectKind::Segment {
-                        segment: crate::front::Segment::Point(point),
-                    } = &new_obj.kind
-                    {
-                        self.point_freedom_cache.insert(new_obj.id, point.freedom);
-                    }
+        if freedom_analysis_ran {
+            // When freedom analysis ran, replace the cache entirely with new values
+            // Don't merge with old values since IDs might have changed
+            self.point_freedom_cache.clear();
+            for new_obj in &new_objects {
+                if let ObjectKind::Segment {
+                    segment: crate::front::Segment::Point(point),
+                } = &new_obj.kind
+                {
+                    self.point_freedom_cache.insert(new_obj.id, point.freedom);
                 }
-                add_wall_and_cap_face_objects(&mut new_objects, &outcome.artifact_graph);
-                // Objects are already correct from the analysis, just use them as-is
-                self.scene_graph.objects = new_objects;
-            } else {
-                // When freedom analysis didn't run, preserve old values and merge
-                // Before replacing objects, extract and store freedom values from old objects
-                for old_obj in &self.scene_graph.objects {
-                    if let ObjectKind::Segment {
-                        segment: crate::front::Segment::Point(point),
-                    } = &old_obj.kind
-                    {
-                        self.point_freedom_cache.insert(old_obj.id, point.freedom);
-                    }
+            }
+            add_wall_and_cap_face_objects(&mut new_objects, &outcome.artifact_graph);
+            // Objects are already correct from the analysis, just use them as-is
+            self.scene_graph.objects = new_objects;
+        } else {
+            // When freedom analysis didn't run, preserve old values and merge
+            // Before replacing objects, extract and store freedom values from old objects
+            for old_obj in &self.scene_graph.objects {
+                if let ObjectKind::Segment {
+                    segment: crate::front::Segment::Point(point),
+                } = &old_obj.kind
+                {
+                    self.point_freedom_cache.insert(old_obj.id, point.freedom);
                 }
+            }
 
-                // Update objects, preserving stored freedom values when new is Free (might be default)
-                let mut updated_objects = Vec::with_capacity(new_objects.len());
-                for new_obj in new_objects {
-                    let mut obj = new_obj;
-                    if let ObjectKind::Segment {
-                        segment: crate::front::Segment::Point(point),
-                    } = &mut obj.kind
-                    {
-                        let new_freedom = point.freedom;
-                        // When freedom_analysis=false, new values are defaults (Free).
-                        // Only preserve cached values when new is Free (indicating it's a default, not from analysis).
-                        // If new is NOT Free, use the new value (it came from somewhere else, maybe conflict detection).
-                        // Never preserve Conflict from cache - conflicts are transient and should only be set
-                        // when there are actually unsatisfied constraints.
-                        match new_freedom {
-                            Freedom::Free => {
-                                match self.point_freedom_cache.get(&obj.id).copied() {
-                                    Some(Freedom::Conflict) => {
-                                        // Don't preserve Conflict - conflicts are transient
-                                        // Keep it as Free
-                                    }
-                                    Some(Freedom::Fixed) => {
-                                        // Preserve Fixed cached value
-                                        point.freedom = Freedom::Fixed;
-                                    }
-                                    Some(Freedom::Free) => {
-                                        // If stored is also Free, keep Free (no change needed)
-                                    }
-                                    None => {
-                                        // If no cached value, keep Free (default)
-                                    }
+            // Update objects, preserving stored freedom values when new is Free (might be default)
+            let mut updated_objects = Vec::with_capacity(new_objects.len());
+            for new_obj in new_objects {
+                let mut obj = new_obj;
+                if let ObjectKind::Segment {
+                    segment: crate::front::Segment::Point(point),
+                } = &mut obj.kind
+                {
+                    let new_freedom = point.freedom;
+                    // When freedom_analysis=false, new values are defaults (Free).
+                    // Only preserve cached values when new is Free (indicating it's a default, not from analysis).
+                    // If new is NOT Free, use the new value (it came from somewhere else, maybe conflict detection).
+                    // Never preserve Conflict from cache - conflicts are transient and should only be set
+                    // when there are actually unsatisfied constraints.
+                    match new_freedom {
+                        Freedom::Free => {
+                            match self.point_freedom_cache.get(&obj.id).copied() {
+                                Some(Freedom::Conflict) => {
+                                    // Don't preserve Conflict - conflicts are transient
+                                    // Keep it as Free
+                                }
+                                Some(Freedom::Fixed) => {
+                                    // Preserve Fixed cached value
+                                    point.freedom = Freedom::Fixed;
+                                }
+                                Some(Freedom::Free) => {
+                                    // If stored is also Free, keep Free (no change needed)
+                                }
+                                None => {
+                                    // If no cached value, keep Free (default)
                                 }
                             }
-                            Freedom::Fixed => {
-                                // Use new value (already set)
-                            }
-                            Freedom::Conflict => {
-                                // Use new value (already set)
-                            }
                         }
-                        // Store the new freedom value (even if it's Free, so we know it was set)
-                        self.point_freedom_cache.insert(obj.id, point.freedom);
+                        Freedom::Fixed => {
+                            // Use new value (already set)
+                        }
+                        Freedom::Conflict => {
+                            // Use new value (already set)
+                        }
                     }
-                    updated_objects.push(obj);
+                    // Store the new freedom value (even if it's Free, so we know it was set)
+                    self.point_freedom_cache.insert(obj.id, point.freedom);
                 }
-
-                add_wall_and_cap_face_objects(&mut updated_objects, &outcome.artifact_graph);
-                self.scene_graph.objects = updated_objects;
+                updated_objects.push(obj);
             }
-            outcome
+
+            add_wall_and_cap_face_objects(&mut updated_objects, &outcome.artifact_graph);
+            self.scene_graph.objects = updated_objects;
         }
+        outcome
     }
 
     fn mutate_ast(
@@ -4858,18 +4813,14 @@ fn sketch_on_ast_expr(
                 .objects
                 .get(object_id.0)
                 .ok_or_else(|| KclError::refactor(format!("Sketch plane object not found: {object_id:?}")))?;
-            #[cfg(feature = "artifact-graph")]
-            {
-                if let Some(face_expr) = sketch_face_of_scene_object_ast_expr(ast, on_object)? {
-                    return Ok(face_expr);
-                }
+            if let Some(face_expr) = sketch_face_of_scene_object_ast_expr(ast, on_object)? {
+                return Ok(face_expr);
             }
             get_or_insert_ast_reference(ast, &on_object.source, "plane", None)
         }
     }
 }
 
-#[cfg(feature = "artifact-graph")]
 fn sketch_face_of_scene_object_ast_expr(
     ast: &mut ast::Node<ast::Program>,
     on_object: &crate::front::Object,
@@ -4967,7 +4918,6 @@ fn sketch_face_of_scene_object_ast_expr(
     }
 }
 
-#[cfg(feature = "artifact-graph")]
 fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, artifact_graph: &ArtifactGraph) {
     let mut existing_artifact_ids = scene_objects
         .iter()
@@ -5073,7 +5023,6 @@ fn negated_plane_ast_expr(name: &str) -> ast::Expr {
     )))
 }
 
-#[cfg(feature = "artifact-graph")]
 fn create_face_of_ast(solid_expr: ast::Expr, face_expr: ast::Expr) -> ast::Expr {
     ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name("faceOf")),
@@ -5087,7 +5036,6 @@ fn create_face_of_ast(solid_expr: ast::Expr, face_expr: ast::Expr) -> ast::Expr 
     })))
 }
 
-#[cfg(feature = "artifact-graph")]
 fn region_name_from_sweep_variable(ast: &ast::Node<ast::Program>, sweep_variable_name: &str) -> Option<String> {
     let ast::Definition::Variable(sweep_decl) = ast.get_variable(sweep_variable_name)? else {
         return None;
@@ -5230,7 +5178,6 @@ enum AstMutateCommand {
     EditCallUnlabeled {
         arg: ast::Expr,
     },
-    #[cfg(feature = "artifact-graph")]
     EditVarInitialValue {
         value: Number,
     },
@@ -5736,7 +5683,6 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
-        #[cfg(feature = "artifact-graph")]
         AstMutateCommand::EditVarInitialValue { value } => {
             if let NodeMut::NumericLiteral(numeric_literal) = node {
                 // Update the initial value.
@@ -6302,7 +6248,7 @@ pub(crate) fn create_midpoint_ast(segment_expr: ast::Expr, point_expr: ast::Expr
     })))
 }
 
-#[cfg(all(feature = "artifact-graph", test))]
+#[cfg(test)]
 mod tests {
     use super::*;
     use crate::engine::PlaneName;
