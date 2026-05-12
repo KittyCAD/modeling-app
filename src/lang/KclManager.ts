@@ -245,7 +245,7 @@ function buildMinimalDocumentChange(
     currentSuffixStart > prefixLength &&
     nextSuffixStart > prefixLength &&
     currentCode.charCodeAt(currentSuffixStart - 1) ===
-    nextCode.charCodeAt(nextSuffixStart - 1)
+      nextCode.charCodeAt(nextSuffixStart - 1)
   ) {
     currentSuffixStart--
     nextSuffixStart--
@@ -648,7 +648,6 @@ export class File extends EventTarget {
     read: (path: string) => {
       fsZds.readFile(path, 'utf8')
       return new Promise(async (resolve, reject) => {
-
         try {
           const text = await fsZds.readFile(path, 'utf8')
           resolve(text)
@@ -658,15 +657,13 @@ export class File extends EventTarget {
           } else {
             reject(err)
           }
-
         }
-
       })
     },
     write: (path: string, content: string) =>
       fsZds.writeFile(path, File.encoder.encode(content)),
-    watch: window.electron?.watchFileOn || (() => { }),
-    unwatch: window.electron?.watchFileOff || (() => { }),
+    watch: window.electron?.watchFileOn || (() => {}),
+    unwatch: window.electron?.watchFileOff || (() => {}),
   }
   static encoder = new TextEncoder()
 }
@@ -700,7 +697,7 @@ export class KclManager extends File {
     return this._wasmInstance
   }
   readonly systemDeps: SystemDeps
-  private _modelingSend: (eventInfo: ModelingMachineEvent) => void = () => { }
+  private _modelingSend: (eventInfo: ModelingMachineEvent) => void = () => {}
   private _modelingState: StateFrom<typeof modelingMachine> | null = null
 
   // CORE STATE
@@ -968,10 +965,10 @@ export class KclManager extends File {
     If this value isn't `null`, don't watch for file system writes it was probably us!
    */
   public writingPromise = signal<Promise<unknown> | null>(null)
-  sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => { }
+  sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
   /** Values merged in from former EditorManager and CodeManager classes */
   private _convertToVariableEnabled: boolean = false
-  private _convertToVariableCallback: () => void = () => { }
+  private _convertToVariableCallback: () => void = () => {}
 
   // CONFIGURATION
 
@@ -1393,8 +1390,8 @@ export class KclManager extends File {
             this.lastCommittedAdditionalSpec =
               directEditCheckpointId != null
                 ? {
-                  sketchCheckpointId: directEditCheckpointId,
-                }
+                    sketchCheckpointId: directEditCheckpointId,
+                  }
                 : undefined
             this.lastCommittedSketchCheckpointId = directEditCheckpointId
 
@@ -1454,8 +1451,13 @@ export class KclManager extends File {
 
     const shouldWriteToFile = hasWriteToFileEffect || notIgnoredUpdate
     if (shouldWriteToFile) {
-      console.log('should write to file', shouldWriteToFile, hasWriteToFileEffect, notIgnoredUpdate, this.path)
-
+      console.log(
+        'should write to file',
+        shouldWriteToFile,
+        hasWriteToFileEffect,
+        notIgnoredUpdate,
+        this.path
+      )
     }
 
     if (shouldWriteToFile) {
@@ -1583,9 +1585,9 @@ export class KclManager extends File {
           const replayAdditionalSpec =
             isHistoryReplay && checkpointId != null
               ? {
-                annotations: effect.value.redoAdditionalSpec?.annotations,
-                sketchCheckpointId: checkpointId,
-              }
+                  annotations: effect.value.redoAdditionalSpec?.annotations,
+                  sketchCheckpointId: checkpointId,
+                }
               : effect.value.redoAdditionalSpec
           const docAlreadyMatchesReplay =
             vu.state.doc.toString() === effect.value.redoCode
@@ -1711,7 +1713,6 @@ export class KclManager extends File {
     providedEditor?: KclManager,
     providedCode?: string
   ) {
-
     let theCode = providedCode
     console.log(file)
     if (!theCode) {
@@ -3188,7 +3189,7 @@ export class KclManager extends File {
         updateOutsideEditorEvent,
         Transaction.addToHistory.of(
           resolvedOptions.shouldAddToHistory &&
-          !resolvedOptions.shouldClearHistory
+            !resolvedOptions.shouldClearHistory
         ),
         ...(additionalSpec?.annotations || []),
       ],
