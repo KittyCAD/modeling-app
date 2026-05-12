@@ -779,6 +779,9 @@ pub struct ExecutorSettings {
     /// skipping these commands can make execution slightly faster.
     #[serde(default, skip_serializing_if = "is_false")]
     pub skip_artifact_graph: bool,
+    /// If Some(N), sends a heartbeat to keep the WebSocket active, every N seconds.
+    /// If None, no heartbeats will be sent.
+    pub heartbeats: Option<u64>,
 }
 
 fn is_false(b: &bool) -> bool {
@@ -796,6 +799,7 @@ impl Default for ExecutorSettings {
             current_file: None,
             fixed_size_grid: true,
             skip_artifact_graph: false,
+            heartbeats: None,
         }
     }
 }
@@ -818,6 +822,7 @@ impl From<crate::settings::types::Settings> for ExecutorSettings {
             current_file: None,
             fixed_size_grid: modeling_settings.fixed_size_grid.unwrap_or_default().0,
             skip_artifact_graph: false,
+            heartbeats: None,
         }
     }
 }
@@ -839,6 +844,7 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             current_file: None,
             fixed_size_grid: true,
             skip_artifact_graph: false,
+            heartbeats: None,
         }
     }
 }
@@ -854,6 +860,7 @@ impl From<crate::settings::types::project::ProjectModelingSettings> for Executor
             current_file: None,
             fixed_size_grid: true,
             skip_artifact_graph: false,
+            heartbeats: None,
         }
     }
 }
@@ -934,8 +941,9 @@ impl ExecutorContext {
             })
             .await?;
 
-        let engine: Arc<Box<dyn EngineManager>> =
-            Arc::new(Box::new(crate::engine::conn::EngineConnection::new(ws).await?));
+        let engine: Arc<Box<dyn EngineManager>> = Arc::new(Box::new(
+            crate::engine::conn::EngineConnection::new(ws, settings.heartbeats).await?,
+        ));
 
         Ok(Self::new_with_engine(engine, settings))
     }
@@ -1044,6 +1052,7 @@ impl ExecutorContext {
                 current_file: None,
                 fixed_size_grid: false,
                 skip_artifact_graph: false,
+                heartbeats: None,
             },
             None,
             engine_addr,
