@@ -153,6 +153,39 @@ const nodeToEditProps = {
   hidden: true,
 } as CommandArgumentConfig<PathToNode | undefined, ModelingMachineContext>
 
+type EditFlowCommandContext = {
+  argumentsToSubmit: Record<string, unknown>
+  kclManager?: { engineCommandManager?: unknown }
+  selectedCommand?: {
+    machineActor?: {
+      getSnapshot?: () => {
+        context?: { engineCommandManager?: unknown }
+      }
+    }
+  }
+}
+
+function commandContextUsesOpenCascade(context: EditFlowCommandContext) {
+  const engineCommandManager =
+    context.kclManager?.engineCommandManager ||
+    context.selectedCommand?.machineActor?.getSnapshot?.().context
+      ?.engineCommandManager
+  const engineState = engineCommandManager as
+    | { isOpenCascade?: boolean; currentEngine?: string }
+    | undefined
+  return (
+    engineState?.isOpenCascade === true ||
+    engineState?.currentEngine === 'open_cascade'
+  )
+}
+
+function hideEditFlowArgWithoutRollback(context: EditFlowCommandContext) {
+  return (
+    Boolean(context.argumentsToSubmit.nodeToEdit) &&
+    !commandContextUsesOpenCascade(context)
+  )
+}
+
 // For all transforms and boolean commands
 const objectsTypesAndFilters: {
   selectionTypes: Artifact['type'][]
@@ -896,7 +929,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       length: {
         inputType: 'kcl',
@@ -1013,7 +1046,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['solid2d', 'segment', 'pathRegion', 'engineRegion'],
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       path: {
         inputType: 'selection',
@@ -1021,7 +1054,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         clearSelectionFirst: true,
         required: true,
         multiple: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       sectional: {
         inputType: 'boolean',
@@ -1100,7 +1133,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['solid2d', 'segment', 'pathRegion', 'engineRegion'],
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       vDegree: {
         inputType: 'kcl',
@@ -1189,7 +1222,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['solid2d', 'segment', 'pathRegion', 'engineRegion'],
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       axisOrEdge: {
         inputType: 'options',
@@ -1199,7 +1232,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'Sketch Axis', isCurrent: true, value: 'Axis' },
           { name: 'Edge', isCurrent: false, value: 'Edge' },
         ],
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       axis: {
         required: (context) =>
@@ -1211,7 +1244,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'Y Axis', isCurrent: false, value: 'Y' },
         ],
         hidden: (context) =>
-          Boolean(context.argumentsToSubmit.nodeToEdit) ||
+          hideEditFlowArgWithoutRollback(context) ||
           !['Axis'].includes(context.argumentsToSubmit.axisOrEdge as string),
       },
       edge: {
@@ -1221,7 +1254,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
         multiple: false,
         hidden: (context) =>
-          Boolean(context.argumentsToSubmit.nodeToEdit) ||
+          hideEditFlowArgWithoutRollback(context) ||
           !['Edge'].includes(context.argumentsToSubmit.axisOrEdge as string),
       },
       angle: {
@@ -1301,7 +1334,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall', 'primitiveFace', 'enginePrimitiveFace'],
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       thickness: {
         inputType: 'kcl',
@@ -1360,7 +1393,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall', 'edgeCut', 'enginePrimitiveFace'],
         multiple: false,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       cutAt: {
         inputType: 'vector2d',
@@ -1517,7 +1550,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       tools: {
         ...objectsTypesAndFilters,
@@ -1525,7 +1558,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         clearSelectionFirst: true,
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
     },
   },
@@ -1575,7 +1608,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true,
         required: true,
         skip: false,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
     },
   },
@@ -1625,7 +1658,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true,
         required: true,
         skip: false,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
     },
   },
@@ -1678,7 +1711,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       tools: {
         ...objectsTypesAndFilters,
@@ -1686,7 +1719,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         clearSelectionFirst: true,
         multiple: true,
         required: false,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       merge: {
         inputType: 'boolean',
@@ -1755,7 +1788,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: false,
         required: true,
         skip: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       offset: {
         inputType: 'kcl',
@@ -1804,7 +1837,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'Edge', isCurrent: false, value: 'Edge' },
           { name: 'Cylinder', isCurrent: false, value: 'Cylinder' },
         ],
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       axis: {
         inputType: 'options',
@@ -1825,7 +1858,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: (context) =>
           ['Edge'].includes(context.argumentsToSubmit.mode as string),
         hidden: (context) =>
-          Boolean(context.argumentsToSubmit.nodeToEdit) ||
+          hideEditFlowArgWithoutRollback(context) ||
           !['Edge'].includes(context.argumentsToSubmit.mode as string),
       },
       cylinder: {
@@ -1835,7 +1868,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: (context) =>
           ['Cylinder'].includes(context.argumentsToSubmit.mode as string),
         hidden: (context) =>
-          Boolean(context.argumentsToSubmit.nodeToEdit) ||
+          hideEditFlowArgWithoutRollback(context) ||
           !['Cylinder'].includes(context.argumentsToSubmit.mode as string),
       },
       revolutions: {
@@ -2159,7 +2192,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true,
         required: true,
         skip: false,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       radius: {
         inputType: 'kcl',
@@ -2235,7 +2268,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true,
         required: true,
         skip: false,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       length: {
         inputType: 'kcl',
@@ -2383,7 +2416,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionFilter: ['object'],
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       color: {
         inputType: 'color',
@@ -2451,7 +2484,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       x: {
         inputType: 'kcl',
@@ -2522,7 +2555,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       roll: {
         inputType: 'kcl',
@@ -2593,7 +2626,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       x: {
         inputType: 'kcl',
@@ -2657,7 +2690,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: false, // only one object can be cloned at this time
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       variableName: {
         inputType: 'string',
@@ -2740,7 +2773,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       instances: {
         inputType: 'kcl',
@@ -2834,7 +2867,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       instances: {
         inputType: 'kcl',
@@ -2900,7 +2933,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall', 'edgeCut', 'enginePrimitiveFace'],
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       tolerance: {
         inputType: 'kcl',
@@ -2982,7 +3015,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall', 'edgeCut', 'enginePrimitiveFace'],
         multiple: false,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       name: {
         inputType: 'string',
@@ -3062,7 +3095,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['segment', 'sweepEdge', 'enginePrimitiveEdge'],
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       datums: {
         inputType: 'string',
@@ -3156,7 +3189,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       datums: {
         inputType: 'string',
@@ -3250,7 +3283,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       datums: {
         inputType: 'string',
@@ -3343,7 +3376,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        hidden: hideEditFlowArgWithoutRollback,
       },
       annotation: {
         inputType: 'text',
