@@ -578,6 +578,22 @@ const CustomIconMap = Object.freeze({
     </svg>
   ),
   coincident: createConstraintIcon('Coincident'),
+  componentDefinition: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M12.8995 14.2426L10.0711 17.0711L7.24264 14.2426L10.0711 11.4142L12.8995 14.2426ZM17.1421 10L14.3137 12.8284L11.4853 10L14.3137 7.17157L17.1421 10ZM8.65685 10L5.82843 12.8284L3 10L5.82843 7.17157L8.65685 10ZM12.8995 5.75736L10.0711 8.58579L7.24264 5.75736L10.0711 2.92893L12.8995 5.75736Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  componentInstance: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M10.0713 2.92871L17.1426 10L10.0713 17.0713L3 10L10.0713 2.92871ZM4.41406 10L10.0713 15.6572L15.7275 10L10.0713 4.34277L4.41406 10Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   concentric: (
     <svg
       viewBox="0 0 20 20"
