@@ -414,6 +414,7 @@ export function ModelingDialog() {
       }
       const wasmInstance = await wasmPromise
       const nextValues: Record<string, unknown> = {}
+      let hasSeededInitialSelection = false
 
       for (const [argName, arg] of Object.entries(selectedCommand.args)) {
         const contextWithDraft: CommandBarContext = {
@@ -423,11 +424,14 @@ export function ModelingDialog() {
             ...nextValues,
           },
         }
+        const { isHidden, isRequired } = evaluateVisibility(
+          arg,
+          contextWithDraft
+        )
         const existingValue = resolveContextValue(
           commandBarState.context.argumentsToSubmit[argName],
           contextWithDraft
         )
-        const { isRequired } = evaluateVisibility(arg, contextWithDraft)
         const defaultValue =
           existingValue === undefined &&
           shouldResolveDefaultValue(arg, isRequired)
@@ -440,7 +444,16 @@ export function ModelingDialog() {
             arg.inputType === 'selectionMixed') &&
           isSelectionValueEmpty(resolvedValue)
         ) {
-          resolvedValue = undefined
+          if (
+            !hasSeededInitialSelection &&
+            !isHidden &&
+            !isSelectionValueEmpty(selectionRanges)
+          ) {
+            resolvedValue = structuredClone(selectionRanges)
+            hasSeededInitialSelection = true
+          } else {
+            resolvedValue = undefined
+          }
         }
 
         if (
