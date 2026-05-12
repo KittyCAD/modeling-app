@@ -51,6 +51,11 @@ type CapturedSelectionListItem = SelectionListItem & {
   index: number
 }
 
+type PendingSelectionSync = {
+  argName: string
+  selection: Selections
+}
+
 const MODELING_DIALOG_TOOLBAR_GAP_PX = 8
 const DEFAULT_DIALOG_GROUP_ID = 'parameters'
 const EMPTY_SELECTION: Selections = {
@@ -123,6 +128,58 @@ function removeSelectionItem(
   }
 
   return isSelectionValueEmpty(nextSelection) ? undefined : nextSelection
+}
+
+function getGraphSelectionKey(
+  selection: Selections['graphSelections'][number]
+): string {
+  return [
+    selection.artifact?.id,
+    selection.engineEntityId,
+    selection.patternIndex,
+    selection.codeRef?.range?.join(':'),
+    JSON.stringify(selection.codeRef?.pathToNode),
+  ].join('|')
+}
+
+function getOtherSelectionKey(
+  selection: Selections['otherSelections'][number]
+): string {
+  if (typeof selection === 'string') {
+    return `axis:${selection}`
+  }
+  if ('type' in selection && selection.type === 'enginePrimitive') {
+    return `enginePrimitive:${selection.entityId}`
+  }
+  if ('type' in selection && selection.type === 'engineRegion') {
+    return `engineRegion:${selection.id}`
+  }
+  if ('id' in selection) {
+    return `other:${selection.id}`
+  }
+  return JSON.stringify(selection)
+}
+
+function areSelectionsEquivalent(a: Selections, b: Selections): boolean {
+  if (
+    a.graphSelections.length !== b.graphSelections.length ||
+    a.otherSelections.length !== b.otherSelections.length
+  ) {
+    return false
+  }
+
+  return (
+    a.graphSelections.every(
+      (selection, index) =>
+        getGraphSelectionKey(selection) ===
+        getGraphSelectionKey(b.graphSelections[index])
+    ) &&
+    a.otherSelections.every(
+      (selection, index) =>
+        getOtherSelectionKey(selection) ===
+        getOtherSelectionKey(b.otherSelections[index])
+    )
+  )
 }
 
 function hasMeaningfulDialogValue(value: unknown): boolean {
@@ -313,7 +370,7 @@ export function ModelingDialog() {
   const [activeSelectionArgName, setActiveSelectionArgName] = useState<
     string | null
   >(null)
-  const pendingSelectionSyncArgNameRef = useRef<string | null>(null)
+  const pendingSelectionSyncRef = useRef<PendingSelectionSync | null>(null)
   const [didAutoEnableSelection, setDidAutoEnableSelection] = useState(false)
   const dialogPositioningRef = useRef<HTMLDivElement>(null)
   const [dialogTopOffset, setDialogTopOffset] = useState(() =>
@@ -445,8 +502,16 @@ export function ModelingDialog() {
   }, [selectedCommand])
 
   useEffect(() => {
+    const pendingSelectionSync = pendingSelectionSyncRef.current
+    if (
+      pendingSelectionSync &&
+      !areSelectionsEquivalent(selectionRanges, pendingSelectionSync.selection)
+    ) {
+      return
+    }
+
     const syncSelectionArgName =
-      pendingSelectionSyncArgNameRef.current ?? activeSelectionArgName
+      pendingSelectionSync?.argName ?? activeSelectionArgName
 
     if (!syncSelectionArgName || !selectedCommand?.args) return
     const arg = selectedCommand.args[syncSelectionArgName]
@@ -460,7 +525,7 @@ export function ModelingDialog() {
     const nextSelection = isSelectionValueEmpty(selectionRanges)
       ? undefined
       : structuredClone(selectionRanges)
-    pendingSelectionSyncArgNameRef.current = null
+    pendingSelectionSyncRef.current = null
     setDraftValues((prev) => ({
       ...prev,
       [syncSelectionArgName]: nextSelection,
@@ -521,17 +586,22 @@ export function ModelingDialog() {
         selectionIndex
       )
 
+      const selectionForScene = nextSelection ?? EMPTY_SELECTION
+
       setDraftValues((prev) => ({
         ...prev,
         [argName]: nextSelection,
       }))
-      pendingSelectionSyncArgNameRef.current = argName
+      pendingSelectionSyncRef.current = {
+        argName,
+        selection: selectionForScene,
+      }
       setActiveSelectionArgName(argName)
       modelingSend({
         type: 'Set selection',
         data: {
           selectionType: 'completeSelection',
-          selection: nextSelection ?? EMPTY_SELECTION,
+          selection: selectionForScene,
         },
       })
     },
@@ -544,7 +614,10 @@ export function ModelingDialog() {
         ...prev,
         [argName]: undefined,
       }))
-      pendingSelectionSyncArgNameRef.current = argName
+      pendingSelectionSyncRef.current = {
+        argName,
+        selection: EMPTY_SELECTION,
+      }
       setActiveSelectionArgName(argName)
       modelingSend({
         type: 'Set selection',
