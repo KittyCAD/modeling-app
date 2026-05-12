@@ -35,11 +35,9 @@ import {
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
-import { errorMonitor } from 'node:events'
 
 export function SystemIOMachineLogicListener() {
   const { auth, billing, settings, systemIOActor, project } = useApp()
-  window.dog = systemIOActor
 
   const { kclManager } = useSingletons()
   // We gotta stop with this pattern. It doesn't scale. "Eager hook creation"
@@ -51,7 +49,6 @@ export function SystemIOMachineLogicListener() {
 
   const navigate = useNavigate()
   const settingsValues = settings.useSettings()
-  window.root = settingsValues.app.projectDirectory.current
   const token = auth.useToken()
   const { onFileOpen, onFileClose } = useLspContext()
   const { pathname } = useLocation()
