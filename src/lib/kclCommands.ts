@@ -952,7 +952,7 @@ function selectedTopLevelBodyItems(kclManager: KclManager): BodyItem[] {
   )
 }
 
-function createComponentFromSelection(
+export function createComponentFromSelection(
   kclManager: KclManager,
   componentName: string
 ): string | Error {
@@ -970,15 +970,7 @@ function createComponentFromSelection(
   )
   const minIndex = Math.min(...bodyIndexes)
   const maxIndex = Math.max(...bodyIndexes)
-  if (maxIndex - minIndex + 1 !== selectedItems.length) {
-    return new Error(
-      'Create Component currently requires a contiguous selection.'
-    )
-  }
-
-  const orderedItems = [...selectedItems].sort(
-    (left, right) => left.start - right.start
-  )
+  const orderedItems = kclManager.ast.body.slice(minIndex, maxIndex + 1)
   const lastItem = orderedItems[orderedItems.length - 1]
   if (lastItem.type !== 'VariableDeclaration') {
     return new Error(

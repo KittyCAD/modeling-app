@@ -3,6 +3,7 @@ import type { Program } from '@rust/kcl-lib/bindings/Program'
 import {
   addParameterToComponentSource,
   componentKclValueOptionsForAst,
+  createComponentFromSelection,
   deleteParameterFromComponentSource,
   kclCommands,
   renameParameterInComponentSource,
@@ -142,6 +143,48 @@ function nameRef(code: string, source: string, name: string, fromIndex = 0) {
   }
 }
 
+function topLevelVariable(code: string, name: string) {
+  const start = code.indexOf(`${name} =`)
+  if (start === -1) {
+    throw new Error(`Could not find ${name}`)
+  }
+  const lineEnd = code.indexOf('\n', start)
+  const end = lineEnd === -1 ? code.length : lineEnd
+
+  return {
+    type: 'VariableDeclaration',
+    start,
+    end,
+    declaration: {
+      type: 'VariableDeclarator',
+      start,
+      end,
+      id: {
+        type: 'Identifier',
+        name,
+        start,
+        end: start + name.length,
+      },
+    },
+    kind: 'const',
+  }
+}
+
+function topLevelExpression(code: string, source: string) {
+  const start = code.indexOf(source)
+  if (start === -1) {
+    throw new Error(`Could not find ${source}`)
+  }
+  const lineEnd = code.indexOf('\n', start)
+  const end = lineEnd === -1 ? code.length : lineEnd
+
+  return {
+    type: 'ExpressionStatement',
+    start,
+    end,
+  }
+}
+
 function componentAstForParameterEdit(code: string): Node<Program> {
   const componentName = 'mySurfaceLine'
   const componentStart = code.indexOf('component')
@@ -229,6 +272,44 @@ function componentAstForParameterEdit(code: string): Node<Program> {
     ],
   } as unknown as Node<Program>
 }
+
+describe('component create codemod', () => {
+  it('wraps intervening top-level statements between discontinuous selections', () => {
+    const code = `sketch001 = startSketchOn(XY)
+hide(sketch001)
+extrude001 = extrude(sketch001, length = 5)
+`
+    const sketch = topLevelVariable(code, 'sketch001')
+    const hide = topLevelExpression(code, 'hide(sketch001)')
+    const extrude = topLevelVariable(code, 'extrude001')
+    const newCode = createComponentFromSelection(
+      {
+        ast: {
+          type: 'Program',
+          start: 0,
+          end: code.length,
+          body: [sketch, hide, extrude],
+        },
+        code,
+        selectionRanges: {
+          graphSelections: [
+            { codeRef: { range: [sketch.start, sketch.end, 0] } },
+            { codeRef: { range: [extrude.start, extrude.end, 0] } },
+          ],
+        },
+      } as never,
+      'myComponent'
+    )
+
+    expect(newCode).not.toBeInstanceOf(Error)
+    expect(newCode).toContain(`myComponent = component() {
+  sketch001 = startSketchOn(XY)
+  hide(sketch001)
+  extrude001 = extrude(sketch001, length = 5)
+  return extrude001
+}`)
+  })
+})
 
 describe('component add parameter codemod', () => {
   it('lists values inside a component definition without listing signature defaults', () => {
