@@ -47,10 +47,10 @@ description: Variables in memory after executing mbd_name_simple.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 94,
-            "end": 99,
+            "commentStart": 64,
+            "end": 69,
             "moduleId": 0,
-            "start": 94,
+            "start": 64,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -61,10 +61,10 @@ description: Variables in memory after executing mbd_name_simple.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 165,
-            "end": 170,
+            "commentStart": 135,
+            "end": 140,
             "moduleId": 0,
-            "start": 165,
+            "start": 135,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -75,10 +75,10 @@ description: Variables in memory after executing mbd_name_simple.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 237,
-            "end": 242,
+            "commentStart": 207,
+            "end": 212,
             "moduleId": 0,
-            "start": 237,
+            "start": 207,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -89,10 +89,10 @@ description: Variables in memory after executing mbd_name_simple.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 309,
-            "end": 314,
+            "commentStart": 279,
+            "end": 284,
             "moduleId": 0,
-            "start": 309,
+            "start": 279,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -103,10 +103,10 @@ description: Variables in memory after executing mbd_name_simple.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 711,
-            "end": 718,
+            "commentStart": 681,
+            "end": 688,
             "moduleId": 0,
-            "start": 711,
+            "start": 681,
             "type": "TagDeclarator",
             "value": "bottom"
           },
@@ -117,10 +117,10 @@ description: Variables in memory after executing mbd_name_simple.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 731,
-            "end": 735,
+            "commentStart": 701,
+            "end": 705,
             "moduleId": 0,
-            "start": 731,
+            "start": 701,
             "type": "TagDeclarator",
             "value": "top"
           },
@@ -142,10 +142,10 @@ description: Variables in memory after executing mbd_name_simple.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 94,
-              "end": 99,
+              "commentStart": 64,
+              "end": 69,
               "moduleId": 0,
-              "start": 94,
+              "start": 64,
               "type": "TagDeclarator",
               "value": "edge1"
             },
@@ -166,10 +166,10 @@ description: Variables in memory after executing mbd_name_simple.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 165,
-              "end": 170,
+              "commentStart": 135,
+              "end": 140,
               "moduleId": 0,
-              "start": 165,
+              "start": 135,
               "type": "TagDeclarator",
               "value": "edge2"
             },
@@ -190,10 +190,10 @@ description: Variables in memory after executing mbd_name_simple.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 237,
-              "end": 242,
+              "commentStart": 207,
+              "end": 212,
               "moduleId": 0,
-              "start": 237,
+              "start": 207,
               "type": "TagDeclarator",
               "value": "edge3"
             },
@@ -214,10 +214,10 @@ description: Variables in memory after executing mbd_name_simple.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 309,
-              "end": 314,
+              "commentStart": 279,
+              "end": 284,
               "moduleId": 0,
-              "start": 309,
+              "start": 279,
               "type": "TagDeclarator",
               "value": "edge4"
             },
@@ -815,10 +815,10 @@ description: Variables in memory after executing mbd_name_simple.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 94,
-                    "end": 99,
+                    "commentStart": 64,
+                    "end": 69,
                     "moduleId": 0,
-                    "start": 94,
+                    "start": 64,
                     "type": "TagDeclarator",
                     "value": "edge1"
                   },
@@ -839,10 +839,10 @@ description: Variables in memory after executing mbd_name_simple.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 165,
-                    "end": 170,
+                    "commentStart": 135,
+                    "end": 140,
                     "moduleId": 0,
-                    "start": 165,
+                    "start": 135,
                     "type": "TagDeclarator",
                     "value": "edge2"
                   },
@@ -863,10 +863,10 @@ description: Variables in memory after executing mbd_name_simple.kcl
                     10.0
                   ],
                   "tag": {
-                    "commentStart": 237,
-                    "end": 242,
+                    "commentStart": 207,
+                    "end": 212,
                     "moduleId": 0,
-                    "start": 237,
+                    "start": 207,
                     "type": "TagDeclarator",
                     "value": "edge3"
                   },
@@ -887,10 +887,10 @@ description: Variables in memory after executing mbd_name_simple.kcl
                     10.0
                   ],
                   "tag": {
-                    "commentStart": 309,
-                    "end": 314,
+                    "commentStart": 279,
+                    "end": 284,
                     "moduleId": 0,
-                    "start": 309,
+                    "start": 279,
                     "type": "TagDeclarator",
                     "value": "edge4"
                   },
