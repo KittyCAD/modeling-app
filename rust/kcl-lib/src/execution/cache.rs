@@ -113,24 +113,8 @@ impl GlobalState {
     }
 
     pub async fn into_exec_outcome(self, ctx: &ExecutorContext) -> ExecOutcome {
-        // Merge entity_names from all imported modules first (in module load
-        // order), then from the root module last so root names win.
-        let mut entity_names: IndexMap<uuid::Uuid, crate::execution::NamedEntity> = IndexMap::new();
-        for module in self.exec_state.module_infos.values() {
-            match &module.repr {
-                crate::modules::ModuleRepr::Kcl(_, Some(outcome)) => {
-                    entity_names.extend(outcome.artifacts.entity_names.iter().map(|(k, v)| (*k, v.clone())));
-                }
-                crate::modules::ModuleRepr::Foreign(_, Some((_, module_artifacts))) => {
-                    entity_names.extend(module_artifacts.entity_names.iter().map(|(k, v)| (*k, v.clone())));
-                }
-                crate::modules::ModuleRepr::Root
-                | crate::modules::ModuleRepr::Kcl(_, None)
-                | crate::modules::ModuleRepr::Foreign(_, None)
-                | crate::modules::ModuleRepr::Dummy => {}
-            }
-        }
-        entity_names.extend(self.exec_state.root_module_artifacts.entity_names.clone());
+        let entity_names =
+            exec_state::merge_entity_names(&self.exec_state.module_infos, &self.exec_state.root_module_artifacts);
 
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.

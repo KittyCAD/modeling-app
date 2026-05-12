@@ -1986,8 +1986,18 @@ impl ExecutorContext {
     /// Export the current scene as a CAD file.
     pub async fn export(
         &self,
+        exec_state: &mut ExecState,
         format: kittycad_modeling_cmds::format::OutputFormat3d,
     ) -> Result<Vec<kittycad_modeling_cmds::websocket::RawFile>, KclError> {
+        // Build the merged map of user-assigned face and edge names so it's
+        // ready to feed into the upcoming `ModelingCmd::Export3d` parameters.
+        // Until those parameters land, the result is computed but unused.
+        let entity_names = exec_state
+            .merged_entity_names()
+            .into_iter()
+            .map(|(id, named_entity)| (id, named_entity.name))
+            .collect();
+
         let resp = self
             .engine
             .send_modeling_cmd(
@@ -1998,6 +2008,7 @@ impl ExecutorContext {
                     kittycad_modeling_cmds::Export::builder()
                         .entity_ids(vec![])
                         .format(format)
+                        .entity_names(entity_names)
                         .build(),
                 ),
             )
@@ -2016,24 +2027,28 @@ impl ExecutorContext {
     /// Export the current scene as a STEP file.
     pub async fn export_step(
         &self,
+        exec_state: &mut ExecState,
         deterministic_time: bool,
     ) -> Result<Vec<kittycad_modeling_cmds::websocket::RawFile>, KclError> {
         let files = self
-            .export(kittycad_modeling_cmds::format::OutputFormat3d::Step(
-                kittycad_modeling_cmds::format::step::export::Options::builder()
-                    .coords(*kittycad_modeling_cmds::coord::KITTYCAD)
-                    .maybe_created(if deterministic_time {
-                        Some("2021-01-01T00:00:00Z".parse().map_err(|e| {
-                            KclError::new_internal(crate::errors::KclErrorDetails::new(
-                                format!("Failed to parse date: {e}"),
-                                vec![SourceRange::default()],
-                            ))
-                        })?)
-                    } else {
-                        None
-                    })
-                    .build(),
-            ))
+            .export(
+                exec_state,
+                kittycad_modeling_cmds::format::OutputFormat3d::Step(
+                    kittycad_modeling_cmds::format::step::export::Options::builder()
+                        .coords(*kittycad_modeling_cmds::coord::KITTYCAD)
+                        .maybe_created(if deterministic_time {
+                            Some("2021-01-01T00:00:00Z".parse().map_err(|e| {
+                                KclError::new_internal(crate::errors::KclErrorDetails::new(
+                                    format!("Failed to parse date: {e}"),
+                                    vec![SourceRange::default()],
+                                ))
+                            })?)
+                        } else {
+                            None
+                        })
+                        .build(),
+                ),
+            )
             .await?;
 
         Ok(files)

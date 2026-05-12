@@ -404,27 +404,19 @@ impl ExecState {
         &self.global.issues
     }
 
+    /// Build the merged map of user-assigned face and edge names by walking
+    /// imported modules in load order, then layering the root module on top.
+    /// When the same UUID is named in more than one place, the last writer
+    /// wins (and the root module always wins last).
+    pub fn merged_entity_names(&self) -> IndexMap<Uuid, NamedEntity> {
+        merge_entity_names(&self.global.module_infos, &self.global.root_module_artifacts)
+    }
+
     /// Convert to execution outcome when running in WebAssembly.  We want to
     /// reduce the amount of data that crosses the WASM boundary as much as
     /// possible.
     pub async fn into_exec_outcome(self, main_ref: EnvironmentRef, ctx: &ExecutorContext) -> ExecOutcome {
-        // Merge entity_names from all imported modules first (in module load
-        // order), then from the root module last so root names win.
-        // `IndexMap::extend` updates values in-place when keys collide, so this
-        // gives last-writer-wins semantics.
-        let mut entity_names: IndexMap<Uuid, crate::execution::NamedEntity> = IndexMap::new();
-        for module in self.global.module_infos.values() {
-            match &module.repr {
-                ModuleRepr::Kcl(_, Some(outcome)) => {
-                    entity_names.extend(outcome.artifacts.entity_names.iter().map(|(k, v)| (*k, v.clone())));
-                }
-                ModuleRepr::Foreign(_, Some((_, module_artifacts))) => {
-                    entity_names.extend(module_artifacts.entity_names.iter().map(|(k, v)| (*k, v.clone())));
-                }
-                ModuleRepr::Root | ModuleRepr::Kcl(_, None) | ModuleRepr::Foreign(_, None) | ModuleRepr::Dummy => {}
-            }
-        }
-        entity_names.extend(self.global.root_module_artifacts.entity_names.clone());
+        let entity_names = self.merged_entity_names();
 
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
@@ -976,6 +968,30 @@ impl GlobalState {
     pub(super) fn get_source(&self, id: ModuleId) -> Option<&ModuleSource> {
         self.id_to_source.get(&id)
     }
+}
+
+/// Build the merged map of user-assigned face and edge names by walking
+/// imported modules in load order, then layering the root module on top.
+/// When the same UUID is named in more than one place, the last writer
+/// wins (and the root module always wins last).
+pub(super) fn merge_entity_names(
+    module_infos: &ModuleInfoMap,
+    root_artifacts: &ModuleArtifactState,
+) -> IndexMap<Uuid, NamedEntity> {
+    let mut entity_names: IndexMap<Uuid, NamedEntity> = IndexMap::new();
+    for module in module_infos.values() {
+        match &module.repr {
+            ModuleRepr::Kcl(_, Some(outcome)) => {
+                entity_names.extend(outcome.artifacts.entity_names.iter().map(|(k, v)| (*k, v.clone())));
+            }
+            ModuleRepr::Foreign(_, Some((_, module_artifacts))) => {
+                entity_names.extend(module_artifacts.entity_names.iter().map(|(k, v)| (*k, v.clone())));
+            }
+            ModuleRepr::Root | ModuleRepr::Kcl(_, None) | ModuleRepr::Foreign(_, None) | ModuleRepr::Dummy => {}
+        }
+    }
+    entity_names.extend(root_artifacts.entity_names.clone());
+    entity_names
 }
 
 impl ArtifactState {
