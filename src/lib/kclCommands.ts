@@ -2,7 +2,9 @@ import type { UnitLength } from '@kittycad/lib'
 import toast from 'react-hot-toast'
 
 import type { BodyItem } from '@rust/kcl-lib/bindings/BodyItem'
+import type { Expr } from '@rust/kcl-lib/bindings/Expr'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Program } from '@rust/kcl-lib/bindings/Program'
 import type { KclManager } from '@src/lang/KclManager'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
@@ -80,11 +82,38 @@ type ComponentDefinition = {
   params: ComponentParam[]
 }
 
+export type ComponentKclValueOption = {
+  start: number
+  end: number
+  valueText: string
+}
+
+const PARAMETERIZABLE_COMPONENT_EXPR_TYPES = new Set<Expr['type']>([
+  'Literal',
+  'Name',
+  'TagDeclarator',
+  'BinaryExpression',
+  'PipeSubstitution',
+  'ArrayExpression',
+  'ArrayRangeExpression',
+  'ObjectExpression',
+  'MemberExpression',
+  'UnaryExpression',
+  'IfExpression',
+  'LabelledExpression',
+  'AscribedExpression',
+  'SketchVar',
+])
+
 function variableNameExists(kclManager: KclManager, name: string): boolean {
   return kclManager.ast.body.some(
     (item) =>
       item.type === 'VariableDeclaration' && item.declaration.id.name === name
   )
+}
+
+function isValidKclIdentifier(name: string) {
+  return /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)
 }
 
 function nextAvailableVariableName(kclManager: KclManager, baseName: string) {
@@ -118,6 +147,254 @@ function componentDefinitions(kclManager: KclManager): ComponentDefinition[] {
       params,
     }
   })
+}
+
+function findComponentDefinition(
+  ast: Node<Program>,
+  componentName: string
+): BodyItem | undefined {
+  return ast.body.find(
+    (item) =>
+      item.type === 'VariableDeclaration' &&
+      item.declaration.id.name === componentName &&
+      item.declaration.init.type === 'ComponentBlock'
+  )
+}
+
+function isExpressionNode(node: unknown): node is Expr {
+  if (!node || typeof node !== 'object') return false
+  const maybeNode = node as { type?: unknown; start?: unknown; end?: unknown }
+  return (
+    typeof maybeNode.type === 'string' &&
+    PARAMETERIZABLE_COMPONENT_EXPR_TYPES.has(maybeNode.type as Expr['type']) &&
+    typeof maybeNode.start === 'number' &&
+    typeof maybeNode.end === 'number'
+  )
+}
+
+function componentLineContext(
+  code: string,
+  option: ComponentKclValueOption
+): string {
+  const lineStart = code.lastIndexOf('\n', option.start - 1) + 1
+  const lineEndIndex = code.indexOf('\n', option.end)
+  const lineEnd = lineEndIndex === -1 ? code.length : lineEndIndex
+  const before = code.slice(lineStart, option.start).trimStart()
+  const after = code.slice(option.end, lineEnd).trimEnd()
+  return `${before}[[${option.valueText}]]${after}`
+}
+
+function indentationAt(code: string, index: number) {
+  const lineStart = code.lastIndexOf('\n', index - 1) + 1
+  const match = code.slice(lineStart, index).match(/^\s*/)
+  return match?.[0] ?? ''
+}
+
+function previousNonWhitespaceIndex(code: string, index: number) {
+  for (let i = index - 1; i >= 0; i--) {
+    if (!/\s/.test(code[i])) return i
+  }
+  return -1
+}
+
+export function componentKclValueOptionsForAst(
+  ast: Node<Program>,
+  code: string,
+  componentName: string
+): ComponentKclValueOption[] {
+  const definition = findComponentDefinition(ast, componentName)
+  if (
+    !definition ||
+    definition.type !== 'VariableDeclaration' ||
+    definition.declaration.init.type !== 'ComponentBlock'
+  ) {
+    return []
+  }
+
+  const component = definition.declaration.init
+  const seenRanges = new Set<string>()
+  const options: ComponentKclValueOption[] = []
+
+  function visit(value: unknown, parentKey?: string) {
+    if (!value || typeof value !== 'object') return
+    if (Array.isArray(value)) {
+      value.forEach((child) => visit(child, parentKey))
+      return
+    }
+
+    if (
+      parentKey !== 'callee' &&
+      isExpressionNode(value) &&
+      value.start >= component.body.start &&
+      value.end <= component.body.end
+    ) {
+      const key = `${value.start}:${value.end}`
+      const valueText = code.slice(value.start, value.end)
+      if (valueText.trim().length > 0 && !seenRanges.has(key)) {
+        seenRanges.add(key)
+        options.push({
+          start: value.start,
+          end: value.end,
+          valueText,
+        })
+      }
+    }
+
+    for (const [key, child] of Object.entries(value)) {
+      if (
+        key === 'moduleId' ||
+        key === 'outerAttrs' ||
+        key === 'preComments' ||
+        key === 'nonCodeMeta' ||
+        key === 'digest'
+      ) {
+        continue
+      }
+      visit(child, key)
+    }
+  }
+
+  visit(component.body)
+
+  return options.sort((left, right) => {
+    if (left.start !== right.start) return left.start - right.start
+    return right.end - left.end
+  })
+}
+
+function componentKclValueOptions(
+  kclManager: KclManager,
+  componentName: string
+): CommandArgumentOption<ComponentKclValueOption>[] {
+  return componentKclValueOptionsForAst(
+    kclManager.ast,
+    kclManager.code,
+    componentName
+  ).map((option) => ({
+    name: componentLineContext(kclManager.code, option),
+    value: option,
+  }))
+}
+
+type SourceInsertion = {
+  index: number
+  text: string
+}
+
+function addComponentParameterInsertions(
+  code: string,
+  componentStart: number,
+  bodyStart: number,
+  hasExistingParams: boolean,
+  parameterName: string,
+  parameterValue: string
+): SourceInsertion[] | Error {
+  const closeParenIndex = code.lastIndexOf(')', bodyStart)
+  if (closeParenIndex < componentStart) {
+    return new Error('Could not find the component parameter list.')
+  }
+
+  const signatureSource = code.slice(componentStart, closeParenIndex)
+  const isMultiline = signatureSource.includes('\n')
+  if (!isMultiline) {
+    const prefix = hasExistingParams ? ', ' : ''
+    return [
+      {
+        index: closeParenIndex,
+        text: `${prefix}${parameterName} = ${parameterValue}`,
+      },
+    ]
+  }
+
+  const closeLineStart = code.lastIndexOf('\n', closeParenIndex - 1) + 1
+  const closeIndent = indentationAt(code, closeParenIndex)
+  const parameterIndent = `${closeIndent}  `
+  const previousIndex = previousNonWhitespaceIndex(code, closeParenIndex)
+  const needsComma = hasExistingParams && code[previousIndex] !== ','
+  return [
+    ...(needsComma ? [{ index: previousIndex + 1, text: ',' }] : []),
+    {
+      index: closeLineStart,
+      text: `${parameterIndent}${parameterName} = ${parameterValue},\n`,
+    },
+  ]
+}
+
+export function addParameterToComponentSource({
+  ast,
+  code,
+  componentName,
+  value,
+  parameterName,
+}: {
+  ast: Node<Program>
+  code: string
+  componentName: string
+  value: ComponentKclValueOption
+  parameterName: string
+}): string | Error {
+  const definition = findComponentDefinition(ast, componentName)
+  if (
+    !definition ||
+    definition.type !== 'VariableDeclaration' ||
+    definition.declaration.init.type !== 'ComponentBlock'
+  ) {
+    return new Error(`Could not find component ${componentName}.`)
+  }
+
+  if (!isValidKclIdentifier(parameterName)) {
+    return new Error('Parameter name must be a valid KCL identifier.')
+  }
+
+  const component = definition.declaration.init
+  if (component.arguments.some((arg) => arg.label?.name === parameterName)) {
+    return new Error(`A parameter named ${parameterName} already exists.`)
+  }
+
+  const currentOptions = componentKclValueOptionsForAst(
+    ast,
+    code,
+    componentName
+  )
+  const selectedValue =
+    currentOptions.find(
+      (option) =>
+        option.start === value.start &&
+        option.end === value.end &&
+        option.valueText === value.valueText
+    ) ?? currentOptions.find((option) => option.valueText === value.valueText)
+
+  if (!selectedValue) {
+    return new Error(`Could not find ${value.valueText} in ${componentName}.`)
+  }
+
+  const parameterInsertions = addComponentParameterInsertions(
+    code,
+    component.start,
+    component.body.start,
+    component.arguments.length > 0,
+    parameterName,
+    selectedValue.valueText
+  )
+  if (parameterInsertions instanceof Error) {
+    return parameterInsertions
+  }
+
+  let newCode =
+    code.slice(0, selectedValue.start) +
+    parameterName +
+    code.slice(selectedValue.end)
+
+  for (const insertion of [...parameterInsertions].sort(
+    (left, right) => right.index - left.index
+  )) {
+    newCode =
+      newCode.slice(0, insertion.index) +
+      insertion.text +
+      newCode.slice(insertion.index)
+  }
+
+  return newCode
 }
 
 function selectedTopLevelBodyItems(kclManager: KclManager): BodyItem[] {
@@ -580,6 +857,141 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         )
         if (!parsed) {
           return new Error('Failed to create component from selection.')
+        }
+
+        commandProps.kclManager.updateCodeEditor(newCode, {
+          shouldExecute: true,
+          shouldWriteToDisk: true,
+          shouldAddToHistory: true,
+        })
+      },
+    },
+    {
+      name: 'component.addParameter',
+      displayName: 'Add component parameter',
+      description: 'Move a value from a component body into its parameters.',
+      icon: 'make-variable',
+      groupId: 'code',
+      needsReview: false,
+      args: {
+        componentName: {
+          displayName: 'Component',
+          inputType: 'options',
+          required: true,
+          options: () =>
+            components.map((component) => ({
+              name: component.name,
+              value: component.name,
+            })),
+          validation: async ({ data }) => {
+            if (typeof data !== 'string') {
+              return 'Select a component.'
+            }
+            if (!components.some((component) => component.name === data)) {
+              return `Could not find component ${data}.`
+            }
+            return true
+          },
+        },
+        value: {
+          displayName: 'Value',
+          inputType: 'options',
+          required: true,
+          valueSummary: (value: ComponentKclValueOption) => value.valueText,
+          options: (context) => {
+            const componentName = context.argumentsToSubmit.componentName
+            if (typeof componentName !== 'string') {
+              return []
+            }
+            return componentKclValueOptions(
+              commandProps.kclManager,
+              componentName
+            )
+          },
+          validation: async ({ data }) => {
+            if (
+              !data ||
+              typeof data !== 'object' ||
+              typeof data.start !== 'number' ||
+              typeof data.end !== 'number' ||
+              typeof data.valueText !== 'string'
+            ) {
+              return 'Select a component value.'
+            }
+            return true
+          },
+        },
+        parameterName: {
+          displayName: 'Parameter name',
+          inputType: 'string',
+          required: true,
+          defaultValue: 'myParameter',
+          validation: async ({ data, context }) => {
+            if (typeof data !== 'string' || data.trim().length === 0) {
+              return 'Parameter name is required.'
+            }
+            if (!isValidKclIdentifier(data)) {
+              return 'Parameter name must be a valid KCL identifier.'
+            }
+            const componentName = context.argumentsToSubmit.componentName
+            if (typeof componentName !== 'string') {
+              return 'Select a component first.'
+            }
+            const component = components.find(
+              (component) => component.name === componentName
+            )
+            if (
+              component?.params.some((param) => param.name === data) ||
+              variableNameExists(commandProps.kclManager, data)
+            ) {
+              return 'This variable name is already in use.'
+            }
+            return true
+          },
+        },
+      },
+      onSubmit: async (data) => {
+        if (!data) {
+          return new Error(NO_INPUT_PROVIDED_MESSAGE)
+        }
+        const { componentName, value, parameterName } = data
+        if (
+          typeof componentName !== 'string' ||
+          !value ||
+          typeof value !== 'object' ||
+          typeof value.start !== 'number' ||
+          typeof value.end !== 'number' ||
+          typeof value.valueText !== 'string' ||
+          typeof parameterName !== 'string'
+        ) {
+          return new Error(NO_INPUT_PROVIDED_MESSAGE)
+        }
+
+        const freshAst = await commandProps.kclManager.safeParse(
+          commandProps.kclManager.code,
+          commandProps.kclManager.wasmInstancePromise
+        )
+        if (!freshAst) {
+          return new Error('Current code could not be parsed.')
+        }
+
+        const newCode = addParameterToComponentSource({
+          ast: freshAst,
+          code: commandProps.kclManager.code,
+          componentName,
+          value,
+          parameterName,
+        })
+        if (newCode instanceof Error) {
+          return newCode
+        }
+
+        const parsed = await commandProps.kclManager.safeParse(
+          newCode,
+          commandProps.kclManager.wasmInstancePromise
+        )
+        if (!parsed) {
+          return new Error('Failed to add component parameter.')
         }
 
         commandProps.kclManager.updateCodeEditor(newCode, {

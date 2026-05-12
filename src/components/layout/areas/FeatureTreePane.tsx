@@ -908,6 +908,32 @@ const OperationItem = ({
             ...(item.type === 'GroupBegin' &&
             item.group.type === 'ComponentInstance'
               ? [
+                  ...(item.group.isDefault
+                    ? [
+                        <ContextMenuItem
+                          onClick={() => {
+                            if (
+                              item.type !== 'GroupBegin' ||
+                              item.group.type !== 'ComponentInstance'
+                            ) {
+                              return
+                            }
+                            commandBarActor.send({
+                              type: 'Find and select command',
+                              data: {
+                                name: 'component.addParameter',
+                                groupId: 'code',
+                                argDefaultValues: {
+                                  componentName: item.group.name,
+                                },
+                              },
+                            })
+                          }}
+                        >
+                          Add parameter
+                        </ContextMenuItem>,
+                      ]
+                    : []),
                   <ContextMenuItem
                     onClick={() => {
                       if (item.type !== 'GroupBegin') {
