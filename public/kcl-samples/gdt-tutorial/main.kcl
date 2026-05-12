@@ -1,0 +1,77 @@
+// GD&T Basics in Zoo Design Studio
+// A simple sample project demonstrating how to use GD&T in Zoo Design Studio. This project keeps the geometry and annotations intentionally minimal so users can quickly understand what GD&T is, how it works in the app, and how to start applying it to their own designs. Future updates may add more examples while keeping the project beginner-friendly.
+
+@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -99.36mm, var 49.61mm], end = [var 100.64mm, var 49.61mm])
+  line2 = line(start = [var 100.64mm, var 49.61mm], end = [var 100.64mm, var -50.39mm])
+  line3 = line(start = [var 100.64mm, var -50.39mm], end = [var -99.36mm, var -50.39mm])
+  line4 = line(start = [var -99.36mm, var -50.39mm], end = [var -99.36mm, var 49.61mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  horizontalDistance([line1.start, line1.end]) == 200
+  verticalDistance([line2.end, line2.start]) == 100
+}
+hidden001 = hide(sketch001)
+region001 = region(point = [0.64mm, 2.7875mm], sketch = sketch001)
+extrude001 = extrude(
+  region001,
+  length = 100,
+  tagEnd = $capEnd001,
+  tagStart = $capStart001,
+)
+gdt::flatness(
+  faces = [region001.tags.line1],
+  tolerance = 0.001mm,
+  precision = 3,
+  framePlane = XY,
+  leaderScale = 3,
+  fontSize = 36,
+)
+gdt::datum(
+  face = region001.tags.line3,
+  name = "A",
+  framePlane = XZ,
+  leaderScale = 3,
+)
+gdt::perpendicularity(
+  faces = [capEnd001],
+  tolerance = 0.1mm,
+  datums = ["A"],
+  framePlane = XZ,
+  leaderScale = 3,
+)
+gdt::parallelism(
+  faces = [region001.tags.line2],
+  tolerance = 0.2mm,
+  datums = ["A"],
+  framePlane = XZ,
+  framePosition = [-100, 100],
+  leaderScale = 3,
+)
+gdt::distance(
+  from = getCommonEdge(faces = [
+    region001.tags.line2,
+    region001.tags.line4
+  ]),
+  to = getCommonEdge(faces = [
+    region001.tags.line4,
+    region001.tags.line3
+  ]),
+  tolerance = 0.1mm,
+  framePlane = XZ,
+  leaderScale = 3,
+)
+gdt::annotation(
+  faces = [region001.tags.line4],
+  annotation = "Break all sharp edges",
+  framePosition = [100, -100],
+  leaderScale = 3,
+)
