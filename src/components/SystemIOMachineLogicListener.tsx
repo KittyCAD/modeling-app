@@ -280,33 +280,52 @@ export function SystemIOMachineLogicListener() {
         }
       })
       if (payload) {
-        payload.files.forEach((p) => {
+        payload.files.forEach(async (p) => {
           const key = fsZds.join(
             settingsValues.app.projectDirectory.current,
             p.requestedProjectName,
             p.requestedFileName
           )
-          const editor = project?.findEditor(key)
-
-          if (editor) {
-            const code = hash[key]
-            const requestedCode = p.requestedCode
-            kclManager.history.entries.value = [
-              {
-                type: '',
-                date: new Date(),
-                absoluteFilePath: key || 'Missing filename.',
-                right: requestedCode,
-                left: code,
-                wroteToDisk: true,
-                source: 'Zookeeper',
-              },
-              ...kclManager.history.entries.value,
-            ]
-          }
+          const code = hash[key]
+            ? hash[key]
+            : await fsZds.readFile(key, { encoding: 'utf-8' })
+          const requestedCode = p.requestedCode
+          kclManager.history.push({
+            type: '',
+            date: new Date(),
+            absoluteFilePath: key || 'Missing filename.',
+            right: requestedCode,
+            left: code,
+            wroteToDisk: true,
+            source: 'Zookeeper',
+            deleted: false,
+          })
         })
 
-        payload.filesToDelete.forEach((p) => {})
+        payload.filesToDelete.forEach(async (p) => {
+          const key = fsZds.join(
+            settingsValues.app.projectDirectory.current,
+            p.requestedFileName
+          )
+          const requestedFilename = p.requestedFileName
+          const absoluteFilePath = fsZds.join(
+            settingsValues.app.projectDirectory.current,
+            requestedFilename
+          )
+          const code = hash[key]
+            ? hash[key]
+            : await fsZds.readFile(key, { encoding: 'utf-8' })
+          kclManager.history.push({
+            type: '',
+            date: new Date(),
+            absoluteFilePath: absoluteFilePath || 'Missing filename.',
+            right: '',
+            left: code,
+            wroteToDisk: true,
+            source: 'Zookeeper',
+            deleted: true,
+          })
+        })
 
         kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
 

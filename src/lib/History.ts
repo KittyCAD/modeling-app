@@ -3,6 +3,17 @@ import { FileMeta } from '@src/lib/types'
 
 type HistorySource = 'CodeEdit' | 'Zookeeper'
 
+export const historyFormatter = (history: HistorySource) => {
+  switch (history) {
+    case 'CodeEdit':
+      return 'edit'
+    case 'Zookeeper':
+      return 'Zookeeper'
+    default:
+      ;('unsupported add a history formatter')
+  }
+}
+
 export interface HistoryEntry {
   type: string
   date: Date
@@ -11,6 +22,7 @@ export interface HistoryEntry {
   left: string
   wroteToDisk: boolean
   source: HistorySource
+  deleted: boolean
 }
 
 export class History {

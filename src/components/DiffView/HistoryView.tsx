@@ -10,6 +10,7 @@ import type { IndexLoaderData } from '@src/lib/types'
 import { useLoaderData } from 'react-router-dom'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { historyFormatter } from '@src/lib/History'
 
 export const HistoryView = (props: AreaTypeComponentProps) => {
   useSignals()
@@ -58,37 +59,40 @@ export const HistoryView = (props: AreaTypeComponentProps) => {
                 const year = e.date.getFullYear()
                 return (
                   <div
-                    className={`px-2 h-5 flex flex-row items-center justify-between text-xs cursor-pointer -outline-offset-1 hover:outline hover:outline-1 hover:bg-gray-300/50 hover:bg-gray-300/50`}
+                    className={`px-2 flex flex-row flex-wrap items-center justify-between text-xs cursor-pointer -outline-offset-1 hover:outline hover:outline-1 hover:bg-gray-300/50 hover:bg-gray-300/50`}
                     role="button"
                     tabIndex="0"
                     onClick={() => {
-                      console.log('SELECTED!', e)
                       kclManager.history.lastEntrySelected.value = e
                     }}
                   >
-                    <div className="flex flex-row items-center">
+                    <div className="flex flex-row items-center w-64 truncate text-ellipsis whitespace-nowrap">
                       <CustomIcon
                         name="kcl"
                         className="inline-block w-4 text-current mr-1"
                       />
-                      <span className="pr-2 text-ellipsis whitespace-nowrap">
-                        {path}
-                      </span>
-                      <span className="text-xs text-chalkboard-80 dark:text-chalkboard-30 text-ellipsis whitespace-nowrap">
-                        {projectPath}
-                      </span>
+                      <span className="pr-2">{path}</span>
                     </div>
-                    {e.wroteToDisk && (
+                    {!e.wroteToDisk && (
+                      <CustomIcon
+                        name="bug"
+                        className="w-5 h-5 text-chalkboard-70 dark:text-chalkboard-40"
+                      />
+                    )}
+                    {e.source === 'Zookeeper' && (
                       <span className="text-ellipsis whitespace-nowrap px-2">
-                        saved to disk
+                        {historyFormatter(e.source)}
                       </span>
                     )}
+                    {e.deleted && (
+                      <CustomIcon
+                        name="trash"
+                        className="w-5 h-5 text-chalkboard-70 dark:text-chalkboard-40"
+                      />
+                    )}
                     <span className="text-ellipsis whitespace-nowrap px-2">
-                      {e.source}
-                    </span>
-                    <span className="text-ellipsis whitespace-nowrap px-2">
-                      ({month} {dayOfMonth}, {year} at{' '}
-                      {e.date.toLocaleTimeString()})
+                      {month} {dayOfMonth}, {year} at{' '}
+                      {e.date.toLocaleTimeString()}
                     </span>
                   </div>
                 )

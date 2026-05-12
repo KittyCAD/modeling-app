@@ -163,7 +163,6 @@ import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
 import toast from 'react-hot-toast'
 import { History } from '@src/lib/History'
-import { V } from 'vitest/dist/chunks/evaluatedModules.d.BxJ5omdx'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -1439,18 +1438,16 @@ export class KclManager extends File {
     const shouldWriteToFile = hasWriteToFileEffect || notIgnoredUpdate
 
     if (shouldWriteToFile) {
-      this.history.entries.value = [
-        {
-          type: '',
-          date: new Date(),
-          absoluteFilePath: this.path || 'Missing filename.',
-          right: update.state.doc.toString(),
-          left: update.startState.doc.toString(),
-          wroteToDisk: true,
-          source: 'CodeEdit',
-        },
-        ...this.history.entries.value,
-      ]
+      this.history.push({
+        type: '',
+        date: new Date(),
+        absoluteFilePath: this.path || 'Missing filename.',
+        right: update.state.doc.toString(),
+        left: update.startState.doc.toString(),
+        wroteToDisk: true,
+        source: 'CodeEdit',
+        deleted: false,
+      })
       // We don't want to block on writing to file
       void this.writeToFile(update.state.doc.toString(), undefined, {
         suppressConflictToast: isProgrammaticWrite,
