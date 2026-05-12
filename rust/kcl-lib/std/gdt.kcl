@@ -9,8 +9,6 @@
 /// This is part of model-based definition (MBD).
 ///
 /// ```kcl,no3d,legacySketch
-/// @settings(defaultLengthUnit = in)
-///
 /// width = 5
 ///
 /// startSketchOn(XY)

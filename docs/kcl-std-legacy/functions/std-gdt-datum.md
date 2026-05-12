@@ -39,8 +39,6 @@ This is part of model-based definition (MBD).
 ### Examples
 
 ```kcl
-@settings(defaultLengthUnit = in)
-
 width = 5
 
 startSketchOn(XY)
