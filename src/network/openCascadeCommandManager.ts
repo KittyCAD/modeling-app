@@ -134,6 +134,7 @@ type ArrangementRegionState = {
 type SolidState = {
   shape: any
   bodyType?: 'solid' | 'surface'
+  appearance?: OpenCascadeAppearance
   sourceRegionId?: string
   sourceIds: string[]
   sideFaceId: string
@@ -154,6 +155,7 @@ type SolidState = {
 
 type PathEdgeEntry = {
   id: string
+  sourceSegmentId?: string
   edge: any
   points: Point3[]
 }
@@ -301,10 +303,19 @@ export type OpenCascadeGdtAnnotationMeshes = {
 export type OpenCascadeVisibleSolidGlb = {
   solidId: string
   bodyType: 'solid' | 'surface'
+  appearance?: OpenCascadeAppearance
   artifactIds: string[]
   provenance?: OpenCascadeEntityProvenance
   suppressMeshEdges?: boolean
   bytes: Uint8Array
+}
+
+export type OpenCascadeAppearance = {
+  color: string
+  opacity: number
+  metalness: number
+  roughness: number
+  ambientOcclusion: number
 }
 
 export type OpenCascadeRenderSnapshot = {
@@ -590,6 +601,7 @@ export class OpenCascadeCommandManager {
       const exports = visible.map(([id, solid]) => ({
         solidId: id,
         bodyType: solid.bodyType || 'solid',
+        appearance: cloneAppearance(solid.appearance),
         artifactIds: this.selectableSolidArtifactIds(id, solid),
         provenance: cloneEntityProvenance(solid.provenance),
         suppressMeshEdges: solid.suppressMeshEdges,
@@ -906,7 +918,6 @@ export class OpenCascadeCommandManager {
         return modeling(await this.setObjectTransform(cmd, range))
       case 'plane_set_color':
       case 'edge_lines_visible':
-      case 'object_set_material_params_pbr':
       case 'object_bring_to_front':
       case 'set_grid_reference_plane':
       case 'set_grid_scale':
@@ -924,6 +935,8 @@ export class OpenCascadeCommandManager {
       case 'default_camera_set_perspective':
       case 'default_camera_perspective_settings':
         return modeling(EMPTY_RESPONSE)
+      case 'object_set_material_params_pbr':
+        return modeling(this.setObjectMaterialParams(cmd))
       case 'new_annotation':
         return modeling(this.newAnnotation(commandId, cmd, range))
       case 'enable_sketch_mode':
@@ -1092,6 +1105,35 @@ export class OpenCascadeCommandManager {
       this.gdtAnnotations.set(commandId, annotation)
       this.latestVisibilityVersion.value += 1
     }
+    return EMPTY_RESPONSE
+  }
+
+  private setObjectMaterialParams(cmd: ModelingCmd): OkModelingCmdResponse {
+    const command = cmd as {
+      object_id?: string
+      color?: { r?: number; g?: number; b?: number; a?: number }
+      metalness?: number
+      roughness?: number
+      ambient_occlusion?: number
+    }
+    const objectId = command.object_id
+    if (!objectId) {
+      return EMPTY_RESPONSE
+    }
+    const entry = this.findSolidEntry(objectId)
+    if (!entry) {
+      return EMPTY_RESPONSE
+    }
+
+    const [, solid] = entry
+    solid.appearance = {
+      color: colorToHex(command.color),
+      opacity: clamp01(command.color?.a ?? 1),
+      metalness: clamp01(command.metalness ?? 0),
+      roughness: clamp01(command.roughness ?? 1),
+      ambientOcclusion: clamp01(command.ambient_occlusion ?? 0),
+    }
+    this.latestShapeVersion.value += 1
     return EMPTY_RESPONSE
   }
 
@@ -1408,7 +1450,22 @@ export class OpenCascadeCommandManager {
               oc
             )
           : prism.Shape()
-      this.storeSolid(commandId, shape, [cmd.target], oc, range, 'surface')
+      const solid = this.storeSolid(
+        commandId,
+        shape,
+        [cmd.target],
+        oc,
+        range,
+        'surface'
+      )
+      this.registerSurfaceExtrudeTopology(
+        commandId,
+        solid,
+        profile.edgeEntries,
+        prismDistance,
+        normal,
+        oppositeHeight || 0
+      )
       return { type: 'extrude', data: {} }
     }
 
@@ -1447,6 +1504,7 @@ export class OpenCascadeCommandManager {
       startCapId: `${commandId.slice(0, 35)}1`,
       endCapId: `${commandId.slice(0, 35)}2`,
       provenance: entityProvenanceForRange(range),
+      appearance: this.appearanceFromSourceIds([cmd.target]),
     }
     if (region.circle) {
       solid.cylinder = {
@@ -3105,10 +3163,14 @@ export class OpenCascadeCommandManager {
   private async wireForTarget(
     targetId: string,
     range: SourceRange
-  ): Promise<{ wire: any; face?: any }> {
+  ): Promise<BuiltPathShape> {
     const region = this.regions.get(targetId)
     if (region) {
-      return { wire: region.wire, face: region.face }
+      return {
+        wire: region.wire,
+        face: region.face,
+        edgeEntries: region.edgeEntries,
+      }
     }
 
     const pathId =
@@ -3139,7 +3201,7 @@ export class OpenCascadeCommandManager {
       wire: shape.wire,
       face: shape.face,
       regionEdgeId: commandId,
-      edgeIds: edgeEntries.map((edge) => edge.id),
+      edgeIds: logicalSourceEdgeIds(edgeEntries),
       planeId: path.planeId,
       circle: path.circle,
       edgeEntries,
@@ -3235,7 +3297,11 @@ export class OpenCascadeCommandManager {
       return []
     }
     const path = this.paths.get(pathId)
-    return path?.edgeEntries?.filter((entry) => entry.id === segmentId) || []
+    return (
+      path?.edgeEntries?.filter(
+        (entry) => entry.id === segmentId || entry.sourceSegmentId === segmentId
+      ) || []
+    )
   }
 
   private async buildPathShape(
@@ -3282,6 +3348,7 @@ export class OpenCascadeCommandManager {
       segment.type === 'line'
         ? {
             id: segment.id,
+            sourceSegmentId: segment.id,
             edge: this.makeLineEdge(segment.start, segment.end, path, oc),
             points: [
               localToWorld(segment.start, this.planeForPath(path)),
@@ -3290,6 +3357,7 @@ export class OpenCascadeCommandManager {
           }
         : {
             id: segment.id,
+            sourceSegmentId: segment.id,
             edge: this.makeArcEdge(segment, path, oc),
             points: sampleArcPoints(segment, this.planeForPath(path)),
           }
@@ -3310,6 +3378,7 @@ export class OpenCascadeCommandManager {
         )
       entries.push({
         id: closingEdgeId,
+        sourceSegmentId: closingEdgeId,
         edge: this.makeLineEdge(path.pen, path.start, path, oc),
         points: [
           localToWorld(path.pen, this.planeForPath(path)),
@@ -3390,10 +3459,14 @@ export class OpenCascadeCommandManager {
     )
     const normal = plane?.normal || { x: 0, y: 0, z: 1 }
     const xAxis = plane?.xAxis || { x: 1, y: 0, z: 0 }
+    const angleSpan = segment.fullCircle
+      ? Math.PI * 2
+      : segment.endAngle - segment.startAngle
+    const isClockwise = !segment.fullCircle && angleSpan < 0
     const circle = new oc.gp_Circ_2(
       new oc.gp_Ax2_2(
         toGpPnt(center, oc),
-        toGpDir(normal, oc),
+        toGpDir(isClockwise ? scale(normal, -1) : normal, oc),
         toGpDir(xAxis, oc)
       ),
       segment.radius
@@ -3402,8 +3475,8 @@ export class OpenCascadeCommandManager {
       ? new oc.BRepBuilderAPI_MakeEdge_8(circle)
       : new oc.BRepBuilderAPI_MakeEdge_9(
           circle,
-          segment.startAngle,
-          segment.endAngle
+          isClockwise ? -segment.startAngle : segment.startAngle,
+          isClockwise ? -segment.endAngle : segment.endAngle
         )
     if (!edgeBuilder.IsDone()) {
       throw new Error('OpenCascade failed to build arc edge')
@@ -3450,6 +3523,7 @@ export class OpenCascadeCommandManager {
       bodyType: bodyType || this.bodyTypeForShape(shape, oc),
       sourceRegionId: sourceIds.find((sourceId) => this.regions.has(sourceId)),
       sourceIds,
+      appearance: this.appearanceFromSourceIds(sourceIds),
       sideFaceId: `${commandId.slice(0, 35)}0`,
       startCapId: `${commandId.slice(0, 35)}1`,
       endCapId: `${commandId.slice(0, 35)}2`,
@@ -3462,6 +3536,18 @@ export class OpenCascadeCommandManager {
     this.registerGenericTopologyForSolid(commandId, solid, oc)
     this.latestShapeVersion.value += 1
     return solid
+  }
+
+  private appearanceFromSourceIds(
+    sourceIds: string[]
+  ): OpenCascadeAppearance | undefined {
+    for (const sourceId of sourceIds) {
+      const appearance = this.findSolidEntry(sourceId)?.[1].appearance
+      if (appearance) {
+        return cloneAppearance(appearance)
+      }
+    }
+    return undefined
   }
 
   private sewShapes(
@@ -3937,7 +4023,7 @@ export class OpenCascadeCommandManager {
       region.wire = shape.wire
       region.face = shape.face
       region.edgeEntries = shape.edgeEntries
-      region.edgeIds = shape.edgeEntries.map((edge) => edge.id)
+      region.edgeIds = logicalSourceEdgeIds(shape.edgeEntries)
       region.planeId = path.planeId
       region.circle = path.circle
       this.profileShapes.set(region.regionEdgeId, region.face)
@@ -4001,17 +4087,22 @@ export class OpenCascadeCommandManager {
       shape: transformTopologyShape(callIfFunction(prism, 'LastShape_1')),
     })
 
-    for (const [index, entry] of region.edgeEntries.entries()) {
-      const wallFaceId = deriveTopologyId(entry.id, 8 + (index % 4))
-      const oppositeEdgeId = deriveTopologyId(entry.id, 12)
-      const nextAdjacentEdgeId = deriveTopologyId(entry.id, 13)
-      const previousAdjacentEdgeId = deriveTopologyId(entry.id, 14)
+    for (const [index, group] of logicalPathEdgeGroups(
+      region.edgeEntries
+    ).entries()) {
+      const wallFaceId = deriveTopologyId(group.sourceId, 8 + (index % 4))
+      const oppositeEdgeId = deriveTopologyId(group.sourceId, 12)
+      const nextAdjacentEdgeId = deriveTopologyId(group.sourceId, 13)
+      const previousAdjacentEdgeId = deriveTopologyId(group.sourceId, 14)
 
-      topology.wallsBySourceEdgeId.set(entry.id, wallFaceId)
-      topology.oppositeEdgesBySourceEdgeId.set(entry.id, oppositeEdgeId)
-      topology.nextAdjacentEdgesBySourceEdgeId.set(entry.id, nextAdjacentEdgeId)
+      topology.wallsBySourceEdgeId.set(group.sourceId, wallFaceId)
+      topology.oppositeEdgesBySourceEdgeId.set(group.sourceId, oppositeEdgeId)
+      topology.nextAdjacentEdgesBySourceEdgeId.set(
+        group.sourceId,
+        nextAdjacentEdgeId
+      )
       topology.previousAdjacentEdgesBySourceEdgeId.set(
-        entry.id,
+        group.sourceId,
         previousAdjacentEdgeId
       )
       topology.commonEdgesByFacePair.set(
@@ -4023,7 +4114,7 @@ export class OpenCascadeCommandManager {
         oppositeEdgeId
       )
 
-      const generated = prism.Generated(entry.edge)
+      const generated = prism.Generated(group.entries[0].edge)
       this.topologyEntries.set(wallFaceId, {
         topologyId: wallFaceId,
         artifactId: wallFaceId,
@@ -4084,6 +4175,47 @@ export class OpenCascadeCommandManager {
         ? mergeTopologyMeshes(renderSolidId, currentMesh, nextMesh)
         : nextMesh
     )
+    this.latestTopologyVersion.value += 1
+  }
+
+  private registerSurfaceExtrudeTopology(
+    commandId: string,
+    solid: SolidState,
+    edgeEntries: PathEdgeEntry[],
+    height: number,
+    normal: Point3,
+    startOffset = 0
+  ) {
+    const mesh = buildSurfaceExtrudeTopologyMesh(
+      commandId,
+      edgeEntries,
+      height,
+      normal,
+      startOffset
+    )
+    mesh.provenance = cloneEntityProvenance(solid.provenance)
+    this.topologyMeshes.set(commandId, mesh)
+    for (const group of mesh.groups) {
+      this.topologyEntries.set(group.topologyId, {
+        topologyId: group.topologyId,
+        artifactId: group.artifactId,
+        solidId: commandId,
+        kind: 'face',
+        role: 'wall',
+      })
+    }
+    for (const edge of mesh.edges) {
+      this.topologyEntries.set(edge.topologyId, {
+        topologyId: edge.topologyId,
+        artifactId: edge.artifactId,
+        solidId: commandId,
+        kind: 'edge',
+        role: edge.role,
+        points: [...edge.points],
+        faceIds: [...edge.faceIds],
+        edgeIndex: edge.edgeIndex,
+      })
+    }
     this.latestTopologyVersion.value += 1
   }
 
@@ -5150,10 +5282,17 @@ function cloneEntityProvenance(
     : undefined
 }
 
+function cloneAppearance(
+  appearance: OpenCascadeAppearance | undefined
+): OpenCascadeAppearance | undefined {
+  return appearance ? { ...appearance } : undefined
+}
+
 function cloneSolidState(solid: SolidState): SolidState {
   return {
     ...solid,
     sourceIds: [...solid.sourceIds],
+    appearance: cloneAppearance(solid.appearance),
     provenance: cloneEntityProvenance(solid.provenance),
     brep: solid.brep ? new Uint8Array(solid.brep) : undefined,
     cylinder: solid.cylinder
@@ -5163,6 +5302,26 @@ function cloneSolidState(solid: SolidState): SolidState {
         }
       : undefined,
   }
+}
+
+function colorToHex(
+  color: {
+    r?: number
+    g?: number
+    b?: number
+  } = {}
+) {
+  const componentToHex = (component: number | undefined) =>
+    Math.round(clamp01(component ?? 0) * 255)
+      .toString(16)
+      .padStart(2, '0')
+  return `#${componentToHex(color.r)}${componentToHex(color.g)}${componentToHex(
+    color.b
+  )}`
+}
+
+function clamp01(value: number) {
+  return Math.max(0, Math.min(1, Number.isFinite(value) ? value : 0))
 }
 
 function clonePathEdgeEntry(entry: PathEdgeEntry): PathEdgeEntry {
@@ -5482,7 +5641,8 @@ function orientArcEndAngle(
 function tangentialPreviousPoint(path: PathState, start: Point3): Point2 {
   const previousSegment = path.segments[path.segments.length - 1]
   if (!previousSegment) {
-    return point3ToPoint2(path.start || start)
+    const firstPoint = point3ToPoint2(path.start || start)
+    return { x: firstPoint.x - 1, y: firstPoint.y }
   }
 
   if (previousSegment.type === 'line') {
@@ -5884,6 +6044,14 @@ function sampleArcPoints(
   segment: Extract<PathSegmentState, { type: 'arc' }>,
   plane?: PlaneState
 ): Point3[] {
+  return sampleArcLocalPoints3(segment).map((point) =>
+    localToWorld(point, plane)
+  )
+}
+
+function sampleArcLocalPoints3(
+  segment: Extract<PathSegmentState, { type: 'arc' }>
+): Point3[] {
   const angleSpan = segment.fullCircle
     ? Math.PI * 2
     : segment.endAngle - segment.startAngle
@@ -5892,16 +6060,11 @@ function sampleArcPoints(
   for (let index = 0; index <= steps; index += 1) {
     const t = index / steps
     const angle = segment.startAngle + angleSpan * t
-    points.push(
-      localToWorld(
-        {
-          x: segment.center.x + segment.radius * Math.cos(angle),
-          y: segment.center.y + segment.radius * Math.sin(angle),
-          z: segment.start.z,
-        },
-        plane
-      )
-    )
+    points.push({
+      x: segment.center.x + segment.radius * Math.cos(angle),
+      y: segment.center.y + segment.radius * Math.sin(angle),
+      z: segment.start.z,
+    })
   }
   return points
 }
@@ -6097,16 +6260,20 @@ function buildExtrudeTopologyMesh(
     reverse: false,
   })
 
-  for (const entry of region.edgeEntries) {
-    const wallFaceId = topology.wallsBySourceEdgeId.get(entry.id)
+  const logicalGroups = logicalPathEdgeGroups(region.edgeEntries)
+  const closed =
+    boundary.length > 1 &&
+    pointsClose(boundary[0], boundary[boundary.length - 1])
+  for (const [groupIndex, group] of logicalGroups.entries()) {
+    const wallFaceId = topology.wallsBySourceEdgeId.get(group.sourceId)
     if (!wallFaceId) {
       continue
     }
 
     const groupStart = indices.length
-    for (let index = 0; index < entry.points.length - 1; index += 1) {
-      const bottomA = add(entry.points[index], offsetVector)
-      const bottomB = add(entry.points[index + 1], offsetVector)
+    for (let index = 0; index < group.points.length - 1; index += 1) {
+      const bottomA = add(group.points[index], offsetVector)
+      const bottomB = add(group.points[index + 1], offsetVector)
       const topA = add(bottomA, sweepVector)
       const topB = add(bottomB, sweepVector)
       addQuad(positions, indices, bottomA, bottomB, topB, topA)
@@ -6120,13 +6287,15 @@ function buildExtrudeTopologyMesh(
       role: 'wall',
     })
 
-    const oppositeEdgeId = topology.oppositeEdgesBySourceEdgeId.get(entry.id)
+    const oppositeEdgeId = topology.oppositeEdgesBySourceEdgeId.get(
+      group.sourceId
+    )
     const nextAdjacentEdgeId = topology.nextAdjacentEdgesBySourceEdgeId.get(
-      entry.id
+      group.sourceId
     )
     const previousAdjacentEdgeId =
-      topology.previousAdjacentEdgesBySourceEdgeId.get(entry.id)
-    const startPoints = entry.points.map((point) => add(point, offsetVector))
+      topology.previousAdjacentEdgesBySourceEdgeId.get(group.sourceId)
+    const startPoints = group.points.map((point) => add(point, offsetVector))
     const endPoints = startPoints.map((point) => add(point, sweepVector))
     pushEdge(nextAdjacentEdgeId, 'adjacentEdge', startPoints, [
       wallFaceId,
@@ -6143,6 +6312,102 @@ function buildExtrudeTopologyMesh(
       [start, add(start, sweepVector)],
       [wallFaceId]
     )
+    if (!closed && groupIndex === logicalGroups.length - 1) {
+      const end = startPoints[startPoints.length - 1]
+      pushEdge(
+        deriveTopologyId(group.sourceId, 15),
+        'adjacentEdge',
+        [end, add(end, sweepVector)],
+        [wallFaceId]
+      )
+    }
+  }
+
+  return { solidId, positions, indices, groups, edges }
+}
+
+function buildSurfaceExtrudeTopologyMesh(
+  solidId: string,
+  edgeEntries: PathEdgeEntry[],
+  height: number,
+  normal: Point3,
+  startOffset = 0
+): OpenCascadeTopologySolidMesh {
+  const positions: number[] = []
+  const indices: number[] = []
+  const groups: OpenCascadeTopologyFaceGroup[] = []
+  const edges: OpenCascadeTopologyEdgeLine[] = []
+  const offsetVector = scale(normal, startOffset)
+  const sweepVector = scale(normal, height)
+  const logicalGroups = logicalPathEdgeGroups(edgeEntries)
+  const boundary = orderedBoundaryPoints(edgeEntries)
+  const closed =
+    boundary.length > 1 &&
+    pointsClose(boundary[0], boundary[boundary.length - 1])
+
+  const pushEdge = (
+    topologyId: string,
+    role: OpenCascadeEdgeRole,
+    points: Point3[],
+    faceIds: string[]
+  ) => {
+    edges.push({
+      topologyId,
+      artifactId: topologyId,
+      kind: 'edge',
+      role,
+      edgeIndex: edges.length,
+      faceIds,
+      points: flattenPoints(points),
+    })
+  }
+
+  for (const [groupIndex, group] of logicalGroups.entries()) {
+    const wallFaceId = deriveTopologyId(group.sourceId, 8 + (groupIndex % 4))
+    const groupStart = indices.length
+    for (let index = 0; index < group.points.length - 1; index += 1) {
+      const bottomA = add(group.points[index], offsetVector)
+      const bottomB = add(group.points[index + 1], offsetVector)
+      const topA = add(bottomA, sweepVector)
+      const topB = add(bottomB, sweepVector)
+      addQuad(positions, indices, bottomA, bottomB, topB, topA)
+    }
+    groups.push({
+      start: groupStart,
+      count: indices.length - groupStart,
+      topologyId: wallFaceId,
+      artifactId: wallFaceId,
+      kind: 'face',
+      role: 'wall',
+    })
+
+    const startPoints = group.points.map((point) => add(point, offsetVector))
+    const endPoints = startPoints.map((point) => add(point, sweepVector))
+    pushEdge(
+      deriveTopologyId(group.sourceId, 13),
+      'adjacentEdge',
+      startPoints,
+      [wallFaceId]
+    )
+    pushEdge(deriveTopologyId(group.sourceId, 12), 'oppositeEdge', endPoints, [
+      wallFaceId,
+    ])
+    const start = startPoints[0]
+    pushEdge(
+      deriveTopologyId(group.sourceId, 14),
+      'adjacentEdge',
+      [start, add(start, sweepVector)],
+      [wallFaceId]
+    )
+    if (!closed && groupIndex === logicalGroups.length - 1) {
+      const end = startPoints[startPoints.length - 1]
+      pushEdge(
+        deriveTopologyId(group.sourceId, 15),
+        'adjacentEdge',
+        [end, add(end, sweepVector)],
+        [wallFaceId]
+      )
+    }
   }
 
   return { solidId, positions, indices, groups, edges }
@@ -6696,6 +6961,37 @@ function orderedBoundaryPoints(edgeEntries: PathEdgeEntry[]): Point3[] {
     points.push(...segmentPoints)
   }
   return points
+}
+
+type LogicalPathEdgeGroup = {
+  sourceId: string
+  entries: PathEdgeEntry[]
+  points: Point3[]
+}
+
+function logicalPathEdgeGroups(
+  edgeEntries: PathEdgeEntry[]
+): LogicalPathEdgeGroup[] {
+  const groups: LogicalPathEdgeGroup[] = []
+  for (const entry of edgeEntries) {
+    const sourceId = entry.sourceSegmentId || entry.id
+    const current = groups[groups.length - 1]
+    if (current?.sourceId === sourceId) {
+      current.entries.push(entry)
+      current.points = orderedBoundaryPoints(current.entries)
+    } else {
+      groups.push({
+        sourceId,
+        entries: [entry],
+        points: [...entry.points],
+      })
+    }
+  }
+  return groups
+}
+
+function logicalSourceEdgeIds(edgeEntries: PathEdgeEntry[]): string[] {
+  return logicalPathEdgeGroups(edgeEntries).map((group) => group.sourceId)
 }
 
 function boundarySegmentsForPoints(

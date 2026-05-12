@@ -324,6 +324,45 @@ describe('OpenCascadeCommandManager', () => {
     )
   })
 
+  it('records object PBR material parameters for visible OpenCascade solids', async () => {
+    const manager = new OpenCascadeCommandManager()
+
+    await buildRectangleRegionInput(manager)
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: IDS.solid,
+      cmd: {
+        type: 'extrude',
+        target: IDS.region,
+        distance: 2,
+        extrude_method: 'new',
+        body_type: 'solid',
+      },
+    })
+
+    await send(manager, IDS.request, {
+      type: 'modeling_cmd_req',
+      cmd_id: '00000000-0000-0000-0000-000000000068',
+      cmd: {
+        type: 'object_set_material_params_pbr',
+        object_id: IDS.solid,
+        color: { r: 0.25, g: 0.5, b: 1, a: 0.75 },
+        metalness: 0.6,
+        roughness: 0.35,
+        ambient_occlusion: 0.1,
+      },
+    })
+
+    const [visibleSolid] = await manager.exportVisibleGlbBytes()
+    expect(visibleSolid.appearance).toEqual({
+      color: '#4080ff',
+      opacity: 0.75,
+      metalness: 0.6,
+      roughness: 0.35,
+      ambientOcclusion: 0.1,
+    })
+  })
+
   it('exports visible OpenCascade solids as STEP, STL, OBJ, and PLY', async () => {
     const manager = new OpenCascadeCommandManager()
 
@@ -1034,6 +1073,9 @@ part002 = startSketchOn(XY)
     const topologyPoints = manager
       .exportLatestTopologyMeshes()
       .solids[0].edges.flatMap((edge) => edge.points)
+    const topology = manager.exportLatestTopologyMeshes().solids[0]
+    expect(topology.groups).toHaveLength(1)
+    expect(topology.edges).toHaveLength(4)
     expect(
       distanceToClosestFlattenedPoint(topologyPoints, expectedStart)
     ).toBeLessThan(1e-5)
@@ -2406,6 +2448,85 @@ sketch001 = startSketchOn(XY)
     )
   })
 
+  it('uses the Zoo-compatible +X tangent for a first V1 tangentialArc segment', async () => {
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(
+      `@settings(defaultLengthUnit = mm)
+
+sketch001 = startSketchOn(XY)
+  |> startProfile(at = [-3 / 2 + 0.567672, 2])
+  |> tangentialArc(end = [0.157636, 0.110378])
+`,
+      instance
+    )
+
+    await rustContext.execute(ast, {
+      settings: { modeling: { engine: 'open_cascade' } },
+    })
+
+    const manager = OpenCascadeCommandManager.latestInstance()
+    const arcSegment = manager?.exportLatestSketchLineMeshes().segments[0]
+    expect(arcSegment?.points.length).toBeGreaterThan(6)
+    expectPointToBeClose(
+      firstPointFromFlattenedPoints(arcSegment?.points || []),
+      {
+        x: -3 / 2 + 0.567672,
+        y: 2,
+        z: 0,
+      }
+    )
+    expectPointToBeClose(
+      lastPointFromFlattenedPoints(arcSegment?.points || []),
+      {
+        x: -3 / 2 + 0.567672 + 0.157636,
+        y: 2 + 0.110378,
+        z: 0,
+      }
+    )
+    expect(arcSegment?.points[3]).toBeGreaterThan(-3 / 2 + 0.567672)
+    expect(Math.abs((arcSegment?.points[4] || 0) - 2)).toBeLessThan(0.01)
+  })
+
+  it('uses exact V1 tangentialArc edges when extruding the profile', async () => {
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(
+      `@settings(defaultLengthUnit = mm)
+
+startSketchOn(XY)
+  |> startProfile(at = [-3 / 2 + 0.567672, 2])
+  |> tangentialArc(end = [0.157636, 0.110378])
+  |> line(end = [0.329118, 0.904244])
+  |> tangentialArc(end = [0.157636, 0.110378])
+  |> line(end = [0.186505, 0])
+  |> tangentialArc(end = [0.157636, -0.110378])
+  |> line(end = [0.329118, -0.904244])
+  |> tangentialArc(end = [0.157636, -0.110378])
+  |> close()
+  |> extrude(length = 2)
+`,
+      instance
+    )
+
+    await rustContext.execute(ast, {
+      settings: { modeling: { engine: 'open_cascade' } },
+    })
+
+    const manager = OpenCascadeCommandManager.latestInstance()
+    expect(manager?.getSolidCount()).toBe(1)
+    const visibleSolids = await manager?.exportVisibleGlbBytes()
+    expect(visibleSolids).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ bytes: expect.any(Uint8Array) }),
+      ])
+    )
+    expect(visibleSolids?.[0].bytes.length).toBeGreaterThan(0)
+
+    const solid = manager?.exportLatestTopologyMeshes().solids[0]
+    const wallGroups =
+      solid?.groups.filter((group) => group.role === 'wall') || []
+    expect(wallGroups).toHaveLength(8)
+  })
+
   it('renders V1 three-point arc as a curve', async () => {
     const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
     const ast = assertParse(
@@ -2991,6 +3112,14 @@ function lastPointFromFlattenedPoints(points: number[]) {
     x: points[lastIndex],
     y: points[lastIndex + 1],
     z: points[lastIndex + 2],
+  }
+}
+
+function firstPointFromFlattenedPoints(points: number[]) {
+  return {
+    x: points[0],
+    y: points[1],
+    z: points[2],
   }
 }
 
