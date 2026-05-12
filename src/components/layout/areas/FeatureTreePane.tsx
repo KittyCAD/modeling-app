@@ -400,7 +400,10 @@ function OperationItemGroup({
     return (
       <Disclosure>
         <div className="flex items-start gap-1">
-          <Disclosure.Button className="reset !px-0 !py-1 self-stretch !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25">
+          <Disclosure.Button
+            data-testid="operation-group-caret"
+            className="reset !px-0 !py-1 self-stretch !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25"
+          >
             <CustomIcon
               name="caretDown"
               className="w-4 h-4 block -rotate-90 ui-open:rotate-0 ui-open:transform"

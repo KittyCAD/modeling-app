@@ -174,7 +174,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       })
 
       const solveSketchOperation = await toolbar.getFeatureTreeOperation(
-        'Solve Sketch',
+        'Sketch',
         0
       )
       await solveSketchOperation.dblclick()
@@ -1943,7 +1943,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
 
     await test.step('Delete first constraint from feature tree and verify code updates', async () => {
-      const caret = await toolbar.getFeatureTreeSketchBlockGroupCaret(0)
+      const caret = await toolbar.getFeatureTreeOperationGroupCaret(0)
       await caret.click()
       const op = await toolbar.getFeatureTreeOperation(
         'Horizontal Constraint',
@@ -1956,7 +1956,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
 
     await test.step('Delete second constraint from feature tree and verify code updates', async () => {
-      const caret = await toolbar.getFeatureTreeSketchBlockGroupCaret(0)
+      const caret = await toolbar.getFeatureTreeOperationGroupCaret(0)
       await caret.click()
       const op = await toolbar.getFeatureTreeOperation(
         'Coincident Constraint',
