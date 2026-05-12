@@ -781,6 +781,7 @@ pub struct ExecutorSettings {
     pub skip_artifact_graph: bool,
     /// If Some(N), sends a heartbeat to keep the WebSocket active, every N seconds.
     /// If None, no heartbeats will be sent.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub heartbeats: Option<u64>,
 }
 
