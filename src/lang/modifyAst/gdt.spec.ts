@@ -384,7 +384,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         rustContextInThisFile
       )
       const framePlane = 'XY'
-      const fontPointSize = await getKclCommandValue(
+      const fontSize = await getKclCommandValue(
         '36',
         instanceInThisFile,
         rustContextInThisFile
@@ -394,12 +394,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         rustContextInThisFile
       )
-      const fontScale = await getKclCommandValue(
-        '1.5',
-        instanceInThisFile,
-        rustContextInThisFile
-      )
-
       const result = addFlatnessGdt({
         ast,
         artifactGraph,
@@ -409,8 +403,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         framePosition,
         framePlane,
         leaderScale,
-        fontPointSize,
-        fontScale,
+        fontSize,
         wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
@@ -426,9 +419,8 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('precision = 3')
       expect(newCode).toContain('framePosition = [10, 20]')
       expect(newCode).toContain('framePlane = XY')
-      expect(newCode).toContain('fontPointSize = 36')
+      expect(newCode).toContain('fontSize = 36')
       expect(newCode).toContain('leaderScale = 1.2')
-      expect(newCode).toContain('fontScale = 1.5')
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
@@ -1281,17 +1273,11 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         rustContextInThisFile
       )
-      const fontPointSize = await getKclCommandValue(
+      const fontSize = await getKclCommandValue(
         '48',
         instanceInThisFile,
         rustContextInThisFile
       )
-      const fontScale = await getKclCommandValue(
-        '2.0',
-        instanceInThisFile,
-        rustContextInThisFile
-      )
-
       const result = addDatumGdt({
         ast,
         artifactGraph,
@@ -1300,8 +1286,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         framePosition,
         framePlane,
         leaderScale,
-        fontPointSize,
-        fontScale,
+        fontSize,
         wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
@@ -1318,8 +1303,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('framePosition = [5, 0]')
       expect(newCode).toContain('framePlane = XZ')
       expect(newCode).toContain('leaderScale = 1.1')
-      expect(newCode).toContain('fontPointSize = 48')
-      expect(newCode).toContain('fontScale = 2')
+      expect(newCode).toContain('fontSize = 48')
     })
   })
 
@@ -1338,8 +1322,7 @@ extrude001 = extrude(profile001, length = 10)`
     })
 
     it('should find single datum name', async () => {
-      const code = `@settings(experimentalFeatures = allow)
-sketch001 = startSketchOn(XY)
+      const code = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> line(end = [10, 0])
   |> line(end = [0, 10])
@@ -1353,8 +1336,7 @@ gdt::datum(face = capEnd001, name = "A")`
     })
 
     it('should find multiple datum names', async () => {
-      const code = `@settings(experimentalFeatures = allow)
-sketch001 = startSketchOn(XY)
+      const code = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> line(end = [10, 0], tag = $seg01)
   |> line(end = [0, 10])
@@ -1370,8 +1352,7 @@ gdt::datum(face = capStart001, name = "C")`
     })
 
     it('should handle mixed case datum names', async () => {
-      const code = `@settings(experimentalFeatures = allow)
-sketch001 = startSketchOn(XY)
+      const code = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> line(end = [10, 0], tag = $seg01)
   |> line(end = [0, 10])
@@ -1386,8 +1367,7 @@ gdt::datum(face = seg01, name = "B")`
     })
 
     it('should ignore non-datum gdt calls', async () => {
-      const code = `@settings(experimentalFeatures = allow)
-sketch001 = startSketchOn(XY)
+      const code = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> line(end = [10, 0], tag = $seg01)
   |> line(end = [0, 10])
@@ -1402,8 +1382,7 @@ gdt::datum(face = seg01, name = "A")`
     })
 
     it('should ignore calls without name argument', async () => {
-      const code = `@settings(experimentalFeatures = allow)
-sketch001 = startSketchOn(XY)
+      const code = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> line(end = [10, 0], tag = $seg01)
   |> line(end = [0, 10])
@@ -1418,8 +1397,7 @@ gdt::datum(face = capEnd001, name = "A")`
     })
 
     it('should ignore non-string name arguments', async () => {
-      const code = `@settings(experimentalFeatures = allow)
-sketch001 = startSketchOn(XY)
+      const code = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> line(end = [10, 0], tag = $seg01)
   |> line(end = [0, 10])
@@ -1436,8 +1414,7 @@ gdt::datum(face = capEnd001, name = "A")`
 
   describe('Testing getNextAvailableDatumName', () => {
     it('should return "A" for empty AST', async () => {
-      const code = `@settings(experimentalFeatures = allow)
-sketch001 = startSketchOn(XY)
+      const code = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> line(end = [10, 0])
   |> line(end = [0, 10])
@@ -1450,8 +1427,7 @@ extrude001 = extrude(profile001, length = 10)`
     })
 
     it('should return "B" when "A" is used', async () => {
-      const code = `@settings(experimentalFeatures = allow)
-sketch001 = startSketchOn(XY)
+      const code = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> line(end = [10, 0])
   |> line(end = [0, 10])
@@ -1465,8 +1441,7 @@ gdt::datum(face = capEnd001, name = "A")`
     })
 
     it('should return "C" when "A" and "B" are used', async () => {
-      const code = `@settings(experimentalFeatures = allow)
-sketch001 = startSketchOn(XY)
+      const code = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> line(end = [10, 0], tag = $seg01)
   |> line(end = [0, 10])
@@ -1481,8 +1456,7 @@ gdt::datum(face = seg01, name = "B")`
     })
 
     it('should handle non-sequential usage', async () => {
-      const code = `@settings(experimentalFeatures = allow)
-sketch001 = startSketchOn(XY)
+      const code = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> line(end = [10, 0], tag = $seg01)
   |> line(end = [0, 10])
@@ -1498,8 +1472,7 @@ gdt::datum(face = capStart001, name = "E")`
     })
 
     it('should handle mixed case by treating as uppercase', async () => {
-      const code = `@settings(experimentalFeatures = allow)
-sketch001 = startSketchOn(XY)
+      const code = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> line(end = [10, 0], tag = $seg01)
   |> line(end = [0, 10])
@@ -1514,8 +1487,7 @@ gdt::datum(face = seg01, name = "b")`
     })
 
     it('should return "A" when all letters are used (fallback)', async () => {
-      const code = `@settings(experimentalFeatures = allow)
-sketch001 = startSketchOn(XY)
+      const code = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> xLine(length = 10)
   |> line(end = [1, 50], tag = $seg01)

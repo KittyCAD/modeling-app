@@ -36,8 +36,7 @@ use crate::std::sketch::ensure_sketch_plane_in_engine;
 /// Bundle of common GD&T annotation style arguments.
 #[derive(Debug, Clone)]
 pub(crate) struct AnnotationStyle {
-    pub font_point_size: Option<TyF64>,
-    pub font_scale: Option<TyF64>,
+    pub font_size: Option<TyF64>,
 }
 
 #[derive(Debug, Clone)]
@@ -98,8 +97,7 @@ pub async fn datum(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
-    let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::count(), exec_state)?;
 
     let annotation = inner_datum(
         face,
@@ -107,10 +105,7 @@ pub async fn datum(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         frame_position,
         frame_plane,
         leader_scale,
-        AnnotationStyle {
-            font_point_size,
-            font_scale,
-        },
+        AnnotationStyle { font_size },
         exec_state,
         &args,
     )
@@ -177,8 +172,8 @@ async fn inner_datum(
             KPoint2d { x: 100.0, y: 100.0 }
         })
         .precision(0)
-        .font_scale(style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
-        .font_point_size(style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
+        .font_scale(1.0)
+        .font_point_size(style.font_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
         .leader_scale(leader_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
         .build();
     exec_state
@@ -211,8 +206,7 @@ pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
-    let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::count(), exec_state)?;
 
     let annotations = inner_flatness(
         faces,
@@ -221,10 +215,7 @@ pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         frame_position,
         frame_plane,
         leader_scale,
-        AnnotationStyle {
-            font_point_size,
-            font_scale,
-        },
+        AnnotationStyle { font_size },
         exec_state,
         &args,
     )
@@ -249,8 +240,7 @@ pub async fn profile(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
-    let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::count(), exec_state)?;
 
     let annotations = inner_profile(
         edges,
@@ -260,10 +250,7 @@ pub async fn profile(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         frame_position,
         frame_plane,
         leader_scale,
-        AnnotationStyle {
-            font_point_size,
-            font_scale,
-        },
+        AnnotationStyle { font_size },
         exec_state,
         &args,
     )
@@ -293,8 +280,7 @@ pub async fn position(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
-    let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::count(), exec_state)?;
 
     let annotations = inner_position(
         faces.unwrap_or_default(),
@@ -305,10 +291,7 @@ pub async fn position(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         frame_position,
         frame_plane,
         leader_scale,
-        AnnotationStyle {
-            font_point_size,
-            font_scale,
-        },
+        AnnotationStyle { font_size },
         exec_state,
         &args,
     )
@@ -330,8 +313,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
-    let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::count(), exec_state)?;
 
     let annotations = inner_distance(
         from,
@@ -342,10 +324,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         frame_position,
         frame_plane,
         leader_scale,
-        AnnotationStyle {
-            font_point_size,
-            font_scale,
-        },
+        AnnotationStyle { font_size },
         exec_state,
         &args,
     )
@@ -375,8 +354,7 @@ pub async fn perpendicularity(exec_state: &mut ExecState, args: Args) -> Result<
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
-    let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::count(), exec_state)?;
 
     let annotations = inner_perpendicularity(
         faces.unwrap_or_default(),
@@ -387,10 +365,7 @@ pub async fn perpendicularity(exec_state: &mut ExecState, args: Args) -> Result<
         frame_position,
         frame_plane,
         leader_scale,
-        AnnotationStyle {
-            font_point_size,
-            font_scale,
-        },
+        AnnotationStyle { font_size },
         exec_state,
         &args,
     )
@@ -420,8 +395,7 @@ pub async fn parallelism(exec_state: &mut ExecState, args: Args) -> Result<KclVa
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
-    let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::count(), exec_state)?;
 
     let annotations = inner_parallelism(
         faces.unwrap_or_default(),
@@ -432,10 +406,7 @@ pub async fn parallelism(exec_state: &mut ExecState, args: Args) -> Result<KclVa
         frame_position,
         frame_plane,
         leader_scale,
-        AnnotationStyle {
-            font_point_size,
-            font_scale,
-        },
+        AnnotationStyle { font_size },
         exec_state,
         &args,
     )
@@ -459,8 +430,7 @@ pub async fn annotation(exec_state: &mut ExecState, args: Args) -> Result<KclVal
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
-    let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::count(), exec_state)?;
 
     let annotations = inner_annotation(
         annotation,
@@ -469,10 +439,7 @@ pub async fn annotation(exec_state: &mut ExecState, args: Args) -> Result<KclVal
         frame_position,
         frame_plane,
         leader_scale,
-        AnnotationStyle {
-            font_point_size,
-            font_scale,
-        },
+        AnnotationStyle { font_size },
         exec_state,
         &args,
     )
@@ -989,8 +956,8 @@ async fn inner_flatness(
                 KPoint2d { x: 100.0, y: 100.0 }
             })
             .precision(precision)
-            .font_scale(style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
-            .font_point_size(style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
+            .font_scale(1.0)
+            .font_point_size(style.font_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
             .leader_scale(leader_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
             .build();
         let options = AnnotationOptions::builder().feature_control(feature_control).build();
@@ -1065,8 +1032,8 @@ async fn create_basic_distance_annotation(
             KPoint2d { x: 100.0, y: 100.0 }
         })
         .precision(precision)
-        .font_scale(style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
-        .font_point_size(style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
+        .font_scale(1.0)
+        .font_point_size(style.font_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
         .arrow_scale(leader_scale.map(|n| n.n as f32).unwrap_or(1.0))
         .build();
     let options = AnnotationOptions::builder().dimension(dimension).build();
@@ -1122,8 +1089,8 @@ async fn create_feature_control_annotation(
             KPoint2d { x: 100.0, y: 100.0 }
         })
         .precision(precision)
-        .font_scale(style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
-        .font_point_size(style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
+        .font_scale(1.0)
+        .font_point_size(style.font_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
         .leader_scale(leader_scale.map(|n| n.n as f32).unwrap_or(1.0))
         .build();
     let options = AnnotationOptions::builder().feature_control(feature_control).build();
@@ -1175,8 +1142,8 @@ async fn create_annotation(
             KPoint2d { x: 100.0, y: 100.0 }
         })
         .precision(0)
-        .font_scale(style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
-        .font_point_size(style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
+        .font_scale(1.0)
+        .font_point_size(style.font_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
         .leader_scale(leader_scale.map(|n| n.n as f32).unwrap_or(1.0))
         .build();
     let options = AnnotationOptions::builder().feature_control(feature_control).build();

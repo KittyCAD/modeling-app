@@ -5,8 +5,6 @@ excerpt: "GD&T distance annotation for displaying measured edge lengths or dista
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 GD&T distance annotation for displaying measured edge lengths or distances between two entities.
 
 ```kcl
@@ -19,8 +17,7 @@ gdt::distance(
   framePosition?: Point2d,
   framePlane?: Plane,
   leaderScale?: number(_),
-  fontPointSize?: number(_),
-  fontScale?: number(_),
+  fontSize?: number(_),
 ): [GdtAnnotation; 1+]
 ```
 
@@ -38,8 +35,7 @@ This is part of model-based definition (MBD).
 | `framePosition` | `Point2d` | The position of the distance label relative to the measured geometry. The default is `[100mm, 100mm]`. | No |
 | `framePlane` | `Plane` | The plane in which to display the distance. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The distance may be displayed in a plane parallel to the given plane. | No |
 | `leaderScale` | `number(_)` | Scale of the distance arrows. The default is `1.0`. Must be greater than `0`. | No |
-| `fontPointSize` | `number(_)` | The font point size to use for the annotation text rendering. The default is `36`. | No |
-| `fontScale` | `number(_)` | Scale to use for the annotation text after rendering with the point size. The default is `1.0`. Must be greater than `0`. | No |
+| `fontSize` | `number(_)` | The font size to use for the annotation text rendering. The default is `36`. | No |
 
 ### Returns
 
@@ -49,8 +45,6 @@ This is part of model-based definition (MBD).
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [10, 0], tag = $side1)

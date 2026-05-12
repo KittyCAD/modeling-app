@@ -103,7 +103,7 @@ hide(helix001)
 </model-viewer>
 
 ```kcl
-@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+@settings(defaultLengthUnit = in)
 
 // Example of hiding GDT annotations
 width = 5

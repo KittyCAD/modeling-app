@@ -5,8 +5,6 @@ excerpt: "GD&T datum feature."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 GD&T datum feature.
 
 ```kcl
@@ -16,8 +14,7 @@ gdt::datum(
   framePosition?: Point2d,
   framePlane?: Plane,
   leaderScale?: number(_),
-  fontPointSize?: number(_),
-  fontScale?: number(_),
+  fontSize?: number(_),
 ): GdtAnnotation
 ```
 
@@ -32,8 +29,7 @@ This is part of model-based definition (MBD).
 | `framePosition` | `Point2d` | The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`. | No |
 | `framePlane` | `Plane` | The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane. | No |
 | `leaderScale` | `number(_)` | Scale of the leader. The default is `1.0`. Must be greater than `0`. | No |
-| `fontPointSize` | `number(_)` | The font point size to use for the annotation text rendering. The default is `36`. | No |
-| `fontScale` | `number(_)` | Scale to use for the annotation text after rendering with the point size. The default is `1.0`. Must be greater than `0`. | No |
+| `fontSize` | `number(_)` | The font size to use for the annotation text rendering. The default is `36`. | No |
 
 ### Returns
 
@@ -43,7 +39,7 @@ This is part of model-based definition (MBD).
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+@settings(defaultLengthUnit = in)
 
 width = 5
 
