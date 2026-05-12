@@ -1607,6 +1607,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selection',
         selectionTypes: [
           'plane',
+          'planeOfFace',
           'cap',
           'wall',
           'edgeCut',

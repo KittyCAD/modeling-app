@@ -784,34 +784,12 @@ export function addOffsetPlane({
   // 2. Prepare unlabeled and labeled arguments
   let planeExpr: Expr | undefined
   const enginePrimitives = getEnginePrimitiveFaceSelectionsFromSelection(plane)
-  const faceSelectionsFromPlaneOfFace: Selection[] = []
-  for (const planeSelection of plane.graphSelections) {
-    if (planeSelection.artifact?.type !== 'planeOfFace') {
-      continue
-    }
-    const faceSelection = getFaceSelectionFromPlaneOfFace(
-      planeSelection.artifact,
-      artifactGraph
-    )
-    if (err(faceSelection)) {
-      return faceSelection
-    }
-    faceSelectionsFromPlaneOfFace.push(faceSelection)
-  }
-  const facePlaneSelection = {
-    graphSelections: plane.graphSelections
-      .filter((sel) => sel.artifact?.type !== 'planeOfFace')
-      .concat(faceSelectionsFromPlaneOfFace),
-    otherSelections: plane.otherSelections,
-  }
   if (
     enginePrimitives.length > 0 ||
-    facePlaneSelection.graphSelections.some((sel) =>
-      isFaceArtifact(sel.artifact)
-    )
+    plane.graphSelections.some((sel) => isFaceArtifact(sel.artifact))
   ) {
     const result = buildSolidsAndFacesExprs(
-      facePlaneSelection,
+      plane,
       artifactGraph,
       modifiedAst,
       wasmInstance,
@@ -1184,6 +1162,22 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
       otherSelections: [],
     }
   } else if (planeArtifact.type === 'planeOfFace') {
+    if (
+      !planeArtifact.codeRef.range.every(
+        (value, index) => value === planeArg.sourceRange[index]
+      )
+    ) {
+      return {
+        graphSelections: [
+          {
+            artifact: planeArtifact,
+            codeRef: planeArtifact.codeRef,
+          },
+        ],
+        otherSelections: [],
+      }
+    }
+
     const faceSelection = getFaceSelectionFromPlaneOfFace(
       planeArtifact,
       artifactGraph
