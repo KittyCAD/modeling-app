@@ -37,7 +37,7 @@ import { useNavigate } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
 
 export function SystemIOMachineLogicListener() {
-  const { auth, billing, settings, systemIOActor } = useApp()
+  const { auth, billing, settings, systemIOActor, project } = useApp()
   const { kclManager } = useSingletons()
   // We gotta stop with this pattern. It doesn't scale. "Eager hook creation"
   const requestedProjectName = useRequestedProjectName()
@@ -272,43 +272,28 @@ export function SystemIOMachineLogicListener() {
     (props) => {
       const payload = prepareMlEphantNewFileRequest(props)
       if (payload) {
-        // Gather promises for all the file reads
-        const filePromises = payload.files.map(async (p) => {
-          const key = fsZds.join(
-            settingsValues.app.projectDirectory.current,
-            p.requestedProjectName,
-            p.requestedFileName
-          )
-          return fsZds.readFile(key, { encoding: 'utf-8' })
-        })
 
-        // Push all the changes
-        Promise.all(filePromises)
-          .then((result) => {
-            result.forEach((codeOnDisk, index) => {
-              const p = payload.files[index]
-              const requestedCode = p.requestedCode
-              const key = fsZds.join(
-                settingsValues.app.projectDirectory.current,
-                p.requestedProjectName,
-                p.requestedFileName
-              )
-              kclManager.history.push({
-                type: '',
-                date: new Date(),
-                absoluteFilePath: key || 'Missing filename.',
-                right: requestedCode,
-                left: codeOnDisk,
-                wroteToDisk: true,
-                source: 'Zookeeper',
-                deleted: false,
+        console.log(payload)
+        if (project && payload) {
+          const openEditorFilePromises = payload.files.map((file) => {
+            const absoluteFilePath = fsZds.join(settingsValues.app.projectDirectory.current, file.requestedProjectName, file.requestedFileName)
+            return project?.openEditor(absoluteFilePath, undefined, '', false)
+          })
+          Promise.all(openEditorFilePromises).then((openedEditors) => {
+            openedEditors.forEach((editor, index) => {
+              const requestedCode = payload.files[index].requestedCode
+              editor.updateCodeEditor(requestedCode, {
+                shouldExecute: false,
+                shouldClearHistory: false,
+                shouldAddToHistory: true,
+                shouldWriteToDisk: true,
+                shouldResetCamera: false
               })
             })
+          }).catch((error) => {
+            console.error(error, 'failed to update local files from the zookeeper response')
           })
-          .catch((e) => {
-            console.error(e, 'unable to save history on edited zookeeper files')
-          })
-
+        }
         // Gather promises for all the file reads
         const fileDeletionPromises = payload.filesToDelete.map(async (p) => {
           const key = fsZds.join(
@@ -317,6 +302,7 @@ export function SystemIOMachineLogicListener() {
           )
           return fsZds.readFile(key, { encoding: 'utf-8' })
         })
+
         // Push all the changes
         Promise.all(fileDeletionPromises)
           .then((result) => {
@@ -351,7 +337,7 @@ export function SystemIOMachineLogicListener() {
         systemIOActor.send({
           type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
           data: {
-            files: payload.files,
+            files: [],
             filesToDelete: payload.filesToDelete,
             override: true,
             // Gotcha: Both are called "project name" and "file name", but one of them
