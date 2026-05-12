@@ -38,6 +38,7 @@ impl Expr {
             Expr::LabelledExpression(expr) => expr.expr.module_id(),
             Expr::AscribedExpression(expr) => expr.expr.module_id(),
             Expr::SketchBlock(expr) => expr.module_id,
+            Expr::ComponentBlock(expr) => expr.module_id,
             Expr::SketchVar(expr) => expr.module_id,
             Expr::None(none) => none.module_id,
         }

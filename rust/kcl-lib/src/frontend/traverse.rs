@@ -363,6 +363,41 @@ fn dfs_mut_expr<V: Visitor>(expr: &mut ast::Expr, visitor: &mut V) -> TraversalR
                 return ret;
             }
         }
+        ast::Expr::ComponentBlock(node) => {
+            ret = visitor.visit(NodeMut::from(&mut **node));
+            if ret.is_break() {
+                return ret;
+            }
+            for (_, arg) in &mut node.iter_arguments_mut() {
+                ret = dfs_mut_expr(arg, visitor);
+                if ret.is_break() {
+                    return ret;
+                }
+            }
+            let mut remove_index = None;
+            for (i, body_item) in node.body.items.iter_mut().enumerate() {
+                ret = dfs_mut_body_item(body_item, visitor);
+                match ret.mutate_body_item.take() {
+                    MutateBodyItem::None => {}
+                    MutateBodyItem::Mutate(new_body_item) => {
+                        *body_item = *new_body_item;
+                    }
+                    MutateBodyItem::Delete => remove_index = Some(i),
+                }
+                if ret.is_break() {
+                    break;
+                }
+            }
+            if let Some(index) = remove_index {
+                let block = &mut node.body.inner;
+                delete_body_item_preserving_pre_comments(&mut block.items, &mut block.non_code_meta, index);
+            }
+            if ret.is_break() {
+                return ret;
+            }
+            let node = NodeMut::from(&mut **node);
+            visitor.finish(node);
+        }
         ast::Expr::SketchBlock(node) => {
             ret = visitor.visit(NodeMut::from(&mut **node));
             if ret.is_break() {

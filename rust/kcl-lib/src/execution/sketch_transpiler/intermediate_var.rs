@@ -277,6 +277,7 @@ fn migrate_expr(context: &mut Context, expr: &mut ast::Expr) -> Result<bool, Kcl
             migrate_expr(context, &mut node.expr)?;
             Ok(false)
         }
+        ast::Expr::ComponentBlock(_) => Ok(false),
         ast::Expr::SketchBlock(_) => Ok(false),
         ast::Expr::SketchVar(_) => Ok(false),
         ast::Expr::None(_) => Ok(false),

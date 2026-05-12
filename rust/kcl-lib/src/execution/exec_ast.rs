@@ -49,6 +49,8 @@ use crate::execution::control_continue;
 use crate::execution::early_return;
 use crate::execution::fn_call::Arg;
 use crate::execution::fn_call::Args;
+use crate::execution::fn_call::call_component_kw;
+use crate::execution::kcl_value::ComponentSource;
 use crate::execution::kcl_value::FunctionSource;
 use crate::execution::kcl_value::KclFunctionSourceParams;
 use crate::execution::kcl_value::TypeDef;
@@ -85,6 +87,7 @@ use crate::parsing::ast::types::BinaryOperator;
 use crate::parsing::ast::types::BinaryPart;
 use crate::parsing::ast::types::BodyItem;
 use crate::parsing::ast::types::CodeBlock;
+use crate::parsing::ast::types::ComponentBlock;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::IfExpression;
 use crate::parsing::ast::types::ImportPath;
@@ -1523,6 +1526,7 @@ impl ExecutorContext {
             }
             Expr::AscribedExpression(expr) => expr.get_result(exec_state, self).await?,
             Expr::SketchBlock(expr) => expr.get_result(exec_state, self).await?,
+            Expr::ComponentBlock(expr) => expr.get_result(exec_state, self).await?,
             Expr::SketchVar(expr) => expr.get_result(exec_state, self).await?.continue_(),
         };
         Ok(item)
@@ -1534,6 +1538,7 @@ impl ExecutorContext {
 fn sketch_mode_should_skip(expr: &Expr) -> bool {
     match expr {
         Expr::SketchBlock(sketch_block) => !sketch_block.is_being_edited,
+        Expr::ComponentBlock(_) => false,
         _ => true,
     }
 }
@@ -2187,6 +2192,42 @@ impl Node<SketchBlock> {
     }
 }
 
+impl Node<ComponentBlock> {
+    pub(super) async fn get_result(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
+        let metadata = Metadata {
+            source_range: SourceRange::from(self),
+        };
+        let component_src = ComponentSource {
+            arguments: self.arguments.clone(),
+            body: self.body.clone(),
+            memory: exec_state.mut_stack().snapshot(),
+            ast: Box::new(self.clone()),
+        };
+        let args = Args::new(
+            IndexMap::new(),
+            Vec::new(),
+            metadata.source_range,
+            self.node_path.clone(),
+            exec_state,
+            ctx.clone(),
+            Some(ComponentBlock::CALLEE_NAME.to_owned()),
+        );
+        let default_value =
+            call_component_kw(&component_src, exec_state, ctx, args, metadata.source_range, false).await?;
+
+        Ok(KclValue::Component {
+            value: Box::new(component_src),
+            default_value: Box::new(default_value),
+            meta: vec![metadata],
+        }
+        .continue_())
+    }
+}
+
 impl SketchBlock {
     fn prep_mem(&self, parent: EnvironmentRef, exec_state: &mut ExecState) {
         exec_state.mut_stack().push_new_env_for_call(parent);
@@ -2425,7 +2466,10 @@ impl Node<MemberExpression> {
         let object_cf = ctx
             .execute_expr(&self.object, exec_state, &meta, &[], StatementKind::Expression)
             .await?;
-        let object = control_continue!(object_cf);
+        let object = match control_continue!(object_cf) {
+            KclValue::Component { default_value, .. } => *default_value,
+            object => object,
+        };
 
         // Check the property and object match -- e.g. ints for arrays, strs for objects.
         match (object, property, self.computed) {
@@ -5543,6 +5587,119 @@ mixedArr = [0, "a"]: [mm]
                 "could not coerce an array of `number`, `string` (with type `[any; 2]`) to type `[number(mm)]`"
             ),
             "Expected error but found {err:?}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn assigned_component_emits_default_value_and_supports_overrides() {
+        let program = r#"
+mySurfaceLine = component(start = 1, length = 5) {
+  return {
+    end = start + length
+  }
+}
+
+defaultEnd = mySurfaceLine.end
+overrideEnd = mySurfaceLine(start = 2).end
+overrideLengthOnly = mySurfaceLine(length = 10).end
+mySurfaceLine
+afterBareReference = mySurfaceLine.end
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let mem = result.exec_state.stack();
+        let get_number = |name: &str| {
+            mem.memory
+                .get_from(name, result.mem_env, SourceRange::default(), 0)
+                .unwrap()
+                .as_ty_f64()
+                .unwrap()
+                .n
+        };
+
+        assert!(matches!(
+            mem.memory
+                .get_from("mySurfaceLine", result.mem_env, SourceRange::default(), 0)
+                .unwrap(),
+            KclValue::Component { .. }
+        ));
+        assert_eq!(get_number("defaultEnd"), 6.0);
+        assert_eq!(get_number("overrideEnd"), 7.0);
+        assert_eq!(get_number("overrideLengthOnly"), 11.0);
+        assert_eq!(get_number("afterBareReference"), 6.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn component_empty_call_is_rejected() {
+        let program = r#"
+mySurfaceLine = component(start = 1, length = 5) {
+  return {
+    end = start + length
+  }
+}
+
+duplicate = mySurfaceLine()
+"#;
+
+        let err = parse_execute(program).await.unwrap_err();
+        assert!(
+            err.message()
+                .contains("Component calls must include at least one override"),
+            "Expected empty component call error but found {err:?}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn component_argument_errors_have_source_ranges() {
+        let unknown_label = r#"
+mySurfaceLine = component(start = 1) {
+  return start
+}
+
+bad = mySurfaceLine(strat = 2)
+"#;
+        let err = parse_execute(unknown_label).await.unwrap_err();
+        assert!(
+            err.message().contains("Component has no parameter named strat"),
+            "Expected unknown component parameter error but found {err:?}"
+        );
+        assert!(
+            err.source_ranges().iter().any(|range| !range.is_synthetic()),
+            "Expected unknown component parameter error to have a source range: {err:?}"
+        );
+
+        let unlabeled_call = r#"
+mySurfaceLine = component(start = 1) {
+  return start
+}
+
+bad = mySurfaceLine(2)
+"#;
+        let err = parse_execute(unlabeled_call).await.unwrap_err();
+        assert!(
+            err.message()
+                .contains("Component calls do not accept unlabeled arguments"),
+            "Expected unlabeled component call error but found {err:?}"
+        );
+        assert!(
+            err.source_ranges().iter().any(|range| !range.is_synthetic()),
+            "Expected unlabeled component call error to have a source range: {err:?}"
+        );
+
+        let unlabeled_param = r#"
+mySurfaceLine = component(1) {
+  return 1
+}
+"#;
+        let err = parse_execute(unlabeled_param).await.unwrap_err();
+        assert!(
+            err.message()
+                .contains("Component blocks cannot have an unlabeled argument"),
+            "Expected unlabeled component parameter error but found {err:?}"
+        );
+        assert!(
+            err.source_ranges().iter().any(|range| !range.is_synthetic()),
+            "Expected unlabeled component parameter error to have a source range: {err:?}"
         );
     }
 

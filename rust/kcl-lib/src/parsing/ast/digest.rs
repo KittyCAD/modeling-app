@@ -10,6 +10,7 @@ use crate::parsing::ast::types::BinaryPart;
 use crate::parsing::ast::types::Block;
 use crate::parsing::ast::types::BodyItem;
 use crate::parsing::ast::types::CallExpressionKw;
+use crate::parsing::ast::types::ComponentBlock;
 use crate::parsing::ast::types::DefaultParamVal;
 use crate::parsing::ast::types::ElseIf;
 use crate::parsing::ast::types::Expr;
@@ -216,6 +217,7 @@ impl Expr {
             Expr::LabelledExpression(e) => e.compute_digest(),
             Expr::AscribedExpression(e) => e.compute_digest(),
             Expr::SketchBlock(e) => e.compute_digest(),
+            Expr::ComponentBlock(e) => e.compute_digest(),
             Expr::SketchVar(e) => e.compute_digest(),
             Expr::None(_) => {
                 let mut hasher = Sha256::new();
@@ -619,6 +621,18 @@ impl Node<SketchBlock> {
         }
         hasher.update(slf.body.compute_digest());
         hasher.update(if slf.is_being_edited { [1] } else { [0] });
+    });
+}
+
+impl Node<ComponentBlock> {
+    compute_digest!(|slf, hasher| {
+        for argument in &mut slf.arguments {
+            if let Some(l) = &mut argument.label {
+                hasher.update(l.compute_digest());
+            }
+            hasher.update(argument.arg.compute_digest());
+        }
+        hasher.update(slf.body.compute_digest());
     });
 }
 

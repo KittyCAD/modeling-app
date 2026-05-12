@@ -107,6 +107,7 @@ export type SyntaxType =
   | 'UnaryExpression'
   | 'ImportStatement'
   | 'SketchBlock'
+  | 'ComponentBlock'
 
 export type { ExtrudeSurface } from '@rust/kcl-lib/bindings/ExtrudeSurface'
 export type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
@@ -851,6 +852,16 @@ export function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
         break
       case 'SketchBlockBodyItem':
         pathToNode.push(['items', 'SketchBlockBodyItem'])
+        pathToNode.push([step.index, 'index'])
+        break
+      case 'ComponentBlockArgs':
+        pathToNode.push(['arguments', 'ComponentBlockArgs'])
+        break
+      case 'ComponentBlockBody':
+        pathToNode.push(['body', 'ComponentBlockBody'])
+        break
+      case 'ComponentBlockBodyItem':
+        pathToNode.push(['items', 'ComponentBlockBodyItem'])
         pathToNode.push([step.index, 'index'])
         break
       case 'SketchVar':

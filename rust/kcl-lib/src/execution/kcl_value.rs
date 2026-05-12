@@ -39,6 +39,7 @@ use crate::execution::annotations::{self};
 use crate::execution::types::NumericType;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
+use crate::parsing::ast::types::ComponentBlock;
 use crate::parsing::ast::types::DefaultParamVal;
 use crate::parsing::ast::types::FunctionExpression;
 use crate::parsing::ast::types::KclNone;
@@ -139,6 +140,14 @@ pub enum KclValue {
         #[serde(skip)]
         meta: Vec<Metadata>,
     },
+    Component {
+        #[serde(serialize_with = "component_value_stub")]
+        #[ts(type = "null")]
+        value: Box<ComponentSource>,
+        default_value: Box<KclValue>,
+        #[serde(skip)]
+        meta: Vec<Metadata>,
+    },
     Module {
         value: ModuleId,
         #[serde(skip)]
@@ -160,6 +169,13 @@ pub enum KclValue {
 }
 
 fn function_value_stub<S>(_value: &FunctionSource, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    serializer.serialize_unit()
+}
+
+fn component_value_stub<S>(_value: &ComponentSource, serializer: S) -> Result<S::Ok, S::Error>
 where
     S: serde::Serializer,
 {
@@ -190,6 +206,14 @@ pub struct FunctionSource {
     pub std_props: Option<StdFnProps>,
     pub body: FunctionBody,
     pub ast: crate::parsing::ast::types::BoxNode<FunctionExpression>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct ComponentSource {
+    pub arguments: Vec<crate::parsing::ast::types::LabeledArg>,
+    pub body: Node<crate::parsing::ast::types::Block>,
+    pub memory: EnvironmentRef,
+    pub ast: crate::parsing::ast::types::BoxNode<ComponentBlock>,
 }
 
 pub struct KclFunctionSourceParams {
@@ -350,6 +374,16 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::Helix { value } => to_vec_sr(&value.meta),
             KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
             KclValue::Function { meta, .. } => to_vec_sr(&meta),
+            KclValue::Component {
+                meta, default_value, ..
+            } => {
+                let ranges = to_vec_sr(&meta);
+                if ranges.is_empty() {
+                    default_value.as_ref().into()
+                } else {
+                    ranges
+                }
+            }
             KclValue::Plane { value } => to_vec_sr(&value.meta),
             KclValue::Face { value } => to_vec_sr(&value.meta),
             KclValue::Segment { value } => to_vec_sr(&value.meta),
@@ -385,6 +419,16 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Helix { value } => to_vec_sr(&value.meta),
             KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
             KclValue::Function { meta, .. } => to_vec_sr(meta),
+            KclValue::Component {
+                meta, default_value, ..
+            } => {
+                let ranges = to_vec_sr(meta);
+                if ranges.is_empty() {
+                    default_value.as_ref().into()
+                } else {
+                    ranges
+                }
+            }
             KclValue::Plane { value } => to_vec_sr(&value.meta),
             KclValue::Face { value } => to_vec_sr(&value.meta),
             KclValue::Segment { value } => to_vec_sr(&value.meta),
@@ -435,6 +479,15 @@ impl KclValue {
             KclValue::Helix { value } => value.meta.clone(),
             KclValue::ImportedGeometry(x) => x.meta.clone(),
             KclValue::Function { meta, .. } => meta.clone(),
+            KclValue::Component {
+                meta, default_value, ..
+            } => {
+                if meta.is_empty() {
+                    default_value.metadata()
+                } else {
+                    meta.clone()
+                }
+            }
             KclValue::Module { meta, .. } => meta.clone(),
             KclValue::KclNone { meta, .. } => meta.clone(),
             KclValue::Type { meta, .. } => meta.clone(),
@@ -473,6 +526,7 @@ impl KclValue {
             | KclValue::Helix { .. }
             | KclValue::ImportedGeometry(_)
             | KclValue::Function { .. }
+            | KclValue::Component { .. }
             | KclValue::Module { .. }
             | KclValue::Type { .. }
             | KclValue::BoundedEdge { .. }
@@ -493,6 +547,7 @@ impl KclValue {
             KclValue::Helix { .. } => "a helix".to_owned(),
             KclValue::ImportedGeometry(_) => "an imported geometry".to_owned(),
             KclValue::Function { .. } => "a function".to_owned(),
+            KclValue::Component { .. } => "a component".to_owned(),
             KclValue::Plane { .. } => "a plane".to_owned(),
             KclValue::Face { .. } => "a face".to_owned(),
             KclValue::Segment { .. } => "a segment".to_owned(),
@@ -601,13 +656,31 @@ impl KclValue {
 
     pub(crate) fn map_env_ref(&self, old_env: EnvironmentRef, new_env: EnvironmentRef) -> Self {
         let mut result = self.clone();
-        if let KclValue::Function { ref mut value, .. } = result
-            && let FunctionSource {
-                body: FunctionBody::Kcl(memory),
-                ..
-            } = &mut **value
-        {
-            memory.replace_env(old_env, new_env);
+        match &mut result {
+            KclValue::Function { value, .. }
+                if matches!(
+                    &**value,
+                    FunctionSource {
+                        body: FunctionBody::Kcl(_),
+                        ..
+                    }
+                ) =>
+            {
+                if let FunctionSource {
+                    body: FunctionBody::Kcl(memory),
+                    ..
+                } = &mut **value
+                {
+                    memory.replace_env(old_env, new_env);
+                }
+            }
+            KclValue::Component {
+                value, default_value, ..
+            } => {
+                value.memory.replace_env(old_env, new_env);
+                *default_value = Box::new(default_value.map_env_ref(old_env, new_env));
+            }
+            _ => {}
         }
 
         result
@@ -615,13 +688,31 @@ impl KclValue {
 
     pub(crate) fn map_env_ref_and_epoch(&self, old_env: EnvironmentRef, new_env: EnvironmentRef) -> Self {
         let mut result = self.clone();
-        if let KclValue::Function { ref mut value, .. } = result
-            && let FunctionSource {
-                body: FunctionBody::Kcl(memory),
-                ..
-            } = &mut **value
-        {
-            memory.replace_env_and_epoch(old_env, new_env);
+        match &mut result {
+            KclValue::Function { value, .. }
+                if matches!(
+                    &**value,
+                    FunctionSource {
+                        body: FunctionBody::Kcl(_),
+                        ..
+                    }
+                ) =>
+            {
+                if let FunctionSource {
+                    body: FunctionBody::Kcl(memory),
+                    ..
+                } = &mut **value
+                {
+                    memory.replace_env_and_epoch(old_env, new_env);
+                }
+            }
+            KclValue::Component {
+                value, default_value, ..
+            } => {
+                value.memory.replace_env_and_epoch(old_env, new_env);
+                *default_value = Box::new(default_value.map_env_ref_and_epoch(old_env, new_env));
+            }
+            _ => {}
         }
 
         result
@@ -933,6 +1024,13 @@ impl KclValue {
         }
     }
 
+    pub fn as_component(&self) -> Option<&ComponentSource> {
+        match self {
+            KclValue::Component { value, .. } => Some(value),
+            _ => None,
+        }
+    }
+
     /// Get a tag identifier from a memory item.
     pub fn get_tag_identifier(&self) -> Result<TagIdentifier, KclError> {
         match self {
@@ -995,6 +1093,7 @@ impl KclValue {
             | KclValue::Helix { .. }
             | KclValue::ImportedGeometry(_)
             | KclValue::Function { .. }
+            | KclValue::Component { .. }
             | KclValue::Plane { .. }
             | KclValue::Face { .. }
             | KclValue::Segment { .. }

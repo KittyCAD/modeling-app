@@ -57,6 +57,7 @@ use crate::parsing::ast::types::BodyItem;
 use crate::parsing::ast::types::BoxNode;
 use crate::parsing::ast::types::CallExpressionKw;
 use crate::parsing::ast::types::CommentStyle;
+use crate::parsing::ast::types::ComponentBlock;
 use crate::parsing::ast::types::DefaultParamVal;
 use crate::parsing::ast::types::ElseIf;
 use crate::parsing::ast::types::Expr;
@@ -994,7 +995,8 @@ fn operand(i: &mut TokenSlice) -> ModalResult<BinaryPart> {
                 | Expr::PipeExpression(_)
                 | Expr::PipeSubstitution(_)
                 | Expr::LabelledExpression(..)
-                | Expr::SketchBlock(_) => return Err(CompilationIssue::fatal(source_range, TODO_783)),
+                | Expr::SketchBlock(_)
+                | Expr::ComponentBlock(_) => return Err(CompilationIssue::fatal(source_range, TODO_783)),
                 Expr::None(_) => {
                     return Err(CompilationIssue::fatal(
                         source_range,
@@ -3863,6 +3865,10 @@ fn is_callee_sketch_block(callee: &Name) -> bool {
     callee.name.name == SketchBlock::CALLEE_NAME && !callee.abs_path && callee.path.is_empty()
 }
 
+fn is_callee_component_block(callee: &Name) -> bool {
+    callee.name.name == ComponentBlock::CALLEE_NAME && !callee.abs_path && callee.path.is_empty()
+}
+
 fn is_sketch_block_arg_shorthand(arg: &Expr) -> bool {
     let Expr::Name(name) = arg else {
         return false;
@@ -3929,6 +3935,50 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
                 arguments,
                 body,
                 is_being_edited: false,
+                non_code_meta,
+                digest: None,
+            },
+        })));
+    }
+    if is_callee_component_block(&fn_call.callee) && peek((opt(whitespace), open_brace)).parse_next(i).is_ok() {
+        ignore_whitespace(i);
+        let (_, body, close) = parse_block(i)?;
+        let end = close.end;
+
+        let Node {
+            start,
+            end: _,
+            module_id,
+            node_path: _,
+            pre_comments,
+            comment_start,
+            outer_attrs,
+            inner:
+                CallExpressionKw {
+                    callee: _,
+                    unlabeled,
+                    arguments,
+                    non_code_meta,
+                    digest: _,
+                },
+        } = fn_call;
+        if let Some(unlabeled) = unlabeled {
+            ParseContext::err(CompilationIssue::err(
+                unlabeled.into(),
+                "Component blocks cannot have an unlabeled argument. Use labeled defaults instead, like `length = 5`.",
+            ));
+        }
+        return Ok(Expr::ComponentBlock(Box::new(Node {
+            start,
+            end,
+            module_id,
+            node_path: None,
+            outer_attrs,
+            pre_comments,
+            comment_start,
+            inner: ComponentBlock {
+                arguments,
+                body,
                 non_code_meta,
                 digest: None,
             },

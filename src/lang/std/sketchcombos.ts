@@ -2358,6 +2358,7 @@ export function isExprBinaryPart(expr: Expr): expr is BinaryPart {
     case 'LabelledExpression':
     case 'AscribedExpression':
     case 'SketchBlock':
+    case 'ComponentBlock':
       return false
     default:
       const _exhaustiveCheck: never = expr

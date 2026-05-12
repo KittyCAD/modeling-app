@@ -16,6 +16,7 @@ use crate::parsing::ast::types::Block;
 use crate::parsing::ast::types::BodyItem;
 use crate::parsing::ast::types::CallExpressionKw;
 use crate::parsing::ast::types::CommentStyle;
+use crate::parsing::ast::types::ComponentBlock;
 use crate::parsing::ast::types::DefaultParamVal;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::FormatOptions;
@@ -423,6 +424,7 @@ impl Expr {
             }
             Expr::AscribedExpression(e) => e.recast(buf, options, indentation_level, ctxt),
             Expr::SketchBlock(e) => e.recast(buf, options, indentation_level, ctxt),
+            Expr::ComponentBlock(e) => e.recast(buf, options, indentation_level, ctxt),
             Expr::SketchVar(e) => e.recast(buf),
             Expr::None(_) => {
                 unimplemented!("there is no literal None, see https://github.com/KittyCAD/modeling-app/issues/1115")
@@ -1178,6 +1180,45 @@ impl SketchBlock {
         recast_call(&name, None, &self.arguments, buf, options, indentation_level, ctxt);
 
         // We don't want to end with a new line inside nested blocks.
+        let mut new_options = options.clone();
+        new_options.insert_final_newline = false;
+
+        writeln!(buf, " {{").no_fail();
+        self.body.recast(buf, &new_options, indentation_level + 1);
+        buf.push('\n');
+        options.write_indentation(buf, indentation_level);
+        buf.push('}');
+    }
+}
+
+impl ComponentBlock {
+    pub(crate) fn recast(
+        &self,
+        buf: &mut String,
+        options: &FormatOptions,
+        indentation_level: usize,
+        ctxt: ExprContext,
+    ) {
+        let name = Name {
+            name: Node {
+                inner: Identifier {
+                    name: ComponentBlock::CALLEE_NAME.to_owned(),
+                    digest: None,
+                },
+                start: Default::default(),
+                end: Default::default(),
+                module_id: Default::default(),
+                node_path: None,
+                outer_attrs: Default::default(),
+                pre_comments: Default::default(),
+                comment_start: Default::default(),
+            },
+            path: Vec::new(),
+            abs_path: false,
+            digest: None,
+        };
+        recast_call(&name, None, &self.arguments, buf, options, indentation_level, ctxt);
+
         let mut new_options = options.clone();
         new_options.insert_final_newline = false;
 

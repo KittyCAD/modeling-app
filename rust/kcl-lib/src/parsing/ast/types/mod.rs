@@ -417,6 +417,7 @@ impl Node<Program> {
             crate::lint::checks::lint_should_be_default_plane,
             crate::lint::checks::lint_should_be_offset_plane,
             crate::lint::checks::lint_profiles_should_not_be_chained,
+            crate::lint::checks::lint_empty_component_calls,
         ];
 
         let mut findings = vec![];
@@ -1241,6 +1242,11 @@ fn collect_defined_names_expr(expr: &Expr, out: &mut Vec<String>) {
                 collect_defined_names_expr(&labeled_arg.arg, out);
             }
         }
+        Expr::ComponentBlock(component_block) => {
+            for labeled_arg in &component_block.arguments {
+                collect_defined_names_expr(&labeled_arg.arg, out);
+            }
+        }
     }
 }
 
@@ -1313,6 +1319,7 @@ pub enum Expr {
     LabelledExpression(BoxNode<LabelledExpression>),
     AscribedExpression(BoxNode<AscribedExpression>),
     SketchBlock(BoxNode<SketchBlock>),
+    ComponentBlock(BoxNode<ComponentBlock>),
     SketchVar(BoxNode<SketchVar>),
     None(Node<KclNone>),
 }
@@ -1364,6 +1371,7 @@ impl Expr {
             Expr::LabelledExpression(expr) => expr.expr.get_non_code_meta(),
             Expr::AscribedExpression(expr) => expr.expr.get_non_code_meta(),
             Expr::SketchBlock(expr) => Some(&expr.non_code_meta),
+            Expr::ComponentBlock(expr) => Some(&expr.non_code_meta),
             Expr::SketchVar(_) => None,
             Expr::None(_none) => None,
         }
@@ -1393,6 +1401,7 @@ impl Expr {
             Expr::LabelledExpression(expr) => expr.expr.replace_value(source_range, new_value),
             Expr::AscribedExpression(expr) => expr.expr.replace_value(source_range, new_value),
             Expr::SketchBlock(e) => e.replace_value(source_range, new_value),
+            Expr::ComponentBlock(e) => e.replace_value(source_range, new_value),
             Expr::SketchVar(_) => {}
             Expr::None(_) => {}
         }
@@ -1417,6 +1426,7 @@ impl Expr {
             Expr::LabelledExpression(expr) => expr.start,
             Expr::AscribedExpression(expr) => expr.start,
             Expr::SketchBlock(sketch_block) => sketch_block.start,
+            Expr::ComponentBlock(component_block) => component_block.start,
             Expr::SketchVar(expr) => expr.start,
             Expr::None(none) => none.start,
         }
@@ -1441,6 +1451,7 @@ impl Expr {
             Expr::LabelledExpression(expr) => expr.end,
             Expr::AscribedExpression(expr) => expr.end,
             Expr::SketchBlock(expr) => expr.end,
+            Expr::ComponentBlock(expr) => expr.end,
             Expr::SketchVar(expr) => expr.end,
             Expr::None(none) => none.end,
         }
@@ -1465,6 +1476,7 @@ impl Expr {
             Expr::LabelledExpression(node) => node.node_path.as_ref(),
             Expr::AscribedExpression(node) => node.node_path.as_ref(),
             Expr::SketchBlock(node) => node.node_path.as_ref(),
+            Expr::ComponentBlock(node) => node.node_path.as_ref(),
             Expr::SketchVar(node) => node.node_path.as_ref(),
             Expr::None(node) => node.node_path.as_ref(),
         }
@@ -1526,6 +1538,9 @@ impl Expr {
             Expr::SketchBlock(expr) => {
                 expr.rename_identifiers(old_name, new_name, excluded);
             }
+            Expr::ComponentBlock(expr) => {
+                expr.rename_identifiers(old_name, new_name, excluded);
+            }
             Expr::SketchVar(_) => {}
             Expr::None(_) => {}
         }
@@ -1554,6 +1569,9 @@ impl Expr {
             Expr::LabelledExpression(expr) => expr.expr.get_constraint_level(),
             Expr::AscribedExpression(expr) => expr.expr.get_constraint_level(),
             Expr::SketchBlock(expr) => ConstraintLevel::Ignore {
+                source_ranges: vec![expr.into()],
+            },
+            Expr::ComponentBlock(expr) => ConstraintLevel::Ignore {
                 source_ranges: vec![expr.into()],
             },
             Expr::SketchVar(expr) => expr.get_constraint_level(),
@@ -1620,6 +1638,7 @@ impl Expr {
             Expr::LabelledExpression(node) => node.expr.fn_declaring_name(),
             Expr::AscribedExpression(node) => node.expr.fn_declaring_name(),
             Expr::SketchBlock(_) => None,
+            Expr::ComponentBlock(_) => None,
             Expr::SketchVar(_) => None,
             Expr::None(_) => None,
         }
@@ -1758,6 +1777,55 @@ impl SketchBlock {
     }
 
     /// Iterate over all arguments.
+    pub fn iter_arguments_mut(&mut self) -> impl Iterator<Item = (Option<&mut Node<Identifier>>, &mut Expr)> {
+        self.arguments.iter_mut().map(|arg| (arg.label.as_mut(), &mut arg.arg))
+    }
+
+    fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        for arg in &mut self.arguments {
+            arg.arg.replace_value(source_range, new_value.clone());
+        }
+
+        self.body.replace_value(source_range, new_value);
+    }
+
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
+        for arg in &mut self.arguments {
+            arg.arg.rename_identifiers(old_name, new_name, excluded);
+        }
+
+        let param_names: Vec<&str> = self
+            .arguments
+            .iter()
+            .filter_map(|arg| arg.label.as_ref().map(|label| label.name.as_str()))
+            .collect();
+        let excluded_for_body: Vec<&str> = excluded.iter().copied().chain(param_names.iter().copied()).collect();
+        self.body.rename_identifiers(old_name, new_name, &excluded_for_body);
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct ComponentBlock {
+    pub arguments: Vec<LabeledArg>,
+    pub body: Node<Block>,
+
+    #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
+    pub non_code_meta: NonCodeMeta,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
+}
+
+impl ComponentBlock {
+    pub(crate) const CALLEE_NAME: &str = "component";
+
+    pub fn iter_arguments(&self) -> impl Iterator<Item = (Option<&Node<Identifier>>, &Expr)> {
+        self.arguments.iter().map(|arg| (arg.label.as_ref(), &arg.arg))
+    }
+
     pub fn iter_arguments_mut(&mut self) -> impl Iterator<Item = (Option<&mut Node<Identifier>>, &mut Expr)> {
         self.arguments.iter_mut().map(|arg| (arg.label.as_mut(), &mut arg.arg))
     }

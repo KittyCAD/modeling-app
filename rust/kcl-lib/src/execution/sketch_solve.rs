@@ -221,6 +221,23 @@ fn substitute_sketch_var(
         KclValue::Helix { .. } => Ok(value),
         KclValue::ImportedGeometry(_) => Ok(value),
         KclValue::Function { .. } => Ok(value),
+        KclValue::Component {
+            value: component,
+            default_value,
+            meta,
+        } => Ok(KclValue::Component {
+            value: component,
+            default_value: Box::new(substitute_sketch_var(
+                *default_value,
+                surface,
+                sketch_id,
+                sketch,
+                solve_outcome,
+                solution_ty,
+                analysis,
+            )?),
+            meta,
+        }),
         KclValue::Module { .. } => Ok(value),
         KclValue::Type { .. } => Ok(value),
         KclValue::KclNone { .. } => Ok(value),

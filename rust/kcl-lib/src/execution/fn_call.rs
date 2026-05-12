@@ -23,6 +23,7 @@ use crate::execution::cad_op::OpArg;
 use crate::execution::cad_op::OpKclValue;
 use crate::execution::cad_op::Operation;
 use crate::execution::control_continue;
+use crate::execution::kcl_value::ComponentSource;
 use crate::execution::kcl_value::FunctionBody;
 use crate::execution::kcl_value::FunctionSource;
 use crate::execution::kcl_value::NamedParam;
@@ -167,13 +168,6 @@ impl Node<CallExpressionKw> {
         // exec_state.
         let func: KclValue = fn_name.get_result(exec_state, ctx).await?.clone();
 
-        let Some(fn_src) = func.as_function() else {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                "cannot call this because it isn't a function".to_string(),
-                vec![callsite],
-            )));
-        };
-
         // Build a hashmap from argument labels to the final evaluated values.
         let mut fn_args = IndexMap::with_capacity(self.arguments.len());
         let mut unlabeled = Vec::new();
@@ -220,6 +214,20 @@ impl Node<CallExpressionKw> {
             Some(fn_name.name.name.clone()),
         );
 
+        if let Some(component_src) = func.as_component() {
+            let return_value = call_component_kw(component_src, exec_state, ctx, args, callsite, true)
+                .await
+                .map_err(|e| e.add_unwind_location(Some(fn_name.name.name.clone()), callsite))?;
+            return Ok(return_value.continue_());
+        }
+
+        let Some(fn_src) = func.as_function() else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "cannot call this because it isn't a function".to_string(),
+                vec![callsite],
+            )));
+        };
+
         let return_value = fn_src
             .call_kw(Some(fn_name.to_string()), exec_state, ctx, args, callsite)
             .await
@@ -248,6 +256,109 @@ impl Node<CallExpressionKw> {
 
         Ok(result)
     }
+}
+
+pub(crate) async fn call_component_kw(
+    component: &ComponentSource,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+    args: Args<Sugary>,
+    source_range: SourceRange,
+    require_override: bool,
+) -> Result<KclValue, KclError> {
+    exec_state.mut_stack().push_new_env_for_call(component.memory);
+
+    for default_arg in &component.arguments {
+        let Some(label) = &default_arg.label else {
+            exec_state.mut_stack().pop_env();
+            return Err(KclError::new_argument(KclErrorDetails::new(
+                "Component parameters must be labeled.".to_owned(),
+                vec![SourceRange::from(&default_arg.arg)],
+            )));
+        };
+
+        let value = if let Some(arg) = args.labeled.get(&label.name) {
+            arg.value.clone()
+        } else {
+            let metadata = Metadata {
+                source_range: SourceRange::from(&default_arg.arg),
+            };
+            let value_cf = ctx
+                .execute_expr(&default_arg.arg, exec_state, &metadata, &[], StatementKind::Expression)
+                .await;
+            match value_cf {
+                Ok(value_cf) => value_cf.into_value(),
+                Err(err) => {
+                    exec_state.mut_stack().pop_env();
+                    return Err(err);
+                }
+            }
+        };
+
+        if let Err(err) = exec_state
+            .mut_stack()
+            .add(label.name.clone(), value, SourceRange::from(&default_arg.arg))
+        {
+            exec_state.mut_stack().pop_env();
+            return Err(err);
+        }
+    }
+
+    for (name, arg) in args.labeled.iter() {
+        if component
+            .arguments
+            .iter()
+            .all(|default_arg| default_arg.label.as_ref().is_none_or(|label| label.name != *name))
+        {
+            exec_state.mut_stack().pop_env();
+            return Err(KclError::new_argument(KclErrorDetails::new(
+                format!("Component has no parameter named {name}."),
+                arg.source_ranges(),
+            )));
+        }
+    }
+
+    if !args.unlabeled.is_empty() || args.pipe_value.is_some() {
+        exec_state.mut_stack().pop_env();
+        return Err(KclError::new_argument(KclErrorDetails::new(
+            "Component calls do not accept unlabeled arguments.".to_owned(),
+            vec![source_range],
+        )));
+    }
+
+    if require_override && args.labeled.is_empty() {
+        exec_state.mut_stack().pop_env();
+        return Err(KclError::new_argument(KclErrorDetails::new(
+            "Component calls must include at least one override. Use `clone(componentName)` to duplicate the default instance."
+                .to_owned(),
+            vec![source_range],
+        )));
+    }
+
+    let result = ctx.exec_block(&component.body, exec_state, BodyType::Block).await;
+    let result = result.and_then(|cf| {
+        if let Some(cf) = cf
+            && cf.is_some_return()
+        {
+            return Ok(cf.into_value());
+        }
+
+        exec_state
+            .stack()
+            .get(memory::RETURN_NAME, component.ast.as_source_range())
+            .cloned()
+            .map_err(|_| {
+                KclError::new_undefined_value(
+                    KclErrorDetails::new(
+                        "Result of component is undefined".to_owned(),
+                        vec![component.ast.as_source_range()],
+                    ),
+                    None,
+                )
+            })
+    });
+    exec_state.mut_stack().pop_env();
+    result
 }
 
 impl FunctionSource {
@@ -543,6 +654,7 @@ fn originates_from_sketch_block(value: &KclValue) -> bool {
         KclValue::Helix { .. } => false,
         KclValue::ImportedGeometry(_) => false,
         KclValue::Function { .. } => false,
+        KclValue::Component { default_value, .. } => originates_from_sketch_block(default_value),
         KclValue::Module { .. } => false,
         KclValue::Type { .. } => false,
         KclValue::KclNone { .. } => false,

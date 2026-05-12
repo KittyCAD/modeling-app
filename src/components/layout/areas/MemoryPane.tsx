@@ -132,6 +132,8 @@ export const processMemory = (
       })
     } else if (val.type === 'Function') {
       processedMemory[key] = '__function__'
+    } else if (val.type === 'Component') {
+      processedMemory[key] = '__component__'
     } else if (val.type === 'Number') {
       processedMemory[key] = humanDisplayNumber(val.value, val.ty, wasmInstance)
     } else if (val.type === 'SketchVar') {

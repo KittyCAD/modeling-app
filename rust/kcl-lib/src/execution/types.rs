@@ -1775,6 +1775,7 @@ impl KclValue {
             KclValue::TagDeclarator(_) => Some(RuntimeType::Primitive(PrimitiveType::TagDecl)),
             KclValue::Uuid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Edge)),
             KclValue::Function { .. } => Some(RuntimeType::Primitive(PrimitiveType::Function)),
+            KclValue::Component { default_value, .. } => default_value.principal_type(),
             KclValue::KclNone { .. } => Some(RuntimeType::Primitive(PrimitiveType::None)),
             KclValue::Module { .. } | KclValue::Type { .. } => None,
             KclValue::BoundedEdge { .. } => Some(RuntimeType::Primitive(PrimitiveType::BoundedEdge)),

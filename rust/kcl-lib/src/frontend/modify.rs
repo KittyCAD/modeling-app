@@ -113,6 +113,11 @@ fn find_defined_names_expr(expr: &Expr, defined_names: &mut HashSet<String>) {
                 find_defined_names_expr(&labeled_arg.arg, defined_names);
             }
         }
+        Expr::ComponentBlock(component_block) => {
+            for labeled_arg in &component_block.arguments {
+                find_defined_names_expr(&labeled_arg.arg, defined_names);
+            }
+        }
         Expr::SketchVar(_) => {}
         Expr::None(_) => {}
     }

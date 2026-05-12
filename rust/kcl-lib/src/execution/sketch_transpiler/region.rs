@@ -197,6 +197,7 @@ fn migrate_expr(context: &mut Context, expr: &mut ast::Expr) -> Result<Ty, KclEr
             migrate_expr(context, &mut node.expr)?;
             Ok(Ty::Unknown)
         }
+        ast::Expr::ComponentBlock(_) => Ok(Ty::Unknown),
         ast::Expr::SketchBlock(sketch_block) => {
             let mut vars = Vec::with_capacity(2);
             for item in sketch_block.body.body() {

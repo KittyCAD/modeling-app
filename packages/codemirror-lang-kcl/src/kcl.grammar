@@ -54,6 +54,7 @@ expression[@isGroup=Expression] {
   ParenthesizedExpression { "(" expression ")" } |
   IfExpression { kw<"if"> expression Body kw<"else"> Body } |
   SketchBlockExpression { kw<"sketch"> ArgumentList Body } |
+  ComponentBlockExpression { kw<"component"> ArgumentList Body } |
   CallExpression { expression !call ArgumentList } |
   ArrayExpression { "[" commaSep<expression | IntegerRange { expression !range ".." expression }> "]" } |
   ObjectExpression { "{" commaSep<ObjectProperty> "}" } |

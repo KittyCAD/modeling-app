@@ -332,6 +332,7 @@ impl From<&KclValue> for OpKclValue {
                 artifact_id: ArtifactId::new(imported_geometry.id),
             },
             KclValue::Function { .. } => Self::Function {},
+            KclValue::Component { default_value, .. } => Self::from(default_value.as_ref()),
             KclValue::Module { .. } => Self::Module {},
             KclValue::KclNone { .. } => Self::KclNone {},
             KclValue::Type { .. } => Self::Type {},
