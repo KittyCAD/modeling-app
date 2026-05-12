@@ -1,4 +1,5 @@
 use std::cell::Cell;
+#[cfg(feature = "artifact-graph")]
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -86,6 +87,7 @@ use crate::id::IncIdGenerator;
 use crate::parsing::ast::types as ast;
 use crate::pretty::NumericSuffix;
 use crate::std::constraints::LinesAtAngleKind;
+#[cfg(feature = "artifact-graph")]
 use crate::walk::Node;
 use crate::walk::NodeMut;
 use crate::walk::Visitable;
@@ -618,7 +620,7 @@ impl SketchApi for FrontendState {
         _version: Version,
         sketch: ObjectId,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
-        self.execute_mock_with_warm_starts(ctx, sketch, true).await
+        self.execute_mock_with_warm_starts(ctx, sketch, false).await
     }
 
     async fn new_sketch(
@@ -5976,6 +5978,7 @@ fn to_source_number(number: Number) -> anyhow::Result<ast::NumericLiteral> {
     })
 }
 
+#[cfg(feature = "artifact-graph")]
 fn sketch_var_initial_value_in_solver_units(number: &ast::Node<ast::NumericLiteral>) -> f64 {
     let unit = match number.suffix {
         NumericSuffix::Cm => UnitLength::Centimeters,
@@ -5988,6 +5991,7 @@ fn sketch_var_initial_value_in_solver_units(number: &ast::Node<ast::NumericLiter
     crate::execution::types::adjust_length(unit, number.value, UnitLength::Millimeters).0
 }
 
+#[cfg(feature = "artifact-graph")]
 fn source_ref_primary_range(source: &SourceRef) -> Option<SourceRange> {
     match source {
         SourceRef::Simple { range, .. } => Some(*range),
@@ -12453,7 +12457,7 @@ sketch(on = offsetPlane(XY, offset = width)) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_execute_mock_consumes_sketch_var_warm_starts() {
+    async fn test_execute_mock_from_preview_consumes_sketch_var_warm_starts() {
         let initial_source = "\
 sketch(on = XY) {
   point(at = [var 1mm, var 2mm])
@@ -12476,7 +12480,10 @@ sketch(on = XY) {
             .insert(sketch_id, vec![5.0, 6.0]);
 
         let mut cold_frontend = frontend.clone();
-        let (warm_src_delta, _) = frontend.execute_mock(&mock_ctx, version, sketch_id).await.unwrap();
+        let (warm_src_delta, _) = frontend
+            .execute_mock_from_preview(&mock_ctx, version, sketch_id)
+            .await
+            .unwrap();
         let (cold_src_delta, _) = cold_frontend
             .execute_mock_with_warm_starts(&mock_ctx, sketch_id, false)
             .await
