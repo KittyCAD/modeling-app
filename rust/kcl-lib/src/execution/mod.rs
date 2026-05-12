@@ -244,6 +244,26 @@ impl PreserveMem {
     }
 }
 
+/// The kind of geometric entity that has been named.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub enum EntityKind {
+    Face,
+    Edge,
+}
+
+/// A user-assigned name for a face or edge identified by its engine UUID.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct NamedEntity {
+    /// The user-visible name.
+    pub name: String,
+    /// The kind of geometry that was named.
+    pub kind: EntityKind,
+}
+
 /// Outcome of executing a program.  This is used in TS.
 #[derive(Debug, Clone, Serialize, ts_rs::TS, PartialEq)]
 #[ts(export)]
@@ -271,6 +291,11 @@ pub struct ExecOutcome {
     pub filenames: IndexMap<ModuleId, ModulePath>,
     /// The default planes.
     pub default_planes: Option<DefaultPlanes>,
+    /// Map from engine UUID to user-assigned name for faces and edges that
+    /// have been named via `mbd::name`. Merged across all modules in the
+    /// program. When the same UUID is named more than once, the last name
+    /// wins.
+    pub entity_names: IndexMap<Uuid, NamedEntity>,
 }
 
 /// Per-segment freedom used by the constraint report. Mirrors
