@@ -3,6 +3,8 @@ import type { Program } from '@rust/kcl-lib/bindings/Program'
 import {
   addParameterToComponentSource,
   componentKclValueOptionsForAst,
+  deleteParameterFromComponentSource,
+  renameParameterInComponentSource,
 } from '@src/lib/kclCommands'
 import { describe, expect, it } from 'vitest'
 
@@ -83,6 +85,141 @@ function componentAst({
                 },
               })),
             },
+          },
+        },
+        kind: 'const',
+      },
+    ],
+  } as unknown as Node<Program>
+}
+
+function paramArg(
+  code: string,
+  label: string,
+  value: string,
+  fromIndex: number
+) {
+  const labelStart = code.indexOf(`${label} =`, fromIndex)
+  const valueStart = code.indexOf(value, labelStart)
+  return {
+    type: 'LabeledArg',
+    label: {
+      type: 'Identifier',
+      name: label,
+      start: labelStart,
+      end: labelStart + label.length,
+    },
+    arg: {
+      type: value.startsWith('[') ? 'ArrayExpression' : 'Literal',
+      start: valueStart,
+      end: valueStart + value.length,
+      elements: [],
+    },
+  }
+}
+
+function nameRef(code: string, source: string, name: string, fromIndex = 0) {
+  const sourceStart = code.indexOf(source, fromIndex)
+  const sourceRelativeStart = source.lastIndexOf(name)
+  const start =
+    sourceRelativeStart === -1
+      ? code.indexOf(name, sourceStart)
+      : sourceStart + sourceRelativeStart
+  return {
+    type: 'Name',
+    start,
+    end: start + name.length,
+    name: {
+      type: 'Identifier',
+      name,
+      start,
+      end: start + name.length,
+    },
+    path: [],
+    abs_path: false,
+  }
+}
+
+function componentAstForParameterEdit(code: string): Node<Program> {
+  const componentName = 'mySurfaceLine'
+  const componentStart = code.indexOf('component')
+  const componentBodyStart = code.indexOf('{', componentStart) + 1
+  const componentEnd = code.indexOf('\nsurfaceB')
+  const callStart = code.indexOf('mySurfaceLine(', componentEnd)
+  const callEnd = code.indexOf(')', callStart) + 1
+  const callArguments = [
+    paramArg(code, 'start', '[var -2mm, var -2.6mm]', callStart),
+  ]
+  if (code.indexOf('length = 10', callStart) !== -1) {
+    callArguments.push(paramArg(code, 'length', '10', callStart))
+  }
+
+  return {
+    type: 'Program',
+    start: 0,
+    end: code.length,
+    body: [
+      {
+        type: 'VariableDeclaration',
+        start: code.indexOf(componentName),
+        end: componentEnd,
+        declaration: {
+          type: 'VariableDeclarator',
+          start: code.indexOf(componentName),
+          end: componentEnd,
+          id: {
+            type: 'Identifier',
+            name: componentName,
+            start: code.indexOf(componentName),
+            end: code.indexOf(componentName) + componentName.length,
+          },
+          init: {
+            type: 'ComponentBlock',
+            start: componentStart,
+            end: componentEnd,
+            arguments: [
+              paramArg(
+                code,
+                'start',
+                '[var -4.3mm, var -2.6mm]',
+                componentStart
+              ),
+              paramArg(code, 'length', '5', componentStart),
+            ],
+            body: {
+              type: 'Block',
+              start: componentBodyStart,
+              end: componentEnd,
+              items: [
+                nameRef(code, 'start = start', 'start'),
+                nameRef(code, 'length = length', 'length'),
+              ],
+            },
+          },
+        },
+        kind: 'const',
+      },
+      {
+        type: 'VariableDeclaration',
+        start: code.indexOf('surfaceB'),
+        end: code.length,
+        declaration: {
+          type: 'VariableDeclarator',
+          start: code.indexOf('surfaceB'),
+          end: code.length,
+          id: {
+            type: 'Identifier',
+            name: 'surfaceB',
+            start: code.indexOf('surfaceB'),
+            end: code.indexOf('surfaceB') + 'surfaceB'.length,
+          },
+          init: {
+            type: 'CallExpressionKw',
+            start: callStart,
+            end: callEnd,
+            callee: nameRef(code, 'mySurfaceLine(', componentName, callStart),
+            unlabeled: null,
+            arguments: callArguments,
           },
         },
         kind: 'const',
@@ -185,5 +322,93 @@ mySurfaceLine = component(
     expect(newCode).toContain(
       'extrude001 = extrude(sketch001.line1, length = length'
     )
+  })
+})
+
+describe('component parameter edit codemods', () => {
+  it('renames a parameter in the signature, direct body references, and override calls', () => {
+    const code = `@settings(experimentalFeatures = allow)
+
+mySurfaceLine = component(start = [var -4.3mm, var -2.6mm], length = 5) {
+  sketch001 = sketch(on = XY) {
+    line1 = line(start = start, end = [var -4.3mm, var 0.27mm])
+  }
+  extrude001 = extrude(sketch001.line1, length = length, bodyType = SURFACE)
+  return extrude001
+}
+surfaceB = mySurfaceLine(start = [var -2mm, var -2.6mm], length = 10)
+`
+    const ast = componentAstForParameterEdit(code)
+
+    const newCode = renameParameterInComponentSource({
+      ast,
+      code,
+      componentName: 'mySurfaceLine',
+      parameterName: 'start',
+      newParameterName: 'origin',
+    })
+
+    expect(newCode).not.toBeInstanceOf(Error)
+    expect(newCode).toContain(
+      'component(origin = [var -4.3mm, var -2.6mm], length = 5)'
+    )
+    expect(newCode).toContain('line1 = line(start = origin, end =')
+    expect(newCode).toContain(
+      'surfaceB = mySurfaceLine(origin = [var -2mm, var -2.6mm], length = 10)'
+    )
+  })
+
+  it('deletes a parameter by inlining defaults and removing override args', () => {
+    const code = `@settings(experimentalFeatures = allow)
+
+mySurfaceLine = component(start = [var -4.3mm, var -2.6mm], length = 5) {
+  sketch001 = sketch(on = XY) {
+    line1 = line(start = start, end = [var -4.3mm, var 0.27mm])
+  }
+  extrude001 = extrude(sketch001.line1, length = length, bodyType = SURFACE)
+  return extrude001
+}
+surfaceB = mySurfaceLine(start = [var -2mm, var -2.6mm], length = 10)
+`
+    const ast = componentAstForParameterEdit(code)
+
+    const newCode = deleteParameterFromComponentSource({
+      ast,
+      code,
+      componentName: 'mySurfaceLine',
+      parameterName: 'start',
+    })
+
+    expect(newCode).not.toBeInstanceOf(Error)
+    expect(newCode).toContain('mySurfaceLine = component(length = 5)')
+    expect(newCode).toContain(
+      'line1 = line(start = [var -4.3mm, var -2.6mm], end ='
+    )
+    expect(newCode).toContain('surfaceB = mySurfaceLine(length = 10)')
+  })
+
+  it('converts an override call to clone when deleting its only override arg', () => {
+    const code = `@settings(experimentalFeatures = allow)
+
+mySurfaceLine = component(start = [var -4.3mm, var -2.6mm], length = 5) {
+  sketch001 = sketch(on = XY) {
+    line1 = line(start = start, end = [var -4.3mm, var 0.27mm])
+  }
+  extrude001 = extrude(sketch001.line1, length = length, bodyType = SURFACE)
+  return extrude001
+}
+surfaceB = mySurfaceLine(start = [var -2mm, var -2.6mm])
+`
+    const ast = componentAstForParameterEdit(code)
+
+    const newCode = deleteParameterFromComponentSource({
+      ast,
+      code,
+      componentName: 'mySurfaceLine',
+      parameterName: 'start',
+    })
+
+    expect(newCode).not.toBeInstanceOf(Error)
+    expect(newCode).toContain('surfaceB = clone(mySurfaceLine)')
   })
 })

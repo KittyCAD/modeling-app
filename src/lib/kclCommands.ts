@@ -2,6 +2,7 @@ import type { UnitLength } from '@kittycad/lib'
 import toast from 'react-hot-toast'
 
 import type { BodyItem } from '@rust/kcl-lib/bindings/BodyItem'
+import type { ComponentBlock } from '@rust/kcl-lib/bindings/ComponentBlock'
 import type { Expr } from '@rust/kcl-lib/bindings/Expr'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
@@ -89,6 +90,20 @@ export type ComponentKclValueOption = {
   valueText: string
 }
 
+type ComponentParameterOption = {
+  name: string
+}
+
+function isComponentParameterOption(
+  value: unknown
+): value is ComponentParameterOption {
+  return (
+    !!value &&
+    typeof value === 'object' &&
+    typeof (value as { name?: unknown }).name === 'string'
+  )
+}
+
 const PARAMETERIZABLE_COMPONENT_EXPR_TYPES = new Set<Expr['type']>([
   'Literal',
   'Name',
@@ -106,11 +121,15 @@ const PARAMETERIZABLE_COMPONENT_EXPR_TYPES = new Set<Expr['type']>([
   'SketchVar',
 ])
 
-function variableNameExists(kclManager: KclManager, name: string): boolean {
-  return kclManager.ast.body.some(
+function topLevelNameExists(ast: Node<Program>, name: string): boolean {
+  return ast.body.some(
     (item) =>
       item.type === 'VariableDeclaration' && item.declaration.id.name === name
   )
+}
+
+function variableNameExists(kclManager: KclManager, name: string): boolean {
+  return topLevelNameExists(kclManager.ast, name)
 }
 
 function isValidKclIdentifier(name: string) {
@@ -277,6 +296,20 @@ function componentKclValueOptions(
   }))
 }
 
+function componentParameterOptions(
+  components: ComponentDefinition[],
+  componentName: string
+): CommandArgumentOption<ComponentParameterOption>[] {
+  return (
+    components
+      .find((component) => component.name === componentName)
+      ?.params.map((param) => ({
+        name: param.name,
+        value: { name: param.name },
+      })) ?? []
+  )
+}
+
 type SourceInsertion = {
   index: number
   text: string
@@ -396,6 +429,324 @@ export function addParameterToComponentSource({
   }
 
   return newCode
+}
+
+function isNameReferenceNode(value: unknown): value is {
+  type: 'Name'
+  start: number
+  end: number
+  name: { name: string }
+} {
+  if (!value || typeof value !== 'object') return false
+  const maybeNode = value as {
+    type?: unknown
+    start?: unknown
+    end?: unknown
+    name?: unknown
+  }
+  return (
+    maybeNode.type === 'Name' &&
+    typeof maybeNode.start === 'number' &&
+    typeof maybeNode.end === 'number' &&
+    typeof (maybeNode.name as { name?: unknown } | undefined)?.name === 'string'
+  )
+}
+
+function visitAst(
+  value: unknown,
+  visitor: (value: unknown, parentKey?: string) => void,
+  parentKey?: string
+) {
+  if (!value || typeof value !== 'object') return
+  visitor(value, parentKey)
+
+  if (isArray(value)) {
+    value.forEach((child) => visitAst(child, visitor, parentKey))
+    return
+  }
+
+  for (const [key, child] of Object.entries(value)) {
+    if (
+      key === 'moduleId' ||
+      key === 'outerAttrs' ||
+      key === 'preComments' ||
+      key === 'nonCodeMeta' ||
+      key === 'digest'
+    ) {
+      continue
+    }
+    visitAst(child, visitor, key)
+  }
+}
+
+function collectDirectParameterReferenceRanges(
+  componentBody: unknown,
+  parameterName: string
+): Array<{ start: number; end: number }> {
+  const ranges: Array<{ start: number; end: number }> = []
+  visitAst(componentBody, (value, parentKey) => {
+    if (
+      parentKey === 'callee' ||
+      parentKey === 'property' ||
+      !isNameReferenceNode(value) ||
+      value.name.name !== parameterName
+    ) {
+      return
+    }
+
+    ranges.push({ start: value.start, end: value.end })
+  })
+  return ranges
+}
+
+function removeSourceRangeForLabeledArg({
+  code,
+  labelStart,
+  argEnd,
+  listStart,
+  listEnd,
+}: {
+  code: string
+  labelStart: number
+  argEnd: number
+  listStart: number
+  listEnd: number
+}): { start: number; end: number; replacement: string } {
+  const listSource = code.slice(listStart, listEnd)
+  const isMultiline = listSource.includes('\n')
+
+  if (isMultiline) {
+    const lineStart = code.lastIndexOf('\n', labelStart - 1) + 1
+    const nextLineStartIndex = code.indexOf('\n', argEnd)
+    const lineEnd = nextLineStartIndex === -1 ? argEnd : nextLineStartIndex + 1
+    return { start: lineStart, end: lineEnd, replacement: '' }
+  }
+
+  const previousIndex = previousNonWhitespaceIndex(code, labelStart)
+  const nextIndex = nextNonWhitespaceIndex(code, argEnd)
+
+  if (nextIndex !== -1 && nextIndex < listEnd && code[nextIndex] === ',') {
+    const afterComma = nextNonWhitespaceIndex(code, nextIndex + 1)
+    return {
+      start: labelStart,
+      end: afterComma === -1 ? nextIndex + 1 : afterComma,
+      replacement: '',
+    }
+  }
+
+  if (
+    previousIndex !== -1 &&
+    previousIndex > listStart &&
+    code[previousIndex] === ','
+  ) {
+    return { start: previousIndex, end: argEnd, replacement: '' }
+  }
+
+  return { start: labelStart, end: argEnd, replacement: '' }
+}
+
+function nextNonWhitespaceIndex(code: string, index: number) {
+  for (let i = index; i < code.length; i++) {
+    if (!/\s/.test(code[i])) return i
+  }
+  return -1
+}
+
+function signatureCloseParenIndex(
+  code: string,
+  component: Node<ComponentBlock>
+) {
+  return code.lastIndexOf(')', component.body.start)
+}
+
+function editsToSource(
+  code: string,
+  edits: Array<{ start: number; end: number; replacement: string }>
+) {
+  let nextCode = code
+  for (const edit of edits.sort((left, right) => right.start - left.start)) {
+    nextCode =
+      nextCode.slice(0, edit.start) +
+      edit.replacement +
+      nextCode.slice(edit.end)
+  }
+  return nextCode
+}
+
+export function deleteParameterFromComponentSource({
+  ast,
+  code,
+  componentName,
+  parameterName,
+}: {
+  ast: Node<Program>
+  code: string
+  componentName: string
+  parameterName: string
+}): string | Error {
+  const definition = findComponentDefinition(ast, componentName)
+  if (
+    !definition ||
+    definition.type !== 'VariableDeclaration' ||
+    definition.declaration.init.type !== 'ComponentBlock'
+  ) {
+    return new Error(`Could not find component ${componentName}.`)
+  }
+
+  const component = definition.declaration.init
+  const parameter = component.arguments.find(
+    (arg) => arg.label?.name === parameterName
+  )
+  if (!parameter?.label) {
+    return new Error(`Could not find parameter ${parameterName}.`)
+  }
+
+  const signatureEnd = signatureCloseParenIndex(code, component)
+  if (signatureEnd < component.start) {
+    return new Error('Could not find the component parameter list.')
+  }
+
+  const defaultValue = code.slice(parameter.arg.start, parameter.arg.end)
+  const edits: Array<{ start: number; end: number; replacement: string }> = [
+    removeSourceRangeForLabeledArg({
+      code,
+      labelStart: parameter.label.start,
+      argEnd: parameter.arg.end,
+      listStart: component.start,
+      listEnd: signatureEnd,
+    }),
+    ...collectDirectParameterReferenceRanges(component.body, parameterName).map(
+      (range) => ({
+        ...range,
+        replacement: defaultValue,
+      })
+    ),
+  ]
+
+  visitAst(ast, (value) => {
+    if (
+      !value ||
+      typeof value !== 'object' ||
+      (value as { type?: unknown }).type !== 'CallExpressionKw'
+    ) {
+      return
+    }
+    const call = value as Extract<Expr, { type: 'CallExpressionKw' }>
+    if (call.callee.name.name !== componentName) {
+      return
+    }
+
+    const arg = call.arguments.find(
+      (candidate) => candidate.label?.name === parameterName
+    )
+    if (!arg?.label) {
+      return
+    }
+
+    if (call.arguments.length === 1 && call.unlabeled === null) {
+      edits.push({
+        start: call.start,
+        end: call.end,
+        replacement: `clone(${componentName})`,
+      })
+      return
+    }
+
+    edits.push(
+      removeSourceRangeForLabeledArg({
+        code,
+        labelStart: arg.label.start,
+        argEnd: arg.arg.end,
+        listStart: call.start,
+        listEnd: call.end,
+      })
+    )
+  })
+
+  return editsToSource(code, edits)
+}
+
+export function renameParameterInComponentSource({
+  ast,
+  code,
+  componentName,
+  parameterName,
+  newParameterName,
+}: {
+  ast: Node<Program>
+  code: string
+  componentName: string
+  parameterName: string
+  newParameterName: string
+}): string | Error {
+  const definition = findComponentDefinition(ast, componentName)
+  if (
+    !definition ||
+    definition.type !== 'VariableDeclaration' ||
+    definition.declaration.init.type !== 'ComponentBlock'
+  ) {
+    return new Error(`Could not find component ${componentName}.`)
+  }
+  if (!isValidKclIdentifier(newParameterName)) {
+    return new Error('Parameter name must be a valid KCL identifier.')
+  }
+
+  const component = definition.declaration.init
+  const parameter = component.arguments.find(
+    (arg) => arg.label?.name === parameterName
+  )
+  if (!parameter?.label) {
+    return new Error(`Could not find parameter ${parameterName}.`)
+  }
+  if (
+    component.arguments.some((arg) => arg.label?.name === newParameterName) ||
+    topLevelNameExists(ast, newParameterName)
+  ) {
+    return new Error('This variable name is already in use.')
+  }
+
+  const edits: Array<{ start: number; end: number; replacement: string }> = [
+    {
+      start: parameter.label.start,
+      end: parameter.label.end,
+      replacement: newParameterName,
+    },
+    ...collectDirectParameterReferenceRanges(component.body, parameterName).map(
+      (range) => ({
+        ...range,
+        replacement: newParameterName,
+      })
+    ),
+  ]
+
+  visitAst(ast, (value) => {
+    if (
+      !value ||
+      typeof value !== 'object' ||
+      (value as { type?: unknown }).type !== 'CallExpressionKw'
+    ) {
+      return
+    }
+    const call = value as Extract<Expr, { type: 'CallExpressionKw' }>
+    if (call.callee.name.name !== componentName) {
+      return
+    }
+
+    const arg = call.arguments.find(
+      (candidate) => candidate.label?.name === parameterName
+    )
+    if (!arg?.label) {
+      return
+    }
+
+    edits.push({
+      start: arg.label.start,
+      end: arg.label.end,
+      replacement: newParameterName,
+    })
+  })
+
+  return editsToSource(code, edits)
 }
 
 function selectedTopLevelBodyItems(kclManager: KclManager): BodyItem[] {
@@ -993,6 +1344,224 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         )
         if (!parsed) {
           return new Error('Failed to add component parameter.')
+        }
+
+        commandProps.kclManager.updateCodeEditor(newCode, {
+          shouldExecute: true,
+          shouldWriteToDisk: true,
+          shouldAddToHistory: true,
+        })
+      },
+    },
+    {
+      name: 'component.renameParameter',
+      displayName: 'Rename component parameter',
+      description: 'Rename a component parameter and its direct uses.',
+      icon: 'make-variable',
+      groupId: 'code',
+      needsReview: false,
+      args: {
+        componentName: {
+          displayName: 'Component',
+          inputType: 'options',
+          required: true,
+          options: () =>
+            components.map((component) => ({
+              name: component.name,
+              value: component.name,
+            })),
+          validation: async ({ data }) => {
+            if (typeof data !== 'string') {
+              return 'Select a component.'
+            }
+            if (!components.some((component) => component.name === data)) {
+              return `Could not find component ${data}.`
+            }
+            return true
+          },
+        },
+        parameterName: {
+          displayName: 'Parameter',
+          inputType: 'options',
+          required: true,
+          valueSummary: (value: ComponentParameterOption) => value.name,
+          options: (context) => {
+            const componentName = context.argumentsToSubmit.componentName
+            if (typeof componentName !== 'string') {
+              return []
+            }
+            return componentParameterOptions(components, componentName)
+          },
+          validation: async ({ data }) => {
+            if (!isComponentParameterOption(data)) {
+              return 'Select a component parameter.'
+            }
+            return true
+          },
+        },
+        newParameterName: {
+          displayName: 'New parameter name',
+          inputType: 'string',
+          required: true,
+          defaultValue: 'myParameter',
+          validation: async ({ data, context }) => {
+            if (typeof data !== 'string' || data.trim().length === 0) {
+              return 'Parameter name is required.'
+            }
+            if (!isValidKclIdentifier(data)) {
+              return 'Parameter name must be a valid KCL identifier.'
+            }
+            const componentName = context.argumentsToSubmit.componentName
+            const parameter = context.argumentsToSubmit.parameterName
+            if (typeof componentName !== 'string') {
+              return 'Select a component first.'
+            }
+            if (!isComponentParameterOption(parameter)) {
+              return 'Select a parameter first.'
+            }
+            const component = components.find(
+              (component) => component.name === componentName
+            )
+            if (component?.params.some((param) => param.name === data)) {
+              return 'This parameter name is already in use.'
+            }
+            if (variableNameExists(commandProps.kclManager, data)) {
+              return 'This variable name is already in use.'
+            }
+            return true
+          },
+        },
+      },
+      onSubmit: async (data) => {
+        if (!data) {
+          return new Error(NO_INPUT_PROVIDED_MESSAGE)
+        }
+        const { componentName, parameterName, newParameterName } = data
+        if (
+          typeof componentName !== 'string' ||
+          !isComponentParameterOption(parameterName) ||
+          typeof newParameterName !== 'string'
+        ) {
+          return new Error(NO_INPUT_PROVIDED_MESSAGE)
+        }
+
+        const freshAst = await commandProps.kclManager.safeParse(
+          commandProps.kclManager.code,
+          commandProps.kclManager.wasmInstancePromise
+        )
+        if (!freshAst) {
+          return new Error('Current code could not be parsed.')
+        }
+
+        const newCode = renameParameterInComponentSource({
+          ast: freshAst,
+          code: commandProps.kclManager.code,
+          componentName,
+          parameterName: parameterName.name,
+          newParameterName,
+        })
+        if (newCode instanceof Error) {
+          return newCode
+        }
+
+        const parsed = await commandProps.kclManager.safeParse(
+          newCode,
+          commandProps.kclManager.wasmInstancePromise
+        )
+        if (!parsed) {
+          return new Error('Failed to rename component parameter.')
+        }
+
+        commandProps.kclManager.updateCodeEditor(newCode, {
+          shouldExecute: true,
+          shouldWriteToDisk: true,
+          shouldAddToHistory: true,
+        })
+      },
+    },
+    {
+      name: 'component.deleteParameter',
+      displayName: 'Delete component parameter',
+      description: 'Inline a component parameter default and remove overrides.',
+      icon: 'make-variable',
+      groupId: 'code',
+      needsReview: false,
+      args: {
+        componentName: {
+          displayName: 'Component',
+          inputType: 'options',
+          required: true,
+          options: () =>
+            components.map((component) => ({
+              name: component.name,
+              value: component.name,
+            })),
+          validation: async ({ data }) => {
+            if (typeof data !== 'string') {
+              return 'Select a component.'
+            }
+            if (!components.some((component) => component.name === data)) {
+              return `Could not find component ${data}.`
+            }
+            return true
+          },
+        },
+        parameterName: {
+          displayName: 'Parameter',
+          inputType: 'options',
+          required: true,
+          valueSummary: (value: ComponentParameterOption) => value.name,
+          options: (context) => {
+            const componentName = context.argumentsToSubmit.componentName
+            if (typeof componentName !== 'string') {
+              return []
+            }
+            return componentParameterOptions(components, componentName)
+          },
+          validation: async ({ data }) => {
+            if (!isComponentParameterOption(data)) {
+              return 'Select a component parameter.'
+            }
+            return true
+          },
+        },
+      },
+      onSubmit: async (data) => {
+        if (!data) {
+          return new Error(NO_INPUT_PROVIDED_MESSAGE)
+        }
+        const { componentName, parameterName } = data
+        if (
+          typeof componentName !== 'string' ||
+          !isComponentParameterOption(parameterName)
+        ) {
+          return new Error(NO_INPUT_PROVIDED_MESSAGE)
+        }
+
+        const freshAst = await commandProps.kclManager.safeParse(
+          commandProps.kclManager.code,
+          commandProps.kclManager.wasmInstancePromise
+        )
+        if (!freshAst) {
+          return new Error('Current code could not be parsed.')
+        }
+
+        const newCode = deleteParameterFromComponentSource({
+          ast: freshAst,
+          code: commandProps.kclManager.code,
+          componentName,
+          parameterName: parameterName.name,
+        })
+        if (newCode instanceof Error) {
+          return newCode
+        }
+
+        const parsed = await commandProps.kclManager.safeParse(
+          newCode,
+          commandProps.kclManager.wasmInstancePromise
+        )
+        if (!parsed) {
+          return new Error('Failed to delete component parameter.')
         }
 
         commandProps.kclManager.updateCodeEditor(newCode, {

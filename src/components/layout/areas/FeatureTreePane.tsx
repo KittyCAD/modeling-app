@@ -932,6 +932,70 @@ const OperationItem = ({
                         >
                           Add parameter
                         </ContextMenuItem>,
+                        <ContextMenuItem
+                          onClick={() => {
+                            if (
+                              item.type !== 'GroupBegin' ||
+                              item.group.type !== 'ComponentInstance'
+                            ) {
+                              return
+                            }
+                            const parameterNames = Object.keys(
+                              item.group.labeledArgs
+                            )
+                            commandBarActor.send({
+                              type: 'Find and select command',
+                              data: {
+                                name: 'component.renameParameter',
+                                groupId: 'code',
+                                argDefaultValues: {
+                                  componentName: item.group.name,
+                                  ...(parameterNames.length === 1
+                                    ? {
+                                        parameterName: {
+                                          name: parameterNames[0],
+                                        },
+                                      }
+                                    : {}),
+                                },
+                              },
+                            })
+                          }}
+                        >
+                          Rename parameter
+                        </ContextMenuItem>,
+                        <ContextMenuItem
+                          onClick={() => {
+                            if (
+                              item.type !== 'GroupBegin' ||
+                              item.group.type !== 'ComponentInstance'
+                            ) {
+                              return
+                            }
+                            const parameterNames = Object.keys(
+                              item.group.labeledArgs
+                            )
+                            commandBarActor.send({
+                              type: 'Find and select command',
+                              data: {
+                                name: 'component.deleteParameter',
+                                groupId: 'code',
+                                argDefaultValues: {
+                                  componentName: item.group.name,
+                                  ...(parameterNames.length === 1
+                                    ? {
+                                        parameterName: {
+                                          name: parameterNames[0],
+                                        },
+                                      }
+                                    : {}),
+                                },
+                              },
+                            })
+                          }}
+                        >
+                          Delete parameter
+                        </ContextMenuItem>,
                       ]
                     : []),
                   <ContextMenuItem
