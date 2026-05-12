@@ -33,10 +33,12 @@ use crate::std::args::TyF64;
 use crate::std::fillet::EdgeReference;
 use crate::std::sketch::ensure_sketch_plane_in_engine;
 
-/// Bundle of common GD&T annotation style arguments.
-#[derive(Debug, Clone)]
-pub(crate) struct AnnotationStyle {
-    pub font_size: Option<TyF64>,
+const DEFAULT_FONT_POINT_SIZE: u32 = 36;
+
+fn font_point_size(font_size: Option<&TyF64>) -> u32 {
+    font_size
+        .map(|size| size.n.round() as u32)
+        .unwrap_or(DEFAULT_FONT_POINT_SIZE)
 }
 
 #[derive(Debug, Clone)]
@@ -105,7 +107,7 @@ pub async fn datum(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         frame_position,
         frame_plane,
         leader_scale,
-        AnnotationStyle { font_size },
+        font_size,
         exec_state,
         &args,
     )
@@ -122,7 +124,7 @@ async fn inner_datum(
     frame_position: Option<[TyF64; 2]>,
     frame_plane: Option<Plane>,
     leader_scale: Option<TyF64>,
-    style: AnnotationStyle,
+    font_size: Option<TyF64>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<GdtAnnotation, KclError> {
@@ -173,7 +175,7 @@ async fn inner_datum(
         })
         .precision(0)
         .font_scale(1.0)
-        .font_point_size(style.font_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
+        .font_point_size(font_point_size(font_size.as_ref()))
         .leader_scale(leader_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
         .build();
     exec_state
@@ -215,7 +217,7 @@ pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         frame_position,
         frame_plane,
         leader_scale,
-        AnnotationStyle { font_size },
+        font_size,
         exec_state,
         &args,
     )
@@ -250,7 +252,7 @@ pub async fn profile(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         frame_position,
         frame_plane,
         leader_scale,
-        AnnotationStyle { font_size },
+        font_size,
         exec_state,
         &args,
     )
@@ -291,7 +293,7 @@ pub async fn position(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         frame_position,
         frame_plane,
         leader_scale,
-        AnnotationStyle { font_size },
+        font_size,
         exec_state,
         &args,
     )
@@ -324,7 +326,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         frame_position,
         frame_plane,
         leader_scale,
-        AnnotationStyle { font_size },
+        font_size,
         exec_state,
         &args,
     )
@@ -365,7 +367,7 @@ pub async fn perpendicularity(exec_state: &mut ExecState, args: Args) -> Result<
         frame_position,
         frame_plane,
         leader_scale,
-        AnnotationStyle { font_size },
+        font_size,
         exec_state,
         &args,
     )
@@ -406,7 +408,7 @@ pub async fn parallelism(exec_state: &mut ExecState, args: Args) -> Result<KclVa
         frame_position,
         frame_plane,
         leader_scale,
-        AnnotationStyle { font_size },
+        font_size,
         exec_state,
         &args,
     )
@@ -439,7 +441,7 @@ pub async fn annotation(exec_state: &mut ExecState, args: Args) -> Result<KclVal
         frame_position,
         frame_plane,
         leader_scale,
-        AnnotationStyle { font_size },
+        font_size,
         exec_state,
         &args,
     )
@@ -457,7 +459,7 @@ async fn inner_perpendicularity(
     frame_position: Option<[TyF64; 2]>,
     frame_plane: Option<Plane>,
     leader_scale: Option<TyF64>,
-    style: AnnotationStyle,
+    font_size: Option<TyF64>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<GdtAnnotation>, KclError> {
@@ -496,7 +498,7 @@ async fn inner_perpendicularity(
             frame_position.as_ref(),
             frame_plane.id,
             leader_scale.as_ref(),
-            &style,
+            font_size.as_ref(),
             exec_state,
             args,
             &mut annotations,
@@ -514,7 +516,7 @@ async fn inner_perpendicularity(
             frame_position.as_ref(),
             frame_plane.id,
             leader_scale.as_ref(),
-            &style,
+            font_size.as_ref(),
             exec_state,
             args,
             &mut annotations,
@@ -535,7 +537,7 @@ async fn inner_parallelism(
     frame_position: Option<[TyF64; 2]>,
     frame_plane: Option<Plane>,
     leader_scale: Option<TyF64>,
-    style: AnnotationStyle,
+    font_size: Option<TyF64>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<GdtAnnotation>, KclError> {
@@ -574,7 +576,7 @@ async fn inner_parallelism(
             frame_position.as_ref(),
             frame_plane.id,
             leader_scale.as_ref(),
-            &style,
+            font_size.as_ref(),
             exec_state,
             args,
             &mut annotations,
@@ -592,7 +594,7 @@ async fn inner_parallelism(
             frame_position.as_ref(),
             frame_plane.id,
             leader_scale.as_ref(),
-            &style,
+            font_size.as_ref(),
             exec_state,
             args,
             &mut annotations,
@@ -611,7 +613,7 @@ async fn inner_annotation(
     frame_position: Option<[TyF64; 2]>,
     frame_plane: Option<Plane>,
     leader_scale: Option<TyF64>,
-    style: AnnotationStyle,
+    font_size: Option<TyF64>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<GdtAnnotation>, KclError> {
@@ -651,7 +653,7 @@ async fn inner_annotation(
             frame_position.as_ref(),
             frame_plane.id,
             leader_scale.as_ref(),
-            &style,
+            font_size.as_ref(),
             exec_state,
             args,
             &mut annotations,
@@ -666,7 +668,7 @@ async fn inner_annotation(
             frame_position.as_ref(),
             frame_plane.id,
             leader_scale.as_ref(),
-            &style,
+            font_size.as_ref(),
             exec_state,
             args,
             &mut annotations,
@@ -687,7 +689,7 @@ async fn inner_distance(
     frame_position: Option<[TyF64; 2]>,
     frame_plane: Option<Plane>,
     leader_scale: Option<TyF64>,
-    style: AnnotationStyle,
+    font_size: Option<TyF64>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<GdtAnnotation>, KclError> {
@@ -732,7 +734,7 @@ async fn inner_distance(
             frame_position.as_ref(),
             frame_plane.id,
             leader_scale.as_ref(),
-            &style,
+            font_size.as_ref(),
             exec_state,
             args,
             &mut annotations,
@@ -765,7 +767,7 @@ async fn inner_distance(
             frame_position.as_ref(),
             frame_plane.id,
             leader_scale.as_ref(),
-            &style,
+            font_size.as_ref(),
             exec_state,
             args,
             &mut annotations,
@@ -784,7 +786,7 @@ async fn inner_profile(
     frame_position: Option<[TyF64; 2]>,
     frame_plane: Option<Plane>,
     leader_scale: Option<TyF64>,
-    style: AnnotationStyle,
+    font_size: Option<TyF64>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<GdtAnnotation>, KclError> {
@@ -816,7 +818,7 @@ async fn inner_profile(
             frame_position.as_ref(),
             frame_plane.id,
             leader_scale.as_ref(),
-            &style,
+            font_size.as_ref(),
             exec_state,
             args,
             &mut annotations,
@@ -836,7 +838,7 @@ async fn inner_position(
     frame_position: Option<[TyF64; 2]>,
     frame_plane: Option<Plane>,
     leader_scale: Option<TyF64>,
-    style: AnnotationStyle,
+    font_size: Option<TyF64>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<GdtAnnotation>, KclError> {
@@ -875,7 +877,7 @@ async fn inner_position(
             frame_position.as_ref(),
             frame_plane.id,
             leader_scale.as_ref(),
-            &style,
+            font_size.as_ref(),
             exec_state,
             args,
             &mut annotations,
@@ -893,7 +895,7 @@ async fn inner_position(
             frame_position.as_ref(),
             frame_plane.id,
             leader_scale.as_ref(),
-            &style,
+            font_size.as_ref(),
             exec_state,
             args,
             &mut annotations,
@@ -911,7 +913,7 @@ async fn inner_flatness(
     frame_position: Option<[TyF64; 2]>,
     frame_plane: Option<Plane>,
     leader_scale: Option<TyF64>,
-    style: AnnotationStyle,
+    font_size: Option<TyF64>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<GdtAnnotation>, KclError> {
@@ -957,7 +959,7 @@ async fn inner_flatness(
             })
             .precision(precision)
             .font_scale(1.0)
-            .font_point_size(style.font_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
+            .font_point_size(font_point_size(font_size.as_ref()))
             .leader_scale(leader_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
             .build();
         let options = AnnotationOptions::builder().feature_control(feature_control).build();
@@ -1005,7 +1007,7 @@ async fn create_basic_distance_annotation(
     frame_position: Option<&[TyF64; 2]>,
     frame_plane_id: uuid::Uuid,
     leader_scale: Option<&TyF64>,
-    style: &AnnotationStyle,
+    font_size: Option<&TyF64>,
     exec_state: &mut ExecState,
     args: &Args,
     annotations: &mut Vec<GdtAnnotation>,
@@ -1033,7 +1035,7 @@ async fn create_basic_distance_annotation(
         })
         .precision(precision)
         .font_scale(1.0)
-        .font_point_size(style.font_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
+        .font_point_size(font_point_size(font_size))
         .arrow_scale(leader_scale.map(|n| n.n as f32).unwrap_or(1.0))
         .build();
     let options = AnnotationOptions::builder().dimension(dimension).build();
@@ -1066,7 +1068,7 @@ async fn create_feature_control_annotation(
     frame_position: Option<&[TyF64; 2]>,
     frame_plane_id: uuid::Uuid,
     leader_scale: Option<&TyF64>,
-    style: &AnnotationStyle,
+    font_size: Option<&TyF64>,
     exec_state: &mut ExecState,
     args: &Args,
     annotations: &mut Vec<GdtAnnotation>,
@@ -1090,7 +1092,7 @@ async fn create_feature_control_annotation(
         })
         .precision(precision)
         .font_scale(1.0)
-        .font_point_size(style.font_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
+        .font_point_size(font_point_size(font_size))
         .leader_scale(leader_scale.map(|n| n.n as f32).unwrap_or(1.0))
         .build();
     let options = AnnotationOptions::builder().feature_control(feature_control).build();
@@ -1120,7 +1122,7 @@ async fn create_annotation(
     frame_position: Option<&[TyF64; 2]>,
     frame_plane_id: uuid::Uuid,
     leader_scale: Option<&TyF64>,
-    style: &AnnotationStyle,
+    font_size: Option<&TyF64>,
     exec_state: &mut ExecState,
     args: &Args,
     annotations: &mut Vec<GdtAnnotation>,
@@ -1143,7 +1145,7 @@ async fn create_annotation(
         })
         .precision(0)
         .font_scale(1.0)
-        .font_point_size(style.font_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36))
+        .font_point_size(font_point_size(font_size))
         .leader_scale(leader_scale.map(|n| n.n as f32).unwrap_or(1.0))
         .build();
     let options = AnnotationOptions::builder().feature_control(feature_control).build();
