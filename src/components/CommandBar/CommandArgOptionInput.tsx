@@ -95,12 +95,18 @@ function CommandArgOptionInput({
       ) || resolvedOptions.find((o) => o.isCurrent),
     [commandBarState.context.argumentsToSubmit, argName, resolvedOptions]
   )
+  const optionByKey = useMemo(
+    () => new Map(resolvedOptions.map((option) => [optionKey(option), option])),
+    [resolvedOptions]
+  )
+  const currentOptionKey = currentOption ? optionKey(currentOption) : ''
   const inputRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
   const shouldSubmitOnChange = useRef(false)
   const [selectedOption, setSelectedOption] = useState<
-    CommandArgumentOption<unknown>
+    CommandArgumentOption<unknown> | undefined
   >(currentOption || resolvedOptions[0])
+  const selectedOptionKey = selectedOption ? optionKey(selectedOption) : ''
   // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   const initialQuery = useMemo(() => '', [arg.options, argName])
   const [query, setQuery] = useState(initialQuery)
@@ -149,7 +155,12 @@ function CommandArgOptionInput({
     setFilteredOptions(query.length > 0 ? results : resolvedOptions)
   }, [query, resolvedOptions, fuse])
 
-  function handleSelectOption(option: CommandArgumentOption<unknown>) {
+  function handleSelectOption(key: string) {
+    const option = optionByKey.get(key)
+    if (!option) {
+      return
+    }
+
     // We deal with the whole option object internally
     setSelectedOption(option)
 
@@ -162,6 +173,9 @@ function CommandArgOptionInput({
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    if (!selectedOption) {
+      return
+    }
 
     // We submit the value of the selected option, not the whole object
     onSubmit(selectedOption.value)
@@ -181,10 +195,9 @@ function CommandArgOptionInput({
       }}
     >
       <Combobox
-        value={selectedOption}
+        value={selectedOptionKey}
         onChange={handleSelectOption}
         name="options"
-        by={(left, right) => optionKey(left) === optionKey(right)}
       >
         <div className="flex items-center mx-4 mt-4 mb-2">
           <label
@@ -240,7 +253,7 @@ function CommandArgOptionInput({
             {filteredOptions?.map((option, index) => (
               <Combobox.Option
                 key={`${option.name}-${index}`}
-                value={option}
+                value={optionKey(option)}
                 disabled={option.disabled}
                 className="flex items-center gap-2 px-4 py-1 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90"
               >
@@ -253,7 +266,7 @@ function CommandArgOptionInput({
                 >
                   <OptionLabel option={option} />
                 </p>
-                {option.value === currentOption?.value && (
+                {optionKey(option) === currentOptionKey && (
                   <small className="text-chalkboard-70 dark:text-chalkboard-50">
                     current
                   </small>
