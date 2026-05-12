@@ -198,19 +198,20 @@ pub async fn new_context(with_auth: bool, current_file: Option<PathBuf>) -> Resu
         client.set_base_url("https://api.zoo.dev".to_string());
     }
 
-    let mut settings = ExecutorSettings {
-        highlight_edges: true,
-        enable_ssao: false,
-        show_grid: false,
-        replay: None,
-        project_directory: None,
-        current_file: None,
-        fixed_size_grid: true,
-        engine: Default::default(),
+    let settings = match current_file {
+        Some(current_file) => ExecutorSettings::from_project_for_current_file(&current_file)
+            .map_err(ConnectionError::CouldNotMakeClient)?,
+        None => ExecutorSettings {
+            highlight_edges: true,
+            enable_ssao: false,
+            show_grid: false,
+            replay: None,
+            project_directory: None,
+            current_file: None,
+            fixed_size_grid: true,
+            engine: Default::default(),
+        },
     };
-    if let Some(current_file) = current_file {
-        settings.with_current_file(crate::TypedPath(current_file));
-    }
     let ctx = ExecutorContext::new(&client, settings)
         .await
         .map_err(ConnectionError::Establishing)?;

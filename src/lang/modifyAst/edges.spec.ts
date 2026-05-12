@@ -230,6 +230,57 @@ fillet001 = fillet(extrude001, tags = edge001, radius = 1)`
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add a fillet call using engine primitive edge indices on an anonymous pipe body', async () => {
+      const anonymousExtrudedTriangle = `startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> xLine(length = 5)
+  |> line(endAbsolute = [0, 5])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 5)`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        anonymousExtrudedTriangle,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
+      expect(sweep).toBeDefined()
+
+      const primitiveEdge: NonCodeSelection = {
+        entityId: 'irrelevant-for-this-test',
+        parentEntityId: sweep?.id,
+        primitiveIndex: 2,
+        primitiveType: 'edge',
+        type: 'enginePrimitive',
+      }
+      const selection: Selections = {
+        graphSelections: [],
+        otherSelections: [primitiveEdge],
+      }
+
+      const radius = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection,
+        radius,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `${anonymousExtrudedTriangle}
+  |> fillet(tags = edgeId(%, index = 2), radius = 1)`
+      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add a basic fillet call on a sweepEdge and a segment', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         extrudedTriangle,

@@ -180,10 +180,10 @@ async fn new_context_state(
     current_file: Option<std::path::PathBuf>,
     mock: bool,
 ) -> Result<(ExecutorContext, kcl_lib::ExecState)> {
-    let mut settings: kcl_lib::ExecutorSettings = Default::default();
-    if let Some(current_file) = current_file {
-        settings.with_current_file(kcl_lib::TypedPath(current_file));
-    }
+    let mut settings = match current_file {
+        Some(current_file) => kcl_lib::ExecutorSettings::from_project_for_current_file(&current_file)?,
+        None => kcl_lib::ExecutorSettings::default(),
+    };
     // Must turn on SSAO, without it, transparent images will look opaque.
     settings.enable_ssao = true;
     let ctx = if mock {

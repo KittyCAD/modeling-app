@@ -2,6 +2,7 @@
 
 #[cfg(feature = "artifact-graph")]
 use std::collections::BTreeMap;
+use std::path::{Path as StdPath, PathBuf as StdPathBuf};
 use std::sync::Arc;
 
 use anyhow::Result;
@@ -873,6 +874,27 @@ impl From<crate::settings::types::project::ProjectModelingSettings> for Executor
 }
 
 impl ExecutorSettings {
+    /// Build executor settings for a KCL file, merging the nearest
+    /// `project.toml` settings if one exists.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn from_project_for_current_file(current_file: &StdPath) -> Result<Self> {
+        let mut settings = match find_project_settings_file(current_file) {
+            Some(settings_path) => {
+                let toml_str = std::fs::read_to_string(&settings_path).map_err(|err| {
+                    anyhow::anyhow!("Failed to read project settings `{}`: {err}", settings_path.display())
+                })?;
+                crate::settings::types::project::ProjectConfiguration::parse_and_validate(&toml_str)
+                    .map(Self::from)
+                    .map_err(|err| {
+                        anyhow::anyhow!("Failed to parse project settings `{}`: {err}", settings_path.display())
+                    })?
+            }
+            None => Self::default(),
+        };
+        settings.with_current_file(crate::TypedPath(current_file.to_path_buf()));
+        Ok(settings)
+    }
+
     /// Add the current file path to the executor settings.
     pub fn with_current_file(&mut self, current_file: TypedPath) {
         // We want the parent directory of the file.
@@ -887,6 +909,23 @@ impl ExecutorSettings {
         } else {
             self.project_directory = Some(current_file);
         }
+    }
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+fn find_project_settings_file(current_file: &StdPath) -> Option<StdPathBuf> {
+    let mut dir = if current_file.is_dir() {
+        current_file
+    } else {
+        current_file.parent()?
+    };
+
+    loop {
+        let candidate = dir.join("project.toml");
+        if candidate.is_file() {
+            return Some(candidate);
+        }
+        dir = dir.parent()?;
     }
 }
 
@@ -2230,6 +2269,31 @@ mod tests {
     #[track_caller]
     fn mem_get_json(memory: &Stack, env: EnvironmentRef, name: &str) -> KclValue {
         memory.memory.get_from_unchecked(name, env).unwrap().to_owned()
+    }
+
+    #[test]
+    fn executor_settings_load_project_toml_for_current_file() {
+        let temp = tempfile::tempdir().unwrap();
+        let project_dir = temp.path();
+        let source_dir = project_dir.join("nested");
+        std::fs::create_dir_all(&source_dir).unwrap();
+        let source_file = source_dir.join("main.kcl");
+        std::fs::write(&source_file, "").unwrap();
+        std::fs::write(
+            project_dir.join("project.toml"),
+            r#"[settings.modeling]
+engine = "open_cascade"
+enable_ssao = false
+"#,
+        )
+        .unwrap();
+
+        let settings = ExecutorSettings::from_project_for_current_file(&source_file).unwrap();
+
+        assert_eq!(settings.engine, crate::settings::types::ModelingEngine::OpenCascade);
+        assert_eq!(settings.current_file.unwrap().0, source_file);
+        assert_eq!(settings.project_directory.unwrap().0, source_dir);
+        assert!(!settings.enable_ssao);
     }
 
     #[tokio::test(flavor = "multi_thread")]

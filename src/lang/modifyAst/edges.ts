@@ -5,6 +5,7 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
+  createPipeSubstitution,
   createArrayExpression,
   createMemberExpression,
   createTagDeclarator,
@@ -1106,9 +1107,13 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
       if (err(vars)) return vars
       solidsExpr = createVariableExpressionsArray(vars.exprs)
       pathIfPipe = vars.pathIfPipe
+
+      if (!solidsExpr && !pathIfPipe) {
+        pathIfPipe = primitiveData.bodySelection.codeRef.pathToNode
+      }
     }
 
-    if (!solidsExpr) {
+    if (!solidsExpr && !pathIfPipe) {
       return new Error(
         'Could not resolve selected primitive edge bodies in code.'
       )
@@ -1118,31 +1123,36 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
     for (const primitiveIndex of primitiveData.primitiveIndices) {
       const edgeIdExpr = createCallExpressionStdLibKw(
         'edgeId',
-        structuredClone(solidsExpr),
+        solidsExpr ? structuredClone(solidsExpr) : createPipeSubstitution(),
         [createLabeledArg('index', createLiteral(primitiveIndex, wasmInstance))]
       )
-      const edgeVariableName = findUniqueName(
-        modifiedAst,
-        KCL_DEFAULT_CONSTANT_PREFIXES.EDGE
-      )
-      const variableIdentifierAst = createLocalName(edgeVariableName)
-      insertVariableAndOffsetPathToNode(
-        {
-          valueAst: edgeIdExpr,
-          valueText: '',
-          valueCalculated: '',
-          variableName: edgeVariableName,
-          variableDeclarationAst: createVariableDeclaration(
-            edgeVariableName,
-            edgeIdExpr
-          ),
-          variableIdentifierAst,
-          insertIndex,
-        },
-        modifiedAst
-      )
-      insertIndex++
-      tagsExprs.push(variableIdentifierAst)
+
+      if (solidsExpr) {
+        const edgeVariableName = findUniqueName(
+          modifiedAst,
+          KCL_DEFAULT_CONSTANT_PREFIXES.EDGE
+        )
+        const variableIdentifierAst = createLocalName(edgeVariableName)
+        insertVariableAndOffsetPathToNode(
+          {
+            valueAst: edgeIdExpr,
+            valueText: '',
+            valueCalculated: '',
+            variableName: edgeVariableName,
+            variableDeclarationAst: createVariableDeclaration(
+              edgeVariableName,
+              edgeIdExpr
+            ),
+            variableIdentifierAst,
+            insertIndex,
+          },
+          modifiedAst
+        )
+        insertIndex++
+        tagsExprs.push(variableIdentifierAst)
+      } else {
+        tagsExprs.push(edgeIdExpr)
+      }
     }
 
     const tagsExpr = createVariableExpressionsArray(tagsExprs)
