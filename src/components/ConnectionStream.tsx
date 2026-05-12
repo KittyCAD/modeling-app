@@ -18,10 +18,8 @@ import {
   getArtifactOfTypes,
   getSketchBlockForArtifact,
 } from '@src/lang/std/artifactGraph'
-import {
-  getOperationForArtifact,
-  prepareEditCommand,
-} from '@src/lib/featureTree'
+import { findOperationForArtifact } from '@src/lang/queryAst'
+import { prepareEditCommand } from '@src/lib/featureTree'
 import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
 import { useOnPageResize } from '@src/hooks/network/useOnPageResize'
 import { useOnPageIdle } from '@src/hooks/network/useOnPageIdle'
@@ -129,7 +127,7 @@ export const ConnectionStream = (props: {
             }
             const artifact = kclManager.artifactGraph.get(entity_id)
             if (artifact?.type === 'gdtAnnotation') {
-              const operation = getOperationForArtifact({
+              const operation = findOperationForArtifact({
                 artifact,
                 operations: kclManager.operations,
               })

@@ -9,7 +9,6 @@ import {
 } from '@src/lang/modifyAst/deleteSelection'
 import { findOperationArtifact } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import { sourceRangeContains } from '@src/lang/sourceRange'
 import { err } from '@src/lib/trap'
 import { type CommandBarActorType } from '@src/machines/commandBarMachine'
 import {
@@ -159,32 +158,6 @@ export function prepareEditCommand(
         resolve(result)
       })
       .catch(reject)
-  })
-}
-
-export function getOperationForArtifact(input: {
-  artifact: Artifact | undefined
-  operations: Operation[]
-}): Operation | undefined {
-  if (!input.artifact || !('codeRef' in input.artifact)) {
-    return undefined
-  }
-  const { artifact } = input
-
-  return input.operations.find((operation) => {
-    if (!('sourceRange' in operation)) {
-      return false
-    }
-    return (
-      sourceRangeContains(operation.sourceRange, artifact.codeRef.range) ||
-      (operation.type === 'StdLibCall' &&
-        operation.stdlibEntrySourceRange !== undefined &&
-        operation.stdlibEntrySourceRange !== null &&
-        sourceRangeContains(
-          operation.stdlibEntrySourceRange,
-          artifact.codeRef.range
-        ))
-    )
   })
 }
 
