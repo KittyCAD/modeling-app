@@ -28,7 +28,6 @@ import {
 } from '@src/machines/systemIO/hooks'
 import {
   NO_PROJECT_DIRECTORY,
-  RequestedKCLFile,
   SystemIOMachineEvents,
   SystemIOMachineStates,
   prepareMlEphantNewFileRequest,
@@ -36,10 +35,9 @@ import {
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
-import { getAppSettingsFilePath } from '@src/lib/desktop'
 
 export function SystemIOMachineLogicListener() {
-  const { auth, billing, settings, systemIOActor, project } = useApp()
+  const { auth, billing, settings, systemIOActor } = useApp()
   const { kclManager } = useSingletons()
   // We gotta stop with this pattern. It doesn't scale. "Eager hook creation"
   const requestedProjectName = useRequestedProjectName()
@@ -271,61 +269,82 @@ export function SystemIOMachineLogicListener() {
     billing.actor,
     token,
     kclManager.engineCommandManager,
-    async (props) => {
+    (props) => {
       const payload = prepareMlEphantNewFileRequest(props)
-      const hash: { [key: string]: string } = {}
-      kclManager.history.filesCachedFromPrompt.value.forEach((f) => {
-        if (f.type === 'kcl') {
-          hash[f.absPath] = f.fileContents
-        }
-      })
       if (payload) {
-        payload.files.forEach(async (p) => {
+        // Gather promises for all the file reads
+        const filePromises = payload.files.map(async (p) => {
           const key = fsZds.join(
             settingsValues.app.projectDirectory.current,
             p.requestedProjectName,
             p.requestedFileName
           )
-          const code = hash[key]
-            ? hash[key]
-            : await fsZds.readFile(key, { encoding: 'utf-8' })
-          const requestedCode = p.requestedCode
-          kclManager.history.push({
-            type: '',
-            date: new Date(),
-            absoluteFilePath: key || 'Missing filename.',
-            right: requestedCode,
-            left: code,
-            wroteToDisk: true,
-            source: 'Zookeeper',
-            deleted: false,
-          })
+          return fsZds.readFile(key, { encoding: 'utf-8' })
         })
 
-        payload.filesToDelete.forEach(async (p) => {
+        // Push all the changes
+        Promise.all(filePromises)
+          .then((result) => {
+            result.forEach((codeOnDisk, index) => {
+              const p = payload.files[index]
+              const requestedCode = p.requestedCode
+              const key = fsZds.join(
+                settingsValues.app.projectDirectory.current,
+                p.requestedProjectName,
+                p.requestedFileName
+              )
+              kclManager.history.push({
+                type: '',
+                date: new Date(),
+                absoluteFilePath: key || 'Missing filename.',
+                right: requestedCode,
+                left: codeOnDisk,
+                wroteToDisk: true,
+                source: 'Zookeeper',
+                deleted: false,
+              })
+            })
+          })
+          .catch((e) => {
+            console.error(e, 'unable to save history on edited zookeeper files')
+          })
+
+        // Gather promises for all the file reads
+        const fileDeletionPromises = payload.filesToDelete.map(async (p) => {
           const key = fsZds.join(
             settingsValues.app.projectDirectory.current,
             p.requestedFileName
           )
-          const requestedFilename = p.requestedFileName
-          const absoluteFilePath = fsZds.join(
-            settingsValues.app.projectDirectory.current,
-            requestedFilename
-          )
-          const code = hash[key]
-            ? hash[key]
-            : await fsZds.readFile(key, { encoding: 'utf-8' })
-          kclManager.history.push({
-            type: '',
-            date: new Date(),
-            absoluteFilePath: absoluteFilePath || 'Missing filename.',
-            right: '',
-            left: code,
-            wroteToDisk: true,
-            source: 'Zookeeper',
-            deleted: true,
-          })
+          return fsZds.readFile(key, { encoding: 'utf-8' })
         })
+        // Push all the changes
+        Promise.all(fileDeletionPromises)
+          .then((result) => {
+            result.forEach((codeOnDisk, index) => {
+              const p = payload.files[index]
+              const requestedFilename = p.requestedFileName
+              const absoluteFilePath = fsZds.join(
+                settingsValues.app.projectDirectory.current,
+                requestedFilename
+              )
+              kclManager.history.push({
+                type: '',
+                date: new Date(),
+                absoluteFilePath: absoluteFilePath || 'Missing filename.',
+                right: '',
+                left: codeOnDisk,
+                wroteToDisk: true,
+                source: 'Zookeeper',
+                deleted: true,
+              })
+            })
+          })
+          .catch((e) => {
+            console.error(
+              e,
+              'unable to save history on deleted zookeeper files'
+            )
+          })
 
         kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
 

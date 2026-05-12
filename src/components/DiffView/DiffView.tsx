@@ -33,6 +33,7 @@ import { ActionButton } from '@src/components/ActionButton'
 import { reportRejection } from '@src/lib/trap'
 import { useApp, useSingletons } from '@src/lib/boot'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 function setDiff(
   editorRef: React.RefObject<HTMLDivElement | null>,
@@ -40,7 +41,7 @@ function setDiff(
   left: string,
   right: string,
   kclLSP: LanguageSupport | null,
-  settingsActor
+  settingsActor: SettingsActorType
 ) {
   if (mergeViewRef.current) {
     mergeViewRef.current.destroy()

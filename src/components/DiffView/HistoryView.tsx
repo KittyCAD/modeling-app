@@ -53,7 +53,7 @@ export const HistoryView = (props: AreaTypeComponentProps) => {
                   <div
                     className={`px-2 flex flex-row flex-wrap items-center justify-between text-xs cursor-pointer -outline-offset-1 hover:outline hover:outline-1 hover:bg-gray-300/50 hover:bg-gray-300/50`}
                     role="button"
-                    tabIndex="0"
+                    tabIndex={0}
                     onClick={() => {
                       kclManager.history.lastEntrySelected.value = e
                     }}
