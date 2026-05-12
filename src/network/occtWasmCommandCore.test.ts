@@ -86,6 +86,22 @@ describe('OcctWasmCommandCoreAdapter', () => {
     })
     expect(module.freedPointers).toHaveLength(1)
   })
+
+  it('exposes Emscripten geometry-state ABI probes', async () => {
+    const module = fakeEmscriptenOcctCore()
+    const core = new OcctWasmCommandCoreAdapter(() =>
+      createOcctWasmModuleFromEmscripten(module)
+    )
+
+    await expect(core.hasNativeOcctGeometry()).resolves.toBe(false)
+    await expect(core.debugGeometryState()).resolves.toMatchObject({
+      ok: true,
+      geometryBackend: 'protocol_geometry',
+      nativeOcct: false,
+      shapeCount: 0,
+    })
+    expect(module.freedPointers).toHaveLength(1)
+  })
 })
 
 function fakeEmscriptenOcctCore() {
@@ -105,7 +121,24 @@ function fakeEmscriptenOcctCore() {
         freedPointers.push(args[0] as number)
         return null
       }
+      if (name === 'zoo_occt_core_has_native_occt') {
+        return 0
+      }
       const ptr = nextPtr++
+      if (name === 'zoo_occt_core_debug_geometry_state') {
+        strings.set(
+          ptr,
+          JSON.stringify({
+            ok: true,
+            engine: 'open_cascade',
+            geometryBackend: 'protocol_geometry',
+            nativeOcct: false,
+            shapeCount: 0,
+            shapes: [],
+          })
+        )
+        return ptr
+      }
       strings.set(
         ptr,
         JSON.stringify({

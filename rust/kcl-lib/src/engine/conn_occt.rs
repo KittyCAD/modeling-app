@@ -35,9 +35,12 @@ use crate::exec::DefaultPlanes;
 use crate::execution::IdGenerator;
 
 unsafe extern "C" {
+    fn zoo_occt_core_has_native_occt() -> i32;
     fn zoo_occt_core_start_new_session() -> *mut c_char;
     fn zoo_occt_core_record_rollback_marker(source_range_json: *const c_char) -> *mut c_char;
     fn zoo_occt_core_handle_modeling_command(request_id: *const c_char, request_json: *const c_char) -> *mut c_char;
+    #[cfg(test)]
+    fn zoo_occt_core_debug_geometry_state() -> *mut c_char;
     fn zoo_occt_core_free(value: *mut c_char);
 }
 
@@ -46,6 +49,16 @@ unsafe extern "C" {
 struct CoreResponse {
     ok: bool,
     response: String,
+}
+
+#[cfg(test)]
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct CoreGeometryState {
+    ok: bool,
+    geometry_backend: String,
+    native_occt: bool,
+    shape_count: usize,
 }
 
 #[derive(Debug, Clone)]
@@ -92,6 +105,28 @@ impl EngineConnection {
             source_range,
         )?;
         parse_core_response(&response, source_range)
+    }
+
+    #[cfg(test)]
+    fn debug_geometry_state(&self, source_range: SourceRange) -> Result<CoreGeometryState, KclError> {
+        let response = call_core(|| unsafe { zoo_occt_core_debug_geometry_state() }, source_range)?;
+        let state: CoreGeometryState = serde_json::from_str(&response).map_err(|e| {
+            core_error(
+                format!("Could not parse OCCT command core geometry state: {e}; response={response}"),
+                source_range,
+            )
+        })?;
+        if !state.ok {
+            return Err(core_error(
+                format!("OCCT command core rejected geometry-state request: {response}"),
+                source_range,
+            ));
+        }
+        Ok(state)
+    }
+
+    pub fn has_native_occt_geometry() -> bool {
+        unsafe { zoo_occt_core_has_native_occt() != 0 }
     }
 }
 
@@ -279,6 +314,7 @@ mod tests {
 
     use kittycad_modeling_cmds::ModelingCmd;
     use kittycad_modeling_cmds::websocket::{ModelingCmdReq, WebSocketRequest};
+    use serde_json::json;
     use uuid::Uuid;
 
     use super::EngineConnection;
@@ -304,5 +340,45 @@ mod tests {
 
         assert_eq!(response.request_id(), Some(request_id));
         assert!(response.is_success());
+    }
+
+    #[tokio::test]
+    async fn native_occt_core_tracks_extrude_geometry_state() {
+        let engine = EngineConnection::new().unwrap();
+        assert_eq!(
+            engine.debug_geometry_state(SourceRange::default()).unwrap().shape_count,
+            0
+        );
+
+        let request: WebSocketRequest = serde_json::from_value(json!({
+            "type": "modeling_cmd_req",
+            "cmd_id": Uuid::new_v4(),
+            "cmd": {
+                "type": "extrude",
+                "target": Uuid::new_v4(),
+                "distance": 2,
+                "body_type": "solid",
+                "extrude_method": "new"
+            }
+        }))
+        .unwrap();
+
+        let response = engine
+            .inner_send_modeling_cmd(Uuid::new_v4(), SourceRange::default(), request, HashMap::new())
+            .await
+            .unwrap();
+
+        assert!(response.is_success());
+        let geometry = engine.debug_geometry_state(SourceRange::default()).unwrap();
+        assert_eq!(geometry.shape_count, 1);
+        assert_eq!(geometry.native_occt, EngineConnection::has_native_occt_geometry());
+        assert_eq!(
+            geometry.geometry_backend,
+            if EngineConnection::has_native_occt_geometry() {
+                "native_occt"
+            } else {
+                "protocol_geometry"
+            }
+        );
     }
 }

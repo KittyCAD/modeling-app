@@ -23,6 +23,10 @@ import type { OpenCascadeManagerLike } from '@src/network/openCascadeWorkerClien
 
 export type OcctWasmCoreModule = {
   startNewSession(): void | Promise<void>
+  hasNativeOcctGeometry?(): boolean | Promise<boolean>
+  debugGeometryState?():
+    | OcctCommandCoreGeometryState
+    | Promise<OcctCommandCoreGeometryState>
   recordRollbackMarker(rangeStr: string): boolean | Promise<boolean>
   handleModelingCommand(args: {
     requestId: string
@@ -35,6 +39,15 @@ export type OcctWasmCoreModule = {
     | OpenCascadeVisibleSolidGlb[]
     | Promise<OpenCascadeVisibleSolidGlb[]>
   exportLatestProfileGlbBytes?(): Uint8Array | Promise<Uint8Array>
+}
+
+export type OcctCommandCoreGeometryState = {
+  ok: boolean
+  engine: 'open_cascade'
+  geometryBackend: 'native_occt' | 'protocol_geometry'
+  nativeOcct: boolean
+  shapeCount: number
+  shapes: Array<{ kind: string; volume: number }>
 }
 
 type EmscriptenOcctCommandCoreModule = {
@@ -84,6 +97,14 @@ export class OcctWasmCommandCoreAdapter implements OpenCascadeManagerLike {
     this.latestExportError.value = undefined
     this.bumpShapeVersion()
     await (await this.module()).startNewSession()
+  }
+
+  async hasNativeOcctGeometry(): Promise<boolean> {
+    return (await this.module()).hasNativeOcctGeometry?.() ?? false
+  }
+
+  async debugGeometryState(): Promise<OcctCommandCoreGeometryState> {
+    return (await this.module()).debugGeometryState?.() ?? emptyGeometryState()
   }
 
   async recordRollbackMarker(rangeStr: string): Promise<boolean> {
@@ -281,6 +302,19 @@ class EmscriptenOcctWasmModule implements OcctWasmCoreModule {
     this.callCoreJson('zoo_occt_core_start_new_session', [])
   }
 
+  hasNativeOcctGeometry() {
+    return (
+      this.module.ccall('zoo_occt_core_has_native_occt', 'number', [], []) === 1
+    )
+  }
+
+  debugGeometryState(): OcctCommandCoreGeometryState {
+    return this.callCoreJson(
+      'zoo_occt_core_debug_geometry_state',
+      []
+    ) as OcctCommandCoreGeometryState
+  }
+
   recordRollbackMarker(rangeStr: string) {
     const response = this.callCoreJson('zoo_occt_core_record_rollback_marker', [
       rangeStr,
@@ -327,6 +361,14 @@ class EmscriptenOcctWasmModule implements OcctWasmCoreModule {
 
 class ProtocolOnlyOcctWasmModule implements OcctWasmCoreModule {
   async startNewSession() {}
+
+  hasNativeOcctGeometry() {
+    return false
+  }
+
+  debugGeometryState(): OcctCommandCoreGeometryState {
+    return emptyGeometryState()
+  }
 
   recordRollbackMarker(_rangeStr: string) {
     return true
@@ -413,6 +455,17 @@ function supportedProtocolSmokeCommand(command: { type: string }) {
     command.type === 'set_selection_filter' ||
     command.type === 'object_visible'
   )
+}
+
+function emptyGeometryState(): OcctCommandCoreGeometryState {
+  return {
+    ok: true,
+    engine: 'open_cascade',
+    geometryBackend: 'protocol_geometry',
+    nativeOcct: false,
+    shapeCount: 0,
+    shapes: [],
+  }
 }
 
 function unsupportedResponse(
