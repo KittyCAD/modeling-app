@@ -9,6 +9,11 @@ import { stringToKclExpression } from '@src/lib/kclHelpers'
 import {
   addFlatnessGdt,
   addDatumGdt,
+  addPositionGdt,
+  addAnnotationGdt,
+  addParallelismGdt,
+  addPerpendicularityGdt,
+  addDistanceGdt,
   addProfileGdt,
   getUsedDatumNames,
   getNextAvailableDatumName,
@@ -603,6 +608,417 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
       expect(newCode).toContain('datums = ["A", "B"]')
       expect(newCode).toContain('tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+  })
+
+  describe('Testing addPositionGdt', () => {
+    it('should add position annotations to selected faces and edges', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const face = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'cap'
+      )
+      const edge = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweepEdge'
+      )
+      if (!face || !edge) {
+        throw new Error('Expected a cap face and sweep edge')
+      }
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const datums = await getKclCommandValue(
+        '["A", "B"]',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addPositionGdt({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        datums,
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+
+      expect(newCode).toContain('gdt::position(')
+      expect(newCode).toContain('faces = [')
+      expect(newCode).toContain('edges = [')
+      expect(newCode).toContain('datums = ["A", "B"]')
+      expect(newCode).toContain('tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+  })
+
+  describe('Testing addDistanceGdt', () => {
+    it('should add a distance annotation to a selected edge', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const edge = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweepEdge'
+      )
+      if (!edge) {
+        throw new Error('Expected a sweep edge')
+      }
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addDistanceGdt({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([edge], artifactGraph),
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+
+      expect(newCode).toContain('gdt::distance(')
+      expect(newCode).toMatch(
+        /edges = \[\s*getCommonEdge\(faces = \[[^\]]+\]\)\s*\]/
+      )
+      expect(newCode).toContain('tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add edge length annotations to multiple selected edges', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const edges = [...artifactGraph.values()]
+        .filter((artifact) => artifact.type === 'sweepEdge')
+        .slice(0, 3)
+      if (edges.length !== 3) {
+        throw new Error('Expected three sweep edges')
+      }
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addDistanceGdt({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts(edges, artifactGraph),
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+
+      expect(newCode).toContain('gdt::distance(')
+      expect(newCode).toContain('edges = [')
+      expect(newCode).not.toContain('from = ')
+      expect(newCode).not.toContain('to = ')
+      expect(newCode.match(/getCommonEdge/g)?.length).toBeGreaterThanOrEqual(3)
+      expect(newCode).toContain('tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a distance annotation between two selected edges', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const edges = [...artifactGraph.values()]
+        .filter((artifact) => artifact.type === 'sweepEdge')
+        .slice(0, 2)
+      if (edges.length !== 2) {
+        throw new Error('Expected two sweep edges')
+      }
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addDistanceGdt({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts(edges, artifactGraph),
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+
+      expect(newCode).toContain('gdt::distance(')
+      expect(newCode).toContain('from = getCommonEdge(')
+      expect(newCode).toContain('to = getCommonEdge(')
+      expect(newCode).toContain('tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a distance annotation between two selected faces', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const faces = [...artifactGraph.values()]
+        .filter(
+          (artifact) => artifact.type === 'wall' || artifact.type === 'cap'
+        )
+        .slice(0, 2)
+      if (faces.length !== 2) {
+        throw new Error('Expected two faces')
+      }
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addDistanceGdt({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts(faces, artifactGraph),
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+
+      expect(newCode).toContain('gdt::distance(')
+      expect(newCode).toContain('from = ')
+      expect(newCode).toContain('to = ')
+      expect(newCode).toContain('tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a distance annotation between a selected face and edge', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const face = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'cap' || artifact.type === 'wall'
+      )
+      const edge = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweepEdge'
+      )
+      if (!face || !edge) {
+        throw new Error('Expected a face and sweep edge')
+      }
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addDistanceGdt({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+
+      expect(newCode).toContain('gdt::distance(')
+      expect(newCode).toContain('from = ')
+      expect(newCode).toContain('to = getCommonEdge(')
+      expect(newCode).toContain('tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+  })
+
+  describe('Testing addPerpendicularityGdt', () => {
+    it('should add perpendicularity annotations to selected faces and edges', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const face = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'cap'
+      )
+      const edge = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweepEdge'
+      )
+      if (!face || !edge) {
+        throw new Error('Expected a cap face and sweep edge')
+      }
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addPerpendicularityGdt({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        datums: 'A, B',
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+
+      expect(newCode).toContain('gdt::perpendicularity(')
+      expect(newCode).toContain('faces = [')
+      expect(newCode).toContain('edges = [')
+      expect(newCode).toContain('datums = ["A", "B"]')
+      expect(newCode).toContain('tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+  })
+
+  describe('Testing addParallelismGdt', () => {
+    it('should add parallelism annotations to selected faces and edges', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        boxWithOneTagAndChamfer,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const selections = [
+        ...[...artifactGraph.values()].filter(
+          (artifact) => artifact.type === 'wall'
+        ),
+        ...[...artifactGraph.values()].filter(
+          (artifact) => artifact.type === 'segment'
+        ),
+      ].slice(0, 2)
+      const objects = createSelectionFromArtifacts(selections, artifactGraph)
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+
+      const result = addParallelismGdt({
+        ast,
+        artifactGraph,
+        objects,
+        tolerance,
+        datums: 'A, B',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+
+      expect(newCode).toContain('gdt::parallelism(')
+      expect(newCode).toContain('tolerance = 0.1mm')
+      expect(newCode).toContain('datums = ["A", "B"]')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+  })
+
+  describe('Testing addAnnotationGdt', () => {
+    it('should add annotations to selected faces and edges', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        boxWithOneTagAndChamfer,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const selections = [
+        ...[...artifactGraph.values()].filter(
+          (artifact) => artifact.type === 'wall'
+        ),
+        ...[...artifactGraph.values()].filter(
+          (artifact) => artifact.type === 'segment'
+        ),
+      ].slice(0, 2)
+      const objects = createSelectionFromArtifacts(selections, artifactGraph)
+
+      const result = addAnnotationGdt({
+        ast,
+        artifactGraph,
+        objects,
+        annotation: 'Break all sharp edges',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+
+      expect(newCode).toContain('gdt::annotation(')
+      expect(newCode).toContain('annotation = "Break all sharp edges"')
+      expect(newCode).toMatch(/faces = \[[^\]]+\]|edges = \[[^\]]+\]/)
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })

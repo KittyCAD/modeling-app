@@ -14,13 +14,10 @@ use crate::ExecutorContext;
 use crate::ModuleId;
 use crate::errors::KclError;
 use crate::exec::KclValue;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::ArtifactGraph;
 use crate::execution::EnvironmentRef;
 use crate::execution::ModuleArtifactState;
-#[cfg(feature = "artifact-graph")]
 use crate::modules::ModulePath;
-#[cfg(feature = "artifact-graph")]
 use crate::modules::ModuleRepr;
 use crate::tooling::render_artifacts::RENDERED_MODEL_NAME;
 use crate::util::RetryConfig;
@@ -43,11 +40,9 @@ struct Test {
     output_dir: PathBuf,
     /// True to skip asserting the artifact graph and only write it. The default
     /// is false and to assert it.
-    #[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
     skip_assert_artifact_graph: bool,
 }
 
-#[cfg(feature = "artifact-graph")]
 const REPO_ROOT: &str = "../..";
 
 fn is_writing() -> bool {
@@ -101,15 +96,9 @@ impl ExecState {
         (outcome, module_state, responses)
     }
 
-    #[cfg(not(feature = "artifact-graph"))]
-    fn to_module_state(&self, _project_directory: &Path) -> IndexMap<String, ModuleArtifactState> {
-        Default::default()
-    }
-
     /// The keys of the map are the module paths.  Can't use `ModulePath` since
     /// it needs to be converted to a string to be a JSON object key.  The paths
     /// need to be relative so that generating locally works in CI.
-    #[cfg(feature = "artifact-graph")]
     fn to_module_state(&self, _project_directory: &Path) -> IndexMap<String, ModuleArtifactState> {
         let project_directory = std::path::Path::new(REPO_ROOT)
             .canonicalize()
@@ -142,7 +131,6 @@ impl ExecState {
     }
 }
 
-#[cfg(feature = "artifact-graph")]
 fn relative_module_path(module_path: &ModulePath, abs_project_directory: &Path) -> Result<String, std::io::Error> {
     match module_path {
         ModulePath::Main => Ok("main".to_owned()),
@@ -320,11 +308,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                 })
             }));
 
-            #[cfg(not(feature = "artifact-graph"))]
             let mut lint_findings = program_to_lint.lint_all().expect("failed to lint program");
-            #[cfg(feature = "artifact-graph")]
-            let mut lint_findings = program_to_lint.lint_all().expect("failed to lint program");
-            #[cfg(feature = "artifact-graph")]
             lint_findings.extend(
                 exec_state
                     .modules()
@@ -354,9 +338,6 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
 
             let snapshot_results = common_snapshots(test, outcome.variables, responses);
 
-            #[cfg(not(feature = "artifact-graph"))]
-            drop(module_state);
-            #[cfg(feature = "artifact-graph")]
             assert_artifact_snapshots(test, module_state, outcome.artifact_graph);
 
             let lint_snap_path = test.output_dir.join("lints.snap");
@@ -418,7 +399,6 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     };
                     let snapshot_results = common_snapshots(test, error.variables, responses);
 
-                    #[cfg(feature = "artifact-graph")]
                     {
                         let module_state = e
                             .exec_state
@@ -484,7 +464,6 @@ fn common_snapshots(
 
 /// Assert snapshots for artifacts that should happen both when KCL execution
 /// succeeds and when it results in an error.
-#[cfg(feature = "artifact-graph")]
 fn assert_artifact_snapshots(
     test: &Test,
     module_state: IndexMap<String, ModuleArtifactState>,
@@ -3014,7 +2993,48 @@ mod intersect_cubes {
         super::execute(TEST_NAME, true).await
     }
 }
+mod csg_subtract_multi_target_result_reuse {
+    const TEST_NAME: &str = "csg_subtract_multi_target_result_reuse";
 
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod csg_subtract_self_empty_result {
+    const TEST_NAME: &str = "csg_subtract_self_empty_result";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
 mod pattern_into_union {
     const TEST_NAME: &str = "pattern_into_union";
 
@@ -5494,6 +5514,91 @@ mod join_surfaces_single_input_does_not_consume {
 }
 mod kcl_v2 {
     const TEST_NAME: &str = "kcl_v2";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod inconsistent_sketch {
+    const TEST_NAME: &str = "inconsistent_sketch";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod inconsistent_sketch_converge {
+    const TEST_NAME: &str = "inconsistent_sketch_converge";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod consumed_solid_original_issue {
+    const TEST_NAME: &str = "consumed_solid_original_issue";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+
+mod christmas_tree_mirror3d_union {
+    const TEST_NAME: &str = "christmas_tree_mirror3d_union";
 
     /// Test parsing KCL.
     #[test]

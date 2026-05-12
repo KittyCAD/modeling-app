@@ -224,7 +224,7 @@ impl EngineConnection {
         tcp_write
             .send(WsMsg::Binary(msg.into()))
             .await
-            .map_err(|e| anyhow!("could not send json over websocket: {e}"))?;
+            .map_err(|e| anyhow!("could not send MsgPack over websocket: {e}"))?;
         Ok(())
     }
 
@@ -535,18 +535,9 @@ impl EngineManager for EngineConnection {
                 }
             }
 
-            #[cfg(feature = "artifact-graph")]
-            {
-                // We cannot pop here or it will break the artifact graph.
-                if let Some(resp) = self.responses.responses.read().await.get(&id) {
-                    return Ok(resp.clone());
-                }
-            }
-            #[cfg(not(feature = "artifact-graph"))]
-            {
-                if let Some(resp) = self.responses.responses.write().await.shift_remove(&id) {
-                    return Ok(resp);
-                }
+            // We cannot pop here or it will break the artifact graph.
+            if let Some(resp) = self.responses.responses.read().await.get(&id) {
+                return Ok(resp.clone());
             }
         }
 

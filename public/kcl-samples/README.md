@@ -42,6 +42,8 @@ ex. `just overwrite-sim-test-sample angle-gauge`
 [![bench-for-kids](screenshots/bench-for-kids.png)](bench-for-kids/main.kcl)
 #### [bike-hub-washer](bike-hub-washer/main.kcl) ([screenshot](screenshots/bike-hub-washer.png))
 [![bike-hub-washer](screenshots/bike-hub-washer.png)](bike-hub-washer/main.kcl)
+#### [blend-tutorial](blend-tutorial/main.kcl) ([screenshot](screenshots/blend-tutorial.png))
+[![blend-tutorial](screenshots/blend-tutorial.png)](blend-tutorial/main.kcl)
 #### [bone-plate](bone-plate/main.kcl) ([screenshot](screenshots/bone-plate.png))
 [![bone-plate](screenshots/bone-plate.png)](bone-plate/main.kcl)
 #### [bottle](bottle/main.kcl) ([screenshot](screenshots/bottle.png))

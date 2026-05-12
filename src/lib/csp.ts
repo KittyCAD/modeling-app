@@ -9,8 +9,8 @@ import mime from 'mime-types'
 
 import { ENVIRONMENT_FILE_NAME } from '@src/lib/constants'
 import {
+  STAGING_BUILD_SUFFIX,
   getAppFolderNameFromBuild,
-  isStagingOrDebugAppBuild,
 } from '@src/lib/appFolderName'
 
 const CSP_META_REGEX =
@@ -53,10 +53,10 @@ const getEnvironmentFolderName = () => {
   })
 }
 
-const isStagingOrDebugBuild = isStagingOrDebugAppBuild({
-  packageName: packageJSON.name,
-  packageVersion: packageJSON.version,
-})
+const isStagingOrDebugBuild =
+  packageJSON.name.includes(STAGING_BUILD_SUFFIX) ||
+  packageJSON.version === '0.0.0' ||
+  packageJSON.version === 'dev'
 
 const getTestSettingsPathForCsp = () => {
   if (process.env.NODE_ENV !== 'test') return undefined

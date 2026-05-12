@@ -90,7 +90,7 @@ export type ToolbarItem = {
     | string
     | ((state: StateFrom<typeof modelingMachine>) => string | string[])
   description: string
-  extraNote?: string
+  extraInfo?: string
   links: { label: string; url: string }[]
   isActive?: (state: StateFrom<typeof modelingMachine>) => boolean
   disabledReason?:
@@ -336,7 +336,7 @@ function createSketchSolveConstraintDropdownItem({
   }
 }
 
-const constraintsExtraNote = 'Hold Cmd/Ctrl to keep selection'
+const constraintsExtraInfo = 'Hold Cmd/Ctrl to keep selection'
 
 const sketchSolveConstraintItems: ToolbarItem[] = [
   createSketchSolveConstraintDropdownItem({
@@ -633,7 +633,7 @@ export function buildToolbarConfig(
           title: 'Chamfer',
           hotkey: 'C',
           description: 'Bevel the edges of a 3D solid.',
-          extraNote:
+          extraInfo:
             'Chamfers cannot touch other chamfers yet. This is under development, see issue tracker.',
           links: [
             {
@@ -1228,48 +1228,114 @@ export function buildToolbarConfig(
             },
             {
               id: 'gdt-position',
-              onClick: () => {},
-              status: 'unavailable',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'GDT Position', groupId: 'modeling' },
+                }),
+              status: 'experimental',
               title: 'Position',
+              icon: 'gdtPosition',
               description:
                 'Controls location tolerance of holes, pins, and other features.',
-              links: [],
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-position'
+                  ),
+                },
+              ],
             },
             {
               id: 'gdt-perpendicularity',
-              onClick: () => {},
-              status: 'unavailable',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: {
+                    name: 'GDT Perpendicularity',
+                    groupId: 'modeling',
+                  },
+                }),
+              status: 'experimental',
               title: 'Perpendicularity',
+              icon: 'perpendicular',
               description:
                 'Specifies how perpendicular one feature must be to another.',
-              links: [],
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-perpendicularity'
+                  ),
+                },
+              ],
             },
             {
               id: 'gdt-parallelism',
-              onClick: () => {},
-              status: 'unavailable',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: {
+                    name: 'GDT Parallelism',
+                    groupId: 'modeling',
+                  },
+                }),
+              status: 'experimental',
               title: 'Parallelism',
+              icon: 'parallel',
               description:
                 'Specifies how parallel one feature must be to another.',
-              links: [],
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-parallelism'
+                  ),
+                },
+              ],
             },
             {
-              id: 'gdt-dimension',
-              onClick: () => {},
-              status: 'unavailable',
-              title: 'Dimension',
+              id: 'gdt-distance',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'GDT Distance', groupId: 'modeling' },
+                }),
+              status: 'experimental',
+              title: 'Distance',
+              icon: 'dimension',
               description:
-                'Adds size dimensions with manufacturing tolerances.',
-              links: [],
+                'Adds distance annotations to edge lengths or between two entities.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-distance'
+                  ),
+                },
+              ],
             },
             {
-              id: 'gdt-note',
-              onClick: () => {},
-              status: 'unavailable',
-              title: 'Note',
+              id: 'gdt-annotation',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'GDT Annotation', groupId: 'modeling' },
+                }),
+              status: 'experimental',
+              title: 'Annotation',
+              icon: 'text',
               description:
-                'Adds text notes for manufacturing instructions or inspection requirements.',
-              links: [],
+                'Adds text annotations for manufacturing instructions or inspection requirements.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-annotation'
+                  ),
+                },
+              ],
             },
           ],
         },
@@ -1587,7 +1653,7 @@ export function buildToolbarConfig(
               title: 'Length',
               showTitle: false,
               description: 'Constrain the length of a straight segment.',
-              extraNote: constraintsExtraNote,
+              extraInfo: constraintsExtraInfo,
               links: [],
             },
             {
@@ -1603,7 +1669,7 @@ export function buildToolbarConfig(
               title: 'Angle',
               showTitle: false,
               description: 'Constrain the angle between two segments.',
-              extraNote: constraintsExtraNote,
+              extraInfo: constraintsExtraInfo,
               links: [],
             },
             {
@@ -1620,7 +1686,7 @@ export function buildToolbarConfig(
               showTitle: false,
               description:
                 'Constrain a straight segment to be vertical relative to the sketch.',
-              extraNote: constraintsExtraNote,
+              extraInfo: constraintsExtraInfo,
               links: [],
             },
             {
@@ -1637,7 +1703,7 @@ export function buildToolbarConfig(
               showTitle: false,
               description:
                 'Constrain a straight segment to be horizontal relative to the sketch.',
-              extraNote: constraintsExtraNote,
+              extraInfo: constraintsExtraInfo,
               links: [],
             },
             {
@@ -1653,7 +1719,7 @@ export function buildToolbarConfig(
               title: 'Parallel',
               showTitle: false,
               description: 'Constrain two segments to be parallel.',
-              extraNote: constraintsExtraNote,
+              extraInfo: constraintsExtraInfo,
               links: [],
             },
             {
@@ -1670,7 +1736,7 @@ export function buildToolbarConfig(
               showTitle: false,
               description:
                 'Constrain two or more segments to have equal length.',
-              extraNote: constraintsExtraNote,
+              extraInfo: constraintsExtraInfo,
               links: [],
             },
             {
@@ -1687,7 +1753,7 @@ export function buildToolbarConfig(
               showTitle: false,
               description:
                 'Constrain the horizontal distance between two points.',
-              extraNote: constraintsExtraNote,
+              extraInfo: constraintsExtraInfo,
               links: [],
             },
             {
@@ -1704,7 +1770,7 @@ export function buildToolbarConfig(
               showTitle: false,
               description:
                 'Constrain the vertical distance between two points.',
-              extraNote: constraintsExtraNote,
+              extraInfo: constraintsExtraInfo,
               links: [],
             },
             {
@@ -1720,7 +1786,7 @@ export function buildToolbarConfig(
               title: 'Absolute X',
               showTitle: false,
               description: 'Constrain the x-coordinate of a point.',
-              extraNote: constraintsExtraNote,
+              extraInfo: constraintsExtraInfo,
               links: [],
             },
             {
@@ -1736,7 +1802,7 @@ export function buildToolbarConfig(
               title: 'Absolute Y',
               showTitle: false,
               description: 'Constrain the y-coordinate of a point.',
-              extraNote: constraintsExtraNote,
+              extraInfo: constraintsExtraInfo,
               links: [],
             },
             {
@@ -1753,7 +1819,7 @@ export function buildToolbarConfig(
               showTitle: false,
               description:
                 'Constrain the perpendicular distance between two segments.',
-              extraNote: constraintsExtraNote,
+              extraInfo: constraintsExtraInfo,
               links: [],
             },
             {
@@ -1770,7 +1836,7 @@ export function buildToolbarConfig(
               showTitle: false,
               description:
                 'Align the ends of two or more segments horizontally.',
-              extraNote: constraintsExtraNote,
+              extraInfo: constraintsExtraInfo,
               links: [],
             },
             {
@@ -1786,7 +1852,7 @@ export function buildToolbarConfig(
               title: 'Vertically Align',
               showTitle: false,
               description: 'Align the ends of two or more segments vertically.',
-              extraNote: constraintsExtraNote,
+              extraInfo: constraintsExtraInfo,
               links: [],
             },
             {
@@ -1802,7 +1868,7 @@ export function buildToolbarConfig(
               title: 'Snap to X',
               showTitle: false,
               description: 'Snap a point to an x-coordinate.',
-              extraNote: constraintsExtraNote,
+              extraInfo: constraintsExtraInfo,
               links: [],
             },
             {
@@ -1818,7 +1884,7 @@ export function buildToolbarConfig(
               title: 'Snap to Y',
               showTitle: false,
               description: 'Snap a point to a y-coordinate.',
-              extraNote: constraintsExtraNote,
+              extraInfo: constraintsExtraInfo,
               links: [],
             },
             {
@@ -2098,7 +2164,7 @@ export function buildToolbarConfig(
           hotkey: 'D',
           description:
             'Constrain distance between points, length of lines, or radius of arcs.',
-          extraNote: constraintsExtraNote,
+          extraInfo: constraintsExtraInfo,
           links: [],
           isActive: (state) => false,
         },
@@ -2114,7 +2180,7 @@ export function buildToolbarConfig(
           title: 'Horizontal Distance',
           hotkey: 'Alt+D',
           description: 'Constrain horizontal distance between two points.',
-          extraNote: constraintsExtraNote,
+          extraInfo: constraintsExtraInfo,
           links: [],
           isActive: (state) => false,
         },
@@ -2130,7 +2196,7 @@ export function buildToolbarConfig(
           title: 'Vertical Distance',
           hotkey: 'Shift+D',
           description: 'Constrain vertical distance between two points.',
-          extraNote: constraintsExtraNote,
+          extraInfo: constraintsExtraInfo,
           links: [],
           isActive: (state) => false,
         },

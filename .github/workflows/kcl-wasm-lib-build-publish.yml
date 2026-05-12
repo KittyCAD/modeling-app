@@ -38,7 +38,7 @@ jobs:
           cache: false
           rustflags: ""
 
-      - uses: taiki-e/install-action@cf525cb33f51aca27cd6fa02034117ab963ff9f1
+      - uses: taiki-e/install-action@c30ba1cbe2face7f695d394a2c95af204d417b29
         with:
           tool: wasm-pack
 
