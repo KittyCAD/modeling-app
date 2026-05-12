@@ -22,7 +22,6 @@ import {
   getOperationVariableName,
   groupNestedOperations,
   groupOperationTypeStreaks,
-  groupSketchBlockOperations,
 } from '@src/lib/operations'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { describe, expect, it } from 'vitest'
