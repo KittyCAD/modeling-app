@@ -39,21 +39,21 @@ This is part of model-based definition (MBD).
 ### Examples
 
 ```kcl
-width = 5
+width = 5in
 
 startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(end = [width, 0], tag = $side1)
-  |> line(end = [0, width], tag = $side2)
-  |> line(end = [-width, 0], tag = $side3)
-  |> line(end = [0, -width], tag = $side4)
+  |> startProfile(at = [0in, 0in])
+  |> line(end = [width, 0in], tag = $side1)
+  |> line(end = [0in, width], tag = $side2)
+  |> line(end = [-width, 0in], tag = $side3)
+  |> line(end = [0in, -width], tag = $side4)
   |> close()
-  |> extrude(length = 5, tagStart = $bottom, tagEnd = $top)
+  |> extrude(length = width, tagStart = $bottom, tagEnd = $top)
 
 gdt::datum(
   face = side2,
   name = "A",
-  framePosition = [5, 0],
+  framePosition = [width, 0in],
   framePlane = XZ,
 )
 
