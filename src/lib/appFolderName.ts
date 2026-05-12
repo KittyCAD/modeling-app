@@ -13,10 +13,7 @@ type AppFolderNameFromBuildOptions = {
   appIdBase?: string
 }
 
-type AppBuildOptions = Pick<
-  AppFolderNameFromBuildOptions,
-  'packageName' | 'packageVersion'
->
+export const STAGING_BUILD_SUFFIX = '-staging'
 
 export const getAppFolderName = ({
   packageName,
@@ -26,23 +23,12 @@ export const getAppFolderName = ({
   appIdBase = 'dev.zoo.modeling-app',
 }: AppFolderNameOptions) => {
   const appId = isStaging
-    ? `${appIdBase}-staging`
+    ? `${appIdBase}${STAGING_BUILD_SUFFIX}`
     : isStagingOrDebug
       ? `${appIdBase}-local`
       : appIdBase
 
   return platform === 'linux' ? packageName : appId
-}
-
-export const isStagingOrDebugAppBuild = ({
-  packageName,
-  packageVersion,
-}: AppBuildOptions) => {
-  return (
-    packageName.includes('-staging') ||
-    packageVersion === '0.0.0' ||
-    packageVersion === 'dev'
-  )
 }
 
 export const getAppFolderNameFromBuild = ({
@@ -51,11 +37,9 @@ export const getAppFolderNameFromBuild = ({
   platform,
   appIdBase,
 }: AppFolderNameFromBuildOptions) => {
-  const isStaging = packageName.includes('-staging')
-  const isStagingOrDebug = isStagingOrDebugAppBuild({
-    packageName,
-    packageVersion,
-  })
+  const isStaging = packageName.includes(STAGING_BUILD_SUFFIX)
+  const isStagingOrDebug =
+    isStaging || packageVersion === '0.0.0' || packageVersion === 'dev'
 
   return getAppFolderName({
     packageName,

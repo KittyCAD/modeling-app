@@ -101,7 +101,8 @@ async function extractKclArgument(
   operation: StdLibCallOp,
   argName: string,
   rustContext: RustContext,
-  isArray?: boolean
+  isArray?: boolean,
+  allowStringArrays?: boolean
 ): Promise<KclCommandValue | { error: string }> {
   const arg = operation.labeledArgs?.[argName]
   if (!arg?.sourceRange) {
@@ -111,7 +112,7 @@ async function extractKclArgument(
   const result = await stringToKclExpression(
     code.slice(...arg.sourceRange.map((r) => toUtf16(r, code))),
     rustContext,
-    { allowArrays: isArray }
+    { allowArrays: isArray, allowStringArrays }
   )
 
   if (err(result) || 'errors' in result) {
@@ -243,21 +244,17 @@ function extractStringArgument(
     : undefined
 }
 
-function extractStringArrayArgument(
+async function extractOptionalKclArrayArgument(
   code: string,
   operation: StdLibCallOp,
-  argName: string
-): string | undefined {
-  const raw = extractStringArgument(code, operation, argName)
-  if (!raw) return undefined
+  argName: string,
+  rustContext: RustContext
+): Promise<KclCommandValue | undefined | { error: string }> {
+  if (!operation.labeledArgs?.[argName]?.sourceRange) {
+    return undefined
+  }
 
-  return raw
-    .replace(/^\s*\[/, '')
-    .replace(/\]\s*$/, '')
-    .split(',')
-    .map((value) => stripQuotes(value.trim()))
-    .filter(Boolean)
-    .join(', ')
+  return extractKclArgument(code, operation, argName, rustContext, true, true)
 }
 
 /**
@@ -2036,19 +2033,14 @@ const prepareToEditGdtPosition: PrepareToEditCallback = async ({
     optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
-  let datums: ModelingCommandSchema['GDT Position']['datums']
-  if (operation.labeledArgs?.['datums']?.sourceRange) {
-    const datumsResult = await extractKclArgument(
-      code,
-      operation,
-      'datums',
-      rustContext,
-      true
-    )
-    if ('error' in datumsResult) {
-      return { reason: datumsResult.error }
-    }
-    datums = datumsResult
+  const datums = await extractOptionalKclArrayArgument(
+    code,
+    operation,
+    'datums',
+    rustContext
+  )
+  if (datums && 'error' in datums) {
+    return { reason: datums.error }
   }
 
   const argDefaultValues: ModelingCommandSchema['GDT Position'] = {
@@ -2112,7 +2104,15 @@ const prepareToEditGdtProfile: PrepareToEditCallback = async ({
     optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
-  const datums = extractStringArrayArgument(code, operation, 'datums')
+  const datums = await extractOptionalKclArrayArgument(
+    code,
+    operation,
+    'datums',
+    rustContext
+  )
+  if (datums && 'error' in datums) {
+    return { reason: datums.error }
+  }
 
   const argDefaultValues: ModelingCommandSchema['GDT Profile'] = {
     edges,
@@ -2282,7 +2282,15 @@ const prepareToEditGdtPerpendicularity: PrepareToEditCallback = async ({
     optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
-  const datums = extractStringArrayArgument(code, operation, 'datums')
+  const datums = await extractOptionalKclArrayArgument(
+    code,
+    operation,
+    'datums',
+    rustContext
+  )
+  if (datums && 'error' in datums) {
+    return { reason: datums.error }
+  }
 
   const argDefaultValues: ModelingCommandSchema['GDT Perpendicularity'] = {
     objects: { graphSelections, otherSelections: [] },
@@ -2361,7 +2369,15 @@ const prepareToEditGdtParallelism: PrepareToEditCallback = async ({
     optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
-  const datums = extractStringArrayArgument(code, operation, 'datums')
+  const datums = await extractOptionalKclArrayArgument(
+    code,
+    operation,
+    'datums',
+    rustContext
+  )
+  if (datums && 'error' in datums) {
+    return { reason: datums.error }
+  }
 
   const argDefaultValues: ModelingCommandSchema['GDT Parallelism'] = {
     objects: { graphSelections, otherSelections: [] },

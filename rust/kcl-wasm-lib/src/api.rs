@@ -185,7 +185,7 @@ impl Context {
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
         let (source_delta, scene_graph_delta) = guard
-            .execute_mock(&ctx, version, sketch)
+            .execute_mock_from_preview(&ctx, version, sketch)
             .await
             .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?;
         let checkpoint_id = guard
@@ -422,10 +422,17 @@ impl Context {
 
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
-        let (source_delta, scene_graph_delta) = guard
-            .edit_segments(&ctx, version, sketch, segments)
-            .await
-            .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
+        let (source_delta, scene_graph_delta) = if create_checkpoint {
+            guard
+                .edit_segments_commit_from_preview(&ctx, version, sketch, segments)
+                .await
+                .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?
+        } else {
+            guard
+                .edit_segments_for_preview(&ctx, version, sketch, segments)
+                .await
+                .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?
+        };
         let checkpoint_id = if create_checkpoint {
             Some(
                 guard
