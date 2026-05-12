@@ -1724,11 +1724,24 @@ impl Node<SketchBlock> {
         let mut sketch_block_state = sketch_block_state;
 
         // Translate sketch variables and constraints to solver input.
+        //
+        // Coincident and transient fixed constraints get a heavier weight so they hold up under
+        // stress — e.g. when the user drags a sketch into a configuration that can't be fully
+        // satisfied, we'd rather see other constraints absorb the error than have shared points
+        // come apart.
+        const COINCIDENT_WEIGHT: f64 = 100.0;
+        const DRAG_FIXED_WEIGHT: f64 = 100.0;
         let constraints = sketch_block_state
             .solver_constraints
             .iter()
             .cloned()
-            .map(ezpz::ConstraintRequest::highest_priority)
+            .map(|c| {
+                let req = ezpz::ConstraintRequest::highest_priority(c);
+                match c {
+                    ezpz::Constraint::PointsCoincident(..) => req.with_weight(COINCIDENT_WEIGHT),
+                    _ => req,
+                }
+            })
             .chain(
                 // Optional constraints have a lower priority.
                 sketch_block_state
