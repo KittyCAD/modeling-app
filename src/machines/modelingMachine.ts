@@ -1923,7 +1923,7 @@ export const modelingMachine = setup({
           }
 
           if (setSelections.selectionType === 'defaultPlaneSelection') {
-            const { engineEvents } = handleSelectionBatch({
+            const { engineEvents, codeMirrorSelection } = handleSelectionBatch({
               selections,
               artifactGraph: kclManager.artifactGraph,
               code: kclManager.code,
@@ -1934,6 +1934,14 @@ export const modelingMachine = setup({
                 wasmInstance,
               },
             })
+
+            if (codeMirrorSelection) {
+              // Default planes are non-code selections, so clear any previous
+              // graph selection still highlighted in the editor.
+              kclManager.editorView.dispatch({
+                selection: codeMirrorSelection,
+              })
+            }
 
             engineEvents?.forEach((event) => {
               engineCommandManager
