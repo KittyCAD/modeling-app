@@ -35,7 +35,7 @@
 /// mbd::name(face = top, name = "mounting-face")
 /// mbd::name(edge = getCommonEdge(faces = [side, top]), name = "front_top_edge")
 /// ```
-@(impl = std_rust, experimental = true)
+@(impl = std_rust)
 export fn name(
   /// The name to assign. Only ASCII alphanumeric characters, `_`, and `-` are
   /// allowed, with a maximum length of 1024. An empty string clears any
