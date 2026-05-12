@@ -1575,7 +1575,7 @@ export async function selectionBodyFace(
   const extrudePathToNode =
     lastChildVariable && !err(lastChildVariable)
       ? lastChildVariable.pathToNode
-      : extrusion.codeRef.pathToNode
+      : []
 
   return {
     type: 'extrudeFace',

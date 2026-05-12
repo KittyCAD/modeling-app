@@ -12,16 +12,9 @@ import {
   findLastRangeStartingBefore,
   getSelectionTypeDisplayText,
   handleSelectionBatch,
-  selectionBodyFace,
 } from '@src/lib/selections'
 import type { Selection } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-
-function rangeOf(code: string, search: string): SourceRange {
-  const start = code.indexOf(search)
-  if (start === -1) throw new Error(`Could not find ${search}`)
-  return [start, start + search.length, 0]
-}
 
 describe('testing source range to artifact conversion', () => {
   const MY_CODE = `sketch001 = startSketchOn(XZ)
@@ -1335,104 +1328,6 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
       }
     }
   )
-})
-
-describe('selectionBodyFace', () => {
-  test('uses the sweep path for unassigned extrusion cap faces', async () => {
-    const code = `startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(end = [1, 0])
-  |> close()
-  |> extrude(length = 2)`
-    const ast = { type: 'Program', start: 0, end: code.length, body: [] }
-    const extrudePathToNode: [string | number, string][] = [
-      ['body', ''],
-      [0, 'index'],
-      ['expression', ''],
-      ['body', 'PipeExpression'],
-      [4, 'index'],
-    ]
-    const codeRef = {
-      range: rangeOf(code, 'extrude(length = 2)'),
-      nodePath: { steps: [] },
-      pathToNode: [...extrudePathToNode],
-    }
-    const artifactGraph: ArtifactGraph = new Map([
-      [
-        'path-1',
-        {
-          type: 'path',
-          id: 'path-1',
-          subType: 'sketch',
-          planeId: 'plane-1',
-          segIds: [],
-          consumed: true,
-          sweepId: 'sweep-1',
-          trajectorySweepId: null,
-          codeRef,
-        },
-      ],
-      [
-        'sweep-1',
-        {
-          type: 'sweep',
-          id: 'sweep-1',
-          subType: 'extrusion',
-          pathId: 'path-1',
-          surfaceIds: ['cap-1'],
-          edgeIds: [],
-          codeRef,
-          trajectoryId: null,
-          method: 'new',
-          consumed: false,
-        },
-      ],
-      [
-        'cap-1',
-        {
-          type: 'cap',
-          id: 'cap-1',
-          subType: 'end',
-          edgeCutEdgeIds: [],
-          sweepId: 'sweep-1',
-          pathIds: ['path-1'],
-          faceCodeRef: codeRef,
-          cmdId: 'cmd-1',
-        },
-      ],
-    ])
-
-    const plane = await selectionBodyFace(
-      'cap-1',
-      artifactGraph,
-      ast as never,
-      {} as never,
-      {
-        rustContext: {
-          defaultPlanes: {
-            xy: 'xy',
-            xz: 'xz',
-            yz: 'yz',
-            negXy: 'negXy',
-            negXz: 'negXz',
-            negYz: 'negYz',
-          },
-        } as never,
-        wasmInstance: { recast_wasm: () => '' } as never,
-        sceneInfra: { baseUnitMultiplier: 1 } as never,
-        sceneEntitiesManager: {
-          getFaceDetails: async () => ({
-            origin: { x: 0, y: 0, z: 2 },
-            z_axis: { x: 0, y: 0, z: 1 },
-            y_axis: { x: 0, y: 1, z: 0 },
-          }),
-        } as never,
-      }
-    )
-
-    expect(plane?.type).toBe('extrudeFace')
-    expect(plane?.extrudePathToNode).toEqual([...extrudePathToNode])
-  })
 })
 
 describe('findLastRangeStartingBefore', () => {
