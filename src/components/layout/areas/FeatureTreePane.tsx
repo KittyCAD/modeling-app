@@ -1,76 +1,81 @@
 import type { Diagnostic } from '@codemirror/lint'
-import type { ComponentProps, ReactNode } from 'react'
-import { use, useCallback, useMemo, memo } from 'react'
-import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
+import { Disclosure } from '@headlessui/react'
+import { useSignals } from '@preact/signals-react/runtime'
+import type {
+  OpArg,
+  OpKclValue,
+  Operation,
+} from '@rust/kcl-lib/bindings/Operation'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { type ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
+import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
+import Tooltip from '@src/components/Tooltip'
+import { VisibilityToggle } from '@src/components/VisibilityToggle'
+import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
+import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import usePlatform from '@src/hooks/usePlatform'
+import { sourceRangeToUtf16, toUtf16 } from '@src/lang/errors'
 import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import {
-  getOperationCalculatedDisplay,
-  getOperationIcon,
-  getOperationLabel,
-  getOperationVariableName,
-  getOpTypeLabel,
-  groupSketchBlockOperations,
-  onHide,
-  groupOperationTypeStreaks,
-  isSketchBlockOperationGroup,
-  stdLibMap,
-  onUnhide,
-} from '@src/lib/operations'
-import { isArray, isOverlap, stripQuotes, uuidv4 } from '@src/lib/utils'
-import type { DefaultPlaneStr } from '@src/lib/planes'
-import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
-import { useApp, useSingletons } from '@src/lib/boot'
-import { err, isErr, reportRejection } from '@src/lib/trap'
-import toast from 'react-hot-toast'
-import {
-  base64Decode,
   type Artifact,
   type ArtifactGraph,
   type SourceRange,
+  base64Decode,
 } from '@src/lang/wasm'
+import {
+  getUnrenderedChangesDisabledReason,
+  shouldDisableModelingForUnrenderedChanges,
+} from '@src/lib/automaticRendering'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
-import {
-  type AreaTypeComponentProps,
-  DefaultLayoutPaneID,
-  getOpenPanes,
-  togglePaneLayoutNode,
-  type Layout,
-} from '@src/lib/layout'
-import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
-import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
-import Tooltip from '@src/components/Tooltip'
-import { Disclosure } from '@headlessui/react'
-import { toUtf16, sourceRangeToUtf16 } from '@src/lang/errors'
 import {
   prepareEditCommand,
   resolveFeatureTreeVisibility,
   sendDeleteCommand,
   sendSelectionEvent,
 } from '@src/lib/featureTree'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
+import type { ComponentInstanceEditTarget } from '@src/lib/kclCommands'
 import {
-  getUnrenderedChangesDisabledReason,
-  shouldDisableModelingForUnrenderedChanges,
-} from '@src/lib/automaticRendering'
-import { VisibilityToggle } from '@src/components/VisibilityToggle'
-import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
-import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import { useSignals } from '@preact/signals-react/runtime'
-import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+  type AreaTypeComponentProps,
+  DefaultLayoutPaneID,
+  type Layout,
+  getOpenPanes,
+  togglePaneLayoutNode,
+} from '@src/lib/layout'
+import {
+  getOpTypeLabel,
+  getOperationCalculatedDisplay,
+  getOperationIcon,
+  getOperationLabel,
+  getOperationVariableName,
+  groupOperationTypeStreaks,
+  groupSketchBlockOperations,
+  isSketchBlockOperationGroup,
+  onHide,
+  onUnhide,
+  stdLibMap,
+} from '@src/lib/operations'
+import type { DefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
+import { err, isErr, reportRejection } from '@src/lib/trap'
+import { isArray, isOverlap, stripQuotes, uuidv4 } from '@src/lib/utils'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
-import usePlatform from '@src/hooks/usePlatform'
-import { hotkeyDisplay } from '@src/lib/hotkeys'
+import type { ComponentProps, ReactNode } from 'react'
+import { memo, use, useCallback, useMemo } from 'react'
+import toast from 'react-hot-toast'
 
 type Singletons = ReturnType<typeof useSingletons>
 type SystemDeps = Pick<Singletons, 'kclManager'> & {
@@ -90,6 +95,12 @@ type ComponentInstanceGroup = Extract<
 type ComponentInstanceOperation = GroupBeginOperation & {
   group: ComponentInstanceGroup
 }
+type ComponentOverrideTreeItem = {
+  type: 'ComponentOverride'
+  component: ComponentInstanceOperation
+  name: string
+  arg: OpArg
+}
 type FeatureTreeItem =
   | Operation
   | Operation[]
@@ -103,6 +114,52 @@ function isComponentOperationGroup(
   item: FeatureTreeItem
 ): item is Extract<FeatureTreeItem, { type: 'ComponentOperationGroup' }> {
   return !isArray(item) && item.type === 'ComponentOperationGroup'
+}
+
+function sourceRangeIsInside(range: SourceRange, container: SourceRange) {
+  return (
+    range[2] === container[2] &&
+    range[0] >= container[0] &&
+    range[1] <= container[1]
+  )
+}
+
+function componentInstanceEditTarget(
+  component: ComponentInstanceOperation
+): ComponentInstanceEditTarget {
+  return {
+    componentName: component.group.name,
+    isDefault: component.group.isDefault,
+    sourceRange: component.sourceRange,
+    definitionSourceRange: component.group.definitionSourceRange,
+    labeledArgs: Object.fromEntries(
+      Object.entries(component.group.labeledArgs).map(([name, arg]) => [
+        name,
+        { sourceRange: arg.sourceRange },
+      ])
+    ),
+  }
+}
+
+function componentOverrideItems(
+  component: ComponentInstanceOperation
+): ComponentOverrideTreeItem[] {
+  return Object.entries(component.group.labeledArgs)
+    .filter(
+      ([, arg]) =>
+        component.group.isDefault ||
+        !sourceRangeIsInside(
+          arg.sourceRange,
+          component.group.definitionSourceRange
+        )
+    )
+    .sort(([, left], [, right]) => left.sourceRange[0] - right.sourceRange[0])
+    .map(([name, arg]) => ({
+      type: 'ComponentOverride',
+      component,
+      name,
+      arg,
+    }))
 }
 
 function collectGroupOperations(
@@ -664,6 +721,8 @@ function ComponentOperationGroup({
 }: Omit<OperationProps, 'item'> & {
   group: Extract<FeatureTreeItem, { type: 'ComponentOperationGroup' }>
 }) {
+  const overrides = componentOverrideItems(group.component)
+
   return (
     <Disclosure>
       <div className="flex items-start gap-1">
@@ -687,9 +746,20 @@ function ComponentOperationGroup({
           />
         </div>
       </div>
-      {group.children.length > 0 && (
+      {(overrides.length > 0 || group.children.length > 0) && (
         <Disclosure.Panel>
           <div className="border-l b-4 ml-6">
+            {overrides.map((override) => (
+              <ComponentOverrideItem
+                key={`component-override-${group.component.sourceRange[0]}-${override.name}`}
+                override={override}
+                code={code}
+                isStaleReference={isStaleReference}
+                systemDeps={systemDeps}
+                onSelect={onSelect}
+                size="sm"
+              />
+            ))}
             {group.children.map((item) =>
               renderFeatureTreeItem({
                 item,
@@ -707,6 +777,122 @@ function ComponentOperationGroup({
         </Disclosure.Panel>
       )}
     </Disclosure>
+  )
+}
+
+function ComponentOverrideItem({
+  override,
+  code,
+  isStaleReference,
+  systemDeps,
+  onSelect,
+  size,
+}: {
+  override: ComponentOverrideTreeItem
+  code: string
+  isStaleReference?: boolean
+  systemDeps: SystemDeps
+  onSelect: (sourceRange: SourceRange, artifact?: Artifact) => void
+  size?: 'default' | 'sm'
+}) {
+  const { layout } = useApp()
+  const { commandBarActor, kclManager } = systemDeps
+  const sourceRange = sourceRangeToUtf16(
+    sourceRangeFromRust(override.arg.sourceRange),
+    kclManager.code
+  )
+  const isSelected = useMemo(
+    () =>
+      kclManager.editorState.selection.ranges.some(({ from, to }) =>
+        isOverlap(sourceRange, topLevelRange(from, to))
+      ),
+    [kclManager.editorState.selection.ranges, sourceRange]
+  )
+  const valueText = code.slice(
+    ...override.arg.sourceRange.map((r) => toUtf16(r, code))
+  )
+
+  const selectOverride = useCallback(() => {
+    onSelect(sourceRangeFromRust(override.arg.sourceRange))
+  }, [onSelect, override.arg.sourceRange])
+
+  const enterEditFlow = useCallback(() => {
+    commandBarActor.send({
+      type: 'Find and select command',
+      data: {
+        name: 'component.editOverride',
+        groupId: 'code',
+        argDefaultValues: {
+          componentInstance: componentInstanceEditTarget(override.component),
+          overrideName: override.name,
+        },
+      },
+    })
+  }, [commandBarActor, override])
+
+  const menuItems = useMemo(
+    () =>
+      isStaleReference
+        ? []
+        : [
+            <ContextMenuItem
+              onClick={() => {
+                const l = layout.signal.value
+                if (!isCodePaneOpen(l)) {
+                  openCodePane(l, layout.set)
+                }
+                selectOverride()
+              }}
+            >
+              View KCL source code
+            </ContextMenuItem>,
+            <ContextMenuItem onClick={enterEditFlow} hotkey="Double click">
+              Edit
+            </ContextMenuItem>,
+          ],
+    [
+      enterEditFlow,
+      isStaleReference,
+      layout.set,
+      layout.signal.value,
+      selectOverride,
+    ]
+  )
+
+  return (
+    <OperationItemWrapper
+      icon="make-variable"
+      name={override.name}
+      customSuffix={
+        <code className="block min-w-[0px] flex-auto overflow-hidden whitespace-nowrap overflow-ellipsis text-chalkboard-70 dark:text-chalkboard-40 text-xs">
+          {valueText}
+        </code>
+      }
+      Tooltip={
+        <Tooltip
+          delay={500}
+          position="bottom-left"
+          wrapperClassName="left-0 right-0"
+          contentClassName="text-sm max-w-full"
+        >
+          <div className="flex flex-col gap-2">
+            <p>{override.name}</p>
+            <p className="font-mono text-xs">
+              <span>{getOperationCalculatedDisplay(override.arg.value)}</span>
+              <span> = </span>
+              <span>{valueText}</span>
+            </p>
+          </div>
+        </Tooltip>
+      }
+      menuItems={menuItems}
+      onClick={isStaleReference ? undefined : selectOverride}
+      onContextMenu={isStaleReference ? undefined : selectOverride}
+      onDoubleClick={isStaleReference ? undefined : enterEditFlow}
+      isSelected={isSelected}
+      disabled={isStaleReference}
+      size={size}
+    />
   )
 }
 

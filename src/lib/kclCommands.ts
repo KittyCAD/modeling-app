@@ -7,7 +7,9 @@ import type { ComponentBlock } from '@rust/kcl-lib/bindings/ComponentBlock'
 import type { Expr } from '@rust/kcl-lib/bindings/Expr'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
+import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import type { KclManager } from '@src/lang/KclManager'
+import { toUtf16 } from '@src/lang/errors'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   addModuleImport,
@@ -93,6 +95,14 @@ export type ComponentKclValueOption = {
 
 type ComponentParameterOption = {
   name: string
+}
+
+export type ComponentInstanceEditTarget = {
+  componentName: string
+  isDefault: boolean
+  sourceRange: SourceRange
+  definitionSourceRange: SourceRange
+  labeledArgs: Record<string, { sourceRange: SourceRange }>
 }
 
 type ComponentKclValueContext = {
@@ -273,6 +283,124 @@ function previousNonWhitespaceIndex(code: string, index: number) {
     if (!/\s/.test(code[i])) return i
   }
   return -1
+}
+
+function sourceRangeUtf16(range: SourceRange, code: string): [number, number] {
+  return [toUtf16(range[0], code), toUtf16(range[1], code)]
+}
+
+function replaceRange(
+  code: string,
+  start: number,
+  end: number,
+  replacement: string
+) {
+  return code.slice(0, start) + replacement + code.slice(end)
+}
+
+function sourceRangeIsInside(
+  range: SourceRange,
+  container: SourceRange
+): boolean {
+  return (
+    range[2] === container[2] &&
+    range[0] >= container[0] &&
+    range[1] <= container[1]
+  )
+}
+
+function componentInstanceOverrideValueText(
+  code: string,
+  instance: ComponentInstanceEditTarget,
+  overrideName: string
+): string | undefined {
+  const arg = instance.labeledArgs[overrideName]
+  if (!arg) return undefined
+
+  const [start, end] = sourceRangeUtf16(arg.sourceRange, code)
+  return code.slice(start, end)
+}
+
+function insertComponentOverrideArg({
+  code,
+  callSourceRange,
+  paramName,
+  valueText,
+}: {
+  code: string
+  callSourceRange: SourceRange
+  paramName: string
+  valueText: string
+}): string | Error {
+  const [callStart, callEnd] = sourceRangeUtf16(callSourceRange, code)
+  const openParen = code.indexOf('(', callStart)
+  const closeParen = code.lastIndexOf(')', callEnd)
+  if (openParen < callStart || closeParen < openParen) {
+    return new Error('Could not find the component instance argument list.')
+  }
+
+  const insertion = `${paramName} = ${valueText}`
+  if (!code.slice(callStart, callEnd).includes('\n')) {
+    const hasExistingArgs = code.slice(openParen + 1, closeParen).trim() !== ''
+    return replaceRange(
+      code,
+      closeParen,
+      closeParen,
+      `${hasExistingArgs ? ', ' : ''}${insertion}`
+    )
+  }
+
+  const previousIndex = previousNonWhitespaceIndex(code, closeParen)
+  const needsComma = previousIndex > openParen && code[previousIndex] !== ','
+  const closeLineStart = code.lastIndexOf('\n', closeParen - 1) + 1
+  const closeIndent = indentationAt(code, closeParen)
+  const parameterIndent = `${closeIndent}  `
+  const withComma = needsComma
+    ? replaceRange(code, previousIndex + 1, previousIndex + 1, ',')
+    : code
+  const adjustedCloseLineStart = needsComma
+    ? closeLineStart + 1
+    : closeLineStart
+
+  return replaceRange(
+    withComma,
+    adjustedCloseLineStart,
+    adjustedCloseLineStart,
+    `${parameterIndent}${insertion},\n`
+  )
+}
+
+export function updateComponentInstanceOverrideSource({
+  code,
+  instance,
+  overrideName,
+  valueText,
+}: {
+  code: string
+  instance: ComponentInstanceEditTarget
+  overrideName: string
+  valueText: string
+}): string | Error {
+  const arg = instance.labeledArgs[overrideName]
+  if (!arg) {
+    return new Error(`Could not find override ${overrideName}.`)
+  }
+
+  const argComesFromDefinition = sourceRangeIsInside(
+    arg.sourceRange,
+    instance.definitionSourceRange
+  )
+  if (!argComesFromDefinition || instance.isDefault) {
+    const [start, end] = sourceRangeUtf16(arg.sourceRange, code)
+    return replaceRange(code, start, end, valueText)
+  }
+
+  return insertComponentOverrideArg({
+    code,
+    callSourceRange: instance.sourceRange,
+    paramName: overrideName,
+    valueText,
+  })
 }
 
 export function componentKclValueOptionsForAst(
@@ -1723,6 +1851,96 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         )
         if (err(newCode)) {
           return new Error(`Failed to create parameter: ${newCode.message}`)
+        }
+
+        commandProps.kclManager.updateCodeEditor(newCode, {
+          shouldExecute: true,
+          shouldWriteToDisk: true,
+          shouldAddToHistory: true,
+        })
+      },
+    },
+    {
+      name: 'component.editOverride',
+      displayName: 'Edit component override',
+      description: 'Edit the KCL value for a component instance override.',
+      icon: 'make-variable',
+      groupId: 'code',
+      needsReview: false,
+      args: {
+        componentInstance: {
+          displayName: 'Component instance',
+          inputType: 'string',
+          required: false,
+          hidden: true,
+          skip: true,
+        } as CommandArgument<ComponentInstanceEditTarget>,
+        overrideName: {
+          displayName: 'Override',
+          inputType: 'string',
+          required: false,
+          hidden: true,
+          skip: true,
+        },
+        value: {
+          displayName: 'Value',
+          inputType: 'kcl',
+          required: true,
+          defaultValue: (context: CommandBarContext) => {
+            const instance = context.argumentsToSubmit.componentInstance
+            const overrideName = context.argumentsToSubmit.overrideName
+            if (
+              !instance ||
+              typeof instance !== 'object' ||
+              typeof overrideName !== 'string'
+            ) {
+              return '5'
+            }
+
+            return (
+              componentInstanceOverrideValueText(
+                commandProps.kclManager.code,
+                instance as ComponentInstanceEditTarget,
+                overrideName
+              ) ?? '5'
+            )
+          },
+          createVariable: 'disallow',
+        },
+      },
+      onSubmit: async (data) => {
+        if (!data) {
+          return new Error(NO_INPUT_PROVIDED_MESSAGE)
+        }
+        const { componentInstance, overrideName, value } = data
+        if (
+          !componentInstance ||
+          typeof componentInstance !== 'object' ||
+          typeof overrideName !== 'string' ||
+          !value ||
+          typeof value !== 'object' ||
+          !('valueText' in value) ||
+          typeof value.valueText !== 'string'
+        ) {
+          return new Error(NO_INPUT_PROVIDED_MESSAGE)
+        }
+
+        const newCode = updateComponentInstanceOverrideSource({
+          code: commandProps.kclManager.code,
+          instance: componentInstance as ComponentInstanceEditTarget,
+          overrideName,
+          valueText: value.valueText,
+        })
+        if (newCode instanceof Error) {
+          return newCode
+        }
+
+        const parsed = await commandProps.kclManager.safeParse(
+          newCode,
+          commandProps.kclManager.wasmInstancePromise
+        )
+        if (!parsed) {
+          return new Error('Failed to edit component override.')
         }
 
         commandProps.kclManager.updateCodeEditor(newCode, {

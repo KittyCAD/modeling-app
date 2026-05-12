@@ -6,6 +6,7 @@ import {
   deleteParameterFromComponentSource,
   kclCommands,
   renameParameterInComponentSource,
+  updateComponentInstanceOverrideSource,
 } from '@src/lib/kclCommands'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -493,6 +494,72 @@ describe('Component parameter commands', () => {
       expect.stringContaining('mySurfaceLine = component(length = 5)'),
       expect.objectContaining({ shouldExecute: true })
     )
+  })
+})
+
+describe('component instance override codemod', () => {
+  it('updates an existing override value', () => {
+    const code = `mySurfaceLine = component(length = 5) {
+  extrude001 = extrude(length = length)
+  return extrude001
+}
+surfaceB = mySurfaceLine(length = 10)
+`
+    const definitionStart = code.indexOf('mySurfaceLine = component')
+    const definitionEnd = code.indexOf('\nsurfaceB')
+    const call = rangeOf(code, 'mySurfaceLine(length = 10)')
+    const override = rangeOf(code, '10', call.start)
+
+    const newCode = updateComponentInstanceOverrideSource({
+      code,
+      instance: {
+        componentName: 'mySurfaceLine',
+        isDefault: false,
+        sourceRange: [call.start, call.end, 0],
+        definitionSourceRange: [definitionStart, definitionEnd, 0],
+        labeledArgs: {
+          length: {
+            sourceRange: [override.start, override.end, 0],
+          },
+        },
+      },
+      overrideName: 'length',
+      valueText: '15',
+    })
+
+    expect(newCode).not.toBeInstanceOf(Error)
+    expect(newCode).toContain('surfaceB = mySurfaceLine(length = 15)')
+  })
+
+  it('updates a default instance parameter value', () => {
+    const code = `mySurfaceLine = component(length = 5) {
+  extrude001 = extrude(length = length)
+  return extrude001
+}
+`
+    const definitionStart = code.indexOf('mySurfaceLine = component')
+    const definitionEnd = code.lastIndexOf('}') + 1
+    const defaultValue = rangeOf(code, '5', code.indexOf('length = 5'))
+
+    const newCode = updateComponentInstanceOverrideSource({
+      code,
+      instance: {
+        componentName: 'mySurfaceLine',
+        isDefault: true,
+        sourceRange: [definitionStart, definitionEnd, 0],
+        definitionSourceRange: [definitionStart, definitionEnd, 0],
+        labeledArgs: {
+          length: {
+            sourceRange: [defaultValue.start, defaultValue.end, 0],
+          },
+        },
+      },
+      overrideName: 'length',
+      valueText: '10',
+    })
+
+    expect(newCode).not.toBeInstanceOf(Error)
+    expect(newCode).toContain('mySurfaceLine = component(length = 10)')
   })
 })
 
