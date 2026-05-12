@@ -2202,9 +2202,7 @@ export async function getOffsetSketchPlaneData(
 ): Promise<Error | false | OffsetPlane> {
   const { sceneInfra } = systemDeps
   if (artifact?.type !== 'plane') {
-    return new Error(
-      `Invalid artifact type for offset sketch plane selection: ${artifact?.type}`
-    )
+    return false
   }
   const planeId = artifact.id
   try {
@@ -2353,8 +2351,9 @@ export async function selectionBodyFace(
     artifact?.type !== 'cap' &&
     artifact?.type !== 'wall' &&
     !(artifact?.type === 'edgeCut' && artifact.subType === 'chamfer')
-  )
+  ) {
     return
+  }
 
   const codeRef =
     artifact.type === 'cap'

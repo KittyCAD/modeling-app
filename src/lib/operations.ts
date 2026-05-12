@@ -40,7 +40,7 @@ import {
   retrieveSelectionsFromOpArg,
 } from '@src/lang/queryAst'
 import type { StdLibCallOp } from '@src/lang/queryAst'
-import type { Artifact, CodeRef } from '@src/lang/std/artifactGraph'
+import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
   getCodeRefsByArtifactId,

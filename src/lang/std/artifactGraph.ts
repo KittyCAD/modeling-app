@@ -668,6 +668,18 @@ export function isFaceFromLegacySketch(
     return false
   }
 
+  const segment = getArtifactOfTypes(
+    {
+      key: face.segId,
+      types: ['segment'],
+    },
+    graph
+  )
+
+  if (err(segment)) {
+    return false
+  }
+
   const body = getArtifactOfTypes(
     {
       key: face.sweepId,
@@ -760,7 +772,7 @@ function getPlaneFromStartSketchOnFace(
   graph: ArtifactGraph
 ) {
   const plane = getArtifactOfTypes(
-    { key: sketch.faceId, types: ['plane'] },
+    { key: sketch.faceId, types: ['plane', 'wall', 'cap'] },
     graph
   )
   return plane
