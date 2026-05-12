@@ -35,9 +35,12 @@ import {
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
+import { errorMonitor } from 'node:events'
 
 export function SystemIOMachineLogicListener() {
-  const { auth, billing, settings, systemIOActor } = useApp()
+  const { auth, billing, settings, systemIOActor, project } = useApp()
+  window.dog = systemIOActor
+
   const { kclManager } = useSingletons()
   // We gotta stop with this pattern. It doesn't scale. "Eager hook creation"
   const requestedProjectName = useRequestedProjectName()
@@ -48,6 +51,7 @@ export function SystemIOMachineLogicListener() {
 
   const navigate = useNavigate()
   const settingsValues = settings.useSettings()
+  window.root = settingsValues.app.projectDirectory.current
   const token = auth.useToken()
   const { onFileOpen, onFileClose } = useLspContext()
   const { pathname } = useLocation()
@@ -272,12 +276,27 @@ export function SystemIOMachineLogicListener() {
     (props) => {
       const payload = prepareMlEphantNewFileRequest(props)
 
+      if (project && payload) {
+        const openEditorFilePromises = payload.files.map((file) => {
+          const absoluteFilePath = fsZds.join(settingsValues.app.projectDirectory.current, file.requestedProjectName, file.requestedFileName)
+          return project?.openEditor(absoluteFilePath)
+        })
+        Promise.all(openEditorFilePromises).then((openedEditors) => {
+          openedEditors.forEach((editor, index) => {
+            const requestedCode = payload.files[index].requestedCode
+            editor.updateCodeEditor(requestedCode)
+          })
+        }).catch((error) => {
+          console.error(error, 'failed to update local files from the zookeeper response')
+        })
+      }
+
       if (payload) {
         kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
         systemIOActor.send({
           type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
           data: {
-            files: payload.files,
+            files: [], // Do not edit in this work flow it is handle above already.
             filesToDelete: payload.filesToDelete,
             override: true,
             // Gotcha: Both are called "project name" and "file name", but one of them
