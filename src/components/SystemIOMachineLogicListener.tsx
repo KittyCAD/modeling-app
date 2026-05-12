@@ -280,7 +280,7 @@ export function SystemIOMachineLogicListener() {
             file.requestedProjectName,
             file.requestedFileName
           )
-          return project?.openEditor(absoluteFilePath)
+          return project?.openEditor(absoluteFilePath, undefined, '', false)
         })
         Promise.all(openEditorFilePromises)
           .then((openedEditors) => {
