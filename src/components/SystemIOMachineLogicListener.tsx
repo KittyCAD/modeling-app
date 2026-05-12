@@ -278,17 +278,26 @@ export function SystemIOMachineLogicListener() {
 
       if (project && payload) {
         const openEditorFilePromises = payload.files.map((file) => {
-          const absoluteFilePath = fsZds.join(settingsValues.app.projectDirectory.current, file.requestedProjectName, file.requestedFileName)
+          const absoluteFilePath = fsZds.join(
+            settingsValues.app.projectDirectory.current,
+            file.requestedProjectName,
+            file.requestedFileName
+          )
           return project?.openEditor(absoluteFilePath)
         })
-        Promise.all(openEditorFilePromises).then((openedEditors) => {
-          openedEditors.forEach((editor, index) => {
-            const requestedCode = payload.files[index].requestedCode
-            editor.updateCodeEditor(requestedCode)
+        Promise.all(openEditorFilePromises)
+          .then((openedEditors) => {
+            openedEditors.forEach((editor, index) => {
+              const requestedCode = payload.files[index].requestedCode
+              editor.updateCodeEditor(requestedCode)
+            })
           })
-        }).catch((error) => {
-          console.error(error, 'failed to update local files from the zookeeper response')
-        })
+          .catch((error) => {
+            console.error(
+              error,
+              'failed to update local files from the zookeeper response'
+            )
+          })
       }
 
       if (payload) {
