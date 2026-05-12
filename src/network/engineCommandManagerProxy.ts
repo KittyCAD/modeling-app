@@ -280,11 +280,6 @@ export class EngineCommandManagerProxy extends ConnectionManager {
   }
 
   rejectAllModelingCommands(rejectionMessage: string) {
-    if (this.isOpenCascade) {
-      this.executionIsStale = true
-      return
-    }
-
     return super.rejectAllModelingCommands(rejectionMessage)
   }
 

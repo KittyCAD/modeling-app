@@ -114,6 +114,37 @@ describe('EngineCommandManagerProxy', () => {
     )
   })
 
+  it('does not make OpenCascade execution stale when rejecting commands', async () => {
+    const { engineCommandManager, settingsActor } =
+      await buildTheWorldAndNoEngineConnection(true)
+    const proxy = engineCommandManager as EngineCommandManagerProxy
+
+    await vi.waitFor(() =>
+      expect(settingsActor.getSnapshot().value).toBe('idle')
+    )
+    settingsActor.send({
+      type: 'set.modeling.engine',
+      data: { level: 'user', value: 'open_cascade' },
+      doNotPersist: true,
+    })
+
+    proxy.rejectAllModelingCommands('cancel pending commands')
+
+    expect(proxy.executionIsStale).toBe(false)
+    await expect(
+      proxy.sendModelingCommandFromWasm(
+        '00000000-0000-0000-0000-000000000007',
+        RANGE,
+        JSON.stringify({
+          type: 'modeling_cmd_req',
+          cmd_id: '00000000-0000-0000-0000-000000000008',
+          cmd: { type: 'scene_clear_all' },
+        }),
+        ID_MAP
+      )
+    ).resolves.toBeDefined()
+  })
+
   it('runs OpenCascade previews against an isolated manager', async () => {
     const { engineCommandManager, instance, rustContext, settingsActor } =
       await buildTheWorldAndNoEngineConnection()
