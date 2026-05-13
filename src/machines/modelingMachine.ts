@@ -235,7 +235,7 @@ import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import { toPlaneName } from '@src/lib/planes'
-import { withDefaultGdtFramePosition } from '@src/lib/gdtFramePosition'
+import { withDefaultGdtFrameDefaults } from '@src/lib/gdtFramePosition'
 
 function sourceRangesEqual(
   a: [number, number, number],
@@ -5122,7 +5122,7 @@ export const modelingMachine = setup({
 
         const wasmInstance = await input.kclManager.wasmInstancePromise
 
-        const data = await withDefaultGdtFramePosition({
+        const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
           ast: input.kclManager.ast,
@@ -5169,7 +5169,7 @@ export const modelingMachine = setup({
 
         const wasmInstance = await input.kclManager.wasmInstancePromise
 
-        const data = await withDefaultGdtFramePosition({
+        const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
           ast: input.kclManager.ast,
@@ -5216,7 +5216,7 @@ export const modelingMachine = setup({
 
         const wasmInstance = await input.kclManager.wasmInstancePromise
 
-        const data = await withDefaultGdtFramePosition({
+        const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
           ast: input.kclManager.ast,
@@ -5263,7 +5263,7 @@ export const modelingMachine = setup({
 
         const wasmInstance = await input.kclManager.wasmInstancePromise
 
-        const data = await withDefaultGdtFramePosition({
+        const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
           ast: input.kclManager.ast,
@@ -5310,7 +5310,7 @@ export const modelingMachine = setup({
 
         const wasmInstance = await input.kclManager.wasmInstancePromise
 
-        const data = await withDefaultGdtFramePosition({
+        const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
           ast: input.kclManager.ast,
@@ -5357,7 +5357,7 @@ export const modelingMachine = setup({
 
         const wasmInstance = await input.kclManager.wasmInstancePromise
 
-        const data = await withDefaultGdtFramePosition({
+        const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
           ast: input.kclManager.ast,
@@ -5404,7 +5404,7 @@ export const modelingMachine = setup({
 
         const wasmInstance = await input.kclManager.wasmInstancePromise
 
-        const data = await withDefaultGdtFramePosition({
+        const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
           ast: input.kclManager.ast,
@@ -5451,7 +5451,7 @@ export const modelingMachine = setup({
 
         const wasmInstance = await input.kclManager.wasmInstancePromise
 
-        const data = await withDefaultGdtFramePosition({
+        const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
           ast: input.kclManager.ast,
