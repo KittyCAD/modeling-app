@@ -76,7 +76,17 @@ async fn unparse_test(test: &Test) {
 #[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples")]
 async fn kcl_test_execute(dir_name: &str, dir_path: &Path) {
     let t = test(dir_name, dir_path.join("main.kcl"));
-    super::execute_test(&t, true, true).await;
+    // Preserve the historical behavior of the kcl_samples runner: render-to-png
+    // and step export are both on, but entity_names are not snapshotted.
+    super::execute_test(
+        &t,
+        super::TestOptions {
+            render_to_png: true,
+            snapshot_entity_names: false,
+            export_step: true,
+        },
+    )
+    .await;
 }
 
 #[test]
