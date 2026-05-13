@@ -47,28 +47,6 @@ description: Operations executed sketch_block_import_multiple.kcl
   ],
   "rust/kcl-lib/tests/sketch_block_import_multiple/rectangle1.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "SketchBlock",
-        "sketchId": 1
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "line",
       "unlabeledArg": null,
@@ -761,33 +739,27 @@ description: Operations executed sketch_block_import_multiple.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
+      "type": "SketchSolve",
+      "sketchId": 1,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
     }
   ],
   "rust/kcl-lib/tests/sketch_block_import_multiple/rectangle2.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "SketchBlock",
-        "sketchId": 1
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "line",
       "unlabeledArg": null,
@@ -1480,7 +1452,23 @@ description: Operations executed sketch_block_import_multiple.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
+      "type": "SketchSolve",
+      "sketchId": 1,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
     }
   ],
   "std::math": [

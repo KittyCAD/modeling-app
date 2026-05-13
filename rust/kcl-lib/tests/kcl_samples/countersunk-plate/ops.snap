@@ -266,28 +266,6 @@ description: Operations executed countersunk-plate.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "SketchBlock",
-        "sketchId": 1
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 9
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "line",
       "unlabeledArg": null,
@@ -2753,7 +2731,23 @@ description: Operations executed countersunk-plate.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
+      "type": "SketchSolve",
+      "sketchId": 1,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
     },
     {
       "type": "StdLibCall",

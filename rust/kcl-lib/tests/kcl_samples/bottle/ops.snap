@@ -382,28 +382,6 @@ description: Operations executed bottle.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "SketchBlock",
-        "sketchId": 1
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 13
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "line",
       "unlabeledArg": null,
@@ -2190,7 +2168,23 @@ description: Operations executed bottle.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
+      "type": "SketchSolve",
+      "sketchId": 1,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 13
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
     },
     {
       "type": "StdLibCall",
@@ -2344,28 +2338,6 @@ description: Operations executed bottle.kcl
           {
             "type": "ProgramBodyItem",
             "index": 16
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "SketchBlock",
-        "sketchId": 50
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2833,7 +2805,23 @@ description: Operations executed bottle.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
+      "type": "SketchSolve",
+      "sketchId": 50,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 17
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
     },
     {
       "type": "StdLibCall",

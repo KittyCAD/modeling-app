@@ -382,28 +382,6 @@ description: Operations executed thermal-block-insert.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "SketchBlock",
-        "sketchId": 1
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 13
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "line",
       "unlabeledArg": null,
@@ -5430,19 +5408,13 @@ description: Operations executed thermal-block-insert.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "SketchBlock",
-        "sketchId": 144
-      },
+      "type": "SketchSolve",
+      "sketchId": 1,
       "nodePath": {
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 13
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10481,7 +10453,23 @@ description: Operations executed thermal-block-insert.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
+      "type": "SketchSolve",
+      "sketchId": 144,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 14
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
     },
     {
       "type": "StdLibCall",
