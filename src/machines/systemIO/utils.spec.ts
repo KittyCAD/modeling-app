@@ -1,8 +1,16 @@
+import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import {
   normalizeKCLFileDeletePath,
   prepareMlEphantNewFileRequest,
 } from '@src/machines/systemIO/utils'
-import { describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it } from 'vitest'
+
+beforeAll(async () => {
+  await moduleFsViaModuleImport({
+    type: StorageName.NodeFS,
+    options: {},
+  })
+})
 
 describe('System IO Utils', () => {
   it('Properly reconstructs paths from Zookeeper new file requests', () => {
@@ -131,6 +139,28 @@ describe('System IO Utils', () => {
       },
     ])
     expect(preparedPayload?.filesToDelete).toEqual([])
+  })
+
+  it('keeps the currently focused file as the navigation target after project-wide edits', () => {
+    const preparedPayload = prepareMlEphantNewFileRequest({
+      projectNameCurrentlyOpened: 'some-project',
+      fileFocusedOnInEditor: {
+        name: 'newFile.kcl',
+        path: '/projects/some-project/newFile.kcl',
+        children: null,
+      },
+      toolOutput: {
+        status_code: 200,
+        type: 'edit_kcl_code',
+        project_name: 'some-project',
+        outputs: {
+          'main.kcl': 'width = 5',
+          'newFile.kcl': 'width = 10',
+        },
+      },
+    })
+
+    expect(preparedPayload?.requestedFileNameWithExtension).toBe('newFile.kcl')
   })
 
   it('carries only explicit Zookeeper delete signals into edit requests', () => {

@@ -98,9 +98,6 @@ export function OpenedProject() {
   const networkHealthStatus = useNetworkHealthStatus()
   const networkMachineStatus = useNetworkMachineStatus()
 
-  // We need the ref for the outermost div so we can screenshot the app for
-  // the coredump.
-
   // Stream related refs and data
   const [searchParams] = useSearchParams()
 

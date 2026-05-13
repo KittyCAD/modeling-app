@@ -5,6 +5,7 @@ import type {
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import type { SourceRange } from '@src/lang/wasm'
 import { parentPathRelativeToProject } from '@src/lib/paths'
+import type { FileEntry } from '@src/lib/project'
 import type { KittyCadLibFile } from '@src/lib/promptToEditTypes'
 import type {
   ConstructRequestArgs,
@@ -12,6 +13,24 @@ import type {
   PromptToEditRequest,
 } from '@src/lib/promptToEditTypes'
 import { err } from '@src/lib/trap'
+
+export function activeFileRelativeToProject({
+  currentFileEntry,
+  applicationProjectDirectory,
+}: {
+  currentFileEntry?: FileEntry
+  applicationProjectDirectory: string
+}): string | undefined {
+  if (!currentFileEntry) {
+    return undefined
+  }
+
+  const activeFile = parentPathRelativeToProject(
+    currentFileEntry.path,
+    applicationProjectDirectory
+  )
+  return activeFile || undefined
+}
 
 function sourceIndexToLineColumn(
   code: string,
@@ -66,19 +85,21 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
     })
   })
 
+  const activeFile = activeFileRelativeToProject({
+    currentFileEntry: currentFile.entry,
+    applicationProjectDirectory,
+  })
+
   // Way to patch in supplying the currently-opened file without updating the API.
   // TODO: update the API to support currently-opened files as other parts of the payload
-  const currentFilePrompt: SourceRangePrompt | null = currentFile.entry
+  const currentFilePrompt: SourceRangePrompt | null = activeFile
     ? {
         prompt: 'This is the active file',
         range: convertAppRangeToApiRange(
           [0, currentFile.content.length, 0],
           currentFile.content
         ),
-        file: parentPathRelativeToProject(
-          currentFile.entry?.path,
-          applicationProjectDirectory
-        ),
+        file: activeFile,
       }
     : null
 
@@ -99,6 +120,7 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
         kcl_version: kclVersion,
       },
       files,
+      activeFile,
     }
   }
 
@@ -250,6 +272,7 @@ See later source ranges for more context. about the sweep`,
       kcl_version: kclVersion,
     },
     files,
+    activeFile,
   }
 
   if (!conversationId) {
