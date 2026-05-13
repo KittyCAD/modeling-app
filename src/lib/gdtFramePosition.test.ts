@@ -12,18 +12,9 @@ import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { describe, expect, it, vi } from 'vitest'
 
+const formatNumberLiteral = vi.fn().mockReturnValue('1.2cm')
 const wasmInstance = {
-  format_number_literal: (value: number, suffix: string) => {
-    const unitBySuffix: Record<string, string> = {
-      Cm: 'cm',
-      Ft: 'ft',
-      Inch: 'in',
-      M: 'm',
-      Mm: 'mm',
-      Yd: 'yd',
-    }
-    return `${value}${unitBySuffix[JSON.parse(suffix)] ?? ''}`
-  },
+  format_number_literal: formatNumberLiteral,
 } as unknown as ModuleType
 
 const artifact = (value: object) =>
@@ -168,6 +159,11 @@ describe('GD&T bounding box frame position defaults', () => {
     )
     expect(result.framePosition?.valueText).toBe('[6, 6]')
     expect(result.fontSize?.valueText).toBe('1.2cm')
+    expect(result.fontSize?.valueAst).toMatchObject({
+      type: 'Literal',
+      raw: '1.2cm',
+    })
+    expect(formatNumberLiteral).toHaveBeenCalledWith(1.2, '"Cm"', 4)
     expect(GDT_FONT_SIZE_TO_BOUNDING_BOX_AVERAGE_RATIO).toBe(0.2)
   })
 

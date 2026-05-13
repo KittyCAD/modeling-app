@@ -234,15 +234,16 @@ function createFontSizeCommandValue(
     averageDimension * GDT_FONT_SIZE_TO_BOUNDING_BOX_AVERAGE_RATIO,
     4
   )
-  const valueText = `${value}${outputUnit}`
+  const valueAst = createLiteral(
+    value,
+    wasmInstance,
+    baseUnitToNumericSuffix(outputUnit),
+    4
+  )
+  const valueText = valueAst.raw
 
   return {
-    valueAst: createLiteral(
-      value,
-      wasmInstance,
-      baseUnitToNumericSuffix(outputUnit),
-      4
-    ),
+    valueAst,
     valueCalculated: valueText,
     valueText,
   }
