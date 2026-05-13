@@ -10,7 +10,6 @@ import { assertEvent, assign, setup, fromPromise } from 'xstate'
 import { createActorContext } from '@xstate/react'
 import type { ActorRefFrom } from 'xstate'
 import type { KittyCadLibFile } from '@src/lib/promptToEditTypes'
-import type { KclFileMetaMap } from '@src/lib/promptToEditTypes'
 
 import {
   isCustomIconName,
@@ -54,6 +53,14 @@ type MlCopilotUserRequest = Omit<
   // The generated client still narrows this to the initially-known mode ids,
   // but mode discovery intentionally treats the backend-provided id as opaque.
   mode?: MlCopilotModeId
+  active_file?: string
+}
+
+type MlCopilotProjectContextRequest = Extract<
+  MlCopilotClientMessage,
+  { type: 'project_context' }
+> & {
+  active_file?: string
 }
 
 type MlCopilotClientMessageWithDiscoveredMode =
@@ -212,6 +219,7 @@ export type MlEphantManagerEvents =
       type: MlEphantManagerStates.ContinueCheck
       projectName: string
       projectFiles: FileMeta[]
+      activeFile?: string
     }
   | {
       type: MlEphantManagerTransitions.ResponseReceive
@@ -928,6 +936,9 @@ export const mlEphantManagerMachine = setup({
         project_name: requestData.body.project_name,
         source_ranges: requestData.body.source_ranges,
         current_files: filesAsByteArrays,
+        ...(requestData.activeFile
+          ? { active_file: requestData.activeFile }
+          : {}),
         ...(event.mode ? { mode: event.mode } : {}),
         ...(additionalFiles ? { additional_files: additionalFiles } : {}),
       }
@@ -967,7 +978,6 @@ export const mlEphantManagerMachine = setup({
       }
 
       const filesAsByteArrays: Record<string, number[]> = {}
-      const kclFilesMap: KclFileMetaMap = {}
       const files: KittyCadLibFile[] = []
 
       event.projectFiles.forEach((file) => {
@@ -976,7 +986,6 @@ export const mlEphantManagerMachine = setup({
           data = file.data
         } else {
           // file.type === 'kcl'
-          kclFilesMap[file.execStateFileNamesIndex] = file
           data = new Blob([file.fileContents], { type: 'text/kcl' })
         }
         files.push({
@@ -991,13 +1000,11 @@ export const mlEphantManagerMachine = setup({
         )
       }
 
-      const requestProjectContext: Extract<
-        MlCopilotClientMessage,
-        { type: 'project_context' }
-      > = {
+      const requestProjectContext: MlCopilotProjectContextRequest = {
         type: 'project_context',
         project_name: event.projectName,
         current_files: filesAsByteArrays,
+        ...(event.activeFile ? { active_file: event.activeFile } : {}),
       }
 
       const requestContinue: Extract<
@@ -1414,10 +1421,12 @@ export const mlEphantManagerMachine = setup({
         target: S.Await,
         actions: [
           ({ context }) => {
+            // Close before clearing context so the live socket is still reachable.
             closeMlEphantWebSocket(context.ws)
           },
           assign(({ context }) => {
             if (context.abruptlyClosed) return {}
+            // A clean close should not leak connection state into the next chat.
             return {
               abruptlyClosed: false,
               conversation: undefined,

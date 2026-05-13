@@ -117,6 +117,7 @@ impl Artifact {
             Artifact::EdgeCut(a) => vec![a.consumed_edge_id],
             Artifact::EdgeCutEdge(a) => vec![a.edge_cut_id],
             Artifact::Helix(a) => a.axis_id.map(|id| vec![id]).unwrap_or_default(),
+            Artifact::GdtAnnotation(_) => Vec::new(),
             Artifact::Pattern(a) => vec![a.source_id],
         }
     }
@@ -258,6 +259,7 @@ impl Artifact {
                 }
                 ids
             }
+            Artifact::GdtAnnotation(_) => Vec::new(),
             Artifact::Pattern(a) => {
                 // Note: Don't include source_id since it's the parent.
                 let mut ids = a.copy_ids.clone();
@@ -340,6 +342,7 @@ impl ArtifactGraph {
                 | Artifact::EdgeCut(_)
                 | Artifact::EdgeCutEdge(_)
                 | Artifact::Helix(_)
+                | Artifact::GdtAnnotation(_)
                 | Artifact::Pattern(_) => false,
             };
             if !grouped {
@@ -537,6 +540,14 @@ impl ArtifactGraph {
                     helix.consumed
                 )?;
                 node_path_display(output, prefix, None, &helix.code_ref)?;
+            }
+            Artifact::GdtAnnotation(annotation) => {
+                writeln!(
+                    output,
+                    "{prefix}{id}[\"GdtAnnotation<br>{:?}\"]",
+                    code_ref_display(&annotation.code_ref)
+                )?;
+                node_path_display(output, prefix, None, &annotation.code_ref)?;
             }
             Artifact::Pattern(pattern) => {
                 writeln!(
