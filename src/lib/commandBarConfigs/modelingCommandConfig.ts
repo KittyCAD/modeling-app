@@ -1669,14 +1669,15 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selection',
         selectionTypes: [
           'plane',
+          'planeOfFace',
           'cap',
           'wall',
           'edgeCut',
           'enginePrimitiveFace',
+          'primitiveFace',
         ],
         multiple: false,
         required: true,
-        skip: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       offset: {

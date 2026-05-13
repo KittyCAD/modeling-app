@@ -1427,6 +1427,33 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
       expect(selections.graphSelections[0].artifact!.id).toEqual(cap!.id)
     })
 
+    it('should keep a variable-backed planeOf face as a planeOfFace selection', async () => {
+      const code = `${cylinder}
+plane001 = planeOf(extrude001, face = END)
+plane002 = offsetPlane(plane001, offset = 1)`
+      const { artifactGraph, operations } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const op = operations.findLast(
+        (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
+      ) as StdLibCallOp
+      const selections = retrieveNonDefaultPlaneSelectionFromOpArg(
+        op.unlabeledArg!,
+        artifactGraph
+      )
+      if (err(selections)) throw selections
+
+      expect(selections.graphSelections).toHaveLength(1)
+      expect(selections.graphSelections[0].artifact!.type).toEqual(
+        'planeOfFace'
+      )
+      expect(selections.graphSelections[0].codeRef.range).not.toEqual(
+        op.unlabeledArg!.sourceRange
+      )
+    })
+
     it('should find an offset plane on a chamfer face', async () => {
       const { artifactGraph, operations } = await getAstAndArtifactGraph(
         boxWithOneTagAndChamferAndPlane,
@@ -1480,6 +1507,36 @@ plane001 = offsetPlane(planeOf(extrude001, face = faceId(extrude001, index = 6))
   })
 
   describe('Testing addOffsetPlane', () => {
+    const getOffsetPlaneEditInputs = async (code: string) => {
+      const { artifactGraph, ast, variables, operations } =
+        await getAstAndArtifactGraph(
+          code,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+      const offsetPlaneOp = operations.findLast(
+        (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
+      ) as StdLibCallOp | undefined
+      if (!offsetPlaneOp?.unlabeledArg) {
+        throw new Error('Expected offsetPlane operation with an unlabeled arg')
+      }
+      const plane = retrieveNonDefaultPlaneSelectionFromOpArg(
+        offsetPlaneOp.unlabeledArg,
+        artifactGraph
+      )
+      if (err(plane)) {
+        throw plane
+      }
+
+      return {
+        artifactGraph,
+        ast,
+        variables,
+        plane,
+        nodeToEdit: createPathToNodeForLastVariable(ast),
+      }
+    }
+
     it.each<DefaultPlaneStr>(['XY', 'XZ', 'YZ'])(
       'should add a basic offset plane call on default plane %s and then edit it',
       async (name) => {
@@ -1513,6 +1570,9 @@ plane001 = offsetPlane(planeOf(extrude001, face = faceId(extrude001, index = 6))
         }
 
         const newCode = recast(result.modifiedAst, instanceInThisFile)
+        if (err(newCode)) {
+          throw newCode
+        }
         expect(newCode).toContain(`plane001 = offsetPlane(${name}, offset = 1)`)
         await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
 
@@ -1534,6 +1594,9 @@ plane001 = offsetPlane(planeOf(extrude001, face = faceId(extrude001, index = 6))
           throw result2
         }
         const newCode2 = recast(result2.modifiedAst, instanceInThisFile)
+        if (err(newCode2)) {
+          throw newCode2
+        }
         expect(newCode2).not.toContain(`offset = 1`)
         expect(newCode2).toContain(
           `plane001 = offsetPlane(${name}, offset = 2)`
@@ -1578,6 +1641,9 @@ plane001 = offsetPlane(planeOf(extrude001, face = faceId(extrude001, index = 6))
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
       expect(newCode).toContain(`${code}
 plane002 = offsetPlane(plane001, offset = 2)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
@@ -1586,12 +1652,18 @@ plane002 = offsetPlane(plane001, offset = 2)`)
         '3',
         rustContextInThisFile
       )) as KclCommandValue
-      const nodeToEdit = createPathToNodeForLastVariable(result.modifiedAst)
+      const {
+        artifactGraph: updatedArtifactGraph,
+        ast: updatedAst,
+        variables: updatedVariables,
+        plane: editPlane,
+        nodeToEdit,
+      } = await getOffsetPlaneEditInputs(newCode)
       const result2 = addOffsetPlane({
-        ast: result.modifiedAst,
-        artifactGraph,
-        variables,
-        plane,
+        ast: updatedAst,
+        artifactGraph: updatedArtifactGraph,
+        variables: updatedVariables,
+        plane: editPlane,
         offset: newOffset,
         nodeToEdit,
         wasmInstance: instanceInThisFile,
@@ -1600,6 +1672,9 @@ plane002 = offsetPlane(plane001, offset = 2)`)
         throw result2
       }
       const newCode2 = recast(result2.modifiedAst, instanceInThisFile)
+      if (err(newCode2)) {
+        throw newCode2
+      }
       expect(newCode2).not.toContain(`offset = 2`)
       expect(newCode2).toContain(`${code}
 plane002 = offsetPlane(plane001, offset = 3)`)
@@ -1630,6 +1705,9 @@ plane002 = offsetPlane(plane001, offset = 3)`)
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
       expect(newCode).toContain(`${cylinderWithEndTag}
 plane001 = planeOf(extrude001, face = capEnd001)
 plane002 = offsetPlane(plane001, offset = 2)`)
@@ -1639,12 +1717,18 @@ plane002 = offsetPlane(plane001, offset = 2)`)
         '3',
         rustContextInThisFile
       )) as KclCommandValue
-      const nodeToEdit = createPathToNodeForLastVariable(result.modifiedAst)
+      const {
+        artifactGraph: updatedArtifactGraph,
+        ast: updatedAst,
+        variables: updatedVariables,
+        plane: editPlane,
+        nodeToEdit,
+      } = await getOffsetPlaneEditInputs(newCode)
       const result2 = addOffsetPlane({
-        ast: result.modifiedAst,
-        artifactGraph,
-        variables,
-        plane,
+        ast: updatedAst,
+        artifactGraph: updatedArtifactGraph,
+        variables: updatedVariables,
+        plane: editPlane,
         offset: newOffset,
         nodeToEdit,
         wasmInstance: instanceInThisFile,
@@ -1653,11 +1737,13 @@ plane002 = offsetPlane(plane001, offset = 2)`)
         throw result2
       }
       const newCode2 = recast(result2.modifiedAst, instanceInThisFile)
+      if (err(newCode2)) {
+        throw newCode2
+      }
       expect(newCode2).not.toContain(`offset = 2`)
       expect(newCode2).toContain(`${cylinderWithEndTag}
 plane001 = planeOf(extrude001, face = capEnd001)
-plane003 = planeOf(extrude001, face = capEnd001)
-plane002 = offsetPlane(plane003, offset = 3)`)
+plane002 = offsetPlane(plane001, offset = 3)`)
       await enginelessExecutor(result2.modifiedAst, rustContextInThisFile)
     })
 
@@ -1685,6 +1771,9 @@ plane002 = offsetPlane(plane003, offset = 3)`)
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
       expect(newCode).toContain(`${boxWithOneTag}
 plane001 = planeOf(extrude001, face = seg01)
 plane002 = offsetPlane(plane001, offset = 10)`)
@@ -1694,12 +1783,18 @@ plane002 = offsetPlane(plane001, offset = 10)`)
         '20',
         rustContextInThisFile
       )) as KclCommandValue
-      const nodeToEdit = createPathToNodeForLastVariable(result.modifiedAst)
+      const {
+        artifactGraph: updatedArtifactGraph,
+        ast: updatedAst,
+        variables: updatedVariables,
+        plane: editPlane,
+        nodeToEdit,
+      } = await getOffsetPlaneEditInputs(newCode)
       const result2 = addOffsetPlane({
-        ast: result.modifiedAst,
-        artifactGraph,
-        variables,
-        plane,
+        ast: updatedAst,
+        artifactGraph: updatedArtifactGraph,
+        variables: updatedVariables,
+        plane: editPlane,
         offset: newOffset,
         nodeToEdit,
         wasmInstance: instanceInThisFile,
@@ -1708,11 +1803,13 @@ plane002 = offsetPlane(plane001, offset = 10)`)
         throw result2
       }
       const newCode2 = recast(result2.modifiedAst, instanceInThisFile)
+      if (err(newCode2)) {
+        throw newCode2
+      }
       expect(newCode2).not.toContain(`offset = 10`)
       expect(newCode2).toContain(`${boxWithOneTag}
 plane001 = planeOf(extrude001, face = seg01)
-plane003 = planeOf(extrude001, face = seg01)
-plane002 = offsetPlane(plane003, offset = 20)`)
+plane002 = offsetPlane(plane001, offset = 20)`)
       await enginelessExecutor(result2.modifiedAst, rustContextInThisFile)
     })
 
@@ -1761,6 +1858,9 @@ shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
       expect(newCode).toContain(`${shell}
 face001 = faceId(extrude001, index = 6)
 plane001 = planeOf(extrude001, face = face001)
@@ -1771,12 +1871,18 @@ plane002 = offsetPlane(plane001, offset = 2)`)
         '3',
         rustContextInThisFile
       )) as KclCommandValue
-      const nodeToEdit = createPathToNodeForLastVariable(result.modifiedAst)
+      const {
+        artifactGraph: updatedArtifactGraph,
+        ast: updatedAst,
+        variables: updatedVariables,
+        plane: editPlane,
+        nodeToEdit,
+      } = await getOffsetPlaneEditInputs(newCode)
       const editResult = addOffsetPlane({
-        ast: result.modifiedAst,
-        artifactGraph,
-        variables,
-        plane,
+        ast: updatedAst,
+        artifactGraph: updatedArtifactGraph,
+        variables: updatedVariables,
+        plane: editPlane,
         offset: editedOffset,
         nodeToEdit,
         wasmInstance: instanceInThisFile,
@@ -1786,13 +1892,72 @@ plane002 = offsetPlane(plane001, offset = 2)`)
       }
 
       const editedCode = recast(editResult.modifiedAst, instanceInThisFile)
+      if (err(editedCode)) {
+        throw editedCode
+      }
       expect(editedCode).toContain(`${shell}
 face001 = faceId(extrude001, index = 6)
 plane001 = planeOf(extrude001, face = face001)
-face002 = faceId(extrude001, index = 6)
-plane003 = planeOf(extrude001, face = face002)
-plane002 = offsetPlane(plane003, offset = 3)`)
+plane002 = offsetPlane(plane001, offset = 3)`)
       await enginelessExecutor(editResult.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add an offset plane call on an existing primitive face variable', async () => {
+      const code = `sketch001 = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> angledLine(angle = 0deg, length = 30, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 30)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = 30)
+shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)
+face001 = faceId(extrude001, index = 6)`
+      const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const primitiveFace = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'primitiveFace'
+      )
+      if (!primitiveFace || primitiveFace.type !== 'primitiveFace') {
+        throw new Error('Expected primitiveFace artifact')
+      }
+      const plane: Selections = {
+        graphSelections: [
+          {
+            artifact: primitiveFace,
+            codeRef: primitiveFace.codeRef,
+          },
+        ],
+        otherSelections: [],
+      }
+      const offset = (await stringToKclExpression(
+        '2',
+        rustContextInThisFile
+      )) as KclCommandValue
+
+      const result = addOffsetPlane({
+        ast,
+        artifactGraph,
+        variables,
+        plane,
+        offset,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+      expect(newCode).toContain(`${code}
+plane001 = planeOf(extrude001, face = face001)
+plane002 = offsetPlane(plane001, offset = 2)`)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should add an offset plane call on chamfer face and allow edits', async () => {
@@ -1822,6 +1987,9 @@ plane002 = offsetPlane(plane003, offset = 3)`)
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
       expect(newCode).toContain(`tag = $seg02`)
       expect(newCode).toContain(`plane001 = planeOf(extrude001, face = seg02)
 plane002 = offsetPlane(plane001, offset = 1)`)
@@ -1831,12 +1999,18 @@ plane002 = offsetPlane(plane001, offset = 1)`)
         '2',
         rustContextInThisFile
       )) as KclCommandValue
-      const nodeToEdit = createPathToNodeForLastVariable(result.modifiedAst)
+      const {
+        artifactGraph: updatedArtifactGraph,
+        ast: updatedAst,
+        variables: updatedVariables,
+        plane: editPlane,
+        nodeToEdit,
+      } = await getOffsetPlaneEditInputs(newCode)
       const result2 = addOffsetPlane({
-        ast: result.modifiedAst,
-        artifactGraph,
-        variables,
-        plane,
+        ast: updatedAst,
+        artifactGraph: updatedArtifactGraph,
+        variables: updatedVariables,
+        plane: editPlane,
         offset: newOffset,
         nodeToEdit,
         wasmInstance: instanceInThisFile,
@@ -1845,9 +2019,12 @@ plane002 = offsetPlane(plane001, offset = 1)`)
         throw result2
       }
       const newCode2 = recast(result2.modifiedAst, instanceInThisFile)
+      if (err(newCode2)) {
+        throw newCode2
+      }
       expect(newCode2).not.toContain(`offset = 1`)
-      expect(newCode2).toContain(`plane002 = offsetPlane(plane003, offset = 2)`)
-      expect(newCode2).toContain(`plane003 = planeOf(extrude001, face = seg02)`)
+      expect(newCode2).toContain(`plane001 = planeOf(extrude001, face = seg02)`)
+      expect(newCode2).toContain(`plane002 = offsetPlane(plane001, offset = 2)`)
       await enginelessExecutor(result2.modifiedAst, rustContextInThisFile)
     })
   })

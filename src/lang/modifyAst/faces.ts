@@ -19,8 +19,10 @@ import {
 } from '@src/lang/modifyAst'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
+  getNodeFromPath,
   getSelectedPlaneAsNode,
   getVariableExprsFromSelection,
+  isCallExprWithName,
   retrieveSelectionsFromOpArg,
   valueOrVariable,
 } from '@src/lang/queryAst'
@@ -39,6 +41,7 @@ import {
   type Expr,
   type PathToNode,
   type Program,
+  type VariableDeclaration,
   type VariableMap,
 } from '@src/lang/wasm'
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
@@ -838,23 +841,12 @@ export function getPlaneExprFromSelection({
 }): Error | { modifiedAst: Node<Program>; expr: Expr } {
   let modifiedAst = ast
   const enginePrimitives = getEnginePrimitiveFaceSelectionsFromSelection(plane)
-  const faceSelectionsFromPlaneOfFace =
-    getFaceSelectionsFromPlaneOfFaceSelections(plane, artifactGraph)
-  if (err(faceSelectionsFromPlaneOfFace)) return faceSelectionsFromPlaneOfFace
-  const facePlaneSelection = {
-    graphSelections: plane.graphSelections
-      .filter((sel) => sel.artifact?.type !== 'planeOfFace')
-      .concat(faceSelectionsFromPlaneOfFace),
-    otherSelections: plane.otherSelections,
-  }
   if (
     enginePrimitives.length > 0 ||
-    facePlaneSelection.graphSelections.some((sel) =>
-      isFaceArtifact(sel.artifact)
-    )
+    plane.graphSelections.some((sel) => isFaceArtifact(sel.artifact))
   ) {
     const result = buildSolidsAndFacesExprs(
-      facePlaneSelection,
+      plane,
       artifactGraph,
       modifiedAst,
       wasmInstance,
@@ -1197,6 +1189,25 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
       otherSelections: [],
     }
   } else if (planeArtifact.type === 'planeOfFace') {
+    // A planeOfFace can be the inline arg itself or a named plane variable used
+    // as the arg. Inline planeOf(...) edits reconstruct from the face selection;
+    // named plane variables keep the existing planeOf variable.
+    if (
+      !planeArtifact.codeRef.range.every(
+        (value, index) => value === planeArg.sourceRange[index]
+      )
+    ) {
+      return {
+        graphSelections: [
+          {
+            artifact: planeArtifact,
+            codeRef: planeArtifact.codeRef,
+          },
+        ],
+        otherSelections: [],
+      }
+    }
+
     const faceSelection = getFaceSelectionFromPlaneOfFace(
       planeArtifact,
       artifactGraph
@@ -1254,10 +1265,41 @@ export function buildSolidsAndFacesExprs(
   if (err(result)) return result
   modifiedAst = result.modifiedAst
 
-  const solidsExpr = createVariableExpressionsArray(vars.exprs)
+  const solidsExprs = [...vars.exprs]
+  for (const faceSelection of faces.graphSelections) {
+    if (faceSelection.artifact?.type !== 'primitiveFace') {
+      continue
+    }
+
+    const faceNode = getNodeFromPath<
+      VariableDeclaration | Node<CallExpressionKw>
+    >(
+      modifiedAst,
+      faceSelection.codeRef.pathToNode,
+      wasmInstance,
+      ['VariableDeclaration', 'CallExpressionKw'],
+      false,
+      true
+    )
+    if (err(faceNode)) {
+      return faceNode
+    }
+
+    const faceExpr: Expr =
+      faceNode.node.type === 'VariableDeclaration'
+        ? faceNode.node.declaration.init
+        : faceNode.node
+    if (!isCallExprWithName(faceExpr, 'faceId') || !faceExpr.unlabeled) {
+      return new Error("Couldn't retrieve solid from primitive face selection")
+    }
+    solidsExprs.push(structuredClone(faceExpr.unlabeled))
+  }
+
+  const dedupedSolidsExprs = deduplicateFaceExprs(solidsExprs)
+  const solidsExpr = createVariableExpressionsArray(dedupedSolidsExprs)
   const facesExpr = createVariableExpressionsArray(result.exprs)
   return {
-    solidsExprs: vars.exprs,
+    solidsExprs: dedupedSolidsExprs,
     facesExprs: result.exprs,
     solidsExpr,
     facesExpr,
@@ -1435,27 +1477,6 @@ function getEnginePrimitiveFaceSelectionsFromSelection(selection: Selections) {
     (s): s is EnginePrimitiveSelection =>
       isEnginePrimitiveSelection(s) && s.primitiveType === 'face'
   )
-}
-
-function getFaceSelectionsFromPlaneOfFaceSelections(
-  selection: Selections,
-  artifactGraph: ArtifactGraph
-): Selection[] | Error {
-  const selections: Selection[] = []
-  for (const planeSelection of selection.graphSelections) {
-    if (planeSelection.artifact?.type !== 'planeOfFace') {
-      continue
-    }
-
-    const faceSelection = getFaceSelectionFromPlaneOfFace(
-      planeSelection.artifact,
-      artifactGraph
-    )
-    if (err(faceSelection)) return faceSelection
-    selections.push(faceSelection)
-  }
-
-  return selections
 }
 
 function getFaceSelectionFromPlaneOfFace(
