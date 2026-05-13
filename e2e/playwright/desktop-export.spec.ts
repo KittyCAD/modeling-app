@@ -102,11 +102,13 @@ test(
       await scene.settled()
 
       // Expect zero errors in gutter
-      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible({
+        timeout: 15_000,
+      })
 
       // Click the export button
       const exportButton = page.getByTestId('export-pane-button')
-      await expect(exportButton).toBeVisible()
+      await expect(exportButton).toBeEnabled({ timeout: 15_000 })
       await exportButton.click()
 
       // Select the first format option

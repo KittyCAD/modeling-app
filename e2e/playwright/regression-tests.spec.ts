@@ -425,12 +425,10 @@ extrude002 = extrude(profile002, length = 150)`
       await page.locator('.cm-content').fill(bracket)
       await page.keyboard.press('End')
       await page.keyboard.press('Enter')
-
       await scene.settled()
 
-      // Now try exporting
-
       // Click the export button
+      await expect(exportButton).toBeEnabled({ timeout: 15_000 })
       await exportButton.click()
 
       // Click the stl.
