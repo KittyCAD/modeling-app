@@ -41,6 +41,7 @@ export type ArgumentFieldProps<Item extends SelectionListItem> = {
   selectionHint?: ReactNode
   currentSelectionLabel?: ReactNode
   isSelecting?: boolean
+  disabled?: boolean
   controlStyle?: 'select' | 'segmented'
   onChange: (value: unknown) => void
   onStartSelecting?: () => void
@@ -76,12 +77,20 @@ export function ArgumentField<Item extends SelectionListItem>({
   selectionHint,
   currentSelectionLabel,
   isSelecting = false,
+  disabled = false,
   controlStyle = 'select',
   onChange,
   onStartSelecting,
   onRemoveSelection,
   onClearSelection,
 }: ArgumentFieldProps<Item>) {
+  const fieldClassName = [
+    'flex flex-col gap-1',
+    disabled ? 'opacity-60' : '',
+  ].join(' ')
+  const inputClassName =
+    'w-full rounded border border-chalkboard-30 bg-transparent px-2 py-1.5 text-xs leading-tight disabled:cursor-not-allowed disabled:bg-chalkboard-10 disabled:text-chalkboard-60 dark:disabled:bg-chalkboard-90 dark:disabled:text-chalkboard-50'
+
   if (inputType === 'options') {
     const selectedIndex = options.findIndex((option) =>
       isOptionValueEqual(option.value, value)
@@ -89,7 +98,7 @@ export function ArgumentField<Item extends SelectionListItem>({
 
     if (controlStyle === 'segmented') {
       return (
-        <div className="flex flex-col gap-1">
+        <div className={fieldClassName}>
           <span className="text-xs font-medium leading-tight">
             {label}
             {isRequired ? ' *' : ''}
@@ -102,6 +111,7 @@ export function ArgumentField<Item extends SelectionListItem>({
             isValueEqual={isOptionValueEqual}
             allowDeselect={!isRequired}
             ariaLabel={typeof label === 'string' ? label : name}
+            disabled={disabled}
           />
           <FieldDescription description={description} />
         </div>
@@ -109,20 +119,21 @@ export function ArgumentField<Item extends SelectionListItem>({
     }
 
     return (
-      <label className="flex flex-col gap-1">
+      <label className={fieldClassName}>
         <span className="text-xs font-medium leading-tight">
           {label}
           {isRequired ? ' *' : ''}
         </span>
         <select
           value={selectedIndex >= 0 ? String(selectedIndex) : ''}
+          disabled={disabled}
           onChange={(event) => {
             const rawIndex = event.target.value
             onChange(
               rawIndex === '' ? undefined : options[Number(rawIndex)]?.value
             )
           }}
-          className="w-full rounded border border-chalkboard-30 bg-transparent px-2 py-1.5 text-xs leading-tight"
+          className={inputClassName}
         >
           <option value="" disabled={isRequired}>
             {isRequired ? 'Select an option' : 'Optional'}
@@ -131,7 +142,7 @@ export function ArgumentField<Item extends SelectionListItem>({
             <option
               key={`${name}-${String(option.name)}-${index}`}
               value={String(index)}
-              disabled={option.disabled}
+              disabled={disabled || option.disabled}
             >
               {option.name}
             </option>
@@ -146,7 +157,7 @@ export function ArgumentField<Item extends SelectionListItem>({
     const boolValue = value === true ? 'true' : value === false ? 'false' : ''
     if (controlStyle === 'segmented') {
       return (
-        <div className="flex flex-col gap-1">
+        <div className={fieldClassName}>
           <span className="text-xs font-medium leading-tight">
             {label}
             {isRequired ? ' *' : ''}
@@ -161,6 +172,7 @@ export function ArgumentField<Item extends SelectionListItem>({
             onChange={onChange}
             allowDeselect={!isRequired}
             ariaLabel={typeof label === 'string' ? label : name}
+            disabled={disabled}
           />
           <FieldDescription description={description} />
         </div>
@@ -168,13 +180,14 @@ export function ArgumentField<Item extends SelectionListItem>({
     }
 
     return (
-      <label className="flex flex-col gap-1">
+      <label className={fieldClassName}>
         <span className="text-xs font-medium leading-tight">
           {label}
           {isRequired ? ' *' : ''}
         </span>
         <select
           value={boolValue}
+          disabled={disabled}
           onChange={(event) =>
             onChange(
               event.target.value === ''
@@ -182,7 +195,7 @@ export function ArgumentField<Item extends SelectionListItem>({
                 : event.target.value === 'true'
             )
           }
-          className="w-full rounded border border-chalkboard-30 bg-transparent px-2 py-1.5 text-xs leading-tight"
+          className={inputClassName}
         >
           <option value="" disabled={isRequired}>
             {isRequired ? 'Select true or false' : 'Optional'}
@@ -197,13 +210,17 @@ export function ArgumentField<Item extends SelectionListItem>({
 
   if (inputType === 'selection' || inputType === 'selectionMixed') {
     const activateCollector = () => {
-      if (!isSelecting) {
+      if (!disabled && !isSelecting) {
         onStartSelecting?.()
       }
     }
 
     return (
-      <div className="flex flex-col gap-2">
+      <div
+        className={['flex flex-col gap-2', disabled ? 'opacity-60' : ''].join(
+          ' '
+        )}
+      >
         <span className="text-xs font-medium leading-tight">
           {label}
           {isRequired ? ' *' : ''}
@@ -211,30 +228,35 @@ export function ArgumentField<Item extends SelectionListItem>({
         <div
           className={[
             'relative rounded-sm border p-2 transition-colors',
-            isSelecting
-              ? 'border-primary bg-primary/10 ring-1 ring-primary dark:bg-primary/15'
-              : 'border-chalkboard-20 bg-chalkboard-10/40 hover:border-chalkboard-40 hover:bg-chalkboard-10 dark:border-chalkboard-70 dark:bg-chalkboard-100/40 dark:hover:border-chalkboard-50 dark:hover:bg-chalkboard-90/60',
+            disabled
+              ? 'border-chalkboard-20 bg-chalkboard-10/30 dark:border-chalkboard-80 dark:bg-chalkboard-100/30'
+              : isSelecting
+                ? 'border-primary bg-primary/10 ring-1 ring-primary dark:bg-primary/15'
+                : 'border-chalkboard-20 bg-chalkboard-10/40 hover:border-chalkboard-40 hover:bg-chalkboard-10 dark:border-chalkboard-70 dark:bg-chalkboard-100/40 dark:hover:border-chalkboard-50 dark:hover:bg-chalkboard-90/60',
           ].join(' ')}
         >
           <button
             type="button"
             aria-pressed={isSelecting}
+            disabled={disabled}
             aria-label={
               typeof label === 'string' ? `Select ${label}` : `Select ${name}`
             }
             onClick={activateCollector}
             onFocus={activateCollector}
-            className="absolute inset-0 z-0 m-0 h-full w-full cursor-pointer rounded-sm border-0 bg-transparent p-0 focus:outline-current"
+            className="absolute inset-0 z-0 m-0 h-full w-full cursor-pointer rounded-sm border-0 bg-transparent p-0 focus:outline-current disabled:cursor-not-allowed"
           />
           <div className="pointer-events-none relative z-10">
             <SelectionList
               items={selectionItems}
-              onRemove={(item) => onRemoveSelection?.(item)}
+              onRemove={
+                disabled ? undefined : (item) => onRemoveSelection?.(item)
+              }
               heading={selectionHeading}
               emptyLabel={selectionEmptyLabel}
               hint={selectionHint}
               isActive={isSelecting}
-              onClear={onClearSelection}
+              onClear={disabled ? undefined : onClearSelection}
             />
             {isSelecting && currentSelectionLabel && (
               <p className="my-1 mb-0 text-[10px] leading-tight text-primary dark:text-primary">
@@ -250,15 +272,16 @@ export function ArgumentField<Item extends SelectionListItem>({
 
   if (inputType === 'text') {
     return (
-      <label className="flex flex-col gap-1">
+      <label className={fieldClassName}>
         <span className="text-xs font-medium leading-tight">
           {label}
           {isRequired ? ' *' : ''}
         </span>
         <textarea
           value={typeof value === 'string' ? value : ''}
+          disabled={disabled}
           onChange={(event) => onChange(event.target.value)}
-          className="min-h-16 w-full rounded border border-chalkboard-30 bg-transparent px-2 py-1.5 text-xs leading-tight"
+          className={`${inputClassName} min-h-16`}
           placeholder={typeof label === 'string' ? label : name}
         />
         <FieldDescription description={description} />
@@ -272,7 +295,7 @@ export function ArgumentField<Item extends SelectionListItem>({
     inputType === 'vector3d'
   ) {
     return (
-      <label className="flex flex-col gap-1">
+      <label className={fieldClassName}>
         <span className="text-xs font-medium leading-tight">
           {label}
           {isRequired ? ' *' : ''}
@@ -280,8 +303,9 @@ export function ArgumentField<Item extends SelectionListItem>({
         <input
           type="text"
           value={typeof value === 'string' ? value : ''}
+          disabled={disabled}
           onChange={(event) => onChange(event.target.value)}
-          className="w-full rounded border border-chalkboard-30 bg-transparent px-2 py-1.5 text-xs leading-tight"
+          className={inputClassName}
           placeholder={
             inputType === 'vector2d'
               ? '[x, y]'
@@ -301,7 +325,7 @@ export function ArgumentField<Item extends SelectionListItem>({
     const colorValue =
       typeof value === 'string' && value.startsWith('#') ? value : '#ffffff'
     return (
-      <label className="flex flex-col gap-1">
+      <label className={fieldClassName}>
         <span className="text-xs font-medium leading-tight">
           {label}
           {isRequired ? ' *' : ''}
@@ -309,8 +333,9 @@ export function ArgumentField<Item extends SelectionListItem>({
         <input
           type="color"
           value={colorValue}
+          disabled={disabled}
           onChange={(event) => onChange(event.target.value)}
-          className="h-8 w-full rounded border border-chalkboard-30 bg-transparent"
+          className="h-8 w-full rounded border border-chalkboard-30 bg-transparent disabled:cursor-not-allowed"
         />
         <FieldDescription description={description} />
       </label>
@@ -318,7 +343,7 @@ export function ArgumentField<Item extends SelectionListItem>({
   }
 
   return (
-    <label className="flex flex-col gap-1">
+    <label className={fieldClassName}>
       <span className="text-xs font-medium leading-tight">
         {label}
         {isRequired ? ' *' : ''}
@@ -326,8 +351,9 @@ export function ArgumentField<Item extends SelectionListItem>({
       <input
         type="text"
         value={typeof value === 'string' ? value : ''}
+        disabled={disabled}
         onChange={(event) => onChange(event.target.value)}
-        className="w-full rounded border border-chalkboard-30 bg-transparent px-2 py-1.5 text-xs leading-tight"
+        className={inputClassName}
         placeholder={typeof label === 'string' ? label : name}
       />
       <FieldDescription description={description} />

@@ -15,6 +15,7 @@ export type ChoiceGroupProps<Value = unknown> = {
   isValueEqual?: (a: Value | undefined, b: Value | undefined) => boolean
   allowDeselect?: boolean
   ariaLabel?: string
+  disabled?: boolean
 }
 
 function getChoiceKey(value: unknown): string {
@@ -46,9 +47,13 @@ export function ChoiceGroup<Value = unknown>({
   isValueEqual = defaultIsValueEqual,
   allowDeselect = false,
   ariaLabel,
+  disabled = false,
 }: ChoiceGroupProps<Value>) {
   return (
-    <fieldset className="grid w-full grid-cols-[repeat(auto-fit,minmax(4.5rem,1fr))] gap-1 rounded-sm border border-chalkboard-30 bg-chalkboard-10 p-0.5 dark:border-chalkboard-70 dark:bg-chalkboard-100">
+    <fieldset
+      disabled={disabled}
+      className="grid w-full grid-cols-[repeat(auto-fit,minmax(4.5rem,1fr))] gap-1 rounded-sm border border-chalkboard-30 bg-chalkboard-10 p-0.5 disabled:opacity-60 dark:border-chalkboard-70 dark:bg-chalkboard-100"
+    >
       <legend className="sr-only">{ariaLabel || name}</legend>
       {options.map((option) => {
         const isSelected = isValueEqual(value, option.value)
@@ -57,7 +62,7 @@ export function ChoiceGroup<Value = unknown>({
             key={`${name}-${getChoiceKey(option.value)}`}
             type="button"
             aria-pressed={isSelected}
-            disabled={option.disabled}
+            disabled={disabled || option.disabled}
             title={option.title}
             onClick={() => {
               if (isSelected && allowDeselect) {

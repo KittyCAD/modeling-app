@@ -52,6 +52,16 @@ function handleCommandSubmitResult(commandName: string, result: unknown) {
   }
 }
 
+function evaluateCommandBarHidden(
+  arg: CommandArgument<unknown>,
+  context: CommandBarContext
+): boolean {
+  const machineContext = arg.machineActor?.getSnapshot().context
+  return typeof arg.hidden === 'function'
+    ? arg.hidden(context, machineContext)
+    : !!arg.hidden
+}
+
 export type CommandBarInput = {
   commands: Command[]
   wasmInstancePromise: Promise<ModuleType>
@@ -212,10 +222,7 @@ export const commandBarMachine = setup({
         // or hidden, or that is not undefined, or that is not marked as "skippable".
         // TODO validate the type of the existing arguments
         const nonHiddenArgs = Object.entries(selectedCommand.args).filter(
-          (a) =>
-            a[1].hidden && typeof a[1].hidden === 'function'
-              ? !a[1].hidden(context)
-              : !a[1].hidden
+          ([, arg]) => !evaluateCommandBarHidden(arg, context)
         )
         let argIndex = 0
         let lastRequiredArg: CommandArgumentWithName<unknown> | undefined
@@ -405,9 +412,7 @@ export const commandBarMachine = setup({
       return Object.values(context.selectedCommand!.args!).every(
         (argConfig) =>
           argConfig.skip ||
-          (typeof argConfig.hidden === 'function'
-            ? argConfig.hidden(context)
-            : argConfig.hidden) ||
+          evaluateCommandBarHidden(argConfig, context) ||
           (typeof argConfig.required === 'function'
             ? !argConfig.required(context)
             : !argConfig.required)
@@ -424,12 +429,7 @@ export const commandBarMachine = setup({
         return false
       return Object.entries(selectedCommand.args).every(
         ([argName, argConfig]) => {
-          if (
-            typeof argConfig.hidden === 'function'
-              ? argConfig.hidden(context)
-              : argConfig.hidden
-          )
-            return true
+          if (evaluateCommandBarHidden(argConfig, context)) return true
           const isRequired =
             typeof argConfig.required === 'function'
               ? argConfig.required(context)

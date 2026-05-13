@@ -7,7 +7,7 @@ export type SelectionListItem = {
 
 export type SelectionListProps<Item extends SelectionListItem> = {
   items: Item[]
-  onRemove: (item: Item) => void
+  onRemove?: (item: Item) => void
   heading?: ReactNode
   emptyLabel?: ReactNode
   hint?: ReactNode
@@ -89,19 +89,21 @@ export function SelectionList<Item extends SelectionListItem>({
                 </span>
                 {item.label}
               </span>
-              <button
-                type="button"
-                className="pointer-events-auto group m-0 flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border-none bg-transparent p-0 text-chalkboard-60 hover:bg-chalkboard-20 hover:text-destroy-80 dark:text-chalkboard-40 dark:hover:bg-chalkboard-80 dark:hover:text-destroy-40"
-                onClick={(event) => {
-                  event.stopPropagation()
-                  onRemove(item)
-                }}
-                onFocus={(event) => event.stopPropagation()}
-                aria-label={`Remove selection ${index + 1}`}
-                title="Remove selection"
-              >
-                <TrashIcon />
-              </button>
+              {onRemove && (
+                <button
+                  type="button"
+                  className="pointer-events-auto group m-0 flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border-none bg-transparent p-0 text-chalkboard-60 hover:bg-chalkboard-20 hover:text-destroy-80 dark:text-chalkboard-40 dark:hover:bg-chalkboard-80 dark:hover:text-destroy-40"
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    onRemove(item)
+                  }}
+                  onFocus={(event) => event.stopPropagation()}
+                  aria-label={`Remove selection ${index + 1}`}
+                  title="Remove selection"
+                >
+                  <TrashIcon />
+                </button>
+              )}
             </li>
           ))}
         </ol>

@@ -39,6 +39,7 @@ type ModelingDialogField = {
   arg: CommandArgument<unknown>
   isHidden: boolean
   isRequired: boolean
+  isDisabled: boolean
   options: CommandArgumentOption<unknown>[]
 }
 
@@ -234,9 +235,9 @@ async function resolveDefaultValue(
 function evaluateVisibility(
   arg: CommandArgument<unknown>,
   context: CommandBarContext
-): { isHidden: boolean; isRequired: boolean } {
+): { isHidden: boolean; isRequired: boolean; isDisabled: boolean } {
   const machineContext = arg.machineActor?.getSnapshot().context
-  const isHidden =
+  const isRawHidden =
     typeof arg.hidden === 'function'
       ? arg.hidden(context, machineContext)
       : !!arg.hidden
@@ -244,7 +245,22 @@ function evaluateVisibility(
     typeof arg.required === 'function'
       ? arg.required(context, machineContext)
       : !!arg.required
-  return { isHidden, isRequired }
+  const overrideHidden =
+    isRawHidden && typeof arg.dialog?.overrideHidden === 'function'
+      ? arg.dialog.overrideHidden(context, machineContext)
+      : isRawHidden
+        ? arg.dialog?.overrideHidden
+        : undefined
+  const shouldOverrideHidden =
+    overrideHidden === true ||
+    overrideHidden === 'disabled' ||
+    overrideHidden === 'enabled'
+
+  return {
+    isHidden: isRawHidden && !shouldOverrideHidden,
+    isRequired,
+    isDisabled: overrideHidden === true || overrideHidden === 'disabled',
+  }
 }
 
 function getOptions(
@@ -335,23 +351,35 @@ export function ModelingDialog() {
       : window.document.getElementById(MODELING_AREA_CONTAINER_ID)
   )
 
+  const dialogArgumentsToSubmit = useMemo(
+    () => ({
+      ...commandBarState.context.argumentsToSubmit,
+      ...draftValues,
+    }),
+    [commandBarState.context.argumentsToSubmit, draftValues]
+  )
+
   const dialogContext = useMemo<CommandBarContext>(
     () => ({
       ...commandBarState.context,
-      argumentsToSubmit: draftValues,
+      argumentsToSubmit: dialogArgumentsToSubmit,
     }),
-    [commandBarState.context, draftValues]
+    [commandBarState.context, dialogArgumentsToSubmit]
   )
 
   const fields = useMemo<ModelingDialogField[]>(() => {
     if (!selectedCommand?.args) return []
     return Object.entries(selectedCommand.args).map(([argName, arg]) => {
-      const { isHidden, isRequired } = evaluateVisibility(arg, dialogContext)
+      const { isHidden, isRequired, isDisabled } = evaluateVisibility(
+        arg,
+        dialogContext
+      )
       return {
         argName,
         arg,
         isHidden,
         isRequired,
+        isDisabled,
         options: getOptions(arg, dialogContext),
       }
     })
@@ -483,18 +511,40 @@ export function ModelingDialog() {
         },
       })
       setActiveSelectionArgName(argName)
+
+      if (!isSelectionArgument(arg)) return
+
+      const savedSelection = commandBarState.context.argumentsToSubmit[argName]
+      if (!isSelectionValueEmpty(savedSelection)) {
+        modelingSend({
+          type: 'Set selection',
+          data: {
+            selectionType: 'completeSelection',
+            selection: structuredClone(savedSelection as Selections),
+          },
+        })
+      } else if (arg.clearSelectionFirst) {
+        modelingSend({
+          type: 'Set selection',
+          data: {
+            selectionType: 'completeSelection',
+            selection: EMPTY_SELECTION,
+          },
+        })
+      }
     },
-    [commands]
+    [commandBarState.context.argumentsToSubmit, commands, modelingSend]
   )
 
   const removeSceneSelection = useCallback(
     (
       argName: string,
       source: CapturedSelectionListItem['source'],
-      selectionIndex: number
+      selectionIndex: number,
+      selection: Selections | undefined = selectionRanges
     ) => {
       const nextSelection = removeSelectionItem(
-        selectionRanges,
+        selection,
         source,
         selectionIndex
       )
@@ -527,7 +577,7 @@ export function ModelingDialog() {
     [modelingSend]
   )
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (didAutoEnableSelection || activeSelectionArgName !== null) return
 
     const hasAnySelectionArg = fields.some(({ arg }) =>
@@ -540,10 +590,14 @@ export function ModelingDialog() {
     }
 
     const firstVisibleSelectionField = fields.find(
-      ({ isHidden, arg }) => !isHidden && isSelectionArgument(arg)
+      ({ isHidden, isDisabled, arg }) =>
+        !isHidden && !isDisabled && isSelectionArgument(arg)
     )
 
-    if (!firstVisibleSelectionField) return
+    if (!firstVisibleSelectionField) {
+      setDidAutoEnableSelection(true)
+      return
+    }
 
     startSelectingArgument(
       firstVisibleSelectionField.argName,
@@ -567,11 +621,18 @@ export function ModelingDialog() {
   const groupedFields = resolveDialogGroups(
     visibleFields,
     selectedCommand.dialogLayout?.groups,
-    draftValues
+    dialogArgumentsToSubmit
   )
   const activeSelectionFieldName =
-    activeSelectionArgName ??
-    visibleFields.find((field) => isSelectionArgument(field.arg))?.argName
+    visibleFields.find(
+      (field) =>
+        field.argName === activeSelectionArgName &&
+        !field.isDisabled &&
+        isSelectionArgument(field.arg)
+    )?.argName ??
+    visibleFields.find(
+      (field) => !field.isDisabled && isSelectionArgument(field.arg)
+    )?.argName
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -583,6 +644,7 @@ export function ModelingDialog() {
       }
       const wasmInstance = await wasmPromise
       const argumentsToSubmit: Record<string, unknown> = {
+        ...commandBarState.context.argumentsToSubmit,
         ...draftValues,
       }
 
@@ -680,18 +742,28 @@ export function ModelingDialog() {
     argName,
     arg,
     isRequired,
+    isDisabled,
     options,
   }: ModelingDialogField) {
     const key = `${argName}-${arg.inputType}`
     const isSelectionField = isSelectionArgument(arg)
+    const isSelecting = activeSelectionArgName === argName
+    const isActivelySelecting = isSelectionField && isSelecting && !isDisabled
     const currentSelection = isSelectionValueEmpty(selectionRanges)
       ? undefined
       : selectionRanges
-    const value = isSelectionField ? currentSelection : draftValues[argName]
+    const savedSelection = isSelectionValueEmpty(
+      commandBarState.context.argumentsToSubmit[argName]
+    )
+      ? undefined
+      : (commandBarState.context.argumentsToSubmit[argName] as Selections)
+    const displayedSelection = isActivelySelecting
+      ? currentSelection
+      : savedSelection
+    const value = isSelectionField ? displayedSelection : draftValues[argName]
 
     const capturedSelection =
-      isSelectionField && currentSelection ? currentSelection : undefined
-    const isSelecting = activeSelectionArgName === argName
+      isSelectionField && displayedSelection ? displayedSelection : undefined
     const capturedSelectionItems = getSelectionListItems(
       kclManager.astSignal.value,
       capturedSelection
@@ -712,6 +784,7 @@ export function ModelingDialog() {
           ) : undefined
         }
         isRequired={isRequired}
+        disabled={isDisabled}
         options={options}
         controlStyle={arg.dialog?.controlStyle}
         value={value}
@@ -719,7 +792,7 @@ export function ModelingDialog() {
         selectionHeading={arg.dialog?.selectionHeading || arg.displayName}
         selectionEmptyLabel={arg.dialog?.selectionEmptyLabel}
         selectionHint={arg.dialog?.selectionHint}
-        isSelecting={isSelecting}
+        isSelecting={isActivelySelecting}
         currentSelectionLabel={selectionSummary(
           kclManager.astSignal.value,
           currentSelection
@@ -734,7 +807,12 @@ export function ModelingDialog() {
         onStartSelecting={() => startSelectingArgument(argName, arg)}
         onRemoveSelection={(item) => {
           startSelectingArgument(argName, arg)
-          removeSceneSelection(argName, item.source, item.index)
+          removeSceneSelection(
+            argName,
+            item.source,
+            item.index,
+            capturedSelection
+          )
         }}
         onClearSelection={() => {
           startSelectingArgument(argName, arg)

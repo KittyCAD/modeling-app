@@ -11,9 +11,10 @@ export function evaluateCommandBarArg(
     typeof argumentsToSubmit[name] === 'function'
       ? argumentsToSubmit[name](commandBarContext)
       : argumentsToSubmit[name]
+  const machineContext = arg.machineActor?.getSnapshot().context
   const isHidden =
     typeof arg.hidden === 'function'
-      ? arg.hidden(commandBarContext)
+      ? arg.hidden(commandBarContext, machineContext)
       : arg.hidden
   const isRequired =
     typeof arg.required === 'function'
