@@ -71,7 +71,7 @@ gdt::distance(
 )
 gdt::annotation(
   faces = [region001.tags.line4],
-  annotation = "Break all sharp edges",
+  annotation = "BREAK ALL SHARP EDGES",
   framePosition = [100, -100],
   leaderScale = 3,
 )
