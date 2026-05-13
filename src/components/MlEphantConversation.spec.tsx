@@ -175,6 +175,50 @@ describe('MlEphantConversation', () => {
     rendersRequestBubbleThenDisplayResponse('standard')
   })
 
+  test('shows an attachments loading indicator while attachment processing is in progress', () => {
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        isLoadingAttachments={true}
+        conversation={{
+          exchanges: [
+            {
+              request: {
+                type: 'user',
+                content: 'Use these files',
+                additional_files: [
+                  {
+                    name: 'front-view.png',
+                    mimetype: 'image/png',
+                    data: [],
+                  },
+                ],
+              },
+              responses: [],
+              deltasAggregated: '',
+            },
+          ],
+        }}
+        onProcess={vi.fn()}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        contexts={[]}
+        disabled={false}
+        hasPromptCompleted={false}
+        isProcessing={true}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    expect(
+      screen.getByText('Progressively loading attachments...')
+    ).toBeInTheDocument()
+  })
+
   test('omits mode while server mode metadata is unavailable', () => {
     const handleProcess = vi.fn()
     render(
