@@ -22,8 +22,9 @@ The same face or edge can be named more than once; the last name wins.
 Passing an empty `name` clears any name previously assigned to that face
 or edge.
 
-Names may contain only ASCII alphanumeric characters and ASCII punctuation.
-The maximum length is 1024 characters.
+Names may contain only non-control ASCII characters. Spaces are allowed, but
+other whitespace characters like newline are considred control characters,
+which are disallowed. The maximum length is 1024 characters.
 
 ### Arguments
 
