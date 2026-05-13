@@ -54,13 +54,6 @@ async fn inner_name(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<(), KclError> {
-    if face.is_some() && edge.is_some() {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "Only one of `face` or `edge` may be provided to `name`, not both.".to_owned(),
-            vec![args.source_range],
-        )));
-    }
-
     validate_name(&name, args)?;
 
     let (uuid, kind) = match (face, edge) {
@@ -78,7 +71,12 @@ async fn inner_name(
                 vec![args.source_range],
             )));
         }
-        (Some(_), Some(_)) => unreachable!(),
+        (Some(_), Some(_)) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Only one of `face` or `edge` may be provided to `name`, not both.".to_owned(),
+                vec![args.source_range],
+            )));
+        }
     };
 
     if name.is_empty() {
