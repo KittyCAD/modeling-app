@@ -57,6 +57,14 @@ type PathSegmentState =
       start: Point3
       end: Point3
     }
+  | {
+      id: string
+      type: 'bezier'
+      start: Point3
+      control1: Point3
+      control2: Point3
+      end: Point3
+    }
 
 type PlaneState = {
   origin: Point3
@@ -219,7 +227,7 @@ export type OpenCascadeSketchLineSegment = {
   pathId: string
   segmentId: string
   artifactId: string
-  kind: 'line' | 'arc'
+  kind: 'line' | 'arc' | 'bezier'
   points: number[]
 }
 
@@ -1283,6 +1291,18 @@ export class OpenCascadeCommandManager {
       const end = endpointFromSegment(start, segment)
       path.segments.push({ id: commandId, type: 'line', start, end })
       path.pen = end
+      this.markSketchChanged()
+      return { type: 'extend_path', data: {} }
+    }
+
+    if (segmentType === 'bezier') {
+      const bezierSegment = bezierSegmentFromPathCommand(
+        commandId,
+        start,
+        segment
+      )
+      path.segments.push(bezierSegment)
+      path.pen = bezierSegment.end
       this.markSketchChanged()
       return { type: 'extend_path', data: {} }
     }
@@ -3344,24 +3364,35 @@ export class OpenCascadeCommandManager {
     path: PathState,
     oc: OpenCascadeInstance
   ): PathEdgeEntry[] {
-    const entries = path.segments.map((segment) =>
-      segment.type === 'line'
-        ? {
-            id: segment.id,
-            sourceSegmentId: segment.id,
-            edge: this.makeLineEdge(segment.start, segment.end, path, oc),
-            points: [
-              localToWorld(segment.start, this.planeForPath(path)),
-              localToWorld(segment.end, this.planeForPath(path)),
-            ],
-          }
-        : {
-            id: segment.id,
-            sourceSegmentId: segment.id,
-            edge: this.makeArcEdge(segment, path, oc),
-            points: sampleArcPoints(segment, this.planeForPath(path)),
-          }
-    )
+    const entries = path.segments.map((segment) => {
+      if (segment.type === 'line') {
+        return {
+          id: segment.id,
+          sourceSegmentId: segment.id,
+          edge: this.makeLineEdge(segment.start, segment.end, path, oc),
+          points: [
+            localToWorld(segment.start, this.planeForPath(path)),
+            localToWorld(segment.end, this.planeForPath(path)),
+          ],
+        }
+      }
+
+      if (segment.type === 'arc') {
+        return {
+          id: segment.id,
+          sourceSegmentId: segment.id,
+          edge: this.makeArcEdge(segment, path, oc),
+          points: sampleArcPoints(segment, this.planeForPath(path)),
+        }
+      }
+
+      return {
+        id: segment.id,
+        sourceSegmentId: segment.id,
+        edge: this.makeBezierEdge(segment, path, oc),
+        points: sampleBezierPoints(segment, this.planeForPath(path)),
+      }
+    })
 
     if (
       path.closed &&
@@ -3480,6 +3511,28 @@ export class OpenCascadeCommandManager {
         )
     if (!edgeBuilder.IsDone()) {
       throw new Error('OpenCascade failed to build arc edge')
+    }
+    return edgeBuilder.Edge()
+  }
+
+  private makeBezierEdge(
+    segment: Extract<PathSegmentState, { type: 'bezier' }>,
+    path: PathState,
+    oc: OpenCascadeInstance
+  ): any {
+    const plane = this.planeForPath(path)
+    const poles = new oc.TColgp_Array1OfPnt_2(1, 4)
+    poles.SetValue(1, toGpPnt(localToWorld(segment.start, plane), oc))
+    poles.SetValue(2, toGpPnt(localToWorld(segment.control1, plane), oc))
+    poles.SetValue(3, toGpPnt(localToWorld(segment.control2, plane), oc))
+    poles.SetValue(4, toGpPnt(localToWorld(segment.end, plane), oc))
+
+    const curve = new oc.Geom_BezierCurve_1(poles)
+    const edgeBuilder = new oc.BRepBuilderAPI_MakeEdge_24(
+      new oc.Handle_Geom_Curve_2(curve)
+    )
+    if (!edgeBuilder.IsDone()) {
+      throw new Error('OpenCascade failed to build bezier edge')
     }
     return edgeBuilder.Edge()
   }
@@ -5119,9 +5172,14 @@ function transformPathSegments(
       ]
     }
 
-    const points = sampleArcPoints(segment, plane).map((point) =>
-      transformPoint(point, matrix)
-    )
+    const points =
+      segment.type === 'arc'
+        ? sampleArcPoints(segment, plane).map((point) =>
+            transformPoint(point, matrix)
+          )
+        : sampleBezierPoints(segment, plane).map((point) =>
+            transformPoint(point, matrix)
+          )
     const lines: PathSegmentState[] = []
     for (let index = 0; index < points.length - 1; index += 1) {
       if (pointsClose(points[index], points[index + 1])) {
@@ -5155,6 +5213,15 @@ function clonePathSegmentState(segment: PathSegmentState): PathSegmentState {
     return {
       ...segment,
       start: { ...segment.start },
+      end: { ...segment.end },
+    }
+  }
+  if (segment.type === 'bezier') {
+    return {
+      ...segment,
+      start: { ...segment.start },
+      control1: { ...segment.control1 },
+      control2: { ...segment.control2 },
       end: { ...segment.end },
     }
   }
@@ -5492,6 +5559,25 @@ function endpointFromSegment(start: Point3, segment: any): Point3 {
   return segment.relative ? add(start, end) : end
 }
 
+function bezierSegmentFromPathCommand(
+  commandId: string,
+  start: Point3,
+  segment: any
+): Extract<PathSegmentState, { type: 'bezier' }> {
+  const control1 = toPoint3(segment.control1)
+  const control2 = toPoint3(segment.control2)
+  const end = endpointFromSegment(start, segment)
+
+  return {
+    id: commandId,
+    type: 'bezier',
+    start,
+    control1: segment.relative ? add(start, control1) : control1,
+    control2: segment.relative ? add(start, control2) : control2,
+    end,
+  }
+}
+
 function arcSegmentFromPathCommand(
   commandId: string,
   path: PathState,
@@ -5647,6 +5733,9 @@ function tangentialPreviousPoint(path: PathState, start: Point3): Point2 {
 
   if (previousSegment.type === 'line') {
     return point3ToPoint2(previousSegment.start)
+  }
+  if (previousSegment.type === 'bezier') {
+    return point3ToPoint2(previousSegment.control2)
   }
 
   return tangentPointFromPreviousArc(
@@ -6036,6 +6125,9 @@ function pointsForPathSegment(
       localToWorld(segment.end, plane),
     ]
   }
+  if (segment.type === 'bezier') {
+    return sampleBezierPoints(segment, plane)
+  }
 
   return sampleArcPoints(segment, plane)
 }
@@ -6067,6 +6159,54 @@ function sampleArcLocalPoints3(
     })
   }
   return points
+}
+
+function sampleBezierPoints(
+  segment: Extract<PathSegmentState, { type: 'bezier' }>,
+  plane?: PlaneState
+): Point3[] {
+  return sampleBezierLocalPoints3(segment).map((point) =>
+    localToWorld(point, plane)
+  )
+}
+
+function sampleBezierLocalPoints3(
+  segment: Extract<PathSegmentState, { type: 'bezier' }>
+): Point3[] {
+  const steps = 32
+  const points: Point3[] = []
+  for (let index = 0; index <= steps; index += 1) {
+    points.push(bezierPoint(segment, index / steps))
+  }
+  return points
+}
+
+function bezierPoint(
+  segment: Extract<PathSegmentState, { type: 'bezier' }>,
+  t: number
+): Point3 {
+  const u = 1 - t
+  const a = u * u * u
+  const b = 3 * u * u * t
+  const c = 3 * u * t * t
+  const d = t * t * t
+  return {
+    x:
+      a * segment.start.x +
+      b * segment.control1.x +
+      c * segment.control2.x +
+      d * segment.end.x,
+    y:
+      a * segment.start.y +
+      b * segment.control1.y +
+      c * segment.control2.y +
+      d * segment.end.y,
+    z:
+      a * segment.start.z +
+      b * segment.control1.z +
+      c * segment.control2.z +
+      d * segment.end.z,
+  }
 }
 
 type GenericTopologyBuild = {
@@ -6623,7 +6763,9 @@ function rawArrangementSegmentsForPath(
     const points =
       segment.type === 'line'
         ? [point3ToPoint2(segment.start), point3ToPoint2(segment.end)]
-        : sampleArcLocalPoints(segment)
+        : segment.type === 'arc'
+          ? sampleArcLocalPoints(segment)
+          : sampleBezierLocalPoints(segment)
     const rawSegments: ArrangementRawSegment[] = []
     for (let index = 0; index < points.length - 1; index += 1) {
       if (!points2Close(points[index], points[index + 1])) {
@@ -7048,6 +7190,12 @@ function sampleArcLocalPoints(
     })
   }
   return points
+}
+
+function sampleBezierLocalPoints(
+  segment: Extract<PathSegmentState, { type: 'bezier' }>
+): Point2[] {
+  return sampleBezierLocalPoints3(segment).map(point3ToPoint2)
 }
 
 function withoutClosingPoint(points: Point3[]): Point3[] {

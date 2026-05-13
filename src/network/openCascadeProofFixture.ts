@@ -54,6 +54,16 @@ region001 = region(point = [2.5mm, 2.5mm], sketch = sketch001)
 bidirectionalExtrude = extrude(region001, length = 5, bidirectionalLength = 2)
 `
 
+export const OPEN_CASCADE_BEZIER_EXTRUDE_KCL = `exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> line(end = [0, 10])
+  |> bezierCurve(control1 = [5, 0], control2 = [5, 10], end = [10, 10])
+  |> line(endAbsolute = [10, 0])
+  |> close()
+
+example = extrude(exampleSketch, length = 10)
+`
+
 export const OPEN_CASCADE_SWEEP_KCL = `sweepPath = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [0, 10])
@@ -387,6 +397,10 @@ export const OPEN_CASCADE_PROOF_FIXTURES = [
   {
     name: 'openCascadeBidirectionalExtrudeProofFixture',
     code: OPEN_CASCADE_BIDIRECTIONAL_EXTRUDE_KCL,
+  },
+  {
+    name: 'openCascadeBezierExtrudeProofFixture',
+    code: OPEN_CASCADE_BEZIER_EXTRUDE_KCL,
   },
   {
     name: 'openCascadeSweepProofFixture',
