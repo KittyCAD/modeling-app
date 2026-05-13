@@ -5,6 +5,7 @@ import {
   getAverageBoundingBoxDimension,
   getDefaultGdtFramePlaneFromBoundingBox,
   getDefaultGdtFramePlaneFromNormal,
+  getDefaultGdtFramePositionSignsFromNormal,
   getEngineEntityIdsForGdtSelections,
   getPlanarFaceEntityIdsForGdtSelections,
   withDefaultGdtFrameDefaults,
@@ -41,6 +42,30 @@ describe('GD&T frame defaults', () => {
     expect(getDefaultGdtFramePlaneFromNormal({ x: 1, y: 0, z: 0 })).toBe('XY')
     expect(
       getDefaultGdtFramePlaneFromNormal({ x: 1, y: 1, z: 0 })
+    ).toBeUndefined()
+  })
+
+  it('infers framePosition signs from face normals', () => {
+    expect(
+      getDefaultGdtFramePositionSignsFromNormal({ x: 0, y: 0, z: 1 })
+    ).toEqual([1, 1])
+    expect(
+      getDefaultGdtFramePositionSignsFromNormal({ x: 0, y: 0, z: -1 })
+    ).toEqual([1, -1])
+    expect(
+      getDefaultGdtFramePositionSignsFromNormal({ x: 1, y: 0, z: 0 })
+    ).toEqual([1, 1])
+    expect(
+      getDefaultGdtFramePositionSignsFromNormal({ x: -1, y: 0, z: 0 })
+    ).toEqual([-1, 1])
+    expect(
+      getDefaultGdtFramePositionSignsFromNormal({ x: 0, y: 1, z: 0 })
+    ).toEqual([1, 1])
+    expect(
+      getDefaultGdtFramePositionSignsFromNormal({ x: 0, y: -1, z: 0 })
+    ).toEqual([1, -1])
+    expect(
+      getDefaultGdtFramePositionSignsFromNormal({ x: 1, y: 1, z: 0 })
     ).toBeUndefined()
   })
 
@@ -197,6 +222,129 @@ describe('GD&T frame defaults', () => {
       })
     )
     expect(result.framePosition?.valueText).toBe('[6, 6]')
+  })
+
+  it('signs omitted framePosition from the selected face normal', async () => {
+    const sendSceneCommand = vi
+      .fn()
+      .mockResolvedValueOnce({
+        success: true,
+        resp: {
+          type: 'modeling',
+          data: {
+            modeling_response: {
+              type: 'face_is_planar',
+              data: {
+                origin: { x: 0, y: 0, z: 0 },
+                x_axis: { x: 1, y: 0, z: 0 },
+                y_axis: { x: 0, y: 1, z: 0 },
+                z_axis: { x: 0, y: 0, z: -1 },
+              },
+            },
+          },
+        },
+      })
+      .mockResolvedValueOnce({
+        success: true,
+        resp: {
+          type: 'modeling',
+          data: {
+            modeling_response: {
+              type: 'bounding_box',
+              data: {
+                center: { x: 0, y: 0, z: 0 },
+                dimensions: { x: 4, y: 0, z: 8 },
+              },
+            },
+          },
+        },
+      })
+
+    const data = {
+      name: 'A',
+      faces: {
+        graphSelections: [
+          {
+            codeRef: { range: [0, 1, 0], pathToNode: [] },
+            artifact: testArtifact({ type: 'cap', id: 'cap-1' }),
+          },
+        ],
+        otherSelections: [],
+      },
+    } as ModelingCommandSchema['GDT Datum']
+
+    const result = await withDefaultGdtFrameDefaults({
+      data,
+      engineCommandManager: {
+        sendSceneCommand,
+      } as unknown as ConnectionManager,
+      wasmInstance: {} as ModuleType,
+    })
+
+    expect(result.framePlane).toBe('XZ')
+    expect(result.framePosition?.valueText).toBe('[6, -6]')
+  })
+
+  it('uses normal framePosition signs even when framePlane is explicit', async () => {
+    const sendSceneCommand = vi
+      .fn()
+      .mockResolvedValueOnce({
+        success: true,
+        resp: {
+          type: 'modeling',
+          data: {
+            modeling_response: {
+              type: 'face_is_planar',
+              data: {
+                origin: { x: 0, y: 0, z: 0 },
+                x_axis: { x: 0, y: 1, z: 0 },
+                y_axis: { x: 0, y: 0, z: 1 },
+                z_axis: { x: -1, y: 0, z: 0 },
+              },
+            },
+          },
+        },
+      })
+      .mockResolvedValueOnce({
+        success: true,
+        resp: {
+          type: 'modeling',
+          data: {
+            modeling_response: {
+              type: 'bounding_box',
+              data: {
+                center: { x: 0, y: 0, z: 0 },
+                dimensions: { x: 4, y: 0, z: 8 },
+              },
+            },
+          },
+        },
+      })
+
+    const data = {
+      name: 'A',
+      framePlane: 'YZ',
+      faces: {
+        graphSelections: [
+          {
+            codeRef: { range: [0, 1, 0], pathToNode: [] },
+            artifact: testArtifact({ type: 'cap', id: 'cap-1' }),
+          },
+        ],
+        otherSelections: [],
+      },
+    } as ModelingCommandSchema['GDT Datum']
+
+    const result = await withDefaultGdtFrameDefaults({
+      data,
+      engineCommandManager: {
+        sendSceneCommand,
+      } as unknown as ConnectionManager,
+      wasmInstance: {} as ModuleType,
+    })
+
+    expect(result.framePlane).toBe('YZ')
+    expect(result.framePosition?.valueText).toBe('[-6, 6]')
   })
 
   it('fills omitted framePlane from a planar face normal', async () => {

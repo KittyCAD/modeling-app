@@ -22,6 +22,11 @@ type GdtFramePlane =
   | typeof KCL_PLANE_XY
   | typeof KCL_PLANE_XZ
   | typeof KCL_PLANE_YZ
+type GdtFramePositionSigns = readonly [number, number]
+type GdtFrameDefaultsFromNormal = {
+  framePlane: GdtFramePlane
+  framePositionSigns: GdtFramePositionSigns
+}
 
 const AXIS_INFERENCE_TOLERANCE = 0.05
 const AXES: Axis[] = ['x', 'y', 'z']
@@ -166,10 +171,8 @@ function getFramePlaneForFeaturePlane(
   return KCL_PLANE_XY
 }
 
-export function getDefaultGdtFramePlaneFromNormal(
-  normal: Point3d
-): GdtFramePlane | undefined {
-  const axis = getDecisiveAxis(
+function getDominantNormalAxis(normal: Point3d): Axis | undefined {
+  return getDecisiveAxis(
     {
       x: Math.abs(normal.x),
       y: Math.abs(normal.y),
@@ -177,11 +180,51 @@ export function getDefaultGdtFramePlaneFromNormal(
     },
     (left, right) => right - left
   )
+}
+
+export function getDefaultGdtFramePlaneFromNormal(
+  normal: Point3d
+): GdtFramePlane | undefined {
+  const axis = getDominantNormalAxis(normal)
   if (!axis) {
     return undefined
   }
 
   return getFramePlaneForFeaturePlane(getFeaturePlaneForNormalAxis(axis))
+}
+
+export function getDefaultGdtFramePositionSignsFromNormal(
+  normal: Point3d
+): GdtFramePositionSigns | undefined {
+  const axis = getDominantNormalAxis(normal)
+  if (!axis) {
+    return undefined
+  }
+
+  if (axis === 'x') {
+    return [normal.x >= 0 ? 1 : -1, 1]
+  }
+  if (axis === 'y') {
+    return [1, normal.y >= 0 ? 1 : -1]
+  }
+
+  return [1, normal.z >= 0 ? 1 : -1]
+}
+
+function getDefaultGdtFrameDefaultsFromNormal(
+  normal: Point3d
+): GdtFrameDefaultsFromNormal | undefined {
+  const framePlane = getDefaultGdtFramePlaneFromNormal(normal)
+  const framePositionSigns = getDefaultGdtFramePositionSignsFromNormal(normal)
+
+  if (!framePlane || !framePositionSigns) {
+    return undefined
+  }
+
+  return {
+    framePlane,
+    framePositionSigns,
+  }
 }
 
 export function getDefaultGdtFramePlaneFromBoundingBox(
@@ -221,14 +264,15 @@ export function getAverageBoundingBoxDimension(
 }
 
 function createFramePositionCommandValue(
-  value: number,
+  xValue: number,
+  yValue: number,
   wasmInstance: ModuleType
 ): KclCommandValue {
-  const valueText = `[${value}, ${value}]`
+  const valueText = `[${xValue}, ${yValue}]`
   return {
     valueAst: createArrayExpression([
-      createLiteral(value, wasmInstance),
-      createLiteral(value, wasmInstance),
+      createLiteral(xValue, wasmInstance),
+      createLiteral(yValue, wasmInstance),
     ]),
     valueCalculated: valueText,
     valueText,
@@ -279,13 +323,13 @@ async function getPlanarFaceNormal(
   }
 }
 
-async function getDefaultGdtFramePlaneFromSelectionNormals({
+async function getDefaultGdtFrameDefaultsFromSelectionNormals({
   engineCommandManager,
   selections,
 }: {
   engineCommandManager: ConnectionManager
   selections: Selections | undefined
-}): Promise<GdtFramePlane | undefined> {
+}): Promise<GdtFrameDefaultsFromNormal | undefined> {
   const faceEntityIds = getPlanarFaceEntityIdsForGdtSelections(selections)
 
   for (const entityId of faceEntityIds) {
@@ -294,9 +338,9 @@ async function getDefaultGdtFramePlaneFromSelectionNormals({
       continue
     }
 
-    const framePlane = getDefaultGdtFramePlaneFromNormal(normal)
-    if (framePlane) {
-      return framePlane
+    const defaults = getDefaultGdtFrameDefaultsFromNormal(normal)
+    if (defaults) {
+      return defaults
     }
   }
 
@@ -357,20 +401,23 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   const entityIds = getEngineEntityIdsForGdtSelections(selections)
   let nextData = data
   let hasResolvedFramePlane = Boolean(data.framePlane)
+  let framePositionSigns: GdtFramePositionSigns | undefined
+  const shouldQueryNormalDefaults = !data.framePlane || !data.framePosition
 
-  if (!data.framePlane) {
-    const framePlaneFromNormal =
-      await getDefaultGdtFramePlaneFromSelectionNormals({
+  if (shouldQueryNormalDefaults) {
+    const defaultsFromNormal =
+      await getDefaultGdtFrameDefaultsFromSelectionNormals({
         engineCommandManager,
         selections,
       })
 
-    if (framePlaneFromNormal) {
+    if (defaultsFromNormal) {
+      framePositionSigns = defaultsFromNormal.framePositionSigns
       hasResolvedFramePlane = true
-      if (framePlaneFromNormal !== KCL_PLANE_XY) {
+      if (!data.framePlane && defaultsFromNormal.framePlane !== KCL_PLANE_XY) {
         nextData = {
           ...nextData,
-          framePlane: framePlaneFromNormal,
+          framePlane: defaultsFromNormal.framePlane,
         }
       }
     }
@@ -413,11 +460,13 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
     if (averageDimension === undefined) {
       return nextData
     }
+    const [xSign, ySign] = framePositionSigns ?? [1, 1]
 
     nextData = {
       ...nextData,
       framePosition: createFramePositionCommandValue(
-        averageDimension,
+        averageDimension * xSign,
+        averageDimension * ySign,
         wasmInstance
       ),
     }
