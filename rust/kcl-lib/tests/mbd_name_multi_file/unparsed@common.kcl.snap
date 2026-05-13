@@ -1,0 +1,18 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing tests/mbd_name_multi_file/common.kcl
+---
+// Shared geometry imported by both left.kcl and right.kcl. The faces of
+// `block` are referenced from both siblings, so naming them in both files
+// targets the same engine UUIDs.
+
+@settings(kclVersion = 2.0)
+
+export block = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0], tag = $side1)
+  |> line(end = [0, 10], tag = $side2)
+  |> line(end = [-10, 0])
+  |> line(end = [0, -10])
+  |> close()
+  |> extrude(length = 5)

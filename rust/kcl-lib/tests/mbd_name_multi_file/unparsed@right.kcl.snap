@@ -1,0 +1,13 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing tests/mbd_name_multi_file/right.kcl
+---
+// Sibling module of `left.kcl`. See left.kcl for the merge-order rationale.
+
+@settings(kclVersion = 2.0)
+
+import block from "common.kcl"
+
+// Same face UUID as left.kcl names. Because right.kcl is imported after
+// left.kcl in input.kcl, this name wins in the merged map.
+mbd::name(face = block.sketch.tags.side1, name = "right_named_side1_wins")
