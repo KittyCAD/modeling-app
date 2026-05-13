@@ -51,10 +51,7 @@ import {
   MlEphantManagerTransitions,
 } from '@src/machines/mlEphantManagerMachine'
 import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
-import {
-  SystemIOMachineStates,
-  collectProjectFiles,
-} from '@src/machines/systemIO/utils'
+import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import {
   statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
@@ -86,11 +83,7 @@ export function OpenedProject() {
   const settingsActor = settings.actor
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
-  const {
-    state: modelingState,
-    send: modelingSend,
-    theProject,
-  } = useModelingContext()
+  const { state: modelingState, send: modelingSend } = useModelingContext()
   useQueryParamEffects(kclManager)
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
@@ -190,40 +183,6 @@ export function OpenedProject() {
 
   const settingsValues = settings.useSettings()
   const authToken = auth.useToken()
-  useEffect(() => {
-    kclManager.setZookeeperHistoryReplayHandler((command) => {
-      void (async () => {
-        const activeProject = theProject.current
-        if (activeProject === undefined) {
-          return
-        }
-
-        const projectFiles = await collectProjectFiles({
-          selectedFileContents: kclManager.code,
-          fileNames: kclManager.execState.filenames,
-          projectContext: activeProject,
-        })
-
-        mlEphantManagerActor2.send({
-          type:
-            command === 'undo'
-              ? MlEphantManagerTransitions.ZookeeperUndo
-              : MlEphantManagerTransitions.ZookeeperRedo,
-          projectName: activeProject.name,
-          projectFiles,
-        })
-
-        billing.actor.send({
-          type: BillingTransition.Update,
-          apiToken: authToken,
-        })
-      })().catch(reportRejection)
-    })
-
-    return () => {
-      kclManager.setZookeeperHistoryReplayHandler(undefined)
-    }
-  }, [authToken, billing.actor, kclManager, mlEphantManagerActor2, theProject])
 
   const machineApiEnabled = settingsValues.app.machineApi.current
   const registryLocalStatusBarItems = filterEngineSceneStatusBarItems(

@@ -1,11 +1,12 @@
-import fsZds from '@src/lib/fs-zds'
 import { useLspContext } from '@src/components/LspProvider'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
+import { useApp, useSingletons } from '@src/lib/boot'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
   PROJECT_ID_QUERY_PARAM,
 } from '@src/lib/constants'
+import fsZds from '@src/lib/fs-zds'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import {
   PATHS,
@@ -15,7 +16,6 @@ import {
   safeEncodeForRouterPaths,
   webSafePathSplit,
 } from '@src/lib/paths'
-import { useApp, useSingletons } from '@src/lib/boot'
 import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine'
 import {
   useHasListedProjects,
@@ -273,9 +273,6 @@ export function SystemIOMachineLogicListener() {
       const payload = prepareMlEphantNewFileRequest(props)
 
       if (payload) {
-        if (props.shouldAddZookeeperHistoryEntry) {
-          kclManager.markPendingZookeeperHistoryEntry()
-        }
         kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
         systemIOActor.send({
           type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
