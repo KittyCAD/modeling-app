@@ -1,8 +1,8 @@
 import type { BoundingBox, FaceIsPlanar, Point3d } from '@kittycad/lib'
 
-import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { createArrayExpression, createLiteral } from '@src/lang/create'
 import type { ArtifactId } from '@src/lang/wasm'
+import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
@@ -13,9 +13,9 @@ import {
 } from '@src/lib/constants'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { roundOff, uuidv4 } from '@src/lib/utils'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
+import type { Selections } from '@src/machines/modelingSharedTypes'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 type Axis = 'x' | 'y' | 'z'
 type GdtFramePlane =

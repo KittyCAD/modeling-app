@@ -1,6 +1,6 @@
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Artifact, Expr } from '@src/lang/wasm'
-import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
-import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
   getAverageBoundingBoxDimension,
   getDefaultGdtFramePlaneFromBoundingBox,
@@ -10,9 +10,9 @@ import {
   getPlanarFaceEntityIdsForGdtSelections,
   withDefaultGdtFrameDefaults,
 } from '@src/lib/gdtFramePosition'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import type { KclCommandValue } from '@src/lib/commandTypes'
 import { describe, expect, it, vi } from 'vitest'
 
 function testArtifact<T extends Artifact['type']>(
