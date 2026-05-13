@@ -1,13 +1,83 @@
-import type { ConnectionManager } from '@src/network/connectionManager'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
+  GDT_FONT_SIZE_TO_BOUNDING_BOX_AVERAGE_RATIO,
   getAverageBoundingBoxDimension,
   getEngineEntityIdsForGdtSelections,
+  getExistingGdtFontSize,
   withDefaultGdtFramePosition,
 } from '@src/lib/gdtFramePosition'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import { describe, expect, it, vi } from 'vitest'
+
+const wasmInstance = {
+  format_number_literal: (value: number, suffix: string) => {
+    const unitBySuffix: Record<string, string> = {
+      Cm: 'cm',
+      Ft: 'ft',
+      Inch: 'in',
+      M: 'm',
+      Mm: 'mm',
+      Yd: 'yd',
+    }
+    return `${value}${unitBySuffix[JSON.parse(suffix)] ?? ''}`
+  },
+} as unknown as ModuleType
+
+const artifact = (value: object) =>
+  value as unknown as NonNullable<
+    Selections['graphSelections'][number]['artifact']
+  >
+
+const kclValue = (valueText: string): KclCommandValue => ({
+  valueAst: {} as unknown as KclCommandValue['valueAst'],
+  valueCalculated: valueText,
+  valueText,
+})
+
+function gdtProgramWithFontSizes(fontSizes: string[]) {
+  let sourceCode = ''
+  const body = fontSizes.map((fontSize) => {
+    const expressionPrefix = `gdt::datum(face = capEnd001, name = "A", fontSize = `
+    const expressionSuffix = ')'
+    const expressionStart = sourceCode.length
+    const fontSizeStart = expressionStart + expressionPrefix.length
+    const fontSizeEnd = fontSizeStart + fontSize.length
+    sourceCode += `${expressionPrefix}${fontSize}${expressionSuffix}\n`
+
+    return {
+      type: 'ExpressionStatement',
+      expression: {
+        type: 'CallExpressionKw',
+        callee: {
+          type: 'Name',
+          path: [{ name: 'gdt' }],
+          name: { name: 'datum' },
+        },
+        unlabeled: null,
+        arguments: [
+          {
+            label: { name: 'fontSize' },
+            arg: {
+              type: 'Literal',
+              value: { value: Number.parseFloat(fontSize), suffix: 'Mm' },
+              raw: fontSize,
+              start: fontSizeStart,
+              end: fontSizeEnd,
+            },
+          },
+        ],
+      },
+    }
+  })
+
+  return {
+    ast: { body } as unknown as Parameters<typeof getExistingGdtFontSize>[0],
+    sourceCode,
+  }
+}
 
 describe('GD&T bounding box frame position defaults', () => {
   it('averages non-zero bounding box dimensions', () => {
@@ -21,20 +91,20 @@ describe('GD&T bounding box frame position defaults', () => {
       graphSelections: [
         {
           codeRef: { range: [0, 1, 0], pathToNode: [] },
-          artifact: {
+          artifact: artifact({
             type: 'cap',
             id: 'cap-1',
-          } as any,
+          }),
         },
         {
           codeRef: { range: [1, 2, 0], pathToNode: [] },
-          artifact: {
+          artifact: artifact({
             type: 'pattern',
             id: 'pattern-1',
             copyIds: ['copy-1'],
             copyFaceIds: ['copy-face-1'],
             copyEdgeIds: ['copy-edge-1', 'copy-face-1'],
-          } as any,
+          }),
         },
       ],
       otherSelections: [],
@@ -71,7 +141,7 @@ describe('GD&T bounding box frame position defaults', () => {
         graphSelections: [
           {
             codeRef: { range: [0, 1, 0], pathToNode: [] },
-            artifact: { type: 'cap', id: 'cap-1' } as any,
+            artifact: artifact({ type: 'cap', id: 'cap-1' }),
           },
         ],
         otherSelections: [],
@@ -84,7 +154,7 @@ describe('GD&T bounding box frame position defaults', () => {
         sendSceneCommand,
       } as unknown as ConnectionManager,
       outputUnit: 'cm',
-      wasmInstance: {} as ModuleType,
+      wasmInstance,
     })
 
     expect(sendSceneCommand).toHaveBeenCalledWith(
@@ -97,18 +167,18 @@ describe('GD&T bounding box frame position defaults', () => {
       })
     )
     expect(result.framePosition?.valueText).toBe('[6, 6]')
+    expect(result.fontSize?.valueText).toBe('1.2cm')
+    expect(GDT_FONT_SIZE_TO_BOUNDING_BOX_AVERAGE_RATIO).toBe(0.2)
   })
 
-  it('preserves an explicit framePosition', async () => {
+  it('preserves explicit framePosition and fontSize', async () => {
     const sendSceneCommand = vi.fn()
-    const framePosition = {
-      valueAst: {} as any,
-      valueCalculated: '[1, 2]',
-      valueText: '[1, 2]',
-    }
+    const framePosition = kclValue('[1, 2]')
+    const fontSize = kclValue('2mm')
     const data = {
       name: 'A',
       framePosition,
+      fontSize,
       faces: { graphSelections: [], otherSelections: [] },
     } as ModelingCommandSchema['GDT Datum']
 
@@ -122,5 +192,35 @@ describe('GD&T bounding box frame position defaults', () => {
 
     expect(sendSceneCommand).not.toHaveBeenCalled()
     expect(result.framePosition).toBe(framePosition)
+    expect(result.fontSize).toBe(fontSize)
+  })
+
+  it('uses the last explicit GD&T fontSize already in the file', async () => {
+    const sendSceneCommand = vi.fn()
+    const { ast, sourceCode } = gdtProgramWithFontSizes(['2mm', '3mm'])
+    const data = {
+      name: 'B',
+      framePosition: kclValue('[1, 2]'),
+      faces: { graphSelections: [], otherSelections: [] },
+    } as ModelingCommandSchema['GDT Datum']
+
+    const result = await withDefaultGdtFramePosition({
+      data,
+      engineCommandManager: {
+        sendSceneCommand,
+      } as unknown as ConnectionManager,
+      ast,
+      sourceCode,
+      wasmInstance: {} as ModuleType,
+    })
+
+    expect(sendSceneCommand).not.toHaveBeenCalled()
+    expect(result.fontSize?.valueText).toBe('3mm')
+  })
+
+  it('finds existing GD&T fontSize values in source order', () => {
+    const { ast, sourceCode } = gdtProgramWithFontSizes(['2mm', '4mm'])
+
+    expect(getExistingGdtFontSize(ast, sourceCode)?.valueText).toBe('4mm')
   })
 })
