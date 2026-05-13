@@ -1448,7 +1448,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   Mirror: {
     description: 'Mirror solids across a plane or edge.',
-    icon: 'mirror',
+    icon: 'mirror3d',
     needsReview: true,
     reviewValidation: async (context, modelingActor) => {
       if (!modelingActor) {

@@ -777,7 +777,7 @@ export function buildToolbarConfig(
               type: 'Find and select command',
               data: { name: 'Mirror', groupId: 'modeling' },
             }),
-          icon: 'mirror', // TODO: need 3D version
+          icon: 'mirror3d',
           status: 'available',
           title: 'Mirror',
           description: 'Mirror solids across a plane or edge.',
