@@ -359,7 +359,7 @@ description: Result of parsing mbd_name_using_face_id.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "name": "mbd",
+                "name": "gdt",
                 "start": 0,
                 "type": "Identifier"
               }
@@ -377,7 +377,7 @@ description: Result of parsing mbd_name_using_face_id.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "// `faceId` returns a `TaggedFace`. `mbd::name` resolves it to the face's",
+          "// `faceId` returns a `TaggedFace`. `gdt::name` resolves it to the face's",
           "// engine UUID via the adjacent-face lookup, the same as for sketch-tag",
           "// faces."
         ],
@@ -510,7 +510,7 @@ description: Result of parsing mbd_name_using_face_id.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "name": "mbd",
+                "name": "gdt",
                 "start": 0,
                 "type": "Identifier"
               }
@@ -528,7 +528,7 @@ description: Result of parsing mbd_name_using_face_id.kcl
         },
         "moduleId": 0,
         "preComments": [
-          "// `edgeId` returns an `Edge` (a UUID). `mbd::name` uses it directly."
+          "// `edgeId` returns an `Edge` (a UUID). `gdt::name` uses it directly."
         ],
         "start": 0,
         "type": "ExpressionStatement",
@@ -621,7 +621,7 @@ description: Result of parsing mbd_name_using_face_id.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Tests `mbd::name` with faces and edges identified by the index-based",
+            "value": "Tests `gdt::name` with faces and edges identified by the index-based",
             "style": "line"
           }
         },

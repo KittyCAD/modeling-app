@@ -99,7 +99,7 @@ description: Result of parsing mbd_name_multi_file.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Verifies that `mbd::name` entries from imported modules are merged into",
+            "value": "Verifies that `gdt::name` entries from imported modules are merged into",
             "style": "line"
           }
         },
@@ -231,7 +231,7 @@ description: Result of parsing mbd_name_multi_file.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Both import `common.kcl` and call `mbd::name` on the same face of",
+            "value": "Both import `common.kcl` and call `gdt::name` on the same face of",
             "style": "line"
           }
         },
