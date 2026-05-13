@@ -1,0 +1,15 @@
+// Sibling module of `right.kcl`. Both import `common.kcl` and call
+// `mbd::name` on the same shared block, so they assign names to the same
+// engine UUIDs. Whichever sibling comes later in `input.kcl`'s import list
+// wins in the merged map.
+
+@settings(kclVersion = 2.0)
+
+import block from "common.kcl"
+
+// `side1` is also named by right.kcl. Since right is the later sibling,
+// right's name wins in the merged map; this one should be overridden.
+mbd::name(face = block.sketch.tags.side1, name = "left_named_side1")
+
+// `side2` is named only by left, so this name appears unchanged.
+mbd::name(face = block.sketch.tags.side2, name = "side2_from_left")
