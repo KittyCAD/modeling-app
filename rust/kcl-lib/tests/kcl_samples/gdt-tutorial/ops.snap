@@ -1359,7 +1359,7 @@ description: Operations executed gdt-tutorial.kcl
         "annotation": {
           "value": {
             "type": "String",
-            "value": "Break all sharp edges"
+            "value": "BREAK ALL SHARP EDGES"
           },
           "sourceRange": []
         },

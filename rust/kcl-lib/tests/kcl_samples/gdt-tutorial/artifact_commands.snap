@@ -656,7 +656,7 @@ description: Artifact commands gdt-tutorial.kcl
             "dimension": null,
             "control_frame": null,
             "defined_datum": null,
-            "prefix": "Break all sharp edges",
+            "prefix": "BREAK ALL SHARP EDGES",
             "suffix": null,
             "plane_id": "[uuid]",
             "offset": {

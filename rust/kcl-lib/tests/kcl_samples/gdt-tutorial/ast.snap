@@ -3811,11 +3811,11 @@ description: Result of parsing gdt-tutorial.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "raw": "\"Break all sharp edges\"",
+                "raw": "\"BREAK ALL SHARP EDGES\"",
                 "start": 0,
                 "type": "Literal",
                 "type": "Literal",
-                "value": "Break all sharp edges"
+                "value": "BREAK ALL SHARP EDGES"
               }
             },
             {
