@@ -266,20 +266,13 @@ async fn unparse_test(test: &Test) {
     input_result.unwrap();
 }
 
-/// Options for running a simulation test. `Default::default()` opts into
-/// every available snapshot; set fields to `false` to skip a snapshot or
-/// assertion. Use this with [`execute_with_options`] when adding new
-/// simulation tests. Existing tests that go through [`execute`] retain
-/// their previous behavior — they do not snapshot `entity_names` and do
-/// not assert step export.
+/// Options for running a simulation test. Use this with
+/// [`execute_with_options`] when adding new simulation tests.
 #[derive(Debug, Clone)]
 struct TestOptions {
     /// True to render the model to a PNG and compare it to a reference
     /// image.
     render_to_png: bool,
-    /// True to assert and snapshot the merged map of user-assigned face
-    /// and edge names produced by `mbd::name`.
-    snapshot_entity_names: bool,
     /// True to request a STEP export from the engine and assert that
     /// non-empty step contents come back.
     export_step: bool,
@@ -289,7 +282,6 @@ impl Default for TestOptions {
     fn default() -> Self {
         Self {
             render_to_png: true,
-            snapshot_entity_names: true,
             export_step: false,
         }
     }
@@ -297,12 +289,11 @@ impl Default for TestOptions {
 
 async fn execute(test_name: &str, render_to_png: bool) {
     // Preserve the historical behavior of this entry point: render-to-png
-    // is caller-controlled, but no entity_names snapshot or step export.
+    // is caller-controlled, no step export.
     execute_test(
         &Test::new(test_name),
         TestOptions {
             render_to_png,
-            snapshot_entity_names: false,
             export_step: false,
         },
     )
@@ -310,7 +301,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
 }
 
 /// Entry point for new simulation tests. Use [`TestOptions`] to control
-/// which assertions and snapshots run; the default opts into all of them.
+/// which assertions and snapshots run.
 #[allow(dead_code)]
 async fn execute_with_options(test_name: &str, opts: TestOptions) {
     execute_test(&Test::new(test_name), opts).await
@@ -319,7 +310,6 @@ async fn execute_with_options(test_name: &str, opts: TestOptions) {
 async fn execute_test(test: &Test, opts: TestOptions) {
     let TestOptions {
         render_to_png,
-        snapshot_entity_names,
         export_step,
     } = opts;
     let input = test.read();
@@ -387,20 +377,9 @@ async fn execute_test(test: &Test, opts: TestOptions) {
             let (outcome, module_state, responses) =
                 exec_state.into_test_exec_outcome(env_ref, &ctx, &test.input_dir).await;
 
-            // Move `entity_names` out before `outcome` gets dismantled below.
-            let entity_names_to_snapshot = snapshot_entity_names.then_some(outcome.entity_names);
-
             let snapshot_results = common_snapshots(test, outcome.variables, responses);
 
             assert_artifact_snapshots(test, module_state, outcome.artifact_graph);
-
-            let entity_names_snap = entity_names_to_snapshot.map(|entity_names| {
-                catch_unwind(AssertUnwindSafe(|| {
-                    assert_snapshot(test, "Entity names", || {
-                        insta::assert_json_snapshot!("entity_names", entity_names);
-                    })
-                }))
-            });
 
             let lint_snap_path = test.output_dir.join("lints.snap");
             if lint_findings.is_empty() {
@@ -418,9 +397,6 @@ async fn execute_test(test: &Test, opts: TestOptions) {
             }
 
             for result in snapshot_results {
-                result.unwrap();
-            }
-            if let Some(result) = entity_names_snap {
                 result.unwrap();
             }
             ok_snap.unwrap();
@@ -5385,14 +5361,7 @@ mod mbd_name_simple {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute_with_options(
-            TEST_NAME,
-            super::TestOptions {
-                snapshot_entity_names: true,
-                ..Default::default()
-            },
-        )
-        .await
+        super::execute_with_options(TEST_NAME, super::TestOptions::default()).await
     }
 }
 mod endless_impeller {

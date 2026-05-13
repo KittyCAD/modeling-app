@@ -1,11 +1,15 @@
 //! Standard library functions for model-based definition (MBD).
 
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kittycad_modeling_cmds::{self as kcmc};
+
 use crate::ExecState;
 use crate::KclError;
 use crate::errors::KclErrorDetails;
-use crate::execution::EntityKind;
 use crate::execution::Face;
 use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
 use crate::execution::TagIdentifier;
 use crate::execution::types::RuntimeType;
 use crate::std::Args;
@@ -56,15 +60,12 @@ async fn inner_name(
 ) -> Result<(), KclError> {
     validate_name(&name, args)?;
 
-    let (uuid, kind) = match (face, edge) {
-        (Some(face), None) => {
-            let id = match face {
-                NamedFace::Face(face) => face.id,
-                NamedFace::Tagged(tag) => args.get_adjacent_face_to_tag(exec_state, &tag, false).await?,
-            };
-            (id, EntityKind::Face)
-        }
-        (None, Some(edge)) => (edge.get_engine_id(exec_state, args)?, EntityKind::Edge),
+    let object_id = match (face, edge) {
+        (Some(face), None) => match face {
+            NamedFace::Face(face) => face.id,
+            NamedFace::Tagged(tag) => args.get_adjacent_face_to_tag(exec_state, &tag, false).await?,
+        },
+        (None, Some(edge)) => edge.get_engine_id(exec_state, args)?,
         (None, None) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "One of `face` or `edge` must be provided to `name`.".to_owned(),
@@ -79,11 +80,14 @@ async fn inner_name(
         }
     };
 
-    if name.is_empty() {
-        exec_state.remove_entity_name(&uuid);
-    } else {
-        exec_state.set_entity_name(uuid, name, kind);
-    }
+    // The engine treats a zero-length name as unset, which is the semantics
+    // we want for an empty `name` argument. No special case needed here.
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args(exec_state, args),
+            ModelingCmd::from(mcmd::ObjectSetName::builder().object_id(object_id).name(name).build()),
+        )
+        .await?;
 
     Ok(())
 }
@@ -106,7 +110,7 @@ fn validate_name(name: &str, args: &Args) -> Result<(), KclError> {
     if let Some(bad) = name.chars().find(|c| !is_allowed_name_char(*c)) {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             format!(
-                "Name contains the disallowed character {bad:?}. Only ASCII characters are allowed. ASCII control and single-quote characters are also disallowed.",
+                "Name contains the disallowed character {bad:?}. Only non-control ASCII characters other than single-quote are allowed.",
             ),
             vec![args.source_range],
         )));

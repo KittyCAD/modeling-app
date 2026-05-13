@@ -244,26 +244,6 @@ impl PreserveMem {
     }
 }
 
-/// The kind of geometric entity that has been named.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, ts_rs::TS)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub enum EntityKind {
-    Face,
-    Edge,
-}
-
-/// A user-assigned name for a face or edge identified by its engine UUID.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub struct NamedEntity {
-    /// The user-visible name.
-    pub name: String,
-    /// The kind of geometry that was named.
-    pub kind: EntityKind,
-}
-
 /// Outcome of executing a program.  This is used in TS.
 #[derive(Debug, Clone, Serialize, ts_rs::TS, PartialEq)]
 #[ts(export)]
@@ -291,11 +271,6 @@ pub struct ExecOutcome {
     pub filenames: IndexMap<ModuleId, ModulePath>,
     /// The default planes.
     pub default_planes: Option<DefaultPlanes>,
-    /// Map from engine UUID to user-assigned name for faces and edges that
-    /// have been named via `mbd::name`. Merged across all modules in the
-    /// program. When the same UUID is named more than once, the last name
-    /// wins.
-    pub entity_names: IndexMap<Uuid, NamedEntity>,
 }
 
 /// Per-segment freedom used by the constraint report. Mirrors
@@ -1986,18 +1961,8 @@ impl ExecutorContext {
     /// Export the current scene as a CAD file.
     pub async fn export(
         &self,
-        exec_state: &mut ExecState,
         format: kittycad_modeling_cmds::format::OutputFormat3d,
     ) -> Result<Vec<kittycad_modeling_cmds::websocket::RawFile>, KclError> {
-        // Build the merged map of user-assigned face and edge names so it's
-        // ready to feed into the upcoming `ModelingCmd::Export3d` parameters.
-        // Until those parameters land, the result is computed but unused.
-        let entity_names = exec_state
-            .merged_entity_names()
-            .into_iter()
-            .map(|(id, named_entity)| (id, named_entity.name))
-            .collect();
-
         let resp = self
             .engine
             .send_modeling_cmd(
@@ -2008,7 +1973,6 @@ impl ExecutorContext {
                     kittycad_modeling_cmds::Export::builder()
                         .entity_ids(vec![])
                         .format(format)
-                        .entity_names(entity_names)
                         .build(),
                 ),
             )
@@ -2027,28 +1991,24 @@ impl ExecutorContext {
     /// Export the current scene as a STEP file.
     pub async fn export_step(
         &self,
-        exec_state: &mut ExecState,
         deterministic_time: bool,
     ) -> Result<Vec<kittycad_modeling_cmds::websocket::RawFile>, KclError> {
         let files = self
-            .export(
-                exec_state,
-                kittycad_modeling_cmds::format::OutputFormat3d::Step(
-                    kittycad_modeling_cmds::format::step::export::Options::builder()
-                        .coords(*kittycad_modeling_cmds::coord::KITTYCAD)
-                        .maybe_created(if deterministic_time {
-                            Some("2021-01-01T00:00:00Z".parse().map_err(|e| {
-                                KclError::new_internal(crate::errors::KclErrorDetails::new(
-                                    format!("Failed to parse date: {e}"),
-                                    vec![SourceRange::default()],
-                                ))
-                            })?)
-                        } else {
-                            None
-                        })
-                        .build(),
-                ),
-            )
+            .export(kittycad_modeling_cmds::format::OutputFormat3d::Step(
+                kittycad_modeling_cmds::format::step::export::Options::builder()
+                    .coords(*kittycad_modeling_cmds::coord::KITTYCAD)
+                    .maybe_created(if deterministic_time {
+                        Some("2021-01-01T00:00:00Z".parse().map_err(|e| {
+                            KclError::new_internal(crate::errors::KclErrorDetails::new(
+                                format!("Failed to parse date: {e}"),
+                                vec![SourceRange::default()],
+                            ))
+                        })?)
+                    } else {
+                        None
+                    })
+                    .build(),
+            ))
             .await?;
 
         Ok(files)

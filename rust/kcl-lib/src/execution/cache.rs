@@ -113,9 +113,6 @@ impl GlobalState {
     }
 
     pub async fn into_exec_outcome(self, ctx: &ExecutorContext) -> ExecOutcome {
-        let entity_names =
-            exec_state::merge_entity_names(&self.exec_state.module_infos, &self.exec_state.root_module_artifacts);
-
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
         ExecOutcome {
@@ -128,7 +125,6 @@ impl GlobalState {
             var_solutions: self.exec_state.root_module_artifacts.var_solutions,
             issues: self.exec_state.issues,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
-            entity_names,
         }
     }
 
