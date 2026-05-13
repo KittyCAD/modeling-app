@@ -107,9 +107,7 @@ fn validate_name(name: &str, args: &Args) -> Result<(), KclError> {
     }
     if let Some(bad) = name.chars().find(|c| !is_allowed_name_char(*c)) {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!(
-                "Name contains the disallowed character {bad:?}. Only ASCII letters, digits, and ASCII punctuation are allowed.",
-            ),
+            format!("Name contains the disallowed character {bad:?}. Only non-control ASCII characters are allowed.",),
             vec![args.source_range],
         )));
     }
@@ -117,5 +115,5 @@ fn validate_name(name: &str, args: &Args) -> Result<(), KclError> {
 }
 
 fn is_allowed_name_char(c: char) -> bool {
-    c.is_ascii_alphanumeric() || c.is_ascii_punctuation()
+    c.is_ascii() && !c.is_ascii_control()
 }
