@@ -12,7 +12,7 @@ description: Entity names mbd_name_simple.kcl
     "kind": "face"
   },
   "[uuid]": {
-    "name": "topFace_final",
+    "name": "edge2_face_value",
     "kind": "face"
   },
   "[uuid]": {
@@ -20,7 +20,7 @@ description: Entity names mbd_name_simple.kcl
     "kind": "face"
   },
   "[uuid]": {
-    "name": "edge2_face_value",
+    "name": "topFace_final",
     "kind": "face"
   }
 }

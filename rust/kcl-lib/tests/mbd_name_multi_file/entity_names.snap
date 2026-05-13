@@ -4,11 +4,11 @@ description: Entity names mbd_name_multi_file.kcl
 ---
 {
   "[uuid]": {
-    "name": "right_named_side1_wins",
+    "name": "side2_from_left",
     "kind": "face"
   },
   "[uuid]": {
-    "name": "side2_from_left",
+    "name": "right_named_side1_wins",
     "kind": "face"
   }
 }
