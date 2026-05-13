@@ -46,6 +46,37 @@ function normaliseCode(code: string): string {
   return code.replaceAll(/\s+/g, ' ').trim()
 }
 
+const getSketchCodeCounts = (code: string) => ({
+  arcs: (code.match(/arc\(/g) ?? []).length,
+  circles: (code.match(/circle\(/g) ?? []).length,
+  lines: (code.match(/line\(/g) ?? []).length,
+  coincidents: (code.match(/coincident\(/g) ?? []).length,
+  tangents: (code.match(/tangent\(/g) ?? []).length,
+})
+
+async function waitForCodeWithCounts(
+  page: Page,
+  previousCode: string,
+  expectedCounts: Partial<ReturnType<typeof getSketchCodeCounts>>
+): Promise<string> {
+  const editor = page.locator('.cm-content')
+  await expect
+    .poll(async () => {
+      const code = await editor.innerText()
+      if (normaliseCode(code) === normaliseCode(previousCode)) {
+        return false
+      }
+
+      const counts = getSketchCodeCounts(code)
+      return Object.entries(expectedCounts).every(([key, value]) => {
+        return counts[key as keyof typeof counts] === value
+      })
+    })
+    .toBe(true)
+
+  return await editor.innerText()
+}
+
 /**
  * Get the midpoint coordinates between two segment IDs.
  * Returns an object with x and y coordinates.
@@ -246,11 +277,13 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     cmdBar,
     editor,
     toolbar,
+    tronApp,
   }) => {
     const INITIAL_CODE = ''
     const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
 
     await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
+      await tronApp?.cleanProjectDir({ modeling: { base_unit: 'mm' } })
       await context.addInitScript(
         async ({ code }) => {
           localStorage.setItem('persistCode', code)
@@ -1046,9 +1079,10 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     tronApp,
   }) => {
     const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
-    const INITIAL_CODE = ''
+    const INITIAL_CODE = '@settings(defaultLengthUnit = mm)'
 
     await test.step('Set up app with sketch solve mode enabled', async () => {
+      await tronApp?.cleanProjectDir({ modeling: { base_unit: 'mm' } })
       await context.addInitScript(
         async ({ code }) => {
           localStorage.setItem('persistCode', code)
@@ -1107,13 +1141,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await page.keyboard.up('Control')
     }
 
-    const getCodeCounts = (code: string) => ({
-      arcs: (code.match(/arc\(/g) ?? []).length,
-      circles: (code.match(/circle\(/g) ?? []).length,
-      lines: (code.match(/line\(/g) ?? []).length,
-      coincidents: (code.match(/coincident\(/g) ?? []).length,
-      tangents: (code.match(/tangent\(/g) ?? []).length,
-    })
+    const getCodeCounts = getSketchCodeCounts
 
     let previousCode = await editor.getCurrentCode()
     const codeAfterSketchStart = previousCode
@@ -1224,7 +1252,11 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       )
 
       await line1End()
-      previousCode = await waitForCodeChange(page, previousCode)
+      previousCode = await waitForCodeWithCounts(page, previousCode, {
+        arcs: 1,
+        lines: 1,
+        coincidents: 0,
+      })
       let counts = getCodeCounts(previousCode)
       expect(counts.arcs).toBe(1)
       expect(counts.lines).toBe(1)
@@ -1232,14 +1264,20 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await expect(pointHandles).toHaveCount(5)
 
       await line2End()
-      previousCode = await waitForCodeChange(page, previousCode)
+      previousCode = await waitForCodeWithCounts(page, previousCode, {
+        lines: 2,
+        coincidents: 1,
+      })
       counts = getCodeCounts(previousCode)
       expect(counts.lines).toBe(2)
       expect(counts.coincidents).toBe(1)
       await expect(pointHandles).toHaveCount(7)
 
       await line3End()
-      previousCode = await waitForCodeChange(page, previousCode)
+      previousCode = await waitForCodeWithCounts(page, previousCode, {
+        lines: 3,
+        coincidents: 2,
+      })
       const codeAfterThreeLines = previousCode
       counts = getCodeCounts(codeAfterThreeLines)
       expect(counts.lines).toBe(3)
@@ -1286,7 +1324,10 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       previousCode = await waitForCodeChange(page, codeAfterSecondLineUndo)
 
       await newLineEnd()
-      previousCode = await waitForCodeChange(page, previousCode)
+      previousCode = await waitForCodeWithCounts(page, previousCode, {
+        lines: 2,
+        coincidents: 1,
+      })
 
       await toolbar.lineBtn.click()
       await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'false')
