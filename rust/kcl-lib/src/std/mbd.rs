@@ -15,9 +15,9 @@ use crate::std::fillet::EdgeReference;
 /// Maximum allowed length, in characters, of a name.
 const MAX_NAME_LENGTH: usize = 1024;
 
-/// A face passed to `name`, either as a `Face` value or a `TaggedFace`. We
-/// keep the two cases separate so that a tag is resolved to its adjacent
-/// face UUID rather than being treated as an edge UUID.
+/// A face passed to the `name` function, either as a `Face` value or a
+/// `TaggedFace`. We keep the two cases separate so that a tag is resolved to
+/// its adjacent face UUID rather than being treated as an edge UUID.
 #[derive(Debug, Clone)]
 enum NamedFace {
     Face(Box<Face>),
