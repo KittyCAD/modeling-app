@@ -656,6 +656,7 @@ openSketch = startSketchOn(XY)
         commandName: 'Offset plane',
       })
       await toolbar.selectDefaultPlane('Front plane')
+      await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'offset',
