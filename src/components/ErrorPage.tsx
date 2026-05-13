@@ -1,47 +1,68 @@
+import { useEffect } from 'react'
 import { isRouteErrorResponse, useRouteError } from 'react-router-dom'
 
 import { ActionButton } from '@src/components/ActionButton'
+import { reportClientError } from '@src/lib/clientErrors'
 import { isDesktop } from '@src/lib/isDesktop'
-import { refreshPage } from '@src/lib/utils'
 import { reportRejection } from '@src/lib/trap'
+import { refreshPage } from '@src/lib/utils'
 
 /** Type narrowing function of unknown error to a string */
 function errorMessage(error: unknown): string {
   if (isRouteErrorResponse(error)) {
     return `${error.status} ${error.statusText}`
-  } else if (error != undefined && error instanceof Error) {
-    return error.message
-  } else if (error && typeof error === 'object') {
-    return JSON.stringify(error)
-  } else if (typeof error === 'string') {
-    return error
-  } else {
-    return 'Unknown error'
   }
-}
-
-function stackTraceMessage(error: unknown): string {
   if (error !== undefined && error instanceof Error) {
-    return error.stack || ''
+    return error.message
   }
-  return ''
+  if (error && typeof error === 'object') {
+    try {
+      return JSON.stringify(error)
+    } catch {
+      return 'Unknown route error'
+    }
+  }
+  if (typeof error === 'string') {
+    return error
+  }
+  return 'Unknown error'
 }
 
-/** Generate a GitHub issue URL from the error */
-export function generateToUrl(
-  error: unknown,
-  title: string = 'An unexpected error occurred'
-) {
-  const newLine = '%0A'
-  const body = `${errorMessage(error)} ${newLine} >${stackTraceMessage(error)} ${newLine}`
-  const result = `https://github.com/KittyCAD/modeling-app/issues/new?title=${title}&body=${body}`
-  return result
+function errorName(error: unknown): string {
+  if (error instanceof Error) {
+    return error.name
+  }
+  if (isRouteErrorResponse(error)) {
+    return 'RouteErrorResponse'
+  }
+  return 'RouteError'
 }
 
 export const ErrorPage = () => {
-  let error = useRouteError()
+  const error = useRouteError()
   // We log the error to the console no matter what
   console.error('error', error)
+
+  useEffect(() => {
+    void reportClientError({
+      code: isRouteErrorResponse(error)
+        ? `route_error_${error.status}`
+        : 'route_error_boundary',
+      message: errorMessage(error),
+      error: error instanceof Error ? error : undefined,
+      errorName: errorName(error),
+      dedupeKey: `ErrorPage:${errorName(error)}:${errorMessage(error)}`,
+      extra: {
+        source: 'ErrorPage',
+        ...(isRouteErrorResponse(error)
+          ? {
+              status: error.status,
+              statusText: error.statusText,
+            }
+          : {}),
+      },
+    })
+  }, [error])
 
   return (
     <div className="flex flex-col items-center justify-center h-screen">
@@ -50,10 +71,8 @@ export const ErrorPage = () => {
           An unexpected error occurred
         </h1>
         <p className="mb-8 w-full overflow-auto">
-          <>{errorMessage(error)}</>
-        </p>
-        <p className="mb-8 w-full overflow-auto">
-          <>{stackTraceMessage(error)}</>
+          We're sorry, something went wrong. The error has been reported to our
+          team.
         </p>
         <div className="flex justify-between gap-2 mt-6">
           {isDesktop() && (
@@ -83,13 +102,6 @@ export const ErrorPage = () => {
             }}
           >
             Clear Storage
-          </ActionButton>
-          <ActionButton
-            Element="externalLink"
-            iconStart={{ icon: 'bug' }}
-            to={generateToUrl(error)}
-          >
-            Report Bug
           </ActionButton>
         </div>
       </section>
