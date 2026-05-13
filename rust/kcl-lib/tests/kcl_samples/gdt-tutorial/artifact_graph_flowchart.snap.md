@@ -82,6 +82,18 @@ flowchart LR
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 12 }, ExpressionStatementExpr]
   43["SketchBlockConstraint VerticalDistance<br>[1131, 1180, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 13 }, ExpressionStatementExpr]
+  44["GdtAnnotation<br>[1381, 1526, 0]"]
+    %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr]
+  45["GdtAnnotation<br>[1527, 1623, 0]"]
+    %% [ProgramBodyItem { index: 5 }, ExpressionStatementExpr]
+  46["GdtAnnotation<br>[1624, 1748, 0]"]
+    %% [ProgramBodyItem { index: 6 }, ExpressionStatementExpr]
+  47["GdtAnnotation<br>[1749, 1910, 0]"]
+    %% [ProgramBodyItem { index: 7 }, ExpressionStatementExpr]
+  48["GdtAnnotation<br>[1911, 2164, 0]"]
+    %% [ProgramBodyItem { index: 8 }, ExpressionStatementExpr]
+  49["GdtAnnotation<br>[2165, 2307, 0]"]
+    %% [ProgramBodyItem { index: 9 }, ExpressionStatementExpr]
   1 --- 2
   1 <--x 7
   1 <--x 33
