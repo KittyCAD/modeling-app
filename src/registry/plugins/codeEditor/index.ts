@@ -1,21 +1,26 @@
 import { defineRegistryItem, provide } from '@kittycad/registry'
-import { createElement } from 'react'
 import { useSignals } from '@preact/signals-react/runtime'
-import { useSelector } from '@xstate/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
+import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
-import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
+import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
+import { reportRejection } from '@src/lib/trap'
 import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
-import { createZdsPlugin } from '@src/registry/createZdsPlugin'
-import { settingsValueSpec } from '@src/registry/contracts/settings'
-import { reportRejection } from '@src/lib/trap'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
+import {
+  CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
+  CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
+  keymapScopesValueSpec,
+} from '@src/registry/contracts/keymap'
+import { settingsValueSpec } from '@src/registry/contracts/settings'
+import { createZdsPlugin } from '@src/registry/createZdsPlugin'
+import { useSelector } from '@xstate/react'
+import { createElement } from 'react'
 import toast from 'react-hot-toast'
-import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
 
 const RENDER_HOTKEY = 'mod+s'
 
@@ -105,6 +110,14 @@ function RenderHeaderItem({ app }: AppHeaderItemProps) {
 
 const codeEditorSettingsItem = defineRegistryItem({
   provides: [
+    provide(keymapScopesValueSpec, {
+      id: CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
+      displayName: 'Code editor focused',
+    }),
+    provide(keymapScopesValueSpec, {
+      id: CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
+      displayName: 'Code editor not focused',
+    }),
     provide(settingsValueSpec, {
       textEditor: {
         automaticallyRender: defineBooleanExtensionSetting({
