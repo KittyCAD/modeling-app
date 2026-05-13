@@ -1,19 +1,62 @@
-import type { ConnectionManager } from '@src/network/connectionManager'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Artifact, Expr } from '@src/lang/wasm'
+import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
   getAverageBoundingBoxDimension,
+  getDefaultGdtFramePlaneFromBoundingBox,
+  getDefaultGdtFramePlaneFromNormal,
   getEngineEntityIdsForGdtSelections,
-  withDefaultGdtFramePosition,
+  getPlanarFaceEntityIdsForGdtSelections,
+  withDefaultGdtFrameDefaults,
 } from '@src/lib/gdtFramePosition'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import { describe, expect, it, vi } from 'vitest'
 
-describe('GD&T bounding box frame position defaults', () => {
+function testArtifact<T extends Artifact['type']>(
+  artifact: { type: T } & Record<string, unknown>
+): Extract<Artifact, { type: T }> {
+  return artifact as Extract<Artifact, { type: T }>
+}
+
+function testFramePosition(): KclCommandValue {
+  return {
+    valueAst: {} as Expr,
+    valueCalculated: '[1, 2]',
+    valueText: '[1, 2]',
+  }
+}
+
+describe('GD&T frame defaults', () => {
   it('averages non-zero bounding box dimensions', () => {
     expect(getAverageBoundingBoxDimension({ x: 4, y: 0, z: 8 })).toBe(6)
     expect(getAverageBoundingBoxDimension({ x: 4, y: 4, z: 4 })).toBe(4)
     expect(getAverageBoundingBoxDimension({ x: 0, y: 0, z: 0 })).toBeUndefined()
+  })
+
+  it('infers perpendicular frame planes from face normals', () => {
+    expect(getDefaultGdtFramePlaneFromNormal({ x: 0, y: 0, z: 1 })).toBe('XZ')
+    expect(getDefaultGdtFramePlaneFromNormal({ x: 0, y: -1, z: 0 })).toBe('XY')
+    expect(getDefaultGdtFramePlaneFromNormal({ x: 1, y: 0, z: 0 })).toBe('XY')
+    expect(
+      getDefaultGdtFramePlaneFromNormal({ x: 1, y: 1, z: 0 })
+    ).toBeUndefined()
+  })
+
+  it('infers perpendicular frame planes from bounding box thin axes', () => {
+    expect(getDefaultGdtFramePlaneFromBoundingBox({ x: 8, y: 4, z: 0 })).toBe(
+      'XZ'
+    )
+    expect(getDefaultGdtFramePlaneFromBoundingBox({ x: 8, y: 0, z: 4 })).toBe(
+      'XY'
+    )
+    expect(getDefaultGdtFramePlaneFromBoundingBox({ x: 0, y: 8, z: 4 })).toBe(
+      'XY'
+    )
+    expect(
+      getDefaultGdtFramePlaneFromBoundingBox({ x: 4, y: 4, z: 4 })
+    ).toBeUndefined()
   })
 
   it('gets engine entity ids from GD&T selections', () => {
@@ -21,20 +64,20 @@ describe('GD&T bounding box frame position defaults', () => {
       graphSelections: [
         {
           codeRef: { range: [0, 1, 0], pathToNode: [] },
-          artifact: {
+          artifact: testArtifact({
             type: 'cap',
             id: 'cap-1',
-          } as any,
+          }),
         },
         {
           codeRef: { range: [1, 2, 0], pathToNode: [] },
-          artifact: {
+          artifact: testArtifact({
             type: 'pattern',
             id: 'pattern-1',
             copyIds: ['copy-1'],
             copyFaceIds: ['copy-face-1'],
             copyEdgeIds: ['copy-edge-1', 'copy-face-1'],
-          } as any,
+          }),
         },
       ],
       otherSelections: [],
@@ -48,22 +91,79 @@ describe('GD&T bounding box frame position defaults', () => {
     ])
   })
 
+  it('gets planar face ids from GD&T selections', () => {
+    const selections: Selections = {
+      graphSelections: [
+        {
+          codeRef: { range: [0, 1, 0], pathToNode: [] },
+          artifact: testArtifact({ type: 'cap', id: 'cap-1' }),
+        },
+        {
+          codeRef: { range: [1, 2, 0], pathToNode: [] },
+          engineEntityId: 'selected-wall-face',
+          artifact: testArtifact({ type: 'wall', id: 'wall-1' }),
+        },
+        {
+          codeRef: { range: [2, 3, 0], pathToNode: [] },
+          artifact: testArtifact({
+            type: 'edgeCut',
+            id: 'edge-cut-1',
+            surfaceId: 'edge-cut-surface-1',
+          }),
+        },
+        {
+          codeRef: { range: [3, 4, 0], pathToNode: [] },
+          artifact: testArtifact({
+            type: 'pattern',
+            id: 'pattern-1',
+            copyIds: ['copy-1'],
+            copyFaceIds: ['copy-face-1'],
+            copyEdgeIds: ['copy-edge-1'],
+          }),
+        },
+      ],
+      otherSelections: [],
+    }
+
+    expect(getPlanarFaceEntityIdsForGdtSelections(selections)).toEqual([
+      'cap-1',
+      'selected-wall-face',
+      'edge-cut-surface-1',
+      'edge-cut-1',
+      'copy-face-1',
+    ])
+  })
+
   it('fills omitted framePosition from the selected bounding box', async () => {
-    const sendSceneCommand = vi.fn().mockResolvedValue({
-      success: true,
-      resp: {
-        type: 'modeling',
-        data: {
-          modeling_response: {
-            type: 'bounding_box',
-            data: {
-              center: { x: 0, y: 0, z: 0 },
-              dimensions: { x: 4, y: 0, z: 8 },
+    const sendSceneCommand = vi
+      .fn()
+      .mockResolvedValueOnce({
+        success: true,
+        resp: {
+          type: 'modeling',
+          data: {
+            modeling_response: {
+              type: 'face_is_planar',
+              data: {},
             },
           },
         },
-      },
-    })
+      })
+      .mockResolvedValueOnce({
+        success: true,
+        resp: {
+          type: 'modeling',
+          data: {
+            modeling_response: {
+              type: 'bounding_box',
+              data: {
+                center: { x: 0, y: 0, z: 0 },
+                dimensions: { x: 4, y: 0, z: 8 },
+              },
+            },
+          },
+        },
+      })
 
     const data = {
       name: 'A',
@@ -71,14 +171,14 @@ describe('GD&T bounding box frame position defaults', () => {
         graphSelections: [
           {
             codeRef: { range: [0, 1, 0], pathToNode: [] },
-            artifact: { type: 'cap', id: 'cap-1' } as any,
+            artifact: testArtifact({ type: 'cap', id: 'cap-1' }),
           },
         ],
         otherSelections: [],
       },
     } as ModelingCommandSchema['GDT Datum']
 
-    const result = await withDefaultGdtFramePosition({
+    const result = await withDefaultGdtFrameDefaults({
       data,
       engineCommandManager: {
         sendSceneCommand,
@@ -99,20 +199,125 @@ describe('GD&T bounding box frame position defaults', () => {
     expect(result.framePosition?.valueText).toBe('[6, 6]')
   })
 
-  it('preserves an explicit framePosition', async () => {
+  it('fills omitted framePlane from a planar face normal', async () => {
+    const sendSceneCommand = vi.fn().mockResolvedValue({
+      success: true,
+      resp: {
+        type: 'modeling',
+        data: {
+          modeling_response: {
+            type: 'face_is_planar',
+            data: {
+              origin: { x: 0, y: 0, z: 0 },
+              x_axis: { x: 1, y: 0, z: 0 },
+              y_axis: { x: 0, y: 1, z: 0 },
+              z_axis: { x: 0, y: 0, z: 1 },
+            },
+          },
+        },
+      },
+    })
+
+    const data = {
+      name: 'A',
+      framePosition: testFramePosition(),
+      faces: {
+        graphSelections: [
+          {
+            codeRef: { range: [0, 1, 0], pathToNode: [] },
+            artifact: testArtifact({ type: 'cap', id: 'cap-1' }),
+          },
+        ],
+        otherSelections: [],
+      },
+    } as ModelingCommandSchema['GDT Datum']
+
+    const result = await withDefaultGdtFrameDefaults({
+      data,
+      engineCommandManager: {
+        sendSceneCommand,
+      } as unknown as ConnectionManager,
+      wasmInstance: {} as ModuleType,
+    })
+
+    expect(sendSceneCommand).toHaveBeenCalledWith(
+      expect.objectContaining({
+        cmd: expect.objectContaining({
+          type: 'face_is_planar',
+          object_id: 'cap-1',
+        }),
+      })
+    )
+    expect(result.framePlane).toBe('XZ')
+  })
+
+  it('falls back to bounding box framePlane inference when normals are unavailable', async () => {
+    const sendSceneCommand = vi
+      .fn()
+      .mockResolvedValueOnce({
+        success: true,
+        resp: {
+          type: 'modeling',
+          data: {
+            modeling_response: {
+              type: 'face_is_planar',
+              data: {},
+            },
+          },
+        },
+      })
+      .mockResolvedValueOnce({
+        success: true,
+        resp: {
+          type: 'modeling',
+          data: {
+            modeling_response: {
+              type: 'bounding_box',
+              data: {
+                center: { x: 0, y: 0, z: 0 },
+                dimensions: { x: 8, y: 4, z: 0 },
+              },
+            },
+          },
+        },
+      })
+
+    const data = {
+      name: 'A',
+      framePosition: testFramePosition(),
+      faces: {
+        graphSelections: [
+          {
+            codeRef: { range: [0, 1, 0], pathToNode: [] },
+            artifact: testArtifact({ type: 'cap', id: 'cap-1' }),
+          },
+        ],
+        otherSelections: [],
+      },
+    } as ModelingCommandSchema['GDT Datum']
+
+    const result = await withDefaultGdtFrameDefaults({
+      data,
+      engineCommandManager: {
+        sendSceneCommand,
+      } as unknown as ConnectionManager,
+      wasmInstance: {} as ModuleType,
+    })
+
+    expect(result.framePlane).toBe('XZ')
+  })
+
+  it('preserves explicit frame defaults', async () => {
     const sendSceneCommand = vi.fn()
-    const framePosition = {
-      valueAst: {} as any,
-      valueCalculated: '[1, 2]',
-      valueText: '[1, 2]',
-    }
+    const framePosition = testFramePosition()
     const data = {
       name: 'A',
       framePosition,
+      framePlane: 'YZ',
       faces: { graphSelections: [], otherSelections: [] },
     } as ModelingCommandSchema['GDT Datum']
 
-    const result = await withDefaultGdtFramePosition({
+    const result = await withDefaultGdtFrameDefaults({
       data,
       engineCommandManager: {
         sendSceneCommand,
@@ -122,5 +327,6 @@ describe('GD&T bounding box frame position defaults', () => {
 
     expect(sendSceneCommand).not.toHaveBeenCalled()
     expect(result.framePosition).toBe(framePosition)
+    expect(result.framePlane).toBe('YZ')
   })
 })
