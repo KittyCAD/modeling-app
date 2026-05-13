@@ -2624,7 +2624,6 @@ dependencies = [
  "enum-iterator-derive",
  "euler",
  "http 1.4.0",
- "indexmap 2.14.0",
  "kittycad-measurements",
  "kittycad-modeling-cmds-macros",
  "kittycad-unit-conversion-derive",
