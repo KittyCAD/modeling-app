@@ -110,7 +110,6 @@ export interface MlEphantNewFileRequestProps {
   projectNameCurrentlyOpened: string
   fileFocusedOnInEditor?: FileEntry
   filesToDelete?: RequestedKCLFileDelete[]
-  shouldAddZookeeperHistoryEntry?: boolean
 }
 
 // Watch MlEphant for any responses that require files to be created.
@@ -157,7 +156,6 @@ export const useWatchForNewFileRequestsFromMlEphant = (
         filesToDelete: Array.from(fileNamesToDelete, (requestedFileName) => ({
           requestedFileName,
         })),
-        shouldAddZookeeperHistoryEntry: lastExchange.request?.type === 'user',
       })
 
       // TODO: Move elsewhere eventually, decouple from SystemIOActor

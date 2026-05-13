@@ -283,11 +283,9 @@ export function SystemIOMachineLogicListener() {
             normalizeProjectRelativePath(file.requestedFileName) ===
             currentProjectRelativePath
         )
-        if (props.shouldAddZookeeperHistoryEntry) {
-          kclManager.markPendingZookeeperHistoryEntry(
-            currentFileOutput?.requestedCode
-          )
-        }
+        kclManager.markPendingZookeeperHistoryEntry(
+          currentFileOutput?.requestedCode
+        )
         kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
         systemIOActor.send({
           type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,

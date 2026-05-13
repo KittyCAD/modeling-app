@@ -283,12 +283,17 @@ describe('KclManager diagnostics', () => {
     kclManager.commitPendingZookeeperHistoryEntry()
 
     expect(kclManager.code).toBe('zookeeper edit')
+    expect(kclManager.undoDepth.value).toBeGreaterThan(0)
+    expect(kclManager.redoDepth.value).toBe(0)
 
     kclManager.undo()
     expect(kclManager.code).toBe('persist me')
+    expect(kclManager.redoDepth.value).toBeGreaterThan(0)
 
     kclManager.redo()
     expect(kclManager.code).toBe('zookeeper edit')
+    expect(kclManager.undoDepth.value).toBeGreaterThan(0)
+    expect(kclManager.redoDepth.value).toBe(0)
   })
 
   it('does not implicitly autosave programmatic editor updates when shouldWriteToDisk is false', () => {
