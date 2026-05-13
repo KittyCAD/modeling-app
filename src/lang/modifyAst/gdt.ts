@@ -43,7 +43,7 @@ function isProfileEdgeArtifact(
  * @param framePosition - Position of the feature control frame [x, y] (optional)
  * @param framePlane - Plane for displaying the frame (XY, XZ, YZ) (optional)
  * @param leaderScale - Scale of the leader (optional)
- * @param fontSize - Font size for annotation text (optional)
+ * @param fontSize - Model-space font size for annotation text (optional)
  * @param nodeToEdit - Path to node to edit (for edit mode)
  * @returns Modified AST and path to the last created node, or an Error
  */
@@ -1251,7 +1251,7 @@ export function addAnnotationGdt({
  * @param framePosition - Position of the feature control frame [x, y] (optional)
  * @param framePlane - Plane for displaying the frame (XY, XZ, YZ) (optional)
  * @param leaderScale - Scale of the leader (optional)
- * @param fontSize - Font size for annotation text (optional)
+ * @param fontSize - Model-space font size for annotation text (optional)
  * @param nodeToEdit - Path to node to edit (for edit mode)
  * @returns Modified AST and path to the created node, or an Error
  */
@@ -1450,7 +1450,7 @@ export function getNextAvailableDatumName(ast?: Node<Program>): string {
  * @param params.nodeToEdit - Path to node being edited (for edit mode)
  * @param params.framePosition - Position of the feature control frame [x, y] (optional)
  * @param params.framePlane - Plane for displaying the frame (XY, XZ, YZ) or variable (optional)
- * @param params.fontSize - Font size for annotation text (optional)
+ * @param params.fontSize - Model-space font size for annotation text (optional)
  * @returns Object containing labeled arguments for the style parameters, or Error if parameter processing fails
  */
 function processGdtStyleParameters({

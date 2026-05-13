@@ -27,6 +27,7 @@ import {
   getNodeFromPath,
   getEdgeCutMeta,
   getRegionTagExprFromSegmentId,
+  isCallExprWithName,
   isSketchSegmentCallName,
 } from '@src/lang/queryAst'
 import type { Artifact } from '@src/lang/std/artifactGraph'
@@ -45,6 +46,7 @@ import type {
   Expr,
   PathToNode,
   Program,
+  VariableDeclaration,
 } from '@src/lang/wasm'
 import type { EdgeCutInfo, Selection } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
@@ -126,6 +128,47 @@ export function modifyAstWithTagsForSelection(
     return {
       modifiedAst: result.modifiedAst,
       exprs: [result.expr],
+    }
+  }
+
+  if (selection.artifact.type === 'primitiveFace') {
+    const variableLookup = getNodeFromPath<VariableDeclaration>(
+      ast,
+      selection.codeRef.pathToNode,
+      wasmInstance,
+      'VariableDeclaration',
+      false,
+      true
+    )
+    if (
+      !(variableLookup instanceof Error) &&
+      variableLookup.node.type === 'VariableDeclaration' &&
+      isCallExprWithName(variableLookup.node.declaration.init, 'faceId')
+    ) {
+      return {
+        modifiedAst: ast,
+        exprs: [createLocalName(variableLookup.node.declaration.id.name)],
+      }
+    }
+
+    const directLookup = getNodeFromPath<Node<CallExpressionKw>>(
+      ast,
+      selection.codeRef.pathToNode,
+      wasmInstance,
+      'CallExpressionKw',
+      false,
+      true
+    )
+    if (err(directLookup)) {
+      return directLookup
+    }
+    const node = directLookup.node
+    if (!isCallExprWithName(node, 'faceId')) {
+      return new Error('Failed to retrieve primitive face')
+    }
+    return {
+      modifiedAst: ast,
+      exprs: [structuredClone(node)],
     }
   }
 

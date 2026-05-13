@@ -16,16 +16,12 @@ use crate::ExecState;
 use crate::KclError;
 use crate::errors::KclErrorDetails;
 use crate::exec::KclValue;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::Artifact;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::ArtifactId;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::CodeRef;
 use crate::execution::ControlFlowKind;
 use crate::execution::Face;
 use crate::execution::GdtAnnotation;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::GdtAnnotationArtifact;
 use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
@@ -41,12 +37,32 @@ use crate::std::args::TyF64;
 use crate::std::fillet::EdgeReference;
 use crate::std::sketch::ensure_sketch_plane_in_engine;
 
-const DEFAULT_FONT_POINT_SIZE: u32 = 36;
+// The engine exposes two text knobs:
+// - font_point_size controls the FreeType raster/bitmap texture resolution in pixels/points.
+// - font_scale is the unitless model-space multiplier applied to that texture.
+// KCL exposes only fontSize as a Length. Keep the raster quality fixed so changing
+// quality does not resize the text, and map the requested length into font_scale.
+const GDT_FONT_TEXTURE_POINT_SIZE: u32 = 36;
+const DEFAULT_GDT_FONT_SIZE_MM: f64 = 10.0;
 
-fn font_point_size(font_size: Option<&TyF64>) -> u32 {
-    font_size
-        .map(|size| size.n.round() as u32)
-        .unwrap_or(DEFAULT_FONT_POINT_SIZE)
+// Calibration target: measured annotation text/frame height in millimeters when
+// font_scale is 1.0 and GDT_FONT_TEXTURE_POINT_SIZE is fixed. Tune this value from
+// scene measurements, not by exposing engine font_point_size to users.
+const GDT_FONT_SCALE_1_HEIGHT_MM: f64 = 8.0;
+
+fn gdt_font_scale(font_size: Option<&TyF64>, args: &Args) -> Result<f32, KclError> {
+    let requested_height_mm = font_size.map(TyF64::to_mm).unwrap_or(DEFAULT_GDT_FONT_SIZE_MM);
+    if requested_height_mm <= 0.0 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "fontSize must be greater than 0.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+    Ok(gdt_font_scale_for_height_mm(requested_height_mm))
+}
+
+fn gdt_font_scale_for_height_mm(requested_height_mm: f64) -> f32 {
+    (requested_height_mm / GDT_FONT_SCALE_1_HEIGHT_MM) as f32
 }
 
 #[derive(Debug, Clone)]
@@ -62,8 +78,11 @@ struct DistanceEndpoint {
     entity_pos: KPoint2d<f64>,
 }
 
-#[cfg(feature = "artifact-graph")]
 fn add_gdt_annotation_artifact(exec_state: &mut ExecState, args: &Args, annotation_id: uuid::Uuid) {
+    if args.ctx.settings.skip_artifact_graph {
+        return;
+    }
+
     exec_state.add_artifact(Artifact::GdtAnnotation(GdtAnnotationArtifact {
         id: ArtifactId::new(annotation_id),
         code_ref: CodeRef::placeholder(args.source_range),
@@ -115,7 +134,7 @@ pub async fn datum(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
 
     let annotation = inner_datum(
         face,
@@ -190,8 +209,8 @@ async fn inner_datum(
             KPoint2d { x: 100.0, y: 100.0 }
         })
         .precision(0)
-        .font_scale(1.0)
-        .font_point_size(font_point_size(font_size.as_ref()))
+        .font_scale(gdt_font_scale(font_size.as_ref(), args)?)
+        .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
         .leader_scale(leader_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
         .build();
     exec_state
@@ -206,7 +225,6 @@ async fn inner_datum(
             ),
         )
         .await?;
-    #[cfg(feature = "artifact-graph")]
     add_gdt_annotation_artifact(exec_state, args, annotation_id);
     Ok(GdtAnnotation {
         id: annotation_id,
@@ -226,7 +244,7 @@ pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
 
     let annotations = inner_flatness(
         faces,
@@ -260,7 +278,7 @@ pub async fn profile(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
 
     let annotations = inner_profile(
         edges,
@@ -300,7 +318,7 @@ pub async fn position(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
 
     let annotations = inner_position(
         faces.unwrap_or_default(),
@@ -333,7 +351,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
 
     let annotations = inner_distance(
         from,
@@ -374,7 +392,7 @@ pub async fn perpendicularity(exec_state: &mut ExecState, args: Args) -> Result<
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
 
     let annotations = inner_perpendicularity(
         faces.unwrap_or_default(),
@@ -415,7 +433,7 @@ pub async fn parallelism(exec_state: &mut ExecState, args: Args) -> Result<KclVa
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
 
     let annotations = inner_parallelism(
         faces.unwrap_or_default(),
@@ -450,7 +468,7 @@ pub async fn annotation(exec_state: &mut ExecState, args: Args) -> Result<KclVal
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
     let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
-    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
 
     let annotations = inner_annotation(
         annotation,
@@ -976,8 +994,8 @@ async fn inner_flatness(
                 KPoint2d { x: 100.0, y: 100.0 }
             })
             .precision(precision)
-            .font_scale(1.0)
-            .font_point_size(font_point_size(font_size.as_ref()))
+            .font_scale(gdt_font_scale(font_size.as_ref(), args)?)
+            .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
             .leader_scale(leader_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0))
             .build();
         let options = AnnotationOptions::builder().feature_control(feature_control).build();
@@ -993,7 +1011,6 @@ async fn inner_flatness(
                 ),
             )
             .await?;
-        #[cfg(feature = "artifact-graph")]
         add_gdt_annotation_artifact(exec_state, args, annotation_id);
         annotations.push(GdtAnnotation {
             id: annotation_id,
@@ -1054,8 +1071,8 @@ async fn create_basic_distance_annotation(
             KPoint2d { x: 100.0, y: 100.0 }
         })
         .precision(precision)
-        .font_scale(1.0)
-        .font_point_size(font_point_size(font_size))
+        .font_scale(gdt_font_scale(font_size, args)?)
+        .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
         .arrow_scale(leader_scale.map(|n| n.n as f32).unwrap_or(1.0))
         .build();
     let options = AnnotationOptions::builder().dimension(dimension).build();
@@ -1071,7 +1088,6 @@ async fn create_basic_distance_annotation(
             ),
         )
         .await?;
-    #[cfg(feature = "artifact-graph")]
     add_gdt_annotation_artifact(exec_state, args, annotation_id);
     annotations.push(GdtAnnotation {
         id: annotation_id,
@@ -1113,8 +1129,8 @@ async fn create_feature_control_annotation(
             KPoint2d { x: 100.0, y: 100.0 }
         })
         .precision(precision)
-        .font_scale(1.0)
-        .font_point_size(font_point_size(font_size))
+        .font_scale(gdt_font_scale(font_size, args)?)
+        .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
         .leader_scale(leader_scale.map(|n| n.n as f32).unwrap_or(1.0))
         .build();
     let options = AnnotationOptions::builder().feature_control(feature_control).build();
@@ -1130,7 +1146,6 @@ async fn create_feature_control_annotation(
             ),
         )
         .await?;
-    #[cfg(feature = "artifact-graph")]
     add_gdt_annotation_artifact(exec_state, args, annotation_id);
     annotations.push(GdtAnnotation {
         id: annotation_id,
@@ -1168,8 +1183,8 @@ async fn create_annotation(
             KPoint2d { x: 100.0, y: 100.0 }
         })
         .precision(0)
-        .font_scale(1.0)
-        .font_point_size(font_point_size(font_size))
+        .font_scale(gdt_font_scale(font_size, args)?)
+        .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
         .leader_scale(leader_scale.map(|n| n.n as f32).unwrap_or(1.0))
         .build();
     let options = AnnotationOptions::builder().feature_control(feature_control).build();
@@ -1185,7 +1200,6 @@ async fn create_annotation(
             ),
         )
         .await?;
-    #[cfg(feature = "artifact-graph")]
     add_gdt_annotation_artifact(exec_state, args, annotation_id);
     annotations.push(GdtAnnotation {
         id: annotation_id,
@@ -1303,4 +1317,74 @@ fn plane_ast(plane_name: &str, range: SourceRange) -> ast::Node<ast::Expr> {
         range.end(),
         range.module_id(),
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::ExecutorContext;
+    use crate::execution::Artifact;
+    use crate::execution::ExecutorSettings;
+    use crate::execution::MockConfig;
+
+    #[test]
+    fn gdt_font_scale_is_scene_height_divided_by_calibration_height() {
+        let scale_at_calibrated_height = gdt_font_scale_for_height_mm(GDT_FONT_SCALE_1_HEIGHT_MM);
+        assert!((scale_at_calibrated_height - 1.0).abs() < f32::EPSILON);
+
+        let double_height_scale = gdt_font_scale_for_height_mm(GDT_FONT_SCALE_1_HEIGHT_MM * 2.0);
+        assert!((double_height_scale - 2.0).abs() < f32::EPSILON);
+
+        let inch_in_mm = 25.4;
+        let inch_scale = gdt_font_scale_for_height_mm(inch_in_mm);
+        assert!((inch_scale - (inch_in_mm / GDT_FONT_SCALE_1_HEIGHT_MM) as f32).abs() < f32::EPSILON);
+    }
+
+    const GDT_DATUM_KCL: &str = r#"
+blockProfile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 8mm, var 0mm])
+  edge2 = line(start = [var 8mm, var 0mm], end = [var 8mm, var 5mm])
+  edge3 = line(start = [var 8mm, var 5mm], end = [var 0mm, var 5mm])
+  edge4 = line(start = [var 0mm, var 5mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+  horizontal(edge1)
+  vertical(edge2)
+  horizontal(edge3)
+  vertical(edge4)
+}
+
+block = extrude(region(point = [4mm, 2mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+
+gdt::datum(face = top, name = "A", framePosition = [10mm, 0mm], framePlane = XZ)
+"#;
+
+    async fn gdt_artifact_count(skip_artifact_graph: bool) -> usize {
+        let settings = ExecutorSettings {
+            skip_artifact_graph,
+            ..Default::default()
+        };
+        let ctx = ExecutorContext::new_mock(Some(settings)).await;
+        let program = crate::Program::parse_no_errs(GDT_DATUM_KCL).unwrap();
+        let mock_config = MockConfig {
+            use_prev_memory: false,
+            ..Default::default()
+        };
+        let outcome = ctx.run_mock(&program, &mock_config).await.unwrap();
+        ctx.close().await;
+
+        outcome
+            .artifact_graph
+            .values()
+            .filter(|artifact| matches!(artifact, Artifact::GdtAnnotation(_)))
+            .count()
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_annotations_follow_runtime_artifact_graph_setting() {
+        assert_eq!(gdt_artifact_count(false).await, 1);
+        assert_eq!(gdt_artifact_count(true).await, 0);
+    }
 }

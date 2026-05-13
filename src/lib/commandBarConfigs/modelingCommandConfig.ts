@@ -1814,7 +1814,15 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       plane: {
         displayName: 'Plane',
         inputType: 'selection',
-        selectionTypes: ['plane', 'cap', 'wall', 'edgeCut'],
+        selectionTypes: [
+          'plane',
+          'planeOfFace',
+          'cap',
+          'wall',
+          'edgeCut',
+          'enginePrimitiveFace',
+          'primitiveFace',
+        ],
         multiple: false,
         required: true,
         dialog: {
