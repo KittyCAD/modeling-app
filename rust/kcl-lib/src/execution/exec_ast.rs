@@ -1726,13 +1726,14 @@ impl Node<SketchBlock> {
             .cloned()
             .map(ezpz::ConstraintRequest::highest_priority)
             .chain(
-                // TODO: Assuming interaction-related constraints are the only optional ones atm.
-                // Will need to revisit this if there are others in the mix.
+                // Interaction constraints are only drag preferences. Keep authored
+                // constraints at higher priority so an impossible drag cannot
+                // deform or invalidate the required sketch solution.
                 sketch_block_state
                     .solver_optional_constraints
                     .iter()
                     .cloned()
-                    .map(ezpz::ConstraintRequest::highest_priority),
+                    .map(|constraint| ezpz::ConstraintRequest::new(constraint, 1)),
             )
             .collect::<Vec<_>>();
         let initial_guesses = sketch_block_state

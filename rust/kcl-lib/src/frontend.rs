@@ -12841,6 +12841,110 @@ sketch001 = sketch(on = XZ) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_drag_optional_constraints_do_not_compete_with_required_constraints() {
+        let initial_source = "\
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var 5.87mm, var -5.86mm], end = [var -7.22mm, var -4.4mm])
+  arc1 = arc(start = [var 0.35mm, var 6.72mm], end = [var -7.22mm, var -4.4mm], center = [var -5.77mm, var 2.75mm])
+  coincident([line1.end, arc1.end])
+  tangent([line1, arc1])
+  line2 = line(start = [var 0.35mm, var 6.72mm], end = [var 0mm, var -5.86mm])
+  coincident([line2.start, arc1.start])
+  coincident([line2.end, line1.start])
+  vertical([line2.end, ORIGIN])
+}
+";
+
+        fn translated_point(scene_graph: &SceneGraph, point_id: ObjectId, dx: f64, dy: f64) -> Point2d<Expr> {
+            let position = point_position(scene_graph, point_id);
+            Point2d {
+                x: Expr::Var(Number {
+                    value: position.x.value + dx,
+                    units: position.x.units,
+                }),
+                y: Expr::Var(Number {
+                    value: position.y.value + dy,
+                    units: position.y.units,
+                }),
+            }
+        }
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        let outcome = frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let sketch_segments = sketch.segments.clone();
+
+        let line1_id = sketch_segments[2];
+        let arc1_id = sketch_segments[6];
+        let line2_id = sketch_segments[9];
+        let line2_end_id = sketch_segments[8];
+
+        frontend.replace_sketch_var_warm_starts(sketch_id, &outcome);
+
+        let dx = -5.0;
+        let dy = 3.0;
+        let segments = vec![
+            ExistingSegmentCtor {
+                id: line1_id,
+                ctor: SegmentCtor::Line(LineCtor {
+                    start: translated_point(&frontend.scene_graph, sketch_segments[0], dx, dy),
+                    end: translated_point(&frontend.scene_graph, sketch_segments[1], dx, dy),
+                    construction: None,
+                }),
+            },
+            ExistingSegmentCtor {
+                id: arc1_id,
+                ctor: SegmentCtor::Arc(ArcCtor {
+                    start: translated_point(&frontend.scene_graph, sketch_segments[3], dx, dy),
+                    end: translated_point(&frontend.scene_graph, sketch_segments[4], dx, dy),
+                    center: translated_point(&frontend.scene_graph, sketch_segments[5], dx, dy),
+                    construction: None,
+                }),
+            },
+            ExistingSegmentCtor {
+                id: line2_id,
+                ctor: SegmentCtor::Line(LineCtor {
+                    start: translated_point(&frontend.scene_graph, sketch_segments[7], dx, dy),
+                    end: translated_point(&frontend.scene_graph, sketch_segments[8], dx, dy),
+                    construction: None,
+                }),
+            },
+        ];
+
+        let (_src_delta, scene_delta) = frontend
+            .edit_segments_for_preview(&mock_ctx, version, sketch_id, segments)
+            .await
+            .unwrap();
+
+        assert!(
+            !scene_delta
+                .exec_outcome
+                .issues
+                .iter()
+                .any(|issue| issue.message.contains(CONSTRAINT_SOLVER_FAILED_MESSAGE)),
+            "select-all drag preview should not fail solving: {:?}",
+            scene_delta.exec_outcome.issues
+        );
+
+        let line2_end = point_position(&scene_delta.new_graph, line2_end_id);
+        assert!(
+            line2_end.x.value.abs() < 1e-6,
+            "required vertical constraint should not be compromised by drag-only fixed constraints: {line2_end:?}"
+        );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_committed_edit_merges_edited_vars_into_existing_warm_starts() {
         let initial_source = "\
 sketch(on = XY) {
