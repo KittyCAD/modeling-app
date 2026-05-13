@@ -33,6 +33,7 @@ use crate::execution::ExecutorSettings;
 use crate::execution::KclValue;
 use crate::execution::ProgramLookup;
 use crate::execution::SketchVarId;
+use crate::execution::SketchVarSolution;
 use crate::execution::UnsolvedSegment;
 use crate::execution::annotations;
 use crate::execution::cad_op::Operation;
@@ -85,6 +86,11 @@ pub(super) struct GlobalState {
     /// Transient warm-start values for sketch variables, keyed by the solver
     /// variable order in the current sketch block.
     pub sketch_var_initial_guess_overrides: Vec<f64>,
+    /// Transient warm-start values for source sketch variables, keyed by source
+    /// variable order and excluding hidden lowered variables.
+    pub sketch_var_source_initial_guess_overrides: Vec<f64>,
+    /// Whether hidden lowered variables may reuse solver-order warm starts.
+    pub preserve_hidden_sketch_var_initial_guess_overrides: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -141,6 +147,10 @@ pub struct ModuleArtifactState {
     pub artifact_id_to_scene_object: IndexMap<ArtifactId, ObjectId>,
     /// Solutions for sketch variables.
     pub var_solutions: Vec<(SourceRange, Number)>,
+    /// Solutions for every sketch variable in solver order, including hidden
+    /// variables introduced while lowering constraints.
+    #[serde(skip)]
+    pub ordered_sketch_var_solutions: Vec<SketchVarSolution>,
 }
 
 #[derive(Debug, Clone)]
@@ -308,7 +318,7 @@ pub(crate) struct SketchBlockState {
 impl ExecState {
     pub fn new(exec_context: &super::ExecutorContext) -> Self {
         ExecState {
-            global: GlobalState::new(&exec_context.settings, Default::default(), Vec::new()),
+            global: GlobalState::new(&exec_context.settings, Default::default(), Vec::new(), Vec::new(), true),
             mod_local: ModuleState::new(ModulePath::Main, ProgramMemory::new(), Default::default(), false, true),
         }
     }
@@ -320,6 +330,8 @@ impl ExecState {
                 &exec_context.settings,
                 segment_ids_edited,
                 mock_config.sketch_var_initial_guess_overrides.clone(),
+                mock_config.sketch_var_source_initial_guess_overrides.clone(),
+                mock_config.preserve_hidden_sketch_var_initial_guess_overrides,
             ),
             mod_local: ModuleState::new(
                 ModulePath::Main,
@@ -332,7 +344,7 @@ impl ExecState {
     }
 
     pub(super) fn reset(&mut self, exec_context: &super::ExecutorContext) {
-        let global = GlobalState::new(&exec_context.settings, Default::default(), Vec::new());
+        let global = GlobalState::new(&exec_context.settings, Default::default(), Vec::new(), Vec::new(), true);
 
         *self = ExecState {
             global,
@@ -412,6 +424,7 @@ impl ExecState {
             scene_objects: self.global.root_module_artifacts.scene_objects,
             source_range_to_object: self.global.root_module_artifacts.source_range_to_object,
             var_solutions: self.global.root_module_artifacts.var_solutions,
+            ordered_sketch_var_solutions: self.global.root_module_artifacts.ordered_sketch_var_solutions,
             issues: self.global.issues,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         }
@@ -553,8 +566,30 @@ impl ExecState {
         self.global.segment_ids_edited.contains(object_id)
     }
 
-    pub(crate) fn sketch_var_initial_guess_override(&self, var_id: SketchVarId) -> Option<f64> {
-        self.global.sketch_var_initial_guess_overrides.get(var_id.0).copied()
+    pub(crate) fn sketch_var_initial_guess_override(
+        &self,
+        sketch_vars: &[KclValue],
+        var_id: SketchVarId,
+    ) -> Option<f64> {
+        if let Some(source_index) = sketch_var_source_index(sketch_vars, var_id) {
+            if let Some(value) = self.global.sketch_var_source_initial_guess_overrides.get(source_index) {
+                return Some(*value);
+            }
+
+            if self.global.sketch_var_source_initial_guess_overrides.is_empty() {
+                return self.global.sketch_var_initial_guess_overrides.get(var_id.0).copied();
+            }
+
+            return None;
+        }
+
+        if self.global.preserve_hidden_sketch_var_initial_guess_overrides
+            || self.global.sketch_var_source_initial_guess_overrides.is_empty()
+        {
+            self.global.sketch_var_initial_guess_overrides.get(var_id.0).copied()
+        } else {
+            None
+        }
     }
 
     pub(super) fn is_in_sketch_block(&self) -> bool {
@@ -890,6 +925,8 @@ impl GlobalState {
         settings: &ExecutorSettings,
         segment_ids_edited: AhashIndexSet<ObjectId>,
         sketch_var_initial_guess_overrides: Vec<f64>,
+        sketch_var_source_initial_guess_overrides: Vec<f64>,
+        preserve_hidden_sketch_var_initial_guess_overrides: bool,
     ) -> Self {
         let mut global = GlobalState {
             path_to_source_id: Default::default(),
@@ -901,6 +938,8 @@ impl GlobalState {
             id_to_source: Default::default(),
             segment_ids_edited,
             sketch_var_initial_guess_overrides,
+            sketch_var_source_initial_guess_overrides,
+            preserve_hidden_sketch_var_initial_guess_overrides,
         };
 
         let root_id = ModuleId::default();
@@ -1001,6 +1040,8 @@ impl ModuleArtifactState {
         self.artifact_id_to_scene_object
             .extend(other.artifact_id_to_scene_object);
         self.var_solutions.extend(other.var_solutions);
+        self.ordered_sketch_var_solutions
+            .extend(other.ordered_sketch_var_solutions);
     }
 
     // Move unprocessed artifact commands so that we don't try to process them
@@ -1074,6 +1115,22 @@ impl ModuleState {
     }
 }
 
+fn sketch_var_source_index(sketch_vars: &[KclValue], var_id: SketchVarId) -> Option<usize> {
+    let mut source_index = 0;
+    for (index, value) in sketch_vars.iter().enumerate() {
+        let Some(sketch_var) = value.as_sketch_var() else {
+            continue;
+        };
+        if index == var_id.0 {
+            return (!sketch_var.meta.is_empty()).then_some(source_index);
+        }
+        if !sketch_var.meta.is_empty() {
+            source_index += 1;
+        }
+    }
+    None
+}
+
 impl SketchBlockState {
     pub(crate) fn next_sketch_var_id(&self) -> SketchVarId {
         SketchVarId(self.sketch_vars.len())
@@ -1121,6 +1178,37 @@ impl SketchBlockState {
             })
             .filter_map(Result::transpose)
             .collect::<Result<Vec<_>, KclError>>()
+    }
+
+    pub(crate) fn ordered_sketch_var_solutions(
+        &self,
+        solve_outcome: &Solved,
+        range: SourceRange,
+    ) -> Result<Vec<SketchVarSolution>, KclError> {
+        self.sketch_vars
+            .iter()
+            .map(|v| {
+                let Some(sketch_var) = v.as_sketch_var() else {
+                    return Err(KclError::new_internal(KclErrorDetails::new(
+                        "Expected sketch variable".to_owned(),
+                        vec![range],
+                    )));
+                };
+                let var_index = sketch_var.id.0;
+                let solved_n = solve_outcome.final_values.get(var_index).ok_or_else(|| {
+                    let message = format!("No solution for sketch variable with id {}", var_index);
+                    debug_assert!(false, "{}", &message);
+                    KclError::new_internal(KclErrorDetails::new(
+                        message,
+                        sketch_var.meta.iter().map(|m| m.source_range).collect(),
+                    ))
+                })?;
+                Ok(SketchVarSolution {
+                    source_range: sketch_var.meta.first().map(|m| m.source_range),
+                    value: *solved_n,
+                })
+            })
+            .collect()
     }
 }
 

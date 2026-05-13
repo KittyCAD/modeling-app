@@ -198,6 +198,10 @@ fn sketch_var_initial_value(
     range: SourceRange,
     description: &str,
 ) -> Result<f64, KclError> {
+    if let Some(value) = exec_state.sketch_var_initial_guess_override(sketch_vars, id) {
+        return Ok(value);
+    }
+
     sketch_vars
         .get(id.0)
         .and_then(KclValue::as_sketch_var)
@@ -1762,7 +1766,7 @@ impl Node<SketchBlock> {
                     return Err(internal_err(message, self));
                 };
                 let initial_guess = exec_state
-                    .sketch_var_initial_guess_override(sketch_var.id)
+                    .sketch_var_initial_guess_override(&sketch_block_state.sketch_vars, sketch_var.id)
                     .unwrap_or(initial_guess);
                 Ok((constraint_id, initial_guess))
             })
@@ -1874,6 +1878,8 @@ impl Node<SketchBlock> {
         // solutions.
         exec_state.mod_local.artifacts.var_solutions =
             sketch_block_state.var_solutions(&solve_outcome, solution_ty, SourceRange::from(self))?;
+        exec_state.mod_local.artifacts.ordered_sketch_var_solutions =
+            sketch_block_state.ordered_sketch_var_solutions(&solve_outcome, SourceRange::from(self))?;
 
         // Create scene objects after unknowns are solved.
         let scene_objects = create_segment_scene_objects(&solved_segments, range, exec_state)?;
@@ -4332,6 +4338,10 @@ impl Node<BinaryExpression> {
                                 exec_state: &mut ExecState,
                                 range: SourceRange,
                             ) -> Result<f64, KclError> {
+                                if let Some(value) = exec_state.sketch_var_initial_guess_override(sketch_vars, id) {
+                                    return Ok(value);
+                                }
+
                                 sketch_vars
                                     .get(id.0)
                                     .and_then(KclValue::as_sketch_var)

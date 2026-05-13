@@ -265,12 +265,20 @@ pub struct ExecOutcome {
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
     #[serde(skip)]
     pub var_solutions: Vec<(SourceRange, Number)>,
+    #[serde(skip)]
+    pub ordered_sketch_var_solutions: Vec<SketchVarSolution>,
     /// Non-fatal errors and warnings.
     pub issues: Vec<CompilationIssue>,
     /// File Names in module Id array index order
     pub filenames: IndexMap<ModuleId, ModulePath>,
     /// The default planes.
     pub default_planes: Option<DefaultPlanes>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct SketchVarSolution {
+    pub source_range: Option<SourceRange>,
+    pub value: f64,
 }
 
 /// Per-segment freedom used by the constraint report. Mirrors
@@ -489,6 +497,11 @@ pub struct MockConfig {
     /// Per-sketch-variable initial guess overrides, keyed by sketch variable
     /// order. These are transient warm-start values for interactive solves.
     pub sketch_var_initial_guess_overrides: Vec<f64>,
+    /// Per-source-sketch-variable warm starts keyed by source variable order,
+    /// excluding hidden lowered variables.
+    pub sketch_var_source_initial_guess_overrides: Vec<f64>,
+    /// Whether hidden lowered variables may reuse solver-order warm starts.
+    pub preserve_hidden_sketch_var_initial_guess_overrides: bool,
 }
 
 impl Default for MockConfig {
@@ -500,6 +513,8 @@ impl Default for MockConfig {
             freedom_analysis: true,
             segment_ids_edited: AhashIndexSet::default(),
             sketch_var_initial_guess_overrides: Vec::new(),
+            sketch_var_source_initial_guess_overrides: Vec::new(),
+            preserve_hidden_sketch_var_initial_guess_overrides: true,
         }
     }
 }
@@ -520,8 +535,15 @@ impl MockConfig {
     }
 
     #[must_use]
-    pub(crate) fn with_sketch_var_initial_guess_overrides(mut self, overrides: Vec<f64>) -> Self {
-        self.sketch_var_initial_guess_overrides = overrides;
+    pub(crate) fn with_ordered_sketch_var_initial_guess_overrides(
+        mut self,
+        solver_overrides: Vec<f64>,
+        source_overrides: Vec<f64>,
+        preserve_hidden_by_id: bool,
+    ) -> Self {
+        self.sketch_var_initial_guess_overrides = solver_overrides;
+        self.sketch_var_source_initial_guess_overrides = source_overrides;
+        self.preserve_hidden_sketch_var_initial_guess_overrides = preserve_hidden_by_id;
         self
     }
 }

@@ -118,6 +118,13 @@ enum SketchVarUpdateMode {
     /// warm-start state. Used at drag boundaries after preview edits.
     CommitSolvedVarsFromWarmStart,
 }
+
+#[derive(Debug, Clone)]
+struct SketchVarWarmStarts {
+    solver_values: Vec<f64>,
+    source_values: Vec<(SourceRange, f64)>,
+}
+
 mod traverse;
 pub(crate) mod trim;
 
@@ -237,7 +244,7 @@ pub struct FrontendState {
     /// Transient solver continuity state. During previews we warm-start from
     /// the previous solution without treating those solved guesses as committed
     /// source text.
-    sketch_var_warm_start_overrides: HashMap<ObjectId, Vec<f64>>,
+    sketch_var_warm_start_overrides: HashMap<ObjectId, SketchVarWarmStarts>,
     next_sketch_var_update_mode: Option<SketchVarUpdateMode>,
     sketch_checkpoints: VecDeque<SketchCheckpoint>,
     sketch_checkpoint_id_gen: IncIdGenerator<u64>,
@@ -399,7 +406,20 @@ impl FrontendState {
         };
 
         match (use_warm_starts, self.sketch_var_warm_start_overrides.get(&sketch)) {
-            (true, Some(overrides)) => config.with_sketch_var_initial_guess_overrides(overrides.clone()),
+            (true, Some(overrides)) => {
+                #[cfg(feature = "artifact-graph")]
+                let source_var_count = self
+                    .sketch_var_source_values_from_program(sketch)
+                    .map(|values| values.len())
+                    .unwrap_or(overrides.source_values.len());
+                #[cfg(not(feature = "artifact-graph"))]
+                let source_var_count = overrides.source_values.len();
+                config.with_ordered_sketch_var_initial_guess_overrides(
+                    overrides.solver_values.clone(),
+                    overrides.source_values.iter().map(|(_, value)| *value).collect(),
+                    source_var_count == overrides.source_values.len(),
+                )
+            }
             _ => config,
         }
     }
@@ -436,15 +456,27 @@ impl FrontendState {
     fn replace_sketch_var_warm_starts(&mut self, sketch: ObjectId, outcome: &ExecOutcome) {
         #[cfg(feature = "artifact-graph")]
         {
-            let solution_by_range = outcome
+            let solver_values = if outcome.ordered_sketch_var_solutions.is_empty() {
+                outcome.var_solutions.iter().map(|(_, value)| value.value).collect()
+            } else {
+                outcome
+                    .ordered_sketch_var_solutions
+                    .iter()
+                    .map(|solution| solution.value)
+                    .collect()
+            };
+            let source_values = outcome
                 .var_solutions
                 .iter()
                 .map(|(range, value)| (*range, value.value))
-                .collect::<HashMap<_, _>>();
-            let values = self
-                .sketch_var_initial_guesses_from_program(sketch, &solution_by_range)
-                .unwrap_or_else(|| outcome.var_solutions.iter().map(|(_, value)| value.value).collect());
-            self.sketch_var_warm_start_overrides.insert(sketch, values);
+                .collect();
+            self.sketch_var_warm_start_overrides.insert(
+                sketch,
+                SketchVarWarmStarts {
+                    solver_values,
+                    source_values,
+                },
+            );
         }
         #[cfg(not(feature = "artifact-graph"))]
         {
@@ -471,22 +503,42 @@ impl FrontendState {
                 return;
             };
             let edited_var_indices = self.edited_sketch_var_indices(&source_values, segment_ids_edited);
-            let values = source_values
-                .into_iter()
+            let source_values = source_values
+                .iter()
                 .enumerate()
                 .map(|(index, (range, source_value))| {
                     if edited_var_indices.contains(&index) || !solution_by_range.contains_key(&range) {
-                        source_value
+                        (*range, *source_value)
                     } else {
-                        previous
+                        let value = previous
                             .as_ref()
-                            .and_then(|values| values.get(index))
-                            .copied()
-                            .unwrap_or(source_value)
+                            .and_then(|warm_starts| warm_starts.source_values.get(index))
+                            .map(|(_, value)| *value)
+                            .unwrap_or(*source_value);
+                        (*range, value)
                     }
                 })
-                .collect();
-            self.sketch_var_warm_start_overrides.insert(sketch, values);
+                .collect::<Vec<_>>();
+
+            let preserve_previous_hidden = !segment_ids_edited.is_empty()
+                && previous
+                    .as_ref()
+                    .is_some_and(|p| p.source_values.len() == source_values.len());
+            let solver_values = merged_solver_warm_start_values(
+                outcome,
+                previous.as_ref(),
+                &source_values,
+                &edited_var_indices,
+                preserve_previous_hidden,
+            );
+
+            self.sketch_var_warm_start_overrides.insert(
+                sketch,
+                SketchVarWarmStarts {
+                    solver_values,
+                    source_values,
+                },
+            );
         }
         #[cfg(not(feature = "artifact-graph"))]
         {
@@ -516,20 +568,6 @@ impl FrontendState {
                     .then_some(index)
             })
             .collect()
-    }
-
-    #[cfg(feature = "artifact-graph")]
-    fn sketch_var_initial_guesses_from_program(
-        &self,
-        sketch: ObjectId,
-        solution_by_range: &HashMap<SourceRange, f64>,
-    ) -> Option<Vec<f64>> {
-        self.sketch_var_source_values_from_program(sketch).map(|source_values| {
-            source_values
-                .into_iter()
-                .map(|(range, source_value)| solution_by_range.get(&range).copied().unwrap_or(source_value))
-                .collect()
-        })
     }
 
     #[cfg(feature = "artifact-graph")]
@@ -1928,6 +1966,7 @@ impl FrontendState {
             scene_objects,
             source_range_to_object,
             var_solutions,
+            ordered_sketch_var_solutions: Default::default(),
             issues: non_fatal,
             default_planes,
         })
@@ -5922,6 +5961,45 @@ fn to_source_number(number: Number) -> anyhow::Result<ast::NumericLiteral> {
         raw: format_number_literal(number.value, number.units, None)?,
         digest: None,
     })
+}
+
+#[cfg(feature = "artifact-graph")]
+fn merged_solver_warm_start_values(
+    outcome: &ExecOutcome,
+    previous: Option<&SketchVarWarmStarts>,
+    source_values: &[(SourceRange, f64)],
+    edited_var_indices: &HashSet<usize>,
+    preserve_previous_hidden: bool,
+) -> Vec<f64> {
+    if outcome.ordered_sketch_var_solutions.is_empty() {
+        return source_values.iter().map(|(_, value)| *value).collect();
+    }
+
+    let mut source_index = 0;
+    outcome
+        .ordered_sketch_var_solutions
+        .iter()
+        .enumerate()
+        .map(|(solver_index, solution)| {
+            if solution.source_range.is_some() {
+                let value = source_values
+                    .get(source_index)
+                    .map(|(_, value)| *value)
+                    .unwrap_or(solution.value);
+                source_index += 1;
+                return value;
+            }
+
+            if preserve_previous_hidden && !edited_var_indices.is_empty() {
+                previous
+                    .and_then(|warm_starts| warm_starts.solver_values.get(solver_index))
+                    .copied()
+                    .unwrap_or(solution.value)
+            } else {
+                solution.value
+            }
+        })
+        .collect()
 }
 
 #[cfg(feature = "artifact-graph")]
@@ -12421,9 +12499,13 @@ sketch(on = XY) {
         frontend.update_state_after_exec(outcome, true);
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
-        frontend
-            .sketch_var_warm_start_overrides
-            .insert(sketch_id, vec![5.0, 6.0]);
+        frontend.sketch_var_warm_start_overrides.insert(
+            sketch_id,
+            SketchVarWarmStarts {
+                solver_values: vec![5.0, 6.0],
+                source_values: Vec::new(),
+            },
+        );
 
         let mut cold_frontend = frontend.clone();
         let (warm_src_delta, _) = frontend
@@ -12450,6 +12532,48 @@ sketch(on = XY) {
   point(at = [var 1mm, var 2mm])
 }
 "
+        );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_warm_starts_keep_lowered_tangent_vars_in_solver_order() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var -2mm, var 0mm], end = [var 2mm, var 0mm])
+  circle1 = circle(start = [var 1mm, var 1mm], center = [var 0mm, var 1mm])
+  tangent([line1, circle1])
+  line2 = line(start = [var 10mm, var 20mm], end = [var 30mm, var 40mm])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        let outcome = frontend.update_state_after_exec(outcome, true);
+        let sketch_id = find_first_sketch_object(&frontend.scene_graph).unwrap().id;
+        frontend.replace_sketch_var_warm_starts(sketch_id, &outcome);
+
+        let warm_starts = frontend
+            .sketch_var_warm_start_overrides
+            .get(&sketch_id)
+            .expect("Expected warm starts for sketch");
+        assert!(warm_starts.solver_values.len() > warm_starts.source_values.len());
+
+        let (src_delta, _) = frontend
+            .execute_mock_from_preview(&mock_ctx, version, sketch_id)
+            .await
+            .unwrap();
+        assert!(
+            src_delta
+                .text
+                .contains("line2 = line(start = [var 10mm, var 20mm], end = [var 30mm, var 40mm])")
         );
 
         mock_ctx.close().await;
@@ -12515,8 +12639,18 @@ sketch(on = XY) {
             .get(&sketch_id)
             .expect("Expected warm starts for edited sketch");
 
-        assert_eq!(&warm_starts[0..4], &[1.0, 2.0, 1.28, -0.78]);
-        assert_eq!(&warm_starts[4..], &previous_warm_starts[4..]);
+        let warm_start_source_values = warm_starts
+            .source_values
+            .iter()
+            .map(|(_, value)| *value)
+            .collect::<Vec<_>>();
+        let previous_warm_start_source_values = previous_warm_starts
+            .source_values
+            .iter()
+            .map(|(_, value)| *value)
+            .collect::<Vec<_>>();
+        assert_eq!(&warm_start_source_values[0..4], &[1.0, 2.0, 1.28, -0.78]);
+        assert_eq!(&warm_start_source_values[4..], &previous_warm_start_source_values[4..]);
 
         mock_ctx.close().await;
     }
