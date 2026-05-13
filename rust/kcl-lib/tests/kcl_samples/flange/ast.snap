@@ -860,6 +860,205 @@ description: Result of parsing flange.kcl
       },
       {
         "commentStart": 0,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "isGreaterThan",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "1",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "\"nHoles must be greater than 1\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "nHoles must be greater than 1"
+              }
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "assert",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "nHoles",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
+        },
+        "moduleId": 0,
+        "preComments": [
+          "// Add assertion so nHoles are always greater than 1"
+        ],
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 0,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "isEqualTo",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "4",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 4.0,
+                  "suffix": "None"
+                }
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "\"This converted flange sample preserves the legacy four-hole layout.\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "This converted flange sample preserves the legacy four-hole layout."
+              }
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "assert",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "nHoles",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
+        },
+        "moduleId": 0,
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 0,
         "declaration": {
           "commentStart": 0,
           "end": 0,
@@ -12630,7 +12829,7 @@ description: Result of parsing flange.kcl
             }
           }
         ],
-        "17": [
+        "18": [
           {
             "commentStart": 0,
             "end": 0,
@@ -12642,7 +12841,7 @@ description: Result of parsing flange.kcl
             }
           }
         ],
-        "20": [
+        "19": [
           {
             "commentStart": 0,
             "end": 0,
@@ -12654,7 +12853,7 @@ description: Result of parsing flange.kcl
             }
           }
         ],
-        "21": [
+        "22": [
           {
             "commentStart": 0,
             "end": 0,
@@ -12666,7 +12865,7 @@ description: Result of parsing flange.kcl
             }
           }
         ],
-        "24": [
+        "23": [
           {
             "commentStart": 0,
             "end": 0,
@@ -12678,7 +12877,7 @@ description: Result of parsing flange.kcl
             }
           }
         ],
-        "25": [
+        "26": [
           {
             "commentStart": 0,
             "end": 0,
@@ -12690,7 +12889,7 @@ description: Result of parsing flange.kcl
             }
           }
         ],
-        "28": [
+        "27": [
           {
             "commentStart": 0,
             "end": 0,
@@ -12702,7 +12901,19 @@ description: Result of parsing flange.kcl
             }
           }
         ],
-        "29": [
+        "30": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "31": [
           {
             "commentStart": 0,
             "end": 0,

@@ -101,10 +101,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 455,
-            "end": 460,
+            "commentStart": 552,
+            "end": 557,
             "moduleId": 0,
-            "start": 455,
+            "start": 552,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -125,10 +125,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 528,
-            "end": 533,
+            "commentStart": 625,
+            "end": 630,
             "moduleId": 0,
-            "start": 528,
+            "start": 625,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -149,10 +149,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
             -2.0
           ],
           "tag": {
-            "commentStart": 641,
-            "end": 646,
+            "commentStart": 738,
+            "end": 743,
             "moduleId": 0,
-            "start": 641,
+            "start": 738,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -173,10 +173,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
             -2.0
           ],
           "tag": {
-            "commentStart": 756,
-            "end": 761,
+            "commentStart": 853,
+            "end": 858,
             "moduleId": 0,
-            "start": 756,
+            "start": 853,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -197,10 +197,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 871,
-            "end": 876,
+            "commentStart": 968,
+            "end": 973,
             "moduleId": 0,
-            "start": 871,
+            "start": 968,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -221,10 +221,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 990,
+            "commentStart": 1082,
+            "end": 1087,
             "moduleId": 0,
-            "start": 985,
+            "start": 1082,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -251,10 +251,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
           ],
           "radius": 20.271408436514715,
           "tag": {
-            "commentStart": 1099,
-            "end": 1103,
+            "commentStart": 1196,
+            "end": 1200,
             "moduleId": 0,
-            "start": 1099,
+            "start": 1196,
             "type": "TagDeclarator",
             "value": "arc7"
           },
@@ -275,10 +275,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
             7.4999999999999964
           ],
           "tag": {
-            "commentStart": 1243,
-            "end": 1248,
+            "commentStart": 1340,
+            "end": 1345,
             "moduleId": 0,
-            "start": 1243,
+            "start": 1340,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -299,10 +299,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
             7.5
           ],
           "tag": {
-            "commentStart": 1359,
-            "end": 1364,
+            "commentStart": 1456,
+            "end": 1461,
             "moduleId": 0,
-            "start": 1359,
+            "start": 1456,
             "type": "TagDeclarator",
             "value": "line9"
           },
@@ -323,10 +323,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
             4.5
           ],
           "tag": {
-            "commentStart": 1475,
-            "end": 1481,
+            "commentStart": 1572,
+            "end": 1578,
             "moduleId": 0,
-            "start": 1475,
+            "start": 1572,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -347,10 +347,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
             4.5
           ],
           "tag": {
-            "commentStart": 1593,
-            "end": 1599,
+            "commentStart": 1690,
+            "end": 1696,
             "moduleId": 0,
-            "start": 1593,
+            "start": 1690,
             "type": "TagDeclarator",
             "value": "line11"
           },
@@ -473,10 +473,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 455,
-            "end": 460,
+            "commentStart": 552,
+            "end": 557,
             "moduleId": 0,
-            "start": 455,
+            "start": 552,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -487,10 +487,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 528,
-            "end": 533,
+            "commentStart": 625,
+            "end": 630,
             "moduleId": 0,
-            "start": 528,
+            "start": 625,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -501,10 +501,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 641,
-            "end": 646,
+            "commentStart": 738,
+            "end": 743,
             "moduleId": 0,
-            "start": 641,
+            "start": 738,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -515,10 +515,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 756,
-            "end": 761,
+            "commentStart": 853,
+            "end": 858,
             "moduleId": 0,
-            "start": 756,
+            "start": 853,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -529,10 +529,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 871,
-            "end": 876,
+            "commentStart": 968,
+            "end": 973,
             "moduleId": 0,
-            "start": 871,
+            "start": 968,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -543,10 +543,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 990,
+            "commentStart": 1082,
+            "end": 1087,
             "moduleId": 0,
-            "start": 985,
+            "start": 1082,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -557,10 +557,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1099,
-            "end": 1103,
+            "commentStart": 1196,
+            "end": 1200,
             "moduleId": 0,
-            "start": 1099,
+            "start": 1196,
             "type": "TagDeclarator",
             "value": "arc7"
           },
@@ -571,10 +571,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1243,
-            "end": 1248,
+            "commentStart": 1340,
+            "end": 1345,
             "moduleId": 0,
-            "start": 1243,
+            "start": 1340,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -585,10 +585,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1359,
-            "end": 1364,
+            "commentStart": 1456,
+            "end": 1461,
             "moduleId": 0,
-            "start": 1359,
+            "start": 1456,
             "type": "TagDeclarator",
             "value": "line9"
           },
@@ -599,10 +599,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1475,
-            "end": 1481,
+            "commentStart": 1572,
+            "end": 1578,
             "moduleId": 0,
-            "start": 1475,
+            "start": 1572,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -613,10 +613,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1593,
-            "end": 1599,
+            "commentStart": 1690,
+            "end": 1696,
             "moduleId": 0,
-            "start": 1593,
+            "start": 1690,
             "type": "TagDeclarator",
             "value": "line11"
           },
@@ -638,10 +638,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 455,
-              "end": 460,
+              "commentStart": 552,
+              "end": 557,
               "moduleId": 0,
-              "start": 455,
+              "start": 552,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -662,10 +662,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 528,
-              "end": 533,
+              "commentStart": 625,
+              "end": 630,
               "moduleId": 0,
-              "start": 528,
+              "start": 625,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -686,10 +686,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
               -2.0
             ],
             "tag": {
-              "commentStart": 641,
-              "end": 646,
+              "commentStart": 738,
+              "end": 743,
               "moduleId": 0,
-              "start": 641,
+              "start": 738,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -710,10 +710,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
               -2.0
             ],
             "tag": {
-              "commentStart": 756,
-              "end": 761,
+              "commentStart": 853,
+              "end": 858,
               "moduleId": 0,
-              "start": 756,
+              "start": 853,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -734,10 +734,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 871,
-              "end": 876,
+              "commentStart": 968,
+              "end": 973,
               "moduleId": 0,
-              "start": 871,
+              "start": 968,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -758,10 +758,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 985,
-              "end": 990,
+              "commentStart": 1082,
+              "end": 1087,
               "moduleId": 0,
-              "start": 985,
+              "start": 1082,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -788,10 +788,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
             ],
             "radius": 20.271408436514715,
             "tag": {
-              "commentStart": 1099,
-              "end": 1103,
+              "commentStart": 1196,
+              "end": 1200,
               "moduleId": 0,
-              "start": 1099,
+              "start": 1196,
               "type": "TagDeclarator",
               "value": "arc7"
             },
@@ -812,10 +812,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
               7.4999999999999964
             ],
             "tag": {
-              "commentStart": 1243,
-              "end": 1248,
+              "commentStart": 1340,
+              "end": 1345,
               "moduleId": 0,
-              "start": 1243,
+              "start": 1340,
               "type": "TagDeclarator",
               "value": "line8"
             },
@@ -836,10 +836,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
               7.5
             ],
             "tag": {
-              "commentStart": 1359,
-              "end": 1364,
+              "commentStart": 1456,
+              "end": 1461,
               "moduleId": 0,
-              "start": 1359,
+              "start": 1456,
               "type": "TagDeclarator",
               "value": "line9"
             },
@@ -860,10 +860,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
               4.5
             ],
             "tag": {
-              "commentStart": 1475,
-              "end": 1481,
+              "commentStart": 1572,
+              "end": 1578,
               "moduleId": 0,
-              "start": 1475,
+              "start": 1572,
               "type": "TagDeclarator",
               "value": "line10"
             },
@@ -884,10 +884,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
               4.5
             ],
             "tag": {
-              "commentStart": 1593,
-              "end": 1599,
+              "commentStart": 1690,
+              "end": 1696,
               "moduleId": 0,
-              "start": 1593,
+              "start": 1690,
               "type": "TagDeclarator",
               "value": "line11"
             },
@@ -2377,10 +2377,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 455,
-                    "end": 460,
+                    "commentStart": 552,
+                    "end": 557,
                     "moduleId": 0,
-                    "start": 455,
+                    "start": 552,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -2401,10 +2401,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 528,
-                    "end": 533,
+                    "commentStart": 625,
+                    "end": 630,
                     "moduleId": 0,
-                    "start": 528,
+                    "start": 625,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -2425,10 +2425,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
                     -2.0
                   ],
                   "tag": {
-                    "commentStart": 641,
-                    "end": 646,
+                    "commentStart": 738,
+                    "end": 743,
                     "moduleId": 0,
-                    "start": 641,
+                    "start": 738,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -2449,10 +2449,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
                     -2.0
                   ],
                   "tag": {
-                    "commentStart": 756,
-                    "end": 761,
+                    "commentStart": 853,
+                    "end": 858,
                     "moduleId": 0,
-                    "start": 756,
+                    "start": 853,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -2473,10 +2473,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 871,
-                    "end": 876,
+                    "commentStart": 968,
+                    "end": 973,
                     "moduleId": 0,
-                    "start": 871,
+                    "start": 968,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -2497,10 +2497,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 985,
-                    "end": 990,
+                    "commentStart": 1082,
+                    "end": 1087,
                     "moduleId": 0,
-                    "start": 985,
+                    "start": 1082,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -2527,10 +2527,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
                   ],
                   "radius": 20.271408436514715,
                   "tag": {
-                    "commentStart": 1099,
-                    "end": 1103,
+                    "commentStart": 1196,
+                    "end": 1200,
                     "moduleId": 0,
-                    "start": 1099,
+                    "start": 1196,
                     "type": "TagDeclarator",
                     "value": "arc7"
                   },
@@ -2551,10 +2551,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
                     7.4999999999999964
                   ],
                   "tag": {
-                    "commentStart": 1243,
-                    "end": 1248,
+                    "commentStart": 1340,
+                    "end": 1345,
                     "moduleId": 0,
-                    "start": 1243,
+                    "start": 1340,
                     "type": "TagDeclarator",
                     "value": "line8"
                   },
@@ -2575,10 +2575,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
                     7.5
                   ],
                   "tag": {
-                    "commentStart": 1359,
-                    "end": 1364,
+                    "commentStart": 1456,
+                    "end": 1461,
                     "moduleId": 0,
-                    "start": 1359,
+                    "start": 1456,
                     "type": "TagDeclarator",
                     "value": "line9"
                   },
@@ -2599,10 +2599,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
                     4.5
                   ],
                   "tag": {
-                    "commentStart": 1475,
-                    "end": 1481,
+                    "commentStart": 1572,
+                    "end": 1578,
                     "moduleId": 0,
-                    "start": 1475,
+                    "start": 1572,
                     "type": "TagDeclarator",
                     "value": "line10"
                   },
@@ -2623,10 +2623,10 @@ description: Variables in memory after executing bike-hub-washer.kcl
                     4.5
                   ],
                   "tag": {
-                    "commentStart": 1593,
-                    "end": 1599,
+                    "commentStart": 1690,
+                    "end": 1696,
                     "moduleId": 0,
-                    "start": 1593,
+                    "start": 1690,
                     "type": "TagDeclarator",
                     "value": "line11"
                   },

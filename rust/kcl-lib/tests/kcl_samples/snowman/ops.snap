@@ -3433,6 +3433,28 @@ description: Operations executed snowman.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 9
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 37
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "line",
       "unlabeledArg": null,
@@ -4263,23 +4285,7 @@ description: Operations executed snowman.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 9,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 37
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -4581,6 +4587,28 @@ description: Operations executed snowman.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 37
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 41
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "circle",
       "unlabeledArg": null,
@@ -4668,23 +4696,7 @@ description: Operations executed snowman.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 37,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 41
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -4803,6 +4815,28 @@ description: Operations executed snowman.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 42
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 44
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "circle",
       "unlabeledArg": null,
@@ -4890,23 +4924,7 @@ description: Operations executed snowman.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 42,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 44
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -5079,6 +5097,28 @@ description: Operations executed snowman.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 47
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 48
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "circle",
       "unlabeledArg": null,
@@ -5166,23 +5206,7 @@ description: Operations executed snowman.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 47,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 48
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -5432,6 +5456,28 @@ description: Operations executed snowman.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 52
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 52
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "circle",
       "unlabeledArg": null,
@@ -5519,23 +5565,7 @@ description: Operations executed snowman.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 52,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 52
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -5816,6 +5846,28 @@ description: Operations executed snowman.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 57
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 57
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "circle",
       "unlabeledArg": null,
@@ -5903,23 +5955,7 @@ description: Operations executed snowman.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 57,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 57
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
