@@ -1,34 +1,23 @@
 //! The executor for the AST.
 
-#[cfg(feature = "artifact-graph")]
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use anyhow::Result;
-#[cfg(feature = "artifact-graph")]
 pub use artifact::Artifact;
-#[cfg(feature = "artifact-graph")]
 pub use artifact::ArtifactCommand;
-#[cfg(feature = "artifact-graph")]
 pub use artifact::ArtifactGraph;
-#[cfg(feature = "artifact-graph")]
 pub use artifact::CapSubType;
-#[cfg(feature = "artifact-graph")]
 pub use artifact::CodeRef;
-#[cfg(feature = "artifact-graph")]
+pub use artifact::GdtAnnotationArtifact;
 pub use artifact::SketchBlock;
-#[cfg(feature = "artifact-graph")]
 pub use artifact::SketchBlockConstraint;
-#[cfg(feature = "artifact-graph")]
 pub use artifact::SketchBlockConstraintType;
-#[cfg(feature = "artifact-graph")]
 pub use artifact::StartSketchOnFace;
-#[cfg(feature = "artifact-graph")]
 pub use artifact::StartSketchOnPlane;
 use cache::GlobalState;
 pub use cache::bust_cache;
 pub use cache::clear_mem_cache;
-#[cfg(feature = "artifact-graph")]
 pub use cad_op::Group;
 pub use cad_op::Operation;
 pub use geometry::*;
@@ -74,7 +63,6 @@ use crate::ExecError;
 use crate::KclErrorWithOutputs;
 use crate::NodePath;
 use crate::SourceRange;
-#[cfg(feature = "artifact-graph")]
 use crate::collections::AhashIndexSet;
 use crate::engine::EngineBatchContext;
 use crate::engine::EngineManager;
@@ -86,7 +74,6 @@ use crate::execution::cache::CacheResult;
 use crate::execution::import_graph::Universe;
 use crate::execution::import_graph::UniverseMap;
 use crate::execution::typed_path::TypedPath;
-#[cfg(feature = "artifact-graph")]
 use crate::front::Number;
 use crate::front::Object;
 use crate::front::ObjectId;
@@ -100,14 +87,12 @@ use crate::parsing::ast::types::ImportPath;
 use crate::parsing::ast::types::NodeRef;
 
 pub(crate) mod annotations;
-#[cfg(feature = "artifact-graph")]
 mod artifact;
 pub(crate) mod cache;
 mod cad_op;
 mod exec_ast;
 pub mod fn_call;
 #[cfg(test)]
-#[cfg(feature = "artifact-graph")]
 mod freedom_analysis_tests;
 mod geometry;
 mod id_generator;
@@ -268,21 +253,16 @@ pub struct ExecOutcome {
     pub variables: IndexMap<String, KclValue>,
     /// Operations that have been performed in execution order, for display in
     /// the Feature Tree.
-    #[cfg(feature = "artifact-graph")]
     pub operations: Vec<Operation>,
     /// Output artifact graph.
-    #[cfg(feature = "artifact-graph")]
     pub artifact_graph: ArtifactGraph,
     /// Objects in the scene, created from execution.
-    #[cfg(feature = "artifact-graph")]
     #[serde(skip)]
     pub scene_objects: Vec<Object>,
     /// Map from source range to object ID for lookup of objects by their source
     /// range.
-    #[cfg(feature = "artifact-graph")]
     #[serde(skip)]
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
-    #[cfg(feature = "artifact-graph")]
     #[serde(skip)]
     pub var_solutions: Vec<(SourceRange, Number)>,
     /// Non-fatal errors and warnings.
@@ -296,7 +276,6 @@ pub struct ExecOutcome {
 /// Per-segment freedom used by the constraint report. Mirrors
 /// [`crate::front::Freedom`] but adds an `Error` variant for when
 /// a point lookup fails.
-#[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
 #[derive(Debug, Clone, Copy, PartialEq)]
 enum SegmentFreedom {
     Free,
@@ -367,7 +346,6 @@ pub struct SketchConstraintReport {
 /// as [`ConstraintKind::FullyConstrained`]. This is vacuously true — there are
 /// no free or conflicting segments. Callers can check `total_count == 0` to
 /// distinguish this from a genuinely constrained sketch.
-#[cfg(feature = "artifact-graph")]
 pub(crate) fn sketch_constraint_status_for_sketch(
     scene_objects: &[Object],
     sketch_obj: &Object,
@@ -443,7 +421,6 @@ pub(crate) fn sketch_constraint_status_for_sketch(
     })
 }
 
-#[cfg(feature = "artifact-graph")]
 pub(crate) fn sketch_constraint_report_from_scene_objects(scene_objects: &[Object]) -> SketchConstraintReport {
     let mut fully_constrained = Vec::new();
     let mut under_constrained = Vec::new();
@@ -472,21 +449,13 @@ pub(crate) fn sketch_constraint_report_from_scene_objects(scene_objects: &[Objec
 
 impl ExecOutcome {
     pub fn scene_object_by_id(&self, id: ObjectId) -> Option<&Object> {
-        #[cfg(feature = "artifact-graph")]
-        {
-            debug_assert!(
-                id.0 < self.scene_objects.len(),
-                "Requested object ID {} but only have {} objects",
-                id.0,
-                self.scene_objects.len()
-            );
-            self.scene_objects.get(id.0)
-        }
-        #[cfg(not(feature = "artifact-graph"))]
-        {
-            let _ = id;
-            None
-        }
+        debug_assert!(
+            id.0 < self.scene_objects.len(),
+            "Requested object ID {} but only have {} objects",
+            id.0,
+            self.scene_objects.len()
+        );
+        self.scene_objects.get(id.0)
     }
 
     /// Returns non-fatal errors. Warnings are not included.
@@ -500,14 +469,13 @@ impl ExecOutcome {
     /// Each segment in a sketch computes its own freedom by looking up the
     /// freedom of its constituent points. Owned points (belonging to a
     /// Line/Arc/Circle) are skipped to avoid double-counting.
-    #[cfg(feature = "artifact-graph")]
     pub fn sketch_constraint_report(&self) -> SketchConstraintReport {
         sketch_constraint_report_from_scene_objects(&self.scene_objects)
     }
 }
 
 /// Configuration for mock execution.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct MockConfig {
     pub use_prev_memory: bool,
     /// The `ObjectId` of the sketch block to execute for sketch mode. Only the
@@ -517,8 +485,10 @@ pub struct MockConfig {
     /// under-constrained.
     pub freedom_analysis: bool,
     /// The segments that were edited that triggered this execution.
-    #[cfg(feature = "artifact-graph")]
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
+    /// Per-sketch-variable initial guess overrides, keyed by sketch variable
+    /// order. These are transient warm-start values for interactive solves.
+    pub sketch_var_initial_guess_overrides: Vec<f64>,
 }
 
 impl Default for MockConfig {
@@ -528,8 +498,8 @@ impl Default for MockConfig {
             use_prev_memory: true,
             sketch_block_id: None,
             freedom_analysis: true,
-            #[cfg(feature = "artifact-graph")]
             segment_ids_edited: AhashIndexSet::default(),
+            sketch_var_initial_guess_overrides: Vec::new(),
         }
     }
 }
@@ -546,6 +516,12 @@ impl MockConfig {
     #[must_use]
     pub(crate) fn no_freedom_analysis(mut self) -> Self {
         self.freedom_analysis = false;
+        self
+    }
+
+    #[must_use]
+    pub(crate) fn with_sketch_var_initial_guess_overrides(mut self, overrides: Vec<f64>) -> Self {
+        self.sketch_var_initial_guess_overrides = overrides;
         self
     }
 }
@@ -796,6 +772,17 @@ pub struct ExecutorSettings {
     pub current_file: Option<TypedPath>,
     /// Whether or not to automatically scale the grid when user zooms.
     pub fixed_size_grid: bool,
+    /// Skip sending the engine messages that are only needed to build the
+    /// artifact graph. When this is true, the artifact graph will be
+    /// incomplete. So you should only use this option if you know you don't
+    /// need the artifact graph or anything that depends on it. In that case,
+    /// skipping these commands can make execution slightly faster.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub skip_artifact_graph: bool,
+}
+
+fn is_false(b: &bool) -> bool {
+    !*b
 }
 
 impl Default for ExecutorSettings {
@@ -808,6 +795,7 @@ impl Default for ExecutorSettings {
             project_directory: None,
             current_file: None,
             fixed_size_grid: true,
+            skip_artifact_graph: false,
         }
     }
 }
@@ -829,6 +817,7 @@ impl From<crate::settings::types::Settings> for ExecutorSettings {
             project_directory: None,
             current_file: None,
             fixed_size_grid: modeling_settings.fixed_size_grid.unwrap_or_default().0,
+            skip_artifact_graph: false,
         }
     }
 }
@@ -849,6 +838,7 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             project_directory: None,
             current_file: None,
             fixed_size_grid: true,
+            skip_artifact_graph: false,
         }
     }
 }
@@ -863,6 +853,7 @@ impl From<crate::settings::types::project::ProjectModelingSettings> for Executor
             project_directory: None,
             current_file: None,
             fixed_size_grid: true,
+            skip_artifact_graph: false,
         }
     }
 }
@@ -1052,6 +1043,7 @@ impl ExecutorContext {
                 project_directory: None,
                 current_file: None,
                 fixed_size_grid: false,
+                skip_artifact_graph: false,
             },
             None,
             engine_addr,
@@ -1127,28 +1119,25 @@ impl ExecutorContext {
         exec_state.global.path_to_source_id = mem.path_to_source_id;
         exec_state.global.id_to_source = mem.id_to_source;
         exec_state.mod_local.constraint_state = mem.constraint_state;
-        #[cfg(feature = "artifact-graph")]
-        {
-            let len = _mock_config
-                .sketch_block_id
-                .map(|sketch_block_id| sketch_block_id.0)
-                .unwrap_or(0);
-            if let Some(scene_objects) = mem.scene_objects.get(0..len) {
-                exec_state
-                    .global
-                    .root_module_artifacts
-                    .restore_scene_objects(scene_objects);
-            } else {
-                let message = format!(
-                    "Cached scene objects length {} is less than expected length from cached object ID generator {}",
-                    mem.scene_objects.len(),
-                    len
-                );
-                debug_assert!(false, "{message}");
-                return Err(KclErrorWithOutputs::no_outputs(KclError::new_internal(
-                    KclErrorDetails::new(message, vec![SourceRange::synthetic()]),
-                )));
-            }
+        let len = _mock_config
+            .sketch_block_id
+            .map(|sketch_block_id| sketch_block_id.0)
+            .unwrap_or(0);
+        if let Some(scene_objects) = mem.scene_objects.get(0..len) {
+            exec_state
+                .global
+                .root_module_artifacts
+                .restore_scene_objects(scene_objects);
+        } else {
+            let message = format!(
+                "Cached scene objects length {} is less than expected length from cached object ID generator {}",
+                mem.scene_objects.len(),
+                len
+            );
+            debug_assert!(false, "{message}");
+            return Err(KclErrorWithOutputs::no_outputs(KclError::new_internal(
+                KclErrorDetails::new(message, vec![SourceRange::synthetic()]),
+            )));
         }
 
         Ok(())
@@ -1190,10 +1179,7 @@ impl ExecutorContext {
         let path_to_source_id = exec_state.global.path_to_source_id.clone();
         let id_to_source = exec_state.global.id_to_source.clone();
         let constraint_state = exec_state.mod_local.constraint_state.clone();
-        #[cfg(feature = "artifact-graph")]
         let scene_objects = exec_state.global.root_module_artifacts.scene_objects.clone();
-        #[cfg(not(feature = "artifact-graph"))]
-        let scene_objects = Default::default();
         let outcome = exec_state.into_exec_outcome(result.0, self).await;
 
         stack.squash_env(result.0);
@@ -1669,19 +1655,6 @@ impl ExecutorContext {
         Ok((universe, root_imports))
     }
 
-    #[cfg(not(feature = "artifact-graph"))]
-    fn add_import_module_ops(
-        &self,
-        _exec_state: &mut ExecState,
-        _program: &crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>,
-        _module_id: ModuleId,
-        _module_path: &ModulePath,
-        _source_range: SourceRange,
-        _universe_map: &UniverseMap,
-    ) {
-    }
-
-    #[cfg(feature = "artifact-graph")]
     fn add_import_module_ops(
         &self,
         exec_state: &mut ExecState,
@@ -1791,10 +1764,7 @@ impl ExecutorContext {
                 path_to_source_id: exec_state.global.path_to_source_id.clone(),
                 id_to_source: exec_state.global.id_to_source.clone(),
                 constraint_state: exec_state.mod_local.constraint_state.clone(),
-                #[cfg(feature = "artifact-graph")]
                 scene_objects: exec_state.global.root_module_artifacts.scene_objects.clone(),
-                #[cfg(not(feature = "artifact-graph"))]
-                scene_objects: Default::default(),
             };
             cache::write_old_memory(state).await;
         }
@@ -1831,7 +1801,6 @@ impl ExecutorContext {
 
         // Because of execution caching, we may start with operations from a
         // previous run.
-        #[cfg(feature = "artifact-graph")]
         let start_op = exec_state.global.root_module_artifacts.operations.len();
 
         self.eval_prelude(exec_state, SourceRange::from(program).start_as_range())
@@ -1868,25 +1837,22 @@ impl ExecutorContext {
                 (err, env_ref)
             });
 
-        #[cfg(feature = "artifact-graph")]
+        // Fill in NodePath for operations.
+        let programs = &exec_state.build_program_lookup(program.clone());
+        let cached_body_items = exec_state.global.artifacts.cached_body_items();
+        for op in exec_state
+            .global
+            .root_module_artifacts
+            .operations
+            .iter_mut()
+            .skip(start_op)
         {
-            // Fill in NodePath for operations.
-            let programs = &exec_state.build_program_lookup(program.clone());
-            let cached_body_items = exec_state.global.artifacts.cached_body_items();
-            for op in exec_state
-                .global
-                .root_module_artifacts
-                .operations
-                .iter_mut()
-                .skip(start_op)
-            {
-                op.fill_node_paths(programs, cached_body_items);
-            }
-            for module in exec_state.global.module_infos.values_mut() {
-                if let ModuleRepr::Kcl(_, Some(outcome)) = &mut module.repr {
-                    for op in &mut outcome.artifacts.operations {
-                        op.fill_node_paths(programs, cached_body_items);
-                    }
+            op.fill_node_paths(programs, cached_body_items);
+        }
+        for module in exec_state.global.module_infos.values_mut() {
+            if let ModuleRepr::Kcl(_, Some(outcome)) = &mut module.repr {
+                for op in &mut outcome.artifacts.operations {
+                    op.fill_node_paths(programs, cached_body_items);
                 }
             }
         }
@@ -1918,7 +1884,6 @@ impl ExecutorContext {
     /// SAFETY: the current thread must have sole access to the memory referenced in exec_state.
     async fn eval_prelude(&self, exec_state: &mut ExecState, source_range: SourceRange) -> Result<(), KclError> {
         if exec_state.stack().memory.requires_std() {
-            #[cfg(feature = "artifact-graph")]
             let initial_ops = exec_state.mod_local.artifacts.operations.len();
 
             let path = vec!["std".to_owned(), "prelude".to_owned()];
@@ -1935,7 +1900,6 @@ impl ExecutorContext {
             //
             // TODO: Should we also clear them out of each module so that they
             // don't appear in test output?
-            #[cfg(feature = "artifact-graph")]
             exec_state.mod_local.artifacts.operations.truncate(initial_ops);
         }
 
@@ -2147,12 +2111,10 @@ pub(crate) struct ExecTestResults {
 /// There are several places where we want to traverse a KCL program or find a symbol in it,
 /// but because KCL modules can import each other, we need to traverse multiple programs.
 /// This stores multiple programs, keyed by their module ID for quick access.
-#[cfg(feature = "artifact-graph")]
 pub struct ProgramLookup {
     programs: IndexMap<ModuleId, crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>>,
 }
 
-#[cfg(feature = "artifact-graph")]
 impl ProgramLookup {
     // TODO: Could this store a reference to KCL programs instead of owning them?
     // i.e. take &state::ModuleInfoMap instead?
@@ -2276,7 +2238,6 @@ secondSolid = extrude(region(point = [2mm, 2mm], sketch = secondProfile), length
         assert!(result.exec_state.issues().is_empty());
     }
 
-    #[cfg(feature = "artifact-graph")]
     #[tokio::test(flavor = "multi_thread")]
     async fn sketch_block_artifact_preserves_standard_plane_name() {
         let code = r#"
@@ -3344,7 +3305,6 @@ solid7 = extrude(r7, length = width)
         assert!(face7.parent_solid.creator_sketch_id.is_some());
     }
 
-    #[cfg(feature = "artifact-graph")]
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_has_stable_ids() {
         let ctx = ExecutorContext::new_mock(None).await;
@@ -3444,7 +3404,6 @@ solid7 = extrude(r7, length = width)
         ctx.close().await;
     }
 
-    #[cfg(feature = "artifact-graph")]
     #[tokio::test(flavor = "multi_thread")]
     async fn sim_sketch_mode_real_mock_real() {
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
@@ -3697,7 +3656,6 @@ fillet(solid001, radius = 0.1, tags = yoyo)
 
     // Sketch constraint report tests
 
-    #[cfg(feature = "artifact-graph")]
     async fn run_constraint_report(kcl: &str) -> SketchConstraintReport {
         let program = crate::Program::parse_no_errs(kcl).unwrap();
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
@@ -3709,7 +3667,6 @@ fillet(solid001, radius = 0.1, tags = yoyo)
         report
     }
 
-    #[cfg(feature = "artifact-graph")]
     #[tokio::test(flavor = "multi_thread")]
     async fn warn_when_sketch_is_over_constrained() {
         let code = r#"
@@ -3727,7 +3684,6 @@ sketch001 = sketch(on = XY) {
         assert_eq!(warning.severity, Severity::Warning);
     }
 
-    #[cfg(feature = "artifact-graph")]
     #[tokio::test(flavor = "multi_thread")]
     async fn no_warning_when_sketch_is_not_over_constrained() {
         // Under-constrained sketch should not emit the over-constrained warning.
@@ -3744,7 +3700,6 @@ sketch001 = sketch(on = XY) {
         );
     }
 
-    #[cfg(feature = "artifact-graph")]
     #[tokio::test(flavor = "multi_thread")]
     async fn test_constraint_report_fully_constrained() {
         // All points are fully constrained via equality constraints.
@@ -3767,7 +3722,6 @@ sketch(on = YZ) {
         assert_eq!(report.fully_constrained[0].status, ConstraintKind::FullyConstrained);
     }
 
-    #[cfg(feature = "artifact-graph")]
     #[tokio::test(flavor = "multi_thread")]
     async fn test_constraint_report_under_constrained() {
         // No constraints at all — all points are free.
@@ -3785,7 +3739,6 @@ sketch(on = YZ) {
         assert!(report.under_constrained[0].free_count > 0);
     }
 
-    #[cfg(feature = "artifact-graph")]
     #[tokio::test(flavor = "multi_thread")]
     async fn test_constraint_report_over_constrained() {
         // Conflicting distance constraints on the same pair of points.
@@ -3808,7 +3761,6 @@ sketch(on = YZ) {
         assert!(report.over_constrained[0].conflict_count > 0);
     }
 
-    #[cfg(feature = "artifact-graph")]
     #[tokio::test(flavor = "multi_thread")]
     async fn test_constraint_report_multiple_sketches() {
         // Two sketches: one fully constrained, one under-constrained.
@@ -3838,25 +3790,5 @@ s2 = sketch(on = XZ) {
         );
         assert_eq!(report.fully_constrained.len(), 1);
         assert_eq!(report.under_constrained.len(), 1);
-    }
-
-    #[cfg(not(feature = "artifact-graph"))]
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_sketch_solve_works_without_artifact_graph_feature() {
-        let code = r#"
-sketch001 = sketch(on = XY) {
-    line1 = line(start = [var -3.38mm, var 3.71mm], end = [var 4.29mm, var 3.59mm])
-    line2 = line(start = [var 4.29mm, var 3.59mm], end = [var 4.31mm, var -3.13mm])
-    coincident([line1.end, line2.start])
-    line3 = line(start = [var 4.31mm, var -3.13mm], end = [var -3.61mm, var -3.18mm])
-    coincident([line2.end, line3.start])
-    line4 = line(start = [var -3.61mm, var -3.18mm], end = [var -3.38mm, var 3.71mm])
-    coincident([line3.end, line4.start])
-    coincident([line4.end, line1.start])
-    circle1 = circle(start = [var -5.73mm, var 1.42mm], center = [var -7.07mm, var 1.47mm])
-    tangent([line4, circle1])
-}
-"#;
-        parse_execute(code).await.unwrap();
     }
 }

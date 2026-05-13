@@ -17,6 +17,7 @@ test = ["pytest", "pytest-asyncio", "flaky"]
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
+profile = "release"
 
 [tool.setuptools]
 include-package-data = false

@@ -731,8 +731,7 @@ pub(crate) async fn do_post_extrude<'a>(
     };
 
     // Only do this if we need the artifact graph.
-    #[cfg(feature = "artifact-graph")]
-    {
+    if !args.ctx.settings.skip_artifact_graph {
         // Getting the ids of a sectional sweep does not work well and we cannot guarantee that
         // any of these call will not just fail.
         if !sectional {

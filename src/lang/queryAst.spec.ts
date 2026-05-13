@@ -1,8 +1,9 @@
 import type { Name } from '@rust/kcl-lib/bindings/Name'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 
-import type { Plane } from '@rust/kcl-lib/bindings/Artifact'
+import type { Artifact, Plane } from '@rust/kcl-lib/bindings/Artifact'
 import { ARG_END_ABSOLUTE } from '@src/lang/constants'
 import {
   createArrayExpression,
@@ -14,6 +15,7 @@ import {
   doesSceneHaveExtrudedSketch,
   doesSceneHaveSweepableSketch,
   findAllPreviousVariables,
+  findOperationForArtifact,
   findOperationPlaneArtifact,
   findUsesOfTagInPipe,
   getNodeFromPath,
@@ -31,8 +33,8 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { addCallExpressionsToPipe, addCloseToPipe } from '@src/lang/std/sketch'
 import { topLevelRange } from '@src/lang/util'
-import type { Identifier, PathToNode } from '@src/lang/wasm'
-import { assertParse, recast } from '@src/lang/wasm'
+import type { Identifier, PathToNode, SourceRange } from '@src/lang/wasm'
+import { assertParse, defaultNodePath, recast } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import {
   enginelessExecutor,
@@ -833,6 +835,44 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
 })
 
 describe('Testing findOperationArtifact', () => {
+  function range(start: number, end: number, moduleId = 0): SourceRange {
+    return [start, end, moduleId]
+  }
+
+  function gdtOperation(
+    sourceRange: SourceRange,
+    stdlibEntrySourceRange?: SourceRange
+  ): Operation {
+    const operation: Operation = {
+      type: 'StdLibCall',
+      name: 'gdt::flatness',
+      unlabeledArg: null,
+      labeledArgs: {},
+      nodePath: defaultNodePath(),
+      sourceRange,
+      isError: false,
+    }
+    if (stdlibEntrySourceRange) {
+      operation.stdlibEntrySourceRange = stdlibEntrySourceRange
+    }
+    return operation
+  }
+
+  function gdtAnnotationArtifact(
+    id: string,
+    sourceRange: SourceRange
+  ): Artifact {
+    return {
+      type: 'gdtAnnotation',
+      id,
+      codeRef: {
+        range: sourceRange,
+        nodePath: defaultNodePath(),
+        pathToNode: [],
+      },
+    }
+  }
+
   it('should find the correct artifact for a given operation', async () => {
     const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
@@ -874,6 +914,57 @@ part001 = startSketchOn(plane001)
       const operationNodePath = JSON.stringify(offsetPlaneOp.nodePath)
       expect(artifactNodePath).toBe(operationNodePath)
     }
+  })
+
+  it('resolves a GD&T annotation artifact contained by its source operation', () => {
+    const gdtRange = range(10, 80)
+    const operation = gdtOperation(gdtRange)
+    const artifact = gdtAnnotationArtifact('gdt-artifact', range(20, 70))
+
+    expect(
+      findOperationForArtifact({
+        artifact,
+        operations: [operation],
+      })
+    ).toBe(operation)
+  })
+
+  it('resolves a GD&T annotation artifact via stdlib entry range', () => {
+    const declarationRange = range(0, 90, 1)
+    const gdtRange = range(12, 89)
+    const operation = gdtOperation(declarationRange, gdtRange)
+    const artifact = gdtAnnotationArtifact('gdt-artifact', gdtRange)
+
+    expect(
+      findOperationForArtifact({
+        artifact,
+        operations: [operation],
+      })
+    ).toBe(operation)
+  })
+
+  it('does not resolve artifacts that do not point at an operation range', () => {
+    const operation = gdtOperation(range(10, 80))
+    const artifact = gdtAnnotationArtifact('gdt-artifact', range(90, 120))
+
+    expect(
+      findOperationForArtifact({
+        artifact,
+        operations: [operation],
+      })
+    ).toBeUndefined()
+  })
+
+  it('does not resolve artifacts in another module id', () => {
+    const operation = gdtOperation(range(10, 80))
+    const artifact = gdtAnnotationArtifact('gdt-artifact', range(10, 80, 1))
+
+    expect(
+      findOperationForArtifact({
+        artifact,
+        operations: [operation],
+      })
+    ).toBeUndefined()
   })
 })
 
