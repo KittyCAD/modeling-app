@@ -16,7 +16,7 @@ import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingC
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
-import { roundOff, uuidv4 } from '@src/lib/utils'
+import { isArray, roundOff, uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
@@ -49,20 +49,38 @@ function getSelectionsFromGdtData(
 }
 
 function isGdtCall(node: unknown): node is Node<CallExpressionKw> {
+  if (
+    typeof node !== 'object' ||
+    node === null ||
+    !('type' in node) ||
+    node.type !== 'CallExpressionKw' ||
+    !('callee' in node)
+  ) {
+    return false
+  }
+
+  const callee = node.callee
+  if (
+    typeof callee !== 'object' ||
+    callee === null ||
+    !('type' in callee) ||
+    callee.type !== 'Name' ||
+    !('path' in callee)
+  ) {
+    return false
+  }
+
+  const path = callee.path
+  if (!isArray(path) || path.length !== 1) {
+    return false
+  }
+
+  const firstPathEntry = path[0]
   return (
-    typeof node === 'object' &&
-    node !== null &&
-    'type' in node &&
-    node.type === 'CallExpressionKw' &&
-    'callee' in node &&
-    typeof node.callee === 'object' &&
-    node.callee !== null &&
-    'type' in node.callee &&
-    node.callee.type === 'Name' &&
-    'path' in node.callee &&
-    Array.isArray(node.callee.path) &&
-    node.callee.path.length === 1 &&
-    node.callee.path[0]?.name === 'gdt'
+    typeof firstPathEntry === 'object' &&
+    firstPathEntry !== null &&
+    'name' in firstPathEntry &&
+    firstPathEntry.name === 'gdt'
   )
 }
 
