@@ -3,6 +3,7 @@
 
 use std::collections::HashMap;
 use std::sync::Arc;
+use std::time::Duration;
 
 use anyhow::Result;
 use anyhow::anyhow;
@@ -153,11 +154,20 @@ struct ToEngineReq {
 
 impl EngineConnection {
     /// Start waiting for incoming engine requests, and send each one over the WebSocket to the engine.
+    /// If heartbeats is Some(N), sends a heartbeat to keep the WebSocket active, every N seconds.
+    /// If None, no heartbeats will be sent.
     async fn start_write_actor(
         mut tcp_write: WebSocketTcpWrite,
         mut engine_req_rx: mpsc::Receiver<ToEngineReq>,
         mut shutdown_rx: mpsc::Receiver<()>,
+        heartbeats: Option<u64>,
     ) {
+        let heartbeats = heartbeats.unwrap_or_default();
+        let send_heartbeats = heartbeats != 0;
+        let period_seconds = if heartbeats == 0 { 5 * 60 } else { heartbeats };
+        let period = Duration::from_secs(period_seconds);
+        let mut heartbeats_stream = tokio::time::interval(period);
+
         loop {
             tokio::select! {
                 maybe_req = engine_req_rx.recv() => {
@@ -190,6 +200,14 @@ impl EngineConnection {
                 _ = shutdown_rx.recv() => {
                     let _ = Self::inner_close_engine(&mut tcp_write).await;
                     return;
+                }
+
+                // Send heartbeats periodically.
+                _ = heartbeats_stream.tick(), if send_heartbeats => {
+                    // Send a heartbeat.
+                    let res = Self::inner_send_to_engine(WebSocketRequest::Ping {}, &mut tcp_write).await;
+                    // We don't really care if a heartbeat fails, we'll just try again soon.
+                    let _ = res;
                 }
             }
         }
@@ -228,7 +246,7 @@ impl EngineConnection {
         Ok(())
     }
 
-    pub async fn new(ws: reqwest::Upgraded) -> Result<EngineConnection> {
+    pub async fn new(ws: reqwest::Upgraded, heartbeats: Option<u64>) -> Result<EngineConnection> {
         let wsconfig = tokio_tungstenite::tungstenite::protocol::WebSocketConfig::default()
             // 4294967296 bytes, which is around 4.2 GB.
             .max_message_size(Some(usize::MAX))
@@ -244,7 +262,12 @@ impl EngineConnection {
         let (tcp_write, tcp_read) = ws_stream.split();
         let (engine_req_tx, engine_req_rx) = mpsc::channel(10);
         let (shutdown_tx, shutdown_rx) = mpsc::channel(1);
-        tokio::task::spawn(Self::start_write_actor(tcp_write, engine_req_rx, shutdown_rx));
+        tokio::task::spawn(Self::start_write_actor(
+            tcp_write,
+            engine_req_rx,
+            shutdown_rx,
+            heartbeats,
+        ));
 
         let mut tcp_read = TcpRead { stream: tcp_read };
 

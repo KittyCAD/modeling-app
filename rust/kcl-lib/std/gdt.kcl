@@ -70,8 +70,9 @@ export fn datum(
   framePlane?: Plane,
   /// Scale of the leader. The default is `1.0`. Must be greater than `0`.
   leaderScale?: number(Count),
-  /// The font size to use for the annotation text rendering. The default is `36`.
-  fontSize?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
 ): GdtAnnotation {}
 
 /// GD&T annotation specifying how flat faces should be.
@@ -156,8 +157,9 @@ export fn flatness(
   framePlane?: Plane,
   /// Scale of the leader. The default is `1.0`. Must be greater than `0`.
   leaderScale?: number(Count),
-  /// The font size to use for the annotation text rendering. The default is `36`.
-  fontSize?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T perpendicularity annotation specifying how much faces or edges may deviate from perpendicular orientation relative to datum references.
@@ -225,8 +227,9 @@ export fn perpendicularity(
   framePlane?: Plane,
   /// Scale of the leader. The default is `1.0`. Must be greater than `0`.
   leaderScale?: number(Count),
-  /// The font size to use for the annotation text rendering. The default is `36`.
-  fontSize?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T parallelism annotation specifying how much faces or edges may deviate from parallel orientation relative to datum references.
@@ -294,8 +297,9 @@ export fn parallelism(
   framePlane?: Plane,
   /// Scale of the leader. The default is `1.0`. Must be greater than `0`.
   leaderScale?: number(Count),
-  /// The font size to use for the annotation text rendering. The default is `36`.
-  fontSize?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T position annotation specifying how much faces or edges may deviate from their ideal location.
@@ -363,8 +367,9 @@ export fn position(
   framePlane?: Plane,
   /// Scale of the leader. The default is `1.0`. Must be greater than `0`.
   leaderScale?: number(Count),
-  /// The font size to use for the annotation text rendering. The default is `36`.
-  fontSize?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T annotation for attaching manufacturing text to faces or edges.
@@ -425,8 +430,9 @@ export fn annotation(
   framePlane?: Plane,
   /// Scale of the leader. The default is `1.0`. Must be greater than `0`.
   leaderScale?: number(Count),
-  /// The font size to use for the annotation text rendering. The default is `36`.
-  fontSize?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T distance annotation for displaying measured edge lengths or distances between two entities.
@@ -492,8 +498,9 @@ export fn distance(
   framePlane?: Plane,
   /// Scale of the distance arrows. The default is `1.0`. Must be greater than `0`.
   leaderScale?: number(Count),
-  /// The font size to use for the annotation text rendering. The default is `36`.
-  fontSize?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T profile annotation specifying how much edges may deviate from their ideal shape.
@@ -565,6 +572,7 @@ export fn profile(
   framePlane?: Plane,
   /// Scale of the leader. The default is `1.0`. Must be greater than `0`.
   leaderScale?: number(Count),
-  /// The font size to use for the annotation text rendering. The default is `36`.
-  fontSize?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
 ): [GdtAnnotation; 1+] {}
