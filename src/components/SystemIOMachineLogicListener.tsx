@@ -273,6 +273,21 @@ export function SystemIOMachineLogicListener() {
       const payload = prepareMlEphantNewFileRequest(props)
 
       if (payload) {
+        const normalizeProjectRelativePath = (path: string) =>
+          path.replaceAll('\\', '/').replace(/^\/+/, '')
+        const currentProjectRelativePath = normalizeProjectRelativePath(
+          payload.requestedFileNameWithExtension
+        )
+        const currentFileOutput = payload.files.find(
+          (file) =>
+            normalizeProjectRelativePath(file.requestedFileName) ===
+            currentProjectRelativePath
+        )
+        if (props.shouldAddZookeeperHistoryEntry) {
+          kclManager.markPendingZookeeperHistoryEntry(
+            currentFileOutput?.requestedCode
+          )
+        }
         kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
         systemIOActor.send({
           type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,

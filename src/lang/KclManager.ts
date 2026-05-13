@@ -204,6 +204,11 @@ type DirectSketchHistoryMarker = {
 
 type ZookeeperHistoryCommand = 'undo' | 'redo'
 
+type PendingZookeeperHistoryEntry = {
+  undoCode: string
+  redoCode?: string
+}
+
 type MinimalDocumentChange = {
   from: number
   to: number
@@ -722,7 +727,8 @@ export class KclManager extends File {
   private sketchCheckpointLimit = FALLBACK_SKETCH_CHECKPOINT_LIMIT
   private lastExecutedCode: string = ''
   lastSuccessfulCode: string = ''
-  private pendingZookeeperHistoryEntry = false
+  private pendingZookeeperHistoryEntry: PendingZookeeperHistoryEntry | null =
+    null
   private zookeeperHistoryReplayHandler?: (
     command: ZookeeperHistoryCommand
   ) => void
@@ -850,6 +856,9 @@ export class KclManager extends File {
    * In future, event listeners like `onWatchEvent` should be Facets in the CodeMirror sense.
    */
   #onWatchEvent = (_eventType: string, path: string) => {
+    if (this.mlEphantManagerMachineBulkManipulatingFileSystem) {
+      return
+    }
     // TODO: We can remove this once we make it impossible to have
     // a KclManager without a ZDSProject.
     if (
@@ -2724,22 +2733,57 @@ export class KclManager extends File {
   ) {
     this.zookeeperHistoryReplayHandler = handler
   }
-  markPendingZookeeperHistoryEntry() {
-    this.pendingZookeeperHistoryEntry = true
+  markPendingZookeeperHistoryEntry(redoCode?: string) {
+    this.pendingZookeeperHistoryEntry = {
+      undoCode: this.code,
+      redoCode:
+        redoCode === undefined ? undefined : normalizeLineEndings(redoCode),
+    }
   }
   commitPendingZookeeperHistoryEntry() {
-    if (!this.pendingZookeeperHistoryEntry) return
-    this.pendingZookeeperHistoryEntry = false
-    this.addZookeeperHistoryEntry()
-  }
-  addZookeeperHistoryEntry() {
-    this._globalHistoryView.dispatch({
+    const pendingEntry = this.pendingZookeeperHistoryEntry
+    if (!pendingEntry) return
+    this.pendingZookeeperHistoryEntry = null
+
+    const redoCode = pendingEntry.redoCode ?? this.code
+    if (isCodeTheSame(pendingEntry.undoCode, redoCode)) {
+      this.markFileCodeAsSynced(redoCode)
+      return
+    }
+
+    if (!isCodeTheSame(this.code, redoCode)) {
+      this.updateCodeEditor(redoCode, {
+        shouldAddToHistory: false,
+        shouldClearHistory: false,
+        shouldExecute: false,
+        shouldResetCamera: false,
+        shouldWriteToDisk: false,
+      })
+    }
+    this.markFileCodeAsSynced(redoCode)
+
+    this.editorView.dispatch({
       annotations: [
         Transaction.addToHistory.of(true),
         isolateHistory.of('full'),
       ],
-      effects: [zookeeperHistoryEffect.of('redo')],
+      effects: [
+        syntheticHistoryCommitEffect.of({
+          undoCode: pendingEntry.undoCode,
+          redoCode,
+          undoCheckpointId: null,
+          redoCheckpointId: null,
+          options: {
+            shouldExecute: true,
+            shouldResetCamera: false,
+            shouldWriteToDisk: true,
+          },
+        }),
+      ],
     })
+  }
+  addZookeeperHistoryEntry() {
+    this.commitPendingZookeeperHistoryEntry()
   }
   undo() {
     this._globalHistoryView.undo(this._editorView)
@@ -2765,7 +2809,7 @@ export class KclManager extends File {
     })
   }
   clearGlobalHistory() {
-    this.pendingZookeeperHistoryEntry = false
+    this.pendingZookeeperHistoryEntry = null
     this._globalHistoryView.dispatch(
       {
         effects: [this._globalHistoryView.historyCompartment.reconfigure([])],

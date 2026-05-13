@@ -275,19 +275,20 @@ describe('KclManager diagnostics', () => {
     expect(writeToFileSpy).not.toHaveBeenCalled()
   })
 
-  it('routes zookeeper history markers through normal undo and redo', () => {
+  it('adds zookeeper code updates to local undo and redo history', () => {
     const { kclManager } = createKclManagerTestHarness('persist me')
-    const replayHandler = vi.fn()
+    vi.spyOn(kclManager, 'writeToFile').mockResolvedValue(undefined)
 
-    kclManager.setZookeeperHistoryReplayHandler(replayHandler)
-    kclManager.markPendingZookeeperHistoryEntry()
+    kclManager.markPendingZookeeperHistoryEntry('zookeeper edit')
     kclManager.commitPendingZookeeperHistoryEntry()
 
+    expect(kclManager.code).toBe('zookeeper edit')
+
     kclManager.undo()
-    expect(replayHandler).toHaveBeenLastCalledWith('undo')
+    expect(kclManager.code).toBe('persist me')
 
     kclManager.redo()
-    expect(replayHandler).toHaveBeenLastCalledWith('redo')
+    expect(kclManager.code).toBe('zookeeper edit')
   })
 
   it('does not implicitly autosave programmatic editor updates when shouldWriteToDisk is false', () => {
