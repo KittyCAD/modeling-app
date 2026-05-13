@@ -27,6 +27,18 @@ async function waitForCodeChange(
   return await page.locator('.cm-content').innerText()
 }
 
+async function waitForNormalisedCodeChange(
+  page: Page,
+  previousCode: string
+): Promise<string> {
+  await expect
+    .poll(async () =>
+      normaliseCode(await page.locator('.cm-content').innerText())
+    )
+    .not.toBe(normaliseCode(previousCode))
+  return await page.locator('.cm-content').innerText()
+}
+
 /**
  * Normalize code by collapsing whitespace for stable equality checks.
  */
@@ -70,7 +82,7 @@ async function clickSegmentById(
   const box = await scene.getBoundingBoxOrThrow(
     `[data-segment_id="${segmentId}"]`
   )
-  await page.mouse.click(box.x, box.y) // box size is 1x1 px so we can ignore width, height
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2)
 }
 
 async function selectSketchSolveConstraintFromDropdown(
@@ -1312,7 +1324,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await page.mouse.up()
       await page.waitForTimeout(300)
 
-      const codeAfterPointDrag = await waitForCodeChange(
+      const codeAfterPointDrag = await waitForNormalisedCodeChange(
         page,
         codeBeforePointDrag
       )
