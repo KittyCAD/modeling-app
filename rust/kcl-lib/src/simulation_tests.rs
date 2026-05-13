@@ -5739,3 +5739,31 @@ mod mbd_name_multi_file {
         .await
     }
 }
+mod mbd_name_using_face_id {
+    const TEST_NAME: &str = "mbd_name_using_face_id";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute_with_options(
+            TEST_NAME,
+            super::TestOptions {
+                render_to_png: true,
+                ..Default::default()
+            },
+        )
+        .await
+    }
+}
