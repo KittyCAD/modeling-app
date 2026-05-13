@@ -295,7 +295,7 @@ description: Artifact commands gdt-tutorial.kcl
               "y": 100.0
             },
             "precision": 3,
-            "font_scale": 1.0,
+            "font_scale": 1.25,
             "font_point_size": 36,
             "leader_scale": 3.0
           },
@@ -360,7 +360,7 @@ description: Artifact commands gdt-tutorial.kcl
               "y": 100.0
             },
             "precision": 0,
-            "font_scale": 1.0,
+            "font_scale": 1.25,
             "font_point_size": 36,
             "leader_scale": 3.0
           },
@@ -433,7 +433,7 @@ description: Artifact commands gdt-tutorial.kcl
               "y": 100.0
             },
             "precision": 3,
-            "font_scale": 1.0,
+            "font_scale": 1.25,
             "font_point_size": 36,
             "leader_scale": 3.0
           },
@@ -506,7 +506,7 @@ description: Artifact commands gdt-tutorial.kcl
               "y": 100.0
             },
             "precision": 3,
-            "font_scale": 1.0,
+            "font_scale": 1.25,
             "font_point_size": 36,
             "leader_scale": 3.0
           },
@@ -598,7 +598,7 @@ description: Artifact commands gdt-tutorial.kcl
               "y": 100.0
             },
             "precision": 3,
-            "font_scale": 1.0,
+            "font_scale": 1.25,
             "font_point_size": 36,
             "arrow_scale": 3.0
           },
@@ -656,7 +656,7 @@ description: Artifact commands gdt-tutorial.kcl
             "dimension": null,
             "control_frame": null,
             "defined_datum": null,
-            "prefix": "Break all sharp edges",
+            "prefix": "BREAK ALL SHARP EDGES",
             "suffix": null,
             "plane_id": "[uuid]",
             "offset": {
@@ -664,7 +664,7 @@ description: Artifact commands gdt-tutorial.kcl
               "y": -100.0
             },
             "precision": 0,
-            "font_scale": 1.0,
+            "font_scale": 1.25,
             "font_point_size": 36,
             "leader_scale": 3.0
           },

@@ -50,6 +50,7 @@ export type {
   CodeRef,
   PrimitiveEdge as PrimitiveEdgeArtifact,
   EdgeCut,
+  GdtAnnotationArtifact,
   PrimitiveFace as PrimitiveFaceArtifact,
   Path as PathArtifact,
   Plane as PlaneArtifact,
