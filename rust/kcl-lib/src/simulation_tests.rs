@@ -5385,7 +5385,14 @@ mod mbd_name_simple {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute_with_options(
+            TEST_NAME,
+            super::TestOptions {
+                snapshot_entity_names: true,
+                ..Default::default()
+            },
+        )
+        .await
     }
 }
 mod endless_impeller {
