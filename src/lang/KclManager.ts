@@ -1718,6 +1718,9 @@ export class KclManager extends File {
       shouldWriteToDisk: false,
     })
     providedEditor.markFileCodeAsSynced(diskCode)
+    if (providedEditor.mlEphantManagerMachineBulkManipulatingFileSystem) {
+      providedEditor.commitPendingZookeeperHistoryEntry()
+    }
     return providedEditor
   }
 

@@ -116,6 +116,7 @@ export const MlEphantConversationPane = (props: {
 
     const projectFiles = await collectProjectFiles({
       selectedFileContents: props.kclManager.code,
+      selectedFilePath: props.loaderFile.path,
       fileNames: props.kclManager.execState.filenames,
       projectContext: project,
     })
@@ -434,6 +435,7 @@ export const MlEphantConversationPane = (props: {
           const currentLoaderFile = loaderFileRef.current
           void collectProjectFiles({
             selectedFileContents: props.kclManager.code,
+            selectedFilePath: currentLoaderFile?.path,
             fileNames: props.kclManager.execState.filenames,
             projectContext: project,
           }).then((projectFiles) => {

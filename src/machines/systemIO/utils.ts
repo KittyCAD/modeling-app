@@ -271,6 +271,7 @@ export const determineProjectFilePathFromPrompt = (
 
 export const collectProjectFiles = async (args: {
   selectedFileContents: string
+  selectedFilePath?: string
   fileNames: ExecState['filenames']
   projectContext?: Project
 }) => {
@@ -295,6 +296,7 @@ export const collectProjectFiles = async (args: {
     basePath = args.projectContext?.path
     const filePromises: Promise<FileMeta | null>[] = []
     let uploadSize = 0
+    const selectedFilePath = args.selectedFilePath?.replaceAll('\\', '/')
     const recursivelyPushFilePromises = (files: FileEntry[]) => {
       // mutates filePromises declared above, so this function definition should stay here
       // if pulled out, it would need to be refactored.
@@ -308,36 +310,59 @@ export const collectProjectFiles = async (args: {
         const absolutePathToFileNameWithExtension = file.path
         const fileNameWithExtension =
           fsZds.relative(basePath, absolutePathToFileNameWithExtension) ?? ''
+        const isSelectedFile =
+          selectedFilePath !== undefined &&
+          absolutePathToFileNameWithExtension.replaceAll('\\', '/') ===
+            selectedFilePath
 
-        const filePromise = fsZds
-          .readFile(absolutePathToFileNameWithExtension)
-          .then((file): FileMeta => {
-            uploadSize += file.byteLength
-            const decoder = new TextDecoder('utf-8')
-            const fileType = fsZds.extname(absolutePathToFileNameWithExtension)
-            if (fileType === FILE_EXT) {
-              return {
-                type: 'kcl',
-                absPath: absolutePathToFileNameWithExtension,
-                relPath: fileNameWithExtension,
-                fileContents: decoder.decode(file),
-                execStateFileNamesIndex:
-                  execStateNameToIndexMap[absolutePathToFileNameWithExtension],
-              }
-            }
-            const blob = new Blob([new Uint8Array(file)], {
-              type: 'application/octet-stream',
-            })
-            return {
-              type: 'other',
+        const filePromise = isSelectedFile
+          ? Promise.resolve<FileMeta>({
+              type: 'kcl',
+              absPath: absolutePathToFileNameWithExtension,
               relPath: fileNameWithExtension,
-              data: blob,
-            }
-          })
-          .catch((e) => {
-            console.error('error reading file', e)
-            return null
-          })
+              fileContents: args.selectedFileContents,
+              execStateFileNamesIndex:
+                execStateNameToIndexMap[absolutePathToFileNameWithExtension],
+            })
+          : fsZds
+              .readFile(absolutePathToFileNameWithExtension)
+              .then((file): FileMeta => {
+                uploadSize += file.byteLength
+                const decoder = new TextDecoder('utf-8')
+                const fileType = fsZds.extname(
+                  absolutePathToFileNameWithExtension
+                )
+                if (fileType === FILE_EXT) {
+                  return {
+                    type: 'kcl',
+                    absPath: absolutePathToFileNameWithExtension,
+                    relPath: fileNameWithExtension,
+                    fileContents: decoder.decode(file),
+                    execStateFileNamesIndex:
+                      execStateNameToIndexMap[
+                        absolutePathToFileNameWithExtension
+                      ],
+                  }
+                }
+                const blob = new Blob([new Uint8Array(file)], {
+                  type: 'application/octet-stream',
+                })
+                return {
+                  type: 'other',
+                  relPath: fileNameWithExtension,
+                  data: blob,
+                }
+              })
+              .catch((e) => {
+                console.error('error reading file', e)
+                return null
+              })
+
+        if (isSelectedFile) {
+          uploadSize += new TextEncoder().encode(
+            args.selectedFileContents
+          ).length
+        }
 
         if (filePromise === undefined) {
           continue
