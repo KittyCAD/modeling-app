@@ -23,7 +23,7 @@ Passing an empty `name` clears any name previously assigned to that face
 or edge.
 
 Names may contain only non-control ASCII characters. Spaces are allowed, but
-other whitespace characters like newline are considred control characters,
+other whitespace characters like newline are considered control characters,
 which are disallowed. Single-quote characters are also disallowed. The
 maximum length is 1024 characters.
 
