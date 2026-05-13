@@ -51,10 +51,10 @@ type CapturedSelectionListItem = SelectionListItem & {
   index: number
 }
 
-type PendingSelectionSync = {
-  argName: string
-  selection: Selections
-}
+type SelectionCommandArgument = Extract<
+  CommandArgument<unknown>,
+  { inputType: 'selection' | 'selectionMixed' }
+>
 
 const MODELING_DIALOG_TOOLBAR_GAP_PX = 8
 const DEFAULT_DIALOG_GROUP_ID = 'parameters'
@@ -99,6 +99,12 @@ function isSelectionValueEmpty(value: unknown): boolean {
   return graphSelections.length === 0 && otherSelections.length === 0
 }
 
+function isSelectionArgument(
+  arg: CommandArgument<unknown>
+): arg is SelectionCommandArgument {
+  return arg.inputType === 'selection' || arg.inputType === 'selectionMixed'
+}
+
 function removeSelectionItem(
   value: unknown,
   source: CapturedSelectionListItem['source'],
@@ -128,58 +134,6 @@ function removeSelectionItem(
   }
 
   return isSelectionValueEmpty(nextSelection) ? undefined : nextSelection
-}
-
-function getGraphSelectionKey(
-  selection: Selections['graphSelections'][number]
-): string {
-  return [
-    selection.artifact?.id,
-    selection.engineEntityId,
-    selection.patternIndex,
-    selection.codeRef?.range?.join(':'),
-    JSON.stringify(selection.codeRef?.pathToNode),
-  ].join('|')
-}
-
-function getOtherSelectionKey(
-  selection: Selections['otherSelections'][number]
-): string {
-  if (typeof selection === 'string') {
-    return `axis:${selection}`
-  }
-  if ('type' in selection && selection.type === 'enginePrimitive') {
-    return `enginePrimitive:${selection.entityId}`
-  }
-  if ('type' in selection && selection.type === 'engineRegion') {
-    return `engineRegion:${selection.id}`
-  }
-  if ('id' in selection) {
-    return `other:${selection.id}`
-  }
-  return JSON.stringify(selection)
-}
-
-function areSelectionsEquivalent(a: Selections, b: Selections): boolean {
-  if (
-    a.graphSelections.length !== b.graphSelections.length ||
-    a.otherSelections.length !== b.otherSelections.length
-  ) {
-    return false
-  }
-
-  return (
-    a.graphSelections.every(
-      (selection, index) =>
-        getGraphSelectionKey(selection) ===
-        getGraphSelectionKey(b.graphSelections[index])
-    ) &&
-    a.otherSelections.every(
-      (selection, index) =>
-        getOtherSelectionKey(selection) ===
-        getOtherSelectionKey(b.otherSelections[index])
-    )
-  )
 }
 
 function hasMeaningfulDialogValue(value: unknown): boolean {
@@ -370,7 +324,6 @@ export function ModelingDialog() {
   const [activeSelectionArgName, setActiveSelectionArgName] = useState<
     string | null
   >(null)
-  const pendingSelectionSyncRef = useRef<PendingSelectionSync | null>(null)
   const [didAutoEnableSelection, setDidAutoEnableSelection] = useState(false)
   const dialogPositioningRef = useRef<HTMLDivElement>(null)
   const [dialogTopOffset, setDialogTopOffset] = useState(() =>
@@ -414,9 +367,10 @@ export function ModelingDialog() {
       }
       const wasmInstance = await wasmPromise
       const nextValues: Record<string, unknown> = {}
-      let hasSeededInitialSelection = false
 
       for (const [argName, arg] of Object.entries(selectedCommand.args)) {
+        if (isSelectionArgument(arg)) continue
+
         const contextWithDraft: CommandBarContext = {
           ...commandBarState.context,
           argumentsToSubmit: {
@@ -424,10 +378,7 @@ export function ModelingDialog() {
             ...nextValues,
           },
         }
-        const { isHidden, isRequired } = evaluateVisibility(
-          arg,
-          contextWithDraft
-        )
+        const { isRequired } = evaluateVisibility(arg, contextWithDraft)
         const existingValue = resolveContextValue(
           commandBarState.context.argumentsToSubmit[argName],
           contextWithDraft
@@ -438,23 +389,6 @@ export function ModelingDialog() {
             ? await resolveDefaultValue(arg, contextWithDraft, wasmInstance)
             : undefined
         let resolvedValue = existingValue ?? defaultValue
-
-        if (
-          (arg.inputType === 'selection' ||
-            arg.inputType === 'selectionMixed') &&
-          isSelectionValueEmpty(resolvedValue)
-        ) {
-          if (
-            !hasSeededInitialSelection &&
-            !isHidden &&
-            !isSelectionValueEmpty(selectionRanges)
-          ) {
-            resolvedValue = structuredClone(selectionRanges)
-            hasSeededInitialSelection = true
-          } else {
-            resolvedValue = undefined
-          }
-        }
 
         if (
           (arg.inputType === 'kcl' ||
@@ -515,43 +449,9 @@ export function ModelingDialog() {
   }, [selectedCommand])
 
   useEffect(() => {
-    const pendingSelectionSync = pendingSelectionSyncRef.current
-    if (
-      pendingSelectionSync &&
-      !areSelectionsEquivalent(selectionRanges, pendingSelectionSync.selection)
-    ) {
-      return
-    }
-
-    const syncSelectionArgName =
-      pendingSelectionSync?.argName ?? activeSelectionArgName
-
-    if (!syncSelectionArgName || !selectedCommand?.args) return
-    const arg = selectedCommand.args[syncSelectionArgName]
-    if (
-      !arg ||
-      (arg.inputType !== 'selection' && arg.inputType !== 'selectionMixed')
-    ) {
-      return
-    }
-
-    const nextSelection = isSelectionValueEmpty(selectionRanges)
-      ? undefined
-      : structuredClone(selectionRanges)
-    pendingSelectionSyncRef.current = null
-    setDraftValues((prev) => ({
-      ...prev,
-      [syncSelectionArgName]: nextSelection,
-    }))
-  }, [activeSelectionArgName, selectionRanges, selectedCommand?.args])
-
-  useEffect(() => {
     if (!activeSelectionArgName || !selectedCommand?.args) return
     const arg = selectedCommand.args[activeSelectionArgName]
-    if (
-      !arg ||
-      (arg.inputType !== 'selection' && arg.inputType !== 'selectionMixed')
-    ) {
+    if (!arg || !isSelectionArgument(arg)) {
       return
     }
 
@@ -587,28 +487,20 @@ export function ModelingDialog() {
     [commands]
   )
 
-  const removeDraftSelection = useCallback(
+  const removeSceneSelection = useCallback(
     (
       argName: string,
       source: CapturedSelectionListItem['source'],
       selectionIndex: number
     ) => {
       const nextSelection = removeSelectionItem(
-        draftValues[argName],
+        selectionRanges,
         source,
         selectionIndex
       )
 
       const selectionForScene = nextSelection ?? EMPTY_SELECTION
 
-      setDraftValues((prev) => ({
-        ...prev,
-        [argName]: nextSelection,
-      }))
-      pendingSelectionSyncRef.current = {
-        argName,
-        selection: selectionForScene,
-      }
       setActiveSelectionArgName(argName)
       modelingSend({
         type: 'Set selection',
@@ -618,19 +510,11 @@ export function ModelingDialog() {
         },
       })
     },
-    [draftValues, modelingSend]
+    [modelingSend, selectionRanges]
   )
 
-  const clearDraftSelection = useCallback(
+  const clearSceneSelection = useCallback(
     (argName: string) => {
-      setDraftValues((prev) => ({
-        ...prev,
-        [argName]: undefined,
-      }))
-      pendingSelectionSyncRef.current = {
-        argName,
-        selection: EMPTY_SELECTION,
-      }
       setActiveSelectionArgName(argName)
       modelingSend({
         type: 'Set selection',
@@ -646,9 +530,8 @@ export function ModelingDialog() {
   useEffect(() => {
     if (didAutoEnableSelection || activeSelectionArgName !== null) return
 
-    const hasAnySelectionArg = fields.some(
-      ({ arg }) =>
-        arg.inputType === 'selection' || arg.inputType === 'selectionMixed'
+    const hasAnySelectionArg = fields.some(({ arg }) =>
+      isSelectionArgument(arg)
     )
 
     if (!hasAnySelectionArg) {
@@ -657,9 +540,7 @@ export function ModelingDialog() {
     }
 
     const firstVisibleSelectionField = fields.find(
-      ({ isHidden, arg }) =>
-        !isHidden &&
-        (arg.inputType === 'selection' || arg.inputType === 'selectionMixed')
+      ({ isHidden, arg }) => !isHidden && isSelectionArgument(arg)
     )
 
     if (!firstVisibleSelectionField) return
@@ -688,6 +569,9 @@ export function ModelingDialog() {
     selectedCommand.dialogLayout?.groups,
     draftValues
   )
+  const activeSelectionFieldName =
+    activeSelectionArgName ??
+    visibleFields.find((field) => isSelectionArgument(field.arg))?.argName
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -708,7 +592,11 @@ export function ModelingDialog() {
           argumentsToSubmit,
         }
         const { isRequired } = evaluateVisibility(arg, currentContext)
-        let value = argumentsToSubmit[argName]
+        let value = isSelectionArgument(arg)
+          ? argName === activeSelectionFieldName
+            ? selectionRanges
+            : commandBarState.context.argumentsToSubmit[argName]
+          : argumentsToSubmit[argName]
 
         if (
           (value === undefined || value === '') &&
@@ -722,11 +610,7 @@ export function ModelingDialog() {
           value = defaultValue
         }
 
-        if (
-          (arg.inputType === 'selection' ||
-            arg.inputType === 'selectionMixed') &&
-          isSelectionValueEmpty(value)
-        ) {
+        if (isSelectionArgument(arg) && isSelectionValueEmpty(value)) {
           value = undefined
         }
 
@@ -799,18 +683,15 @@ export function ModelingDialog() {
     options,
   }: ModelingDialogField) {
     const key = `${argName}-${arg.inputType}`
-    const value = draftValues[argName]
-
-    const capturedSelection =
-      (arg.inputType === 'selection' || arg.inputType === 'selectionMixed') &&
-      (draftValues[argName] as Selections | undefined) &&
-      !isSelectionValueEmpty(draftValues[argName])
-        ? (draftValues[argName] as Selections)
-        : undefined
-    const isSelecting = activeSelectionArgName === argName
+    const isSelectionField = isSelectionArgument(arg)
     const currentSelection = isSelectionValueEmpty(selectionRanges)
       ? undefined
       : selectionRanges
+    const value = isSelectionField ? currentSelection : draftValues[argName]
+
+    const capturedSelection =
+      isSelectionField && currentSelection ? currentSelection : undefined
+    const isSelecting = activeSelectionArgName === argName
     const capturedSelectionItems = getSelectionListItems(
       kclManager.astSignal.value,
       capturedSelection
@@ -843,20 +724,21 @@ export function ModelingDialog() {
           kclManager.astSignal.value,
           currentSelection
         )}
-        onChange={(nextValue) =>
+        onChange={(nextValue) => {
+          if (isSelectionField) return
           setDraftValues((prev) => ({
             ...prev,
             [argName]: nextValue,
           }))
-        }
+        }}
         onStartSelecting={() => startSelectingArgument(argName, arg)}
         onRemoveSelection={(item) => {
           startSelectingArgument(argName, arg)
-          removeDraftSelection(argName, item.source, item.index)
+          removeSceneSelection(argName, item.source, item.index)
         }}
         onClearSelection={() => {
           startSelectingArgument(argName, arg)
-          clearDraftSelection(argName)
+          clearSceneSelection(argName)
         }}
       />
     )
