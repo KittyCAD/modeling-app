@@ -542,7 +542,7 @@ impl FrontendState {
                 .iter()
                 .enumerate()
                 .map(|(index, (range, source_value))| {
-                    if edited_var_indices.contains(&index) || !solution_by_range.contains_key(&range) {
+                    if edited_var_indices.contains(&index) || !solution_by_range.contains_key(range) {
                         (*range, *source_value)
                     } else {
                         let value = previous
