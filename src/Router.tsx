@@ -138,15 +138,6 @@ export const Router = () => {
             ...(IS_STAGING_OR_DEBUG
               ? [
                   {
-                    path: '/error-page-test',
-                    errorElement: <ErrorPage />,
-                    loader: () => {
-                      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-                      throw new Error('Manual ErrorPage test')
-                    },
-                    element: <></>,
-                  },
-                  {
                     path: '/layout',
                     errorElement: <ErrorPage />,
                     element: <TestLayout />,

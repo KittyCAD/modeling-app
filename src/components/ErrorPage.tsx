@@ -4,38 +4,29 @@ import { isRouteErrorResponse, useRouteError } from 'react-router-dom'
 import { ActionButton } from '@src/components/ActionButton'
 import { reportClientError } from '@src/lib/clientErrors'
 import { isDesktop } from '@src/lib/isDesktop'
-import { reportRejection } from '@src/lib/trap'
 import { refreshPage } from '@src/lib/utils'
+import { reportRejection } from '@src/lib/trap'
 
 /** Type narrowing function of unknown error to a string */
 function errorMessage(error: unknown): string {
   if (isRouteErrorResponse(error)) {
     return `${error.status} ${error.statusText}`
-  }
-  if (error !== undefined && error instanceof Error) {
+  } else if (error != undefined && error instanceof Error) {
     return error.message
-  }
-  if (error && typeof error === 'object') {
-    try {
-      return JSON.stringify(error)
-    } catch {
-      return 'Unknown route error'
-    }
-  }
-  if (typeof error === 'string') {
+  } else if (error && typeof error === 'object') {
+    return JSON.stringify(error)
+  } else if (typeof error === 'string') {
     return error
+  } else {
+    return 'Unknown error'
   }
-  return 'Unknown error'
 }
 
-function errorName(error: unknown): string {
-  if (error instanceof Error) {
-    return error.name
+function stackTraceMessage(error: unknown): string {
+  if (error !== undefined && error instanceof Error) {
+    return error.stack || ''
   }
-  if (isRouteErrorResponse(error)) {
-    return 'RouteErrorResponse'
-  }
-  return 'RouteError'
+  return ''
 }
 
 export const ErrorPage = () => {
@@ -44,17 +35,23 @@ export const ErrorPage = () => {
   console.error('error', error)
 
   useEffect(() => {
+    const isRouteError = isRouteErrorResponse(error)
+    const message = errorMessage(error)
+    const name = error instanceof Error ? error.name : 'RouteError'
+    const stackTrace = stackTraceMessage(error)
+
     void reportClientError({
-      code: isRouteErrorResponse(error)
+      code: isRouteError
         ? `route_error_${error.status}`
         : 'route_error_boundary',
-      message: errorMessage(error),
+      message,
       error: error instanceof Error ? error : undefined,
-      errorName: errorName(error),
-      dedupeKey: `ErrorPage:${errorName(error)}:${errorMessage(error)}`,
+      errorName: isRouteError ? 'RouteErrorResponse' : name,
+      dedupeKey: `ErrorPage:${name}:${message}`,
       extra: {
         source: 'ErrorPage',
-        ...(isRouteErrorResponse(error)
+        ...(stackTrace ? { stackTrace } : {}),
+        ...(isRouteError
           ? {
               status: error.status,
               statusText: error.statusText,
