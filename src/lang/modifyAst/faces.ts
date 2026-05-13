@@ -1162,6 +1162,9 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
       otherSelections: [],
     }
   } else if (planeArtifact.type === 'planeOfFace') {
+    // A planeOfFace can be the inline arg itself or a named plane variable used
+    // as the arg. Inline planeOf(...) edits reconstruct from the face selection;
+    // named plane variables keep the existing planeOf variable.
     if (
       !planeArtifact.codeRef.range.every(
         (value, index) => value === planeArg.sourceRange[index]
