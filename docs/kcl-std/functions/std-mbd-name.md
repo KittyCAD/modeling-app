@@ -24,7 +24,8 @@ or edge.
 
 Names may contain only non-control ASCII characters. Spaces are allowed, but
 other whitespace characters like newline are considred control characters,
-which are disallowed. The maximum length is 1024 characters.
+which are disallowed. Single-quote characters are also disallowed. The
+maximum length is 1024 characters.
 
 ### Arguments
 
