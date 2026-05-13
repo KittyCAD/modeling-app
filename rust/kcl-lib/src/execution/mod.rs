@@ -3,6 +3,7 @@
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
+use ahash::AHashMap;
 use anyhow::Result;
 pub use artifact::Artifact;
 pub use artifact::ArtifactCommand;
@@ -486,9 +487,10 @@ pub struct MockConfig {
     pub freedom_analysis: bool,
     /// The segments that were edited that triggered this execution.
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
-    /// Per-sketch-variable initial guess overrides, keyed by sketch variable
-    /// order. These are transient warm-start values for interactive solves.
-    pub sketch_var_initial_guess_overrides: Vec<f64>,
+    /// Per-sketch-variable initial guess overrides, keyed by the source range
+    /// of the `var` initial value. This is the stable form used by sketch
+    /// interaction because some constraints introduce hidden solver variables.
+    pub sketch_var_initial_guess_overrides_by_source: AHashMap<SourceRange, f64>,
 }
 
 impl Default for MockConfig {
@@ -499,7 +501,7 @@ impl Default for MockConfig {
             sketch_block_id: None,
             freedom_analysis: true,
             segment_ids_edited: AhashIndexSet::default(),
-            sketch_var_initial_guess_overrides: Vec::new(),
+            sketch_var_initial_guess_overrides_by_source: AHashMap::new(),
         }
     }
 }
@@ -520,8 +522,11 @@ impl MockConfig {
     }
 
     #[must_use]
-    pub(crate) fn with_sketch_var_initial_guess_overrides(mut self, overrides: Vec<f64>) -> Self {
-        self.sketch_var_initial_guess_overrides = overrides;
+    pub(crate) fn with_sketch_var_initial_guess_overrides_by_source(
+        mut self,
+        overrides: AHashMap<SourceRange, f64>,
+    ) -> Self {
+        self.sketch_var_initial_guess_overrides_by_source = overrides;
         self
     }
 }

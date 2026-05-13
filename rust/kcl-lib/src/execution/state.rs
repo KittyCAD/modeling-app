@@ -82,9 +82,9 @@ pub(super) struct GlobalState {
     pub root_module_artifacts: ModuleArtifactState,
     /// The segments that were edited that triggered this execution.
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
-    /// Transient warm-start values for sketch variables, keyed by the solver
-    /// variable order in the current sketch block.
-    pub sketch_var_initial_guess_overrides: Vec<f64>,
+    /// Transient warm-start values for sketch variables, keyed by the source
+    /// range of the `var` initial value.
+    pub sketch_var_initial_guess_overrides_by_source: AHashMap<SourceRange, f64>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -308,7 +308,7 @@ pub(crate) struct SketchBlockState {
 impl ExecState {
     pub fn new(exec_context: &super::ExecutorContext) -> Self {
         ExecState {
-            global: GlobalState::new(&exec_context.settings, Default::default(), Vec::new()),
+            global: GlobalState::new(&exec_context.settings, Default::default(), Default::default()),
             mod_local: ModuleState::new(ModulePath::Main, ProgramMemory::new(), Default::default(), false, true),
         }
     }
@@ -319,7 +319,7 @@ impl ExecState {
             global: GlobalState::new(
                 &exec_context.settings,
                 segment_ids_edited,
-                mock_config.sketch_var_initial_guess_overrides.clone(),
+                mock_config.sketch_var_initial_guess_overrides_by_source.clone(),
             ),
             mod_local: ModuleState::new(
                 ModulePath::Main,
@@ -332,7 +332,7 @@ impl ExecState {
     }
 
     pub(super) fn reset(&mut self, exec_context: &super::ExecutorContext) {
-        let global = GlobalState::new(&exec_context.settings, Default::default(), Vec::new());
+        let global = GlobalState::new(&exec_context.settings, Default::default(), Default::default());
 
         *self = ExecState {
             global,
@@ -553,8 +553,16 @@ impl ExecState {
         self.global.segment_ids_edited.contains(object_id)
     }
 
-    pub(crate) fn sketch_var_initial_guess_override(&self, var_id: SketchVarId) -> Option<f64> {
-        self.global.sketch_var_initial_guess_overrides.get(var_id.0).copied()
+    pub(crate) fn sketch_var_initial_guess_override(&self, sketch_var: &crate::execution::SketchVar) -> Option<f64> {
+        sketch_var
+            .meta
+            .first()
+            .and_then(|meta| {
+                self.global
+                    .sketch_var_initial_guess_overrides_by_source
+                    .get(&meta.source_range)
+            })
+            .copied()
     }
 
     pub(super) fn is_in_sketch_block(&self) -> bool {
@@ -889,7 +897,7 @@ impl GlobalState {
     fn new(
         settings: &ExecutorSettings,
         segment_ids_edited: AhashIndexSet<ObjectId>,
-        sketch_var_initial_guess_overrides: Vec<f64>,
+        sketch_var_initial_guess_overrides_by_source: AHashMap<SourceRange, f64>,
     ) -> Self {
         let mut global = GlobalState {
             path_to_source_id: Default::default(),
@@ -900,7 +908,7 @@ impl GlobalState {
             issues: Default::default(),
             id_to_source: Default::default(),
             segment_ids_edited,
-            sketch_var_initial_guess_overrides,
+            sketch_var_initial_guess_overrides_by_source,
         };
 
         let root_id = ModuleId::default();

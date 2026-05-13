@@ -1762,7 +1762,7 @@ impl Node<SketchBlock> {
                     return Err(internal_err(message, self));
                 };
                 let initial_guess = exec_state
-                    .sketch_var_initial_guess_override(sketch_var.id)
+                    .sketch_var_initial_guess_override(sketch_var)
                     .unwrap_or(initial_guess);
                 Ok((constraint_id, initial_guess))
             })
