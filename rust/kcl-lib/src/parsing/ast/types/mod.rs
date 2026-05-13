@@ -16,7 +16,6 @@ use parse_display::Display;
 use parse_display::FromStr;
 pub use path::NodePath;
 pub use path::Step;
-#[cfg(feature = "artifact-graph")]
 pub(crate) use path::fill_node_paths;
 use serde::Deserialize;
 use serde::Serialize;
@@ -182,7 +181,6 @@ impl<T> Node<T> {
         self.start <= pos && pos <= self.end
     }
 
-    #[cfg(feature = "artifact-graph")]
     pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
         self.as_source_range().contains_range(range)
     }
@@ -1023,7 +1021,6 @@ impl BodyItem {
         }
     }
 
-    #[cfg(feature = "artifact-graph")]
     pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
         let item_range = SourceRange::from(self);
         item_range.contains_range(range)
@@ -1473,7 +1470,6 @@ impl Expr {
         }
     }
 
-    #[cfg(feature = "artifact-graph")]
     fn contains_range(&self, range: &SourceRange) -> bool {
         let expr_range = SourceRange::from(self);
         expr_range.contains_range(range)
@@ -4152,7 +4148,6 @@ impl Parameter {
         self.default_value.is_some()
     }
 
-    #[cfg(feature = "artifact-graph")]
     pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
         let sr = SourceRange::from(self);
         sr.contains_range(range)

@@ -8,10 +8,17 @@ import type { FileMenuActions } from '@src/menu/fileRole'
 import { isMac } from '@src/menu/utils'
 import { BrowserWindow, Menu } from 'electron'
 
-export type AppMenuPage = 'project' | 'modeling' | 'fallback'
+const APP_MENU_PAGES = ['project', 'modeling', 'fallback'] as const
+
+export type AppMenuPage = (typeof APP_MENU_PAGES)[number]
 
 export function isAppMenuPage(page: unknown): page is AppMenuPage {
-  return page === 'project' || page === 'modeling' || page === 'fallback'
+  return APP_MENU_PAGES.some((appMenuPage) => appMenuPage === page)
+}
+
+export type NativeMenuItemSnapshot = {
+  accelerator: string | undefined
+  label: string
 }
 
 export class WindowMenuManager {
@@ -24,10 +31,6 @@ export class WindowMenuManager {
   private oldMenus: Menu[] = []
 
   constructor(private readonly actions: FileMenuActions) {}
-
-  get nativeWindowMenusForTests() {
-    return this.windowMenus
-  }
 
   clearWindow(targetWindow: BrowserWindow) {
     this.windowMenuPages.delete(targetWindow)
@@ -69,6 +72,34 @@ export class WindowMenuManager {
     }
   }
 
+  clickMenuItemForWindow(targetWindow: BrowserWindow, menuId: string) {
+    const menuItem = this.getMenuItemForWindow(targetWindow, menuId)
+    if (!menuItem || typeof menuItem.click !== 'function') {
+      return false
+    }
+
+    menuItem.click(menuItem, targetWindow, {})
+    return true
+  }
+
+  getMenuItemSnapshotForWindow(
+    targetWindow: BrowserWindow,
+    menuId: string
+  ): NativeMenuItemSnapshot | null {
+    const menuItem = this.getMenuItemForWindow(targetWindow, menuId)
+    if (!menuItem) {
+      return null
+    }
+
+    return {
+      accelerator:
+        typeof menuItem.accelerator === 'string'
+          ? menuItem.accelerator
+          : undefined,
+      label: menuItem.label,
+    }
+  }
+
   private buildAndSetMenuForWindow(
     targetWindow: BrowserWindow,
     page: AppMenuPage
@@ -98,6 +129,10 @@ export class WindowMenuManager {
     }
 
     return this.windowMenus.get(targetWindow.id)
+  }
+
+  private getMenuItemForWindow(targetWindow: BrowserWindow, menuId: string) {
+    return this.getMenuForWindow(targetWindow)?.getMenuItemById(menuId)
   }
 
   private applyMenuStateForWindow(targetWindow: BrowserWindow) {

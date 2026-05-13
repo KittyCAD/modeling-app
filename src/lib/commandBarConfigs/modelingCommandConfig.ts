@@ -32,8 +32,7 @@ import {
   KCL_DEFAULT_TOLERANCE,
   KCL_DEFAULT_DATUM_REFS,
   KCL_DEFAULT_PRECISION,
-  KCL_DEFAULT_FONT_POINT_SIZE,
-  KCL_DEFAULT_FONT_SCALE,
+  KCL_DEFAULT_FONT_SIZE,
   type KclPreludeBodyType,
   KCL_PRELUDE_BODY_TYPE_VALUES,
   KCL_PRELUDE_EXTRUDE_METHOD_VALUES,
@@ -440,8 +439,7 @@ export type ModelingCommandSchema = {
     framePosition?: KclCommandValue
     framePlane?: string
     leaderScale?: KclCommandValue
-    fontPointSize?: KclCommandValue
-    fontScale?: KclCommandValue
+    fontSize?: KclCommandValue
   }
   'GDT Position': {
     nodeToEdit?: PathToNode
@@ -452,20 +450,18 @@ export type ModelingCommandSchema = {
     framePosition?: KclCommandValue
     framePlane?: string
     leaderScale?: KclCommandValue
-    fontPointSize?: KclCommandValue
-    fontScale?: KclCommandValue
+    fontSize?: KclCommandValue
   }
   'GDT Profile': {
     nodeToEdit?: PathToNode
     edges: Selections
-    datums?: string
+    datums?: KclCommandValue
     tolerance: KclCommandValue
     precision?: KclCommandValue
     framePosition?: KclCommandValue
     framePlane?: string
     leaderScale?: KclCommandValue
-    fontPointSize?: KclCommandValue
-    fontScale?: KclCommandValue
+    fontSize?: KclCommandValue
   }
   'GDT Distance': {
     nodeToEdit?: PathToNode
@@ -475,32 +471,29 @@ export type ModelingCommandSchema = {
     framePosition?: KclCommandValue
     framePlane?: string
     leaderScale?: KclCommandValue
-    fontPointSize?: KclCommandValue
-    fontScale?: KclCommandValue
+    fontSize?: KclCommandValue
   }
   'GDT Perpendicularity': {
     nodeToEdit?: PathToNode
     objects: Selections
-    datums?: string
+    datums?: KclCommandValue
     tolerance: KclCommandValue
     precision?: KclCommandValue
     framePosition?: KclCommandValue
     framePlane?: string
     leaderScale?: KclCommandValue
-    fontPointSize?: KclCommandValue
-    fontScale?: KclCommandValue
+    fontSize?: KclCommandValue
   }
   'GDT Parallelism': {
     nodeToEdit?: PathToNode
     objects: Selections
-    datums?: string
+    datums?: KclCommandValue
     tolerance: KclCommandValue
     precision?: KclCommandValue
     framePosition?: KclCommandValue
     framePlane?: string
     leaderScale?: KclCommandValue
-    fontPointSize?: KclCommandValue
-    fontScale?: KclCommandValue
+    fontSize?: KclCommandValue
   }
   'GDT Annotation': {
     nodeToEdit?: PathToNode
@@ -509,8 +502,7 @@ export type ModelingCommandSchema = {
     framePosition?: KclCommandValue
     framePlane?: string
     leaderScale?: KclCommandValue
-    fontPointSize?: KclCommandValue
-    fontScale?: KclCommandValue
+    fontSize?: KclCommandValue
   }
   'GDT Datum': {
     nodeToEdit?: PathToNode
@@ -519,8 +511,7 @@ export type ModelingCommandSchema = {
     framePosition?: KclCommandValue
     framePlane?: string
     leaderScale?: KclCommandValue
-    fontPointSize?: KclCommandValue
-    fontScale?: KclCommandValue
+    fontSize?: KclCommandValue
   }
   'Boolean Subtract': {
     solids: Selections
@@ -598,6 +589,18 @@ const summarizeDatumKclValue = (value?: KclCommandValue) =>
           : value.valueCalculated
       )
     : ''
+
+const datumsProps = {
+  inputType: 'kcl',
+  defaultValue: KCL_DEFAULT_DATUM_REFS,
+  allowArrays: true,
+  allowStringArrays: true,
+  allowUncalculated: true,
+  inputToKclValue: datumInputToKclArray,
+  kclValueToInput: kclDatumArrayToInput,
+  valueSummary: summarizeDatumKclValue,
+  required: false,
+} satisfies CommandArgumentConfig<KclCommandValue, ModelingMachineContext>
 
 export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   typeof modelingMachine,
@@ -1605,10 +1608,17 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       plane: {
         inputType: 'selection',
-        selectionTypes: ['plane', 'cap', 'wall', 'edgeCut'],
+        selectionTypes: [
+          'plane',
+          'planeOfFace',
+          'cap',
+          'wall',
+          'edgeCut',
+          'enginePrimitiveFace',
+          'primitiveFace',
+        ],
         multiple: false,
         required: true,
-        skip: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       offset: {
@@ -2631,7 +2641,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    status: 'experimental',
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -2673,14 +2682,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_LEADER_SCALE,
         required: false,
       },
-      fontPointSize: {
+      fontSize: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_POINT_SIZE,
-        required: false,
-      },
-      fontScale: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_SCALE,
+        defaultValue: KCL_DEFAULT_FONT_SIZE,
         required: false,
       },
     },
@@ -2713,7 +2717,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    status: 'experimental',
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -2753,14 +2756,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_LEADER_SCALE,
         required: false,
       },
-      fontPointSize: {
+      fontSize: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_POINT_SIZE,
-        required: false,
-      },
-      fontScale: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_SCALE,
+        defaultValue: KCL_DEFAULT_FONT_SIZE,
         required: false,
       },
     },
@@ -2793,7 +2791,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    status: 'experimental',
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -2806,15 +2803,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       datums: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_DATUM_REFS,
-        allowArrays: true,
-        allowStringArrays: true,
-        allowUncalculated: true,
-        inputToKclValue: datumInputToKclArray,
-        kclValueToInput: kclDatumArrayToInput,
-        valueSummary: summarizeDatumKclValue,
-        required: false,
+        ...datumsProps,
       },
       tolerance: {
         inputType: 'kcl',
@@ -2846,14 +2835,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_LEADER_SCALE,
         required: false,
       },
-      fontPointSize: {
+      fontSize: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_POINT_SIZE,
-        required: false,
-      },
-      fontScale: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_SCALE,
+        defaultValue: KCL_DEFAULT_FONT_SIZE,
         required: false,
       },
     },
@@ -2886,7 +2870,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    status: 'experimental',
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -2899,8 +2882,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       datums: {
-        inputType: 'string',
-        required: false,
+        ...datumsProps,
       },
       tolerance: {
         inputType: 'kcl',
@@ -2932,14 +2914,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_LEADER_SCALE,
         required: false,
       },
-      fontPointSize: {
+      fontSize: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_POINT_SIZE,
-        required: false,
-      },
-      fontScale: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_SCALE,
+        defaultValue: KCL_DEFAULT_FONT_SIZE,
         required: false,
       },
     },
@@ -2976,7 +2953,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         return execRes
       }
     },
-    status: 'experimental',
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -3018,14 +2994,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_LEADER_SCALE,
         required: false,
       },
-      fontPointSize: {
+      fontSize: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_POINT_SIZE,
-        required: false,
-      },
-      fontScale: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_SCALE,
+        defaultValue: KCL_DEFAULT_FONT_SIZE,
         required: false,
       },
     },
@@ -3058,7 +3029,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    status: 'experimental',
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -3071,8 +3041,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       datums: {
-        inputType: 'string',
-        required: false,
+        ...datumsProps,
       },
       tolerance: {
         inputType: 'kcl',
@@ -3104,14 +3073,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_LEADER_SCALE,
         required: false,
       },
-      fontPointSize: {
+      fontSize: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_POINT_SIZE,
-        required: false,
-      },
-      fontScale: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_SCALE,
+        defaultValue: KCL_DEFAULT_FONT_SIZE,
         required: false,
       },
     },
@@ -3144,7 +3108,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    status: 'experimental',
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -3157,8 +3120,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       datums: {
-        inputType: 'string',
-        required: false,
+        ...datumsProps,
       },
       tolerance: {
         inputType: 'kcl',
@@ -3190,14 +3152,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_LEADER_SCALE,
         required: false,
       },
-      fontPointSize: {
+      fontSize: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_POINT_SIZE,
-        required: false,
-      },
-      fontScale: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_SCALE,
+        defaultValue: KCL_DEFAULT_FONT_SIZE,
         required: false,
       },
     },
@@ -3229,7 +3186,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    status: 'experimental',
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -3243,7 +3199,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       annotation: {
         inputType: 'text',
-        defaultValue: 'Break all sharp edges',
+        defaultValue: 'BREAK ALL SHARP EDGES',
         required: true,
       },
       framePosition: {
@@ -3266,14 +3222,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_LEADER_SCALE,
         required: false,
       },
-      fontPointSize: {
+      fontSize: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_POINT_SIZE,
-        required: false,
-      },
-      fontScale: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_SCALE,
+        defaultValue: KCL_DEFAULT_FONT_SIZE,
         required: false,
       },
     },
