@@ -5,7 +5,7 @@ import { ActionButton } from '@src/components/ActionButton'
 import { reportClientError } from '@src/lib/clientErrors'
 import { isDesktop } from '@src/lib/isDesktop'
 import { refreshPage } from '@src/lib/utils'
-import { reportRejection } from '@src/lib/trap'
+import { isErr, reportRejection } from '@src/lib/trap'
 
 /** Type narrowing function of unknown error to a string */
 function errorMessage(error: unknown): string {
@@ -37,7 +37,7 @@ export const ErrorPage = () => {
   useEffect(() => {
     const isRouteError = isRouteErrorResponse(error)
     const message = errorMessage(error)
-    const name = error instanceof Error ? error.name : 'RouteError'
+    const name = isErr(error) ? error.name : 'RouteError'
     const stackTrace = stackTraceMessage(error)
 
     void reportClientError({
@@ -45,7 +45,7 @@ export const ErrorPage = () => {
         ? `route_error_${error.status}`
         : 'route_error_boundary',
       message,
-      error: error instanceof Error ? error : undefined,
+      error: isErr(error) ? error : undefined,
       errorName: isRouteError ? 'RouteErrorResponse' : name,
       dedupeKey: `ErrorPage:${name}:${message}`,
       extra: {
