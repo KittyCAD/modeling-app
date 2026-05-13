@@ -215,7 +215,7 @@ describe('MlEphantConversation', () => {
     )
 
     expect(
-      screen.getByText('Progressively loading attachments...')
+      screen.getByText('Progressively loading attachments into context...')
     ).toBeInTheDocument()
   })
 
