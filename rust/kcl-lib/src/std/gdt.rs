@@ -16,16 +16,12 @@ use crate::ExecState;
 use crate::KclError;
 use crate::errors::KclErrorDetails;
 use crate::exec::KclValue;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::Artifact;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::ArtifactId;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::CodeRef;
 use crate::execution::ControlFlowKind;
 use crate::execution::Face;
 use crate::execution::GdtAnnotation;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::GdtAnnotationArtifact;
 use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
@@ -82,8 +78,11 @@ struct DistanceEndpoint {
     entity_pos: KPoint2d<f64>,
 }
 
-#[cfg(feature = "artifact-graph")]
 fn add_gdt_annotation_artifact(exec_state: &mut ExecState, args: &Args, annotation_id: uuid::Uuid) {
+    if args.ctx.settings.skip_artifact_graph {
+        return;
+    }
+
     exec_state.add_artifact(Artifact::GdtAnnotation(GdtAnnotationArtifact {
         id: ArtifactId::new(annotation_id),
         code_ref: CodeRef::placeholder(args.source_range),
@@ -226,7 +225,6 @@ async fn inner_datum(
             ),
         )
         .await?;
-    #[cfg(feature = "artifact-graph")]
     add_gdt_annotation_artifact(exec_state, args, annotation_id);
     Ok(GdtAnnotation {
         id: annotation_id,
@@ -1013,7 +1011,6 @@ async fn inner_flatness(
                 ),
             )
             .await?;
-        #[cfg(feature = "artifact-graph")]
         add_gdt_annotation_artifact(exec_state, args, annotation_id);
         annotations.push(GdtAnnotation {
             id: annotation_id,
@@ -1091,7 +1088,6 @@ async fn create_basic_distance_annotation(
             ),
         )
         .await?;
-    #[cfg(feature = "artifact-graph")]
     add_gdt_annotation_artifact(exec_state, args, annotation_id);
     annotations.push(GdtAnnotation {
         id: annotation_id,
@@ -1150,7 +1146,6 @@ async fn create_feature_control_annotation(
             ),
         )
         .await?;
-    #[cfg(feature = "artifact-graph")]
     add_gdt_annotation_artifact(exec_state, args, annotation_id);
     annotations.push(GdtAnnotation {
         id: annotation_id,
@@ -1205,7 +1200,6 @@ async fn create_annotation(
             ),
         )
         .await?;
-    #[cfg(feature = "artifact-graph")]
     add_gdt_annotation_artifact(exec_state, args, annotation_id);
     annotations.push(GdtAnnotation {
         id: annotation_id,
@@ -1328,6 +1322,10 @@ fn plane_ast(plane_name: &str, range: SourceRange) -> ast::Node<ast::Expr> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::ExecutorContext;
+    use crate::execution::Artifact;
+    use crate::execution::ExecutorSettings;
+    use crate::execution::MockConfig;
 
     #[test]
     fn gdt_font_scale_is_scene_height_divided_by_calibration_height() {
@@ -1340,5 +1338,53 @@ mod tests {
         let inch_in_mm = 25.4;
         let inch_scale = gdt_font_scale_for_height_mm(inch_in_mm);
         assert!((inch_scale - (inch_in_mm / GDT_FONT_SCALE_1_HEIGHT_MM) as f32).abs() < f32::EPSILON);
+    }
+
+    const GDT_DATUM_KCL: &str = r#"
+blockProfile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 8mm, var 0mm])
+  edge2 = line(start = [var 8mm, var 0mm], end = [var 8mm, var 5mm])
+  edge3 = line(start = [var 8mm, var 5mm], end = [var 0mm, var 5mm])
+  edge4 = line(start = [var 0mm, var 5mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+  horizontal(edge1)
+  vertical(edge2)
+  horizontal(edge3)
+  vertical(edge4)
+}
+
+block = extrude(region(point = [4mm, 2mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+
+gdt::datum(face = top, name = "A", framePosition = [10mm, 0mm], framePlane = XZ)
+"#;
+
+    async fn gdt_artifact_count(skip_artifact_graph: bool) -> usize {
+        let settings = ExecutorSettings {
+            skip_artifact_graph,
+            ..Default::default()
+        };
+        let ctx = ExecutorContext::new_mock(Some(settings)).await;
+        let program = crate::Program::parse_no_errs(GDT_DATUM_KCL).unwrap();
+        let mock_config = MockConfig {
+            use_prev_memory: false,
+            ..Default::default()
+        };
+        let outcome = ctx.run_mock(&program, &mock_config).await.unwrap();
+        ctx.close().await;
+
+        outcome
+            .artifact_graph
+            .values()
+            .filter(|artifact| matches!(artifact, Artifact::GdtAnnotation(_)))
+            .count()
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_annotations_follow_runtime_artifact_graph_setting() {
+        assert_eq!(gdt_artifact_count(false).await, 1);
+        assert_eq!(gdt_artifact_count(true).await, 0);
     }
 }
