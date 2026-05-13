@@ -122,6 +122,7 @@ enum SketchVarUpdateMode {
 #[derive(Debug, Clone)]
 struct SketchVarWarmStarts {
     solver_values: Vec<f64>,
+    solver_source_ranges: Vec<Option<SourceRange>>,
     source_values: Vec<(SourceRange, f64)>,
 }
 
@@ -153,6 +154,7 @@ const CIRCLE_VARIABLE: &str = "circle";
 const CIRCLE_START_PARAM: &str = "start";
 const CIRCLE_CENTER_PARAM: &str = "center";
 const LABEL_POSITION_PARAM: &str = "labelPosition";
+const CONSTRAINT_SOLVER_FAILED_MESSAGE: &str = "Constraint solver failed to find a solution";
 
 const COINCIDENT_FN: &str = "coincident";
 const DIAMETER_FN: &str = "diameter";
@@ -401,23 +403,45 @@ impl FrontendState {
             sketch_block_id: Some(sketch),
             freedom_analysis,
             #[cfg(feature = "artifact-graph")]
-            segment_ids_edited,
+            segment_ids_edited: segment_ids_edited.clone(),
             ..Default::default()
         };
 
         match (use_warm_starts, self.sketch_var_warm_start_overrides.get(&sketch)) {
             (true, Some(overrides)) => {
                 #[cfg(feature = "artifact-graph")]
-                let source_var_count = self
-                    .sketch_var_source_values_from_program(sketch)
-                    .map(|values| values.len())
-                    .unwrap_or(overrides.source_values.len());
+                let source_overrides =
+                    if overrides.source_values.is_empty() && overrides.solver_source_ranges.is_empty() {
+                        Vec::new()
+                    } else {
+                        self.sketch_var_source_values_from_program(sketch)
+                            .map(|current_source_values| {
+                                let edited_var_indices =
+                                    self.edited_sketch_var_indices(&current_source_values, &segment_ids_edited);
+                                current_source_values
+                                    .iter()
+                                    .enumerate()
+                                    .map(|(index, (_, source_value))| {
+                                        if edited_var_indices.contains(&index) {
+                                            *source_value
+                                        } else {
+                                            overrides
+                                                .source_values
+                                                .get(index)
+                                                .map(|(_, value)| *value)
+                                                .unwrap_or(*source_value)
+                                        }
+                                    })
+                                    .collect()
+                            })
+                            .unwrap_or_else(|| overrides.source_values.iter().map(|(_, value)| *value).collect())
+                    };
                 #[cfg(not(feature = "artifact-graph"))]
-                let source_var_count = overrides.source_values.len();
+                let source_overrides = overrides.source_values.iter().map(|(_, value)| *value).collect();
                 config.with_ordered_sketch_var_initial_guess_overrides(
                     overrides.solver_values.clone(),
-                    overrides.source_values.iter().map(|(_, value)| *value).collect(),
-                    source_var_count == overrides.source_values.len(),
+                    source_overrides,
+                    overrides.solver_source_ranges.clone(),
                 )
             }
             _ => config,
@@ -456,14 +480,24 @@ impl FrontendState {
     fn replace_sketch_var_warm_starts(&mut self, sketch: ObjectId, outcome: &ExecOutcome) {
         #[cfg(feature = "artifact-graph")]
         {
-            let solver_values = if outcome.ordered_sketch_var_solutions.is_empty() {
-                outcome.var_solutions.iter().map(|(_, value)| value.value).collect()
+            let (solver_values, solver_source_ranges) = if outcome.ordered_sketch_var_solutions.is_empty() {
+                (
+                    outcome.var_solutions.iter().map(|(_, value)| value.value).collect(),
+                    outcome.var_solutions.iter().map(|(range, _)| Some(*range)).collect(),
+                )
             } else {
-                outcome
-                    .ordered_sketch_var_solutions
-                    .iter()
-                    .map(|solution| solution.value)
-                    .collect()
+                (
+                    outcome
+                        .ordered_sketch_var_solutions
+                        .iter()
+                        .map(|solution| solution.value)
+                        .collect(),
+                    outcome
+                        .ordered_sketch_var_solutions
+                        .iter()
+                        .map(|solution| solution.source_range)
+                        .collect(),
+                )
             };
             let source_values = outcome
                 .var_solutions
@@ -474,6 +508,7 @@ impl FrontendState {
                 sketch,
                 SketchVarWarmStarts {
                     solver_values,
+                    solver_source_ranges,
                     source_values,
                 },
             );
@@ -520,22 +555,23 @@ impl FrontendState {
                 })
                 .collect::<Vec<_>>();
 
-            let preserve_previous_hidden = !segment_ids_edited.is_empty()
-                && previous
-                    .as_ref()
-                    .is_some_and(|p| p.source_values.len() == source_values.len());
-            let solver_values = merged_solver_warm_start_values(
-                outcome,
-                previous.as_ref(),
-                &source_values,
-                &edited_var_indices,
-                preserve_previous_hidden,
-            );
+            let solver_values =
+                merged_solver_warm_start_values(outcome, previous.as_ref(), &source_values, &edited_var_indices);
+            let solver_source_ranges = if outcome.ordered_sketch_var_solutions.is_empty() {
+                source_values.iter().map(|(range, _)| Some(*range)).collect()
+            } else {
+                outcome
+                    .ordered_sketch_var_solutions
+                    .iter()
+                    .map(|solution| solution.source_range)
+                    .collect()
+            };
 
             self.sketch_var_warm_start_overrides.insert(
                 sketch,
                 SketchVarWarmStarts {
                     solver_values,
+                    solver_source_ranges,
                     source_values,
                 },
             );
@@ -2051,12 +2087,8 @@ impl FrontendState {
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
         // Execute.
-        let outcome = ctx
-            .run_mock(
-                &truncated_program,
-                &MockConfig::new_sketch_mode(sketch).no_freedom_analysis(),
-            )
-            .await?;
+        let mock_config = self.sketch_mock_config(sketch, false, Default::default(), true);
+        let outcome = ctx.run_mock(&truncated_program, &mock_config).await?;
 
         let new_object_ids = {
             let make_err =
@@ -2085,8 +2117,9 @@ impl FrontendState {
             vec![segment_id]
         };
         let src_delta = SourceDelta { text: new_source };
-        // Uses .no_freedom_analysis() so freedom_analysis: false
+        // Uses freedom_analysis: false
         let outcome = self.update_state_after_exec(outcome, false);
+        self.replace_sketch_var_warm_starts(sketch, &outcome);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -2187,12 +2220,8 @@ impl FrontendState {
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
         // Execute.
-        let outcome = ctx
-            .run_mock(
-                &truncated_program,
-                &MockConfig::new_sketch_mode(sketch).no_freedom_analysis(),
-            )
-            .await?;
+        let mock_config = self.sketch_mock_config(sketch, false, Default::default(), true);
+        let outcome = ctx.run_mock(&truncated_program, &mock_config).await?;
 
         let new_object_ids = {
             let make_err =
@@ -2220,8 +2249,9 @@ impl FrontendState {
             vec![line.start, line.end, segment_id]
         };
         let src_delta = SourceDelta { text: new_source };
-        // Uses .no_freedom_analysis() so freedom_analysis: false
+        // Uses freedom_analysis: false
         let outcome = self.update_state_after_exec(outcome, false);
+        self.replace_sketch_var_warm_starts(sketch, &outcome);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -2328,12 +2358,8 @@ impl FrontendState {
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
         // Execute.
-        let outcome = ctx
-            .run_mock(
-                &truncated_program,
-                &MockConfig::new_sketch_mode(sketch).no_freedom_analysis(),
-            )
-            .await?;
+        let mock_config = self.sketch_mock_config(sketch, false, Default::default(), true);
+        let outcome = ctx.run_mock(&truncated_program, &mock_config).await?;
 
         let new_object_ids = {
             let make_err =
@@ -2362,8 +2388,9 @@ impl FrontendState {
             vec![arc.start, arc.end, arc.center, segment_id]
         };
         let src_delta = SourceDelta { text: new_source };
-        // Uses .no_freedom_analysis() so freedom_analysis: false
+        // Uses freedom_analysis: false
         let outcome = self.update_state_after_exec(outcome, false);
+        self.replace_sketch_var_warm_starts(sketch, &outcome);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -2467,12 +2494,8 @@ impl FrontendState {
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
         // Execute.
-        let outcome = ctx
-            .run_mock(
-                &truncated_program,
-                &MockConfig::new_sketch_mode(sketch).no_freedom_analysis(),
-            )
-            .await?;
+        let mock_config = self.sketch_mock_config(sketch, false, Default::default(), true);
+        let outcome = ctx.run_mock(&truncated_program, &mock_config).await?;
 
         let new_object_ids = {
             let make_err =
@@ -2501,8 +2524,9 @@ impl FrontendState {
             vec![circle.start, circle.center, segment_id]
         };
         let src_delta = SourceDelta { text: new_source };
-        // Uses .no_freedom_analysis() so freedom_analysis: false
+        // Uses freedom_analysis: false
         let outcome = self.update_state_after_exec(outcome, false);
+        self.replace_sketch_var_warm_starts(sketch, &outcome);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -3125,6 +3149,12 @@ impl FrontendState {
             )));
         };
 
+        let previous_program = self.program.clone();
+        let previous_source = source_from_ast(&previous_program.ast);
+        let previous_scene_graph = self.scene_graph.clone();
+        let previous_warm_start_overrides = self.sketch_var_warm_start_overrides.clone();
+        let previous_mock_memory = read_old_memory().await;
+
         // TODO: sketch-api: make sure to only set this if there are no errors.
         self.program = new_program.clone();
 
@@ -3150,6 +3180,34 @@ impl FrontendState {
         let mock_config =
             self.sketch_mock_config(sketch, is_delete, options.segment_ids_edited.clone(), use_warm_starts);
         let outcome = ctx.run_mock(&truncated_program, &mock_config).await?;
+        if matches!(options.sketch_var_update_mode, SketchVarUpdateMode::WarmStartOnly)
+            && has_constraint_solver_failed_issue(&outcome)
+        {
+            // Mouse-move previews can hit transient solver branches while an
+            // arc is moving away from a degenerate draft. Keep the last good
+            // sketch state instead of surfacing a red, toast-producing frame.
+            self.program = previous_program;
+            self.scene_graph = previous_scene_graph.clone();
+            self.sketch_var_warm_start_overrides = previous_warm_start_overrides;
+            if let Some(previous_mock_memory) = previous_mock_memory {
+                write_old_memory(previous_mock_memory).await;
+            } else {
+                clear_mem_cache().await;
+            }
+
+            let mut outcome = outcome;
+            outcome.issues.clear();
+            outcome.scene_objects = previous_scene_graph.objects.clone();
+            return Ok((
+                SourceDelta { text: previous_source },
+                SceneGraphDelta {
+                    new_graph: previous_scene_graph,
+                    invalidates_ids: false,
+                    new_objects: Vec::new(),
+                    exec_outcome: outcome,
+                },
+            ));
+        }
 
         // Uses freedom_analysis: is_delete
         let outcome = self.update_state_after_exec(outcome, is_delete);
@@ -5969,7 +6027,6 @@ fn merged_solver_warm_start_values(
     previous: Option<&SketchVarWarmStarts>,
     source_values: &[(SourceRange, f64)],
     edited_var_indices: &HashSet<usize>,
-    preserve_previous_hidden: bool,
 ) -> Vec<f64> {
     if outcome.ordered_sketch_var_solutions.is_empty() {
         return source_values.iter().map(|(_, value)| *value).collect();
@@ -5990,7 +6047,10 @@ fn merged_solver_warm_start_values(
                 return value;
             }
 
-            if preserve_previous_hidden && !edited_var_indices.is_empty() {
+            let previous_slot_was_hidden = previous
+                .is_some_and(|warm_starts| matches!(warm_starts.solver_source_ranges.get(solver_index), Some(None)));
+
+            if previous_slot_was_hidden && !edited_var_indices.is_empty() {
                 previous
                     .and_then(|warm_starts| warm_starts.solver_values.get(solver_index))
                     .copied()
@@ -6000,6 +6060,13 @@ fn merged_solver_warm_start_values(
             }
         })
         .collect()
+}
+
+fn has_constraint_solver_failed_issue(outcome: &ExecOutcome) -> bool {
+    outcome
+        .issues
+        .iter()
+        .any(|issue| issue.message.contains(CONSTRAINT_SOLVER_FAILED_MESSAGE))
 }
 
 #[cfg(feature = "artifact-graph")]
@@ -12503,6 +12570,7 @@ sketch(on = XY) {
             sketch_id,
             SketchVarWarmStarts {
                 solver_values: vec![5.0, 6.0],
+                solver_source_ranges: Vec::new(),
                 source_values: Vec::new(),
             },
         );
@@ -12575,6 +12643,199 @@ sketch(on = XY) {
                 .text
                 .contains("line2 = line(start = [var 10mm, var 20mm], end = [var 30mm, var 40mm])")
         );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_add_arc_uses_warm_starts_for_lowered_constraints() {
+        let initial_source = "\
+sketch001 = sketch(on = XZ) {
+  circle1 = circle(start = [var -6.97mm, var 0mm], center = [var -1.85mm, var 0.13mm])
+  horizontal([circle1.start, ORIGIN])
+  circle2 = circle(start = [var -14.46mm, var 0mm], center = [var -15.66mm, var 4.19mm])
+  horizontal([circle2.start, ORIGIN])
+  line1 = line(start = [var -11.38mm, var -5.02mm], end = [var -7.81mm, var 8.69mm])
+  line2 = line(start = [var -11.38mm, var -5.02mm], end = [var -20.15mm, var -2.97mm])
+  coincident([line2.start, line1.start])
+  line3 = line(start = [var -11.38mm, var -5.02mm], end = [var 0.77mm, var -7.39mm])
+  coincident([line3.start, line2.start])
+  line4 = line(start = [var -11.38mm, var -5.02mm], end = [var -21.87mm, var -13.4mm])
+  coincident([line4.start, line3.start])
+  distance([circle1, circle2]) == 4.91mm
+  arc1 = arc(start = [var -20.15mm, var -2.97mm], end = [var -25.04mm, var -9.89mm], center = [var -21.19mm, var -7.42mm])
+  coincident([line2.end, arc1.start])
+  tangent([line2, arc1])
+  line(start = [var -12.02mm, var -15.45mm], end = [var 4.83mm, var -8.9mm])
+}
+";
+
+        fn var_mm(value: f64) -> Expr {
+            Expr::Var(Number {
+                value,
+                units: NumericSuffix::Mm,
+            })
+        }
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        let outcome = frontend.update_state_after_exec(outcome, true);
+        let sketch_id = find_first_sketch_object(&frontend.scene_graph).unwrap().id;
+        frontend.replace_sketch_var_warm_starts(sketch_id, &outcome);
+
+        let (_src_delta, scene_delta) = frontend
+            .add_arc(
+                &mock_ctx,
+                sketch_id,
+                ArcCtor {
+                    start: Point2d {
+                        x: var_mm(-32.07),
+                        y: var_mm(-2.53),
+                    },
+                    end: Point2d {
+                        x: var_mm(-18.96),
+                        y: var_mm(7.04),
+                    },
+                    center: Point2d {
+                        x: var_mm(-29.12),
+                        y: var_mm(7.19),
+                    },
+                    construction: None,
+                },
+            )
+            .await
+            .unwrap();
+
+        assert!(
+            !scene_delta
+                .exec_outcome
+                .issues
+                .iter()
+                .any(|issue| issue.message.contains(CONSTRAINT_SOLVER_FAILED_MESSAGE)),
+            "add-arc preview should not drop lowered-constraint warm starts: {:?}",
+            scene_delta.exec_outcome.issues
+        );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_arc_preview_edits_use_warm_starts_for_lowered_constraints() {
+        let initial_source = "\
+sketch001 = sketch(on = XZ) {
+  circle1 = circle(start = [var -6.97mm, var 0mm], center = [var -1.85mm, var 0.13mm])
+  horizontal([circle1.start, ORIGIN])
+  circle2 = circle(start = [var -14.46mm, var 0mm], center = [var -15.66mm, var 4.19mm])
+  horizontal([circle2.start, ORIGIN])
+  line1 = line(start = [var -11.38mm, var -5.02mm], end = [var -7.81mm, var 8.69mm])
+  line2 = line(start = [var -11.38mm, var -5.02mm], end = [var -20.15mm, var -2.97mm])
+  coincident([line2.start, line1.start])
+  line3 = line(start = [var -11.38mm, var -5.02mm], end = [var 0.77mm, var -7.39mm])
+  coincident([line3.start, line2.start])
+  line4 = line(start = [var -11.38mm, var -5.02mm], end = [var -21.87mm, var -13.4mm])
+  coincident([line4.start, line3.start])
+  distance([circle1, circle2]) == 4.91mm
+  arc1 = arc(start = [var -20.15mm, var -2.97mm], end = [var -25.04mm, var -9.89mm], center = [var -21.19mm, var -7.42mm])
+  coincident([line2.end, arc1.start])
+  tangent([line2, arc1])
+  line(start = [var -12.02mm, var -15.45mm], end = [var 4.83mm, var -8.9mm])
+}
+";
+
+        fn var_mm(value: f64) -> Expr {
+            Expr::Var(Number {
+                value,
+                units: NumericSuffix::Mm,
+            })
+        }
+
+        fn point(x: f64, y: f64) -> Point2d<Expr> {
+            Point2d {
+                x: var_mm(x),
+                y: var_mm(y),
+            }
+        }
+
+        fn assert_no_solver_failure(label: &str, scene_delta: &SceneGraphDelta) {
+            assert!(
+                !scene_delta
+                    .exec_outcome
+                    .issues
+                    .iter()
+                    .any(|issue| issue.message.contains(CONSTRAINT_SOLVER_FAILED_MESSAGE)),
+                "{label}: arc preview should not drop lowered-constraint warm starts: {:?}",
+                scene_delta.exec_outcome.issues
+            );
+        }
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        let outcome = frontend.update_state_after_exec(outcome, true);
+        let sketch_id = find_first_sketch_object(&frontend.scene_graph).unwrap().id;
+        frontend.replace_sketch_var_warm_starts(sketch_id, &outcome);
+
+        let center = point(-29.12, 7.19);
+        let initial_start = point(-32.07, -2.53);
+        let (_src_delta, scene_delta) = frontend
+            .add_arc(
+                &mock_ctx,
+                sketch_id,
+                ArcCtor {
+                    start: initial_start.clone(),
+                    end: initial_start,
+                    center: center.clone(),
+                    construction: None,
+                },
+            )
+            .await
+            .unwrap();
+        assert_no_solver_failure("add draft arc", &scene_delta);
+
+        let arc_id = scene_delta
+            .new_objects
+            .last()
+            .copied()
+            .expect("Expected added arc object id");
+
+        for (index, (start, end)) in [
+            (point(-32.07, -2.53), point(-32.07, -2.53)),
+            (point(-34.199, -1.607), point(-38.665, 3.716)),
+            (point(-38.665, 3.716), point(-38.665, 10.664)),
+            (point(-38.665, 10.664), point(-34.199, 15.987)),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let (_src_delta, scene_delta) = frontend
+                .edit_segments_for_preview(
+                    &mock_ctx,
+                    version,
+                    sketch_id,
+                    vec![ExistingSegmentCtor {
+                        id: arc_id,
+                        ctor: SegmentCtor::Arc(ArcCtor {
+                            start,
+                            end,
+                            center: center.clone(),
+                            construction: None,
+                        }),
+                    }],
+                )
+                .await
+                .unwrap();
+            assert_no_solver_failure(&format!("preview edit {index}"), &scene_delta);
+        }
 
         mock_ctx.close().await;
     }

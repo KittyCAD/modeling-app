@@ -500,8 +500,9 @@ pub struct MockConfig {
     /// Per-source-sketch-variable warm starts keyed by source variable order,
     /// excluding hidden lowered variables.
     pub sketch_var_source_initial_guess_overrides: Vec<f64>,
-    /// Whether hidden lowered variables may reuse solver-order warm starts.
-    pub preserve_hidden_sketch_var_initial_guess_overrides: bool,
+    /// Source ranges for the solver-order warm starts. Hidden lowered
+    /// variables have no source range.
+    pub sketch_var_initial_guess_source_ranges: Vec<Option<SourceRange>>,
 }
 
 impl Default for MockConfig {
@@ -514,7 +515,7 @@ impl Default for MockConfig {
             segment_ids_edited: AhashIndexSet::default(),
             sketch_var_initial_guess_overrides: Vec::new(),
             sketch_var_source_initial_guess_overrides: Vec::new(),
-            preserve_hidden_sketch_var_initial_guess_overrides: true,
+            sketch_var_initial_guess_source_ranges: Vec::new(),
         }
     }
 }
@@ -529,21 +530,15 @@ impl MockConfig {
     }
 
     #[must_use]
-    pub(crate) fn no_freedom_analysis(mut self) -> Self {
-        self.freedom_analysis = false;
-        self
-    }
-
-    #[must_use]
     pub(crate) fn with_ordered_sketch_var_initial_guess_overrides(
         mut self,
         solver_overrides: Vec<f64>,
         source_overrides: Vec<f64>,
-        preserve_hidden_by_id: bool,
+        solver_source_ranges: Vec<Option<SourceRange>>,
     ) -> Self {
         self.sketch_var_initial_guess_overrides = solver_overrides;
         self.sketch_var_source_initial_guess_overrides = source_overrides;
-        self.preserve_hidden_sketch_var_initial_guess_overrides = preserve_hidden_by_id;
+        self.sketch_var_initial_guess_source_ranges = solver_source_ranges;
         self
     }
 }

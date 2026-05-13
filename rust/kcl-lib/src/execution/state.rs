@@ -89,8 +89,9 @@ pub(super) struct GlobalState {
     /// Transient warm-start values for source sketch variables, keyed by source
     /// variable order and excluding hidden lowered variables.
     pub sketch_var_source_initial_guess_overrides: Vec<f64>,
-    /// Whether hidden lowered variables may reuse solver-order warm starts.
-    pub preserve_hidden_sketch_var_initial_guess_overrides: bool,
+    /// Source ranges for the solver-order warm starts. Hidden lowered
+    /// variables have no source range.
+    pub sketch_var_initial_guess_source_ranges: Vec<Option<SourceRange>>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -318,7 +319,13 @@ pub(crate) struct SketchBlockState {
 impl ExecState {
     pub fn new(exec_context: &super::ExecutorContext) -> Self {
         ExecState {
-            global: GlobalState::new(&exec_context.settings, Default::default(), Vec::new(), Vec::new(), true),
+            global: GlobalState::new(
+                &exec_context.settings,
+                Default::default(),
+                Vec::new(),
+                Vec::new(),
+                Vec::new(),
+            ),
             mod_local: ModuleState::new(ModulePath::Main, ProgramMemory::new(), Default::default(), false, true),
         }
     }
@@ -331,7 +338,7 @@ impl ExecState {
                 segment_ids_edited,
                 mock_config.sketch_var_initial_guess_overrides.clone(),
                 mock_config.sketch_var_source_initial_guess_overrides.clone(),
-                mock_config.preserve_hidden_sketch_var_initial_guess_overrides,
+                mock_config.sketch_var_initial_guess_source_ranges.clone(),
             ),
             mod_local: ModuleState::new(
                 ModulePath::Main,
@@ -344,7 +351,13 @@ impl ExecState {
     }
 
     pub(super) fn reset(&mut self, exec_context: &super::ExecutorContext) {
-        let global = GlobalState::new(&exec_context.settings, Default::default(), Vec::new(), Vec::new(), true);
+        let global = GlobalState::new(
+            &exec_context.settings,
+            Default::default(),
+            Vec::new(),
+            Vec::new(),
+            Vec::new(),
+        );
 
         *self = ExecState {
             global,
@@ -577,15 +590,21 @@ impl ExecState {
             }
 
             if self.global.sketch_var_source_initial_guess_overrides.is_empty() {
+                if !self.global.sketch_var_initial_guess_source_ranges.is_empty() {
+                    return None;
+                }
                 return self.global.sketch_var_initial_guess_overrides.get(var_id.0).copied();
             }
 
             return None;
         }
 
-        if self.global.preserve_hidden_sketch_var_initial_guess_overrides
-            || self.global.sketch_var_source_initial_guess_overrides.is_empty()
-        {
+        let can_use_solver_slot = self.global.sketch_var_initial_guess_source_ranges.is_empty()
+            || matches!(
+                self.global.sketch_var_initial_guess_source_ranges.get(var_id.0),
+                Some(None)
+            );
+        if can_use_solver_slot {
             self.global.sketch_var_initial_guess_overrides.get(var_id.0).copied()
         } else {
             None
@@ -926,7 +945,7 @@ impl GlobalState {
         segment_ids_edited: AhashIndexSet<ObjectId>,
         sketch_var_initial_guess_overrides: Vec<f64>,
         sketch_var_source_initial_guess_overrides: Vec<f64>,
-        preserve_hidden_sketch_var_initial_guess_overrides: bool,
+        sketch_var_initial_guess_source_ranges: Vec<Option<SourceRange>>,
     ) -> Self {
         let mut global = GlobalState {
             path_to_source_id: Default::default(),
@@ -939,7 +958,7 @@ impl GlobalState {
             segment_ids_edited,
             sketch_var_initial_guess_overrides,
             sketch_var_source_initial_guess_overrides,
-            preserve_hidden_sketch_var_initial_guess_overrides,
+            sketch_var_initial_guess_source_ranges,
         };
 
         let root_id = ModuleId::default();
