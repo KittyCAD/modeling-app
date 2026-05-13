@@ -9,6 +9,7 @@ pub use artifact::ArtifactCommand;
 pub use artifact::ArtifactGraph;
 pub use artifact::CapSubType;
 pub use artifact::CodeRef;
+pub use artifact::GdtAnnotationArtifact;
 pub use artifact::SketchBlock;
 pub use artifact::SketchBlockConstraint;
 pub use artifact::SketchBlockConstraintType;
