@@ -142,8 +142,8 @@ export const SKETCH_FILE_VERSION = 0
 /** The default KCL leader scale expression */
 export const KCL_DEFAULT_LEADER_SCALE = `1.0`
 
-/** The default KCL font size expression */
-export const KCL_DEFAULT_FONT_SIZE = `36`
+/** The default model-space GDT font size expression */
+export const KCL_DEFAULT_FONT_SIZE = `10mm`
 
 export const SETTINGS_FILE_NAME = 'settings.toml'
 export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'

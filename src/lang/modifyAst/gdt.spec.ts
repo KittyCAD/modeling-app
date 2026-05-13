@@ -385,7 +385,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
       const framePlane = 'XY'
       const fontSize = await getKclCommandValue(
-        '36',
+        '10mm',
         instanceInThisFile,
         rustContextInThisFile
       )
@@ -419,7 +419,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('precision = 3')
       expect(newCode).toContain('framePosition = [10, 20]')
       expect(newCode).toContain('framePlane = XY')
-      expect(newCode).toContain('fontSize = 36')
+      expect(newCode).toContain('fontSize = 10mm')
       expect(newCode).toContain('leaderScale = 1.2')
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -1274,7 +1274,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         rustContextInThisFile
       )
       const fontSize = await getKclCommandValue(
-        '48',
+        '12mm',
         instanceInThisFile,
         rustContextInThisFile
       )
@@ -1303,7 +1303,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('framePosition = [5, 0]')
       expect(newCode).toContain('framePlane = XZ')
       expect(newCode).toContain('leaderScale = 1.1')
-      expect(newCode).toContain('fontSize = 48')
+      expect(newCode).toContain('fontSize = 12mm')
     })
   })
 

@@ -2423,13 +2423,13 @@ description: Result of parsing gdt-tutorial.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "raw": "36",
+                "raw": "10mm",
                 "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
-                  "value": 36.0,
-                  "suffix": "None"
+                  "value": 10.0,
+                  "suffix": "Mm"
                 }
               }
             }

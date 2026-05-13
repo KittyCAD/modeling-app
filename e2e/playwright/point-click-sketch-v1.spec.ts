@@ -3204,7 +3204,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'arguments',
             commandName: 'GDT Flatness',
             currentArgKey: 'fontSize',
-            currentArgValue: '36',
+            currentArgValue: '10mm',
             headerArguments: {
               Faces: '1 face',
               Tolerance: '0.1mm',
@@ -3215,8 +3215,8 @@ extrude001 = extrude(sketch001, length = 30)
             },
             highlightedHeaderArg: 'fontSize',
           })
-          // Update font size from 36 to 48
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('48')
+          // Update font size to 12mm
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('12mm')
           await cmdBar.progressCmdBar()
           // Review changes to font size
           await cmdBar.expectState({
@@ -3228,7 +3228,7 @@ extrude001 = extrude(sketch001, length = 30)
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
-              FontSize: '48',
+              FontSize: '12mm',
             },
           })
         })
@@ -3244,7 +3244,7 @@ extrude001 = extrude(sketch001, length = 30)
         await editor.expectEditor.toContain('precision = 5')
         await editor.expectEditor.toContain('framePosition = [10, 10]')
         await editor.expectEditor.toContain('framePlane = XY')
-        await editor.expectEditor.toContain('fontSize = 48')
+        await editor.expectEditor.toContain('fontSize = 12mm')
       })
     })
 
@@ -3267,7 +3267,7 @@ extrude001 = extrude(sketch001, length = 30)
             Precision: '5',
             FramePosition: '[10, 10]',
             FramePlane: 'XY',
-            FontSize: '48',
+            FontSize: '12mm',
           },
           highlightedHeaderArg: 'tolerance',
         })
@@ -3285,7 +3285,7 @@ extrude001 = extrude(sketch001, length = 30)
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
-              FontSize: '48',
+              FontSize: '12mm',
             },
             highlightedHeaderArg: 'tolerance',
           })
@@ -3301,7 +3301,7 @@ extrude001 = extrude(sketch001, length = 30)
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
-              FontSize: '48',
+              FontSize: '12mm',
             },
           })
         })
@@ -3318,7 +3318,7 @@ extrude001 = extrude(sketch001, length = 30)
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
-              FontSize: '48',
+              FontSize: '12mm',
             },
             highlightedHeaderArg: 'precision',
           })
@@ -3334,7 +3334,7 @@ extrude001 = extrude(sketch001, length = 30)
               Precision: '3',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
-              FontSize: '48',
+              FontSize: '12mm',
             },
           })
         })
@@ -3351,7 +3351,7 @@ extrude001 = extrude(sketch001, length = 30)
               Precision: '3',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
-              FontSize: '48',
+              FontSize: '12mm',
             },
             highlightedHeaderArg: 'framePosition',
           })
@@ -3368,7 +3368,7 @@ extrude001 = extrude(sketch001, length = 30)
               Precision: '3',
               FramePosition: '[20, 30]',
               FramePlane: 'XY',
-              FontSize: '48',
+              FontSize: '12mm',
             },
           })
         })
@@ -3385,7 +3385,7 @@ extrude001 = extrude(sketch001, length = 30)
               Precision: '3',
               FramePosition: '[20, 30]',
               FramePlane: 'XY',
-              FontSize: '48',
+              FontSize: '12mm',
             },
             highlightedHeaderArg: 'framePlane',
           })
@@ -3400,7 +3400,7 @@ extrude001 = extrude(sketch001, length = 30)
               Precision: '3',
               FramePosition: '[20, 30]',
               FramePlane: 'XZ',
-              FontSize: '48',
+              FontSize: '12mm',
             },
           })
         })
@@ -3411,13 +3411,13 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'arguments',
             commandName: 'GDT Flatness',
             currentArgKey: 'fontSize',
-            currentArgValue: '48',
+            currentArgValue: '12mm',
             headerArguments: {
               Tolerance: '0.2mm',
               Precision: '3',
               FramePosition: '[20, 30]',
               FramePlane: 'XZ',
-              FontSize: '48',
+              FontSize: '12mm',
             },
             highlightedHeaderArg: 'fontSize',
           })
@@ -3626,7 +3626,7 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'arguments',
             commandName: 'GDT Datum',
             currentArgKey: 'fontSize',
-            currentArgValue: '36',
+            currentArgValue: '10mm',
             headerArguments: {
               Faces: '1 face',
               Name: 'A',
@@ -3636,8 +3636,8 @@ extrude001 = extrude(sketch001, length = 30)
             },
             highlightedHeaderArg: 'fontSize',
           })
-          // Update font size from 36 to 48
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('48')
+          // Update font size to 12mm
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('12mm')
           await cmdBar.progressCmdBar()
           // Review changes to font size
           await cmdBar.expectState({
@@ -3648,7 +3648,7 @@ extrude001 = extrude(sketch001, length = 30)
               Name: 'A',
               FramePosition: '[5, 0]',
               FramePlane: 'XZ',
-              FontSize: '48',
+              FontSize: '12mm',
             },
           })
         })
@@ -3663,7 +3663,7 @@ extrude001 = extrude(sketch001, length = 30)
         await editor.expectEditor.toContain('name = "A"')
         await editor.expectEditor.toContain('framePosition = [5, 0]')
         await editor.expectEditor.toContain('framePlane = XZ')
-        await editor.expectEditor.toContain('fontSize = 48')
+        await editor.expectEditor.toContain('fontSize = 12mm')
       })
     })
 
@@ -3686,7 +3686,7 @@ extrude001 = extrude(sketch001, length = 30)
               Name: 'A',
               FramePosition: '[5, 0]',
               FramePlane: 'XZ',
-              FontSize: '48',
+              FontSize: '12mm',
             },
             highlightedHeaderArg: 'name',
           })
@@ -3702,7 +3702,7 @@ extrude001 = extrude(sketch001, length = 30)
               Name: 'B',
               FramePosition: '[5, 0]',
               FramePlane: 'XZ',
-              FontSize: '48',
+              FontSize: '12mm',
             },
           })
         })
@@ -3718,7 +3718,7 @@ extrude001 = extrude(sketch001, length = 30)
               Name: 'B',
               FramePosition: '[5, 0]',
               FramePlane: 'XZ',
-              FontSize: '48',
+              FontSize: '12mm',
             },
             highlightedHeaderArg: 'framePosition',
           })
@@ -3734,7 +3734,7 @@ extrude001 = extrude(sketch001, length = 30)
               Name: 'B',
               FramePosition: '[10, 5]',
               FramePlane: 'XZ',
-              FontSize: '48',
+              FontSize: '12mm',
             },
           })
         })
@@ -3750,7 +3750,7 @@ extrude001 = extrude(sketch001, length = 30)
               Name: 'B',
               FramePosition: '[10, 5]',
               FramePlane: 'XZ',
-              FontSize: '48',
+              FontSize: '12mm',
             },
             highlightedHeaderArg: 'framePlane',
           })
@@ -3764,7 +3764,7 @@ extrude001 = extrude(sketch001, length = 30)
               Name: 'B',
               FramePosition: '[10, 5]',
               FramePlane: 'YZ',
-              FontSize: '48',
+              FontSize: '12mm',
             },
           })
         })
@@ -3775,12 +3775,12 @@ extrude001 = extrude(sketch001, length = 30)
             stage: 'arguments',
             commandName: 'GDT Datum',
             currentArgKey: 'fontSize',
-            currentArgValue: '48',
+            currentArgValue: '12mm',
             headerArguments: {
               Name: 'B',
               FramePosition: '[10, 5]',
               FramePlane: 'YZ',
-              FontSize: '48',
+              FontSize: '12mm',
             },
             highlightedHeaderArg: 'fontSize',
           })

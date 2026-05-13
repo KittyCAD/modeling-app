@@ -33,7 +33,7 @@ gdt::flatness(
   precision = 3,
   framePlane = XY,
   leaderScale = 3,
-  fontSize = 36,
+  fontSize = 10mm,
 )
 gdt::datum(
   face = region001.tags.line3,
