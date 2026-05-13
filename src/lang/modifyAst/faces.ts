@@ -919,7 +919,7 @@ function getSolidSelectionsFromFaceSelections(
         face.artifact.id,
         artifactGraph
       )
-      if (sweep instanceof Error || !sweep) {
+      if (err(sweep) || !sweep) {
         return []
       }
 
