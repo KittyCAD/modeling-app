@@ -63,17 +63,9 @@ type MlCopilotProjectContextRequest = Extract<
   active_file?: string
 }
 
-type MlCopilotZookeeperHistoryRequest = {
-  type: 'system'
-  command: 'zookeeper_undo' | 'zookeeper_redo'
-  project_name: string
-  current_files: Record<string, number[]>
-}
-
 type MlCopilotClientMessageWithDiscoveredMode =
   | Exclude<MlCopilotClientMessage, { type: 'user' }>
   | MlCopilotUserRequest
-  | MlCopilotZookeeperHistoryRequest
 
 type MlCopilotClientMessageUser<T = MlCopilotClientMessageWithDiscoveredMode> =
   T extends {
@@ -180,8 +172,6 @@ export enum MlEphantManagerStates {
 
 export enum MlEphantManagerTransitions {
   MessageSend = 'message-send',
-  ZookeeperUndo = 'zookeeper-undo',
-  ZookeeperRedo = 'zookeeper-redo',
   ResponseReceive = 'response-receive',
   ModesReceive = 'modes-receive',
   ConversationClose = 'conversation-close',
@@ -224,13 +214,6 @@ export type MlEphantManagerEvents =
       artifactGraph: ArtifactGraph
       mode?: MlCopilotModeId
       additionalFiles?: File[]
-    }
-  | {
-      type:
-        | MlEphantManagerTransitions.ZookeeperUndo
-        | MlEphantManagerTransitions.ZookeeperRedo
-      projectName: string
-      projectFiles: FileMeta[]
     }
   | {
       type: MlEphantManagerStates.ContinueCheck
@@ -547,51 +530,6 @@ type XSInput<T> = {
   }
 }
 
-type ZookeeperHistoryRequestOutput = {
-  conversation: Conversation
-  projectNameCurrentlyOpened: string
-  zookeeperHistoryRequest: MlCopilotZookeeperHistoryRequest
-}
-
-async function prepareZookeeperHistoryRequest(
-  args: XSInput<
-    | MlEphantManagerTransitions.ZookeeperUndo
-    | MlEphantManagerTransitions.ZookeeperRedo
-  >
-): Promise<ZookeeperHistoryRequestOutput> {
-  const { context, event } = args.input
-  if (!isPresent<WebSocket>(context.ws))
-    return Promise.reject(new Error('WebSocket not present'))
-  if (!isPresent<Conversation>(context.conversation))
-    return Promise.reject(new Error('Conversation not present'))
-
-  const request: MlCopilotZookeeperHistoryRequest = {
-    type: 'system',
-    command:
-      event.type === MlEphantManagerTransitions.ZookeeperUndo
-        ? 'zookeeper_undo'
-        : 'zookeeper_redo',
-    project_name: event.projectName,
-    current_files: await projectFilesToByteArrays(event.projectFiles),
-  }
-
-  const conversation: Conversation = {
-    exchanges: Array.from(context.conversation.exchanges),
-  }
-
-  conversation.exchanges.push({
-    request,
-    responses: [],
-    deltasAggregated: '',
-  })
-
-  return {
-    conversation,
-    projectNameCurrentlyOpened: event.projectName,
-    zookeeperHistoryRequest: request,
-  }
-}
-
 export const mlEphantManagerMachine = setup({
   types: {
     context: {} as MlEphantManagerContext,
@@ -671,16 +609,6 @@ export const mlEphantManagerMachine = setup({
         )
         context.ws?.close()
       }
-    },
-    sendPreparedZookeeperHistoryRequest: ({ context, event }) => {
-      if (!('output' in event)) {
-        return
-      }
-      const output = event.output as Partial<ZookeeperHistoryRequestOutput>
-      if (output.zookeeperHistoryRequest === undefined) {
-        return
-      }
-      context.ws?.send(JSON.stringify(output.zookeeperHistoryRequest))
     },
     cacheSetup: assign({
       conversationId: ({ event }) => {
@@ -1135,12 +1063,6 @@ export const mlEphantManagerMachine = setup({
 
       return {}
     }),
-    [MlEphantManagerTransitions.ZookeeperUndo]: fromPromise(
-      prepareZookeeperHistoryRequest
-    ),
-    [MlEphantManagerTransitions.ZookeeperRedo]: fromPromise(
-      prepareZookeeperHistoryRequest
-    ),
   },
 }).createMachine({
   initial: S.Await,
@@ -1416,8 +1338,6 @@ export const mlEphantManagerMachine = setup({
             [S.Await]: {
               on: transitions([
                 MlEphantManagerTransitions.MessageSend,
-                MlEphantManagerTransitions.ZookeeperUndo,
-                MlEphantManagerTransitions.ZookeeperRedo,
                 MlEphantManagerTransitions.Cancel,
                 MlEphantManagerTransitions.Interrupt,
                 MlEphantManagerTransitions.ConversationClose,
@@ -1450,62 +1370,6 @@ export const mlEphantManagerMachine = setup({
                       awaitingResponse: true,
                       pendingBackendShutdown: context.pendingBackendShutdown,
                     })),
-                  ],
-                },
-                onError: { target: S.Await, actions: ['toastError'] },
-              },
-            },
-            [MlEphantManagerTransitions.ZookeeperUndo]: {
-              invoke: {
-                input: (args) => {
-                  assertEvent(args.event, [
-                    MlEphantManagerTransitions.ZookeeperUndo,
-                  ])
-                  return {
-                    event: args.event,
-                    context: args.context,
-                  }
-                },
-                src: MlEphantManagerTransitions.ZookeeperUndo,
-                onDone: {
-                  target: S.Await,
-                  actions: [
-                    assign(({ event, context }) => ({
-                      conversation: event.output.conversation,
-                      projectNameCurrentlyOpened:
-                        event.output.projectNameCurrentlyOpened,
-                      awaitingResponse: true,
-                      pendingBackendShutdown: context.pendingBackendShutdown,
-                    })),
-                    'sendPreparedZookeeperHistoryRequest',
-                  ],
-                },
-                onError: { target: S.Await, actions: ['toastError'] },
-              },
-            },
-            [MlEphantManagerTransitions.ZookeeperRedo]: {
-              invoke: {
-                input: (args) => {
-                  assertEvent(args.event, [
-                    MlEphantManagerTransitions.ZookeeperRedo,
-                  ])
-                  return {
-                    event: args.event,
-                    context: args.context,
-                  }
-                },
-                src: MlEphantManagerTransitions.ZookeeperRedo,
-                onDone: {
-                  target: S.Await,
-                  actions: [
-                    assign(({ event, context }) => ({
-                      conversation: event.output.conversation,
-                      projectNameCurrentlyOpened:
-                        event.output.projectNameCurrentlyOpened,
-                      awaitingResponse: true,
-                      pendingBackendShutdown: context.pendingBackendShutdown,
-                    })),
-                    'sendPreparedZookeeperHistoryRequest',
                   ],
                 },
                 onError: { target: S.Await, actions: ['toastError'] },
