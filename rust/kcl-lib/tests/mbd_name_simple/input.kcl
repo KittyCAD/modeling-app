@@ -23,25 +23,25 @@ block = extrude(
 )
 
 // TaggedFace: tag must resolve to the adjacent face UUID, not an edge UUID.
-mbd::name(face = top,    name = "topFace")
-mbd::name(face = bottom, name = "bottom-face")
+gdt::name(face = top,    name = "topFace")
+gdt::name(face = bottom, name = "bottom-face")
 
 // TaggedFace via the sketch's face-tag map.
-mbd::name(face = block.sketch.tags.edge1, name = "side_1_face")
+gdt::name(face = block.sketch.tags.edge1, name = "side_1_face")
 
 // Face value (not a TaggedFace): exercises the Face branch of the impl.
 edge2Face = faceOf(block, face = block.sketch.tags.edge2)
-mbd::name(face = edge2Face, name = "edge2_face_value")
+gdt::name(face = edge2Face, name = "edge2_face_value")
 
 // Edge by UUID returned from getCommonEdge.
 sharedEdge = getCommonEdge(faces = [block.sketch.tags.edge2, top])
-mbd::name(edge = sharedEdge, name = "top-edge2-edge")
+gdt::name(edge = sharedEdge, name = "top-edge2-edge")
 
 // Last-name-wins: final entry for top's face UUID must be "topFace_final".
-mbd::name(face = top, name = "topFace_final")
+gdt::name(face = top, name = "topFace_final")
 
 // Empty string clears the entry for bottom's face UUID.
-mbd::name(face = bottom, name = "")
+gdt::name(face = bottom, name = "")
 
 // All allowed character classes in one name.
-mbd::name(face = block.sketch.tags.edge3, name = "Mixed_name-WITH-123")
+gdt::name(face = block.sketch.tags.edge3, name = "Mixed_name-WITH-123")

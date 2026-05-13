@@ -6,4 +6,4 @@ import block from "common.kcl"
 
 // Same face UUID as left.kcl names. Because right.kcl is imported after
 // left.kcl in input.kcl, this name wins in the merged map.
-mbd::name(face = block.sketch.tags.side1, name = "right_named_side1_wins")
+gdt::name(face = block.sketch.tags.side1, name = "right_named_side1_wins")

@@ -1,4 +1,4 @@
-// Verifies that `mbd::name` entries from imported modules are merged into
+// Verifies that `gdt::name` entries from imported modules are merged into
 // the final `entity_names` map.
 //
 // The shape of the import graph is:
@@ -9,7 +9,7 @@
 //     `- right.kcl  ──┘
 //
 // `left.kcl` and `right.kcl` are siblings — neither imports the other.
-// Both import `common.kcl` and call `mbd::name` on the same face of
+// Both import `common.kcl` and call `gdt::name` on the same face of
 // `common.block`, so they target the same engine UUID. The merge layers
 // each sibling's entity_names into the result in module load order, so the
 // later sibling (`right.kcl`) wins. See the `entity_names.snap` snapshot

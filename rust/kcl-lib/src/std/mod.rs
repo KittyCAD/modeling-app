@@ -18,7 +18,6 @@ pub mod helix;
 pub mod ids;
 pub mod loft;
 pub mod math;
-pub mod mbd;
 pub mod mirror;
 pub mod patterns;
 pub mod planes;
@@ -105,9 +104,9 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::gdt::position(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::gdt::position"),
         ),
-        ("mbd", "name") => (
-            |e, a| Box::pin(crate::std::mbd::name(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::mbd::name"),
+        ("gdt", "name") => (
+            |e, a| Box::pin(crate::std::gdt::name(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::name"),
         ),
         ("math", "cos") => (
             |e, a| Box::pin(crate::std::math::cos(e, a).map(|r| r.map(KclValue::continue_))),
