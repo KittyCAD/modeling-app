@@ -17,7 +17,7 @@ gdt::parallelism(
   framePosition?: Point2d,
   framePlane?: Plane,
   leaderScale?: number(_),
-  fontSize?: number(_),
+  fontSize?: number(Length),
 ): [GdtAnnotation; 1+]
 ```
 
@@ -35,7 +35,7 @@ This is part of model-based definition (MBD).
 | `framePosition` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`. | No |
 | `framePlane` | [`Plane`](/docs/kcl-std/types/std-types-Plane) | The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane. | No |
 | `leaderScale` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Scale of the leader. The default is `1.0`. Must be greater than `0`. | No |
-| `fontSize` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The font size to use for the annotation text rendering. The default is `36`. | No |
+| `fontSize` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit. This changes the scene size, not the internal raster texture quality. | No |
 
 ### Returns
 
