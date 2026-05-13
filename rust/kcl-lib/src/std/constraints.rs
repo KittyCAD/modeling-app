@@ -90,6 +90,9 @@ struct ArcVars {
     end: Option<[SketchVarId; 2]>,
 }
 
+type SketchPointVars = [SketchVarId; 2];
+type CircularTangentPoints = (SketchPointVars, SketchPointVars);
+
 fn make_line_arc_tangency_key(line: LineVars, arc: ArcVars) -> ConstraintKey {
     let [a0, a1, a2, a3] = flatten_line_vars(line);
     let [b0, b1, b2, b3, b4, b5] = flatten_arc_vars(arc);
@@ -201,6 +204,116 @@ fn arc_initial_radius(
     range: crate::SourceRange,
 ) -> Result<f64, KclError> {
     points_initial_distance(sketch_vars, arc.center, arc.start, exec_state, range)
+}
+
+fn datum_point_matches_vars(
+    point: DatumPoint,
+    vars: SketchPointVars,
+    range: crate::SourceRange,
+) -> Result<bool, KclError> {
+    Ok(point.id_x() == vars[0].to_constraint_id(range)? && point.id_y() == vars[1].to_constraint_id(range)?)
+}
+
+fn constraint_connects_points(
+    constraint: &SolverConstraint,
+    point_a: SketchPointVars,
+    point_b: SketchPointVars,
+    range: crate::SourceRange,
+) -> Result<bool, KclError> {
+    let SolverConstraint::PointsCoincident(lhs, rhs) = constraint else {
+        return Ok(false);
+    };
+    Ok(
+        (datum_point_matches_vars(*lhs, point_a, range)? && datum_point_matches_vars(*rhs, point_b, range)?)
+            || (datum_point_matches_vars(*lhs, point_b, range)? && datum_point_matches_vars(*rhs, point_a, range)?),
+    )
+}
+
+fn points_are_coincident_in_constraints(
+    constraints: &[SolverConstraint],
+    point_a: SketchPointVars,
+    point_b: SketchPointVars,
+    range: crate::SourceRange,
+) -> Result<bool, KclError> {
+    if point_a == point_b {
+        return Ok(true);
+    }
+
+    // Coincident constraints may be chained, especially for multi-point
+    // coincident groups. Walk the existing coincidence graph rather than only
+    // checking the direct pair.
+    let mut seen = vec![point_a];
+    let mut pending = vec![point_a];
+    while let Some(current) = pending.pop() {
+        for constraint in constraints {
+            let SolverConstraint::PointsCoincident(lhs, rhs) = constraint else {
+                continue;
+            };
+
+            let next = if datum_point_matches_vars(*lhs, current, range)? {
+                Some([SketchVarId(rhs.id_x() as usize), SketchVarId(rhs.id_y() as usize)])
+            } else if datum_point_matches_vars(*rhs, current, range)? {
+                Some([SketchVarId(lhs.id_x() as usize), SketchVarId(lhs.id_y() as usize)])
+            } else {
+                None
+            };
+
+            let Some(next) = next else {
+                continue;
+            };
+            if next == point_b {
+                return Ok(true);
+            }
+            if !seen.contains(&next) {
+                seen.push(next);
+                pending.push(next);
+            }
+        }
+    }
+
+    // Direct check kept separate for clarity and for any future non-graph
+    // coincident representation.
+    for constraint in constraints {
+        if constraint_connects_points(constraint, point_a, point_b, range)? {
+            return Ok(true);
+        }
+    }
+    Ok(false)
+}
+
+fn line_circular_shared_tangent_point(
+    constraints: &[SolverConstraint],
+    line: LineVars,
+    circular: ArcVars,
+    range: crate::SourceRange,
+) -> Result<Option<SketchPointVars>, KclError> {
+    let circular_points = [Some(circular.start), circular.end];
+    for line_point in [line.start, line.end] {
+        for circular_point in circular_points.into_iter().flatten() {
+            if points_are_coincident_in_constraints(constraints, line_point, circular_point, range)? {
+                return Ok(Some(circular_point));
+            }
+        }
+    }
+    Ok(None)
+}
+
+fn circular_circular_shared_tangent_points(
+    constraints: &[SolverConstraint],
+    circular0: ArcVars,
+    circular1: ArcVars,
+    range: crate::SourceRange,
+) -> Result<Option<CircularTangentPoints>, KclError> {
+    let circular0_points = [Some(circular0.start), circular0.end];
+    let circular1_points = [Some(circular1.start), circular1.end];
+    for point0 in circular0_points.into_iter().flatten() {
+        for point1 in circular1_points.into_iter().flatten() {
+            if points_are_coincident_in_constraints(constraints, point0, point1, range)? {
+                return Ok(Some((point0, point1)));
+            }
+        }
+    }
+    Ok(None)
 }
 
 fn constrainable_point_from_unsolved_segment(
@@ -3550,148 +3663,195 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         };
         sketch_state.sketch_vars.clone()
     };
+    let existing_solver_constraints = exec_state
+        .sketch_block()
+        .map(|sketch_state| sketch_state.solver_constraints.clone())
+        .unwrap_or_default();
 
-    // Hidden radius vars. Empty metadata keeps them out of source write-back.
+    // Tangency without a known shared contact point still uses hidden radius
+    // vars. Empty metadata keeps those vars out of source write-back.
     match tangent_case {
         TangentCase::LineCircular(line, circular) => {
-            let tangency_key = make_line_arc_tangency_key(line, circular);
-            let tangency_side = match exec_state.constraint_state(sketch_id, &tangency_key) {
-                Some(ConstraintState::Tangency(TangencyMode::LineCircle(side))) => side,
-                _ => {
-                    let side = infer_line_tangent_side(&sketch_vars, line, circular.center, exec_state, range)?;
-                    exec_state.set_constraint_state(
-                        sketch_id,
-                        tangency_key,
-                        ConstraintState::Tangency(TangencyMode::LineCircle(side)),
-                    );
-                    side
-                }
-            };
-            let line_p0 = datum_point(line.start, range)?;
-            let line_p1 = datum_point(line.end, range)?;
-            let line_datum = DatumLineSegment::new(line_p0, line_p1);
+            if let Some(tangent_point) =
+                line_circular_shared_tangent_point(&existing_solver_constraints, line, circular, range)?
+            {
+                let line_p0 = datum_point(line.start, range)?;
+                let line_p1 = datum_point(line.end, range)?;
+                let line_datum = DatumLineSegment::new(line_p0, line_p1);
+                let radius_line =
+                    DatumLineSegment::new(datum_point(circular.center, range)?, datum_point(tangent_point, range)?);
+                let Some(sketch_state) = exec_state.sketch_block_mut() else {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "tangent() can only be used inside a sketch block".to_owned(),
+                        vec![range],
+                    )));
+                };
+                sketch_state.solver_constraints.push(SolverConstraint::LinesAtAngle(
+                    line_datum,
+                    radius_line,
+                    AngleKind::Perpendicular,
+                ));
+            } else {
+                let tangency_key = make_line_arc_tangency_key(line, circular);
+                let tangency_side = match exec_state.constraint_state(sketch_id, &tangency_key) {
+                    Some(ConstraintState::Tangency(TangencyMode::LineCircle(side))) => side,
+                    _ => {
+                        let side = infer_line_tangent_side(&sketch_vars, line, circular.center, exec_state, range)?;
+                        exec_state.set_constraint_state(
+                            sketch_id,
+                            tangency_key,
+                            ConstraintState::Tangency(TangencyMode::LineCircle(side)),
+                        );
+                        side
+                    }
+                };
+                let line_p0 = datum_point(line.start, range)?;
+                let line_p1 = datum_point(line.end, range)?;
+                let line_datum = DatumLineSegment::new(line_p0, line_p1);
 
-            let center = datum_point(circular.center, range)?;
-            let circular_start = datum_point(circular.start, range)?;
-            let circular_end = circular.end.map(|end| datum_point(end, range)).transpose()?;
-            let radius_initial_value = radius_guess(&sketch_vars, circular.center, circular.start, exec_state, range)?;
-            let Some(sketch_state) = exec_state.sketch_block_mut() else {
-                return Err(KclError::new_semantic(KclErrorDetails::new(
-                    "tangent() can only be used inside a sketch block".to_owned(),
-                    vec![range],
-                )));
-            };
-            let radius_id = sketch_state.next_sketch_var_id();
-            sketch_state.sketch_vars.push(KclValue::SketchVar {
-                value: Box::new(crate::execution::SketchVar {
-                    id: radius_id,
-                    initial_value: radius_initial_value,
-                    ty: sketch_var_ty,
-                    meta: vec![],
-                }),
-            });
-            let radius = DatumDistance::new(radius_id.to_constraint_id(range)?);
-            let circle = DatumCircle { center, radius };
+                let center = datum_point(circular.center, range)?;
+                let circular_start = datum_point(circular.start, range)?;
+                let circular_end = circular.end.map(|end| datum_point(end, range)).transpose()?;
+                let radius_initial_value =
+                    radius_guess(&sketch_vars, circular.center, circular.start, exec_state, range)?;
+                let Some(sketch_state) = exec_state.sketch_block_mut() else {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "tangent() can only be used inside a sketch block".to_owned(),
+                        vec![range],
+                    )));
+                };
+                let radius_id = sketch_state.next_sketch_var_id();
+                sketch_state.sketch_vars.push(KclValue::SketchVar {
+                    value: Box::new(crate::execution::SketchVar {
+                        id: radius_id,
+                        initial_value: radius_initial_value,
+                        ty: sketch_var_ty,
+                        meta: vec![],
+                    }),
+                });
+                let radius = DatumDistance::new(radius_id.to_constraint_id(range)?);
+                let circle = DatumCircle { center, radius };
 
-            // Tangency decomposition for Line/circular segment:
-            // 1) Introduce a hidden radius variable r for the segment's underlying circle.
-            // 2) Keep the segment's defining points on that circle with DistanceVar(point, center, r).
-            // 3) Apply the native LineTangentToCircle solver constraint.
-            sketch_state
-                .solver_constraints
-                .push(SolverConstraint::DistanceVar(circular_start, center, radius));
-            if let Some(circular_end) = circular_end {
+                // Tangency decomposition for Line/circular segment:
+                // 1) Introduce a hidden radius variable r for the segment's underlying circle.
+                // 2) Keep the segment's defining points on that circle with DistanceVar(point, center, r).
+                // 3) Apply the native LineTangentToCircle solver constraint.
                 sketch_state
                     .solver_constraints
-                    .push(SolverConstraint::DistanceVar(circular_end, center, radius));
+                    .push(SolverConstraint::DistanceVar(circular_start, center, radius));
+                if let Some(circular_end) = circular_end {
+                    sketch_state
+                        .solver_constraints
+                        .push(SolverConstraint::DistanceVar(circular_end, center, radius));
+                }
+                sketch_state
+                    .solver_constraints
+                    .push(SolverConstraint::LineTangentToCircle(line_datum, circle, tangency_side));
             }
-            sketch_state
-                .solver_constraints
-                .push(SolverConstraint::LineTangentToCircle(line_datum, circle, tangency_side));
         }
         TangentCase::CircularCircular(circular0, circular1) => {
-            let tangency_key = make_arc_arc_tangency_key(circular0, circular1);
-            let tangency_side = match exec_state.constraint_state(sketch_id, &tangency_key) {
-                Some(ConstraintState::Tangency(TangencyMode::CircleCircle(side))) => side,
-                _ => {
-                    let side = infer_arc_tangent_side(&sketch_vars, circular0, circular1, exec_state, range)?;
-                    exec_state.set_constraint_state(
-                        sketch_id,
-                        tangency_key,
-                        ConstraintState::Tangency(TangencyMode::CircleCircle(side)),
-                    );
-                    side
+            if let Some((point0, point1)) =
+                circular_circular_shared_tangent_points(&existing_solver_constraints, circular0, circular1, range)?
+            {
+                let radius0_line =
+                    DatumLineSegment::new(datum_point(circular0.center, range)?, datum_point(point0, range)?);
+                let radius1_line =
+                    DatumLineSegment::new(datum_point(circular1.center, range)?, datum_point(point1, range)?);
+                let Some(sketch_state) = exec_state.sketch_block_mut() else {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "tangent() can only be used inside a sketch block".to_owned(),
+                        vec![range],
+                    )));
+                };
+                sketch_state.solver_constraints.push(SolverConstraint::LinesAtAngle(
+                    radius0_line,
+                    radius1_line,
+                    AngleKind::Parallel,
+                ));
+            } else {
+                let tangency_key = make_arc_arc_tangency_key(circular0, circular1);
+                let tangency_side = match exec_state.constraint_state(sketch_id, &tangency_key) {
+                    Some(ConstraintState::Tangency(TangencyMode::CircleCircle(side))) => side,
+                    _ => {
+                        let side = infer_arc_tangent_side(&sketch_vars, circular0, circular1, exec_state, range)?;
+                        exec_state.set_constraint_state(
+                            sketch_id,
+                            tangency_key,
+                            ConstraintState::Tangency(TangencyMode::CircleCircle(side)),
+                        );
+                        side
+                    }
+                };
+                let center0 = datum_point(circular0.center, range)?;
+                let start0 = datum_point(circular0.start, range)?;
+                let end0 = circular0.end.map(|end| datum_point(end, range)).transpose()?;
+                let radius0_initial_value =
+                    radius_guess(&sketch_vars, circular0.center, circular0.start, exec_state, range)?;
+                let center1 = datum_point(circular1.center, range)?;
+                let start1 = datum_point(circular1.start, range)?;
+                let end1 = circular1.end.map(|end| datum_point(end, range)).transpose()?;
+                let radius1_initial_value =
+                    radius_guess(&sketch_vars, circular1.center, circular1.start, exec_state, range)?;
+                let Some(sketch_state) = exec_state.sketch_block_mut() else {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "tangent() can only be used inside a sketch block".to_owned(),
+                        vec![range],
+                    )));
+                };
+                let radius0_id = sketch_state.next_sketch_var_id();
+                sketch_state.sketch_vars.push(KclValue::SketchVar {
+                    value: Box::new(crate::execution::SketchVar {
+                        id: radius0_id,
+                        initial_value: radius0_initial_value,
+                        ty: sketch_var_ty,
+                        meta: vec![],
+                    }),
+                });
+                let radius0 = DatumDistance::new(radius0_id.to_constraint_id(range)?);
+                let circle0 = DatumCircle {
+                    center: center0,
+                    radius: radius0,
+                };
+
+                let radius1_id = sketch_state.next_sketch_var_id();
+                sketch_state.sketch_vars.push(KclValue::SketchVar {
+                    value: Box::new(crate::execution::SketchVar {
+                        id: radius1_id,
+                        initial_value: radius1_initial_value,
+                        ty: sketch_var_ty,
+                        meta: vec![],
+                    }),
+                });
+                let radius1 = DatumDistance::new(radius1_id.to_constraint_id(range)?);
+                let circle1 = DatumCircle {
+                    center: center1,
+                    radius: radius1,
+                };
+
+                // Tangency decomposition for circular segment/circular segment:
+                // 1) Introduce one hidden radius variable per arc.
+                // 2) Keep each segment's defining points on its corresponding circle.
+                // 3) Apply the native CircleTangentToCircle solver constraint.
+                sketch_state
+                    .solver_constraints
+                    .push(SolverConstraint::DistanceVar(start0, center0, radius0));
+                if let Some(end0) = end0 {
+                    sketch_state
+                        .solver_constraints
+                        .push(SolverConstraint::DistanceVar(end0, center0, radius0));
                 }
-            };
-            let center0 = datum_point(circular0.center, range)?;
-            let start0 = datum_point(circular0.start, range)?;
-            let end0 = circular0.end.map(|end| datum_point(end, range)).transpose()?;
-            let radius0_initial_value =
-                radius_guess(&sketch_vars, circular0.center, circular0.start, exec_state, range)?;
-            let center1 = datum_point(circular1.center, range)?;
-            let start1 = datum_point(circular1.start, range)?;
-            let end1 = circular1.end.map(|end| datum_point(end, range)).transpose()?;
-            let radius1_initial_value =
-                radius_guess(&sketch_vars, circular1.center, circular1.start, exec_state, range)?;
-            let Some(sketch_state) = exec_state.sketch_block_mut() else {
-                return Err(KclError::new_semantic(KclErrorDetails::new(
-                    "tangent() can only be used inside a sketch block".to_owned(),
-                    vec![range],
-                )));
-            };
-            let radius0_id = sketch_state.next_sketch_var_id();
-            sketch_state.sketch_vars.push(KclValue::SketchVar {
-                value: Box::new(crate::execution::SketchVar {
-                    id: radius0_id,
-                    initial_value: radius0_initial_value,
-                    ty: sketch_var_ty,
-                    meta: vec![],
-                }),
-            });
-            let radius0 = DatumDistance::new(radius0_id.to_constraint_id(range)?);
-            let circle0 = DatumCircle {
-                center: center0,
-                radius: radius0,
-            };
-
-            let radius1_id = sketch_state.next_sketch_var_id();
-            sketch_state.sketch_vars.push(KclValue::SketchVar {
-                value: Box::new(crate::execution::SketchVar {
-                    id: radius1_id,
-                    initial_value: radius1_initial_value,
-                    ty: sketch_var_ty,
-                    meta: vec![],
-                }),
-            });
-            let radius1 = DatumDistance::new(radius1_id.to_constraint_id(range)?);
-            let circle1 = DatumCircle {
-                center: center1,
-                radius: radius1,
-            };
-
-            // Tangency decomposition for circular segment/circular segment:
-            // 1) Introduce one hidden radius variable per arc.
-            // 2) Keep each segment's defining points on its corresponding circle.
-            // 3) Apply the native CircleTangentToCircle solver constraint.
-            sketch_state
-                .solver_constraints
-                .push(SolverConstraint::DistanceVar(start0, center0, radius0));
-            if let Some(end0) = end0 {
                 sketch_state
                     .solver_constraints
-                    .push(SolverConstraint::DistanceVar(end0, center0, radius0));
-            }
-            sketch_state
-                .solver_constraints
-                .push(SolverConstraint::DistanceVar(start1, center1, radius1));
-            if let Some(end1) = end1 {
+                    .push(SolverConstraint::DistanceVar(start1, center1, radius1));
+                if let Some(end1) = end1 {
+                    sketch_state
+                        .solver_constraints
+                        .push(SolverConstraint::DistanceVar(end1, center1, radius1));
+                }
                 sketch_state
                     .solver_constraints
-                    .push(SolverConstraint::DistanceVar(end1, center1, radius1));
+                    .push(SolverConstraint::CircleTangentToCircle(circle0, circle1, tangency_side));
             }
-            sketch_state
-                .solver_constraints
-                .push(SolverConstraint::CircleTangentToCircle(circle0, circle1, tangency_side));
         }
     }
 

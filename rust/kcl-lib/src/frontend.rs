@@ -12626,6 +12626,101 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_preview_drag_coincident_line_arc_tangent_endpoint() {
+        let initial_source = "\
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -3.52mm, var -3.44mm], end = [var -5.78mm, var 1.75mm])
+  arc1 = arc(start = [var -2.7mm, var 4.41mm], end = [var -5.78mm, var 1.75mm], center = [var -3.83mm, var 2.6mm])
+  coincident([line1.end, arc1.end])
+  tangent([line1, arc1])
+  line2 = line(start = [var -2.7mm, var 4.41mm], end = [var 2.02mm, var 1.89mm])
+  coincident([line2.start, arc1.start])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        let outcome = frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line_end_id = sketch
+            .segments
+            .iter()
+            .find_map(|segment_id| match &frontend.scene_graph.objects[segment_id.0].kind {
+                ObjectKind::Segment {
+                    segment: Segment::Line(line),
+                } => Some(line.end),
+                _ => None,
+            })
+            .expect("Expected line segment");
+        let arc_end_id = sketch
+            .segments
+            .iter()
+            .find_map(|segment_id| match &frontend.scene_graph.objects[segment_id.0].kind {
+                ObjectKind::Segment {
+                    segment: Segment::Arc(arc),
+                } => Some(arc.end),
+                _ => None,
+            })
+            .expect("Expected arc segment");
+
+        frontend.replace_sketch_var_warm_starts(sketch_id, &outcome);
+        let target = Point2d {
+            x: Expr::Var(Number {
+                value: -5.2,
+                units: NumericSuffix::Mm,
+            }),
+            y: Expr::Var(Number {
+                value: 2.1,
+                units: NumericSuffix::Mm,
+            }),
+        };
+        let segments = vec![
+            ExistingSegmentCtor {
+                id: line_end_id,
+                ctor: SegmentCtor::Point(PointCtor {
+                    position: target.clone(),
+                }),
+            },
+            ExistingSegmentCtor {
+                id: arc_end_id,
+                ctor: SegmentCtor::Point(PointCtor { position: target }),
+            },
+        ];
+
+        let (_, scene_delta) = frontend
+            .edit_segments_for_preview(&mock_ctx, version, sketch_id, segments)
+            .await
+            .unwrap();
+
+        let line_end_position = point_position(&scene_delta.new_graph, line_end_id);
+        let arc_end_position = point_position(&scene_delta.new_graph, arc_end_id);
+        assert_point_position_close(line_end_position.clone(), arc_end_position);
+        assert_point_position_close(
+            line_end_position,
+            Point2d {
+                x: Number {
+                    value: -5.2,
+                    units: NumericSuffix::Mm,
+                },
+                y: Number {
+                    value: 2.1,
+                    units: NumericSuffix::Mm,
+                },
+            },
+        );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_committed_edit_merges_edited_vars_into_existing_warm_starts() {
         let initial_source = "\
 sketch(on = XY) {
