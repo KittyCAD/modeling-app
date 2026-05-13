@@ -180,9 +180,27 @@ description: Artifact commands mbd_name_using_face_id.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_set_name",
+        "object_id": "[uuid]",
+        "name": "top_face_via_faceId"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "solid3d_get_edge_uuid",
         "object_id": "[uuid]",
         "edge_index": 2
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_set_name",
+        "object_id": "[uuid]",
+        "name": "top_edge_via_edgeId"
       }
     }
   ]

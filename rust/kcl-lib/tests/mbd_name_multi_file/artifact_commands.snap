@@ -210,5 +210,36 @@ description: Artifact commands mbd_name_multi_file.kcl
         "edge_id": "[uuid]"
       }
     }
+  ],
+  "rust/kcl-lib/tests/mbd_name_multi_file/left.kcl": [
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_set_name",
+        "object_id": "[uuid]",
+        "name": "left_named_side1"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_set_name",
+        "object_id": "[uuid]",
+        "name": "side2_from_left"
+      }
+    }
+  ],
+  "rust/kcl-lib/tests/mbd_name_multi_file/right.kcl": [
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_set_name",
+        "object_id": "[uuid]",
+        "name": "right_named_side1_wins"
+      }
+    }
   ]
 }
