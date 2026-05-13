@@ -4,7 +4,6 @@ import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { createArrayExpression, createLiteral } from '@src/lang/create'
 import { toUtf16 } from '@src/lang/errors'
-import { traverse } from '@src/lang/queryAst'
 import type {
   ArtifactId,
   CallExpressionKw,
@@ -46,6 +45,21 @@ function getSelectionsFromGdtData(
     return data.edges
   }
   return undefined
+}
+
+function visitAstNodes(value: unknown, onNode: (node: unknown) => void): void {
+  if (typeof value !== 'object' || value === null) {
+    return
+  }
+
+  onNode(value)
+
+  if (isArray(value)) {
+    value.forEach((item) => visitAstNodes(item, onNode))
+    return
+  }
+
+  Object.values(value).forEach((item) => visitAstNodes(item, onNode))
 }
 
 function isGdtCall(node: unknown): node is Node<CallExpressionKw> {
@@ -120,30 +134,28 @@ export function getExistingGdtFontSize(
 
   let fontSize: KclCommandValue | undefined
 
-  traverse(ast, {
-    enter: (node) => {
-      if (!isGdtCall(node)) {
-        return
-      }
+  visitAstNodes(ast, (node) => {
+    if (!isGdtCall(node)) {
+      return
+    }
 
-      const fontSizeArg = node.arguments?.find(
-        (arg) => arg.label?.name === 'fontSize'
-      )
-      if (!fontSizeArg) {
-        return
-      }
+    const fontSizeArg = node.arguments?.find(
+      (arg) => arg.label?.name === 'fontSize'
+    )
+    if (!fontSizeArg) {
+      return
+    }
 
-      const valueText = getSourceTextForExpr(fontSizeArg.arg, sourceCode)
-      if (!valueText) {
-        return
-      }
+    const valueText = getSourceTextForExpr(fontSizeArg.arg, sourceCode)
+    if (!valueText) {
+      return
+    }
 
-      fontSize = {
-        valueAst: structuredClone(fontSizeArg.arg),
-        valueCalculated: valueText,
-        valueText,
-      }
-    },
+    fontSize = {
+      valueAst: structuredClone(fontSizeArg.arg),
+      valueCalculated: valueText,
+      valueText,
+    }
   })
 
   return fontSize
