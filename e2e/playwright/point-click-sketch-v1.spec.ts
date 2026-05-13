@@ -3198,12 +3198,12 @@ extrude001 = extrude(sketch001, length = 30)
           })
         })
 
-        await test.step('Configure font point size', async () => {
-          await cmdBar.clickOptionalArgument('fontPointSize')
+        await test.step('Configure font size', async () => {
+          await cmdBar.clickOptionalArgument('fontSize')
           await cmdBar.expectState({
             stage: 'arguments',
             commandName: 'GDT Flatness',
-            currentArgKey: 'fontPointSize',
+            currentArgKey: 'fontSize',
             currentArgValue: '36',
             headerArguments: {
               Faces: '1 face',
@@ -3211,14 +3211,14 @@ extrude001 = extrude(sketch001, length = 30)
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
-              FontPointSize: '',
+              FontSize: '',
             },
-            highlightedHeaderArg: 'fontPointSize',
+            highlightedHeaderArg: 'fontSize',
           })
-          // Update font point size from 36 to 48
+          // Update font size from 36 to 48
           await cmdBar.currentArgumentInput.locator('.cm-content').fill('48')
           await cmdBar.progressCmdBar()
-          // Review changes to font point size
+          // Review changes to font size
           await cmdBar.expectState({
             stage: 'review',
             commandName: 'GDT Flatness',
@@ -3228,44 +3228,7 @@ extrude001 = extrude(sketch001, length = 30)
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
-              FontPointSize: '48',
-            },
-          })
-        })
-
-        await test.step('Configure font scale', async () => {
-          await cmdBar.clickOptionalArgument('fontScale')
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'GDT Flatness',
-            currentArgKey: 'fontScale',
-            currentArgValue: '1.0',
-            headerArguments: {
-              Faces: '1 face',
-              Tolerance: '0.1mm',
-              Precision: '5',
-              FramePosition: '[10, 10]',
-              FramePlane: 'XY',
-              FontPointSize: '48',
-              FontScale: '',
-            },
-            highlightedHeaderArg: 'fontScale',
-          })
-          // Update font scale from 1 to 1.5
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('1.5')
-          await cmdBar.progressCmdBar()
-          // Review changes to font scale
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'GDT Flatness',
-            headerArguments: {
-              Faces: '1 face',
-              Tolerance: '0.1mm',
-              Precision: '5',
-              FramePosition: '[10, 10]',
-              FramePlane: 'XY',
-              FontPointSize: '48',
-              FontScale: '1.5',
+              FontSize: '48',
             },
           })
         })
@@ -3274,15 +3237,14 @@ extrude001 = extrude(sketch001, length = 30)
       await test.step('Submit and verify all parameters', async () => {
         await cmdBar.progressCmdBar()
         await scene.settled(cmdBar)
-        await editor.expectEditor.toContain('experimentalFeatures = allow')
+        await editor.expectEditor.not.toContain('experimentalFeatures = allow')
         await editor.expectEditor.toContain('gdt::flatness(')
         await editor.expectEditor.toContain('faces = [capEnd001]')
         await editor.expectEditor.toContain('tolerance = 0.1mm')
         await editor.expectEditor.toContain('precision = 5')
         await editor.expectEditor.toContain('framePosition = [10, 10]')
         await editor.expectEditor.toContain('framePlane = XY')
-        await editor.expectEditor.toContain('fontPointSize = 48')
-        await editor.expectEditor.toContain('fontScale = 1.5')
+        await editor.expectEditor.toContain('fontSize = 48')
       })
     })
 
@@ -3305,8 +3267,7 @@ extrude001 = extrude(sketch001, length = 30)
             Precision: '5',
             FramePosition: '[10, 10]',
             FramePlane: 'XY',
-            FontPointSize: '48',
-            FontScale: '1.5',
+            FontSize: '48',
           },
           highlightedHeaderArg: 'tolerance',
         })
@@ -3324,8 +3285,7 @@ extrude001 = extrude(sketch001, length = 30)
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
-              FontPointSize: '48',
-              FontScale: '1.5',
+              FontSize: '48',
             },
             highlightedHeaderArg: 'tolerance',
           })
@@ -3341,8 +3301,7 @@ extrude001 = extrude(sketch001, length = 30)
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
-              FontPointSize: '48',
-              FontScale: '1.5',
+              FontSize: '48',
             },
           })
         })
@@ -3359,8 +3318,7 @@ extrude001 = extrude(sketch001, length = 30)
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
-              FontPointSize: '48',
-              FontScale: '1.5',
+              FontSize: '48',
             },
             highlightedHeaderArg: 'precision',
           })
@@ -3376,8 +3334,7 @@ extrude001 = extrude(sketch001, length = 30)
               Precision: '3',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
-              FontPointSize: '48',
-              FontScale: '1.5',
+              FontSize: '48',
             },
           })
         })
@@ -3394,8 +3351,7 @@ extrude001 = extrude(sketch001, length = 30)
               Precision: '3',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
-              FontPointSize: '48',
-              FontScale: '1.5',
+              FontSize: '48',
             },
             highlightedHeaderArg: 'framePosition',
           })
@@ -3412,8 +3368,7 @@ extrude001 = extrude(sketch001, length = 30)
               Precision: '3',
               FramePosition: '[20, 30]',
               FramePlane: 'XY',
-              FontPointSize: '48',
-              FontScale: '1.5',
+              FontSize: '48',
             },
           })
         })
@@ -3430,8 +3385,7 @@ extrude001 = extrude(sketch001, length = 30)
               Precision: '3',
               FramePosition: '[20, 30]',
               FramePlane: 'XY',
-              FontPointSize: '48',
-              FontScale: '1.5',
+              FontSize: '48',
             },
             highlightedHeaderArg: 'framePlane',
           })
@@ -3446,33 +3400,31 @@ extrude001 = extrude(sketch001, length = 30)
               Precision: '3',
               FramePosition: '[20, 30]',
               FramePlane: 'XZ',
-              FontPointSize: '48',
-              FontScale: '1.5',
+              FontSize: '48',
             },
           })
         })
 
-        await test.step('Edit font point size', async () => {
-          await page.getByRole('button', { name: 'FontPointSize' }).click()
+        await test.step('Edit font size', async () => {
+          await page.getByRole('button', { name: 'FontSize' }).click()
           await cmdBar.expectState({
             stage: 'arguments',
             commandName: 'GDT Flatness',
-            currentArgKey: 'fontPointSize',
+            currentArgKey: 'fontSize',
             currentArgValue: '48',
             headerArguments: {
               Tolerance: '0.2mm',
               Precision: '3',
               FramePosition: '[20, 30]',
               FramePlane: 'XZ',
-              FontPointSize: '48',
-              FontScale: '1.5',
+              FontSize: '48',
             },
-            highlightedHeaderArg: 'fontPointSize',
+            highlightedHeaderArg: 'fontSize',
           })
-          // Update font point size from 48 to 24
+          // Update font size from 48 to 24
           await cmdBar.currentArgumentInput.locator('.cm-content').fill('24')
           await cmdBar.progressCmdBar()
-          // Review changes to font point size
+          // Review changes to font size
           await cmdBar.expectState({
             stage: 'review',
             commandName: 'GDT Flatness',
@@ -3481,43 +3433,7 @@ extrude001 = extrude(sketch001, length = 30)
               Precision: '3',
               FramePosition: '[20, 30]',
               FramePlane: 'XZ',
-              FontPointSize: '24',
-              FontScale: '1.5',
-            },
-          })
-        })
-
-        await test.step('Edit font scale', async () => {
-          await page.getByRole('button', { name: 'FontScale' }).click()
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'GDT Flatness',
-            currentArgKey: 'fontScale',
-            currentArgValue: '1.5',
-            headerArguments: {
-              Tolerance: '0.2mm',
-              Precision: '3',
-              FramePosition: '[20, 30]',
-              FramePlane: 'XZ',
-              FontPointSize: '24',
-              FontScale: '1.5',
-            },
-            highlightedHeaderArg: 'fontScale',
-          })
-          // Update font scale from 1.5 to 2.0
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('2.0')
-          await cmdBar.progressCmdBar()
-          // Review changes to font scale
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'GDT Flatness',
-            headerArguments: {
-              Tolerance: '0.2mm',
-              Precision: '3',
-              FramePosition: '[20, 30]',
-              FramePlane: 'XZ',
-              FontPointSize: '24',
-              FontScale: '2',
+              FontSize: '24',
             },
           })
         })
@@ -3532,8 +3448,7 @@ extrude001 = extrude(sketch001, length = 30)
         await editor.expectEditor.toContain('precision = 3')
         await editor.expectEditor.toContain('framePosition = [20, 30]')
         await editor.expectEditor.toContain('framePlane = XZ')
-        await editor.expectEditor.toContain('fontPointSize = 24')
-        await editor.expectEditor.toContain('fontScale = 2')
+        await editor.expectEditor.toContain('fontSize = 24')
       })
     })
 
@@ -3705,26 +3620,26 @@ extrude001 = extrude(sketch001, length = 30)
           })
         })
 
-        await test.step('Configure font point size', async () => {
-          await cmdBar.clickOptionalArgument('fontPointSize')
+        await test.step('Configure font size', async () => {
+          await cmdBar.clickOptionalArgument('fontSize')
           await cmdBar.expectState({
             stage: 'arguments',
             commandName: 'GDT Datum',
-            currentArgKey: 'fontPointSize',
+            currentArgKey: 'fontSize',
             currentArgValue: '36',
             headerArguments: {
               Faces: '1 face',
               Name: 'A',
               FramePosition: '[5, 0]',
               FramePlane: 'XZ',
-              FontPointSize: '',
+              FontSize: '',
             },
-            highlightedHeaderArg: 'fontPointSize',
+            highlightedHeaderArg: 'fontSize',
           })
-          // Update font point size from 36 to 48
+          // Update font size from 36 to 48
           await cmdBar.currentArgumentInput.locator('.cm-content').fill('48')
           await cmdBar.progressCmdBar()
-          // Review changes to font point size
+          // Review changes to font size
           await cmdBar.expectState({
             stage: 'review',
             commandName: 'GDT Datum',
@@ -3733,42 +3648,7 @@ extrude001 = extrude(sketch001, length = 30)
               Name: 'A',
               FramePosition: '[5, 0]',
               FramePlane: 'XZ',
-              FontPointSize: '48',
-            },
-          })
-        })
-
-        await test.step('Configure font scale', async () => {
-          await cmdBar.clickOptionalArgument('fontScale')
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'GDT Datum',
-            currentArgKey: 'fontScale',
-            currentArgValue: '1.0',
-            headerArguments: {
-              Faces: '1 face',
-              Name: 'A',
-              FramePosition: '[5, 0]',
-              FramePlane: 'XZ',
-              FontPointSize: '48',
-              FontScale: '',
-            },
-            highlightedHeaderArg: 'fontScale',
-          })
-          // Update font scale from 1.0 to 2.0
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('2.0')
-          await cmdBar.progressCmdBar()
-          // Review changes to font scale
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'GDT Datum',
-            headerArguments: {
-              Faces: '1 face',
-              Name: 'A',
-              FramePosition: '[5, 0]',
-              FramePlane: 'XZ',
-              FontPointSize: '48',
-              FontScale: '2',
+              FontSize: '48',
             },
           })
         })
@@ -3777,14 +3657,13 @@ extrude001 = extrude(sketch001, length = 30)
       await test.step('Submit and verify all parameters', async () => {
         await cmdBar.progressCmdBar()
         await scene.settled(cmdBar)
-        await editor.expectEditor.toContain('experimentalFeatures = allow')
+        await editor.expectEditor.not.toContain('experimentalFeatures = allow')
         await editor.expectEditor.toContain('gdt::datum(')
         await editor.expectEditor.toContain('face = capEnd001')
         await editor.expectEditor.toContain('name = "A"')
         await editor.expectEditor.toContain('framePosition = [5, 0]')
         await editor.expectEditor.toContain('framePlane = XZ')
-        await editor.expectEditor.toContain('fontPointSize = 48')
-        await editor.expectEditor.toContain('fontScale = 2')
+        await editor.expectEditor.toContain('fontSize = 48')
       })
     })
 
@@ -3807,8 +3686,7 @@ extrude001 = extrude(sketch001, length = 30)
               Name: 'A',
               FramePosition: '[5, 0]',
               FramePlane: 'XZ',
-              FontPointSize: '48',
-              FontScale: '2',
+              FontSize: '48',
             },
             highlightedHeaderArg: 'name',
           })
@@ -3824,8 +3702,7 @@ extrude001 = extrude(sketch001, length = 30)
               Name: 'B',
               FramePosition: '[5, 0]',
               FramePlane: 'XZ',
-              FontPointSize: '48',
-              FontScale: '2',
+              FontSize: '48',
             },
           })
         })
@@ -3841,8 +3718,7 @@ extrude001 = extrude(sketch001, length = 30)
               Name: 'B',
               FramePosition: '[5, 0]',
               FramePlane: 'XZ',
-              FontPointSize: '48',
-              FontScale: '2',
+              FontSize: '48',
             },
             highlightedHeaderArg: 'framePosition',
           })
@@ -3858,8 +3734,7 @@ extrude001 = extrude(sketch001, length = 30)
               Name: 'B',
               FramePosition: '[10, 5]',
               FramePlane: 'XZ',
-              FontPointSize: '48',
-              FontScale: '2',
+              FontSize: '48',
             },
           })
         })
@@ -3875,8 +3750,7 @@ extrude001 = extrude(sketch001, length = 30)
               Name: 'B',
               FramePosition: '[10, 5]',
               FramePlane: 'XZ',
-              FontPointSize: '48',
-              FontScale: '2',
+              FontSize: '48',
             },
             highlightedHeaderArg: 'framePlane',
           })
@@ -3890,32 +3764,30 @@ extrude001 = extrude(sketch001, length = 30)
               Name: 'B',
               FramePosition: '[10, 5]',
               FramePlane: 'YZ',
-              FontPointSize: '48',
-              FontScale: '2',
+              FontSize: '48',
             },
           })
         })
 
-        await test.step('Edit font point size', async () => {
-          await page.getByRole('button', { name: 'FontPointSize' }).click()
+        await test.step('Edit font size', async () => {
+          await page.getByRole('button', { name: 'FontSize' }).click()
           await cmdBar.expectState({
             stage: 'arguments',
             commandName: 'GDT Datum',
-            currentArgKey: 'fontPointSize',
+            currentArgKey: 'fontSize',
             currentArgValue: '48',
             headerArguments: {
               Name: 'B',
               FramePosition: '[10, 5]',
               FramePlane: 'YZ',
-              FontPointSize: '48',
-              FontScale: '2',
+              FontSize: '48',
             },
-            highlightedHeaderArg: 'fontPointSize',
+            highlightedHeaderArg: 'fontSize',
           })
-          // Update font point size from 48 to 32
+          // Update font size from 48 to 32
           await cmdBar.currentArgumentInput.locator('.cm-content').fill('32')
           await cmdBar.progressCmdBar()
-          // Review changes to font point size
+          // Review changes to font size
           await cmdBar.expectState({
             stage: 'review',
             commandName: 'GDT Datum',
@@ -3923,41 +3795,7 @@ extrude001 = extrude(sketch001, length = 30)
               Name: 'B',
               FramePosition: '[10, 5]',
               FramePlane: 'YZ',
-              FontPointSize: '32',
-              FontScale: '2',
-            },
-          })
-        })
-
-        await test.step('Edit font scale', async () => {
-          await page.getByRole('button', { name: 'FontScale' }).click()
-          await cmdBar.expectState({
-            stage: 'arguments',
-            commandName: 'GDT Datum',
-            currentArgKey: 'fontScale',
-            currentArgValue: '2.0',
-            headerArguments: {
-              Name: 'B',
-              FramePosition: '[10, 5]',
-              FramePlane: 'YZ',
-              FontPointSize: '32',
-              FontScale: '2',
-            },
-            highlightedHeaderArg: 'fontScale',
-          })
-          // Update font scale from 2.0 to 1.5
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('1.5')
-          await cmdBar.progressCmdBar()
-          // Review changes to font scale
-          await cmdBar.expectState({
-            stage: 'review',
-            commandName: 'GDT Datum',
-            headerArguments: {
-              Name: 'B',
-              FramePosition: '[10, 5]',
-              FramePlane: 'YZ',
-              FontPointSize: '32',
-              FontScale: '1.5',
+              FontSize: '32',
             },
           })
         })
@@ -3971,8 +3809,7 @@ extrude001 = extrude(sketch001, length = 30)
         await editor.expectEditor.toContain('name = "B"')
         await editor.expectEditor.toContain('framePosition = [10, 5]')
         await editor.expectEditor.toContain('framePlane = YZ')
-        await editor.expectEditor.toContain('fontPointSize = 32')
-        await editor.expectEditor.toContain('fontScale = 1.5')
+        await editor.expectEditor.toContain('fontSize = 32')
       })
     })
 
