@@ -233,7 +233,7 @@ test('external change of file contents are reflected in editor', async ({
   await u.openKclCodePanel()
 
   await test.step('Write to file externally and check for changed content', async () => {
-    const content = 'ha he ho ho ha blap scap be dap'
+    const content = 'foobar'
     await fsp.writeFile(
       join(projectsDir, PROJECT_DIR_NAME, 'main.kcl'),
       content
