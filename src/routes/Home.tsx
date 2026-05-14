@@ -1,3 +1,4 @@
+import { useSignals } from '@preact/signals-react/runtime'
 import type { FormEvent, HTMLProps } from 'react'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
@@ -52,7 +53,11 @@ import {
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
-import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
+import {
+  filterStatusBarItemsForScopes,
+  statusBarGlobalItemsValueSpec,
+  statusBarLocalItemsValueSpec,
+} from '@src/registry/contracts/statusBar'
 import {
   acceptOnboarding,
   needsToOnboard,
@@ -63,6 +68,7 @@ import type { ActorRefFrom } from 'xstate'
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
+  useSignals()
   const { auth, billing, commands, settings, systemIOActor, registry } =
     useApp()
   const { kclManager } = useSingletons()
@@ -383,9 +389,18 @@ const Home = () => {
               window.electron?.appRestart()
             },
           }),
-          ...registry.signal(statusBarGlobalItemsValueSpec).value,
+          ...filterStatusBarItemsForScopes(
+            registry.signal(statusBarGlobalItemsValueSpec).value,
+            ['home']
+          ),
         ]}
-        localItems={defaultLocalStatusBarItems}
+        localItems={[
+          ...filterStatusBarItemsForScopes(
+            registry.signal(statusBarLocalItemsValueSpec).value,
+            ['home']
+          ),
+          ...defaultLocalStatusBarItems,
+        ]}
       />
     </div>
   )

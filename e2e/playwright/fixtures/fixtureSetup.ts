@@ -27,6 +27,7 @@ import { SignInPageFixture } from '@e2e/playwright/fixtures/signInPageFixture'
 import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
 import { FsFixture } from '@e2e/playwright/fixtures/fsFixture'
+import { NativeMenuFixture } from '@e2e/playwright/fixtures/nativeMenuFixture'
 
 import { TEST_SETTINGS } from '@e2e/playwright/storageStates'
 import {
@@ -189,6 +190,7 @@ export interface Fixtures {
   signInPage: SignInPageFixture
   copilot: CopilotFixture
   fs: ReturnType<typeof FsFixture>
+  nativeMenu: NativeMenuFixture
   folderSetupFn: (
     cb: (dir: string) => Promise<void>
   ) => Promise<{ dir: string; refreshRecentProjects: () => Promise<void> }>
@@ -543,6 +545,9 @@ const fixturesBasedOnProcessEnvPlatform = {
   },
   fs: async ({ page }: { page: Page }, use: FnUse) => {
     await use(FsFixture(page))
+  },
+  nativeMenu: async ({ tronApp }: { tronApp?: ElectronZoo }, use: FnUse) => {
+    await use(new NativeMenuFixture(tronApp))
   },
   folderSetupFn: async (
     {

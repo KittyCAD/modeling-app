@@ -88,6 +88,7 @@ export type Command<
   CommandSchema extends
     StateMachineCommandSetSchema<T>[CommandName] = StateMachineCommandSetSchema<T>[CommandName],
 > = {
+  id?: string
   name: CommandName
   groupId: T['id']
   needsReview: boolean

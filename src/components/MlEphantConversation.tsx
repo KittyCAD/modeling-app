@@ -55,6 +55,7 @@ export interface MlEphantConversationProps {
   initialMlCopilotMode?: MlCopilotModeId // resolved from settings/server metadata
   onMlCopilotModeChange?: (mode: MlCopilotModeId | undefined) => void
   isProcessing: boolean
+  isLoadingAttachments?: boolean
   queue: QueuedMessage[]
   onRemoveFromQueue: (id: string) => void
   onSteer: (id: string) => void
@@ -706,6 +707,11 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
               ))}
             </div>
           )}
+          {props.isLoadingAttachments ? (
+            <div className="border-t b-4 px-4 py-2 bg-chalkboard-10 dark:bg-chalkboard-90 text-xs text-chalkboard-70 dark:text-chalkboard-30">
+              Progressively loading attachments into context...
+            </div>
+          ) : null}
           <div className="border-t b-4">
             <MlEphantConversationInput
               contexts={props.contexts}

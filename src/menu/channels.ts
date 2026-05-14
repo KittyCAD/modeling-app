@@ -75,21 +75,17 @@ type MenuTargetWindow = {
   webContents: WebContentsSender
 }
 
-function isObject(value: unknown): value is Record<PropertyKey, unknown> {
-  return typeof value === 'object' && value !== null
-}
-
 function isMenuTargetWindow(value: unknown): value is MenuTargetWindow {
-  if (!isObject(value)) {
+  if (typeof value !== 'object' || value === null) {
     return false
   }
 
-  const webContents = value.webContents
-  if (!isObject(webContents)) {
+  const webContents = Reflect.get(value, 'webContents')
+  if (typeof webContents !== 'object' || webContents === null) {
     return false
   }
 
-  return typeof webContents.send === 'function'
+  return typeof Reflect.get(webContents, 'send') === 'function'
 }
 
 // Unable to use declare module 'electron' with the interface of WebContents

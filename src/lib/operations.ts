@@ -101,7 +101,8 @@ async function extractKclArgument(
   operation: StdLibCallOp,
   argName: string,
   rustContext: RustContext,
-  isArray?: boolean
+  isArray?: boolean,
+  allowStringArrays?: boolean
 ): Promise<KclCommandValue | { error: string }> {
   const arg = operation.labeledArgs?.[argName]
   if (!arg?.sourceRange) {
@@ -111,7 +112,7 @@ async function extractKclArgument(
   const result = await stringToKclExpression(
     code.slice(...arg.sourceRange.map((r) => toUtf16(r, code))),
     rustContext,
-    { allowArrays: isArray }
+    { allowArrays: isArray, allowStringArrays }
   )
 
   if (err(result) || 'errors' in result) {
@@ -243,21 +244,17 @@ function extractStringArgument(
     : undefined
 }
 
-function extractStringArrayArgument(
+async function extractOptionalKclArrayArgument(
   code: string,
   operation: StdLibCallOp,
-  argName: string
-): string | undefined {
-  const raw = extractStringArgument(code, operation, argName)
-  if (!raw) return undefined
+  argName: string,
+  rustContext: RustContext
+): Promise<KclCommandValue | undefined | { error: string }> {
+  if (!operation.labeledArgs?.[argName]?.sourceRange) {
+    return undefined
+  }
 
-  return raw
-    .replace(/^\s*\[/, '')
-    .replace(/\]\s*$/, '')
-    .split(',')
-    .map((value) => stripQuotes(value.trim()))
-    .filter(Boolean)
-    .join(', ')
+  return extractKclArgument(code, operation, argName, rustContext, true, true)
 }
 
 /**
@@ -1890,12 +1887,12 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
     extractKclArgument(code, operation, 'precision', rustContext),
     extractKclArgument(code, operation, 'framePosition', rustContext, true),
     extractKclArgument(code, operation, 'leaderScale', rustContext),
-    extractKclArgument(code, operation, 'fontPointSize', rustContext),
-    extractKclArgument(code, operation, 'fontScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
   ])
 
-  const [precision, framePosition, leaderScale, fontPointSize, fontScale] =
-    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
+  const [precision, framePosition, leaderScale, fontSize] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
+  )
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
 
@@ -1906,8 +1903,7 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 
@@ -1952,12 +1948,12 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({
   const optionalArgs = await Promise.all([
     extractKclArgument(code, operation, 'framePosition', rustContext, true),
     extractKclArgument(code, operation, 'leaderScale', rustContext),
-    extractKclArgument(code, operation, 'fontPointSize', rustContext),
-    extractKclArgument(code, operation, 'fontScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
   ])
 
-  const [framePosition, leaderScale, fontPointSize, fontScale] =
-    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
+  const [framePosition, leaderScale, fontSize] = optionalArgs.map((arg) =>
+    'error' in arg ? undefined : arg
+  )
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
 
@@ -1967,8 +1963,7 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 
@@ -2028,27 +2023,22 @@ const prepareToEditGdtPosition: PrepareToEditCallback = async ({
     extractKclArgument(code, operation, 'precision', rustContext),
     extractKclArgument(code, operation, 'framePosition', rustContext, true),
     extractKclArgument(code, operation, 'leaderScale', rustContext),
-    extractKclArgument(code, operation, 'fontPointSize', rustContext),
-    extractKclArgument(code, operation, 'fontScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
   ])
 
-  const [precision, framePosition, leaderScale, fontPointSize, fontScale] =
-    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
+  const [precision, framePosition, leaderScale, fontSize] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
+  )
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
-  let datums: ModelingCommandSchema['GDT Position']['datums']
-  if (operation.labeledArgs?.['datums']?.sourceRange) {
-    const datumsResult = await extractKclArgument(
-      code,
-      operation,
-      'datums',
-      rustContext,
-      true
-    )
-    if ('error' in datumsResult) {
-      return { reason: datumsResult.error }
-    }
-    datums = datumsResult
+  const datums = await extractOptionalKclArrayArgument(
+    code,
+    operation,
+    'datums',
+    rustContext
+  )
+  if (datums && 'error' in datums) {
+    return { reason: datums.error }
   }
 
   const argDefaultValues: ModelingCommandSchema['GDT Position'] = {
@@ -2059,8 +2049,7 @@ const prepareToEditGdtPosition: PrepareToEditCallback = async ({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 
@@ -2104,15 +2093,23 @@ const prepareToEditGdtProfile: PrepareToEditCallback = async ({
     extractKclArgument(code, operation, 'precision', rustContext),
     extractKclArgument(code, operation, 'framePosition', rustContext, true),
     extractKclArgument(code, operation, 'leaderScale', rustContext),
-    extractKclArgument(code, operation, 'fontPointSize', rustContext),
-    extractKclArgument(code, operation, 'fontScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
   ])
 
-  const [precision, framePosition, leaderScale, fontPointSize, fontScale] =
-    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
+  const [precision, framePosition, leaderScale, fontSize] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
+  )
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
-  const datums = extractStringArrayArgument(code, operation, 'datums')
+  const datums = await extractOptionalKclArrayArgument(
+    code,
+    operation,
+    'datums',
+    rustContext
+  )
+  if (datums && 'error' in datums) {
+    return { reason: datums.error }
+  }
 
   const argDefaultValues: ModelingCommandSchema['GDT Profile'] = {
     edges,
@@ -2122,8 +2119,7 @@ const prepareToEditGdtProfile: PrepareToEditCallback = async ({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 
@@ -2197,12 +2193,12 @@ const prepareToEditGdtDistance: PrepareToEditCallback = async ({
     extractKclArgument(code, operation, 'precision', rustContext),
     extractKclArgument(code, operation, 'framePosition', rustContext, true),
     extractKclArgument(code, operation, 'leaderScale', rustContext),
-    extractKclArgument(code, operation, 'fontPointSize', rustContext),
-    extractKclArgument(code, operation, 'fontScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
   ])
 
-  const [precision, framePosition, leaderScale, fontPointSize, fontScale] =
-    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
+  const [precision, framePosition, leaderScale, fontSize] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
+  )
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
 
@@ -2213,8 +2209,7 @@ const prepareToEditGdtDistance: PrepareToEditCallback = async ({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 
@@ -2274,15 +2269,23 @@ const prepareToEditGdtPerpendicularity: PrepareToEditCallback = async ({
     extractKclArgument(code, operation, 'precision', rustContext),
     extractKclArgument(code, operation, 'framePosition', rustContext, true),
     extractKclArgument(code, operation, 'leaderScale', rustContext),
-    extractKclArgument(code, operation, 'fontPointSize', rustContext),
-    extractKclArgument(code, operation, 'fontScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
   ])
 
-  const [precision, framePosition, leaderScale, fontPointSize, fontScale] =
-    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
+  const [precision, framePosition, leaderScale, fontSize] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
+  )
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
-  const datums = extractStringArrayArgument(code, operation, 'datums')
+  const datums = await extractOptionalKclArrayArgument(
+    code,
+    operation,
+    'datums',
+    rustContext
+  )
+  if (datums && 'error' in datums) {
+    return { reason: datums.error }
+  }
 
   const argDefaultValues: ModelingCommandSchema['GDT Perpendicularity'] = {
     objects: { graphSelections, otherSelections: [] },
@@ -2292,8 +2295,7 @@ const prepareToEditGdtPerpendicularity: PrepareToEditCallback = async ({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 
@@ -2353,15 +2355,23 @@ const prepareToEditGdtParallelism: PrepareToEditCallback = async ({
     extractKclArgument(code, operation, 'precision', rustContext),
     extractKclArgument(code, operation, 'framePosition', rustContext, true),
     extractKclArgument(code, operation, 'leaderScale', rustContext),
-    extractKclArgument(code, operation, 'fontPointSize', rustContext),
-    extractKclArgument(code, operation, 'fontScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
   ])
 
-  const [precision, framePosition, leaderScale, fontPointSize, fontScale] =
-    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
+  const [precision, framePosition, leaderScale, fontSize] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
+  )
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
-  const datums = extractStringArrayArgument(code, operation, 'datums')
+  const datums = await extractOptionalKclArrayArgument(
+    code,
+    operation,
+    'datums',
+    rustContext
+  )
+  if (datums && 'error' in datums) {
+    return { reason: datums.error }
+  }
 
   const argDefaultValues: ModelingCommandSchema['GDT Parallelism'] = {
     objects: { graphSelections, otherSelections: [] },
@@ -2371,8 +2381,7 @@ const prepareToEditGdtParallelism: PrepareToEditCallback = async ({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 
@@ -2427,12 +2436,12 @@ const prepareToEditGdtAnnotation: PrepareToEditCallback = async ({
   const optionalArgs = await Promise.all([
     extractKclArgument(code, operation, 'framePosition', rustContext, true),
     extractKclArgument(code, operation, 'leaderScale', rustContext),
-    extractKclArgument(code, operation, 'fontPointSize', rustContext),
-    extractKclArgument(code, operation, 'fontScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
   ])
 
-  const [framePosition, leaderScale, fontPointSize, fontScale] =
-    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
+  const [framePosition, leaderScale, fontSize] = optionalArgs.map((arg) =>
+    'error' in arg ? undefined : arg
+  )
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
 
@@ -2442,8 +2451,7 @@ const prepareToEditGdtAnnotation: PrepareToEditCallback = async ({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 
@@ -2714,6 +2722,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   mirror2d: {
     label: 'Mirror 2D',
     icon: 'mirror',
+  },
+  mirror3d: {
+    label: 'Mirror',
+    icon: 'mirror3d',
   },
   region: {
     label: 'Region',

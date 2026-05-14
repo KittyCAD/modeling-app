@@ -11,6 +11,7 @@ import {
 import type { ToolTip } from '@src/lang/langHelpers'
 import { splitPathAtLastIndex } from '@src/lang/modifyAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { sourceRangeContains } from '@src/lang/sourceRange'
 import {
   codeRefFromRange,
   getArtifactOfTypes,
@@ -1601,6 +1602,32 @@ export function findOperationArtifact(
         a.codeRef.range.every((v, i) => v === operation.sourceRange[i])
     )
   return artifact
+}
+
+export function findOperationForArtifact(input: {
+  artifact: Artifact | undefined
+  operations: Operation[]
+}): Operation | undefined {
+  if (!input.artifact || !('codeRef' in input.artifact)) {
+    return undefined
+  }
+  const { artifact } = input
+
+  return input.operations.find((operation) => {
+    if (!('sourceRange' in operation)) {
+      return false
+    }
+    return (
+      sourceRangeContains(operation.sourceRange, artifact.codeRef.range) ||
+      (operation.type === 'StdLibCall' &&
+        operation.stdlibEntrySourceRange !== undefined &&
+        operation.stdlibEntrySourceRange !== null &&
+        sourceRangeContains(
+          operation.stdlibEntrySourceRange,
+          artifact.codeRef.range
+        ))
+    )
+  })
 }
 
 export function findOperationPlaneArtifact(

@@ -29,7 +29,7 @@ function CommandBarBasicInput({
   const previouslySetValue = commandBarState.context.argumentsToSubmit[
     arg.name
   ] as string | undefined
-  useHotkeys('mod + k, mod + /', () => commands.send({ type: 'Close' }))
+  useHotkeys('mod + /', () => commands.send({ type: 'Close' }))
   const inputRef = useRef<HTMLInputElement>(null)
   const argMachineContext = useSelector(
     arg.machineActor,

@@ -2,15 +2,13 @@
 /// This can be used for model-based definition (MBD).
 
 @no_std
-@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 /// GD&T datum feature.
 ///
 /// This is part of model-based definition (MBD).
 ///
 /// ```kcl,no3d,legacySketch
-/// @settings(experimentalFeatures = allow, defaultLengthUnit = in)
-///
 /// width = 5
 ///
 /// startSketchOn(XY)
@@ -31,7 +29,6 @@
 /// ```
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(experimentalFeatures = allow)
 ///
 /// blockProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 8mm, var 0mm])
@@ -57,7 +54,7 @@
 ///   framePlane = XZ,
 /// )
 /// ```
-@(impl = std_rust, experimental = true, feature_tree = true)
+@(impl = std_rust, feature_tree = true)
 export fn datum(
   /// The face to be annotated.
   @(includeInSnippet = true)
@@ -73,10 +70,9 @@ export fn datum(
   framePlane?: Plane,
   /// Scale of the leader. The default is `1.0`. Must be greater than `0`.
   leaderScale?: number(Count),
-  /// The font point size to use for the annotation text rendering. The default is `36`.
-  fontPointSize?: number(Count),
-  /// Scale to use for the annotation text after rendering with the point size. The default is `1.0`. Must be greater than `0`.
-  fontScale?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
 ): GdtAnnotation {}
 
 /// GD&T annotation specifying how flat faces should be.
@@ -84,7 +80,6 @@ export fn datum(
 /// This is part of model-based definition (MBD).
 ///
 /// ```kcl,no3d,legacySketch
-/// @settings(experimentalFeatures = allow)
 ///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -98,7 +93,6 @@ export fn datum(
 /// ```
 ///
 /// ```kcl,no3d,legacySketch
-/// @settings(experimentalFeatures = allow)
 ///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -112,7 +106,6 @@ export fn datum(
 /// ```
 ///
 /// ```kcl,no3d,legacySketch
-/// @settings(experimentalFeatures = allow)
 ///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -126,7 +119,6 @@ export fn datum(
 /// ```
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(experimentalFeatures = allow)
 ///
 /// blockProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -146,7 +138,7 @@ export fn datum(
 /// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
 /// gdt::flatness(faces = [top], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
-@(impl = std_rust, experimental = true, feature_tree = true)
+@(impl = std_rust, feature_tree = true)
 export fn flatness(
   /// The faces to be annotated.
   @(includeInSnippet = true)
@@ -165,10 +157,9 @@ export fn flatness(
   framePlane?: Plane,
   /// Scale of the leader. The default is `1.0`. Must be greater than `0`.
   leaderScale?: number(Count),
-  /// The font point size to use for the annotation text rendering. The default is `36`.
-  fontPointSize?: number(Count),
-  /// Scale to use for the annotation text after rendering with the point size. The default is `1.0`. Must be greater than `0`.
-  fontScale?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T perpendicularity annotation specifying how much faces or edges may deviate from perpendicular orientation relative to datum references.
@@ -176,7 +167,6 @@ export fn flatness(
 /// This is part of model-based definition (MBD).
 ///
 /// ```kcl,no3d,legacySketch
-/// @settings(experimentalFeatures = allow)
 ///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -192,7 +182,6 @@ export fn flatness(
 /// ```
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(experimentalFeatures = allow)
 ///
 /// blockProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -213,7 +202,7 @@ export fn flatness(
 /// sideEdge = getCommonEdge(faces = [block.sketch.tags.edge2, top])
 /// gdt::perpendicularity(edges = [sideEdge], tolerance = 0.05mm, datums = ["A"], framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
-@(impl = std_rust, experimental = true, feature_tree = true)
+@(impl = std_rust, feature_tree = true)
 export fn perpendicularity(
   /// The tolerance zone size for perpendicular orientation.
   @(includeInSnippet = true)
@@ -238,10 +227,9 @@ export fn perpendicularity(
   framePlane?: Plane,
   /// Scale of the leader. The default is `1.0`. Must be greater than `0`.
   leaderScale?: number(Count),
-  /// The font point size to use for the annotation text rendering. The default is `36`.
-  fontPointSize?: number(Count),
-  /// Scale to use for the annotation text after rendering with the point size. The default is `1.0`. Must be greater than `0`.
-  fontScale?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T parallelism annotation specifying how much faces or edges may deviate from parallel orientation relative to datum references.
@@ -249,7 +237,6 @@ export fn perpendicularity(
 /// This is part of model-based definition (MBD).
 ///
 /// ```kcl,no3d,legacySketch
-/// @settings(experimentalFeatures = allow)
 ///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -265,7 +252,6 @@ export fn perpendicularity(
 /// ```
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(experimentalFeatures = allow)
 ///
 /// blockProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -286,7 +272,7 @@ export fn perpendicularity(
 /// sideEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
 /// gdt::parallelism(edges = [sideEdge], tolerance = 0.05mm, datums = ["A"], framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
-@(impl = std_rust, experimental = true, feature_tree = true)
+@(impl = std_rust, feature_tree = true)
 export fn parallelism(
   /// The tolerance zone size for parallel orientation.
   @(includeInSnippet = true)
@@ -311,10 +297,9 @@ export fn parallelism(
   framePlane?: Plane,
   /// Scale of the leader. The default is `1.0`. Must be greater than `0`.
   leaderScale?: number(Count),
-  /// The font point size to use for the annotation text rendering. The default is `36`.
-  fontPointSize?: number(Count),
-  /// Scale to use for the annotation text after rendering with the point size. The default is `1.0`. Must be greater than `0`.
-  fontScale?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T position annotation specifying how much faces or edges may deviate from their ideal location.
@@ -322,7 +307,6 @@ export fn parallelism(
 /// This is part of model-based definition (MBD).
 ///
 /// ```kcl,no3d,legacySketch
-/// @settings(experimentalFeatures = allow)
 ///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -338,7 +322,6 @@ export fn parallelism(
 /// ```
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(experimentalFeatures = allow)
 ///
 /// blockProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -359,7 +342,7 @@ export fn parallelism(
 /// sideEdge = getCommonEdge(faces = [block.sketch.tags.edge2, top])
 /// gdt::position(edges = [sideEdge], tolerance = 0.05mm, datums = ["A"], framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
-@(impl = std_rust, experimental = true, feature_tree = true)
+@(impl = std_rust, feature_tree = true)
 export fn position(
   /// The positional tolerance that is acceptable.
   @(includeInSnippet = true)
@@ -384,10 +367,9 @@ export fn position(
   framePlane?: Plane,
   /// Scale of the leader. The default is `1.0`. Must be greater than `0`.
   leaderScale?: number(Count),
-  /// The font point size to use for the annotation text rendering. The default is `36`.
-  fontPointSize?: number(Count),
-  /// Scale to use for the annotation text after rendering with the point size. The default is `1.0`. Must be greater than `0`.
-  fontScale?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T annotation for attaching manufacturing text to faces or edges.
@@ -395,7 +377,6 @@ export fn position(
 /// This is part of model-based definition (MBD).
 ///
 /// ```kcl,no3d,legacySketch
-/// @settings(experimentalFeatures = allow)
 ///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -410,7 +391,6 @@ export fn position(
 /// ```
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(experimentalFeatures = allow)
 ///
 /// blockProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -431,7 +411,7 @@ export fn position(
 /// sideEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
 /// gdt::annotation(edges = [sideEdge], annotation = "Deburr edge", framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
-@(impl = std_rust, experimental = true, feature_tree = true)
+@(impl = std_rust, feature_tree = true)
 export fn annotation(
   /// The annotation text to display.
   @(includeInSnippet = true)
@@ -450,10 +430,9 @@ export fn annotation(
   framePlane?: Plane,
   /// Scale of the leader. The default is `1.0`. Must be greater than `0`.
   leaderScale?: number(Count),
-  /// The font point size to use for the annotation text rendering. The default is `36`.
-  fontPointSize?: number(Count),
-  /// Scale to use for the annotation text after rendering with the point size. The default is `1.0`. Must be greater than `0`.
-  fontScale?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T distance annotation for displaying measured edge lengths or distances between two entities.
@@ -461,7 +440,6 @@ export fn annotation(
 /// This is part of model-based definition (MBD).
 ///
 /// ```kcl,no3d,legacySketch
-/// @settings(experimentalFeatures = allow)
 ///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -477,7 +455,6 @@ export fn annotation(
 /// ```
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(experimentalFeatures = allow)
 ///
 /// blockProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -498,7 +475,7 @@ export fn annotation(
 /// lengthEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
 /// gdt::distance(edges = [lengthEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
-@(impl = std_rust, experimental = true, feature_tree = true)
+@(impl = std_rust, feature_tree = true)
 export fn distance(
   /// The acceptable distance tolerance.
   @(includeInSnippet = true)
@@ -521,10 +498,9 @@ export fn distance(
   framePlane?: Plane,
   /// Scale of the distance arrows. The default is `1.0`. Must be greater than `0`.
   leaderScale?: number(Count),
-  /// The font point size to use for the annotation text rendering. The default is `36`.
-  fontPointSize?: number(Count),
-  /// Scale to use for the annotation text after rendering with the point size. The default is `1.0`. Must be greater than `0`.
-  fontScale?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
 ): [GdtAnnotation; 1+] {}
 
 /// GD&T profile annotation specifying how much edges may deviate from their ideal shape.
@@ -532,7 +508,6 @@ export fn distance(
 /// This is part of model-based definition (MBD).
 ///
 /// ```kcl,no3d,legacySketch
-/// @settings(experimentalFeatures = allow)
 ///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -555,7 +530,6 @@ export fn distance(
 /// ```
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(experimentalFeatures = allow)
 ///
 /// blockProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -576,7 +550,7 @@ export fn distance(
 /// profileEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
 /// gdt::profile(edges = [profileEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
-@(impl = std_rust, experimental = true, feature_tree = true)
+@(impl = std_rust, feature_tree = true)
 export fn profile(
   /// The edges to be annotated.
   @(includeInSnippet = true)
@@ -598,8 +572,7 @@ export fn profile(
   framePlane?: Plane,
   /// Scale of the leader. The default is `1.0`. Must be greater than `0`.
   leaderScale?: number(Count),
-  /// The font point size to use for the annotation text rendering. The default is `36`.
-  fontPointSize?: number(Count),
-  /// Scale to use for the annotation text after rendering with the point size. The default is `1.0`. Must be greater than `0`.
-  fontScale?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
 ): [GdtAnnotation; 1+] {}

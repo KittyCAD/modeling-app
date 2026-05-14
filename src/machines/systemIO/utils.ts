@@ -413,15 +413,21 @@ export const prepareMlEphantNewFileRequest = ({
     }
   )
 
-  const targetFilePathRelativeToProjectDir = getFilePathRelativeToProject(
+  // getFilePathRelativeToProject intentionally keeps the leading separator
+  // (e.g. "/newFile.kcl"). Strip it here so the returned value is genuinely
+  // project-relative, matching what the field name promises.
+  const rawRelativePath = getFilePathRelativeToProject(
     fileFocusedOnInEditor?.path || '',
     projectNameCurrentlyOpened
   )
+  const requestedFileNameWithExtension = rawRelativePath.startsWith(fsZds.sep)
+    ? rawRelativePath.slice(fsZds.sep.length)
+    : rawRelativePath
 
   return {
     files: requestedFiles,
     filesToDelete,
     requestedProjectName: projectNameCurrentlyOpened,
-    requestedFileNameWithExtension: targetFilePathRelativeToProjectDir ?? '',
+    requestedFileNameWithExtension,
   }
 }

@@ -670,6 +670,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           return {
             ...message,
             projectName: input.requestedProjectName,
+            fileName: input.requestedFileNameWithExtension || '',
             subRoute: input.requestedSubRoute || '',
           }
         }
