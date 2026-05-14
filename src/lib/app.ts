@@ -69,6 +69,10 @@ import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import {
+  createProjectRegistryItem,
+  projectRegistrySlot,
+} from '@src/registry/extensions/project'
+import {
   appRegistryServicesSlot,
   coreRegistryItems,
 } from '@src/registry/registry'
@@ -451,6 +455,12 @@ export class App implements AppSubsystems {
   async openProject(projectIORef: Project) {
     const projectIORefSignal = signal(projectIORef)
     this.project = await ZDSProject.open(projectIORefSignal, this)
+    this.registry.reconfigure(projectRegistrySlot, [
+      createProjectRegistryItem({
+        project: this.project,
+        settingsActor: this.settings.actor,
+      }),
+    ])
 
     // This extension makes it possible to mark FS operations as un/redoable
     effect(() => {
@@ -485,6 +495,7 @@ export class App implements AppSubsystems {
   closeProject() {
     this.unsubscribeFromSettings?.unsubscribe()
     this.project?.close()
+    this.registry.reconfigure(projectRegistrySlot, [])
     this.project = undefined
   }
 
@@ -595,10 +606,6 @@ export class App implements AppSubsystems {
       return // Everything in here only matters inside a project.
     }
     const { context } = snapshot
-
-    this.singletons.kclManager.sendModelingEvent({
-      type: 'refresh sketch solve scene plugins',
-    })
 
     // Update line wrapping
     this.singletons.kclManager.setEditorLineWrapping(

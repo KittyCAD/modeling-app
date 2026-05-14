@@ -76,7 +76,7 @@ import { machine as tangentialArcTool } from '@src/machines/sketchSolve/tools/ta
 import { machine as threePointArcTool } from '@src/machines/sketchSolve/tools/threePointArcToolDiagram'
 import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
 import { constraintToolMachines } from '@src/machines/sketchSolve/tools/constraintToolMachine'
-import { sketchSolveScenePluginsValueSpec } from '@src/registry/contracts/sketchSolveScene'
+import { sketchSolveScenePluginsValueSpec } from '@src/registry/contracts/project'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import {
   type ActionArgs,
@@ -127,7 +127,6 @@ export type SketchSolveMachineEvent =
       keepSelection?: boolean
     }
   | { type: 'toggle non-visual constraints' }
-  | { type: 'refresh scene plugins' }
   | {
       type: 'update selected ids'
       data: {

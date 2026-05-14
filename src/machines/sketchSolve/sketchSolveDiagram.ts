@@ -44,7 +44,6 @@ import {
   initializeIntersectionPlane,
   ORIGIN_TARGET,
   refreshSelectionStyling,
-  refreshSketchSolveScenePlugins,
   refreshSketchSolveScale,
   sendToActorIfActive,
   setDraftEntities,
@@ -478,9 +477,6 @@ export const sketchSolveMachine = setup({
     'update selected code highlight': updateSelectedCodeHighlight,
     'update hovered id': assign(updateHoveredId),
     'refresh selection styling': refreshSelectionStyling,
-    'refresh scene plugins': ({ context }) => {
-      refreshSketchSolveScenePlugins(context)
-    },
     'clear hovered code highlight': clearHoveredCodeHighlight,
     'update sketch outcome': assign(updateSketchOutcome),
     'set draft entities': assign(setDraftEntities),
@@ -567,9 +563,6 @@ export const sketchSolveMachine = setup({
       ],
       description:
         'Toggles whether non-visual constraints should be shown in sketch solve mode.',
-    },
-    'refresh scene plugins': {
-      actions: 'refresh scene plugins',
     },
     escape: {
       // Only forward to tool if we're in 'using tool' state

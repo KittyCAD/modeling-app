@@ -1,8 +1,20 @@
-import { defineContract, defineValueSpec } from '@kittycad/registry'
+import {
+  defineContract,
+  defineService,
+  defineValueSpec,
+} from '@kittycad/registry'
+import type { ReadonlySignal } from '@preact/signals-core'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { ZDSProject } from '@src/lang/KclManager'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { Group } from 'three'
+
+export interface ProjectService {
+  readonly project: ZDSProject
+  readonly settings: ReadonlySignal<SettingsType>
+  refreshSketchSolveScenePlugins(): void
+}
 
 export interface SketchSolveScenePluginContext {
   sceneInfra: SceneInfra
@@ -17,15 +29,17 @@ export interface SketchSolveScenePlugin {
   onSketchSceneGraphUpdate: (context: SketchSolveScenePluginContext) => void
 }
 
-export const sketchSolveSceneContract = defineContract({
+const projectContract = defineContract({
+  projectService: defineService<ProjectService>('project'),
   sketchSolveScenePluginsValueSpec: defineValueSpec<
     SketchSolveScenePlugin,
     SketchSolveScenePlugin[]
   >({
-    name: 'sketch-solve-scene-plugins',
+    name: 'project.sketch-solve-scene-plugins',
     defaultValue: [],
     combine: (plugins) => [...plugins],
   }),
 })
 
-export const { sketchSolveScenePluginsValueSpec } = sketchSolveSceneContract
+export const { projectService, sketchSolveScenePluginsValueSpec } =
+  projectContract

@@ -13,7 +13,7 @@ import {
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
-import type { SketchSolveScenePluginContext } from '@src/registry/contracts/sketchSolveScene'
+import type { SketchSolveScenePluginContext } from '@src/registry/contracts/project'
 import {
   type Group,
   Mesh,

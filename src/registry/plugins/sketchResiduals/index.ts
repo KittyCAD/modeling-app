@@ -1,7 +1,7 @@
 import { defineRegistryItem, provide } from '@kittycad/registry'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
+import { sketchSolveScenePluginsValueSpec } from '@src/registry/contracts/project'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
-import { sketchSolveScenePluginsValueSpec } from '@src/registry/contracts/sketchSolveScene'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { updateResidualsUnderlay } from './residualsUnderlay'
 

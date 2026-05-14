@@ -9,8 +9,8 @@ import {
   createPointApiObject,
   createSceneGraphDelta,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
+import { sketchSolveScenePluginsValueSpec } from '@src/registry/contracts/project'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
-import { sketchSolveScenePluginsValueSpec } from '@src/registry/contracts/sketchSolveScene'
 import { describe, expect, it } from 'vitest'
 import sketchResiduals from '.'
 import {
