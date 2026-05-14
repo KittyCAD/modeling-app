@@ -279,6 +279,28 @@ function buildSegmentCtorWithDrag({
   return baseCtor
 }
 
+function getActiveDragPointIds(
+  segmentsToEdit: ExistingSegmentCtor[],
+  objects: ApiObject[]
+): number[] {
+  return Array.from(
+    new Set(
+      segmentsToEdit.flatMap(({ id }) =>
+        isPointSegment(objects[id]) ? [id] : []
+      )
+    )
+  )
+}
+
+function updateActiveDragPointIds(
+  context: SolveActionArgs['context'],
+  pointIds: number[] | null
+) {
+  if (context.activeDragPointIds) {
+    context.activeDragPointIds.value = pointIds
+  }
+}
+
 function buildConstraintLabelPosition(
   position: Vector2,
   units: NumericSuffix
@@ -822,11 +844,13 @@ export function createOnDragEndCallback({
   getDraggedEntityId,
   setDraggedEntityId,
   invalidateDragSession,
+  onUpdateActiveDragPointIds = () => {},
   onComplete,
 }: {
   getDraggedEntityId: () => number | null
   setDraggedEntityId: (entityId: number | null) => void
   invalidateDragSession: () => void
+  onUpdateActiveDragPointIds?: (pointIds: number[] | null) => void
   onComplete: (data: {
     draggedEntityId: number | null
     intersectionPoint?: Partial<{ twoD: Vector2; threeD: Vector3 }>
@@ -849,6 +873,7 @@ export function createOnDragEndCallback({
         mouseEvent,
       })
     } finally {
+      onUpdateActiveDragPointIds(null)
       setDraggedEntityId(null)
     }
   }
@@ -1122,6 +1147,7 @@ export function createOnDragCallback({
   getJsAppSettings,
   sceneInfra,
   onUpdateDragSnapping,
+  onUpdateActiveDragPointIds = () => {},
   onPreviewSolveStarted,
   onPreviewSolveSettled,
 }: {
@@ -1173,6 +1199,7 @@ export function createOnDragCallback({
   getJsAppSettings: () => Promise<DeepPartial<Configuration>>
   sceneInfra: SceneInfra
   onUpdateDragSnapping: (candidate: SnappingCandidate | null) => void
+  onUpdateActiveDragPointIds?: (pointIds: number[]) => void
   onPreviewSolveStarted?: () => void
   onPreviewSolveSettled?: () => void
 }): (arg: {
@@ -1197,6 +1224,7 @@ export function createOnDragCallback({
 
     if (!sceneGraphDelta) {
       onUpdateDragSnapping(null)
+      onUpdateActiveDragPointIds([])
       return
     }
 
@@ -1206,6 +1234,7 @@ export function createOnDragCallback({
       sceneGraphDelta
     )
     if (draggedConstraintLabelId != null) {
+      onUpdateActiveDragPointIds([])
       setIsSolveInProgress(true)
       onPreviewSolveStarted?.()
       try {
@@ -1263,6 +1292,7 @@ export function createOnDragCallback({
     // If no entity under cursor and no selectedIds, nothing to do
     if (entityUnderCursorId === null && selectedIds.length === 0) {
       onUpdateDragSnapping(null)
+      onUpdateActiveDragPointIds([])
       return
     }
 
@@ -1331,9 +1361,12 @@ export function createOnDragCallback({
       }
 
       if (segmentsToEdit.length === 0) {
+        onUpdateActiveDragPointIds([])
         setIsSolveInProgress(false)
         return
       }
+
+      onUpdateActiveDragPointIds(getActiveDragPointIds(segmentsToEdit, objects))
 
       // Edit segments via Rust context
       const settings = await getJsAppSettings()
@@ -1617,12 +1650,14 @@ export function setUpOnDragAndSelectionClickCallbacks({
 
   const beginDragSession = () => {
     setIsDragActive(true)
+    updateActiveDragPointIds(context, [])
     const nextDragSessionId = getActiveDragSessionId() + 1
     setActiveDragSessionId(nextDragSessionId)
   }
 
   const invalidateDragSession = () => {
     setIsDragActive(false)
+    updateActiveDragPointIds(context, null)
     const nextDragSessionId = getActiveDragSessionId() + 1
     setActiveDragSessionId(nextDragSessionId)
   }
@@ -1706,6 +1741,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
       getDraggedEntityId,
       setDraggedEntityId,
       invalidateDragSession,
+      onUpdateActiveDragPointIds: (pointIds) => {
+        updateActiveDragPointIds(context, pointIds)
+      },
       // Send the last up-to-date state from the frontend to Rust. It doesn't know
       // about this last feedback loop yet!
       onComplete: async ({
@@ -2171,11 +2209,15 @@ export function setUpOnDragAndSelectionClickCallbacks({
         jsAppSettings(context.rustContext.settingsActor),
       sceneInfra: context.sceneInfra,
       onUpdateDragSnapping: updateDragSnappingState,
+      onUpdateActiveDragPointIds: (pointIds) => {
+        updateActiveDragPointIds(context, pointIds)
+      },
       onPreviewSolveStarted: markPreviewSolveStarted,
       onPreviewSolveSettled: markPreviewSolveSettled,
     }),
     onMouseDownSelection: () => {
       setDraggedEntityId(null)
+      updateActiveDragPointIds(context, null)
       const snapshot = self.getSnapshot()
       const hoveredId = snapshot.context.hoveredId
       if (!isObjectSelectionId(hoveredId)) {

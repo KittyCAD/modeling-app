@@ -147,6 +147,72 @@ describe('buildResidualFieldsForSceneGraph', () => {
       expect.arrayContaining([
         expect.objectContaining({
           kind: RESIDUAL_FIELD_KIND.point,
+          a: [0, 0, 1],
+        }),
+        expect.objectContaining({
+          kind: RESIDUAL_FIELD_KIND.point,
+          a: [3, 4, 1],
+        }),
+      ])
+    )
+  })
+
+  it('marks only active dragged point residual masks', () => {
+    const fixed = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const dragged = createPointApiObject({ id: 2, x: 3, y: 4 })
+    const constraint = createConstraintApiObject(3, {
+      type: 'Coincident',
+      segments: [fixed.id, dragged.id],
+    })
+
+    const fields = buildResidualFieldsForSceneGraph(
+      createSceneGraphDelta([
+        createSketchApiObject(0),
+        fixed,
+        dragged,
+        constraint,
+      ]),
+      0,
+      [dragged.id]
+    )
+
+    expect(fields).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          kind: RESIDUAL_FIELD_KIND.point,
+          a: [0, 0, 1],
+        }),
+        expect.objectContaining({
+          kind: RESIDUAL_FIELD_KIND.point,
+          a: [3, 4, 0],
+        }),
+      ])
+    )
+  })
+
+  it('marks no point residual masks active during a drag without dragged points', () => {
+    const fixed = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const point = createPointApiObject({ id: 2, x: 3, y: 4 })
+    const constraint = createConstraintApiObject(3, {
+      type: 'Coincident',
+      segments: [fixed.id, point.id],
+    })
+
+    const fields = buildResidualFieldsForSceneGraph(
+      createSceneGraphDelta([
+        createSketchApiObject(0),
+        fixed,
+        point,
+        constraint,
+      ]),
+      0,
+      []
+    )
+
+    expect(fields).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          kind: RESIDUAL_FIELD_KIND.point,
           a: [0, 0, 0],
         }),
         expect.objectContaining({

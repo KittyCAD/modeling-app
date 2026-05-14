@@ -6,7 +6,7 @@ import type {
   SegmentCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import { effect, type ReadonlySignal } from '@preact/signals-core'
+import { effect, type ReadonlySignal, type Signal } from '@preact/signals-core'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -258,6 +258,7 @@ export type SketchSolveContext = {
   kclManager: KclManager
   sketchSolveScenePlugins: ReadonlySignal<SketchSolveScenePlugin[]>
   sketchSolveScenePluginHost?: SketchSolveScenePluginHost
+  activeDragPointIds: Signal<readonly number[] | null>
 }
 
 export type SolveActionArgs = ActionArgs<
@@ -742,6 +743,7 @@ export function createSketchSolveScenePluginHost(
 
   const disposeSignalEffect = effect(() => {
     void context.sketchSolveScenePlugins.value
+    void context.activeDragPointIds.value
     render()
   })
 
@@ -797,6 +799,7 @@ function getSketchSolveScenePluginContext(
     sceneGraphDelta,
     sketchId: context.sketchId,
     settings,
+    activeDragPointIds: context.activeDragPointIds.value,
   }
 }
 

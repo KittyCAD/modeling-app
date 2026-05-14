@@ -3,7 +3,7 @@ import type {
   SceneGraphDelta,
   SegmentCtor,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { ReadonlySignal } from '@preact/signals-core'
+import { signal, type ReadonlySignal } from '@preact/signals-core'
 import { toggleSketchExtension } from '@src/editor/plugins/sketch'
 import type { KclManager } from '@src/lang/KclManager'
 import {
@@ -526,6 +526,7 @@ export const sketchSolveMachine = setup({
       rustContext: input.kclManager.rustContext,
       kclManager: input.kclManager,
       sketchSolveScenePlugins: input.sketchSolveScenePlugins,
+      activeDragPointIds: signal<readonly number[] | null>(null),
       showNonVisualConstraints: false,
     }
     context.sketchSolveScenePluginHost =

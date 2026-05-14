@@ -22,6 +22,7 @@ export interface SketchSolveScenePluginContext {
   sceneGraphDelta: SceneGraphDelta
   sketchId: number
   settings: SettingsType
+  activeDragPointIds: readonly number[] | null
 }
 
 export interface SketchSolveScenePlugin {

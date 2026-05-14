@@ -97,6 +97,9 @@ float distanceToLine(vec2 p, vec2 a, vec2 b) {
 float residualForField(vec2 p, vec4 a, vec4 b) {
   float kind = a.w;
   if (kind < 1.5) {
+    if (a.z < 0.5) {
+      return 1.0e20;
+    }
     return length(p - a.xy);
   }
   if (kind < 2.5) {
@@ -129,7 +132,14 @@ void main() {
     if (i >= uFieldCount) {
       break;
     }
-    mag = min(mag, residualForField(p, uFieldA[i], uFieldB[i]));
+    float fieldMag = residualForField(p, uFieldA[i], uFieldB[i]);
+    if (fieldMag < 1.0e19) {
+      mag = min(mag, fieldMag);
+    }
+  }
+
+  if (mag > 9.0e19) {
+    discard;
   }
 
   vec3 turquoise = vec3(64.0 / 255.0, 224.0 / 255.0, 208.0 / 255.0);
@@ -154,7 +164,8 @@ export function updateResidualsUnderlay(
 ): void {
   const fields = buildResidualFieldsForSceneGraph(
     context.sceneGraphDelta,
-    context.sketchId
+    context.sketchId,
+    context.activeDragPointIds
   )
   if (!fields.length) {
     removeResidualsUnderlay(context.sketchSolveGroup)
@@ -178,20 +189,23 @@ export function disposeResidualsUnderlay(
 
 export function buildResidualFieldsForSceneGraph(
   sceneGraphDelta: SceneGraphDelta,
-  sketchId: number
+  sketchId: number,
+  activeDragPointIds: readonly number[] | null = null
 ): ResidualField[] {
   const objects = getCurrentSketchObjectsById(
     sceneGraphDelta.new_graph.objects,
     sketchId
   )
   const fields: ResidualField[] = []
+  const activeDragPointIdSet =
+    activeDragPointIds === null ? null : new Set(activeDragPointIds)
 
   for (const object of objects) {
     if (!isConstraint(object)) {
       continue
     }
 
-    appendConstraintFields(fields, object, objects)
+    appendConstraintFields(fields, object, objects, activeDragPointIdSet)
     if (fields.length >= MAX_RESIDUAL_FIELDS) {
       break
     }
@@ -203,7 +217,8 @@ export function buildResidualFieldsForSceneGraph(
 function appendConstraintFields(
   fields: ResidualField[],
   object: ApiObject,
-  objects: ApiObject[]
+  objects: ApiObject[],
+  activeDragPointIds: ReadonlySet<number> | null
 ) {
   if (!isConstraint(object)) {
     return
@@ -212,7 +227,12 @@ function appendConstraintFields(
   const constraint = object.kind.constraint
   switch (constraint.type) {
     case 'Coincident':
-      appendCoincidentFields(fields, constraint.segments, objects)
+      appendCoincidentFields(
+        fields,
+        constraint.segments,
+        objects,
+        activeDragPointIds
+      )
       break
     case 'Distance':
       appendDistanceFields(
@@ -255,7 +275,13 @@ function appendConstraintFields(
       appendAxisFields(fields, constraint, objects, 'x')
       break
     case 'Midpoint':
-      appendMidpointField(fields, constraint.point, constraint.segment, objects)
+      appendMidpointField(
+        fields,
+        constraint.point,
+        constraint.segment,
+        objects,
+        activeDragPointIds
+      )
       break
     case 'Radius':
       appendRadiusField(
@@ -285,7 +311,8 @@ function appendConstraintFields(
 function appendCoincidentFields(
   fields: ResidualField[],
   segments: ConstraintSegment[],
-  objects: ApiObject[]
+  objects: ApiObject[],
+  activeDragPointIds: ReadonlySet<number> | null
 ) {
   if (segments.length < 2) {
     return
@@ -295,19 +322,37 @@ function appendCoincidentFields(
   const second = segments[1]
   const firstPoint = pointForConstraintSegment(first, objects)
   const secondPoint = pointForConstraintSegment(second, objects)
+  const firstPointId = pointIdForConstraintSegment(first, objects)
+  const secondPointId = pointIdForConstraintSegment(second, objects)
 
   if (firstPoint && secondPoint) {
     if (first === 'ORIGIN') {
-      addPointField(fields, firstPoint)
+      addPointField(
+        fields,
+        firstPoint,
+        isActiveDragPoint(secondPointId, activeDragPointIds)
+      )
       return
     }
     if (second === 'ORIGIN') {
-      addPointField(fields, secondPoint)
+      addPointField(
+        fields,
+        secondPoint,
+        isActiveDragPoint(firstPointId, activeDragPointIds)
+      )
       return
     }
 
-    addPointField(fields, firstPoint)
-    addPointField(fields, secondPoint)
+    addPointField(
+      fields,
+      firstPoint,
+      isActiveDragPoint(secondPointId, activeDragPointIds)
+    )
+    addPointField(
+      fields,
+      secondPoint,
+      isActiveDragPoint(firstPointId, activeDragPointIds)
+    )
     return
   }
 
@@ -403,14 +448,19 @@ function appendMidpointField(
   fields: ResidualField[],
   pointId: number,
   segmentId: number,
-  objects: ApiObject[]
+  objects: ApiObject[],
+  activeDragPointIds: ReadonlySet<number> | null
 ) {
   const midpoint = getSegmentMidpoint(objects[segmentId], objects)
   const point = objects[pointId]
   if (!midpoint || !isPointSegment(point)) {
     return
   }
-  addPointField(fields, midpoint)
+  addPointField(
+    fields,
+    midpoint,
+    isActiveDragPoint(pointId, activeDragPointIds)
+  )
 }
 
 function appendRadiusField(
@@ -463,10 +513,14 @@ function appendEqualLengthFields(
   }
 }
 
-function addPointField(fields: ResidualField[], point: Point2d) {
+function addPointField(
+  fields: ResidualField[],
+  point: Point2d,
+  active = false
+) {
   fields.push({
     kind: RESIDUAL_FIELD_KIND.point,
-    a: [point.x, point.y, 0],
+    a: [point.x, point.y, active ? 1 : 0],
   })
 }
 
@@ -512,6 +566,27 @@ function pointForConstraintSegment(
   }
 
   return pointForObject(objects[segment])
+}
+
+function pointIdForConstraintSegment(
+  segment: ConstraintSegment | undefined,
+  objects: ApiObject[]
+): number | undefined {
+  if (typeof segment !== 'number') {
+    return undefined
+  }
+
+  return isPointSegment(objects[segment]) ? segment : undefined
+}
+
+function isActiveDragPoint(
+  pointId: number | undefined,
+  activeDragPointIds: ReadonlySet<number> | null
+) {
+  return (
+    activeDragPointIds === null ||
+    (pointId !== undefined && activeDragPointIds.has(pointId))
+  )
 }
 
 function pointForObject(object: ApiObject | undefined): Point2d | null {
