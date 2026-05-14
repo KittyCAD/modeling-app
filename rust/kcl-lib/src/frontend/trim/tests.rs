@@ -2196,10 +2196,10 @@ async fn test_trim_with_distance_constraints_preserve_constraints() {
     line3.start
   ])
   line5 = line(start = [var 1.24mm, var 0.92mm], end = [var 1.84mm, var -1.64mm])
-  splitTrimLineDistanceConstraintMigrated = line(start = [var -2.67mm, var -3.46mm], end = [var -1.78mm, var -3.62mm])
-  line8 = line(start = [var 2.87mm, var -3.72mm], end = [var 5.42mm, var -1.72mm])
-  line9 = line(start = [var 1.1mm, var -3.91mm], end = [var 1.28mm, var -5.69mm])
-  line10 = line(start = [var 1.99mm, var -3.81mm], end = [var 2.57mm, var -5.65mm])
+  splitTrimLineDistanceConstraintMigrated = line(start = [var -2.67mm, var -3.6mm], end = [var -1.78mm, var -3.63mm])
+  line8 = line(start = [var 2.87mm, var -3.77mm], end = [var 5.42mm, var -1.72mm])
+  line9 = line(start = [var 1.1mm, var -3.71mm], end = [var 1.28mm, var -5.69mm])
+  line10 = line(start = [var 1.99mm, var -3.74mm], end = [var 2.57mm, var -5.65mm])
   line11 = line(start = [var -1.93mm, var -2.2mm], end = [var -1.6mm, var -5.43mm])
   coincident([
     endTrimmedShouldDeleteDisConstraint.end,
@@ -2209,7 +2209,7 @@ async fn test_trim_with_distance_constraints_preserve_constraints() {
     startTrimmedAlsoDeleteDisConstraint.start,
     line5
   ])
-  line2 = line(start = [var 1.1mm, var -3.91mm], end = [var 2.87mm, var -3.72mm])
+  line2 = line(start = [var 1.1mm, var -3.71mm], end = [var 2.87mm, var -3.77mm])
   coincident([
     splitTrimLineDistanceConstraintMigrated.end,
     line11
@@ -2896,8 +2896,6 @@ async fn get_objects_from_kcl(kcl_code: &str) -> Vec<crate::frontend::api::Objec
     let mut scene_graph = frontend.scene_graph.clone();
 
     // If scene graph is empty, try to get objects from exec_outcome.scene_objects
-    // (this is only available when artifact-graph feature is enabled)
-    #[cfg(feature = "artifact-graph")]
     if scene_graph.objects.is_empty() && !exec_outcome.scene_objects.is_empty() {
         scene_graph.objects = exec_outcome.scene_objects;
     }
@@ -3006,7 +3004,6 @@ const RECT_ARC_LINE5_TRIM_BASE_KCL: &str = r#"sketch001 = sketch(on = YZ) {
 
 /// Tests for `get_trim_spawn_terminations` function.
 /// These tests mirror the TypeScript tests in `trimToolImpl.spec.ts`.
-/// Note: These tests require the `artifact-graph` feature to be enabled to access scene objects.
 mod get_trim_spawn_terminations_tests {
     use kittycad_modeling_cmds::units::UnitLength;
 

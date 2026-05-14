@@ -22,6 +22,7 @@ import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import type { FileEntry, Project } from '@src/lib/project'
+import { activeFileRelativeToProject } from '@src/lib/promptToEdit'
 import { useSelector } from '@xstate/react'
 import { useSearchParams } from 'react-router-dom'
 import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
@@ -62,6 +63,10 @@ export const MlEphantConversationPane = (props: {
   const isSubmittingFromQueue = useRef(false)
   const isClearingChat = useRef(false)
   const steeredId = useRef<string | null>(null)
+  const loaderFileRef = useRef(props.loaderFile)
+  useEffect(() => {
+    loaderFileRef.current = props.loaderFile
+  })
 
   let conversation = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.conversation
@@ -78,6 +83,10 @@ export const MlEphantConversationPane = (props: {
   const modeOptions = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.modeOptions
   })
+  const attachmentsLoadedForCurrentPrompt = useSelector(
+    props.mlEphantManagerActor,
+    (actor) => actor.context.attachmentsLoadedForCurrentPrompt
+  )
   const defaultMode = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.defaultMode
   })
@@ -426,6 +435,7 @@ export const MlEphantConversationPane = (props: {
         ) {
           let project: Project = props.theProject
 
+          const currentLoaderFile = loaderFileRef.current
           void collectProjectFiles({
             selectedFileContents: props.kclManager.code,
             fileNames: props.kclManager.execState.filenames,
@@ -435,6 +445,13 @@ export const MlEphantConversationPane = (props: {
               type: MlEphantManagerStates.ContinueCheck,
               projectName: project.name,
               projectFiles,
+              activeFile: currentLoaderFile
+                ? activeFileRelativeToProject({
+                    currentFileEntry: currentLoaderFile,
+                    applicationProjectDirectory:
+                      props.settings.app.projectDirectory.current,
+                  })
+                : undefined,
             })
           })
           return
@@ -482,10 +499,13 @@ export const MlEphantConversationPane = (props: {
   }, [searchParams, setSearchParams])
 
   const userBlockedOnPaymentReason = props.user?.block_message
+  const isLoadingAttachments =
+    !attachmentsLoadedForCurrentPrompt && conversation !== undefined
 
   return (
     <MlEphantConversation
       isLoading={conversation === undefined}
+      isLoadingAttachments={isLoadingAttachments}
       contexts={[
         { type: 'selections', data: props.contextModeling.selectionRanges },
       ]}

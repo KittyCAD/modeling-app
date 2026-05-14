@@ -2,10 +2,8 @@
 
 use kcl_lib::ExecError;
 use kcl_lib::ExecOutcome;
-#[cfg(feature = "artifact-graph")]
 use kcl_lib::NodePathStep;
 use kcl_lib::bust_cache;
-#[cfg(feature = "artifact-graph")]
 use kcl_lib::exec::Operation;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
@@ -266,7 +264,6 @@ extrude(profile001, length = 100)"#
     assert_eq!(first.2, last.2, "The outcomes should be the same");
 }
 
-#[cfg(feature = "artifact-graph")]
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_add_line_preserves_artifact_graph() {
     let code = r#"sketch001 = startSketchOn(XY)
@@ -351,7 +348,6 @@ extrude001 = extrude(profile001, length = 4)
     }
 }
 
-#[cfg(feature = "artifact-graph")]
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_add_second_sketch_block_preserves_node_path() {
     let code = r#"sketch001 = sketch(on = YZ) {
@@ -447,7 +443,6 @@ extrude001 = extrude(region001, length = 5)
     }
 }
 
-#[cfg(feature = "artifact-graph")]
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_add_offset_plane_computes_node_path() {
     let code = r#"sketch001 = startSketchOn(XY)
@@ -659,7 +654,6 @@ extrude(profile001, length = 100)
     result.last().unwrap();
 }
 
-#[cfg(feature = "artifact-graph")]
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_multi_file_other_file_only_change() {
     let code = r#"import "toBeImported.kcl" as importedCube
@@ -796,7 +790,6 @@ extrude(profile001, length = 100)"#
     assert_eq!(first.2, last.2, "The outcomes should be the same");
 }
 
-#[cfg(feature = "artifact-graph")]
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_add_second_sketch_block_import_succeeds() {
     let rectangle1 = (

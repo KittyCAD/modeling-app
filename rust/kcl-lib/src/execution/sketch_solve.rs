@@ -15,7 +15,6 @@ use crate::exec::NumericType;
 use crate::exec::Sketch;
 use crate::exec::UnitType;
 use crate::execution::AbstractSegment;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::Metadata;
 use crate::execution::Segment;
 use crate::execution::SegmentKind;
@@ -28,7 +27,6 @@ use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::front::Freedom;
 use crate::front::Object;
-#[cfg(feature = "artifact-graph")]
 use crate::front::ObjectKind;
 use crate::std::args::TyF64;
 
@@ -537,16 +535,6 @@ fn point_freedom(x: Option<Freedom>, y: Option<Freedom>) -> Option<Freedom> {
     }
 }
 
-#[cfg(not(feature = "artifact-graph"))]
-pub(super) fn create_segment_scene_objects(
-    _segments: &[Segment],
-    _sketch_block_range: SourceRange,
-    _exec_state: &mut ExecState,
-) -> Result<Vec<Object>, KclError> {
-    Ok(Vec::new())
-}
-
-#[cfg(feature = "artifact-graph")]
 pub(super) fn create_segment_scene_objects(
     segments: &[Segment],
     sketch_block_range: SourceRange,

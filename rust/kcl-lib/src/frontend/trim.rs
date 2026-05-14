@@ -15,8 +15,9 @@ use crate::frontend::sketch::ConstraintSegment;
 use crate::frontend::sketch::Segment;
 use crate::frontend::sketch::SegmentCtor;
 use crate::pretty::NumericSuffix;
+use crate::util::MathExt;
 
-#[cfg(all(feature = "artifact-graph", test))]
+#[cfg(test)]
 mod tests;
 
 // Epsilon constants for geometric calculations
@@ -1886,9 +1887,9 @@ fn curve_contains_point(curve: &CurveHandle, point: Coords2d, epsilon: f64) -> b
             .center
             .is_some_and(|center| is_point_on_arc(point, center, curve.start, curve.end, epsilon)),
         (CurveKind::Circular, CurveDomain::Closed) => curve.center.is_some_and(|center| {
-            let radius = curve
-                .radius
-                .unwrap_or_else(|| ((curve.start.x - center.x).powi(2) + (curve.start.y - center.y).powi(2)).sqrt());
+            let radius = curve.radius.unwrap_or_else(|| {
+                ((curve.start.x - center.x).squared() + (curve.start.y - center.y).squared()).sqrt()
+            });
             is_point_on_circle(point, center, radius, epsilon)
         }),
         (CurveKind::Line, CurveDomain::Closed) => false,
@@ -1953,9 +1954,9 @@ fn curve_line_segment_intersections(
             let Some(center) = curve.center else {
                 return Vec::new();
             };
-            let radius = curve
-                .radius
-                .unwrap_or_else(|| ((curve.start.x - center.x).powi(2) + (curve.start.y - center.y).powi(2)).sqrt());
+            let radius = curve.radius.unwrap_or_else(|| {
+                ((curve.start.x - center.x).squared() + (curve.start.y - center.y).squared()).sqrt()
+            });
             line_circle_intersections(line_start, line_end, center, radius, epsilon)
         }
         (CurveKind::Line, CurveDomain::Closed) => Vec::new(),
@@ -2013,7 +2014,7 @@ fn curve_curve_intersections(curve: &CurveHandle, other: &CurveHandle, epsilon: 
                 return Vec::new();
             };
             let other_radius = other.radius.unwrap_or_else(|| {
-                ((other.start.x - other_center.x).powi(2) + (other.start.y - other_center.y).powi(2)).sqrt()
+                ((other.start.x - other_center.x).squared() + (other.start.y - other_center.y).squared()).sqrt()
             });
             line_circle_intersections(curve.start, curve.end, other_center, other_radius, epsilon)
                 .into_iter()
@@ -2048,7 +2049,7 @@ fn curve_curve_intersections(curve: &CurveHandle, other: &CurveHandle, epsilon: 
                 return Vec::new();
             };
             let other_radius = other.radius.unwrap_or_else(|| {
-                ((other.start.x - other_center.x).powi(2) + (other.start.y - other_center.y).powi(2)).sqrt()
+                ((other.start.x - other_center.x).squared() + (other.start.y - other_center.y).squared()).sqrt()
             });
             circle_arc_intersections(
                 other_center,
@@ -2064,7 +2065,7 @@ fn curve_curve_intersections(curve: &CurveHandle, other: &CurveHandle, epsilon: 
                 return Vec::new();
             };
             let curve_radius = curve.radius.unwrap_or_else(|| {
-                ((curve.start.x - curve_center.x).powi(2) + (curve.start.y - curve_center.y).powi(2)).sqrt()
+                ((curve.start.x - curve_center.x).squared() + (curve.start.y - curve_center.y).squared()).sqrt()
             });
             line_circle_intersections(other.start, other.end, curve_center, curve_radius, epsilon)
                 .into_iter()
@@ -2076,7 +2077,7 @@ fn curve_curve_intersections(curve: &CurveHandle, other: &CurveHandle, epsilon: 
                 return Vec::new();
             };
             let curve_radius = curve.radius.unwrap_or_else(|| {
-                ((curve.start.x - curve_center.x).powi(2) + (curve.start.y - curve_center.y).powi(2)).sqrt()
+                ((curve.start.x - curve_center.x).squared() + (curve.start.y - curve_center.y).squared()).sqrt()
             });
             circle_arc_intersections(
                 curve_center,
@@ -2092,10 +2093,10 @@ fn curve_curve_intersections(curve: &CurveHandle, other: &CurveHandle, epsilon: 
                 return Vec::new();
             };
             let curve_radius = curve.radius.unwrap_or_else(|| {
-                ((curve.start.x - curve_center.x).powi(2) + (curve.start.y - curve_center.y).powi(2)).sqrt()
+                ((curve.start.x - curve_center.x).squared() + (curve.start.y - curve_center.y).squared()).sqrt()
             });
             let other_radius = other.radius.unwrap_or_else(|| {
-                ((other.start.x - other_center.x).powi(2) + (other.start.y - other_center.y).powi(2)).sqrt()
+                ((other.start.x - other_center.x).squared() + (other.start.y - other_center.y).squared()).sqrt()
             });
             circle_circle_intersections(curve_center, curve_radius, other_center, other_radius, epsilon)
         }
@@ -2703,8 +2704,8 @@ fn find_termination_in_direction(
             let is_other_seg_endpoint = segment_endpoint_points(intersecting_seg, objects, default_unit)
                 .into_iter()
                 .any(|(_, endpoint)| {
-                    let dist_to_endpoint = ((closest_candidate.point.x - endpoint.x).powi(2)
-                        + (closest_candidate.point.y - endpoint.y).powi(2))
+                    let dist_to_endpoint = ((closest_candidate.point.x - endpoint.x).squared()
+                        + (closest_candidate.point.y - endpoint.y).squared())
                     .sqrt();
                     dist_to_endpoint < endpoint_epsilon
                 });
@@ -3023,7 +3024,7 @@ where
 }
 
 /// Result of executing trim flow
-#[cfg(all(feature = "artifact-graph", test))]
+#[cfg(test)]
 #[derive(Debug, Clone)]
 pub struct TrimFlowResult {
     pub kcl_code: String,
@@ -3045,7 +3046,7 @@ pub struct TrimFlowResult {
 ///
 /// Note: This function is only available for non-WASM builds (tests) and uses
 /// a mock executor context so tests can run without an engine token.
-#[cfg(all(not(target_arch = "wasm32"), feature = "artifact-graph", test))]
+#[cfg(all(not(target_arch = "wasm32"), test))]
 pub(crate) async fn execute_trim_flow(
     kcl_code: &str,
     trim_points: &[Coords2d],
@@ -3080,12 +3081,9 @@ pub(crate) async fn execute_trim_flow(
             .map_err(|e| format!("Failed to execute program: {}", e.error.message()))?;
 
         let exec_outcome = frontend.update_state_after_exec(exec_outcome, false);
-        #[allow(unused_mut)] // mut is needed when artifact-graph feature is enabled
         let mut initial_scene_graph = frontend.scene_graph.clone();
 
         // If scene graph is empty, try to get objects from exec_outcome.scene_objects
-        // (this is only available when artifact-graph feature is enabled)
-        #[cfg(feature = "artifact-graph")]
         if initial_scene_graph.objects.is_empty() && !exec_outcome.scene_objects.is_empty() {
             initial_scene_graph.objects = exec_outcome.scene_objects.clone();
         }
@@ -3167,6 +3165,7 @@ pub async fn execute_trim_loop_with_context(
 ) -> Result<(crate::frontend::api::SourceDelta, crate::frontend::api::SceneGraphDelta), String> {
     // Trim line points are expected in millimeters and normalized to the current unit here.
     let default_unit = frontend.default_length_unit();
+    frontend.clear_sketch_var_warm_starts();
     let normalized_points = normalize_trim_points_to_unit(points, default_unit);
 
     // We inline the loop logic here to avoid borrow checker issues with closures capturing mutable references
@@ -3991,8 +3990,8 @@ pub(crate) fn build_trim_plan(
         {
             let endpoint_is_at_intersection = get_point_coords_from_native(objects, point_id, default_unit)
                 .is_some_and(|point_coords| {
-                    ((point_coords.x - intersection_coords.x).powi(2)
-                        + (point_coords.y - intersection_coords.y).powi(2))
+                    ((point_coords.x - intersection_coords.x).squared()
+                        + (point_coords.y - intersection_coords.y).squared())
                     .sqrt()
                         <= EPSILON_POINT_ON_SEGMENT * 1000.0
                 });
@@ -5306,7 +5305,7 @@ pub(crate) async fn execute_trim_operations_simple(
                             };
 
                             frontend
-                                .edit_segments(ctx, version, sketch_id, vec![segment_to_edit])
+                                .edit_segments_for_preview(ctx, version, sketch_id, vec![segment_to_edit])
                                 .await
                                 .map_err(|e| format!("Failed to edit segment: {}", e.error.message()))
                         }
@@ -5318,7 +5317,7 @@ pub(crate) async fn execute_trim_operations_simple(
                         };
 
                         frontend
-                            .edit_segments(ctx, version, sketch_id, vec![segment_to_edit])
+                            .edit_segments_for_preview(ctx, version, sketch_id, vec![segment_to_edit])
                             .await
                             .map_err(|e| format!("Failed to edit segment: {}", e.error.message()))
                     }
@@ -5330,7 +5329,7 @@ pub(crate) async fn execute_trim_operations_simple(
                     };
 
                     frontend
-                        .edit_segments(ctx, version, sketch_id, vec![segment_to_edit])
+                        .edit_segments_for_preview(ctx, version, sketch_id, vec![segment_to_edit])
                         .await
                         .map_err(|e| format!("Failed to edit segment: {}", e.error.message()))
                 }
@@ -5482,6 +5481,7 @@ pub(crate) async fn execute_trim_operations_simple(
                     .add_segment(ctx, version, sketch_id, arc_ctor, None)
                     .await
                     .map_err(|e| format!("Failed to add arc while replacing circle: {}", e.error.message()))?;
+                frontend.clear_sketch_var_warm_starts();
                 invalidates_ids = invalidates_ids || add_scene_graph_delta.invalidates_ids;
 
                 let new_arc_id = *add_scene_graph_delta
@@ -5517,14 +5517,91 @@ pub(crate) async fn execute_trim_operations_simple(
                     _ => return Err("New arc object is not a segment".to_string()),
                 };
 
+                let endpoint_point_at = |segment_id: ObjectId, coords: Coords2d| -> Option<ObjectId> {
+                    let segment_obj = current_scene_graph_delta
+                        .new_graph
+                        .objects
+                        .iter()
+                        .find(|obj| obj.id == segment_id)?;
+                    let endpoint_epsilon = EPSILON_POINT_ON_SEGMENT * 1000.0;
+
+                    let endpoint_matches = |endpoint: Coords2d| {
+                        let dx = coords.x - endpoint.x;
+                        let dy = coords.y - endpoint.y;
+                        (dx * dx + dy * dy).sqrt() < endpoint_epsilon
+                    };
+
+                    match &segment_obj.kind {
+                        crate::frontend::api::ObjectKind::Segment { segment } => match segment {
+                            crate::frontend::sketch::Segment::Line(line) => {
+                                if get_position_coords_for_line(
+                                    segment_obj,
+                                    LineEndpoint::Start,
+                                    &current_scene_graph_delta.new_graph.objects,
+                                    default_unit,
+                                )
+                                .is_some_and(endpoint_matches)
+                                {
+                                    Some(line.start)
+                                } else if get_position_coords_for_line(
+                                    segment_obj,
+                                    LineEndpoint::End,
+                                    &current_scene_graph_delta.new_graph.objects,
+                                    default_unit,
+                                )
+                                .is_some_and(endpoint_matches)
+                                {
+                                    Some(line.end)
+                                } else {
+                                    None
+                                }
+                            }
+                            crate::frontend::sketch::Segment::Arc(arc) => {
+                                if get_position_coords_from_arc(
+                                    segment_obj,
+                                    ArcPoint::Start,
+                                    &current_scene_graph_delta.new_graph.objects,
+                                    default_unit,
+                                )
+                                .is_some_and(endpoint_matches)
+                                {
+                                    Some(arc.start)
+                                } else if get_position_coords_from_arc(
+                                    segment_obj,
+                                    ArcPoint::End,
+                                    &current_scene_graph_delta.new_graph.objects,
+                                    default_unit,
+                                )
+                                .is_some_and(endpoint_matches)
+                                {
+                                    Some(arc.end)
+                                } else {
+                                    None
+                                }
+                            }
+                            _ => None,
+                        },
+                        _ => None,
+                    }
+                };
+
                 let constraint_segments_for =
                     |arc_endpoint_id: ObjectId,
                      term: &TrimTermination|
                      -> Result<Vec<crate::frontend::sketch::ConstraintSegment>, String> {
                         match term {
                             TrimTermination::Intersection {
-                                intersecting_seg_id, ..
-                            } => Ok(vec![arc_endpoint_id.into(), (*intersecting_seg_id).into()]),
+                                trim_termination_coords,
+                                intersecting_seg_id,
+                            } => {
+                                if let Some(endpoint_id) =
+                                    endpoint_point_at(*intersecting_seg_id, *trim_termination_coords)
+                                {
+                                    Ok(vec![arc_endpoint_id.into(), endpoint_id.into()])
+                                } else {
+                                    Ok(vec![arc_endpoint_id.into(), (*intersecting_seg_id).into()])
+                                }
+                            }
                             TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
                                 other_segment_point_id,
                                 ..
@@ -5542,6 +5619,7 @@ pub(crate) async fn execute_trim_operations_simple(
                     .add_constraint(ctx, version, sketch_id, start_constraint)
                     .await
                     .map_err(|e| format!("Failed to add start coincident on replaced arc: {}", e.error.message()))?;
+                frontend.clear_sketch_var_warm_starts();
                 invalidates_ids = invalidates_ids || c1_scene_graph_delta.invalidates_ids;
 
                 let end_constraint = Constraint::Coincident(crate::frontend::sketch::Coincident {
@@ -5551,16 +5629,28 @@ pub(crate) async fn execute_trim_operations_simple(
                     .add_constraint(ctx, version, sketch_id, end_constraint)
                     .await
                     .map_err(|e| format!("Failed to add end coincident on replaced arc: {}", e.error.message()))?;
+                frontend.clear_sketch_var_warm_starts();
                 invalidates_ids = invalidates_ids || c2_scene_graph_delta.invalidates_ids;
 
                 let mut termination_point_ids: Vec<ObjectId> = Vec::new();
                 for term in [arc_start_termination, arc_end_termination] {
-                    if let TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
-                        other_segment_point_id,
-                        ..
-                    } = term.as_ref()
-                    {
-                        termination_point_ids.push(*other_segment_point_id);
+                    match term.as_ref() {
+                        TrimTermination::Intersection {
+                            trim_termination_coords,
+                            intersecting_seg_id,
+                        } => {
+                            if let Some(endpoint_id) = endpoint_point_at(*intersecting_seg_id, *trim_termination_coords)
+                            {
+                                termination_point_ids.push(endpoint_id);
+                            }
+                        }
+                        TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
+                            other_segment_point_id,
+                            ..
+                        } => {
+                            termination_point_ids.push(*other_segment_point_id);
+                        }
+                        TrimTermination::SegEndPoint { .. } => {}
                     }
                 }
 
@@ -5694,6 +5784,7 @@ pub(crate) async fn execute_trim_operations_simple(
                         .add_constraint(ctx, version, sketch_id, constraint)
                         .await
                         .map_err(|e| format!("Failed to migrate circle constraint to arc: {}", e.error.message()))?;
+                    frontend.clear_sketch_var_warm_starts();
                     invalidates_ids = invalidates_ids || migrated_scene_graph_delta.invalidates_ids;
                 }
 
@@ -5887,7 +5978,7 @@ pub(crate) async fn execute_trim_operations_simple(
                 };
 
                 let (_edit_source_delta, edit_scene_graph_delta) = frontend
-                    .edit_segments(
+                    .edit_segments_for_preview(
                         ctx,
                         version,
                         sketch_id,
@@ -5898,6 +5989,7 @@ pub(crate) async fn execute_trim_operations_simple(
                     )
                     .await
                     .map_err(|e| format!("Failed to edit segment: {}", e.error.message()))?;
+                frontend.clear_sketch_var_warm_starts();
                 // Track invalidates_ids from edit_segments call
                 invalidates_ids = invalidates_ids || edit_scene_graph_delta.invalidates_ids;
 
@@ -6516,6 +6608,7 @@ pub(crate) async fn execute_trim_operations_simple(
                 // Track invalidates_ids from each operation result
                 invalidates_ids = invalidates_ids || scene_graph_delta.invalidates_ids;
                 last_result = Some((source_delta, scene_graph_delta.clone()));
+                frontend.clear_sketch_var_warm_starts();
             }
             Err(e) => {
                 crate::logln!("Error executing trim operation {}: {}", op_index, e);

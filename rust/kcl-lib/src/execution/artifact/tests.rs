@@ -3,6 +3,26 @@
 use super::*;
 
 #[test]
+fn gdt_annotation_artifacts_get_node_paths() {
+    let code = r#"gdt::annotation(annotation = "NOTE", faces = [], edges = [])"#;
+    let ast = crate::parsing::parse_str(code, ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+    let source_range = SourceRange::new(0, code.len(), ModuleId::default());
+    let mut artifact = Artifact::GdtAnnotation(GdtAnnotationArtifact {
+        id: ArtifactId::new(Uuid::new_v4()),
+        code_ref: CodeRef::placeholder(source_range),
+    });
+
+    fill_in_node_paths(&mut artifact, &programs, 0, &FnvHashMap::default());
+
+    let Artifact::GdtAnnotation(annotation) = artifact else {
+        panic!("Expected GD&T annotation artifact");
+    };
+    assert_eq!(annotation.code_ref.range, source_range);
+    assert!(!annotation.code_ref.node_path.is_empty());
+}
+
+#[test]
 fn entity_clone_remaps_sweep_ids() {
     let source_id = ArtifactId::new(Uuid::new_v4());
     let source_path_id = ArtifactId::new(Uuid::new_v4());
@@ -850,4 +870,107 @@ fn primitive_face_does_not_replace_existing_cap_artifact() {
     );
 
     assert!(matches!(map.get(&shared_id), Some(Artifact::Cap(_))));
+}
+
+#[test]
+fn mirror_3d_artifacts_include_mirrored_body_with_face_and_edge_ids() {
+    let path_id = ArtifactId::new(Uuid::new_v4());
+    let source_sweep_id = ArtifactId::new(Uuid::new_v4());
+    let mirrored_sweep_id = Uuid::new_v4();
+    let face_one_id = Uuid::new_v4();
+    let face_two_id = Uuid::new_v4();
+    let edge_id = Uuid::new_v4();
+    let code_ref = CodeRef::placeholder(SourceRange::synthetic());
+
+    let mut artifacts = IndexMap::new();
+    artifacts.insert(
+        path_id,
+        Artifact::Path(Path {
+            id: path_id,
+            sub_type: PathSubType::Region,
+            plane_id: ArtifactId::new(Uuid::new_v4()),
+            seg_ids: Vec::new(),
+            consumed: true,
+            sweep_id: Some(source_sweep_id),
+            trajectory_sweep_id: None,
+            solid2d_id: None,
+            code_ref: CodeRef::placeholder(SourceRange::synthetic()),
+            composite_solid_id: None,
+            sketch_block_id: None,
+            origin_path_id: None,
+            inner_path_id: None,
+            outer_path_id: None,
+            pattern_ids: Vec::new(),
+        }),
+    );
+    artifacts.insert(
+        source_sweep_id,
+        Artifact::Sweep(Sweep {
+            id: source_sweep_id,
+            sub_type: SweepSubType::Extrusion,
+            path_id,
+            surface_ids: Vec::new(),
+            edge_ids: Vec::new(),
+            code_ref,
+            trajectory_id: None,
+            method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            consumed: false,
+            pattern_ids: Vec::new(),
+        }),
+    );
+
+    let cmd_id = Uuid::new_v4();
+    let command = ModelingCmd::from(
+        kcmc::each_cmd::EntityMirrorAcross::builder()
+            .ids(vec![Uuid::from(path_id)])
+            .across(kittycad_modeling_cmds::shared::MirrorAcross::Plane { id: Uuid::new_v4() })
+            .build(),
+    );
+    let artifact_command = ArtifactCommand {
+        cmd_id,
+        range: SourceRange::synthetic(),
+        command,
+    };
+    let mirror_response: kcmc::output::EntityMirrorAcross = serde_json::from_value(serde_json::json!({
+        "entity_face_edge_ids": [
+            {
+                "object_id": mirrored_sweep_id,
+                "faces": [face_one_id, face_two_id],
+                "edges": [edge_id],
+            }
+        ]
+    }))
+    .expect("valid mirror response");
+    let mut responses = FnvHashMap::default();
+    responses.insert(cmd_id, OkModelingCmdResponse::EntityMirrorAcross(mirror_response));
+    let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+
+    let updated = artifacts_to_update(
+        &artifacts,
+        &artifact_command,
+        &responses,
+        &FnvHashMap::default(),
+        &FnvHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &FnvHashMap::default(),
+    )
+    .unwrap();
+
+    assert_eq!(updated.len(), 1);
+    assert!(updated.iter().any(|artifact| {
+        matches!(
+            artifact,
+            Artifact::Sweep(Sweep {
+                id,
+                surface_ids,
+                edge_ids,
+                ..
+            }) if *id == ArtifactId::new(mirrored_sweep_id)
+                && surface_ids == &vec![ArtifactId::new(face_one_id), ArtifactId::new(face_two_id)]
+                && edge_ids == &vec![ArtifactId::new(edge_id)]
+        )
+    }));
 }

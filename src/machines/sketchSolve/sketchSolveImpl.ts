@@ -179,6 +179,12 @@ export type UpdateSketchOutcomeEvent = {
      */
     suppressExecOutcomeIssues?: boolean
     /**
+     * Preview updates can briefly report Freedom::Conflict while the solver is
+     * settling around drag constraints. Suppress that per-segment red styling
+     * without hiding actual solve-error state.
+     */
+    suppressFreedomConflictColoring?: boolean
+    /**
      * If true, debounce editor updates to allow cancellation (e.g., for double-click handling)
      */
     debounceEditorUpdate?: boolean
@@ -235,6 +241,7 @@ export type SketchSolveContext = {
   sketchExecOutcome?: {
     sourceDelta: SourceDelta
     sceneGraphDelta: SceneGraphDelta
+    suppressFreedomConflictColoring?: boolean
   }
   draftEntities?: {
     segmentIds: Array<number>
@@ -405,6 +412,7 @@ export function updateSegmentGroup({
   scale,
   theme,
   hasSolveErrors,
+  suppressFreedomConflictColoring,
   objects,
 }: {
   apiObject: ApiObject
@@ -413,6 +421,7 @@ export function updateSegmentGroup({
   scale: number
   theme: Themes
   hasSolveErrors: boolean
+  suppressFreedomConflictColoring?: boolean
   objects: ApiObject[]
 }): void {
   const input = buildSegmentCtorFromObject(apiObject, objects)
@@ -431,6 +440,7 @@ export function updateSegmentGroup({
       group,
       state,
       hasSolveErrors,
+      suppressFreedomConflictColoring,
       freedom: freedomResult,
     })
   } else if (input.type === 'Line') {
@@ -442,6 +452,7 @@ export function updateSegmentGroup({
       group,
       state,
       hasSolveErrors,
+      suppressFreedomConflictColoring,
       freedom: freedomResult,
     })
   } else if (input.type === 'Arc') {
@@ -453,6 +464,7 @@ export function updateSegmentGroup({
       group,
       state,
       hasSolveErrors,
+      suppressFreedomConflictColoring,
       freedom: freedomResult,
     })
   } else if (input.type === 'Circle') {
@@ -475,6 +487,7 @@ export function updateSegmentGroup({
       group,
       state,
       hasSolveErrors,
+      suppressFreedomConflictColoring,
       freedom: freedomResult,
     })
   }
@@ -547,6 +560,7 @@ export interface IUpdateSketchSceneGraph {
   context: SketchSolveContext
   selectedIds: Array<SketchSolveSelectionId>
   duringAreaSelectIds: Array<number>
+  suppressFreedomConflictColoring?: boolean
 }
 export const updateSketchSceneGraphEffect =
   StateEffect.define<IUpdateSketchSceneGraph>()
@@ -560,6 +574,7 @@ export function updateSceneGraphFromDelta({
   context,
   selectedIds,
   duringAreaSelectIds,
+  suppressFreedomConflictColoring,
 }: IUpdateSketchSceneGraph): void {
   const objects = sceneGraphDelta.new_graph.objects
   const hasSolveErrors =
@@ -698,6 +713,7 @@ export function updateSceneGraphFromDelta({
       scale: factor,
       theme: context.sceneInfra.theme,
       hasSolveErrors,
+      suppressFreedomConflictColoring,
       objects,
     })
   })
@@ -967,6 +983,8 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
         scale: factor,
         theme: context.sceneInfra.theme,
         hasSolveErrors,
+        suppressFreedomConflictColoring:
+          context.sketchExecOutcome?.suppressFreedomConflictColoring,
         objects,
       })
     }
@@ -1155,6 +1173,8 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
       scale: scaleFactor,
       theme: context.sceneInfra.theme,
       hasSolveErrors,
+      suppressFreedomConflictColoring:
+        context.sketchExecOutcome?.suppressFreedomConflictColoring,
       objects,
     })
   })
@@ -1325,6 +1345,8 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
         context,
         selectedIds: context.selectedIds,
         duringAreaSelectIds: context.duringAreaSelectIds,
+        suppressFreedomConflictColoring:
+          event.data.suppressFreedomConflictColoring,
       }),
     ],
   }
@@ -1424,6 +1446,8 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     sketchExecOutcome: {
       sourceDelta: event.data.sourceDelta,
       sceneGraphDelta,
+      suppressFreedomConflictColoring:
+        event.data.suppressFreedomConflictColoring,
     },
   }
 }

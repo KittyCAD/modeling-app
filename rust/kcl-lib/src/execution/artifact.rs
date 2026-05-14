@@ -512,6 +512,14 @@ pub struct Helix {
     pub consumed: bool,
 }
 
+#[derive(Debug, Clone, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct GdtAnnotationArtifact {
+    pub id: ArtifactId,
+    pub code_ref: CodeRef,
+}
+
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
@@ -562,6 +570,7 @@ pub enum Artifact {
     EdgeCut(EdgeCut),
     EdgeCutEdge(EdgeCutEdge),
     Helix(Helix),
+    GdtAnnotation(GdtAnnotationArtifact),
     Pattern(Pattern),
 }
 
@@ -587,6 +596,7 @@ impl Artifact {
             Artifact::EdgeCut(a) => a.id,
             Artifact::EdgeCutEdge(a) => a.id,
             Artifact::Helix(a) => a.id,
+            Artifact::GdtAnnotation(a) => a.id,
             Artifact::Pattern(a) => a.id,
         }
     }
@@ -614,6 +624,7 @@ impl Artifact {
             Artifact::EdgeCut(a) => Some(&a.code_ref),
             Artifact::EdgeCutEdge(_) => None,
             Artifact::Helix(a) => Some(&a.code_ref),
+            Artifact::GdtAnnotation(a) => Some(&a.code_ref),
             Artifact::Pattern(a) => Some(&a.code_ref),
         }
     }
@@ -641,6 +652,7 @@ impl Artifact {
             | Artifact::EdgeCut(_)
             | Artifact::EdgeCutEdge(_)
             | Artifact::Helix(_)
+            | Artifact::GdtAnnotation(_)
             | Artifact::Pattern(_) => None,
         }
     }
@@ -668,6 +680,7 @@ impl Artifact {
             Artifact::EdgeCut(a) => a.merge(new),
             Artifact::EdgeCutEdge(_) => Some(new),
             Artifact::Helix(a) => a.merge(new),
+            Artifact::GdtAnnotation(a) => a.merge(new),
             Artifact::Pattern(a) => a.merge(new),
         }
     }
@@ -795,6 +808,17 @@ impl Helix {
         merge_opt_id(&mut self.axis_id, new.axis_id);
         merge_opt_id(&mut self.trajectory_sweep_id, new.trajectory_sweep_id);
         self.consumed = new.consumed;
+
+        None
+    }
+}
+
+impl GdtAnnotationArtifact {
+    fn merge(&mut self, new: Artifact) -> Option<Artifact> {
+        let Artifact::GdtAnnotation(new) = new else {
+            return Some(new);
+        };
+        self.code_ref = new.code_ref;
 
         None
     }
@@ -1023,6 +1047,12 @@ fn fill_in_node_paths(
         Artifact::SketchBlockConstraint(constraint) if constraint.code_ref.node_path.is_empty() => {
             constraint.code_ref.node_path =
                 NodePath::from_range(programs, cached_body_items, constraint.code_ref.range).unwrap_or_default();
+        }
+        Artifact::GdtAnnotation(annotation) if annotation.code_ref.node_path.is_empty() => {
+            let (range, node_path) =
+                code_ref_for_range(programs, cached_body_items, annotation.code_ref.range, import_code_refs);
+            annotation.code_ref.range = range;
+            annotation.code_ref.node_path = node_path;
         }
         _ => {}
     }
@@ -1380,6 +1410,10 @@ fn remap_artifact_for_clone(
                 source.consumed
             },
         }),
+        Artifact::GdtAnnotation(source) => Artifact::GdtAnnotation(GdtAnnotationArtifact {
+            id: remap_id_for_clone(source.id, entity_id_map),
+            code_ref: clone_code_ref.clone(),
+        }),
         Artifact::Pattern(source) => Artifact::Pattern(Pattern {
             id: remap_id_for_clone(source.id, entity_id_map),
             sub_type: source.sub_type,
@@ -1478,6 +1512,141 @@ fn pattern_artifact_updates(
     }
 
     return_arr
+}
+
+fn is_single_target_self_subtract(target_ids: &[Uuid], tool_ids: &[Uuid]) -> bool {
+    target_ids.len() == 1 && tool_ids.len() == 1 && target_ids[0] == tool_ids[0]
+}
+
+fn boolean_subtract_output_artifact_ids(
+    cmd_id: ArtifactId,
+    target_ids: &[Uuid],
+    tool_ids: &[Uuid],
+    extra_solid_ids: &[Uuid],
+) -> Vec<ArtifactId> {
+    if is_single_target_self_subtract(target_ids, tool_ids) {
+        return Vec::new();
+    }
+
+    let mut output_ids = if target_ids.len() == 1 {
+        vec![cmd_id]
+    } else {
+        Vec::new()
+    };
+
+    for extra_solid_id in extra_solid_ids {
+        let artifact_id = ArtifactId::new(*extra_solid_id);
+        if !output_ids.contains(&artifact_id) {
+            output_ids.push(artifact_id);
+        }
+    }
+
+    output_ids
+}
+
+fn update_consumed_csg_sweep(
+    return_arr: &mut Vec<Artifact>,
+    artifacts: &IndexMap<ArtifactId, Artifact>,
+    sweep_id: ArtifactId,
+    consumed_sweep_ids: &mut FnvHashSet<ArtifactId>,
+) {
+    if consumed_sweep_ids.insert(sweep_id)
+        && let Some(Artifact::Sweep(sweep)) = artifacts.get(&sweep_id)
+    {
+        let mut new_sweep = sweep.clone();
+        new_sweep.consumed = true;
+        return_arr.push(Artifact::Sweep(new_sweep));
+    }
+}
+
+fn update_csg_input_artifacts(
+    return_arr: &mut Vec<Artifact>,
+    artifacts: &IndexMap<ArtifactId, Artifact>,
+    input_ids: &[ArtifactId],
+    composite_solid_id: Option<ArtifactId>,
+    consumed_sweep_ids: &mut FnvHashSet<ArtifactId>,
+) {
+    for input_id in input_ids {
+        if let Some(artifact) = artifacts.get(input_id) {
+            match artifact {
+                Artifact::CompositeSolid(comp) => {
+                    let mut new_comp = comp.clone();
+                    new_comp.composite_solid_id = composite_solid_id;
+                    new_comp.consumed = true;
+                    return_arr.push(Artifact::CompositeSolid(new_comp));
+                }
+                Artifact::Path(path) => {
+                    let mut new_path = path.clone();
+                    new_path.composite_solid_id = composite_solid_id;
+
+                    // We want to mark any sweeps of the path used in this operation
+                    // as consumed. The path itself is already consumed by sweeping.
+                    if let Some(sweep_id) = new_path.sweep_id {
+                        update_consumed_csg_sweep(return_arr, artifacts, sweep_id, consumed_sweep_ids);
+                    }
+
+                    return_arr.push(Artifact::Path(new_path));
+                }
+                Artifact::Sweep(sweep) => {
+                    update_consumed_csg_sweep(return_arr, artifacts, sweep.id, consumed_sweep_ids);
+                }
+                _ => {}
+            }
+        }
+    }
+}
+
+fn mirror_3d_artifact_updates(
+    artifacts: &IndexMap<ArtifactId, Artifact>,
+    original_solid_ids: &[Uuid],
+    face_edge_infos: &[kcmc::output::FaceEdgeInfo],
+    code_ref: CodeRef,
+    range: SourceRange,
+    cmd: &ModelingCmd,
+) -> Result<Vec<Artifact>, KclError> {
+    if original_solid_ids.len() != face_edge_infos.len() {
+        internal_error!(
+            range,
+            "EntityMirrorAcross response has different number face edge info than original mirrored solids: cmd={cmd:?}, face_edge_infos={face_edge_infos:?}"
+        );
+    }
+
+    let mut return_arr = Vec::new();
+    for (face_edge_info, original_solid_id) in face_edge_infos.iter().zip(original_solid_ids) {
+        let original_solid_id = ArtifactId::new(*original_solid_id);
+        let mirrored_solid_id = ArtifactId::new(face_edge_info.object_id);
+        let source_solid = match artifacts.get(&original_solid_id) {
+            Some(Artifact::Path(path)) => path.sweep_id.and_then(|sweep_id| artifacts.get(&sweep_id)).or_else(|| {
+                path.composite_solid_id
+                    .and_then(|composite_id| artifacts.get(&composite_id))
+            }),
+            source => source,
+        };
+        match source_solid {
+            Some(Artifact::Sweep(sweep)) => {
+                let mut mirrored_sweep = sweep.clone();
+                mirrored_sweep.id = mirrored_solid_id;
+                mirrored_sweep.surface_ids = face_edge_info.faces.iter().copied().map(ArtifactId::new).collect();
+                mirrored_sweep.edge_ids = face_edge_info.edges.iter().copied().map(ArtifactId::new).collect();
+                mirrored_sweep.code_ref = code_ref.clone();
+                mirrored_sweep.consumed = false;
+                mirrored_sweep.pattern_ids = Vec::new();
+                return_arr.push(Artifact::Sweep(mirrored_sweep));
+            }
+            Some(Artifact::CompositeSolid(composite)) => {
+                let mut mirrored_composite = composite.clone();
+                mirrored_composite.id = mirrored_solid_id;
+                mirrored_composite.code_ref = code_ref.clone();
+                mirrored_composite.consumed = false;
+                mirrored_composite.composite_solid_id = None;
+                mirrored_composite.pattern_ids = Vec::new();
+                return_arr.push(Artifact::CompositeSolid(mirrored_composite));
+            }
+            Some(_) | None => continue,
+        }
+    }
+
+    Ok(return_arr)
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -1810,6 +1979,19 @@ fn artifacts_to_update(
                 face_edge_infos,
                 code_ref,
             ));
+        }
+        ModelingCmd::EntityMirrorAcross(kcmc::EntityMirrorAcross {
+            ids: original_solid_ids,
+            ..
+        }) => {
+            let face_edge_infos = match response {
+                Some(OkModelingCmdResponse::EntityMirrorAcross(resp)) => resp.entity_face_edge_ids.as_slice(),
+                _ => internal_error!(
+                    range,
+                    "EntityMirrorAcross response variant not handled: id={id:?}, cmd={cmd:?}, response={response:?}"
+                ),
+            };
+            return mirror_3d_artifact_updates(artifacts, original_solid_ids, face_edge_infos, code_ref, range, cmd);
         }
         ModelingCmd::EntityMirror(kcmc::EntityMirror {
             ids: original_path_ids, ..
@@ -2517,22 +2699,26 @@ fn artifacts_to_update(
             // can't handle it.
             let not_cmd_id = move |solid_id: &ArtifactId| *solid_id != id;
 
-            match response {
-                Some(OkModelingCmdResponse::BooleanIntersection(intersection)) => intersection
+            match (cmd, response) {
+                (
+                    ModelingCmd::BooleanSubtract(subtract_cmd),
+                    Some(OkModelingCmdResponse::BooleanSubtract(subtract_resp)),
+                ) => {
+                    new_solid_ids = boolean_subtract_output_artifact_ids(
+                        id,
+                        &subtract_cmd.target_ids,
+                        &subtract_cmd.tool_ids,
+                        &subtract_resp.extra_solid_ids,
+                    );
+                }
+                (_, Some(OkModelingCmdResponse::BooleanIntersection(intersection))) => intersection
                     .extra_solid_ids
                     .iter()
                     .copied()
                     .map(ArtifactId::new)
                     .filter(not_cmd_id)
                     .for_each(|id| new_solid_ids.push(id)),
-                Some(OkModelingCmdResponse::BooleanSubtract(subtract)) => subtract
-                    .extra_solid_ids
-                    .iter()
-                    .copied()
-                    .map(ArtifactId::new)
-                    .filter(not_cmd_id)
-                    .for_each(|id| new_solid_ids.push(id)),
-                Some(OkModelingCmdResponse::BooleanUnion(union)) => union
+                (_, Some(OkModelingCmdResponse::BooleanUnion(union))) => union
                     .extra_solid_ids
                     .iter()
                     .copied()
@@ -2544,22 +2730,11 @@ fn artifacts_to_update(
 
             let mut return_arr = Vec::new();
             let mut consumed_sweep_ids = FnvHashSet::default();
+            let mut input_ids = solid_ids.clone();
+            merge_ids(&mut input_ids, tool_ids.clone());
 
-            for input_id in solid_ids.iter().chain(tool_ids.iter()) {
-                let sweep_id = match artifacts.get(input_id) {
-                    Some(Artifact::Sweep(sweep)) => Some(sweep.id),
-                    Some(Artifact::Path(path)) => path.sweep_id,
-                    _ => None,
-                };
-
-                if let Some(sweep_id) = sweep_id
-                    && consumed_sweep_ids.insert(sweep_id)
-                    && let Some(Artifact::Sweep(sweep)) = artifacts.get(&sweep_id)
-                {
-                    let mut new_sweep = sweep.clone();
-                    new_sweep.consumed = true;
-                    return_arr.push(Artifact::Sweep(new_sweep));
-                }
+            if new_solid_ids.is_empty() {
+                update_csg_input_artifacts(&mut return_arr, artifacts, &input_ids, None, &mut consumed_sweep_ids);
             }
 
             // Create the new composite solids and update their linked artifacts
@@ -2577,47 +2752,13 @@ fn artifacts_to_update(
                     pattern_ids: Vec::new(),
                 }));
 
-                // Update the artifacts that were used as input for this composite solid
-                for input_id in &solid_ids {
-                    if let Some(artifact) = artifacts.get(input_id) {
-                        match artifact {
-                            Artifact::CompositeSolid(comp) => {
-                                let mut new_comp = comp.clone();
-                                new_comp.composite_solid_id = Some(*solid_id);
-                                new_comp.consumed = true;
-                                return_arr.push(Artifact::CompositeSolid(new_comp));
-                            }
-                            Artifact::Path(path) => {
-                                let mut new_path = path.clone();
-                                new_path.composite_solid_id = Some(*solid_id);
-
-                                return_arr.push(Artifact::Path(new_path));
-                            }
-                            _ => {}
-                        }
-                    }
-                }
-
-                // Update the tool artifacts if this is a subtract operation
-                for tool_id in &tool_ids {
-                    if let Some(artifact) = artifacts.get(tool_id) {
-                        match artifact {
-                            Artifact::CompositeSolid(comp) => {
-                                let mut new_comp = comp.clone();
-                                new_comp.composite_solid_id = Some(*solid_id);
-                                new_comp.consumed = true;
-                                return_arr.push(Artifact::CompositeSolid(new_comp));
-                            }
-                            Artifact::Path(path) => {
-                                let mut new_path = path.clone();
-                                new_path.composite_solid_id = Some(*solid_id);
-
-                                return_arr.push(Artifact::Path(new_path));
-                            }
-                            _ => {}
-                        }
-                    }
-                }
+                update_csg_input_artifacts(
+                    &mut return_arr,
+                    artifacts,
+                    &input_ids,
+                    Some(*solid_id),
+                    &mut consumed_sweep_ids,
+                );
             }
 
             return Ok(return_arr);

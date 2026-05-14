@@ -1202,7 +1202,7 @@ export function buildToolbarConfig(
                   type: 'Find and select command',
                   data: { name: 'GDT Flatness', groupId: 'modeling' },
                 }),
-              status: 'experimental',
+              status: 'available',
               title: 'Flatness',
               icon: 'gdtFlatness',
               description:
@@ -1223,7 +1223,7 @@ export function buildToolbarConfig(
                   type: 'Find and select command',
                   data: { name: 'GDT Datum', groupId: 'modeling' },
                 }),
-              status: 'experimental',
+              status: 'available',
               title: 'Datum',
               icon: 'gdtDatum',
               description:
@@ -1242,7 +1242,7 @@ export function buildToolbarConfig(
                   type: 'Find and select command',
                   data: { name: 'GDT Profile', groupId: 'modeling' },
                 }),
-              status: 'experimental',
+              status: 'available',
               title: 'Profile',
               icon: 'gdtProfile',
               description:
@@ -1263,7 +1263,7 @@ export function buildToolbarConfig(
                   type: 'Find and select command',
                   data: { name: 'GDT Position', groupId: 'modeling' },
                 }),
-              status: 'experimental',
+              status: 'available',
               title: 'Position',
               icon: 'gdtPosition',
               description:
@@ -1287,7 +1287,7 @@ export function buildToolbarConfig(
                     groupId: 'modeling',
                   },
                 }),
-              status: 'experimental',
+              status: 'available',
               title: 'Perpendicularity',
               icon: 'perpendicular',
               description:
@@ -1311,7 +1311,7 @@ export function buildToolbarConfig(
                     groupId: 'modeling',
                   },
                 }),
-              status: 'experimental',
+              status: 'available',
               title: 'Parallelism',
               icon: 'parallel',
               description:
@@ -1326,13 +1326,25 @@ export function buildToolbarConfig(
               ],
             },
             {
-              id: 'gdt-dimension',
-              onClick: () => {},
-              status: 'unavailable',
-              title: 'Dimension',
+              id: 'gdt-distance',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'GDT Distance', groupId: 'modeling' },
+                }),
+              status: 'available',
+              title: 'Distance',
+              icon: 'dimension',
               description:
-                'Adds size dimensions with manufacturing tolerances.',
-              links: [],
+                'Adds distance annotations to edge lengths or between two entities.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-gdt-distance'
+                  ),
+                },
+              ],
             },
             {
               id: 'gdt-annotation',
@@ -1341,7 +1353,7 @@ export function buildToolbarConfig(
                   type: 'Find and select command',
                   data: { name: 'GDT Annotation', groupId: 'modeling' },
                 }),
-              status: 'experimental',
+              status: 'available',
               title: 'Annotation',
               icon: 'text',
               description:

@@ -2,21 +2,23 @@ import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useEffect, useRef } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
+import { pluginsValueSpec } from '@kittycad/registry'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { PluginsList } from '@src/components/PluginList'
 import { AllKeybindingsFields } from '@src/components/Settings/AllKeybindingsFields'
 import { AllSettingsFields } from '@src/components/Settings/AllSettingsFields'
 import { KeybindingsSectionsList } from '@src/components/Settings/KeybindingsSectionsList'
 import { SettingsSearchBar } from '@src/components/Settings/SettingsSearchBar'
 import { SettingsSectionsList } from '@src/components/Settings/SettingsSectionsList'
 import { SettingsTabs } from '@src/components/Settings/SettingsTabs'
+import { useApp } from '@src/lib/boot'
 import { PATHS } from '@src/lib/paths'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
-import { PluginsList } from '@src/components/PluginList'
-import { useApp } from '@src/lib/boot'
-import { pluginsValueSpec } from '@kittycad/registry'
+import { keymapService } from '@src/registry/contracts/keymap'
 
 export const Settings = () => {
   const app = useApp()
+  const keymap = app.registry.optional(keymapService)
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const close = () => {
@@ -33,6 +35,18 @@ export const Settings = () => {
     (isFileSettings ? 'project' : 'user')
 
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!keymap) {
+      return
+    }
+
+    keymap.applyScope('settings-open')
+
+    return () => {
+      keymap.removeScope('settings-open')
+    }
+  }, [keymap])
 
   // Scroll to the hash on load if it exists
   useEffect(() => {
@@ -89,6 +103,7 @@ export const Settings = () => {
               <div className="flex gap-4 items-start">
                 <SettingsSearchBar />
                 <button
+                  type="button"
                   onClick={close}
                   className="p-0 m-0 focus:ring-0 focus:outline-none border-none hover:bg-destroy-10 focus:bg-destroy-10 dark:hover:bg-destroy-80/50 dark:focus:bg-destroy-80/50"
                   data-testid="settings-close-button"
