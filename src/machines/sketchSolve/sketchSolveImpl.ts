@@ -42,6 +42,7 @@ import { compilationIssuesToDiagnostics } from '@src/lang/errors'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { deferredCallback, isNonNullable, isOverlap } from '@src/lib/utils'
+import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import type { InvisibleConstraintDisplayState } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
 import {
   CONSTRAINT_TYPE,
@@ -75,6 +76,7 @@ import { machine as tangentialArcTool } from '@src/machines/sketchSolve/tools/ta
 import { machine as threePointArcTool } from '@src/machines/sketchSolve/tools/threePointArcToolDiagram'
 import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
 import { constraintToolMachines } from '@src/machines/sketchSolve/tools/constraintToolMachine'
+import { sketchSolveScenePluginsValueSpec } from '@src/registry/contracts/sketchSolveScene'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import {
   type ActionArgs,
@@ -125,6 +127,7 @@ export type SketchSolveMachineEvent =
       keepSelection?: boolean
     }
   | { type: 'toggle non-visual constraints' }
+  | { type: 'refresh scene plugins' }
   | {
       type: 'update selected ids'
       data: {
@@ -656,6 +659,42 @@ export function updateSceneGraphFromDelta({
       objects,
     })
   })
+
+  updateSketchSolveScenePlugins(context, sceneGraphDelta)
+}
+
+function updateSketchSolveScenePlugins(
+  context: SketchSolveContext,
+  sceneGraphDelta: SceneGraphDelta
+): void {
+  const registry = context.kclManager.systemDeps.registry
+  if (!registry) {
+    return
+  }
+
+  const sketchSolveGroup =
+    context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+  if (!(sketchSolveGroup instanceof Group)) {
+    return
+  }
+
+  const settings = getOnlySettingsFromContext(
+    context.kclManager.systemDeps.settings.getSnapshot().context
+  )
+
+  for (const plugin of registry.get(sketchSolveScenePluginsValueSpec)) {
+    try {
+      plugin.onSketchSceneGraphUpdate({
+        sceneInfra: context.sceneInfra,
+        sketchSolveGroup,
+        sceneGraphDelta,
+        sketchId: context.sketchId,
+        settings,
+      })
+    } catch (error) {
+      console.error('Sketch solve scene plugin failed', plugin.id, error)
+    }
+  }
 }
 
 function getLinkedPoint({
@@ -1133,6 +1172,24 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
       )
     }
   })
+
+  updateSketchSolveScenePlugins(
+    context,
+    context.sketchExecOutcome.sceneGraphDelta
+  )
+}
+
+export function refreshSketchSolveScenePlugins(
+  context: SketchSolveContext
+): void {
+  if (!context.sketchExecOutcome?.sceneGraphDelta) {
+    return
+  }
+
+  updateSketchSolveScenePlugins(
+    context,
+    context.sketchExecOutcome.sceneGraphDelta
+  )
 }
 
 function getInvisibleConstraintDisplayState(

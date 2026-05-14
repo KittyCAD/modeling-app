@@ -62,6 +62,7 @@ import {
   commandSystemService,
   provideCommand,
 } from '@src/registry/contracts/commands'
+import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { keymapService } from '@src/registry/contracts/keymap'
 import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
@@ -79,7 +80,6 @@ import type {
   Subscription,
 } from 'xstate'
 import { createActor } from 'xstate'
-import { executingEditorService } from '@src/registry/contracts/executingEditor'
 
 const DEFAULT_LAYOUT_CONFIG_NAME = 'default'
 const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
@@ -537,6 +537,7 @@ export class App implements AppSubsystems {
       projectPath: signal(''),
       engineCommandManager: this.engineCommandManager,
       rustContext: this.rustContext,
+      registry: this.registry,
       keymap: this.registry.get(keymapService),
     })
 
@@ -594,6 +595,10 @@ export class App implements AppSubsystems {
       return // Everything in here only matters inside a project.
     }
     const { context } = snapshot
+
+    this.singletons.kclManager.sendModelingEvent({
+      type: 'refresh sketch solve scene plugins',
+    })
 
     // Update line wrapping
     this.singletons.kclManager.setEditorLineWrapping(

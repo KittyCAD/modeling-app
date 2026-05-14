@@ -607,6 +607,7 @@ export type ModelingMachineEvent =
     }
   | { type: 'Set mouse state'; data: MouseState }
   | { type: 'toggle non-visual constraints' }
+  | { type: 'refresh sketch solve scene plugins' }
   | {
       type: 'show non-visual constraints changed'
       data: { value: boolean }
@@ -7765,6 +7766,15 @@ export const modelingMachine = setup({
             },
             'update sketch outcome': {
               actions: ['forward event to sketch solve if active'],
+            },
+            'refresh sketch solve scene plugins': {
+              actions: [
+                ({ self }) => {
+                  sendToActorIfActive(getSketchSolveActor(self), {
+                    type: 'refresh scene plugins',
+                  })
+                },
+              ],
             },
           },
           invoke: {
