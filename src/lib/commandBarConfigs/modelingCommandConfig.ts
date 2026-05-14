@@ -78,10 +78,10 @@ import {
   addRingGear,
   addSpurGear,
 } from '@src/lang/modifyAst/gears'
-import { addMirror3D } from '@src/lang/modifyAst/mirrors'
 import {
   addAppearance,
   addClone,
+  addMirror3D,
   addRotate,
   addScale,
   addTranslate,
@@ -414,6 +414,10 @@ export type ModelingCommandSchema = {
     objects: Selections
     variableName: string
   }
+  'Mirror 3D': {
+    bodies: Selections
+    across: Selections
+  }
   'Pattern Circular 3D': {
     nodeToEdit?: PathToNode
     solids: Selections
@@ -517,10 +521,6 @@ export type ModelingCommandSchema = {
   'Boolean Subtract': {
     solids: Selections
     tools: Selections
-  }
-  'Mirror 3D': {
-    bodies: Selections
-    across: Selections
   }
   'Boolean Union': {
     solids: Selections
@@ -1443,64 +1443,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-    },
-  },
-  'Mirror 3D': {
-    description: 'Mirror solids across a plane or edge.',
-    icon: 'mirror3d',
-    displayName: 'Mirror',
-    needsReview: true,
-    reviewValidation: async (context, modelingActor) => {
-      if (!modelingActor) {
-        return new Error('modelingMachine not found')
-      }
-      const { engineCommandManager, kclManager, rustContext } =
-        modelingActor.getSnapshot().context
-      const hasConnectionRes = hasEngineConnection(engineCommandManager)
-      if (err(hasConnectionRes)) {
-        return hasConnectionRes
-      }
-      const modRes = addMirror3D({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Mirror 3D']),
-        ast: kclManager.ast,
-        artifactGraph: kclManager.artifactGraph,
-        variables: kclManager.variables,
-        wasmInstance: await kclManager.wasmInstancePromise,
-      })
-      if (err(modRes)) {
-        return modRes
-      }
-      const execRes = await mockExecAstAndReportErrors(
-        modRes.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) {
-        return execRes
-      }
-    },
-    args: {
-      bodies: {
-        ...objectsTypesAndFilters,
-        inputType: 'selectionMixed',
-        multiple: true,
-        required: true,
-      },
-      across: {
-        inputType: 'selection',
-        selectionTypes: [
-          'plane',
-          'cap',
-          'wall',
-          'edgeCut',
-          'enginePrimitiveFace',
-          'segment',
-          'sweepEdge',
-          'edgeCutEdge',
-        ],
-        clearSelectionFirst: true,
-        multiple: false,
-        required: true,
       },
     },
   },
@@ -2536,6 +2478,64 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
 
           return true
         },
+      },
+    },
+  },
+  'Mirror 3D': {
+    description: 'Mirror solids across a plane or edge.',
+    icon: 'mirror3d',
+    displayName: 'Mirror',
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addMirror3D({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Mirror 3D']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        variables: kclManager.variables,
+        wasmInstance: await kclManager.wasmInstancePromise,
+      })
+      if (err(modRes)) {
+        return modRes
+      }
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) {
+        return execRes
+      }
+    },
+    args: {
+      bodies: {
+        ...objectsTypesAndFilters,
+        inputType: 'selectionMixed',
+        multiple: true,
+        required: true,
+      },
+      across: {
+        inputType: 'selection',
+        selectionTypes: [
+          'plane',
+          'cap',
+          'wall',
+          'edgeCut',
+          'enginePrimitiveFace',
+          'segment',
+          'sweepEdge',
+          'edgeCutEdge',
+        ],
+        clearSelectionFirst: true,
+        multiple: false,
+        required: true,
       },
     },
   },

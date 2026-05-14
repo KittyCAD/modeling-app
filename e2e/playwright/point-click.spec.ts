@@ -540,7 +540,7 @@ plane001 = offsetPlane(YZ, offset = 10)`
     })
 
     await test.step(`Go through the command bar flow`, async () => {
-      await page.getByTestId('mirror3d').click()
+      await toolbar.selectTransform('mirror3d')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'bodies',

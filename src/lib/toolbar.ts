@@ -771,27 +771,6 @@ export function buildToolbarConfig(
           ],
         },
         {
-          id: 'mirror3d',
-          onClick: () =>
-            commands.send({
-              type: 'Find and select command',
-              data: { name: 'Mirror 3D', groupId: 'modeling' },
-            }),
-          icon: 'mirror3d',
-          hotkey: 'M',
-          status: 'available',
-          title: 'Mirror',
-          description: 'Mirror solids across a plane or edge.',
-          links: [
-            {
-              label: 'KCL docs',
-              url: withSiteBaseURL(
-                '/docs/kcl-std/functions/std-transform-mirror3d'
-              ),
-            },
-          ],
-        },
-        {
           id: 'surface',
           array: [
             {
@@ -1109,6 +1088,27 @@ export function buildToolbarConfig(
                 {
                   label: 'API docs',
                   url: withSiteBaseURL('/docs/kcl-std/functions/std-clone'),
+                },
+              ],
+            },
+            {
+              id: 'mirror3d',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'Mirror 3D', groupId: 'modeling' },
+                }),
+              icon: 'mirror3d',
+              hotkey: 'M',
+              status: 'available',
+              title: 'Mirror',
+              description: 'Mirror solids across a plane or edge.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL(
+                    '/docs/kcl-std/functions/std-transform-mirror3d'
+                  ),
                 },
               ],
             },

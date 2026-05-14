@@ -133,7 +133,6 @@ import {
   addRevolve,
   addSweep,
 } from '@src/lang/modifyAst/sweeps'
-import { addMirror3D } from '@src/lang/modifyAst/mirrors'
 import {
   addPatternCircular3D,
   addPatternLinear3D,
@@ -151,6 +150,7 @@ import {
 import {
   addAppearance,
   addClone,
+  addMirror3D,
   addHide,
   addRotate,
   addScale,
@@ -498,10 +498,6 @@ export type ModelingMachineEvent =
       data: ModelingCommandSchema['Boolean Split']
     }
   | {
-      type: 'Mirror 3D'
-      data: ModelingCommandSchema['Mirror 3D']
-    }
-  | {
       type: 'Pattern Circular 3D'
       data: ModelingCommandSchema['Pattern Circular 3D']
     }
@@ -544,6 +540,10 @@ export type ModelingMachineEvent =
   | { type: 'Rotate'; data: ModelingCommandSchema['Rotate'] }
   | { type: 'Scale'; data: ModelingCommandSchema['Scale'] }
   | { type: 'Clone'; data: ModelingCommandSchema['Clone'] }
+  | {
+      type: 'Mirror 3D'
+      data: ModelingCommandSchema['Mirror 3D']
+    }
   | {
       type: 'Hide'
       data: {
@@ -5071,6 +5071,44 @@ export const modelingMachine = setup({
         )
       }
     ),
+    mirror3DAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Mirror 3D'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              wasmInstance: ModuleType
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const { ast, artifactGraph, variables } = input.kclManager
+        const result = addMirror3D({
+          ...input.data,
+          ast,
+          artifactGraph,
+          variables,
+          wasmInstance: input.wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
     hideAstMod: fromPromise(
       async ({
         input,
@@ -5879,45 +5917,6 @@ export const modelingMachine = setup({
       }
     ),
 
-    mirrorAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Mirror 3D'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-              wasmInstance: ModuleType
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const { ast, artifactGraph, variables } = input.kclManager
-        const result = addMirror3D({
-          ...input.data,
-          ast,
-          artifactGraph,
-          variables,
-          wasmInstance: input.wasmInstance,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
-    ),
-
     patternCircular3dAstMod: fromPromise(
       async ({
         input,
@@ -6220,6 +6219,10 @@ export const modelingMachine = setup({
           target: 'Applying clone',
         },
 
+        'Mirror 3D': {
+          target: 'Mirroring',
+        },
+
         Hide: {
           target: 'Applying hide',
         },
@@ -6270,10 +6273,6 @@ export const modelingMachine = setup({
 
         'Boolean Split': {
           target: 'Boolean splitting',
-        },
-
-        'Mirror 3D': {
-          target: 'Mirroring',
         },
 
         'Pattern Circular 3D': {
@@ -8262,6 +8261,27 @@ export const modelingMachine = setup({
       },
     },
 
+    'Applying Mirror 3D': {
+      invoke: {
+        src: 'mirror3DAstMod',
+        id: 'mirror3DAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Mirror 3D') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
+          }
+        },
+        onDone: 'idle',
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
     'Applying hide': {
       invoke: {
         src: 'hideAstMod',
@@ -8590,27 +8610,6 @@ export const modelingMachine = setup({
         id: 'boolSplitAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'Boolean Split') return undefined
-          return {
-            data: event.data,
-            kclManager: context.kclManager,
-            rustContext: context.rustContext,
-            wasmInstance: context.wasmInstance,
-          }
-        },
-        onDone: 'idle',
-        onError: {
-          target: 'idle',
-          actions: 'toastError',
-        },
-      },
-    },
-
-    Mirroring: {
-      invoke: {
-        src: 'mirrorAstMod',
-        id: 'mirrorAstMod',
-        input: ({ event, context }) => {
-          if (event.type !== 'Mirror 3D') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,
