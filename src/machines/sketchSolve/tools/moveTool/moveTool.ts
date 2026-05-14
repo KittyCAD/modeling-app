@@ -786,6 +786,8 @@ function buildPreviewOutcomeWithPreservedGeometry({
 type CreateOnDragStartCallbackArgs = {
   // Seeds the drag anchor used to compute relative drag vectors.
   setLastSuccessfulDragFromPoint: (point: Vector2) => void
+  // Keeps the fixed drag-start anchor for frame-independent previews.
+  setDragStartPoint: (point: Vector2) => void
   // Clears any previously cached valid preview from an earlier drag session.
   setLastGoodPreview: (preview: DragCommitCandidate | null) => void
   // Stores the frontend sketch outcome at drag start for preview fallback.
@@ -811,6 +813,7 @@ type CreateOnDragStartCallbackArgs = {
  */
 export function createOnDragStartCallback({
   setLastSuccessfulDragFromPoint,
+  setDragStartPoint,
   setLastGoodPreview,
   setDragStartOutcome,
   setPreDragCheckpointId,
@@ -827,7 +830,9 @@ export function createOnDragStartCallback({
   return ({ intersectionPoint }) => {
     dismissConstraintHoverPopup()
     beginDragSession()
-    setLastSuccessfulDragFromPoint(intersectionPoint.twoD.clone())
+    const dragStartPoint = intersectionPoint.twoD.clone()
+    setLastSuccessfulDragFromPoint(dragStartPoint.clone())
+    setDragStartPoint(dragStartPoint)
     setLastGoodPreview(null)
     setDragStartOutcome(getCurrentSketchOutcome())
     setPreDragCheckpointId(getCurrentCommittedCheckpointId())
@@ -1136,6 +1141,7 @@ export function createOnDragCallback({
   getLastGoodPreview,
   setLastGoodPreview,
   getDragStartOutcome,
+  getDragStartPoint,
   getContextData,
   editSegments,
   editDistanceConstraintLabelPosition = async () => null,
@@ -1157,6 +1163,7 @@ export function createOnDragCallback({
   getLastGoodPreview: () => DragCommitCandidate | null
   setLastGoodPreview: (preview: DragCommitCandidate | null) => void
   getDragStartOutcome: () => DragSketchOutcome | null
+  getDragStartPoint?: () => Vector2
   getContextData: () => {
     selectedIds: Array<number>
     sketchId: number
@@ -1190,6 +1197,7 @@ export function createOnDragCallback({
     sceneGraphDelta: SceneGraphDelta
     writeToDisk?: boolean
     suppressExecOutcomeIssues?: boolean
+    suppressFreedomConflictColoring?: boolean
   }) => void
   getDefaultLengthUnit: () => UnitLength | undefined
   getJsAppSettings: () => Promise<DeepPartial<Configuration>>
@@ -1264,6 +1272,7 @@ export function createOnDragCallback({
             ...result,
             writeToDisk: false,
             suppressExecOutcomeIssues: true,
+            suppressFreedomConflictColoring: true,
           })
           await new Promise((resolve) => requestAnimationFrame(resolve))
         }
@@ -1274,12 +1283,14 @@ export function createOnDragCallback({
       return
     }
 
+    const dragStartOutcome = getDragStartOutcome()
+    const editSceneGraphDelta =
+      dragStartOutcome?.sceneGraphDelta ?? sceneGraphDelta
+    const editObjects = editSceneGraphDelta.new_graph.objects
+
     const coincidentClusterPointIds =
       entityUnderCursorId !== null
-        ? getCoincidentCluster(
-            entityUnderCursorId,
-            sceneGraphDelta.new_graph.objects
-          )
+        ? getCoincidentCluster(entityUnderCursorId, editObjects)
         : []
 
     // If no entity under cursor and no selectedIds, nothing to do
@@ -1307,10 +1318,14 @@ export function createOnDragCallback({
           })
       onUpdateDragSnapping(snappingCandidate)
 
-      // Calculate drag vector from last successful drag point to current position
-      const dragVec = twoD.clone().sub(getLastSuccessfulDragFromPoint())
+      // Build every preview from the drag-start geometry. Solver output can
+      // legitimately adjust unconstrained geometry, and applying the next drag
+      // increment to that adjusted result compounds small deviations.
+      const dragAnchorPoint =
+        getDragStartPoint?.() ?? getLastSuccessfulDragFromPoint()
+      const dragVec = twoD.clone().sub(dragAnchorPoint)
 
-      const objects = sceneGraphDelta.new_graph.objects
+      const objects = editObjects
       const segmentsToEdit: ExistingSegmentCtor[] = []
       const units = baseUnitToNumericSuffix(getDefaultLengthUnit())
       const isDraggingPointCluster =
@@ -1441,6 +1456,7 @@ export function createOnDragCallback({
             ...result,
             writeToDisk: false,
             suppressExecOutcomeIssues: true,
+            suppressFreedomConflictColoring: true,
           })
         } else {
           const fallbackOutcome =
@@ -1465,6 +1481,7 @@ export function createOnDragCallback({
               : result),
             writeToDisk: false,
             suppressExecOutcomeIssues: true,
+            suppressFreedomConflictColoring: true,
           })
         }
         await new Promise((resolve) => requestAnimationFrame(resolve))
@@ -1495,6 +1512,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
   const [getIsDragActive, setIsDragActive] = createGetSet(false)
   const [getLastSuccessfulDragFromPoint, setLastSuccessfulDragFromPoint] =
     createGetSet<Vector2>(new Vector2())
+  const [getDragStartPoint, setDragStartPoint] = createGetSet<Vector2>(
+    new Vector2()
+  )
   const [getDraggedEntityId, setDraggedEntityId] = createGetSet<number | null>(
     null
   )
@@ -1719,6 +1739,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
   context.sceneInfra.setCallbacks({
     onDragStart: createOnDragStartCallback({
       setLastSuccessfulDragFromPoint,
+      setDragStartPoint,
       setLastGoodPreview,
       setDragStartOutcome,
       setPreDragCheckpointId,
@@ -1841,7 +1862,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
           let restoredPreDragOutcome: DragSketchOutcome | null = null
           const commitSegmentAndLabelEdits = async (
             segmentsToEdit: ExistingSegmentCtor[],
-            constraintLabelEdits: ConstraintLabelEdit[] = []
+            constraintLabelEdits: ConstraintLabelEdit[] = [],
+            shouldCreateCheckpoint = true
           ) => {
             const anchorSegmentIds = segmentsToEdit.map(({ id }) => id)
             let latestResult = await context.rustContext.editSegments(
@@ -1849,7 +1871,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
               context.sketchId,
               segmentsToEdit,
               settings,
-              constraintLabelEdits.length === 0
+              constraintLabelEdits.length === 0 && shouldCreateCheckpoint
             )
 
             for (const [
@@ -1863,7 +1885,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
                   constraintId,
                   labelPosition,
                   settings,
-                  index === constraintLabelEdits.length - 1,
+                  index === constraintLabelEdits.length - 1 &&
+                    shouldCreateCheckpoint,
                   anchorSegmentIds
                 )
             }
@@ -2061,9 +2084,17 @@ export function setUpOnDragAndSelectionClickCallbacks({
             }
           } else {
             if (lastGoodPreview?.segmentsToEdit.length) {
-              result = await commitSegmentAndLabelEdits(
+              // Commit dragged positions without checkpointing, then settle:
+              // a solve without drag constraints finds the nearest valid
+              // solution and creates the checkpoint.
+              await commitSegmentAndLabelEdits(
                 lastGoodPreview.segmentsToEdit,
-                lastGoodPreview.constraintLabelEdits
+                lastGoodPreview.constraintLabelEdits,
+                false
+              )
+              result = await context.rustContext.sketchExecuteMock(
+                SKETCH_FILE_VERSION,
+                context.sketchId
               )
             } else if (!currentSceneGraphDelta) {
               result = await context.rustContext.sketchExecuteMock(
@@ -2101,12 +2132,18 @@ export function setUpOnDragAndSelectionClickCallbacks({
                   context.sketchId
                 )
               } else {
-                result = await context.rustContext.editSegments(
+                // Same settle pattern: commit positions, then re-solve without
+                // drag constraints to snap back to a geometrically valid state.
+                await context.rustContext.editSegments(
                   0,
                   context.sketchId,
                   segmentsToEdit,
                   settings,
-                  true
+                  false
+                )
+                result = await context.rustContext.sketchExecuteMock(
+                  SKETCH_FILE_VERSION,
+                  context.sketchId
                 )
               }
             }
@@ -2153,6 +2190,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       getLastGoodPreview,
       setLastGoodPreview,
       getDragStartOutcome,
+      getDragStartPoint,
       getContextData: () => {
         const snapshot = self.getSnapshot()
         return {
@@ -2200,6 +2238,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
             sceneGraphDelta: outcome.sceneGraphDelta,
             writeToDisk: false,
             suppressExecOutcomeIssues: outcome.suppressExecOutcomeIssues,
+            suppressFreedomConflictColoring:
+              outcome.suppressFreedomConflictColoring,
           },
         })
       },
