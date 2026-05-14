@@ -280,6 +280,7 @@ export interface MlEphantManagerContext {
   fileFocusedOnInEditor?: FileEntry
   projectNameCurrentlyOpened?: string
   awaitingResponse: boolean
+  attachmentsLoadedForCurrentPrompt: boolean
   pendingBackendShutdown: boolean
   defaultMode?: MlCopilotModeId
   modeOptions?: MlCopilotModeOption[]
@@ -305,6 +306,7 @@ export const mlEphantDefaultContext = (args: {
   fileFocusedOnInEditor: undefined,
   projectNameCurrentlyOpened: undefined,
   awaitingResponse: false,
+  attachmentsLoadedForCurrentPrompt: true,
   pendingBackendShutdown: false,
   defaultMode: undefined,
   modeOptions: undefined,
@@ -364,6 +366,16 @@ function isBackendShutdownMessage(
 
 function isResponseComplete(response: MlCopilotServerMessage): boolean {
   return 'end_of_stream' in response || 'error' in response
+}
+
+function isAttachmentsLoadedMessage(
+  response: unknown
+): response is { attachments_loaded: object } {
+  return (
+    typeof response === 'object' &&
+    response !== null &&
+    'attachments_loaded' in response
+  )
 }
 
 async function toMlCopilotFile(file: File): Promise<MlCopilotFile> {
@@ -959,6 +971,8 @@ export const mlEphantManagerMachine = setup({
         conversation,
         fileFocusedOnInEditor: event.fileSelectedDuringPrompting.entry,
         projectNameCurrentlyOpened: requestData.body.project_name,
+        attachmentsLoadedForCurrentPrompt:
+          !event.additionalFiles || event.additionalFiles.length === 0,
       }
     }),
     [MlEphantManagerStates.ContinueCheck]: fromPromise(async function (
@@ -1084,6 +1098,7 @@ export const mlEphantManagerMachine = setup({
               defaultMode: undefined,
               modeOptions: undefined,
               awaitingResponse: false,
+              attachmentsLoadedForCurrentPrompt: true,
               pendingBackendShutdown: false,
             }),
             'cacheSetup',
@@ -1120,6 +1135,7 @@ export const mlEphantManagerMachine = setup({
               defaultMode: event.output.defaultMode ?? context.defaultMode,
               modeOptions: event.output.modeOptions ?? context.modeOptions,
               awaitingResponse: false,
+              attachmentsLoadedForCurrentPrompt: true,
               pendingBackendShutdown: false,
             })),
             'clearCacheSetup',
@@ -1259,6 +1275,18 @@ export const mlEphantManagerMachine = setup({
                         conversation,
                         lastMessageId,
                         awaitingResponse: false,
+                        attachmentsLoadedForCurrentPrompt: true,
+                        pendingBackendShutdown: responseComplete
+                          ? false
+                          : context.pendingBackendShutdown,
+                      }
+                    }
+
+                    if (isAttachmentsLoadedMessage(event.response)) {
+                      return {
+                        lastMessageId,
+                        attachmentsLoadedForCurrentPrompt: true,
+                        awaitingResponse: context.awaitingResponse,
                         pendingBackendShutdown: responseComplete
                           ? false
                           : context.pendingBackendShutdown,
@@ -1361,6 +1389,9 @@ export const mlEphantManagerMachine = setup({
                     assign(({ event, context }) => ({
                       ...event.output,
                       awaitingResponse: true,
+                      attachmentsLoadedForCurrentPrompt:
+                        event.output.attachmentsLoadedForCurrentPrompt ??
+                        context.attachmentsLoadedForCurrentPrompt,
                       pendingBackendShutdown: context.pendingBackendShutdown,
                     })),
                   ],
@@ -1435,6 +1466,7 @@ export const mlEphantManagerMachine = setup({
               lastMessageId: undefined,
               lastMessageType: undefined,
               awaitingResponse: false,
+              attachmentsLoadedForCurrentPrompt: true,
               pendingBackendShutdown: false,
               closeReason: undefined,
               ws: undefined,
