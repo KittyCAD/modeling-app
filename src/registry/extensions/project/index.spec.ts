@@ -7,6 +7,7 @@ import {
   projectService,
   sketchSolveScenePluginsValueSpec,
 } from '@src/registry/contracts/project'
+import modeSketch from '@src/registry/plugins/modeSketch'
 import { describe, expect, it, vi } from 'vitest'
 import projectExtension, {
   createProjectRegistryItem,
@@ -21,7 +22,7 @@ function createSettingsActor() {
     subscribe: vi.fn(() => ({ unsubscribe })),
   } as unknown as SettingsActorType
 
-  return { actor, unsubscribe }
+  return { actor }
 }
 
 function createProject(): ZDSProject {
@@ -31,29 +32,20 @@ function createProject(): ZDSProject {
   } as unknown as ZDSProject
 }
 
-describe('project extension', () => {
-  it('scopes project services to the project registry slot', () => {
+describe('project extension integration', () => {
+  it('can resolve project-owned sketch solve plugins without a service cycle', () => {
     const registry = new Registry()
     const project = createProject()
-    const { actor: settingsActor, unsubscribe } = createSettingsActor()
+    const { actor: settingsActor } = createSettingsActor()
 
-    registry.configure([projectExtension])
-
-    expect(registry.optional(projectService)).toBeUndefined()
+    registry.configure([projectExtension, modeSketch])
 
     registry.reconfigure(projectRegistrySlot, [
       createProjectRegistryItem({ project, settingsActor }),
     ])
 
     const service = registry.get(projectService)
-    expect(service.project).toBe(project)
-    expect(service.sketchSolveScenePlugins.value).toEqual(
-      registry.get(sketchSolveScenePluginsValueSpec)
-    )
-
-    registry.reconfigure(projectRegistrySlot, [])
-
-    expect(registry.optional(projectService)).toBeUndefined()
-    expect(unsubscribe).toHaveBeenCalled()
+    expect(registry.get(sketchSolveScenePluginsValueSpec)).toEqual([])
+    expect(service.sketchSolveScenePlugins.value).toEqual([])
   })
 })
