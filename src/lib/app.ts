@@ -67,6 +67,7 @@ import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
+import { scenePostprocessorsValueSpec } from '@src/registry/extensions/engineScene/scenePostprocessors'
 import {
   appRegistryServicesSlot,
   coreRegistryItems,
@@ -538,6 +539,7 @@ export class App implements AppSubsystems {
       engineCommandManager: this.engineCommandManager,
       rustContext: this.rustContext,
       keymap: this.registry.get(keymapService),
+      scenePostprocessors: this.registry.signal(scenePostprocessorsValueSpec),
     })
 
     this.registry.reconfigure(appRegistryServicesSlot, [

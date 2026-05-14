@@ -1,26 +1,26 @@
-import { useApp, useSingletons } from '@src/lib/boot'
-import { ConnectionStream } from '@src/components/ConnectionStream'
-import Gizmo from '@src/components/gizmo/Gizmo'
+import { useSignals } from '@preact/signals-react/runtime'
 import { Toolbar } from '@src/Toolbar'
-import type { AreaLibrary, AreaTypeDefinition } from '@src/lib/layout/types'
+import { DEFAULT_SKETCH_SOLVE_STREAM_DIMMING } from '@src/clientSideScene/ClientSideSceneComp'
+import { ConnectionStream } from '@src/components/ConnectionStream'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { BodiesPane } from '@src/components/layout/areas/BodiesPane'
+import { DebugPane } from '@src/components/layout/areas/DebugPane'
+import { FeatureTreePane } from '@src/components/layout/areas/FeatureTreePane'
+import { KclEditorPane } from '@src/components/layout/areas/KclEditorPane'
+import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
+import { MemoryPane } from '@src/components/layout/areas/MemoryPane'
+import { MlEphantConversationPaneWrapper } from '@src/components/layout/areas/MlEphantConversationPaneWrapper'
+import { ProjectExplorerPane } from '@src/components/layout/areas/ProjectExplorerPane'
+import { useModelingContext } from '@src/hooks/useModelingContext'
 import { kclErrorsByFilename } from '@src/lang/errors'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import type { AreaLibrary, AreaTypeDefinition } from '@src/lib/layout/types'
+import { togglePaneLayoutNode } from '@src/lib/layout/utils'
+import { layoutAreaLibraryValueSpec } from '@src/registry/contracts/layout'
+import { EngineSceneViewExtensions } from '@src/registry/extensions/engineScene/EngineSceneViewExtensions'
 import type { MouseEventHandler } from 'react'
 import { useCallback, useMemo, useState } from 'react'
-import { togglePaneLayoutNode } from '@src/lib/layout/utils'
-import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
-import { ProjectExplorerPane } from '@src/components/layout/areas/ProjectExplorerPane'
-import { KclEditorPane } from '@src/components/layout/areas/KclEditorPane'
-import { MlEphantConversationPaneWrapper } from '@src/components/layout/areas/MlEphantConversationPaneWrapper'
-import { FeatureTreePane } from '@src/components/layout/areas/FeatureTreePane'
-import { MemoryPane } from '@src/components/layout/areas/MemoryPane'
-import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
-import { DebugPane } from '@src/components/layout/areas/DebugPane'
-import { BodiesPane } from '@src/components/layout/areas/BodiesPane'
-import { useSignals } from '@preact/signals-react/runtime'
-import { useModelingContext } from '@src/hooks/useModelingContext'
-import { DEFAULT_SKETCH_SOLVE_STREAM_DIMMING } from '@src/clientSideScene/ClientSideSceneComp'
-import { CustomIcon } from '@src/components/CustomIcon'
-import { layoutAreaLibraryValueSpec } from '@src/registry/contracts/layout'
 
 function ModelingArea() {
   const { auth } = useApp()
@@ -80,9 +80,7 @@ function ModelingArea() {
           </button>
         </div>
       )}
-      <div className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
-        <Gizmo />
-      </div>
+      <EngineSceneViewExtensions />
     </div>
   )
 }

@@ -103,7 +103,12 @@ import {
   addLineHighlightEvent,
 } from '@src/editor/highlightextension'
 
-import { type Signal, computed, signal } from '@preact/signals-core'
+import {
+  type ReadonlySignal,
+  type Signal,
+  computed,
+  signal,
+} from '@preact/signals-core'
 import type {
   ApiFile,
   SceneGraphDelta,
@@ -167,6 +172,11 @@ import {
   type KeymapService,
 } from '@src/registry/contracts/keymap'
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
+import {
+  applyScenePostprocessors,
+  type ScenePostprocessor,
+  scenePostprocessorsValueSpec,
+} from '@src/registry/extensions/engineScene/scenePostprocessors'
 import toast from 'react-hot-toast'
 
 interface ExecuteArgs {
@@ -278,6 +288,7 @@ interface SystemDeps {
   engineCommandManager: ConnectionManager
   rustContext: RustContext
   keymap?: KeymapService
+  scenePostprocessors?: ReadonlySignal<readonly ScenePostprocessor[]>
 }
 
 export enum KclManagerEvents {
@@ -410,6 +421,9 @@ export class ZDSProject {
       engineCommandManager: this.app.engineCommandManager,
       rustContext: this.app.rustContext,
       projectPath: computed(() => this.projectIORefSignal.value.path),
+      scenePostprocessors: this.app.registry.signal(
+        scenePostprocessorsValueSpec
+      ),
     }
 
     if (providedEditor) {
@@ -2120,6 +2134,16 @@ export class KclManager extends File {
     this.dispatchUpdateOperations(execState.operations)
 
     if (!isInterrupted) {
+      if (errors.length === 0) {
+        await applyScenePostprocessors(
+          this.systemDeps.scenePostprocessors?.value ?? [],
+          {
+            artifactGraph: this.artifactGraph,
+            engineCommandManager: this.engineCommandManager,
+          }
+        ).catch(reportRejection)
+      }
+
       this.sceneInfra.modelingSend({
         type: 'code edit during sketch',
       })

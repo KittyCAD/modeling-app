@@ -14,6 +14,14 @@ import {
 import { Suspense, createElement, lazy } from 'react'
 import { EngineExecutionStatusTooltip } from './EngineExecutionStatusTooltip'
 import { ENGINE_SCENE_EXECUTION_STATUS_BAR_ITEM_ID } from './constants'
+import { scenePostprocessorsValueSpec } from './scenePostprocessors'
+import {
+  type EngineSceneViewExtension,
+  type SceneControlsViewExtension,
+  sceneControlsViewExtensionsValueSpec,
+  viewExtensionsValueSpec,
+} from './viewExtensions'
+import { xRayOverrideTransparencyPostprocessor } from './xRayPostprocessor'
 
 const UnitsMenu = lazy(async () => {
   const { UnitsMenu } = await import('@src/components/UnitsMenu')
@@ -36,6 +44,42 @@ const EngineSceneExperimentalFeaturesMenu = () =>
     { fallback: null },
     createElement(ExperimentalFeaturesMenu)
   )
+
+const LazyEngineSceneControls = lazy(async () => {
+  const { EngineSceneControls } = await import('./SceneControls')
+  return { default: EngineSceneControls }
+})
+
+const EngineSceneControlsView = () =>
+  createElement(
+    Suspense,
+    { fallback: null },
+    createElement(LazyEngineSceneControls)
+  )
+
+const LazyXRaySceneControl = lazy(async () => {
+  const { EngineSceneXRayControl } = await import('./xRay')
+  return { default: EngineSceneXRayControl }
+})
+
+const XRaySceneControlView = () =>
+  createElement(
+    Suspense,
+    { fallback: null },
+    createElement(LazyXRaySceneControl)
+  )
+
+const engineSceneControlsViewExtension: EngineSceneViewExtension = {
+  id: 'engine-scene.scene-controls',
+  order: 100,
+  Component: EngineSceneControlsView,
+}
+
+const xRaySceneControlViewExtension: SceneControlsViewExtension = {
+  id: 'engine-scene.x-ray.control',
+  order: 100,
+  Component: XRaySceneControlView,
+}
 
 /**
  * Engine scene extension.
@@ -147,6 +191,15 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
           experimentalFeaturesStatusBarItem
         ),
         provide(statusBarLocalItemsValueSpec, executionStatusBarItem),
+        provide(viewExtensionsValueSpec, engineSceneControlsViewExtension),
+        provide(
+          sceneControlsViewExtensionsValueSpec,
+          xRaySceneControlViewExtension
+        ),
+        provide(
+          scenePostprocessorsValueSpec,
+          xRayOverrideTransparencyPostprocessor
+        ),
       ],
     }),
   }
