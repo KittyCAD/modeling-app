@@ -808,6 +808,93 @@ fn pattern_artifact_links_to_source_geometry() {
 }
 
 #[test]
+fn set_object_transform_updates_sweep_code_ref_to_shared_expression() {
+    let source = "\
+body = extrude(region001, length = 5)
+  |> translate(z = 1)
+";
+    let program = crate::Program::parse_no_errs(source).unwrap();
+    let programs = crate::execution::ProgramLookup::new(program.ast.clone(), Default::default());
+    let range_for = |snippet: &str| {
+        let start = source.find(snippet).unwrap();
+        SourceRange::new(start, start + snippet.len(), ModuleId::default())
+    };
+
+    let extrude_range = range_for("extrude(region001, length = 5)");
+    let transform_range = range_for("translate(z = 1)");
+    let pipe_range = range_for("extrude(region001, length = 5)\n  |> translate(z = 1)");
+    let sweep_id = ArtifactId::new(Uuid::new_v4());
+    let path_id = ArtifactId::new(Uuid::new_v4());
+    let sweep_code_ref = CodeRef {
+        range: extrude_range,
+        node_path: program.node_path_from_range(0, extrude_range).unwrap(),
+        path_to_node: Vec::new(),
+    };
+    let expected_code_ref = CodeRef {
+        range: pipe_range,
+        node_path: program.node_path_from_range(0, pipe_range).unwrap(),
+        path_to_node: Vec::new(),
+    };
+
+    let mut artifacts = IndexMap::new();
+    artifacts.insert(
+        sweep_id,
+        Artifact::Sweep(Sweep {
+            id: sweep_id,
+            sub_type: SweepSubType::Extrusion,
+            path_id,
+            surface_ids: Vec::new(),
+            edge_ids: Vec::new(),
+            code_ref: sweep_code_ref,
+            trajectory_id: None,
+            method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            consumed: false,
+            pattern_ids: Vec::new(),
+        }),
+    );
+
+    let command = ModelingCmd::from(
+        kcmc::each_cmd::SetObjectTransform::builder()
+            .object_id(Uuid::from(sweep_id))
+            .transforms(Vec::<kittycad_modeling_cmds::shared::ComponentTransform>::new())
+            .build(),
+    );
+    let artifact_command = ArtifactCommand {
+        cmd_id: Uuid::new_v4(),
+        range: transform_range,
+        command,
+    };
+
+    let updated = artifacts_to_update(
+        &artifacts,
+        &artifact_command,
+        &FnvHashMap::default(),
+        &FnvHashMap::default(),
+        &FnvHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &FnvHashMap::default(),
+    )
+    .unwrap();
+
+    assert_eq!(updated.len(), 1);
+    let Artifact::Sweep(updated_sweep) = &updated[0] else {
+        panic!("Expected SetObjectTransform to update the sweep artifact, got: {updated:?}");
+    };
+    assert_eq!(updated_sweep.id, sweep_id);
+    assert_eq!(updated_sweep.code_ref, expected_code_ref);
+
+    for artifact in updated {
+        merge_artifact_into_map(&mut artifacts, artifact);
+    }
+    let Some(Artifact::Sweep(merged_sweep)) = artifacts.get(&sweep_id) else {
+        panic!("Expected transformed sweep to remain in artifact graph");
+    };
+    assert_eq!(merged_sweep.code_ref, expected_code_ref);
+}
+
+#[test]
 fn primitive_edge_does_not_replace_existing_segment_artifact() {
     let shared_id = ArtifactId::new(Uuid::new_v4());
     let path_id = ArtifactId::new(Uuid::new_v4());

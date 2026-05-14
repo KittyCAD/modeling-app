@@ -4543,14 +4543,12 @@ fn sketch_face_of_scene_object_ast_expr(
                     on_object.artifact_id
                 )));
             };
-            let sweep_ref = get_or_insert_ast_reference(
+            let sweep_ref = get_or_insert_sweep_ast_reference(
                 ast,
                 &SourceRef::Simple {
                     range: sweep_range.0,
                     node_path: sweep_range.1.clone(),
                 },
-                "solid",
-                None,
             )?;
             let ast::Expr::Name(solid_name_expr) = sweep_ref else {
                 return Err(KclError::refactor(format!(
@@ -4595,14 +4593,12 @@ fn sketch_face_of_scene_object_ast_expr(
                     on_object.artifact_id
                 )));
             };
-            let sweep_ref = get_or_insert_ast_reference(
+            let sweep_ref = get_or_insert_sweep_ast_reference(
                 ast,
                 &SourceRef::Simple {
                     range: range.0,
                     node_path: range.1.clone(),
                 },
-                "solid",
-                None,
             )?;
             let ast::Expr::Name(solid_name_expr) = sweep_ref else {
                 return Err(KclError::refactor(format!(
@@ -4745,15 +4741,7 @@ fn region_name_from_sweep_variable(ast: &ast::Node<ast::Program>, sweep_variable
     let ast::Definition::Variable(sweep_decl) = ast.get_variable(sweep_variable_name)? else {
         return None;
     };
-    let ast::Expr::CallExpressionKw(sweep_call) = &sweep_decl.init else {
-        return None;
-    };
-    if !matches!(
-        sweep_call.callee.name.name.as_str(),
-        "extrude" | "revolve" | "sweep" | "loft"
-    ) {
-        return None;
-    }
+    let sweep_call = sweep_call_from_expr(&sweep_decl.init)?;
     let ast::Expr::Name(region_name_expr) = sweep_call.unlabeled.as_ref()? else {
         return None;
     };
@@ -4768,6 +4756,58 @@ fn region_name_from_sweep_variable(ast: &ast::Node<ast::Program>, sweep_variable
         return None;
     }
     Some(candidate)
+}
+
+fn sweep_call_from_expr(expr: &ast::Expr) -> Option<&ast::Node<ast::CallExpressionKw>> {
+    match expr {
+        ast::Expr::CallExpressionKw(call)
+            if matches!(call.callee.name.name.as_str(), "extrude" | "revolve" | "sweep" | "loft") =>
+        {
+            Some(call)
+        }
+        ast::Expr::PipeExpression(pipe) => pipe.body.iter().find_map(sweep_call_from_expr),
+        _ => None,
+    }
+}
+
+fn get_or_insert_sweep_ast_reference(
+    ast: &mut ast::Node<ast::Program>,
+    source_ref: &SourceRef,
+) -> Result<ast::Expr, KclError> {
+    if let Some(pipe_source_ref) = pipe_source_ref_for_contained_node(source_ref)
+        && let Ok(sweep_ref) = get_or_insert_ast_reference(ast, &pipe_source_ref, "solid", None)
+    {
+        return Ok(sweep_ref);
+    }
+
+    get_or_insert_ast_reference(ast, source_ref, "solid", None)
+}
+
+fn pipe_source_ref_for_contained_node(source_ref: &SourceRef) -> Option<SourceRef> {
+    let SourceRef::Simple {
+        range,
+        node_path: Some(node_path),
+    } = source_ref
+    else {
+        return None;
+    };
+
+    Some(SourceRef::Simple {
+        range: *range,
+        node_path: Some(enclosing_pipe_node_path(node_path)?),
+    })
+}
+
+fn enclosing_pipe_node_path(node_path: &ast::NodePath) -> Option<ast::NodePath> {
+    let pipe_body_item_index = node_path
+        .steps
+        .iter()
+        .rposition(|step| matches!(step, ast::Step::PipeBodyItem { .. }))?;
+    let steps = node_path.steps[..pipe_body_item_index].to_vec();
+    if steps.is_empty() {
+        return None;
+    }
+    Some(ast::NodePath { steps })
 }
 
 /// Return the AST expression referencing the variable at the given source ref.
@@ -5978,11 +6018,28 @@ mod tests {
         None
     }
 
+    fn find_first_end_cap_object_id(scene_graph: &SceneGraph) -> Option<ObjectId> {
+        for object in &scene_graph.objects {
+            if matches!(
+                &object.kind,
+                ObjectKind::Cap(crate::frontend::api::Cap {
+                    kind: crate::frontend::api::CapKind::End,
+                    ..
+                })
+            ) {
+                return Some(object.id);
+            }
+        }
+        None
+    }
+
     #[test]
     fn test_region_name_from_sweep_variable_supports_sweep_kinds() {
         let source = "\
 region001 = region(point = [0.1, 0.1], sketch = s)
 extrude001 = extrude(region001, length = 5)
+translatedExtrude001 = extrude(region001, length = 5)
+  |> translate(z = 1)
 revolve001 = revolve(region001, axis = Y)
 sweep001 = sweep(region001, path = path001)
 loft001 = loft(region001)
@@ -5993,6 +6050,10 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
 
         assert_eq!(
             region_name_from_sweep_variable(&program.ast, "extrude001"),
+            Some("region001".to_owned())
+        );
+        assert_eq!(
+            region_name_from_sweep_variable(&program.ast, "translatedExtrude001"),
             Some("region001".to_owned())
         );
         assert_eq!(
@@ -11771,6 +11832,79 @@ extrude001 = extrude(region001, length = 5)
             .await
             .unwrap();
         assert!(src_delta.text.contains("faceOf(extrude001, face = region001.tags."));
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_sketch_on_wall_artifact_from_translated_region_extrude() {
+        let initial_source = "\
+cubeProfile = sketch(on = XY) {
+  bottomEdge = line(start = [-12.5, -12.5], end = [12.5, -12.5])
+  rightEdge = line(start = [12.5, -12.5], end = [12.5, 12.5])
+  topEdge = line(start = [12.5, 12.5], end = [-12.5, 12.5])
+  leftEdge = line(start = [-12.5, 12.5], end = [-12.5, -12.5])
+}
+cubeRegion = region(point = [0, 0], sketch = cubeProfile)
+cubeBody = extrude(cubeRegion, length = 25)
+  |> translate(z = -12.5, global = true)
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let wall_object_id = find_first_wall_object_id(&frontend.scene_graph).expect("expected a wall object");
+
+        let sketch_args = SketchCtor {
+            on: Plane::Object(wall_object_id),
+        };
+        let (src_delta, _scene_delta, _sketch_id) = frontend
+            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .await
+            .unwrap();
+        assert!(src_delta.text.contains("faceOf(cubeBody, face = cubeRegion.tags."));
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_sketch_on_cap_artifact_from_translated_region_extrude() {
+        let initial_source = "\
+sideLength = 25
+halfSide = sideLength / 2
+
+cubeProfile = sketch(on = XY) {
+  bottomEdge = line(start = [-12.5, -12.5], end = [12.5, -12.5])
+  rightEdge = line(start = [12.5, -12.5], end = [12.5, 12.5])
+  topEdge = line(start = [12.5, 12.5], end = [-12.5, 12.5])
+  leftEdge = line(start = [-12.5, 12.5], end = [-12.5, -12.5])
+}
+cubeRegion = region(point = [0, 0], sketch = cubeProfile)
+cubeBody = extrude(cubeRegion, length = sideLength)
+  |> translate(z = -halfSide, global = true)
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let cap_object_id = find_first_end_cap_object_id(&frontend.scene_graph).expect("expected an end cap object");
+
+        let sketch_args = SketchCtor {
+            on: Plane::Object(cap_object_id),
+        };
+        let (src_delta, _scene_delta, _sketch_id) = frontend
+            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .await
+            .unwrap();
+        assert!(src_delta.text.contains("faceOf(cubeBody, face = END)"));
 
         ctx.close().await;
     }
