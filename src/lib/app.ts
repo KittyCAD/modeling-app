@@ -62,6 +62,7 @@ import {
   commandSystemService,
   provideCommand,
 } from '@src/registry/contracts/commands'
+import { keymapService } from '@src/registry/contracts/keymap'
 import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
@@ -536,6 +537,7 @@ export class App implements AppSubsystems {
       projectPath: signal(''),
       engineCommandManager: this.engineCommandManager,
       rustContext: this.rustContext,
+      keymap: this.registry.get(keymapService),
     })
 
     this.registry.reconfigure(appRegistryServicesSlot, [

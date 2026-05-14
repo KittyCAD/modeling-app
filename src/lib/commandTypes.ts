@@ -15,6 +15,8 @@ import type { MachineManager } from '@src/lib/MachineManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { Expr, Name, VariableDeclaration } from '@src/lang/wasm'
+import type { MachineManager } from '@src/lib/MachineManager'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   CommandBarContext,
   commandBarMachine,
@@ -114,6 +116,7 @@ export type Command<
   CommandSchema extends
     StateMachineCommandSetSchema<T>[CommandName] = StateMachineCommandSetSchema<T>[CommandName],
 > = {
+  id?: string
   name: CommandName
   groupId: T['id']
   needsReview: boolean

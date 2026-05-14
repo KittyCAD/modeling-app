@@ -52,9 +52,9 @@ beforeEach(async () => {
   kclManagerInThisFile = kclManager
   rustContextInThisFile = rustContext
   engineCommandManagerInThisFile = engineCommandManager
-}, 60_000)
+})
 afterAll(() => {
-  engineCommandManagerInThisFile?.tearDown()
+  engineCommandManagerInThisFile.tearDown()
 })
 
 describe('edges.spec.ts', () => {
