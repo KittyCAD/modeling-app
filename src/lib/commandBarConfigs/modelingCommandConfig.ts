@@ -78,7 +78,7 @@ import {
   addRingGear,
   addSpurGear,
 } from '@src/lang/modifyAst/gears'
-import { addMirror } from '@src/lang/modifyAst/mirrors'
+import { addMirror3D } from '@src/lang/modifyAst/mirrors'
 import {
   addAppearance,
   addClone,
@@ -518,7 +518,7 @@ export type ModelingCommandSchema = {
     solids: Selections
     tools: Selections
   }
-  Mirror: {
+  'Mirror 3D': {
     bodies: Selections
     across: Selections
   }
@@ -1446,9 +1446,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
-  Mirror: {
+  'Mirror 3D': {
     description: 'Mirror solids across a plane or edge.',
     icon: 'mirror3d',
+    displayName: 'Mirror',
     needsReview: true,
     reviewValidation: async (context, modelingActor) => {
       if (!modelingActor) {
@@ -1460,8 +1461,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
-      const modRes = addMirror({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Mirror']),
+      const modRes = addMirror3D({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Mirror 3D']),
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
         variables: kclManager.variables,

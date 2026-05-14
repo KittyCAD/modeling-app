@@ -1,4 +1,4 @@
-import { addMirror } from '@src/lang/modifyAst/mirrors'
+import { addMirror3D } from '@src/lang/modifyAst/mirrors'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { assertParse, recast } from '@src/lang/wasm'
 import type { Artifact, VariableDeclaration } from '@src/lang/wasm'
@@ -138,7 +138,7 @@ describe('mirror', () => {
           acrossType,
           bodyType,
         })
-      const result = addMirror({
+      const result = addMirror3D({
         ast,
         artifactGraph,
         variables,
@@ -223,7 +223,7 @@ extrude001 = extrude(profile001, length = 1)`
       if (!bodyArtifact || !('codeRef' in bodyArtifact)) {
         throw new Error('Body artifact not found')
       }
-      const result = addMirror({
+      const result = addMirror3D({
         ast,
         artifactGraph,
         variables,
@@ -280,7 +280,7 @@ extrude001 = extrude(profile001, length = 10)`
         cmdId: '',
       }
       artifactGraph.set(capArtifact.id, capArtifact)
-      const result = addMirror({
+      const result = addMirror3D({
         ast,
         artifactGraph,
         variables,
@@ -345,7 +345,7 @@ shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
         primitiveType: 'face',
         type: 'enginePrimitive',
       }
-      const result = addMirror({
+      const result = addMirror3D({
         ast,
         artifactGraph,
         variables,

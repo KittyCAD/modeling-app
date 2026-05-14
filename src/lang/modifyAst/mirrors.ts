@@ -23,7 +23,7 @@ import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
-export function addMirror({
+export function addMirror3D({
   ast,
   artifactGraph,
   variables,

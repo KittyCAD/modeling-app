@@ -775,9 +775,10 @@ export function buildToolbarConfig(
           onClick: () =>
             commands.send({
               type: 'Find and select command',
-              data: { name: 'Mirror', groupId: 'modeling' },
+              data: { name: 'Mirror 3D', groupId: 'modeling' },
             }),
           icon: 'mirror3d',
+          hotkey: 'M',
           status: 'available',
           title: 'Mirror',
           description: 'Mirror solids across a plane or edge.',

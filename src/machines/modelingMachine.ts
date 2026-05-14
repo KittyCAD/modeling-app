@@ -133,7 +133,7 @@ import {
   addRevolve,
   addSweep,
 } from '@src/lang/modifyAst/sweeps'
-import { addMirror } from '@src/lang/modifyAst/mirrors'
+import { addMirror3D } from '@src/lang/modifyAst/mirrors'
 import {
   addPatternCircular3D,
   addPatternLinear3D,
@@ -498,8 +498,8 @@ export type ModelingMachineEvent =
       data: ModelingCommandSchema['Boolean Split']
     }
   | {
-      type: 'Mirror'
-      data: ModelingCommandSchema['Mirror']
+      type: 'Mirror 3D'
+      data: ModelingCommandSchema['Mirror 3D']
     }
   | {
       type: 'Pattern Circular 3D'
@@ -5885,7 +5885,7 @@ export const modelingMachine = setup({
       }: {
         input:
           | {
-              data: ModelingCommandSchema['Mirror'] | undefined
+              data: ModelingCommandSchema['Mirror 3D'] | undefined
               kclManager: KclManager
               rustContext: RustContext
               wasmInstance: ModuleType
@@ -5897,7 +5897,7 @@ export const modelingMachine = setup({
         }
 
         const { ast, artifactGraph, variables } = input.kclManager
-        const result = addMirror({
+        const result = addMirror3D({
           ...input.data,
           ast,
           artifactGraph,
@@ -6272,7 +6272,7 @@ export const modelingMachine = setup({
           target: 'Boolean splitting',
         },
 
-        Mirror: {
+        'Mirror 3D': {
           target: 'Mirroring',
         },
 
@@ -8610,7 +8610,7 @@ export const modelingMachine = setup({
         src: 'mirrorAstMod',
         id: 'mirrorAstMod',
         input: ({ event, context }) => {
-          if (event.type !== 'Mirror') return undefined
+          if (event.type !== 'Mirror 3D') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,
