@@ -1168,7 +1168,6 @@ export function createOnDragCallback({
     sceneGraphDelta: SceneGraphDelta
     writeToDisk?: boolean
     suppressExecOutcomeIssues?: boolean
-    suppressFreedomConflictColoring?: boolean
   }) => void
   getDefaultLengthUnit: () => UnitLength | undefined
   getJsAppSettings: () => Promise<DeepPartial<Configuration>>
@@ -1243,7 +1242,6 @@ export function createOnDragCallback({
             ...result,
             writeToDisk: false,
             suppressExecOutcomeIssues: true,
-            suppressFreedomConflictColoring: true,
           })
           await new Promise((resolve) => requestAnimationFrame(resolve))
         }
@@ -1405,7 +1403,6 @@ export function createOnDragCallback({
             ...result,
             writeToDisk: false,
             suppressExecOutcomeIssues: true,
-            suppressFreedomConflictColoring: true,
           })
         } else {
           const fallbackOutcome =
@@ -1430,7 +1427,6 @@ export function createOnDragCallback({
               : result),
             writeToDisk: false,
             suppressExecOutcomeIssues: true,
-            suppressFreedomConflictColoring: true,
           })
         }
         await new Promise((resolve) => requestAnimationFrame(resolve))
@@ -1807,8 +1803,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
           let restoredPreDragOutcome: DragSketchOutcome | null = null
           const commitSegmentAndLabelEdits = async (
             segmentsToEdit: ExistingSegmentCtor[],
-            constraintLabelEdits: ConstraintLabelEdit[] = [],
-            shouldCreateCheckpoint = true
+            constraintLabelEdits: ConstraintLabelEdit[] = []
           ) => {
             const anchorSegmentIds = segmentsToEdit.map(({ id }) => id)
             let latestResult = await context.rustContext.editSegments(
@@ -1816,7 +1811,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
               context.sketchId,
               segmentsToEdit,
               settings,
-              constraintLabelEdits.length === 0 && shouldCreateCheckpoint
+              constraintLabelEdits.length === 0
             )
 
             for (const [
@@ -1830,8 +1825,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                   constraintId,
                   labelPosition,
                   settings,
-                  index === constraintLabelEdits.length - 1 &&
-                    shouldCreateCheckpoint,
+                  index === constraintLabelEdits.length - 1,
                   anchorSegmentIds
                 )
             }
@@ -2029,17 +2023,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
             }
           } else {
             if (lastGoodPreview?.segmentsToEdit.length) {
-              // Commit dragged positions without checkpointing, then settle:
-              // a solve without drag constraints finds the nearest valid
-              // solution and creates the checkpoint.
-              await commitSegmentAndLabelEdits(
+              result = await commitSegmentAndLabelEdits(
                 lastGoodPreview.segmentsToEdit,
-                lastGoodPreview.constraintLabelEdits,
-                false
-              )
-              result = await context.rustContext.sketchExecuteMock(
-                SKETCH_FILE_VERSION,
-                context.sketchId
+                lastGoodPreview.constraintLabelEdits
               )
             } else if (!currentSceneGraphDelta) {
               result = await context.rustContext.sketchExecuteMock(
@@ -2077,18 +2063,12 @@ export function setUpOnDragAndSelectionClickCallbacks({
                   context.sketchId
                 )
               } else {
-                // Same settle pattern: commit positions, then re-solve without
-                // drag constraints to snap back to a geometrically valid state.
-                await context.rustContext.editSegments(
+                result = await context.rustContext.editSegments(
                   0,
                   context.sketchId,
                   segmentsToEdit,
                   settings,
-                  false
-                )
-                result = await context.rustContext.sketchExecuteMock(
-                  SKETCH_FILE_VERSION,
-                  context.sketchId
+                  true
                 )
               }
             }
@@ -2182,8 +2162,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
             sceneGraphDelta: outcome.sceneGraphDelta,
             writeToDisk: false,
             suppressExecOutcomeIssues: outcome.suppressExecOutcomeIssues,
-            suppressFreedomConflictColoring:
-              outcome.suppressFreedomConflictColoring,
           },
         })
       },

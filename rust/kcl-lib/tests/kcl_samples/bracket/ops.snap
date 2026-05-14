@@ -791,7 +791,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -878,7 +878,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -925,7 +925,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1009,7 +1009,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1056,7 +1056,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1140,7 +1140,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1187,7 +1187,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1271,7 +1271,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1318,7 +1318,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1402,7 +1402,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1449,7 +1449,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1493,7 +1493,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1557,7 +1557,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1593,7 +1593,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1629,7 +1629,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1665,7 +1665,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1701,7 +1701,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1737,7 +1737,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1773,7 +1773,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1817,7 +1817,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1864,7 +1864,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1911,7 +1911,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1958,7 +1958,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1990,7 +1990,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2024,7 +2024,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2053,7 +2053,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 33
+            "index": 29
           },
           {
             "type": "ExpressionStatementExpr"
@@ -2113,7 +2113,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 34
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2162,7 +2162,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 35
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2211,7 +2211,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 36
+            "index": 32
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2277,7 +2277,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 37
+            "index": 33
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2739,7 +2739,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 38
+            "index": 34
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3023,7 +3023,7 @@ description: Operations executed bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 39
+            "index": 35
           },
           {
             "type": "VariableDeclarationDeclaration"

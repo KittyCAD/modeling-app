@@ -998,10 +998,11 @@ description: Operations executed gdt-tutorial.kcl
         "fontSize": {
           "value": {
             "type": "Number",
-            "value": 36.0,
+            "value": 10.0,
             "ty": {
+              "mm": null,
               "type": "Known",
-              "type": "Count"
+              "type": "Length"
             }
           },
           "sourceRange": []
@@ -1358,7 +1359,7 @@ description: Operations executed gdt-tutorial.kcl
         "annotation": {
           "value": {
             "type": "String",
-            "value": "Break all sharp edges"
+            "value": "BREAK ALL SHARP EDGES"
           },
           "sourceRange": []
         },

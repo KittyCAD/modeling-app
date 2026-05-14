@@ -474,6 +474,7 @@ sketch001 = extrude(region001, length = -12)`
         commandName: 'Offset plane',
       })
       await toolbar.selectDefaultPlane('Front plane')
+      await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'offset',
@@ -508,6 +509,92 @@ sketch001 = extrude(region001, length = -12)`
       )
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')
+    })
+  })
+
+  test(`Mirror point-and-click`, async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region001 = region(segments = [sketch001.circle1])
+extrude001 = extrude(region001, length = 10)
+plane001 = offsetPlane(YZ, offset = 10)`
+    const expectedMirrorCode =
+      'solid001 = mirror3d(extrude001, across = plane001)'
+
+    await test.step('Settle the scene', async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step(`Go through the command bar flow`, async () => {
+      await toolbar.selectTransform('mirror3d')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'bodies',
+        currentArgValue: '',
+        headerArguments: { Bodies: '', Across: '' },
+        highlightedHeaderArg: 'bodies',
+        commandName: 'Mirror',
+      })
+
+      await editor.selectText('extrude001 = extrude(region001, length = 10)')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'across',
+        currentArgValue: '',
+        headerArguments: { Bodies: '1 sweep', Across: '' },
+        highlightedHeaderArg: 'across',
+        commandName: 'Mirror',
+      })
+
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      const plane = await toolbar.getFeatureTreeOperation('plane001', 0)
+      await plane.click()
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: { Bodies: '1 sweep', Across: '1 plane' },
+        commandName: 'Mirror',
+      })
+      await cmdBar.submit()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step(`Confirm code is added to the editor`, async () => {
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(expectedMirrorCode)
+      await editor.expectState({
+        diagnostics: [],
+        activeLines: [expectedMirrorCode],
+        highlightedCode: '',
+      })
+    })
+
+    await test.step('Delete mirror via feature tree selection', async () => {
+      await editor.closePane()
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'solid001',
+        0
+      )
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain(expectedMirrorCode)
     })
   })
 
@@ -3762,7 +3849,7 @@ extrude001 = extrude(region001, length = 30)`
             stage: 'arguments',
             commandName: 'GDT Flatness',
             currentArgKey: 'fontSize',
-            currentArgValue: '36',
+            currentArgValue: '10mm',
             headerArguments: {
               Faces: '1 face',
               Tolerance: '0.1mm',
@@ -3773,8 +3860,8 @@ extrude001 = extrude(region001, length = 30)`
             },
             highlightedHeaderArg: 'fontSize',
           })
-          // Update font size from 36 to 48
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('48')
+          // Update font size to 12mm
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('12mm')
           await cmdBar.progressCmdBar()
           // Review changes to font size
           await cmdBar.expectState({
@@ -3786,7 +3873,7 @@ extrude001 = extrude(region001, length = 30)`
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
-              FontSize: '48',
+              FontSize: '12mm',
             },
           })
         })
@@ -3802,7 +3889,7 @@ extrude001 = extrude(region001, length = 30)`
         await editor.expectEditor.toContain('precision = 5')
         await editor.expectEditor.toContain('framePosition = [10, 10]')
         await editor.expectEditor.toContain('framePlane = XY')
-        await editor.expectEditor.toContain('fontSize = 48')
+        await editor.expectEditor.toContain('fontSize = 12mm')
       })
     })
 
@@ -3825,7 +3912,7 @@ extrude001 = extrude(region001, length = 30)`
             Precision: '5',
             FramePosition: '[10, 10]',
             FramePlane: 'XY',
-            FontSize: '48',
+            FontSize: '12mm',
           },
           highlightedHeaderArg: 'tolerance',
         })
@@ -3843,7 +3930,7 @@ extrude001 = extrude(region001, length = 30)`
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
-              FontSize: '48',
+              FontSize: '12mm',
             },
             highlightedHeaderArg: 'tolerance',
           })
@@ -3859,7 +3946,7 @@ extrude001 = extrude(region001, length = 30)`
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
-              FontSize: '48',
+              FontSize: '12mm',
             },
           })
         })
@@ -3876,7 +3963,7 @@ extrude001 = extrude(region001, length = 30)`
               Precision: '5',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
-              FontSize: '48',
+              FontSize: '12mm',
             },
             highlightedHeaderArg: 'precision',
           })
@@ -3892,7 +3979,7 @@ extrude001 = extrude(region001, length = 30)`
               Precision: '3',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
-              FontSize: '48',
+              FontSize: '12mm',
             },
           })
         })
@@ -3909,7 +3996,7 @@ extrude001 = extrude(region001, length = 30)`
               Precision: '3',
               FramePosition: '[10, 10]',
               FramePlane: 'XY',
-              FontSize: '48',
+              FontSize: '12mm',
             },
             highlightedHeaderArg: 'framePosition',
           })
@@ -3926,7 +4013,7 @@ extrude001 = extrude(region001, length = 30)`
               Precision: '3',
               FramePosition: '[20, 30]',
               FramePlane: 'XY',
-              FontSize: '48',
+              FontSize: '12mm',
             },
           })
         })
@@ -3943,7 +4030,7 @@ extrude001 = extrude(region001, length = 30)`
               Precision: '3',
               FramePosition: '[20, 30]',
               FramePlane: 'XY',
-              FontSize: '48',
+              FontSize: '12mm',
             },
             highlightedHeaderArg: 'framePlane',
           })
@@ -3958,7 +4045,7 @@ extrude001 = extrude(region001, length = 30)`
               Precision: '3',
               FramePosition: '[20, 30]',
               FramePlane: 'XZ',
-              FontSize: '48',
+              FontSize: '12mm',
             },
           })
         })
@@ -3969,13 +4056,13 @@ extrude001 = extrude(region001, length = 30)`
             stage: 'arguments',
             commandName: 'GDT Flatness',
             currentArgKey: 'fontSize',
-            currentArgValue: '48',
+            currentArgValue: '12mm',
             headerArguments: {
               Tolerance: '0.2mm',
               Precision: '3',
               FramePosition: '[20, 30]',
               FramePlane: 'XZ',
-              FontSize: '48',
+              FontSize: '12mm',
             },
             highlightedHeaderArg: 'fontSize',
           })
@@ -4186,7 +4273,7 @@ extrude001 = extrude(region001, length = 30)`
             stage: 'arguments',
             commandName: 'GDT Datum',
             currentArgKey: 'fontSize',
-            currentArgValue: '36',
+            currentArgValue: '10mm',
             headerArguments: {
               Faces: '1 face',
               Name: 'A',
@@ -4196,8 +4283,8 @@ extrude001 = extrude(region001, length = 30)`
             },
             highlightedHeaderArg: 'fontSize',
           })
-          // Update font size from 36 to 48
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('48')
+          // Update font size to 12mm
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('12mm')
           await cmdBar.progressCmdBar()
           // Review changes to font size
           await cmdBar.expectState({
@@ -4208,7 +4295,7 @@ extrude001 = extrude(region001, length = 30)`
               Name: 'A',
               FramePosition: '[5, 0]',
               FramePlane: 'XZ',
-              FontSize: '48',
+              FontSize: '12mm',
             },
           })
         })
@@ -4223,7 +4310,7 @@ extrude001 = extrude(region001, length = 30)`
         await editor.expectEditor.toContain('name = "A"')
         await editor.expectEditor.toContain('framePosition = [5, 0]')
         await editor.expectEditor.toContain('framePlane = XZ')
-        await editor.expectEditor.toContain('fontSize = 48')
+        await editor.expectEditor.toContain('fontSize = 12mm')
       })
     })
 
@@ -4246,7 +4333,7 @@ extrude001 = extrude(region001, length = 30)`
               Name: 'A',
               FramePosition: '[5, 0]',
               FramePlane: 'XZ',
-              FontSize: '48',
+              FontSize: '12mm',
             },
             highlightedHeaderArg: 'name',
           })
@@ -4262,7 +4349,7 @@ extrude001 = extrude(region001, length = 30)`
               Name: 'B',
               FramePosition: '[5, 0]',
               FramePlane: 'XZ',
-              FontSize: '48',
+              FontSize: '12mm',
             },
           })
         })
@@ -4278,7 +4365,7 @@ extrude001 = extrude(region001, length = 30)`
               Name: 'B',
               FramePosition: '[5, 0]',
               FramePlane: 'XZ',
-              FontSize: '48',
+              FontSize: '12mm',
             },
             highlightedHeaderArg: 'framePosition',
           })
@@ -4294,7 +4381,7 @@ extrude001 = extrude(region001, length = 30)`
               Name: 'B',
               FramePosition: '[10, 5]',
               FramePlane: 'XZ',
-              FontSize: '48',
+              FontSize: '12mm',
             },
           })
         })
@@ -4310,7 +4397,7 @@ extrude001 = extrude(region001, length = 30)`
               Name: 'B',
               FramePosition: '[10, 5]',
               FramePlane: 'XZ',
-              FontSize: '48',
+              FontSize: '12mm',
             },
             highlightedHeaderArg: 'framePlane',
           })
@@ -4324,7 +4411,7 @@ extrude001 = extrude(region001, length = 30)`
               Name: 'B',
               FramePosition: '[10, 5]',
               FramePlane: 'YZ',
-              FontSize: '48',
+              FontSize: '12mm',
             },
           })
         })
@@ -4335,12 +4422,12 @@ extrude001 = extrude(region001, length = 30)`
             stage: 'arguments',
             commandName: 'GDT Datum',
             currentArgKey: 'fontSize',
-            currentArgValue: '48',
+            currentArgValue: '12mm',
             headerArguments: {
               Name: 'B',
               FramePosition: '[10, 5]',
               FramePlane: 'YZ',
-              FontSize: '48',
+              FontSize: '12mm',
             },
             highlightedHeaderArg: 'fontSize',
           })
