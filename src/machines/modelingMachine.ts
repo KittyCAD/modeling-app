@@ -5125,6 +5125,8 @@ export const modelingMachine = setup({
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
           outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
@@ -5170,6 +5172,8 @@ export const modelingMachine = setup({
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
           outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
@@ -5215,6 +5219,8 @@ export const modelingMachine = setup({
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
           outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
@@ -5260,6 +5266,8 @@ export const modelingMachine = setup({
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
           outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
@@ -5305,6 +5313,8 @@ export const modelingMachine = setup({
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
           outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
@@ -5350,6 +5360,8 @@ export const modelingMachine = setup({
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
           outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
@@ -5395,6 +5407,8 @@ export const modelingMachine = setup({
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
           outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
@@ -5440,6 +5454,8 @@ export const modelingMachine = setup({
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
           outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
