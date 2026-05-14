@@ -16,6 +16,7 @@ import { useNetworkStatus } from '@src/hooks/useNetworkStatus'
 import { isDesktop } from '@src/lib/isDesktop'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
+import { shouldRevalidateFileRoute } from '@src/lib/routeRevalidation'
 import { baseLoader, fileLoader, homeLoader } from '@src/lib/routeLoaders'
 import { useApp, useSingletons } from '@src/lib/boot'
 import Home from '@src/routes/Home'
@@ -57,6 +58,7 @@ export const Router = () => {
               loader: fileLoader({
                 app,
               }),
+              shouldRevalidate: shouldRevalidateFileRoute,
               id: PATHS.FILE,
               path: PATHS.FILE + '/:id',
               errorElement: <ErrorPage />,
