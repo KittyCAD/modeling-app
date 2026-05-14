@@ -658,6 +658,59 @@ second = subtract(first, tools = [tool])
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn hide_consumed_solid_does_not_report_kcl_error() {
+        let code = r#"
+targetSketch = sketch(on = XY) {
+  line1 = line(start = [var -10, var -10], end = [var 10, var -10])
+  line2 = line(start = [var 10, var -10], end = [var 10, var 10])
+  line3 = line(start = [var 10, var 10], end = [var -10, var 10])
+  line4 = line(start = [var -10, var 10], end = [var -10, var -10])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+target = extrude(region(point = [0, 0], sketch = targetSketch), length = 20)
+
+toolSketch = sketch(on = XY) {
+  line1 = line(start = [var -2, var -2], end = [var 2, var -2])
+  line2 = line(start = [var 2, var -2], end = [var 2, var 2])
+  line3 = line(start = [var 2, var 2], end = [var -2, var 2])
+  line4 = line(start = [var -2, var 2], end = [var -2, var -2])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+tool = extrude(region(point = [0, 0], sketch = toolSketch), length = 4)
+
+result = subtract(target, tools = [tool])
+hidden = hide(target)
+"#;
+
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let result = ctx.run_mock(&program, &MockConfig::default()).await;
+        ctx.close().await;
+
+        match result {
+            Ok(outcome) => assert!(outcome.variables.contains_key("hidden")),
+            Err(err) => {
+                let message = err.error.message();
+                assert!(
+                    message.contains("`target` was already consumed by a `subtract` operation"),
+                    "{message}"
+                );
+                panic!("hide should ignore consumed-solid validation, but failed with: {message}");
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn union_reusing_consumed_solid_reports_kcl_error() {
         let code = r#"
 leftSketch = sketch(on = XY) {

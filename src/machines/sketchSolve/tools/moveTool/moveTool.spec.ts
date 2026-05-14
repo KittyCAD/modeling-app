@@ -403,6 +403,7 @@ function createPointSegmentGroup({
 describe('createOnDragStartCallback', () => {
   it('should track the drag start position and dismiss constraint hover popup', () => {
     const setLastSuccessfulDragFromPoint = vi.fn()
+    const setDragStartPoint = vi.fn()
     const setLastGoodPreview = vi.fn()
     const setDragStartOutcome = vi.fn()
     const setPreDragCheckpointId = vi.fn()
@@ -416,6 +417,7 @@ describe('createOnDragStartCallback', () => {
 
     const callback = createOnDragStartCallback({
       setLastSuccessfulDragFromPoint,
+      setDragStartPoint,
       setLastGoodPreview,
       setDragStartOutcome,
       setPreDragCheckpointId,
@@ -448,6 +450,10 @@ describe('createOnDragStartCallback', () => {
     expect(callArg).not.toBe(intersectionPoint.twoD)
     expect(callArg.x).toBe(10)
     expect(callArg.y).toBe(20)
+    expect(setDragStartPoint).toHaveBeenCalledWith(
+      expect.objectContaining({ x: 10, y: 20 })
+    )
+    expect(setDragStartPoint.mock.calls[0][0]).not.toBe(intersectionPoint.twoD)
     expect(setLastGoodPreview).toHaveBeenCalledWith(null)
     expect(setDragStartOutcome).toHaveBeenCalledWith({
       kclSource: { text: 'baseline' },
@@ -2152,6 +2158,120 @@ describe('createOnDragCallback', () => {
     }
   })
 
+  it('should build drag previews from the drag-start geometry instead of the previous preview', async () => {
+    const getIsSolveInProgress = vi.fn(() => false)
+    const setIsSolveInProgress = vi.fn()
+    const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(5, 1))
+    const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(3)
+
+    const baselineStart = createPointApiObject({
+      id: 1,
+      x: 0,
+      y: 0,
+      owner: 3,
+    })
+    const baselineEnd = createPointApiObject({
+      id: 2,
+      x: 10,
+      y: 0,
+      owner: 3,
+    })
+    const baselineLine = createLineApiObject({ id: 3, start: 1, end: 2 })
+    const baselineDelta = createSceneGraphDelta([
+      baselineStart,
+      baselineEnd,
+      baselineLine,
+    ])
+
+    const previousPreviewStart = createPointApiObject({
+      id: 1,
+      x: 5,
+      y: 1,
+      owner: 3,
+    })
+    const previousPreviewEnd = createPointApiObject({
+      id: 2,
+      x: 20,
+      y: 4,
+      owner: 3,
+    })
+    const previousPreviewLine = createLineApiObject({
+      id: 3,
+      start: 1,
+      end: 2,
+    })
+    const previousPreviewDelta = createSceneGraphDelta([
+      previousPreviewStart,
+      previousPreviewEnd,
+      previousPreviewLine,
+    ])
+
+    const getContextData = vi.fn(() => ({
+      selectedIds: [3],
+      sketchId: 0,
+      sketchExecOutcome: { sceneGraphDelta: previousPreviewDelta },
+    }))
+    const editSegments = vi.fn(() =>
+      Promise.resolve({
+        kclSource: { text: '' },
+        sceneGraphDelta: baselineDelta,
+      })
+    )
+    const onNewSketchOutcome = vi.fn()
+
+    const callback = createOnDragCallback({
+      getIsSolveInProgress,
+      setIsSolveInProgress,
+      getLastSuccessfulDragFromPoint,
+      setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
+      getContextData,
+      editSegments,
+      onNewSketchOutcome,
+      getDefaultLengthUnit: vi.fn((): UnitLength => 'mm'),
+      getJsAppSettings: vi.fn(() => Promise.resolve({})),
+      ...createDragSnappingDeps(),
+      getDragStartOutcome: vi.fn(() => ({
+        kclSource: { text: 'baseline' },
+        sceneGraphDelta: baselineDelta,
+      })),
+      getDragStartPoint: vi.fn(() => new Vector2(0, 0)),
+    })
+
+    await callback({
+      intersectionPoint: {
+        twoD: new Vector2(7, 2),
+        threeD: new Vector3(7, 2, 0),
+      },
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    expect(editSegments).toHaveBeenCalledWith(
+      0,
+      0,
+      [
+        {
+          id: 3,
+          ctor: {
+            type: 'Line',
+            start: {
+              x: { type: 'Var', value: 7, units: 'Mm' },
+              y: { type: 'Var', value: 2, units: 'Mm' },
+            },
+            end: {
+              x: { type: 'Var', value: 17, units: 'Mm' },
+              y: { type: 'Var', value: 2, units: 'Mm' },
+            },
+          },
+        },
+      ],
+      {}
+    )
+  })
+
   it('should drag the entity under cursor when no other segments are selected', async () => {
     const getIsSolveInProgress = vi.fn(() => false)
     const setIsSolveInProgress = vi.fn()
@@ -2289,6 +2409,162 @@ describe('createOnDragCallback', () => {
         expect(editedIds).toEqual([5, 13])
       }
     }
+  })
+
+  it('should pin every point in a dragged coincident cluster to the cursor after selected owner edits', async () => {
+    const getIsSolveInProgress = vi.fn(() => false)
+    const setIsSolveInProgress = vi.fn()
+    const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(15, -5.5))
+    const setLastSuccessfulDragFromPoint = vi.fn()
+    const getDraggedEntityId = createDraggedEntityIdGetter(10)
+    const line4Start = createPointApiObject({
+      id: 1,
+      x: 12.6,
+      y: -8.05,
+      owner: 30,
+    })
+    const line5End = createPointApiObject({
+      id: 2,
+      x: 14.48,
+      y: 0,
+      owner: 31,
+    })
+    const line7Start = createPointApiObject({
+      id: 3,
+      x: 1.88,
+      y: -3.33,
+      owner: 32,
+    })
+    const point1 = createPointApiObject({
+      id: 10,
+      x: 14.64,
+      y: -5.7,
+      owner: 30,
+    })
+    const point2 = createPointApiObject({
+      id: 11,
+      x: 14.64,
+      y: -5.7,
+      owner: 31,
+    })
+    const point3 = createPointApiObject({
+      id: 12,
+      x: 14.64,
+      y: -5.7,
+      owner: 32,
+    })
+    const line4 = createLineApiObject({ id: 30, start: 1, end: 10 })
+    const line5 = createLineApiObject({ id: 31, start: 11, end: 2 })
+    const line7 = createLineApiObject({ id: 32, start: 3, end: 12 })
+    const coincidentConstraint1 = {
+      id: 20,
+      kind: {
+        type: 'Constraint',
+        constraint: {
+          type: 'Coincident',
+          segments: [10, 11],
+        },
+      },
+      label: '',
+      comments: '',
+      artifact_id: '0',
+      source: { type: 'Simple', range: [0, 0, 0] },
+    } as ApiObject
+    const coincidentConstraint2 = {
+      id: 21,
+      kind: {
+        type: 'Constraint',
+        constraint: {
+          type: 'Coincident',
+          segments: [11, 12],
+        },
+      },
+      label: '',
+      comments: '',
+      artifact_id: '0',
+      source: { type: 'Simple', range: [0, 0, 0] },
+    } as ApiObject
+    const sceneGraphDelta = createSceneGraphDelta([
+      line4Start,
+      line5End,
+      line7Start,
+      point1,
+      point2,
+      point3,
+      line4,
+      line5,
+      line7,
+      coincidentConstraint1,
+      coincidentConstraint2,
+    ])
+    const getContextData = vi.fn(() => ({
+      selectedIds: [30, 31, 32],
+      sketchId: 0,
+      sketchExecOutcome: { sceneGraphDelta },
+    }))
+    const editSegments = vi.fn(() =>
+      Promise.resolve({
+        kclSource: { text: '' },
+        sceneGraphDelta,
+      })
+    )
+    const onNewSketchOutcome = vi.fn()
+
+    const callback = createOnDragCallback({
+      getIsSolveInProgress,
+      setIsSolveInProgress,
+      getLastSuccessfulDragFromPoint,
+      setLastSuccessfulDragFromPoint,
+      getDraggedEntityId,
+      getContextData,
+      editSegments,
+      onNewSketchOutcome,
+      getDefaultLengthUnit: vi.fn((): UnitLength => 'mm'),
+      getJsAppSettings: vi.fn(() => Promise.resolve({})),
+      ...createDragSnappingDeps(),
+    })
+
+    await callback({
+      intersectionPoint: {
+        twoD: new Vector2(18, -4.5),
+        threeD: new Vector3(18, -4.5, 0),
+      },
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    expect(editSegments).toHaveBeenCalledTimes(1)
+    const editCall = editSegments.mock.calls[0] as unknown as
+      | [
+          number,
+          number,
+          { id: number; ctor: { type: string; position: unknown } }[],
+          unknown,
+        ]
+      | undefined
+    const segments = editCall?.[2] ?? []
+    const expectedPosition = {
+      x: { type: 'Var', value: 18, units: 'Mm' },
+      y: { type: 'Var', value: -4.5, units: 'Mm' },
+    }
+
+    expect(segments.map((segment) => segment.id)).toEqual([
+      30, 31, 32, 10, 11, 12,
+    ])
+    for (const id of [10, 11, 12]) {
+      expect(segments.find((segment) => segment.id === id)?.ctor).toEqual({
+        type: 'Point',
+        position: expectedPosition,
+      })
+    }
+    expect(segments.find((segment) => segment.id === 30)?.ctor).toMatchObject({
+      type: 'Line',
+      end: {
+        x: { type: 'Var', value: 17.64, units: 'Mm' },
+        y: { type: 'Var', value: -4.7, units: 'Mm' },
+      },
+    })
   })
 
   it('should prevent race conditions and only update drag point after successful edit resolves', async () => {

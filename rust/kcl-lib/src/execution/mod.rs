@@ -265,12 +265,20 @@ pub struct ExecOutcome {
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
     #[serde(skip)]
     pub var_solutions: Vec<(SourceRange, Number)>,
+    #[serde(skip)]
+    pub ordered_sketch_var_solutions: Vec<SketchVarSolution>,
     /// Non-fatal errors and warnings.
     pub issues: Vec<CompilationIssue>,
     /// File Names in module Id array index order
     pub filenames: IndexMap<ModuleId, ModulePath>,
     /// The default planes.
     pub default_planes: Option<DefaultPlanes>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct SketchVarSolution {
+    pub source_range: Option<SourceRange>,
+    pub value: f64,
 }
 
 /// Per-segment freedom used by the constraint report. Mirrors
@@ -489,6 +497,12 @@ pub struct MockConfig {
     /// Per-sketch-variable initial guess overrides, keyed by sketch variable
     /// order. These are transient warm-start values for interactive solves.
     pub sketch_var_initial_guess_overrides: Vec<f64>,
+    /// Per-source-sketch-variable warm starts keyed by source variable order,
+    /// excluding hidden lowered variables.
+    pub sketch_var_source_initial_guess_overrides: Vec<f64>,
+    /// Source ranges for the solver-order warm starts. Hidden lowered
+    /// variables have no source range.
+    pub sketch_var_initial_guess_source_ranges: Vec<Option<SourceRange>>,
 }
 
 impl Default for MockConfig {
@@ -500,6 +514,8 @@ impl Default for MockConfig {
             freedom_analysis: true,
             segment_ids_edited: AhashIndexSet::default(),
             sketch_var_initial_guess_overrides: Vec::new(),
+            sketch_var_source_initial_guess_overrides: Vec::new(),
+            sketch_var_initial_guess_source_ranges: Vec::new(),
         }
     }
 }
@@ -514,14 +530,15 @@ impl MockConfig {
     }
 
     #[must_use]
-    pub(crate) fn no_freedom_analysis(mut self) -> Self {
-        self.freedom_analysis = false;
-        self
-    }
-
-    #[must_use]
-    pub(crate) fn with_sketch_var_initial_guess_overrides(mut self, overrides: Vec<f64>) -> Self {
-        self.sketch_var_initial_guess_overrides = overrides;
+    pub(crate) fn with_ordered_sketch_var_initial_guess_overrides(
+        mut self,
+        solver_overrides: Vec<f64>,
+        source_overrides: Vec<f64>,
+        solver_source_ranges: Vec<Option<SourceRange>>,
+    ) -> Self {
+        self.sketch_var_initial_guess_overrides = solver_overrides;
+        self.sketch_var_source_initial_guess_overrides = source_overrides;
+        self.sketch_var_initial_guess_source_ranges = solver_source_ranges;
         self
     }
 }
@@ -779,6 +796,10 @@ pub struct ExecutorSettings {
     /// skipping these commands can make execution slightly faster.
     #[serde(default, skip_serializing_if = "is_false")]
     pub skip_artifact_graph: bool,
+    /// If Some(N), sends a heartbeat to keep the WebSocket active, every N seconds.
+    /// If None, no heartbeats will be sent.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub heartbeats: Option<u64>,
 }
 
 fn is_false(b: &bool) -> bool {
@@ -796,6 +817,7 @@ impl Default for ExecutorSettings {
             current_file: None,
             fixed_size_grid: true,
             skip_artifact_graph: false,
+            heartbeats: None,
         }
     }
 }
@@ -818,6 +840,7 @@ impl From<crate::settings::types::Settings> for ExecutorSettings {
             current_file: None,
             fixed_size_grid: modeling_settings.fixed_size_grid.unwrap_or_default().0,
             skip_artifact_graph: false,
+            heartbeats: None,
         }
     }
 }
@@ -839,6 +862,7 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             current_file: None,
             fixed_size_grid: true,
             skip_artifact_graph: false,
+            heartbeats: None,
         }
     }
 }
@@ -854,6 +878,7 @@ impl From<crate::settings::types::project::ProjectModelingSettings> for Executor
             current_file: None,
             fixed_size_grid: true,
             skip_artifact_graph: false,
+            heartbeats: None,
         }
     }
 }
@@ -934,8 +959,9 @@ impl ExecutorContext {
             })
             .await?;
 
-        let engine: Arc<Box<dyn EngineManager>> =
-            Arc::new(Box::new(crate::engine::conn::EngineConnection::new(ws).await?));
+        let engine: Arc<Box<dyn EngineManager>> = Arc::new(Box::new(
+            crate::engine::conn::EngineConnection::new(ws, settings.heartbeats).await?,
+        ));
 
         Ok(Self::new_with_engine(engine, settings))
     }
@@ -1044,6 +1070,7 @@ impl ExecutorContext {
                 current_file: None,
                 fixed_size_grid: false,
                 skip_artifact_graph: false,
+                heartbeats: None,
             },
             None,
             engine_addr,
