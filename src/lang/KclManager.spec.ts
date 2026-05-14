@@ -367,6 +367,43 @@ describe('KclManager diagnostics', () => {
     expect(kclManager.code).toBe('persist me')
   })
 
+  it('keeps mixed manual and zookeeper history before a routed zookeeper file reload', async () => {
+    const path = '/tmp/kcl-manager-zookeeper-manual-reload.kcl'
+    const { kclManager } = createKclManagerTestHarness('persist me')
+    vi.spyOn(kclManager, 'writeToFile').mockResolvedValue(undefined)
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('zookeeper edit')
+
+    kclManager.path = path
+    ;(kclManager as any).markFileCodeAsSynced('persist me')
+    kclManager.markPendingZookeeperHistoryEntry('first zookeeper edit')
+    kclManager.commitPendingZookeeperHistoryEntry()
+    kclManager.updateCodeEditor('manual edit two', {
+      shouldExecute: false,
+      shouldResetCamera: false,
+      shouldWriteToDisk: false,
+    })
+    kclManager.beginPendingZookeeperHistoryEntry()
+    kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
+    kclManager.markPendingZookeeperHistoryEntry('zookeeper edit')
+
+    await KclManager.fromFile(
+      new File(path, 99),
+      (kclManager as any).systemDeps,
+      kclManager
+    )
+
+    expect(kclManager.code).toBe('zookeeper edit')
+
+    kclManager.undo()
+    expect(kclManager.code).toBe('manual edit two')
+
+    kclManager.undo()
+    expect(kclManager.code).toBe('first zookeeper edit')
+
+    kclManager.undo()
+    expect(kclManager.code).toBe('persist me')
+  })
+
   it('preserves the zookeeper prompt-start baseline if the editor updates before tool output is handled', () => {
     const { kclManager } = createKclManagerTestHarness('persist me')
     vi.spyOn(kclManager, 'writeToFile').mockResolvedValue(undefined)

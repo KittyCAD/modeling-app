@@ -322,8 +322,10 @@ export const collectProjectFiles = async (args: {
         const absolutePathToFileNameWithExtension = file.path
         const fileNameWithExtension =
           fsZds.relative(basePath, absolutePathToFileNameWithExtension) ?? ''
-        const absoluteFilePath =
-          absolutePathToFileNameWithExtension.replaceAll('\\', '/')
+        const absoluteFilePath = absolutePathToFileNameWithExtension.replaceAll(
+          '\\',
+          '/'
+        )
         const relativeFilePath = normalizeSelectedPath(fileNameWithExtension)
         const isSelectedFile =
           selectedFilePath !== undefined &&

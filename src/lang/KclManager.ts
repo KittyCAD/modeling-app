@@ -211,6 +211,7 @@ type DirectSketchHistoryMarker = {
 type PendingZookeeperHistoryEntry = {
   undoCode: string
   redoCode?: string
+  redoCodeWasAddedToHistory?: boolean
 }
 
 type ZookeeperCodeHistoryEntry = {
@@ -1759,15 +1760,33 @@ export class KclManager extends File {
     providedEditor.path = file.path
     providedEditor.id = file.id
     providedEditor.codeSignal.value = initialCode
-    providedEditor.updateCodeEditor(initialCode, {
-      shouldExecute: providedEditor.engineCommandManager.connection?.connected,
-      // This way undo and redo are not super weird when opening new files.
-      shouldClearHistory: true,
-      shouldResetCamera: true,
-      // We explicitly do not write to the file here since we are loading from
-      // the file system and not the editor.
-      shouldWriteToDisk: false,
-    })
+    const isZookeeperReload =
+      providedEditor.mlEphantManagerMachineBulkManipulatingFileSystem
+    providedEditor.updateCodeEditor(
+      initialCode,
+      {
+        shouldExecute:
+          providedEditor.engineCommandManager.connection?.connected,
+        // This way undo and redo are not super weird when opening new files.
+        // Zookeeper reloads are different: the pending Zookeeper history commit
+        // needs the existing manual editor history to remain below its own entry.
+        shouldClearHistory: !isZookeeperReload,
+        shouldAddToHistory: isZookeeperReload,
+        shouldResetCamera: true,
+        // We explicitly do not write to the file here since we are loading from
+        // the file system and not the editor. Zookeeper reloads are the exception
+        // because undo/redo of that history entry must keep disk in sync.
+        shouldWriteToDisk: isZookeeperReload,
+      },
+      isZookeeperReload
+        ? {
+            annotations: [isolateHistory.of('full')],
+          }
+        : undefined
+    )
+    if (isZookeeperReload && providedEditor.pendingZookeeperHistoryEntry) {
+      providedEditor.pendingZookeeperHistoryEntry.redoCodeWasAddedToHistory = true
+    }
     providedEditor.markFileCodeAsSynced(diskCode)
     if (providedEditor.mlEphantManagerMachineBulkManipulatingFileSystem) {
       providedEditor.commitPendingZookeeperHistoryEntry()
@@ -2861,6 +2880,20 @@ export class KclManager extends File {
     }
 
     const codeMatchesUndo = isCodeTheSame(this.code, pendingEntry.undoCode)
+    const codeMatchesRedo = isCodeTheSame(this.code, redoCode)
+    if (
+      !codeMatchesUndo &&
+      codeMatchesRedo &&
+      pendingEntry.redoCodeWasAddedToHistory
+    ) {
+      this.rememberZookeeperHistoryEntry({
+        undoCode: pendingEntry.undoCode,
+        redoCode,
+      })
+      this.markFileCodeAsSynced(redoCode)
+      this.mlEphantManagerMachineBulkManipulatingFileSystem = false
+      return
+    }
     if (!codeMatchesUndo) {
       this.updateCodeEditor(pendingEntry.undoCode, {
         shouldAddToHistory: false,

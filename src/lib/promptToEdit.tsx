@@ -74,7 +74,10 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
     applicationProjectDirectory,
   })
   const currentFilePath = currentFile.entry?.path.replaceAll('\\', '/')
-  const currentFilePathWithoutLeadingSlash = currentFilePath?.replace(/^\/+/, '')
+  const currentFilePathWithoutLeadingSlash = currentFilePath?.replace(
+    /^\/+/,
+    ''
+  )
 
   projectFiles.forEach((file) => {
     let data: Blob

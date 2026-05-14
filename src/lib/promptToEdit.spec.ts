@@ -86,6 +86,8 @@ describe('constructMultiFileIterationRequestWithPromptHelpers', () => {
       kclVersion: '1.0.0',
     })
 
-    await expect(request.files[0].data.text()).resolves.toBe('boxWidth = 1000\n')
+    await expect(request.files[0].data.text()).resolves.toBe(
+      'boxWidth = 1000\n'
+    )
   })
 })
