@@ -1,5 +1,6 @@
 import { Menu } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
+import { useEffect } from 'react'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
@@ -7,6 +8,7 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { BillingTransition } from '@src/machines/billingMachine'
 import {
   MlEphantConversationToMarkdown,
@@ -18,7 +20,8 @@ import styles from './KclEditorMenu.module.css'
 
 export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
   useSignals()
-  const { auth, billing, settings, project, systemIOActor } = useApp()
+  const app = useApp()
+  const { auth, billing, settings, project, systemIOActor } = app
   const { kclManager } = useSingletons()
   const settingsValues = settings.useSettings()
   const user = auth.useUser()
@@ -30,6 +33,18 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
   } = useModelingContext()
   const loaderFile = project?.executingFileEntry.value
   const mlEphantManagerActor = MlEphantManagerReactContext.useActorRef()
+
+  useEffect(() => {
+    if (!IS_STAGING_OR_DEBUG) return
+
+    app.debug.mlEphantManagerActor = mlEphantManagerActor
+
+    return () => {
+      if (app.debug.mlEphantManagerActor === mlEphantManagerActor) {
+        delete app.debug.mlEphantManagerActor
+      }
+    }
+  }, [app, mlEphantManagerActor])
 
   const sendBillingUpdate = () => {
     billing.send({
