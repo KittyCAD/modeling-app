@@ -28,9 +28,12 @@ import {
   getAxisConstraintPointIds,
   getCoincidentCluster,
   isConstraint,
+  isArcSegment,
   isArcLikeSegment,
+  isCircleSegment,
   isDiameterConstraint,
   isDistanceConstraint,
+  isLineSegment,
   isPointSegment,
   isRadiusConstraint,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
@@ -97,6 +100,10 @@ type ClosestSelectionTarget = {
   selectionId: SketchSolveSelectionId
   apiObject: ApiObject | null
 }
+
+const DRAG_PREVIEW_MIN_CONSTRAINED_LENGTH = 0.05
+const DRAG_PREVIEW_MAX_UNEDITED_POINT_STEP = 5
+const DRAG_PREVIEW_MAX_UNEDITED_POINT_STEP_RATIO = 6
 
 // This is only a settlement latch for "there is a preview solve in flight".
 // It is not used to carry a value or an error, so a reject path would not add
@@ -501,6 +508,279 @@ function getPointSegmentPosition(pointId: number, objects: ApiObject[]) {
     obj.kind.segment.position.x.value,
     obj.kind.segment.position.y.value
   )
+}
+
+function hasUnstableDragPreview({
+  referenceObjects,
+  candidateObjects,
+  editedSegmentIds,
+  previousCursorPosition,
+  currentCursorPosition,
+}: {
+  referenceObjects: ApiObject[]
+  candidateObjects: ApiObject[]
+  editedSegmentIds: Set<number>
+  previousCursorPosition: Vector2
+  currentCursorPosition: Vector2
+}) {
+  return (
+    hasDegenerateConstrainedGeometry(candidateObjects, referenceObjects) ||
+    hasExcessiveUneditedPointStep({
+      referenceObjects,
+      candidateObjects,
+      editedSegmentIds,
+      previousCursorPosition,
+      currentCursorPosition,
+    })
+  )
+}
+
+function hasDegenerateConstrainedGeometry(
+  objects: ApiObject[],
+  referenceObjects: ApiObject[]
+) {
+  for (const obj of objects) {
+    if (!isConstraint(obj)) {
+      continue
+    }
+
+    const constraint = obj.kind.constraint
+    if (constraint.type === 'Tangent') {
+      if (
+        constraint.input.some((segmentId) =>
+          isDegenerateConstrainedSegment(segmentId, objects)
+        ) ||
+        hasLineCircularTangentSideFlip(
+          constraint.input,
+          referenceObjects,
+          objects
+        )
+      ) {
+        return true
+      }
+    }
+
+    if (
+      (constraint.type === 'LinesEqualLength' ||
+        constraint.type === 'Parallel' ||
+        constraint.type === 'Perpendicular' ||
+        constraint.type === 'Angle') &&
+      constraint.lines.some((lineId) => isNearZeroLine(lineId, objects))
+    ) {
+      return true
+    }
+
+    if (
+      (constraint.type === 'Radius' || constraint.type === 'Diameter') &&
+      isNearZeroCircularSegment(constraint.arc, objects)
+    ) {
+      return true
+    }
+
+    if (
+      constraint.type === 'EqualRadius' &&
+      constraint.input.some((segmentId) =>
+        isNearZeroCircularSegment(segmentId, objects)
+      )
+    ) {
+      return true
+    }
+  }
+
+  return false
+}
+
+function isDegenerateConstrainedSegment(
+  segmentId: number,
+  objects: ApiObject[]
+) {
+  return (
+    isNearZeroLine(segmentId, objects) ||
+    isNearZeroCircularSegment(segmentId, objects)
+  )
+}
+
+function isNearZeroLine(segmentId: number, objects: ApiObject[]) {
+  const endpoints = getLineEndpoints(segmentId, objects)
+  return (
+    endpoints !== null &&
+    endpoints[0].distanceTo(endpoints[1]) <= DRAG_PREVIEW_MIN_CONSTRAINED_LENGTH
+  )
+}
+
+function isNearZeroCircularSegment(segmentId: number, objects: ApiObject[]) {
+  const radius = getCircularRadius(segmentId, objects)
+  return radius !== null && radius <= DRAG_PREVIEW_MIN_CONSTRAINED_LENGTH
+}
+
+function getLineEndpoints(
+  segmentId: number,
+  objects: ApiObject[]
+): [Vector2, Vector2] | null {
+  const obj = objects[segmentId]
+  if (!isLineSegment(obj)) {
+    return null
+  }
+
+  const start = getPointSegmentPosition(obj.kind.segment.start, objects)
+  const end = getPointSegmentPosition(obj.kind.segment.end, objects)
+  return start && end ? [start, end] : null
+}
+
+function getCircularRadius(segmentId: number, objects: ApiObject[]) {
+  const obj = objects[segmentId]
+  if (!isArcLikeSegment(obj)) {
+    return null
+  }
+
+  const center = getPointSegmentPosition(obj.kind.segment.center, objects)
+  const start = getPointSegmentPosition(obj.kind.segment.start, objects)
+  return center && start ? center.distanceTo(start) : null
+}
+
+function getCircularCenter(segmentId: number, objects: ApiObject[]) {
+  const obj = objects[segmentId]
+  if (!isArcLikeSegment(obj)) {
+    return null
+  }
+
+  return getPointSegmentPosition(obj.kind.segment.center, objects)
+}
+
+function hasLineCircularTangentSideFlip(
+  input: number[],
+  referenceObjects: ApiObject[],
+  candidateObjects: ApiObject[]
+) {
+  const lineCircularPair = getLineCircularTangentPair(input, candidateObjects)
+  if (!lineCircularPair) {
+    return false
+  }
+
+  const referenceSide = getLineCircularSide(
+    lineCircularPair.lineId,
+    lineCircularPair.circularId,
+    referenceObjects
+  )
+  const candidateSide = getLineCircularSide(
+    lineCircularPair.lineId,
+    lineCircularPair.circularId,
+    candidateObjects
+  )
+  if (referenceSide === null || candidateSide === null) {
+    return false
+  }
+
+  const sideTolerance = DRAG_PREVIEW_MIN_CONSTRAINED_LENGTH ** 2
+  return (
+    Math.abs(candidateSide) <= sideTolerance ||
+    (Math.abs(referenceSide) > sideTolerance &&
+      referenceSide * candidateSide < 0)
+  )
+}
+
+function getLineCircularTangentPair(input: number[], objects: ApiObject[]) {
+  if (input.length !== 2) {
+    return null
+  }
+
+  const [firstId, secondId] = input
+  if (firstId === undefined || secondId === undefined) {
+    return null
+  }
+
+  const first = objects[firstId]
+  const second = objects[secondId]
+  if (isLineSegment(first) && isArcLikeSegment(second)) {
+    return { lineId: firstId, circularId: secondId }
+  }
+  if (isArcLikeSegment(first) && isLineSegment(second)) {
+    return { lineId: secondId, circularId: firstId }
+  }
+
+  return null
+}
+
+function getLineCircularSide(
+  lineId: number,
+  circularId: number,
+  objects: ApiObject[]
+) {
+  const endpoints = getLineEndpoints(lineId, objects)
+  const center = getCircularCenter(circularId, objects)
+  if (!endpoints || !center) {
+    return null
+  }
+
+  const [start, end] = endpoints
+  return (
+    (end.x - start.x) * (center.y - start.y) -
+    (end.y - start.y) * (center.x - start.x)
+  )
+}
+
+function hasExcessiveUneditedPointStep({
+  referenceObjects,
+  candidateObjects,
+  editedSegmentIds,
+  previousCursorPosition,
+  currentCursorPosition,
+}: {
+  referenceObjects: ApiObject[]
+  candidateObjects: ApiObject[]
+  editedSegmentIds: Set<number>
+  previousCursorPosition: Vector2
+  currentCursorPosition: Vector2
+}) {
+  const editedPointIds = getEditedPointIds(editedSegmentIds, candidateObjects)
+  const maxPointStep = Math.max(
+    DRAG_PREVIEW_MAX_UNEDITED_POINT_STEP,
+    previousCursorPosition.distanceTo(currentCursorPosition) *
+      DRAG_PREVIEW_MAX_UNEDITED_POINT_STEP_RATIO
+  )
+
+  for (const obj of candidateObjects) {
+    if (!isPointSegment(obj) || editedPointIds.has(obj.id)) {
+      continue
+    }
+
+    const referencePosition = getPointSegmentPosition(obj.id, referenceObjects)
+    const candidatePosition = getPointSegmentPosition(obj.id, candidateObjects)
+    if (
+      referencePosition &&
+      candidatePosition &&
+      referencePosition.distanceTo(candidatePosition) > maxPointStep
+    ) {
+      return true
+    }
+  }
+
+  return false
+}
+
+function getEditedPointIds(
+  editedSegmentIds: Set<number>,
+  objects: ApiObject[]
+) {
+  const editedPointIds = new Set<number>()
+  for (const segmentId of editedSegmentIds) {
+    const obj = objects[segmentId]
+    if (isPointSegment(obj)) {
+      editedPointIds.add(segmentId)
+    } else if (isLineSegment(obj)) {
+      editedPointIds.add(obj.kind.segment.start)
+      editedPointIds.add(obj.kind.segment.end)
+    } else if (isArcSegment(obj)) {
+      editedPointIds.add(obj.kind.segment.center)
+      editedPointIds.add(obj.kind.segment.start)
+      editedPointIds.add(obj.kind.segment.end)
+    } else if (isCircleSegment(obj)) {
+      editedPointIds.add(obj.kind.segment.center)
+      editedPointIds.add(obj.kind.segment.start)
+    }
+  }
+
+  return editedPointIds
 }
 
 // Preserve the label's local position relative to the given points across the drag.
@@ -1411,7 +1691,20 @@ export function createOnDragCallback({
 
       // Notify about new sketch outcome if edit was successful
       if (result && isActiveDragSession()) {
-        if (!hasSketchSolveIssues(result.sceneGraphDelta)) {
+        const editedSegmentIds = new Set(segmentsToEdit.map(({ id }) => id))
+        const previewInstability = hasUnstableDragPreview({
+          referenceObjects:
+            getLastGoodPreview()?.sceneGraphDelta.new_graph.objects ?? objects,
+          candidateObjects: result.sceneGraphDelta.new_graph.objects,
+          editedSegmentIds,
+          previousCursorPosition: getLastSuccessfulDragFromPoint(),
+          currentCursorPosition: twoD,
+        })
+
+        if (
+          !hasSketchSolveIssues(result.sceneGraphDelta) &&
+          !previewInstability
+        ) {
           const constraintLabelEdits =
             buildConstraintLabelEditsForMovedSegments({
               objectsBeforeDrag: objects,
