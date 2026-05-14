@@ -279,41 +279,51 @@ async function getVertexEdgeEndpointSelection({
   engineCommandManager: ConnectionManager
   defaultPlanes: DefaultPlanes | null
 }): Promise<EnginePrimitiveSelection['edgeEndpoint']> {
-  if (!parentEntityId || vertexReference.side_faces.length < 2) {
+  if (
+    !parentEntityId ||
+    !defaultPlanes ||
+    vertexReference.side_faces.length < 2
+  ) {
     return undefined
   }
 
   for (let i = 0; i < vertexReference.side_faces.length - 1; i++) {
     for (let j = i + 1; j < vertexReference.side_faces.length; j++) {
+      const edgeFaceIds: [string, string] = [
+        vertexReference.side_faces[i],
+        vertexReference.side_faces[j],
+      ]
       const commonEdgeId = await getCommonEdgeIdForFaces({
         parentEntityId,
-        faceIds: [vertexReference.side_faces[i], vertexReference.side_faces[j]],
+        faceIds: edgeFaceIds,
         engineCommandManager,
       })
       if (!commonEdgeId) continue
 
-      const edgeSelection = await getPrimitiveSelectionForEntity(
-        commonEdgeId,
-        engineCommandManager,
-        defaultPlanes
-      )
+      const [edgeSelection, endpoint] = await Promise.all([
+        getPrimitiveSelectionForEntity(
+          commonEdgeId,
+          engineCommandManager,
+          defaultPlanes
+        ),
+        getEndpointForVertexOnEdgeGeometry({
+          vertexEntityId,
+          edgeEntityId: commonEdgeId,
+          defaultPlanes,
+          engineCommandManager,
+        }),
+      ])
       if (
         edgeSelection?.primitiveType !== 'edge' ||
-        edgeSelection.parentEntityId !== parentEntityId
+        edgeSelection.parentEntityId !== parentEntityId ||
+        !endpoint
       ) {
         continue
       }
 
-      const endpoint = await getEndpointForVertexOnEdgeGeometry({
-        vertexEntityId,
-        edgeEntityId: commonEdgeId,
-        defaultPlanes,
-        engineCommandManager,
-      })
-      if (!endpoint) continue
-
       return {
         edgePrimitiveIndex: edgeSelection.primitiveIndex,
+        edgeFaceIds,
         endpoint,
       }
     }
@@ -445,9 +455,15 @@ function primitiveSelectionFromEntityReference(
 
   if (!reference.topology_fallback) return null
 
+  const edgeFaceIds =
+    reference.type === 'edge' && reference.side_faces.length >= 2
+      ? ([reference.side_faces[0], reference.side_faces[1]] as [string, string])
+      : undefined
+
   return {
     type: 'enginePrimitive',
     entityId,
+    ...(edgeFaceIds ? { edgeFaceIds } : {}),
     parentEntityId: reference.topology_fallback.parent_id,
     primitiveIndex: reference.topology_fallback.primitive_index,
     primitiveType: reference.type,

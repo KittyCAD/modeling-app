@@ -29,8 +29,10 @@ export type EnginePrimitiveSelection = {
   parentEntityId?: string
   primitiveIndex: number
   primitiveType: EntityType
+  edgeFaceIds?: [string, string]
   edgeEndpoint?: {
     edgePrimitiveIndex: number
+    edgeFaceIds?: [string, string]
     endpoint: 'start' | 'end'
   }
 }

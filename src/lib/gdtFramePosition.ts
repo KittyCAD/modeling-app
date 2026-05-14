@@ -15,14 +15,19 @@ import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingC
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
+  DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES,
   KCL_PLANE_XY,
   KCL_PLANE_XZ,
   KCL_PLANE_YZ,
 } from '@src/lib/constants'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
-import { isArray, roundOff, uuidv4 } from '@src/lib/utils'
+import { isEnginePrimitiveSelection } from '@src/lib/selections'
+import { isArray, mmToBaseUnit, roundOff, uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  EnginePrimitiveSelection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
 
 type Axis = 'x' | 'y' | 'z'
@@ -212,7 +217,15 @@ export function getEngineEntityIdsForGdtSelections(
     ]
   })
 
-  return deduplicateArtifactIds(entityIds)
+  const primitiveEntityIds = selections.otherSelections.flatMap((selection) => {
+    if (!isEnginePrimitiveSelection(selection)) {
+      return []
+    }
+
+    return [selection.parentEntityId ?? selection.entityId]
+  })
+
+  return deduplicateArtifactIds([...entityIds, ...primitiveEntityIds])
 }
 
 export function getPlanarFaceEntityIdsForGdtSelections(
@@ -534,6 +547,62 @@ async function getBoundingBoxForGdtSelections({
   }
 }
 
+async function getPrimitiveVertexDistanceAverageDimension({
+  engineCommandManager,
+  selections,
+  outputUnit,
+}: {
+  engineCommandManager: ConnectionManager
+  selections: Selections | undefined
+  outputUnit: UnitLength
+}): Promise<number | undefined> {
+  const vertexSelections = selections?.otherSelections.filter(
+    (selection): selection is EnginePrimitiveSelection =>
+      isEnginePrimitiveSelection(selection) &&
+      selection.primitiveType === 'vertex'
+  )
+
+  if (vertexSelections?.length !== 2) {
+    return undefined
+  }
+
+  try {
+    const response = await engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'entity_get_distance',
+        entity_id1: vertexSelections[0].entityId,
+        entity_id2: vertexSelections[1].entityId,
+        distance_type: { type: 'euclidean' },
+      },
+    })
+
+    if (!isModelingResponse(response)) {
+      return undefined
+    }
+
+    const modelingResponse = response.resp.data.modeling_response
+    if (modelingResponse.type !== 'entity_get_distance') {
+      return undefined
+    }
+
+    const distance = mmToBaseUnit(
+      modelingResponse.data.min_distance,
+      DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES,
+      outputUnit
+    )
+
+    if (!Number.isFinite(distance) || distance <= 0) {
+      return undefined
+    }
+
+    return roundOff(distance, 4)
+  } catch {
+    return undefined
+  }
+}
+
 export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   data,
   engineCommandManager,
@@ -592,17 +661,36 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
     return nextData
   }
 
-  const boundingBox = await getBoundingBoxForGdtSelections({
-    engineCommandManager,
-    entityIds,
-    outputUnit,
-  })
+  const needsAverageDimension = !nextData.framePosition || !nextData.fontSize
+  const primitiveVertexDistanceAverageDimension = needsAverageDimension
+    ? await getPrimitiveVertexDistanceAverageDimension({
+        engineCommandManager,
+        selections,
+        outputUnit,
+      })
+    : undefined
 
-  if (!boundingBox) {
+  let boundingBox: BoundingBox | undefined
+  if (
+    !hasResolvedFramePlane ||
+    (needsAverageDimension && !primitiveVertexDistanceAverageDimension)
+  ) {
+    boundingBox = await getBoundingBoxForGdtSelections({
+      engineCommandManager,
+      entityIds,
+      outputUnit,
+    })
+  }
+
+  if (
+    needsAverageDimension &&
+    !boundingBox &&
+    !primitiveVertexDistanceAverageDimension
+  ) {
     return nextData
   }
 
-  if (!hasResolvedFramePlane) {
+  if (boundingBox && !hasResolvedFramePlane) {
     const framePlaneFromBoundingBox = getDefaultGdtFramePlaneFromBoundingBox(
       boundingBox.dimensions
     )
@@ -618,10 +706,12 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
     }
   }
 
-  const averageDimension =
-    !nextData.framePosition || !nextData.fontSize
-      ? getAverageBoundingBoxDimension(boundingBox.dimensions)
-      : undefined
+  const averageDimension = needsAverageDimension
+    ? (primitiveVertexDistanceAverageDimension ??
+      (boundingBox
+        ? getAverageBoundingBoxDimension(boundingBox.dimensions)
+        : undefined))
+    : undefined
 
   if (!nextData.framePosition) {
     if (averageDimension === undefined) {

@@ -161,7 +161,22 @@ describe('GD&T frame defaults', () => {
           }),
         },
       ],
-      otherSelections: [],
+      otherSelections: [
+        {
+          type: 'enginePrimitive',
+          entityId: 'vertex-entity-1',
+          parentEntityId: 'primitive-body-1',
+          primitiveIndex: 7,
+          primitiveType: 'vertex',
+        },
+        {
+          type: 'enginePrimitive',
+          entityId: 'edge-entity-1',
+          parentEntityId: 'primitive-body-1',
+          primitiveIndex: 3,
+          primitiveType: 'edge',
+        },
+      ],
     }
 
     expect(getEngineEntityIdsForGdtSelections(selections)).toEqual([
@@ -169,6 +184,7 @@ describe('GD&T frame defaults', () => {
       'copy-1',
       'copy-face-1',
       'copy-edge-1',
+      'primitive-body-1',
     ])
   })
 
@@ -285,6 +301,73 @@ describe('GD&T frame defaults', () => {
     })
     expect(formatNumberLiteral).toHaveBeenCalledWith(1.2, '"Cm"', 4)
     expect(GDT_FONT_SIZE_TO_BOUNDING_BOX_AVERAGE_RATIO).toBe(0.2)
+  })
+
+  it('fills primitive vertex distance defaults from the selected vertex distance', async () => {
+    formatNumberLiteral.mockReturnValue('1.6mm')
+    const sendSceneCommand = vi.fn().mockResolvedValueOnce({
+      success: true,
+      resp: {
+        type: 'modeling',
+        data: {
+          modeling_response: {
+            type: 'entity_get_distance',
+            data: {
+              min_distance: 8,
+              max_distance: 8,
+            },
+          },
+        },
+      },
+    })
+
+    const data = {
+      framePlane: 'XY',
+      tolerance: kclValue('0.1mm'),
+      objects: {
+        graphSelections: [],
+        otherSelections: [
+          {
+            type: 'enginePrimitive',
+            entityId: 'vertex-1',
+            parentEntityId: 'body-1',
+            primitiveIndex: 0,
+            primitiveType: 'vertex',
+          },
+          {
+            type: 'enginePrimitive',
+            entityId: 'vertex-2',
+            parentEntityId: 'body-1',
+            primitiveIndex: 1,
+            primitiveType: 'vertex',
+          },
+        ],
+      },
+    } as ModelingCommandSchema['GDT Distance']
+
+    const result = await withDefaultGdtFrameDefaults({
+      data,
+      engineCommandManager: {
+        sendSceneCommand,
+      } as unknown as ConnectionManager,
+      outputUnit: 'mm',
+      wasmInstance,
+    })
+
+    expect(sendSceneCommand).toHaveBeenCalledTimes(1)
+    expect(sendSceneCommand).toHaveBeenCalledWith(
+      expect.objectContaining({
+        cmd: expect.objectContaining({
+          type: 'entity_get_distance',
+          entity_id1: 'vertex-1',
+          entity_id2: 'vertex-2',
+          distance_type: { type: 'euclidean' },
+        }),
+      })
+    )
+    expect(result.framePosition?.valueText).toBe('[8, 8]')
+    expect(result.fontSize?.valueText).toBe('1.6mm')
+    expect(formatNumberLiteral).toHaveBeenCalledWith(1.6, '"Mm"', 4)
   })
 
   it('signs omitted framePosition from the selected face normal', async () => {
