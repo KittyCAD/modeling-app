@@ -72,12 +72,11 @@ pub(crate) const WARN_IGNORED_Z_AXIS: &str = "ignoredZAxis";
 pub(crate) const WARN_SOLVER: &str = "solver";
 pub(crate) const WARN_SHOULD_BE_PERCENTAGE: &str = "shouldBePercentage";
 pub(crate) const WARN_INVALID_MATH: &str = "invalidMath";
-pub(crate) const WARN_CSG_NO_INTERSECTION: &str = "csgNoIntersection";
 pub(crate) const WARN_UNNECESSARY_CLOSE: &str = "unnecessaryClose";
 pub(crate) const WARN_UNUSED_TAGS: &str = "unusedTags";
 pub(crate) const WARN_NOT_YET_SUPPORTED: &str = "notYetSupported";
 pub(crate) const WARN_OVER_CONSTRAINED_SKETCH: &str = "overConstrainedSketch";
-pub(super) const WARN_VALUES: [&str; 13] = [
+pub(super) const WARN_VALUES: [&str; 12] = [
     WARN_UNKNOWN_UNITS,
     WARN_ANGLE_UNITS,
     WARN_UNKNOWN_ATTR,
@@ -89,7 +88,6 @@ pub(super) const WARN_VALUES: [&str; 13] = [
     WARN_INVALID_MATH,
     WARN_UNNECESSARY_CLOSE,
     WARN_NOT_YET_SUPPORTED,
-    WARN_CSG_NO_INTERSECTION,
     WARN_OVER_CONSTRAINED_SKETCH,
 ];
 

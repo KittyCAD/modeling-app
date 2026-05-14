@@ -20,7 +20,6 @@ use crate::execution::ExecState;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Solid;
-use crate::execution::annotations;
 use crate::execution::types::RuntimeType;
 use crate::std::Args;
 use crate::std::patterns::GeometryTrait;
@@ -140,12 +139,11 @@ pub(crate) async fn inner_union(
     };
 
     if !boolean_resp.any_intersections {
-        exec_state.warn(
+        exec_state.err(
             CompilationIssue::err(
                 args.source_range,
                 "The bodies in this union had no overlap. This usually indicates a problem in your model, these bodies were probably intended to intersect somewhere.".to_string(),
             ),
-            annotations::WARN_CSG_NO_INTERSECTION,
         );
     }
 
@@ -234,12 +232,11 @@ pub(crate) async fn inner_intersect(
         )));
     };
     if !boolean_resp.any_intersections {
-        exec_state.warn(
+        exec_state.err(
             CompilationIssue::err(
                 args.source_range,
                 "The bodies in this intersection had no overlap. This usually indicates a problem in your model, these bodies were probably intended to intersect somewhere.".to_string(),
             ),
-            annotations::WARN_CSG_NO_INTERSECTION,
         );
     }
 
@@ -328,12 +325,11 @@ pub(crate) async fn inner_subtract(
     };
 
     if !boolean_resp.any_intersections {
-        exec_state.warn(
+        exec_state.err(
             CompilationIssue::err(
                 args.source_range,
                 "The bodies in this subtraction had no overlap. This usually indicates a problem in your model, these bodies were probably intended to intersect somewhere.".to_string(),
             ),
-            annotations::WARN_CSG_NO_INTERSECTION,
         );
     }
 
@@ -467,12 +463,11 @@ pub(crate) async fn inner_imprint(
         )));
     };
     if !boolean_resp.any_intersections {
-        exec_state.warn(
+        exec_state.err(
             CompilationIssue::err(
                 args.source_range,
                 "The bodies in this split had no overlap. This usually indicates a problem in your model, these bodies were probably intended to intersect somewhere.".to_string(),
             ),
-            annotations::WARN_CSG_NO_INTERSECTION,
         );
     }
 
