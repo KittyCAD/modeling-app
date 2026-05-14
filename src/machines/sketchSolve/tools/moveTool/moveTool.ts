@@ -764,8 +764,6 @@ function buildPreviewOutcomeWithPreservedGeometry({
 type CreateOnDragStartCallbackArgs = {
   // Seeds the drag anchor used to compute relative drag vectors.
   setLastSuccessfulDragFromPoint: (point: Vector2) => void
-  // Keeps the fixed drag-start anchor for frame-independent previews.
-  setDragStartPoint: (point: Vector2) => void
   // Clears any previously cached valid preview from an earlier drag session.
   setLastGoodPreview: (preview: DragCommitCandidate | null) => void
   // Stores the frontend sketch outcome at drag start for preview fallback.
@@ -791,7 +789,6 @@ type CreateOnDragStartCallbackArgs = {
  */
 export function createOnDragStartCallback({
   setLastSuccessfulDragFromPoint,
-  setDragStartPoint,
   setLastGoodPreview,
   setDragStartOutcome,
   setPreDragCheckpointId,
@@ -808,9 +805,7 @@ export function createOnDragStartCallback({
   return ({ intersectionPoint }) => {
     dismissConstraintHoverPopup()
     beginDragSession()
-    const dragStartPoint = intersectionPoint.twoD.clone()
-    setLastSuccessfulDragFromPoint(dragStartPoint.clone())
-    setDragStartPoint(dragStartPoint)
+    setLastSuccessfulDragFromPoint(intersectionPoint.twoD.clone())
     setLastGoodPreview(null)
     setDragStartOutcome(getCurrentSketchOutcome())
     setPreDragCheckpointId(getCurrentCommittedCheckpointId())
@@ -1119,7 +1114,6 @@ export function createOnDragCallback({
   getLastGoodPreview,
   setLastGoodPreview,
   getDragStartOutcome,
-  getDragStartPoint,
   getContextData,
   editSegments,
   editDistanceConstraintLabelPosition = async () => null,
@@ -1141,7 +1135,6 @@ export function createOnDragCallback({
   getLastGoodPreview: () => DragCommitCandidate | null
   setLastGoodPreview: (preview: DragCommitCandidate | null) => void
   getDragStartOutcome: () => DragSketchOutcome | null
-  getDragStartPoint?: () => Vector2
   getContextData: () => {
     selectedIds: Array<number>
     sketchId: number
@@ -1261,14 +1254,12 @@ export function createOnDragCallback({
       return
     }
 
-    const dragStartOutcome = getDragStartOutcome()
-    const editSceneGraphDelta =
-      dragStartOutcome?.sceneGraphDelta ?? sceneGraphDelta
-    const editObjects = editSceneGraphDelta.new_graph.objects
-
     const coincidentClusterPointIds =
       entityUnderCursorId !== null
-        ? getCoincidentCluster(entityUnderCursorId, editObjects)
+        ? getCoincidentCluster(
+            entityUnderCursorId,
+            sceneGraphDelta.new_graph.objects
+          )
         : []
 
     // If no entity under cursor and no selectedIds, nothing to do
@@ -1296,14 +1287,10 @@ export function createOnDragCallback({
           })
       onUpdateDragSnapping(snappingCandidate)
 
-      // Build every preview from the drag-start geometry. Solver output can
-      // legitimately adjust unconstrained geometry, and applying the next drag
-      // increment to that adjusted result compounds small deviations.
-      const dragAnchorPoint =
-        getDragStartPoint?.() ?? getLastSuccessfulDragFromPoint()
-      const dragVec = twoD.clone().sub(dragAnchorPoint)
+      // Calculate drag vector from last successful drag point to current position
+      const dragVec = twoD.clone().sub(getLastSuccessfulDragFromPoint())
 
-      const objects = editObjects
+      const objects = sceneGraphDelta.new_graph.objects
       const segmentsToEdit: ExistingSegmentCtor[] = []
 
       // Collect all IDs to edit (entity under cursor + coincident points + selectedIds)
@@ -1474,9 +1461,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
   const [getIsDragActive, setIsDragActive] = createGetSet(false)
   const [getLastSuccessfulDragFromPoint, setLastSuccessfulDragFromPoint] =
     createGetSet<Vector2>(new Vector2())
-  const [getDragStartPoint, setDragStartPoint] = createGetSet<Vector2>(
-    new Vector2()
-  )
   const [getDraggedEntityId, setDraggedEntityId] = createGetSet<number | null>(
     null
   )
@@ -1701,7 +1685,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
   context.sceneInfra.setCallbacks({
     onDragStart: createOnDragStartCallback({
       setLastSuccessfulDragFromPoint,
-      setDragStartPoint,
       setLastGoodPreview,
       setDragStartOutcome,
       setPreDragCheckpointId,
@@ -2152,7 +2135,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
       getLastGoodPreview,
       setLastGoodPreview,
       getDragStartOutcome,
-      getDragStartPoint,
       getContextData: () => {
         const snapshot = self.getSnapshot()
         return {

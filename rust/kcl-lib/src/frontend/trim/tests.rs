@@ -1764,10 +1764,10 @@ async fn test_trim_line_with_midpoint_coincident_arc_endpoint() {
     let trim_points = vec![Coords2d { x: 0.19, y: 3.25 }, Coords2d { x: 0.41, y: 3.32 }];
 
     let expected_code = r#"sketch001 = sketch(on = YZ) {
-  line6 = line(start = [var 0.32mm, var 3.43mm], end = [var 1.87mm, var 3.43mm])
-  line7 = line(start = [var 1.87mm, var 3.43mm], end = [var 1.87mm, var 2.22mm])
-  line8 = line(start = [var 1.87mm, var 2.22mm], end = [var 0.33mm, var 2.22mm])
-  line9 = line(start = [var 0.33mm, var 2.22mm], end = [var 0.33mm, var 2.91mm])
+  line6 = line(start = [var 0.32mm, var 3.42mm], end = [var 1.87mm, var 3.41mm])
+  line7 = line(start = [var 1.87mm, var 3.4mm], end = [var 1.87mm, var 2.22mm])
+  line8 = line(start = [var 1.87mm, var 2.22mm], end = [var 0.32mm, var 2.22mm])
+  line9 = line(start = [var 0.32mm, var 2.22mm], end = [var 0.33mm, var 2.95mm])
   coincident([line6.end, line7.start])
   coincident([line7.end, line8.start])
   coincident([line8.end, line9.start])
@@ -1775,7 +1775,7 @@ async fn test_trim_line_with_midpoint_coincident_arc_endpoint() {
   parallel([line8, line6])
   perpendicular([line6, line7])
   horizontal(line8)
-  arc2 = arc(start = [var 0.88mm, var 3.43mm], end = [var 0.33mm, var 2.86mm], center = [var 0.87mm, var 2.89mm])
+  arc2 = arc(start = [var 0.88mm, var 3.47mm], end = [var 0.33mm, var 2.81mm], center = [var 0.89mm, var 2.92mm])
   coincident([arc2.end, line9])
   coincident([arc2.start, line6])
   coincident([line9.end, arc2])
@@ -1820,7 +1820,7 @@ async fn test_trim_arc_start_coincident_with_line_segment() {
   parallel([line8, line6])
   perpendicular([line6, line7])
   horizontal(line8)
-  arc2 = arc(start = [var 0.88mm, var 3.43mm], end = [var 0.33mm, var 2.87mm], center = [var 0.87mm, var 2.89mm])
+  arc2 = arc(start = [var 0.88mm, var 3.43mm], end = [var 0.33mm, var 2.86mm], center = [var 0.87mm, var 2.89mm])
   coincident([arc2.end, line9])
   coincident([line9.end, arc2])
   coincident([line6.start, arc2.start])
