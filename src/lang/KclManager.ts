@@ -2139,6 +2139,7 @@ export class KclManager extends File {
           this.systemDeps.scenePostprocessors?.value ?? [],
           {
             artifactGraph: this.artifactGraph,
+            operations: this.execState.operations,
             engineCommandManager: this.engineCommandManager,
           }
         ).catch(reportRejection)

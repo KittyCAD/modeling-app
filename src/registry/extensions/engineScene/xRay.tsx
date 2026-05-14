@@ -25,6 +25,7 @@ export function EngineSceneXRayControl() {
       throttle((nextTransparency: number) => {
         applyXRayTransparencyToScene({
           artifactGraph: kclManager.artifactGraph,
+          operations: kclManager.execState.operations,
           engineCommandManager: kclManager.engineCommandManager,
           transparency: nextTransparency,
           force: true,

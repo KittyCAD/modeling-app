@@ -18,6 +18,7 @@ import {
   viewExtensionsValueSpec,
 } from './viewExtensions'
 import {
+  applyXRayTransparencyToScene,
   getXRayEntityIdsFromArtifactGraph,
   xRayTransparency,
 } from './xRayPostprocessor'
@@ -37,6 +38,78 @@ function createExecutingEditorService(
     executeCode: vi.fn(),
     updateCode: vi.fn(),
   }
+}
+
+function createAppearanceOperation({
+  artifactId,
+  color,
+  metalness,
+  roughness,
+  opacity,
+}: {
+  artifactId: string
+  color: string
+  metalness?: number
+  roughness?: number
+  opacity?: number
+}): ScenePostprocessorContext['operations'][number] {
+  return {
+    type: 'StdLibCall',
+    name: 'appearance',
+    unlabeledArg: {
+      value: {
+        type: 'Solid',
+        value: {
+          artifactId,
+        },
+      },
+      sourceRange: [],
+    },
+    labeledArgs: {
+      color: {
+        value: {
+          type: 'String',
+          value: color,
+        },
+        sourceRange: [],
+      },
+      ...(metalness === undefined
+        ? {}
+        : {
+            metalness: {
+              value: {
+                type: 'Number',
+                value: metalness,
+              },
+              sourceRange: [],
+            },
+          }),
+      ...(roughness === undefined
+        ? {}
+        : {
+            roughness: {
+              value: {
+                type: 'Number',
+                value: roughness,
+              },
+              sourceRange: [],
+            },
+          }),
+      ...(opacity === undefined
+        ? {}
+        : {
+            opacity: {
+              value: {
+                type: 'Number',
+                value: opacity,
+              },
+              sourceRange: [],
+            },
+          }),
+    },
+    nodePath: { steps: [] },
+    sourceRange: [],
+  } as unknown as ScenePostprocessorContext['operations'][number]
 }
 
 describe('engineScene extension', () => {
@@ -189,10 +262,24 @@ describe('engineScene extension', () => {
 
     await postprocessor.postprocess({
       artifactGraph,
+      operations: [
+        createAppearanceOperation({
+          artifactId: 'body-1',
+          color: '#ff0000',
+          metalness: 50,
+          roughness: 25,
+        }),
+        createAppearanceOperation({
+          artifactId: 'composite-member-1',
+          color: '#00ff00',
+          metalness: 80,
+          roughness: 40,
+        }),
+      ],
       engineCommandManager,
     })
 
-    expect(sendSceneCommand).toHaveBeenCalledTimes(2)
+    expect(sendSceneCommand).toHaveBeenCalledTimes(3)
     expect(sendSceneCommand).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
@@ -202,38 +289,131 @@ describe('engineScene extension', () => {
         },
       })
     )
-    expect(sendSceneCommand).toHaveBeenNthCalledWith(
-      2,
+    expect(sendSceneCommand).toHaveBeenCalledWith(
       expect.objectContaining({
-        type: 'modeling_cmd_batch_req',
-        requests: expect.arrayContaining([
-          expect.objectContaining({
-            cmd: expect.objectContaining({
-              type: 'entity_set_opacity',
-              entity_id: 'body-1',
-              opacity: 0.42,
-            }),
-          }),
-          expect.objectContaining({
-            cmd: expect.objectContaining({
-              type: 'entity_set_opacity',
-              entity_id: 'nozzle-1',
-              opacity: 0.42,
-            }),
-          }),
-          expect.objectContaining({
-            cmd: expect.objectContaining({
-              type: 'entity_set_opacity',
-              entity_id: 'composite-member-1',
-              opacity: 0.42,
-            }),
-          }),
-        ]),
+        type: 'modeling_cmd_req',
+        cmd: expect.objectContaining({
+          type: 'object_set_material_params_pbr',
+          object_id: 'body-1',
+          color: {
+            r: 1,
+            g: 0,
+            b: 0,
+            a: 0.42,
+          },
+          metalness: 0.5,
+          roughness: 0.25,
+          ambient_occlusion: 0,
+        }),
+      })
+    )
+    expect(sendSceneCommand).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'modeling_cmd_req',
+        cmd: expect.objectContaining({
+          type: 'object_set_material_params_pbr',
+          object_id: 'nozzle-1',
+        }),
+      })
+    )
+    expect(sendSceneCommand).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'modeling_cmd_req',
+        cmd: expect.objectContaining({
+          type: 'object_set_material_params_pbr',
+          object_id: 'composite-1',
+          color: {
+            r: 0,
+            g: 1,
+            b: 0,
+            a: 0.42,
+          },
+          metalness: 0.8,
+          roughness: 0.4,
+          ambient_occlusion: 0,
+        }),
+      })
+    )
+    expect(sendSceneCommand).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'modeling_cmd_req',
+        cmd: expect.objectContaining({
+          type: 'object_set_material_params_pbr',
+          object_id: 'composite-member-1',
+        }),
+      })
+    )
+    expect(sendSceneCommand).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        cmd: expect.objectContaining({
+          type: 'scene_get_entity_ids',
+        }),
       })
     )
   })
 
-  it('collects X-Ray entity ids from visible and consumed bodies', () => {
+  it('restores original material alpha when X-Ray transparency is forced off', async () => {
+    const sendSceneCommand = vi.fn().mockResolvedValue(null)
+    const artifactGraph = new Map([
+      [
+        'body-1',
+        {
+          id: 'body-1',
+          type: 'sweep',
+          consumed: false,
+        },
+      ],
+    ]) as unknown as ScenePostprocessorContext['artifactGraph']
+    const engineCommandManager = {
+      settings: { enableSSAO: true },
+      sendSceneCommand,
+    } as unknown as ScenePostprocessorContext['engineCommandManager']
+
+    await applyXRayTransparencyToScene({
+      transparency: 1,
+      artifactGraph,
+      operations: [
+        createAppearanceOperation({
+          artifactId: 'body-1',
+          color: '#336699',
+          metalness: 80,
+          roughness: 20,
+          opacity: 30,
+        }),
+      ],
+      engineCommandManager,
+      force: true,
+    })
+
+    expect(sendSceneCommand).toHaveBeenCalledWith(
+      expect.objectContaining({
+        cmd: {
+          type: 'set_order_independent_transparency',
+          enabled: true,
+        },
+      })
+    )
+    expect(sendSceneCommand).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'modeling_cmd_req',
+        cmd: expect.objectContaining({
+          type: 'object_set_material_params_pbr',
+          object_id: 'body-1',
+          color: {
+            r: 0.2,
+            g: 0.4,
+            b: 0.6,
+            a: 0.3,
+          },
+          metalness: 0.8,
+          roughness: 0.2,
+          ambient_occlusion: 0,
+        }),
+      })
+    )
+  })
+
+  it('collects X-Ray entity ids from non-consumed bodies', () => {
     const artifactGraph = new Map([
       [
         'visible-body',
@@ -270,15 +450,39 @@ describe('engineScene extension', () => {
           copyIds: ['pattern-copy'],
         },
       ],
+      [
+        'consumed-source',
+        {
+          id: 'consumed-source',
+          type: 'sweep',
+          consumed: true,
+          patternIds: ['consumed-source-pattern'],
+        },
+      ],
+      [
+        'consumed-source-pattern',
+        {
+          id: 'consumed-source-pattern',
+          type: 'pattern',
+          sourceId: 'consumed-source',
+          copyIds: ['consumed-source-pattern-copy'],
+        },
+      ],
     ]) as unknown as ScenePostprocessorContext['artifactGraph']
 
     expect(getXRayEntityIdsFromArtifactGraph(artifactGraph)).toEqual(
       expect.arrayContaining([
         'visible-body',
-        'consumed-body',
         'composite',
-        'composite-member',
         'pattern-copy',
+        'consumed-source-pattern-copy',
+      ])
+    )
+    expect(getXRayEntityIdsFromArtifactGraph(artifactGraph)).not.toEqual(
+      expect.arrayContaining([
+        'consumed-body',
+        'composite-member',
+        'consumed-source',
       ])
     )
   })

@@ -1,9 +1,11 @@
 import { defineContract, defineValueSpec } from '@kittycad/registry'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { ArtifactGraph } from '@src/lang/wasm'
 import type { ConnectionManager } from '@src/network/connectionManager'
 
 export interface ScenePostprocessorContext {
   artifactGraph: ArtifactGraph
+  operations: readonly Operation[]
   engineCommandManager: ConnectionManager
 }
 
