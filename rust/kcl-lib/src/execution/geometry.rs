@@ -51,6 +51,7 @@ use crate::std::Args;
 use crate::std::args::TyF64;
 use crate::std::sketch::FaceTag;
 use crate::std::sketch::PlaneData;
+use crate::util::MathExt;
 
 type Point3D = kcmc::shared::Point3d<f64>;
 
@@ -1152,6 +1153,10 @@ impl Sketch {
 pub struct Solid {
     /// The id of the solid.
     pub id: uuid::Uuid,
+    /// Internal KCL value generation. The engine may reuse `id` for a new value.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub value_id: uuid::Uuid,
     /// The artifact ID of the solid.  Unlike `id`, this doesn't change.
     pub artifact_id: ArtifactId,
     /// The extrude surfaces.
@@ -1929,8 +1934,8 @@ fn linear_distance(
     [x0, y0]: &[f64; 2],
     [x1, y1]: &[f64; 2]
 ) -> f64 {
-    let y_sq = (y1 - y0).powi(2);
-    let x_sq = (x1 - x0).powi(2);
+    let y_sq = (y1 - y0).squared();
+    let x_sq = (x1 - x0).squared();
     (y_sq + x_sq).sqrt()
 }
 
@@ -2332,6 +2337,64 @@ pub enum SketchConstraintKind {
         #[ts(optional)]
         label_position: Option<ApiPoint2d<Number>>,
     },
+    PointLineDistance {
+        point: ConstrainablePoint2dOrOrigin,
+        line: ConstrainableLine2d,
+        input_object_ids: [Option<ObjectId>; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
+    },
+    LineLineDistance {
+        line0: ConstrainableLine2d,
+        line1: ConstrainableLine2d,
+        input_object_ids: [ObjectId; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
+    },
+    PointCircularDistance {
+        point: ConstrainablePoint2dOrOrigin,
+        center: ConstrainablePoint2d,
+        start: ConstrainablePoint2d,
+        end: Option<ConstrainablePoint2d>,
+        input_object_ids: [Option<ObjectId>; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
+    },
+    LineCircularDistance {
+        line: ConstrainableLine2d,
+        center: ConstrainablePoint2d,
+        start: ConstrainablePoint2d,
+        end: Option<ConstrainablePoint2d>,
+        input_object_ids: [ObjectId; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
+    },
+    CircularCircularDistance {
+        center0: ConstrainablePoint2d,
+        start0: ConstrainablePoint2d,
+        end0: Option<ConstrainablePoint2d>,
+        center1: ConstrainablePoint2d,
+        start1: ConstrainablePoint2d,
+        end1: Option<ConstrainablePoint2d>,
+        input_object_ids: [ObjectId; 2],
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
+    },
     Radius {
         points: [ConstrainablePoint2d; 2],
         #[serde(rename = "labelPosition")]
@@ -2371,6 +2434,11 @@ impl SketchConstraintKind {
         match self {
             SketchConstraintKind::Angle { .. } => "angle",
             SketchConstraintKind::Distance { .. } => "distance",
+            SketchConstraintKind::PointLineDistance { .. } => "distance",
+            SketchConstraintKind::LineLineDistance { .. } => "distance",
+            SketchConstraintKind::PointCircularDistance { .. } => "distance",
+            SketchConstraintKind::LineCircularDistance { .. } => "distance",
+            SketchConstraintKind::CircularCircularDistance { .. } => "distance",
             SketchConstraintKind::Radius { .. } => "radius",
             SketchConstraintKind::Diameter { .. } => "diameter",
             SketchConstraintKind::HorizontalDistance { .. } => "horizontalDistance",

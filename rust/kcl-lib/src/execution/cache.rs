@@ -118,16 +118,12 @@ impl GlobalState {
         ExecOutcome {
             variables: self.main.exec_state.variables(self.main.result_env),
             filenames: self.exec_state.filenames(),
-            #[cfg(feature = "artifact-graph")]
             operations: self.exec_state.root_module_artifacts.operations,
-            #[cfg(feature = "artifact-graph")]
             artifact_graph: self.exec_state.artifacts.graph,
-            #[cfg(feature = "artifact-graph")]
             scene_objects: self.exec_state.root_module_artifacts.scene_objects,
-            #[cfg(feature = "artifact-graph")]
             source_range_to_object: self.exec_state.root_module_artifacts.source_range_to_object,
-            #[cfg(feature = "artifact-graph")]
             var_solutions: self.exec_state.root_module_artifacts.var_solutions,
+            ordered_sketch_var_solutions: self.exec_state.root_module_artifacts.ordered_sketch_var_solutions,
             issues: self.exec_state.issues,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         }
@@ -143,10 +139,7 @@ impl GlobalState {
             path_to_source_id: self.exec_state.path_to_source_id.clone(),
             id_to_source: self.exec_state.id_to_source.clone(),
             constraint_state: self.main.exec_state.constraint_state.clone(),
-            #[cfg(feature = "artifact-graph")]
             scene_objects: self.exec_state.root_module_artifacts.scene_objects.clone(),
-            #[cfg(not(feature = "artifact-graph"))]
-            scene_objects: Default::default(),
         }
     }
 }
@@ -176,7 +169,6 @@ pub(crate) struct SketchModeState {
     /// Sticky per-constraint state persisted across sketch-mode mock solves.
     pub constraint_state: IndexMap<ObjectId, IndexMap<ConstraintKey, ConstraintState>>,
     /// The scene objects.
-    #[cfg_attr(not(feature = "artifact-graph"), allow(dead_code))]
     pub scene_objects: Vec<Object>,
 }
 

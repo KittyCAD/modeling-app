@@ -140,8 +140,11 @@ import {
 import {
   addFlatnessGdt,
   addDatumGdt,
+  addPositionGdt,
+  addAnnotationGdt,
   addParallelismGdt,
   addPerpendicularityGdt,
+  addDistanceGdt,
   addProfileGdt,
 } from '@src/lang/modifyAst/gdt'
 import {
@@ -232,6 +235,7 @@ import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import { toPlaneName } from '@src/lib/planes'
+import { withDefaultGdtFrameDefaults } from '@src/lib/gdtFramePosition'
 
 function sourceRangesEqual(
   a: [number, number, number],
@@ -579,7 +583,9 @@ export type ModelingMachineEvent =
     }
   | { type: 'GDT Flatness'; data: ModelingCommandSchema['GDT Flatness'] }
   | { type: 'GDT Datum'; data: ModelingCommandSchema['GDT Datum'] }
+  | { type: 'GDT Position'; data: ModelingCommandSchema['GDT Position'] }
   | { type: 'GDT Profile'; data: ModelingCommandSchema['GDT Profile'] }
+  | { type: 'GDT Distance'; data: ModelingCommandSchema['GDT Distance'] }
   | {
       type: 'GDT Perpendicularity'
       data: ModelingCommandSchema['GDT Perpendicularity']
@@ -588,6 +594,7 @@ export type ModelingMachineEvent =
       type: 'GDT Parallelism'
       data: ModelingCommandSchema['GDT Parallelism']
     }
+  | { type: 'GDT Annotation'; data: ModelingCommandSchema['GDT Annotation'] }
   | { type: 'Flip Surface'; data: ModelingCommandSchema['Flip Surface'] }
   | { type: 'Join Surfaces'; data: ModelingCommandSchema['Join Surfaces'] }
   | {
@@ -1528,7 +1535,7 @@ export const modelingMachine = setup({
     },
     'reset client scene mouse handlers': ({ context }) => {
       // when not in sketch mode we don't need any mouse listeners
-      // (note the orbit controls are always active though)
+      // Orbit controls are always active though.
       context.kclManager.sceneInfra.resetMouseListeners()
     },
     'restore modeling camera controls': ({ context }) => {
@@ -3698,7 +3705,7 @@ export const modelingMachine = setup({
 
         for (const variable of Object.values(kclManager.execState.variables)) {
           // find programMemory that matches path artifact
-          // Note: this is similar to sketchFromKclValueOptional(), could be combined?
+          // This is similar to sketchFromKclValueOptional(), could be combined.
           if (
             variable?.type === 'Sketch' &&
             variable.value.artifactId === mainPath
@@ -5160,30 +5167,20 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        // Remove once this command isn't experimental anymore
-        let astWithNewSetting: Node<Program> | undefined
-        if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-        ) {
-          const ast = setExperimentalFeatures(
-            input.kclManager.code,
-            {
-              type: 'Allow',
-            },
-            await input.kclManager.wasmInstancePromise
-          )
-          if (err(ast)) {
-            return Promise.reject(ast)
-          }
+        const wasmInstance = await input.kclManager.wasmInstancePromise
 
-          astWithNewSetting = ast
-        }
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
 
         const result = addFlatnessGdt({
-          ...input.data,
-          ast: astWithNewSetting ?? input.kclManager.ast,
+          ...data,
+          ast: input.kclManager.ast,
           artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -5215,30 +5212,20 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        // Remove once this command isn't experimental anymore
-        let astWithNewSetting: Node<Program> | undefined
-        if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-        ) {
-          const ast = setExperimentalFeatures(
-            input.kclManager.code,
-            {
-              type: 'Allow',
-            },
-            await input.kclManager.wasmInstancePromise
-          )
-          if (err(ast)) {
-            return Promise.reject(ast)
-          }
+        const wasmInstance = await input.kclManager.wasmInstancePromise
 
-          astWithNewSetting = ast
-        }
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
 
         const result = addDatumGdt({
-          ...input.data,
-          ast: astWithNewSetting ?? input.kclManager.ast,
+          ...data,
+          ast: input.kclManager.ast,
           artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -5270,29 +5257,110 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        let astWithNewSetting: Node<Program> | undefined
-        if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-        ) {
-          const ast = setExperimentalFeatures(
-            input.kclManager.code,
-            {
-              type: 'Allow',
-            },
-            await input.kclManager.wasmInstancePromise
-          )
-          if (err(ast)) {
-            return Promise.reject(ast)
-          }
+        const wasmInstance = await input.kclManager.wasmInstancePromise
 
-          astWithNewSetting = ast
-        }
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
 
         const result = addProfileGdt({
-          ...input.data,
-          ast: astWithNewSetting ?? input.kclManager.ast,
+          ...data,
+          ast: input.kclManager.ast,
           artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtPositionAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Position'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
+
+        const result = addPositionGdt({
+          ...data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtDistanceAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Distance'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
+
+        const result = addDistanceGdt({
+          ...data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -5324,29 +5392,20 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        let astWithNewSetting: Node<Program> | undefined
-        if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-        ) {
-          const ast = setExperimentalFeatures(
-            input.kclManager.code,
-            {
-              type: 'Allow',
-            },
-            await input.kclManager.wasmInstancePromise
-          )
-          if (err(ast)) {
-            return Promise.reject(ast)
-          }
+        const wasmInstance = await input.kclManager.wasmInstancePromise
 
-          astWithNewSetting = ast
-        }
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
 
         const result = addPerpendicularityGdt({
-          ...input.data,
-          ast: astWithNewSetting ?? input.kclManager.ast,
+          ...data,
+          ast: input.kclManager.ast,
           artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -5378,29 +5437,65 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        let astWithNewSetting: Node<Program> | undefined
-        if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-        ) {
-          const ast = setExperimentalFeatures(
-            input.kclManager.code,
-            {
-              type: 'Allow',
-            },
-            await input.kclManager.wasmInstancePromise
-          )
-          if (err(ast)) {
-            return Promise.reject(ast)
-          }
+        const wasmInstance = await input.kclManager.wasmInstancePromise
 
-          astWithNewSetting = ast
-        }
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
 
         const result = addParallelismGdt({
-          ...input.data,
-          ast: astWithNewSetting ?? input.kclManager.ast,
+          ...data,
+          ast: input.kclManager.ast,
           artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtAnnotationAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Annotation'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
+
+        const result = addAnnotationGdt({
+          ...data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -6140,8 +6235,16 @@ export const modelingMachine = setup({
           target: 'Applying GDT Datum',
         },
 
+        'GDT Position': {
+          target: 'Applying GDT Position',
+        },
+
         'GDT Profile': {
           target: 'Applying GDT Profile',
+        },
+
+        'GDT Distance': {
+          target: 'Applying GDT Distance',
         },
 
         'GDT Perpendicularity': {
@@ -6150,6 +6253,10 @@ export const modelingMachine = setup({
 
         'GDT Parallelism': {
           target: 'Applying GDT Parallelism',
+        },
+
+        'GDT Annotation': {
+          target: 'Applying GDT Annotation',
         },
 
         'Boolean Subtract': {
@@ -8235,6 +8342,46 @@ export const modelingMachine = setup({
       },
     },
 
+    'Applying GDT Position': {
+      invoke: {
+        src: 'gdtPositionAstMod',
+        id: 'gdtPositionAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Position') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Distance': {
+      invoke: {
+        src: 'gdtDistanceAstMod',
+        id: 'gdtDistanceAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Distance') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
     'Applying GDT Perpendicularity': {
       invoke: {
         src: 'gdtPerpendicularityAstMod',
@@ -8261,6 +8408,26 @@ export const modelingMachine = setup({
         id: 'gdtParallelismAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'GDT Parallelism') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Annotation': {
+      invoke: {
+        src: 'gdtAnnotationAstMod',
+        id: 'gdtAnnotationAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Annotation') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,

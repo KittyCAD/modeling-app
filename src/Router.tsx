@@ -1,5 +1,4 @@
 import { Suspense, useMemo } from 'react'
-import toast from 'react-hot-toast'
 import {
   Outlet,
   RouterProvider,
@@ -14,15 +13,11 @@ import ModelingMachineProvider from '@src/components/ModelingMachineProvider'
 import ModelingPageProvider from '@src/components/ModelingPageProvider'
 import { NetworkContext } from '@src/hooks/useNetworkContext'
 import { useNetworkStatus } from '@src/hooks/useNetworkStatus'
-import { coreDump } from '@src/lang/wasm'
-import { CoreDumpManager, submitCoreDumpSupportTicket } from '@src/lib/coredump'
-import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
 import { baseLoader, fileLoader, homeLoader } from '@src/lib/routeLoaders'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { reportRejection } from '@src/lib/trap'
 import Home from '@src/routes/Home'
 import { OnboardingRootRoute, onboardingRoutes } from '@src/routes/Onboarding'
 import { Settings } from '@src/routes/Settings'
@@ -78,7 +73,6 @@ export const Router = () => {
                     }
                   >
                     <ModelingMachineProvider>
-                      <CoreDump />
                       <Outlet />
                       <OpenedProject />
                       <CommandBar />
@@ -144,6 +138,15 @@ export const Router = () => {
             ...(IS_STAGING_OR_DEBUG
               ? [
                   {
+                    path: '/error-page-test',
+                    errorElement: <ErrorPage />,
+                    loader: () => {
+                      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+                      throw new Error('Manual ErrorPage test')
+                    },
+                    element: <></>,
+                  },
+                  {
                     path: '/layout',
                     errorElement: <ErrorPage />,
                     element: <TestLayout />,
@@ -163,48 +166,4 @@ export const Router = () => {
       <RouterProvider router={router} />
     </NetworkContext.Provider>
   )
-}
-
-function CoreDump() {
-  const { auth } = useApp()
-  const { kclManager } = useSingletons()
-  const token = auth.useToken()
-  const user = auth.useUser()
-  const coreDumpManager = useMemo(
-    () => new CoreDumpManager(kclManager),
-    [kclManager]
-  )
-  useHotkeyWrapper(
-    ['mod + shift + period'],
-    () => {
-      toast
-        .promise(
-          coreDump(coreDumpManager, kclManager.wasmInstancePromise).then(
-            async (dump) => {
-              await submitCoreDumpSupportTicket({
-                dump,
-                token,
-                user,
-              })
-              return dump
-            }
-          ),
-          {
-            loading: 'Submitting support ticket...',
-            success: 'Support ticket created successfully.',
-            error: 'Error while creating support ticket.',
-          },
-          {
-            success: {
-              // Note: this extended duration is especially important for Playwright e2e testing
-              // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
-              duration: 6000,
-            },
-          }
-        )
-        .catch(reportRejection)
-    },
-    kclManager
-  )
-  return null
 }

@@ -1,4 +1,6 @@
 use std::cell::Cell;
+#[cfg(feature = "artifact-graph")]
+use std::cell::RefCell;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::collections::VecDeque;
@@ -16,11 +18,8 @@ use crate::KclError;
 use crate::KclErrorWithOutputs;
 use crate::Program;
 use crate::collections::AhashIndexSet;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::Artifact;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::ArtifactGraph;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::CapSubType;
 use crate::execution::MockConfig;
 use crate::execution::SKETCH_BLOCK_PARAM_ON;
@@ -85,6 +84,8 @@ use crate::id::IncIdGenerator;
 use crate::parsing::ast::types as ast;
 use crate::pretty::NumericSuffix;
 use crate::std::constraints::LinesAtAngleKind;
+#[cfg(feature = "artifact-graph")]
+use crate::walk::Node;
 use crate::walk::NodeMut;
 use crate::walk::Visitable;
 
@@ -104,6 +105,27 @@ struct SketchCheckpoint {
     point_freedom_cache: HashMap<ObjectId, Freedom>,
     mock_memory: Option<SketchModeState>,
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum SketchVarUpdateMode {
+    /// Keep solved values as transient warm-start state only. Used for drag
+    /// previews and other intermediate edits.
+    WarmStartOnly,
+    /// Serialize the settled solved values back into KCL. Used at interaction
+    /// boundaries where source should represent the displayed sketch.
+    CommitSolvedVars,
+    /// Serialize solved values back into KCL after solving from transient
+    /// warm-start state. Used at drag boundaries after preview edits.
+    CommitSolvedVarsFromWarmStart,
+}
+
+#[derive(Debug, Clone)]
+struct SketchVarWarmStarts {
+    solver_values: Vec<f64>,
+    solver_source_ranges: Vec<Option<SourceRange>>,
+    source_values: Vec<(SourceRange, f64)>,
+}
+
 mod traverse;
 pub(crate) mod trim;
 
@@ -132,6 +154,7 @@ const CIRCLE_VARIABLE: &str = "circle";
 const CIRCLE_START_PARAM: &str = "start";
 const CIRCLE_CENTER_PARAM: &str = "center";
 const LABEL_POSITION_PARAM: &str = "labelPosition";
+const CONSTRAINT_SOLVER_FAILED_MESSAGE: &str = "Constraint solver failed to find a solution";
 
 const COINCIDENT_FN: &str = "coincident";
 const DIAMETER_FN: &str = "diameter";
@@ -185,6 +208,12 @@ impl EditDeleteKind {
     }
 }
 
+struct ExecuteAfterEditOptions {
+    segment_ids_edited: AhashIndexSet<ObjectId>,
+    edit_kind: EditDeleteKind,
+    sketch_var_update_mode: SketchVarUpdateMode,
+}
+
 #[derive(Debug, Clone, Copy)]
 enum ChangeKind {
     Add,
@@ -214,6 +243,11 @@ pub struct FrontendState {
     /// Stores the last known freedom value for each point object.
     /// This allows us to preserve freedom values when freedom analysis isn't run.
     point_freedom_cache: HashMap<ObjectId, Freedom>,
+    /// Transient solver continuity state. During previews we warm-start from
+    /// the previous solution without treating those solved guesses as committed
+    /// source text.
+    sketch_var_warm_start_overrides: HashMap<ObjectId, SketchVarWarmStarts>,
+    next_sketch_var_update_mode: Option<SketchVarUpdateMode>,
     sketch_checkpoints: VecDeque<SketchCheckpoint>,
     sketch_checkpoint_id_gen: IncIdGenerator<u64>,
 }
@@ -237,6 +271,8 @@ impl FrontendState {
                 sketch_mode: Default::default(),
             },
             point_freedom_cache: HashMap::new(),
+            sketch_var_warm_start_overrides: HashMap::new(),
+            next_sketch_var_update_mode: None,
             sketch_checkpoints: VecDeque::new(),
             sketch_checkpoint_id_gen: IncIdGenerator::new(1),
         }
@@ -295,6 +331,7 @@ impl FrontendState {
         self.program = checkpoint.program;
         self.scene_graph = checkpoint.scene_graph.clone();
         self.point_freedom_cache = checkpoint.point_freedom_cache;
+        self.clear_sketch_var_warm_starts();
 
         if let Some(mock_memory) = checkpoint.mock_memory {
             write_old_memory(mock_memory).await;
@@ -316,6 +353,335 @@ impl FrontendState {
     pub fn clear_sketch_checkpoints(&mut self) {
         self.sketch_checkpoints.clear();
     }
+
+    pub(crate) fn clear_sketch_var_warm_starts(&mut self) {
+        self.sketch_var_warm_start_overrides.clear();
+    }
+
+    pub async fn edit_segments_for_preview(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        segments: Vec<ExistingSegmentCtor>,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        self.next_sketch_var_update_mode = Some(SketchVarUpdateMode::WarmStartOnly);
+        SketchApi::edit_segments(self, ctx, version, sketch, segments).await
+    }
+
+    pub async fn edit_segments_commit_from_preview(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        segments: Vec<ExistingSegmentCtor>,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        self.next_sketch_var_update_mode = Some(SketchVarUpdateMode::CommitSolvedVarsFromWarmStart);
+        SketchApi::edit_segments(self, ctx, version, sketch, segments).await
+    }
+
+    pub async fn execute_mock_from_preview(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        let _ = version;
+        self.execute_mock_with_warm_starts(ctx, sketch, true).await
+    }
+
+    fn sketch_mock_config(
+        &self,
+        sketch: ObjectId,
+        freedom_analysis: bool,
+        #[cfg_attr(not(feature = "artifact-graph"), allow(unused_variables))] segment_ids_edited: AhashIndexSet<
+            ObjectId,
+        >,
+        use_warm_starts: bool,
+    ) -> MockConfig {
+        let config = MockConfig {
+            sketch_block_id: Some(sketch),
+            freedom_analysis,
+            #[cfg(feature = "artifact-graph")]
+            segment_ids_edited: segment_ids_edited.clone(),
+            ..Default::default()
+        };
+
+        match (use_warm_starts, self.sketch_var_warm_start_overrides.get(&sketch)) {
+            (true, Some(overrides)) => {
+                #[cfg(feature = "artifact-graph")]
+                let source_overrides =
+                    if overrides.source_values.is_empty() && overrides.solver_source_ranges.is_empty() {
+                        Vec::new()
+                    } else {
+                        self.sketch_var_source_values_from_program(sketch)
+                            .map(|current_source_values| {
+                                let edited_var_indices =
+                                    self.edited_sketch_var_indices(&current_source_values, &segment_ids_edited);
+                                current_source_values
+                                    .iter()
+                                    .enumerate()
+                                    .map(|(index, (_, source_value))| {
+                                        if edited_var_indices.contains(&index) {
+                                            *source_value
+                                        } else {
+                                            overrides
+                                                .source_values
+                                                .get(index)
+                                                .map(|(_, value)| *value)
+                                                .unwrap_or(*source_value)
+                                        }
+                                    })
+                                    .collect()
+                            })
+                            .unwrap_or_else(|| overrides.source_values.iter().map(|(_, value)| *value).collect())
+                    };
+                #[cfg(not(feature = "artifact-graph"))]
+                let source_overrides = overrides.source_values.iter().map(|(_, value)| *value).collect();
+                config.with_ordered_sketch_var_initial_guess_overrides(
+                    overrides.solver_values.clone(),
+                    source_overrides,
+                    overrides.solver_source_ranges.clone(),
+                )
+            }
+            _ => config,
+        }
+    }
+
+    async fn execute_mock_with_warm_starts(
+        &mut self,
+        ctx: &ExecutorContext,
+        sketch: ObjectId,
+        use_warm_starts: bool,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        let sketch_block_ref =
+            sketch_block_ref_from_id(&self.scene_graph, sketch).map_err(KclErrorWithOutputs::no_outputs)?;
+
+        let mut truncated_program = self.program.clone();
+        only_sketch_block(&mut truncated_program.ast, &sketch_block_ref, ChangeKind::None)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+
+        let mock_config = self.sketch_mock_config(sketch, true, Default::default(), use_warm_starts);
+        let run_outcome = ctx.run_mock(&truncated_program, &mock_config).await?;
+        let outcome = self.update_state_after_exec(run_outcome, true);
+        self.replace_sketch_var_warm_starts(sketch, &outcome);
+        let new_source = self.commit_var_solutions_to_program(&outcome)?;
+
+        let src_delta = SourceDelta { text: new_source };
+        let scene_graph_delta = SceneGraphDelta {
+            new_graph: self.scene_graph.clone(),
+            new_objects: Default::default(),
+            invalidates_ids: false,
+            exec_outcome: outcome,
+        };
+        Ok((src_delta, scene_graph_delta))
+    }
+
+    fn replace_sketch_var_warm_starts(&mut self, sketch: ObjectId, outcome: &ExecOutcome) {
+        #[cfg(feature = "artifact-graph")]
+        {
+            let (solver_values, solver_source_ranges) = if outcome.ordered_sketch_var_solutions.is_empty() {
+                (
+                    outcome.var_solutions.iter().map(|(_, value)| value.value).collect(),
+                    outcome.var_solutions.iter().map(|(range, _)| Some(*range)).collect(),
+                )
+            } else {
+                (
+                    outcome
+                        .ordered_sketch_var_solutions
+                        .iter()
+                        .map(|solution| solution.value)
+                        .collect(),
+                    outcome
+                        .ordered_sketch_var_solutions
+                        .iter()
+                        .map(|solution| solution.source_range)
+                        .collect(),
+                )
+            };
+            let source_values = outcome
+                .var_solutions
+                .iter()
+                .map(|(range, value)| (*range, value.value))
+                .collect();
+            self.sketch_var_warm_start_overrides.insert(
+                sketch,
+                SketchVarWarmStarts {
+                    solver_values,
+                    solver_source_ranges,
+                    source_values,
+                },
+            );
+        }
+        #[cfg(not(feature = "artifact-graph"))]
+        {
+            let _ = (sketch, outcome);
+        }
+    }
+
+    fn merge_committed_edit_sketch_var_warm_starts(
+        &mut self,
+        sketch: ObjectId,
+        outcome: &ExecOutcome,
+        segment_ids_edited: &AhashIndexSet<ObjectId>,
+    ) {
+        #[cfg(feature = "artifact-graph")]
+        {
+            let solution_by_range = outcome
+                .var_solutions
+                .iter()
+                .map(|(range, value)| (*range, value.value))
+                .collect::<HashMap<_, _>>();
+            let previous = self.sketch_var_warm_start_overrides.get(&sketch).cloned();
+            let Some(source_values) = self.sketch_var_source_values_from_program(sketch) else {
+                self.replace_sketch_var_warm_starts(sketch, outcome);
+                return;
+            };
+            let edited_var_indices = self.edited_sketch_var_indices(&source_values, segment_ids_edited);
+            let source_values = source_values
+                .iter()
+                .enumerate()
+                .map(|(index, (range, source_value))| {
+                    if edited_var_indices.contains(&index) || !solution_by_range.contains_key(range) {
+                        (*range, *source_value)
+                    } else {
+                        let value = previous
+                            .as_ref()
+                            .and_then(|warm_starts| warm_starts.source_values.get(index))
+                            .map(|(_, value)| *value)
+                            .unwrap_or(*source_value);
+                        (*range, value)
+                    }
+                })
+                .collect::<Vec<_>>();
+
+            let solver_values =
+                merged_solver_warm_start_values(outcome, previous.as_ref(), &source_values, &edited_var_indices);
+            let solver_source_ranges = if outcome.ordered_sketch_var_solutions.is_empty() {
+                source_values.iter().map(|(range, _)| Some(*range)).collect()
+            } else {
+                outcome
+                    .ordered_sketch_var_solutions
+                    .iter()
+                    .map(|solution| solution.source_range)
+                    .collect()
+            };
+
+            self.sketch_var_warm_start_overrides.insert(
+                sketch,
+                SketchVarWarmStarts {
+                    solver_values,
+                    solver_source_ranges,
+                    source_values,
+                },
+            );
+        }
+        #[cfg(not(feature = "artifact-graph"))]
+        {
+            let _ = (sketch, outcome, segment_ids_edited);
+        }
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    fn edited_sketch_var_indices(
+        &self,
+        source_values: &[(SourceRange, f64)],
+        segment_ids_edited: &AhashIndexSet<ObjectId>,
+    ) -> HashSet<usize> {
+        let edited_ranges = segment_ids_edited
+            .iter()
+            .filter_map(|segment_id| self.scene_graph.objects.get(segment_id.0))
+            .filter_map(|object| source_ref_primary_range(&object.source))
+            .collect::<Vec<_>>();
+
+        source_values
+            .iter()
+            .enumerate()
+            .filter_map(|(index, (range, _))| {
+                edited_ranges
+                    .iter()
+                    .any(|edited_range| edited_range.contains_range(range))
+                    .then_some(index)
+            })
+            .collect()
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    fn sketch_var_source_values_from_program(&self, sketch: ObjectId) -> Option<Vec<(SourceRange, f64)>> {
+        let sketch_range = source_ref_primary_range(&self.scene_graph.objects.get(sketch.0)?.source)?;
+        let values = RefCell::new(Vec::new());
+        crate::walk::walk(&self.program.ast, |node| -> anyhow::Result<bool> {
+            let Node::SketchVar(sketch_var) = node else {
+                return Ok(true);
+            };
+            let Some(initial) = sketch_var.initial.as_ref() else {
+                return Ok(true);
+            };
+            let range = initial.as_source_range();
+            if sketch_range.contains_range(&range) {
+                values
+                    .borrow_mut()
+                    .push((range, sketch_var_initial_value_in_solver_units(initial)));
+            }
+            Ok(true)
+        })
+        .ok()?;
+        let values = values.into_inner();
+        (!values.is_empty()).then_some(values)
+    }
+
+    fn update_single_sketch_var_warm_starts(&mut self, outcome: &ExecOutcome) {
+        let mut sketch_ids = self.scene_graph.objects.iter().filter_map(|object| match object.kind {
+            ObjectKind::Sketch(_) => Some(object.id),
+            _ => None,
+        });
+        let Some(sketch_id) = sketch_ids.next() else {
+            return;
+        };
+        if sketch_ids.next().is_none() {
+            self.replace_sketch_var_warm_starts(sketch_id, outcome);
+        }
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    fn source_with_committed_var_solutions(
+        &self,
+        outcome: &ExecOutcome,
+    ) -> ExecResult<(ast::Node<ast::Program>, String)> {
+        let mut new_ast = self.program.ast.clone();
+        for (var_range, value) in &outcome.var_solutions {
+            let rounded = value.round(3);
+            let source_ref = SourceRef::Simple {
+                range: *var_range,
+                node_path: None,
+            };
+            mutate_ast_node_by_source_ref(
+                &mut new_ast,
+                &source_ref,
+                AstMutateCommand::EditVarInitialValue { value: rounded },
+            )
+            .map_err(|err| KclErrorWithOutputs::from_error_outcome(err, outcome.clone()))?;
+        }
+        let source = source_from_ast(&new_ast);
+        Ok((new_ast, source))
+    }
+
+    fn commit_var_solutions_to_program(&mut self, outcome: &ExecOutcome) -> ExecResult<String> {
+        #[cfg(feature = "artifact-graph")]
+        {
+            let (new_ast, source) = self.source_with_committed_var_solutions(outcome)?;
+            self.program = Program {
+                ast: new_ast,
+                original_file_contents: source.clone(),
+            };
+            Ok(source)
+        }
+        #[cfg(not(feature = "artifact-graph"))]
+        {
+            let _ = outcome;
+            Ok(source_from_ast(&self.program.ast))
+        }
+    }
 }
 
 impl SketchApi for FrontendState {
@@ -325,28 +691,7 @@ impl SketchApi for FrontendState {
         _version: Version,
         sketch: ObjectId,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
-        let sketch_block_ref =
-            sketch_block_ref_from_id(&self.scene_graph, sketch).map_err(KclErrorWithOutputs::no_outputs)?;
-
-        let mut truncated_program = self.program.clone();
-        only_sketch_block(&mut truncated_program.ast, &sketch_block_ref, ChangeKind::None)
-            .map_err(KclErrorWithOutputs::no_outputs)?;
-
-        // Execute.
-        let outcome = ctx
-            .run_mock(&truncated_program, &MockConfig::new_sketch_mode(sketch))
-            .await?;
-        let new_source = source_from_ast(&self.program.ast);
-        let src_delta = SourceDelta { text: new_source };
-        // MockConfig::default() has freedom_analysis: true
-        let outcome = self.update_state_after_exec(outcome, true);
-        let scene_graph_delta = SceneGraphDelta {
-            new_graph: self.scene_graph.clone(),
-            new_objects: Default::default(),
-            invalidates_ids: false,
-            exec_outcome: outcome,
-        };
-        Ok((src_delta, scene_graph_delta))
+        self.execute_mock_with_warm_starts(ctx, sketch, false).await
     }
 
     async fn new_sketch(
@@ -429,6 +774,7 @@ impl SketchApi for FrontendState {
 
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
+        self.clear_sketch_var_warm_starts();
 
         // We need to do an engine execute so that the plane object gets created
         // and is cached.
@@ -503,6 +849,7 @@ impl SketchApi for FrontendState {
 
         // MockConfig::default() has freedom_analysis: true
         let outcome = self.update_state_after_exec(outcome, true);
+        self.replace_sketch_var_warm_starts(sketch, &outcome);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -596,6 +943,10 @@ impl SketchApi for FrontendState {
         segments: Vec<ExistingSegmentCtor>,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
+        let sketch_var_update_mode = self
+            .next_sketch_var_update_mode
+            .take()
+            .unwrap_or(SketchVarUpdateMode::CommitSolvedVars);
         let sketch_block_ref =
             sketch_block_ref_from_id(&self.scene_graph, sketch).map_err(KclErrorWithOutputs::no_outputs)?;
 
@@ -772,8 +1123,11 @@ impl SketchApi for FrontendState {
             ctx,
             sketch,
             sketch_block_ref,
-            segment_ids_edited,
-            EditDeleteKind::Edit,
+            ExecuteAfterEditOptions {
+                segment_ids_edited,
+                edit_kind: EditDeleteKind::Edit,
+                sketch_var_update_mode,
+            },
             &mut new_ast,
         )
         .await
@@ -944,8 +1298,11 @@ impl SketchApi for FrontendState {
             ctx,
             sketch,
             sketch_block_ref,
-            Default::default(),
-            EditDeleteKind::DeleteNonSketch,
+            ExecuteAfterEditOptions {
+                segment_ids_edited: Default::default(),
+                edit_kind: EditDeleteKind::DeleteNonSketch,
+                sketch_var_update_mode: SketchVarUpdateMode::CommitSolvedVars,
+            },
             &mut new_ast,
         )
         .await
@@ -1205,8 +1562,11 @@ impl SketchApi for FrontendState {
             ctx,
             sketch,
             sketch_block_ref,
-            Default::default(),
-            EditDeleteKind::Edit,
+            ExecuteAfterEditOptions {
+                segment_ids_edited: Default::default(),
+                edit_kind: EditDeleteKind::Edit,
+                sketch_var_update_mode: SketchVarUpdateMode::CommitSolvedVars,
+            },
             &mut new_ast,
         )
         .await
@@ -1260,8 +1620,11 @@ impl SketchApi for FrontendState {
             ctx,
             sketch,
             sketch_block_ref,
-            anchor_segment_ids.into_iter().collect(),
-            EditDeleteKind::Edit,
+            ExecuteAfterEditOptions {
+                segment_ids_edited: anchor_segment_ids.into_iter().collect(),
+                edit_kind: EditDeleteKind::Edit,
+                sketch_var_update_mode: SketchVarUpdateMode::WarmStartOnly,
+            },
             &mut new_ast,
         )
         .await
@@ -1418,8 +1781,11 @@ impl SketchApi for FrontendState {
                 ctx,
                 sketch,
                 sketch_block_ref,
-                segment_ids_edited,
-                EditDeleteKind::Edit,
+                ExecuteAfterEditOptions {
+                    segment_ids_edited,
+                    edit_kind: EditDeleteKind::Edit,
+                    sketch_var_update_mode: SketchVarUpdateMode::CommitSolvedVars,
+                },
                 &mut new_ast,
             )
             .await?;
@@ -1503,8 +1869,11 @@ impl SketchApi for FrontendState {
                 ctx,
                 sketch,
                 sketch_block_ref,
-                segment_ids_edited,
-                EditDeleteKind::Edit,
+                ExecuteAfterEditOptions {
+                    segment_ids_edited,
+                    edit_kind: EditDeleteKind::Edit,
+                    sketch_var_update_mode: SketchVarUpdateMode::CommitSolvedVars,
+                },
                 &mut new_ast,
             )
             .await?;
@@ -1522,6 +1891,7 @@ impl SketchApi for FrontendState {
 impl FrontendState {
     pub async fn hack_set_program(&mut self, ctx: &ExecutorContext, program: Program) -> ExecResult<SetProgramOutcome> {
         self.program = program.clone();
+        self.clear_sketch_var_warm_starts();
 
         // Execute so that the objects are updated and available for the next
         // API call.
@@ -1537,6 +1907,7 @@ impl FrontendState {
         match ctx.run_with_caching(program).await {
             Ok(outcome) => {
                 let outcome = self.update_state_after_exec(outcome, true);
+                self.update_single_sketch_var_warm_starts(&outcome);
                 let checkpoint_id = self
                     .create_sketch_checkpoint(outcome.clone())
                     .await
@@ -1566,6 +1937,7 @@ impl FrontendState {
         program: Program,
     ) -> Result<SceneGraphDelta, KclErrorWithOutputs> {
         self.program = program.clone();
+        self.clear_sketch_var_warm_starts();
 
         // Engine execution now runs freedom analysis automatically. Clear the
         // freedom cache since IDs might have changed after direct editing, and
@@ -1574,6 +1946,7 @@ impl FrontendState {
         match ctx.run_with_caching(program).await {
             Ok(outcome) => {
                 let outcome = self.update_state_after_exec(outcome, true);
+                self.update_single_sketch_var_warm_starts(&outcome);
                 Ok(SceneGraphDelta {
                     new_graph: self.scene_graph.clone(),
                     exec_outcome: outcome,
@@ -1605,15 +1978,10 @@ impl FrontendState {
             error,
             mut non_fatal,
             variables,
-            #[cfg(feature = "artifact-graph")]
             operations,
-            #[cfg(feature = "artifact-graph")]
             artifact_graph,
-            #[cfg(feature = "artifact-graph")]
             scene_objects,
-            #[cfg(feature = "artifact-graph")]
             source_range_to_object,
-            #[cfg(feature = "artifact-graph")]
             var_solutions,
             filenames,
             default_planes,
@@ -1629,16 +1997,12 @@ impl FrontendState {
         Ok(ExecOutcome {
             variables,
             filenames,
-            #[cfg(feature = "artifact-graph")]
             operations,
-            #[cfg(feature = "artifact-graph")]
             artifact_graph,
-            #[cfg(feature = "artifact-graph")]
             scene_objects,
-            #[cfg(feature = "artifact-graph")]
             source_range_to_object,
-            #[cfg(feature = "artifact-graph")]
             var_solutions,
+            ordered_sketch_var_solutions: Default::default(),
             issues: non_fatal,
             default_planes,
         })
@@ -1713,8 +2077,6 @@ impl FrontendState {
                 "Source range of point not found in sketch block: {sketch_block_ref:?}; {err:?}"
             )))
         })?;
-        #[cfg(not(feature = "artifact-graph"))]
-        let _ = point_node_ref;
 
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
@@ -1725,16 +2087,9 @@ impl FrontendState {
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
         // Execute.
-        let outcome = ctx
-            .run_mock(
-                &truncated_program,
-                &MockConfig::new_sketch_mode(sketch).no_freedom_analysis(),
-            )
-            .await?;
+        let mock_config = self.sketch_mock_config(sketch, false, Default::default(), true);
+        let outcome = ctx.run_mock(&truncated_program, &mock_config).await?;
 
-        #[cfg(not(feature = "artifact-graph"))]
-        let new_object_ids = Vec::new();
-        #[cfg(feature = "artifact-graph")]
         let new_object_ids = {
             let make_err =
                 |msg: String| KclErrorWithOutputs::from_error_outcome(KclError::refactor(msg), outcome.clone());
@@ -1762,8 +2117,9 @@ impl FrontendState {
             vec![segment_id]
         };
         let src_delta = SourceDelta { text: new_source };
-        // Uses .no_freedom_analysis() so freedom_analysis: false
+        // Uses freedom_analysis: false
         let outcome = self.update_state_after_exec(outcome, false);
+        self.replace_sketch_var_warm_starts(sketch, &outcome);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -1854,8 +2210,6 @@ impl FrontendState {
                 "Source range of line not found in sketch block: {sketch_block_ref:?}; {err:?}"
             )))
         })?;
-        #[cfg(not(feature = "artifact-graph"))]
-        let _ = line_node_ref;
 
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
@@ -1866,16 +2220,9 @@ impl FrontendState {
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
         // Execute.
-        let outcome = ctx
-            .run_mock(
-                &truncated_program,
-                &MockConfig::new_sketch_mode(sketch).no_freedom_analysis(),
-            )
-            .await?;
+        let mock_config = self.sketch_mock_config(sketch, false, Default::default(), true);
+        let outcome = ctx.run_mock(&truncated_program, &mock_config).await?;
 
-        #[cfg(not(feature = "artifact-graph"))]
-        let new_object_ids = Vec::new();
-        #[cfg(feature = "artifact-graph")]
         let new_object_ids = {
             let make_err =
                 |msg: String| KclErrorWithOutputs::from_error_outcome(KclError::refactor(msg), outcome.clone());
@@ -1902,8 +2249,9 @@ impl FrontendState {
             vec![line.start, line.end, segment_id]
         };
         let src_delta = SourceDelta { text: new_source };
-        // Uses .no_freedom_analysis() so freedom_analysis: false
+        // Uses freedom_analysis: false
         let outcome = self.update_state_after_exec(outcome, false);
+        self.replace_sketch_var_warm_starts(sketch, &outcome);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -2000,8 +2348,6 @@ impl FrontendState {
                 "Source range of arc not found in sketch block: {sketch_block_ref:?}; {err:?}"
             )))
         })?;
-        #[cfg(not(feature = "artifact-graph"))]
-        let _ = arc_node_ref;
 
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
@@ -2012,16 +2358,9 @@ impl FrontendState {
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
         // Execute.
-        let outcome = ctx
-            .run_mock(
-                &truncated_program,
-                &MockConfig::new_sketch_mode(sketch).no_freedom_analysis(),
-            )
-            .await?;
+        let mock_config = self.sketch_mock_config(sketch, false, Default::default(), true);
+        let outcome = ctx.run_mock(&truncated_program, &mock_config).await?;
 
-        #[cfg(not(feature = "artifact-graph"))]
-        let new_object_ids = Vec::new();
-        #[cfg(feature = "artifact-graph")]
         let new_object_ids = {
             let make_err =
                 |msg: String| KclErrorWithOutputs::from_error_outcome(KclError::refactor(msg), outcome.clone());
@@ -2049,8 +2388,9 @@ impl FrontendState {
             vec![arc.start, arc.end, arc.center, segment_id]
         };
         let src_delta = SourceDelta { text: new_source };
-        // Uses .no_freedom_analysis() so freedom_analysis: false
+        // Uses freedom_analysis: false
         let outcome = self.update_state_after_exec(outcome, false);
+        self.replace_sketch_var_warm_starts(sketch, &outcome);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -2144,8 +2484,6 @@ impl FrontendState {
                 "Source range of circle not found in sketch block: {sketch_block_ref:?}; {err:?}"
             )))
         })?;
-        #[cfg(not(feature = "artifact-graph"))]
-        let _ = circle_node_ref;
 
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
@@ -2156,16 +2494,9 @@ impl FrontendState {
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
         // Execute.
-        let outcome = ctx
-            .run_mock(
-                &truncated_program,
-                &MockConfig::new_sketch_mode(sketch).no_freedom_analysis(),
-            )
-            .await?;
+        let mock_config = self.sketch_mock_config(sketch, false, Default::default(), true);
+        let outcome = ctx.run_mock(&truncated_program, &mock_config).await?;
 
-        #[cfg(not(feature = "artifact-graph"))]
-        let new_object_ids = Vec::new();
-        #[cfg(feature = "artifact-graph")]
         let new_object_ids = {
             let make_err =
                 |msg: String| KclErrorWithOutputs::from_error_outcome(KclError::refactor(msg), outcome.clone());
@@ -2193,8 +2524,9 @@ impl FrontendState {
             vec![circle.start, circle.center, segment_id]
         };
         let src_delta = SourceDelta { text: new_source };
-        // Uses .no_freedom_analysis() so freedom_analysis: false
+        // Uses freedom_analysis: false
         let outcome = self.update_state_after_exec(outcome, false);
+        self.replace_sketch_var_warm_starts(sketch, &outcome);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -2798,8 +3130,7 @@ impl FrontendState {
         ctx: &ExecutorContext,
         sketch: ObjectId,
         sketch_block_ref: AstNodeRef,
-        segment_ids_edited: AhashIndexSet<ObjectId>,
-        edit_kind: EditDeleteKind,
+        options: ExecuteAfterEditOptions,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
         // Convert to string source to create real source ranges.
@@ -2818,59 +3149,82 @@ impl FrontendState {
             )));
         };
 
+        let previous_program = self.program.clone();
+        let previous_source = source_from_ast(&previous_program.ast);
+        let previous_scene_graph = self.scene_graph.clone();
+        let previous_warm_start_overrides = self.sketch_var_warm_start_overrides.clone();
+        let previous_mock_memory = read_old_memory().await;
+
         // TODO: sketch-api: make sure to only set this if there are no errors.
         self.program = new_program.clone();
 
         // Truncate after the sketch block for mock execution.
-        let is_delete = edit_kind.is_delete();
+        let is_delete = options.edit_kind.is_delete();
         let truncated_program = {
             let mut truncated_program = new_program;
             only_sketch_block(
                 &mut truncated_program.ast,
                 &sketch_block_ref,
-                edit_kind.to_change_kind(),
+                options.edit_kind.to_change_kind(),
             )
             .map_err(KclErrorWithOutputs::no_outputs)?;
             truncated_program
         };
 
-        #[cfg(not(feature = "artifact-graph"))]
-        drop(segment_ids_edited);
-
         // Execute.
-        let mock_config = MockConfig {
-            sketch_block_id: Some(sketch),
-            freedom_analysis: is_delete,
-            #[cfg(feature = "artifact-graph")]
-            segment_ids_edited: segment_ids_edited.clone(),
-            ..Default::default()
-        };
+        let use_warm_starts = !is_delete
+            && matches!(
+                options.sketch_var_update_mode,
+                SketchVarUpdateMode::WarmStartOnly | SketchVarUpdateMode::CommitSolvedVarsFromWarmStart
+            );
+        let mock_config =
+            self.sketch_mock_config(sketch, is_delete, options.segment_ids_edited.clone(), use_warm_starts);
         let outcome = ctx.run_mock(&truncated_program, &mock_config).await?;
+        if matches!(options.sketch_var_update_mode, SketchVarUpdateMode::WarmStartOnly)
+            && has_constraint_solver_failed_issue(&outcome)
+        {
+            // Mouse-move previews can hit transient solver branches while an
+            // arc is moving away from a degenerate draft. Keep the last good
+            // sketch state instead of surfacing a red, toast-producing frame.
+            self.program = previous_program;
+            self.scene_graph = previous_scene_graph.clone();
+            self.sketch_var_warm_start_overrides = previous_warm_start_overrides;
+            if let Some(previous_mock_memory) = previous_mock_memory {
+                write_old_memory(previous_mock_memory).await;
+            } else {
+                clear_mem_cache().await;
+            }
+
+            let mut outcome = outcome;
+            outcome.issues.clear();
+            outcome.scene_objects = previous_scene_graph.objects.clone();
+            return Ok((
+                SourceDelta { text: previous_source },
+                SceneGraphDelta {
+                    new_graph: previous_scene_graph,
+                    invalidates_ids: false,
+                    new_objects: Vec::new(),
+                    exec_outcome: outcome,
+                },
+            ));
+        }
 
         // Uses freedom_analysis: is_delete
         let outcome = self.update_state_after_exec(outcome, is_delete);
-
-        #[cfg(feature = "artifact-graph")]
-        let new_source = {
-            // Feed back sketch var solutions into the source.
-            //
-            // The interpreter is returning all var solutions from the sketch
-            // block we're editing.
-            let mut new_ast = self.program.ast.clone();
-            for (var_range, value) in &outcome.var_solutions {
-                let rounded = value.round(3);
-                let source_ref = SourceRef::Simple {
-                    range: *var_range,
-                    node_path: None,
-                };
-                mutate_ast_node_by_source_ref(
-                    &mut new_ast,
-                    &source_ref,
-                    AstMutateCommand::EditVarInitialValue { value: rounded },
-                )
-                .map_err(|err| KclErrorWithOutputs::from_error_outcome(err, outcome.clone()))?;
+        match options.sketch_var_update_mode {
+            SketchVarUpdateMode::CommitSolvedVars => {
+                self.merge_committed_edit_sketch_var_warm_starts(sketch, &outcome, &options.segment_ids_edited);
             }
-            source_from_ast(&new_ast)
+            SketchVarUpdateMode::WarmStartOnly | SketchVarUpdateMode::CommitSolvedVarsFromWarmStart => {
+                self.replace_sketch_var_warm_starts(sketch, &outcome);
+            }
+        }
+
+        let new_source = match options.sketch_var_update_mode {
+            SketchVarUpdateMode::WarmStartOnly => new_source,
+            SketchVarUpdateMode::CommitSolvedVars | SketchVarUpdateMode::CommitSolvedVarsFromWarmStart => {
+                self.commit_var_solutions_to_program(&outcome)?
+            }
         };
 
         let src_delta = SourceDelta { text: new_source };
@@ -4074,7 +4428,7 @@ impl FrontendState {
         &mut self,
         ctx: &ExecutorContext,
         sketch_id: ObjectId,
-        #[cfg_attr(not(feature = "artifact-graph"), allow(unused_variables))] sketch_block_ref: AstNodeRef,
+        sketch_block_ref: AstNodeRef,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
         // Convert to string source to create real source ranges.
@@ -4092,7 +4446,6 @@ impl FrontendState {
                 "No AST produced after adding constraint".to_string(),
             )));
         };
-        #[cfg(feature = "artifact-graph")]
         let constraint_node_ref = find_sketch_block_added_item(&new_program.ast, &sketch_block_ref).map_err(|err| {
             KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
                 "Source range of new constraint not found in sketch block: {sketch_block_ref:?}; {err:?}"
@@ -4106,13 +4459,9 @@ impl FrontendState {
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
         // Execute - if this fails, we haven't modified self yet, so state is safe
-        let outcome = ctx
-            .run_mock(&truncated_program, &MockConfig::new_sketch_mode(sketch_id))
-            .await?;
+        let mock_config = self.sketch_mock_config(sketch_id, true, Default::default(), false);
+        let outcome = ctx.run_mock(&truncated_program, &mock_config).await?;
 
-        #[cfg(not(feature = "artifact-graph"))]
-        let new_object_ids = Vec::new();
-        #[cfg(feature = "artifact-graph")]
         let new_object_ids = {
             // Extract the constraint ID from the execution outcome using source_range_to_object
             let constraint_id = outcome
@@ -4128,12 +4477,13 @@ impl FrontendState {
             vec![constraint_id]
         };
 
-        // Only now, after all operations succeeded, update self.program
-        // This ensures state is only modified if everything succeeds
+        // Only now, after all operations succeeded, update self.program.
+        // This ensures state is only modified if everything succeeds.
         self.program = new_program;
 
         // Uses MockConfig::default() which has freedom_analysis: true
         let outcome = self.update_state_after_exec(outcome, true);
+        self.replace_sketch_var_warm_starts(sketch_id, &outcome);
 
         let src_delta = SourceDelta { text: new_source };
         let scene_graph_delta = SceneGraphDelta {
@@ -4283,94 +4633,86 @@ impl FrontendState {
     }
 
     fn update_state_after_exec(&mut self, outcome: ExecOutcome, freedom_analysis_ran: bool) -> ExecOutcome {
-        #[cfg(not(feature = "artifact-graph"))]
-        {
-            let _ = freedom_analysis_ran; // Only used when artifact-graph feature is enabled
-            outcome
-        }
-        #[cfg(feature = "artifact-graph")]
-        {
-            let mut outcome = outcome;
-            let mut new_objects = std::mem::take(&mut outcome.scene_objects);
+        let mut outcome = outcome;
+        let mut new_objects = std::mem::take(&mut outcome.scene_objects);
 
-            if freedom_analysis_ran {
-                // When freedom analysis ran, replace the cache entirely with new values
-                // Don't merge with old values since IDs might have changed
-                self.point_freedom_cache.clear();
-                for new_obj in &new_objects {
-                    if let ObjectKind::Segment {
-                        segment: crate::front::Segment::Point(point),
-                    } = &new_obj.kind
-                    {
-                        self.point_freedom_cache.insert(new_obj.id, point.freedom);
-                    }
+        if freedom_analysis_ran {
+            // When freedom analysis ran, replace the cache entirely with new values
+            // Don't merge with old values since IDs might have changed
+            self.point_freedom_cache.clear();
+            for new_obj in &new_objects {
+                if let ObjectKind::Segment {
+                    segment: crate::front::Segment::Point(point),
+                } = &new_obj.kind
+                {
+                    self.point_freedom_cache.insert(new_obj.id, point.freedom);
                 }
-                add_wall_and_cap_face_objects(&mut new_objects, &outcome.artifact_graph);
-                // Objects are already correct from the analysis, just use them as-is
-                self.scene_graph.objects = new_objects;
-            } else {
-                // When freedom analysis didn't run, preserve old values and merge
-                // Before replacing objects, extract and store freedom values from old objects
-                for old_obj in &self.scene_graph.objects {
-                    if let ObjectKind::Segment {
-                        segment: crate::front::Segment::Point(point),
-                    } = &old_obj.kind
-                    {
-                        self.point_freedom_cache.insert(old_obj.id, point.freedom);
-                    }
+            }
+            add_wall_and_cap_face_objects(&mut new_objects, &outcome.artifact_graph);
+            // Objects are already correct from the analysis, just use them as-is
+            self.scene_graph.objects = new_objects;
+        } else {
+            // When freedom analysis didn't run, preserve old values and merge
+            // Before replacing objects, extract and store freedom values from old objects
+            for old_obj in &self.scene_graph.objects {
+                if let ObjectKind::Segment {
+                    segment: crate::front::Segment::Point(point),
+                } = &old_obj.kind
+                {
+                    self.point_freedom_cache.insert(old_obj.id, point.freedom);
                 }
+            }
 
-                // Update objects, preserving stored freedom values when new is Free (might be default)
-                let mut updated_objects = Vec::with_capacity(new_objects.len());
-                for new_obj in new_objects {
-                    let mut obj = new_obj;
-                    if let ObjectKind::Segment {
-                        segment: crate::front::Segment::Point(point),
-                    } = &mut obj.kind
-                    {
-                        let new_freedom = point.freedom;
-                        // When freedom_analysis=false, new values are defaults (Free).
-                        // Only preserve cached values when new is Free (indicating it's a default, not from analysis).
-                        // If new is NOT Free, use the new value (it came from somewhere else, maybe conflict detection).
-                        // Never preserve Conflict from cache - conflicts are transient and should only be set
-                        // when there are actually unsatisfied constraints.
-                        match new_freedom {
-                            Freedom::Free => {
-                                match self.point_freedom_cache.get(&obj.id).copied() {
-                                    Some(Freedom::Conflict) => {
-                                        // Don't preserve Conflict - conflicts are transient
-                                        // Keep it as Free
-                                    }
-                                    Some(Freedom::Fixed) => {
-                                        // Preserve Fixed cached value
-                                        point.freedom = Freedom::Fixed;
-                                    }
-                                    Some(Freedom::Free) => {
-                                        // If stored is also Free, keep Free (no change needed)
-                                    }
-                                    None => {
-                                        // If no cached value, keep Free (default)
-                                    }
+            // Update objects, preserving stored freedom values when new is Free (might be default)
+            let mut updated_objects = Vec::with_capacity(new_objects.len());
+            for new_obj in new_objects {
+                let mut obj = new_obj;
+                if let ObjectKind::Segment {
+                    segment: crate::front::Segment::Point(point),
+                } = &mut obj.kind
+                {
+                    let new_freedom = point.freedom;
+                    // When freedom_analysis=false, new values are defaults (Free).
+                    // Only preserve cached values when new is Free (indicating it's a default, not from analysis).
+                    // If new is NOT Free, use the new value (it came from somewhere else, maybe conflict detection).
+                    // Never preserve Conflict from cache - conflicts are transient and should only be set
+                    // when there are actually unsatisfied constraints.
+                    match new_freedom {
+                        Freedom::Free => {
+                            match self.point_freedom_cache.get(&obj.id).copied() {
+                                Some(Freedom::Conflict) => {
+                                    // Don't preserve Conflict - conflicts are transient
+                                    // Keep it as Free
+                                }
+                                Some(Freedom::Fixed) => {
+                                    // Preserve Fixed cached value
+                                    point.freedom = Freedom::Fixed;
+                                }
+                                Some(Freedom::Free) => {
+                                    // If stored is also Free, keep Free (no change needed)
+                                }
+                                None => {
+                                    // If no cached value, keep Free (default)
                                 }
                             }
-                            Freedom::Fixed => {
-                                // Use new value (already set)
-                            }
-                            Freedom::Conflict => {
-                                // Use new value (already set)
-                            }
                         }
-                        // Store the new freedom value (even if it's Free, so we know it was set)
-                        self.point_freedom_cache.insert(obj.id, point.freedom);
+                        Freedom::Fixed => {
+                            // Use new value (already set)
+                        }
+                        Freedom::Conflict => {
+                            // Use new value (already set)
+                        }
                     }
-                    updated_objects.push(obj);
+                    // Store the new freedom value (even if it's Free, so we know it was set)
+                    self.point_freedom_cache.insert(obj.id, point.freedom);
                 }
-
-                add_wall_and_cap_face_objects(&mut updated_objects, &outcome.artifact_graph);
-                self.scene_graph.objects = updated_objects;
+                updated_objects.push(obj);
             }
-            outcome
+
+            add_wall_and_cap_face_objects(&mut updated_objects, &outcome.artifact_graph);
+            self.scene_graph.objects = updated_objects;
         }
+        outcome
     }
 
     fn mutate_ast(
@@ -4568,18 +4910,14 @@ fn sketch_on_ast_expr(
                 .objects
                 .get(object_id.0)
                 .ok_or_else(|| KclError::refactor(format!("Sketch plane object not found: {object_id:?}")))?;
-            #[cfg(feature = "artifact-graph")]
-            {
-                if let Some(face_expr) = sketch_face_of_scene_object_ast_expr(ast, on_object)? {
-                    return Ok(face_expr);
-                }
+            if let Some(face_expr) = sketch_face_of_scene_object_ast_expr(ast, on_object)? {
+                return Ok(face_expr);
             }
             get_or_insert_ast_reference(ast, &on_object.source, "plane", None)
         }
     }
 }
 
-#[cfg(feature = "artifact-graph")]
 fn sketch_face_of_scene_object_ast_expr(
     ast: &mut ast::Node<ast::Program>,
     on_object: &crate::front::Object,
@@ -4677,7 +5015,6 @@ fn sketch_face_of_scene_object_ast_expr(
     }
 }
 
-#[cfg(feature = "artifact-graph")]
 fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, artifact_graph: &ArtifactGraph) {
     let mut existing_artifact_ids = scene_objects
         .iter()
@@ -4783,7 +5120,6 @@ fn negated_plane_ast_expr(name: &str) -> ast::Expr {
     )))
 }
 
-#[cfg(feature = "artifact-graph")]
 fn create_face_of_ast(solid_expr: ast::Expr, face_expr: ast::Expr) -> ast::Expr {
     ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name("faceOf")),
@@ -4797,7 +5133,6 @@ fn create_face_of_ast(solid_expr: ast::Expr, face_expr: ast::Expr) -> ast::Expr 
     })))
 }
 
-#[cfg(feature = "artifact-graph")]
 fn region_name_from_sweep_variable(ast: &ast::Node<ast::Program>, sweep_variable_name: &str) -> Option<String> {
     let ast::Definition::Variable(sweep_decl) = ast.get_variable(sweep_variable_name)? else {
         return None;
@@ -4940,7 +5275,6 @@ enum AstMutateCommand {
     EditCallUnlabeled {
         arg: ast::Expr,
     },
-    #[cfg(feature = "artifact-graph")]
     EditVarInitialValue {
         value: Number,
     },
@@ -5446,7 +5780,6 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
-        #[cfg(feature = "artifact-graph")]
         AstMutateCommand::EditVarInitialValue { value } => {
             if let NodeMut::NumericLiteral(numeric_literal) = node {
                 // Update the initial value.
@@ -5686,6 +6019,75 @@ fn to_source_number(number: Number) -> anyhow::Result<ast::NumericLiteral> {
         raw: format_number_literal(number.value, number.units, None)?,
         digest: None,
     })
+}
+
+#[cfg(feature = "artifact-graph")]
+fn merged_solver_warm_start_values(
+    outcome: &ExecOutcome,
+    previous: Option<&SketchVarWarmStarts>,
+    source_values: &[(SourceRange, f64)],
+    edited_var_indices: &HashSet<usize>,
+) -> Vec<f64> {
+    if outcome.ordered_sketch_var_solutions.is_empty() {
+        return source_values.iter().map(|(_, value)| *value).collect();
+    }
+
+    let mut source_index = 0;
+    outcome
+        .ordered_sketch_var_solutions
+        .iter()
+        .enumerate()
+        .map(|(solver_index, solution)| {
+            if solution.source_range.is_some() {
+                let value = source_values
+                    .get(source_index)
+                    .map(|(_, value)| *value)
+                    .unwrap_or(solution.value);
+                source_index += 1;
+                return value;
+            }
+
+            let previous_slot_was_hidden = previous
+                .is_some_and(|warm_starts| matches!(warm_starts.solver_source_ranges.get(solver_index), Some(None)));
+
+            if previous_slot_was_hidden && !edited_var_indices.is_empty() {
+                previous
+                    .and_then(|warm_starts| warm_starts.solver_values.get(solver_index))
+                    .copied()
+                    .unwrap_or(solution.value)
+            } else {
+                solution.value
+            }
+        })
+        .collect()
+}
+
+fn has_constraint_solver_failed_issue(outcome: &ExecOutcome) -> bool {
+    outcome
+        .issues
+        .iter()
+        .any(|issue| issue.message.contains(CONSTRAINT_SOLVER_FAILED_MESSAGE))
+}
+
+#[cfg(feature = "artifact-graph")]
+fn sketch_var_initial_value_in_solver_units(number: &ast::Node<ast::NumericLiteral>) -> f64 {
+    let unit = match number.suffix {
+        NumericSuffix::Cm => UnitLength::Centimeters,
+        NumericSuffix::M => UnitLength::Meters,
+        NumericSuffix::Inch => UnitLength::Inches,
+        NumericSuffix::Ft => UnitLength::Feet,
+        NumericSuffix::Yd => UnitLength::Yards,
+        _ => UnitLength::Millimeters,
+    };
+    crate::execution::types::adjust_length(unit, number.value, UnitLength::Millimeters).0
+}
+
+#[cfg(feature = "artifact-graph")]
+fn source_ref_primary_range(source: &SourceRef) -> Option<SourceRange> {
+    match source {
+        SourceRef::Simple { range, .. } => Some(*range),
+        SourceRef::BackTrace { ranges } => ranges.first().map(|(range, _)| *range),
+    }
 }
 
 pub(crate) fn ast_name_expr(name: String) -> ast::Expr {
@@ -5991,7 +6393,7 @@ pub(crate) fn create_midpoint_ast(segment_expr: ast::Expr, point_expr: ast::Expr
     })))
 }
 
-#[cfg(all(feature = "artifact-graph", test))]
+#[cfg(test)]
 mod tests {
     use super::*;
     use crate::engine::PlaneName;
@@ -6093,6 +6495,201 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
         assert!((actual.x.value - expected.x.value).abs() < 1e-6);
         assert!((actual.y.value - expected.y.value).abs() < 1e-6);
     }
+
+    fn assert_close(label: &str, actual: f64, expected: f64) {
+        const SKETCH_SETUP_TOLERANCE: f64 = 1e-2;
+        assert!(
+            (actual - expected).abs() < SKETCH_SETUP_TOLERANCE,
+            "{label}: expected {expected}, got {actual}"
+        );
+    }
+
+    fn assert_no_solver_failure(label: &str, scene_delta: &SceneGraphDelta) {
+        assert!(
+            !scene_delta
+                .exec_outcome
+                .issues
+                .iter()
+                .any(|issue| issue.message.contains(CONSTRAINT_SOLVER_FAILED_MESSAGE)),
+            "{label}: unexpected solver failure: {:?}",
+            scene_delta.exec_outcome.issues
+        );
+    }
+
+    fn expr_var_number(value: f64, units: NumericSuffix) -> Expr {
+        Expr::Var(Number { value, units })
+    }
+
+    fn point_expr_mm(x: f64, y: f64) -> Point2d<Expr> {
+        Point2d {
+            x: expr_var_number(x, NumericSuffix::Mm),
+            y: expr_var_number(y, NumericSuffix::Mm),
+        }
+    }
+
+    fn translated_point_expr(scene_graph: &SceneGraph, point_id: ObjectId, dx: f64, dy: f64) -> Point2d<Expr> {
+        let position = point_position(scene_graph, point_id);
+        Point2d {
+            x: expr_var_number(position.x.value + dx, position.x.units),
+            y: expr_var_number(position.y.value + dy, position.y.units),
+        }
+    }
+
+    fn point_edit(scene_graph: &SceneGraph, point_id: ObjectId, dx: f64, dy: f64) -> ExistingSegmentCtor {
+        ExistingSegmentCtor {
+            id: point_id,
+            ctor: SegmentCtor::Point(PointCtor {
+                position: translated_point_expr(scene_graph, point_id, dx, dy),
+            }),
+        }
+    }
+
+    fn line_edit_from_points(
+        scene_graph: &SceneGraph,
+        line_id: ObjectId,
+        start_id: ObjectId,
+        end_id: ObjectId,
+        dx: f64,
+        dy: f64,
+    ) -> ExistingSegmentCtor {
+        ExistingSegmentCtor {
+            id: line_id,
+            ctor: SegmentCtor::Line(LineCtor {
+                start: translated_point_expr(scene_graph, start_id, dx, dy),
+                end: translated_point_expr(scene_graph, end_id, dx, dy),
+                construction: None,
+            }),
+        }
+    }
+
+    fn arc_edit_from_points(
+        scene_graph: &SceneGraph,
+        arc_id: ObjectId,
+        start_id: ObjectId,
+        end_id: ObjectId,
+        center_id: ObjectId,
+        dx: f64,
+        dy: f64,
+    ) -> ExistingSegmentCtor {
+        ExistingSegmentCtor {
+            id: arc_id,
+            ctor: SegmentCtor::Arc(ArcCtor {
+                start: translated_point_expr(scene_graph, start_id, dx, dy),
+                end: translated_point_expr(scene_graph, end_id, dx, dy),
+                center: translated_point_expr(scene_graph, center_id, dx, dy),
+                construction: None,
+            }),
+        }
+    }
+
+    fn assert_points_coincident(scene_graph: &SceneGraph, a: ObjectId, b: ObjectId, label: &str) {
+        let a_pos = point_position(scene_graph, a);
+        let b_pos = point_position(scene_graph, b);
+        assert_close(&format!("{label} x"), a_pos.x.value, b_pos.x.value);
+        assert_close(&format!("{label} y"), a_pos.y.value, b_pos.y.value);
+    }
+
+    fn assert_point_translated(
+        before: &SceneGraph,
+        after: &SceneGraph,
+        point_id: ObjectId,
+        dx: f64,
+        dy: f64,
+        label: &str,
+    ) {
+        let before_pos = point_position(before, point_id);
+        let after_pos = point_position(after, point_id);
+        assert_close(&format!("{label} x"), after_pos.x.value, before_pos.x.value + dx);
+        assert_close(&format!("{label} y"), after_pos.y.value, before_pos.y.value + dy);
+    }
+
+    fn line_arc_tangent_all_segment_edits(
+        scene_graph: &SceneGraph,
+        sketch_segments: &[ObjectId],
+        dx: f64,
+        dy: f64,
+    ) -> Vec<ExistingSegmentCtor> {
+        vec![
+            line_edit_from_points(
+                scene_graph,
+                sketch_segments[2],
+                sketch_segments[0],
+                sketch_segments[1],
+                dx,
+                dy,
+            ),
+            arc_edit_from_points(
+                scene_graph,
+                sketch_segments[6],
+                sketch_segments[3],
+                sketch_segments[4],
+                sketch_segments[5],
+                dx,
+                dy,
+            ),
+            line_edit_from_points(
+                scene_graph,
+                sketch_segments[9],
+                sketch_segments[7],
+                sketch_segments[8],
+                dx,
+                dy,
+            ),
+        ]
+    }
+
+    fn lowered_warm_start_slots(frontend: &FrontendState, sketch_id: ObjectId) -> Vec<usize> {
+        frontend
+            .sketch_var_warm_start_overrides
+            .get(&sketch_id)
+            .expect("Expected warm starts for sketch")
+            .solver_source_ranges
+            .iter()
+            .enumerate()
+            .filter_map(|(index, range)| range.is_none().then_some(index))
+            .collect()
+    }
+
+    async fn setup_sketch_with_warm_starts(source: &str) -> (FrontendState, ExecutorContext, ObjectId, Vec<ObjectId>) {
+        let program = Program::parse(source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        let outcome = frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch_segments = expect_sketch(sketch_object).segments.clone();
+        frontend.replace_sketch_var_warm_starts(sketch_id, &outcome);
+
+        (frontend, mock_ctx, sketch_id, sketch_segments)
+    }
+
+    const LINE_ARC_TANGENT_DRAG_SOURCE: &str = "\
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var 5.87mm, var -5.86mm], end = [var -7.22mm, var -4.4mm])
+  arc1 = arc(start = [var 0.35mm, var 6.72mm], end = [var -7.22mm, var -4.4mm], center = [var -5.77mm, var 2.75mm])
+  coincident([line1.end, arc1.end])
+  tangent([line1, arc1])
+  line2 = line(start = [var 0.35mm, var 6.72mm], end = [var 0mm, var -5.86mm])
+  coincident([line2.start, arc1.start])
+  coincident([line2.end, line1.start])
+  vertical([line2.end, ORIGIN])
+}
+";
+
+    const CIRCLE_CIRCLE_DISTANCE_SOURCE: &str = "\
+sketch001 = sketch(on = XZ) {
+  circle1 = circle(start = [var -6.97mm, var 0mm], center = [var -1.85mm, var 0.13mm])
+  horizontal([circle1.start, ORIGIN])
+  circle2 = circle(start = [var -14.46mm, var 0mm], center = [var -15.66mm, var 4.19mm])
+  horizontal([circle2.start, ORIGIN])
+  distance([circle1, circle2]) == 4.91mm
+  line1 = line(start = [var -11.38mm, var -5.02mm], end = [var -7.81mm, var 8.69mm])
+}
+";
 
     fn make_line_ctor(start_x: f64, start_y: f64, end_x: f64, end_y: f64, units: NumericSuffix) -> LineCtor {
         LineCtor {
@@ -7732,6 +8329,48 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_point_with_var_ignores_stale_warm_starts() {
+        let initial_source = "\
+sketch(on = XY) {
+  point(at = [var 1, var 2])
+  point1 = point(at = [var 3, var 4])
+  point(at = [var 5, var 6])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        let outcome = frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point_id = *sketch.segments.get(1).unwrap();
+        frontend.replace_sketch_var_warm_starts(sketch_id, &outcome);
+
+        let (src_delta, _scene_delta) = frontend
+            .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![point_id])
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  point(at = [var 1mm, var 2mm])
+  point(at = [var 5mm, var 6mm])
+}
+"
+        );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_delete_multiple_points() {
         let initial_source = "\
 sketch(on = XY) {
@@ -9268,8 +9907,8 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  point1 = point(at = [var 1mm, var 2mm])
-  point2 = point(at = [var 3mm, var 2mm])
+  point1 = point(at = [var 1, var 2])
+  point2 = point(at = [var 3, var 2])
   distance([point1, point2], labelPosition = [10mm, 11mm]) == 2mm
 }
 "
@@ -9365,6 +10004,617 @@ sketch(on = XY) {
             point1_after_segment_edit,
         );
 
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_distance_constraint_value_commits_solved_point_guesses() {
+        let initial_source = "\
+sketch(on = XY) {
+  point1 = point(at = [var 1mm, var 2mm])
+  point2 = point(at = [var 3mm, var 2mm])
+  distance([point1, point2]) == 2mm
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = sketch.constraints[0];
+        let point0_id = sketch.segments[0];
+        let point1_id = sketch.segments[1];
+
+        let (src_delta, scene_delta) = frontend
+            .edit_constraint(&mock_ctx, version, sketch_id, constraint_id, "4mm".to_owned())
+            .await
+            .unwrap();
+
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  point1 = point(at = [var 0mm, var 2mm])
+  point2 = point(at = [var 4mm, var 2mm])
+  distance([point1, point2]) == 4mm
+}
+"
+        );
+
+        assert_point_position_close(
+            point_position(&scene_delta.new_graph, point0_id),
+            Point2d {
+                x: Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                },
+                y: Number {
+                    value: 2.0,
+                    units: NumericSuffix::Mm,
+                },
+            },
+        );
+        assert_point_position_close(
+            point_position(&scene_delta.new_graph, point1_id),
+            Point2d {
+                x: Number {
+                    value: 4.0,
+                    units: NumericSuffix::Mm,
+                },
+                y: Number {
+                    value: 2.0,
+                    units: NumericSuffix::Mm,
+                },
+            },
+        );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_distance_point_line() {
+        let initial_source = "\
+sketch(on = XY) {
+  point(at = [var 0, var 5])
+  line(start = [var 0, var 0], end = [var 10, var 0])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point_id = *sketch.segments.first().unwrap();
+        let line_id = *sketch
+            .segments
+            .iter()
+            .find(|segment_id| {
+                matches!(
+                    frontend.scene_graph.objects.get(segment_id.0).map(|obj| &obj.kind),
+                    Some(ObjectKind::Segment {
+                        segment: Segment::Line(_)
+                    })
+                )
+            })
+            .unwrap();
+
+        let label_position = Point2d {
+            x: Number {
+                value: 10.0,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: 11.0,
+                units: NumericSuffix::Mm,
+            },
+        };
+        let constraint = Constraint::Distance(Distance {
+            points: vec![point_id.into(), line_id.into()],
+            distance: Number {
+                value: 5.0,
+                units: NumericSuffix::Mm,
+            },
+            label_position: Some(label_position.clone()),
+            source: Default::default(),
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  point1 = point(at = [var 0, var 5])
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  distance([point1, line1], labelPosition = [10mm, 11mm]) == 5mm
+}
+"
+        );
+        let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
+        let sketch = expect_sketch(sketch_object);
+        let constraint_object = scene_delta.new_graph.objects.get(sketch.constraints[0].0).unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("Expected constraint object");
+        };
+        let Constraint::Distance(distance) = constraint else {
+            panic!("Expected distance constraint");
+        };
+        assert_eq!(distance.label_position, Some(label_position));
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_distance_point_arc() {
+        let initial_source = "\
+sketch(on = XY) {
+  point(at = [var 0, var 8])
+  arc(start = [var 5, var 0], end = [var 0, var 5], center = [var 0, var 0])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point_id = *sketch.segments.first().unwrap();
+        let arc_id = *sketch
+            .segments
+            .iter()
+            .find(|segment_id| {
+                matches!(
+                    frontend.scene_graph.objects.get(segment_id.0).map(|obj| &obj.kind),
+                    Some(ObjectKind::Segment {
+                        segment: Segment::Arc(_)
+                    })
+                )
+            })
+            .unwrap();
+
+        let constraint = Constraint::Distance(Distance {
+            points: vec![point_id.into(), arc_id.into()],
+            distance: Number {
+                value: 3.0,
+                units: NumericSuffix::Mm,
+            },
+            label_position: None,
+            source: Default::default(),
+        });
+        let (src_delta, _scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  point1 = point(at = [var 0, var 8])
+  arc1 = arc(start = [var 5, var 0], end = [var 0, var 5], center = [var 0, var 0])
+  distance([point1, arc1]) == 3mm
+}
+"
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_distance_arc_origin() {
+        let initial_source = "\
+sketch001 = sketch(on = XY) {
+  arc(start = [var -4.13mm, var -0.59mm], end = [var -3.47mm, var 3.38mm], center = [var -4.55mm, var 1.52mm])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let arc_id = *sketch
+            .segments
+            .iter()
+            .find(|segment_id| {
+                matches!(
+                    frontend.scene_graph.objects.get(segment_id.0).map(|obj| &obj.kind),
+                    Some(ObjectKind::Segment {
+                        segment: Segment::Arc(_)
+                    })
+                )
+            })
+            .unwrap();
+
+        let constraint = Constraint::Distance(Distance {
+            points: vec![arc_id.into(), ConstraintSegment::ORIGIN],
+            distance: Number {
+                value: 3.0,
+                units: NumericSuffix::Mm,
+            },
+            label_position: None,
+            source: Default::default(),
+        });
+        let (src_delta, _scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch001 = sketch(on = XY) {
+  arc1 = arc(start = [var -4.13mm, var -0.59mm], end = [var -3.47mm, var 3.38mm], center = [var -4.55mm, var 1.52mm])
+  distance([arc1, ORIGIN]) == 3mm
+}
+"
+        );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_distance_line_origin() {
+        let initial_source = "\
+sketch(on = XY) {
+  line(start = [var 5, var 0], end = [var 5, var 10])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line_id = *sketch
+            .segments
+            .iter()
+            .find(|segment_id| {
+                matches!(
+                    frontend.scene_graph.objects.get(segment_id.0).map(|obj| &obj.kind),
+                    Some(ObjectKind::Segment {
+                        segment: Segment::Line(_)
+                    })
+                )
+            })
+            .unwrap();
+
+        let constraint = Constraint::Distance(Distance {
+            points: vec![ConstraintSegment::ORIGIN, line_id.into()],
+            distance: Number {
+                value: 5.0,
+                units: NumericSuffix::Mm,
+            },
+            label_position: None,
+            source: Default::default(),
+        });
+        let (src_delta, _scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 5, var 0], end = [var 5, var 10])
+  distance([ORIGIN, line1]) == 5mm
+}
+"
+        );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_distance_line_circle() {
+        let initial_source = "\
+sketch(on = XY) {
+  line(start = [var -10, var 8], end = [var 10, var 8])
+  circle(start = [var 5, var 0], center = [var 0, var 0])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line_id = *sketch
+            .segments
+            .iter()
+            .find(|segment_id| {
+                matches!(
+                    frontend.scene_graph.objects.get(segment_id.0).map(|obj| &obj.kind),
+                    Some(ObjectKind::Segment {
+                        segment: Segment::Line(_)
+                    })
+                )
+            })
+            .unwrap();
+        let circle_id = *sketch
+            .segments
+            .iter()
+            .find(|segment_id| {
+                matches!(
+                    frontend.scene_graph.objects.get(segment_id.0).map(|obj| &obj.kind),
+                    Some(ObjectKind::Segment {
+                        segment: Segment::Circle(_)
+                    })
+                )
+            })
+            .unwrap();
+
+        let constraint = Constraint::Distance(Distance {
+            points: vec![line_id.into(), circle_id.into()],
+            distance: Number {
+                value: 3.0,
+                units: NumericSuffix::Mm,
+            },
+            label_position: None,
+            source: Default::default(),
+        });
+        let (src_delta, _scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var -10, var 8], end = [var 10, var 8])
+  circle1 = circle(start = [var 5, var 0], center = [var 0, var 0])
+  distance([line1, circle1]) == 3mm
+}
+"
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_distance_circle_arc() {
+        let initial_source = "\
+sketch(on = XY) {
+  circle(start = [var 5, var 0], center = [var 0, var 0])
+  arc(start = [var 15, var 0], end = [var 10, var 5], center = [var 10, var 0])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let circle_id = *sketch
+            .segments
+            .iter()
+            .find(|segment_id| {
+                matches!(
+                    frontend.scene_graph.objects.get(segment_id.0).map(|obj| &obj.kind),
+                    Some(ObjectKind::Segment {
+                        segment: Segment::Circle(_)
+                    })
+                )
+            })
+            .unwrap();
+        let arc_id = *sketch
+            .segments
+            .iter()
+            .find(|segment_id| {
+                matches!(
+                    frontend.scene_graph.objects.get(segment_id.0).map(|obj| &obj.kind),
+                    Some(ObjectKind::Segment {
+                        segment: Segment::Arc(_)
+                    })
+                )
+            })
+            .unwrap();
+
+        let constraint = Constraint::Distance(Distance {
+            points: vec![circle_id.into(), arc_id.into()],
+            distance: Number {
+                value: 3.0,
+                units: NumericSuffix::Mm,
+            },
+            label_position: None,
+            source: Default::default(),
+        });
+        let (src_delta, _scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  circle1 = circle(start = [var 5, var 0], center = [var 0, var 0])
+  arc1 = arc(start = [var 15, var 0], end = [var 10, var 5], center = [var 10, var 0])
+  distance([circle1, arc1]) == 3mm
+}
+"
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_distance_parallel_lines() {
+        let initial_source = "\
+sketch(on = XY) {
+  line(start = [var 0, var 0], end = [var 10, var 0])
+  line(start = [var 0, var 5], end = [var 10, var 5])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line_ids = sketch
+            .segments
+            .iter()
+            .copied()
+            .filter(|segment_id| {
+                matches!(
+                    frontend.scene_graph.objects.get(segment_id.0).map(|obj| &obj.kind),
+                    Some(ObjectKind::Segment {
+                        segment: Segment::Line(_)
+                    })
+                )
+            })
+            .collect::<Vec<_>>();
+
+        let constraint = Constraint::Distance(Distance {
+            points: vec![line_ids[0].into(), line_ids[1].into()],
+            distance: Number {
+                value: 5.0,
+                units: NumericSuffix::Mm,
+            },
+            label_position: None,
+            source: Default::default(),
+        });
+        let (src_delta, _scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  line2 = line(start = [var 0, var 5], end = [var 10, var 5])
+  distance([line1, line2]) == 5mm
+}
+"
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_distance_non_parallel_lines_lowers_to_distance() {
+        let initial_source = "\
+sketch(on = XY) {
+  line(start = [var 0, var 0], end = [var 10, var 0])
+  line(start = [var 0, var 0], end = [var 0, var 10])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line_ids = sketch
+            .segments
+            .iter()
+            .copied()
+            .filter(|segment_id| {
+                matches!(
+                    frontend.scene_graph.objects.get(segment_id.0).map(|obj| &obj.kind),
+                    Some(ObjectKind::Segment {
+                        segment: Segment::Line(_)
+                    })
+                )
+            })
+            .collect::<Vec<_>>();
+
+        let constraint = Constraint::Distance(Distance {
+            points: vec![line_ids[0].into(), line_ids[1].into()],
+            distance: Number {
+                value: 5.0,
+                units: NumericSuffix::Mm,
+            },
+            label_position: None,
+            source: Default::default(),
+        });
+        let (src_delta, _scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  line2 = line(start = [var 0, var 0], end = [var 0, var 10])
+  distance([line1, line2]) == 5mm
+}
+"
+        );
+
+        ctx.close().await;
         mock_ctx.close().await;
     }
 
@@ -11493,6 +12743,726 @@ sketch(on = offsetPlane(XY, offset = width)) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_mock_from_preview_consumes_sketch_var_warm_starts() {
+        let initial_source = "\
+sketch(on = XY) {
+  point(at = [var 1mm, var 2mm])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        frontend.sketch_var_warm_start_overrides.insert(
+            sketch_id,
+            SketchVarWarmStarts {
+                solver_values: vec![5.0, 6.0],
+                solver_source_ranges: Vec::new(),
+                source_values: Vec::new(),
+            },
+        );
+
+        let mut cold_frontend = frontend.clone();
+        let (warm_src_delta, _) = frontend
+            .execute_mock_from_preview(&mock_ctx, version, sketch_id)
+            .await
+            .unwrap();
+        let (cold_src_delta, _) = cold_frontend
+            .execute_mock_with_warm_starts(&mock_ctx, sketch_id, false)
+            .await
+            .unwrap();
+
+        assert_eq!(
+            warm_src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  point(at = [var 5mm, var 6mm])
+}
+"
+        );
+        assert_eq!(
+            cold_src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  point(at = [var 1mm, var 2mm])
+}
+"
+        );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_warm_starts_keep_lowered_tangent_vars_in_solver_order() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var -2mm, var 0mm], end = [var 2mm, var 0mm])
+  circle1 = circle(start = [var 1mm, var 1mm], center = [var 0mm, var 1mm])
+  tangent([line1, circle1])
+  line2 = line(start = [var 10mm, var 20mm], end = [var 30mm, var 40mm])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        let outcome = frontend.update_state_after_exec(outcome, true);
+        let sketch_id = find_first_sketch_object(&frontend.scene_graph).unwrap().id;
+        frontend.replace_sketch_var_warm_starts(sketch_id, &outcome);
+
+        let warm_starts = frontend
+            .sketch_var_warm_start_overrides
+            .get(&sketch_id)
+            .expect("Expected warm starts for sketch");
+        assert!(warm_starts.solver_values.len() > warm_starts.source_values.len());
+
+        let (src_delta, _) = frontend
+            .execute_mock_from_preview(&mock_ctx, version, sketch_id)
+            .await
+            .unwrap();
+        assert!(
+            src_delta
+                .text
+                .contains("line2 = line(start = [var 10mm, var 20mm], end = [var 30mm, var 40mm])")
+        );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_sketch_setup_warm_start_metadata_separates_visible_and_lowered_tangent_vars() {
+        let (mut frontend, mock_ctx, sketch_id, _sketch_segments) =
+            setup_sketch_with_warm_starts(LINE_ARC_TANGENT_DRAG_SOURCE).await;
+        let warm_starts = frontend
+            .sketch_var_warm_start_overrides
+            .get(&sketch_id)
+            .expect("Expected warm starts for sketch");
+
+        assert_eq!(warm_starts.solver_values.len(), warm_starts.solver_source_ranges.len());
+        assert_eq!(warm_starts.source_values.len(), 14);
+        assert!(
+            warm_starts.solver_values.len() > warm_starts.source_values.len(),
+            "tangent should add lowered support variables to solver order"
+        );
+        assert!(
+            !lowered_warm_start_slots(&frontend, sketch_id).is_empty(),
+            "lowered support variables should have no source range"
+        );
+        assert!(
+            warm_starts
+                .solver_source_ranges
+                .iter()
+                .filter_map(|range| *range)
+                .all(|range| warm_starts
+                    .source_values
+                    .iter()
+                    .any(|(source_range, _)| *source_range == range)),
+            "every visible solver slot should point back to a source sketch var"
+        );
+
+        let (_src_delta, scene_delta) = frontend
+            .execute_mock_from_preview(&mock_ctx, Version(0), sketch_id)
+            .await
+            .unwrap();
+        assert_no_solver_failure("line-arc tangent warm-start replay", &scene_delta);
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_sketch_setup_warm_start_metadata_handles_circle_circle_distance_lowering() {
+        let (mut frontend, mock_ctx, sketch_id, sketch_segments) =
+            setup_sketch_with_warm_starts(CIRCLE_CIRCLE_DISTANCE_SOURCE).await;
+        let warm_starts = frontend
+            .sketch_var_warm_start_overrides
+            .get(&sketch_id)
+            .expect("Expected warm starts for sketch");
+        let lowered_slots = lowered_warm_start_slots(&frontend, sketch_id);
+
+        assert_eq!(warm_starts.solver_values.len(), warm_starts.solver_source_ranges.len());
+        assert_eq!(warm_starts.source_values.len(), 12);
+        assert!(
+            lowered_slots.len() >= 2,
+            "circle-circle distance should lower through support tangent variables"
+        );
+
+        let line_id = sketch_segments[8];
+        let line_start_id = sketch_segments[6];
+        let line_end_id = sketch_segments[7];
+        let (_src_delta, scene_delta) = frontend
+            .edit_segments_for_preview(
+                &mock_ctx,
+                Version(0),
+                sketch_id,
+                vec![line_edit_from_points(
+                    &frontend.scene_graph,
+                    line_id,
+                    line_start_id,
+                    line_end_id,
+                    1.25,
+                    -0.75,
+                )],
+            )
+            .await
+            .unwrap();
+        assert_no_solver_failure("circle-circle distance lowered warm-start preview", &scene_delta);
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_add_arc_uses_warm_starts_for_lowered_constraints() {
+        let initial_source = "\
+sketch001 = sketch(on = XZ) {
+  circle1 = circle(start = [var -6.97mm, var 0mm], center = [var -1.85mm, var 0.13mm])
+  horizontal([circle1.start, ORIGIN])
+  circle2 = circle(start = [var -14.46mm, var 0mm], center = [var -15.66mm, var 4.19mm])
+  horizontal([circle2.start, ORIGIN])
+  line1 = line(start = [var -11.38mm, var -5.02mm], end = [var -7.81mm, var 8.69mm])
+  line2 = line(start = [var -11.38mm, var -5.02mm], end = [var -20.15mm, var -2.97mm])
+  coincident([line2.start, line1.start])
+  line3 = line(start = [var -11.38mm, var -5.02mm], end = [var 0.77mm, var -7.39mm])
+  coincident([line3.start, line2.start])
+  line4 = line(start = [var -11.38mm, var -5.02mm], end = [var -21.87mm, var -13.4mm])
+  coincident([line4.start, line3.start])
+  distance([circle1, circle2]) == 4.91mm
+  arc1 = arc(start = [var -20.15mm, var -2.97mm], end = [var -25.04mm, var -9.89mm], center = [var -21.19mm, var -7.42mm])
+  coincident([line2.end, arc1.start])
+  tangent([line2, arc1])
+  line(start = [var -12.02mm, var -15.45mm], end = [var 4.83mm, var -8.9mm])
+}
+";
+
+        fn var_mm(value: f64) -> Expr {
+            Expr::Var(Number {
+                value,
+                units: NumericSuffix::Mm,
+            })
+        }
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        let outcome = frontend.update_state_after_exec(outcome, true);
+        let sketch_id = find_first_sketch_object(&frontend.scene_graph).unwrap().id;
+        frontend.replace_sketch_var_warm_starts(sketch_id, &outcome);
+
+        let (_src_delta, scene_delta) = frontend
+            .add_arc(
+                &mock_ctx,
+                sketch_id,
+                ArcCtor {
+                    start: Point2d {
+                        x: var_mm(-32.07),
+                        y: var_mm(-2.53),
+                    },
+                    end: Point2d {
+                        x: var_mm(-18.96),
+                        y: var_mm(7.04),
+                    },
+                    center: Point2d {
+                        x: var_mm(-29.12),
+                        y: var_mm(7.19),
+                    },
+                    construction: None,
+                },
+            )
+            .await
+            .unwrap();
+
+        assert!(
+            !scene_delta
+                .exec_outcome
+                .issues
+                .iter()
+                .any(|issue| issue.message.contains(CONSTRAINT_SOLVER_FAILED_MESSAGE)),
+            "add-arc preview should not drop lowered-constraint warm starts: {:?}",
+            scene_delta.exec_outcome.issues
+        );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_arc_preview_edits_use_warm_starts_for_lowered_constraints() {
+        let initial_source = "\
+sketch001 = sketch(on = XZ) {
+  circle1 = circle(start = [var -6.97mm, var 0mm], center = [var -1.85mm, var 0.13mm])
+  horizontal([circle1.start, ORIGIN])
+  circle2 = circle(start = [var -14.46mm, var 0mm], center = [var -15.66mm, var 4.19mm])
+  horizontal([circle2.start, ORIGIN])
+  line1 = line(start = [var -11.38mm, var -5.02mm], end = [var -7.81mm, var 8.69mm])
+  line2 = line(start = [var -11.38mm, var -5.02mm], end = [var -20.15mm, var -2.97mm])
+  coincident([line2.start, line1.start])
+  line3 = line(start = [var -11.38mm, var -5.02mm], end = [var 0.77mm, var -7.39mm])
+  coincident([line3.start, line2.start])
+  line4 = line(start = [var -11.38mm, var -5.02mm], end = [var -21.87mm, var -13.4mm])
+  coincident([line4.start, line3.start])
+  distance([circle1, circle2]) == 4.91mm
+  arc1 = arc(start = [var -20.15mm, var -2.97mm], end = [var -25.04mm, var -9.89mm], center = [var -21.19mm, var -7.42mm])
+  coincident([line2.end, arc1.start])
+  tangent([line2, arc1])
+  line(start = [var -12.02mm, var -15.45mm], end = [var 4.83mm, var -8.9mm])
+}
+";
+
+        fn var_mm(value: f64) -> Expr {
+            Expr::Var(Number {
+                value,
+                units: NumericSuffix::Mm,
+            })
+        }
+
+        fn point(x: f64, y: f64) -> Point2d<Expr> {
+            Point2d {
+                x: var_mm(x),
+                y: var_mm(y),
+            }
+        }
+
+        fn assert_no_solver_failure(label: &str, scene_delta: &SceneGraphDelta) {
+            assert!(
+                !scene_delta
+                    .exec_outcome
+                    .issues
+                    .iter()
+                    .any(|issue| issue.message.contains(CONSTRAINT_SOLVER_FAILED_MESSAGE)),
+                "{label}: arc preview should not drop lowered-constraint warm starts: {:?}",
+                scene_delta.exec_outcome.issues
+            );
+        }
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        let outcome = frontend.update_state_after_exec(outcome, true);
+        let sketch_id = find_first_sketch_object(&frontend.scene_graph).unwrap().id;
+        frontend.replace_sketch_var_warm_starts(sketch_id, &outcome);
+
+        let center = point(-29.12, 7.19);
+        let initial_start = point(-32.07, -2.53);
+        let (_src_delta, scene_delta) = frontend
+            .add_arc(
+                &mock_ctx,
+                sketch_id,
+                ArcCtor {
+                    start: initial_start.clone(),
+                    end: initial_start,
+                    center: center.clone(),
+                    construction: None,
+                },
+            )
+            .await
+            .unwrap();
+        assert_no_solver_failure("add draft arc", &scene_delta);
+
+        let arc_id = scene_delta
+            .new_objects
+            .last()
+            .copied()
+            .expect("Expected added arc object id");
+
+        for (index, (start, end)) in [
+            (point(-32.07, -2.53), point(-32.07, -2.53)),
+            (point(-34.199, -1.607), point(-38.665, 3.716)),
+            (point(-38.665, 3.716), point(-38.665, 10.664)),
+            (point(-38.665, 10.664), point(-34.199, 15.987)),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let (_src_delta, scene_delta) = frontend
+                .edit_segments_for_preview(
+                    &mock_ctx,
+                    version,
+                    sketch_id,
+                    vec![ExistingSegmentCtor {
+                        id: arc_id,
+                        ctor: SegmentCtor::Arc(ArcCtor {
+                            start,
+                            end,
+                            center: center.clone(),
+                            construction: None,
+                        }),
+                    }],
+                )
+                .await
+                .unwrap();
+            assert_no_solver_failure(&format!("preview edit {index}"), &scene_delta);
+        }
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_drag_optional_constraints_do_not_compete_with_required_constraints() {
+        let initial_source = "\
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var 5.87mm, var -5.86mm], end = [var -7.22mm, var -4.4mm])
+  arc1 = arc(start = [var 0.35mm, var 6.72mm], end = [var -7.22mm, var -4.4mm], center = [var -5.77mm, var 2.75mm])
+  coincident([line1.end, arc1.end])
+  tangent([line1, arc1])
+  line2 = line(start = [var 0.35mm, var 6.72mm], end = [var 0mm, var -5.86mm])
+  coincident([line2.start, arc1.start])
+  coincident([line2.end, line1.start])
+  vertical([line2.end, ORIGIN])
+}
+";
+
+        fn translated_point(scene_graph: &SceneGraph, point_id: ObjectId, dx: f64, dy: f64) -> Point2d<Expr> {
+            let position = point_position(scene_graph, point_id);
+            Point2d {
+                x: Expr::Var(Number {
+                    value: position.x.value + dx,
+                    units: position.x.units,
+                }),
+                y: Expr::Var(Number {
+                    value: position.y.value + dy,
+                    units: position.y.units,
+                }),
+            }
+        }
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        let outcome = frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let sketch_segments = sketch.segments.clone();
+
+        let line1_id = sketch_segments[2];
+        let arc1_id = sketch_segments[6];
+        let line2_id = sketch_segments[9];
+        let line2_end_id = sketch_segments[8];
+
+        frontend.replace_sketch_var_warm_starts(sketch_id, &outcome);
+
+        let dx = -5.0;
+        let dy = 3.0;
+        let segments = vec![
+            ExistingSegmentCtor {
+                id: line1_id,
+                ctor: SegmentCtor::Line(LineCtor {
+                    start: translated_point(&frontend.scene_graph, sketch_segments[0], dx, dy),
+                    end: translated_point(&frontend.scene_graph, sketch_segments[1], dx, dy),
+                    construction: None,
+                }),
+            },
+            ExistingSegmentCtor {
+                id: arc1_id,
+                ctor: SegmentCtor::Arc(ArcCtor {
+                    start: translated_point(&frontend.scene_graph, sketch_segments[3], dx, dy),
+                    end: translated_point(&frontend.scene_graph, sketch_segments[4], dx, dy),
+                    center: translated_point(&frontend.scene_graph, sketch_segments[5], dx, dy),
+                    construction: None,
+                }),
+            },
+            ExistingSegmentCtor {
+                id: line2_id,
+                ctor: SegmentCtor::Line(LineCtor {
+                    start: translated_point(&frontend.scene_graph, sketch_segments[7], dx, dy),
+                    end: translated_point(&frontend.scene_graph, sketch_segments[8], dx, dy),
+                    construction: None,
+                }),
+            },
+        ];
+
+        let (_src_delta, scene_delta) = frontend
+            .edit_segments_for_preview(&mock_ctx, version, sketch_id, segments)
+            .await
+            .unwrap();
+
+        assert!(
+            !scene_delta
+                .exec_outcome
+                .issues
+                .iter()
+                .any(|issue| issue.message.contains(CONSTRAINT_SOLVER_FAILED_MESSAGE)),
+            "select-all drag preview should not fail solving: {:?}",
+            scene_delta.exec_outcome.issues
+        );
+
+        let line2_end = point_position(&scene_delta.new_graph, line2_end_id);
+        assert!(
+            line2_end.x.value.abs() < 1e-6,
+            "required vertical constraint should not be compromised by drag-only fixed constraints: {line2_end:?}"
+        );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_sketch_setup_select_all_vertical_drag_translates_without_deformation() {
+        let (mut frontend, mock_ctx, sketch_id, sketch_segments) =
+            setup_sketch_with_warm_starts(LINE_ARC_TANGENT_DRAG_SOURCE).await;
+        let baseline_graph = frontend.scene_graph.clone();
+        let dy = 3.25;
+        let edits = line_arc_tangent_all_segment_edits(&baseline_graph, &sketch_segments, 0.0, dy);
+
+        let (_src_delta, scene_delta) = frontend
+            .edit_segments_for_preview(&mock_ctx, Version(0), sketch_id, edits)
+            .await
+            .unwrap();
+        assert_no_solver_failure("select-all vertical drag", &scene_delta);
+
+        for (label, point_id) in [
+            ("line1.start", sketch_segments[0]),
+            ("line1.end", sketch_segments[1]),
+            ("arc1.start", sketch_segments[3]),
+            ("arc1.end", sketch_segments[4]),
+            ("arc1.center", sketch_segments[5]),
+            ("line2.start", sketch_segments[7]),
+            ("line2.end", sketch_segments[8]),
+        ] {
+            assert_point_translated(&baseline_graph, &scene_delta.new_graph, point_id, 0.0, dy, label);
+        }
+
+        assert_points_coincident(
+            &scene_delta.new_graph,
+            sketch_segments[1],
+            sketch_segments[4],
+            "line1.end/arc1.end",
+        );
+        assert_points_coincident(
+            &scene_delta.new_graph,
+            sketch_segments[7],
+            sketch_segments[3],
+            "line2.start/arc1.start",
+        );
+        assert_points_coincident(
+            &scene_delta.new_graph,
+            sketch_segments[8],
+            sketch_segments[0],
+            "line2.end/line1.start",
+        );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_sketch_setup_select_all_impossible_drag_keeps_required_constraints_authoritative() {
+        let (mut frontend, mock_ctx, sketch_id, sketch_segments) =
+            setup_sketch_with_warm_starts(LINE_ARC_TANGENT_DRAG_SOURCE).await;
+        let edits = line_arc_tangent_all_segment_edits(&frontend.scene_graph, &sketch_segments, -5.0, 3.0);
+
+        let (_src_delta, scene_delta) = frontend
+            .edit_segments_for_preview(&mock_ctx, Version(0), sketch_id, edits)
+            .await
+            .unwrap();
+        assert_no_solver_failure("select-all impossible drag", &scene_delta);
+
+        let line2_end = point_position(&scene_delta.new_graph, sketch_segments[8]);
+        assert_close("vertical line2.end x", line2_end.x.value, 0.0);
+        assert_points_coincident(
+            &scene_delta.new_graph,
+            sketch_segments[1],
+            sketch_segments[4],
+            "line1.end/arc1.end",
+        );
+        assert_points_coincident(
+            &scene_delta.new_graph,
+            sketch_segments[7],
+            sketch_segments[3],
+            "line2.start/arc1.start",
+        );
+        assert_points_coincident(
+            &scene_delta.new_graph,
+            sketch_segments[8],
+            sketch_segments[0],
+            "line2.end/line1.start",
+        );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_sketch_setup_repeated_select_all_previews_do_not_accumulate_drift() {
+        let (mut frontend, mock_ctx, sketch_id, sketch_segments) =
+            setup_sketch_with_warm_starts(LINE_ARC_TANGENT_DRAG_SOURCE).await;
+        let baseline_graph = frontend.scene_graph.clone();
+
+        for dy in [0.5, 1.25, 2.5, 4.0] {
+            let edits = line_arc_tangent_all_segment_edits(&baseline_graph, &sketch_segments, 0.0, dy);
+            let (_src_delta, scene_delta) = frontend
+                .edit_segments_for_preview(&mock_ctx, Version(0), sketch_id, edits)
+                .await
+                .unwrap();
+            assert_no_solver_failure(&format!("select-all preview dy={dy}"), &scene_delta);
+
+            for (label, point_id) in [
+                ("line1.start", sketch_segments[0]),
+                ("line1.end", sketch_segments[1]),
+                ("arc1.start", sketch_segments[3]),
+                ("arc1.end", sketch_segments[4]),
+                ("arc1.center", sketch_segments[5]),
+                ("line2.start", sketch_segments[7]),
+                ("line2.end", sketch_segments[8]),
+            ] {
+                assert_point_translated(
+                    &baseline_graph,
+                    &scene_delta.new_graph,
+                    point_id,
+                    0.0,
+                    dy,
+                    &format!("{label} dy={dy}"),
+                );
+            }
+        }
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_sketch_setup_dragging_each_coincident_pair_keeps_clusters_stable() {
+        for (label, point_a_index, point_b_index, dx, dy, expect_x_from_vertical) in [
+            ("line1.end/arc1.end", 1, 4, -1.2, 0.8, false),
+            ("line2.start/arc1.start", 7, 3, -0.7, 1.1, false),
+            ("line2.end/line1.start", 8, 0, 1.4, 1.3, true),
+        ] {
+            let (mut frontend, mock_ctx, sketch_id, sketch_segments) =
+                setup_sketch_with_warm_starts(LINE_ARC_TANGENT_DRAG_SOURCE).await;
+            let point_a = sketch_segments[point_a_index];
+            let point_b = sketch_segments[point_b_index];
+            let before = point_position(&frontend.scene_graph, point_a);
+            let edits = vec![
+                point_edit(&frontend.scene_graph, point_a, dx, dy),
+                ExistingSegmentCtor {
+                    id: point_b,
+                    ctor: SegmentCtor::Point(PointCtor {
+                        position: point_expr_mm(before.x.value + dx, before.y.value + dy),
+                    }),
+                },
+            ];
+
+            let (_src_delta, scene_delta) = frontend
+                .edit_segments_for_preview(&mock_ctx, Version(0), sketch_id, edits)
+                .await
+                .unwrap();
+            assert_no_solver_failure(label, &scene_delta);
+            assert_points_coincident(&scene_delta.new_graph, point_a, point_b, label);
+
+            let after = point_position(&scene_delta.new_graph, point_a);
+            if expect_x_from_vertical {
+                assert_close(&format!("{label} vertical x"), after.x.value, 0.0);
+                assert!(
+                    (after.y.value - before.y.value).abs() > dy.abs() * 0.5,
+                    "{label}: expected vertical pair to move with the drag, before={before:?}, after={after:?}"
+                );
+            } else {
+                assert_close(&format!("{label} dragged x"), after.x.value, before.x.value + dx);
+                assert_close(&format!("{label} dragged y"), after.y.value, before.y.value + dy);
+            }
+
+            mock_ctx.close().await;
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_committed_edit_merges_edited_vars_into_existing_warm_starts() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])
+  line2 = line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line1.start])
+  equalLength([line3, line1])
+  equalLength([line1, line2])
+  distance([line1.start, line1.end]) == 4mm
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        let outcome = frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point_id = *sketch.segments.first().unwrap();
+        frontend.replace_sketch_var_warm_starts(sketch_id, &outcome);
+        let previous_warm_starts = frontend
+            .sketch_var_warm_start_overrides
+            .get(&sketch_id)
+            .expect("Expected initial warm starts")
+            .clone();
+
+        let segments = vec![ExistingSegmentCtor {
+            id: point_id,
+            ctor: SegmentCtor::Point(PointCtor {
+                position: Point2d {
+                    x: Expr::Var(Number {
+                        value: 1.0,
+                        units: NumericSuffix::Mm,
+                    }),
+                    y: Expr::Var(Number {
+                        value: 2.0,
+                        units: NumericSuffix::Mm,
+                    }),
+                },
+            }),
+        }];
+        frontend
+            .edit_segments(&mock_ctx, version, sketch_id, segments)
+            .await
+            .unwrap();
+        let warm_starts = frontend
+            .sketch_var_warm_start_overrides
+            .get(&sketch_id)
+            .expect("Expected warm starts for edited sketch");
+
+        let warm_start_source_values = warm_starts
+            .source_values
+            .iter()
+            .map(|(_, value)| *value)
+            .collect::<Vec<_>>();
+        let previous_warm_start_source_values = previous_warm_starts
+            .source_values
+            .iter()
+            .map(|(_, value)| *value)
+            .collect::<Vec<_>>();
+        assert_eq!(&warm_start_source_values[0..4], &[1.0, 2.0, 1.28, -0.78]);
+        assert_eq!(&warm_start_source_values[4..], &previous_warm_start_source_values[4..]);
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_multiple_sketch_blocks() {
         let initial_source = "\
 // Cube that requires the engine.
@@ -11594,48 +13564,15 @@ sketch2 = sketch(on = XY) {
             .await
             .unwrap();
         // Only the first sketch block changes.
-        assert_eq!(
+        pretty_assertions::assert_eq!(
+            "// Cube that requires the engine.\nwidth = 2\nsketch001 = startSketchOn(XY)\nprofile001 = startProfile(sketch001, at = [0, 0])\n  |> yLine(length = width, tag = $seg1)\n  |> xLine(length = width)\n  |> yLine(length = -width)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nextrude001 = extrude(profile001, length = width)\n\n// Get a value that requires the engine.\nx = segLen(seg1)\n\n// Triangle with side length 2*x.\nsketch(on = XY) {\n  line1 = line(start = [var 1mm, var 2mm], end = [var 2.32mm, var -1.78mm])\n  line2 = line(start = [var 2.32mm, var -1.78mm], end = [var -1.61mm, var -1.03mm])\n  coincident([line1.end, line2.start])\n  line3 = line(start = [var -1.61mm, var -1.03mm], end = [var 1mm, var 2mm])\n  coincident([line2.end, line3.start])\n  coincident([line3.end, line1.start])\n  equalLength([line3, line1])\n  equalLength([line1, line2])\n  distance([line1.start, line1.end]) == 2 * x\n}\n\n// Line segment with length x.\nsketch2 = sketch(on = XY) {\n  line1 = line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])\n  distance([line1.start, line1.end]) == x\n}\n",
             src_delta.text.as_str(),
-            "\
-// Cube that requires the engine.
-width = 2
-sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> yLine(length = width, tag = $seg1)
-  |> xLine(length = width)
-  |> yLine(length = -width)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(profile001, length = width)
-
-// Get a value that requires the engine.
-x = segLen(seg1)
-
-// Triangle with side length 2*x.
-sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 2.32mm, var -1.78mm])
-  line2 = line(start = [var 2.32mm, var -1.78mm], end = [var -1.61mm, var -1.03mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var -1.61mm, var -1.03mm], end = [var 1mm, var 2mm])
-  coincident([line2.end, line3.start])
-  coincident([line3.end, line1.start])
-  equalLength([line3, line1])
-  equalLength([line1, line2])
-  distance([line1.start, line1.end]) == 2 * x
-}
-
-// Line segment with length x.
-sketch2 = sketch(on = XY) {
-  line1 = line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])
-  distance([line1.start, line1.end]) == x
-}
-"
         );
 
         // Execute mock to simulate drag end.
         let (src_delta, _) = frontend.execute_mock(&mock_ctx, version, sketch1_id).await.unwrap();
         // Only the first sketch block changes.
-        assert_eq!(
+        pretty_assertions::assert_eq!(
             src_delta.text.as_str(),
             "\
 // Cube that requires the engine.
@@ -11654,10 +13591,10 @@ x = segLen(seg1)
 
 // Triangle with side length 2*x.
 sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 1.28mm, var -0.78mm])
-  line2 = line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
+  line1 = line(start = [var 2mm, var 2mm], end = [var 2.32mm, var -1.78mm])
+  line2 = line(start = [var 2.32mm, var -1.78mm], end = [var -1.61mm, var -1.03mm])
   coincident([line1.end, line2.start])
-  line3 = line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
+  line3 = line(start = [var -1.61mm, var -1.03mm], end = [var 1mm, var 2mm])
   coincident([line2.end, line3.start])
   coincident([line3.end, line1.start])
   equalLength([line3, line1])
@@ -11680,7 +13617,7 @@ sketch2 = sketch(on = XY) {
         // - sketch on=XY cached
         // - Sketch block 5
         let scene = frontend.exit_sketch(&ctx, version, sketch1_id).await.unwrap();
-        assert_eq!(scene.objects.len(), 30, "{:#?}", scene.objects);
+        pretty_assertions::assert_eq!(scene.objects.len(), 30, "{:#?}", scene.objects);
 
         // Edit the second sketch.
         //
@@ -11693,7 +13630,7 @@ sketch2 = sketch(on = XY) {
             .edit_sketch(&mock_ctx, project_id, file_id, version, sketch2_id)
             .await
             .unwrap();
-        assert_eq!(
+        pretty_assertions::assert_eq!(
             scene_delta.new_graph.objects.len(),
             24,
             "{:#?}",
@@ -11722,8 +13659,7 @@ sketch2 = sketch(on = XY) {
             .await
             .unwrap();
         // Only the second sketch block changes.
-        assert_eq!(
-            src_delta.text.as_str(),
+        pretty_assertions::assert_eq!(
             "\
 // Cube that requires the engine.
 width = 2
@@ -11741,10 +13677,10 @@ x = segLen(seg1)
 
 // Triangle with side length 2*x.
 sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 1.28mm, var -0.78mm])
-  line2 = line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
+  line1 = line(start = [var 2mm, var 2mm], end = [var 2.32mm, var -1.78mm])
+  line2 = line(start = [var 2.32mm, var -1.78mm], end = [var -1.61mm, var -1.03mm])
   coincident([line1.end, line2.start])
-  line3 = line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
+  line3 = line(start = [var -1.61mm, var -1.03mm], end = [var 1mm, var 2mm])
   coincident([line2.end, line3.start])
   coincident([line3.end, line1.start])
   equalLength([line3, line1])
@@ -11757,14 +13693,14 @@ sketch2 = sketch(on = XY) {
   line1 = line(start = [var 3mm, var 4mm], end = [var 2.32mm, var 2.12mm])
   distance([line1.start, line1.end]) == x
 }
-"
+",
+            src_delta.text.as_str(),
         );
 
         // Execute mock to simulate drag end.
         let (src_delta, _) = frontend.execute_mock(&mock_ctx, version, sketch2_id).await.unwrap();
         // Only the second sketch block changes.
-        assert_eq!(
-            src_delta.text.as_str(),
+        pretty_assertions::assert_eq!(
             "\
 // Cube that requires the engine.
 width = 2
@@ -11782,10 +13718,10 @@ x = segLen(seg1)
 
 // Triangle with side length 2*x.
 sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 1.28mm, var -0.78mm])
-  line2 = line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
+  line1 = line(start = [var 2mm, var 2mm], end = [var 2.32mm, var -1.78mm])
+  line2 = line(start = [var 2.32mm, var -1.78mm], end = [var -1.61mm, var -1.03mm])
   coincident([line1.end, line2.start])
-  line3 = line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
+  line3 = line(start = [var -1.61mm, var -1.03mm], end = [var 1mm, var 2mm])
   coincident([line2.end, line3.start])
   coincident([line3.end, line1.start])
   equalLength([line3, line1])
@@ -11795,10 +13731,11 @@ sketch(on = XY) {
 
 // Line segment with length x.
 sketch2 = sketch(on = XY) {
-  line1 = line(start = [var 3mm, var 4mm], end = [var 1.28mm, var -0.78mm])
+  line1 = line(start = [var 2.12mm, var 4mm], end = [var 2.32mm, var 2.12mm])
   distance([line1.start, line1.end]) == x
 }
-"
+",
+            src_delta.text.as_str(),
         );
 
         ctx.close().await;

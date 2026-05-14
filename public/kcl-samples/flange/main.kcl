@@ -25,10 +25,6 @@ topTotalRadius = topTotalDiameter / 2
 bottomTotalRadius = bottomTotalDiameter / 2
 pipeRadius = pipeDia / 2
 
-// Add assertion so nHoles are always greater than 1
-assert(nHoles, isGreaterThan = 1, error = "nHoles must be greater than 1")
-assert(nHoles, isEqualTo = 4, error = "This converted flange sample preserves the legacy four-hole layout.")
-
 // Create the base of the flange and add the mounting holes
 baseProfile = sketch(on = XY) {
   outerCircle = circle(start = [var 2.4in, var 0in], center = [var 0in, var 0in])

@@ -214,6 +214,7 @@ describe('mlEphantManagerMachine', () => {
         type: MlEphantManagerStates.ContinueCheck,
         projectName: 'zoo-project',
         projectFiles,
+        activeFile: 'newFile.kcl',
       })
 
       await waitFor(actor, (state) =>
@@ -233,6 +234,7 @@ describe('mlEphantManagerMachine', () => {
             'main.kcl': Array.from(new TextEncoder().encode('cube()')),
             'notes.txt': Array.from(new TextEncoder().encode('notes')),
           },
+          active_file: 'newFile.kcl',
         }),
       ])
 

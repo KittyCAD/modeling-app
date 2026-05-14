@@ -5,7 +5,6 @@ import type {
 } from '@kittycad/lib'
 import { decode as msgpackDecode } from '@msgpack/msgpack'
 import type { KittyCadLibFile } from '@src/lib/promptToEditTypes'
-import type { KclFileMetaMap } from '@src/lib/promptToEditTypes'
 import { withMlephantWebSocketURL } from '@src/lib/withBaseURL'
 import { createActorContext } from '@xstate/react'
 import ms from 'ms'
@@ -54,6 +53,14 @@ type MlCopilotUserRequest = Omit<
   // The generated client still narrows this to the initially-known mode ids,
   // but mode discovery intentionally treats the backend-provided id as opaque.
   mode?: MlCopilotModeId
+  active_file?: string
+}
+
+type MlCopilotProjectContextRequest = Extract<
+  MlCopilotClientMessage,
+  { type: 'project_context' }
+> & {
+  active_file?: string
 }
 
 type MlCopilotClientMessageWithDiscoveredMode =
@@ -213,6 +220,7 @@ export type MlEphantManagerEvents =
       type: MlEphantManagerStates.ContinueCheck
       projectName: string
       projectFiles: FileMeta[]
+      activeFile?: string
     }
   | {
       type: MlEphantManagerTransitions.ResponseReceive
@@ -296,6 +304,7 @@ export interface MlEphantManagerContext {
   fileFocusedOnInEditor?: FileEntry
   projectNameCurrentlyOpened?: string
   awaitingResponse: boolean
+  attachmentsLoadedForCurrentPrompt: boolean
   pendingBackendShutdown: boolean
   defaultMode?: MlCopilotModeId
   modeOptions?: MlCopilotModeOption[]
@@ -323,6 +332,7 @@ export const mlEphantDefaultContext = (args: {
   fileFocusedOnInEditor: undefined,
   projectNameCurrentlyOpened: undefined,
   awaitingResponse: false,
+  attachmentsLoadedForCurrentPrompt: true,
   pendingBackendShutdown: false,
   defaultMode: undefined,
   modeOptions: undefined,
@@ -510,6 +520,16 @@ function applyZookeeperDebugTiming({
   }
 
   return current
+}
+
+function isAttachmentsLoadedMessage(
+  response: unknown
+): response is { attachments_loaded: object } {
+  return (
+    typeof response === 'object' &&
+    response !== null &&
+    'attachments_loaded' in response
+  )
 }
 
 async function toMlCopilotFile(file: File): Promise<MlCopilotFile> {
@@ -1097,6 +1117,9 @@ export const mlEphantManagerMachine = setup({
         project_name: requestData.body.project_name,
         source_ranges: requestData.body.source_ranges,
         current_files: filesAsByteArrays,
+        ...(requestData.activeFile
+          ? { active_file: requestData.activeFile }
+          : {}),
         ...(event.mode ? { mode: event.mode } : {}),
         ...(additionalFiles ? { additional_files: additionalFiles } : {}),
       }
@@ -1117,6 +1140,8 @@ export const mlEphantManagerMachine = setup({
         conversation,
         fileFocusedOnInEditor: event.fileSelectedDuringPrompting.entry,
         projectNameCurrentlyOpened: requestData.body.project_name,
+        attachmentsLoadedForCurrentPrompt:
+          !event.additionalFiles || event.additionalFiles.length === 0,
       }
     }),
     [MlEphantManagerStates.ContinueCheck]: fromPromise(async function (
@@ -1136,7 +1161,6 @@ export const mlEphantManagerMachine = setup({
       }
 
       const filesAsByteArrays: Record<string, number[]> = {}
-      const kclFilesMap: KclFileMetaMap = {}
       const files: KittyCadLibFile[] = []
 
       event.projectFiles.forEach((file) => {
@@ -1145,7 +1169,6 @@ export const mlEphantManagerMachine = setup({
           data = file.data
         } else {
           // file.type === 'kcl'
-          kclFilesMap[file.execStateFileNamesIndex] = file
           data = new Blob([file.fileContents], { type: 'text/kcl' })
         }
         files.push({
@@ -1160,13 +1183,11 @@ export const mlEphantManagerMachine = setup({
         )
       }
 
-      const requestProjectContext: Extract<
-        MlCopilotClientMessage,
-        { type: 'project_context' }
-      > = {
+      const requestProjectContext: MlCopilotProjectContextRequest = {
         type: 'project_context',
         project_name: event.projectName,
         current_files: filesAsByteArrays,
+        ...(event.activeFile ? { active_file: event.activeFile } : {}),
       }
 
       const requestContinue: Extract<
@@ -1250,6 +1271,7 @@ export const mlEphantManagerMachine = setup({
               modeOptions: undefined,
               lastDebugTimingPoint: undefined,
               awaitingResponse: false,
+              attachmentsLoadedForCurrentPrompt: true,
               pendingBackendShutdown: false,
             }),
             'cacheSetup',
@@ -1287,6 +1309,7 @@ export const mlEphantManagerMachine = setup({
               modeOptions: event.output.modeOptions ?? context.modeOptions,
               lastDebugTimingPoint: undefined,
               awaitingResponse: false,
+              attachmentsLoadedForCurrentPrompt: true,
               pendingBackendShutdown: false,
             })),
             'clearCacheSetup',
@@ -1428,6 +1451,18 @@ export const mlEphantManagerMachine = setup({
                         lastMessageId,
                         lastDebugTimingPoint: undefined,
                         awaitingResponse: false,
+                        attachmentsLoadedForCurrentPrompt: true,
+                        pendingBackendShutdown: responseComplete
+                          ? false
+                          : context.pendingBackendShutdown,
+                      }
+                    }
+
+                    if (isAttachmentsLoadedMessage(event.response)) {
+                      return {
+                        lastMessageId,
+                        attachmentsLoadedForCurrentPrompt: true,
+                        awaitingResponse: context.awaitingResponse,
                         pendingBackendShutdown: responseComplete
                           ? false
                           : context.pendingBackendShutdown,
@@ -1539,11 +1574,17 @@ export const mlEphantManagerMachine = setup({
                       ...event.output,
                       awaitingResponse: true,
                       lastDebugTimingPoint: undefined,
+                      attachmentsLoadedForCurrentPrompt:
+                        event.output.attachmentsLoadedForCurrentPrompt ??
+                        context.attachmentsLoadedForCurrentPrompt,
                       pendingBackendShutdown: context.pendingBackendShutdown,
                     })),
                   ],
                 },
-                onError: { target: S.Await, actions: ['toastError'] },
+                onError: {
+                  target: S.Await,
+                  actions: ['toastError'],
+                },
               },
             },
             [MlEphantManagerTransitions.Cancel]: {
@@ -1560,7 +1601,10 @@ export const mlEphantManagerMachine = setup({
                   target: S.Await,
                   actions: [],
                 },
-                onError: { target: S.Await, actions: ['toastError'] },
+                onError: {
+                  target: S.Await,
+                  actions: ['toastError'],
+                },
               },
             },
             [MlEphantManagerTransitions.Interrupt]: {
@@ -1579,7 +1623,10 @@ export const mlEphantManagerMachine = setup({
                   target: S.Await,
                   actions: [],
                 },
-                onError: { target: S.Await, actions: ['toastError'] },
+                onError: {
+                  target: S.Await,
+                  actions: ['toastError'],
+                },
               },
             },
           },
@@ -1599,10 +1646,12 @@ export const mlEphantManagerMachine = setup({
         target: S.Await,
         actions: [
           ({ context }) => {
+            // Close before clearing context so the live socket is still reachable.
             closeMlEphantWebSocket(context.ws)
           },
           assign(({ context }) => {
             if (context.abruptlyClosed) return {}
+            // A clean close should not leak connection state into the next chat.
             return {
               abruptlyClosed: false,
               conversation: undefined,
@@ -1611,6 +1660,7 @@ export const mlEphantManagerMachine = setup({
               lastMessageId: undefined,
               lastMessageType: undefined,
               awaitingResponse: false,
+              attachmentsLoadedForCurrentPrompt: true,
               pendingBackendShutdown: false,
               lastDebugTimingPoint: undefined,
               closeReason: undefined,
