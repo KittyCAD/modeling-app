@@ -11,6 +11,7 @@ import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
 import {
+  isConstraint,
   isLineSegment,
   isPointSegment,
   pointToCoords2d,
@@ -275,6 +276,18 @@ export const machine = setup({
             snapConstraintNewObjects = snapResult.newObjectIds
           }
 
+          // Continue placing lines until a new coincident constraint is added
+          // to another actual segment (ORIGIN excluded).
+          const hasNewCoincidentSnapConstraint = snapConstraintNewObjects.some(
+            (objId) => {
+              const obj = latestSceneGraphDelta.new_graph.objects[objId]
+              return (
+                isConstraint(obj, 'Coincident') &&
+                !obj.kind.constraint.segments.includes('ORIGIN')
+              )
+            }
+          )
+
           return {
             kclSource: latestKclSource,
             sceneGraphDelta: {
@@ -286,7 +299,7 @@ export const machine = setup({
             },
             checkpointId: latestCheckpointId,
             lastPointId:
-              snapConstraintNewObjects.length === 0 && isDoubleClick !== true
+              !hasNewCoincidentSnapConstraint && isDoubleClick !== true
                 ? id
                 : undefined,
           }
