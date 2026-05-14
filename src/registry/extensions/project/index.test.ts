@@ -3,7 +3,10 @@ import { signal } from '@preact/signals-core'
 import type { ZDSProject } from '@src/lang/KclManager'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import { projectService } from '@src/registry/contracts/project'
+import {
+  projectService,
+  sketchSolveScenePluginsValueSpec,
+} from '@src/registry/contracts/project'
 import { describe, expect, it, vi } from 'vitest'
 import projectExtension, {
   createProjectRegistryItem,
@@ -29,7 +32,7 @@ function createProject(): ZDSProject {
 }
 
 describe('project extension', () => {
-  it('scopes project services to the project registry slot', async () => {
+  it('scopes project services to the project registry slot', () => {
     const registry = new Registry()
     const project = createProject()
     const { actor: settingsActor, unsubscribe } = createSettingsActor()
@@ -42,10 +45,13 @@ describe('project extension', () => {
       createProjectRegistryItem({ project, settingsActor }),
     ])
 
-    expect(registry.get(projectService).project).toBe(project)
+    const service = registry.get(projectService)
+    expect(service.project).toBe(project)
+    expect(service.sketchSolveScenePlugins.value).toEqual(
+      registry.get(sketchSolveScenePluginsValueSpec)
+    )
 
     registry.reconfigure(projectRegistrySlot, [])
-    await Promise.resolve()
 
     expect(registry.optional(projectService)).toBeUndefined()
     expect(unsubscribe).toHaveBeenCalled()

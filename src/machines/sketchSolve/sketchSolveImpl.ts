@@ -6,6 +6,7 @@ import type {
   SegmentCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { ReadonlySignal } from '@preact/signals-core'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -76,7 +77,7 @@ import { machine as tangentialArcTool } from '@src/machines/sketchSolve/tools/ta
 import { machine as threePointArcTool } from '@src/machines/sketchSolve/tools/threePointArcToolDiagram'
 import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
 import { constraintToolMachines } from '@src/machines/sketchSolve/tools/constraintToolMachine'
-import { sketchSolveScenePluginsValueSpec } from '@src/registry/contracts/project'
+import type { SketchSolveScenePlugin } from '@src/registry/contracts/project'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import {
   type ActionArgs,
@@ -247,6 +248,7 @@ export type SketchSolveContext = {
   sceneEntitiesManager: SceneEntities
   rustContext: RustContext
   kclManager: KclManager
+  sketchSolveScenePlugins: ReadonlySignal<SketchSolveScenePlugin[]>
 }
 
 export type SolveActionArgs = ActionArgs<
@@ -666,11 +668,6 @@ function updateSketchSolveScenePlugins(
   context: SketchSolveContext,
   sceneGraphDelta: SceneGraphDelta
 ): void {
-  const registry = context.kclManager.systemDeps.registry
-  if (!registry) {
-    return
-  }
-
   const sketchSolveGroup =
     context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
   if (!(sketchSolveGroup instanceof Group)) {
@@ -681,7 +678,7 @@ function updateSketchSolveScenePlugins(
     context.kclManager.systemDeps.settings.getSnapshot().context
   )
 
-  for (const plugin of registry.get(sketchSolveScenePluginsValueSpec)) {
+  for (const plugin of context.sketchSolveScenePlugins.value) {
     try {
       plugin.onSketchSceneGraphUpdate({
         sceneInfra: context.sceneInfra,
@@ -1171,19 +1168,6 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
       )
     }
   })
-
-  updateSketchSolveScenePlugins(
-    context,
-    context.sketchExecOutcome.sceneGraphDelta
-  )
-}
-
-export function refreshSketchSolveScenePlugins(
-  context: SketchSolveContext
-): void {
-  if (!context.sketchExecOutcome?.sceneGraphDelta) {
-    return
-  }
 
   updateSketchSolveScenePlugins(
     context,

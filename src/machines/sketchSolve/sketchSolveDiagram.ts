@@ -3,6 +3,7 @@ import type {
   SceneGraphDelta,
   SegmentCtor,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { ReadonlySignal } from '@preact/signals-core'
 import { toggleSketchExtension } from '@src/editor/plugins/sketch'
 import type { KclManager } from '@src/lang/KclManager'
 import {
@@ -63,6 +64,7 @@ import {
 } from '@src/machines/sketchSolve/tools/constraintToolModel'
 import { applyOrEquipConstraintToolFromToolbar } from '@src/machines/sketchSolve/tools/constraintToolbarAction'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
+import type { SketchSolveScenePlugin } from '@src/registry/contracts/project'
 import { assertEvent, assign, createMachine, sendParent, setup } from 'xstate'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
@@ -73,6 +75,7 @@ type SketchSolveInput = {
   initialSketchSolvePlane?: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null
   sketchId: number
   initialSceneGraphDelta: SceneGraphDelta
+  sketchSolveScenePlugins: ReadonlySignal<SketchSolveScenePlugin[]>
 }
 
 function sendToolbarConstraintOutcome(
@@ -520,6 +523,7 @@ export const sketchSolveMachine = setup({
       sceneEntitiesManager: input.kclManager.sceneEntitiesManager,
       rustContext: input.kclManager.rustContext,
       kclManager: input.kclManager,
+      sketchSolveScenePlugins: input.sketchSolveScenePlugins,
       showNonVisualConstraints: false,
     }
   },

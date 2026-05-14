@@ -37,6 +37,10 @@ import { DefaultLayoutPaneID } from '@src/lib/layout'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import { useSignals } from '@preact/signals-react/runtime'
 import { modelingMachineStateToToolbarModeName } from '@src/lib/toolbar'
+import {
+  projectService,
+  sketchSolveScenePluginsValueSpec,
+} from '@src/registry/contracts/project'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -54,7 +58,8 @@ export const ModelingMachineProvider = ({
   children: React.ReactNode
 }) => {
   useSignals()
-  const { machineManager, commands, settings, layout, project } = useApp()
+  const { machineManager, commands, settings, layout, project, registry } =
+    useApp()
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
   const wasmInstance = use(kclManager.wasmInstancePromise)
@@ -84,6 +89,10 @@ export const ModelingMachineProvider = ({
     project?.projectIORefSignal.value
   )
   const file = project?.executingFileEntry.value
+  const projectRegistryService = registry.signal(projectService).value
+  const sketchSolveScenePlugins =
+    projectRegistryService?.sketchSolveScenePlugins ??
+    registry.signal(sketchSolveScenePluginsValueSpec)
   useEffect(() => {
     // Have no idea why the project loader data doesn't have the children from the ls on disk
     // That means it is a different object or cached incorrectly?
@@ -129,6 +138,7 @@ export const ModelingMachineProvider = ({
         commandBarActor: commands.actor,
         fileName: file?.name,
         projectRef: theProject,
+        sketchSolveScenePlugins,
         // React Suspense will await this
         wasmInstance,
         store: {

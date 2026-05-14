@@ -6107,6 +6107,9 @@ export const modelingMachine = setup({
       ...modelingMachineInitialInternalContext.store,
       ...input.store,
     },
+    sketchSolveScenePlugins:
+      input.sketchSolveScenePlugins ??
+      modelingMachineInitialInternalContext.sketchSolveScenePlugins,
   }),
 
   states: {
@@ -7775,6 +7778,7 @@ export const modelingMachine = setup({
               sketchId: context.sketchSolveId || 0,
               initialSceneGraphDelta: context.initialSceneGraphDelta,
               kclManager: context.kclManager,
+              sketchSolveScenePlugins: context.sketchSolveScenePlugins,
             }),
             onDone: {
               target: '#sketchSolveMode.exiting',

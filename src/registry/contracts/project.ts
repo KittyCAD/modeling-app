@@ -13,7 +13,7 @@ import type { Group } from 'three'
 export interface ProjectService {
   readonly project: ZDSProject
   readonly settings: ReadonlySignal<SettingsType>
-  refreshSketchSolveScenePlugins(): void
+  readonly sketchSolveScenePlugins: ReadonlySignal<SketchSolveScenePlugin[]>
 }
 
 export interface SketchSolveScenePluginContext {
