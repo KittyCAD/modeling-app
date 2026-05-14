@@ -619,9 +619,10 @@ impl FrontendState {
             };
             let range = initial.as_source_range();
             if sketch_range.contains_range(&range) {
-                values
-                    .borrow_mut()
-                    .push((range, sketch_var_initial_value_in_solver_units(initial)));
+                values.borrow_mut().push((
+                    range,
+                    sketch_var_initial_value_in_solver_units(initial, self.default_length_unit()),
+                ));
             }
             Ok(true)
         })
@@ -6070,8 +6071,9 @@ fn has_constraint_solver_failed_issue(outcome: &ExecOutcome) -> bool {
 }
 
 #[cfg(feature = "artifact-graph")]
-fn sketch_var_initial_value_in_solver_units(number: &ast::Node<ast::NumericLiteral>) -> f64 {
+fn sketch_var_initial_value_in_solver_units(number: &ast::Node<ast::NumericLiteral>, solver_unit: UnitLength) -> f64 {
     let unit = match number.suffix {
+        NumericSuffix::None => solver_unit,
         NumericSuffix::Cm => UnitLength::Centimeters,
         NumericSuffix::M => UnitLength::Meters,
         NumericSuffix::Inch => UnitLength::Inches,
@@ -6079,7 +6081,7 @@ fn sketch_var_initial_value_in_solver_units(number: &ast::Node<ast::NumericLiter
         NumericSuffix::Yd => UnitLength::Yards,
         _ => UnitLength::Millimeters,
     };
-    crate::execution::types::adjust_length(unit, number.value, UnitLength::Millimeters).0
+    crate::execution::types::adjust_length(unit, number.value, solver_unit).0
 }
 
 #[cfg(feature = "artifact-graph")]
@@ -12795,6 +12797,72 @@ sketch(on = XY) {
   point(at = [var 1mm, var 2mm])
 }
 "
+        );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_preview_warm_starts_honor_default_inches() {
+        let initial_source = "\
+@settings(defaultLengthUnit = in)
+
+sketch(on = XY) {
+  point(at = [var 1in, var 2in])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        let outcome = frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point_id = *sketch.segments.first().unwrap();
+        frontend.replace_sketch_var_warm_starts(sketch_id, &outcome);
+
+        let (_src_delta, scene_delta) = frontend
+            .edit_segments_for_preview(
+                &mock_ctx,
+                version,
+                sketch_id,
+                vec![ExistingSegmentCtor {
+                    id: point_id,
+                    ctor: SegmentCtor::Point(PointCtor {
+                        position: Point2d {
+                            x: Expr::Var(Number {
+                                value: 3.0,
+                                units: NumericSuffix::Inch,
+                            }),
+                            y: Expr::Var(Number {
+                                value: 4.0,
+                                units: NumericSuffix::Inch,
+                            }),
+                        },
+                    }),
+                }],
+            )
+            .await
+            .unwrap();
+
+        assert_point_position_close(
+            point_position(&scene_delta.new_graph, point_id),
+            Point2d {
+                x: Number {
+                    value: 3.0,
+                    units: NumericSuffix::Inch,
+                },
+                y: Number {
+                    value: 4.0,
+                    units: NumericSuffix::Inch,
+                },
+            },
         );
 
         mock_ctx.close().await;
