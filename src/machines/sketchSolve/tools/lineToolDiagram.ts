@@ -276,17 +276,17 @@ export const machine = setup({
             snapConstraintNewObjects = snapResult.newObjectIds
           }
 
-          // Continue placing lines until a new coincident constraint is added
-          // to another actual segment (ORIGIN excluded).
-          const hasNewCoincidentSnapConstraint = snapConstraintNewObjects.some(
-            (objId) => {
+          // Continue placing lines unless a new coincident constraint is added
+          // to another point. The synthetic ORIGIN target is not a point snap.
+          const hasNewCoincidentSnapConstraintToNonOriginPoint =
+            snapTarget?.type === 'point' &&
+            snapConstraintNewObjects.some((objId) => {
               const obj = latestSceneGraphDelta.new_graph.objects[objId]
               return (
                 isConstraint(obj, 'Coincident') &&
-                !obj.kind.constraint.segments.includes('ORIGIN')
+                obj.kind.constraint.segments.includes(snapTarget.id)
               )
-            }
-          )
+            })
 
           return {
             kclSource: latestKclSource,
@@ -299,7 +299,8 @@ export const machine = setup({
             },
             checkpointId: latestCheckpointId,
             lastPointId:
-              !hasNewCoincidentSnapConstraint && isDoubleClick !== true
+              !hasNewCoincidentSnapConstraintToNonOriginPoint &&
+              isDoubleClick !== true
                 ? id
                 : undefined,
           }

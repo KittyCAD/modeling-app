@@ -321,14 +321,38 @@ describe('lineTool - XState', () => {
         expectedState: 'waiting to start next draft line',
       },
       {
-        targetName: 'another point',
+        targetName: 'another non-origin point',
         coincidentSegments: [1, 99],
         snapTarget: { type: 'point', id: 99 },
+        targetObjects: [createPointApiObject({ id: 99, x: 5, y: 5 })],
         expectedState: 'ready for user click',
+      },
+      {
+        targetName: 'another real point at the origin',
+        coincidentSegments: [1, 99],
+        snapTarget: { type: 'point', id: 99 },
+        targetObjects: [createPointApiObject({ id: 99, x: 0, y: 0 })],
+        expectedState: 'ready for user click',
+      },
+      {
+        targetName: 'a line',
+        coincidentSegments: [1, 99],
+        snapTarget: { type: 'line', id: 99 },
+        targetObjects: [
+          createPointApiObject({ id: 20, x: 0, y: 0 }),
+          createPointApiObject({ id: 21, x: 10, y: 0 }),
+          createLineApiObject({ id: 99, start: 20, end: 21 }),
+        ],
+        expectedState: 'waiting to start next draft line',
       },
     ] as const)(
       'should transition to $expectedState when snapping the next point coincident to $targetName',
-      async ({ coincidentSegments, snapTarget, expectedState }) => {
+      async ({
+        coincidentSegments,
+        snapTarget,
+        targetObjects = [],
+        expectedState,
+      }) => {
         const pointObj = createPointApiObject({ id: 1, x: 10, y: 20 })
         const lineObj = createLineApiObject({ id: 2, start: 1, end: 1 })
         const coincidentConstraint = {
@@ -363,12 +387,18 @@ describe('lineTool - XState', () => {
         })
         editSegmentsMock.mockResolvedValue({
           kclSource: { text: 'line' },
-          sceneGraphDelta: createSceneGraphDelta([pointObj, lineObj], [1]),
+          sceneGraphDelta: createSceneGraphDelta(
+            [pointObj, lineObj, ...targetObjects],
+            [1]
+          ),
           checkpointId: null,
         })
         addConstraintMock.mockResolvedValue({
           kclSource: { text: 'line' },
-          sceneGraphDelta: createSceneGraphDelta([coincidentConstraint], [10]),
+          sceneGraphDelta: createSceneGraphDelta(
+            [pointObj, lineObj, ...targetObjects, coincidentConstraint],
+            [10]
+          ),
           checkpointId: null,
         })
 
