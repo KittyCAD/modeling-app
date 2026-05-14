@@ -3,6 +3,7 @@ import type {
   SceneGraphDelta,
   SegmentCtor,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import { signal, type ReadonlySignal } from '@preact/signals-core'
 import { toggleSketchExtension } from '@src/editor/plugins/sketch'
 import type { KclManager } from '@src/lang/KclManager'
 import {
@@ -37,6 +38,7 @@ import {
   clearDraftEntities,
   clearHoverCallbacks,
   clearHoveredCodeHighlight,
+  createSketchSolveScenePluginHost,
   deleteDraftEntities,
   equipTools,
   getObjectSelectionIds,
@@ -63,6 +65,7 @@ import {
 } from '@src/machines/sketchSolve/tools/constraintToolModel'
 import { applyOrEquipConstraintToolFromToolbar } from '@src/machines/sketchSolve/tools/constraintToolbarAction'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
+import type { SketchSolveScenePlugin } from '@src/registry/contracts/project'
 import { assertEvent, assign, createMachine, sendParent, setup } from 'xstate'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
@@ -73,6 +76,7 @@ type SketchSolveInput = {
   initialSketchSolvePlane?: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null
   sketchId: number
   initialSceneGraphDelta: SceneGraphDelta
+  sketchSolveScenePlugins: ReadonlySignal<SketchSolveScenePlugin[]>
 }
 
 function sendToolbarConstraintOutcome(
@@ -396,6 +400,7 @@ export const sketchSolveMachine = setup({
     setUpOnDragAndSelectionClickCallbacks,
     'clear hover callbacks': clearHoverCallbacks,
     'cleanup sketch solve group': ({ context }) => {
+      context.sketchSolveScenePluginHost?.dispose()
       cleanupSketchSolveGroup(context.sceneInfra)
     },
     'send unequip to tool': ({ context }) => {
@@ -488,7 +493,7 @@ export const sketchSolveMachine = setup({
       void deleteDraftEntities(args)
     },
     'spawn tool': assign((args) => {
-      const typedSpawn: SpawnToolActor = args.spawn
+      const typedSpawn = args.spawn as unknown as SpawnToolActor
       return spawnTool(args, typedSpawn)
     }),
   },
@@ -502,7 +507,7 @@ export const sketchSolveMachine = setup({
 }).createMachine({
   /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAMwBOAKwBGAHQA2eQHYALKo7rZ0gBwAmADQgAnomPTpyjscfSOik8Y3T5xgL7fzaTFwCEnIqGnoAVz4IAEMMClh0bHxCCOxCAFswTh4kEAEhDBFxPKkEYxN5NRNVEwNPDi1zKwQAWgqq6S0NeVlFRQ5bQ3lVX38koKIyCmpaOlhMPAgAJxiAMww8MFEiorgciQLhMQky4y0tOwHpc+M+jgd5ZsR24eUujV0TDg1FVWMfmMQAFksFpmE5lhiGAYsslqsNlsdsJ9txDoJjiVQGVFLJVFplACNDYLo1pP8zJYXu4qrpFPIyZpVNptECQZMQjNwnRaND4vD1pttrtmKjcvwMUUTqUZLoqoZ-lofqoFLjDNJnm0Ou9ur1+oMjCM2RN8FNQrN6HAsDE+Nk0XkjlKsZIZMZFHZfgDSRcGdpNe1ie9iTctK5updjYFTZyIfQsIRmKIsMxaDsDg7JcVTogGf9CY1DP0NIZfiNNQNLspKhUuqpnJp5JHQWauXMACLMWAYGJJu3i-KZ6XYnMAlQuQw-Gxujh48tkqvGLzqnT1npNjngi10AAKsJixGhxHTEsKWZlCHk0kUGkJF3xhq8WieVIQFbs1eXdY4DfX0c33IAGUTOAAFEAEcIn3ADtigDAcGPAdTyHF0EC0BVjGUHRPnJLQ+kuJoXzfBcl1rVdGz8YETTBc1uQANTAZYimtI97RPTFs1Q7QCQ4QxhgGFUNA0Po50rD9SO-NcKPZP8aLmAAJQhlmYAAvMRuxY-tHTPYdUK+QkATdS9cTuHoRPfRcaxXCTyPGKNqNbSJojiBIwGhLB4ggPAU1gBCtOQs4bBvekelJeRcKUAiWgDK5VHUCcJ0vf5RikqiW1jHlXMwFy3I83zB2dMoLi0DDvwUb9nB4iozOIyyvx-FK7LSi1lAyQhQh7TyFhynkxDAZRE1IQh0BatqwAAFUIEg8qQgqZHpQxMJuCpcSUeR5BLTU3QWu462Jd1i1kcrf3s2MRva0ROsy9yGGWZZFOUPhiDiNZFIyM7xsmjT0Rmjir16ZQK0URcGQZP5NvxZQDF1UMeiMDRAQa5sY2a1rzsu7qwAg5g+DwDBPum9jz1xQNGj6cldBVNDZE1Lo7CMdC-kGElFGOprwnevAOrwLqwGuq0bT7b7CZ0m5-tDfDYqfATNWLDg1EnNbDGK5xalZ5H2YiIRRCgXHProCJRExiJsd1qbWMQ4WUPcT5MLQxRQzuXMFE1bo5ZufElXK2p1rV-9aGUTXEx1vGSAYLGcZDr6Mx+89rdUW3CwdsqNE1db4-UHjvx0Hilt92S+sD7XTeIBhYGtW0CadDjHFDd5ZCVn5+lcYxYpl+uAfUS8FCGYYfERjd8+UJhhCLgB3Vh8ChGFRCiHrDf60RBuG3ksrbBEMBA5E9lgAB5UQQJYdhzb82aEHJRc1HW9btFi5UXaEwlC2JH4J2ZekbMoxr1f94eijHie8BTx7LPBid1lgPSehgF6yw3or3iGvQUm8RRwD3gfVgldtIoXPvHG4fRYrMkMH0YsqcDDKHWneYsT4DCxTzg5Ieh8g54HHnBQB0JgF8AynyCgKxBRImQT5Y++VfpK3jg8CystZCfG-JqPEcshLaELOSHisg3S+AoqIcI8A8jSROhaIWVciYqO4rhd0t9KaEJphhMMRhGaFnVLILQtDTqowoFzHm7l9GYICnIQkFJejqkLLOF8U53hA3+C4CKvE1pOOaoXYOn1PH+WsIuG8i5XAjEOuoZuLsjD2E0J4e2PQjIfx0Wzf2sBmG4EYZHRJp9nAX0IWtOUsN3YkKqNoIGuF3A2AnI4-uMk6G-0YcwyebCZ58Fqb9DwJULg2EaHoc4GoXweHjgMNa+ECnXlkDE9mQztaTPPEom8hDKi1H+MMdam1nCQ3DLqXM3R647P9gbI22M+DVISdHS2ZR6lVHrnWOs9IlqKBdqoFQTTbgjGKgqRoajvBAA */
   context: ({ input }): SketchSolveContext => {
-    return {
+    const context: SketchSolveContext = {
       sketchSolveToolName: null,
       selectedIds: [],
       duringAreaSelectIds: [],
@@ -520,8 +525,13 @@ export const sketchSolveMachine = setup({
       sceneEntitiesManager: input.kclManager.sceneEntitiesManager,
       rustContext: input.kclManager.rustContext,
       kclManager: input.kclManager,
+      sketchSolveScenePlugins: input.sketchSolveScenePlugins,
+      activeDragPointIds: signal<readonly number[] | null>(null),
       showNonVisualConstraints: false,
     }
+    context.sketchSolveScenePluginHost =
+      createSketchSolveScenePluginHost(context)
+    return context
   },
   id: 'Sketch Solve Mode',
   initial: 'move and select',

@@ -1,4 +1,5 @@
 import type { EntityType } from '@kittycad/lib'
+import type { Registry } from '@kittycad/registry'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -277,6 +278,7 @@ interface SystemDeps {
   projectPath: Signal<string>
   engineCommandManager: ConnectionManager
   rustContext: RustContext
+  registry?: Registry
   keymap?: KeymapService
 }
 
@@ -409,6 +411,7 @@ export class ZDSProject {
       settings: this.app.settings.actor,
       engineCommandManager: this.app.engineCommandManager,
       rustContext: this.app.rustContext,
+      registry: this.app.registry,
       projectPath: computed(() => this.projectIORefSignal.value.path),
     }
 
