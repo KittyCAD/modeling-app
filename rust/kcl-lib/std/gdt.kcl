@@ -577,9 +577,8 @@ export fn profile(
   fontSize?: number(Length),
 ): [GdtAnnotation; 1+] {}
 
-/// Assigns a user-visible name to a face or edge. The name will be available
-/// to downstream tools (for example, in the 2D and 3D export messages that
-/// reference faces and edges by name).
+/// Set a name of a face or edge. The name will be used in exported STEP files
+/// for use in downstream tools.
 ///
 /// Exactly one of `face` or `edge` must be provided. Specifying both is an
 /// error.
@@ -616,9 +615,9 @@ export fn profile(
 /// ```
 @(impl = std_rust)
 export fn name(
-  /// The name to assign. Only ASCII alphanumeric characters, `_`, and `-` are
-  /// allowed, with a maximum length of 1024. An empty string clears any
-  /// previously assigned name.
+  /// The name to assign. ASCII characters besides control characters and
+  /// single-quotes are allowed, with a maximum length of 1024. An empty string
+  /// clears any previously assigned name.
   name: string,
   /// The face to name. Cannot be combined with `edge`.
   face?: Face | TaggedFace,

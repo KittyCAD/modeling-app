@@ -1,14 +1,14 @@
 ---
-title: "mbd::name"
-subtitle: "Function in std::mbd"
-excerpt: "Assigns a user-visible name to a face or edge. The name will be available to downstream tools (for example, in the 2D and 3D export messages that reference faces and edges by name)."
+title: "gdt::name"
+subtitle: "Function in std::gdt"
+excerpt: "Set a name of a face or edge. The name will be used in exported STEP files for use in downstream tools."
 layout: manual
 ---
 
-Assigns a user-visible name to a face or edge. The name will be available to downstream tools (for example, in the 2D and 3D export messages that reference faces and edges by name).
+Set a name of a face or edge. The name will be used in exported STEP files for use in downstream tools.
 
 ```kcl
-mbd::name(
+gdt::name(
   name: string,
   face?: Face | TaggedFace,
   edge?: Edge | TaggedEdge,
@@ -31,7 +31,7 @@ maximum length is 1024 characters.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `name` | [`string`](/docs/kcl-std/types/std-types-string) | The name to assign. Only ASCII alphanumeric characters, `_`, and `-` are allowed, with a maximum length of 1024. An empty string clears any previously assigned name. | Yes |
+| `name` | [`string`](/docs/kcl-std/types/std-types-string) | The name to assign. ASCII characters besides control characters and single-quotes are allowed, with a maximum length of 1024. An empty string clears any previously assigned name. | Yes |
 | `face` | [`Face`](/docs/kcl-std/types/std-types-Face) or [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) | The face to name. Cannot be combined with `edge`. | No |
 | `edge` | [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) | The edge to name. Cannot be combined with `face`. | No |
 
@@ -56,19 +56,19 @@ boxProfile = sketch(on = XY) {
 
 boxRegion = region(point = [2mm, 2mm], sketch = boxProfile)
 box = extrude(boxRegion, length = 4mm, tagEnd = $top)
-mbd::name(face = top, name = "mounting-face")
-mbd::name(edge = getCommonEdge(faces = [boxRegion.tags.edge1, top]), name = "front_top_edge")
+gdt::name(face = top, name = "mounting-face")
+gdt::name(edge = getCommonEdge(faces = [boxRegion.tags.edge1, top]), name = "front_top_edge")
 
 ```
 
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the mbd::name function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-mbd-name0_output.gltf"
+  alt="Example showing a rendered KCL program that uses the gdt::name function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-gdt-name0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-mbd-name0.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-gdt-name0.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
