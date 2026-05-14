@@ -404,6 +404,61 @@ describe('KclManager diagnostics', () => {
     expect(kclManager.code).toBe('persist me')
   })
 
+  it('keeps manual edits and zookeeper edits in chronological undo and redo order', () => {
+    const { kclManager } = createKclManagerTestHarness('persist me')
+    vi.spyOn(kclManager, 'writeToFile').mockResolvedValue(undefined)
+
+    kclManager.markPendingZookeeperHistoryEntry('zookeeper edit')
+    kclManager.commitPendingZookeeperHistoryEntry()
+    kclManager.updateCodeEditor('manual edit', {
+      shouldExecute: false,
+      shouldResetCamera: false,
+      shouldWriteToDisk: false,
+    })
+
+    expect(kclManager.code).toBe('manual edit')
+
+    kclManager.undo()
+    expect(kclManager.code).toBe('zookeeper edit')
+
+    kclManager.undo()
+    expect(kclManager.code).toBe('persist me')
+
+    kclManager.redo()
+    expect(kclManager.code).toBe('zookeeper edit')
+
+    kclManager.redo()
+    expect(kclManager.code).toBe('manual edit')
+  })
+
+  it('keeps chronological redo order when local history is cleared before a manual edit', () => {
+    const { kclManager } = createKclManagerTestHarness('persist me')
+    vi.spyOn(kclManager, 'writeToFile').mockResolvedValue(undefined)
+
+    kclManager.markPendingZookeeperHistoryEntry('zookeeper edit')
+    kclManager.commitPendingZookeeperHistoryEntry()
+    kclManager.clearLocalHistory()
+    kclManager.updateCodeEditor('manual edit', {
+      shouldExecute: false,
+      shouldResetCamera: false,
+      shouldWriteToDisk: false,
+    })
+
+    expect(kclManager.code).toBe('manual edit')
+
+    kclManager.undo()
+    expect(kclManager.code).toBe('zookeeper edit')
+
+    kclManager.undo()
+    expect(kclManager.code).toBe('persist me')
+
+    kclManager.redo()
+    expect(kclManager.code).toBe('zookeeper edit')
+
+    kclManager.redo()
+    expect(kclManager.code).toBe('manual edit')
+  })
+
   it('does not implicitly autosave programmatic editor updates when shouldWriteToDisk is false', () => {
     const { kclManager } = createKclManagerTestHarness('persist me')
     const writeToFileSpy = vi
