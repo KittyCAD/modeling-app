@@ -6,28 +6,161 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
+  createVariableDeclaration,
+  findUniqueName,
 } from '@src/lang/create'
 import {
   createPoint2dExpression,
+  createVariableExpressionsArray,
   deduplicateFaceExprs,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
-import { isFaceArtifact } from '@src/lang/modifyAst/faces'
+import {
+  getBodySelectionFromPrimitiveParentEntityId,
+  isFaceArtifact,
+} from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import { traverse } from '@src/lang/queryAst'
-import { valueOrVariable } from '@src/lang/queryAst'
+import {
+  getVariableExprsFromSelection,
+  valueOrVariable,
+} from '@src/lang/queryAst'
 import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
+import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
+import { isEnginePrimitiveSelection } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  EnginePrimitiveSelection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 
 function isProfileEdgeArtifact(
   artifact: Selections['graphSelections'][number]['artifact']
 ): boolean {
   return artifact?.type === 'segment' || artifact?.type === 'sweepEdge'
+}
+
+function getPrimitiveDistanceSelections(
+  selections: Selections
+): EnginePrimitiveSelection[] {
+  return selections.otherSelections.filter(
+    (selection): selection is EnginePrimitiveSelection =>
+      isEnginePrimitiveSelection(selection) &&
+      (selection.primitiveType === 'edge' ||
+        selection.primitiveType === 'vertex')
+  )
+}
+
+function insertPrimitiveDistanceTarget({
+  selection,
+  artifactGraph,
+  modifiedAst,
+  wasmInstance,
+  nodeToEdit,
+  insertIndex,
+}: {
+  selection: EnginePrimitiveSelection
+  artifactGraph: ArtifactGraph
+  modifiedAst: Node<Program>
+  wasmInstance: ModuleType
+  nodeToEdit?: PathToNode
+  insertIndex: number
+}):
+  | Error
+  | {
+      kind: 'edge' | 'vertex'
+      expr: Expr
+      insertIndex: number
+    } {
+  if (
+    selection.primitiveType !== 'edge' &&
+    selection.primitiveType !== 'vertex'
+  ) {
+    return new Error('Distance only supports primitive edge or vertex targets.')
+  }
+
+  if (!selection.parentEntityId) {
+    return new Error(
+      'Primitive distance selections must include a parent body.'
+    )
+  }
+
+  const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
+    selection.parentEntityId,
+    artifactGraph
+  )
+  if (!bodySelection?.artifact) {
+    return new Error('Could not resolve selected primitive body in code.')
+  }
+
+  const vars = getVariableExprsFromSelection(
+    {
+      graphSelections: [bodySelection],
+      otherSelections: [],
+    },
+    artifactGraph,
+    modifiedAst,
+    wasmInstance,
+    nodeToEdit,
+    {
+      lastChildLookup: true,
+    }
+  )
+  if (err(vars)) return vars
+
+  const bodyExpr = createVariableExpressionsArray(vars.exprs)
+  if (!bodyExpr) {
+    return new Error('Could not resolve selected primitive body in code.')
+  }
+
+  if (selection.primitiveType === 'vertex' && !selection.edgeEndpoint) {
+    return new Error('Could not resolve selected vertex to an edge endpoint.')
+  }
+
+  const primitiveIndex = selection.edgeEndpoint
+    ? selection.edgeEndpoint.edgePrimitiveIndex
+    : selection.primitiveIndex
+
+  const idExpr = createCallExpressionStdLibKw(
+    'edgeId',
+    structuredClone(bodyExpr),
+    [createLabeledArg('index', createLiteral(primitiveIndex, wasmInstance))]
+  )
+  const variableName = findUniqueName(
+    modifiedAst,
+    KCL_DEFAULT_CONSTANT_PREFIXES.EDGE
+  )
+  const variableIdentifierAst = createLocalName(variableName)
+  insertVariableAndOffsetPathToNode(
+    {
+      valueAst: idExpr,
+      valueText: '',
+      valueCalculated: '',
+      variableName,
+      variableDeclarationAst: createVariableDeclaration(variableName, idExpr),
+      variableIdentifierAst,
+      insertIndex,
+    },
+    modifiedAst
+  )
+
+  const expr = selection.edgeEndpoint
+    ? createCallExpressionStdLibKw(
+        selection.edgeEndpoint.endpoint === 'end' ? 'endOf' : 'startOf',
+        structuredClone(variableIdentifierAst),
+        []
+      )
+    : variableIdentifierAst
+
+  return {
+    kind: selection.primitiveType,
+    expr,
+    insertIndex: insertIndex + 1,
+  }
 }
 
 /**
@@ -578,13 +711,15 @@ export function addDistanceGdt({
       isFaceArtifact(selection.artifact) ||
       isProfileEdgeArtifact(selection.artifact)
   )
-  if (targetSelections.length === 0) {
+  const primitiveTargetSelections = getPrimitiveDistanceSelections(selections)
+
+  if (targetSelections.length === 0 && primitiveTargetSelections.length === 0) {
     return new Error(
-      'No valid selections found. Select one edge, or exactly two faces or edges.'
+      'No valid selections found. Select one edge, or exactly two faces, edges, or vertices.'
     )
   }
 
-  const targets: Array<{ kind: 'face' | 'edge'; expr: Expr }> = []
+  const targets: Array<{ kind: 'face' | 'edge' | 'vertex'; expr: Expr }> = []
   for (const selection of targetSelections) {
     const tagResult = modifyAstWithTagsForSelection(
       modifiedAst,
@@ -619,13 +754,35 @@ export function addDistanceGdt({
     }
   }
 
+  let primitiveInsertIndex = modifiedAst.body.length
+  for (const selection of primitiveTargetSelections) {
+    const primitiveTarget = insertPrimitiveDistanceTarget({
+      selection,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      nodeToEdit: mNodeToEdit,
+      insertIndex: primitiveInsertIndex,
+    })
+    if (err(primitiveTarget)) {
+      console.warn(
+        'Failed to create primitive distance target',
+        primitiveTarget
+      )
+      continue
+    }
+
+    primitiveInsertIndex = primitiveTarget.insertIndex
+    targets.push({ kind: primitiveTarget.kind, expr: primitiveTarget.expr })
+  }
+
   if (targets.length === 0) {
     return new Error('No valid distance targets could be generated')
   }
 
   if (targets.length === 1 && targets[0].kind !== 'edge') {
     return new Error(
-      'A single distance selection must be an edge. Select two faces or edges to measure between entities.'
+      'A single distance selection must be an edge. Select two faces, edges, or vertices to measure between entities.'
     )
   }
 
@@ -633,7 +790,7 @@ export function addDistanceGdt({
 
   if (targets.length > 2 && !allTargetsAreEdges) {
     return new Error(
-      'Select one or more edges for edge lengths, or exactly two faces or edges for a distance.'
+      'Select one or more edges for edge lengths, or exactly two faces, edges, or vertices for a distance.'
     )
   }
 

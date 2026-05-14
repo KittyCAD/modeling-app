@@ -54,12 +54,29 @@ use crate::std::args::TyF64;
 
 pub type KclObjectFields = HashMap<String, KclValue>;
 
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+pub struct EdgeEndpoint {
+    pub edge_id: ::uuid::Uuid,
+    pub position: f64,
+}
+
 /// Any KCL value.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum KclValue {
     Uuid {
+        value: ::uuid::Uuid,
+        #[serde(skip)]
+        meta: Vec<Metadata>,
+    },
+    EdgeEndpoint {
+        value: EdgeEndpoint,
+        #[serde(skip)]
+        meta: Vec<Metadata>,
+    },
+    Vertex {
         value: ::uuid::Uuid,
         #[serde(skip)]
         meta: Vec<Metadata>,
@@ -363,6 +380,8 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::Object { meta, .. } => to_vec_sr(&meta),
             KclValue::Module { meta, .. } => to_vec_sr(&meta),
             KclValue::Uuid { meta, .. } => to_vec_sr(&meta),
+            KclValue::EdgeEndpoint { meta, .. } => to_vec_sr(&meta),
+            KclValue::Vertex { meta, .. } => to_vec_sr(&meta),
             KclValue::Type { meta, .. } => to_vec_sr(&meta),
             KclValue::KclNone { meta, .. } => to_vec_sr(&meta),
             KclValue::BoundedEdge { meta, .. } => to_vec_sr(&meta),
@@ -394,6 +413,8 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::SketchVar { value, .. } => to_vec_sr(&value.meta),
             KclValue::SketchConstraint { value, .. } => to_vec_sr(&value.meta),
             KclValue::Uuid { meta, .. } => to_vec_sr(meta),
+            KclValue::EdgeEndpoint { meta, .. } => to_vec_sr(meta),
+            KclValue::Vertex { meta, .. } => to_vec_sr(meta),
             KclValue::Tuple { meta, .. } => to_vec_sr(meta),
             KclValue::HomArray { value, .. } => value.iter().flat_map(Into::<Vec<SourceRange>>::into).collect(),
             KclValue::Object { meta, .. } => to_vec_sr(meta),
@@ -416,6 +437,8 @@ impl KclValue {
     pub(crate) fn metadata(&self) -> Vec<Metadata> {
         match self {
             KclValue::Uuid { value: _, meta } => meta.clone(),
+            KclValue::EdgeEndpoint { meta, .. } => meta.clone(),
+            KclValue::Vertex { value: _, meta } => meta.clone(),
             KclValue::Bool { value: _, meta } => meta.clone(),
             KclValue::Number { meta, .. } => meta.clone(),
             KclValue::String { value: _, meta } => meta.clone(),
@@ -456,6 +479,8 @@ impl KclValue {
     pub(crate) fn show_variable_in_feature_tree(&self) -> bool {
         match self {
             KclValue::Uuid { .. } => false,
+            KclValue::EdgeEndpoint { .. } => false,
+            KclValue::Vertex { .. } => false,
             KclValue::Bool { .. } | KclValue::Number { .. } | KclValue::String { .. } => true,
             KclValue::SketchVar { .. }
             | KclValue::SketchConstraint { .. }
@@ -485,6 +510,8 @@ impl KclValue {
     pub(crate) fn human_friendly_type(&self) -> String {
         match self {
             KclValue::Uuid { .. } => "a unique ID (uuid)".to_owned(),
+            KclValue::EdgeEndpoint { .. } => "an edge endpoint".to_owned(),
+            KclValue::Vertex { .. } => "a vertex".to_owned(),
             KclValue::TagDeclarator(_) => "a tag declarator".to_owned(),
             KclValue::TagIdentifier(_) => "a tag identifier".to_owned(),
             KclValue::GdtAnnotation { .. } => "an annotation".to_owned(),
@@ -981,6 +1008,8 @@ impl KclValue {
             // TODO: Show units.
             KclValue::SketchVar { value, .. } => Some(format!("var {}", value.initial_value)),
             KclValue::Uuid { value, .. } => Some(format!("{value}")),
+            KclValue::EdgeEndpoint { value, .. } => Some(format!("{}@{}", value.edge_id, value.position)),
+            KclValue::Vertex { value, .. } => Some(format!("{value}")),
             KclValue::TagDeclarator(tag) => Some(format!("${}", tag.name)),
             KclValue::TagIdentifier(tag) => Some(format!("${}", tag.value)),
             // TODO better Array and Object stringification

@@ -702,3 +702,59 @@ export fn edgeId(
   /// Query the edge closest to this point. Uses absolute global coordinates.
   closestTo?: Point3d,
 ): Edge {}
+
+/// Return the start endpoint of an edge.
+/// This is useful for dimension and GD&T annotations that need to anchor to a
+/// specific end of an edge without referring to a BREP vertex index.
+/// ```kcl,legacySketch
+/// cube = startSketchOn(XY)
+///   |> rectangle(width = 10, height = 10, center = [0, 0])
+///   |> extrude(length = 2)
+///
+/// topEdge = edgeId(cube, closestTo = [0, 5, 2])
+/// gdt::distance(from = startOf(topEdge), to = endOf(topEdge), tolerance = 0.1)
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn startOf(
+  /// Edge whose start endpoint should be referenced.
+  @edge: Edge,
+): EdgeEndpoint {}
+
+/// Return the end endpoint of an edge.
+/// This is useful for dimension and GD&T annotations that need to anchor to a
+/// specific end of an edge without referring to a BREP vertex index.
+/// ```kcl,legacySketch
+/// cube = startSketchOn(XY)
+///   |> rectangle(width = 10, height = 10, center = [0, 0])
+///   |> extrude(length = 2)
+///
+/// topEdge = edgeId(cube, closestTo = [0, 5, 2])
+/// gdt::distance(from = startOf(topEdge), to = endOf(topEdge), tolerance = 0.1)
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn endOf(
+  /// Edge whose end endpoint should be referenced.
+  @edge: Edge,
+): EdgeEndpoint {}
+
+/// Given a vertex index, find its ID.
+/// In general, you should prefer selecting tagged faces or edges to using this function.
+/// Use this function if you need a topological vertex from imported geometry or operations
+/// that do not yet expose a taggable vertex.
+/// ```kcl,legacySketch
+/// cube = startSketchOn(XY)
+///   |> rectangle(width = 10, height = 10, center = [0, 0])
+///   |> extrude(length = 2)
+///
+/// corner = vertexId(cube, index = 0)
+/// gdt::distance(from = corner, to = edgeId(cube, index = 0), tolerance = 0.1)
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn vertexId(
+  /// The solid whose vertices we're trying to find
+  @body: Solid,
+  /// Vertex to identify.
+  /// The index is a stable ordering of vertices, used when you can't get the
+  /// usual ID of a vertex.
+  index: number(Count),
+): Vertex {}

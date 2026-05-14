@@ -131,6 +131,8 @@ fn substitute_sketch_var(
 ) -> Result<KclValue, KclError> {
     match value {
         KclValue::Uuid { .. } => Ok(value),
+        KclValue::EdgeEndpoint { .. } => Ok(value),
+        KclValue::Vertex { .. } => Ok(value),
         KclValue::Bool { .. } => Ok(value),
         KclValue::Number { .. } => Ok(value),
         KclValue::String { .. } => Ok(value),

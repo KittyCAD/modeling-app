@@ -2923,7 +2923,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   'GDT Distance': {
     description:
-      'Add an MBD distance annotation to an edge length or between two faces or edges.',
+      'Add an MBD distance annotation to an edge length or between two faces, edges, or vertices.',
     icon: 'dimension',
     needsReview: true,
     reviewValidation: async (context, modelingActor) => {
@@ -2959,7 +2959,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       objects: {
         inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+        selectionTypes: [
+          'cap',
+          'wall',
+          'edgeCut',
+          'segment',
+          'sweepEdge',
+          'enginePrimitiveEdge',
+          'enginePrimitiveVertex',
+        ],
+        selectionFilter: ['face', 'edge', 'curve', 'vertex'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),

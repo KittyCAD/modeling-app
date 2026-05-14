@@ -341,6 +341,18 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::ids::edge_id(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::edgeId"),
         ),
+        ("prelude", "startOf") => (
+            |e, a| Box::pin(crate::std::ids::start_of(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::startOf"),
+        ),
+        ("prelude", "endOf") => (
+            |e, a| Box::pin(crate::std::ids::end_of(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::endOf"),
+        ),
+        ("prelude", "vertexId") => (
+            |e, a| Box::pin(crate::std::ids::vertex_id(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::vertexId"),
+        ),
         ("sketch", "conic") => (
             |e, a| Box::pin(crate::std::sketch::conic(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::conic"),
@@ -672,6 +684,11 @@ pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
         ),
         ("types", "Helix") => (PrimitiveType::Helix, StdFnProps::default("std::types::Helix")),
         ("types", "Edge") => (PrimitiveType::Edge, StdFnProps::default("std::types::Edge")),
+        ("types", "EdgeEndpoint") => (
+            PrimitiveType::EdgeEndpoint,
+            StdFnProps::default("std::types::EdgeEndpoint"),
+        ),
+        ("types", "Vertex") => (PrimitiveType::Vertex, StdFnProps::default("std::types::Vertex")),
         ("types", "Axis2d") => (PrimitiveType::Axis2d, StdFnProps::default("std::types::Axis2d")),
         ("types", "Axis3d") => (PrimitiveType::Axis3d, StdFnProps::default("std::types::Axis3d")),
         ("types", "TaggedEdge") => (PrimitiveType::TaggedEdge, StdFnProps::default("std::types::TaggedEdge")),

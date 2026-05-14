@@ -2,10 +2,13 @@ import type { SelectionRange } from '@codemirror/state'
 import { EditorSelection } from '@codemirror/state'
 import type {
   EntityGetPrimitiveIndex,
+  EntityReference,
   OkModelingCmdResponse,
   Point2d,
+  Point3d,
   WebSocketRequest,
 } from '@kittycad/lib'
+import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type { Object3D } from 'three'
 import { Mesh } from 'three'
@@ -174,8 +177,16 @@ export async function getEngineRegionSelectionFromEntity(
 
 async function getPrimitiveSelectionForEntity(
   entityId: string,
-  engineCommandManager: ConnectionManager
+  engineCommandManager: ConnectionManager,
+  defaultPlanes: DefaultPlanes | null
 ): Promise<EnginePrimitiveSelection | null> {
+  const referenceSelection = await getPrimitiveSelectionFromEntityReference(
+    entityId,
+    engineCommandManager,
+    defaultPlanes
+  )
+  if (referenceSelection) return referenceSelection
+
   const websocketResponse = await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd_id: uuidv4(),
@@ -204,6 +215,260 @@ async function getPrimitiveSelectionForEntity(
     parentEntityId,
     primitiveIndex: entityGetPrimitiveIndex.primitive_index,
     primitiveType: entityGetPrimitiveIndex.entity_type,
+  }
+}
+
+async function getPrimitiveSelectionFromEntityReference(
+  entityId: string,
+  engineCommandManager: ConnectionManager,
+  defaultPlanes: DefaultPlanes | null
+): Promise<EnginePrimitiveSelection | null> {
+  const reference = await getEntityReferenceForEntity(
+    entityId,
+    engineCommandManager
+  )
+  if (!reference) return null
+
+  const selection = primitiveSelectionFromEntityReference(entityId, reference)
+  if (!selection) return null
+
+  if (reference.type !== 'vertex') return selection
+
+  const edgeEndpoint = await getVertexEdgeEndpointSelection({
+    vertexEntityId: entityId,
+    vertexReference: reference,
+    parentEntityId: selection.parentEntityId,
+    engineCommandManager,
+    defaultPlanes,
+  })
+
+  return edgeEndpoint ? { ...selection, edgeEndpoint } : selection
+}
+
+async function getEntityReferenceForEntity(
+  entityId: string,
+  engineCommandManager: ConnectionManager
+): Promise<EntityReference | null> {
+  const websocketResponse = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'query_entity_type',
+      entity_id: entityId,
+    },
+  })
+
+  if (!isModelingResponse(websocketResponse)) return null
+
+  const response = websocketResponse.resp.data.modeling_response
+  if (response.type !== 'query_entity_type') return null
+
+  return response.data.reference
+}
+
+async function getVertexEdgeEndpointSelection({
+  vertexEntityId,
+  vertexReference,
+  parentEntityId,
+  engineCommandManager,
+  defaultPlanes,
+}: {
+  vertexEntityId: string
+  vertexReference: Extract<EntityReference, { type: 'vertex' }>
+  parentEntityId?: string
+  engineCommandManager: ConnectionManager
+  defaultPlanes: DefaultPlanes | null
+}): Promise<EnginePrimitiveSelection['edgeEndpoint']> {
+  if (!parentEntityId || vertexReference.side_faces.length < 2) {
+    return undefined
+  }
+
+  for (let i = 0; i < vertexReference.side_faces.length - 1; i++) {
+    for (let j = i + 1; j < vertexReference.side_faces.length; j++) {
+      const commonEdgeId = await getCommonEdgeIdForFaces({
+        parentEntityId,
+        faceIds: [vertexReference.side_faces[i], vertexReference.side_faces[j]],
+        engineCommandManager,
+      })
+      if (!commonEdgeId) continue
+
+      const edgeReference = await getEntityReferenceForEntity(
+        commonEdgeId,
+        engineCommandManager
+      )
+      if (edgeReference?.type !== 'edge') continue
+
+      const topologyFallback = edgeReference.topology_fallback
+      if (!topologyFallback || topologyFallback.parent_id !== parentEntityId) {
+        continue
+      }
+
+      const endpoint =
+        (await getEndpointForVertexOnEdgeGeometry({
+          vertexEntityId,
+          edgeEntityId: commonEdgeId,
+          defaultPlanes,
+          engineCommandManager,
+        })) ?? getEndpointForVertexOnEdge(vertexReference, edgeReference)
+      if (!endpoint) continue
+
+      return {
+        edgePrimitiveIndex: topologyFallback.primitive_index,
+        endpoint,
+      }
+    }
+  }
+
+  return undefined
+}
+
+async function getCommonEdgeIdForFaces({
+  parentEntityId,
+  faceIds,
+  engineCommandManager,
+}: {
+  parentEntityId: string
+  faceIds: [string, string]
+  engineCommandManager: ConnectionManager
+}): Promise<string | undefined> {
+  const websocketResponse = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'solid3d_get_common_edge',
+      object_id: parentEntityId,
+      face_ids: faceIds,
+    },
+  })
+
+  if (!isModelingResponse(websocketResponse)) return undefined
+
+  const response = websocketResponse.resp.data.modeling_response
+  if (response.type !== 'solid3d_get_common_edge') return undefined
+
+  return response.data.edge
+}
+
+async function getEndpointForVertexOnEdgeGeometry({
+  vertexEntityId,
+  edgeEntityId,
+  defaultPlanes,
+  engineCommandManager,
+}: {
+  vertexEntityId: string
+  edgeEntityId: string
+  defaultPlanes: DefaultPlanes | null
+  engineCommandManager: ConnectionManager
+}): Promise<'start' | 'end' | undefined> {
+  if (!defaultPlanes) return undefined
+
+  for (const planeId of [
+    defaultPlanes.xy,
+    defaultPlanes.xz,
+    defaultPlanes.yz,
+  ]) {
+    const [vertexPoints, edgePoints] = await Promise.all([
+      projectEntityToPlane({
+        entityId: vertexEntityId,
+        planeId,
+        engineCommandManager,
+      }),
+      projectEntityToPlane({
+        entityId: edgeEntityId,
+        planeId,
+        engineCommandManager,
+      }),
+    ])
+
+    if (!vertexPoints?.[0] || !edgePoints || edgePoints.length < 2) continue
+
+    const vertexPoint = vertexPoints[0]
+    const startPoint = edgePoints[0]
+    const endPoint = edgePoints[edgePoints.length - 1]
+    const startDistance = distanceSquared3d(vertexPoint, startPoint)
+    const endDistance = distanceSquared3d(vertexPoint, endPoint)
+    const delta = Math.abs(startDistance - endDistance)
+
+    if (delta < 1e-8) continue
+    return startDistance < endDistance ? 'start' : 'end'
+  }
+
+  return undefined
+}
+
+async function projectEntityToPlane({
+  entityId,
+  planeId,
+  engineCommandManager,
+}: {
+  entityId: string
+  planeId: string
+  engineCommandManager: ConnectionManager
+}): Promise<Point3d[] | undefined> {
+  const websocketResponse = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'project_entity_to_plane',
+      entity_id: entityId,
+      plane_id: planeId,
+      use_plane_coords: false,
+    },
+  })
+
+  if (!isModelingResponse(websocketResponse)) return undefined
+
+  const response = websocketResponse.resp.data.modeling_response
+  if (response.type !== 'project_entity_to_plane') return undefined
+
+  return response.data.projected_points
+}
+
+function distanceSquared3d(a: Point3d, b: Point3d): number {
+  const dx = a.x - b.x
+  const dy = a.y - b.y
+  const dz = a.z - b.z
+  return dx * dx + dy * dy + dz * dz
+}
+
+function getEndpointForVertexOnEdge(
+  vertexReference: Extract<EntityReference, { type: 'vertex' }>,
+  edgeReference: Extract<EntityReference, { type: 'edge' }>
+): 'start' | 'end' | undefined {
+  if (!edgeReference.end_faces || edgeReference.end_faces.length === 0) {
+    return undefined
+  }
+
+  const vertexSideFaces = new Set(vertexReference.side_faces)
+  const matchingEndFaceIndex = edgeReference.end_faces.findIndex((faceId) =>
+    vertexSideFaces.has(faceId)
+  )
+
+  if (matchingEndFaceIndex === 0) return 'start'
+  if (matchingEndFaceIndex === 1) return 'end'
+  return undefined
+}
+
+function primitiveSelectionFromEntityReference(
+  entityId: string,
+  reference: EntityReference
+): EnginePrimitiveSelection | null {
+  if (
+    reference.type !== 'face' &&
+    reference.type !== 'edge' &&
+    reference.type !== 'vertex'
+  ) {
+    return null
+  }
+
+  if (!reference.topology_fallback) return null
+
+  return {
+    type: 'enginePrimitive',
+    entityId,
+    parentEntityId: reference.topology_fallback.parent_id,
+    primitiveIndex: reference.topology_fallback.primitive_index,
+    primitiveType: reference.type,
   }
 }
 
@@ -305,7 +570,8 @@ export async function getEventForSelectWithPoint(
     // or we build a primitive selection to be used as fallback for downstream operations
     const primitiveSelection = await getPrimitiveSelectionForEntity(
       data.entity_id,
-      engineCommandManager
+      engineCommandManager,
+      rustContext.defaultPlanes
     )
     if (primitiveSelection !== null) {
       return {
@@ -757,6 +1023,11 @@ export function getSelectionCountByType(
       selection.primitiveType === 'edge'
     ) {
       incrementOrInitializeSelectionType('enginePrimitiveEdge')
+    } else if (
+      selection.type === 'enginePrimitive' &&
+      selection.primitiveType === 'vertex'
+    ) {
+      incrementOrInitializeSelectionType('enginePrimitiveVertex')
     } else {
       incrementOrInitializeSelectionType('other')
     }
@@ -1177,7 +1448,7 @@ const semanticEntityNames: {
     'primitiveEdge',
     'enginePrimitiveEdge',
   ],
-  point: [],
+  point: ['enginePrimitiveVertex'],
   plane: ['defaultPlane'],
 }
 

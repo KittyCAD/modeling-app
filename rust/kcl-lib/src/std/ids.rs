@@ -4,6 +4,8 @@ use anyhow::Result;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
+use kittycad_modeling_cmds::shared::EntityReference;
+use kittycad_modeling_cmds::shared::EntityType;
 use kittycad_modeling_cmds::shared::Point3d;
 use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::{self as kcmc};
@@ -11,6 +13,7 @@ use kittycad_modeling_cmds::{self as kcmc};
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::exec::KclValue;
+use crate::execution::EdgeEndpoint;
 use crate::execution::ExecState;
 use crate::execution::ExtrudeSurface;
 use crate::execution::GeoMeta;
@@ -24,6 +27,7 @@ use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::std::Args;
 use crate::std::args::TyF64;
+use crate::std::fillet::EdgeReference;
 
 /// Translates face indices to face IDs.
 pub async fn face_id(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -132,6 +136,137 @@ pub async fn edge_id(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             vec![args.source_range],
         ))),
     }
+}
+
+/// Returns the start endpoint of an edge.
+pub async fn start_of(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    inner_edge_endpoint(0.0, exec_state, args)
+}
+
+/// Returns the end endpoint of an edge.
+pub async fn end_of(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    inner_edge_endpoint(1.0, exec_state, args)
+}
+
+fn inner_edge_endpoint(position: f64, exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let edge: EdgeReference = args.get_unlabeled_kw_arg("edge", &RuntimeType::edge(), exec_state)?;
+    let edge_id = edge.get_engine_id(exec_state, &args)?;
+
+    Ok(KclValue::EdgeEndpoint {
+        value: EdgeEndpoint { edge_id, position },
+        meta: vec![Metadata {
+            source_range: args.source_range,
+        }],
+    })
+}
+
+/// Translates vertex indices to vertex IDs.
+pub async fn vertex_id(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let body = args.get_unlabeled_kw_arg("body", &RuntimeType::solid(), exec_state)?;
+    let vertex_index: u32 = args.get_kw_arg("index", &RuntimeType::count(), exec_state)?;
+
+    inner_vertex_id(body, vertex_index, exec_state, args).await
+}
+
+/// Translates vertex indices to vertex IDs.
+async fn inner_vertex_id(
+    body: Solid,
+    vertex_index: u32,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<KclValue, KclError> {
+    let no_engine_commands = args.ctx.no_engine_commands().await;
+    let vertex_id = if no_engine_commands {
+        exec_state.next_uuid()
+    } else {
+        let child_ids_response = exec_state
+            .send_modeling_cmd(
+                ModelingCmdMeta::from_args(exec_state, &args),
+                ModelingCmd::from(mcmd::EntityGetAllChildUuids::builder().entity_id(body.id).build()),
+            )
+            .await?;
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::EntityGetAllChildUuids(inner_resp),
+        } = child_ids_response
+        else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "Engine returned invalid response, it should have returned EntityGetAllChildUuids but it returned {child_ids_response:?}"
+                ),
+                vec![args.source_range],
+            )));
+        };
+
+        let mut matching_vertex_id = None;
+        for child_id in inner_resp.entity_ids {
+            let entity_type_response = exec_state
+                .send_modeling_cmd(
+                    ModelingCmdMeta::from_args(exec_state, &args),
+                    ModelingCmd::from(mcmd::GetEntityType::builder().entity_id(child_id).build()),
+                )
+                .await?;
+            let OkWebSocketResponseData::Modeling {
+                modeling_response: OkModelingCmdResponse::GetEntityType(inner_resp),
+            } = entity_type_response
+            else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!(
+                        "Engine returned invalid response, it should have returned GetEntityType but it returned {entity_type_response:?}"
+                    ),
+                    vec![args.source_range],
+                )));
+            };
+
+            if inner_resp.entity_type != EntityType::Vertex {
+                continue;
+            }
+
+            let entity_type_response = exec_state
+                .send_modeling_cmd(
+                    ModelingCmdMeta::from_args(exec_state, &args),
+                    ModelingCmd::from(mcmd::QueryEntityType { entity_id: child_id }),
+                )
+                .await?;
+            let OkWebSocketResponseData::Modeling {
+                modeling_response: OkModelingCmdResponse::QueryEntityType(inner_resp),
+            } = entity_type_response
+            else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!(
+                        "Engine returned invalid response, it should have returned QueryEntityType but it returned {entity_type_response:?}"
+                    ),
+                    vec![args.source_range],
+                )));
+            };
+
+            let EntityReference::Vertex {
+                topology_fallback: Some(topology_fallback),
+                ..
+            } = inner_resp.reference
+            else {
+                continue;
+            };
+
+            if topology_fallback.parent_id == body.id && topology_fallback.primitive_index == vertex_index {
+                matching_vertex_id = Some(child_id);
+                break;
+            }
+        }
+
+        matching_vertex_id.ok_or_else(|| {
+            KclError::new_semantic(KclErrorDetails::new(
+                format!("Could not find vertex index {vertex_index} on the selected solid."),
+                vec![args.source_range],
+            ))
+        })?
+    };
+
+    Ok(KclValue::Vertex {
+        value: vertex_id,
+        meta: vec![Metadata {
+            source_range: args.source_range,
+        }],
+    })
 }
 
 /// Translates edge indices to edge IDs.
