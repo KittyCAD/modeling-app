@@ -1,13 +1,15 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { createActor, waitFor, fromPromise } from 'xstate'
 import {
   machine,
   confirmingDimensions,
 } from '@src/machines/sketchSolve/tools/lineToolDiagram'
 import type {
+  ApiObject,
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import { ORIGIN_TARGET } from '@src/machines/sketchSolve/sketchSolveSelection'
 import {
   createSceneGraphDelta,
   createPointApiObject,
@@ -310,5 +312,88 @@ describe('lineTool - XState', () => {
 
       actor.stop()
     })
+
+    it.each([
+      {
+        targetName: 'origin',
+        coincidentSegments: [1, 'ORIGIN'],
+        snapTarget: { type: ORIGIN_TARGET },
+        expectedState: 'waiting to start next draft line',
+      },
+      {
+        targetName: 'another point',
+        coincidentSegments: [1, 99],
+        snapTarget: { type: 'point', id: 99 },
+        expectedState: 'ready for user click',
+      },
+    ] as const)(
+      'should transition to $expectedState when snapping the next point coincident to $targetName',
+      async ({ coincidentSegments, snapTarget, expectedState }) => {
+        const pointObj = createPointApiObject({ id: 1, x: 10, y: 20 })
+        const lineObj = createLineApiObject({ id: 2, start: 1, end: 1 })
+        const coincidentConstraint = {
+          id: 10,
+          kind: {
+            type: 'Constraint',
+            constraint: {
+              type: 'Coincident',
+              segments: [...coincidentSegments],
+            },
+          },
+          label: '',
+          comments: '',
+          artifact_id: '0',
+          source: { type: 'Simple', range: [0, 0, 0], node_path: null },
+        } satisfies ApiObject
+
+        const sceneInfra = createMockSceneInfra()
+        const rustContext = createMockRustContext()
+        const kclManager = createMockKclManager()
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        const addSegmentMock = vi.mocked(rustContext.addSegment)
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        const editSegmentsMock = vi.mocked(rustContext.editSegments)
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        const addConstraintMock = vi.mocked(rustContext.addConstraint)
+
+        addSegmentMock.mockResolvedValue({
+          kclSource: { text: 'line' },
+          sceneGraphDelta: createSceneGraphDelta([pointObj, lineObj], [1, 2]),
+          checkpointId: null,
+        })
+        editSegmentsMock.mockResolvedValue({
+          kclSource: { text: 'line' },
+          sceneGraphDelta: createSceneGraphDelta([pointObj, lineObj], [1]),
+          checkpointId: null,
+        })
+        addConstraintMock.mockResolvedValue({
+          kclSource: { text: 'line' },
+          sceneGraphDelta: createSceneGraphDelta([coincidentConstraint], [10]),
+          checkpointId: null,
+        })
+
+        const actor = createActor(machine, {
+          input: {
+            sceneInfra,
+            rustContext,
+            kclManager,
+            sketchId: 0,
+          },
+        }).start()
+
+        actor.send({ type: 'add point', data: [10, 20] })
+        await waitFor(actor, (state) => state.matches('ShowDraftLine'))
+        actor.send({
+          type: 'add point',
+          data: [0, 0],
+          id: 1,
+          snapTarget,
+        })
+
+        await waitFor(actor, (state) => state.value === expectedState)
+
+        actor.stop()
+      }
+    )
   })
 })
