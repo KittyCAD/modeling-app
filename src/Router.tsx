@@ -53,6 +53,7 @@ export const Router = () => {
           children: [
             {
               path: PATHS.INDEX,
+              element: <></>,
               errorElement: <ErrorPage />,
               loader: baseLoader({ app }),
             },

@@ -40,7 +40,7 @@ import {
   getAllCurrentSettings,
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
-import { err, reportRejection } from '@src/lib/trap'
+import { err, isErr, reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
@@ -396,11 +396,15 @@ export class App implements AppSubsystems {
       } else {
         const legacyLayout = loadLayout(layoutConfigName)
         const fallbackLegacyLayout =
-          err(legacyLayout) && layoutConfigName !== DEFAULT_LAYOUT_CONFIG_NAME
+          isErr(legacyLayout) && layoutConfigName !== DEFAULT_LAYOUT_CONFIG_NAME
             ? loadLayout(DEFAULT_LAYOUT_CONFIG_NAME)
             : legacyLayout
-        if (!err(fallbackLegacyLayout)) {
+        if (!isErr(fallbackLegacyLayout)) {
           layoutSignal.value = structuredClone(fallbackLegacyLayout)
+        } else if (
+          fallbackLegacyLayout.message !== 'No persisted layout found'
+        ) {
+          err(fallbackLegacyLayout)
         }
       }
 
