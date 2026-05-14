@@ -755,7 +755,6 @@ describe('createOnDragCallback', () => {
         sceneGraphDelta,
         writeToDisk: false,
         suppressExecOutcomeIssues: true,
-        suppressFreedomConflictColoring: true,
       })
       expect(setIsSolveInProgress).toHaveBeenCalledWith(true)
       expect(setIsSolveInProgress).toHaveBeenCalledWith(false)
@@ -882,7 +881,6 @@ describe('createOnDragCallback', () => {
         sceneGraphDelta: updatedSceneGraphDelta,
         writeToDisk: false,
         suppressExecOutcomeIssues: true,
-        suppressFreedomConflictColoring: true,
       })
     }
   )
@@ -995,7 +993,6 @@ describe('createOnDragCallback', () => {
         sceneGraphDelta: updatedSceneGraphDelta,
         writeToDisk: false,
         suppressExecOutcomeIssues: true,
-        suppressFreedomConflictColoring: true,
       })
     }
   )
@@ -1540,16 +1537,11 @@ describe('createOnDragCallback', () => {
         checkpointId: null,
       })
       .mockResolvedValueOnce({
-        kclSource: { text: 'pre-settle final' },
-        sceneGraphDelta: validPreviewDelta,
+        kclSource: { text: 'invalid final' },
+        sceneGraphDelta: invalidCommittedDelta,
         checkpointId: null,
       })
       .mockResolvedValueOnce(recoveredCommit)
-    ;(rustContext.sketchExecuteMock as any).mockResolvedValueOnce({
-      kclSource: { text: 'invalid final' },
-      sceneGraphDelta: invalidCommittedDelta,
-      checkpointId: null,
-    })
     ;(rustContext.restoreSketchCheckpoint as any).mockResolvedValue(
       restoreResult
     )
@@ -1645,16 +1637,11 @@ describe('createOnDragCallback', () => {
         checkpointId: null,
       })
       .mockResolvedValueOnce({
-        kclSource: { text: 'pre-settle final' },
+        kclSource: { text: 'missing checkpoint final' },
         sceneGraphDelta: validPreviewDelta,
         checkpointId: null,
       })
       .mockResolvedValueOnce(recoveredCommit)
-    ;(rustContext.sketchExecuteMock as any).mockResolvedValueOnce({
-      kclSource: { text: 'missing checkpoint final' },
-      sceneGraphDelta: validPreviewDelta,
-      checkpointId: null,
-    })
     ;(rustContext.restoreSketchCheckpoint as any).mockResolvedValue(
       restoreResult
     )
@@ -1759,14 +1746,7 @@ describe('createOnDragCallback', () => {
         checkpointId: null,
       })
       .mockImplementationOnce(() => deferredInvalidPreview.promise)
-      .mockResolvedValueOnce({
-        kclSource: { text: 'pre-settle final' },
-        sceneGraphDelta: validPreviewDelta,
-        checkpointId: null,
-      })
-    ;(rustContext.sketchExecuteMock as any).mockResolvedValueOnce(
-      committedResult
-    )
+      .mockResolvedValueOnce(committedResult)
 
     onDragStart({
       intersectionPoint: {
@@ -1960,7 +1940,6 @@ describe('createOnDragCallback', () => {
       checkpointId: 123,
     }
     ;(rustContext.editSegments as any).mockResolvedValue(editResult)
-    ;(rustContext.sketchExecuteMock as any).mockResolvedValue(editResult)
 
     onDragStart({
       intersectionPoint: {
@@ -1983,8 +1962,7 @@ describe('createOnDragCallback', () => {
     })
 
     expect(rustContext.editSegments).toHaveBeenCalledOnce()
-    expect(rustContext.editSegments.mock.calls[0]?.[4]).toBe(false)
-    expect(rustContext.sketchExecuteMock).toHaveBeenCalledOnce()
+    expect(rustContext.editSegments.mock.calls[0]?.[4]).toBe(true)
     expect(rustContext.addConstraint).not.toHaveBeenCalled()
   })
 
@@ -2773,7 +2751,6 @@ describe('createOnDragCallback', () => {
       ...result,
       writeToDisk: false,
       suppressExecOutcomeIssues: true,
-      suppressFreedomConflictColoring: true,
     })
   })
 
@@ -2909,7 +2886,6 @@ describe('createOnDragCallback', () => {
       invalidDelta.exec_outcome
     )
     expect(outcome?.suppressExecOutcomeIssues).toBe(true)
-    expect(outcome?.suppressFreedomConflictColoring).toBe(true)
   })
 
   it('should not send event when edit fails to prevent invalid state updates', async () => {

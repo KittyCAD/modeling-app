@@ -169,7 +169,6 @@ interface UpdateSegmentArgs {
   group: Group
   state: SegmentRenderState
   hasSolveErrors: boolean
-  suppressFreedomConflictColoring?: boolean
   freedom: Freedom | null
 }
 
@@ -376,7 +375,6 @@ class PointSegment implements SketchEntityUtils {
       hoverColor: state.hoverColor,
       isDraft: state.draft,
       hasSolveErrors: args.hasSolveErrors,
-      suppressFreedomConflictColoring: args.suppressFreedomConflictColoring,
       freedom,
       theme,
     })
@@ -390,7 +388,6 @@ class PointSegment implements SketchEntityUtils {
       hoverColor,
       isDraft,
       hasSolveErrors,
-      suppressFreedomConflictColoring,
       freedom,
       theme,
     }: {
@@ -399,7 +396,6 @@ class PointSegment implements SketchEntityUtils {
       hoverColor?: number
       isDraft: boolean
       hasSolveErrors?: boolean
-      suppressFreedomConflictColoring?: boolean
       freedom?: Freedom | null
       theme: Themes
     }
@@ -414,7 +410,6 @@ class PointSegment implements SketchEntityUtils {
       hoverColor,
       isSelected,
       hasSolveErrors,
-      suppressFreedomConflictColoring,
       freedom,
       theme,
     })
@@ -435,7 +430,6 @@ class LineSegment implements SketchEntityUtils {
     isDraft: boolean,
     theme: Themes,
     hasSolveErrors?: boolean,
-    suppressFreedomConflictColoring?: boolean,
     freedom?: Freedom | null
   ): void {
     updateLineMaterial(mesh.material, {
@@ -446,7 +440,6 @@ class LineSegment implements SketchEntityUtils {
       isDraft,
       theme,
       hasSolveErrors,
-      suppressFreedomConflictColoring,
       freedom,
     })
   }
@@ -618,7 +611,6 @@ class LineSegment implements SketchEntityUtils {
       state.draft,
       theme,
       args.hasSolveErrors,
-      args.suppressFreedomConflictColoring,
       freedom
     )
   }
@@ -708,7 +700,6 @@ class ArcSegment implements SketchEntityUtils {
     isDraft: boolean,
     theme: Themes,
     hasSolveErrors?: boolean,
-    suppressFreedomConflictColoring?: boolean,
     freedom?: Freedom | null
   ): void {
     updateLineMaterial(mesh.material, {
@@ -719,7 +710,6 @@ class ArcSegment implements SketchEntityUtils {
       isDraft,
       theme,
       hasSolveErrors,
-      suppressFreedomConflictColoring,
       freedom,
     })
   }
@@ -952,7 +942,6 @@ class ArcSegment implements SketchEntityUtils {
       state.draft,
       theme,
       args.hasSolveErrors,
-      args.suppressFreedomConflictColoring,
       freedom
     )
   }
@@ -1148,7 +1137,6 @@ class CircleSegment implements SketchEntityUtils {
       isDraft: state.draft,
       theme,
       hasSolveErrors: args.hasSolveErrors,
-      suppressFreedomConflictColoring: args.suppressFreedomConflictColoring,
       freedom,
     })
   }
@@ -1164,7 +1152,6 @@ function updateLineMaterial(
     isDraft,
     theme,
     hasSolveErrors,
-    suppressFreedomConflictColoring,
     freedom,
   }: {
     isSelected: boolean
@@ -1174,7 +1161,6 @@ function updateLineMaterial(
     isDraft: boolean
     theme: Themes
     hasSolveErrors?: boolean
-    suppressFreedomConflictColoring?: boolean
     freedom?: Freedom | null
   }
 ) {
@@ -1187,7 +1173,6 @@ function updateLineMaterial(
     isSelected,
     theme,
     hasSolveErrors,
-    suppressFreedomConflictColoring,
     freedom,
   })
   material.color.set(color)
