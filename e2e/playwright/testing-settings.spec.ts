@@ -110,7 +110,7 @@ test.describe(
         })
 
         // Go to the hotkey for Command Palette.
-        const commandPalette = page.getByText('Toggle Command Palette')
+        const commandPalette = page.getByText('Open Command Palette')
         await commandPalette.scrollIntoViewIfNeeded()
 
         // The heading is above it and should be in view now.

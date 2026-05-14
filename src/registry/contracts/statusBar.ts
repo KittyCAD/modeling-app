@@ -64,6 +64,19 @@ const sortLocalStatusBarItems = (
   inputs: readonly StatusBarItemContribution[]
 ) => sortByOrderProperty(inputs, 'start')
 
+export function filterStatusBarItemsForScopes(
+  items: readonly StatusBarItemType[],
+  scopes: readonly string[]
+) {
+  const activeScopes = new Set(scopes)
+
+  return items.filter(
+    (item) =>
+      !item.scopes?.length ||
+      item.scopes.some((scope) => activeScopes.has(scope))
+  )
+}
+
 export const statusBarContract = defineContract({
   statusBarGlobalItemsValueSpec: defineValueSpec<
     StatusBarItemContribution,

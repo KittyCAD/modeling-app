@@ -1,15 +1,16 @@
-import { defineConfig, globalIgnores } from 'eslint/config'
 import { fixupConfigRules, fixupPluginRules } from '@eslint/compat'
-import reactPerf from 'eslint-plugin-react-perf'
+import { FlatCompat } from '@eslint/eslintrc'
+import js from '@eslint/js'
+import typescriptEslint from '@typescript-eslint/eslint-plugin'
+import tsParser from '@typescript-eslint/parser'
 import cssModules from 'eslint-plugin-css-modules'
 import jsxA11Y from 'eslint-plugin-jsx-a11y'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
+import reactPerf from 'eslint-plugin-react-perf'
 import suggestNoThrow from 'eslint-plugin-suggest-no-throw'
-import typescriptEslint from '@typescript-eslint/eslint-plugin'
-import tsParser from '@typescript-eslint/parser'
-import js from '@eslint/js'
-import { FlatCompat } from '@eslint/eslintrc'
+import { defineConfig, globalIgnores } from 'eslint/config'
+import noCodemirrorPrintableKeymapKeystrokes from './src/eslint/rules/no-codemirror-printable-keymap-keystrokes.mjs'
 
 const compat = new FlatCompat({
   baseDirectory: import.meta.dirname,
@@ -46,6 +47,12 @@ export default defineConfig([
       'react-hooks': fixupPluginRules(reactHooks),
       'suggest-no-throw': suggestNoThrow,
       '@typescript-eslint': typescriptEslint,
+      zds: {
+        rules: {
+          'no-codemirror-printable-keymap-keystrokes':
+            noCodemirrorPrintableKeymapKeystrokes,
+        },
+      },
     },
 
     languageOptions: {
@@ -183,6 +190,7 @@ export default defineConfig([
       semi: ['error', 'never'],
       'react-hooks/exhaustive-deps': 'error',
       'suggest-no-throw/suggest-no-throw': 'error',
+      'zds/no-codemirror-printable-keymap-keystrokes': 'error',
     },
   },
   {

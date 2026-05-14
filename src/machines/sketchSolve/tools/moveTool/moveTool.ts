@@ -194,13 +194,15 @@ function buildSegmentCtorWithDrag({
   currentCursorPosition,
   dragVec,
   units,
+  pointPositionOverride,
 }: {
   objUnderCursor: ApiObject
-  selectedObjects: Array<ApiObject>
+  selectedObjects: ApiObject[]
   isEntityUnderCursor: boolean
   currentCursorPosition: Vector2
   dragVec: Vector2
   units: NumericSuffix
+  pointPositionOverride?: Extract<SegmentCtor, { type: 'Point' }>['position']
 }): SegmentCtor | null {
   const baseCtor = buildSegmentCtorFromObject(obj, objects)
   if (!baseCtor) {
@@ -208,37 +210,35 @@ function buildSegmentCtorWithDrag({
   }
 
   if (baseCtor.type === 'Point') {
+    if (pointPositionOverride) {
+      return {
+        type: 'Point',
+        position: pointPositionOverride,
+      }
+    }
+
     if (isEntityUnderCursor) {
       // Use twoD directly for entity under cursor
       // Note: currentCursorPosition comes from intersectionPoint.twoD which is in world coordinates and scaled to match current units
       return {
         type: 'Point',
-        position: {
-          x: {
-            type: 'Var',
-            value: roundOff(currentCursorPosition.x),
-            units,
-          },
-          y: {
-            type: 'Var',
-            value: roundOff(currentCursorPosition.y),
-            units,
-          },
-        },
-      }
-    } else {
-      // Apply drag vector to current position
-      const currentPos = {
-        x: baseCtor.position.x,
-        y: baseCtor.position.y,
-      }
-      const newPos = applyVectorToPoint2D(currentPos, dragVec)
-      return {
-        type: 'Point',
-        position: newPos,
+        position: buildCursorPointPosition(currentCursorPosition, units),
       }
     }
-  } else if (baseCtor.type === 'Line') {
+
+    // Apply drag vector to current position
+    const currentPos = {
+      x: baseCtor.position.x,
+      y: baseCtor.position.y,
+    }
+    const newPos = applyVectorToPoint2D(currentPos, dragVec)
+    return {
+      type: 'Point',
+      position: newPos,
+    }
+  }
+
+  if (baseCtor.type === 'Line') {
     // For lines, always apply the drag vector to both endpoints (translate the line)
     // This applies whether it's the entity under cursor or another selected entity
     const newStart = applyVectorToPoint2D(baseCtor.start, dragVec)
@@ -248,7 +248,9 @@ function buildSegmentCtorWithDrag({
       start: newStart,
       end: newEnd,
     }
-  } else if (baseCtor.type === 'Arc') {
+  }
+
+  if (baseCtor.type === 'Arc') {
     // For arcs, always apply the drag vector to center, start, and end points (translate the arc)
     // This applies whether it's the entity under cursor or another selected entity
     const newCenter = applyVectorToPoint2D(baseCtor.center, dragVec)
@@ -264,7 +266,9 @@ function buildSegmentCtorWithDrag({
       start: newStart,
       end: newEnd,
     }
-  } else if (baseCtor.type === 'Circle') {
+  }
+
+  if (baseCtor.type === 'Circle') {
     const newCenter = applyVectorToPoint2D(baseCtor.center, dragVec)
     const newStart = applyVectorToPoint2D(baseCtor.start, dragVec)
 
@@ -277,6 +281,24 @@ function buildSegmentCtorWithDrag({
   }
 
   return baseCtor
+}
+
+function buildCursorPointPosition(
+  position: Vector2,
+  units: NumericSuffix
+): Extract<SegmentCtor, { type: 'Point' }>['position'] {
+  return {
+    x: {
+      type: 'Var',
+      value: roundOff(position.x),
+      units,
+    },
+    y: {
+      type: 'Var',
+      value: roundOff(position.y),
+      units,
+    },
+  }
 }
 
 function buildConstraintLabelPosition(
@@ -764,6 +786,8 @@ function buildPreviewOutcomeWithPreservedGeometry({
 type CreateOnDragStartCallbackArgs = {
   // Seeds the drag anchor used to compute relative drag vectors.
   setLastSuccessfulDragFromPoint: (point: Vector2) => void
+  // Keeps the fixed drag-start anchor for frame-independent previews.
+  setDragStartPoint: (point: Vector2) => void
   // Clears any previously cached valid preview from an earlier drag session.
   setLastGoodPreview: (preview: DragCommitCandidate | null) => void
   // Stores the frontend sketch outcome at drag start for preview fallback.
@@ -789,6 +813,7 @@ type CreateOnDragStartCallbackArgs = {
  */
 export function createOnDragStartCallback({
   setLastSuccessfulDragFromPoint,
+  setDragStartPoint,
   setLastGoodPreview,
   setDragStartOutcome,
   setPreDragCheckpointId,
@@ -805,7 +830,9 @@ export function createOnDragStartCallback({
   return ({ intersectionPoint }) => {
     dismissConstraintHoverPopup()
     beginDragSession()
-    setLastSuccessfulDragFromPoint(intersectionPoint.twoD.clone())
+    const dragStartPoint = intersectionPoint.twoD.clone()
+    setLastSuccessfulDragFromPoint(dragStartPoint.clone())
+    setDragStartPoint(dragStartPoint)
     setLastGoodPreview(null)
     setDragStartOutcome(getCurrentSketchOutcome())
     setPreDragCheckpointId(getCurrentCommittedCheckpointId())
@@ -1114,6 +1141,7 @@ export function createOnDragCallback({
   getLastGoodPreview,
   setLastGoodPreview,
   getDragStartOutcome,
+  getDragStartPoint,
   getContextData,
   editSegments,
   editDistanceConstraintLabelPosition = async () => null,
@@ -1135,6 +1163,7 @@ export function createOnDragCallback({
   getLastGoodPreview: () => DragCommitCandidate | null
   setLastGoodPreview: (preview: DragCommitCandidate | null) => void
   getDragStartOutcome: () => DragSketchOutcome | null
+  getDragStartPoint?: () => Vector2
   getContextData: () => {
     selectedIds: Array<number>
     sketchId: number
@@ -1254,12 +1283,14 @@ export function createOnDragCallback({
       return
     }
 
+    const dragStartOutcome = getDragStartOutcome()
+    const editSceneGraphDelta =
+      dragStartOutcome?.sceneGraphDelta ?? sceneGraphDelta
+    const editObjects = editSceneGraphDelta.new_graph.objects
+
     const coincidentClusterPointIds =
       entityUnderCursorId !== null
-        ? getCoincidentCluster(
-            entityUnderCursorId,
-            sceneGraphDelta.new_graph.objects
-          )
+        ? getCoincidentCluster(entityUnderCursorId, editObjects)
         : []
 
     // If no entity under cursor and no selectedIds, nothing to do
@@ -1287,23 +1318,38 @@ export function createOnDragCallback({
           })
       onUpdateDragSnapping(snappingCandidate)
 
-      // Calculate drag vector from last successful drag point to current position
-      const dragVec = twoD.clone().sub(getLastSuccessfulDragFromPoint())
+      // Build every preview from the drag-start geometry. Solver output can
+      // legitimately adjust unconstrained geometry, and applying the next drag
+      // increment to that adjusted result compounds small deviations.
+      const dragAnchorPoint =
+        getDragStartPoint?.() ?? getLastSuccessfulDragFromPoint()
+      const dragVec = twoD.clone().sub(dragAnchorPoint)
 
-      const objects = sceneGraphDelta.new_graph.objects
+      const objects = editObjects
       const segmentsToEdit: ExistingSegmentCtor[] = []
-
-      // Collect all IDs to edit (entity under cursor + coincident points + selectedIds)
-      const idsToEdit = new Set<number>()
-      coincidentClusterPointIds.forEach((id) => {
-        idsToEdit.add(id)
-      })
-      selectedIds.forEach((id) => {
-        idsToEdit.add(id)
-      })
-
-      // Build ctors for each segment with drag applied
       const units = baseUnitToNumericSuffix(getDefaultLengthUnit())
+      const isDraggingPointCluster =
+        entityUnderCursorId !== null &&
+        coincidentClusterPointIds.length > 1 &&
+        isPointSegment(objects[entityUnderCursorId])
+      const coincidentClusterPointIdSet = new Set(
+        isDraggingPointCluster ? coincidentClusterPointIds : []
+      )
+      const coincidentClusterDragTarget = isDraggingPointCluster
+        ? buildCursorPointPosition(twoD, units)
+        : null
+
+      // Collect all IDs to edit. Coincident point edits are intentionally last:
+      // Rust flattens point edits into owner segment edits in order, and the
+      // point under the cursor should override broader selected-segment edits.
+      const idsToEdit = new Set<number>()
+      for (const id of selectedIds) {
+        idsToEdit.add(id)
+      }
+      for (const id of coincidentClusterPointIds) {
+        idsToEdit.delete(id)
+        idsToEdit.add(id)
+      }
 
       for (const id of idsToEdit) {
         const obj = objects[id]
@@ -1317,6 +1363,10 @@ export function createOnDragCallback({
         }
 
         const isEntityUnderCursor = id === entityUnderCursorId
+        const pointPositionOverride =
+          coincidentClusterDragTarget && coincidentClusterPointIdSet.has(id)
+            ? coincidentClusterDragTarget
+            : undefined
 
         const ctor = buildSegmentCtorWithDrag({
           objUnderCursor: obj,
@@ -1325,6 +1375,7 @@ export function createOnDragCallback({
           currentCursorPosition: twoD,
           dragVec: dragVec,
           units,
+          pointPositionOverride,
         })
 
         if (ctor) {
@@ -1461,6 +1512,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
   const [getIsDragActive, setIsDragActive] = createGetSet(false)
   const [getLastSuccessfulDragFromPoint, setLastSuccessfulDragFromPoint] =
     createGetSet<Vector2>(new Vector2())
+  const [getDragStartPoint, setDragStartPoint] = createGetSet<Vector2>(
+    new Vector2()
+  )
   const [getDraggedEntityId, setDraggedEntityId] = createGetSet<number | null>(
     null
   )
@@ -1685,6 +1739,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
   context.sceneInfra.setCallbacks({
     onDragStart: createOnDragStartCallback({
       setLastSuccessfulDragFromPoint,
+      setDragStartPoint,
       setLastGoodPreview,
       setDragStartOutcome,
       setPreDragCheckpointId,
@@ -2135,6 +2190,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       getLastGoodPreview,
       setLastGoodPreview,
       getDragStartOutcome,
+      getDragStartPoint,
       getContextData: () => {
         const snapshot = self.getSnapshot()
         return {
