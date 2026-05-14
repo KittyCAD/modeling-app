@@ -187,6 +187,12 @@ export function updateResidualsUnderlay(
   updateUnderlayFields(underlay, fields)
 }
 
+export function disposeResidualsUnderlay(
+  context: SketchSolveScenePluginContext
+): void {
+  removeResidualsUnderlay(context.sketchSolveGroup)
+}
+
 export function buildResidualFieldsForSceneGraph(
   sceneGraphDelta: SceneGraphDelta,
   sketchId: number

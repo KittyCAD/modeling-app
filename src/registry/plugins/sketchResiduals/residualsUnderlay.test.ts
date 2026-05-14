@@ -66,6 +66,10 @@ describe('sketch residuals plugin', () => {
     expect(registry.get(sketchSolveScenePluginsValueSpec)[0].id).toBe(
       'sketch-residuals-underlay'
     )
+    expect(
+      registry.get(sketchSolveScenePluginsValueSpec)[0]
+        .onSketchScenePluginDispose
+    ).toBeTypeOf('function')
   })
 })
 

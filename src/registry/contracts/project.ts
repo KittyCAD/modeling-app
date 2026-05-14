@@ -27,6 +27,7 @@ export interface SketchSolveScenePluginContext {
 export interface SketchSolveScenePlugin {
   id: string
   onSketchSceneGraphUpdate: (context: SketchSolveScenePluginContext) => void
+  onSketchScenePluginDispose?: (context: SketchSolveScenePluginContext) => void
 }
 
 const projectContract = defineContract({

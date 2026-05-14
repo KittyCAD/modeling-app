@@ -3,7 +3,7 @@ import type {
   SceneGraphDelta,
   SegmentCtor,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { ReadonlySignal } from '@preact/signals-core'
+import { effect, type ReadonlySignal } from '@preact/signals-core'
 import { toggleSketchExtension } from '@src/editor/plugins/sketch'
 import type { KclManager } from '@src/lang/KclManager'
 import {
@@ -44,6 +44,7 @@ import {
   initializeInitialSceneGraph,
   initializeIntersectionPlane,
   ORIGIN_TARGET,
+  refreshSketchSolveScenePlugins,
   refreshSelectionStyling,
   refreshSketchSolveScale,
   sendToActorIfActive,
@@ -65,7 +66,14 @@ import {
 import { applyOrEquipConstraintToolFromToolbar } from '@src/machines/sketchSolve/tools/constraintToolbarAction'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import type { SketchSolveScenePlugin } from '@src/registry/contracts/project'
-import { assertEvent, assign, createMachine, sendParent, setup } from 'xstate'
+import {
+  assertEvent,
+  assign,
+  createMachine,
+  fromCallback,
+  sendParent,
+  setup,
+} from 'xstate'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
 const constraintToolNameSet = new Set<string>(constraintToolNames)
@@ -482,6 +490,7 @@ export const sketchSolveMachine = setup({
     'refresh selection styling': refreshSelectionStyling,
     'clear hovered code highlight': clearHoveredCodeHighlight,
     'update sketch outcome': assign(updateSketchOutcome),
+    'refresh sketch solve scene plugins': refreshSketchSolveScenePlugins,
     'set draft entities': assign(setDraftEntities),
     'clear draft entities': assign(clearDraftEntities),
     'delete draft entities': (
@@ -491,12 +500,45 @@ export const sketchSolveMachine = setup({
       void deleteDraftEntities(args)
     },
     'spawn tool': assign((args) => {
-      const typedSpawn: SpawnToolActor = args.spawn
+      const typedSpawn = args.spawn as unknown as SpawnToolActor
       return spawnTool(args, typedSpawn)
     }),
   },
   actors: {
     tearDownSketchSolve,
+    watchSketchSolveScenePluginInputs: fromCallback<
+      SketchSolveMachineEvent,
+      {
+        kclManager: KclManager
+        sketchSolveScenePlugins: ReadonlySignal<SketchSolveScenePlugin[]>
+      }
+    >(({ input, sendBack }) => {
+      const refresh = () => {
+        sendBack({ type: 'refresh sketch solve scene plugins' })
+      }
+      let previousPlugins = input.sketchSolveScenePlugins.value
+      const settingsSubscription =
+        input.kclManager.systemDeps.settings.subscribe(refresh)
+      const disposePluginSignalEffect = effect(() => {
+        const nextPlugins = input.sketchSolveScenePlugins.value
+        const disposedPlugins = previousPlugins.filter(
+          (previousPlugin) =>
+            !nextPlugins.some(
+              (nextPlugin) => nextPlugin.id === previousPlugin.id
+            )
+        )
+        previousPlugins = nextPlugins
+        sendBack({
+          type: 'refresh sketch solve scene plugins',
+          data: { disposedPlugins },
+        })
+      })
+
+      return () => {
+        settingsSubscription.unsubscribe()
+        disposePluginSignalEffect()
+      }
+    }),
     moveToolActor: createMachine({
       /* ... */
     }),
@@ -544,6 +586,11 @@ export const sketchSolveMachine = setup({
       actions: 'update sketch outcome',
       description:
         'Updates the sketch execution outcome in the context when tools complete operations',
+    },
+    'refresh sketch solve scene plugins': {
+      actions: 'refresh sketch solve scene plugins',
+      description:
+        'Re-runs sketch scene plugins against the current sketch graph after settings or plugin activation changes.',
     },
     'set draft entities': {
       actions: 'set draft entities',
@@ -1184,4 +1231,13 @@ export const sketchSolveMachine = setup({
     ({ context }) =>
       toggleSketchExtension(context.kclManager.editorView, false),
   ],
+
+  invoke: {
+    id: 'watchSketchSolveScenePluginInputs',
+    src: 'watchSketchSolveScenePluginInputs',
+    input: ({ context }: { context: SketchSolveContext }) => ({
+      kclManager: context.kclManager,
+      sketchSolveScenePlugins: context.sketchSolveScenePlugins,
+    }),
+  },
 })

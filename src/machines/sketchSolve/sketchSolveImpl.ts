@@ -77,7 +77,10 @@ import { machine as tangentialArcTool } from '@src/machines/sketchSolve/tools/ta
 import { machine as threePointArcTool } from '@src/machines/sketchSolve/tools/threePointArcToolDiagram'
 import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
 import { constraintToolMachines } from '@src/machines/sketchSolve/tools/constraintToolMachine'
-import type { SketchSolveScenePlugin } from '@src/registry/contracts/project'
+import type {
+  SketchSolveScenePlugin,
+  SketchSolveScenePluginContext,
+} from '@src/registry/contracts/project'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import {
   type ActionArgs,
@@ -166,6 +169,10 @@ export type SketchSolveMachineEvent =
       data: { constraintId: number }
     }
   | { type: 'stop editing constraint' }
+  | {
+      type: 'refresh sketch solve scene plugins'
+      data?: { disposedPlugins?: SketchSolveScenePlugin[] }
+    }
 
 export type UpdateSketchOutcomeEvent = {
   type: 'update sketch outcome'
@@ -668,29 +675,80 @@ function updateSketchSolveScenePlugins(
   context: SketchSolveContext,
   sceneGraphDelta: SceneGraphDelta
 ): void {
+  const pluginContext = getSketchSolveScenePluginContext(
+    context,
+    sceneGraphDelta
+  )
+  if (!pluginContext) {
+    return
+  }
+
+  for (const plugin of context.sketchSolveScenePlugins.value) {
+    try {
+      plugin.onSketchSceneGraphUpdate(pluginContext)
+    } catch (error) {
+      console.error('Sketch solve scene plugin failed', plugin.id, error)
+    }
+  }
+}
+
+function getSketchSolveScenePluginContext(
+  context: SketchSolveContext,
+  sceneGraphDelta: SceneGraphDelta
+): SketchSolveScenePluginContext | null {
   const sketchSolveGroup =
     context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
   if (!(sketchSolveGroup instanceof Group)) {
-    return
+    return null
   }
 
   const settings = getOnlySettingsFromContext(
     context.kclManager.systemDeps.settings.getSnapshot().context
   )
 
-  for (const plugin of context.sketchSolveScenePlugins.value) {
-    try {
-      plugin.onSketchSceneGraphUpdate({
-        sceneInfra: context.sceneInfra,
-        sketchSolveGroup,
-        sceneGraphDelta,
-        sketchId: context.sketchId,
-        settings,
-      })
-    } catch (error) {
-      console.error('Sketch solve scene plugin failed', plugin.id, error)
+  return {
+    sceneInfra: context.sceneInfra,
+    sketchSolveGroup,
+    sceneGraphDelta,
+    sketchId: context.sketchId,
+    settings,
+  }
+}
+
+export function refreshSketchSolveScenePlugins({
+  context,
+  event,
+}: SolveActionArgs): void {
+  if (!context.sketchExecOutcome?.sceneGraphDelta) {
+    return
+  }
+
+  const pluginContext = getSketchSolveScenePluginContext(
+    context,
+    context.sketchExecOutcome.sceneGraphDelta
+  )
+  if (!pluginContext) {
+    return
+  }
+
+  if (event.type === 'refresh sketch solve scene plugins') {
+    for (const plugin of event.data?.disposedPlugins ?? []) {
+      try {
+        plugin.onSketchScenePluginDispose?.(pluginContext)
+      } catch (error) {
+        console.error(
+          'Sketch solve scene plugin cleanup failed',
+          plugin.id,
+          error
+        )
+      }
     }
   }
+
+  updateSketchSolveScenePlugins(
+    context,
+    context.sketchExecOutcome.sceneGraphDelta
+  )
 }
 
 function getLinkedPoint({

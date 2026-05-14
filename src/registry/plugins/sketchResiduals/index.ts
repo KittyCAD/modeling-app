@@ -3,7 +3,10 @@ import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettin
 import { sketchSolveScenePluginsValueSpec } from '@src/registry/contracts/project'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
-import { updateResidualsUnderlay } from './residualsUnderlay'
+import {
+  disposeResidualsUnderlay,
+  updateResidualsUnderlay,
+} from './residualsUnderlay'
 
 const sketchResidualsItem = defineRegistryItem({
   id: 'sketch-residuals-underlay',
@@ -32,6 +35,7 @@ const sketchResidualsItem = defineRegistryItem({
     provide(sketchSolveScenePluginsValueSpec, {
       id: 'sketch-residuals-underlay',
       onSketchSceneGraphUpdate: updateResidualsUnderlay,
+      onSketchScenePluginDispose: disposeResidualsUnderlay,
     }),
   ],
 })
