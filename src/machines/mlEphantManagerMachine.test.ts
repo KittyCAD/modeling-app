@@ -1,4 +1,19 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { FileMeta } from '@src/lib/types'
+
+const mockClientErrors = vi.hoisted(() => ({
+  reportClientError: vi.fn(async () => undefined),
+}))
+
+vi.mock('@src/lib/clientErrors', () => ({
+  errorToMessage: (error: unknown, fallback = 'Unknown client error') => {
+    if (error instanceof Error) return error.message
+    if (typeof error === 'string') return error
+    return fallback
+  },
+  reportClientError: mockClientErrors.reportClientError,
+}))
+
 import {
   type Conversation,
   type MlCopilotModeOption,
@@ -11,7 +26,6 @@ import {
   parseMlCopilotModesResult,
 } from '@src/machines/mlEphantManagerMachine'
 import { S } from '@src/machines/utils'
-import { describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
 
 class TestSocket extends EventTarget {
@@ -51,6 +65,10 @@ const completedConversation: Conversation = {
 }
 
 describe('mlEphantManagerMachine', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   describe('parseMlCopilotModesResult', () => {
     const modes = [
       {
@@ -348,6 +366,122 @@ describe('mlEphantManagerMachine', () => {
       )
       expect(actor.getSnapshot().context.conversationId).toBe('conversation-id')
       expect(actor.getSnapshot().context.abruptlyClosed).toBe(true)
+      expect(mockClientErrors.reportClientError).not.toHaveBeenCalled()
+
+      actor.stop()
+    })
+  })
+
+  describe('ResponseReceive', () => {
+    it('does not report server error responses as client errors', async () => {
+      const ws: TestWebSocket = new TestSocket() as TestWebSocket
+      const machine = mlEphantManagerMachine.provide({
+        actors: {
+          [MlEphantManagerStates.Setup]: fromPromise<
+            Partial<MlEphantManagerContext>,
+            SetupActorInput
+          >(async () => ({
+            ws,
+            conversation: { exchanges: [] },
+            conversationId: 'conversation-id',
+          })),
+        },
+      })
+      const actor = createActor(machine, {
+        input: {
+          apiToken: '',
+        },
+      }).start()
+
+      actor.send({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+      })
+
+      await waitFor(actor, (state) =>
+        state.matches(MlEphantManagerStates.WaitForContinueCheck)
+      )
+
+      actor.send({
+        type: MlEphantManagerStates.ContinueCheck,
+        projectName: 'zoo-project',
+        projectFiles: [],
+      })
+
+      await waitFor(actor, (state) =>
+        state.matches(MlEphantManagerStates.Ready)
+      )
+
+      actor.send({
+        type: MlEphantManagerTransitions.ResponseReceive,
+        response: {
+          error: {
+            detail: 'Zookeeper backend failed',
+          },
+        },
+      })
+
+      await waitFor(
+        actor,
+        (state) => state.context.conversation?.exchanges.length === 1
+      )
+
+      expect(mockClientErrors.reportClientError).not.toHaveBeenCalled()
+      expect(actor.getSnapshot().context.awaitingResponse).toBe(false)
+
+      actor.stop()
+    })
+  })
+
+  describe('client-side actor errors', () => {
+    it('reports local actor invocation failures', async () => {
+      const machine = mlEphantManagerMachine.provide({
+        actors: {
+          [MlEphantManagerStates.Setup]: fromPromise<
+            Partial<MlEphantManagerContext>,
+            SetupActorInput
+          >(async () => ({
+            conversation: { exchanges: [] },
+            conversationId: 'conversation-id',
+          })),
+        },
+      })
+      const actor = createActor(machine, {
+        input: {
+          apiToken: '',
+        },
+      }).start()
+
+      actor.send({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+      })
+
+      await waitFor(actor, (state) =>
+        state.matches(MlEphantManagerStates.WaitForContinueCheck)
+      )
+
+      actor.send({
+        type: MlEphantManagerStates.ContinueCheck,
+        projectName: 'zoo-project',
+        projectFiles: [],
+      })
+
+      await waitFor(actor, (state) => state.matches(S.Await))
+
+      expect(mockClientErrors.reportClientError).toHaveBeenCalledWith(
+        expect.objectContaining({
+          code: 'zookeeper_actor_error',
+          message: 'WebSocket not present',
+          dedupeKey: expect.stringContaining(
+            'MlEphantManagerMachine:actor-error'
+          ),
+          extra: expect.objectContaining({
+            source: 'MlEphantManagerMachine',
+            conversationId: 'conversation-id',
+          }),
+        })
+      )
 
       actor.stop()
     })
