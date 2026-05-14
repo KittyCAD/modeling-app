@@ -70,6 +70,7 @@ import type {
 import type { ConnectionManager } from '@src/network/connectionManager'
 
 import {
+  historyField,
   invertedEffects,
   isolateHistory,
   redoDepth,
@@ -210,6 +211,14 @@ type PendingZookeeperHistoryEntry = {
 type ZookeeperCodeHistoryEntry = {
   undoCode: string
   redoCode: string
+}
+
+type PendingEditorHistorySnapshot = {
+  path: string
+  code: string
+  editorState: unknown
+  zookeeperHistoryEntries: ZookeeperCodeHistoryEntry[]
+  zookeeperHistoryIndex: number
 }
 
 type MinimalDocumentChange = {
@@ -567,6 +576,8 @@ export class ZDSProject {
 const PERSIST_CODE_KEY = 'persistCode'
 const RECOVERY_SNAPSHOT_VERSION = 1
 const RECOVERY_SNAPSHOT_DEBOUNCE_MS = 300
+const EDITOR_HISTORY_SNAPSHOT_VERSION = 1
+const EDITOR_HISTORY_SNAPSHOT_DEBOUNCE_MS = 300
 
 const keymapCompartment = new Compartment()
 const executionCompartment = new Compartment()
@@ -837,14 +848,18 @@ export class KclManager extends File {
       )
     }
 
-    const localUndo = undoDepth(vu.state)
-    const localRedo = redoDepth(vu.state)
+    this.syncUndoRedoDepths(vu.state)
+    this.persistEditorHistorySnapshot()
+  })
+  private syncUndoRedoDepths(state = this.editorView.state) {
+    const localUndo = undoDepth(state)
+    const localRedo = redoDepth(state)
     const globalUndo = undoDepth(this._globalHistoryView.state)
     const globalRedo = redoDepth(this._globalHistoryView.state)
 
     this.undoDepth.value = localUndo + globalUndo
     this.redoDepth.value = localRedo + globalRedo
-  })
+  }
   get operations() {
     return this._editorView.state.field(operationsStateField)
   }
@@ -960,6 +975,9 @@ export class KclManager extends File {
   private timeoutRewatch: ReturnType<typeof setTimeout> | undefined = undefined
   private timeoutRecoverySnapshot: ReturnType<typeof setTimeout> | undefined =
     undefined
+  private timeoutEditorHistorySnapshot:
+    | ReturnType<typeof setTimeout>
+    | undefined = undefined
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
   private settingsSubscription: Subscription | undefined = undefined
@@ -970,6 +988,11 @@ export class KclManager extends File {
     code: string
     diskCode: string
   } | null = null
+  private pendingEditorHistorySnapshot: PendingEditorHistorySnapshot | null =
+    null
+  private readonly flushEditorHistorySnapshotBeforeUnload = () => {
+    this.flushEditorHistorySnapshot()
+  }
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
   public mlEphantManagerMachineBulkManipulatingFileSystem = false
   /**
@@ -1687,12 +1710,27 @@ export class KclManager extends File {
       this.clearSelectionsOnEmptyDoc,
     ]
   }
-  private createEditorView(initialCode = '') {
+  private createEditorState(
+    initialCode = '',
+    editorStateJson?: unknown
+  ): EditorState {
+    const extensions = this.createEditorExtensions()
+    if (editorStateJson) {
+      return EditorState.fromJSON(
+        editorStateJson,
+        { extensions },
+        { history: historyField }
+      )
+    }
+
+    return EditorState.create({
+      doc: initialCode,
+      extensions,
+    })
+  }
+  private createEditorView(initialCode = '', editorStateJson?: unknown) {
     return new EditorView({
-      state: EditorState.create({
-        doc: initialCode,
-        extensions: this.createEditorExtensions(),
-      }),
+      state: this.createEditorState(initialCode, editorStateJson),
     })
   }
 
@@ -1712,9 +1750,16 @@ export class KclManager extends File {
       recoverySnapshot && !isCodeTheSame(recoverySnapshot.code, diskCode)
         ? normalizeLineEndings(recoverySnapshot.code)
         : diskCode
+    const editorHistorySnapshot = readEditorHistorySnapshot(file.path)
 
     if (!providedEditor) {
-      const editor = new KclManager(file.path, initialCode, systemDeps, file.id)
+      const editor = new KclManager(
+        file.path,
+        initialCode,
+        systemDeps,
+        file.id,
+        editorHistorySnapshot
+      )
       if (!isCodeTheSame(initialCode, diskCode)) {
         editor.markFileCodeAsSynced(diskCode)
       }
@@ -1736,6 +1781,10 @@ export class KclManager extends File {
       shouldWriteToDisk: false,
     })
     providedEditor.markFileCodeAsSynced(diskCode)
+    providedEditor.restoreEditorHistorySnapshot(
+      editorHistorySnapshot,
+      initialCode
+    )
     if (providedEditor.mlEphantManagerMachineBulkManipulatingFileSystem) {
       providedEditor.commitPendingZookeeperHistoryEntry()
     }
@@ -1746,7 +1795,8 @@ export class KclManager extends File {
     path: string,
     initialCode: string,
     systemDeps: SystemDeps,
-    fileId = 0
+    fileId = 0,
+    editorHistorySnapshot?: EditorHistorySnapshot | null
   ) {
     super(path, fileId)
     // Register our additional, KclManager-specific watch event handler
@@ -1783,6 +1833,21 @@ export class KclManager extends File {
     this._code.value = initialCode
     this.markFileCodeAsSynced(initialCode)
     this._globalHistoryView.registerLocalHistoryTarget(this._editorView)
+    this.restoreEditorHistorySnapshot(
+      editorHistorySnapshot ?? null,
+      initialCode
+    )
+    this.syncUndoRedoDepths()
+    if (typeof window !== 'undefined') {
+      window.addEventListener(
+        'pagehide',
+        this.flushEditorHistorySnapshotBeforeUnload
+      )
+      window.addEventListener(
+        'beforeunload',
+        this.flushEditorHistorySnapshotBeforeUnload
+      )
+    }
 
     this.systemDeps.wasmInstancePromise
       .then(async (wasmInstance) => {
@@ -1810,8 +1875,20 @@ export class KclManager extends File {
   public close() {
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
+    clearTimeout(this.timeoutEditorHistorySnapshot)
     this.settingsSubscription?.unsubscribe()
     this.flushRecoverySnapshot()
+    this.flushEditorHistorySnapshot()
+    if (typeof window !== 'undefined') {
+      window.removeEventListener(
+        'pagehide',
+        this.flushEditorHistorySnapshotBeforeUnload
+      )
+      window.removeEventListener(
+        'beforeunload',
+        this.flushEditorHistorySnapshotBeforeUnload
+      )
+    }
     this.unwatch()
   }
 
@@ -1858,6 +1935,88 @@ export class KclManager extends File {
 
     writeRecoverySnapshot(this.pendingRecoverySnapshot)
     this.pendingRecoverySnapshot = null
+  }
+
+  private restoreZookeeperHistoryMetadata(snapshot: EditorHistorySnapshot) {
+    this.zookeeperHistoryEntries = snapshot.zookeeperHistoryEntries
+    this.zookeeperHistoryIndex = Math.max(
+      0,
+      Math.min(
+        snapshot.zookeeperHistoryIndex,
+        this.zookeeperHistoryEntries.length
+      )
+    )
+  }
+
+  private restoreEditorHistorySnapshot(
+    snapshot: EditorHistorySnapshot | null,
+    code: string
+  ) {
+    if (!snapshot) return
+    if (!isCodeTheSame(snapshot.code, code)) {
+      clearEditorHistorySnapshot(this.path)
+      return
+    }
+
+    try {
+      const state = this.createEditorState(code, snapshot.editorState)
+      if (!isCodeTheSame(state.doc.toString(), code)) {
+        clearEditorHistorySnapshot(this.path)
+        return
+      }
+
+      this._editorView.setState(state)
+      this.restoreZookeeperHistoryMetadata(snapshot)
+      this._globalHistoryView.registerLocalHistoryTarget(this._editorView)
+      this.syncUndoRedoDepths()
+      this.persistEditorHistorySnapshot()
+    } catch {
+      clearEditorHistorySnapshot(this.path)
+    }
+  }
+
+  private persistEditorHistorySnapshot() {
+    if (!this.path) {
+      return
+    }
+
+    const localUndo = undoDepth(this.editorView.state)
+    const localRedo = redoDepth(this.editorView.state)
+    if (
+      localUndo === 0 &&
+      localRedo === 0 &&
+      this.zookeeperHistoryEntries.length === 0
+    ) {
+      this.pendingEditorHistorySnapshot = null
+      clearTimeout(this.timeoutEditorHistorySnapshot)
+      this.timeoutEditorHistorySnapshot = undefined
+      clearEditorHistorySnapshot(this.path)
+      return
+    }
+
+    this.pendingEditorHistorySnapshot = {
+      path: this.path,
+      code: this.code,
+      editorState: this.editorView.state.toJSON({ history: historyField }),
+      zookeeperHistoryEntries: this.zookeeperHistoryEntries,
+      zookeeperHistoryIndex: this.zookeeperHistoryIndex,
+    }
+    clearTimeout(this.timeoutEditorHistorySnapshot)
+    this.timeoutEditorHistorySnapshot = setTimeout(() => {
+      this.flushEditorHistorySnapshot()
+    }, EDITOR_HISTORY_SNAPSHOT_DEBOUNCE_MS)
+  }
+
+  private flushEditorHistorySnapshot() {
+    clearTimeout(this.timeoutEditorHistorySnapshot)
+    this.timeoutEditorHistorySnapshot = undefined
+
+    if (!this.pendingEditorHistorySnapshot) {
+      return
+    }
+
+    writeEditorHistorySnapshot(this.pendingEditorHistorySnapshot)
+    this.pendingEditorHistorySnapshot = null
   }
 
   clearAst() {
@@ -3523,8 +3682,22 @@ type RecoverySnapshot = {
   savedAt: string
 }
 
+type EditorHistorySnapshot = {
+  version: typeof EDITOR_HISTORY_SNAPSHOT_VERSION
+  path: string
+  code: string
+  editorState: unknown
+  zookeeperHistoryEntries: ZookeeperCodeHistoryEntry[]
+  zookeeperHistoryIndex: number
+  savedAt: string
+}
+
 function getRecoverySnapshotKey(path: string) {
   return `kclRecovery:${path || '__untitled__'}`
+}
+
+function getEditorHistorySnapshotKey(path: string) {
+  return `kclEditorHistory:${path || '__untitled__'}`
 }
 
 function readRecoverySnapshot(path: string): RecoverySnapshot | null {
@@ -3577,6 +3750,85 @@ function writeRecoverySnapshot({
 
 function clearRecoverySnapshot(path: string) {
   safeLSRemoveItem(getRecoverySnapshotKey(path))
+}
+
+function isZookeeperCodeHistoryEntry(
+  value: unknown
+): value is ZookeeperCodeHistoryEntry {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'undoCode' in value &&
+    typeof value.undoCode === 'string' &&
+    'redoCode' in value &&
+    typeof value.redoCode === 'string'
+  )
+}
+
+function readEditorHistorySnapshot(path: string): EditorHistorySnapshot | null {
+  const persisted = safeLSGetItem(getEditorHistorySnapshotKey(path))
+  if (!persisted) return null
+
+  try {
+    const parsed = JSON.parse(persisted) as Partial<EditorHistorySnapshot>
+    if (
+      parsed.version !== EDITOR_HISTORY_SNAPSHOT_VERSION ||
+      typeof parsed.code !== 'string' ||
+      typeof parsed.path !== 'string' ||
+      parsed.path !== path ||
+      typeof parsed.editorState !== 'object' ||
+      parsed.editorState === null
+    ) {
+      return null
+    }
+
+    const zookeeperHistoryEntries = Array.isArray(
+      parsed.zookeeperHistoryEntries
+    )
+      ? parsed.zookeeperHistoryEntries.filter(isZookeeperCodeHistoryEntry)
+      : []
+    const zookeeperHistoryIndex =
+      typeof parsed.zookeeperHistoryIndex === 'number'
+        ? parsed.zookeeperHistoryIndex
+        : zookeeperHistoryEntries.length
+
+    return {
+      version: EDITOR_HISTORY_SNAPSHOT_VERSION,
+      path: parsed.path,
+      code: parsed.code,
+      editorState: parsed.editorState,
+      zookeeperHistoryEntries,
+      zookeeperHistoryIndex,
+      savedAt: typeof parsed.savedAt === 'string' ? parsed.savedAt : '',
+    }
+  } catch {
+    return null
+  }
+}
+
+function writeEditorHistorySnapshot({
+  path,
+  code,
+  editorState,
+  zookeeperHistoryEntries,
+  zookeeperHistoryIndex,
+}: PendingEditorHistorySnapshot) {
+  safeLSSetItem(
+    getEditorHistorySnapshotKey(path),
+    JSON.stringify({
+      version: EDITOR_HISTORY_SNAPSHOT_VERSION,
+      path,
+      code,
+      editorState,
+      zookeeperHistoryEntries,
+      zookeeperHistoryIndex,
+      savedAt: new Date().toISOString(),
+    } satisfies EditorHistorySnapshot)
+  )
+}
+
+function clearEditorHistorySnapshot(path: string) {
+  safeLSRemoveItem(getEditorHistorySnapshotKey(path))
 }
 
 function isEnoentError(err: unknown) {

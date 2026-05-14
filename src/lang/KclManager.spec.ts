@@ -459,6 +459,52 @@ describe('KclManager diagnostics', () => {
     expect(kclManager.code).toBe('manual edit')
   })
 
+  it('restores mixed zookeeper and manual undo history after reopening the file', async () => {
+    const path = '/tmp/kcl-manager-editor-history-test.kcl'
+    const { kclManager } = createKclManagerTestHarness('persist me')
+    const testAccess = kclManager as unknown as {
+      markFileCodeAsSynced(code: string): void
+      flushEditorHistorySnapshot(): void
+      systemDeps: Parameters<typeof KclManager.fromFile>[1]
+    }
+    vi.spyOn(kclManager, 'writeToFile').mockResolvedValue(undefined)
+
+    kclManager.path = path
+    testAccess.markFileCodeAsSynced('persist me')
+
+    kclManager.markPendingZookeeperHistoryEntry('zookeeper edit')
+    kclManager.commitPendingZookeeperHistoryEntry()
+    kclManager.updateCodeEditor('manual edit', {
+      shouldExecute: false,
+      shouldResetCamera: false,
+      shouldWriteToDisk: false,
+    })
+    testAccess.flushEditorHistorySnapshot()
+
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('manual edit')
+
+    await KclManager.fromFile(
+      new File(path, 99),
+      testAccess.systemDeps,
+      kclManager
+    )
+
+    expect(kclManager.code).toBe('manual edit')
+    expect(kclManager.undoDepth.value).toBeGreaterThan(0)
+
+    kclManager.undo()
+    expect(kclManager.code).toBe('zookeeper edit')
+
+    kclManager.undo()
+    expect(kclManager.code).toBe('persist me')
+
+    kclManager.redo()
+    expect(kclManager.code).toBe('zookeeper edit')
+
+    kclManager.redo()
+    expect(kclManager.code).toBe('manual edit')
+  })
+
   it('does not implicitly autosave programmatic editor updates when shouldWriteToDisk is false', () => {
     const { kclManager } = createKclManagerTestHarness('persist me')
     const writeToFileSpy = vi
