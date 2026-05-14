@@ -60,6 +60,9 @@ describe('engineScene extension', () => {
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
     ).toEqual(['selection', 'units', 'experimental-features'])
+    expect(
+      registry.get(statusBarLocalItemsValueSpec).map((item) => item.scopes)
+    ).toEqual([['file'], ['file'], ['file']])
 
     isExecuting.value = true
 

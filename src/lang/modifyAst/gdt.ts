@@ -43,8 +43,7 @@ function isProfileEdgeArtifact(
  * @param framePosition - Position of the feature control frame [x, y] (optional)
  * @param framePlane - Plane for displaying the frame (XY, XZ, YZ) (optional)
  * @param leaderScale - Scale of the leader (optional)
- * @param fontPointSize - Font point size for annotation text (optional)
- * @param fontScale - Scale factor for annotation text (optional)
+ * @param fontSize - Model-space font size for annotation text (optional)
  * @param nodeToEdit - Path to node to edit (for edit mode)
  * @returns Modified AST and path to the last created node, or an Error
  */
@@ -58,8 +57,7 @@ export function addFlatnessGdt({
   framePosition,
   framePlane,
   leaderScale,
-  fontPointSize,
-  fontScale,
+  fontSize,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -71,8 +69,7 @@ export function addFlatnessGdt({
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
   leaderScale?: KclCommandValue
-  fontPointSize?: KclCommandValue
-  fontScale?: KclCommandValue
+  fontSize?: KclCommandValue
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // Clone the AST to avoid mutating the original
@@ -142,8 +139,7 @@ export function addFlatnessGdt({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
   })
   if (err(styleResult)) {
     return styleResult
@@ -222,8 +218,7 @@ export function addPositionGdt({
   framePosition,
   framePlane,
   leaderScale,
-  fontPointSize,
-  fontScale,
+  fontSize,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -236,8 +231,7 @@ export function addPositionGdt({
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
   leaderScale?: KclCommandValue
-  fontPointSize?: KclCommandValue
-  fontScale?: KclCommandValue
+  fontSize?: KclCommandValue
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   let modifiedAst = structuredClone(ast)
@@ -320,8 +314,7 @@ export function addPositionGdt({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
   })
   if (err(styleResult)) {
     return styleResult
@@ -409,8 +402,7 @@ export function addProfileGdt({
   framePosition,
   framePlane,
   leaderScale,
-  fontPointSize,
-  fontScale,
+  fontSize,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -423,8 +415,7 @@ export function addProfileGdt({
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
   leaderScale?: KclCommandValue
-  fontPointSize?: KclCommandValue
-  fontScale?: KclCommandValue
+  fontSize?: KclCommandValue
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   let modifiedAst = structuredClone(ast)
@@ -487,8 +478,7 @@ export function addProfileGdt({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
   })
   if (err(styleResult)) {
     return styleResult
@@ -557,8 +547,7 @@ export function addDistanceGdt({
   framePosition,
   framePlane,
   leaderScale,
-  fontPointSize,
-  fontScale,
+  fontSize,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -571,8 +560,7 @@ export function addDistanceGdt({
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
   leaderScale?: KclCommandValue
-  fontPointSize?: KclCommandValue
-  fontScale?: KclCommandValue
+  fontSize?: KclCommandValue
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   let modifiedAst = structuredClone(ast)
@@ -663,8 +651,7 @@ export function addDistanceGdt({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
   })
   if (err(styleResult)) {
     return styleResult
@@ -737,8 +724,7 @@ export function addPerpendicularityGdt({
   framePosition,
   framePlane,
   leaderScale,
-  fontPointSize,
-  fontScale,
+  fontSize,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -751,8 +737,7 @@ export function addPerpendicularityGdt({
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
   leaderScale?: KclCommandValue
-  fontPointSize?: KclCommandValue
-  fontScale?: KclCommandValue
+  fontSize?: KclCommandValue
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   let modifiedAst = structuredClone(ast)
@@ -835,8 +820,7 @@ export function addPerpendicularityGdt({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
   })
   if (err(styleResult)) {
     return styleResult
@@ -925,8 +909,7 @@ export function addParallelismGdt({
   framePosition,
   framePlane,
   leaderScale,
-  fontPointSize,
-  fontScale,
+  fontSize,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -939,8 +922,7 @@ export function addParallelismGdt({
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
   leaderScale?: KclCommandValue
-  fontPointSize?: KclCommandValue
-  fontScale?: KclCommandValue
+  fontSize?: KclCommandValue
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   let modifiedAst = structuredClone(ast)
@@ -1023,8 +1005,7 @@ export function addParallelismGdt({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
   })
   if (err(styleResult)) {
     return styleResult
@@ -1111,8 +1092,7 @@ export function addAnnotationGdt({
   framePosition,
   framePlane,
   leaderScale,
-  fontPointSize,
-  fontScale,
+  fontSize,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -1123,8 +1103,7 @@ export function addAnnotationGdt({
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
   leaderScale?: KclCommandValue
-  fontPointSize?: KclCommandValue
-  fontScale?: KclCommandValue
+  fontSize?: KclCommandValue
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   let modifiedAst = structuredClone(ast)
@@ -1197,8 +1176,7 @@ export function addAnnotationGdt({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
   })
   if (err(styleResult)) {
     return styleResult
@@ -1273,8 +1251,7 @@ export function addAnnotationGdt({
  * @param framePosition - Position of the feature control frame [x, y] (optional)
  * @param framePlane - Plane for displaying the frame (XY, XZ, YZ) (optional)
  * @param leaderScale - Scale of the leader (optional)
- * @param fontPointSize - Font point size for annotation text (optional)
- * @param fontScale - Scale factor for annotation text (optional)
+ * @param fontSize - Model-space font size for annotation text (optional)
  * @param nodeToEdit - Path to node to edit (for edit mode)
  * @returns Modified AST and path to the created node, or an Error
  */
@@ -1287,8 +1264,7 @@ export function addDatumGdt({
   framePosition,
   framePlane,
   leaderScale,
-  fontPointSize,
-  fontScale,
+  fontSize,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -1299,8 +1275,7 @@ export function addDatumGdt({
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
   leaderScale?: KclCommandValue
-  fontPointSize?: KclCommandValue
-  fontScale?: KclCommandValue
+  fontSize?: KclCommandValue
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // Clone the AST to avoid mutating the original
@@ -1359,8 +1334,7 @@ export function addDatumGdt({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
   })
   if (err(styleResult)) {
     return styleResult
@@ -1476,8 +1450,7 @@ export function getNextAvailableDatumName(ast?: Node<Program>): string {
  * @param params.nodeToEdit - Path to node being edited (for edit mode)
  * @param params.framePosition - Position of the feature control frame [x, y] (optional)
  * @param params.framePlane - Plane for displaying the frame (XY, XZ, YZ) or variable (optional)
- * @param params.fontPointSize - Font point size for annotation text (optional)
- * @param params.fontScale - Scale factor for annotation text (optional)
+ * @param params.fontSize - Model-space font size for annotation text (optional)
  * @returns Object containing labeled arguments for the style parameters, or Error if parameter processing fails
  */
 function processGdtStyleParameters({
@@ -1487,8 +1460,7 @@ function processGdtStyleParameters({
   framePosition,
   framePlane,
   leaderScale,
-  fontPointSize,
-  fontScale,
+  fontSize,
 }: {
   modifiedAst: Node<Program>
   wasmInstance: ModuleType
@@ -1496,8 +1468,7 @@ function processGdtStyleParameters({
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
   leaderScale?: KclCommandValue
-  fontPointSize?: KclCommandValue
-  fontScale?: KclCommandValue
+  fontSize?: KclCommandValue
 }): Error | { labeledArgs: ReturnType<typeof createLabeledArg>[] } {
   const labeledArgs: ReturnType<typeof createLabeledArg>[] = []
 
@@ -1527,15 +1498,8 @@ function processGdtStyleParameters({
   ) {
     insertVariableAndOffsetPathToNode(leaderScale, modifiedAst, nodeToEdit)
   }
-  if (
-    fontPointSize &&
-    'variableName' in fontPointSize &&
-    fontPointSize.variableName
-  ) {
-    insertVariableAndOffsetPathToNode(fontPointSize, modifiedAst, nodeToEdit)
-  }
-  if (fontScale && 'variableName' in fontScale && fontScale.variableName) {
-    insertVariableAndOffsetPathToNode(fontScale, modifiedAst, nodeToEdit)
+  if (fontSize && 'variableName' in fontSize && fontSize.variableName) {
+    insertVariableAndOffsetPathToNode(fontSize, modifiedAst, nodeToEdit)
   }
 
   // Handle framePlane parameter - can be a named plane (XY, XZ, YZ) or variable
@@ -1569,13 +1533,8 @@ function processGdtStyleParameters({
       createLabeledArg('leaderScale', valueOrVariable(leaderScale))
     )
   }
-  if (fontPointSize !== undefined) {
-    labeledArgs.push(
-      createLabeledArg('fontPointSize', valueOrVariable(fontPointSize))
-    )
-  }
-  if (fontScale !== undefined) {
-    labeledArgs.push(createLabeledArg('fontScale', valueOrVariable(fontScale)))
+  if (fontSize !== undefined) {
+    labeledArgs.push(createLabeledArg('fontSize', valueOrVariable(fontSize)))
   }
 
   return { labeledArgs }
