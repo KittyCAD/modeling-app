@@ -118,6 +118,7 @@ pub use execution::transpile_old_sketch_to_new;
 pub use execution::transpile_old_sketch_to_new_ast;
 pub use execution::transpile_old_sketch_to_new_with_execution;
 pub use execution::typed_path::TypedPath;
+pub use kcl_error;
 pub use kcl_error::SourceRange;
 pub use lsp::ToLspRange;
 pub use lsp::copilot::Backend as CopilotLspBackend;
