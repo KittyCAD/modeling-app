@@ -1,21 +1,21 @@
-import type { FileEntry } from '@src/lib/project'
-import { type MlToolResult } from '@kittycad/lib'
-import type { SettingsType } from '@src/lib/settings/initialSettings'
+import type { MlToolResult } from '@kittycad/lib'
 import { useApp } from '@src/lib/boot'
-import { type MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
+import type { FileEntry } from '@src/lib/project'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
+import {
+  type BillingActor,
+  BillingTransition,
+} from '@src/machines/billingMachine'
+import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
   type RequestedKCLFileDelete,
   type SystemIOActor,
   SystemIOMachineEvents,
 } from '@src/machines/systemIO/utils'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import { useSelector } from '@xstate/react'
 import { useEffect } from 'react'
 import { NIL as uuidNIL } from 'uuid'
-import {
-  type BillingActor,
-  BillingTransition,
-} from '@src/machines/billingMachine'
-import type { ConnectionManager } from '@src/network/connectionManager'
 
 export const useRequestedProjectName = () => {
   const { systemIOActor } = useApp()
@@ -70,6 +70,7 @@ export const useProjectIdToConversationId = (
   systemIOActor: SystemIOActor,
   settings2: SettingsType
 ) => {
+  // biome-ignore lint/correctness/useExhaustiveDependencies: This hook intentionally manages a long-lived actor subscription.
   useEffect(() => {
     let lastConversationId =
       mlEphantManagerActor.getSnapshot().context.conversationId
@@ -112,6 +113,52 @@ export interface MlEphantNewFileRequestProps {
   filesToDelete?: RequestedKCLFileDelete[]
 }
 
+type MlEphantConversation = NonNullable<
+  ReturnType<MlEphantManagerActor['getSnapshot']>['context']['conversation']
+>
+type MlEphantExchange = MlEphantConversation['exchanges'][number]
+
+export interface MlEphantToolOutputRequest {
+  toolOutput: MlToolResult
+  filesToDelete: RequestedKCLFileDelete[]
+}
+
+export const collectMlEphantToolOutputRequests = (
+  exchanges: MlEphantExchange[]
+): MlEphantToolOutputRequest[] =>
+  exchanges.flatMap((exchange) => {
+    const fileNamesToDelete = new Set(
+      exchange.responses.flatMap((response) => {
+        if (!('reasoning' in response)) {
+          return []
+        }
+        if (response.reasoning.type !== 'deleted_kcl_file') {
+          return []
+        }
+        return response.reasoning.file_name
+      })
+    )
+    const filesToDelete = Array.from(
+      fileNamesToDelete,
+      (requestedFileName) => ({
+        requestedFileName,
+      })
+    )
+
+    return exchange.responses.flatMap((response) => {
+      if (!('tool_output' in response)) {
+        return []
+      }
+
+      return [
+        {
+          toolOutput: response.tool_output.result,
+          filesToDelete,
+        },
+      ]
+    })
+  })
+
 // Watch MlEphant for any responses that require files to be created.
 export const useWatchForNewFileRequestsFromMlEphant = (
   mlEphantManagerActor: MlEphantManagerActor,
@@ -120,55 +167,53 @@ export const useWatchForNewFileRequestsFromMlEphant = (
   engineCommandManager: ConnectionManager,
   fn: (props: MlEphantNewFileRequestProps) => void
 ) => {
+  // biome-ignore lint/correctness/useExhaustiveDependencies: This hook intentionally manages a long-lived actor subscription.
   useEffect(() => {
-    let lastId: number | undefined = undefined
+    let handledToolOutputCount = collectMlEphantToolOutputRequests(
+      mlEphantManagerActor.getSnapshot().context.conversation?.exchanges ?? []
+    ).length
+
     const subscription = mlEphantManagerActor.subscribe((next) => {
-      if (next.context.lastMessageId === lastId) return
-      lastId = next.context.lastMessageId
-
-      if (next.context.lastMessageType === 'delta') return
-
       const exchanges = next.context.conversation?.exchanges ?? []
-      const lastExchange = exchanges[exchanges.length - 1]
-      if (lastExchange === undefined) return
-      const lastResponse = (lastExchange.responses ?? []).slice(-1)[0] ?? {}
-      if (!('tool_output' in lastResponse)) return
+      const toolOutputRequests = collectMlEphantToolOutputRequests(exchanges)
+      if (toolOutputRequests.length < handledToolOutputCount) {
+        handledToolOutputCount = 0
+      }
+
+      const newToolOutputRequests = toolOutputRequests.slice(
+        handledToolOutputCount
+      )
+      if (newToolOutputRequests.length === 0) {
+        return
+      }
 
       // We don't know what project to write to, so do nothing.
-      if (!next.context.projectNameCurrentlyOpened) return
+      const projectNameCurrentlyOpened = next.context.projectNameCurrentlyOpened
+      if (!projectNameCurrentlyOpened) {
+        return
+      }
+      handledToolOutputCount = toolOutputRequests.length
 
-      const fileNamesToDelete = new Set(
-        lastExchange.responses.flatMap((response) => {
-          if (!('reasoning' in response)) {
-            return []
-          }
-          if (response.reasoning.type !== 'deleted_kcl_file') {
-            return []
-          }
-          return response.reasoning.file_name
+      for (const { toolOutput, filesToDelete } of newToolOutputRequests) {
+        fn({
+          toolOutput,
+          projectNameCurrentlyOpened,
+          fileFocusedOnInEditor: next.context.fileFocusedOnInEditor,
+          filesToDelete,
         })
-      )
 
-      fn({
-        toolOutput: lastResponse.tool_output.result,
-        projectNameCurrentlyOpened: next.context.projectNameCurrentlyOpened,
-        fileFocusedOnInEditor: next.context.fileFocusedOnInEditor,
-        filesToDelete: Array.from(fileNamesToDelete, (requestedFileName) => ({
-          requestedFileName,
-        })),
-      })
+        // TODO: Move elsewhere eventually, decouple from SystemIOActor
+        billingActor.send({
+          type: BillingTransition.Update,
+          apiToken: token,
+        })
 
-      // TODO: Move elsewhere eventually, decouple from SystemIOActor
-      billingActor.send({
-        type: BillingTransition.Update,
-        apiToken: token,
-      })
-
-      // Clear selections since new model
-      engineCommandManager.modelingSend({
-        type: 'Set selection',
-        data: { selection: undefined, selectionType: 'singleCodeCursor' },
-      })
+        // Clear selections since new model
+        engineCommandManager.modelingSend({
+          type: 'Set selection',
+          data: { selection: undefined, selectionType: 'singleCodeCursor' },
+        })
+      }
     })
 
     return () => {
