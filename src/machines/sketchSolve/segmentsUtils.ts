@@ -144,7 +144,6 @@ export function getSegmentColor({
   hoverColor,
   isSelected,
   hasSolveErrors = false,
-  suppressFreedomConflictColoring = false,
   freedom,
   theme,
 }: {
@@ -153,7 +152,6 @@ export function getSegmentColor({
   hoverColor?: number
   isSelected?: boolean
   hasSolveErrors?: boolean
-  suppressFreedomConflictColoring?: boolean
   freedom?: Freedom | null
   theme: Themes
 }): number {
@@ -173,10 +171,7 @@ export function getSegmentColor({
   }
 
   // Priority 4: Conflict / solver failure color (red)
-  if (
-    hasSolveErrors ||
-    (!suppressFreedomConflictColoring && freedom === 'Conflict')
-  ) {
+  if (hasSolveErrors || freedom === 'Conflict') {
     return CONFLICT_COLOR
   }
 

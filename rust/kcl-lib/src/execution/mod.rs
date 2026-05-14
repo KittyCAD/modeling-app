@@ -265,20 +265,12 @@ pub struct ExecOutcome {
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
     #[serde(skip)]
     pub var_solutions: Vec<(SourceRange, Number)>,
-    #[serde(skip)]
-    pub ordered_sketch_var_solutions: Vec<SketchVarSolution>,
     /// Non-fatal errors and warnings.
     pub issues: Vec<CompilationIssue>,
     /// File Names in module Id array index order
     pub filenames: IndexMap<ModuleId, ModulePath>,
     /// The default planes.
     pub default_planes: Option<DefaultPlanes>,
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct SketchVarSolution {
-    pub source_range: Option<SourceRange>,
-    pub value: f64,
 }
 
 /// Per-segment freedom used by the constraint report. Mirrors
@@ -483,7 +475,7 @@ impl ExecOutcome {
 }
 
 /// Configuration for mock execution.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MockConfig {
     pub use_prev_memory: bool,
     /// The `ObjectId` of the sketch block to execute for sketch mode. Only the
@@ -494,15 +486,6 @@ pub struct MockConfig {
     pub freedom_analysis: bool,
     /// The segments that were edited that triggered this execution.
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
-    /// Per-sketch-variable initial guess overrides, keyed by sketch variable
-    /// order. These are transient warm-start values for interactive solves.
-    pub sketch_var_initial_guess_overrides: Vec<f64>,
-    /// Per-source-sketch-variable warm starts keyed by source variable order,
-    /// excluding hidden lowered variables.
-    pub sketch_var_source_initial_guess_overrides: Vec<f64>,
-    /// Source ranges for the solver-order warm starts. Hidden lowered
-    /// variables have no source range.
-    pub sketch_var_initial_guess_source_ranges: Vec<Option<SourceRange>>,
 }
 
 impl Default for MockConfig {
@@ -513,9 +496,6 @@ impl Default for MockConfig {
             sketch_block_id: None,
             freedom_analysis: true,
             segment_ids_edited: AhashIndexSet::default(),
-            sketch_var_initial_guess_overrides: Vec::new(),
-            sketch_var_source_initial_guess_overrides: Vec::new(),
-            sketch_var_initial_guess_source_ranges: Vec::new(),
         }
     }
 }
@@ -530,15 +510,8 @@ impl MockConfig {
     }
 
     #[must_use]
-    pub(crate) fn with_ordered_sketch_var_initial_guess_overrides(
-        mut self,
-        solver_overrides: Vec<f64>,
-        source_overrides: Vec<f64>,
-        solver_source_ranges: Vec<Option<SourceRange>>,
-    ) -> Self {
-        self.sketch_var_initial_guess_overrides = solver_overrides;
-        self.sketch_var_source_initial_guess_overrides = source_overrides;
-        self.sketch_var_initial_guess_source_ranges = solver_source_ranges;
+    pub(crate) fn no_freedom_analysis(mut self) -> Self {
+        self.freedom_analysis = false;
         self
     }
 }

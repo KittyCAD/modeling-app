@@ -3165,7 +3165,6 @@ pub async fn execute_trim_loop_with_context(
 ) -> Result<(crate::frontend::api::SourceDelta, crate::frontend::api::SceneGraphDelta), String> {
     // Trim line points are expected in millimeters and normalized to the current unit here.
     let default_unit = frontend.default_length_unit();
-    frontend.clear_sketch_var_warm_starts();
     let normalized_points = normalize_trim_points_to_unit(points, default_unit);
 
     // We inline the loop logic here to avoid borrow checker issues with closures capturing mutable references
@@ -5305,7 +5304,7 @@ pub(crate) async fn execute_trim_operations_simple(
                             };
 
                             frontend
-                                .edit_segments_for_preview(ctx, version, sketch_id, vec![segment_to_edit])
+                                .edit_segments(ctx, version, sketch_id, vec![segment_to_edit])
                                 .await
                                 .map_err(|e| format!("Failed to edit segment: {}", e.error.message()))
                         }
@@ -5317,7 +5316,7 @@ pub(crate) async fn execute_trim_operations_simple(
                         };
 
                         frontend
-                            .edit_segments_for_preview(ctx, version, sketch_id, vec![segment_to_edit])
+                            .edit_segments(ctx, version, sketch_id, vec![segment_to_edit])
                             .await
                             .map_err(|e| format!("Failed to edit segment: {}", e.error.message()))
                     }
@@ -5329,7 +5328,7 @@ pub(crate) async fn execute_trim_operations_simple(
                     };
 
                     frontend
-                        .edit_segments_for_preview(ctx, version, sketch_id, vec![segment_to_edit])
+                        .edit_segments(ctx, version, sketch_id, vec![segment_to_edit])
                         .await
                         .map_err(|e| format!("Failed to edit segment: {}", e.error.message()))
                 }
@@ -5481,7 +5480,6 @@ pub(crate) async fn execute_trim_operations_simple(
                     .add_segment(ctx, version, sketch_id, arc_ctor, None)
                     .await
                     .map_err(|e| format!("Failed to add arc while replacing circle: {}", e.error.message()))?;
-                frontend.clear_sketch_var_warm_starts();
                 invalidates_ids = invalidates_ids || add_scene_graph_delta.invalidates_ids;
 
                 let new_arc_id = *add_scene_graph_delta
@@ -5517,91 +5515,14 @@ pub(crate) async fn execute_trim_operations_simple(
                     _ => return Err("New arc object is not a segment".to_string()),
                 };
 
-                let endpoint_point_at = |segment_id: ObjectId, coords: Coords2d| -> Option<ObjectId> {
-                    let segment_obj = current_scene_graph_delta
-                        .new_graph
-                        .objects
-                        .iter()
-                        .find(|obj| obj.id == segment_id)?;
-                    let endpoint_epsilon = EPSILON_POINT_ON_SEGMENT * 1000.0;
-
-                    let endpoint_matches = |endpoint: Coords2d| {
-                        let dx = coords.x - endpoint.x;
-                        let dy = coords.y - endpoint.y;
-                        (dx * dx + dy * dy).sqrt() < endpoint_epsilon
-                    };
-
-                    match &segment_obj.kind {
-                        crate::frontend::api::ObjectKind::Segment { segment } => match segment {
-                            crate::frontend::sketch::Segment::Line(line) => {
-                                if get_position_coords_for_line(
-                                    segment_obj,
-                                    LineEndpoint::Start,
-                                    &current_scene_graph_delta.new_graph.objects,
-                                    default_unit,
-                                )
-                                .is_some_and(endpoint_matches)
-                                {
-                                    Some(line.start)
-                                } else if get_position_coords_for_line(
-                                    segment_obj,
-                                    LineEndpoint::End,
-                                    &current_scene_graph_delta.new_graph.objects,
-                                    default_unit,
-                                )
-                                .is_some_and(endpoint_matches)
-                                {
-                                    Some(line.end)
-                                } else {
-                                    None
-                                }
-                            }
-                            crate::frontend::sketch::Segment::Arc(arc) => {
-                                if get_position_coords_from_arc(
-                                    segment_obj,
-                                    ArcPoint::Start,
-                                    &current_scene_graph_delta.new_graph.objects,
-                                    default_unit,
-                                )
-                                .is_some_and(endpoint_matches)
-                                {
-                                    Some(arc.start)
-                                } else if get_position_coords_from_arc(
-                                    segment_obj,
-                                    ArcPoint::End,
-                                    &current_scene_graph_delta.new_graph.objects,
-                                    default_unit,
-                                )
-                                .is_some_and(endpoint_matches)
-                                {
-                                    Some(arc.end)
-                                } else {
-                                    None
-                                }
-                            }
-                            _ => None,
-                        },
-                        _ => None,
-                    }
-                };
-
                 let constraint_segments_for =
                     |arc_endpoint_id: ObjectId,
                      term: &TrimTermination|
                      -> Result<Vec<crate::frontend::sketch::ConstraintSegment>, String> {
                         match term {
                             TrimTermination::Intersection {
-                                trim_termination_coords,
-                                intersecting_seg_id,
-                            } => {
-                                if let Some(endpoint_id) =
-                                    endpoint_point_at(*intersecting_seg_id, *trim_termination_coords)
-                                {
-                                    Ok(vec![arc_endpoint_id.into(), endpoint_id.into()])
-                                } else {
-                                    Ok(vec![arc_endpoint_id.into(), (*intersecting_seg_id).into()])
-                                }
-                            }
+                                intersecting_seg_id, ..
+                            } => Ok(vec![arc_endpoint_id.into(), (*intersecting_seg_id).into()]),
                             TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
                                 other_segment_point_id,
                                 ..
@@ -5619,7 +5540,6 @@ pub(crate) async fn execute_trim_operations_simple(
                     .add_constraint(ctx, version, sketch_id, start_constraint)
                     .await
                     .map_err(|e| format!("Failed to add start coincident on replaced arc: {}", e.error.message()))?;
-                frontend.clear_sketch_var_warm_starts();
                 invalidates_ids = invalidates_ids || c1_scene_graph_delta.invalidates_ids;
 
                 let end_constraint = Constraint::Coincident(crate::frontend::sketch::Coincident {
@@ -5629,28 +5549,16 @@ pub(crate) async fn execute_trim_operations_simple(
                     .add_constraint(ctx, version, sketch_id, end_constraint)
                     .await
                     .map_err(|e| format!("Failed to add end coincident on replaced arc: {}", e.error.message()))?;
-                frontend.clear_sketch_var_warm_starts();
                 invalidates_ids = invalidates_ids || c2_scene_graph_delta.invalidates_ids;
 
                 let mut termination_point_ids: Vec<ObjectId> = Vec::new();
                 for term in [arc_start_termination, arc_end_termination] {
-                    match term.as_ref() {
-                        TrimTermination::Intersection {
-                            trim_termination_coords,
-                            intersecting_seg_id,
-                        } => {
-                            if let Some(endpoint_id) = endpoint_point_at(*intersecting_seg_id, *trim_termination_coords)
-                            {
-                                termination_point_ids.push(endpoint_id);
-                            }
-                        }
-                        TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
-                            other_segment_point_id,
-                            ..
-                        } => {
-                            termination_point_ids.push(*other_segment_point_id);
-                        }
-                        TrimTermination::SegEndPoint { .. } => {}
+                    if let TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
+                        other_segment_point_id,
+                        ..
+                    } = term.as_ref()
+                    {
+                        termination_point_ids.push(*other_segment_point_id);
                     }
                 }
 
@@ -5784,7 +5692,6 @@ pub(crate) async fn execute_trim_operations_simple(
                         .add_constraint(ctx, version, sketch_id, constraint)
                         .await
                         .map_err(|e| format!("Failed to migrate circle constraint to arc: {}", e.error.message()))?;
-                    frontend.clear_sketch_var_warm_starts();
                     invalidates_ids = invalidates_ids || migrated_scene_graph_delta.invalidates_ids;
                 }
 
@@ -5978,7 +5885,7 @@ pub(crate) async fn execute_trim_operations_simple(
                 };
 
                 let (_edit_source_delta, edit_scene_graph_delta) = frontend
-                    .edit_segments_for_preview(
+                    .edit_segments(
                         ctx,
                         version,
                         sketch_id,
@@ -5989,7 +5896,6 @@ pub(crate) async fn execute_trim_operations_simple(
                     )
                     .await
                     .map_err(|e| format!("Failed to edit segment: {}", e.error.message()))?;
-                frontend.clear_sketch_var_warm_starts();
                 // Track invalidates_ids from edit_segments call
                 invalidates_ids = invalidates_ids || edit_scene_graph_delta.invalidates_ids;
 
@@ -6608,7 +6514,6 @@ pub(crate) async fn execute_trim_operations_simple(
                 // Track invalidates_ids from each operation result
                 invalidates_ids = invalidates_ids || scene_graph_delta.invalidates_ids;
                 last_result = Some((source_delta, scene_graph_delta.clone()));
-                frontend.clear_sketch_var_warm_starts();
             }
             Err(e) => {
                 crate::logln!("Error executing trim operation {}: {}", op_index, e);
