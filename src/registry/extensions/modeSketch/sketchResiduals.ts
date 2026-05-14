@@ -2,14 +2,13 @@ import { defineRegistryItem, provide } from '@kittycad/registry'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 import { sketchSolveScenePluginsValueSpec } from '@src/registry/contracts/project'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
-import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import {
   disposeResidualsUnderlay,
   updateResidualsUnderlay,
 } from './residualsUnderlay'
 
-const sketchResidualsItem = defineRegistryItem({
-  id: 'sketch-residuals-underlay',
+export const sketchResidualsExtension = defineRegistryItem({
+  id: 'mode-sketch.sketch-residuals',
   provides: [
     provide(settingsValueSpec, {
       debug: {
@@ -39,13 +38,3 @@ const sketchResidualsItem = defineRegistryItem({
     }),
   ],
 })
-
-const sketchResiduals = createZdsPlugin({
-  id: 'sketch-residuals',
-  title: 'Sketch residuals',
-  description: 'Debug shader underlay for sketch-solver residual fields.',
-  items: [sketchResidualsItem],
-  defaultSetting: 'core',
-})
-
-export default sketchResiduals

@@ -11,8 +11,8 @@ import {
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
 import { sketchSolveScenePluginsValueSpec } from '@src/registry/contracts/project'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
+import modeSketch from '@src/registry/plugins/modeSketch'
 import { describe, expect, it } from 'vitest'
-import sketchResiduals from '.'
 import {
   RESIDUAL_FIELD_KIND,
   buildResidualFieldsForSceneGraph,
@@ -52,16 +52,20 @@ function createConstraintApiObject(
   }
 }
 
-describe('sketch residuals plugin', () => {
-  it('contributes the debug setting and sketch solve scene plugin', () => {
+describe('mode sketch plugin', () => {
+  it('contributes sketch residuals as a debug-controlled extension', () => {
     const registry = new Registry()
-    registry.configure([sketchResiduals])
+    registry.configure([modeSketch])
 
     const setting = registry
       .get(settingsValueSpec)
       .debug.showSketchResiduals.createSetting()
 
     expect(setting.default).toBe(false)
+    expect(registry.get(settingsValueSpec).plugins['mode-sketch']).toBeDefined()
+    expect(
+      registry.get(settingsValueSpec).plugins['sketch-residuals']
+    ).toBeUndefined()
     expect(registry.get(sketchSolveScenePluginsValueSpec)).toHaveLength(1)
     expect(registry.get(sketchSolveScenePluginsValueSpec)[0].id).toBe(
       'sketch-residuals-underlay'
