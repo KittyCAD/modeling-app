@@ -6220,7 +6220,7 @@ export const modelingMachine = setup({
         },
 
         'Mirror 3D': {
-          target: 'Mirroring',
+          target: 'Applying Mirror 3D',
         },
 
         Hide: {
