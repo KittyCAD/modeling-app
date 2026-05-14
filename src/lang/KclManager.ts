@@ -2705,12 +2705,16 @@ export class KclManager extends File {
   }
   commitPendingZookeeperHistoryEntry() {
     const pendingEntry = this.pendingZookeeperHistoryEntry
-    if (!pendingEntry) return
+    if (!pendingEntry) {
+      this.mlEphantManagerMachineBulkManipulatingFileSystem = false
+      return
+    }
     this.pendingZookeeperHistoryEntry = null
 
     const redoCode = pendingEntry.redoCode ?? this.code
     if (isCodeTheSame(pendingEntry.undoCode, redoCode)) {
       this.markFileCodeAsSynced(redoCode)
+      this.mlEphantManagerMachineBulkManipulatingFileSystem = false
       return
     }
 
@@ -2744,6 +2748,7 @@ export class KclManager extends File {
         }),
       ],
     })
+    this.mlEphantManagerMachineBulkManipulatingFileSystem = false
   }
   addZookeeperHistoryEntry() {
     this.commitPendingZookeeperHistoryEntry()

@@ -138,8 +138,9 @@ export function OpenedProject() {
       return
     }
     const reloadBehavior = getMlEphantProjectReloadBehavior(modelingState)
-    kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = false
-    kclManager.commitPendingZookeeperHistoryEntry()
+    // KclManager.fromFile commits the pending Zookeeper history entry after
+    // the routed file reload clears local editor history. Committing here is
+    // too early because the reload can wipe the undo stack afterward.
 
     if (reloadBehavior === 'exit-sketch-solve') {
       toast(

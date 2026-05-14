@@ -340,6 +340,33 @@ describe('KclManager diagnostics', () => {
     expect(kclManager.code).toBe('persist me')
   })
 
+  it('commits zookeeper undo history after the routed file reload clears local history', async () => {
+    const path = '/tmp/kcl-manager-zookeeper-reload.kcl'
+    const { kclManager } = createKclManagerTestHarness('persist me')
+    vi.spyOn(kclManager, 'writeToFile').mockResolvedValue(undefined)
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('zookeeper edit')
+
+    kclManager.path = path
+    ;(kclManager as any).markFileCodeAsSynced('persist me')
+    kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
+    kclManager.markPendingZookeeperHistoryEntry('zookeeper edit')
+
+    await KclManager.fromFile(
+      new File(path, 99),
+      (kclManager as any).systemDeps,
+      kclManager
+    )
+
+    expect(kclManager.code).toBe('zookeeper edit')
+    expect(kclManager.undoDepth.value).toBeGreaterThan(0)
+    expect(kclManager.mlEphantManagerMachineBulkManipulatingFileSystem).toBe(
+      false
+    )
+
+    kclManager.undo()
+    expect(kclManager.code).toBe('persist me')
+  })
+
   it('does not implicitly autosave programmatic editor updates when shouldWriteToDisk is false', () => {
     const { kclManager } = createKclManagerTestHarness('persist me')
     const writeToFileSpy = vi
