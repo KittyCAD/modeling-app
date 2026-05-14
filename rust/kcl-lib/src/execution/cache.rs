@@ -124,6 +124,7 @@ impl GlobalState {
             source_range_to_object: self.exec_state.root_module_artifacts.source_range_to_object,
             var_solutions: self.exec_state.root_module_artifacts.var_solutions,
             ordered_sketch_var_solutions: self.exec_state.root_module_artifacts.ordered_sketch_var_solutions,
+            sketch_solver_traces: self.exec_state.root_module_artifacts.sketch_solver_traces,
             issues: self.exec_state.issues,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         }

@@ -267,6 +267,8 @@ pub struct ExecOutcome {
     pub var_solutions: Vec<(SourceRange, Number)>,
     #[serde(skip)]
     pub ordered_sketch_var_solutions: Vec<SketchVarSolution>,
+    /// Debug-only sketch solver invocations produced during this execution.
+    pub sketch_solver_traces: Vec<SketchSolverTrace>,
     /// Non-fatal errors and warnings.
     pub issues: Vec<CompilationIssue>,
     /// File Names in module Id array index order
@@ -279,6 +281,27 @@ pub struct ExecOutcome {
 pub struct SketchVarSolution {
     pub source_range: Option<SourceRange>,
     pub value: f64,
+}
+
+#[derive(Debug, Clone, Serialize, ts_rs::TS, PartialEq)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct SketchSolverTrace {
+    pub sketch_id: ObjectId,
+    pub source_range: SourceRange,
+    pub required_constraint_count: usize,
+    pub optional_constraint_count: usize,
+    pub initial_guess_count: usize,
+    pub items: Vec<SketchSolverTraceItem>,
+}
+
+#[derive(Debug, Clone, Serialize, ts_rs::TS, PartialEq)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct SketchSolverTraceItem {
+    pub kind: String,
+    pub label: String,
+    pub detail: String,
 }
 
 /// Per-segment freedom used by the constraint report. Mirrors

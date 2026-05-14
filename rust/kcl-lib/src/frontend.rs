@@ -2004,6 +2004,7 @@ impl FrontendState {
             source_range_to_object,
             var_solutions,
             ordered_sketch_var_solutions: Default::default(),
+            sketch_solver_traces: Default::default(),
             issues: non_fatal,
             default_planes,
         })
