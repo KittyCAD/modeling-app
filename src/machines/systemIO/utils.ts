@@ -296,7 +296,19 @@ export const collectProjectFiles = async (args: {
     basePath = args.projectContext?.path
     const filePromises: Promise<FileMeta | null>[] = []
     let uploadSize = 0
+    const normalizeSelectedPath = (path: string) =>
+      path.replaceAll('\\', '/').replace(/^\/+/, '')
     const selectedFilePath = args.selectedFilePath?.replaceAll('\\', '/')
+    const selectedFilePathWithoutLeadingSlash =
+      selectedFilePath === undefined
+        ? undefined
+        : normalizeSelectedPath(selectedFilePath)
+    const selectedFileRelativePath =
+      selectedFilePath === undefined
+        ? undefined
+        : normalizeSelectedPath(
+            fsZds.relative(basePath, selectedFilePath) ?? selectedFilePath
+          )
     const recursivelyPushFilePromises = (files: FileEntry[]) => {
       // mutates filePromises declared above, so this function definition should stay here
       // if pulled out, it would need to be refactored.
@@ -310,10 +322,14 @@ export const collectProjectFiles = async (args: {
         const absolutePathToFileNameWithExtension = file.path
         const fileNameWithExtension =
           fsZds.relative(basePath, absolutePathToFileNameWithExtension) ?? ''
+        const absoluteFilePath =
+          absolutePathToFileNameWithExtension.replaceAll('\\', '/')
+        const relativeFilePath = normalizeSelectedPath(fileNameWithExtension)
         const isSelectedFile =
           selectedFilePath !== undefined &&
-          absolutePathToFileNameWithExtension.replaceAll('\\', '/') ===
-            selectedFilePath
+          (absoluteFilePath === selectedFilePath ||
+            relativeFilePath === selectedFilePathWithoutLeadingSlash ||
+            relativeFilePath === selectedFileRelativePath)
 
         const filePromise = isSelectedFile
           ? Promise.resolve<FileMeta>({
