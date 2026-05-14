@@ -6,7 +6,7 @@ import type {
   SegmentCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { ReadonlySignal } from '@preact/signals-core'
+import { effect, type ReadonlySignal } from '@preact/signals-core'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -169,10 +169,6 @@ export type SketchSolveMachineEvent =
       data: { constraintId: number }
     }
   | { type: 'stop editing constraint' }
-  | {
-      type: 'refresh sketch solve scene plugins'
-      data?: { disposedPlugins?: SketchSolveScenePlugin[] }
-    }
 
 export type UpdateSketchOutcomeEvent = {
   type: 'update sketch outcome'
@@ -230,6 +226,11 @@ export const equipTools = Object.freeze({
 
 type ToolActorRef = ActorRefFrom<(typeof equipTools)[EquipTool]>
 
+export type SketchSolveScenePluginHost = {
+  updateSceneGraph: (sceneGraphDelta: SceneGraphDelta) => void
+  dispose: () => void
+}
+
 export type SketchSolveContext = {
   sketchSolveToolName: EquipTool | null
   childTool?: ToolActorRef
@@ -256,6 +257,7 @@ export type SketchSolveContext = {
   rustContext: RustContext
   kclManager: KclManager
   sketchSolveScenePlugins: ReadonlySignal<SketchSolveScenePlugin[]>
+  sketchSolveScenePluginHost?: SketchSolveScenePluginHost
 }
 
 export type SolveActionArgs = ActionArgs<
@@ -675,20 +677,103 @@ function updateSketchSolveScenePlugins(
   context: SketchSolveContext,
   sceneGraphDelta: SceneGraphDelta
 ): void {
-  const pluginContext = getSketchSolveScenePluginContext(
-    context,
-    sceneGraphDelta
-  )
-  if (!pluginContext) {
-    return
+  context.sketchSolveScenePluginHost?.updateSceneGraph(sceneGraphDelta)
+}
+
+function updateSketchSolveScenePlugin(
+  plugin: SketchSolveScenePlugin,
+  pluginContext: SketchSolveScenePluginContext
+): void {
+  try {
+    plugin.onSketchSceneGraphUpdate(pluginContext)
+  } catch (error) {
+    console.error('Sketch solve scene plugin failed', plugin.id, error)
+  }
+}
+
+function disposeSketchSolveScenePlugin(
+  plugin: SketchSolveScenePlugin,
+  pluginContext: SketchSolveScenePluginContext
+): void {
+  try {
+    plugin.onSketchScenePluginDispose?.(pluginContext)
+  } catch (error) {
+    console.error('Sketch solve scene plugin cleanup failed', plugin.id, error)
+  }
+}
+
+export function createSketchSolveScenePluginHost(
+  context: SketchSolveContext
+): SketchSolveScenePluginHost {
+  let currentSceneGraphDelta =
+    context.sketchExecOutcome?.sceneGraphDelta ?? null
+  let previousPlugins: SketchSolveScenePlugin[] = []
+  let disposed = false
+
+  const render = () => {
+    if (disposed || !currentSceneGraphDelta) {
+      return
+    }
+
+    const pluginContext = getSketchSolveScenePluginContext(
+      context,
+      currentSceneGraphDelta
+    )
+    if (!pluginContext) {
+      return
+    }
+
+    const nextPlugins = context.sketchSolveScenePlugins.value
+    const disposedPlugins = previousPlugins.filter(
+      (previousPlugin) =>
+        !nextPlugins.some((nextPlugin) => nextPlugin.id === previousPlugin.id)
+    )
+
+    for (const plugin of disposedPlugins) {
+      disposeSketchSolveScenePlugin(plugin, pluginContext)
+    }
+
+    previousPlugins = nextPlugins
+
+    for (const plugin of nextPlugins) {
+      updateSketchSolveScenePlugin(plugin, pluginContext)
+    }
   }
 
-  for (const plugin of context.sketchSolveScenePlugins.value) {
-    try {
-      plugin.onSketchSceneGraphUpdate(pluginContext)
-    } catch (error) {
-      console.error('Sketch solve scene plugin failed', plugin.id, error)
-    }
+  const disposeSignalEffect = effect(() => {
+    void context.sketchSolveScenePlugins.value
+    render()
+  })
+
+  return {
+    updateSceneGraph(sceneGraphDelta) {
+      currentSceneGraphDelta = sceneGraphDelta
+      render()
+    },
+    dispose() {
+      if (disposed) {
+        return
+      }
+
+      disposed = true
+      disposeSignalEffect()
+
+      if (!currentSceneGraphDelta) {
+        previousPlugins = []
+        return
+      }
+
+      const pluginContext = getSketchSolveScenePluginContext(
+        context,
+        currentSceneGraphDelta
+      )
+      if (pluginContext) {
+        for (const plugin of previousPlugins) {
+          disposeSketchSolveScenePlugin(plugin, pluginContext)
+        }
+      }
+      previousPlugins = []
+    },
   }
 }
 
@@ -713,42 +798,6 @@ function getSketchSolveScenePluginContext(
     sketchId: context.sketchId,
     settings,
   }
-}
-
-export function refreshSketchSolveScenePlugins({
-  context,
-  event,
-}: SolveActionArgs): void {
-  if (!context.sketchExecOutcome?.sceneGraphDelta) {
-    return
-  }
-
-  const pluginContext = getSketchSolveScenePluginContext(
-    context,
-    context.sketchExecOutcome.sceneGraphDelta
-  )
-  if (!pluginContext) {
-    return
-  }
-
-  if (event.type === 'refresh sketch solve scene plugins') {
-    for (const plugin of event.data?.disposedPlugins ?? []) {
-      try {
-        plugin.onSketchScenePluginDispose?.(pluginContext)
-      } catch (error) {
-        console.error(
-          'Sketch solve scene plugin cleanup failed',
-          plugin.id,
-          error
-        )
-      }
-    }
-  }
-
-  updateSketchSolveScenePlugins(
-    context,
-    context.sketchExecOutcome.sceneGraphDelta
-  )
 }
 
 function getLinkedPoint({
