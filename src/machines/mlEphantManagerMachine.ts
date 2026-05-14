@@ -17,7 +17,7 @@ import {
 } from '@src/components/CustomIcon'
 
 import { isArray } from '@src/lib/utils'
-import { errorToMessage, reportClientError } from '@src/lib/clientErrors'
+import { reportClientError } from '@src/lib/clientErrors'
 import { isErr } from '@src/lib/trap'
 
 import { S, transitions } from '@src/machines/utils'
@@ -346,9 +346,7 @@ function zookeeperErrorContext(
 
 function reportZookeeperClientError(args: {
   code: string
-  message: string
-  error?: unknown
-  errorName?: string
+  error: Error
   dedupeKey?: string
   extra?: Record<string, unknown>
 }) {
@@ -357,11 +355,8 @@ function reportZookeeperClientError(args: {
   // client bugs, even when they produce user-visible Zookeeper errors.
   void reportClientError({
     code: args.code,
-    message: args.message,
+    message: args.error.message,
     error: args.error,
-    errorName:
-      args.errorName ??
-      (isErr(args.error) ? undefined : 'ZookeeperClientError'),
     dedupeKey: args.dedupeKey,
     extra: {
       source: 'MlEphantManagerMachine',
@@ -578,35 +573,28 @@ export const mlEphantManagerMachine = setup({
     toastError: ({ event, context }) => {
       console.error(event)
       const error = xstateEventError(event)
+      if (!isErr(error)) return
+
       reportZookeeperClientError({
         code: 'zookeeper_actor_error',
-        message: errorToMessage(error, 'Zookeeper actor failed'),
         error,
-        errorName: isErr(error) ? undefined : 'ZookeeperActorError',
-        dedupeKey: `MlEphantManagerMachine:actor-error:${event.type}:${errorToMessage(error, 'unknown')}`,
+        dedupeKey: `MlEphantManagerMachine:actor-error:${event.type}:${error.message}`,
         extra: {
           eventType: event.type,
           ...zookeeperErrorContext(context),
         },
       })
-      if ('output' in event && isErr(event.output)) {
-        toast.error(event.output.message)
-      } else if ('data' in event && isErr(event.data)) {
-        toast.error(event.data.message)
-      } else if ('error' in event && isErr(event.error)) {
-        toast.error(event.error.message)
-      }
+      toast.error(error.message)
     },
     reportSetupError: ({ event, context }) => {
       if (!('error' in event)) return
       if (event.error === MlEphantSetupErrors.ConversationNotFound) return
+      if (!isErr(event.error)) return
 
       reportZookeeperClientError({
         code: 'zookeeper_setup_error',
-        message: errorToMessage(event.error, 'Zookeeper setup failed'),
         error: event.error,
-        errorName: isErr(event.error) ? undefined : 'ZookeeperSetupError',
-        dedupeKey: `MlEphantManagerMachine:setup-error:${errorToMessage(event.error, 'unknown')}`,
+        dedupeKey: `MlEphantManagerMachine:setup-error:${event.error.message}`,
         extra: {
           eventType: event.type,
           ...zookeeperErrorContext(context),
@@ -726,7 +714,7 @@ export const mlEphantManagerMachine = setup({
         ? `?${queryParams.toString()}`
         : ''
       const url = withMlephantWebSocketURL(querystring)
-      const conversationIdForReport =
+      const conversationId =
         args.input.context.conversationId ?? args.input.event.conversationId
 
       // Defensive: if there's already an open connection, close it.
@@ -736,7 +724,7 @@ export const mlEphantManagerMachine = setup({
       ws.binaryType = 'arraybuffer'
 
       logZookeeperDisconnect('websocket opened and authenticated', {
-        conversationId: conversationIdForReport,
+        conversationId,
         url,
         readyState: getWebSocketReadyStateLabel(ws.readyState),
       })
@@ -758,7 +746,7 @@ export const mlEphantManagerMachine = setup({
 
           ws.addEventListener('error', function (event: Event) {
             logZookeeperDisconnect('websocket error event received', {
-              conversationId: conversationIdForReport,
+              conversationId,
               readyState: getWebSocketReadyStateLabel(ws.readyState),
               eventType: event.type,
             })
@@ -777,20 +765,15 @@ export const mlEphantManagerMachine = setup({
                     msgpackError,
                   }
                 )
+                if (!isErr(msgpackError)) return
+
                 reportZookeeperClientError({
                   code: 'zookeeper_websocket_binary_decode_error',
-                  message: errorToMessage(
-                    msgpackError,
-                    'Failed to deserialize binary Zookeeper websocket message.'
-                  ),
                   error: msgpackError,
-                  errorName: isErr(msgpackError)
-                    ? undefined
-                    : 'ZookeeperWebSocketDecodeError',
-                  dedupeKey: `MlEphantManagerMachine:binary-decode:${String(conversationIdForReport)}:${errorToMessage(msgpackError, 'unknown')}`,
+                  dedupeKey: `MlEphantManagerMachine:binary-decode:${String(conversationId)}:${msgpackError.message}`,
                   extra: {
                     ...zookeeperErrorContext(args.input.context),
-                    conversationId: conversationIdForReport,
+                    conversationId,
                     byteLength: binaryData.byteLength,
                     readyState: getWebSocketReadyStateLabel(ws.readyState),
                   },
@@ -802,20 +785,15 @@ export const mlEphantManagerMachine = setup({
                 response = JSON.parse(event.data)
               } catch (e: unknown) {
                 console.error(e)
+                if (!isErr(e)) return
+
                 reportZookeeperClientError({
                   code: 'zookeeper_websocket_json_parse_error',
-                  message: errorToMessage(
-                    e,
-                    'Failed to parse Zookeeper websocket JSON message.'
-                  ),
                   error: e,
-                  errorName: isErr(e)
-                    ? undefined
-                    : 'ZookeeperWebSocketParseError',
-                  dedupeKey: `MlEphantManagerMachine:json-parse:${String(conversationIdForReport)}:${errorToMessage(e, 'unknown')}`,
+                  dedupeKey: `MlEphantManagerMachine:json-parse:${String(conversationId)}:${e.message}`,
                   extra: {
                     ...zookeeperErrorContext(args.input.context),
-                    conversationId: conversationIdForReport,
+                    conversationId,
                     dataLength: event.data.length,
                     readyState: getWebSocketReadyStateLabel(ws.readyState),
                   },
@@ -841,7 +819,7 @@ export const mlEphantManagerMachine = setup({
             if (isBackendShutdownMessage(response)) {
               logZookeeperDisconnect('server sent backend_shutdown', {
                 backendShutdownReason: response.backend_shutdown.reason,
-                conversationId: conversationIdForReport,
+                conversationId,
                 lastMessageType: args.input.context.lastMessageType,
                 readyState: getWebSocketReadyStateLabel(ws.readyState),
               })
@@ -886,7 +864,7 @@ export const mlEphantManagerMachine = setup({
                 'closing websocket because conversation replay/setup is invalid',
                 {
                   errorDetail: response.error.detail,
-                  conversationId: conversationIdForReport,
+                  conversationId,
                   readyState: getWebSocketReadyStateLabel(ws.readyState),
                 }
               )
@@ -997,7 +975,7 @@ export const mlEphantManagerMachine = setup({
               wasClean: event.wasClean,
               devCalledClose,
               intentionallyClosed,
-              conversationId: conversationIdForReport,
+              conversationId,
               lastMessageType: args.input.context.lastMessageType,
               readyState: getWebSocketReadyStateLabel(ws.readyState),
             })
