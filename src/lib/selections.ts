@@ -292,28 +292,28 @@ async function getVertexEdgeEndpointSelection({
       })
       if (!commonEdgeId) continue
 
-      const edgeReference = await getEntityReferenceForEntity(
+      const edgeSelection = await getPrimitiveSelectionForEntity(
         commonEdgeId,
-        engineCommandManager
+        engineCommandManager,
+        defaultPlanes
       )
-      if (edgeReference?.type !== 'edge') continue
-
-      const topologyFallback = edgeReference.topology_fallback
-      if (!topologyFallback || topologyFallback.parent_id !== parentEntityId) {
+      if (
+        edgeSelection?.primitiveType !== 'edge' ||
+        edgeSelection.parentEntityId !== parentEntityId
+      ) {
         continue
       }
 
-      const endpoint =
-        (await getEndpointForVertexOnEdgeGeometry({
-          vertexEntityId,
-          edgeEntityId: commonEdgeId,
-          defaultPlanes,
-          engineCommandManager,
-        })) ?? getEndpointForVertexOnEdge(vertexReference, edgeReference)
+      const endpoint = await getEndpointForVertexOnEdgeGeometry({
+        vertexEntityId,
+        edgeEntityId: commonEdgeId,
+        defaultPlanes,
+        engineCommandManager,
+      })
       if (!endpoint) continue
 
       return {
-        edgePrimitiveIndex: topologyFallback.primitive_index,
+        edgePrimitiveIndex: edgeSelection.primitiveIndex,
         endpoint,
       }
     }
@@ -429,24 +429,6 @@ function distanceSquared3d(a: Point3d, b: Point3d): number {
   const dy = a.y - b.y
   const dz = a.z - b.z
   return dx * dx + dy * dy + dz * dz
-}
-
-function getEndpointForVertexOnEdge(
-  vertexReference: Extract<EntityReference, { type: 'vertex' }>,
-  edgeReference: Extract<EntityReference, { type: 'edge' }>
-): 'start' | 'end' | undefined {
-  if (!edgeReference.end_faces || edgeReference.end_faces.length === 0) {
-    return undefined
-  }
-
-  const vertexSideFaces = new Set(vertexReference.side_faces)
-  const matchingEndFaceIndex = edgeReference.end_faces.findIndex((faceId) =>
-    vertexSideFaces.has(faceId)
-  )
-
-  if (matchingEndFaceIndex === 0) return 'start'
-  if (matchingEndFaceIndex === 1) return 'end'
-  return undefined
 }
 
 function primitiveSelectionFromEntityReference(
