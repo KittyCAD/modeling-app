@@ -17,19 +17,23 @@ export const external = [
   'node:fs/promises',
 ]
 
-export const ignoredWatchPathGlobs = [
-  '**/target/**',
-  '**/dist/**',
-  '**/build/**',
-  '**/test-results/**',
-  '**/playwright-report/**',
+const ignoredWatchPathNames = [
+  'target',
+  'dist',
+  'build',
+  'test-results',
+  'playwright-report',
 ]
+
+export const ignoredWatchPathGlobs = ignoredWatchPathNames.map(
+  (pathName) => `**/${pathName}/**`
+)
 
 export function isIgnoredWatchPath(filePath: string) {
   const normalizedPath = filePath.replace(/\\/g, '/')
   const pathParts = normalizedPath.split('/')
-  return ['target', 'dist', 'build', 'test-results', 'playwright-report'].some(
-    (ignoredPath) => pathParts.includes(ignoredPath)
+  return ignoredWatchPathNames.some((ignoredPath) =>
+    pathParts.includes(ignoredPath)
   )
 }
 
