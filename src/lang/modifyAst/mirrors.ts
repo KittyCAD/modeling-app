@@ -60,22 +60,46 @@ export function addMirror({
     return vars
   }
 
-  const acrossExpr = getMirrorAcrossExpression({
-    across,
-    artifactGraph,
-    variables,
-    ast: modifiedAst,
-    wasmInstance,
-    nodeToEdit: mNodeToEdit,
-  })
-  if (err(acrossExpr)) {
-    return acrossExpr
+  const isEdgeSelection = across.graphSelections.some(
+    (selection) =>
+      selection.artifact?.type === 'segment' ||
+      selection.artifact?.type === 'sweepEdge' ||
+      selection.artifact?.type === 'edgeCutEdge'
+  )
+  let acrossArg: Expr
+  if (isEdgeSelection) {
+    const result = getAxisExpression(
+      undefined,
+      across,
+      modifiedAst,
+      wasmInstance,
+      artifactGraph,
+      mNodeToEdit
+    )
+    if (err(result)) {
+      return result
+    }
+    modifiedAst = result.modifiedAst
+    acrossArg = result.generatedAxis
+  } else {
+    const result = getPlaneExprFromSelection({
+      ast: modifiedAst,
+      artifactGraph,
+      variables,
+      plane: across,
+      wasmInstance,
+      nodeToEdit: mNodeToEdit,
+    })
+    if (err(result)) {
+      return result
+    }
+    modifiedAst = result.modifiedAst
+    acrossArg = result.expr
   }
-  modifiedAst = acrossExpr.modifiedAst
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('mirror3d', objectsExpr, [
-    createLabeledArg('across', acrossExpr.expr),
+    createLabeledArg('across', acrossArg),
   ])
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -96,55 +120,4 @@ export function addMirror({
     modifiedAst,
     pathToNode,
   }
-}
-
-function getMirrorAcrossExpression({
-  across,
-  artifactGraph,
-  variables,
-  ast,
-  wasmInstance,
-  nodeToEdit,
-}: {
-  across: Selections
-  artifactGraph: ArtifactGraph
-  variables: VariableMap
-  ast: Node<Program>
-  wasmInstance: ModuleType
-  nodeToEdit?: PathToNode
-}): Error | { modifiedAst: Node<Program>; expr: Expr } {
-  const isEdgeSelection = across.graphSelections.some(
-    (selection) =>
-      selection.artifact?.type === 'segment' ||
-      selection.artifact?.type === 'sweepEdge' ||
-      selection.artifact?.type === 'edgeCutEdge'
-  )
-
-  if (isEdgeSelection) {
-    const result = getAxisExpression(
-      undefined,
-      across,
-      ast,
-      wasmInstance,
-      artifactGraph,
-      nodeToEdit
-    )
-    if (err(result)) {
-      return result
-    }
-
-    return {
-      modifiedAst: result.modifiedAst,
-      expr: result.generatedAxis,
-    }
-  }
-
-  return getPlaneExprFromSelection({
-    ast,
-    artifactGraph,
-    variables,
-    plane: across,
-    wasmInstance,
-    nodeToEdit,
-  })
 }

@@ -841,10 +841,14 @@ export function getPlaneExprFromSelection({
 }): Error | { modifiedAst: Node<Program>; expr: Expr } {
   let modifiedAst = ast
   const enginePrimitives = getEnginePrimitiveFaceSelectionsFromSelection(plane)
-  if (
-    enginePrimitives.length > 0 ||
-    plane.graphSelections.some((sel) => isFaceArtifact(sel.artifact))
-  ) {
+  const hasFaceSelection = plane.graphSelections.some((sel) =>
+    isFaceArtifact(sel.artifact)
+  )
+
+  // Face selections become a named planeOf(...) first. That keeps mirror3d and
+  // offsetPlane on the same representation and preserves edit paths when we
+  // insert faceId(...) variables before the edited node.
+  if (enginePrimitives.length > 0 || hasFaceSelection) {
     const result = buildSolidsAndFacesExprs(
       plane,
       artifactGraph,
@@ -872,7 +876,9 @@ export function getPlaneExprFromSelection({
         wasmInstance,
         pathToNode: nodeToEdit,
       })
-      if (err(result)) return result
+      if (err(result)) {
+        return result
+      }
       solidsExprs = deduplicateFaceExprs(solidsExprs.concat(result.solidsExprs))
       facesExprs.push(...result.faceExprs)
     }
@@ -883,14 +889,37 @@ export function getPlaneExprFromSelection({
       return new Error("Couldn't retrieve face from selection")
     }
 
+    const planeOfExpr = createCallExpressionStdLibKw('planeOf', solidsExpr, [
+      createLabeledArg('face', facesExpr),
+    ])
+    const planeVariableName = findUniqueName(
+      modifiedAst,
+      KCL_DEFAULT_CONSTANT_PREFIXES.PLANE
+    )
+    const variableIdentifierAst = createLocalName(planeVariableName)
+    insertVariableAndOffsetPathToNode(
+      {
+        valueAst: planeOfExpr,
+        valueText: '',
+        valueCalculated: '',
+        variableName: planeVariableName,
+        variableDeclarationAst: createVariableDeclaration(
+          planeVariableName,
+          planeOfExpr
+        ),
+        variableIdentifierAst,
+        insertIndex:
+          nodeToEdit && typeof nodeToEdit[1]?.[0] === 'number'
+            ? nodeToEdit[1][0]
+            : modifiedAst.body.length,
+      },
+      modifiedAst,
+      nodeToEdit
+    )
+
     return {
       modifiedAst,
-      expr: insertPlaneOfVariableAndOffsetPathToNode({
-        solidsExpr,
-        facesExpr,
-        modifiedAst,
-        pathToNode: nodeToEdit,
-      }),
+      expr: variableIdentifierAst,
     }
   }
 
@@ -1429,47 +1458,6 @@ function insertFacePrimitiveVariablesAndOffsetPathToNode({
   }
 
   return { solidsExprs: solidExprs, faceExprs }
-}
-
-function insertPlaneOfVariableAndOffsetPathToNode({
-  solidsExpr,
-  facesExpr,
-  modifiedAst,
-  pathToNode,
-}: {
-  solidsExpr: Expr | null
-  facesExpr: Expr
-  modifiedAst: Node<Program>
-  pathToNode?: PathToNode
-}) {
-  const planeOfExpr = createCallExpressionStdLibKw('planeOf', solidsExpr, [
-    createLabeledArg('face', facesExpr),
-  ])
-  const planeVariableName = findUniqueName(
-    modifiedAst,
-    KCL_DEFAULT_CONSTANT_PREFIXES.PLANE
-  )
-  const variableIdentifierAst = createLocalName(planeVariableName)
-  insertVariableAndOffsetPathToNode(
-    {
-      valueAst: planeOfExpr,
-      valueText: '',
-      valueCalculated: '',
-      variableName: planeVariableName,
-      variableDeclarationAst: createVariableDeclaration(
-        planeVariableName,
-        planeOfExpr
-      ),
-      variableIdentifierAst,
-      insertIndex:
-        pathToNode && typeof pathToNode[1]?.[0] === 'number'
-          ? pathToNode[1][0]
-          : modifiedAst.body.length,
-    },
-    modifiedAst,
-    pathToNode
-  )
-  return variableIdentifierAst
 }
 
 function getEnginePrimitiveFaceSelectionsFromSelection(selection: Selections) {
