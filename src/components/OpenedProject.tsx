@@ -14,7 +14,6 @@ import { UndoRedoButtons } from '@src/components/UndoRedoButtons'
 import { WasmErrToast } from '@src/components/WasmErrToast'
 import { ZookeeperCreditsMenu } from '@src/components/ZookeeperCreditsMenu'
 import { getMlEphantProjectReloadBehavior } from '@src/components/openedProjectUtils'
-import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { useModelingContext } from '@src/hooks/useModelingContext'
@@ -52,6 +51,7 @@ import {
 import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import {
+  filterStatusBarItemsForScopes,
   statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
@@ -89,7 +89,6 @@ export function OpenedProject() {
 
   const location = useLocation()
   const navigate = useNavigate()
-  const filePath = useAbsoluteFilePath()
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
   const autoUpdateReady = autoUpdateReadySignal.value
   const lastOperation = useLastOperation()
@@ -181,8 +180,15 @@ export function OpenedProject() {
 
   const settingsValues = settings.useSettings()
   const machineApiEnabled = settingsValues.app.machineApi.current
+  const registryGlobalStatusBarItems = filterStatusBarItemsForScopes(
+    registry.signal(statusBarGlobalItemsValueSpec).value,
+    ['file']
+  )
   const registryLocalStatusBarItems = filterEngineSceneStatusBarItems(
-    registry.signal(statusBarLocalItemsValueSpec).value,
+    filterStatusBarItemsForScopes(
+      registry.signal(statusBarLocalItemsValueSpec).value,
+      ['file']
+    ),
     settingsValues
   )
   const authToken = auth.useToken()
@@ -205,21 +211,6 @@ export function OpenedProject() {
     e.preventDefault()
     kclManager.redo()
   })
-  useHotkeyWrapper(
-    [isDesktop() ? 'mod + ,' : 'shift + mod + ,'],
-    () => {
-      if (!filePath) {
-        console.warn('bug: filePath is undefined')
-        return
-      }
-
-      void navigate(filePath + PATHS.SETTINGS)
-    },
-    kclManager,
-    {
-      splitKey: '|',
-    }
-  )
 
   useHotkeyWrapper(
     ['alt + shift + f'],
@@ -414,7 +405,7 @@ export function OpenedProject() {
                 window.electron?.appRestart()
               },
             }),
-            ...registry.signal(statusBarGlobalItemsValueSpec).value,
+            ...registryGlobalStatusBarItems,
           ]}
           localItems={[
             ...(settingsValues.debug.showModelingMachineState.current

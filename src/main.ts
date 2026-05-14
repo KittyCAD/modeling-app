@@ -239,6 +239,7 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
     })
   })
   newWindow.on('closed', () => {
+    // BrowserWindow-scoped resources must die with that exact window.
     windowMenuManager.clearWindow(newWindow)
     deviceFlowSessions.abort(newWindow)
     if (mainWindow !== newWindow) return
@@ -419,8 +420,27 @@ app.on('ready', (event, data) => {
 const appTestProperties: Record<string, unknown> = {}
 Reflect.set(app, 'testProperty', appTestProperties)
 if (NODE_ENV === 'test') {
-  appTestProperties.nativeWindowMenus =
-    windowMenuManager.nativeWindowMenusForTests
+  appTestProperties.nativeMenu = {
+    clickMenuItemForWindow: (browserWindowId: number, menuId: string) => {
+      const targetWindow = BrowserWindow.fromId(browserWindowId)
+      if (!targetWindow) {
+        return false
+      }
+
+      return windowMenuManager.clickMenuItemForWindow(targetWindow, menuId)
+    },
+    getMenuItemForWindow: (browserWindowId: number, menuId: string) => {
+      const targetWindow = BrowserWindow.fromId(browserWindowId)
+      if (!targetWindow) {
+        return null
+      }
+
+      return windowMenuManager.getMenuItemSnapshotForWindow(
+        targetWindow,
+        menuId
+      )
+    },
+  }
   Reflect.set(app, 'resizeWindow', (width: number, height: number) => {
     const targetWindow = BrowserWindow.getFocusedWindow() ?? mainWindow
     return targetWindow?.setSize(width, height)

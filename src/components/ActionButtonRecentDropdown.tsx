@@ -1,7 +1,9 @@
 import type { MouseEvent, ReactNode } from 'react'
+import { useRef } from 'react'
 import { Popover } from '@headlessui/react'
 
 import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
+import { ToolbarDropdownPanel } from '@src/components/ToolbarDropdownPanel'
 import Tooltip from '@src/components/Tooltip'
 import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
 
@@ -33,6 +35,7 @@ export function ActionButtonRecentDropdown({
 }: ActionButtonRecentDropdownProps) {
   const baseClassNames =
     'action-button p-0 m-0 group mono text-xs leading-none flex items-stretch rounded-sm border-solid border border-chalkboard-30 hover:border-chalkboard-40 enabled:dark:border-chalkboard-70 dark:hover:border-chalkboard-60 dark:bg-chalkboard-90/50 text-chalkboard-100 dark:text-chalkboard-10 relative'
+  const buttonRef = useRef<HTMLButtonElement>(null)
 
   return (
     <Popover
@@ -43,6 +46,7 @@ export function ActionButtonRecentDropdown({
         <>
           <div className="flex items-stretch gap-[1px]">{children}</div>
           <Popover.Button
+            ref={buttonRef}
             className="!border-transparent dark:!border-transparent bg-transparent dark:bg-transparent enabled:hover:bg-chalkboard-10/85 dark:enabled:hover:bg-chalkboard-100/85 pressed:!bg-primary/85 pressed:enabled:hover:!text-chalkboard-10 absolute -bottom-3 left-1 right-1 z-10 min-h-3 px-0 py-0 rounded-sm !outline-none ui-open:border-primary ui-open:bg-primary/85 flex items-center justify-center"
             data-onboarding-id={`${name}-dropdown-button`}
             data-testid={`${name}-dropdown`}
@@ -62,11 +66,7 @@ export function ActionButtonRecentDropdown({
               {dropdownTooltipText}
             </Tooltip>
           </Popover.Button>
-          <Popover.Panel
-            as="ul"
-            className="!pointer-events-auto absolute z-20 left-1/2 -translate-x-1/2 top-full mt-4 w-fit max-w-[280px] max-h-[80vh] overflow-y-auto py-2 flex flex-col align-stretch text-inherit dark:text-chalkboard-10 bg-chalkboard-10 dark:bg-chalkboard-100 rounded shadow-lg border border-solid border-chalkboard-30 dark:border-chalkboard-80 text-sm m-0 p-0"
-            unmount={false}
-          >
+          <ToolbarDropdownPanel buttonRef={buttonRef} open={popover.open}>
             {menuItems.map((item) => (
               <li className="contents" key={item.id}>
                 <button
@@ -134,7 +134,7 @@ export function ActionButtonRecentDropdown({
                 </button>
               </li>
             ))}
-          </Popover.Panel>
+          </ToolbarDropdownPanel>
         </>
       )}
     </Popover>

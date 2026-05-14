@@ -55,6 +55,7 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
             element: 'text' as const,
             label: executionService.value.selectionStatusLabel.value,
             order: 10,
+            scopes: ['file'],
             toolTip: {
               children: 'Currently selected geometry',
             },
@@ -69,6 +70,7 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
             id: 'experimental-features',
             component: EngineSceneExperimentalFeaturesMenu,
             order: 30,
+            scopes: ['file'],
           }
         : null
     )
@@ -80,6 +82,7 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
             id: 'units',
             component: EngineSceneUnitsMenu,
             order: 20,
+            scopes: ['file'],
           }
         : null
     )
@@ -98,6 +101,7 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
               label: 'Engine executing',
               hideLabel: true,
               order: 0,
+              scopes: ['file'],
               toolTip: {
                 children: createElement(EngineExecutionStatusTooltip, {
                   executionElapsedMs: service.executionElapsedMs,

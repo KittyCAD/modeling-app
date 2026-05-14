@@ -6,8 +6,7 @@ import { describe, expect, it } from 'vitest'
 describe('GDT Datum Default Name', () => {
   it('should work with command bar when datum A already exists', async () => {
     // Test command bar integration with existing datum
-    const codeWithDatum = `@settings(experimentalFeatures = allow)
-sketch001 = startSketchOn(XY)
+    const codeWithDatum = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> line(end = [10, 0])
   |> close()

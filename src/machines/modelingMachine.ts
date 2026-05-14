@@ -235,6 +235,7 @@ import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import { toPlaneName } from '@src/lib/planes'
+import { withDefaultGdtFrameDefaults } from '@src/lib/gdtFramePosition'
 
 function sourceRangesEqual(
   a: [number, number, number],
@@ -5119,30 +5120,22 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        // Remove once this command isn't experimental anymore
-        let astWithNewSetting: Node<Program> | undefined
-        if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-        ) {
-          const ast = setExperimentalFeatures(
-            input.kclManager.code,
-            {
-              type: 'Allow',
-            },
-            await input.kclManager.wasmInstancePromise
-          )
-          if (err(ast)) {
-            return Promise.reject(ast)
-          }
+        const wasmInstance = await input.kclManager.wasmInstancePromise
 
-          astWithNewSetting = ast
-        }
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
 
         const result = addFlatnessGdt({
-          ...input.data,
-          ast: astWithNewSetting ?? input.kclManager.ast,
+          ...data,
+          ast: input.kclManager.ast,
           artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -5174,30 +5167,22 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        // Remove once this command isn't experimental anymore
-        let astWithNewSetting: Node<Program> | undefined
-        if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-        ) {
-          const ast = setExperimentalFeatures(
-            input.kclManager.code,
-            {
-              type: 'Allow',
-            },
-            await input.kclManager.wasmInstancePromise
-          )
-          if (err(ast)) {
-            return Promise.reject(ast)
-          }
+        const wasmInstance = await input.kclManager.wasmInstancePromise
 
-          astWithNewSetting = ast
-        }
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
 
         const result = addDatumGdt({
-          ...input.data,
-          ast: astWithNewSetting ?? input.kclManager.ast,
+          ...data,
+          ast: input.kclManager.ast,
           artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -5229,29 +5214,22 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        let astWithNewSetting: Node<Program> | undefined
-        if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-        ) {
-          const ast = setExperimentalFeatures(
-            input.kclManager.code,
-            {
-              type: 'Allow',
-            },
-            await input.kclManager.wasmInstancePromise
-          )
-          if (err(ast)) {
-            return Promise.reject(ast)
-          }
+        const wasmInstance = await input.kclManager.wasmInstancePromise
 
-          astWithNewSetting = ast
-        }
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
 
         const result = addProfileGdt({
-          ...input.data,
-          ast: astWithNewSetting ?? input.kclManager.ast,
+          ...data,
+          ast: input.kclManager.ast,
           artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -5283,29 +5261,22 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        let astWithNewSetting: Node<Program> | undefined
-        if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-        ) {
-          const ast = setExperimentalFeatures(
-            input.kclManager.code,
-            {
-              type: 'Allow',
-            },
-            await input.kclManager.wasmInstancePromise
-          )
-          if (err(ast)) {
-            return Promise.reject(ast)
-          }
+        const wasmInstance = await input.kclManager.wasmInstancePromise
 
-          astWithNewSetting = ast
-        }
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
 
         const result = addPositionGdt({
-          ...input.data,
-          ast: astWithNewSetting ?? input.kclManager.ast,
+          ...data,
+          ast: input.kclManager.ast,
           artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -5337,29 +5308,22 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        let astWithNewSetting: Node<Program> | undefined
-        if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-        ) {
-          const ast = setExperimentalFeatures(
-            input.kclManager.code,
-            {
-              type: 'Allow',
-            },
-            await input.kclManager.wasmInstancePromise
-          )
-          if (err(ast)) {
-            return Promise.reject(ast)
-          }
+        const wasmInstance = await input.kclManager.wasmInstancePromise
 
-          astWithNewSetting = ast
-        }
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
 
         const result = addDistanceGdt({
-          ...input.data,
-          ast: astWithNewSetting ?? input.kclManager.ast,
+          ...data,
+          ast: input.kclManager.ast,
           artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -5391,29 +5355,22 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        let astWithNewSetting: Node<Program> | undefined
-        if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-        ) {
-          const ast = setExperimentalFeatures(
-            input.kclManager.code,
-            {
-              type: 'Allow',
-            },
-            await input.kclManager.wasmInstancePromise
-          )
-          if (err(ast)) {
-            return Promise.reject(ast)
-          }
+        const wasmInstance = await input.kclManager.wasmInstancePromise
 
-          astWithNewSetting = ast
-        }
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
 
         const result = addPerpendicularityGdt({
-          ...input.data,
-          ast: astWithNewSetting ?? input.kclManager.ast,
+          ...data,
+          ast: input.kclManager.ast,
           artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -5445,29 +5402,22 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        let astWithNewSetting: Node<Program> | undefined
-        if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-        ) {
-          const ast = setExperimentalFeatures(
-            input.kclManager.code,
-            {
-              type: 'Allow',
-            },
-            await input.kclManager.wasmInstancePromise
-          )
-          if (err(ast)) {
-            return Promise.reject(ast)
-          }
+        const wasmInstance = await input.kclManager.wasmInstancePromise
 
-          astWithNewSetting = ast
-        }
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
 
         const result = addParallelismGdt({
-          ...input.data,
-          ast: astWithNewSetting ?? input.kclManager.ast,
+          ...data,
+          ast: input.kclManager.ast,
           artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -5499,29 +5449,22 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        let astWithNewSetting: Node<Program> | undefined
-        if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-        ) {
-          const ast = setExperimentalFeatures(
-            input.kclManager.code,
-            {
-              type: 'Allow',
-            },
-            await input.kclManager.wasmInstancePromise
-          )
-          if (err(ast)) {
-            return Promise.reject(ast)
-          }
+        const wasmInstance = await input.kclManager.wasmInstancePromise
 
-          astWithNewSetting = ast
-        }
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
 
         const result = addAnnotationGdt({
-          ...input.data,
-          ast: astWithNewSetting ?? input.kclManager.ast,
+          ...data,
+          ast: input.kclManager.ast,
           artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
+          wasmInstance,
         })
         if (err(result)) {
           return Promise.reject(result)
