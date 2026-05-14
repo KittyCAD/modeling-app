@@ -43,6 +43,8 @@ use crate::bridge::physical_properties::PhysicalPropertiesResponse;
 use crate::bridge::sketch_constraints::KclErrorInfo;
 use crate::bridge::sketch_constraints::SketchConstraintReport;
 
+const HEARTBEAT_INTERVAL_SECONDS: u64 = 5;
+
 mod bridge;
 
 fn tokio() -> &'static tokio::runtime::Runtime {
@@ -180,7 +182,10 @@ async fn new_context_state(
     current_file: Option<std::path::PathBuf>,
     mock: bool,
 ) -> Result<(ExecutorContext, kcl_lib::ExecState)> {
-    let mut settings: kcl_lib::ExecutorSettings = Default::default();
+    let mut settings: kcl_lib::ExecutorSettings = kcl_lib::ExecutorSettings {
+        heartbeats: Some(HEARTBEAT_INTERVAL_SECONDS),
+        ..Default::default()
+    };
     if let Some(current_file) = current_file {
         settings.with_current_file(kcl_lib::TypedPath(current_file));
     }
