@@ -1,15 +1,26 @@
-import { Registry } from '@kittycad/registry'
+import {
+  Registry,
+  defineRegistryItem,
+  provideService,
+} from '@kittycad/registry'
+import { signal } from '@preact/signals-core'
 import type {
   ApiConstraint,
   ApiObject,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
 import {
   createCircleApiObject,
   createLineApiObject,
   createPointApiObject,
   createSceneGraphDelta,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
-import { sketchSolveScenePluginsValueSpec } from '@src/registry/contracts/project'
+import {
+  type ProjectService,
+  type SketchSolveScenePlugin,
+  projectService,
+  sketchSolveScenePluginsValueSpec,
+} from '@src/registry/contracts/project'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import modeSketch from '@src/registry/plugins/modeSketch'
 import { describe, expect, it } from 'vitest'
@@ -52,8 +63,30 @@ function createConstraintApiObject(
   }
 }
 
+function createSettings(showSketchResiduals: boolean): SettingsType {
+  return {
+    debug: {
+      showSketchResiduals: {
+        current: showSketchResiduals,
+      },
+    },
+  } as unknown as SettingsType
+}
+
+function createProjectServiceItem(settings: ProjectService['settings']) {
+  return defineRegistryItem({
+    providesServices: [
+      provideService(projectService, {
+        project: {} as ProjectService['project'],
+        settings,
+        sketchSolveScenePlugins: signal([] as SketchSolveScenePlugin[]),
+      }),
+    ],
+  })
+}
+
 describe('mode sketch plugin', () => {
-  it('contributes sketch residuals as a debug-controlled extension', () => {
+  it('contributes sketch residuals as a debug-controlled setting', () => {
     const registry = new Registry()
     registry.configure([modeSketch])
 
@@ -66,14 +99,29 @@ describe('mode sketch plugin', () => {
     expect(
       registry.get(settingsValueSpec).plugins['sketch-residuals']
     ).toBeUndefined()
-    expect(registry.get(sketchSolveScenePluginsValueSpec)).toHaveLength(1)
-    expect(registry.get(sketchSolveScenePluginsValueSpec)[0].id).toBe(
-      'sketch-residuals-underlay'
-    )
-    expect(
-      registry.get(sketchSolveScenePluginsValueSpec)[0]
-        .onSketchScenePluginDispose
-    ).toBeTypeOf('function')
+    expect(registry.get(sketchSolveScenePluginsValueSpec)).toHaveLength(0)
+  })
+
+  it('derives the residuals scene plugin from the live project settings', () => {
+    const registry = new Registry()
+    const settings = signal(createSettings(false))
+
+    registry.configure([createProjectServiceItem(settings), modeSketch])
+
+    const plugins = registry.signal(sketchSolveScenePluginsValueSpec)
+
+    expect(plugins.value).toHaveLength(0)
+
+    settings.value = createSettings(true)
+
+    expect(plugins.value).toHaveLength(1)
+    const plugin = plugins.value[0]
+    expect(plugin?.id).toBe('sketch-residuals-underlay')
+    expect(plugin?.onSketchScenePluginDispose).toBeTypeOf('function')
+
+    settings.value = createSettings(false)
+
+    expect(plugins.value).toHaveLength(0)
   })
 })
 

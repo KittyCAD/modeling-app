@@ -4,7 +4,6 @@ import type {
   SceneGraphDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { SKETCH_LAYER } from '@src/clientSideScene/sceneUtils'
-import type { SettingsType } from '@src/lib/settings/initialSettings'
 import {
   isArcSegment,
   isCircleSegment,
@@ -58,10 +57,6 @@ type Bounds = {
   minY: number
   maxX: number
   maxY: number
-}
-
-type ResidualDebugSettings = SettingsType['debug'] & {
-  showSketchResiduals?: { current?: boolean }
 }
 
 type ResidualsUnderlayMesh = Mesh<PlaneGeometry, ShaderMaterial>
@@ -154,21 +149,9 @@ void main() {
 }
 `
 
-function shouldShowResiduals(settings: SettingsType) {
-  return (
-    (settings.debug as ResidualDebugSettings).showSketchResiduals?.current ===
-    true
-  )
-}
-
 export function updateResidualsUnderlay(
   context: SketchSolveScenePluginContext
 ): void {
-  if (!shouldShowResiduals(context.settings)) {
-    removeResidualsUnderlay(context.sketchSolveGroup)
-    return
-  }
-
   const fields = buildResidualFieldsForSceneGraph(
     context.sceneGraphDelta,
     context.sketchId

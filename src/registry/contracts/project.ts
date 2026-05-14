@@ -33,12 +33,15 @@ export interface SketchSolveScenePlugin {
 const projectContract = defineContract({
   projectService: defineService<ProjectService>('project'),
   sketchSolveScenePluginsValueSpec: defineValueSpec<
-    SketchSolveScenePlugin,
+    SketchSolveScenePlugin | null,
     SketchSolveScenePlugin[]
   >({
     name: 'project.sketch-solve-scene-plugins',
     defaultValue: [],
-    combine: (plugins) => [...plugins],
+    combine: (plugins) =>
+      plugins.filter(
+        (plugin): plugin is SketchSolveScenePlugin => plugin !== null
+      ),
   }),
 })
 

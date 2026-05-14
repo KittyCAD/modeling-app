@@ -7,6 +7,7 @@ import {
   projectService,
   sketchSolveScenePluginsValueSpec,
 } from '@src/registry/contracts/project'
+import modeSketch from '@src/registry/plugins/modeSketch'
 import { describe, expect, it, vi } from 'vitest'
 import projectExtension, {
   createProjectRegistryItem,
@@ -55,5 +56,21 @@ describe('project extension', () => {
 
     expect(registry.optional(projectService)).toBeUndefined()
     expect(unsubscribe).toHaveBeenCalled()
+  })
+
+  it('can resolve project-owned sketch solve plugins without a service cycle', () => {
+    const registry = new Registry()
+    const project = createProject()
+    const { actor: settingsActor } = createSettingsActor()
+
+    registry.configure([projectExtension, modeSketch])
+
+    registry.reconfigure(projectRegistrySlot, [
+      createProjectRegistryItem({ project, settingsActor }),
+    ])
+
+    const service = registry.get(projectService)
+    expect(registry.get(sketchSolveScenePluginsValueSpec)).toEqual([])
+    expect(service.sketchSolveScenePlugins.value).toEqual([])
   })
 })
