@@ -3,6 +3,7 @@
 
 use std::collections::HashMap;
 use std::sync::Arc;
+use std::time::Duration;
 
 use anyhow::Result;
 use anyhow::anyhow;
@@ -27,6 +28,7 @@ use uuid::Uuid;
 
 use crate::SourceRange;
 use crate::engine::AsyncTasks;
+use crate::engine::EngineBatchContext;
 use crate::engine::EngineManager;
 use crate::engine::EngineStats;
 use crate::errors::KclError;
@@ -51,8 +53,6 @@ pub struct EngineConnection {
     #[allow(dead_code)]
     tcp_read_handle: Arc<TcpReadHandle>,
     socket_health: Arc<RwLock<SocketHealth>>,
-    batch: Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>>,
-    batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
     ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>>,
 
     /// The default planes for the scene.
@@ -154,11 +154,20 @@ struct ToEngineReq {
 
 impl EngineConnection {
     /// Start waiting for incoming engine requests, and send each one over the WebSocket to the engine.
+    /// If heartbeats is Some(N), sends a heartbeat to keep the WebSocket active, every N seconds.
+    /// If None, no heartbeats will be sent.
     async fn start_write_actor(
         mut tcp_write: WebSocketTcpWrite,
         mut engine_req_rx: mpsc::Receiver<ToEngineReq>,
         mut shutdown_rx: mpsc::Receiver<()>,
+        heartbeats: Option<u64>,
     ) {
+        let heartbeats = heartbeats.unwrap_or_default();
+        let send_heartbeats = heartbeats != 0;
+        let period_seconds = if heartbeats == 0 { 5 * 60 } else { heartbeats };
+        let period = Duration::from_secs(period_seconds);
+        let mut heartbeats_stream = tokio::time::interval(period);
+
         loop {
             tokio::select! {
                 maybe_req = engine_req_rx.recv() => {
@@ -191,6 +200,14 @@ impl EngineConnection {
                 _ = shutdown_rx.recv() => {
                     let _ = Self::inner_close_engine(&mut tcp_write).await;
                     return;
+                }
+
+                // Send heartbeats periodically.
+                _ = heartbeats_stream.tick(), if send_heartbeats => {
+                    // Send a heartbeat.
+                    let res = Self::inner_send_to_engine(WebSocketRequest::Ping {}, &mut tcp_write).await;
+                    // We don't really care if a heartbeat fails, we'll just try again soon.
+                    let _ = res;
                 }
             }
         }
@@ -225,11 +242,11 @@ impl EngineConnection {
         tcp_write
             .send(WsMsg::Binary(msg.into()))
             .await
-            .map_err(|e| anyhow!("could not send json over websocket: {e}"))?;
+            .map_err(|e| anyhow!("could not send MsgPack over websocket: {e}"))?;
         Ok(())
     }
 
-    pub async fn new(ws: reqwest::Upgraded) -> Result<EngineConnection> {
+    pub async fn new(ws: reqwest::Upgraded, heartbeats: Option<u64>) -> Result<EngineConnection> {
         let wsconfig = tokio_tungstenite::tungstenite::protocol::WebSocketConfig::default()
             // 4294967296 bytes, which is around 4.2 GB.
             .max_message_size(Some(usize::MAX))
@@ -245,7 +262,12 @@ impl EngineConnection {
         let (tcp_write, tcp_read) = ws_stream.split();
         let (engine_req_tx, engine_req_rx) = mpsc::channel(10);
         let (shutdown_tx, shutdown_rx) = mpsc::channel(1);
-        tokio::task::spawn(Self::start_write_actor(tcp_write, engine_req_rx, shutdown_rx));
+        tokio::task::spawn(Self::start_write_actor(
+            tcp_write,
+            engine_req_rx,
+            shutdown_rx,
+            heartbeats,
+        ));
 
         let mut tcp_read = TcpRead { stream: tcp_read };
 
@@ -383,8 +405,6 @@ impl EngineConnection {
             responses: response_information,
             pending_errors,
             socket_health,
-            batch: Arc::new(RwLock::new(Vec::new())),
-            batch_end: Arc::new(RwLock::new(IndexMap::new())),
             ids_of_async_commands,
             default_planes: Default::default(),
             session_data,
@@ -397,14 +417,6 @@ impl EngineConnection {
 
 #[async_trait::async_trait]
 impl EngineManager for EngineConnection {
-    fn batch(&self) -> Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>> {
-        self.batch.clone()
-    }
-
-    fn batch_end(&self) -> Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>> {
-        self.batch_end.clone()
-    }
-
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>> {
         self.responses.responses.clone()
     }
@@ -446,11 +458,14 @@ impl EngineManager for EngineConnection {
 
     async fn clear_scene_post_hook(
         &self,
+        batch_context: &EngineBatchContext,
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
     ) -> Result<(), KclError> {
         // Remake the default planes, since they would have been removed after the scene was cleared.
-        let new_planes = self.new_default_planes(id_generator, source_range).await?;
+        let new_planes = self
+            .new_default_planes(batch_context, id_generator, source_range)
+            .await?;
         *self.default_planes.write().await = Some(new_planes);
 
         Ok(())
@@ -543,18 +558,9 @@ impl EngineManager for EngineConnection {
                 }
             }
 
-            #[cfg(feature = "artifact-graph")]
-            {
-                // We cannot pop here or it will break the artifact graph.
-                if let Some(resp) = self.responses.responses.read().await.get(&id) {
-                    return Ok(resp.clone());
-                }
-            }
-            #[cfg(not(feature = "artifact-graph"))]
-            {
-                if let Some(resp) = self.responses.responses.write().await.shift_remove(&id) {
-                    return Ok(resp);
-                }
+            // We cannot pop here or it will break the artifact graph.
+            if let Some(resp) = self.responses.responses.read().await.get(&id) {
+                return Ok(resp.clone());
             }
         }
 

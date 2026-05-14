@@ -77,7 +77,7 @@ test.describe('Editor tests', { tag: '@desktop' }, () => {
     await page.keyboard.up('ControlOrMeta')
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `@settings(defaultLengthUnit = in)
+      `@settings(defaultLengthUnit = in, kclVersion = 2.0)
 sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
@@ -92,7 +92,7 @@ sketch001 = startSketchOn(XY)
     await page.keyboard.up('ControlOrMeta')
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `@settings(defaultLengthUnit = in)
+      `@settings(defaultLengthUnit = in, kclVersion = 2.0)
 sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
@@ -231,7 +231,7 @@ sketch001 = startSketchOn(XY)
     await page.locator('button:has-text("Format code")').click()
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `@settings(defaultLengthUnit = in)
+      `@settings(defaultLengthUnit = in, kclVersion = 2.0)
 sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
@@ -316,12 +316,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
     await u.codeLocator.click()
-    await page.keyboard.type(`sketch_001 = startSketchOn(XY)
-    |> startProfile(at = [-10, -10])
-    |> line(end = [20, 0])
-    |> line(end = [0, 20])
-    |> line(end = [-20, 0])
-    |> close()`)
+    await page.keyboard.type(`my_var =  1+2`)
 
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
@@ -344,13 +339,8 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     await u.closeDebugPanel()
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `@settings(defaultLengthUnit = in)
-sketch_001 = startSketchOn(XY)
-  |> startProfile(at = [-10, -10])
-  |> line(end = [20, 0])
-  |> line(end = [0, 20])
-  |> line(end = [-20, 0])
-  |> close()`.replaceAll('\n', '')
+      `@settings(defaultLengthUnit = in, kclVersion = 2.0)
+my_var = 1 + 2`.replaceAll('\n', '')
     )
 
     // error in guter
@@ -971,7 +961,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
       await expect(page.locator('.cm-content')).toHaveText(
-        `@settings(defaultLengthUnit = in)
+        `@settings(defaultLengthUnit = in, kclVersion = 2.0)
 sketch001 = startSketchOn(XZ)
     |> startProfile(at = [0, 12])
     |> xLine(length = 5) // lin`.replaceAll('\n', '')
@@ -1044,7 +1034,7 @@ sketch001 = startSketchOn(XZ)
       await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
       await expect(page.locator('.cm-content')).toHaveText(
-        `@settings(defaultLengthUnit = in)
+        `@settings(defaultLengthUnit = in, kclVersion = 2.0)
 sketch001 = startSketchOn(XZ)
     |> startProfile(at = [0, 12])
     |> xLine(length = 5) // lin`.replaceAll('\n', '')
@@ -1452,36 +1442,6 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
     // Verify error is still visible
     await expect(page.locator('.cm-lint-marker-error')).toHaveCount(1)
-  })
-
-  test('Core dump hotkey', async ({ page, scene, cmdBar, homePage }) => {
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn(XZ)
-    profile001 = circle(sketch001, center = [-100.0, -100.0], radius = 50.0)
-`
-      )
-    })
-
-    const viewportSize = { width: 1200, height: 800 }
-    await page.setBodyDimensions(viewportSize)
-
-    await homePage.goToModelingScene()
-
-    await scene.connectionEstablished()
-    await scene.settled(cmdBar)
-
-    const modifier = process.platform === 'darwin' ? 'Meta' : 'Control'
-
-    await page.keyboard.press(`${modifier}+Shift+.`)
-
-    const toast1 = page.getByText('Submitting support ticket...')
-    await expect(toast1).toBeVisible()
-
-    const toast2 = page.getByText('Support ticket created successfully.')
-    const toastError = page.getByText('Error while creating support ticket.')
-    await expect(toast2.or(toastError)).toBeVisible()
   })
 })
 

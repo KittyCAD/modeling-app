@@ -318,17 +318,35 @@ impl FunctionSource {
 
         let args = type_check_params_kw(fn_name.as_deref(), self, args, exec_state)?;
 
-        // Warn if experimental arguments are used after desugaring.
+        // Warn if experimental or deprecated arguments are used after desugaring.
         for (label, arg) in &args.labeled {
-            if let Some(param) = self.named_args.get(label.as_str())
-                && param.experimental
-            {
+            let Some(param) = self.named_args.get(label.as_str()) else {
+                continue;
+            };
+            if param.experimental {
                 exec_state.warn_experimental(
                     &match &fn_name {
                         Some(f) => format!("`{f}({label})`"),
                         None => label.to_owned(),
                     },
                     arg.source_range,
+                );
+            }
+            if let Some(since) = &param.deprecated_since
+                && annotations::version_ge(&exec_state.mod_local.settings.kcl_version, since)
+            {
+                let qualified = match &fn_name {
+                    Some(f) => format!("`{f}({label})`"),
+                    None => format!("`{label}`"),
+                };
+                exec_state.warn(
+                    CompilationIssue::err(
+                        arg.source_range,
+                        format!(
+                            "{qualified} is deprecated as of KCL {since}. See the docs for a recommended replacement."
+                        ),
+                    ),
+                    annotations::WARN_DEPRECATED,
                 );
             }
         }
@@ -892,6 +910,7 @@ fn type_check_params_kw(
         match fn_def.named_args.get(&label) {
             Some(NamedParam {
                 experimental: _,
+                deprecated_since: _,
                 default_value: def,
                 ty,
             }) => {
@@ -942,12 +961,18 @@ fn type_check_params_kw(
         }
     }
 
-    result
-        .unlabeled
-        .iter()
-        .map(|(_, arg)| arg)
-        .chain(result.labeled.values())
-        .try_for_each(|arg| validate_value_not_consumed(&arg.value, exec_state, arg.source_range))?;
+    let check_consumed_solid_args = fn_def
+        .std_props
+        .as_ref()
+        .is_none_or(|props| props.check_consumed_solid_args);
+    if check_consumed_solid_args {
+        result
+            .unlabeled
+            .iter()
+            .map(|(_, arg)| arg)
+            .chain(result.labeled.values())
+            .try_for_each(|arg| validate_value_not_consumed(&arg.value, exec_state, arg.source_range))?;
+    }
 
     Ok(result)
 }
@@ -1070,6 +1095,7 @@ mod test {
         fn opt_param(s: &'static str) -> Parameter {
             Parameter {
                 experimental: false,
+                deprecated_since: None,
                 identifier: ident(s),
                 param_type: None,
                 default_value: Some(DefaultParamVal::none()),
@@ -1080,6 +1106,7 @@ mod test {
         fn req_param(s: &'static str) -> Parameter {
             Parameter {
                 experimental: false,
+                deprecated_since: None,
                 identifier: ident(s),
                 param_type: None,
                 default_value: None,
@@ -1174,6 +1201,7 @@ mod test {
                 .collect::<IndexMap<_, _>>();
             let exec_ctxt = ExecutorContext {
                 engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+                engine_batch: crate::engine::EngineBatchContext::default(),
                 fs: Arc::new(crate::fs::FileManager::new()),
                 settings: Default::default(),
                 context_type: ContextType::Mock,

@@ -1,0 +1,27 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+assertion_line: 407
+description: Error from executing consumed_solid_original_issue.kcl
+---
+KCL Engine error
+
+  × engine: The Zoo engine cannot handle this 3D intersection yet.  Please
+  │ report this as an issue
+    ╭─[66:17]
+ 65 │ 
+ 66 │ ballEndHandle = intersect([ballEnd, rawHandle])
+    ·                 ───────────────┬───────────────┬
+    ·                                ╰── tests/consumed_solid_original_issue/input.kcl
+    ·                                ╰── tests/consumed_solid_original_issue/input.kcl
+    ╰────
+  ╰─▶ KCL Engine error
+      
+        × engine: The Zoo engine cannot handle this 3D intersection yet.
+        │ Please report this as an issue
+          ╭─[66:17]
+       65 │
+       66 │ ballEndHandle = intersect([ballEnd, rawHandle])
+          ·                 ───────────────┬───────────────
+          ·                                ╰── tests/
+      consumed_solid_original_issue/input.kcl
+          ╰────

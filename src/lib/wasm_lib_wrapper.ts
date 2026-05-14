@@ -10,7 +10,7 @@ import type {
   base64_decode as Base64Decode,
   change_default_units as ChangeDefaultUnits,
   change_experimental_features as ChangeExperimentalFeatures,
-  coredump as CoreDump,
+  change_kcl_version as ChangeKclVersion,
   default_app_settings as DefaultAppSettings,
   default_project_settings as DefaultProjectSettings,
   format_number_literal as FormatNumberLiteral,
@@ -86,9 +86,6 @@ export const get_tangential_arc_to_info: typeof GetTangentialArcToInfo = (
 ) => {
   return getModule().get_tangential_arc_to_info(...args)
 }
-export const coredump: typeof CoreDump = (...args) => {
-  return getModule().coredump(...args)
-}
 export const default_app_settings: typeof DefaultAppSettings = (...args) => {
   return getModule().default_app_settings(...args)
 }
@@ -113,6 +110,9 @@ export const kcl_settings: typeof KclSettings = (...args) => {
 }
 export const change_default_units: typeof ChangeDefaultUnits = (...args) => {
   return getModule().change_default_units(...args)
+}
+export const change_kcl_version: typeof ChangeKclVersion = (...args) => {
+  return getModule().change_kcl_version(...args)
 }
 export const change_experimental_features: typeof ChangeExperimentalFeatures = (
   ...args

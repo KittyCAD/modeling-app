@@ -11,11 +11,13 @@ import {
 import type { ToolTip } from '@src/lang/langHelpers'
 import { splitPathAtLastIndex } from '@src/lang/modifyAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { sourceRangeContains } from '@src/lang/sourceRange'
 import {
   codeRefFromRange,
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
   getFaceCodeRef,
+  getPatternArtifactForCopyId,
 } from '@src/lang/std/artifactGraph'
 import { getArgForEnd, sketchLineHelperMapKw } from '@src/lang/std/sketch'
 import { getSketchSegmentFromSourceRange } from '@src/lang/std/sketchConstraints'
@@ -48,21 +50,26 @@ import type {
 import { kclSettings, recast, sketchFromKclValue } from '@src/lang/wasm'
 import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
-import { getAngle, isArray } from '@src/lib/utils'
+import { isArray } from '@src/lib/utils'
+import {
+  deg2Rad,
+  isParallel as areVectorsParallel,
+  subVec,
+} from '@src/lib/utils2d'
 
 import type { Artifact, Plane } from '@rust/kcl-lib/bindings/Artifact'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
 import type { OpArg, Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { SketchBlock } from '@rust/kcl-lib/bindings/SketchBlock'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import type { UnaryExpression } from 'typescript'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
+  EdgeCutInfo,
   Selection,
   Selections,
-  EdgeCutInfo,
 } from '@src/machines/modelingSharedTypes'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { SketchBlock } from '@rust/kcl-lib/bindings/SketchBlock'
+import type { UnaryExpression } from 'typescript'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -564,7 +571,7 @@ export function isLinesParallelAndConstrained(
     }
   | Error {
   try {
-    const EPSILON = 0.005
+    const EPSILON = deg2Rad(0.005)
     const primaryPath = getNodePathFromSourceRange(
       ast,
       primaryLine?.codeRef?.range
@@ -617,15 +624,11 @@ export function isLinesParallelAndConstrained(
     )
     if (err(_segment)) return _segment
     const { segment: secondarySegment, index: secondaryIndex } = _segment
-    const primaryAngle = getAngle(primarySegment.from, primarySegment.to)
-    const secondaryAngle = getAngle(secondarySegment.from, secondarySegment.to)
-    const secondaryAngleAlt = getAngle(
-      secondarySegment.to,
-      secondarySegment.from
+    const isParallel = areVectorsParallel(
+      subVec(primarySegment.to, primarySegment.from),
+      subVec(secondarySegment.to, secondarySegment.from),
+      EPSILON
     )
-    const isParallel =
-      Math.abs(primaryAngle - secondaryAngle) < EPSILON ||
-      Math.abs(primaryAngle - secondaryAngleAlt) < EPSILON
 
     // is secondary line fully constrain, or has constrain type of 'angle'
     const secondaryFirstArg = getArgForEnd(secondaryNode)
@@ -1171,6 +1174,21 @@ export function getVariableExprsFromSelection(
   let exprs: Expr[] = []
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
+    const patternCopyExpr = getPatternCopyExprFromSelection(
+      s,
+      ast,
+      wasmInstance
+    )
+    if (patternCopyExpr) {
+      const key = splitOutputExprKey(patternCopyExpr)
+      if (pushedNames[key]) {
+        continue
+      }
+      exprs.push(patternCopyExpr)
+      pushedNames[key] = true
+      continue
+    }
+
     const splitOutputExpr = getSplitOutputExprFromSelection(
       s,
       ast,
@@ -1332,6 +1350,49 @@ export function getVariableExprsFromSelection(
   return { exprs, pathIfPipe }
 }
 
+function getPatternCopyExprFromSelection(
+  selection: Selection,
+  ast: Node<Program>,
+  wasmInstance: ModuleType
+): Expr | null {
+  const artifact = selection.artifact
+  if (artifact?.type !== 'pattern') {
+    return null
+  }
+
+  const patternIndex =
+    selection.patternIndex ??
+    (selection.engineEntityId
+      ? artifact.copyIds.indexOf(selection.engineEntityId) + 1
+      : -1)
+  if (patternIndex < 0) {
+    return null
+  }
+
+  const pathCandidates = [
+    getNodePathFromSourceRange(ast, artifact.codeRef.range),
+    artifact.codeRef.pathToNode,
+    selection.codeRef.pathToNode,
+  ]
+
+  for (const pathToNode of pathCandidates) {
+    const patternVariableName = getVariableNameFromNodePath(
+      pathToNode,
+      ast,
+      wasmInstance
+    )
+    if (patternVariableName) {
+      return createMemberExpression(
+        patternVariableName,
+        createLiteral(patternIndex, wasmInstance),
+        true
+      )
+    }
+  }
+
+  return null
+}
+
 function getSplitOutputExprFromSelection(
   selection: Selection,
   ast: Node<Program>,
@@ -1481,7 +1542,9 @@ export function retrieveSelectionsFromOpArg(
 
   const graphSelections: Selection[] = []
   for (const artifactId of artifactIds) {
-    let artifact = artifactGraph.get(artifactId)
+    let artifact =
+      artifactGraph.get(artifactId) ??
+      getPatternArtifactForCopyId(artifactId, artifactGraph)
     if (!artifact) {
       continue
     }
@@ -1539,6 +1602,32 @@ export function findOperationArtifact(
         a.codeRef.range.every((v, i) => v === operation.sourceRange[i])
     )
   return artifact
+}
+
+export function findOperationForArtifact(input: {
+  artifact: Artifact | undefined
+  operations: Operation[]
+}): Operation | undefined {
+  if (!input.artifact || !('codeRef' in input.artifact)) {
+    return undefined
+  }
+  const { artifact } = input
+
+  return input.operations.find((operation) => {
+    if (!('sourceRange' in operation)) {
+      return false
+    }
+    return (
+      sourceRangeContains(operation.sourceRange, artifact.codeRef.range) ||
+      (operation.type === 'StdLibCall' &&
+        operation.stdlibEntrySourceRange !== undefined &&
+        operation.stdlibEntrySourceRange !== null &&
+        sourceRangeContains(
+          operation.stdlibEntrySourceRange,
+          artifact.codeRef.range
+        ))
+    )
+  })
 }
 
 export function findOperationPlaneArtifact(
@@ -1853,9 +1942,11 @@ export function findAllChildrenAndOrderByPlaceInCode(
       pushToSomething(currentId, current.sweepId)
       pushToSomething(currentId, current.segIds)
       pushToSomething(currentId, current.compositeSolidId)
+      pushToSomething(currentId, current.patternIds)
     } else if (current?.type === 'sweep') {
       pushToSomething(currentId, current.surfaceIds)
       pushToSomething(currentId, current.pathId)
+      pushToSomething(currentId, current.patternIds)
     } else if (current?.type === 'wall' || current?.type === 'cap') {
       pushToSomething(currentId, current?.pathIds)
     } else if (current?.type === 'segment') {
@@ -1869,6 +1960,11 @@ export function findAllChildrenAndOrderByPlaceInCode(
       pushToSomething(currentId, current.pathIds)
     } else if (current?.type === 'compositeSolid') {
       pushToSomething(currentId, current.compositeSolidId)
+      pushToSomething(currentId, current.patternIds)
+    } else if (current?.type === 'pattern') {
+      pushToSomething(currentId, current.copyIds)
+      pushToSomething(currentId, current.copyFaceIds)
+      pushToSomething(currentId, current.copyEdgeIds)
     }
     result.add(currentId)
   }

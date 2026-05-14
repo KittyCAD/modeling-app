@@ -61,6 +61,35 @@ impl CsgAlgorithm {
     }
 }
 
+fn is_single_target_self_subtract(target_ids: &[uuid::Uuid], tool_ids: &[uuid::Uuid]) -> bool {
+    target_ids.len() == 1 && tool_ids.len() == 1 && target_ids[0] == tool_ids[0]
+}
+
+fn subtract_output_ids(
+    solid_out_id: uuid::Uuid,
+    target_ids: &[uuid::Uuid],
+    tool_ids: &[uuid::Uuid],
+    extra_solid_ids: &[uuid::Uuid],
+) -> Vec<uuid::Uuid> {
+    if is_single_target_self_subtract(target_ids, tool_ids) {
+        return Vec::new();
+    }
+
+    let mut output_ids = if target_ids.len() == 1 {
+        vec![solid_out_id]
+    } else {
+        Vec::new()
+    };
+
+    for extra_solid_id in extra_solid_ids {
+        if !output_ids.contains(extra_solid_id) {
+            output_ids.push(*extra_solid_id);
+        }
+    }
+
+    output_ids
+}
+
 pub(crate) async fn inner_union(
     solids: Vec<Solid>,
     tolerance: Option<TyF64>,
@@ -78,7 +107,7 @@ pub(crate) async fn inner_union(
     let mut new_solids = vec![solid.clone()];
 
     if args.ctx.no_engine_commands().await {
-        record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Union, Some(solid_out_id));
+        record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Union, &new_solids);
         return Ok(new_solids);
     }
 
@@ -127,11 +156,12 @@ pub(crate) async fn inner_union(
         }
         let mut new_solid = solid.clone();
         new_solid.set_id(extra_solid_id);
+        new_solid.value_id = solid_out_id;
         new_solid.artifact_id = extra_solid_id.into();
         new_solids.push(new_solid);
     }
 
-    record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Union, Some(solid_out_id));
+    record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Union, &new_solids);
 
     Ok(new_solids)
 }
@@ -172,12 +202,7 @@ pub(crate) async fn inner_intersect(
     let mut new_solids = vec![solid.clone()];
 
     if args.ctx.no_engine_commands().await {
-        record_consumed_solids(
-            exec_state,
-            &solids,
-            ConsumedSolidOperation::Intersect,
-            Some(solid_out_id),
-        );
+        record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Intersect, &new_solids);
         return Ok(new_solids);
     }
 
@@ -225,16 +250,12 @@ pub(crate) async fn inner_intersect(
         }
         let mut new_solid = solid.clone();
         new_solid.set_id(extra_solid_id);
+        new_solid.value_id = solid_out_id;
         new_solid.artifact_id = extra_solid_id.into();
         new_solids.push(new_solid);
     }
 
-    record_consumed_solids(
-        exec_state,
-        &solids,
-        ConsumedSolidOperation::Intersect,
-        Some(solid_out_id),
-    );
+    record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Intersect, &new_solids);
 
     Ok(new_solids)
 }
@@ -264,20 +285,16 @@ pub(crate) async fn inner_subtract(
     validate_solids_not_consumed(&combined_solids, exec_state, args.source_range)?;
 
     let solid_out_id = exec_state.next_uuid();
-
-    let mut solid = solids[0].clone();
-    solid.set_id(solid_out_id);
-    solid.artifact_id = solid_out_id.into();
-    let mut new_solids = vec![solid.clone()];
+    let target_ids = solids.iter().map(|s| s.id).collect::<Vec<_>>();
+    let tool_ids = tools.iter().map(|s| s.id).collect::<Vec<_>>();
 
     if args.ctx.no_engine_commands().await {
-        record_consumed_solids(
-            exec_state,
-            &solids,
-            ConsumedSolidOperation::Subtract,
-            Some(solid_out_id),
-        );
-        record_consumed_solids(exec_state, &tools, ConsumedSolidOperation::Subtract, None);
+        let mut solid = solids[0].clone();
+        solid.set_id(solid_out_id);
+        solid.artifact_id = solid_out_id.into();
+        let new_solids = vec![solid];
+        record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Subtract, &new_solids);
+        record_consumed_solids(exec_state, &tools, ConsumedSolidOperation::Subtract, &[]);
         return Ok(new_solids);
     }
 
@@ -292,8 +309,8 @@ pub(crate) async fn inner_subtract(
             ModelingCmd::from(
                 mcmd::BooleanSubtract::builder()
                     .use_legacy(csg_algorithm.is_legacy())
-                    .target_ids(solids.iter().map(|s| s.id).collect())
-                    .tool_ids(tools.iter().map(|s| s.id).collect())
+                    .target_ids(target_ids.clone())
+                    .tool_ids(tool_ids.clone())
                     .tolerance(LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)))
                     .build(),
             ),
@@ -320,24 +337,20 @@ pub(crate) async fn inner_subtract(
         );
     }
 
-    // If we have more solids, set those as well.
-    for extra_solid_id in boolean_resp.extra_solid_ids {
-        if extra_solid_id == solid_out_id {
-            continue;
-        }
-        let mut new_solid = solid.clone();
-        new_solid.set_id(extra_solid_id);
-        new_solid.artifact_id = extra_solid_id.into();
-        new_solids.push(new_solid);
-    }
+    let output_ids = subtract_output_ids(solid_out_id, &target_ids, &tool_ids, &boolean_resp.extra_solid_ids);
+    let new_solids = output_ids
+        .into_iter()
+        .map(|output_id| {
+            let mut new_solid = solids[0].clone();
+            new_solid.set_id(output_id);
+            new_solid.value_id = solid_out_id;
+            new_solid.artifact_id = output_id.into();
+            new_solid
+        })
+        .collect::<Vec<_>>();
 
-    record_consumed_solids(
-        exec_state,
-        &solids,
-        ConsumedSolidOperation::Subtract,
-        Some(solid_out_id),
-    );
-    record_consumed_solids(exec_state, &tools, ConsumedSolidOperation::Subtract, None);
+    record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Subtract, &new_solids);
+    record_consumed_solids(exec_state, &tools, ConsumedSolidOperation::Subtract, &[]);
 
     Ok(new_solids)
 }
@@ -406,12 +419,13 @@ pub(crate) async fn inner_imprint(
             let extra_solid_id = exec_state.next_uuid();
             let mut new_solid = body.clone();
             new_solid.set_id(extra_solid_id);
+            new_solid.value_id = body_out_id;
             new_solid.artifact_id = extra_solid_id.into();
             new_solids.push(new_solid);
         }
-        record_consumed_solids(exec_state, &targets, ConsumedSolidOperation::Split, Some(body_out_id));
+        record_consumed_solids(exec_state, &targets, ConsumedSolidOperation::Split, &new_solids);
         if !keep_tools && let Some(tools) = tools.as_ref() {
-            record_consumed_solids(exec_state, tools, ConsumedSolidOperation::Split, None);
+            record_consumed_solids(exec_state, tools, ConsumedSolidOperation::Split, &[]);
         }
         return Ok(new_solids);
     }
@@ -469,13 +483,14 @@ pub(crate) async fn inner_imprint(
         }
         let mut new_solid = body.clone();
         new_solid.set_id(extra_solid_id);
+        new_solid.value_id = body_out_id;
         new_solid.artifact_id = extra_solid_id.into();
         new_solids.push(new_solid);
     }
 
-    record_consumed_solids(exec_state, &targets, ConsumedSolidOperation::Split, Some(body_out_id));
+    record_consumed_solids(exec_state, &targets, ConsumedSolidOperation::Split, &new_solids);
     if !keep_tools && let Some(tools) = tools.as_ref() {
-        record_consumed_solids(exec_state, tools, ConsumedSolidOperation::Split, None);
+        record_consumed_solids(exec_state, tools, ConsumedSolidOperation::Split, &[]);
     }
 
     Ok(new_solids)
@@ -483,8 +498,49 @@ pub(crate) async fn inner_imprint(
 
 #[cfg(test)]
 mod tests {
+    use uuid::Uuid;
+
+    use super::subtract_output_ids;
     use crate::errors::KclError;
     use crate::execution::MockConfig;
+
+    fn test_uuid(id: u128) -> Uuid {
+        Uuid::from_u128(id)
+    }
+
+    #[test]
+    fn subtract_output_ids_single_target_uses_command_id() {
+        let output_id = test_uuid(100);
+        let target_id = test_uuid(1);
+        let tool_id = test_uuid(2);
+        let extra_id = test_uuid(3);
+
+        let output_ids = subtract_output_ids(output_id, &[target_id], &[tool_id], &[extra_id]);
+
+        assert_eq!(output_ids, vec![output_id, extra_id]);
+    }
+
+    #[test]
+    fn subtract_output_ids_multi_target_uses_response_ids_only() {
+        let output_id = test_uuid(100);
+        let target_ids = [test_uuid(1), test_uuid(2)];
+        let tool_id = test_uuid(3);
+        let extra_ids = [test_uuid(4), test_uuid(5)];
+
+        let output_ids = subtract_output_ids(output_id, &target_ids, &[tool_id], &extra_ids);
+
+        assert_eq!(output_ids, extra_ids);
+    }
+
+    #[test]
+    fn subtract_output_ids_self_subtract_returns_no_outputs() {
+        let output_id = test_uuid(100);
+        let target_id = test_uuid(1);
+
+        let output_ids = subtract_output_ids(output_id, &[target_id], &[target_id], &[]);
+
+        assert!(output_ids.is_empty());
+    }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn subtract_reusing_consumed_target_reports_kcl_error() {
@@ -546,7 +602,10 @@ second = subtract(target, tools = [tool2])
             message.contains("`target` was already consumed by a `subtract` operation"),
             "{message}"
         );
-        assert!(message.contains("The operation result is now in `first`"), "{message}");
+        assert!(
+            message.contains("The operation result is now in `first`; use that for subsequent operations"),
+            "{message}"
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -596,6 +655,59 @@ second = subtract(first, tools = [tool])
             "{message}"
         );
         assert!(message.contains("can no longer be used"), "{message}");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn hide_consumed_solid_does_not_report_kcl_error() {
+        let code = r#"
+targetSketch = sketch(on = XY) {
+  line1 = line(start = [var -10, var -10], end = [var 10, var -10])
+  line2 = line(start = [var 10, var -10], end = [var 10, var 10])
+  line3 = line(start = [var 10, var 10], end = [var -10, var 10])
+  line4 = line(start = [var -10, var 10], end = [var -10, var -10])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+target = extrude(region(point = [0, 0], sketch = targetSketch), length = 20)
+
+toolSketch = sketch(on = XY) {
+  line1 = line(start = [var -2, var -2], end = [var 2, var -2])
+  line2 = line(start = [var 2, var -2], end = [var 2, var 2])
+  line3 = line(start = [var 2, var 2], end = [var -2, var 2])
+  line4 = line(start = [var -2, var 2], end = [var -2, var -2])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+tool = extrude(region(point = [0, 0], sketch = toolSketch), length = 4)
+
+result = subtract(target, tools = [tool])
+hidden = hide(target)
+"#;
+
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let result = ctx.run_mock(&program, &MockConfig::default()).await;
+        ctx.close().await;
+
+        match result {
+            Ok(outcome) => assert!(outcome.variables.contains_key("hidden")),
+            Err(err) => {
+                let message = err.error.message();
+                assert!(
+                    message.contains("`target` was already consumed by a `subtract` operation"),
+                    "{message}"
+                );
+                panic!("hide should ignore consumed-solid validation, but failed with: {message}");
+            }
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -659,7 +771,10 @@ third = subtract(left, tools = [tool])
             message.contains("`left` was already consumed by a `union` operation"),
             "{message}"
         );
-        assert!(message.contains("The operation result is now in `second`"), "{message}");
+        assert!(
+            message.contains("The operation result is now in `second`; use that for subsequent operations"),
+            "{message}"
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -722,7 +837,10 @@ second = subtract(left, tools = [tool])
             message.contains("`left` was already consumed by an `intersect` operation"),
             "{message}"
         );
-        assert!(message.contains("The operation result is now in `first`"), "{message}");
+        assert!(
+            message.contains("The operation result is now in `first`; use that for subsequent operations"),
+            "{message}"
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]

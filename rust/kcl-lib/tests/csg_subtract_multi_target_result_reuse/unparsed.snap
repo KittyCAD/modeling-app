@@ -1,0 +1,45 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing csg_subtract_multi_target_result_reuse.kcl
+---
+leftSketch = sketch(on = XY) {
+  bottom = line(start = [var -5, var -2], end = [var -1, var -2])
+  right = line(start = [var -1, var -2], end = [var -1, var 2])
+  top = line(start = [var -1, var 2], end = [var -5, var 2])
+  left = line(start = [var -5, var 2], end = [var -5, var -2])
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
+}
+
+leftBody = extrude(region(point = [-3, 0], sketch = leftSketch), length = 4)
+
+rightSketch = sketch(on = XY) {
+  bottom = line(start = [var 1, var -2], end = [var 5, var -2])
+  right = line(start = [var 5, var -2], end = [var 5, var 2])
+  top = line(start = [var 5, var 2], end = [var 1, var 2])
+  left = line(start = [var 1, var 2], end = [var 1, var -2])
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
+}
+
+rightBody = extrude(region(point = [3, 0], sketch = rightSketch), length = 4)
+
+toolSketch = sketch(on = offsetPlane(XY, offset = -1)) {
+  bottom = line(start = [var -2, var -1], end = [var 2, var -1])
+  right = line(start = [var 2, var -1], end = [var 2, var 1])
+  top = line(start = [var 2, var 1], end = [var -2, var 1])
+  left = line(start = [var -2, var 1], end = [var -2, var -1])
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
+}
+
+tool = extrude(region(point = [0, 0], sketch = toolSketch), length = 6)
+
+result = subtract([leftBody, rightBody], tools = [tool])
+colored = appearance(result, color = "#33aa55")

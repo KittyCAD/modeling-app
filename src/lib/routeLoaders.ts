@@ -1,4 +1,12 @@
 import { projectSkeletonCreate } from '@src/lang/project'
+import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  PROJECT_ENTRYPOINT,
+} from '@src/lib/constants'
+import type { LoaderFunction } from 'react-router-dom'
+import fsZds from '@src/lib/fs-zds'
+import { redirect } from 'react-router-dom'
+import { waitFor } from 'xstate'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
 import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
@@ -77,7 +85,10 @@ export const baseLoader =
           await getInitialDefaultDir(),
           DEFAULT_WEB_PROJECT_NAME,
           'main.kcl'
-        )
+        ),
+        settings.settings.modeling.defaultUnit.current ??
+          DEFAULT_DEFAULT_LENGTH_UNIT,
+        wasmInstance
       )
 
       const fileURLPath = `${PATHS.FILE}/${encodeURIComponent(

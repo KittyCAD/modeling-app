@@ -178,7 +178,7 @@ function CommandBarVector2DInput({
   const yInputRef = useRef<HTMLInputElement>(null)
 
   // Close the command bar
-  useHotkeys('mod + k, mod + /', () => commands.send({ type: 'Close' }))
+  useHotkeys('mod + /', () => commands.send({ type: 'Close' }))
 
   // Focus and select the first input on mount
   useEffect(() => {

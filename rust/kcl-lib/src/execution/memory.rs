@@ -25,7 +25,7 @@
 //!
 //! Example:
 //!
-//! ```norun
+//! ```no_run
 //! a = 10
 //!
 //! fn foo() {
@@ -65,7 +65,7 @@
 //!
 //! Example:
 //!
-//! ```norun
+//! ```no_run
 //! a = 10
 //!
 //! fn foo() {
@@ -203,7 +203,10 @@
 //! as the storage modification, it is ok.
 
 use std::cell::UnsafeCell;
+use std::collections::LinkedList;
 use std::fmt;
+use std::ops::Deref;
+use std::ops::DerefMut;
 use std::pin::Pin;
 use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
@@ -228,6 +231,152 @@ pub(crate) const TYPE_PREFIX: &str = "__ty_";
 pub(crate) const MODULE_PREFIX: &str = "__mod_";
 pub(crate) const SKETCH_PREFIX: &str = "__sketch_";
 
+/// Size of the internal "block" of [Environment]s.
+pub(crate) const ENVIRONMENTS_BLOCK_LEN: usize = 8192;
+
+/// Internal wrapper around a fixed sized block of
+#[derive(Debug)]
+struct EnvironmentsBlocks {
+    n: AtomicUsize,
+    blocks: LinkedList<Vec<Pin<Box<Environment>>>>,
+}
+
+impl EnvironmentsBlocks {
+    /// Create a new list of allocated blocks.
+    pub fn new() -> Self {
+        let mut blocks = LinkedList::new();
+        blocks.push_back(Vec::with_capacity(ENVIRONMENTS_BLOCK_LEN));
+        Self { blocks, n: 0.into() }
+    }
+
+    /// recompute n to check.
+    fn recompute_n(blocks: &LinkedList<Vec<Pin<Box<Environment>>>>) -> usize {
+        ((blocks.len() - 1) * ENVIRONMENTS_BLOCK_LEN) + blocks.back().unwrap().len()
+    }
+
+    /// "Deep clone" the blocks, in its current state. Writes may be going
+    /// on during this, so we'll recompute n.
+    pub fn deep_clone(&self) -> Self {
+        let blocks: LinkedList<Vec<Pin<Box<Environment>>>> = self
+            .iter()
+            .map(|og| {
+                // calling .clone will shrink the vec on us, doing it
+                // this way will just do one new allocation and associated
+                // clone.
+                let mut new = Vec::with_capacity(ENVIRONMENTS_BLOCK_LEN);
+                new.extend_from_slice(og);
+                new
+            })
+            .collect();
+        let n = Self::recompute_n(&blocks);
+        Self { blocks, n: n.into() }
+    }
+
+    fn must_current_block_mut(&mut self) -> &mut Vec<Pin<Box<Environment>>> {
+        self.blocks.back_mut().expect("internal consistency error")
+    }
+
+    fn must_current_block(&mut self) -> &Vec<Pin<Box<Environment>>> {
+        self.blocks.back().expect("internal consistency error")
+    }
+
+    /// Grow a new Block. This will assert that the current block is full.
+    fn grow(&mut self) -> &mut Vec<Pin<Box<Environment>>> {
+        {
+            let block = self.must_current_block();
+            assert_eq!(ENVIRONMENTS_BLOCK_LEN, block.capacity());
+            assert_eq!(block.capacity(), block.len());
+        }
+        self.blocks.push_back_mut(Vec::with_capacity(ENVIRONMENTS_BLOCK_LEN))
+    }
+
+    /// Get an [Environment] given some environment id.
+    pub fn get(&self, idx: usize) -> &Environment {
+        let n = self.n.load(Ordering::Relaxed);
+        if idx >= n {
+            panic!("index {} is out of range (len={})", idx, n);
+        }
+        let vec_idx = idx % ENVIRONMENTS_BLOCK_LEN;
+        let block = self.get_containing_block(idx);
+        &block[vec_idx]
+    }
+
+    fn get_containing_block(&self, idx: usize) -> &Vec<Pin<Box<Environment>>> {
+        let block_idx = idx / ENVIRONMENTS_BLOCK_LEN;
+        let Some(block) = self.blocks.iter().nth(block_idx) else {
+            panic!("index {} (block={}) is out of range", idx, block_idx);
+        };
+        block
+    }
+
+    fn get_containing_block_mut(&mut self, idx: usize) -> &mut Vec<Pin<Box<Environment>>> {
+        let block_idx = idx / ENVIRONMENTS_BLOCK_LEN;
+        let Some(block) = self.blocks.iter_mut().nth(block_idx) else {
+            panic!("index {} (block={}) is out of range", idx, block_idx);
+        };
+        block
+    }
+
+    pub fn take(&mut self, idx: usize) -> Pin<Box<Environment>> {
+        let len = self.n.load(Ordering::Relaxed);
+        if idx == len - 1 {
+            self.n.fetch_sub(1, Ordering::Relaxed);
+            let block = self.must_current_block_mut();
+            block.pop().unwrap()
+        } else {
+            let block = self.get_containing_block_mut(idx);
+            let offset = idx % ENVIRONMENTS_BLOCK_LEN;
+            std::mem::replace(&mut block[offset], Box::pin(Environment::new(None, false, 0)))
+        }
+    }
+
+    pub fn pop(&mut self, old: EnvironmentRef, owner: usize) {
+        let len = self.n.load(Ordering::Relaxed);
+        let env = self.get(old.index());
+        env.compact(owner);
+
+        if env.is_empty() && old.index() == len - 1 {
+            // special case, we can literally pop it
+            self.take(old.index());
+            return;
+        }
+
+        env.read_only();
+    }
+
+    /// Push an [Environment] into a free spot, and return the [EnvironmentRef]
+    pub fn push(&mut self, environment: Environment) -> EnvironmentRef {
+        {
+            let block = self.must_current_block();
+            assert_eq!(ENVIRONMENTS_BLOCK_LEN, block.capacity());
+            if block.capacity() == block.len() {
+                let _ = block;
+                self.grow();
+            }
+        }
+
+        let n = self.n.fetch_add(1, Ordering::Relaxed);
+        let block = self.must_current_block_mut();
+        let result = EnvironmentRef(n, usize::MAX);
+        block.push(Box::pin(environment));
+        result
+    }
+}
+
+impl Deref for EnvironmentsBlocks {
+    type Target = LinkedList<Vec<Pin<Box<Environment>>>>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.blocks
+    }
+}
+
+impl DerefMut for EnvironmentsBlocks {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.blocks
+    }
+}
+
 /// KCL memory. There should be only one ProgramMemory for the interpretation of a program (
 /// including other modules). Multiple interpretation runs should have fresh instances.
 ///
@@ -236,7 +385,7 @@ pub(crate) const SKETCH_PREFIX: &str = "__sketch_";
 pub(crate) struct ProgramMemory {
     // Environments are boxed so they will never be moved if the `Vec` reallocates. We use `Pin`
     // to help guarantee that.
-    environments: UnsafeCell<Vec<Pin<Box<Environment>>>>,
+    environments: UnsafeCell<EnvironmentsBlocks>,
     /// Memory for the std prelude.
     std: Option<EnvironmentRef>,
     /// Statistics about the memory, should not be used for anything other than meta-info.
@@ -261,12 +410,7 @@ pub(crate) struct Stack {
 // Intended for debugging. Do not rely on this output in any way!
 impl fmt::Display for ProgramMemory {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let envs: Vec<String> = self
-            .envs()
-            .iter()
-            .enumerate()
-            .map(|(i, env)| format!("{i}: {env}"))
-            .collect();
+        let envs: Vec<String> = self.envs().enumerate().map(|(i, env)| format!("{i}: {env}")).collect();
         write!(
             f,
             "ProgramMemory (next stack: {})\nenvs:\n{}",
@@ -293,8 +437,7 @@ impl ProgramMemory {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Arc<Self> {
         Arc::new(Self {
-            // Massively over-allocate here to try and avoid reallocating later.
-            environments: UnsafeCell::new(Vec::with_capacity(512)),
+            environments: UnsafeCell::new(EnvironmentsBlocks::new()),
             std: None,
             stats: MemoryStats::default(),
             next_stack_id: AtomicUsize::new(1),
@@ -313,7 +456,7 @@ impl ProgramMemory {
     /// that no other task will need to use `self` while this runs.
     fn deep_clone(&self) -> Self {
         self.with_envs(|envs| Self {
-            environments: UnsafeCell::new(envs.clone()),
+            environments: UnsafeCell::new(envs.deep_clone()),
             std: self.std,
             stats: MemoryStats::default(),
             next_stack_id: AtomicUsize::new(self.next_stack_id.load(Ordering::Relaxed)),
@@ -383,19 +526,21 @@ impl ProgramMemory {
         self.get_env(env.index()).find_all_by(pred, owner)
     }
 
-    fn envs(&self) -> &[Pin<Box<Environment>>] {
-        unsafe { self.environments.get().as_ref().unwrap() }
+    fn envs(&self) -> impl Iterator<Item = &Pin<Box<Environment>>> {
+        let environments = unsafe { self.environments.get().as_ref().unwrap() };
+        environments.iter().flatten()
     }
 
     #[track_caller]
     fn get_env(&self, index: usize) -> &Environment {
-        unsafe { &self.environments.get().as_ref().unwrap()[index] }
+        let environments = unsafe { &self.environments.get().as_ref().unwrap() };
+        environments.get(index)
     }
 
     /// Mutable access to the environments. Prefer using higher-level methods if possible.
     ///
     /// Uses a spin lock to wait for write access, so `f` must not be even slightly long-running.
-    fn with_envs<T>(&self, f: impl FnOnce(&mut Vec<Pin<Box<Environment>>>) -> T) -> T {
+    fn with_envs<T>(&self, f: impl FnOnce(&mut EnvironmentsBlocks) -> T) -> T {
         // Spin lock
         while self.write_lock.swap(true, Ordering::AcqRel) {
             // Atomics wrap on overflow, so no chance of panicking here.
@@ -418,57 +563,20 @@ impl ProgramMemory {
         self.stats.env_count.fetch_add(1, Ordering::Relaxed);
 
         let new_env = Environment::new(parent, is_root_env, owner);
-        self.with_envs(|envs| {
-            let result = EnvironmentRef(envs.len(), usize::MAX);
-            // Note this might reallocate, which would hold the `with_envs` spin lock for way too long
-            // so somehow we should make sure we don't do that (though honestly the chance of that
-            // happening while another thread is waiting for the lock is pretty small).
-            envs.push(Box::pin(new_env));
-            result
-        })
+        self.with_envs(|envs| envs.push(new_env))
     }
 
     /// Handle tidying up an env when it has been popped from the call stack.
     ///
     /// If the env must be preserved, it is. If not, then it will be removed or compacted.
     fn pop_env(&self, old: EnvironmentRef, owner: usize) {
-        // If the env can't be referenced delete all it's bindings.
-        self.get_env(old.index()).compact(owner);
-
-        if self.get_env(old.index()).is_empty() {
-            self.with_envs(|envs| {
-                if old.index() == envs.len() - 1 {
-                    // We can pop the env from the vec.
-                    self.stats.env_gcs.fetch_add(1, Ordering::Relaxed);
-                    envs.pop();
-                } else {
-                    // The env is empty, but we can't pop it. Just leave it around (it can't be
-                    // referenced).
-                    self.stats.skipped_env_gcs.fetch_add(1, Ordering::Relaxed);
-                    envs[old.index()].read_only();
-                }
-            });
-        } else {
-            // Env is non-empty, so preserve it.
-            self.stats.preserved_envs.fetch_add(1, Ordering::Relaxed);
-            self.get_env(old.index()).read_only();
-        }
+        self.with_envs(|envs| {
+            envs.pop(old, owner);
+        });
     }
 
     fn take_env(&self, old: EnvironmentRef) -> Pin<Box<Environment>> {
-        self.with_envs(|envs| {
-            if old.index() == envs.len() - 1 {
-                // We can pop the env from the vec.
-                self.stats.env_gcs.fetch_add(1, Ordering::Relaxed);
-                envs.pop().unwrap()
-            } else {
-                // We can't pop because the env is not at the end of the vec and we must maintain
-                // the indices. Replace the env with an empty one. It can no longer be referenced
-                // so we don't care about it.
-                self.stats.skipped_env_gcs.fetch_add(1, Ordering::Relaxed);
-                std::mem::replace(&mut envs[old.index()], Box::pin(Environment::new(None, false, 0)))
-            }
-        })
+        self.with_envs(|envs| envs.take(old.index()))
     }
 
     /// Get a value from memory without checking for ownership of the env.
@@ -925,12 +1033,6 @@ pub(crate) struct MemoryStats {
     epoch_count: AtomicUsize,
     // Total number of values inserted or updated.
     mutation_count: AtomicUsize,
-    // The number of envs we delete when popped from the call stack.
-    env_gcs: AtomicUsize,
-    // The number of empty envs we can't delete when popped from the call stack.
-    skipped_env_gcs: AtomicUsize,
-    // The number of envs we can't delete when popped from the call stack because they may be referenced.
-    preserved_envs: AtomicUsize,
     // The number of iterations waiting for a spin lock.
     lock_waits: AtomicUsize,
 }
@@ -1410,7 +1512,7 @@ mod test {
             },
             v => panic!("{v:#?}, expected {sn1:?}"),
         }
-        assert_eq!(mem.memory.envs().len(), 2);
+        assert_eq!(mem.memory.envs().count(), 2);
     }
 
     #[test]

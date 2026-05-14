@@ -39,7 +39,7 @@ export function useCalculateKclExpression({
   code: string
   ast: Node<Program>
   variables: VariableMap
-  options?: { allowArrays?: boolean }
+  options?: { allowArrays?: boolean; allowStringArrays?: boolean }
 }): {
   inputRef: React.RefObject<HTMLInputElement | null>
   valueNode: Expr | null
