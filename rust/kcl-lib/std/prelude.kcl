@@ -736,25 +736,3 @@ export fn endOf(
   /// Edge whose end endpoint should be referenced.
   @edge: Edge,
 ): EdgeEndpoint {}
-
-/// Given a vertex index, find its ID.
-/// In general, you should prefer selecting tagged faces or edges to using this function.
-/// Use this function if you need a topological vertex from imported geometry or operations
-/// that do not yet expose a taggable vertex.
-/// ```kcl,legacySketch
-/// cube = startSketchOn(XY)
-///   |> rectangle(width = 10, height = 10, center = [0, 0])
-///   |> extrude(length = 2)
-///
-/// corner = vertexId(cube, index = 0)
-/// gdt::distance(from = corner, to = edgeId(cube, index = 0), tolerance = 0.1)
-/// ```
-@(impl = std_rust, feature_tree = false)
-export fn vertexId(
-  /// The solid whose vertices we're trying to find
-  @body: Solid,
-  /// Vertex to identify.
-  /// The index is a stable ordering of vertices, used when you can't get the
-  /// usual ID of a vertex.
-  index: number(Count),
-): Vertex {}

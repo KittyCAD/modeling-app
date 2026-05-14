@@ -335,10 +335,6 @@ export type Edge
 @(impl = std_rust)
 export type EdgeEndpoint
 
-/// A vertex of a solid.
-@(impl = std_rust)
-export type Vertex
-
 /// A [bounded edge](/docs/kcl-std/functions/std-sketch-getBoundedEdge) of a solid.
 @(impl = std_rust)
 export type BoundedEdge

@@ -127,7 +127,6 @@ pub const TEST_NAMES: &[&str] = &[
     "std-startOf-0",
     "std-endOf-0",
     "std-faceId-0",
-    "std-vertexId-0",
     "std-offsetPlane-0",
     "std-offsetPlane-1",
     "std-offsetPlane-2",

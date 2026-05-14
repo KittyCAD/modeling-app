@@ -520,7 +520,6 @@ fn originates_from_sketch_block(value: &KclValue) -> bool {
     match value {
         KclValue::Uuid { .. } => false,
         KclValue::EdgeEndpoint { .. } => false,
-        KclValue::Vertex { .. } => false,
         KclValue::Bool { .. } => false,
         KclValue::Number { .. } => false,
         KclValue::String { .. } => false,
