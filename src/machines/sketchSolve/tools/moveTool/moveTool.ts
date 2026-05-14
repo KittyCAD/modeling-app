@@ -194,13 +194,15 @@ function buildSegmentCtorWithDrag({
   currentCursorPosition,
   dragVec,
   units,
+  pointPositionOverride,
 }: {
   objUnderCursor: ApiObject
-  selectedObjects: Array<ApiObject>
+  selectedObjects: ApiObject[]
   isEntityUnderCursor: boolean
   currentCursorPosition: Vector2
   dragVec: Vector2
   units: NumericSuffix
+  pointPositionOverride?: Extract<SegmentCtor, { type: 'Point' }>['position']
 }): SegmentCtor | null {
   const baseCtor = buildSegmentCtorFromObject(obj, objects)
   if (!baseCtor) {
@@ -208,37 +210,35 @@ function buildSegmentCtorWithDrag({
   }
 
   if (baseCtor.type === 'Point') {
+    if (pointPositionOverride) {
+      return {
+        type: 'Point',
+        position: pointPositionOverride,
+      }
+    }
+
     if (isEntityUnderCursor) {
       // Use twoD directly for entity under cursor
       // Note: currentCursorPosition comes from intersectionPoint.twoD which is in world coordinates and scaled to match current units
       return {
         type: 'Point',
-        position: {
-          x: {
-            type: 'Var',
-            value: roundOff(currentCursorPosition.x),
-            units,
-          },
-          y: {
-            type: 'Var',
-            value: roundOff(currentCursorPosition.y),
-            units,
-          },
-        },
-      }
-    } else {
-      // Apply drag vector to current position
-      const currentPos = {
-        x: baseCtor.position.x,
-        y: baseCtor.position.y,
-      }
-      const newPos = applyVectorToPoint2D(currentPos, dragVec)
-      return {
-        type: 'Point',
-        position: newPos,
+        position: buildCursorPointPosition(currentCursorPosition, units),
       }
     }
-  } else if (baseCtor.type === 'Line') {
+
+    // Apply drag vector to current position
+    const currentPos = {
+      x: baseCtor.position.x,
+      y: baseCtor.position.y,
+    }
+    const newPos = applyVectorToPoint2D(currentPos, dragVec)
+    return {
+      type: 'Point',
+      position: newPos,
+    }
+  }
+
+  if (baseCtor.type === 'Line') {
     // For lines, always apply the drag vector to both endpoints (translate the line)
     // This applies whether it's the entity under cursor or another selected entity
     const newStart = applyVectorToPoint2D(baseCtor.start, dragVec)
@@ -248,7 +248,9 @@ function buildSegmentCtorWithDrag({
       start: newStart,
       end: newEnd,
     }
-  } else if (baseCtor.type === 'Arc') {
+  }
+
+  if (baseCtor.type === 'Arc') {
     // For arcs, always apply the drag vector to center, start, and end points (translate the arc)
     // This applies whether it's the entity under cursor or another selected entity
     const newCenter = applyVectorToPoint2D(baseCtor.center, dragVec)
@@ -264,7 +266,9 @@ function buildSegmentCtorWithDrag({
       start: newStart,
       end: newEnd,
     }
-  } else if (baseCtor.type === 'Circle') {
+  }
+
+  if (baseCtor.type === 'Circle') {
     const newCenter = applyVectorToPoint2D(baseCtor.center, dragVec)
     const newStart = applyVectorToPoint2D(baseCtor.start, dragVec)
 
@@ -277,6 +281,24 @@ function buildSegmentCtorWithDrag({
   }
 
   return baseCtor
+}
+
+function buildCursorPointPosition(
+  position: Vector2,
+  units: NumericSuffix
+): Extract<SegmentCtor, { type: 'Point' }>['position'] {
+  return {
+    x: {
+      type: 'Var',
+      value: roundOff(position.x),
+      units,
+    },
+    y: {
+      type: 'Var',
+      value: roundOff(position.y),
+      units,
+    },
+  }
 }
 
 function buildConstraintLabelPosition(
@@ -1305,18 +1327,29 @@ export function createOnDragCallback({
 
       const objects = editObjects
       const segmentsToEdit: ExistingSegmentCtor[] = []
-
-      // Collect all IDs to edit (entity under cursor + coincident points + selectedIds)
-      const idsToEdit = new Set<number>()
-      coincidentClusterPointIds.forEach((id) => {
-        idsToEdit.add(id)
-      })
-      selectedIds.forEach((id) => {
-        idsToEdit.add(id)
-      })
-
-      // Build ctors for each segment with drag applied
       const units = baseUnitToNumericSuffix(getDefaultLengthUnit())
+      const isDraggingPointCluster =
+        entityUnderCursorId !== null &&
+        coincidentClusterPointIds.length > 1 &&
+        isPointSegment(objects[entityUnderCursorId])
+      const coincidentClusterPointIdSet = new Set(
+        isDraggingPointCluster ? coincidentClusterPointIds : []
+      )
+      const coincidentClusterDragTarget = isDraggingPointCluster
+        ? buildCursorPointPosition(twoD, units)
+        : null
+
+      // Collect all IDs to edit. Coincident point edits are intentionally last:
+      // Rust flattens point edits into owner segment edits in order, and the
+      // point under the cursor should override broader selected-segment edits.
+      const idsToEdit = new Set<number>()
+      for (const id of selectedIds) {
+        idsToEdit.add(id)
+      }
+      for (const id of coincidentClusterPointIds) {
+        idsToEdit.delete(id)
+        idsToEdit.add(id)
+      }
 
       for (const id of idsToEdit) {
         const obj = objects[id]
@@ -1330,6 +1363,10 @@ export function createOnDragCallback({
         }
 
         const isEntityUnderCursor = id === entityUnderCursorId
+        const pointPositionOverride =
+          coincidentClusterDragTarget && coincidentClusterPointIdSet.has(id)
+            ? coincidentClusterDragTarget
+            : undefined
 
         const ctor = buildSegmentCtorWithDrag({
           objUnderCursor: obj,
@@ -1338,6 +1375,7 @@ export function createOnDragCallback({
           currentCursorPosition: twoD,
           dragVec: dragVec,
           units,
+          pointPositionOverride,
         })
 
         if (ctor) {
