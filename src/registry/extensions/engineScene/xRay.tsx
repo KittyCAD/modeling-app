@@ -17,17 +17,18 @@ const X_RAY_TRANSPARENCY_INPUT_ID = 'engine-scene-x-ray-transparency-input'
 export function EngineSceneXRayControl() {
   useSignals()
   const { kclManager } = useSingletons()
-  const transparency = xRayTransparency.value
-  const isActive = transparency < 1
+  const opacity = xRayTransparency.value
+  const transparency = 1 - opacity
+  const isActive = transparency > 0
 
   const applyTransparency = useMemo(
     () =>
-      throttle((nextTransparency: number) => {
+      throttle((nextOpacity: number) => {
         applyXRayTransparencyToScene({
           artifactGraph: kclManager.artifactGraph,
           operations: kclManager.execState.operations,
           engineCommandManager: kclManager.engineCommandManager,
-          transparency: nextTransparency,
+          transparency: nextOpacity,
           force: true,
         }).catch(reportRejection)
       }, X_RAY_COMMAND_THROTTLE_MS),
@@ -53,7 +54,18 @@ export function EngineSceneXRayControl() {
                 : 'border-chalkboard-30 bg-chalkboard-10/90 text-chalkboard-100 hover:border-chalkboard-50 hover:bg-chalkboard-10 dark:border-chalkboard-70 dark:bg-chalkboard-100/80 dark:text-chalkboard-10 dark:hover:border-chalkboard-60'
             }`}
           >
-            <CustomIcon name="eyeOpen" className="h-5 w-5" />
+            <span className="relative block h-5 w-5" aria-hidden="true">
+              <CustomIcon
+                name="solid"
+                className="absolute inset-0 h-5 w-5 transition-opacity duration-200 ease-out"
+                style={{ opacity }}
+              />
+              <CustomIcon
+                name="xRay"
+                className="absolute inset-0 h-5 w-5 transition-opacity duration-200 ease-out"
+                style={{ opacity: transparency }}
+              />
+            </span>
             <Tooltip hoverOnly={true} position="top-right">
               X-Ray
             </Tooltip>
@@ -80,8 +92,9 @@ export function EngineSceneXRayControl() {
               value={transparency}
               onChange={(event) => {
                 const nextTransparency = Number(event.currentTarget.value)
-                xRayTransparency.value = nextTransparency
-                applyTransparency(nextTransparency)
+                const nextOpacity = 1 - nextTransparency
+                xRayTransparency.value = nextOpacity
+                applyTransparency(nextOpacity)
               }}
             />
           </Popover.Panel>
