@@ -4,6 +4,17 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
+import {
+  DefaultLayoutPaneID,
+  DefaultLayoutToolbarID,
+} from '@src/lib/layout/configs/default'
+import {
+  createLayoutService,
+  createLayoutServiceRegistryItem,
+} from '@src/lib/layout/service'
+import { LayoutType } from '@src/lib/layout/types'
+import type { Layout } from '@src/lib/layout/types'
+import { findLayoutChildNode } from '@src/lib/layout/utils'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import {
   layoutAreaLibraryValueSpec,
@@ -75,5 +86,71 @@ describe('sketch debugger pane extension', () => {
     const area = areaLibrary.value['modeSketch.sketchDebugger']
     expect(area).toBeDefined()
     expect(area?.hide()).toBe(false)
+  })
+
+  it('inserts the debugger pane into an existing layout when the debug setting is enabled', async () => {
+    const registry = new Registry()
+    const settings = signal(createSettings(false))
+    const layout = signal<Layout>({
+      id: 'root',
+      label: 'Root',
+      type: LayoutType.Splits,
+      orientation: 'inline',
+      sizes: [70, 30],
+      children: [
+        {
+          id: 'modeling-scene',
+          label: 'Modeling scene',
+          type: LayoutType.Simple,
+          areaType: 'modeling',
+        },
+        {
+          id: DefaultLayoutToolbarID.Right,
+          label: DefaultLayoutToolbarID.Right,
+          type: LayoutType.Panes,
+          side: 'inline-end',
+          activeIndices: [0],
+          sizes: [100],
+          splitOrientation: 'block',
+          children: [
+            {
+              id: DefaultLayoutPaneID.TTC,
+              label: 'Zookeeper',
+              type: LayoutType.Simple,
+              areaType: 'ttc',
+              icon: 'sparkles',
+            },
+          ],
+        },
+      ],
+    })
+
+    registry.configure([
+      createProjectServiceItem(settings),
+      createLayoutServiceRegistryItem(createLayoutService(layout)),
+      modeSketch,
+    ])
+    registry.get(layoutContributionsValueSpec)
+    await Promise.resolve()
+
+    expect(
+      findLayoutChildNode({
+        rootLayout: layout.value,
+        targetNodeId: 'sketch-debugger',
+      })
+    ).toBeUndefined()
+
+    settings.value = createSettings(true)
+    await Promise.resolve()
+
+    expect(
+      findLayoutChildNode({
+        rootLayout: layout.value,
+        targetNodeId: 'sketch-debugger',
+      })
+    ).toMatchObject({
+      id: 'sketch-debugger',
+      areaType: 'modeSketch.sketchDebugger',
+    })
   })
 })

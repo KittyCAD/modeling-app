@@ -98,6 +98,13 @@ type ClosestSelectionTarget = {
   apiObject: ApiObject | null
 }
 
+type DragCallbackArgs = {
+  intersectionPoint: { twoD: Vector2; threeD: Vector3 }
+  selected?: Object3D
+  mouseEvent: MouseEvent
+  intersects: Array<unknown>
+}
+
 // This is only a settlement latch for "there is a preview solve in flight".
 // It is not used to carry a value or an error, so a reject path would not add
 // useful semantics here. `onDragEnd` only needs to wait until the preview solve
@@ -114,6 +121,17 @@ function createDeferredVoid(): DeferredVoid {
   })
 
   return { promise, resolve }
+}
+
+function cloneDragCallbackArgs(args: DragCallbackArgs): DragCallbackArgs {
+  return {
+    ...args,
+    intersectionPoint: {
+      twoD: args.intersectionPoint.twoD.clone(),
+      threeD: args.intersectionPoint.threeD.clone(),
+    },
+    intersects: [...args.intersects],
+  }
 }
 
 export function getClosestSelectionTarget(
@@ -1232,19 +1250,20 @@ export function createOnDragCallback({
   onUpdateActiveDragPointIds?: (pointIds: number[]) => void
   onPreviewSolveStarted?: () => void
   onPreviewSolveSettled?: () => void
-}): (arg: {
-  intersectionPoint: { twoD: Vector2; threeD: Vector3 }
-  selected?: Object3D
-  mouseEvent: MouseEvent
-  intersects: Array<unknown>
-}) => Promise<void> {
-  return async ({ intersectionPoint, mouseEvent }) => {
+}): (arg: DragCallbackArgs) => Promise<void> {
+  let queuedDragArgs: DragCallbackArgs | null = null
+
+  const handleDrag = async (
+    args: DragCallbackArgs,
+    isQueuedContinuation = false
+  ): Promise<void> => {
+    const { intersectionPoint, mouseEvent } = args
     if (!getIsDragActive()) {
       return
     }
 
-    // Prevent concurrent drag operations
     if (getIsSolveInProgress()) {
+      queuedDragArgs = cloneDragCallbackArgs(args)
       return
     }
 
@@ -1330,7 +1349,9 @@ export function createOnDragCallback({
     }
 
     setIsSolveInProgress(true)
-    onPreviewSolveStarted?.()
+    if (!isQueuedContinuation) {
+      onPreviewSolveStarted?.()
+    }
     try {
       const dragSessionId = getActiveDragSessionId()
       const isActiveDragSession = () =>
@@ -1415,7 +1436,6 @@ export function createOnDragCallback({
 
       if (segmentsToEdit.length === 0) {
         onUpdateActiveDragPointIds([])
-        setIsSolveInProgress(false)
         return
       }
 
@@ -1520,10 +1540,21 @@ export function createOnDragCallback({
         await new Promise((resolve) => requestAnimationFrame(resolve))
       }
     } finally {
-      onPreviewSolveSettled?.()
       setIsSolveInProgress(false)
+      const nextDragArgs = queuedDragArgs
+      queuedDragArgs = null
+      if (nextDragArgs && getIsDragActive()) {
+        await handleDrag(nextDragArgs, true)
+        if (!isQueuedContinuation) {
+          onPreviewSolveSettled?.()
+        }
+      } else if (!isQueuedContinuation) {
+        onPreviewSolveSettled?.()
+      }
     }
   }
+
+  return handleDrag
 }
 
 export function setUpOnDragAndSelectionClickCallbacks({

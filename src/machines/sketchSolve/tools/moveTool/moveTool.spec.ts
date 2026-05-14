@@ -2568,7 +2568,7 @@ describe('createOnDragCallback', () => {
     })
   })
 
-  it('should prevent race conditions and only update drag point after successful edit resolves', async () => {
+  it('coalesces the latest drag update while a preview solve is in flight', async () => {
     // Simulate state that persists across calls
     let isSolveInProgress = false
     const getIsSolveInProgress = vi.fn(() => isSolveInProgress)
@@ -2640,8 +2640,8 @@ describe('createOnDragCallback', () => {
     // Drag point should NOT be updated yet (editSegments hasn't resolved)
     expect(setLastSuccessfulDragFromPoint).not.toHaveBeenCalled()
 
-    // Second call while first is still pending - should be prevented by isSolveInProgress check
-    // Since isSolveInProgress is now true, this call should return early
+    // Second call while first is still pending should be queued, not run
+    // concurrently and not dropped.
     const secondPosition = new Vector2(15, 25)
     const secondCallPromise = callback({
       intersectionPoint: {
@@ -2653,7 +2653,7 @@ describe('createOnDragCallback', () => {
       intersects: [],
     })
 
-    // Should not have called editSegments again (concurrent operation prevented)
+    // Should not have called editSegments again yet.
     expect(editSegments).toHaveBeenCalledTimes(1)
 
     // Now resolve the first editSegments call
@@ -2662,23 +2662,24 @@ describe('createOnDragCallback', () => {
       sceneGraphDelta: createSceneGraphDelta([pointObject]),
     })
 
-    // Wait for first call to complete
+    // Wait for the first call to complete, including its queued follow-up.
     await firstCallPromise
 
-    // Now drag point should be updated with the first position (the one that succeeded)
-    expect(setLastSuccessfulDragFromPoint).toHaveBeenCalledTimes(1)
-    expect(setLastSuccessfulDragFromPoint).toHaveBeenCalledWith(
+    expect(editSegments).toHaveBeenCalledTimes(2)
+    expect(setLastSuccessfulDragFromPoint).toHaveBeenCalledTimes(2)
+    expect(setLastSuccessfulDragFromPoint).toHaveBeenNthCalledWith(
+      1,
       expect.objectContaining({ x: 10, y: 20 })
+    )
+    expect(setLastSuccessfulDragFromPoint).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ x: 15, y: 25 })
     )
     expect(setIsSolveInProgress).toHaveBeenCalledWith(false)
     expect(isSolveInProgress).toBe(false)
 
-    // Wait for second call (which should have returned early)
+    // Wait for second call, which only queued the latest position.
     await secondCallPromise
-
-    // Verify second call didn't update drag point (it was prevented)
-    expect(setLastSuccessfulDragFromPoint).toHaveBeenCalledTimes(1)
-    expect(editSegments).toHaveBeenCalledTimes(1)
   })
 
   it('should update last successful drag point after successful edit to track drag progress', async () => {
