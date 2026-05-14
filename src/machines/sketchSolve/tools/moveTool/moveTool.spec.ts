@@ -403,7 +403,6 @@ function createPointSegmentGroup({
 describe('createOnDragStartCallback', () => {
   it('should track the drag start position and dismiss constraint hover popup', () => {
     const setLastSuccessfulDragFromPoint = vi.fn()
-    const setDragStartPoint = vi.fn()
     const setLastGoodPreview = vi.fn()
     const setDragStartOutcome = vi.fn()
     const setPreDragCheckpointId = vi.fn()
@@ -417,7 +416,6 @@ describe('createOnDragStartCallback', () => {
 
     const callback = createOnDragStartCallback({
       setLastSuccessfulDragFromPoint,
-      setDragStartPoint,
       setLastGoodPreview,
       setDragStartOutcome,
       setPreDragCheckpointId,
@@ -450,10 +448,6 @@ describe('createOnDragStartCallback', () => {
     expect(callArg).not.toBe(intersectionPoint.twoD)
     expect(callArg.x).toBe(10)
     expect(callArg.y).toBe(20)
-    expect(setDragStartPoint).toHaveBeenCalledWith(
-      expect.objectContaining({ x: 10, y: 20 })
-    )
-    expect(setDragStartPoint.mock.calls[0][0]).not.toBe(intersectionPoint.twoD)
     expect(setLastGoodPreview).toHaveBeenCalledWith(null)
     expect(setDragStartOutcome).toHaveBeenCalledWith({
       kclSource: { text: 'baseline' },
@@ -761,7 +755,6 @@ describe('createOnDragCallback', () => {
         sceneGraphDelta,
         writeToDisk: false,
         suppressExecOutcomeIssues: true,
-        suppressFreedomConflictColoring: true,
       })
       expect(setIsSolveInProgress).toHaveBeenCalledWith(true)
       expect(setIsSolveInProgress).toHaveBeenCalledWith(false)
@@ -888,7 +881,6 @@ describe('createOnDragCallback', () => {
         sceneGraphDelta: updatedSceneGraphDelta,
         writeToDisk: false,
         suppressExecOutcomeIssues: true,
-        suppressFreedomConflictColoring: true,
       })
     }
   )
@@ -1001,7 +993,6 @@ describe('createOnDragCallback', () => {
         sceneGraphDelta: updatedSceneGraphDelta,
         writeToDisk: false,
         suppressExecOutcomeIssues: true,
-        suppressFreedomConflictColoring: true,
       })
     }
   )
@@ -1546,16 +1537,11 @@ describe('createOnDragCallback', () => {
         checkpointId: null,
       })
       .mockResolvedValueOnce({
-        kclSource: { text: 'pre-settle final' },
-        sceneGraphDelta: validPreviewDelta,
+        kclSource: { text: 'invalid final' },
+        sceneGraphDelta: invalidCommittedDelta,
         checkpointId: null,
       })
       .mockResolvedValueOnce(recoveredCommit)
-    ;(rustContext.sketchExecuteMock as any).mockResolvedValueOnce({
-      kclSource: { text: 'invalid final' },
-      sceneGraphDelta: invalidCommittedDelta,
-      checkpointId: null,
-    })
     ;(rustContext.restoreSketchCheckpoint as any).mockResolvedValue(
       restoreResult
     )
@@ -1651,16 +1637,11 @@ describe('createOnDragCallback', () => {
         checkpointId: null,
       })
       .mockResolvedValueOnce({
-        kclSource: { text: 'pre-settle final' },
+        kclSource: { text: 'missing checkpoint final' },
         sceneGraphDelta: validPreviewDelta,
         checkpointId: null,
       })
       .mockResolvedValueOnce(recoveredCommit)
-    ;(rustContext.sketchExecuteMock as any).mockResolvedValueOnce({
-      kclSource: { text: 'missing checkpoint final' },
-      sceneGraphDelta: validPreviewDelta,
-      checkpointId: null,
-    })
     ;(rustContext.restoreSketchCheckpoint as any).mockResolvedValue(
       restoreResult
     )
@@ -1765,14 +1746,7 @@ describe('createOnDragCallback', () => {
         checkpointId: null,
       })
       .mockImplementationOnce(() => deferredInvalidPreview.promise)
-      .mockResolvedValueOnce({
-        kclSource: { text: 'pre-settle final' },
-        sceneGraphDelta: validPreviewDelta,
-        checkpointId: null,
-      })
-    ;(rustContext.sketchExecuteMock as any).mockResolvedValueOnce(
-      committedResult
-    )
+      .mockResolvedValueOnce(committedResult)
 
     onDragStart({
       intersectionPoint: {
@@ -1966,7 +1940,6 @@ describe('createOnDragCallback', () => {
       checkpointId: 123,
     }
     ;(rustContext.editSegments as any).mockResolvedValue(editResult)
-    ;(rustContext.sketchExecuteMock as any).mockResolvedValue(editResult)
 
     onDragStart({
       intersectionPoint: {
@@ -1989,8 +1962,7 @@ describe('createOnDragCallback', () => {
     })
 
     expect(rustContext.editSegments).toHaveBeenCalledOnce()
-    expect(rustContext.editSegments.mock.calls[0]?.[4]).toBe(false)
-    expect(rustContext.sketchExecuteMock).toHaveBeenCalledOnce()
+    expect(rustContext.editSegments.mock.calls[0]?.[4]).toBe(true)
     expect(rustContext.addConstraint).not.toHaveBeenCalled()
   })
 
@@ -2156,120 +2128,6 @@ describe('createOnDragCallback', () => {
     if (callArg && callArg.length > 0) {
       expect(callArg[0]).not.toBe(new Vector2(15, 25))
     }
-  })
-
-  it('should build drag previews from the drag-start geometry instead of the previous preview', async () => {
-    const getIsSolveInProgress = vi.fn(() => false)
-    const setIsSolveInProgress = vi.fn()
-    const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(5, 1))
-    const setLastSuccessfulDragFromPoint = vi.fn()
-    const getDraggedEntityId = createDraggedEntityIdGetter(3)
-
-    const baselineStart = createPointApiObject({
-      id: 1,
-      x: 0,
-      y: 0,
-      owner: 3,
-    })
-    const baselineEnd = createPointApiObject({
-      id: 2,
-      x: 10,
-      y: 0,
-      owner: 3,
-    })
-    const baselineLine = createLineApiObject({ id: 3, start: 1, end: 2 })
-    const baselineDelta = createSceneGraphDelta([
-      baselineStart,
-      baselineEnd,
-      baselineLine,
-    ])
-
-    const previousPreviewStart = createPointApiObject({
-      id: 1,
-      x: 5,
-      y: 1,
-      owner: 3,
-    })
-    const previousPreviewEnd = createPointApiObject({
-      id: 2,
-      x: 20,
-      y: 4,
-      owner: 3,
-    })
-    const previousPreviewLine = createLineApiObject({
-      id: 3,
-      start: 1,
-      end: 2,
-    })
-    const previousPreviewDelta = createSceneGraphDelta([
-      previousPreviewStart,
-      previousPreviewEnd,
-      previousPreviewLine,
-    ])
-
-    const getContextData = vi.fn(() => ({
-      selectedIds: [3],
-      sketchId: 0,
-      sketchExecOutcome: { sceneGraphDelta: previousPreviewDelta },
-    }))
-    const editSegments = vi.fn(() =>
-      Promise.resolve({
-        kclSource: { text: '' },
-        sceneGraphDelta: baselineDelta,
-      })
-    )
-    const onNewSketchOutcome = vi.fn()
-
-    const callback = createOnDragCallback({
-      getIsSolveInProgress,
-      setIsSolveInProgress,
-      getLastSuccessfulDragFromPoint,
-      setLastSuccessfulDragFromPoint,
-      getDraggedEntityId,
-      getContextData,
-      editSegments,
-      onNewSketchOutcome,
-      getDefaultLengthUnit: vi.fn((): UnitLength => 'mm'),
-      getJsAppSettings: vi.fn(() => Promise.resolve({})),
-      ...createDragSnappingDeps(),
-      getDragStartOutcome: vi.fn(() => ({
-        kclSource: { text: 'baseline' },
-        sceneGraphDelta: baselineDelta,
-      })),
-      getDragStartPoint: vi.fn(() => new Vector2(0, 0)),
-    })
-
-    await callback({
-      intersectionPoint: {
-        twoD: new Vector2(7, 2),
-        threeD: new Vector3(7, 2, 0),
-      },
-      selected: undefined,
-      mouseEvent: createTestMouseEvent(),
-      intersects: [],
-    })
-
-    expect(editSegments).toHaveBeenCalledWith(
-      0,
-      0,
-      [
-        {
-          id: 3,
-          ctor: {
-            type: 'Line',
-            start: {
-              x: { type: 'Var', value: 7, units: 'Mm' },
-              y: { type: 'Var', value: 2, units: 'Mm' },
-            },
-            end: {
-              x: { type: 'Var', value: 17, units: 'Mm' },
-              y: { type: 'Var', value: 2, units: 'Mm' },
-            },
-          },
-        },
-      ],
-      {}
-    )
   })
 
   it('should drag the entity under cursor when no other segments are selected', async () => {
@@ -3049,7 +2907,6 @@ describe('createOnDragCallback', () => {
       ...result,
       writeToDisk: false,
       suppressExecOutcomeIssues: true,
-      suppressFreedomConflictColoring: true,
     })
   })
 
@@ -3185,7 +3042,6 @@ describe('createOnDragCallback', () => {
       invalidDelta.exec_outcome
     )
     expect(outcome?.suppressExecOutcomeIssues).toBe(true)
-    expect(outcome?.suppressFreedomConflictColoring).toBe(true)
   })
 
   it('should not send event when edit fails to prevent invalid state updates', async () => {
