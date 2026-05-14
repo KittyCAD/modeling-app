@@ -691,7 +691,6 @@ impl CompositeSolid {
         let Artifact::CompositeSolid(new) = new else {
             return Some(new);
         };
-        self.code_ref = new.code_ref;
         merge_ids(&mut self.solid_ids, new.solid_ids);
         merge_ids(&mut self.tool_ids, new.tool_ids);
         merge_opt_id(&mut self.composite_solid_id, new.composite_solid_id);
@@ -719,7 +718,6 @@ impl Path {
         let Artifact::Path(new) = new else {
             return Some(new);
         };
-        self.code_ref = new.code_ref;
         merge_opt_id(&mut self.sweep_id, new.sweep_id);
         merge_opt_id(&mut self.trajectory_sweep_id, new.trajectory_sweep_id);
         merge_ids(&mut self.seg_ids, new.seg_ids);
@@ -756,7 +754,6 @@ impl Sweep {
         let Artifact::Sweep(new) = new else {
             return Some(new);
         };
-        self.code_ref = new.code_ref;
         merge_ids(&mut self.surface_ids, new.surface_ids);
         merge_ids(&mut self.edge_ids, new.edge_ids);
         merge_opt_id(&mut self.trajectory_id, new.trajectory_id);
@@ -1517,54 +1514,6 @@ fn pattern_artifact_updates(
     return_arr
 }
 
-fn transformed_artifact_update(source_artifact: &Artifact, transform_code_ref: &CodeRef) -> Option<Artifact> {
-    let source_code_ref = source_artifact.code_ref()?;
-    let code_ref = code_ref_for_transformed_artifact(source_code_ref, transform_code_ref)?;
-    match source_artifact {
-        Artifact::CompositeSolid(composite) => {
-            let mut composite = composite.clone();
-            composite.code_ref = code_ref;
-            Some(Artifact::CompositeSolid(composite))
-        }
-        Artifact::Path(path) => {
-            let mut path = path.clone();
-            path.code_ref = code_ref;
-            Some(Artifact::Path(path))
-        }
-        Artifact::Sweep(sweep) => {
-            let mut sweep = sweep.clone();
-            sweep.code_ref = code_ref;
-            Some(Artifact::Sweep(sweep))
-        }
-        _ => None,
-    }
-}
-
-fn code_ref_for_transformed_artifact(source_code_ref: &CodeRef, transform_code_ref: &CodeRef) -> Option<CodeRef> {
-    if source_code_ref.range.module_id() != transform_code_ref.range.module_id() {
-        return None;
-    }
-    // In a pipe or nested call, the source artifact command and transform
-    // command share the expression that now represents the transformed artifact.
-    let steps = common_node_path_steps(&source_code_ref.node_path, &transform_code_ref.node_path)?;
-    Some(CodeRef {
-        range: SourceRange::merge([source_code_ref.range, transform_code_ref.range].into_iter()),
-        node_path: NodePath { steps },
-        path_to_node: Vec::new(),
-    })
-}
-
-fn common_node_path_steps(a: &NodePath, b: &NodePath) -> Option<Vec<crate::NodePathStep>> {
-    let steps = a
-        .steps
-        .iter()
-        .zip(&b.steps)
-        .take_while(|(a, b)| a == b)
-        .map(|(step, _)| step.clone())
-        .collect::<Vec<_>>();
-    if steps.is_empty() { None } else { Some(steps) }
-}
-
 fn is_single_target_self_subtract(target_ids: &[Uuid], tool_ids: &[Uuid]) -> bool {
     target_ids.len() == 1 && tool_ids.len() == 1 && target_ids[0] == tool_ids[0]
 }
@@ -1988,16 +1937,6 @@ fn artifacts_to_update(
                 solid_id: (*object_id).into(),
                 code_ref,
             })]);
-        }
-        ModelingCmd::SetObjectTransform(transform_cmd) => {
-            let source_id = ArtifactId::new(transform_cmd.object_id);
-            let Some(source_artifact) = artifacts.get(&source_id) else {
-                return Ok(Vec::new());
-            };
-
-            return Ok(transformed_artifact_update(source_artifact, &code_ref)
-                .into_iter()
-                .collect());
         }
         ModelingCmd::EntityLinearPatternTransform(pattern_cmd) => {
             let face_edge_infos = match response {
