@@ -1020,7 +1020,7 @@ function keyboardEventToKeymapChord(event: KeyboardEvent) {
     return null
   }
 
-  const key = normalizeEventKey(event.key)
+  const key = normalizeEventKey(event)
   if (!key) {
     return null
   }
@@ -1050,7 +1050,16 @@ function keyboardEventToKeymapChord(event: KeyboardEvent) {
   return parts.join('+')
 }
 
-function normalizeEventKey(key: string) {
+function normalizeEventKey(event: KeyboardEvent) {
+  const key = getUnmodifiedKeyFromCode(event)
+  if (key) {
+    return key
+  }
+
+  return normalizeEventKeyValue(event.key)
+}
+
+function normalizeEventKeyValue(key: string) {
   if (key.length === 1) {
     return key.toLowerCase()
   }
@@ -1061,6 +1070,42 @@ function normalizeEventKey(key: string) {
   }
 
   return normalized
+}
+
+function getUnmodifiedKeyFromCode(event: KeyboardEvent) {
+  if (!event.altKey && !event.ctrlKey && !event.metaKey) {
+    return null
+  }
+
+  if (event.code.startsWith('Key') && event.code.length === 4) {
+    return event.code.slice(3).toLowerCase()
+  }
+
+  if (event.code.startsWith('Digit') && event.code.length === 6) {
+    return event.code.slice(5)
+  }
+
+  return unmodifiedKeyByCode[event.code] ?? null
+}
+
+const unmodifiedKeyByCode: Record<string, string> = {
+  Backquote: '`',
+  Backslash: '\\',
+  BracketLeft: '[',
+  BracketRight: ']',
+  Comma: ',',
+  Equal: '=',
+  Minus: '-',
+  NumpadAdd: '+',
+  NumpadDecimal: '.',
+  NumpadDivide: '/',
+  NumpadMultiply: '*',
+  NumpadSubtract: '-',
+  Period: '.',
+  Quote: "'",
+  Semicolon: ';',
+  Slash: '/',
+  Space: 'space',
 }
 
 function isModifierKey(key: string) {
