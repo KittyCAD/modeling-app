@@ -113,6 +113,7 @@ export const MlEphantConversationPane = (props: {
     }
 
     const project: Project = props.theProject
+    props.kclManager.beginPendingZookeeperHistoryEntry()
 
     const projectFiles = await collectProjectFiles({
       selectedFileContents: props.kclManager.code,

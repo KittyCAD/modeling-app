@@ -1752,7 +1752,10 @@ export class KclManager extends File {
       getSettings
     )
 
-    this._globalHistoryView = new HistoryView([fsHistoryExtension()])
+    this._globalHistoryView = new HistoryView([
+      fsHistoryExtension(),
+      this.syntheticHistoryCommitExtension,
+    ])
     this._editorView = this.createEditorView(initialCode)
     this.settingsSubscription = this.systemDeps.settings.subscribe(() => {
       this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
@@ -2696,9 +2699,16 @@ export class KclManager extends File {
   addGlobalHistoryEvent(spec: TransactionSpecNoChanges) {
     this._globalHistoryView.dispatch(spec)
   }
-  markPendingZookeeperHistoryEntry(redoCode?: string) {
+  beginPendingZookeeperHistoryEntry() {
     this.pendingZookeeperHistoryEntry = {
       undoCode: this.code,
+      redoCode: undefined,
+    }
+  }
+  markPendingZookeeperHistoryEntry(redoCode?: string) {
+    const pendingEntry = this.pendingZookeeperHistoryEntry
+    this.pendingZookeeperHistoryEntry = {
+      undoCode: pendingEntry?.undoCode ?? this.code,
       redoCode:
         redoCode === undefined ? undefined : normalizeLineEndings(redoCode),
     }
@@ -2729,7 +2739,7 @@ export class KclManager extends File {
     }
     this.markFileCodeAsSynced(redoCode)
 
-    this.editorView.dispatch({
+    this._globalHistoryView.dispatch({
       annotations: [
         Transaction.addToHistory.of(true),
         isolateHistory.of('full'),

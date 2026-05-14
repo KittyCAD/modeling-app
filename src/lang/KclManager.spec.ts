@@ -367,6 +367,43 @@ describe('KclManager diagnostics', () => {
     expect(kclManager.code).toBe('persist me')
   })
 
+  it('preserves the zookeeper prompt-start baseline if the editor updates before tool output is handled', () => {
+    const { kclManager } = createKclManagerTestHarness('persist me')
+    vi.spyOn(kclManager, 'writeToFile').mockResolvedValue(undefined)
+
+    kclManager.beginPendingZookeeperHistoryEntry()
+    kclManager.updateCodeEditor('zookeeper edit', {
+      shouldAddToHistory: false,
+      shouldClearHistory: true,
+      shouldExecute: false,
+      shouldResetCamera: false,
+      shouldWriteToDisk: false,
+    })
+    kclManager.markPendingZookeeperHistoryEntry('zookeeper edit')
+    kclManager.commitPendingZookeeperHistoryEntry()
+
+    expect(kclManager.code).toBe('zookeeper edit')
+    expect(kclManager.undoDepth.value).toBeGreaterThan(0)
+
+    kclManager.undo()
+    expect(kclManager.code).toBe('persist me')
+  })
+
+  it('keeps zookeeper undo available if local editor history is cleared after the commit', () => {
+    const { kclManager } = createKclManagerTestHarness('persist me')
+    vi.spyOn(kclManager, 'writeToFile').mockResolvedValue(undefined)
+
+    kclManager.markPendingZookeeperHistoryEntry('zookeeper edit')
+    kclManager.commitPendingZookeeperHistoryEntry()
+    kclManager.clearLocalHistory()
+
+    expect(kclManager.code).toBe('zookeeper edit')
+    expect(kclManager.undoDepth.value).toBeGreaterThan(0)
+
+    kclManager.undo()
+    expect(kclManager.code).toBe('persist me')
+  })
+
   it('does not implicitly autosave programmatic editor updates when shouldWriteToDisk is false', () => {
     const { kclManager } = createKclManagerTestHarness('persist me')
     const writeToFileSpy = vi
