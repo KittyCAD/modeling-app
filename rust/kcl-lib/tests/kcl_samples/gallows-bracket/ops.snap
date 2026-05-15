@@ -4491,7 +4491,7 @@ description: Operations executed gallows-bracket.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "translate",
+      "name": "scale",
       "unlabeledArg": {
         "value": {
           "type": "Solid",
@@ -4502,45 +4502,13 @@ description: Operations executed gallows-bracket.kcl
         "sourceRange": []
       },
       "labeledArgs": {
-        "global": {
-          "value": {
-            "type": "Bool",
-            "value": true
-          },
-          "sourceRange": []
-        },
         "x": {
           "value": {
             "type": "Number",
-            "value": 0.0,
+            "value": -1.0,
             "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        },
-        "y": {
-          "value": {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        },
-        "z": {
-          "value": {
-            "type": "Number",
-            "value": 1.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "type": "Known",
+              "type": "Count"
             }
           },
           "sourceRange": []
@@ -4561,6 +4529,39 @@ description: Operations executed gallows-bracket.kcl
           {
             "type": "PipeBodyItem",
             "index": 1
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "flipSurface",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 29
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
           }
         ]
       },
@@ -8542,7 +8543,7 @@ description: Operations executed gallows-bracket.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "translate",
+      "name": "scale",
       "unlabeledArg": {
         "value": {
           "type": "Solid",
@@ -8553,45 +8554,13 @@ description: Operations executed gallows-bracket.kcl
         "sourceRange": []
       },
       "labeledArgs": {
-        "global": {
-          "value": {
-            "type": "Bool",
-            "value": true
-          },
-          "sourceRange": []
-        },
         "x": {
           "value": {
             "type": "Number",
-            "value": 0.0,
+            "value": -1.0,
             "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        },
-        "y": {
-          "value": {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        },
-        "z": {
-          "value": {
-            "type": "Number",
-            "value": 1.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "type": "Known",
+              "type": "Count"
             }
           },
           "sourceRange": []
@@ -8612,6 +8581,39 @@ description: Operations executed gallows-bracket.kcl
           {
             "type": "PipeBodyItem",
             "index": 1
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "flipSurface",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 51
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
           }
         ]
       },
