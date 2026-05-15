@@ -150,6 +150,7 @@ import {
 import {
   addAppearance,
   addClone,
+  addMirror3D,
   addHide,
   addRotate,
   addScale,
@@ -539,6 +540,10 @@ export type ModelingMachineEvent =
   | { type: 'Rotate'; data: ModelingCommandSchema['Rotate'] }
   | { type: 'Scale'; data: ModelingCommandSchema['Scale'] }
   | { type: 'Clone'; data: ModelingCommandSchema['Clone'] }
+  | {
+      type: 'Mirror 3D'
+      data: ModelingCommandSchema['Mirror 3D']
+    }
   | {
       type: 'Hide'
       data: {
@@ -5066,6 +5071,44 @@ export const modelingMachine = setup({
         )
       }
     ),
+    mirror3DAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['Mirror 3D'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+              wasmInstance: ModuleType
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const { ast, artifactGraph, variables } = input.kclManager
+        const result = addMirror3D({
+          ...input.data,
+          ast,
+          artifactGraph,
+          variables,
+          wasmInstance: input.wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
     hideAstMod: fromPromise(
       async ({
         input,
@@ -5125,6 +5168,8 @@ export const modelingMachine = setup({
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
           outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
@@ -5170,6 +5215,8 @@ export const modelingMachine = setup({
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
           outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
@@ -5215,6 +5262,8 @@ export const modelingMachine = setup({
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
           outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
@@ -5260,6 +5309,8 @@ export const modelingMachine = setup({
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
           outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
@@ -5305,6 +5356,8 @@ export const modelingMachine = setup({
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
           outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
@@ -5350,6 +5403,8 @@ export const modelingMachine = setup({
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
           outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
@@ -5395,6 +5450,8 @@ export const modelingMachine = setup({
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
           outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
@@ -5440,6 +5497,8 @@ export const modelingMachine = setup({
         const data = await withDefaultGdtFrameDefaults({
           data: input.data,
           engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
           outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
           wasmInstance,
         })
@@ -6174,6 +6233,10 @@ export const modelingMachine = setup({
 
         Clone: {
           target: 'Applying clone',
+        },
+
+        'Mirror 3D': {
+          target: 'Applying Mirror 3D',
         },
 
         Hide: {
@@ -8207,6 +8270,27 @@ export const modelingMachine = setup({
           }
         },
         onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying Mirror 3D': {
+      invoke: {
+        src: 'mirror3DAstMod',
+        id: 'mirror3DAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Mirror 3D') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
+          }
+        },
+        onDone: 'idle',
         onError: {
           target: 'idle',
           actions: 'toastError',
