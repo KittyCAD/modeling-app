@@ -1404,7 +1404,8 @@ export function createOnDragCallback({
         ? buildCursorPointPosition(twoD, units)
         : null
       const draggedPointIds =
-        entityUnderCursorId !== null && isPointSegment(objects[entityUnderCursorId])
+        entityUnderCursorId !== null &&
+        isPointSegment(objects[entityUnderCursorId])
           ? coincidentClusterPointIds
           : []
       const draggedPointOwnerIds = getPointOwnerSegmentIds(
@@ -2204,7 +2205,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
                   ? getCoincidentCluster(draggedEntityId, objects)
                   : []
               const draggedPointOwnerIds =
-                draggedEntityId !== null && isPointSegment(objects[draggedEntityId])
+                draggedEntityId !== null &&
+                isPointSegment(objects[draggedEntityId])
                   ? getPointOwnerSegmentIds(coincidentClusterPointIds, objects)
                   : new Set<number>()
               const idsToEdit = new Set<number>()
