@@ -13,6 +13,7 @@ import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
+import { distance2d } from '@src/lib/utils2d'
 import {
   getConstraintForSnapTarget,
   getObjectIdForSnapTarget,
@@ -285,14 +286,6 @@ function getCurrentSplineState({
   }
 }
 
-function pointsRoughlyEqual(a: Coords2d, b: Coords2d, epsilon = 1e-6): boolean {
-  return Math.abs(a[0] - b[0]) <= epsilon && Math.abs(a[1] - b[1]) <= epsilon
-}
-
-function pointDistance(a: Coords2d, b: Coords2d): number {
-  return Math.hypot(a[0] - b[0], a[1] - b[1])
-}
-
 function getSplineSnapHoverDistance(sceneInfra: SceneInfra) {
   const sketchSolveGroup = getSketchSolveGroup(sceneInfra)
   return getSketchHoverDistance(
@@ -310,10 +303,7 @@ function getControlPointSplineMatchScore(
 
   let totalDistance = 0
   for (let index = 0; index < candidatePoints.length; index++) {
-    totalDistance += pointDistance(
-      candidatePoints[index],
-      expectedPoints[index]
-    )
+    totalDistance += distance2d(candidatePoints[index], expectedPoints[index])
   }
   return totalDistance
 }
@@ -368,14 +358,6 @@ function findControlPointSplineByPoints({
   const bestCandidate = candidates[0]
   if (!bestCandidate) {
     return null
-  }
-
-  if (
-    bestCandidate.candidatePoints.every((point, index) =>
-      pointsRoughlyEqual(point, expectedPoints[index])
-    )
-  ) {
-    return bestCandidate.candidate
   }
 
   return bestCandidate.candidate
@@ -873,7 +855,7 @@ function animateDraftPointListener({
       const snappingCandidate =
         currentSnappingCandidate ??
         (lastSnappingCandidate &&
-        pointDistance(mousePosition, lastSnappingCandidate.position) <=
+        distance2d(mousePosition, lastSnappingCandidate.position) <=
           getSplineSnapHoverDistance(context.sceneInfra)
           ? lastSnappingCandidate
           : null)
