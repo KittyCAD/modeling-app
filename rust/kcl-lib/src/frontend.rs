@@ -122,6 +122,11 @@ enum SketchVarUpdateMode {
 
 #[derive(Debug, Clone)]
 struct SketchVarWarmStarts {
+    // This cache is for solver continuity, not for authoritatively storing
+    // visible KCL-backed sketch vars. Visible vars must come from the current
+    // AST/source because previews rewrite those guesses continuously. The cache
+    // remains useful for solver-order metadata and lowered support vars, which
+    // have no KCL source range to read from.
     solver_values: Vec<f64>,
     solver_source_ranges: Vec<Option<SourceRange>>,
     source_values: Vec<(SourceRange, f64)>,
@@ -415,24 +420,17 @@ impl FrontendState {
                     if overrides.source_values.is_empty() && overrides.solver_source_ranges.is_empty() {
                         Vec::new()
                     } else {
+                        // Visible sketch vars are sourced from the current
+                        // program. During drag previews, KCL guesses are
+                        // updated after each solve; using cached source_values
+                        // here would reintroduce stale visible guesses into
+                        // solver.rs. The cache still provides solver-order
+                        // values for lowered vars whose source_range is None.
                         self.sketch_var_source_values_from_program(sketch)
                             .map(|current_source_values| {
-                                let edited_var_indices =
-                                    self.edited_sketch_var_indices(&current_source_values, &segment_ids_edited);
                                 current_source_values
                                     .iter()
-                                    .enumerate()
-                                    .map(|(index, (_, source_value))| {
-                                        if edited_var_indices.contains(&index) {
-                                            *source_value
-                                        } else {
-                                            overrides
-                                                .source_values
-                                                .get(index)
-                                                .map(|(_, value)| *value)
-                                                .unwrap_or(*source_value)
-                                        }
-                                    })
+                                    .map(|(_, source_value)| *source_value)
                                     .collect()
                             })
                             .unwrap_or_else(|| overrides.source_values.iter().map(|(_, value)| *value).collect())
@@ -518,30 +516,6 @@ impl FrontendState {
         {
             let _ = (sketch, outcome);
         }
-    }
-
-    #[cfg(feature = "artifact-graph")]
-    fn edited_sketch_var_indices(
-        &self,
-        source_values: &[(SourceRange, f64)],
-        segment_ids_edited: &AhashIndexSet<ObjectId>,
-    ) -> HashSet<usize> {
-        let edited_ranges = segment_ids_edited
-            .iter()
-            .filter_map(|segment_id| self.scene_graph.objects.get(segment_id.0))
-            .filter_map(|object| source_ref_primary_range(&object.source))
-            .collect::<Vec<_>>();
-
-        source_values
-            .iter()
-            .enumerate()
-            .filter_map(|(index, (range, _))| {
-                edited_ranges
-                    .iter()
-                    .any(|edited_range| edited_range.contains_range(range))
-                    .then_some(index)
-            })
-            .collect()
     }
 
     #[cfg(feature = "artifact-graph")]
@@ -898,136 +872,17 @@ impl SketchApi for FrontendState {
             segment_ids_edited.insert(segment.id);
         }
 
-        // Preprocess segments into a final_edits vector to handle if segments contains:
-        // - edit start point of line1 (as SegmentCtor::Point)
-        // - edit end point of line1 (as SegmentCtor::Point)
-        //
-        // This would result in only the end point to be updated because edit_point() clones line1's ctor from
-        // scene_graph, but this is still the old ctor because self.scene_graph is only updated after the loop finishes.
-        //
-        // To fix this, and other cases when the same point is edited from multiple elements in the segments Vec
-        // we apply all edits in order to final_edits in a way that owned point edits result in line edits,
-        // so the above example would result in a single line1 edit:
-        // - the first start point edit creates a new line edit entry in final_edits
-        // - the second end point edit finds this line edit and mutates the end position only.
-        //
-        // The result is that segments are flattened into a single IndexMap of edits by their owners, later edits overriding earlier ones.
+        // Preserve request order while coalescing repeated edits for the same
+        // object. Owned point edits are applied as point edits below so they
+        // mutate only that point's argument in the current AST; rebuilding the
+        // whole owner segment from the scene graph would reintroduce stale
+        // preview guesses for the owner's other points.
         let mut final_edits: IndexMap<ObjectId, SegmentCtor> = IndexMap::new();
 
         for segment in segments {
             let segment_id = segment.id;
             match segment.ctor {
                 SegmentCtor::Point(ctor) => {
-                    // Find the owner, if any (point -> line / arc)
-                    if let Some(segment_object) = self.scene_graph.objects.get(segment_id.0)
-                        && let ObjectKind::Segment { segment } = &segment_object.kind
-                        && let Segment::Point(point) = segment
-                        && let Some(owner_id) = point.owner
-                        && let Some(owner_object) = self.scene_graph.objects.get(owner_id.0)
-                        && let ObjectKind::Segment { segment: owner_segment } = &owner_object.kind
-                    {
-                        match owner_segment {
-                            Segment::Line(line) if line.start == segment_id || line.end == segment_id => {
-                                if let Some(existing) = final_edits.get_mut(&owner_id) {
-                                    let SegmentCtor::Line(line_ctor) = existing else {
-                                        return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                                            "Internal: Expected line ctor for owner, but found {}",
-                                            existing.human_friendly_kind_with_article()
-                                        ))));
-                                    };
-                                    // Line owner is already in final_edits -> apply this point edit
-                                    if line.start == segment_id {
-                                        line_ctor.start = ctor.position;
-                                    } else {
-                                        line_ctor.end = ctor.position;
-                                    }
-                                } else if let SegmentCtor::Line(line_ctor) = &line.ctor {
-                                    // Line owner is not in final_edits yet -> create it
-                                    let mut line_ctor = line_ctor.clone();
-                                    if line.start == segment_id {
-                                        line_ctor.start = ctor.position;
-                                    } else {
-                                        line_ctor.end = ctor.position;
-                                    }
-                                    final_edits.insert(owner_id, SegmentCtor::Line(line_ctor));
-                                } else {
-                                    // This should never run..
-                                    return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                                        "Internal: Line does not have line ctor, but found {}",
-                                        line.ctor.human_friendly_kind_with_article()
-                                    ))));
-                                }
-                                continue;
-                            }
-                            Segment::Arc(arc)
-                                if arc.start == segment_id || arc.end == segment_id || arc.center == segment_id =>
-                            {
-                                if let Some(existing) = final_edits.get_mut(&owner_id) {
-                                    let SegmentCtor::Arc(arc_ctor) = existing else {
-                                        return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                                            "Internal: Expected arc ctor for owner, but found {}",
-                                            existing.human_friendly_kind_with_article()
-                                        ))));
-                                    };
-                                    if arc.start == segment_id {
-                                        arc_ctor.start = ctor.position;
-                                    } else if arc.end == segment_id {
-                                        arc_ctor.end = ctor.position;
-                                    } else {
-                                        arc_ctor.center = ctor.position;
-                                    }
-                                } else if let SegmentCtor::Arc(arc_ctor) = &arc.ctor {
-                                    let mut arc_ctor = arc_ctor.clone();
-                                    if arc.start == segment_id {
-                                        arc_ctor.start = ctor.position;
-                                    } else if arc.end == segment_id {
-                                        arc_ctor.end = ctor.position;
-                                    } else {
-                                        arc_ctor.center = ctor.position;
-                                    }
-                                    final_edits.insert(owner_id, SegmentCtor::Arc(arc_ctor));
-                                } else {
-                                    return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                                        "Internal: Arc does not have arc ctor, but found {}",
-                                        arc.ctor.human_friendly_kind_with_article()
-                                    ))));
-                                }
-                                continue;
-                            }
-                            Segment::Circle(circle) if circle.start == segment_id || circle.center == segment_id => {
-                                if let Some(existing) = final_edits.get_mut(&owner_id) {
-                                    let SegmentCtor::Circle(circle_ctor) = existing else {
-                                        return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                                            "Internal: Expected circle ctor for owner, but found {}",
-                                            existing.human_friendly_kind_with_article()
-                                        ))));
-                                    };
-                                    if circle.start == segment_id {
-                                        circle_ctor.start = ctor.position;
-                                    } else {
-                                        circle_ctor.center = ctor.position;
-                                    }
-                                } else if let SegmentCtor::Circle(circle_ctor) = &circle.ctor {
-                                    let mut circle_ctor = circle_ctor.clone();
-                                    if circle.start == segment_id {
-                                        circle_ctor.start = ctor.position;
-                                    } else {
-                                        circle_ctor.center = ctor.position;
-                                    }
-                                    final_edits.insert(owner_id, SegmentCtor::Circle(circle_ctor));
-                                } else {
-                                    return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                                        "Internal: Circle does not have circle ctor, but found {}",
-                                        circle.ctor.human_friendly_kind_with_article()
-                                    ))));
-                                }
-                                continue;
-                            }
-                            _ => {}
-                        }
-                    }
-
-                    // No owner, it's an individual point
                     final_edits.insert(segment_id, SegmentCtor::Point(ctor));
                 }
                 SegmentCtor::Line(ctor) => {
@@ -2531,69 +2386,76 @@ impl FrontendState {
 
             // Handle Line owner
             if let Segment::Line(line) = segment {
-                let SegmentCtor::Line(line_ctor) = &line.ctor else {
-                    return Err(KclError::refactor(format!(
-                        "Internal: Owner of point does not have line ctor, but found {}",
-                        line.ctor.human_friendly_kind_with_article()
-                    )));
-                };
-                let mut line_ctor = line_ctor.clone();
-                // Which end of the line is this point?
-                if line.start == point_id {
-                    line_ctor.start = ctor.position;
+                let label = if line.start == point_id {
+                    LINE_START_PARAM
                 } else if line.end == point_id {
-                    line_ctor.end = ctor.position;
+                    LINE_END_PARAM
                 } else {
                     return Err(KclError::refactor(format!(
                         "Internal: Point is not part of owner's line segment: point={point_id:?}, line={owner_id:?}"
                     )));
-                }
-                return self.edit_line(new_ast, sketch_id, owner_id, line_ctor);
+                };
+                return self
+                    .mutate_ast(
+                        new_ast,
+                        owner_id,
+                        AstMutateCommand::EditCallLabeledArg {
+                            callee: LINE_FN,
+                            label,
+                            arg: new_at_ast,
+                        },
+                    )
+                    .map(|_| ());
             }
 
             // Handle Arc owner
             if let Segment::Arc(arc) = segment {
-                let SegmentCtor::Arc(arc_ctor) = &arc.ctor else {
-                    return Err(KclError::refactor(format!(
-                        "Internal: Owner of point does not have arc ctor, but found {}",
-                        arc.ctor.human_friendly_kind_with_article()
-                    )));
-                };
-                let mut arc_ctor = arc_ctor.clone();
-                // Which point of the arc is this? (center, start, or end)
-                if arc.center == point_id {
-                    arc_ctor.center = ctor.position;
+                let label = if arc.center == point_id {
+                    ARC_CENTER_PARAM
                 } else if arc.start == point_id {
-                    arc_ctor.start = ctor.position;
+                    ARC_START_PARAM
                 } else if arc.end == point_id {
-                    arc_ctor.end = ctor.position;
+                    ARC_END_PARAM
                 } else {
                     return Err(KclError::refactor(format!(
                         "Internal: Point is not part of owner's arc segment: point={point_id:?}, arc={owner_id:?}"
                     )));
-                }
-                return self.edit_arc(new_ast, sketch_id, owner_id, arc_ctor);
+                };
+                return self
+                    .mutate_ast(
+                        new_ast,
+                        owner_id,
+                        AstMutateCommand::EditCallLabeledArg {
+                            callee: ARC_FN,
+                            label,
+                            arg: new_at_ast,
+                        },
+                    )
+                    .map(|_| ());
             }
 
             // Handle Circle owner
             if let Segment::Circle(circle) = segment {
-                let SegmentCtor::Circle(circle_ctor) = &circle.ctor else {
-                    return Err(KclError::refactor(format!(
-                        "Internal: Owner of point does not have circle ctor, but found {}",
-                        circle.ctor.human_friendly_kind_with_article()
-                    )));
-                };
-                let mut circle_ctor = circle_ctor.clone();
-                if circle.center == point_id {
-                    circle_ctor.center = ctor.position;
+                let label = if circle.center == point_id {
+                    CIRCLE_CENTER_PARAM
                 } else if circle.start == point_id {
-                    circle_ctor.start = ctor.position;
+                    CIRCLE_START_PARAM
                 } else {
                     return Err(KclError::refactor(format!(
                         "Internal: Point is not part of owner's circle segment: point={point_id:?}, circle={owner_id:?}"
                     )));
-                }
-                return self.edit_circle(new_ast, sketch_id, owner_id, circle_ctor);
+                };
+                return self
+                    .mutate_ast(
+                        new_ast,
+                        owner_id,
+                        AstMutateCommand::EditCallLabeledArg {
+                            callee: CIRCLE_FN,
+                            label,
+                            arg: new_at_ast,
+                        },
+                    )
+                    .map(|_| ());
             }
 
             // If owner is neither Line, Arc, nor Circle, allow editing the point directly
@@ -5188,6 +5050,11 @@ enum AstMutateCommand {
     EditPoint {
         at: ast::Expr,
     },
+    EditCallLabeledArg {
+        callee: &'static str,
+        label: &'static str,
+        arg: ast::Expr,
+    },
     EditLine {
         start: ast::Expr,
         end: ast::Expr,
@@ -5489,6 +5356,19 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 for labeled_arg in &mut call.arguments {
                     if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(POINT_AT_PARAM) {
                         labeled_arg.arg = at.clone();
+                    }
+                }
+                return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
+            }
+        }
+        AstMutateCommand::EditCallLabeledArg { callee, label, arg } => {
+            if let NodeMut::CallExpressionKw(call) = node {
+                if call.callee.name.name != *callee {
+                    return TraversalReturn::new_continue(());
+                }
+                for labeled_arg in &mut call.arguments {
+                    if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(*label) {
+                        labeled_arg.arg = arg.clone();
                     }
                 }
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
@@ -13404,6 +13284,86 @@ sketch(on = XY) {
         let line2_start = point_position(&scene_delta.new_graph, sketch_segments[3]);
         assert_close("line2.start moved by coincident x", line2_start.x.value, 2.0);
         assert_close("line2.start source x", source_values[4], line2_start.x.value);
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_preview_warm_starts_use_current_source_for_unedited_visible_vars() {
+        let initial_source = "\
+sketch(on = XY) {
+  arc1 = arc(start = [var 8.47mm, var 0mm], end = [var 0mm, var 8.47mm], center = [var 0mm, var 0mm])
+  coincident([arc1.center, ORIGIN])
+  horizontal([arc1.start, ORIGIN])
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 8.47mm])
+  coincident([line1.start, arc1.center])
+  coincident([line1.end, arc1.end])
+  vertical(line1)
+  vertical([line1.end, ORIGIN])
+}
+";
+        let (mut frontend, mock_ctx, sketch_id, sketch_segments) = setup_sketch_with_warm_starts(initial_source).await;
+        let arc_start_id = sketch_segments[0];
+
+        let (_src_delta, scene_delta) = frontend
+            .edit_segments_for_preview(
+                &mock_ctx,
+                Version(0),
+                sketch_id,
+                vec![ExistingSegmentCtor {
+                    id: arc_start_id,
+                    ctor: SegmentCtor::Point(PointCtor {
+                        position: point_expr_mm(6.0, 0.0),
+                    }),
+                }],
+            )
+            .await
+            .unwrap();
+        assert_no_solver_failure("first arc start preview", &scene_delta);
+        let source_values = frontend
+            .sketch_var_source_values_from_program(sketch_id)
+            .expect("Expected source values for sketch")
+            .iter()
+            .map(|(_, value)| *value)
+            .collect::<Vec<_>>();
+        assert_close("first preview source arc1.end.y", source_values[3], 6.0);
+
+        let warm_starts = frontend
+            .sketch_var_warm_start_overrides
+            .get_mut(&sketch_id)
+            .expect("Expected warm starts for sketch");
+        warm_starts.source_values[3].1 = 8.47;
+
+        let (_src_delta, scene_delta) = frontend
+            .edit_segments_for_preview(
+                &mock_ctx,
+                Version(0),
+                sketch_id,
+                vec![ExistingSegmentCtor {
+                    id: arc_start_id,
+                    ctor: SegmentCtor::Point(PointCtor {
+                        position: point_expr_mm(7.0, 0.0),
+                    }),
+                }],
+            )
+            .await
+            .unwrap();
+        assert_no_solver_failure("second arc start preview", &scene_delta);
+
+        let trace = scene_delta
+            .exec_outcome
+            .sketch_solver_traces
+            .last()
+            .expect("Expected sketch solver trace");
+        let arc_end_y_guess = trace
+            .items
+            .iter()
+            .find(|item| item.kind == "initialGuess" && item.label == "guess 3")
+            .expect("Expected arc1.end.y initial guess")
+            .detail
+            .parse::<f64>()
+            .expect("Expected numeric guess detail");
+        assert_close("second preview arc1.end.y initial guess", arc_end_y_guess, 6.0);
 
         mock_ctx.close().await;
     }
