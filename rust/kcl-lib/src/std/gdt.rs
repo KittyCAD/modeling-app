@@ -1,6 +1,7 @@
 use kcl_error::SourceRange;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
+use kcmc::websocket::ModelingCmdReq;
 use kittycad_modeling_cmds::shared::AnnotationBasicDimension;
 use kittycad_modeling_cmds::shared::AnnotationFeatureControl;
 use kittycad_modeling_cmds::shared::AnnotationLineEnd;
@@ -65,18 +66,11 @@ fn gdt_font_scale_for_height_mm(requested_height_mm: f64) -> f32 {
     (requested_height_mm / GDT_FONT_SCALE_1_HEIGHT_MM) as f32
 }
 
-async fn set_engine_scene_units(
-    exec_state: &mut ExecState,
-    args: &Args,
-    units: kcmc::units::UnitLength,
-) -> Result<(), KclError> {
-    let id = exec_state.next_uuid();
-    exec_state
-        .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(exec_state, args, id),
-            ModelingCmd::from(mcmd::SetSceneUnits::builder().unit(units).build()),
-        )
-        .await
+fn set_engine_scene_units_cmd(cmd_id: uuid::Uuid, units: kcmc::units::UnitLength) -> ModelingCmdReq {
+    ModelingCmdReq {
+        cmd_id: cmd_id.into(),
+        cmd: ModelingCmd::from(mcmd::SetSceneUnits::builder().unit(units).build()),
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -1092,31 +1086,35 @@ async fn create_basic_distance_annotation(
         .build();
     let options = AnnotationOptions::builder().dimension(dimension).build();
     // The engine formats auto-measured MBD distance labels from its current scene units.
-    // Flip only around this annotation so KCL-authored offset/font values keep their existing mm behavior.
+    // Queue the unit switch, annotation, and reset together so other module commands
+    // cannot interleave while the engine's MBD display units are flipped.
     let use_display_units = display_units != kcmc::units::UnitLength::Millimeters;
+    let annotation_cmd = ModelingCmd::from(
+        mcmd::NewAnnotation::builder()
+            .options(options)
+            .clobber(false)
+            .annotation_type(AnnotationType::T3D)
+            .build(),
+    );
+    let cmd_meta = ModelingCmdMeta::from_args_id(exec_state, args, annotation_id);
     if use_display_units {
-        set_engine_scene_units(exec_state, args, display_units).await?;
-    }
-    let annotation_result = exec_state
-        .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
-            ModelingCmd::from(
-                mcmd::NewAnnotation::builder()
-                    .options(options)
-                    .clobber(false)
-                    .annotation_type(AnnotationType::T3D)
-                    .build(),
-            ),
-        )
-        .await;
-    let reset_result = if use_display_units {
-        Some(set_engine_scene_units(exec_state, args, kcmc::units::UnitLength::Millimeters).await)
+        let set_units_id = exec_state.next_uuid();
+        let reset_units_id = exec_state.next_uuid();
+        exec_state
+            .batch_modeling_cmds(
+                cmd_meta,
+                &[
+                    set_engine_scene_units_cmd(set_units_id, display_units),
+                    ModelingCmdReq {
+                        cmd_id: annotation_id.into(),
+                        cmd: annotation_cmd,
+                    },
+                    set_engine_scene_units_cmd(reset_units_id, kcmc::units::UnitLength::Millimeters),
+                ],
+            )
+            .await?;
     } else {
-        None
-    };
-    annotation_result?;
-    if let Some(reset_result) = reset_result {
-        reset_result?;
+        exec_state.batch_modeling_cmd(cmd_meta, annotation_cmd).await?;
     }
     add_gdt_annotation_artifact(exec_state, args, annotation_id);
     annotations.push(GdtAnnotation {
