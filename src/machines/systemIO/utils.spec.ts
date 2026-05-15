@@ -176,6 +176,7 @@ describe('System IO Utils', () => {
           0: {
             type: 'Local',
             value: fsZds.join(projectPath, 'main.kcl'),
+            original_import_path: null,
           },
         },
         projectContext: {

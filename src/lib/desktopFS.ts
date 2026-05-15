@@ -156,6 +156,7 @@ export async function getNextFileName({
   if (!preserveUnknownExtension && (!isRelevantFile || !extension)) {
     extension = FILE_EXT
   }
+  extension ??= ''
 
   // Remove any existing index from the name before adding a new one
   let createdName = entryName.replace(extension, '') + extension

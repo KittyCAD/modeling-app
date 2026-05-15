@@ -230,8 +230,9 @@ describe('desktop utilities', () => {
 
     it('shows all non-dot files except settings files in project contents', async () => {
       const { instance } = await buildTheWorldNode()
+      const wasmInstance = await instance
       const instanceWithProjectSettings = {
-        ...instance,
+        ...wasmInstance,
         parse_app_settings: vi.fn(() => ({})),
         parse_project_settings: vi.fn(() => ({})),
       }
@@ -262,8 +263,9 @@ describe('desktop utilities', () => {
       })
 
       const { instance } = await buildTheWorldNode()
+      const wasmInstance = await instance
       const instanceWithAppSettings = {
-        ...instance,
+        ...wasmInstance,
         parse_app_settings: vi.fn(() => ({
           settings: { app: { show_all_files: true } },
         })),
