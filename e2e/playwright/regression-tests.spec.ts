@@ -426,9 +426,10 @@ extrude002 = extrude(profile002, length = 150)`
       await page.keyboard.press('End')
       await page.keyboard.press('Enter')
       await scene.settled()
+      await page.waitForTimeout(5_000) // delay for re-execution
 
       // Click the export button
-      await expect(exportButton).toBeEnabled({ timeout: 15_000 })
+      await expect(exportButton).toBeEnabled()
       await exportButton.click()
 
       // Click the stl.
