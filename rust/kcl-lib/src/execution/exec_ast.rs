@@ -1718,12 +1718,14 @@ impl Node<SketchBlock> {
 
         // Translate sketch variables and constraints to solver input.
         //
-        // Coincident and transient fixed constraints get a heavier weight so they hold up under
-        // stress — e.g. when the user drags a sketch into a configuration that can't be fully
-        // satisfied, we'd rather see other constraints absorb the error than have shared points
-        // come apart.
+        // Coincident constraints get a heavier weight so they hold up under stress — e.g. when the
+        // user drags a sketch into a configuration that can't be fully satisfied, we'd rather see
+        // other constraints absorb the error than have shared points come apart.
+        //
+        // The same should be applied to any transient constraints associated with mouse
+        // interactions once drag improvements are ready.
+        //
         const COINCIDENT_WEIGHT: f64 = 100.0;
-        const DRAG_FIXED_WEIGHT: f64 = 100.0;
         let constraints = sketch_block_state
             .solver_constraints
             .iter()
