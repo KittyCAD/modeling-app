@@ -330,9 +330,21 @@ function xstateEventError(event: unknown): unknown {
   return undefined
 }
 
+type ZookeeperErrorContext = Pick<
+  MlEphantManagerContext,
+  | 'conversationId'
+  | 'awaitingResponse'
+  | 'pendingBackendShutdown'
+  | 'lastMessageId'
+  | 'lastMessageType'
+> & {
+  exchangeCount: Conversation['exchanges']['length'] | undefined
+  readyState: ReturnType<typeof getWebSocketReadyStateLabel>
+}
+
 function zookeeperErrorContext(
   context: MlEphantManagerContext
-): Record<string, unknown> {
+): ZookeeperErrorContext {
   return {
     conversationId: context.conversationId,
     awaitingResponse: context.awaitingResponse,
