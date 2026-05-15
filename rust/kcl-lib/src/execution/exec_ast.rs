@@ -115,47 +115,50 @@ fn internal_err(message: impl Into<String>, range: impl Into<SourceRange>) -> Kc
     KclError::new_internal(KclErrorDetails::new(message.into(), vec![range.into()]))
 }
 
-fn sketch_solver_trace(
+struct SketchSolverTraceInput<'a> {
     sketch_id: crate::front::ObjectId,
     source_range: SourceRange,
     required_constraint_count: usize,
     optional_constraint_count: usize,
-    constraints: &[ezpz::ConstraintRequest],
-    initial_guesses: &[(ezpz::Id, f64)],
-    config: &ezpz::Config,
-) -> crate::execution::SketchSolverTrace {
-    let mut items = Vec::with_capacity(constraints.len() + initial_guesses.len() + 1);
+    constraints: &'a [ezpz::ConstraintRequest],
+    initial_guesses: &'a [(ezpz::Id, f64)],
+    initial_guess_source_ranges: &'a [Option<SourceRange>],
+    config: &'a ezpz::Config,
+}
+
+fn sketch_solver_trace(input: SketchSolverTraceInput<'_>) -> crate::execution::SketchSolverTrace {
+    let mut items = Vec::with_capacity(input.constraints.len() + input.initial_guesses.len() + 1);
     items.push(crate::execution::SketchSolverTraceItem {
         kind: "config".to_owned(),
         label: "solver config".to_owned(),
-        detail: format!("{config:?}"),
+        detail: format!("{:?}", input.config),
+        source_range: None,
     });
-    items.extend(
-        constraints
-            .iter()
-            .enumerate()
-            .map(|(index, request)| crate::execution::SketchSolverTraceItem {
-                kind: "constraint".to_owned(),
-                label: format!("constraint {}", index + 1),
-                detail: format!("priority {}\n{:?}", request.priority(), request.constraint()),
-            }),
-    );
-    items.extend(
-        initial_guesses
-            .iter()
-            .map(|(id, value)| crate::execution::SketchSolverTraceItem {
-                kind: "initialGuess".to_owned(),
-                label: format!("guess {id}"),
-                detail: value.to_string(),
-            }),
-    );
+    items.extend(input.constraints.iter().enumerate().map(|(index, request)| {
+        crate::execution::SketchSolverTraceItem {
+            kind: "constraint".to_owned(),
+            label: format!("constraint {}", index + 1),
+            detail: format!("priority {}\n{:?}", request.priority(), request.constraint()),
+            source_range: None,
+        }
+    }));
+    items.extend(input.initial_guesses.iter().map(|(id, value)| {
+        crate::execution::SketchSolverTraceItem {
+            kind: "initialGuess".to_owned(),
+            label: format!("guess {id}"),
+            detail: value.to_string(),
+            source_range: usize::try_from(*id)
+                .ok()
+                .and_then(|index| input.initial_guess_source_ranges.get(index).copied().flatten()),
+        }
+    }));
 
     crate::execution::SketchSolverTrace {
-        sketch_id,
-        source_range,
-        required_constraint_count,
-        optional_constraint_count,
-        initial_guess_count: initial_guesses.len(),
+        sketch_id: input.sketch_id,
+        source_range: input.source_range,
+        required_constraint_count: input.required_constraint_count,
+        optional_constraint_count: input.optional_constraint_count,
+        initial_guess_count: input.initial_guesses.len(),
         items,
     }
 }
@@ -1851,6 +1854,14 @@ impl Node<SketchBlock> {
                 Ok((constraint_id, initial_guess))
             })
             .collect::<Result<Vec<_>, KclError>>()?;
+        let initial_guess_source_ranges = sketch_block_state
+            .sketch_vars
+            .iter()
+            .map(|v| {
+                v.as_sketch_var()
+                    .and_then(|sketch_var| sketch_var.meta.first().map(|m| m.source_range))
+            })
+            .collect::<Vec<_>>();
         // Solve constraints.
         let config = ezpz::Config::default()
             .with_max_iterations(50)
@@ -1859,15 +1870,16 @@ impl Node<SketchBlock> {
             .mod_local
             .artifacts
             .sketch_solver_traces
-            .push(sketch_solver_trace(
+            .push(sketch_solver_trace(SketchSolverTraceInput {
                 sketch_id,
-                range,
-                sketch_block_state.solver_constraints.len(),
-                sketch_block_state.solver_optional_constraints.len(),
-                &constraints,
-                &initial_guesses,
-                &config,
-            ));
+                source_range: range,
+                required_constraint_count: sketch_block_state.solver_constraints.len(),
+                optional_constraint_count: sketch_block_state.solver_optional_constraints.len(),
+                constraints: &constraints,
+                initial_guesses: &initial_guesses,
+                initial_guess_source_ranges: &initial_guess_source_ranges,
+                config: &config,
+            }));
         let solve_result = if exec_state.mod_local.freedom_analysis {
             ezpz::solve_analysis(&constraints, initial_guesses.clone(), config).map(|outcome| {
                 let freedom_analysis = FreedomAnalysis::from_ezpz_analysis(outcome.analysis, constraints.len());

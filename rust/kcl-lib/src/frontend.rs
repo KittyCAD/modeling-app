@@ -409,7 +409,7 @@ impl FrontendState {
             sketch_block_id: Some(sketch),
             freedom_analysis,
             #[cfg(feature = "artifact-graph")]
-            segment_ids_edited: segment_ids_edited.clone(),
+            segment_ids_edited,
             ..Default::default()
         };
 
@@ -520,6 +520,8 @@ impl FrontendState {
 
     #[cfg(feature = "artifact-graph")]
     fn sketch_var_source_values_from_program(&self, sketch: ObjectId) -> Option<Vec<(SourceRange, f64)>> {
+        let sketch_ref = sketch_block_ref_from_id(&self.scene_graph, sketch).ok()?;
+        let sketch_node_path = sketch_ref.node_path;
         let sketch_range = source_ref_primary_range(&self.scene_graph.objects.get(sketch.0)?.source)?;
         let values = RefCell::new(Vec::new());
         crate::walk::walk(&self.program.ast, |node| -> anyhow::Result<bool> {
@@ -529,17 +531,46 @@ impl FrontendState {
             let Some(initial) = sketch_var.initial.as_ref() else {
                 return Ok(true);
             };
-            let range = initial.as_source_range();
-            if sketch_range.contains_range(&range) {
-                values.borrow_mut().push((
-                    range,
-                    sketch_var_initial_value_in_solver_units(initial, self.default_length_unit()),
-                ));
+            if let Some(sketch_node_path) = &sketch_node_path {
+                let Some(sketch_var_node_path) = sketch_var.node_path.as_ref() else {
+                    return Ok(true);
+                };
+                if !sketch_var_node_path.steps.starts_with(&sketch_node_path.steps) {
+                    return Ok(true);
+                }
+            } else {
+                return Ok(true);
             }
+            let range = initial.as_source_range();
+            values.borrow_mut().push((
+                range,
+                sketch_var_initial_value_in_solver_units(initial, self.default_length_unit()),
+            ));
             Ok(true)
         })
         .ok()?;
-        let values = values.into_inner();
+        let mut values = values.into_inner();
+        if values.is_empty() {
+            let fallback_values = RefCell::new(Vec::new());
+            crate::walk::walk(&self.program.ast, |node| -> anyhow::Result<bool> {
+                let Node::SketchVar(sketch_var) = node else {
+                    return Ok(true);
+                };
+                let Some(initial) = sketch_var.initial.as_ref() else {
+                    return Ok(true);
+                };
+                let range = initial.as_source_range();
+                if sketch_range.contains_range(&range) {
+                    fallback_values.borrow_mut().push((
+                        range,
+                        sketch_var_initial_value_in_solver_units(initial, self.default_length_unit()),
+                    ));
+                }
+                Ok(true)
+            })
+            .ok()?;
+            values = fallback_values.into_inner();
+        }
         (!values.is_empty()).then_some(values)
     }
 
@@ -579,10 +610,75 @@ impl FrontendState {
         Ok((new_ast, source))
     }
 
+    #[cfg(feature = "artifact-graph")]
+    fn source_with_changed_var_solutions(
+        &self,
+        sketch: ObjectId,
+        outcome: &ExecOutcome,
+    ) -> ExecResult<(ast::Node<ast::Program>, String)> {
+        let current_values = self
+            .sketch_var_source_values_from_program(sketch)
+            .unwrap_or_default()
+            .into_iter()
+            .collect::<HashMap<_, _>>();
+        let mut new_ast = self.program.ast.clone();
+        let mut changed = false;
+
+        for (var_range, value) in &outcome.var_solutions {
+            let Some(current_value) = current_values.get(var_range).copied() else {
+                continue;
+            };
+            let rounded = value.round(3);
+            if (round_f64(current_value, 3) - rounded.value).abs() <= 1.0e-9 {
+                continue;
+            }
+
+            let source_ref = SourceRef::Simple {
+                range: *var_range,
+                node_path: None,
+            };
+            mutate_ast_node_by_source_ref(
+                &mut new_ast,
+                &source_ref,
+                AstMutateCommand::EditVarInitialValue { value: rounded },
+            )
+            .map_err(|err| KclErrorWithOutputs::from_error_outcome(err, outcome.clone()))?;
+            changed = true;
+        }
+
+        if !changed {
+            return Ok((self.program.ast.clone(), source_from_ast(&self.program.ast)));
+        }
+
+        let source = source_from_ast(&new_ast);
+        Ok((new_ast, source))
+    }
+
     fn commit_var_solutions_to_program(&mut self, outcome: &ExecOutcome) -> ExecResult<String> {
         #[cfg(feature = "artifact-graph")]
         {
             let (new_ast, source) = self.source_with_committed_var_solutions(outcome)?;
+            self.program = Program {
+                ast: new_ast,
+                original_file_contents: source.clone(),
+            };
+            Ok(source)
+        }
+        #[cfg(not(feature = "artifact-graph"))]
+        {
+            let _ = outcome;
+            Ok(source_from_ast(&self.program.ast))
+        }
+    }
+
+    fn commit_changed_var_solutions_to_program(
+        &mut self,
+        #[cfg_attr(not(feature = "artifact-graph"), allow(unused_variables))] sketch: ObjectId,
+        outcome: &ExecOutcome,
+    ) -> ExecResult<String> {
+        #[cfg(feature = "artifact-graph")]
+        {
+            let (new_ast, source) = self.source_with_changed_var_solutions(sketch, outcome)?;
             self.program = Program {
                 ast: new_ast,
                 original_file_contents: source.clone(),
@@ -4284,6 +4380,7 @@ impl FrontendState {
         // Uses MockConfig::default() which has freedom_analysis: true
         let outcome = self.update_state_after_exec(outcome, true);
         self.replace_sketch_var_warm_starts(sketch_id, &outcome);
+        let new_source = self.commit_changed_var_solutions_to_program(sketch_id, &outcome)?;
 
         let src_delta = SourceDelta { text: new_source };
         let scene_graph_delta = SceneGraphDelta {
@@ -5844,6 +5941,13 @@ fn has_constraint_solver_failed_issue(outcome: &ExecOutcome) -> bool {
         .issues
         .iter()
         .any(|issue| issue.message.contains(CONSTRAINT_SOLVER_FAILED_MESSAGE))
+}
+
+#[cfg(feature = "artifact-graph")]
+fn round_f64(value: f64, digits: u8) -> f64 {
+    let factor = 10f64.powi(digits as i32);
+    let rounded = (value * factor).round() / factor;
+    if rounded == -0.0 { 0.0 } else { rounded }
 }
 
 #[cfg(feature = "artifact-graph")]
@@ -10487,11 +10591,12 @@ sketch(on = XY) {
 
         let mut frontend = FrontendState::new();
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -10528,7 +10633,7 @@ sketch(on = XY) {
             // The lack indentation is a formatter bug.
             "\
 sketch(on = XY) {
-  arc1 = arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
+  arc1 = arc(start = [var 1.83mm, var 3.62mm], end = [var 2.42mm, var 3.3mm], center = [var -0.25mm, var -0.92mm])
   radius(arc1) == 5mm
 }
 "
@@ -10540,7 +10645,6 @@ sketch(on = XY) {
             scene_delta.new_graph.objects
         );
 
-        ctx.close().await;
         mock_ctx.close().await;
     }
 
@@ -10604,7 +10708,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  arc1 = arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])
+  arc1 = arc(start = [var 1.83mm, var 3.62mm], end = [var 2.42mm, var 3.3mm], center = [var -0.25mm, var -0.92mm])
   radius(arc1, labelPosition = [10mm, 11mm]) == 5mm
 }
 "
@@ -10620,6 +10724,130 @@ sketch(on = XY) {
             panic!("Expected radius constraint");
         };
         assert_eq!(radius.label_position, Some(label_position));
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_add_radius_to_arc_after_dimensioned_sketch_does_not_explode() {
+        let initial_source = "\
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+sketch002 = sketch(on = XZ) {
+  line1 = line(start = [var 30mm, var -14.46mm], end = [var 30mm, var -144.46mm])
+  line2 = line(start = [var -10.9mm, var -172.41mm], end = [var -41.96mm, var -160.31mm])
+  line3 = line(start = [var -60mm, var -124.46mm], end = [var -28.78mm, var -13.34mm])
+  line4 = line(start = [var -13.86mm, var 0mm], end = [var 30mm, var -14.46mm])
+  verticalDistance([line1.end, line1.start]) == 150
+  horizontalDistance([line3.start, line3.end]) == 30
+  verticalDistance([line3.start, line3.end]) == 110
+  horizontalDistance([line4.start, line4.end]) == 60
+  vertical(line1)
+  coincident([line1.start, line4.end])
+  coincident([line3.end, line4.start])
+  horizontal(line4)
+  horizontal([line4.start, ORIGIN])
+  horizontalDistance([line4.start, ORIGIN]) == 20
+  line5 = line(start = [var -14.13mm, var -176.93mm], end = [var 40mm, var -266.46mm], construction = true)
+  coincident([line5.start, line2.start])
+  line6 = line(start = [var 45.26mm, var -253.46mm], end = [var 40mm, var -150mm], construction = true)
+  coincident([line5.end, line6.start])
+  vertical(line6)
+  line7 = line(start = [var -44.7mm, var -160.93mm], end = [var -61.4mm, var -151.79mm], construction = true)
+  coincident([line7.start, line2.end])
+  line8 = line(start = [var -61.4mm, var -151.79mm], end = [var -50mm, var -110mm], construction = true)
+  coincident([line7.end, line8.start])
+  coincident([line8.end, line3.start])
+  parallel([line8, line3])
+  parallel([line7, line2])
+  parallel([line7, line5])
+  coincident([line6.end, line1.end])
+  arc1 = arc(start = [var -50mm, var -110mm], end = [var -45.04mm, var -135.92mm], center = [var -21.06mm, var -117.89mm])
+  coincident([arc1.end, line7.start])
+  coincident([arc1.start, line8.end])
+  tangent([line2, arc1])
+  tangent([line3, arc1])
+  radius(arc1) == 30
+  arc2 = arc(start = [var -4.54mm, var -165.47mm], end = [var 40mm, var -150mm], center = [var 10.3mm, var -145.4mm])
+  coincident([arc2.end, line1.end])
+  coincident([arc2.start, line5.start])
+  tangent([line1, arc2])
+  tangent([line2, arc2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        let outcome = frontend.update_state_after_exec(outcome, true);
+        frontend.update_single_sketch_var_warm_starts(&outcome);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let arc2_id = sketch
+            .segments
+            .iter()
+            .filter(|segment_id| {
+                matches!(
+                    frontend
+                        .scene_graph
+                        .objects
+                        .get(segment_id.0)
+                        .map(|object| &object.kind),
+                    Some(ObjectKind::Segment {
+                        segment: Segment::Arc(_)
+                    })
+                )
+            })
+            .nth(1)
+            .copied()
+            .expect("Expected arc2 segment");
+
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(
+                &mock_ctx,
+                version,
+                sketch_id,
+                Constraint::Radius(Radius {
+                    arc: arc2_id,
+                    radius: Number {
+                        value: 33.18,
+                        units: NumericSuffix::Mm,
+                    },
+                    label_position: None,
+                    source: Default::default(),
+                }),
+            )
+            .await
+            .unwrap();
+
+        assert_no_solver_failure("arc2 radius add", &scene_delta);
+        assert!(src_delta.text.contains("radius(arc2) == 33.18mm"));
+        let source_values = frontend
+            .sketch_var_source_values_from_program(sketch_id)
+            .expect("Expected source values for sketch")
+            .iter()
+            .map(|(_, value)| *value)
+            .collect::<Vec<_>>();
+        let solved_values = scene_delta
+            .exec_outcome
+            .var_solutions
+            .iter()
+            .map(|(_, number)| number.value)
+            .collect::<Vec<_>>();
+
+        assert_eq!(source_values.len(), solved_values.len());
+        for (index, (source_value, solved_value)) in source_values.iter().zip(solved_values.iter()).enumerate() {
+            assert!(
+                (source_value - solved_value).abs() < 1e-3,
+                "source var {index}: expected solved value {solved_value}, got {source_value}\n{}",
+                src_delta.text
+            );
+        }
 
         mock_ctx.close().await;
     }

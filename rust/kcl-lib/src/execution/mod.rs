@@ -302,6 +302,9 @@ pub struct SketchSolverTraceItem {
     pub kind: String,
     pub label: String,
     pub detail: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub source_range: Option<SourceRange>,
 }
 
 /// Per-segment freedom used by the constraint report. Mirrors

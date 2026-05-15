@@ -6,6 +6,7 @@ import {
 import { signal } from '@preact/signals-core'
 import type { SketchSolverTrace } from '@rust/kcl-lib/bindings/SketchSolverTrace'
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import {
   createPointApiObject,
@@ -66,7 +67,7 @@ function createProjectServiceItem(settings: ProjectService['settings']) {
 
 function createTrace(
   sketchId: number,
-  guesses: Array<[number, number]>
+  guesses: Array<[number, number, SourceRange?]>
 ): SketchSolverTrace {
   return {
     sketchId,
@@ -74,10 +75,11 @@ function createTrace(
     requiredConstraintCount: 0,
     optionalConstraintCount: 0,
     initialGuessCount: guesses.length,
-    items: guesses.map(([id, value]) => ({
+    items: guesses.map(([id, value, sourceRange]) => ({
       kind: 'initialGuess',
       label: `guess ${id}`,
       detail: String(value),
+      ...(sourceRange === undefined ? {} : { sourceRange }),
     })),
   }
 }
@@ -175,6 +177,35 @@ describe('buildInitialGuessDriftsForSceneGraph', () => {
         guess: { x: 2, y: 1 },
         resolved: { x: 2, y: 3 },
         distance: 2,
+      },
+    ])
+  })
+
+  it('ignores source-less lowered guesses when pairing visible point drift', () => {
+    const sceneGraphDelta = createSceneGraphDelta([
+      createSketchApiObject(0),
+      createPointApiObject({ id: 1, x: 10, y: 20 }),
+      createPointApiObject({ id: 2, x: 30, y: 40 }),
+    ])
+    sceneGraphDelta.exec_outcome.sketchSolverTraces = [
+      createTrace(0, [
+        [0, -100],
+        [1, -100],
+        [2, 10, [10, 11, 0]],
+        [3, 19, [12, 13, 0]],
+        [4, 30, [14, 15, 0]],
+        [5, 40, [16, 17, 0]],
+      ]),
+    ]
+
+    expect(buildInitialGuessDriftsForSceneGraph(sceneGraphDelta, 0)).toEqual([
+      {
+        pointId: 1,
+        xGuessId: 2,
+        yGuessId: 3,
+        guess: { x: 10, y: 19 },
+        resolved: { x: 10, y: 20 },
+        distance: 1,
       },
     ])
   })

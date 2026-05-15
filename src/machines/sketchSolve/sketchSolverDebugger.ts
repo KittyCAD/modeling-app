@@ -63,9 +63,9 @@ export const DEFAULT_SKETCH_SOLVER_PRIORITY_LEVELS: Record<
   number
 > = {
   existingCoincident: 0,
-  fixed: 2,
+  fixed: 0,
   dragFixed: 1,
-  everythingElse: 2,
+  everythingElse: 0,
 }
 
 export const SKETCH_SOLVER_PRIORITY_BUCKET_LABELS: Record<

@@ -3,6 +3,7 @@ import type {
   SceneGraphDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SketchSolverTrace } from '@rust/kcl-lib/bindings/SketchSolverTrace'
+import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import { SKETCH_LAYER } from '@src/clientSideScene/sceneUtils'
 import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
@@ -30,6 +31,12 @@ const MIN_DASH_SEGMENTS = 4
 type Point2d = {
   x: number
   y: number
+}
+
+type InitialGuessTraceValue = {
+  id: number
+  value: number
+  sourceRange?: SourceRange
 }
 
 export type InitialGuessDrift = {
@@ -76,26 +83,26 @@ export function buildInitialGuessDriftsForSceneGraph(
     return []
   }
 
-  const initialGuesses = initialGuessValuesById(trace)
-  if (initialGuesses.size === 0) {
+  const initialGuesses = initialGuessValues(trace)
+  if (initialGuesses.length === 0) {
     return []
   }
 
   const pointSegments = currentSketchPointSegments(sceneGraphDelta, sketchId)
-  const guessIds = [...initialGuesses.keys()].sort((a, b) => a - b)
+  const sourceBackedInitialGuesses = initialGuesses.filter(
+    (guess) => guess.sourceRange !== undefined
+  )
+  const orderedInitialGuesses =
+    sourceBackedInitialGuesses.length > 0
+      ? sourceBackedInitialGuesses
+      : initialGuesses
   const drifts: InitialGuessDrift[] = []
 
   for (let pointIndex = 0; pointIndex < pointSegments.length; pointIndex++) {
-    const xGuessId = guessIds[pointIndex * 2]
-    const yGuessId = guessIds[pointIndex * 2 + 1]
-    if (xGuessId === undefined || yGuessId === undefined) {
+    const xGuess = orderedInitialGuesses[pointIndex * 2]
+    const yGuess = orderedInitialGuesses[pointIndex * 2 + 1]
+    if (xGuess === undefined || yGuess === undefined) {
       break
-    }
-
-    const guessX = initialGuesses.get(xGuessId)
-    const guessY = initialGuesses.get(yGuessId)
-    if (guessX === undefined || guessY === undefined) {
-      continue
     }
 
     const point = pointSegments[pointIndex]
@@ -103,7 +110,7 @@ export function buildInitialGuessDriftsForSceneGraph(
       x: point.kind.segment.position.x.value,
       y: point.kind.segment.position.y.value,
     }
-    const guess = { x: guessX, y: guessY }
+    const guess = { x: xGuess.value, y: yGuess.value }
     const distance = pointDistance(guess, resolved)
 
     if (distance <= MIN_VISIBLE_DRIFT) {
@@ -112,8 +119,8 @@ export function buildInitialGuessDriftsForSceneGraph(
 
     drifts.push({
       pointId: point.id,
-      xGuessId,
-      yGuessId,
+      xGuessId: xGuess.id,
+      yGuessId: yGuess.id,
       guess,
       resolved,
       distance,
@@ -137,8 +144,8 @@ function latestTraceForSketch(
   return null
 }
 
-function initialGuessValuesById(trace: SketchSolverTrace): Map<number, number> {
-  const values = new Map<number, number>()
+function initialGuessValues(trace: SketchSolverTrace): InitialGuessTraceValue[] {
+  const values: InitialGuessTraceValue[] = []
 
   for (const item of trace.items) {
     if (item.kind !== 'initialGuess') {
@@ -151,10 +158,14 @@ function initialGuessValuesById(trace: SketchSolverTrace): Map<number, number> {
       continue
     }
 
-    values.set(Number.parseInt(id, 10), value)
+    values.push({
+      id: Number.parseInt(id, 10),
+      value,
+      ...(item.sourceRange === undefined ? {} : { sourceRange: item.sourceRange }),
+    })
   }
 
-  return values
+  return values.sort((a, b) => a.id - b.id)
 }
 
 function currentSketchPointSegments(
