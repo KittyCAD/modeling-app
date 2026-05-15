@@ -23,11 +23,11 @@ import {
   KCL_PLANE_YZ,
 } from '@src/lib/constants'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
-import { isEnginePrimitiveSelection } from '@src/lib/selections'
 import { isArray, mmToBaseUnit, roundOff, uuidv4 } from '@src/lib/utils'
-import type {
-  EnginePrimitiveSelection,
-  Selections,
+import {
+  isEnginePrimitiveSelection,
+  type EnginePrimitiveSelection,
+  type Selections,
 } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
 

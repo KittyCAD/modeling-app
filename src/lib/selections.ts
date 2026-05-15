@@ -81,17 +81,21 @@ import {
 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
-import type {
-  DefaultPlane,
-  EnginePrimitiveSelection,
-  EngineRegionSelection,
-  ExtrudeFacePlane,
-  OffsetPlane,
+import {
+  isEnginePrimitiveSelection,
+  type DefaultPlane,
+  type EnginePrimitiveSelection,
+  type EngineRegionSelection,
+  type ExtrudeFacePlane,
+  type OffsetPlane,
+  type Selection,
+  type Selections,
 } from '@src/machines/modelingSharedTypes'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import toast from 'react-hot-toast'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
+
+export { isEnginePrimitiveSelection } from '@src/machines/modelingSharedTypes'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -468,16 +472,6 @@ function primitiveSelectionFromEntityReference(
     primitiveIndex: reference.topology_fallback.primitive_index,
     primitiveType: reference.type,
   }
-}
-
-export function isEnginePrimitiveSelection(
-  selection: Selections['otherSelections'][number]
-): selection is EnginePrimitiveSelection {
-  return (
-    typeof selection === 'object' &&
-    'type' in selection &&
-    selection.type === 'enginePrimitive'
-  )
 }
 
 export function isEngineRegionSelection(
