@@ -3,7 +3,7 @@ import Loading from '@src/components/Loading'
 import { type Selections } from '@src/machines/modelingSharedTypes'
 import { Popover } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { ExchangeCard } from '@src/components/ExchangeCard'
+import { ExchangeCard, hasTerminalResponse } from '@src/components/ExchangeCard'
 import type {
   Conversation,
   Exchange,
@@ -585,9 +585,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
   const lastExchange = exchangesLength
     ? props.conversation?.exchanges[exchangesLength - 1]
     : undefined
-  const isEndOfStream = lastExchange?.responses.some(
-    (ex) => 'end_of_stream' in ex || 'error' in ex || 'info' in ex
-  )
+  const isEndOfStream = hasTerminalResponse(lastExchange?.responses)
 
   // Autoscroll: right after sending a prompt when the new exchange is added
   useEffect(() => {

@@ -23,6 +23,11 @@ vi.mock('@src/lib/boot', () => ({
   }),
 }))
 
+vi.mock('@src/lib/wasm_lib_wrapper', () => ({
+  getModule: () => ({}),
+  reloadModule: vi.fn(),
+}))
+
 import { MlEphantConversation } from '@src/components/MlEphantConversation'
 import type {
   Conversation,
@@ -173,6 +178,91 @@ describe('MlEphantConversation', () => {
 
   test('renders request bubble, shows thinking state, then displays response text after completion (non-default reasoning effort)', () => {
     rendersRequestBubbleThenDisplayResponse('standard')
+  })
+
+  test('keeps reasoning expanded after manual edit info until final response', () => {
+    const promptText = 'Change the width'
+    const reasoningResponse = {
+      reasoning: {
+        type: 'text',
+        content: 'Inspecting current file',
+      },
+    } as const
+    const manualEditInfo = {
+      info: {
+        text: 'Manual edits detected since the last Zookeeper state.',
+      },
+    } as const
+
+    const renderConversation = (
+      responses: Conversation['exchanges'][number]['responses'],
+      deltasAggregated = ''
+    ) => (
+      <MlEphantConversation
+        isLoading={false}
+        conversation={{
+          exchanges: [
+            {
+              request: {
+                type: 'user',
+                content: promptText,
+              },
+              responses,
+              deltasAggregated,
+            },
+          ],
+        }}
+        onProcess={vi.fn()}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        contexts={[]}
+        disabled={false}
+        hasPromptCompleted={false}
+        isProcessing={true}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    const { rerender } = render(renderConversation([reasoningResponse]))
+
+    expect(
+      screen.getAllByText('Inspecting current file').length
+    ).toBeGreaterThan(0)
+    expect(screen.getByText('Collapse')).toBeInTheDocument()
+
+    rerender(renderConversation([reasoningResponse, manualEditInfo]))
+
+    expect(
+      screen.getAllByText('Inspecting current file').length
+    ).toBeGreaterThan(0)
+    expect(
+      screen.getByText('Manual edits detected since the last Zookeeper state.')
+    ).toBeInTheDocument()
+    expect(screen.getByText('Collapse')).toBeInTheDocument()
+
+    rerender(
+      renderConversation(
+        [
+          reasoningResponse,
+          manualEditInfo,
+          {
+            end_of_stream: {
+              whole_response: 'Done.',
+            },
+          },
+        ],
+        'Done.'
+      )
+    )
+
+    expect(screen.getByText('See reasoning')).toBeInTheDocument()
+    expect(
+      screen.queryByText('Inspecting current file')
+    ).not.toBeInTheDocument()
   })
 
   test('shows an attachments loading indicator while attachment processing is in progress', () => {
