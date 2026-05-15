@@ -236,14 +236,21 @@ impl CompilationIssue {
 #[derive(Debug, Clone)]
 struct ExecOutcome {
     issues: Vec<CompilationIssue>,
+    code: String,
+    filename: String,
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pymethods]
 #[pymethods]
 impl ExecOutcome {
-    #[getter]
     fn issues(&self) -> PyResult<Vec<CompilationIssue>> {
         Ok(self.issues.clone())
+    }
+
+    /// Render the given compilation issue as a miette report string, using
+    /// the source code and filename captured at execution time.
+    fn report(&self, issue: &CompilationIssue) -> String {
+        kcl_lib::render_compilation_issue_miette(&self.filename, &self.code, issue.inner.clone())
     }
 }
 
@@ -281,10 +288,18 @@ async fn run_kcl(input: KclInput, mock: bool) -> PyResult<ExecutedKcl> {
 }
 
 async fn execute_impl(input: KclInput, mock: bool) -> PyResult<ExecOutcome> {
-    let ExecutedKcl { ctx, issues, .. } = run_kcl(input, mock).await?;
+    let ExecutedKcl {
+        ctx,
+        issues,
+        code,
+        filename,
+        ..
+    } = run_kcl(input, mock).await?;
     ctx.close().await;
     Ok(ExecOutcome {
         issues: issues.into_iter().map(CompilationIssue::from).collect(),
+        code,
+        filename,
     })
 }
 
