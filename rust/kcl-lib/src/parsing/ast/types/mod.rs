@@ -8,10 +8,10 @@ use std::ops::Deref;
 use std::ops::DerefMut;
 use std::ops::RangeInclusive;
 use std::rc::Rc;
-use std::sync::atomic::AtomicBool;
-use std::sync::atomic::Ordering;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 
 use anyhow::Result;
 use parse_display::Display;
@@ -233,7 +233,7 @@ impl<T> Node<T> {
             outer_attrs: self.outer_attrs,
             pre_comments: self.pre_comments,
             comment_start: self.comment_start,
-            visited: self.visited.clone(),
+            visited: self.visited,
         }
     }
 
@@ -255,7 +255,6 @@ impl<T> Node<T> {
             visited: self.visited.clone(),
         }
     }
-
 }
 
 impl<T> Deref for Node<T> {
@@ -4196,7 +4195,6 @@ impl Parameter {
         let sr = SourceRange::from(self);
         sr.contains_range(range)
     }
-
 }
 
 impl From<&Parameter> for SourceRange {

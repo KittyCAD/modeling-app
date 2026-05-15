@@ -80,11 +80,7 @@ impl Context {
             return Ok(ctx);
         }
 
-        let mut ctx = kcl_lib::ExecutorContext::new_with_engine_and_fs(
-            self.engine.clone(),
-            self.fs.clone(),
-            settings,
-        );
+        let mut ctx = kcl_lib::ExecutorContext::new_with_engine_and_fs(self.engine.clone(), self.fs.clone(), settings);
         ctx.progress = self.progress.clone();
         Ok(ctx)
     }

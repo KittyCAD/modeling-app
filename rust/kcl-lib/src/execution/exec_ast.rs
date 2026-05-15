@@ -110,10 +110,10 @@ use crate::std::StdFnProps;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
 use crate::std::shapes::SketchOrSurface;
-use crate::walk;
 use crate::std::sketch::ensure_sketch_plane_in_engine;
 use crate::std::solver::SOLVER_CONVERGENCE_TOLERANCE;
 use crate::std::solver::create_segments_in_engine;
+use crate::walk;
 
 fn internal_err(message: impl Into<String>, range: impl Into<SourceRange>) -> KclError {
     KclError::new_internal(KclErrorDetails::new(message.into(), vec![range.into()]))

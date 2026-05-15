@@ -39,7 +39,6 @@ impl KclNone {
             visited: VisitedState::default(),
         }
     }
-
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
