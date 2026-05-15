@@ -1,0 +1,78 @@
+// Primary Shaft Module
+// Main shaft, spine teeth, and demo instances
+// Categories: Aerospace
+
+@settings(defaultLengthUnit = mm)
+
+// Import gear and propeller
+import * from "helical.kcl"
+import * from "propeller.kcl"
+
+// Revolve the primary shaft
+primaryShaft = startSketchOn(YZ)
+  |> startProfile(at = [0, 0])
+  |> xLine(length = 100)
+  |> yLine(length = -30)
+  |> angledLine(angle = 45deg, length = -10)
+  |> xLine(endAbsolute = 0)
+  |> yLine(endAbsolute = -85)
+  |> xLine(length = -100, tag = $seg01)
+  |> yLine(endAbsolute = -65)
+  |> xLine(endAbsolute = -800)
+  |> yLine(endAbsolute = -60)
+  |> xLine(endAbsolute = -850)
+  |> yLine(endAbsolute = profileStartY(), tag = $seg02)
+  |> xLine(endAbsolute = profileStartX())
+  |> close()
+  |> revolve(axis = X)
+
+// Spline shaft inputs
+toothWidth = 10
+toothHeight = 6
+shaftDiameter = 105
+
+// Tooth angle and count
+toothAngleDeg = (toothWidth / shaftDiameter * 360 / PI): deg
+toothCount = round(180deg / toothAngleDeg)
+
+// Sketch the spline portion of the shaft
+primarySpine = startSketchOn(primaryShaft, face = seg02)
+  |> startProfile(at = [shaftDiameter / 2, 0])
+  |> arc(angleStart = 0deg, angleEnd = toothAngleDeg, diameter = shaftDiameter)
+  |> angledLine(angle = toothAngleDeg, length = toothHeight)
+  |> arc(angleStart = toothAngleDeg, angleEnd = 2 * toothAngleDeg, diameter = shaftDiameter + 2 * toothHeight)
+  |> angledLine(angle = 2 * toothAngleDeg, length = -toothHeight)
+  |> line(endAbsolute = polar(angle = 360deg / toothCount, length = shaftDiameter / 2))
+  |> patternCircular2d(instances = toothCount, center = [0, 0])
+  |> close()
+  |> extrude(length = 200)
+
+// Extend the front of the shaft
+frontExtension = startSketchOn(primarySpine, face = END)
+  |> circle(center = [0, 0], radius = 30)
+  |> extrude(length = 50)
+
+// Build the gear and propeller bodies
+helicalGear(nTeeth = 32, helixAngle = 25deg, bore = 170)
+
+propeller(
+       twistAngle = 75deg,
+       toothWidth = toothWidth,
+       toothHeight = toothHeight,
+       shaftDiameter = shaftDiameter,
+     )
+  |> translate(y = -950)
+
+// Model the nose cone
+noseCone = startSketchOn(YZ)
+  |> startProfile(at = [-1100, 0])
+  |> yLine(length = -30)
+  |> line(end = [50, -28])
+  |> xLine(length = 20)
+  |> yLine(length = -25)
+  |> tangentialArc(angle = -90deg, radius = 15)
+  |> tangentialArc(endAbsolute = [-1280, 0])
+  |> line(endAbsolute = [profileStartX(), profileStartY()])
+  |> close()
+  |> revolve(axis = X)
+  |> appearance(color = "#e88811", metalness = 10, roughness = 80)

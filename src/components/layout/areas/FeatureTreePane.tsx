@@ -1,24 +1,16 @@
 import type { Diagnostic } from '@codemirror/lint'
-import { useMachine, useSelector } from '@xstate/react'
-import type { ComponentProps } from 'react'
-
-import { use, useCallback, useEffect, useMemo, useRef, memo } from 'react'
-
-import type { Actor, Prop } from 'xstate'
-
+import type { ComponentProps, ReactNode } from 'react'
+import { use, useCallback, useMemo, memo } from 'react'
 import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
-
-import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
+import { type ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
-import {
-  codeRefFromRange,
-  getArtifactFromRange,
-} from '@src/lang/std/artifactGraph'
+import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
+import { topLevelRange } from '@src/lang/util'
 import {
   filterOperations,
   getOperationCalculatedDisplay,
@@ -26,33 +18,21 @@ import {
   getOperationLabel,
   getOperationVariableName,
   getOpTypeLabel,
+  getSketchBlockOperationKey,
+  groupSketchBlockOperations,
+  onHide,
   groupOperationTypeStreaks,
+  isSketchBlockOperationGroup,
   stdLibMap,
+  onUnhide,
 } from '@src/lib/operations'
-import { stripQuotes } from '@src/lib/utils'
-import { isArray, uuidv4 } from '@src/lib/utils'
+import { isArray, isOverlap, stripQuotes, uuidv4 } from '@src/lib/utils'
 import type { DefaultPlaneStr } from '@src/lib/planes'
-import { selectOffsetSketchPlane } from '@src/lib/selections'
 import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
-import {
-  commandBarActor,
-  engineCommandManager,
-  getLayout,
-  kclManager,
-  rustContext,
-  sceneEntitiesManager,
-  sceneInfra,
-  setLayout,
-  useLayout,
-} from '@src/lib/singletons'
-import { err } from '@src/lib/trap'
-import { featureTreeMachine } from '@src/machines/featureTreeMachine'
-import {
-  editorIsMountedSelector,
-  kclEditorActor,
-} from '@src/machines/kclEditorMachine'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { err, isErr, reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
-import { base64Decode } from '@src/lang/wasm'
+import { base64Decode, type SourceRange } from '@src/lang/wasm'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
 import {
@@ -60,21 +40,44 @@ import {
   DefaultLayoutPaneID,
   getOpenPanes,
   togglePaneLayoutNode,
+  type Layout,
 } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
 import Tooltip from '@src/components/Tooltip'
 import { Disclosure } from '@headlessui/react'
-import { toUtf16 } from '@src/lang/errors'
+import { toUtf16, sourceRangeToUtf16 } from '@src/lang/errors'
+import {
+  prepareEditCommand,
+  resolveFeatureTreeVisibility,
+  sendDeleteCommand,
+  sendSelectionEvent,
+} from '@src/lib/featureTree'
+import {
+  getUnrenderedChangesDisabledReason,
+  shouldDisableModelingForUnrenderedChanges,
+} from '@src/lib/automaticRendering'
+import { VisibilityToggle } from '@src/components/VisibilityToggle'
+import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import { useSignals } from '@preact/signals-react/runtime'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type RustContext from '@src/lib/rustContext'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import { executingEditorService } from '@src/registry/contracts/executingEditor'
+import usePlatform from '@src/hooks/usePlatform'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
 
-// Defined outside of React to prevent rerenders
-// TODO: get all system dependencies into React via global context
-const systemDeps = {
-  kclManager,
-  sceneInfra,
-  sceneEntitiesManager,
-  rustContext,
+type Singletons = ReturnType<typeof useSingletons>
+type SystemDeps = Pick<Singletons, 'kclManager'> & {
+  commandBarActor: CommandBarActorType
+  sceneInfra: SceneInfra
+  sceneEntitiesManager: SceneEntities
+  rustContext: RustContext
 }
+
+const UNRENDERED_EXECUTE_HOTKEY = 'mod+s'
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
   return (
@@ -88,130 +91,87 @@ export function FeatureTreePane(props: AreaTypeComponentProps) {
         icon="model"
         title={props.layout.label}
         Menu={FeatureTreeMenu}
-        onClose={props.onClose}
+        onClose={() => {
+          // Gotcha: because our layout system is a goofy first draft,
+          // it doesn't know how to handle Splits as children of Panes very well,
+          // so the onClose here needs to explicitly state the Split to close,
+          // since this layout will be used in a Simple layout now.
+          props.onClose?.('feature-tree')
+        }}
       />
       <FeatureTreePaneContents />
     </LayoutPanel>
   )
 }
 
+function isCodePaneOpen(layout: Layout) {
+  return getOpenPanes({ rootLayout: layout }).includes(DefaultLayoutPaneID.Code)
+}
+function openCodePane(layout: Layout, setLayout: (l: Layout) => void) {
+  const rootLayout = structuredClone(layout)
+  setLayout(
+    togglePaneLayoutNode({
+      rootLayout,
+      targetNodeId: DefaultLayoutPaneID.Code,
+      shouldExpand: true,
+    })
+  )
+}
+
 export const FeatureTreePaneContents = memo(() => {
-  const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
-  const layout = useLayout()
-  const { send: modelingSend, state: modelingState } = useModelingContext()
+  useSignals()
+  const app = useApp()
+  const { layout, commands, settings } = app
+  const settingsValues = settings.useSettings()
+  const platform = usePlatform()
+  const unrenderedExecuteHotkeyLabel = hotkeyDisplay(
+    UNRENDERED_EXECUTE_HOTKEY,
+    platform
+  )
+  const { kclManager } = useSingletons()
+  const executionService = app.registry.signal(executingEditorService).value
+  const { engineCommandManager, rustContext } = kclManager
+  const {
+    send: modelingSend,
+    state: modelingState,
+    actor: modelingActor,
+  } = useModelingContext()
+  const systemDeps: SystemDeps = useMemo(
+    () => ({
+      kclManager,
+      sceneInfra: kclManager.sceneInfra,
+      sceneEntitiesManager: kclManager.sceneEntitiesManager,
+      rustContext,
+      commandBarActor: commands.actor,
+    }),
+    [kclManager, rustContext, commands.actor]
+  )
+
+  const selectOperation = useCallback(
+    (sourceRange: SourceRange) => {
+      sendSelectionEvent({
+        sourceRange: sourceRangeToUtf16(sourceRange, kclManager.code),
+        kclManager,
+        modelingSend,
+      })
+    },
+    [modelingSend, kclManager]
+  )
 
   const sketchNoFace = modelingState.matches('Sketch no face')
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_featureTreeState, featureTreeSend] = useMachine(
-    featureTreeMachine.provide({
-      guards: {
-        codePaneIsOpen: () =>
-          getOpenPanes({ rootLayout: getLayout() }).includes(
-            DefaultLayoutPaneID.Code
-          ) && kclManager.editorView !== null,
-      },
-      actions: {
-        openCodePane: () => {
-          const rootLayout = structuredClone(getLayout())
-          setLayout(
-            togglePaneLayoutNode({
-              rootLayout,
-              targetNodeId: DefaultLayoutPaneID.Code,
-              shouldExpand: true,
-            })
-          )
-        },
-        scrollToError: () => {
-          kclManager.scrollToFirstErrorDiagnosticIfExists()
-        },
-        sendTranslateCommand: () => {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Translate', groupId: 'modeling' },
-          })
-        },
-        sendRotateCommand: () => {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Rotate', groupId: 'modeling' },
-          })
-        },
-        sendScaleCommand: () => {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Scale', groupId: 'modeling' },
-          })
-        },
-        sendCloneCommand: () => {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Clone', groupId: 'modeling' },
-          })
-        },
-        sendAppearanceCommand: () => {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Appearance', groupId: 'modeling' },
-          })
-        },
-        sendSelectionEvent: ({ context }) => {
-          if (!context.targetSourceRange) {
-            return
-          }
-          const artifact = context.targetSourceRange
-            ? getArtifactFromRange(
-                context.targetSourceRange,
-                kclManager.artifactGraph
-              )
-            : null
-
-          if (!artifact) {
-            modelingSend({
-              type: 'Set selection',
-              data: {
-                selectionType: 'singleCodeCursor',
-                selection: {
-                  codeRef: codeRefFromRange(
-                    context.targetSourceRange,
-                    kclManager.ast
-                  ),
-                },
-                scrollIntoView: true,
-              },
-            })
-          } else {
-            modelingSend({
-              type: 'Set selection',
-              data: {
-                selectionType: 'singleCodeCursor',
-                selection: {
-                  artifact: artifact,
-                  codeRef: codeRefFromRange(
-                    context.targetSourceRange,
-                    kclManager.ast
-                  ),
-                },
-                scrollIntoView: true,
-              },
-            })
-          }
-        },
-      },
-    }),
-    {
-      input: {
-        rustContext,
-        kclManager,
-        sceneEntitiesManager,
-        commandBarActor,
-      },
-      // devTools: true,
-    }
-  )
-  // If there are parse errors we show the last successful operations
-  // and overlay a message on top of the pane
-  const parseErrors = kclManager.errors.filter((e) => e.kind !== 'engine')
+  const hasParseErrors = kclManager.hasParseErrors()
+  const disableModelingForUnrenderedChanges =
+    shouldDisableModelingForUnrenderedChanges({
+      settings: settingsValues,
+      hasEditsSinceLastExecution:
+        kclManager.hasEditsSinceLastExecutionSignal.value,
+    })
+  const diagnostics = kclManager.diagnosticsSignal.value
+  const parseDiagnostics = hasParseErrors
+    ? diagnostics.filter((diagnostic) => diagnostic.severity === 'error')
+    : []
+  const firstParseDiagnostic = parseDiagnostics[0]
+  const firstParseAction = firstParseDiagnostic?.actions?.[0]
 
   // If there are engine errors we show the successful operations
   // Errors return an operation list, so use the longest one if there are multiple
@@ -221,36 +181,45 @@ export const FeatureTreePaneContents = memo(() => {
       : acc
   }, [] as Operation[])
 
-  const unfilteredOperationList = !parseErrors.length
+  const unfilteredOperationList = !hasParseErrors
     ? !kclManager.errors.length
-      ? kclManager.execState.operations
+      ? kclManager.operations
       : longestErrorOperationList
     : kclManager.lastSuccessfulOperations
   // We use the code that corresponds to the operations. In case this is an
   // error on the first run, fall back to whatever is currently in the code
   // editor.
-  const operationsCode =
-    kclManager.lastSuccessfulCode || kclManager.codeSignal.value
+  const operationsCode = hasParseErrors
+    ? kclManager.lastSuccessfulCode || kclManager.codeSignal.value
+    : disableModelingForUnrenderedChanges
+      ? kclManager.lastSuccessfulCode || kclManager.codeSignal.value
+      : kclManager.codeSignal.value
+  const isReadOnlyFeatureTree =
+    hasParseErrors || disableModelingForUnrenderedChanges
 
   // We filter out operations that are not useful to show in the feature tree
-  const operationList = groupOperationTypeStreaks(
-    filterOperations(unfilteredOperationList),
-    ['VariableDeclaration']
+  const operationList = groupSketchBlockOperations(
+    groupOperationTypeStreaks(filterOperations(unfilteredOperationList), [
+      'VariableDeclaration',
+    ])
   )
-
-  // Watch for changes in the open panes and send an event to the feature tree machine
-  useEffect(() => {
-    const codeOpen = getOpenPanes({ rootLayout: layout }).includes(
-      DefaultLayoutPaneID.Code
-    )
-    if (codeOpen && isEditorMounted) {
-      featureTreeSend({ type: 'codePaneOpened' })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [layout, isEditorMounted, featureTreeSend])
+  const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
 
   function goToError() {
-    featureTreeSend({ type: 'goToError' })
+    const l = layout.signal.value
+    if (!isCodePaneOpen(l)) {
+      openCodePane(l, layout.set)
+    }
+    kclManager.scrollToFirstErrorDiagnosticIfExists()
+  }
+
+  function applyParseQuickFix() {
+    if (!firstParseDiagnostic || !firstParseAction) return
+    firstParseAction.apply(
+      kclManager.editorView,
+      firstParseDiagnostic.from,
+      firstParseDiagnostic.to
+    )
   }
 
   return (
@@ -265,51 +234,129 @@ export const FeatureTreePaneContents = memo(() => {
           </Loading>
         ) : (
           <>
-            {!modelingState.matches('Sketch') && <DefaultPlanes />}
-            {parseErrors.length > 0 && (
-              <div
-                className={`absolute inset-0 rounded-lg p-2 ${
-                  operationList.length &&
-                  `bg-destroy-10/40 dark:bg-destroy-80/40`
-                }`}
-              >
-                <div className="text-sm bg-destroy-80 text-chalkboard-10 py-1 px-2 rounded flex gap-2 items-center">
-                  <p className="flex-1">
-                    Errors found in KCL code.
-                    <br />
-                    Please fix them before continuing.
-                  </p>
+            {!modelingState.matches('Sketch') && (
+              <DefaultPlanes
+                systemDeps={systemDeps}
+                disabled={disableModelingForUnrenderedChanges}
+              />
+            )}
+            {disableModelingForUnrenderedChanges && !hasParseErrors && (
+              <div className="text-sm bg-2 text-2 py-2 px-2 rounded flex flex-col gap-2 flex-none mb-2 border border-chalkboard-20 dark:border-chalkboard-80">
+                <p className="font-medium">
+                  Feature tree actions are disabled.
+                </p>
+                <p className="text-xs opacity-80">
+                  {getUnrenderedChangesDisabledReason()}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      executionService?.executeCode().catch(reportRejection)
+                    }}
+                    disabled={kclManager.isExecuting || !executionService}
+                    className="flex gap-1 items-center py-0 pl-0.5 pr-1 m-0 flex-none text-primary dark:text-primary border border-solid border-primary bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 hover:border-primary active:border-primary disabled:cursor-wait disabled:opacity-70"
+                  >
+                    <CustomIcon name="play" className="w-5 h-5" />
+                    <span>Execute</span>
+                    {unrenderedExecuteHotkeyLabel && (
+                      <kbd className="hotkey text-xs">
+                        {unrenderedExecuteHotkeyLabel}
+                      </kbd>
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
+            {hasParseErrors && (
+              <div className="text-sm bg-destroy-80 text-chalkboard-10 py-2 px-2 rounded flex flex-col gap-2 flex-none mb-2">
+                <p className="font-medium">
+                  KCL parse errors are blocking the current feature tree.
+                </p>
+                <p className="whitespace-pre-wrap break-words text-xs">
+                  {firstParseDiagnostic?.message ||
+                    'Fix the parse error to rebuild the feature tree.'}
+                </p>
+                <p className="text-xs text-chalkboard-20">
+                  {isShowingStaleFeatureTree
+                    ? 'Showing the last successful feature tree as a read-only reference. It may not match the current code.'
+                    : 'No successful feature tree is available yet for this file.'}
+                </p>
+                <div className="flex flex-wrap gap-2">
                   <button
                     onClick={goToError}
                     className="bg-chalkboard-10 text-destroy-80 p-1 rounded-sm flex-none hover:bg-chalkboard-10 hover:border-destroy-70 hover:text-destroy-80 border-transparent"
                   >
                     View error
                   </button>
+                  {firstParseAction && (
+                    <button
+                      onClick={applyParseQuickFix}
+                      className="bg-destroy-70 text-chalkboard-10 p-1 rounded-sm flex-none hover:bg-destroy-60 border-transparent"
+                    >
+                      {firstParseAction.name}
+                    </button>
+                  )}
                 </div>
               </div>
             )}
             {operationList.map((opOrList) => {
-              const key = `${isArray(opOrList) ? opOrList[0].type : opOrList.type}-${
-                'name' in opOrList ? opOrList.name : 'anonymous'
-              }-${
-                'sourceRange' in opOrList ? opOrList.sourceRange[0] : 'start'
-              }`
+              const key = (() => {
+                if (!isArray(opOrList)) {
+                  return `${opOrList.type}-${
+                    'name' in opOrList ? opOrList.name : 'anonymous'
+                  }-${'sourceRange' in opOrList ? opOrList.sourceRange[0] : 'start'}`
+                }
+                const first = opOrList[0]
+                const last = opOrList[opOrList.length - 1]
+                return `group-${
+                  first?.type ?? 'unknown'
+                }-${first && 'sourceRange' in first ? first.sourceRange[0] : 'start'}-${
+                  last && 'sourceRange' in last ? last.sourceRange[1] : 'end'
+                }`
+              })()
+
+              if (isArray(opOrList) && isSketchBlockOperationGroup(opOrList)) {
+                const sketchGroupKey =
+                  getSketchBlockOperationKey(opOrList[0]) ?? key
+                return (
+                  <SketchBlockOperationGroup
+                    key={sketchGroupKey}
+                    items={opOrList}
+                    code={operationsCode}
+                    isStaleReference={isReadOnlyFeatureTree}
+                    sketchNoFace={sketchNoFace}
+                    systemDeps={systemDeps}
+                    modelingActor={modelingActor}
+                    engineCommandManager={engineCommandManager}
+                    onSelect={selectOperation}
+                  />
+                )
+              }
 
               return isArray(opOrList) ? (
                 <OperationItemGroup
                   key={key}
                   items={opOrList}
                   code={operationsCode}
-                  send={featureTreeSend}
+                  isStaleReference={isReadOnlyFeatureTree}
                   sketchNoFace={sketchNoFace}
+                  systemDeps={systemDeps}
+                  modelingActor={modelingActor}
+                  engineCommandManager={engineCommandManager}
+                  onSelect={selectOperation}
                 />
               ) : (
                 <OperationItem
                   key={key}
                   item={opOrList}
                   code={operationsCode}
-                  send={featureTreeSend}
+                  isStaleReference={isReadOnlyFeatureTree}
                   sketchNoFace={sketchNoFace}
+                  systemDeps={systemDeps}
+                  modelingActor={modelingActor}
+                  engineCommandManager={engineCommandManager}
+                  onSelect={selectOperation}
                 />
               )
             })}
@@ -320,35 +367,95 @@ export const FeatureTreePaneContents = memo(() => {
   )
 })
 
+function SketchBlockOperationGroup({
+  items,
+  code,
+  isStaleReference,
+  sketchNoFace,
+  systemDeps,
+  modelingActor,
+  engineCommandManager,
+  onSelect,
+}: Omit<OperationProps, 'item'> & { items: Operation[] }) {
+  if (items.length === 0) {
+    return null
+  }
+
+  const parentItem =
+    items.find((item) => item.type === 'SketchSolve') ?? items[0]
+  const childItems = items.filter((item) => item !== parentItem)
+
+  if (childItems.length === 0) {
+    return (
+      <OperationItem
+        item={parentItem}
+        code={code}
+        isStaleReference={isStaleReference}
+        sketchNoFace={sketchNoFace}
+        systemDeps={systemDeps}
+        modelingActor={modelingActor}
+        engineCommandManager={engineCommandManager}
+        onSelect={onSelect}
+      />
+    )
+  }
+
+  return (
+    <Disclosure>
+      <div className="flex items-start gap-1">
+        <Disclosure.Button
+          data-testid="sketchblock-group-caret"
+          className="reset !px-0 !py-1 self-stretch !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25"
+        >
+          <CustomIcon
+            name="caretDown"
+            className="w-4 h-4 block -rotate-90 ui-open:rotate-0 ui-open:transform"
+            aria-hidden
+          />
+        </Disclosure.Button>
+        <div className="flex-1 min-w-0">
+          <OperationItem
+            item={parentItem}
+            code={code}
+            isStaleReference={isStaleReference}
+            sketchNoFace={sketchNoFace}
+            systemDeps={systemDeps}
+            modelingActor={modelingActor}
+            engineCommandManager={engineCommandManager}
+            onSelect={onSelect}
+          />
+        </div>
+      </div>
+      <Disclosure.Panel>
+        <div className="border-l b-4 ml-6">
+          {childItems.map((item) => {
+            const key = `${item.type}-${
+              'name' in item ? item.name : 'anonymous'
+            }-${'sourceRange' in item ? item.sourceRange[0] : 'start'}`
+            return (
+              <OperationItem
+                key={key}
+                item={item}
+                code={code}
+                isStaleReference={isStaleReference}
+                sketchNoFace={sketchNoFace}
+                systemDeps={systemDeps}
+                modelingActor={modelingActor}
+                engineCommandManager={engineCommandManager}
+                onSelect={onSelect}
+                size="sm"
+              />
+            )
+          })}
+        </div>
+      </Disclosure.Panel>
+    </Disclosure>
+  )
+}
+
 interface VisibilityToggleProps {
   visible: boolean
   onVisibilityChange: () => unknown
-}
-
-/**
- * A button that toggles the visibility of an entity
- * tied to an artifact in the feature tree.
- * For now just used for default planes.
- */
-const VisibilityToggle = (props: VisibilityToggleProps) => {
-  const visible = props.visible
-  const handleToggleVisible = useCallback(() => {
-    props.onVisibilityChange()
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [props.onVisibilityChange])
-
-  return (
-    <button
-      onClick={handleToggleVisible}
-      className="p-0 m-0 border-transparent dark:border-transparent"
-      data-testid="feature-tree-visibility-toggle"
-    >
-      <CustomIcon
-        name={visible ? 'eyeOpen' : 'eyeCrossedOut'}
-        className="w-6 h-6"
-      />
-    </button>
-  )
 }
 
 /**
@@ -357,8 +464,12 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
 function OperationItemGroup({
   items,
   code,
-  send,
+  isStaleReference,
   sketchNoFace,
+  systemDeps,
+  modelingActor,
+  engineCommandManager,
+  onSelect,
 }: Omit<OperationProps, 'item'> & { items: Operation[] }) {
   return (
     <Disclosure>
@@ -383,8 +494,13 @@ function OperationItemGroup({
                 key={key}
                 item={op}
                 code={code}
-                send={send}
+                isStaleReference={isStaleReference}
                 sketchNoFace={sketchNoFace}
+                systemDeps={systemDeps}
+                modelingActor={modelingActor}
+                engineCommandManager={engineCommandManager}
+                onSelect={onSelect}
+                size="sm"
               />
             )
           })}
@@ -418,36 +534,27 @@ const OperationItemWrapper = memo(
     errors,
     customSuffix,
     className,
-    selectable = true,
-    greyedOut = false,
+    Tooltip,
+    size = 'default',
     ...props
-  }: React.HTMLAttributes<HTMLButtonElement> & {
+  }: Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
     icon: CustomIconName
     visibilityToggle?: VisibilityToggleProps
     customSuffix?: React.JSX.Element
     menuItems?: ComponentProps<typeof ContextMenu>['items']
     errors?: Diagnostic[]
-    selectable?: boolean
-    greyedOut?: boolean
+    onContextMenu?: (e: MouseEvent) => void
+    Tooltip?: ReactNode
+    isSelected?: boolean
+    size?: 'default' | 'sm'
   } & OpValueProps) => {
-    const menuRef = useRef<HTMLDivElement>(null)
-
     return (
-      <div
-        ref={menuRef}
-        className={`flex select-none items-center group/item my-0 py-0.5 px-1 ${selectable ? 'focus-within:bg-primary/25 hover:bg-2 hover:focus-within:bg-primary/25' : ''} ${greyedOut ? 'opacity-50 cursor-not-allowed' : ''}`}
-        data-testid="feature-tree-operation-item"
-      >
-        <button
-          {...props}
-          className={`reset min-w-[0px] py-1 flex-1 flex items-center gap-2 text-left text-base !border-transparent ${className}`}
-        >
-          <CustomIcon
-            name={icon}
-            className="w-6 h-6 block self-start"
-            aria-hidden
-          />
-          <div className="text-sm flex-1 flex gap-x-2 overflow-x-hidden items-baseline align-baseline">
+      <RowItemWithIconMenuAndToggle
+        {...props}
+        icon={icon}
+        size={size}
+        LabelSecondary={
+          <>
             {variableName && valueDetail ? (
               <>
                 <span className="text-sm">{variableName}</span>
@@ -458,35 +565,23 @@ const OperationItemWrapper = memo(
                   {getOperationCalculatedDisplay(valueDetail.calculated)}
                 </code>
               </>
-            ) : (
-              <span className="text-sm">{variableName ?? name}</span>
-            )}
-            {customSuffix && customSuffix}
-          </div>
-          {errors && errors.length > 0 && (
+            ) : null}
+            {customSuffix ?? null}
+          </>
+        }
+        Warning={
+          errors && errors.length > 0 ? (
             <em className="text-destroy-80 text-xs">has error</em>
-          )}
-          {valueDetail || variableName ? (
-            <Tooltip
-              delay={500}
-              position="bottom-left"
-              wrapperClassName="left-0 right-0"
-              contentClassName="text-sm max-w-full"
-            >
-              <VariableTooltipContents
-                variableName={variableName}
-                valueDetail={valueDetail}
-                name={name}
-                type={type}
-              />
-            </Tooltip>
-          ) : null}
-        </button>
-        {visibilityToggle && <VisibilityToggle {...visibilityToggle} />}
-        {menuItems && (
-          <ContextMenu menuTargetElement={menuRef} items={menuItems} />
-        )}
-      </div>
+          ) : null
+        }
+        Tooltip={Tooltip}
+        Toggle={
+          visibilityToggle ? <VisibilityToggle {...visibilityToggle} /> : null
+        }
+        menuItems={menuItems}
+      >
+        {variableName ?? name}
+      </RowItemWithIconMenuAndToggle>
     )
   }
 )
@@ -520,386 +615,532 @@ function VariableTooltipContents({
 interface OperationProps {
   item: Operation
   code: string
-  send: Prop<Actor<typeof featureTreeMachine>, 'send'>
+  isStaleReference?: boolean
   sketchNoFace: boolean
+  systemDeps: SystemDeps
+  engineCommandManager: ConnectionManager
+  modelingActor: ReturnType<typeof useModelingContext>['actor']
+  onSelect: (sourceRange: SourceRange) => void
+  size?: 'default' | 'sm'
 }
 /**
  * A button with an icon, name, and context menu
  * for an operation in the feature tree.
  */
-const OperationItem = (props: OperationProps) => {
+const OperationItem = ({
+  item,
+  code,
+  isStaleReference = false,
+  sketchNoFace,
+  onSelect,
+  systemDeps,
+  modelingActor,
+  engineCommandManager,
+  size,
+}: OperationProps) => {
+  useSignals()
+  const { layout } = useApp()
+  const { kclManager, commandBarActor } = systemDeps
+  const useSketchSolveMode =
+    modelingActor.getSnapshot().context.store.useSketchSolveMode?.current
   const diagnostics = kclManager.diagnosticsSignal.value
-  const ast = kclManager.astSignal.value
+  const liveAst = kclManager.astSignal.value
+  const ast = kclManager.hasParseErrors() ? kclManager.lastGoodAst : liveAst
   const wasmInstance = use(kclManager.wasmInstancePromise)
-  const name = getOperationLabel(props.item)
+  const name = getOperationLabel(item)
+  const sourceRange =
+    'sourceRange' in item &&
+    sourceRangeToUtf16(sourceRangeFromRust(item.sourceRange), kclManager.code)
+  const isSelected = useMemo(() => {
+    if (!sourceRange) {
+      return false
+    }
+
+    return kclManager.editorState.selection.ranges.some(({ from, to }) => {
+      return isOverlap(sourceRange, topLevelRange(from, to))
+    })
+  }, [kclManager.editorState.selection, sourceRange])
   const valueDetail = useMemo(() => {
-    return getFeatureTreeValueDetail(props.item, props.code)
-  }, [props.item, props.code])
+    return getFeatureTreeValueDetail(item, code)
+  }, [item, code])
 
   const variableName = useMemo(() => {
-    return getOperationVariableName(props.item, ast, wasmInstance)
-  }, [props.item, ast, wasmInstance])
+    return getOperationVariableName(item, ast, wasmInstance)
+  }, [item, ast, wasmInstance])
 
   const errors = useMemo(() => {
+    if (isStaleReference) {
+      return []
+    }
     return diagnostics.filter(
       (diag) =>
         diag.severity === 'error' &&
-        'sourceRange' in props.item &&
-        diag.from >= toUtf16(props.item.sourceRange[0], props.code) &&
-        diag.to <= toUtf16(props.item.sourceRange[1], props.code)
+        'sourceRange' in item &&
+        diag.from >= toUtf16(item.sourceRange[0], code) &&
+        diag.to <= toUtf16(item.sourceRange[1], code)
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [diagnostics.length])
+  }, [diagnostics.length, isStaleReference])
 
-  async function selectOperation() {
-    if (props.sketchNoFace) {
-      if (isOffsetPlane(props.item)) {
-        const artifact = findOperationPlaneArtifact(
-          props.item,
-          kclManager.artifactGraph
-        )
-        const result = await selectOffsetSketchPlane(artifact, systemDeps)
-        if (err(result)) {
-          console.error(result)
+  const selectOperation = useCallback(
+    async (providedSourceRange?: SourceRange) => {
+      if (sketchNoFace) {
+        if (isOffsetPlane(item)) {
+          const artifact = findOperationPlaneArtifact(
+            item,
+            kclManager.artifactGraph
+          )
+          const result = await selectSketchPlane(
+            artifact?.id,
+            useSketchSolveMode,
+            kclManager
+          )
+          if (err(result)) {
+            console.error(result)
+          }
         }
+      } else if (providedSourceRange !== undefined) {
+        onSelect(sourceRangeFromRust(providedSourceRange))
+      } else {
+        if (item.type === 'GroupEnd') {
+          return
+        }
+        onSelect(sourceRangeFromRust(item.sourceRange))
       }
-    } else {
-      if (props.item.type === 'GroupEnd') {
-        return
-      }
-      props.send({
-        type: 'selectOperation',
-        data: {
-          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-        },
-      })
-    }
-  }
+    },
+    [sketchNoFace, onSelect, item, kclManager, useSketchSolveMode]
+  )
 
-  function enterEditFlow() {
+  const enterEditFlow = useCallback(() => {
     if (
-      props.item.type === 'StdLibCall' ||
-      props.item.type === 'VariableDeclaration' ||
-      props.item.type === 'SketchSolve'
+      item.type === 'StdLibCall' ||
+      item.type === 'VariableDeclaration' ||
+      item.type === 'SketchSolve'
     ) {
-      props.send({
-        type: 'enterEditFlow',
-        data: {
-          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-          currentOperation: props.item,
-        },
-      })
+      const artifact =
+        getArtifactFromRange(
+          item.sourceRange,
+          systemDeps.kclManager.artifactGraph
+        ) ?? undefined
+      prepareEditCommand({
+        artifactGraph: systemDeps.kclManager.artifactGraph,
+        code: systemDeps.kclManager.code,
+        commandBarActor,
+        operation: item,
+        rustContext: systemDeps.rustContext,
+        artifact,
+      }).catch((e) => toast.error(err(e) ? e.message : JSON.stringify(e)))
     }
-  }
+  }, [
+    item,
+    commandBarActor,
+    systemDeps.kclManager.artifactGraph,
+    systemDeps.kclManager.code,
+    systemDeps.rustContext,
+  ])
 
   function enterAppearanceFlow() {
-    if (
-      props.item.type === 'StdLibCall' ||
-      (props.item.type === 'GroupBegin' &&
-        props.item.group.type === 'FunctionCall')
-    ) {
-      props.send({
-        type: 'enterAppearanceFlow',
-        data: {
-          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-          currentOperation: props.item,
-        },
+    selectOperation()
+      .then(() => {
+        if (
+          item.type === 'StdLibCall' ||
+          (item.type === 'GroupBegin' && item.group.type === 'FunctionCall')
+        ) {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Appearance', groupId: 'modeling' },
+          })
+        }
       })
-    }
+      .catch((e) => toast.error(e))
   }
 
   function enterTranslateFlow() {
-    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
-      props.send({
-        type: 'enterTranslateFlow',
-        data: {
-          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-          currentOperation: props.item,
-        },
+    selectOperation()
+      .then(() => {
+        if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Translate', groupId: 'modeling' },
+          })
+        }
       })
-    }
+      .catch((e) => toast.error(e))
   }
 
   function enterRotateFlow() {
-    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
-      props.send({
-        type: 'enterRotateFlow',
-        data: {
-          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-          currentOperation: props.item,
-        },
+    selectOperation()
+      .then(() => {
+        if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Rotate', groupId: 'modeling' },
+          })
+        }
       })
-    }
+      .catch((e) => toast.error(e))
   }
 
   function enterScaleFlow() {
-    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
-      props.send({
-        type: 'enterScaleFlow',
-        data: {
-          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-          currentOperation: props.item,
-        },
+    selectOperation()
+      .then(() => {
+        if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Scale', groupId: 'modeling' },
+          })
+        }
       })
-    }
+      .catch((e) => toast.error(e))
   }
 
   function enterCloneFlow() {
-    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
-      props.send({
-        type: 'enterCloneFlow',
-        data: {
-          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-          currentOperation: props.item,
-        },
+    selectOperation()
+      .then(() => {
+        if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Clone', groupId: 'modeling' },
+          })
+        }
       })
-    }
+      .catch((e) => toast.error(e))
   }
 
   function deleteOperation() {
     if (
-      props.item.type === 'StdLibCall' ||
-      props.item.type === 'GroupBegin' ||
-      props.item.type === 'VariableDeclaration'
+      item.type === 'StdLibCall' ||
+      item.type === 'GroupBegin' ||
+      item.type === 'VariableDeclaration' ||
+      item.type === 'SketchSolve'
     ) {
-      props.send({
-        type: 'deleteOperation',
-        data: {
-          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-        },
+      const maybeArtifact =
+        getArtifactFromRange(item.sourceRange, kclManager.artifactGraph) ??
+        undefined
+      sendDeleteCommand({
+        artifact: maybeArtifact,
+        targetSourceRange: item.sourceRange,
+        systemDeps,
+      }).catch((e) => {
+        toast.error(isErr(e) ? e.message : JSON.stringify(e))
       })
     }
   }
 
   function startSketchOnOffsetPlane() {
-    if (isOffsetPlane(props.item)) {
+    if (isOffsetPlane(item)) {
       const artifact = findOperationPlaneArtifact(
-        props.item,
+        item,
         kclManager.artifactGraph
       )
       if (artifact?.id) {
-        sceneInfra.modelingSend({
+        kclManager.sceneInfra.modelingSend({
           type: 'Enter sketch',
           data: { forceNewSketch: true },
         })
 
-        void selectOffsetSketchPlane(artifact, systemDeps)
+        void selectSketchPlane(artifact.id, useSketchSolveMode, kclManager)
       }
     }
   }
 
   const menuItems = useMemo(
-    () => [
-      <ContextMenuItem
-        onClick={() => {
-          if (props.item.type === 'GroupEnd') {
-            return
-          }
-          props.send({
-            type: 'goToKclSource',
-            data: {
-              targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
-            },
-          })
-        }}
-      >
-        View KCL source code
-      </ContextMenuItem>,
-      ...(props.item.type === 'GroupBegin' &&
-      props.item.group.type === 'FunctionCall'
-        ? [
+    () =>
+      isStaleReference
+        ? []
+        : [
             <ContextMenuItem
               onClick={() => {
-                if (props.item.type !== 'GroupBegin') {
+                if (item.type === 'GroupEnd') {
                   return
                 }
-                if (props.item.group.type !== 'FunctionCall') {
-                  // TODO: Add module instance support.
-                  return
+                const l = layout.signal.value
+                if (!isCodePaneOpen(l)) {
+                  openCodePane(l, layout.set)
                 }
-                const functionRange = props.item.group.functionSourceRange
-                // For some reason, the cursor goes to the end of the source
-                // range we select.  So set the end equal to the beginning.
-                functionRange[1] = functionRange[0]
-                props.send({
-                  type: 'goToKclSource',
-                  data: {
-                    targetSourceRange: sourceRangeFromRust(functionRange),
-                  },
-                })
+                selectOperation().catch(reportRejection)
               }}
             >
-              View function definition
+              View KCL source code
             </ContextMenuItem>,
-          ]
-        : []),
-      ...(isOffsetPlane(props.item)
-        ? [
-            <ContextMenuItem onClick={startSketchOnOffsetPlane}>
-              Start Sketch
-            </ContextMenuItem>,
-          ]
-        : []),
-      ...(props.item.type === 'StdLibCall' &&
-      props.item.name === 'startSketchOn'
-        ? [
-            <ContextMenuItem
-              onClick={() => {
-                const exportDxf = async () => {
-                  if (props.item.type !== 'StdLibCall') return
-                  const result = await exportSketchToDxf(props.item, {
-                    engineCommandManager,
-                    kclManager,
-                    toast,
-                    uuidv4,
-                    base64Decode,
-                    browserSaveFile,
-                  })
-
-                  if (err(result)) {
-                    // Additional error logging for debugging purposes
-                    // Main error handling (toasts) is already done in exportSketchToDxf
-                    console.error('DXF export failed:', result.message)
-                  } else {
-                    console.log('DXF export completed successfully')
-                  }
-                }
-                void exportDxf()
-              }}
-              data-testid="context-menu-export-dxf"
-            >
-              Export to DXF
-            </ContextMenuItem>,
-          ]
-        : []),
-      ...(props.item.type === 'StdLibCall' ||
-      props.item.type === 'VariableDeclaration'
-        ? [
-            <ContextMenuItem
-              disabled={
-                !(
-                  stdLibMap[props.item.name]?.prepareToEdit ||
-                  props.item.type === 'VariableDeclaration'
-                )
-              }
-              onClick={enterEditFlow}
-              hotkey="Double click"
-            >
-              Edit
-            </ContextMenuItem>,
-          ]
-        : []),
-      ...(props.item.type === 'StdLibCall' ||
-      (props.item.type === 'GroupBegin' &&
-        props.item.group.type === 'FunctionCall')
-        ? [
-            <ContextMenuItem
-              disabled={
-                !(
-                  (props.item.type === 'GroupBegin' &&
-                    props.item.group.type === 'FunctionCall') ||
-                  (props.item.type === 'StdLibCall' &&
-                    stdLibMap[props.item.name]?.supportsAppearance)
-                )
-              }
-              onClick={enterAppearanceFlow}
-              data-testid="context-menu-set-appearance"
-            >
-              Set appearance
-            </ContextMenuItem>,
-          ]
-        : []),
-      ...(props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin'
-        ? [
-            <ContextMenuItem
-              onClick={enterTranslateFlow}
-              data-testid="context-menu-set-translate"
-              disabled={
-                props.item.type !== 'GroupBegin' &&
-                !stdLibMap[props.item.name]?.supportsTransform
-              }
-            >
-              Translate
-            </ContextMenuItem>,
-            <ContextMenuItem
-              onClick={enterRotateFlow}
-              data-testid="context-menu-set-rotate"
-              disabled={
-                props.item.type !== 'GroupBegin' &&
-                !stdLibMap[props.item.name]?.supportsTransform
-              }
-            >
-              Rotate
-            </ContextMenuItem>,
-            <ContextMenuItem
-              onClick={enterScaleFlow}
-              data-testid="context-menu-set-scale"
-              disabled={
-                props.item.type !== 'GroupBegin' &&
-                !stdLibMap[props.item.name]?.supportsTransform
-              }
-            >
-              Scale
-            </ContextMenuItem>,
-            <ContextMenuItem
-              onClick={enterCloneFlow}
-              data-testid="context-menu-clone"
-              disabled={
-                props.item.type !== 'GroupBegin' &&
-                !stdLibMap[props.item.name]?.supportsTransform
-              }
-            >
-              Clone
-            </ContextMenuItem>,
-          ]
-        : []),
-      ...(props.item.type === 'StdLibCall' ||
-      props.item.type === 'GroupBegin' ||
-      props.item.type === 'VariableDeclaration'
-        ? [
-            <ContextMenuItem
-              onClick={deleteOperation}
-              hotkey="Delete"
-              data-testid="context-menu-delete"
-            >
-              Delete
-            </ContextMenuItem>,
-          ]
-        : []),
-      ...(props.item.type === 'SketchSolve'
-        ? [
-            <ContextMenuItem onClick={enterEditFlow} hotkey="Double click">
-              Edit
-            </ContextMenuItem>,
-          ]
-        : []),
-    ],
+            ...(item.type === 'GroupBegin' && item.group.type === 'FunctionCall'
+              ? [
+                  <ContextMenuItem
+                    onClick={() => {
+                      if (item.type !== 'GroupBegin') {
+                        return
+                      }
+                      if (item.group.type !== 'FunctionCall') {
+                        // TODO: Add module instance support.
+                        return
+                      }
+                      const functionRange = item.group.functionSourceRange
+                      // For some reason, the cursor goes to the end of the source
+                      // range we select.  So set the end equal to the beginning.
+                      functionRange[1] = functionRange[0]
+                      const l = layout.signal.value
+                      if (!isCodePaneOpen(l)) {
+                        openCodePane(l, layout.set)
+                      }
+                      selectOperation(functionRange).catch(reportRejection)
+                    }}
+                  >
+                    View function definition
+                  </ContextMenuItem>,
+                ]
+              : []),
+            ...(isOffsetPlane(item)
+              ? [
+                  <ContextMenuItem onClick={startSketchOnOffsetPlane}>
+                    Start Sketch
+                  </ContextMenuItem>,
+                ]
+              : []),
+            ...(item.type === 'StdLibCall' && item.name === 'startSketchOn'
+              ? [
+                  <ContextMenuItem
+                    onClick={() => {
+                      const exportDxf = async () => {
+                        if (item.type !== 'StdLibCall') return
+                        await exportSketchToDxf(item, {
+                          engineCommandManager,
+                          kclManager,
+                          toast,
+                          uuidv4,
+                          base64Decode,
+                          browserSaveFile,
+                        })
+                      }
+                      void exportDxf()
+                    }}
+                    data-testid="context-menu-export-dxf"
+                  >
+                    Export to DXF
+                  </ContextMenuItem>,
+                ]
+              : []),
+            ...(item.type === 'StdLibCall' && item.name === 'subtract2d'
+              ? [
+                  <ContextMenuItem
+                    onClick={() => {
+                      const exportDxf = async () => {
+                        if (item.type !== 'StdLibCall') return
+                        await exportSketchToDxf(item, {
+                          engineCommandManager,
+                          kclManager,
+                          toast,
+                          uuidv4,
+                          base64Decode,
+                          browserSaveFile,
+                        })
+                      }
+                      void exportDxf()
+                    }}
+                    data-testid="context-menu-export-dxf"
+                  >
+                    Export to DXF
+                  </ContextMenuItem>,
+                ]
+              : []),
+            ...(item.type === 'StdLibCall' ||
+            item.type === 'VariableDeclaration' ||
+            item.type === 'SketchSolve'
+              ? [
+                  <ContextMenuItem
+                    disabled={
+                      item.type !== 'VariableDeclaration' &&
+                      item.type !== 'SketchSolve' &&
+                      stdLibMap[item.name]?.prepareToEdit === undefined
+                    }
+                    onClick={enterEditFlow}
+                    hotkey="Double click"
+                  >
+                    Edit
+                  </ContextMenuItem>,
+                ]
+              : []),
+            ...(item.type === 'StdLibCall' ||
+            (item.type === 'GroupBegin' && item.group.type === 'FunctionCall')
+              ? [
+                  <ContextMenuItem
+                    disabled={
+                      !(
+                        (item.type === 'GroupBegin' &&
+                          item.group.type === 'FunctionCall') ||
+                        (item.type === 'StdLibCall' &&
+                          stdLibMap[item.name]?.supportsAppearance)
+                      )
+                    }
+                    onClick={enterAppearanceFlow}
+                    data-testid="context-menu-set-appearance"
+                  >
+                    Set appearance
+                  </ContextMenuItem>,
+                ]
+              : []),
+            ...(item.type === 'StdLibCall' || item.type === 'GroupBegin'
+              ? [
+                  <ContextMenuItem
+                    onClick={enterTranslateFlow}
+                    data-testid="context-menu-set-translate"
+                    disabled={
+                      item.type !== 'GroupBegin' &&
+                      !stdLibMap[item.name]?.supportsTransform
+                    }
+                  >
+                    Translate
+                  </ContextMenuItem>,
+                  <ContextMenuItem
+                    onClick={enterRotateFlow}
+                    data-testid="context-menu-set-rotate"
+                    disabled={
+                      item.type !== 'GroupBegin' &&
+                      !stdLibMap[item.name]?.supportsTransform
+                    }
+                  >
+                    Rotate
+                  </ContextMenuItem>,
+                  <ContextMenuItem
+                    onClick={enterScaleFlow}
+                    data-testid="context-menu-set-scale"
+                    disabled={
+                      item.type !== 'GroupBegin' &&
+                      !stdLibMap[item.name]?.supportsTransform
+                    }
+                  >
+                    Scale
+                  </ContextMenuItem>,
+                  <ContextMenuItem
+                    onClick={enterCloneFlow}
+                    data-testid="context-menu-clone"
+                    disabled={
+                      item.type !== 'GroupBegin' &&
+                      !stdLibMap[item.name]?.supportsTransform
+                    }
+                  >
+                    Clone
+                  </ContextMenuItem>,
+                ]
+              : []),
+            ...(item.type === 'StdLibCall' ||
+            item.type === 'GroupBegin' ||
+            item.type === 'VariableDeclaration' ||
+            item.type === 'SketchSolve'
+              ? [
+                  <ContextMenuItem
+                    onClick={deleteOperation}
+                    hotkey="Delete"
+                    data-testid="context-menu-delete"
+                  >
+                    Delete
+                  </ContextMenuItem>,
+                ]
+              : []),
+          ],
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [props.item, props.send]
+    [item, isStaleReference, layout.signal.value]
   )
 
-  const enabled = !props.sketchNoFace || isOffsetPlane(props.item)
+  const enabled = (!sketchNoFace || isOffsetPlane(item)) && !isStaleReference
+
+  const visibilityState = resolveFeatureTreeVisibility({
+    item,
+    operations: kclManager.operations ?? [],
+    artifactGraph: kclManager.artifactGraph,
+  })
 
   return (
     <OperationItemWrapper
-      selectable={enabled}
-      icon={getOperationIcon(props.item)}
+      icon={getOperationIcon(item)}
       name={name}
-      type={props.item.type}
+      type={item.type}
       variableName={variableName}
       valueDetail={valueDetail}
+      Tooltip={
+        <Tooltip
+          delay={500}
+          position="bottom-left"
+          wrapperClassName="left-0 right-0"
+          contentClassName="text-sm max-w-full"
+        >
+          <VariableTooltipContents
+            variableName={variableName}
+            valueDetail={valueDetail}
+            name={name}
+            type={item.type}
+          />
+        </Tooltip>
+      }
       menuItems={menuItems}
-      onClick={() => {
-        void selectOperation()
-      }}
-      onDoubleClick={props.sketchNoFace ? undefined : enterEditFlow} // no double click in "Sketch no face" mode
+      onClick={
+        isStaleReference
+          ? undefined
+          : () => {
+              void selectOperation()
+            }
+      }
+      onContextMenu={
+        isStaleReference
+          ? undefined
+          : () => {
+              void selectOperation()
+            }
+      }
+      onDoubleClick={
+        sketchNoFace || isStaleReference ? undefined : enterEditFlow
+      } // no double click in "Sketch no face" mode
+      isSelected={isSelected}
       errors={errors}
-      greyedOut={!enabled}
+      disabled={!enabled}
+      size={size}
+      visibilityToggle={
+        !isStaleReference && visibilityState.canToggleVisibility
+          ? {
+              visible: visibilityState.hideOperation === undefined,
+              onVisibilityChange: () => {
+                selectOperation()
+                  .then(() => {
+                    if (visibilityState.hideOperation === undefined) {
+                      onHide({
+                        ast: kclManager.ast,
+                        artifactGraph: kclManager.artifactGraph,
+                        modelingActor,
+                      })
+                    } else if (visibilityState.targetArtifact !== undefined) {
+                      onUnhide({
+                        hideOperation: visibilityState.hideOperation,
+                        targetArtifact: visibilityState.targetArtifact,
+                        kclManager,
+                      })
+                        .then((result) => {
+                          if (err(result)) {
+                            toast.error(
+                              result.message || 'Error while unhiding.'
+                            )
+                          }
+                        })
+                        .catch((e) => {
+                          toast.error(e.message || 'Error while unhiding.')
+                        })
+                    }
+                  })
+                  .catch(reportRejection)
+              },
+            }
+          : undefined
+      }
     />
   )
 }
 
-const DefaultPlanes = () => {
+const DefaultPlanes = ({
+  systemDeps,
+  disabled = false,
+}: {
+  systemDeps: SystemDeps
+  disabled?: boolean
+}) => {
+  const { rustContext, sceneInfra, kclManager } = systemDeps
   const { state: modelingState, send } = useModelingContext()
   const sketchNoFace = modelingState.matches('Sketch no face')
 
@@ -908,8 +1149,8 @@ const DefaultPlanes = () => {
       if (sketchNoFace) {
         void selectSketchPlane(
           planeId,
-          modelingState.context.store.useNewSketchMode?.current,
-          systemDeps
+          modelingState.context.store.useSketchSolveMode?.current,
+          kclManager
         )
       } else {
         const foundDefaultPlane =
@@ -932,7 +1173,7 @@ const DefaultPlanes = () => {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [sketchNoFace, modelingState.context.store.useNewSketchMode]
+    [sketchNoFace, modelingState.context.store.useSketchSolveMode]
   )
 
   const startSketchOnDefaultPlane = useCallback(
@@ -944,11 +1185,11 @@ const DefaultPlanes = () => {
 
       void selectSketchPlane(
         planeId,
-        modelingState.context.store.useNewSketchMode?.current,
-        systemDeps
+        modelingState.context.store.useSketchSolveMode?.current,
+        kclManager
       )
     },
-    [modelingState.context.store.useNewSketchMode]
+    [modelingState.context.store.useSketchSolveMode, sceneInfra, kclManager]
   )
 
   const defaultPlanes = rustContext.defaultPlanes
@@ -987,25 +1228,34 @@ const DefaultPlanes = () => {
           customSuffix={plane.customSuffix}
           icon={'plane'}
           name={plane.name}
-          selectable={true}
-          onClick={() => onClickPlane(plane.id)}
-          menuItems={[
-            <ContextMenuItem
-              onClick={() => startSketchOnDefaultPlane(plane.id)}
-            >
-              Start Sketch
-            </ContextMenuItem>,
-          ]}
-          visibilityToggle={{
-            visible: modelingState.context.defaultPlaneVisibility[plane.key],
-            onVisibilityChange: () => {
-              send({
-                type: 'Toggle default plane visibility',
-                planeId: plane.id,
-                planeKey: plane.key,
-              })
-            },
-          }}
+          disabled={disabled}
+          onClick={disabled ? undefined : () => onClickPlane(plane.id)}
+          menuItems={
+            disabled
+              ? undefined
+              : [
+                  <ContextMenuItem
+                    onClick={() => startSketchOnDefaultPlane(plane.id)}
+                  >
+                    Start Sketch
+                  </ContextMenuItem>,
+                ]
+          }
+          visibilityToggle={
+            disabled
+              ? undefined
+              : {
+                  visible:
+                    modelingState.context.defaultPlaneVisibility[plane.key],
+                  onVisibilityChange: () => {
+                    send({
+                      type: 'Toggle default plane visibility',
+                      planeId: plane.id,
+                      planeKey: plane.key,
+                    })
+                  },
+                }
+          }
         />
       ))}
       <div className="h-px bg-chalkboard-50/20 my-2" />

@@ -27,6 +27,7 @@ import {
   isExtensionARelevantExtension,
 } from '@src/lib/paths'
 import { afterAll, expect, beforeEach, describe, it } from 'vitest'
+import type { ApiFile } from '@rust/kcl-lib/bindings/FrontendApi'
 
 let instanceInThisFile: ModuleType = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
@@ -77,6 +78,12 @@ it('formats numbers with units', () => {
   expect(formatNumberLiteral(1, 'Inch', instanceInThisFile)).toEqual('1in')
   expect(formatNumberLiteral(0.5, 'Mm', instanceInThisFile)).toEqual('0.5mm')
   expect(formatNumberLiteral(-0.5, 'Mm', instanceInThisFile)).toEqual('-0.5mm')
+  expect(formatNumberLiteral(-0.123, 'Mm', instanceInThisFile, 1)).toEqual(
+    '-0.1mm'
+  )
+  expect(formatNumberLiteral(-0.12345, 'Mm', instanceInThisFile, 4)).toEqual(
+    '-0.1235mm'
+  )
   expect(formatNumberLiteral(1, 'Unknown', instanceInThisFile)).toEqual(
     new Error('Error formatting number literal: value=1, suffix=Unknown')
   )
@@ -239,6 +246,16 @@ describe('relevantFileExtensions', () => {
       const actual = relevantFileExtensions(instanceInThisFile).some(
         (extension) => {
           return extension === 'stl'
+        }
+      )
+      expect(actual).toBe(expected)
+    })
+
+    it('contains md', () => {
+      const expected = true
+      const actual = relevantFileExtensions(instanceInThisFile).some(
+        (extension) => {
+          return extension === 'md'
         }
       )
       expect(actual).toBe(expected)
@@ -408,5 +425,32 @@ describe('isExtensionARelevantExtension', () => {
     const expected = true
     const actual = isExtensionARelevantExtension('steP', extensions)
     expect(actual).toBe(expected)
+  })
+})
+
+describe('Project file lifecycle', () => {
+  it('accepts open, update, and get requests', async () => {
+    const projectFiles: ApiFile[] = [
+      { id: 0, path: 'some/path/main.kcl', text: 'The first file!' },
+      { id: 1, path: 'some/path/to-you.kcl', text: 'The second file 🤑' },
+      { id: 2, path: 'some/path/home.kcl', text: 'The third file 🐘' },
+    ]
+
+    await rustContextInThisFile.sendOpenProject(
+      'not-important-to-test',
+      projectFiles
+    )
+    expect(await rustContextInThisFile.getProjectState()).toEqual(projectFiles)
+
+    const newText = 'Things sure are changing.'
+    await rustContextInThisFile.sendUpdateFile(1, newText)
+    expect((await rustContextInThisFile.getProjectState())[1]).toHaveProperty(
+      'text',
+      newText
+    )
+    expect(await rustContextInThisFile.getFileState(1)).toHaveProperty(
+      'text',
+      newText
+    )
   })
 })

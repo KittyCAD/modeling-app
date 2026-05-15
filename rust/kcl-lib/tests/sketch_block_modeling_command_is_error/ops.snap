@@ -25,7 +25,14 @@ description: Operations executed sketch_block_modeling_command_is_error.kcl
             "type": "ExpressionStatementExpr"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 0
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -252,6 +259,54 @@ description: Operations executed sketch_block_modeling_command_is_error.kcl
           {
             "type": "ProgramBodyItem",
             "index": 26
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "CCW",
+      "value": {
+        "type": "String",
+        "value": "ccw"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 27
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "CW",
+      "value": {
+        "type": "String",
+        "value": "cw"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"

@@ -1,47 +1,64 @@
-import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { Menu } from '@headlessui/react'
-import { ActionIcon } from '@src/components/ActionIcon'
-// Yea, feels bad, but literally every other pane is doing this.
-// TODO: Don't use CSS module for this? More generic module?
-import styles from './KclEditorMenu.module.css'
-import {
-  billingActor,
-  kclManager,
-  systemIOActor,
-  useSettings,
-  useToken,
-  useUser,
-} from '@src/lib/singletons'
+import { useSignals } from '@preact/signals-react/runtime'
+import { useEffect } from 'react'
+import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import type { IndexLoaderData } from '@src/lib/types'
-import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
-import { useLoaderData } from 'react-router-dom'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { browserSaveFile } from '@src/lib/browserSaveFile'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import { BillingTransition } from '@src/machines/billingMachine'
 import {
   MlEphantConversationToMarkdown,
   MlEphantManagerReactContext,
 } from '@src/machines/mlEphantManagerMachine'
-import { BillingTransition } from '@src/machines/billingMachine'
+// Yea, feels bad, but literally every other pane is doing this.
+// TODO: Don't use CSS module for this? More generic module?
+import styles from './KclEditorMenu.module.css'
 
 export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
-  const settings = useSettings()
-  const user = useUser()
-  const token = useToken()
+  useSignals()
+  const app = useApp()
+  const { auth, billing, settings, project, systemIOActor } = app
+  const { kclManager } = useSingletons()
+  const settingsValues = settings.useSettings()
+  const user = auth.useUser()
+  const token = auth.useToken()
   const {
     context: contextModeling,
     send: sendModeling,
     theProject,
   } = useModelingContext()
-  const { file: loaderFile } = useLoaderData<IndexLoaderData>()
+  const loaderFile = project?.executingFileEntry.value
   const mlEphantManagerActor = MlEphantManagerReactContext.useActorRef()
 
+  useEffect(() => {
+    if (!IS_STAGING_OR_DEBUG) return
+
+    app.debug.mlEphantManagerActor = mlEphantManagerActor
+
+    return () => {
+      if (app.debug.mlEphantManagerActor === mlEphantManagerActor) {
+        delete app.debug.mlEphantManagerActor
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run on mount
+  }, [])
+
   const sendBillingUpdate = () => {
-    billingActor.send({
+    billing.send({
       type: BillingTransition.Update,
       apiToken: token,
     })
   }
+
+  // During the makethon, this was set to the following:
+  // !isPlaywright() &&
+  // !location.pathname.includes(String(PATHS.ONBOARDING)) &&
+  // !billingContext.isOrg
+  const showMakeathonAnnouncement = false
 
   return (
     <LayoutPanel
@@ -66,64 +83,46 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
           sendBillingUpdate,
           theProject: theProject.current,
           loaderFile,
-          settings,
+          settings: settingsValues,
           user,
+          showMakeathonAnnouncement,
+          onMlCopilotModeChange: (mode) => {
+            settings.actor.send({
+              type: 'set.app.zookeeperMode',
+              data: { level: 'project', value: mode },
+            })
+          },
         }}
       />
     </LayoutPanel>
   )
 }
 
-export const MlEphantConversationMenu = ({
-  children,
-}: React.PropsWithChildren) => {
+export const MlEphantConversationMenu = () => {
   const mlEphantManagerActor = MlEphantManagerReactContext.useActorRef()
 
   return (
-    <Menu>
-      <div
-        className="relative"
-        role="button"
-        tabIndex={0}
-        onClick={(e) => {
-          const target = e.target as HTMLElement
-          if (e.eventPhase === 3 && target.closest('a') === null) {
-            e.stopPropagation()
-            e.preventDefault()
-          }
-        }}
-      >
-        <Menu.Button className="!p-0 !bg-transparent hover:text-primary border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 ui-open:!border-primary dark:ui-open:!border-chalkboard-70 !outline-none">
-          <ActionIcon
-            icon="three-dots"
-            className="p-1"
-            size="sm"
-            bgClassName="bg-transparent dark:bg-transparent"
-            iconClassName={'!text-chalkboard-90 dark:!text-chalkboard-40'}
-          />
-        </Menu.Button>
-        <Menu.Items className="absolute right-0 left-auto w-72 flex flex-col gap-1 divide-y divide-chalkboard-20 dark:divide-chalkboard-70 align-stretch px-0 py-1 bg-chalkboard-10 dark:bg-chalkboard-100 rounded-sm shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50">
-          <Menu.Item>
-            <button
-              onClick={() => {
-                const context = mlEphantManagerActor.getSnapshot().context
-                const md = MlEphantConversationToMarkdown(context.conversation)
-                const blob = new Blob([new TextEncoder().encode(md)], {
-                  type: 'text/markdown',
-                })
-                void browserSaveFile(
-                  blob,
-                  `${context.conversationId ?? new Date().toISOString()}.md`,
-                  ''
-                )
-              }}
-              className={styles.button}
-            >
-              <span>Export conversation</span>
-            </button>
-          </Menu.Item>
-        </Menu.Items>
-      </div>
-    </Menu>
+    <HeaderMenu>
+      <Menu.Item>
+        <button
+          type="button"
+          onClick={() => {
+            const context = mlEphantManagerActor.getSnapshot().context
+            const md = MlEphantConversationToMarkdown(context.conversation)
+            const blob = new Blob([new TextEncoder().encode(md)], {
+              type: 'text/markdown',
+            })
+            void browserSaveFile(
+              blob,
+              `${context.conversationId ?? new Date().toISOString()}.md`,
+              ''
+            )
+          }}
+          className={styles.button}
+        >
+          <span>Export conversation</span>
+        </button>
+      </Menu.Item>
+    </HeaderMenu>
   )
 }

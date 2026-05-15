@@ -3,6 +3,103 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing parametric-shelf-unit.kcl
 ---
 {
+  "__sketch_1_on": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "Custom",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      }
+    }
+  },
+  "__sketch_32_on": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "Custom",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      }
+    }
+  },
+  "__sketch_52_on": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 51,
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 50.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      }
+    }
+  },
   "availableVerticalSpace": {
     "type": "Number",
     "value": 1.93,
@@ -23,32 +120,61 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 3068,
+            "end": 3073,
+            "moduleId": 0,
+            "start": 3068,
+            "type": "TagDeclarator",
+            "value": "line1"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 3145,
+            "end": 3150,
+            "moduleId": 0,
+            "start": 3145,
+            "type": "TagDeclarator",
+            "value": "line2"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 3264,
+            "end": 3269,
+            "moduleId": 0,
+            "start": 3264,
+            "type": "TagDeclarator",
+            "value": "line3"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 3378,
+            "end": 3383,
+            "moduleId": 0,
+            "start": 3378,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
           "type": "extrudePlane"
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -61,7 +187,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               -0.48,
               0.0
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 3068,
+              "end": 3073,
+              "moduleId": 0,
+              "start": 3068,
+              "type": "TagDeclarator",
+              "value": "line1"
+            },
             "to": [
               -0.48,
               -0.37
@@ -78,7 +211,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               -0.48,
               -0.37
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 3145,
+              "end": 3150,
+              "moduleId": 0,
+              "start": 3145,
+              "type": "TagDeclarator",
+              "value": "line2"
+            },
             "to": [
               0.48,
               -0.37
@@ -95,7 +235,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               0.48,
               -0.37
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 3264,
+              "end": 3269,
+              "moduleId": 0,
+              "start": 3264,
+              "type": "TagDeclarator",
+              "value": "line3"
+            },
             "to": [
               0.48,
               0.0
@@ -112,7 +259,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               0.48,
               0.0
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 3378,
+              "end": 3383,
+              "moduleId": 0,
+              "start": 3378,
+              "type": "TagDeclarator",
+              "value": "line4"
+            },
             "to": [
               -0.48,
               0.0
@@ -124,8 +278,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XY",
-          "objectId": 0,
+          "kind": "Custom",
+          "objectId": 31,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -168,8 +322,27 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             "sourceRange": []
           }
         },
+        "tags": {
+          "line1": {
+            "type": "TagIdentifier",
+            "value": "line1"
+          },
+          "line2": {
+            "type": "TagIdentifier",
+            "value": "line2"
+          },
+          "line3": {
+            "type": "TagIdentifier",
+            "value": "line3"
+          },
+          "line4": {
+            "type": "TagIdentifier",
+            "value": "line4"
+          }
+        },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -205,165 +378,671 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
       "angle": "degrees"
     }
   },
-  "basePlane": {
-    "type": "Plane",
-    "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
-      "kind": "XY",
-      "objectId": 0,
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": "mm"
-      },
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      }
-    }
-  },
   "baseProfile": {
-    "type": "Sketch",
+    "type": "Object",
     "value": {
-      "type": "Sketch",
-      "id": "[uuid]",
-      "paths": [
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -0.48,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            -0.48,
-            -0.37
-          ],
-          "type": "ToPoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -0.48,
-            -0.37
-          ],
-          "tag": null,
-          "to": [
-            0.48,
-            -0.37
-          ],
-          "type": "ToPoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.48,
-            -0.37
-          ],
-          "tag": null,
-          "to": [
-            0.48,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.48,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            -0.48,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "m"
-        }
-      ],
-      "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
-        "kind": "XY",
-        "objectId": 0,
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": "mm"
-        },
-        "type": "plane",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
+      "line1": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 35,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": -0.48,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": -0.48,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.37,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.48,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.48,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.37,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 33,
+                    "end_object_id": 34,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 31,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line1"
+                }
+              }
+            }
+          }
         }
       },
-      "start": {
-        "from": [
-          -0.48,
-          0.0
-        ],
-        "to": [
-          -0.48,
-          0.0
-        ],
-        "units": "m",
-        "tag": null,
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": []
+      "line2": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 38,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": -0.48,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.37,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 0.48,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.37,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.48,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.37,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.48,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.37,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 36,
+                    "end_object_id": 37,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 31,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line2"
+                }
+              }
+            }
+          }
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "units": "m"
-    }
+      "line3": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 42,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": 0.48,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.37,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 0.48,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.48,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.37,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.48,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 40,
+                    "end_object_id": 41,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 31,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line3"
+                }
+              }
+            }
+          }
+        }
+      },
+      "line4": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 46,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": 0.48,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": -0.48,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.48,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.48,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 44,
+                    "end_object_id": 45,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 31,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line4"
+                }
+              }
+            }
+          }
+        }
+      },
+      "meta": {
+        "type": "Object",
+        "value": {
+          "sketch": {
+            "type": "Sketch",
+            "value": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -0.48,
+                    0.0
+                  ],
+                  "tag": {
+                    "commentStart": 3068,
+                    "end": 3073,
+                    "moduleId": 0,
+                    "start": 3068,
+                    "type": "TagDeclarator",
+                    "value": "line1"
+                  },
+                  "to": [
+                    -0.48,
+                    -0.37
+                  ],
+                  "type": "ToPoint",
+                  "units": "m"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -0.48,
+                    -0.37
+                  ],
+                  "tag": {
+                    "commentStart": 3145,
+                    "end": 3150,
+                    "moduleId": 0,
+                    "start": 3145,
+                    "type": "TagDeclarator",
+                    "value": "line2"
+                  },
+                  "to": [
+                    0.48,
+                    -0.37
+                  ],
+                  "type": "ToPoint",
+                  "units": "m"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    0.48,
+                    -0.37
+                  ],
+                  "tag": {
+                    "commentStart": 3264,
+                    "end": 3269,
+                    "moduleId": 0,
+                    "start": 3264,
+                    "type": "TagDeclarator",
+                    "value": "line3"
+                  },
+                  "to": [
+                    0.48,
+                    0.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "m"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    0.48,
+                    0.0
+                  ],
+                  "tag": {
+                    "commentStart": 3378,
+                    "end": 3383,
+                    "moduleId": 0,
+                    "start": 3378,
+                    "type": "TagDeclarator",
+                    "value": "line4"
+                  },
+                  "to": [
+                    -0.48,
+                    0.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "m"
+                }
+              ],
+              "on": {
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 31,
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": "mm"
+                },
+                "type": "plane",
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
+                  "units": null
+                }
+              },
+              "start": {
+                "from": [
+                  -0.48,
+                  0.0
+                ],
+                "to": [
+                  -0.48,
+                  0.0
+                ],
+                "units": "m",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "tags": {
+                "line1": {
+                  "type": "TagIdentifier",
+                  "value": "line1"
+                },
+                "line2": {
+                  "type": "TagIdentifier",
+                  "value": "line2"
+                },
+                "line3": {
+                  "type": "TagIdentifier",
+                  "value": "line3"
+                },
+                "line4": {
+                  "type": "TagIdentifier",
+                  "value": "line4"
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "m",
+              "isClosed": "implicitly"
+            }
+          }
+        },
+        "constrainable": false
+      }
+    },
+    "constrainable": false
   },
   "baseWidth": {
     "type": "Number",
@@ -385,32 +1064,61 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 3857,
+            "end": 3862,
+            "moduleId": 0,
+            "start": 3857,
+            "type": "TagDeclarator",
+            "value": "line1"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 3933,
+            "end": 3938,
+            "moduleId": 0,
+            "start": 3933,
+            "type": "TagDeclarator",
+            "value": "line2"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 4050,
+            "end": 4055,
+            "moduleId": 0,
+            "start": 4050,
+            "type": "TagDeclarator",
+            "value": "line3"
+          },
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [],
-          "tag": null,
+          "tag": {
+            "commentStart": 4163,
+            "end": 4168,
+            "moduleId": 0,
+            "start": 4163,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
           "type": "extrudePlane"
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -423,7 +1131,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               -0.48,
               0.0
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 3857,
+              "end": 3862,
+              "moduleId": 0,
+              "start": 3857,
+              "type": "TagDeclarator",
+              "value": "line1"
+            },
             "to": [
               -0.48,
               -0.4
@@ -440,7 +1155,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               -0.48,
               -0.4
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 3933,
+              "end": 3938,
+              "moduleId": 0,
+              "start": 3933,
+              "type": "TagDeclarator",
+              "value": "line2"
+            },
             "to": [
               0.48,
               -0.4
@@ -457,7 +1179,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               0.48,
               -0.4
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 4050,
+              "end": 4055,
+              "moduleId": 0,
+              "start": 4050,
+              "type": "TagDeclarator",
+              "value": "line3"
+            },
             "to": [
               0.48,
               0.0
@@ -474,7 +1203,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               0.48,
               0.0
             ],
-            "tag": null,
+            "tag": {
+              "commentStart": 4163,
+              "end": 4168,
+              "moduleId": 0,
+              "start": 4163,
+              "type": "TagDeclarator",
+              "value": "line4"
+            },
             "to": [
               -0.48,
               0.0
@@ -487,7 +1223,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "kind": "Custom",
-          "objectId": 1,
+          "objectId": 51,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -530,8 +1266,27 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             "sourceRange": []
           }
         },
+        "tags": {
+          "line1": {
+            "type": "TagIdentifier",
+            "value": "line1"
+          },
+          "line2": {
+            "type": "TagIdentifier",
+            "value": "line2"
+          },
+          "line3": {
+            "type": "TagIdentifier",
+            "value": "line3"
+          },
+          "line4": {
+            "type": "TagIdentifier",
+            "value": "line4"
+          }
+        },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
         "units": "m"
       },
       "startCapId": "[uuid]",
@@ -546,7 +1301,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
       "artifactId": "[uuid]",
       "id": "[uuid]",
       "kind": "Custom",
-      "objectId": 1,
+      "objectId": 51,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -574,6 +1329,705 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     }
   },
   "firstShelfProfile": {
+    "type": "Object",
+    "value": {
+      "line1": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 55,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": -0.48,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": -0.48,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.4,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.48,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.48,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.4,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 53,
+                    "end_object_id": 54,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 51,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 50.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line1"
+                }
+              }
+            }
+          }
+        }
+      },
+      "line2": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 58,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": -0.48,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.4,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 0.48,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.4,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.48,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.4,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.48,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.4,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 56,
+                    "end_object_id": 57,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 51,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 50.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line2"
+                }
+              }
+            }
+          }
+        }
+      },
+      "line3": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 62,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": 0.48,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.4,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 0.48,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.48,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.4,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.48,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 60,
+                    "end_object_id": 61,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 51,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 50.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line3"
+                }
+              }
+            }
+          }
+        }
+      },
+      "line4": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 66,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": 0.48,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": -0.48,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.48,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.48,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 64,
+                    "end_object_id": 65,
+                    "start_freedom": "Free",
+                    "end_freedom": "Free",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 51,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 50.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line4"
+                }
+              }
+            }
+          }
+        }
+      },
+      "meta": {
+        "type": "Object",
+        "value": {
+          "sketch": {
+            "type": "Sketch",
+            "value": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -0.48,
+                    0.0
+                  ],
+                  "tag": {
+                    "commentStart": 3857,
+                    "end": 3862,
+                    "moduleId": 0,
+                    "start": 3857,
+                    "type": "TagDeclarator",
+                    "value": "line1"
+                  },
+                  "to": [
+                    -0.48,
+                    -0.4
+                  ],
+                  "type": "ToPoint",
+                  "units": "m"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -0.48,
+                    -0.4
+                  ],
+                  "tag": {
+                    "commentStart": 3933,
+                    "end": 3938,
+                    "moduleId": 0,
+                    "start": 3933,
+                    "type": "TagDeclarator",
+                    "value": "line2"
+                  },
+                  "to": [
+                    0.48,
+                    -0.4
+                  ],
+                  "type": "ToPoint",
+                  "units": "m"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    0.48,
+                    -0.4
+                  ],
+                  "tag": {
+                    "commentStart": 4050,
+                    "end": 4055,
+                    "moduleId": 0,
+                    "start": 4050,
+                    "type": "TagDeclarator",
+                    "value": "line3"
+                  },
+                  "to": [
+                    0.48,
+                    0.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "m"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    0.48,
+                    0.0
+                  ],
+                  "tag": {
+                    "commentStart": 4163,
+                    "end": 4168,
+                    "moduleId": 0,
+                    "start": 4163,
+                    "type": "TagDeclarator",
+                    "value": "line4"
+                  },
+                  "to": [
+                    -0.48,
+                    0.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "m"
+                }
+              ],
+              "on": {
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 51,
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 50.0,
+                  "units": "mm"
+                },
+                "type": "plane",
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
+                  "units": null
+                }
+              },
+              "start": {
+                "from": [
+                  -0.48,
+                  0.0
+                ],
+                "to": [
+                  -0.48,
+                  0.0
+                ],
+                "units": "m",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "tags": {
+                "line1": {
+                  "type": "TagIdentifier",
+                  "value": "line1"
+                },
+                "line2": {
+                  "type": "TagIdentifier",
+                  "value": "line2"
+                },
+                "line3": {
+                  "type": "TagIdentifier",
+                  "value": "line3"
+                },
+                "line4": {
+                  "type": "TagIdentifier",
+                  "value": "line4"
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "m",
+              "isClosed": "implicitly"
+            }
+          }
+        },
+        "constrainable": false
+      }
+    },
+    "constrainable": false
+  },
+  "firstShelfSketch": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 51,
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 50.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      }
+    }
+  },
+  "hidden001": {
     "type": "Sketch",
     "value": {
       "type": "Sketch",
@@ -588,10 +2042,17 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             -0.48,
             0.0
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 3068,
+            "end": 3073,
+            "moduleId": 0,
+            "start": 3068,
+            "type": "TagDeclarator",
+            "value": "line1"
+          },
           "to": [
             -0.48,
-            -0.4
+            -0.37
           ],
           "type": "ToPoint",
           "units": "m"
@@ -603,12 +2064,19 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           },
           "from": [
             -0.48,
-            -0.4
+            -0.37
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 3145,
+            "end": 3150,
+            "moduleId": 0,
+            "start": 3145,
+            "type": "TagDeclarator",
+            "value": "line2"
+          },
           "to": [
             0.48,
-            -0.4
+            -0.37
           ],
           "type": "ToPoint",
           "units": "m"
@@ -620,9 +2088,16 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           },
           "from": [
             0.48,
-            -0.4
+            -0.37
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 3264,
+            "end": 3269,
+            "moduleId": 0,
+            "start": 3264,
+            "type": "TagDeclarator",
+            "value": "line3"
+          },
           "to": [
             0.48,
             0.0
@@ -639,7 +2114,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             0.48,
             0.0
           ],
-          "tag": null,
+          "tag": {
+            "commentStart": 3378,
+            "end": 3383,
+            "moduleId": 0,
+            "start": 3378,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
           "to": [
             -0.48,
             0.0
@@ -652,7 +2134,181 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         "artifactId": "[uuid]",
         "id": "[uuid]",
         "kind": "Custom",
-        "objectId": 1,
+        "objectId": 31,
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": "mm"
+        },
+        "type": "plane",
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": null
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0,
+          "units": null
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": null
+        }
+      },
+      "start": {
+        "from": [
+          -0.48,
+          0.0
+        ],
+        "to": [
+          -0.48,
+          0.0
+        ],
+        "units": "m",
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": []
+        }
+      },
+      "tags": {
+        "line1": {
+          "type": "TagIdentifier",
+          "value": "line1"
+        },
+        "line2": {
+          "type": "TagIdentifier",
+          "value": "line2"
+        },
+        "line3": {
+          "type": "TagIdentifier",
+          "value": "line3"
+        },
+        "line4": {
+          "type": "TagIdentifier",
+          "value": "line4"
+        }
+      },
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "units": "m",
+      "isClosed": "implicitly"
+    }
+  },
+  "hidden002": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -0.48,
+            0.0
+          ],
+          "tag": {
+            "commentStart": 3857,
+            "end": 3862,
+            "moduleId": 0,
+            "start": 3857,
+            "type": "TagDeclarator",
+            "value": "line1"
+          },
+          "to": [
+            -0.48,
+            -0.4
+          ],
+          "type": "ToPoint",
+          "units": "m"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -0.48,
+            -0.4
+          ],
+          "tag": {
+            "commentStart": 3933,
+            "end": 3938,
+            "moduleId": 0,
+            "start": 3933,
+            "type": "TagDeclarator",
+            "value": "line2"
+          },
+          "to": [
+            0.48,
+            -0.4
+          ],
+          "type": "ToPoint",
+          "units": "m"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            0.48,
+            -0.4
+          ],
+          "tag": {
+            "commentStart": 4050,
+            "end": 4055,
+            "moduleId": 0,
+            "start": 4050,
+            "type": "TagDeclarator",
+            "value": "line3"
+          },
+          "to": [
+            0.48,
+            0.0
+          ],
+          "type": "ToPoint",
+          "units": "m"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            0.48,
+            0.0
+          ],
+          "tag": {
+            "commentStart": 4163,
+            "end": 4168,
+            "moduleId": 0,
+            "start": 4163,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
+          "to": [
+            -0.48,
+            0.0
+          ],
+          "type": "ToPoint",
+          "units": "m"
+        }
+      ],
+      "on": {
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 51,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -695,43 +2351,223 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "sourceRange": []
         }
       },
+      "tags": {
+        "line1": {
+          "type": "TagIdentifier",
+          "value": "line1"
+        },
+        "line2": {
+          "type": "TagIdentifier",
+          "value": "line2"
+        },
+        "line3": {
+          "type": "TagIdentifier",
+          "value": "line3"
+        },
+        "line4": {
+          "type": "TagIdentifier",
+          "value": "line4"
+        }
+      },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "implicitly"
     }
   },
-  "firstShelfSketch": {
-    "type": "Plane",
+  "hidden003": {
+    "type": "Sketch",
     "value": {
-      "artifactId": "[uuid]",
+      "type": "Sketch",
       "id": "[uuid]",
-      "kind": "Custom",
-      "objectId": 1,
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 50.0,
-        "units": "mm"
+      "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -0.5,
+            -0.4
+          ],
+          "tag": {
+            "commentStart": 1787,
+            "end": 1792,
+            "moduleId": 0,
+            "start": 1787,
+            "type": "TagDeclarator",
+            "value": "line1"
+          },
+          "to": [
+            -0.48,
+            -0.4
+          ],
+          "type": "ToPoint",
+          "units": "m"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -0.48,
+            -0.4
+          ],
+          "tag": {
+            "commentStart": 1865,
+            "end": 1870,
+            "moduleId": 0,
+            "start": 1865,
+            "type": "TagDeclarator",
+            "value": "line2"
+          },
+          "to": [
+            -0.48,
+            0.0
+          ],
+          "type": "ToPoint",
+          "units": "m"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -0.48,
+            0.0
+          ],
+          "tag": {
+            "commentStart": 1941,
+            "end": 1946,
+            "moduleId": 0,
+            "start": 1941,
+            "type": "TagDeclarator",
+            "value": "line3"
+          },
+          "to": [
+            -0.5,
+            0.0
+          ],
+          "type": "ToPoint",
+          "units": "m"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -0.5,
+            0.0
+          ],
+          "tag": {
+            "commentStart": 2013,
+            "end": 2018,
+            "moduleId": 0,
+            "start": 2013,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
+          "to": [
+            -0.5,
+            -0.4
+          ],
+          "type": "ToPoint",
+          "units": "m"
+        }
+      ],
+      "on": {
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 0,
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": "mm"
+        },
+        "type": "plane",
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": null
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0,
+          "units": null
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": null
+        }
       },
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
+      "start": {
+        "from": [
+          -0.5,
+          -0.4
+        ],
+        "to": [
+          -0.5,
+          -0.4
+        ],
+        "units": "m",
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": []
+        }
       },
-      "yAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
+      "tags": {
+        "line1": {
+          "type": "TagIdentifier",
+          "value": "line1"
+        },
+        "line2": {
+          "type": "TagIdentifier",
+          "value": "line2"
+        },
+        "line3": {
+          "type": "TagIdentifier",
+          "value": "line3"
+        },
+        "line4": {
+          "type": "TagIdentifier",
+          "value": "line4"
+        }
       },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      }
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "units": "m",
+      "isClosed": "implicitly"
     }
+  },
+  "line1": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line1"
+  },
+  "line2": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line2"
+  },
+  "line3": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line3"
+  },
+  "line4": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "line4"
   },
   "panelThickness": {
     "type": "Number",
@@ -740,6 +2576,354 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
       "type": "Default",
       "len": "m",
       "angle": "degrees"
+    }
+  },
+  "region001": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -0.48,
+            0.0
+          ],
+          "tag": {
+            "commentStart": 3068,
+            "end": 3073,
+            "moduleId": 0,
+            "start": 3068,
+            "type": "TagDeclarator",
+            "value": "line1"
+          },
+          "to": [
+            -0.48,
+            -0.37
+          ],
+          "type": "ToPoint",
+          "units": "m"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -0.48,
+            -0.37
+          ],
+          "tag": {
+            "commentStart": 3145,
+            "end": 3150,
+            "moduleId": 0,
+            "start": 3145,
+            "type": "TagDeclarator",
+            "value": "line2"
+          },
+          "to": [
+            0.48,
+            -0.37
+          ],
+          "type": "ToPoint",
+          "units": "m"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            0.48,
+            -0.37
+          ],
+          "tag": {
+            "commentStart": 3264,
+            "end": 3269,
+            "moduleId": 0,
+            "start": 3264,
+            "type": "TagDeclarator",
+            "value": "line3"
+          },
+          "to": [
+            0.48,
+            0.0
+          ],
+          "type": "ToPoint",
+          "units": "m"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            0.48,
+            0.0
+          ],
+          "tag": {
+            "commentStart": 3378,
+            "end": 3383,
+            "moduleId": 0,
+            "start": 3378,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
+          "to": [
+            -0.48,
+            0.0
+          ],
+          "type": "ToPoint",
+          "units": "m"
+        }
+      ],
+      "on": {
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 31,
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": "mm"
+        },
+        "type": "plane",
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": null
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0,
+          "units": null
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": null
+        }
+      },
+      "start": {
+        "from": [
+          -0.48,
+          0.0
+        ],
+        "to": [
+          -0.48,
+          0.0
+        ],
+        "units": "m",
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": []
+        }
+      },
+      "tags": {
+        "line1": {
+          "type": "TagIdentifier",
+          "value": "line1"
+        },
+        "line2": {
+          "type": "TagIdentifier",
+          "value": "line2"
+        },
+        "line3": {
+          "type": "TagIdentifier",
+          "value": "line3"
+        },
+        "line4": {
+          "type": "TagIdentifier",
+          "value": "line4"
+        }
+      },
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
+      "units": "m"
+    }
+  },
+  "region002": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -0.48,
+            0.0
+          ],
+          "tag": {
+            "commentStart": 3857,
+            "end": 3862,
+            "moduleId": 0,
+            "start": 3857,
+            "type": "TagDeclarator",
+            "value": "line1"
+          },
+          "to": [
+            -0.48,
+            -0.4
+          ],
+          "type": "ToPoint",
+          "units": "m"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -0.48,
+            -0.4
+          ],
+          "tag": {
+            "commentStart": 3933,
+            "end": 3938,
+            "moduleId": 0,
+            "start": 3933,
+            "type": "TagDeclarator",
+            "value": "line2"
+          },
+          "to": [
+            0.48,
+            -0.4
+          ],
+          "type": "ToPoint",
+          "units": "m"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            0.48,
+            -0.4
+          ],
+          "tag": {
+            "commentStart": 4050,
+            "end": 4055,
+            "moduleId": 0,
+            "start": 4050,
+            "type": "TagDeclarator",
+            "value": "line3"
+          },
+          "to": [
+            0.48,
+            0.0
+          ],
+          "type": "ToPoint",
+          "units": "m"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            0.48,
+            0.0
+          ],
+          "tag": {
+            "commentStart": 4163,
+            "end": 4168,
+            "moduleId": 0,
+            "start": 4163,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
+          "to": [
+            -0.48,
+            0.0
+          ],
+          "type": "ToPoint",
+          "units": "m"
+        }
+      ],
+      "on": {
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 51,
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 50.0,
+          "units": "mm"
+        },
+        "type": "plane",
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": null
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0,
+          "units": null
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": null
+        }
+      },
+      "start": {
+        "from": [
+          -0.48,
+          0.0
+        ],
+        "to": [
+          -0.48,
+          0.0
+        ],
+        "units": "m",
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": []
+        }
+      },
+      "tags": {
+        "line1": {
+          "type": "TagIdentifier",
+          "value": "line1"
+        },
+        "line2": {
+          "type": "TagIdentifier",
+          "value": "line2"
+        },
+        "line3": {
+          "type": "TagIdentifier",
+          "value": "line3"
+        },
+        "line4": {
+          "type": "TagIdentifier",
+          "value": "line4"
+        }
+      },
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
+      "units": "m"
     }
   },
   "shelfBoardCount": {
@@ -810,32 +2994,61 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 3857,
+                "end": 3862,
+                "moduleId": 0,
+                "start": 3857,
+                "type": "TagDeclarator",
+                "value": "line1"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 3933,
+                "end": 3938,
+                "moduleId": 0,
+                "start": 3933,
+                "type": "TagDeclarator",
+                "value": "line2"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 4050,
+                "end": 4055,
+                "moduleId": 0,
+                "start": 4050,
+                "type": "TagDeclarator",
+                "value": "line3"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 4163,
+                "end": 4168,
+                "moduleId": 0,
+                "start": 4163,
+                "type": "TagDeclarator",
+                "value": "line4"
+              },
               "type": "extrudePlane"
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -848,7 +3061,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   -0.48,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 3857,
+                  "end": 3862,
+                  "moduleId": 0,
+                  "start": 3857,
+                  "type": "TagDeclarator",
+                  "value": "line1"
+                },
                 "to": [
                   -0.48,
                   -0.4
@@ -865,7 +3085,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   -0.48,
                   -0.4
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 3933,
+                  "end": 3938,
+                  "moduleId": 0,
+                  "start": 3933,
+                  "type": "TagDeclarator",
+                  "value": "line2"
+                },
                 "to": [
                   0.48,
                   -0.4
@@ -882,7 +3109,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   0.48,
                   -0.4
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 4050,
+                  "end": 4055,
+                  "moduleId": 0,
+                  "start": 4050,
+                  "type": "TagDeclarator",
+                  "value": "line3"
+                },
                 "to": [
                   0.48,
                   0.0
@@ -899,7 +3133,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   0.48,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 4163,
+                  "end": 4168,
+                  "moduleId": 0,
+                  "start": 4163,
+                  "type": "TagDeclarator",
+                  "value": "line4"
+                },
                 "to": [
                   -0.48,
                   0.0
@@ -912,7 +3153,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "Custom",
-              "objectId": 1,
+              "objectId": 51,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -955,8 +3196,27 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 "sourceRange": []
               }
             },
+            "tags": {
+              "line1": {
+                "type": "TagIdentifier",
+                "value": "line1"
+              },
+              "line2": {
+                "type": "TagIdentifier",
+                "value": "line2"
+              },
+              "line3": {
+                "type": "TagIdentifier",
+                "value": "line3"
+              },
+              "line4": {
+                "type": "TagIdentifier",
+                "value": "line4"
+              }
+            },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -976,32 +3236,61 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 3857,
+                "end": 3862,
+                "moduleId": 0,
+                "start": 3857,
+                "type": "TagDeclarator",
+                "value": "line1"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 3933,
+                "end": 3938,
+                "moduleId": 0,
+                "start": 3933,
+                "type": "TagDeclarator",
+                "value": "line2"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 4050,
+                "end": 4055,
+                "moduleId": 0,
+                "start": 4050,
+                "type": "TagDeclarator",
+                "value": "line3"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 4163,
+                "end": 4168,
+                "moduleId": 0,
+                "start": 4163,
+                "type": "TagDeclarator",
+                "value": "line4"
+              },
               "type": "extrudePlane"
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1014,7 +3303,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   -0.48,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 3857,
+                  "end": 3862,
+                  "moduleId": 0,
+                  "start": 3857,
+                  "type": "TagDeclarator",
+                  "value": "line1"
+                },
                 "to": [
                   -0.48,
                   -0.4
@@ -1031,7 +3327,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   -0.48,
                   -0.4
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 3933,
+                  "end": 3938,
+                  "moduleId": 0,
+                  "start": 3933,
+                  "type": "TagDeclarator",
+                  "value": "line2"
+                },
                 "to": [
                   0.48,
                   -0.4
@@ -1048,7 +3351,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   0.48,
                   -0.4
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 4050,
+                  "end": 4055,
+                  "moduleId": 0,
+                  "start": 4050,
+                  "type": "TagDeclarator",
+                  "value": "line3"
+                },
                 "to": [
                   0.48,
                   0.0
@@ -1065,7 +3375,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   0.48,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 4163,
+                  "end": 4168,
+                  "moduleId": 0,
+                  "start": 4163,
+                  "type": "TagDeclarator",
+                  "value": "line4"
+                },
                 "to": [
                   -0.48,
                   0.0
@@ -1078,7 +3395,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "Custom",
-              "objectId": 1,
+              "objectId": 51,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1121,8 +3438,27 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 "sourceRange": []
               }
             },
+            "tags": {
+              "line1": {
+                "type": "TagIdentifier",
+                "value": "line1"
+              },
+              "line2": {
+                "type": "TagIdentifier",
+                "value": "line2"
+              },
+              "line3": {
+                "type": "TagIdentifier",
+                "value": "line3"
+              },
+              "line4": {
+                "type": "TagIdentifier",
+                "value": "line4"
+              }
+            },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -1142,32 +3478,61 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 3857,
+                "end": 3862,
+                "moduleId": 0,
+                "start": 3857,
+                "type": "TagDeclarator",
+                "value": "line1"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 3933,
+                "end": 3938,
+                "moduleId": 0,
+                "start": 3933,
+                "type": "TagDeclarator",
+                "value": "line2"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 4050,
+                "end": 4055,
+                "moduleId": 0,
+                "start": 4050,
+                "type": "TagDeclarator",
+                "value": "line3"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 4163,
+                "end": 4168,
+                "moduleId": 0,
+                "start": 4163,
+                "type": "TagDeclarator",
+                "value": "line4"
+              },
               "type": "extrudePlane"
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1180,7 +3545,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   -0.48,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 3857,
+                  "end": 3862,
+                  "moduleId": 0,
+                  "start": 3857,
+                  "type": "TagDeclarator",
+                  "value": "line1"
+                },
                 "to": [
                   -0.48,
                   -0.4
@@ -1197,7 +3569,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   -0.48,
                   -0.4
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 3933,
+                  "end": 3938,
+                  "moduleId": 0,
+                  "start": 3933,
+                  "type": "TagDeclarator",
+                  "value": "line2"
+                },
                 "to": [
                   0.48,
                   -0.4
@@ -1214,7 +3593,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   0.48,
                   -0.4
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 4050,
+                  "end": 4055,
+                  "moduleId": 0,
+                  "start": 4050,
+                  "type": "TagDeclarator",
+                  "value": "line3"
+                },
                 "to": [
                   0.48,
                   0.0
@@ -1231,7 +3617,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   0.48,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 4163,
+                  "end": 4168,
+                  "moduleId": 0,
+                  "start": 4163,
+                  "type": "TagDeclarator",
+                  "value": "line4"
+                },
                 "to": [
                   -0.48,
                   0.0
@@ -1244,7 +3637,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "Custom",
-              "objectId": 1,
+              "objectId": 51,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1287,8 +3680,27 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 "sourceRange": []
               }
             },
+            "tags": {
+              "line1": {
+                "type": "TagIdentifier",
+                "value": "line1"
+              },
+              "line2": {
+                "type": "TagIdentifier",
+                "value": "line2"
+              },
+              "line3": {
+                "type": "TagIdentifier",
+                "value": "line3"
+              },
+              "line4": {
+                "type": "TagIdentifier",
+                "value": "line4"
+              }
+            },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -1308,32 +3720,61 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 3857,
+                "end": 3862,
+                "moduleId": 0,
+                "start": 3857,
+                "type": "TagDeclarator",
+                "value": "line1"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 3933,
+                "end": 3938,
+                "moduleId": 0,
+                "start": 3933,
+                "type": "TagDeclarator",
+                "value": "line2"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 4050,
+                "end": 4055,
+                "moduleId": 0,
+                "start": 4050,
+                "type": "TagDeclarator",
+                "value": "line3"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 4163,
+                "end": 4168,
+                "moduleId": 0,
+                "start": 4163,
+                "type": "TagDeclarator",
+                "value": "line4"
+              },
               "type": "extrudePlane"
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1346,7 +3787,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   -0.48,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 3857,
+                  "end": 3862,
+                  "moduleId": 0,
+                  "start": 3857,
+                  "type": "TagDeclarator",
+                  "value": "line1"
+                },
                 "to": [
                   -0.48,
                   -0.4
@@ -1363,7 +3811,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   -0.48,
                   -0.4
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 3933,
+                  "end": 3938,
+                  "moduleId": 0,
+                  "start": 3933,
+                  "type": "TagDeclarator",
+                  "value": "line2"
+                },
                 "to": [
                   0.48,
                   -0.4
@@ -1380,7 +3835,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   0.48,
                   -0.4
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 4050,
+                  "end": 4055,
+                  "moduleId": 0,
+                  "start": 4050,
+                  "type": "TagDeclarator",
+                  "value": "line3"
+                },
                 "to": [
                   0.48,
                   0.0
@@ -1397,7 +3859,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   0.48,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 4163,
+                  "end": 4168,
+                  "moduleId": 0,
+                  "start": 4163,
+                  "type": "TagDeclarator",
+                  "value": "line4"
+                },
                 "to": [
                   -0.48,
                   0.0
@@ -1410,7 +3879,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "Custom",
-              "objectId": 1,
+              "objectId": 51,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1453,8 +3922,27 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 "sourceRange": []
               }
             },
+            "tags": {
+              "line1": {
+                "type": "TagIdentifier",
+                "value": "line1"
+              },
+              "line2": {
+                "type": "TagIdentifier",
+                "value": "line2"
+              },
+              "line3": {
+                "type": "TagIdentifier",
+                "value": "line3"
+              },
+              "line4": {
+                "type": "TagIdentifier",
+                "value": "line4"
+              }
+            },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -1474,32 +3962,61 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 3857,
+                "end": 3862,
+                "moduleId": 0,
+                "start": 3857,
+                "type": "TagDeclarator",
+                "value": "line1"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 3933,
+                "end": 3938,
+                "moduleId": 0,
+                "start": 3933,
+                "type": "TagDeclarator",
+                "value": "line2"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 4050,
+                "end": 4055,
+                "moduleId": 0,
+                "start": 4050,
+                "type": "TagDeclarator",
+                "value": "line3"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 4163,
+                "end": 4168,
+                "moduleId": 0,
+                "start": 4163,
+                "type": "TagDeclarator",
+                "value": "line4"
+              },
               "type": "extrudePlane"
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1512,7 +4029,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   -0.48,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 3857,
+                  "end": 3862,
+                  "moduleId": 0,
+                  "start": 3857,
+                  "type": "TagDeclarator",
+                  "value": "line1"
+                },
                 "to": [
                   -0.48,
                   -0.4
@@ -1529,7 +4053,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   -0.48,
                   -0.4
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 3933,
+                  "end": 3938,
+                  "moduleId": 0,
+                  "start": 3933,
+                  "type": "TagDeclarator",
+                  "value": "line2"
+                },
                 "to": [
                   0.48,
                   -0.4
@@ -1546,7 +4077,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   0.48,
                   -0.4
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 4050,
+                  "end": 4055,
+                  "moduleId": 0,
+                  "start": 4050,
+                  "type": "TagDeclarator",
+                  "value": "line3"
+                },
                 "to": [
                   0.48,
                   0.0
@@ -1563,7 +4101,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   0.48,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 4163,
+                  "end": 4168,
+                  "moduleId": 0,
+                  "start": 4163,
+                  "type": "TagDeclarator",
+                  "value": "line4"
+                },
                 "to": [
                   -0.48,
                   0.0
@@ -1576,7 +4121,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "Custom",
-              "objectId": 1,
+              "objectId": 51,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1619,8 +4164,27 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 "sourceRange": []
               }
             },
+            "tags": {
+              "line1": {
+                "type": "TagIdentifier",
+                "value": "line1"
+              },
+              "line2": {
+                "type": "TagIdentifier",
+                "value": "line2"
+              },
+              "line3": {
+                "type": "TagIdentifier",
+                "value": "line3"
+              },
+              "line4": {
+                "type": "TagIdentifier",
+                "value": "line4"
+              }
+            },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -1640,32 +4204,61 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 3857,
+                "end": 3862,
+                "moduleId": 0,
+                "start": 3857,
+                "type": "TagDeclarator",
+                "value": "line1"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 3933,
+                "end": 3938,
+                "moduleId": 0,
+                "start": 3933,
+                "type": "TagDeclarator",
+                "value": "line2"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 4050,
+                "end": 4055,
+                "moduleId": 0,
+                "start": 4050,
+                "type": "TagDeclarator",
+                "value": "line3"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 4163,
+                "end": 4168,
+                "moduleId": 0,
+                "start": 4163,
+                "type": "TagDeclarator",
+                "value": "line4"
+              },
               "type": "extrudePlane"
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1678,7 +4271,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   -0.48,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 3857,
+                  "end": 3862,
+                  "moduleId": 0,
+                  "start": 3857,
+                  "type": "TagDeclarator",
+                  "value": "line1"
+                },
                 "to": [
                   -0.48,
                   -0.4
@@ -1695,7 +4295,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   -0.48,
                   -0.4
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 3933,
+                  "end": 3938,
+                  "moduleId": 0,
+                  "start": 3933,
+                  "type": "TagDeclarator",
+                  "value": "line2"
+                },
                 "to": [
                   0.48,
                   -0.4
@@ -1712,7 +4319,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   0.48,
                   -0.4
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 4050,
+                  "end": 4055,
+                  "moduleId": 0,
+                  "start": 4050,
+                  "type": "TagDeclarator",
+                  "value": "line3"
+                },
                 "to": [
                   0.48,
                   0.0
@@ -1729,7 +4343,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   0.48,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 4163,
+                  "end": 4168,
+                  "moduleId": 0,
+                  "start": 4163,
+                  "type": "TagDeclarator",
+                  "value": "line4"
+                },
                 "to": [
                   -0.48,
                   0.0
@@ -1742,7 +4363,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "Custom",
-              "objectId": 1,
+              "objectId": 51,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1785,8 +4406,27 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 "sourceRange": []
               }
             },
+            "tags": {
+              "line1": {
+                "type": "TagIdentifier",
+                "value": "line1"
+              },
+              "line2": {
+                "type": "TagIdentifier",
+                "value": "line2"
+              },
+              "line3": {
+                "type": "TagIdentifier",
+                "value": "line3"
+              },
+              "line4": {
+                "type": "TagIdentifier",
+                "value": "line4"
+              }
+            },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -1796,6 +4436,248 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         }
       }
     ]
+  },
+  "sidePanel": {
+    "type": "Solid",
+    "value": {
+      "type": "Solid",
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1787,
+            "end": 1792,
+            "moduleId": 0,
+            "start": 1787,
+            "type": "TagDeclarator",
+            "value": "line1"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1865,
+            "end": 1870,
+            "moduleId": 0,
+            "start": 1865,
+            "type": "TagDeclarator",
+            "value": "line2"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1941,
+            "end": 1946,
+            "moduleId": 0,
+            "start": 1941,
+            "type": "TagDeclarator",
+            "value": "line3"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 2013,
+            "end": 2018,
+            "moduleId": 0,
+            "start": 2013,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
+          "type": "extrudePlane"
+        }
+      ],
+      "sketch": {
+        "creatorType": "sketch",
+        "type": "Sketch",
+        "id": "[uuid]",
+        "paths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -0.5,
+              -0.4
+            ],
+            "tag": {
+              "commentStart": 1787,
+              "end": 1792,
+              "moduleId": 0,
+              "start": 1787,
+              "type": "TagDeclarator",
+              "value": "line1"
+            },
+            "to": [
+              -0.48,
+              -0.4
+            ],
+            "type": "ToPoint",
+            "units": "m"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -0.48,
+              -0.4
+            ],
+            "tag": {
+              "commentStart": 1865,
+              "end": 1870,
+              "moduleId": 0,
+              "start": 1865,
+              "type": "TagDeclarator",
+              "value": "line2"
+            },
+            "to": [
+              -0.48,
+              0.0
+            ],
+            "type": "ToPoint",
+            "units": "m"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -0.48,
+              0.0
+            ],
+            "tag": {
+              "commentStart": 1941,
+              "end": 1946,
+              "moduleId": 0,
+              "start": 1941,
+              "type": "TagDeclarator",
+              "value": "line3"
+            },
+            "to": [
+              -0.5,
+              0.0
+            ],
+            "type": "ToPoint",
+            "units": "m"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -0.5,
+              0.0
+            ],
+            "tag": {
+              "commentStart": 2013,
+              "end": 2018,
+              "moduleId": 0,
+              "start": 2013,
+              "type": "TagDeclarator",
+              "value": "line4"
+            },
+            "to": [
+              -0.5,
+              -0.4
+            ],
+            "type": "ToPoint",
+            "units": "m"
+          }
+        ],
+        "on": {
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 0,
+          "origin": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": "mm"
+          },
+          "type": "plane",
+          "xAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0.0,
+            "y": 1.0,
+            "z": 0.0,
+            "units": null
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
+            "units": null
+          }
+        },
+        "start": {
+          "from": [
+            -0.5,
+            -0.4
+          ],
+          "to": [
+            -0.5,
+            -0.4
+          ],
+          "units": "m",
+          "tag": null,
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          }
+        },
+        "tags": {
+          "line1": {
+            "type": "TagIdentifier",
+            "value": "line1"
+          },
+          "line2": {
+            "type": "TagIdentifier",
+            "value": "line2"
+          },
+          "line3": {
+            "type": "TagIdentifier",
+            "value": "line3"
+          },
+          "line4": {
+            "type": "TagIdentifier",
+            "value": "line4"
+          }
+        },
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
+        "units": "m"
+      },
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
+      "units": "m",
+      "sectional": false
+    }
   },
   "sidePanelOffset": {
     "type": "Number",
@@ -1807,263 +4689,965 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     }
   },
   "sidePanelProfile": {
-    "type": "HomArray",
-    "value": [
-      {
-        "type": "Sketch",
+    "type": "Object",
+    "value": {
+      "line1": {
+        "type": "Segment",
         "value": {
-          "type": "Sketch",
-          "id": "[uuid]",
-          "paths": [
-            {
-              "__geoMeta": {
+          "repr": {
+            "Solved": {
+              "segment": {
                 "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -0.5,
-                0.0
-              ],
-              "tag": null,
-              "to": [
-                -0.5,
-                -0.4
-              ],
-              "type": "ToPoint",
-              "units": "m"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -0.5,
-                -0.4
-              ],
-              "tag": null,
-              "to": [
-                -0.48,
-                -0.4
-              ],
-              "type": "ToPoint",
-              "units": "m"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -0.48,
-                -0.4
-              ],
-              "tag": null,
-              "to": [
-                -0.48,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": "m"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -0.48,
-                0.0
-              ],
-              "tag": null,
-              "to": [
-                -0.5,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": "m"
+                "objectId": 4,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": -0.5,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.4,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": -0.48,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.4,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.5,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.4,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.48,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.4,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 2,
+                    "end_object_id": 3,
+                    "start_freedom": "Fixed",
+                    "end_freedom": "Fixed",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line1"
+                }
+              }
             }
-          ],
-          "on": {
-            "artifactId": "[uuid]",
-            "id": "[uuid]",
-            "kind": "XY",
-            "objectId": 0,
-            "origin": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 0.0,
-              "units": "mm"
-            },
-            "type": "plane",
-            "xAxis": {
-              "x": 1.0,
-              "y": 0.0,
-              "z": 0.0,
-              "units": null
-            },
-            "yAxis": {
-              "x": 0.0,
-              "y": 1.0,
-              "z": 0.0,
-              "units": null
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": null
-            }
-          },
-          "start": {
-            "from": [
-              -0.5,
-              0.0
-            ],
-            "to": [
-              -0.5,
-              0.0
-            ],
-            "units": "m",
-            "tag": null,
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            }
-          },
-          "artifactId": "[uuid]",
-          "originalId": "[uuid]",
-          "units": "m"
+          }
         }
       },
-      {
-        "type": "Sketch",
+      "line2": {
+        "type": "Segment",
         "value": {
-          "type": "Sketch",
-          "id": "[uuid]",
-          "paths": [
-            {
-              "__geoMeta": {
+          "repr": {
+            "Solved": {
+              "segment": {
                 "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -0.5,
-                0.0
-              ],
-              "tag": null,
-              "to": [
-                -0.5,
-                -0.4
-              ],
-              "type": "ToPoint",
-              "units": "m"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -0.5,
-                -0.4
-              ],
-              "tag": null,
-              "to": [
-                -0.48,
-                -0.4
-              ],
-              "type": "ToPoint",
-              "units": "m"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -0.48,
-                -0.4
-              ],
-              "tag": null,
-              "to": [
-                -0.48,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": "m"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -0.48,
-                0.0
-              ],
-              "tag": null,
-              "to": [
-                -0.5,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": "m"
+                "objectId": 7,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": -0.48,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.4,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": -0.48,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.48,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.4,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.48,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 5,
+                    "end_object_id": 6,
+                    "start_freedom": "Fixed",
+                    "end_freedom": "Fixed",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line2"
+                }
+              }
             }
-          ],
-          "on": {
-            "artifactId": "[uuid]",
-            "id": "[uuid]",
-            "kind": "XY",
-            "objectId": 0,
-            "origin": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 0.0,
-              "units": "mm"
-            },
-            "type": "plane",
-            "xAxis": {
-              "x": 1.0,
-              "y": 0.0,
-              "z": 0.0,
-              "units": null
-            },
-            "yAxis": {
-              "x": 0.0,
-              "y": 1.0,
-              "z": 0.0,
-              "units": null
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": null
+          }
+        }
+      },
+      "line3": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 10,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": -0.48,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": -0.5,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.48,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.5,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 8,
+                    "end_object_id": 9,
+                    "start_freedom": "Fixed",
+                    "end_freedom": "Fixed",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line3"
+                }
+              }
             }
-          },
-          "start": {
-            "from": [
-              -0.5,
-              0.0
-            ],
-            "to": [
-              -0.5,
-              0.0
-            ],
-            "units": "m",
-            "tag": null,
-            "__geoMeta": {
+          }
+        }
+      },
+      "line4": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 13,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": -0.5,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": -0.5,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.4,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.5,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.5,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.4,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 11,
+                    "end_object_id": 12,
+                    "start_freedom": "Fixed",
+                    "end_freedom": "Fixed",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line4"
+                }
+              }
+            }
+          }
+        }
+      },
+      "line5": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 24,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": -0.48,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.48,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      },
+                      "construction": true
+                    },
+                    "start_object_id": 22,
+                    "end_object_id": 23,
+                    "start_freedom": "Fixed",
+                    "end_freedom": "Fixed",
+                    "construction": true
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 0,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "line5"
+                }
+              }
+            }
+          }
+        }
+      },
+      "meta": {
+        "type": "Object",
+        "value": {
+          "sketch": {
+            "type": "Sketch",
+            "value": {
+              "type": "Sketch",
               "id": "[uuid]",
-              "sourceRange": []
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -0.5,
+                    -0.4
+                  ],
+                  "tag": {
+                    "commentStart": 1787,
+                    "end": 1792,
+                    "moduleId": 0,
+                    "start": 1787,
+                    "type": "TagDeclarator",
+                    "value": "line1"
+                  },
+                  "to": [
+                    -0.48,
+                    -0.4
+                  ],
+                  "type": "ToPoint",
+                  "units": "m"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -0.48,
+                    -0.4
+                  ],
+                  "tag": {
+                    "commentStart": 1865,
+                    "end": 1870,
+                    "moduleId": 0,
+                    "start": 1865,
+                    "type": "TagDeclarator",
+                    "value": "line2"
+                  },
+                  "to": [
+                    -0.48,
+                    0.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "m"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -0.48,
+                    0.0
+                  ],
+                  "tag": {
+                    "commentStart": 1941,
+                    "end": 1946,
+                    "moduleId": 0,
+                    "start": 1941,
+                    "type": "TagDeclarator",
+                    "value": "line3"
+                  },
+                  "to": [
+                    -0.5,
+                    0.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "m"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -0.5,
+                    0.0
+                  ],
+                  "tag": {
+                    "commentStart": 2013,
+                    "end": 2018,
+                    "moduleId": 0,
+                    "start": 2013,
+                    "type": "TagDeclarator",
+                    "value": "line4"
+                  },
+                  "to": [
+                    -0.5,
+                    -0.4
+                  ],
+                  "type": "ToPoint",
+                  "units": "m"
+                }
+              ],
+              "on": {
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 0,
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": "mm"
+                },
+                "type": "plane",
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
+                  "units": null
+                }
+              },
+              "start": {
+                "from": [
+                  -0.5,
+                  -0.4
+                ],
+                "to": [
+                  -0.5,
+                  -0.4
+                ],
+                "units": "m",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "tags": {
+                "line1": {
+                  "type": "TagIdentifier",
+                  "value": "line1"
+                },
+                "line2": {
+                  "type": "TagIdentifier",
+                  "value": "line2"
+                },
+                "line3": {
+                  "type": "TagIdentifier",
+                  "value": "line3"
+                },
+                "line4": {
+                  "type": "TagIdentifier",
+                  "value": "line4"
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "m",
+              "isClosed": "implicitly"
             }
+          }
+        },
+        "constrainable": false
+      }
+    },
+    "constrainable": false
+  },
+  "sidePanelRegion": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
           },
-          "artifactId": "[uuid]",
-          "originalId": "[uuid]",
+          "from": [
+            -0.5,
+            -0.4
+          ],
+          "tag": {
+            "commentStart": 1787,
+            "end": 1792,
+            "moduleId": 0,
+            "start": 1787,
+            "type": "TagDeclarator",
+            "value": "line1"
+          },
+          "to": [
+            -0.48,
+            -0.4
+          ],
+          "type": "ToPoint",
+          "units": "m"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -0.48,
+            -0.4
+          ],
+          "tag": {
+            "commentStart": 1865,
+            "end": 1870,
+            "moduleId": 0,
+            "start": 1865,
+            "type": "TagDeclarator",
+            "value": "line2"
+          },
+          "to": [
+            -0.48,
+            0.0
+          ],
+          "type": "ToPoint",
+          "units": "m"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -0.48,
+            0.0
+          ],
+          "tag": {
+            "commentStart": 1941,
+            "end": 1946,
+            "moduleId": 0,
+            "start": 1941,
+            "type": "TagDeclarator",
+            "value": "line3"
+          },
+          "to": [
+            -0.5,
+            0.0
+          ],
+          "type": "ToPoint",
+          "units": "m"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -0.5,
+            0.0
+          ],
+          "tag": {
+            "commentStart": 2013,
+            "end": 2018,
+            "moduleId": 0,
+            "start": 2013,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
+          "to": [
+            -0.5,
+            -0.4
+          ],
+          "type": "ToPoint",
           "units": "m"
         }
-      }
-    ]
+      ],
+      "on": {
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 0,
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": "mm"
+        },
+        "type": "plane",
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": null
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0,
+          "units": null
+        },
+        "zAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": null
+        }
+      },
+      "start": {
+        "from": [
+          -0.5,
+          -0.4
+        ],
+        "to": [
+          -0.5,
+          -0.4
+        ],
+        "units": "m",
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": []
+        }
+      },
+      "tags": {
+        "line1": {
+          "type": "TagIdentifier",
+          "value": "line1"
+        },
+        "line2": {
+          "type": "TagIdentifier",
+          "value": "line2"
+        },
+        "line3": {
+          "type": "TagIdentifier",
+          "value": "line3"
+        },
+        "line4": {
+          "type": "TagIdentifier",
+          "value": "line4"
+        }
+      },
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
+      "units": "m"
+    }
   },
   "sidePanels": {
     "type": "HomArray",
@@ -2079,32 +5663,61 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 1787,
+                "end": 1792,
+                "moduleId": 0,
+                "start": 1787,
+                "type": "TagDeclarator",
+                "value": "line1"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 1865,
+                "end": 1870,
+                "moduleId": 0,
+                "start": 1865,
+                "type": "TagDeclarator",
+                "value": "line2"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 1941,
+                "end": 1946,
+                "moduleId": 0,
+                "start": 1941,
+                "type": "TagDeclarator",
+                "value": "line3"
+              },
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 2013,
+                "end": 2018,
+                "moduleId": 0,
+                "start": 2013,
+                "type": "TagDeclarator",
+                "value": "line4"
+              },
               "type": "extrudePlane"
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2115,26 +5728,16 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 },
                 "from": [
                   -0.5,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -0.5,
                   -0.4
                 ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
+                "tag": {
+                  "commentStart": 1787,
+                  "end": 1792,
+                  "moduleId": 0,
+                  "start": 1787,
+                  "type": "TagDeclarator",
+                  "value": "line1"
                 },
-                "from": [
-                  -0.5,
-                  -0.4
-                ],
-                "tag": null,
                 "to": [
                   -0.48,
                   -0.4
@@ -2151,7 +5754,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   -0.48,
                   -0.4
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 1865,
+                  "end": 1870,
+                  "moduleId": 0,
+                  "start": 1865,
+                  "type": "TagDeclarator",
+                  "value": "line2"
+                },
                 "to": [
                   -0.48,
                   0.0
@@ -2168,10 +5778,41 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   -0.48,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 1941,
+                  "end": 1946,
+                  "moduleId": 0,
+                  "start": 1941,
+                  "type": "TagDeclarator",
+                  "value": "line3"
+                },
                 "to": [
                   -0.5,
                   0.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.5,
+                  0.0
+                ],
+                "tag": {
+                  "commentStart": 2013,
+                  "end": 2018,
+                  "moduleId": 0,
+                  "start": 2013,
+                  "type": "TagDeclarator",
+                  "value": "line4"
+                },
+                "to": [
+                  -0.5,
+                  -0.4
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -2180,7 +5821,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
+              "kind": "Custom",
               "objectId": 0,
               "origin": {
                 "x": 0.0,
@@ -2211,11 +5852,11 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             "start": {
               "from": [
                 -0.5,
-                0.0
+                -0.4
               ],
               "to": [
                 -0.5,
-                0.0
+                -0.4
               ],
               "units": "m",
               "tag": null,
@@ -2224,8 +5865,27 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 "sourceRange": []
               }
             },
+            "tags": {
+              "line1": {
+                "type": "TagIdentifier",
+                "value": "line1"
+              },
+              "line2": {
+                "type": "TagIdentifier",
+                "value": "line2"
+              },
+              "line3": {
+                "type": "TagIdentifier",
+                "value": "line3"
+              },
+              "line4": {
+                "type": "TagIdentifier",
+                "value": "line4"
+              }
+            },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",
@@ -2240,8 +5900,66 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 1787,
+                "end": 1792,
+                "moduleId": 0,
+                "start": 1787,
+                "type": "TagDeclarator",
+                "value": "line1"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 1865,
+                "end": 1870,
+                "moduleId": 0,
+                "start": 1865,
+                "type": "TagDeclarator",
+                "value": "line2"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 1941,
+                "end": 1946,
+                "moduleId": 0,
+                "start": 1941,
+                "type": "TagDeclarator",
+                "value": "line3"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 2013,
+                "end": 2018,
+                "moduleId": 0,
+                "start": 2013,
+                "type": "TagDeclarator",
+                "value": "line4"
+              },
+              "type": "extrudePlane"
+            }
+          ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2252,26 +5970,16 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 },
                 "from": [
                   -0.5,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -0.5,
                   -0.4
                 ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
+                "tag": {
+                  "commentStart": 1787,
+                  "end": 1792,
+                  "moduleId": 0,
+                  "start": 1787,
+                  "type": "TagDeclarator",
+                  "value": "line1"
                 },
-                "from": [
-                  -0.5,
-                  -0.4
-                ],
-                "tag": null,
                 "to": [
                   -0.48,
                   -0.4
@@ -2288,7 +5996,14 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   -0.48,
                   -0.4
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 1865,
+                  "end": 1870,
+                  "moduleId": 0,
+                  "start": 1865,
+                  "type": "TagDeclarator",
+                  "value": "line2"
+                },
                 "to": [
                   -0.48,
                   0.0
@@ -2305,10 +6020,41 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   -0.48,
                   0.0
                 ],
-                "tag": null,
+                "tag": {
+                  "commentStart": 1941,
+                  "end": 1946,
+                  "moduleId": 0,
+                  "start": 1941,
+                  "type": "TagDeclarator",
+                  "value": "line3"
+                },
                 "to": [
                   -0.5,
                   0.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.5,
+                  0.0
+                ],
+                "tag": {
+                  "commentStart": 2013,
+                  "end": 2018,
+                  "moduleId": 0,
+                  "start": 2013,
+                  "type": "TagDeclarator",
+                  "value": "line4"
+                },
+                "to": [
+                  -0.5,
+                  -0.4
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -2317,7 +6063,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
+              "kind": "Custom",
               "objectId": 0,
               "origin": {
                 "x": 0.0,
@@ -2348,11 +6094,11 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             "start": {
               "from": [
                 -0.5,
-                0.0
+                -0.4
               ],
               "to": [
                 -0.5,
-                0.0
+                -0.4
               ],
               "units": "m",
               "tag": null,
@@ -2361,8 +6107,27 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 "sourceRange": []
               }
             },
+            "tags": {
+              "line1": {
+                "type": "TagIdentifier",
+                "value": "line1"
+              },
+              "line2": {
+                "type": "TagIdentifier",
+                "value": "line2"
+              },
+              "line3": {
+                "type": "TagIdentifier",
+                "value": "line3"
+              },
+              "line4": {
+                "type": "TagIdentifier",
+                "value": "line4"
+              }
+            },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "m"
           },
           "startCapId": "[uuid]",

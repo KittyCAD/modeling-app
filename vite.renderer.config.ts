@@ -4,8 +4,13 @@ import type { ConfigEnv, UserConfig } from 'vite'
 import { defineConfig } from 'vite'
 import topLevelAwait from 'vite-plugin-top-level-await'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
-import { indexHtmlCsp, pluginExposeRenderer } from './vite.base.config'
+import {
+  indexHtmlCsp,
+  isIgnoredWatchPath,
+  pluginExposeRenderer,
+} from './vite.base.config'
 
 // https://vitejs.dev/config
 export default defineConfig((env) => {
@@ -17,12 +22,20 @@ export default defineConfig((env) => {
     root,
     mode,
     base: './',
+    server: {
+      watch: {
+        ignored: isIgnoredWatchPath,
+      },
+    },
     build: {
       outDir: `.vite/renderer/${name}`,
     },
     // Needed for electron-forge (in npm run tron:start)
     optimizeDeps: { esbuildOptions: { target: 'es2022' } },
     plugins: [
+      nodePolyfills({
+        include: ['path'],
+      }),
       indexHtmlCsp(mode !== 'development'),
       pluginExposeRenderer(name),
       viteTsconfigPaths(),

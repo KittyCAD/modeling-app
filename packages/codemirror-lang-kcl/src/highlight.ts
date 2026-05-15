@@ -4,6 +4,7 @@ export const kclHighlight = styleTags({
   'import export': t.moduleKeyword,
   ImportItemAs: t.definitionKeyword,
   ImportFrom: t.moduleKeyword,
+  sketch: t.function(t.variableName),
   'fn var let const': t.definitionKeyword,
   'if else': t.controlKeyword,
   return: t.controlKeyword,

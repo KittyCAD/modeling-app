@@ -1,0 +1,18 @@
+@settings(experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  a = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+  b = circle(start = [var 13mm, var 0mm], center = [var 10mm, var 0mm])
+
+  radius(a) == 5mm
+  diameter(b) == 6mm
+
+  a.center.at[0] == 0mm
+  a.center.at[1] == 0mm
+  b.center.at[1] == 0mm
+
+  tangent([a, b])
+}
+
+assert(s.b.center.at[0], isEqualTo = 8mm, tolerance = 0.001)
+assert(s.b.center.at[1], isEqualTo = 0mm, tolerance = 0.001)

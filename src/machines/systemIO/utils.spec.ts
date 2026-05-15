@@ -1,0 +1,201 @@
+import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+import {
+  normalizeKCLFileDeletePath,
+  prepareMlEphantNewFileRequest,
+} from '@src/machines/systemIO/utils'
+import { beforeAll, describe, expect, it } from 'vitest'
+
+beforeAll(async () => {
+  await moduleFsViaModuleImport({
+    type: StorageName.NodeFS,
+    options: {},
+  })
+})
+
+describe('System IO Utils', () => {
+  it('Properly reconstructs paths from Zookeeper new file requests', () => {
+    const preparedPayload = prepareMlEphantNewFileRequest({
+      projectNameCurrentlyOpened: 'some-project',
+      fileFocusedOnInEditor: {
+        name: 'main.kcl',
+        path: '/some-project/main.kcl',
+        children: null,
+      },
+      toolOutput: {
+        status_code: 201,
+        type: 'edit_kcl_code',
+        project_name: 'some-project',
+        outputs: {
+          '7/main.kcl':
+            '@settings(defaultLengthUnit = mm)\n\nlength = 10\nwidth = 10\nheight = 10\n\nsketch = startSketchOn(XY)\n\nprofile = startProfile(sketch, at = [-length / 2, -width / 2])\n  |> xLine(length = length)\n  |> yLine(length = width)\n  |> xLine(length = -length)\n  |> close()\n\nbox = extrude(profile, length = height)\n',
+          '9/main.kcl':
+            '@settings(defaultLengthUnit = mm)\n\nlength = 10\nwidth = 10\nheight = 10\nboxColor = "#00ff00"\n\nsketch = startSketchOn(XY)\n\nprofile = startProfile(sketch, at = [-length / 2, -width / 2])\n  |> xLine(length = length)\n  |> yLine(length = width)\n  |> xLine(length = -length)\n  |> close()\n\nbox = extrude(profile, length = height)\n  |> appearance(color = boxColor)\n',
+          '4/main.kcl':
+            '@settings(defaultLengthUnit = mm)\n\nlength = 10\nwidth = 10\nheight = 10\n\nsketch = startSketchOn(XY)\n\nprofile = startProfile(sketch, at = [-length / 2, -width / 2])\n  |> xLine(length = length)\n  |> yLine(length = width)\n  |> xLine(length = -length)\n  |> close()\n\nbox = extrude(profile, length = height)\n',
+          '6/main.kcl':
+            '@settings(defaultLengthUnit = mm)\n\nlength = 10\nwidth = 10\nheight = 10\n\nsketch = startSketchOn(XY)\n\nprofile = startProfile(sketch, at = [-length / 2, -width / 2])\n  |> xLine(length = length)\n  |> yLine(length = width)\n  |> xLine(length = -length)\n  |> close()\n\nbox = extrude(profile, length = height)\n',
+          '5/main.kcl':
+            '@settings(defaultLengthUnit = mm)\n\nlength = 10\nwidth = 10\nheight = 10\n\nsketch = startSketchOn(XY)\n\nprofile = startProfile(sketch, at = [-length / 2, -width / 2])\n  |> xLine(length = length)\n  |> yLine(length = width)\n  |> xLine(length = -length)\n  |> close()\n\nbox = extrude(profile, length = height)\n',
+          'main.kcl': '',
+          '1/main.kcl':
+            '@settings(defaultLengthUnit = mm)\n\nlength = 10\nwidth = 10\nheight = 10\n\nsketch = startSketchOn(XY)\n\nprofile = startProfile(sketch, at = [-length / 2, -width / 2])\n  |> xLine(length = length)\n  |> yLine(length = width)\n  |> xLine(length = -length)\n  |> close()\n\nbox = extrude(profile, length = height)\n',
+          '8/main.kcl':
+            '@settings(defaultLengthUnit = mm)\n\nlength = 10\nwidth = 10\nheight = 10\n\nsketch = startSketchOn(XY)\n\nprofile = startProfile(sketch, at = [-length / 2, -width / 2])\n  |> xLine(length = length)\n  |> yLine(length = width)\n  |> xLine(length = -length)\n  |> close()\n\nbox = extrude(profile, length = height)\n',
+          '3/main.kcl':
+            '@settings(defaultLengthUnit = mm)\n\nlength = 10\nwidth = 10\nheight = 10\n\nsketch = startSketchOn(XY)\n\nprofile = startProfile(sketch, at = [-length / 2, -width / 2])\n  |> xLine(length = length)\n  |> yLine(length = width)\n  |> xLine(length = -length)\n  |> close()\n\nbox = extrude(profile, length = height)\n',
+          '2/main.kcl':
+            '@settings(defaultLengthUnit = mm)\n\nlength = 10\nwidth = 10\nheight = 10\n\nsketch = startSketchOn(XY)\n\nprofile = startProfile(sketch, at = [-length / 2, -width / 2])\n  |> xLine(length = length)\n  |> yLine(length = width)\n  |> xLine(length = -length)\n  |> close()\n\nbox = extrude(profile, length = height)\n',
+        },
+      },
+    })
+
+    expect(preparedPayload).toBeDefined()
+    expect(preparedPayload?.files).toEqual([
+      {
+        requestedFileName: '7/main.kcl',
+        requestedCode:
+          '@settings(defaultLengthUnit = mm)\n\nlength = 10\nwidth = 10\nheight = 10\n\nsketch = startSketchOn(XY)\n\nprofile = startProfile(sketch, at = [-length / 2, -width / 2])\n  |> xLine(length = length)\n  |> yLine(length = width)\n  |> xLine(length = -length)\n  |> close()\n\nbox = extrude(profile, length = height)\n',
+        requestedProjectName: 'some-project',
+      },
+      {
+        requestedFileName: '9/main.kcl',
+        requestedCode:
+          '@settings(defaultLengthUnit = mm)\n\nlength = 10\nwidth = 10\nheight = 10\nboxColor = "#00ff00"\n\nsketch = startSketchOn(XY)\n\nprofile = startProfile(sketch, at = [-length / 2, -width / 2])\n  |> xLine(length = length)\n  |> yLine(length = width)\n  |> xLine(length = -length)\n  |> close()\n\nbox = extrude(profile, length = height)\n  |> appearance(color = boxColor)\n',
+        requestedProjectName: 'some-project',
+      },
+      {
+        requestedFileName: '4/main.kcl',
+        requestedCode:
+          '@settings(defaultLengthUnit = mm)\n\nlength = 10\nwidth = 10\nheight = 10\n\nsketch = startSketchOn(XY)\n\nprofile = startProfile(sketch, at = [-length / 2, -width / 2])\n  |> xLine(length = length)\n  |> yLine(length = width)\n  |> xLine(length = -length)\n  |> close()\n\nbox = extrude(profile, length = height)\n',
+        requestedProjectName: 'some-project',
+      },
+      {
+        requestedFileName: '6/main.kcl',
+        requestedCode:
+          '@settings(defaultLengthUnit = mm)\n\nlength = 10\nwidth = 10\nheight = 10\n\nsketch = startSketchOn(XY)\n\nprofile = startProfile(sketch, at = [-length / 2, -width / 2])\n  |> xLine(length = length)\n  |> yLine(length = width)\n  |> xLine(length = -length)\n  |> close()\n\nbox = extrude(profile, length = height)\n',
+        requestedProjectName: 'some-project',
+      },
+      {
+        requestedFileName: '5/main.kcl',
+        requestedCode:
+          '@settings(defaultLengthUnit = mm)\n\nlength = 10\nwidth = 10\nheight = 10\n\nsketch = startSketchOn(XY)\n\nprofile = startProfile(sketch, at = [-length / 2, -width / 2])\n  |> xLine(length = length)\n  |> yLine(length = width)\n  |> xLine(length = -length)\n  |> close()\n\nbox = extrude(profile, length = height)\n',
+        requestedProjectName: 'some-project',
+      },
+      {
+        requestedFileName: 'main.kcl',
+        requestedCode: '',
+        requestedProjectName: 'some-project',
+      },
+      {
+        requestedFileName: '1/main.kcl',
+        requestedCode:
+          '@settings(defaultLengthUnit = mm)\n\nlength = 10\nwidth = 10\nheight = 10\n\nsketch = startSketchOn(XY)\n\nprofile = startProfile(sketch, at = [-length / 2, -width / 2])\n  |> xLine(length = length)\n  |> yLine(length = width)\n  |> xLine(length = -length)\n  |> close()\n\nbox = extrude(profile, length = height)\n',
+        requestedProjectName: 'some-project',
+      },
+      {
+        requestedFileName: '8/main.kcl',
+        requestedCode:
+          '@settings(defaultLengthUnit = mm)\n\nlength = 10\nwidth = 10\nheight = 10\n\nsketch = startSketchOn(XY)\n\nprofile = startProfile(sketch, at = [-length / 2, -width / 2])\n  |> xLine(length = length)\n  |> yLine(length = width)\n  |> xLine(length = -length)\n  |> close()\n\nbox = extrude(profile, length = height)\n',
+        requestedProjectName: 'some-project',
+      },
+      {
+        requestedFileName: '3/main.kcl',
+        requestedCode:
+          '@settings(defaultLengthUnit = mm)\n\nlength = 10\nwidth = 10\nheight = 10\n\nsketch = startSketchOn(XY)\n\nprofile = startProfile(sketch, at = [-length / 2, -width / 2])\n  |> xLine(length = length)\n  |> yLine(length = width)\n  |> xLine(length = -length)\n  |> close()\n\nbox = extrude(profile, length = height)\n',
+        requestedProjectName: 'some-project',
+      },
+      {
+        requestedFileName: '2/main.kcl',
+        requestedCode:
+          '@settings(defaultLengthUnit = mm)\n\nlength = 10\nwidth = 10\nheight = 10\n\nsketch = startSketchOn(XY)\n\nprofile = startProfile(sketch, at = [-length / 2, -width / 2])\n  |> xLine(length = length)\n  |> yLine(length = width)\n  |> xLine(length = -length)\n  |> close()\n\nbox = extrude(profile, length = height)\n',
+        requestedProjectName: 'some-project',
+      },
+    ])
+  })
+
+  it('preserves files by default when preparing Zookeeper edit requests', () => {
+    const preparedPayload = prepareMlEphantNewFileRequest({
+      projectNameCurrentlyOpened: 'some-project',
+      fileFocusedOnInEditor: {
+        name: 'main.kcl',
+        path: '/some-project/main.kcl',
+        children: null,
+      },
+      toolOutput: {
+        status_code: 200,
+        type: 'edit_kcl_code',
+        project_name: 'some-project',
+        outputs: {
+          'main.kcl': 'cube = 1',
+        },
+      },
+    })
+
+    expect(preparedPayload?.files).toEqual([
+      {
+        requestedFileName: 'main.kcl',
+        requestedCode: 'cube = 1',
+        requestedProjectName: 'some-project',
+      },
+    ])
+    expect(preparedPayload?.filesToDelete).toEqual([])
+  })
+
+  it('keeps the currently focused file as the navigation target after project-wide edits', () => {
+    const preparedPayload = prepareMlEphantNewFileRequest({
+      projectNameCurrentlyOpened: 'some-project',
+      fileFocusedOnInEditor: {
+        name: 'newFile.kcl',
+        path: '/projects/some-project/newFile.kcl',
+        children: null,
+      },
+      toolOutput: {
+        status_code: 200,
+        type: 'edit_kcl_code',
+        project_name: 'some-project',
+        outputs: {
+          'main.kcl': 'width = 5',
+          'newFile.kcl': 'width = 10',
+        },
+      },
+    })
+
+    expect(preparedPayload?.requestedFileNameWithExtension).toBe('newFile.kcl')
+  })
+
+  it('carries only explicit Zookeeper delete signals into edit requests', () => {
+    const preparedPayload = prepareMlEphantNewFileRequest({
+      projectNameCurrentlyOpened: 'some-project',
+      fileFocusedOnInEditor: {
+        name: 'main.kcl',
+        path: '/some-project/main.kcl',
+        children: null,
+      },
+      filesToDelete: [{ requestedFileName: 'old.kcl' }],
+      toolOutput: {
+        status_code: 200,
+        type: 'edit_kcl_code',
+        project_name: 'some-project',
+        outputs: {
+          'main.kcl': 'cube = 1',
+        },
+      },
+    })
+
+    expect(preparedPayload?.filesToDelete).toEqual([
+      { requestedFileName: 'old.kcl' },
+    ])
+  })
+
+  it('matches explicit Zookeeper delete signals across path separators', () => {
+    const requestedFilesToDelete = new Set(
+      [{ requestedFileName: 'parts/old.kcl' }].map((file) =>
+        normalizeKCLFileDeletePath(file.requestedFileName)
+      )
+    )
+
+    expect(
+      requestedFilesToDelete.has(normalizeKCLFileDeletePath('parts\\old.kcl'))
+    ).toBe(true)
+  })
+})

@@ -6,13 +6,25 @@ import react from '@vitejs/plugin-react'
 import version from 'vite-plugin-package-version'
 import topLevelAwait from 'vite-plugin-top-level-await'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
+import { createLogger } from 'vite'
 import { configDefaults, defineConfig } from 'vitest/config'
 import { indexHtmlCsp } from './vite.base.config'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
+
+const publicAssetWarning =
+  'Assets in public directory cannot be imported from JavaScript'
+const logger = createLogger()
+const originalWarn = logger.warn.bind(logger)
+logger.warn = (msg, opts) => {
+  if (msg.includes(publicAssetWarning)) return
+  originalWarn(msg, opts)
+}
 
 export default defineConfig(({ command, mode }) => {
   const runMillion = process.env.RUN_MILLION
 
   return {
+    customLogger: logger,
     define: {
       'import.meta.env.VERCEL_ENV': JSON.stringify(process.env.VERCEL_ENV),
     },
@@ -68,9 +80,11 @@ export default defineConfig(({ command, mode }) => {
     },
     resolve: {
       alias: {
+        '@kittycad/registry': '/packages/registry/src',
         '@kittycad/codemirror-lsp-client':
           '/packages/codemirror-lsp-client/src',
         '@kittycad/codemirror-lang-kcl': '/packages/codemirror-lang-kcl/src',
+        '@kittycad/ui-components': '/packages/ui-components/src',
         '@rust': '/rust',
         '@e2e': '/e2e',
         '@src': '/src',
@@ -79,6 +93,9 @@ export default defineConfig(({ command, mode }) => {
       },
     },
     plugins: [
+      nodePolyfills({
+        include: ['path'],
+      }),
       react({
         babel: {
           plugins: [['module:@preact/signals-react-transform']],

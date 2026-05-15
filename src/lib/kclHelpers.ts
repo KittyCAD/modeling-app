@@ -15,12 +15,17 @@ import type { Expr } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Vector2 } from 'three'
 import { toUtf16 } from '@src/lang/errors'
 
-const DUMMY_VARIABLE_NAME = '__result__'
+export const DUMMY_VARIABLE_NAME = '__result__'
 
 // Type guard for number value items
 type KclNumber<T = KclValue> = T extends { type: 'Number' } ? T : never
 function isNumberValueItem(item: KclValue): item is KclNumber {
   return item.type === 'Number'
+}
+
+type KclString<T = KclValue> = T extends { type: 'String' } ? T : never
+function isStringValueItem(item: KclValue): item is KclString {
+  return item.type === 'String'
 }
 
 /**
@@ -35,6 +40,7 @@ export async function getCalculatedKclExpressionValue(
   rustContext: RustContext,
   options?: {
     allowArrays?: boolean
+    allowStringArrays?: boolean
   }
 ) {
   // Create a one-line program that assigns the value to a variable
@@ -76,10 +82,18 @@ export async function getCalculatedKclExpressionValue(
       }
     }
 
-    // Validate that all array elements are numbers
     const allElementsAreNumbers = varValue.value.every(isNumberValueItem)
+    const allElementsAreStrings = varValue.value.every(isStringValueItem)
 
-    if (!allElementsAreNumbers) {
+    if (!allElementsAreNumbers && !options.allowStringArrays) {
+      const valueAsString = 'NAN'
+      return {
+        astNode: variableDeclaratorAstNode,
+        valueAsString,
+      }
+    }
+
+    if (!allElementsAreNumbers && !allElementsAreStrings) {
       const valueAsString = 'NAN'
       return {
         astNode: variableDeclaratorAstNode,
@@ -88,7 +102,9 @@ export async function getCalculatedKclExpressionValue(
     }
 
     const arrayValues = varValue.value.map((item: KclValue) => {
-      if (isNumberValueItem(item)) {
+      if (isStringValueItem(item)) {
+        return JSON.stringify(item.value)
+      } else if (isNumberValueItem(item)) {
         const formatted = formatNumberValue(item.value, item.ty, wasmInstance)
         if (!err(formatted)) {
           return formatted
@@ -138,6 +154,7 @@ export async function stringToKclExpression(
   providedRustContext: RustContext,
   options?: {
     allowArrays?: boolean
+    allowStringArrays?: boolean
   }
 ) {
   const calculatedResult = await getCalculatedKclExpressionValue(

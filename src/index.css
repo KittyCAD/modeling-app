@@ -84,6 +84,21 @@ textarea,
   @apply bg-chalkboard-70;
 }
 
+/* This is used to hide the reasoning scrollbar until the user interacts */
+.scrollbar-hide {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+.scrollbar-hide::-webkit-scrollbar-track,
+.scrollbar-hide::-webkit-scrollbar-thumb {
+  display: none !important;
+}
+
 button {
   @apply border border-chalkboard-30 m-0.5 px-3 rounded text-xs;
   @apply focus-visible:outline-none;
@@ -143,6 +158,25 @@ code,
 
 #code-mirror-override {
   @apply text-xs;
+
+  /* Operation highlighting CSS. TODO: turn on when we have more rich debug behavior toggling */
+  /* .cm-operation-range { */
+  /* --base-color: oklch(60% .2 15 / .3); */
+
+  /* .dark & { */
+  /* --base-color: oklch(50% .2 15 / .5); */
+  /* } */
+
+  /* background-color: var(--base-color); */
+
+  /* &[data-operation-type="StdLibCall"] { */
+  /* background-color: oklch(from var(--base-color) l c calc(h + 120)); */
+  /* } */
+
+  /* &[data-operation-type="VariableDeclaration"] { */
+  /* background-color: oklch(from var(--base-color) l c calc(h + 240)); */
+  /* } */
+  /* } */
 }
 
 /*
@@ -377,6 +411,20 @@ code,
     @apply grid place-content-center overflow-hidden;
     @apply border rounded border-chalkboard-30/50 dark:border-chalkboard-80/30;
     @apply group-hover/avatar:border-chalkboard-30 group-hover/avatar:dark:border-chalkboard-70;
+  }
+
+  .toolbar {
+    box-sizing: border-box;
+    :has(> &) {
+      container-type: inline-size;
+    }
+
+    /** relate the values of cqi units (% container's inline size)
+    and percentage (which uses child's inline-size) to get a percentage */
+    --container-percentage-width: calc(100cqi - 100%);
+    --br: min(var(--container-percentage-width), 4px);
+    border-bottom-right-radius: var(--br);
+    border-bottom-left-radius: var(--br);
   }
 }
 

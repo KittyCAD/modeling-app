@@ -14,7 +14,28 @@ export const external = [
   ...Object.keys(
     'dependencies' in pkg ? (pkg.dependencies as Record<string, unknown>) : {}
   ),
+  'node:fs/promises',
 ]
+
+const ignoredWatchPathNames = [
+  'target',
+  'dist',
+  'build',
+  'test-results',
+  'playwright-report',
+]
+
+export const ignoredWatchPathGlobs = ignoredWatchPathNames.map(
+  (pathName) => `**/${pathName}/**`
+)
+
+export function isIgnoredWatchPath(filePath: string) {
+  const normalizedPath = filePath.replace(/\\/g, '/')
+  const pathParts = normalizedPath.split('/')
+  return ignoredWatchPathNames.some((ignoredPath) =>
+    pathParts.includes(ignoredPath)
+  )
+}
 
 export function getBuildConfig(env: ConfigEnv<'build'>): UserConfig {
   const { root, mode, command } = env
@@ -27,7 +48,15 @@ export function getBuildConfig(env: ConfigEnv<'build'>): UserConfig {
       emptyOutDir: false,
       // 🚧 Multiple builds may conflict.
       outDir: '.vite/build',
-      watch: command === 'serve' ? {} : null,
+      watch:
+        command === 'serve'
+          ? {
+              exclude: ignoredWatchPathGlobs,
+              chokidar: {
+                ignored: isIgnoredWatchPath,
+              },
+            }
+          : null,
       minify: command === 'build',
     },
     clearScreen: false,

@@ -1,0 +1,112 @@
+import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { Group } from 'three'
+
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { getResolvedTheme } from '@src/lib/theme'
+import { AngleConstraintBuilder } from '@src/machines/sketchSolve/constraints/AngleConstraintBuilder'
+import { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
+import { CONSTRAINT_COLOR } from '@src/machines/sketchSolve/constraints/DimensionLine'
+import { DistanceConstraintBuilder } from '@src/machines/sketchSolve/constraints/DistanceConstraintBuilder'
+import {
+  InvisibleConstraintSpriteBuilder,
+  type InvisibleConstraintDisplayState,
+} from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
+import { RadiusConstraintBuilder } from '@src/machines/sketchSolve/constraints/RadiusConstraintBuilder'
+import {
+  type ConstraintObject,
+  isAngleConstraint,
+  isDiameterConstraint,
+  isDistanceConstraint,
+  isRadiusConstraint,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { isInvisibleConstraintObject } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
+
+export type EditingCallbacks = {
+  cancel: () => void
+  submit: (value: string) => void | Promise<void>
+}
+
+export class ConstraintBuilder {
+  private readonly resources = new ConstraintResources()
+  private readonly angleBuilder = new AngleConstraintBuilder(this.resources)
+  private readonly distanceBuilder = new DistanceConstraintBuilder(
+    this.resources
+  )
+  private readonly radiusBuilder = new RadiusConstraintBuilder(this.resources)
+  private readonly invisibleConstraintBuilder =
+    new InvisibleConstraintSpriteBuilder()
+
+  public init(obj: ConstraintObject): Group | null {
+    if (isAngleConstraint(obj)) {
+      return this.angleBuilder.init(obj)
+    }
+    if (isDistanceConstraint(obj)) {
+      return this.distanceBuilder.init(obj)
+    }
+    if (isRadiusConstraint(obj) || isDiameterConstraint(obj)) {
+      return this.radiusBuilder.init(obj)
+    }
+    if (isInvisibleConstraintObject(obj)) {
+      return this.invisibleConstraintBuilder.init(obj)
+    }
+    return null
+  }
+
+  public update(
+    group: Group,
+    obj: ApiObject,
+    objects: ApiObject[],
+    scale: number,
+    sceneInfra: SceneInfra,
+    selectedIds: number[],
+    hoveredId: number | null,
+    invisibleConstraintDisplayState: InvisibleConstraintDisplayState
+  ) {
+    // Technically this only needs to be done once per frame, before rendering, not per object.
+    const theme = getResolvedTheme(sceneInfra.theme)
+    const constraintColor = CONSTRAINT_COLOR[theme]
+    this.resources.updateMaterials(constraintColor)
+
+    if (isAngleConstraint(obj)) {
+      this.angleBuilder.update(
+        group,
+        obj,
+        objects,
+        scale,
+        sceneInfra,
+        selectedIds,
+        hoveredId
+      )
+    } else if (isDistanceConstraint(obj)) {
+      this.distanceBuilder.update(
+        group,
+        obj,
+        objects,
+        scale,
+        sceneInfra,
+        selectedIds,
+        hoveredId
+      )
+    } else if (isRadiusConstraint(obj) || isDiameterConstraint(obj)) {
+      this.radiusBuilder.update(
+        group,
+        obj,
+        objects,
+        scale,
+        sceneInfra,
+        selectedIds,
+        hoveredId
+      )
+    } else if (isInvisibleConstraintObject(obj)) {
+      this.invisibleConstraintBuilder.update(
+        group,
+        obj,
+        objects,
+        sceneInfra,
+        selectedIds,
+        hoveredId,
+        invisibleConstraintDisplayState
+      )
+    }
+  }
+}

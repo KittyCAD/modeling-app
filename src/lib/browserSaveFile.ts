@@ -5,6 +5,43 @@ import toast from 'react-hot-toast'
 
 import { EXPORT_TOAST_MESSAGES } from '@src/lib/constants'
 
+const getSuggestedExtension = (suggestedName: string): `.${string}` | null => {
+  const finalDotIndex = suggestedName.lastIndexOf('.')
+  if (finalDotIndex <= 0 || finalDotIndex === suggestedName.length - 1) {
+    return null
+  }
+
+  const ext = suggestedName.slice(finalDotIndex + 1).toLowerCase()
+  if (!ext) return null
+
+  return `.${ext}`
+}
+
+export const getShowSaveFilePickerOptions = (
+  suggestedName: string
+): SaveFilePickerOptions => {
+  const options: SaveFilePickerOptions = {
+    suggestedName,
+  }
+
+  const extension = getSuggestedExtension(suggestedName)
+  if (!extension) {
+    return options
+  }
+
+  options.types = [
+    {
+      description: `${extension.slice(1).toUpperCase()} files`,
+      accept: {
+        'application/octet-stream': [extension],
+      },
+    },
+  ]
+  options.excludeAcceptAllOption = true
+
+  return options
+}
+
 // user will get a file save dialog where they can choose where the file should be saved.
 export const browserSaveFile = async (
   blob: Blob,
@@ -30,9 +67,9 @@ export const browserSaveFile = async (
   ) {
     try {
       // Show the file save dialog.
-      const handle = await window.showSaveFilePicker({
-        suggestedName,
-      })
+      const handle = await window.showSaveFilePicker(
+        getShowSaveFilePickerOptions(suggestedName)
+      )
       // Write the blob to the file.
       const writable = await handle.createWritable()
       await writable.write(blob)

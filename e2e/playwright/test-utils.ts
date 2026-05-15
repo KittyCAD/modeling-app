@@ -5,7 +5,13 @@ import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
 import { expect } from '@playwright/test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { Configuration } from '@src/lang/wasm'
-import { IS_PLAYWRIGHT_KEY, COOKIE_NAME_PREFIX } from '@src/lib/constants'
+import {
+  IS_PLAYWRIGHT_KEY,
+  TOKEN_PERSIST_KEY,
+  VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM,
+  COOKIE_NAME_PREFIX,
+  SIDEBAR_BUTTON_SUFFIX,
+} from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
@@ -30,12 +36,20 @@ import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
-import {
-  type LayoutWithMetadata,
-  setOpenPanes,
-  getLayoutPersistKey,
-} from '@src/lib/layout'
+import { createLayoutWithMetadata } from '@src/lib/layout'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
+
+export const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
+
+export const PLAYWRIGHT_LAYOUT_SETTINGS = {
+  layout: {
+    configs: {
+      [PLAYWRIGHT_LAYOUT_CONFIG_NAME]: JSON.stringify(
+        createLayoutWithMetadata(playwrightLayoutConfig)
+      ),
+    },
+  },
+} as const
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
@@ -355,6 +369,35 @@ async function waitForAuthAndLsp(page: Page) {
     },
     timeout: 45_000,
   })
+
+  if (process.env.VERCEL_BASE_URL) {
+    // set bypass secret for the page's requests based on the hostname
+    let secret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+    if (secret) {
+      await page.route('**/*', async (route, request) => {
+        const url = request.url()
+
+        // Only apply to Vercel preview domain
+        if (new URL(url).hostname.endsWith('vercel.dev.zoo.dev')) {
+          const headers = {
+            ...request.headers(),
+            'X-Vercel-Protection-Bypass': secret,
+          }
+
+          await route.continue({ headers })
+        } else {
+          await route.continue()
+        }
+      })
+    }
+
+    if (token) {
+      // Vercel is external to Playwright, so the token is provided in the URL
+      await page.goto(`/?${VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM}=${token}`)
+      await waitForPageLoad(page)
+    }
+  }
+
   await page.goto('/')
   await waitForPageLoad(page)
   return waitForLspPromise
@@ -499,7 +542,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
       const buffer = await page.screenshot({
         fullPage: true,
       })
-      const screenshot = await PNG.sync.read(buffer)
+      const screenshot = PNG.sync.read(buffer)
       const pixMultiplier: number = await page.evaluate(
         'window.devicePixelRatio'
       )
@@ -543,8 +586,13 @@ export async function getUtils(page: Page, test_?: typeof test) {
       const editor = page.locator(editorSelector)
       return expect
         .poll(async () => {
-          const text = await editor.textContent()
-          return toNormalizedCode(text ?? '')
+          try {
+            const text = await editor.textContent()
+            return toNormalizedCode(text ?? '')
+          } catch (e) {
+            console.log(e)
+            return ''
+          }
         })
         .toContain(toNormalizedCode(code))
     },
@@ -656,33 +704,11 @@ export async function getUtils(page: Page, test_?: typeof test) {
         .filter({ hasText: name })
     },
 
-    /**
-     * @deprecated Sorry I don't have time to fix this right now, but runs like
-     * the one linked below show me that setting the open panes in this manner is not reliable.
-     * You can either set `openPanes` as a part of the same initScript we run in setupElectron/setup,
-     * or you can imperatively open the panes with functions like {openKclCodePanel}
-     * (or we can make a general openPane function that takes a paneId).,
-     * but having a separate initScript does not seem to work reliably.
-     * @link https://github.com/KittyCAD/modeling-app/actions/runs/10731890169/job/29762700806?pr=3807#step:20:19553
-     */
     panesOpen: async (paneIds: string[]) => {
       return test?.step(`Setting ${paneIds} panes to be open`, async () => {
-        await page.addInitScript(
-          ({ layoutName, layoutPayload }) => {
-            localStorage.setItem(layoutName, layoutPayload)
-          },
-          {
-            layoutName: getLayoutPersistKey(),
-            layoutPayload: JSON.stringify({
-              version: 'v1',
-              layout: setOpenPanes(
-                structuredClone(playwrightLayoutConfig),
-                paneIds
-              ),
-            } satisfies LayoutWithMetadata),
-          }
-        )
-        await page.reload()
+        for (const paneId of paneIds) {
+          await openPane(page, paneId + SIDEBAR_BUTTON_SUFFIX)
+        }
       })
     },
   }
@@ -700,7 +726,7 @@ type makeTemplateReturn = {
   ) => makeTemplateReturn
 }
 
-const escapeRegExp = (string: string) => {
+export const escapeRegExp = (string: string) => {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // $& means the whole matched string
 }
 
@@ -802,8 +828,16 @@ export const doExport = async (
   rootDir: string,
   page: Page,
   cmdBar: CmdBarFixture,
+  testInfo: TestInfo,
   exportFrom: 'dropdown' | 'sidebarButton' | 'commandBar' = 'dropdown'
 ): Promise<Paths> => {
+  const relPathToSpec = path.relative(testInfo.project.testDir, testInfo.file)
+  const specSubdir = path.dirname(relPathToSpec)
+  const snapshotsDirName = `${path.basename(testInfo.file)}-snapshots`
+  const exportFolder =
+    specSubdir === '.' || specSubdir === ''
+      ? path.join(testInfo.project.testDir, snapshotsDirName)
+      : path.join(testInfo.project.testDir, specSubdir, snapshotsDirName)
   if (exportFrom === 'dropdown') {
     await page.getByTestId('project-sidebar-toggle').click()
 
@@ -858,9 +892,12 @@ export const doExport = async (
 
   // Handle download
   const downloadLocationer = (extra = '', isImage = false) =>
-    `./e2e/playwright/export-snapshots/${output.type}-${
-      'storage' in output ? output.storage : ''
-    }${extra}.${isImage ? 'png' : output.type}`
+    path.join(
+      exportFolder,
+      `${output.type}-${'storage' in output ? output.storage : ''}${extra}.${
+        isImage ? 'png' : output.type
+      }`
+    )
   const downloadLocation = downloadLocationer()
 
   if (output.type === 'step') {
@@ -908,30 +945,28 @@ export async function setup(
   page: Page,
   testInfo?: TestInfo
 ) {
+  const testProjectSettings =
+    TEST_SETTINGS.project &&
+    typeof TEST_SETTINGS.project === 'object' &&
+    !isArray(TEST_SETTINGS.project)
+      ? TEST_SETTINGS.project
+      : undefined
+
   await page.addInitScript(
     async ({
       token,
       settingsKey,
       settings,
       IS_PLAYWRIGHT_KEY,
-      layoutName,
-      layoutPayload,
+      TOKEN_PERSIST_KEY,
     }) => {
       localStorage.clear()
-      localStorage.setItem('TOKEN_PERSIST_KEY', token)
+      localStorage.setItem(TOKEN_PERSIST_KEY, token)
       localStorage.setItem('persistCode', ``)
-      localStorage.setItem(
-        layoutName,
-        JSON.stringify({
-          version: 'v1',
-          layout: layoutPayload,
-        } satisfies LayoutWithMetadata)
-      )
       localStorage.setItem(settingsKey, settings)
       localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
       window.addEventListener('beforeunload', () => {
         localStorage.removeItem(IS_PLAYWRIGHT_KEY)
-        localStorage.removeItem(layoutName)
       })
     },
     {
@@ -940,23 +975,24 @@ export async function setup(
       settings: settingsToToml({
         settings: {
           ...TEST_SETTINGS,
+          ...PLAYWRIGHT_LAYOUT_SETTINGS,
           app: {
             appearance: {
               ...TEST_SETTINGS.app?.appearance,
               theme: 'dark',
             },
-            ...TEST_SETTINGS.project,
             onboarding_status: 'dismissed',
           },
           project: {
-            ...TEST_SETTINGS.project,
-            directory: TEST_SETTINGS.project?.directory,
+            ...testProjectSettings,
+            ...(typeof testProjectSettings?.directory === 'string'
+              ? { directory: testProjectSettings.directory }
+              : {}),
           },
         },
       }),
       IS_PLAYWRIGHT_KEY,
-      layoutName: getLayoutPersistKey(),
-      layoutPayload: playwrightLayoutConfig,
+      TOKEN_PERSIST_KEY,
     }
   )
 
@@ -1046,6 +1082,8 @@ export async function createProject({
     await page.getByRole('textbox', { name: 'Name' }).fill(name)
     await page.getByRole('button', { name: 'Continue' }).click()
 
+    await closeOnboardingModalIfPresent(page)
+
     if (returnHome) {
       await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
       await page.getByTestId('app-logo').click()
@@ -1053,7 +1091,7 @@ export async function createProject({
   })
 }
 
-async function goToHomePageFromModeling(page: Page) {
+export async function goToHomePageFromModeling(page: Page) {
   await page.getByTestId('app-logo').click()
   await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
 }
@@ -1138,7 +1176,7 @@ export function getPixelRGBs(page: Page) {
     const buffer = await page.screenshot({
       fullPage: true,
     })
-    const screenshot = await PNG.sync.read(buffer)
+    const screenshot = PNG.sync.read(buffer)
     const pixMultiplier: number = await page.evaluate('window.devicePixelRatio')
     const allCords: [number, number][] = [[coords.x, coords.y]]
     for (let i = 1; i < radius; i++) {
@@ -1168,10 +1206,11 @@ export async function pollEditorLinesSelectedLength(page: Page, lines: number) {
     .toBe(lines)
 }
 
-// TODO: fix type to allow for meta.id in configuration
-export function settingsToToml(
-  settings: DeepPartial<Configuration | { settings: { meta: { id: string } } }>
-) {
+type SettingsTomlConfiguration = {
+  settings?: Record<string, unknown>
+}
+
+export function settingsToToml(settings: SettingsTomlConfiguration) {
   // eslint-disable-next-line no-restricted-syntax
   return TOML.stringify(settings as any)
 }
@@ -1193,40 +1232,6 @@ export function perProjectSettingsToToml(
 ) {
   // eslint-disable-next-line no-restricted-syntax
   return TOML.stringify(settings as any)
-}
-
-export async function clickElectronNativeMenuById(
-  tronApp: ElectronZoo,
-  menuId: string
-) {
-  const clickWasTriggered = await tronApp.electron.evaluate(
-    async ({ app }, menuId) => {
-      if (!app || !app.applicationMenu) {
-        return false
-      }
-      const menu = app.applicationMenu.getMenuItemById(menuId)
-      if (!menu) return false
-      menu.click()
-      return true
-    },
-    menuId
-  )
-  expect(clickWasTriggered).toBe(true)
-}
-
-export async function findElectronNativeMenuById(
-  tronApp: ElectronZoo,
-  menuId: string
-) {
-  const found = await tronApp.electron.evaluate(async ({ app }, menuId) => {
-    if (!app || !app.applicationMenu) {
-      return false
-    }
-    const menu = app.applicationMenu.getMenuItemById(menuId)
-    if (!menu) return false
-    return true
-  }, menuId)
-  expect(found).toBe(true)
 }
 
 export async function openSettingsExpectText(page: Page, text: string) {
@@ -1441,4 +1446,13 @@ export async function pinchFromCenter(
   }
 
   await locator.dispatchEvent('touchend')
+}
+
+export const closeOnboardingModalIfPresent = async (page: Page) => {
+  const onboardingNotRightNow = page.getByTestId('onboarding-not-right-now')
+  await expect(page.getByTestId('stream')).toBeVisible({ timeout: 10_000 })
+  if (await onboardingNotRightNow.isVisible()) {
+    await onboardingNotRightNow.click()
+    await expect(onboardingNotRightNow).toBeHidden()
+  }
 }

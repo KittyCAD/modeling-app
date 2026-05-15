@@ -2,12 +2,14 @@
   "compilerOptions": {
     "noErrorTruncation": true,
     "paths": {
+      "@kittycad/registry": ["./packages/registry/src/index.ts"],
       "@kittycad/codemirror-lsp-client": [
         "./packages/codemirror-lsp-client/src/index.ts"
       ],
       "@kittycad/codemirror-lang-kcl": [
         "./packages/codemirror-lang-kcl/src/index.ts"
       ],
+      "@kittycad/ui-components": ["./packages/ui-components/src/index.ts"],
       "@rust/*": ["./rust/*"],
       "@e2e/*": ["./e2e/*"],
       "@src/*": ["./src/*"],
@@ -29,7 +31,7 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "module": "commonjs",
+    "module": "es2022",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "composite": false,

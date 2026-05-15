@@ -1,0 +1,33 @@
+// Dog House (Great Dane) - Base Frame
+// Base plate layout for the dog house frame.
+
+@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+
+import * from "dimensions.kcl"
+import * from "2x4.kcl"
+
+// Base plates
+leftBottomPlate = twoByFourY(
+  minX = -frameWidth / 2,
+  minY = 0,
+  minZ = floorZ,
+  lengthY = frameLength,
+)
+rightBottomPlate = twoByFourY(
+  minX = frameWidth / 2 - studDepth,
+  minY = 0,
+  minZ = floorZ,
+  lengthY = frameLength,
+)
+frontBottomPlate = twoByFourX(
+  minX = -frameWidth / 2 + studDepth,
+  minY = 0,
+  minZ = floorZ,
+  lengthX = frameWidth - (2 * studDepth),
+)
+backBottomPlate = twoByFourX(
+  minX = -frameWidth / 2 + studDepth,
+  minY = frameLength - studDepth,
+  minZ = floorZ,
+  lengthX = frameWidth - (2 * studDepth),
+)

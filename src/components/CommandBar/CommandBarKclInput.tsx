@@ -7,10 +7,10 @@ import {
 } from '@codemirror/autocomplete'
 import type { ViewUpdate } from '@codemirror/view'
 import { EditorView, keymap } from '@codemirror/view'
+import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { useSelector } from '@xstate/react'
 import { use, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
-import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -21,20 +21,19 @@ import { createLocalName, createVariableDeclaration } from '@src/lang/create'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import type { SourceRange, VariableDeclarator } from '@src/lang/wasm'
 import { formatNumberValue, isPathToNode } from '@src/lang/wasm'
+import { useApp } from '@src/lib/boot'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
-import { kclManager, rustContext } from '@src/lib/singletons'
-import { useSettings } from '@src/lib/singletons'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { getResolvedTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 import { roundOff, roundOffWithUnits } from '@src/lib/utils'
 import { varMentions } from '@src/lib/varCompletionExtension'
 
-import { useModelingContext } from '@src/hooks/useModelingContext'
-import styles from './CommandBarKclInput.module.css'
-import { editorTheme, themeCompartment } from '@src/editor/plugins/theme'
 import { Compartment, EditorState } from '@codemirror/state'
+import { editorTheme, themeCompartment } from '@src/editor/plugins/theme'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import type { KclManager } from '@src/lang/KclManager'
+import styles from './CommandBarKclInput.module.css'
 
 // TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
@@ -64,6 +63,7 @@ function CommandBarKclInput({
   arg,
   stepBack,
   onSubmit,
+  executingEditor: kclManager,
 }: {
   arg: CommandArgument<unknown> & {
     inputType: 'kcl'
@@ -71,13 +71,15 @@ function CommandBarKclInput({
   }
   stepBack: () => void
   onSubmit: (event: unknown) => void
+  executingEditor: KclManager
 }) {
-  const wasmInstance = use(kclManager.wasmInstancePromise)
-  const commandBarState = useCommandBarState()
+  const { commands, settings, wasmPromise } = useApp()
+  const wasmInstance = use(wasmPromise)
+  const commandBarState = commands.useState()
   const previouslySetValue = commandBarState.context.argumentsToSubmit[
     arg.name
   ] as KclCommandValue | undefined
-  const settings = useSettings()
+  const settingsValues = settings.useSettings()
   const {
     context: { selectionRanges },
   } = useModelingContext()
@@ -140,11 +142,15 @@ function CommandBarKclInput({
     arg.name,
     previouslySetValue,
   ])
-  const initialValue = useMemo(
-    () => previouslySetValue?.valueText || defaultValue || '',
-    [previouslySetValue, defaultValue]
-  )
+  const initialValue = useMemo(() => {
+    const kclValue = previouslySetValue?.valueText || defaultValue || ''
+    return arg.kclValueToInput ? arg.kclValueToInput(kclValue) : kclValue
+  }, [arg, previouslySetValue, defaultValue])
   const [value, setValue] = useState(initialValue)
+  const kclValue = useMemo(
+    () => (arg.inputToKclValue ? arg.inputToKclValue(value) : value),
+    [arg, value]
+  )
   const [createNewVariable, setCreateNewVariable] = useState(
     (typeof previouslySetValue === 'object' &&
       'variableName' in previouslySetValue) ||
@@ -154,15 +160,19 @@ function CommandBarKclInput({
   )
   const [canSubmit, setCanSubmit] = useState(true)
   useHotkeyWrapper(
-    ['mod + k', 'esc'],
-    () => commandBarActor.send({ type: 'Close' }),
+    ['esc'],
+    () => commands.send({ type: 'Close' }),
     kclManager,
     { enableOnFormTags: true, enableOnContentEditable: true }
   )
   const editorRef = useRef<HTMLDivElement>(null)
 
   const allowArrays = arg.allowArrays ?? false
-  const options = useMemo(() => ({ allowArrays }), [allowArrays])
+  const allowStringArrays = arg.allowStringArrays ?? false
+  const options = useMemo(
+    () => ({ allowArrays, allowStringArrays }),
+    [allowArrays, allowStringArrays]
+  )
 
   const {
     calcResult,
@@ -174,11 +184,11 @@ function CommandBarKclInput({
     prevVariables,
     isExecuting,
   } = useCalculateKclExpression({
-    value,
+    value: kclValue,
     initialVariableName,
     sourceRange: sourceRangeForPrevVariables,
     selectionRanges,
-    rustContext,
+    rustContext: kclManager.rustContext,
     code: kclManager.codeSignal.value,
     ast: kclManager.astSignal.value,
     variables: kclManager.variablesSignal.value,
@@ -239,10 +249,10 @@ function CommandBarKclInput({
   useEffect(() => {
     miniEditor.dispatch({
       effects: themeCompartment.reconfigure(
-        editorTheme[getResolvedTheme(settings.app.theme.current)]
+        editorTheme[getResolvedTheme(settingsValues.app.theme.current)]
       ),
     })
-  }, [settings.app.theme])
+  }, [settingsValues.app.theme])
 
   useEffect(() => {
     if (editorRef.current) {
@@ -272,21 +282,30 @@ function CommandBarKclInput({
   }, [arg, editorRef, initialValue])
 
   useEffect(() => {
+    const canUseUncalculatedValue =
+      Boolean(arg.allowUncalculated) && valueNode !== null
     setCanSubmit(
-      calcResult !== 'NAN' &&
+      (calcResult !== 'NAN' || canUseUncalculatedValue) &&
         (!createNewVariable || isNewVariableNameUnique) &&
         !isExecuting
     )
-  }, [calcResult, createNewVariable, isNewVariableNameUnique, isExecuting])
+  }, [
+    arg.allowUncalculated,
+    calcResult,
+    createNewVariable,
+    isNewVariableNameUnique,
+    isExecuting,
+    valueNode,
+  ])
 
   function handleSubmit(e?: React.FormEvent<HTMLFormElement>) {
     e?.preventDefault()
     if (!canSubmit || valueNode === null) {
       // Gotcha: Our application can attempt to submit a command value before the command bar kcl input is ready. Notify the scene and user.
       if (!canSubmit) {
-        toast.error('Unable to submit command')
+        toast.error('Unable to submit command.')
       } else if (valueNode === null) {
-        toast.error('Unable to submit undefined command value')
+        toast.error('Unable to submit undefined command value.')
       }
       return
     }
@@ -295,7 +314,7 @@ function CommandBarKclInput({
       createNewVariable
         ? ({
             valueAst: valueNode,
-            valueText: value,
+            valueText: kclValue,
             valueCalculated: calcResult,
             variableName: newVariableName,
             insertIndex: newVariableInsertIndex,
@@ -307,7 +326,7 @@ function CommandBarKclInput({
           } satisfies KclCommandValue)
         : ({
             valueAst: valueNode,
-            valueText: value,
+            valueText: kclValue,
             valueCalculated: calcResult,
           } satisfies KclCommandValue)
     )
@@ -345,6 +364,12 @@ function CommandBarKclInput({
         >
           {isExecuting === true || !calcResult ? (
             <Spinner className="text-inherit w-4 h-4" />
+          ) : arg.valueSummary && valueNode ? (
+            arg.valueSummary({
+              valueAst: valueNode,
+              valueText: kclValue,
+              valueCalculated: calcResult,
+            } as KclCommandValue)
           ) : calcResult === 'NAN' ? (
             "Can't calculate"
           ) : (

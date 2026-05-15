@@ -1,18 +1,23 @@
-use std::{collections::HashMap, sync::Arc};
+use std::collections::HashMap;
+use std::sync::Arc;
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use kcl_lib::{
-    exec::{DefaultPlanes, IdGenerator},
-    AsyncTasks, EngineStats, KclError,
-};
-use kittycad_modeling_cmds::{
-    self as kcmc,
-    id::ModelingCmdId,
-    ok_response::OkModelingCmdResponse,
-    shared::PathSegment::{self, *},
-    websocket::{ModelingBatch, ModelingCmdReq, OkWebSocketResponseData, WebSocketRequest, WebSocketResponse},
-};
+use kcl_lib::AsyncTasks;
+use kcl_lib::EngineStats;
+use kcl_lib::KclError;
+use kcl_lib::exec::DefaultPlanes;
+use kcl_lib::exec::IdGenerator;
+use kittycad_modeling_cmds::id::ModelingCmdId;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
+use kittycad_modeling_cmds::shared::PathSegment::*;
+use kittycad_modeling_cmds::shared::PathSegment::{self};
+use kittycad_modeling_cmds::websocket::ModelingBatch;
+use kittycad_modeling_cmds::websocket::ModelingCmdReq;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
+use kittycad_modeling_cmds::websocket::WebSocketRequest;
+use kittycad_modeling_cmds::websocket::WebSocketResponse;
+use kittycad_modeling_cmds::{self as kcmc};
 use tokio::sync::RwLock;
 use uuid::Uuid;
 
@@ -20,8 +25,6 @@ const CPP_PREFIX: &str = "const double scaleFactor = 100;\n";
 
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
-    batch: Arc<RwLock<Vec<(WebSocketRequest, kcl_lib::SourceRange)>>>,
-    batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, kcl_lib::SourceRange)>>>,
     core_test: Arc<RwLock<String>>,
     ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, kcl_lib::SourceRange>>>,
     /// The default planes for the scene.
@@ -35,8 +38,6 @@ impl EngineConnection {
         result.write().await.push_str(CPP_PREFIX);
 
         Ok(EngineConnection {
-            batch: Arc::new(RwLock::new(Vec::new())),
-            batch_end: Arc::new(RwLock::new(IndexMap::new())),
             core_test: result,
             default_planes: Default::default(),
             ids_of_async_commands: Arc::new(RwLock::new(IndexMap::new())),
@@ -263,9 +264,8 @@ impl EngineConnection {
             }) => {
                 let entity_ids = generate_repl_uuids(*num_repetitions as usize);
 
-                this_response = OkModelingCmdResponse::EntityCircularPattern(kcmc::output::EntityCircularPattern {
-                    entity_face_edge_ids: vec![],
-                });
+                this_response =
+                    OkModelingCmdResponse::EntityCircularPattern(kcmc::output::EntityCircularPattern::default());
 
                 let mut base_code: String = format!(
                     r#"
@@ -372,14 +372,6 @@ fn codegen_cpp_repl_uuid_setters(reps_id: &str, entity_ids: &[uuid::Uuid]) -> St
 
 #[async_trait::async_trait]
 impl kcl_lib::EngineManager for EngineConnection {
-    fn batch(&self) -> Arc<RwLock<Vec<(WebSocketRequest, kcl_lib::SourceRange)>>> {
-        self.batch.clone()
-    }
-
-    fn batch_end(&self) -> Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, kcl_lib::SourceRange)>>> {
-        self.batch_end.clone()
-    }
-
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>> {
         Arc::new(RwLock::new(IndexMap::new()))
     }
@@ -402,6 +394,7 @@ impl kcl_lib::EngineManager for EngineConnection {
 
     async fn clear_scene_post_hook(
         &self,
+        _batch_context: &kcl_lib::EngineBatchContext,
         _id_generator: &mut IdGenerator,
         _source_range: kcl_lib::SourceRange,
     ) -> Result<(), KclError> {

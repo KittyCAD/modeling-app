@@ -1,31 +1,40 @@
 //! Standard library shapes.
 
 use anyhow::Result;
-use kcmc::{
-    ModelingCmd, each_cmd as mcmd,
-    length_unit::LengthUnit,
-    shared::{Angle, Point2d as KPoint2d},
-};
-use kittycad_modeling_cmds::{self as kcmc, shared::PathSegment, units::UnitLength};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::shared::Angle;
+use kcmc::shared::Point2d as KPoint2d;
+use kittycad_modeling_cmds::shared::PathSegment;
+use kittycad_modeling_cmds::units::UnitLength;
+use kittycad_modeling_cmds::{self as kcmc};
 use serde::Serialize;
 
-use super::{
-    args::TyF64,
-    utils::{point_to_len_unit, point_to_mm, point_to_typed, untype_point, untyped_point_to_mm},
-};
-use crate::{
-    SourceRange,
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        BasePath, ExecState, GeoMeta, KclValue, ModelingCmdMeta, Path, ProfileClosed, Sketch, SketchSurface,
-        types::{RuntimeType, adjust_length},
-    },
-    parsing::ast::types::TagNode,
-    std::{
-        Args,
-        utils::{calculate_circle_center, distance},
-    },
-};
+use super::args::TyF64;
+use super::utils::point_to_len_unit;
+use super::utils::point_to_mm;
+use super::utils::point_to_typed;
+use super::utils::untype_point;
+use super::utils::untyped_point_to_mm;
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::BasePath;
+use crate::execution::ExecState;
+use crate::execution::GeoMeta;
+use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Path;
+use crate::execution::ProfileClosed;
+use crate::execution::Sketch;
+use crate::execution::SketchSurface;
+use crate::execution::types::RuntimeType;
+use crate::execution::types::adjust_length;
+use crate::parsing::ast::types::TagNode;
+use crate::std::Args;
+use crate::std::utils::calculate_circle_center;
+use crate::std::utils::distance;
 
 /// A sketch surface or a sketch.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -95,8 +104,15 @@ async fn inner_rectangle(
     let corner_t = [TyF64::new(corner[0], ty), TyF64::new(corner[1], ty)];
 
     // Start the sketch then draw the 4 lines.
-    let sketch =
-        crate::std::sketch::inner_start_profile(sketch_surface, corner_t, None, exec_state, args.clone()).await?;
+    let sketch = crate::std::sketch::inner_start_profile(
+        sketch_surface,
+        corner_t,
+        None,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+    )
+    .await?;
     let sketch_id = sketch.id;
     let deltas = [[width.n, 0.0], [0.0, height.n], [-width.n, 0.0], [0.0, -height.n]];
     let ids = [
@@ -173,12 +189,12 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     })
 }
 
-const POINT_ZERO_ZERO: [TyF64; 2] = [
+pub const POINT_ZERO_ZERO: [TyF64; 2] = [
     TyF64::new(0.0, crate::exec::NumericType::mm()),
     TyF64::new(0.0, crate::exec::NumericType::mm()),
 ];
 
-async fn inner_circle(
+pub(super) async fn inner_circle(
     sketch_or_surface: SketchOrSurface,
     center: Option<[TyF64; 2]>,
     radius: Option<TyF64>,
@@ -197,7 +213,8 @@ async fn inner_circle(
     let from_t = [TyF64::new(from[0], ty), TyF64::new(from[1], ty)];
 
     let sketch =
-        crate::std::sketch::inner_start_profile(sketch_surface, from_t, None, exec_state, args.clone()).await?;
+        crate::std::sketch::inner_start_profile(sketch_surface, from_t, None, exec_state, &args.ctx, args.source_range)
+            .await?;
 
     let angle_start = Angle::zero();
     let angle_end = Angle::turn();
@@ -296,8 +313,15 @@ async fn inner_circle_three_point(
     let sketch_surface = sketch_surface_or_group.into_sketch_surface();
 
     let from = [TyF64::new(center[0] + radius, ty), TyF64::new(center[1], ty)];
-    let sketch =
-        crate::std::sketch::inner_start_profile(sketch_surface, from.clone(), None, exec_state, args.clone()).await?;
+    let sketch = crate::std::sketch::inner_start_profile(
+        sketch_surface,
+        from.clone(),
+        None,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+    )
+    .await?;
 
     let angle_start = Angle::zero();
     let angle_end = Angle::turn();
@@ -373,7 +397,7 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         args.get_unlabeled_kw_arg("sketchOrSurface", &RuntimeType::sketch_or_surface(), exec_state)?;
     let radius: TyF64 = args.get_kw_arg("radius", &RuntimeType::length(), exec_state)?;
     let num_sides: TyF64 = args.get_kw_arg("numSides", &RuntimeType::count(), exec_state)?;
-    let center = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
+    let center = args.get_kw_arg_opt("center", &RuntimeType::point2d(), exec_state)?;
     let inscribed = args.get_kw_arg_opt("inscribed", &RuntimeType::bool(), exec_state)?;
 
     let sketch = inner_polygon(
@@ -396,11 +420,12 @@ async fn inner_polygon(
     sketch_surface_or_group: SketchOrSurface,
     radius: TyF64,
     num_sides: u64,
-    center: [TyF64; 2],
+    center: Option<[TyF64; 2]>,
     inscribed: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
+    let center = center.unwrap_or(POINT_ZERO_ZERO);
     if num_sides < 3 {
         return Err(KclError::new_type(KclErrorDetails::new(
             "Polygon must have at least 3 sides".to_string(),
@@ -449,7 +474,8 @@ async fn inner_polygon(
         point_to_typed(vertices[0], units),
         None,
         exec_state,
-        args.clone(),
+        &args.ctx,
+        args.source_range,
     )
     .await?;
 
@@ -542,7 +568,7 @@ async fn inner_polygon(
 pub async fn ellipse(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch_or_surface =
         args.get_unlabeled_kw_arg("sketchOrSurface", &RuntimeType::sketch_or_surface(), exec_state)?;
-    let center = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
+    let center = args.get_kw_arg_opt("center", &RuntimeType::point2d(), exec_state)?;
     let major_radius = args.get_kw_arg_opt("majorRadius", &RuntimeType::length(), exec_state)?;
     let major_axis = args.get_kw_arg_opt("majorAxis", &RuntimeType::point2d(), exec_state)?;
     let minor_radius = args.get_kw_arg("minorRadius", &RuntimeType::length(), exec_state)?;
@@ -567,7 +593,7 @@ pub async fn ellipse(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 #[allow(clippy::too_many_arguments)]
 async fn inner_ellipse(
     sketch_surface_or_group: SketchOrSurface,
-    center: [TyF64; 2],
+    center: Option<[TyF64; 2]>,
     major_radius: Option<TyF64>,
     major_axis: Option<[TyF64; 2]>,
     minor_radius: TyF64,
@@ -576,6 +602,7 @@ async fn inner_ellipse(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let sketch_surface = sketch_surface_or_group.into_sketch_surface();
+    let center = center.unwrap_or(POINT_ZERO_ZERO);
     let (center_u, ty) = untype_point(center.clone());
     let units = ty.as_length().unwrap_or(UnitLength::Millimeters);
 
@@ -603,7 +630,8 @@ async fn inner_ellipse(
     let from_t = [TyF64::new(from[0], ty), TyF64::new(from[1], ty)];
 
     let sketch =
-        crate::std::sketch::inner_start_profile(sketch_surface, from_t, None, exec_state, args.clone()).await?;
+        crate::std::sketch::inner_start_profile(sketch_surface, from_t, None, exec_state, &args.ctx, args.source_range)
+            .await?;
 
     let angle_start = Angle::zero();
     let angle_end = Angle::turn();

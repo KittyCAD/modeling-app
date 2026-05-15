@@ -5,7 +5,13 @@ use std::sync::Arc;
 use indexmap::IndexMap;
 use tokio::sync::RwLock;
 
-use crate::front::{Error, FileId, LifecycleApi, ProjectId, Result, SceneGraph, Version};
+use crate::front::Error;
+use crate::front::FileId;
+use crate::front::LifecycleApi;
+use crate::front::ProjectId;
+use crate::front::Result;
+use crate::front::SceneGraph;
+use crate::front::Version;
 
 #[derive(Debug, Clone)]
 pub struct Project {
@@ -71,6 +77,23 @@ impl LifecycleApi for ProjectManager {
         .await
     }
 
+    async fn get_project(&self, id: ProjectId) -> Result<Vec<crate::front::File>> {
+        Self::with_project(move |project| {
+            let Some(project) = project else {
+                return Err(Error::bad_project(id, None));
+            };
+            if project.id != id {
+                return Err(Error::bad_project(id, Some(project.id)));
+            }
+            Ok(project
+                .files
+                .iter()
+                .map(|(file_id, file)| to_front_file(*file_id, file))
+                .collect())
+        })
+        .await
+    }
+
     async fn add_file(&self, project_id: ProjectId, file: crate::front::File) -> Result<()> {
         Self::with_project_mut(move |project| {
             let Some(project) = project else {
@@ -91,6 +114,23 @@ impl LifecycleApi for ProjectManager {
                 },
             );
             Ok(())
+        })
+        .await
+    }
+
+    async fn get_file(&self, project_id: ProjectId, file_id: FileId) -> Result<crate::front::File> {
+        Self::with_project(move |project| {
+            let Some(project) = project else {
+                return Err(Error::bad_project(project_id, None));
+            };
+            if project.id != project_id {
+                return Err(Error::bad_project(project_id, Some(project.id)));
+            }
+            project
+                .files
+                .get(&file_id)
+                .map(|file| to_front_file(file_id, file))
+                .ok_or_else(|| Error::file_id_not_found(project_id, file_id))
         })
         .await
     }
@@ -158,6 +198,14 @@ impl LifecycleApi for ProjectManager {
             Ok(())
         })
         .await
+    }
+}
+
+fn to_front_file(file_id: FileId, file: &File) -> crate::front::File {
+    crate::front::File {
+        id: file_id,
+        path: file.path.clone(),
+        text: file.text.clone(),
     }
 }
 

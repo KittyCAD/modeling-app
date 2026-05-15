@@ -1852,7 +1852,7 @@ function createLengthIndicator({
     })
     if (err(canConstrainLength) || !canConstrainLength.enabled) {
       toast.error(
-        'Unable to constrain the length of this segment. Check the KCL code'
+        'Unable to constrain the length of this segment. Check the KCL code.'
       )
       return
     }

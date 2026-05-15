@@ -1,0 +1,34 @@
+@warnings(deny = csgNoIntersection)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -1.45mm, var 1.89mm], end = [var -7.48mm, var -2.93mm])
+  line2 = line(start = [var -7.48mm, var -2.93mm], end = [var 1.5mm, var -7.67mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 1.5mm, var -7.67mm], end = [var 7.52mm, var -2.85mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 7.52mm, var -2.85mm], end = [var -1.45mm, var 1.89mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  line5 = line(start = [var -7.48mm, var -2.93mm], end = [var 7.52mm, var -2.85mm], construction = true)
+  coincident([line5.start, line2.start])
+  coincident([line5.end, line4.start])
+  line6 = line(start = [var -1.45mm, var 1.89mm], end = [var 1.5mm, var -7.67mm], construction = true)
+  coincident([line6.start, line4.end])
+  coincident([line6.end, line3.start])
+  distance([line6.start, line6.end]) == 10
+  distance([line5.start, line5.end]) == 15
+  parallel([line1, line3])
+  parallel([line2, line4])
+  perpendicular([line6, line5])
+  coincident([line6.start, ORIGIN])
+  vertical(line6)
+}
+hidden001 = hide(sketch001)
+region001 = region(point = [-3.7486132mm, -2.5020801mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 5)
+
+cb2 = clone(extrude001)
+  |> translate(x = 20)
+
+subtract([extrude001], tools = [cb2])
+

@@ -4,23 +4,24 @@ import { useLocation } from 'react-router-dom'
 
 import CommandBarArgument from '@src/components/CommandBar/CommandBarArgument'
 import CommandBarReview from '@src/components/CommandBar/CommandBarReview'
+import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 import CommandComboBox from '@src/components/CommandComboBox'
 import { CustomIcon } from '@src/components/CustomIcon'
-import Tooltip from '@src/components/Tooltip'
-import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
-import {
-  commandBarActor,
-  kclManager,
-  useCommandBarState,
-} from '@src/lib/singletons'
-import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 import Loading from '@src/components/Loading'
+import Tooltip from '@src/components/Tooltip'
+import { useApp } from '@src/lib/boot'
+import type { Command, CommandArgument } from '@src/lib/commandTypes'
+import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
+import { keymapService } from '@src/registry/contracts/keymap'
 
 export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 
 export const CommandBar = () => {
   const { pathname } = useLocation()
-  const commandBarState = useCommandBarState()
+  const { commands: cmd, project, registry } = useApp()
+  const keymap = registry.optional(keymapService)
+  const commandBarState = cmd.useState()
+  const isCommandBarOpen = !commandBarState.matches('Closed')
   const {
     context: { selectedCommand, currentArgument, commands },
   } = commandBarState
@@ -38,29 +39,32 @@ export const CommandBar = () => {
 
   // Close the command bar when navigating
   // but importantly not when the query parameters change
+  // biome-ignore lint/correctness/useExhaustiveDependencies: this intentionally reacts only to path changes.
   useEffect(() => {
-    if (commandBarState.matches('Closed')) return
-    commandBarActor.send({ type: 'Close' })
+    if (commandBarState.matches('Closed')) {
+      return
+    }
+    cmd.send({ type: 'Close' })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [pathname])
 
+  useEffect(() => {
+    if (!keymap || !isCommandBarOpen) {
+      return
+    }
+
+    keymap.applyScope('cmd-palette-open')
+
+    return () => {
+      keymap.removeScope('cmd-palette-open')
+    }
+  }, [isCommandBarOpen, keymap])
+
   // Hook up keyboard shortcuts
   useHotkeyWrapper(
-    [COMMAND_PALETTE_HOTKEY],
-    () => {
-      if (commandBarState.context.commands.length === 0) return
-      if (commandBarState.matches('Closed')) {
-        commandBarActor.send({ type: 'Open' })
-      } else {
-        commandBarActor.send({ type: 'Close' })
-      }
-    },
-    kclManager
-  )
-  useHotkeyWrapper(
     ['esc'],
-    () => commandBarActor.send({ type: 'Close' }),
-    kclManager,
+    () => cmd.send({ type: 'Close' }),
+    project?.executingEditor.value ?? undefined,
     {
       enableOnFormTags: true,
       enableOnContentEditable: true,
@@ -68,16 +72,19 @@ export const CommandBar = () => {
   )
 
   function stepBack() {
-    const entries = Object.entries(selectedCommand?.args || {}).filter(
-      ([argName, arg]) => {
-        const { value, isRequired, isHidden } = evaluateCommandBarArg(
-          argName,
-          arg,
-          commandBarState.context
-        )
-        return !isHidden && (value || isRequired)
-      }
-    )
+    const entries = (
+      Object.entries(selectedCommand?.args || {}) as [
+        string,
+        CommandArgument<unknown>,
+      ][]
+    ).filter(([argName, arg]) => {
+      const { value, isRequired, isHidden } = evaluateCommandBarArg(
+        argName,
+        arg,
+        commandBarState.context
+      )
+      return !isHidden && (value !== undefined || isRequired)
+    })
 
     if (!currentArgument) {
       if (commandBarState.matches('Review')) {
@@ -87,14 +94,14 @@ export const CommandBar = () => {
           ...entries[entries.length - 1][1],
         }
 
-        commandBarActor.send({
+        cmd.send({
           type: 'Edit argument',
           data: {
             arg: currentArg,
           },
         })
       } else {
-        commandBarActor.send({ type: 'Deselect command' })
+        cmd.send({ type: 'Deselect command' })
       }
     } else {
       const index = entries.findIndex(
@@ -103,12 +110,15 @@ export const CommandBar = () => {
 
       if (index === 0) {
         // We're on the first entry, just close
-        commandBarActor.send({ type: 'Close' })
+        cmd.send({ type: 'Close' })
       } else {
-        commandBarActor.send({
+        // Either go to the previous argument if we could locate the current one,
+        // or to the last one (likely a case of unconfirmed optional arg)
+        const prevIndex = index === -1 ? entries.length - 1 : index - 1
+        cmd.send({
           type: 'Change current argument',
           data: {
-            arg: { name: entries[index - 1][0], ...entries[index - 1][1] },
+            arg: { name: entries[prevIndex][0], ...entries[prevIndex][1] },
           },
         })
       }
@@ -117,25 +127,21 @@ export const CommandBar = () => {
 
   return (
     <Transition.Root
-      show={!commandBarState.matches('Closed') || false}
+      show={isCommandBarOpen || false}
       afterLeave={() => {
-        if (selectedCommand?.onCancel) selectedCommand.onCancel()
-        commandBarActor.send({ type: 'Clear' })
+        if (selectedCommand?.onCancel) {
+          selectedCommand.onCancel()
+        }
+        cmd.send({ type: 'Clear' })
       }}
       as={Fragment}
     >
       <WrapperComponent
-        open={
-          !commandBarState.matches('Closed') ||
-          isArgumentThatShouldBeHardToDismiss
-        }
+        open={isCommandBarOpen || isArgumentThatShouldBeHardToDismiss}
         onClose={() => {
-          commandBarActor.send({ type: 'Close' })
+          cmd.send({ type: 'Close' })
         }}
-        className={
-          'fixed inset-0 z-50 overflow-y-auto pb-4 pt-1 ' +
-          (isArgumentThatShouldBeHardToDismiss ? 'pointer-events-none' : '')
-        }
+        className={`fixed inset-0 z-50 overflow-y-auto pb-4 pt-1 ${isArgumentThatShouldBeHardToDismiss ? 'pointer-events-none' : ''}`}
         data-testid="command-bar-wrapper"
       >
         <Transition.Child
@@ -153,7 +159,7 @@ export const CommandBar = () => {
           >
             {commandBarState.matches('Selecting command') ? (
               <CommandComboBox
-                options={commands.filter((command) => {
+                options={commands.filter((command: Command) => {
                   return (
                     // By default everything is undefined
                     // If marked explicitly as false hide
@@ -181,8 +187,9 @@ export const CommandBar = () => {
             )}
             <div className="flex flex-col gap-2 !absolute right-2 top-2 m-0 p-0 border-none bg-transparent hover:bg-transparent">
               <button
+                type="button"
                 data-testid="command-bar-close-button"
-                onClick={() => commandBarActor.send({ type: 'Close' })}
+                onClick={() => cmd.send({ type: 'Close' })}
                 className="group m-0 p-0 border-none bg-transparent hover:bg-transparent"
               >
                 <CustomIcon

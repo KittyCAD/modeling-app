@@ -39,7 +39,7 @@ export function useCalculateKclExpression({
   code: string
   ast: Node<Program>
   variables: VariableMap
-  options?: { allowArrays?: boolean }
+  options?: { allowArrays?: boolean; allowStringArrays?: boolean }
 }): {
   inputRef: React.RefObject<HTMLInputElement | null>
   valueNode: Expr | null
@@ -103,9 +103,10 @@ export function useCalculateKclExpression({
 
   useEffect(() => {
     setTimeout(() => {
-      inputRef.current && inputRef.current.focus()
-      inputRef.current &&
+      if (inputRef.current) {
+        inputRef.current.focus()
         inputRef.current.setSelectionRange(0, String(value).length)
+      }
     }, 100)
     setNewVariableName(findUniqueName(ast, valueName))
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -151,7 +152,7 @@ export function useCalculateKclExpression({
       const newInsertIndex = getSafeInsertIndex(result.astNode, ast)
       setInsertIndex(newInsertIndex)
       setCalcResult(result?.valueAsString || 'NAN')
-      result?.astNode && setValueNode(result.astNode)
+      if (result?.astNode) setValueNode(result.astNode)
     }
     if (!value) return
     setIsExecuting(true)

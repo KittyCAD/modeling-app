@@ -1,4 +1,9 @@
 pub mod checks;
 mod rule;
 
-pub use rule::{Discovered, Finding, FindingFamily, Rule, lint_and_fix_all, lint_and_fix_families};
+pub use rule::Discovered;
+pub use rule::Finding;
+pub use rule::FindingFamily;
+pub use rule::Rule;
+pub use rule::lint_and_fix_all;
+pub use rule::lint_and_fix_families;

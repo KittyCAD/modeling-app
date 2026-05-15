@@ -30,6 +30,7 @@ export class ToolbarFixture {
   revolveButton!: Locator
   offsetPlaneButton!: Locator
   helixButton!: Locator
+  splitButton!: Locator
   translateButton!: Locator
   patternCircularButton!: Locator
   patternLinearButton!: Locator
@@ -81,6 +82,7 @@ export class ToolbarFixture {
     this.revolveButton = page.getByTestId('revolve')
     this.offsetPlaneButton = page.getByTestId('plane-offset')
     this.helixButton = page.getByTestId('helix')
+    this.splitButton = page.getByTestId('split')
     this.translateButton = page.getByTestId('translate')
     this.patternCircularButton = page.getByTestId('pattern-circular-3d')
     this.patternLinearButton = page.getByTestId('pattern-linear-3d')
@@ -101,7 +103,7 @@ export class ToolbarFixture {
     this.loadButton = page.getByTestId('add-file-to-project-pane-button')
 
     this.filePane = page.locator('#files-pane')
-    this.featureTreePane = page.locator('#feature-tree-pane')
+    this.featureTreePane = page.locator('#operations-list-pane')
     this.fileCreateToast = page.getByText('Successfully created')
 
     // Note to test writers: having two locators like this is preferable to one
@@ -221,7 +223,11 @@ export class ToolbarFixture {
    * Opens file by it's name
    */
   openFile = async (fileName: string) => {
-    await this.filePane.getByText(fileName).click()
+    const fileTreeItem = this.page
+      .getByTestId('file-pane-scroll-container')
+      .getByRole('treeitem', { name: fileName, exact: true })
+    await expect(fileTreeItem).toBeVisible()
+    await fileTreeItem.click()
   }
   ensureFolderOpen = async (folder: Locator, open: boolean) => {
     const expanded = await folder.getAttribute('aria-expanded')
@@ -252,6 +258,36 @@ export class ToolbarFixture {
       .getByRole('button', { name: 'caret down booleans: open menu' })
       .click()
     const operationTestId = `dropdown-boolean-${operation}`
+    await expect(this.page.getByTestId(operationTestId)).toBeVisible()
+    await this.page.getByTestId(operationTestId).click()
+  }
+  selectTransform = async (
+    operation:
+      | 'translate'
+      | 'rotate'
+      | 'scale'
+      | 'clone'
+      | 'mirror3d'
+      | 'appearance'
+  ) => {
+    await this.page
+      .getByRole('button', { name: 'caret down transform: open menu' })
+      .click()
+    const operationTestId = `dropdown-${operation}`
+    await expect(this.page.getByTestId(operationTestId)).toBeVisible()
+    await this.page.getByTestId(operationTestId).click()
+  }
+  selectSurface = async (
+    operation:
+      | 'blend-surface'
+      | 'flip-surface'
+      | 'join-surfaces'
+      | 'delete-face'
+  ) => {
+    await this.page
+      .getByRole('button', { name: 'caret down surface: open menu' })
+      .click()
+    const operationTestId = `dropdown-${operation}`
     await expect(this.page.getByTestId(operationTestId)).toBeVisible()
     await this.page.getByTestId(operationTestId).click()
   }
@@ -325,6 +361,18 @@ export class ToolbarFixture {
         name: operationName,
       })
       .nth(operationIndex)
+  }
+
+  /**
+   * Get a specific sketch solve group caret button from the Feature Tree pane.
+   * Index is 0-based.
+   */
+  async getFeatureTreeSketchBlockGroupCaret(index: number) {
+    await this.openFeatureTreePane()
+    await expect(this.featureTreePane).toBeVisible()
+    return this.featureTreePane
+      .getByTestId('sketchblock-group-caret')
+      .nth(index)
   }
 
   getDefaultPlaneVisibilityButton(plane: 'XY' | 'XZ' | 'YZ' = 'XY') {

@@ -1,6 +1,6 @@
 // We do use all the classes in this file currently, but we
 // index into them with styles[position], which CSS Modules doesn't pick up.
-// eslint-disable-next-line css-modules/no-unused-class
+
 import { useRef, useEffect } from 'react'
 import styles from './Tooltip.module.css'
 

@@ -1,19 +1,21 @@
+use ahash::AHashSet;
 use kcmc::ModelingCmd;
-use kittycad_modeling_cmds::{
-    self as kcmc,
-    websocket::{ModelingCmdReq, OkWebSocketResponseData},
-};
+use kittycad_modeling_cmds::websocket::ModelingCmdReq;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
+use kittycad_modeling_cmds::{self as kcmc};
 use uuid::Uuid;
 
-#[cfg(feature = "artifact-graph")]
+use crate::ExecState;
+use crate::ExecutorContext;
+use crate::KclError;
+use crate::SourceRange;
+use crate::errors::KclErrorDetails;
 use crate::exec::ArtifactCommand;
-use crate::{
-    ExecState, ExecutorContext, KclError, SourceRange,
-    errors::KclErrorDetails,
-    exec::{IdGenerator, KclValue},
-    execution::Solid,
-    std::Args,
-};
+use crate::exec::IdGenerator;
+use crate::exec::KclValue;
+use crate::execution::FaceParentSolid;
+use crate::execution::Solid;
+use crate::std::Args;
 
 /// Context and metadata needed to send a single modeling command.
 ///
@@ -29,18 +31,18 @@ pub(crate) struct ModelingCmdMeta<'a> {
 }
 
 impl<'a> ModelingCmdMeta<'a> {
-    pub fn new(ctx: &'a ExecutorContext, source_range: SourceRange) -> Self {
+    pub fn new(exec_state: &ExecState, ctx: &'a ExecutorContext, range: SourceRange) -> Self {
         ModelingCmdMeta {
             ctx,
-            source_range,
+            source_range: exec_state.mod_local.stdlib_entry_source_range.unwrap_or(range),
             id: None,
         }
     }
 
-    pub fn with_id(ctx: &'a ExecutorContext, source_range: SourceRange, id: Uuid) -> Self {
+    pub fn with_id(exec_state: &ExecState, ctx: &'a ExecutorContext, range: SourceRange, id: Uuid) -> Self {
         ModelingCmdMeta {
             ctx,
-            source_range,
+            source_range: exec_state.mod_local.stdlib_entry_source_range.unwrap_or(range),
             id: Some(id),
         }
     }
@@ -88,13 +90,15 @@ impl ExecState {
             return Err(no_modeling_in_sketch_block_error(meta.source_range));
         }
         let id = meta.id(self.id_generator());
-        #[cfg(feature = "artifact-graph")]
         self.push_command(ArtifactCommand {
             cmd_id: id,
             range: meta.source_range,
             command: cmd.clone(),
         });
-        meta.ctx.engine.batch_modeling_cmd(id, meta.source_range, &cmd).await
+        meta.ctx
+            .engine
+            .batch_modeling_cmd(&meta.ctx.engine_batch, id, meta.source_range, &cmd)
+            .await
     }
 
     /// Add multiple modeling commands to the batch but don't fire them right
@@ -107,7 +111,6 @@ impl ExecState {
         if self.is_in_sketch_block() {
             return Err(no_modeling_in_sketch_block_error(meta.source_range));
         }
-        #[cfg(feature = "artifact-graph")]
         for cmd_req in cmds {
             self.push_command(ArtifactCommand {
                 cmd_id: *cmd_req.cmd_id.as_ref(),
@@ -115,7 +118,10 @@ impl ExecState {
                 command: cmd_req.cmd.clone(),
             });
         }
-        meta.ctx.engine.batch_modeling_cmds(meta.source_range, cmds).await
+        meta.ctx
+            .engine
+            .batch_modeling_cmds(&meta.ctx.engine_batch, meta.source_range, cmds)
+            .await
     }
 
     /// Add a modeling command to the batch that gets executed at the end of the
@@ -132,13 +138,15 @@ impl ExecState {
         let id = meta.id(self.id_generator());
         // TODO: The order of the tracking of these doesn't match the order that
         // they're sent to the engine.
-        #[cfg(feature = "artifact-graph")]
         self.push_command(ArtifactCommand {
             cmd_id: id,
             range: meta.source_range,
             command: cmd.clone(),
         });
-        meta.ctx.engine.batch_end_cmd(id, meta.source_range, &cmd).await
+        meta.ctx
+            .engine
+            .batch_end_cmd(&meta.ctx.engine_batch, id, meta.source_range, &cmd)
+            .await
     }
 
     /// Send the modeling cmd and wait for the response.
@@ -151,13 +159,15 @@ impl ExecState {
             return Err(no_modeling_in_sketch_block_error(meta.source_range));
         }
         let id = meta.id(self.id_generator());
-        #[cfg(feature = "artifact-graph")]
         self.push_command(ArtifactCommand {
             cmd_id: id,
             range: meta.source_range,
             command: cmd.clone(),
         });
-        meta.ctx.engine.send_modeling_cmd(id, meta.source_range, &cmd).await
+        meta.ctx
+            .engine
+            .send_modeling_cmd(&meta.ctx.engine_batch, id, meta.source_range, &cmd)
+            .await
     }
 
     /// Send the modeling cmd async and don't wait for the response.
@@ -171,7 +181,6 @@ impl ExecState {
             return Err(no_modeling_in_sketch_block_error(meta.source_range));
         }
         let id = meta.id(self.id_generator());
-        #[cfg(feature = "artifact-graph")]
         self.push_command(ArtifactCommand {
             cmd_id: id,
             range: meta.source_range,
@@ -191,7 +200,10 @@ impl ExecState {
         if self.is_in_sketch_block() {
             return Err(no_modeling_in_sketch_block_error(meta.source_range));
         }
-        meta.ctx.engine.flush_batch(batch_end, meta.source_range).await
+        meta.ctx
+            .engine
+            .flush_batch(&meta.ctx.engine_batch, batch_end, meta.source_range)
+            .await
     }
 
     /// Flush just the fillets and chamfers for this specific SolidSet.
@@ -204,46 +216,95 @@ impl ExecState {
             return Err(no_modeling_in_sketch_block_error(meta.source_range));
         }
         // Make sure we don't traverse sketches more than once.
-        let mut traversed_sketches = Vec::new();
+        let mut traversed_sketches = AHashSet::new();
 
         // Collect all the fillet/chamfer ids for the solids.
         let mut ids = Vec::new();
         for solid in solids {
             // We need to traverse the solids that share the same sketch.
-            let sketch_id = solid.sketch.id;
+            let sketch_id = solid.sketch_id().unwrap_or(solid.id);
             if !traversed_sketches.contains(&sketch_id) {
                 // Find all the solids on the same shared sketch.
                 ids.extend(
                     self.stack()
                         .walk_call_stack()
-                        .filter(|v| matches!(v, KclValue::Solid { value } if value.sketch.id == sketch_id))
+                        .filter(|v| {
+                            matches!(
+                                v,
+                                KclValue::Solid { value }
+                                    if value.sketch_id().unwrap_or(value.id) == sketch_id
+                            )
+                        })
                         .flat_map(|v| match v {
                             KclValue::Solid { value } => value.get_all_edge_cut_ids(),
                             _ => unreachable!(),
                         }),
                 );
-                traversed_sketches.push(sketch_id);
+                traversed_sketches.insert(sketch_id);
             }
 
             ids.extend(solid.get_all_edge_cut_ids());
         }
 
+        self.flush_batch_for_edge_cut_ids(meta, ids).await
+    }
+
+    /// Flush just the fillets and chamfers for the parent solids of face-backed sketches.
+    pub(crate) async fn flush_batch_for_face_parent_solids(
+        &mut self,
+        meta: ModelingCmdMeta<'_>,
+        solids: &[FaceParentSolid],
+    ) -> Result<(), KclError> {
+        if self.is_in_sketch_block() {
+            return Err(no_modeling_in_sketch_block_error(meta.source_range));
+        }
+        // Make sure we don't traverse sketches more than once.
+        let mut traversed_sketches = AHashSet::new();
+
+        // Collect all the fillet/chamfer ids for the solids.
+        let mut ids = Vec::new();
+        for solid in solids {
+            // We need to traverse the solids that share the same sketch.
+            let sketch_id = solid.sketch_or_solid_id();
+            if !traversed_sketches.contains(&sketch_id) {
+                // Find all the solids on the same shared sketch.
+                ids.extend(
+                    self.stack()
+                        .walk_call_stack()
+                        .filter(|v| {
+                            matches!(
+                                v,
+                                KclValue::Solid { value }
+                                    if value.sketch_id().unwrap_or(value.id) == sketch_id
+                            )
+                        })
+                        .flat_map(|v| match v {
+                            KclValue::Solid { value } => value.get_all_edge_cut_ids(),
+                            _ => unreachable!(),
+                        }),
+                );
+                traversed_sketches.insert(sketch_id);
+            }
+
+            ids.extend(solid.edge_cut_ids.iter().copied());
+        }
+
+        self.flush_batch_for_edge_cut_ids(meta, ids).await
+    }
+
+    async fn flush_batch_for_edge_cut_ids(
+        &mut self,
+        meta: ModelingCmdMeta<'_>,
+        ids: Vec<Uuid>,
+    ) -> Result<(), KclError> {
         // We can return early if there are no fillets or chamfers.
         if ids.is_empty() {
             return Ok(());
         }
 
         // We want to move these fillets and chamfers from batch_end to batch so they get executed
-        // before what ever we call next.
-        for id in ids {
-            // Pop it off the batch_end and add it to the batch.
-            let Some(item) = meta.ctx.engine.batch_end().write().await.shift_remove(&id) else {
-                // It might be in the batch already.
-                continue;
-            };
-            // Add it to the batch.
-            meta.ctx.engine.batch().write().await.push(item);
-        }
+        // before whatever we call next.
+        meta.ctx.engine_batch.move_batch_end_to_batch(ids).await;
 
         // Run flush.
         // Yes, we do need to actually flush the batch here, or references will fail later.

@@ -1,10 +1,11 @@
+import { join } from 'path'
 import type { NodePath } from '@rust/kcl-lib/bindings/NodePath'
+import type { OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import { topLevelRange } from '@src/lang/util'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
-import { join } from 'path'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
 
 import {
@@ -13,12 +14,17 @@ import {
   defaultNodePath,
   nodePathFromRange,
 } from '@src/lang/wasm'
+import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
 import {
+  enterEditFlow,
   filterOperations,
+  getHideOpForArtifact,
   getOperationVariableName,
   groupOperationTypeStreaks,
+  groupSketchBlockOperations,
 } from '@src/lib/operations'
-import { expect, describe, it } from 'vitest'
+import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+import { describe, expect, it } from 'vitest'
 
 function stdlib(name: string): Operation {
   return {
@@ -29,6 +35,87 @@ function stdlib(name: string): Operation {
     nodePath: defaultNodePath(),
     sourceRange: defaultSourceRange(),
     isError: false,
+  }
+}
+
+function hideOperation(searchId: string): Operation {
+  return {
+    type: 'StdLibCall',
+    name: 'hide',
+    unlabeledArg: {
+      sourceRange: defaultSourceRange(),
+      value: {
+        type: 'Solid',
+        value: { artifactId: searchId },
+      },
+    },
+    labeledArgs: {},
+    nodePath: defaultNodePath(),
+    sourceRange: defaultSourceRange(),
+    isError: false,
+  }
+}
+
+function compositeSolidArtifact(
+  id: string,
+  sourceRange: SourceRange,
+  nodePath: NodePath = defaultNodePath()
+): Artifact {
+  return {
+    type: 'compositeSolid',
+    id,
+    consumed: false,
+    subType: 'subtract',
+    solidIds: [],
+    toolIds: [],
+    codeRef: {
+      range: sourceRange,
+      nodePath,
+      pathToNode: [],
+    },
+  }
+}
+
+function segmentArtifact(id: string): Artifact {
+  return {
+    type: 'segment',
+    id,
+    pathId: 'path-id',
+    edgeIds: [],
+    codeRef: {
+      range: defaultSourceRange(),
+      nodePath: defaultNodePath(),
+      pathToNode: [],
+    },
+    commonSurfaceIds: [],
+  }
+}
+
+function toArtifactGraph(artifacts: Artifact[]): ArtifactGraph {
+  return new Map(artifacts.map((artifact) => [artifact.id, artifact]))
+}
+
+function stdlibInSketchBlock(name: string, index = 0): Operation {
+  const op = stdlib(name)
+  if (op.type !== 'StdLibCall') {
+    return op
+  }
+  return {
+    ...op,
+    nodePath: {
+      steps: [
+        {
+          type: 'ProgramBodyItem',
+          index,
+        },
+        {
+          type: 'ExpressionStatementExpr',
+        },
+        {
+          type: 'SketchBlockBody',
+        },
+      ],
+    },
   }
 }
 
@@ -73,6 +160,65 @@ function moduleEnd(): Operation {
 }
 
 describe('operations.test.ts', () => {
+  describe('body visibility operations', () => {
+    it('finds a hide operation by direct artifact id', () => {
+      const artifact = compositeSolidArtifact('body-artifact', [0, 10, 0])
+      const hideOp = hideOperation('body-artifact')
+
+      const result = getHideOpForArtifact({
+        operations: [hideOp],
+        artifact,
+        artifactGraph: toArtifactGraph([artifact]),
+      })
+
+      expect(result).toBe(hideOp)
+    })
+
+    it('finds a hide operation for equivalent boolean result artifacts', () => {
+      const sourceRange: SourceRange = [0, 24, 0]
+      const nodePath = defaultNodePath()
+      const hiddenArtifact = compositeSolidArtifact(
+        'hidden-result-artifact',
+        sourceRange,
+        nodePath
+      )
+      const bodyRowArtifact = compositeSolidArtifact(
+        'body-row-artifact',
+        sourceRange,
+        nodePath
+      )
+      const hideOp = hideOperation(hiddenArtifact.id)
+
+      const result = getHideOpForArtifact({
+        operations: [hideOp],
+        artifact: bodyRowArtifact,
+        artifactGraph: toArtifactGraph([hiddenArtifact, bodyRowArtifact]),
+      })
+
+      expect(result).toBe(hideOp)
+    })
+
+    it('does not find a hide operation for a different boolean operation', () => {
+      const hiddenArtifact = compositeSolidArtifact(
+        'hidden-result-artifact',
+        [0, 24, 0]
+      )
+      const visibleArtifact = compositeSolidArtifact(
+        'visible-result-artifact',
+        [30, 54, 0]
+      )
+      const hideOp = hideOperation(hiddenArtifact.id)
+
+      const result = getHideOpForArtifact({
+        operations: [hideOp],
+        artifact: visibleArtifact,
+        artifactGraph: toArtifactGraph([hiddenArtifact, visibleArtifact]),
+      })
+
+      expect(result).toBeUndefined()
+    })
+  })
+
   describe('operations filtering', () => {
     it('drops stdlib operations inside a user-defined function call', async () => {
       const operations = [
@@ -205,6 +351,111 @@ describe('operations.test.ts', () => {
     )
   }
 
+  describe('GDT edit flow', () => {
+    it.each([
+      {
+        operationName: 'gdt::profile',
+        commandName: 'GDT Profile',
+        targetLabel: 'edges',
+        targetExpression: '[edge001]',
+        targetValue: {
+          type: 'Array',
+          value: [{ type: 'Uuid', value: 'segment-id' }],
+        } satisfies OpKclValue,
+      },
+      {
+        operationName: 'gdt::perpendicularity',
+        commandName: 'GDT Perpendicularity',
+        targetLabel: 'faces',
+        targetExpression: '[side]',
+        targetValue: {
+          type: 'Array',
+          value: [
+            {
+              type: 'TagIdentifier',
+              value: 'side',
+              artifact_id: 'segment-id',
+            },
+          ],
+        } satisfies OpKclValue,
+      },
+      {
+        operationName: 'gdt::parallelism',
+        commandName: 'GDT Parallelism',
+        targetLabel: 'faces',
+        targetExpression: '[side]',
+        targetValue: {
+          type: 'Array',
+          value: [
+            {
+              type: 'TagIdentifier',
+              value: 'side',
+              artifact_id: 'segment-id',
+            },
+          ],
+        } satisfies OpKclValue,
+      },
+    ])(
+      'preserves variable-backed datums for $operationName',
+      async ({
+        operationName,
+        commandName,
+        targetLabel,
+        targetExpression,
+        targetValue,
+      }) => {
+        const { rustContext } = await buildTheWorldAndNoEngineConnection()
+        const code = `datumRefs = ["A"]
+edge001 = getCommonEdge(faces = [side, top])
+${operationName}(${targetLabel} = ${targetExpression}, tolerance = 0.1mm, datums = datumRefs)`
+        const datumRefsArgStart = code.lastIndexOf('datumRefs')
+        const operation = stdlib(operationName)
+        if (operation.type !== 'StdLibCall') {
+          throw new Error('Expected operation to be a StdLibCall')
+        }
+        operation.labeledArgs = {
+          [targetLabel]: {
+            value: targetValue,
+            sourceRange: rangeOfText(code, targetExpression),
+          },
+          tolerance: {
+            value: { type: 'Number', value: 0.1, ty: { type: 'Any' } },
+            sourceRange: rangeOfText(code, '0.1mm'),
+          },
+          datums: {
+            value: {
+              type: 'Array',
+              value: [{ type: 'String', value: 'A' }],
+            },
+            sourceRange: topLevelRange(
+              datumRefsArgStart,
+              datumRefsArgStart + 'datumRefs'.length
+            ),
+          },
+        }
+
+        const result = await enterEditFlow({
+          operation,
+          code,
+          artifactGraph: toArtifactGraph([segmentArtifact('segment-id')]),
+          rustContext,
+        })
+        if (result instanceof Error) {
+          throw result
+        }
+        if (result.type !== 'Find and select command') {
+          throw new Error(`Expected edit flow event, got ${result.type}`)
+        }
+
+        const argDefaultValues = result.data.argDefaultValues as {
+          datums?: { valueText: string }
+        }
+        expect(result.data.name).toBe(commandName)
+        expect(argDefaultValues.datums?.valueText).toBe('datumRefs')
+      }
+    )
+  })
+
   describe('variable name of operations', () => {
     it('finds the variable name with simple assignment', async () => {
       const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
@@ -270,6 +521,71 @@ describe('operations.test.ts', () => {
       const program = assertParse(code, instance)
       const variableName = getOperationVariableName(op, program, instance)
       expect(variableName).toBeUndefined()
+    })
+    it('finds variable names for operations inside a sketch block', async () => {
+      const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
+      const code = `sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var -13.64mm, var 7.86mm], end = [var 0mm, var 18.94mm])
+  horizontalDistance([line1.end, ORIGIN]) == 0mm
+  line2 = line(start = [var -12.18mm, var -3.65mm], end = [var -13.64mm, var 7.86mm])
+  coincident([line2.end, line1.start])
+  point2 = point(at = [var 7.65mm, var 18.08mm])
+  point1 = point(at = [var 9.37mm, var 7.94mm])
+  verticalDistance([point1, point2]) == 0mm
+  circle1 = circle(start = [var 10.57mm, var 2.96mm], center = [var 10.49mm, var 0mm])
+  arc1 = arc(start = [var 1.04mm, var -8.29mm], end = [var -3.62mm, var -5.28mm], center = [var -3.42mm, var -10.09mm])
+  coincident([arc1.end, line2.start])
+}
+`
+      const program = assertParse(code, instance)
+
+      const cases = [
+        {
+          name: 'line',
+          target:
+            'line(start = [var -13.64mm, var 7.86mm], end = [var 0mm, var 18.94mm])',
+          expected: 'line1',
+        },
+        {
+          name: 'line',
+          target:
+            'line(start = [var -12.18mm, var -3.65mm], end = [var -13.64mm, var 7.86mm])',
+          expected: 'line2',
+        },
+        {
+          name: 'point',
+          target: 'point(at = [var 7.65mm, var 18.08mm])',
+          expected: 'point2',
+        },
+        {
+          name: 'point',
+          target: 'point(at = [var 9.37mm, var 7.94mm])',
+          expected: 'point1',
+        },
+        {
+          name: 'arc',
+          target:
+            'arc(start = [var 1.04mm, var -8.29mm], end = [var -3.62mm, var -5.28mm], center = [var -3.42mm, var -10.09mm])',
+          expected: 'arc1',
+        },
+        {
+          name: 'circle',
+          target:
+            'circle(start = [var 10.57mm, var 2.96mm], center = [var 10.49mm, var 0mm])',
+          expected: 'circle1',
+        },
+      ] as const
+
+      for (const testCase of cases) {
+        const op = stdlib(testCase.name)
+        if (op.type !== 'StdLibCall') {
+          throw new Error('Expected operation to be a StdLibCall')
+        }
+        op.nodePath = await buildNodePath(code, testCase.target, instance)
+
+        const variableName = getOperationVariableName(op, program, instance)
+        expect(variableName).toBe(testCase.expected)
+      }
     })
   })
 
@@ -339,6 +655,68 @@ describe('operations.test.ts', () => {
         [moduleBegin('m1'), moduleBegin('m2')],
         userReturn(),
         stdlib('s3'),
+      ])
+    })
+  })
+
+  describe('groupSketchBlockOperations', () => {
+    it('groups contiguous operations from the same sketch block', () => {
+      const ops = [
+        stdlib('offsetPlane'),
+        stdlibInSketchBlock('horizontal', 1),
+        stdlibInSketchBlock('vertical', 1),
+        stdlibInSketchBlock('coincident', 1),
+        stdlib('extrude'),
+      ]
+
+      const actual = groupSketchBlockOperations(ops)
+
+      expect(actual).toEqual([
+        stdlib('offsetPlane'),
+        [
+          stdlibInSketchBlock('horizontal', 1),
+          stdlibInSketchBlock('vertical', 1),
+          stdlibInSketchBlock('coincident', 1),
+        ],
+        stdlib('extrude'),
+      ])
+    })
+
+    it('keeps separate sketch blocks separate', () => {
+      const ops = [
+        stdlibInSketchBlock('horizontal', 1),
+        stdlibInSketchBlock('vertical', 1),
+        stdlib('offsetPlane'),
+        stdlibInSketchBlock('coincident', 2),
+      ]
+
+      const actual = groupSketchBlockOperations(ops)
+
+      expect(actual).toEqual([
+        [
+          stdlibInSketchBlock('horizontal', 1),
+          stdlibInSketchBlock('vertical', 1),
+        ],
+        stdlib('offsetPlane'),
+        [stdlibInSketchBlock('coincident', 2)],
+      ])
+    })
+
+    it('does not merge pre-grouped operation streaks into sketch block groups', () => {
+      const ops = [
+        [stdlib('a'), stdlib('b')],
+        stdlibInSketchBlock('horizontal', 1),
+        stdlibInSketchBlock('vertical', 1),
+      ]
+
+      const actual = groupSketchBlockOperations(ops)
+
+      expect(actual).toEqual([
+        [stdlib('a'), stdlib('b')],
+        [
+          stdlibInSketchBlock('horizontal', 1),
+          stdlibInSketchBlock('vertical', 1),
+        ],
       ])
     })
   })

@@ -11,14 +11,14 @@ import type {
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
-import type { MachineManager } from '@src/components/MachineManagerProvider'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { Expr, Name, VariableDeclaration } from '@src/lang/wasm'
+import type { MachineManager } from '@src/lib/MachineManager'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   CommandBarContext,
   commandBarMachine,
 } from '@src/machines/commandBarMachine'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 type Icon = CustomIconName
 const _TARGETS = ['both', 'web', 'desktop'] as const
@@ -48,6 +48,14 @@ export interface KclExpressionWithVariable extends KclExpression {
 export type KclCommandValue = KclExpression | KclExpressionWithVariable
 export type CommandInputType = INPUT_TYPE[number]
 type CommandStatus = 'active' | 'development' | 'inactive' | 'experimental'
+export type CommandSelectionType =
+  | Artifact['type']
+  | 'pathRegion'
+  | 'primitiveFace'
+  | 'primitiveEdge'
+  | 'enginePrimitiveFace'
+  | 'enginePrimitiveEdge'
+  | 'engineRegion'
 export type FileFilter = {
   name: string
   extensions: string[]
@@ -79,6 +87,7 @@ export type Command<
   CommandSchema extends
     StateMachineCommandSetSchema<T>[CommandName] = StateMachineCommandSetSchema<T>[CommandName],
 > = {
+  id?: string
   name: CommandName
   groupId: T['id']
   needsReview: boolean
@@ -90,7 +99,7 @@ export type Command<
     machineActor?: ActorRefFrom<T>
   ) => Promise<undefined | Error>
   machineActor?: Actor<T>
-  onSubmit: (data?: CommandSchema, wasmInstance?: ModuleType) => void
+  onSubmit: (data?: CommandSchema, wasmInstance?: ModuleType) => unknown
   onCancel?: () => void
   args?: {
     [ArgName in keyof CommandSchema]: CommandArgument<CommandSchema[ArgName], T>
@@ -174,7 +183,7 @@ export type CommandArgumentConfig<
     }
   | {
       inputType: 'selection'
-      selectionTypes: Artifact['type'][]
+      selectionTypes: CommandSelectionType[]
       clearSelectionFirst?: boolean
       selectionFilter?: EntityType[]
       multiple: boolean
@@ -186,7 +195,7 @@ export type CommandArgumentConfig<
     }
   | {
       inputType: 'selectionMixed'
-      selectionTypes: Artifact['type'][]
+      selectionTypes: CommandSelectionType[]
       selectionFilter?: EntityType[]
       multiple: boolean
       clearSelectionFirst?: boolean
@@ -204,6 +213,10 @@ export type CommandArgumentConfig<
   | {
       inputType: 'kcl'
       allowArrays?: boolean
+      allowStringArrays?: boolean
+      allowUncalculated?: boolean
+      inputToKclValue?: (value: string) => string
+      kclValueToInput?: (value: string) => string
       createVariable?: 'byDefault' | 'force' | 'disallow'
       variableName?:
         | string
@@ -362,7 +375,7 @@ export type CommandArgument<
     }
   | {
       inputType: 'selection'
-      selectionTypes: Artifact['type'][]
+      selectionTypes: CommandSelectionType[]
       clearSelectionFirst?: boolean
       selectionFilter?: EntityType[]
       multiple: boolean
@@ -374,7 +387,7 @@ export type CommandArgument<
     }
   | {
       inputType: 'selectionMixed'
-      selectionTypes: Artifact['type'][]
+      selectionTypes: CommandSelectionType[]
       selectionFilter?: EntityType[]
       multiple: boolean
       clearSelectionFirst?: boolean
@@ -392,6 +405,10 @@ export type CommandArgument<
   | {
       inputType: 'kcl'
       allowArrays?: boolean
+      allowStringArrays?: boolean
+      allowUncalculated?: boolean
+      inputToKclValue?: (value: string) => string
+      kclValueToInput?: (value: string) => string
       createVariable?: 'byDefault' | 'force' | 'disallow'
       variableName?:
         | string

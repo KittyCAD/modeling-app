@@ -397,7 +397,6 @@ description: Artifact commands intersect_cubes.kcl
                 "z": 1.0
               },
               "set": false,
-              "is_local": true,
               "origin": {
                 "type": "local"
               }
@@ -418,6 +417,7 @@ description: Artifact commands intersect_cubes.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     }

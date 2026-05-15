@@ -4,7 +4,16 @@ import type {
   LayoutMigrationMap,
   LayoutWithMetadata,
 } from '@src/lib/layout/types'
-import { applyLayoutMigrationMap } from '@src/lib/layout/utils'
+import {
+  applyLayoutContribution,
+  applyLayoutMigrationMap,
+  closeAllPanes,
+  setOpenPanes,
+} from '@src/lib/layout/utils'
+import {
+  DefaultLayoutPaneID,
+  DefaultLayoutToolbarID,
+} from '@src/lib/layout/configs/default'
 import { expect } from 'vitest'
 import { it } from 'vitest'
 import { describe } from 'vitest'
@@ -32,6 +41,271 @@ const basicSplitLayout: Layout = {
 }
 
 describe('Layout utils', () => {
+  describe('pane visibility utilities', () => {
+    it('closes every open pane in a pane layout', () => {
+      const layout: Layout = {
+        id: 'root',
+        label: 'Root',
+        type: LayoutType.Splits,
+        orientation: 'inline',
+        sizes: [50, 50],
+        children: [
+          {
+            id: DefaultLayoutToolbarID.Left,
+            label: 'Left',
+            type: LayoutType.Panes,
+            side: 'inline-start',
+            activeIndices: [0, 1, 2],
+            sizes: [34, 33, 33],
+            splitOrientation: 'block',
+            children: [
+              {
+                id: DefaultLayoutPaneID.FeatureTree,
+                label: 'Feature Tree',
+                type: LayoutType.Simple,
+                areaType: AreaType.FeatureTree,
+                icon: 'model',
+              },
+              {
+                id: DefaultLayoutPaneID.Code,
+                label: 'Code',
+                type: LayoutType.Simple,
+                areaType: AreaType.Code,
+                icon: 'code',
+              },
+              {
+                id: DefaultLayoutPaneID.Files,
+                label: 'Files',
+                type: LayoutType.Simple,
+                areaType: AreaType.Files,
+                icon: 'folder',
+              },
+            ],
+            actions: [],
+          },
+          {
+            id: DefaultLayoutToolbarID.Right,
+            label: 'Right',
+            type: LayoutType.Panes,
+            side: 'inline-end',
+            activeIndices: [0],
+            sizes: [100],
+            splitOrientation: 'block',
+            children: [
+              {
+                id: DefaultLayoutPaneID.TTC,
+                label: 'Zookeeper',
+                type: LayoutType.Simple,
+                areaType: AreaType.TTC,
+                icon: 'sparkles',
+              },
+            ],
+            actions: [],
+          },
+        ],
+      }
+
+      closeAllPanes(layout, DefaultLayoutToolbarID.Left)
+
+      expect(layout).toHaveProperty('children[0].activeIndices', [])
+      expect(layout).toHaveProperty('children[0].sizes', [])
+    })
+
+    it('opens only the requested panes', () => {
+      const layout: Layout = {
+        id: 'root',
+        label: 'Root',
+        type: LayoutType.Splits,
+        orientation: 'inline',
+        sizes: [50, 50],
+        children: [
+          {
+            id: DefaultLayoutToolbarID.Left,
+            label: 'Left',
+            type: LayoutType.Panes,
+            side: 'inline-start',
+            activeIndices: [0, 1, 2],
+            sizes: [34, 33, 33],
+            splitOrientation: 'block',
+            children: [
+              {
+                id: DefaultLayoutPaneID.FeatureTree,
+                label: 'Feature Tree',
+                type: LayoutType.Simple,
+                areaType: AreaType.FeatureTree,
+                icon: 'model',
+              },
+              {
+                id: DefaultLayoutPaneID.Code,
+                label: 'Code',
+                type: LayoutType.Simple,
+                areaType: AreaType.Code,
+                icon: 'code',
+              },
+              {
+                id: DefaultLayoutPaneID.Files,
+                label: 'Files',
+                type: LayoutType.Simple,
+                areaType: AreaType.Files,
+                icon: 'folder',
+              },
+              {
+                id: DefaultLayoutPaneID.Variables,
+                label: 'Variables',
+                type: LayoutType.Simple,
+                areaType: AreaType.Variables,
+                icon: 'make-variable',
+              },
+            ],
+            actions: [],
+          },
+          {
+            id: DefaultLayoutToolbarID.Right,
+            label: 'Right',
+            type: LayoutType.Panes,
+            side: 'inline-end',
+            activeIndices: [0],
+            sizes: [100],
+            splitOrientation: 'block',
+            children: [
+              {
+                id: DefaultLayoutPaneID.TTC,
+                label: 'Zookeeper',
+                type: LayoutType.Simple,
+                areaType: AreaType.TTC,
+                icon: 'sparkles',
+              },
+            ],
+            actions: [],
+          },
+        ],
+      }
+
+      setOpenPanes(layout, [DefaultLayoutPaneID.FeatureTree])
+
+      expect(layout).toHaveProperty('children[0].activeIndices', [0])
+      expect(layout).toHaveProperty('children[1].activeIndices', [])
+    })
+  })
+
+  describe('layout contributions', () => {
+    it('inserts missing contributed areas into a target pane layout', () => {
+      const layout: Layout = {
+        id: 'root',
+        label: 'Root',
+        type: LayoutType.Panes,
+        side: 'inline-start',
+        activeIndices: [0],
+        sizes: [100],
+        splitOrientation: 'block',
+        children: [
+          {
+            id: 'existing-pane',
+            label: 'Existing',
+            type: LayoutType.Simple,
+            areaType: AreaType.Code,
+            icon: 'code',
+          },
+        ],
+      }
+
+      const result = applyLayoutContribution({
+        rootLayout: layout,
+        contribution: {
+          id: 'plugin-area-default',
+          kind: 'area',
+          pane: {
+            id: 'plugin-pane',
+            label: 'Plugin',
+            type: LayoutType.Simple,
+            areaType: 'plugin.area',
+            icon: 'stopwatch',
+          },
+          placement: {
+            targetPaneId: 'root',
+            afterId: 'existing-pane',
+          },
+          initiallyOpen: true,
+        },
+      })
+
+      expect(result).toStrictEqual({ applied: true, reason: 'applied' })
+      expect(layout).toHaveProperty('children[1].id', 'plugin-pane')
+      expect(layout).toHaveProperty('activeIndices', [0, 1])
+      expect(layout).toHaveProperty('sizes', [50, 50])
+    })
+
+    it('does not duplicate contributed areas already present anywhere in the layout', () => {
+      const layout = structuredClone(basicSplitLayout)
+
+      const result = applyLayoutContribution({
+        rootLayout: layout,
+        contribution: {
+          id: 'plugin-area-default',
+          kind: 'area',
+          pane: {
+            id: 'ttc',
+            label: 'Plugin',
+            type: LayoutType.Simple,
+            areaType: 'plugin.area',
+            icon: 'stopwatch',
+          },
+          placement: {
+            targetPaneId: 'root',
+          },
+        },
+      })
+
+      expect(result).toStrictEqual({
+        applied: false,
+        reason: 'already-present',
+      })
+    })
+
+    it('inserts missing contributed actions into a target pane layout', () => {
+      const layout: Layout = {
+        id: 'root',
+        label: 'Root',
+        type: LayoutType.Panes,
+        side: 'inline-start',
+        activeIndices: [],
+        sizes: [],
+        splitOrientation: 'block',
+        children: [],
+        actions: [
+          {
+            id: 'existing-action',
+            label: 'Existing',
+            icon: 'command',
+            actionType: 'existing.action',
+          },
+        ],
+      }
+
+      const result = applyLayoutContribution({
+        rootLayout: layout,
+        contribution: {
+          id: 'plugin-action-default',
+          kind: 'action',
+          action: {
+            id: 'plugin-action',
+            label: 'Plugin action',
+            icon: 'stopwatch',
+            actionType: 'plugin.action',
+          },
+          placement: {
+            targetPaneId: 'root',
+            beforeId: 'existing-action',
+          },
+        },
+      })
+
+      expect(result).toStrictEqual({ applied: true, reason: 'applied' })
+      expect(layout).toHaveProperty('actions[0].id', 'plugin-action')
+      expect(layout).toHaveProperty('actions[1].id', 'existing-action')
+    })
+  })
+
   describe('layout migrations', () => {
     it('should do nothing if we just return the layout back', () => {
       const migrationMap: LayoutMigrationMap = new Map([

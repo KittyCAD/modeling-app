@@ -1,14 +1,14 @@
 use anyhow::Result;
 
-use crate::{
-    errors::Suggestion,
-    lint::{
-        checks::offset_plane::start_sketch_on_check_specific_plane,
-        rule::{Discovered, Finding, FindingFamily, def_finding},
-    },
-    parsing::ast::types::{Node as AstNode, Program},
-    walk::Node,
-};
+use crate::errors::Suggestion;
+use crate::lint::checks::offset_plane::start_sketch_on_check_specific_plane;
+use crate::lint::rule::Discovered;
+use crate::lint::rule::Finding;
+use crate::lint::rule::FindingFamily;
+use crate::lint::rule::def_finding;
+use crate::parsing::ast::types::Node as AstNode;
+use crate::parsing::ast::types::Program;
+use crate::walk::Node;
 
 def_finding!(
     Z0002,
@@ -46,8 +46,10 @@ pub fn lint_should_be_default_plane(node: Node, _prog: &AstNode<Program>) -> Res
 
 #[cfg(test)]
 mod tests {
-    use super::{Z0002, lint_should_be_default_plane};
-    use crate::lint::rule::{test_finding, test_no_finding};
+    use super::Z0002;
+    use super::lint_should_be_default_plane;
+    use crate::lint::rule::test_finding;
+    use crate::lint::rule::test_no_finding;
 
     test_finding!(
         z0002_bad_sketch_on,

@@ -2,16 +2,22 @@ use std::fmt;
 
 use anyhow::Result;
 pub use kcl_error::ModuleId;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
-use crate::{
-    SourceRange,
-    errors::{KclError, KclErrorDetails},
-    exec::KclValue,
-    execution::{EnvironmentRef, ModuleArtifactState, PreImportedGeometry, typed_path::TypedPath},
-    fs::{FileManager, FileSystem},
-    parsing::ast::types::{ImportPath, Node, Program},
-};
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::exec::KclValue;
+use crate::execution::EnvironmentRef;
+use crate::execution::ModuleArtifactState;
+use crate::execution::PreImportedGeometry;
+use crate::execution::typed_path::TypedPath;
+use crate::fs::FileManager;
+use crate::fs::FileSystem;
+use crate::parsing::ast::types::ImportPath;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::Program;
 
 #[derive(Debug, Clone, Default)]
 pub(crate) struct ModuleLoader {
@@ -83,7 +89,7 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
         "math" => Some(include_str!("../std/math.kcl")),
         "runtime" => Some(include_str!("../std/runtime.kcl")),
         "sketch" => Some(include_str!("../std/sketch.kcl")),
-        "sketch2" => Some(include_str!("../std/sketch2.kcl")),
+        "solver" => Some(include_str!("../std/solver.kcl")),
         "turns" => Some(include_str!("../std/turns.kcl")),
         "types" => Some(include_str!("../std/types.kcl")),
         "solid" => Some(include_str!("../std/solid.kcl")),
@@ -94,6 +100,7 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
         "transform" => Some(include_str!("../std/transform.kcl")),
         "vector" => Some(include_str!("../std/vector.kcl")),
         "hole" => Some(include_str!("../std/hole.kcl")),
+        "gear" => Some(include_str!("../std/gear.kcl")),
         _ => None,
     }
 }
@@ -159,6 +166,12 @@ pub enum ModulePath {
 }
 
 impl ModulePath {
+    /// Returns true if this is a path to the solver module that should only be
+    /// accessible from sketch blocks. This is how we create a kind of DSL.
+    pub(crate) fn is_solver_module(&self) -> bool {
+        matches!(self, ModulePath::Std { value } if value == "solver")
+    }
+
     pub(crate) fn expect_path(&self) -> &TypedPath {
         match self {
             ModulePath::Local { value: p, .. } => p,
@@ -241,6 +254,16 @@ impl ModulePath {
             })
         } else {
             Ok(ModulePath::Std { value: path[1].clone() })
+        }
+    }
+
+    /// If we have std path, return the fully qualified name of the given item
+    /// in the module.
+    pub(crate) fn build_std_fully_qualified_name(&self, local_item_name: &str) -> Option<String> {
+        match self {
+            ModulePath::Main => None,
+            ModulePath::Local { .. } => None,
+            ModulePath::Std { .. } => Some(format!("{self}::{local_item_name}")),
         }
     }
 }

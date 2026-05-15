@@ -1,108 +1,120 @@
 // Brake Rotor
-// A 320mm vented brake disc (rotor), with straight vanes, 30mm thick. The disc bell should accommodate 5 M12 wheel studs on a 114.3mm pitch circle diameter.
+// Vented rotor with a bell and rear friction disc.
 
-// Define units
-@settings(defaultLengthUnit = in)
+// Set units and version
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Import parameters
 import * from "parameters.kcl"
 
-// Sketch a profile for the center bell, then rotate
-sketchDiscBell = startSketchOn(-XY)
-  |> startProfile(at = [rotorBore / 2, 0])
-  |> yLine(length = -tBell)
-  |> xLine(endAbsolute = (lugSpacing + rotorBore) / 2)
-  |> angledLine(angle = rDraftAngle, lengthY = hBellAboveDiscFace, tag = $seg08)
-  |> tangentialArc(angle = -90 - rDraftAngle, diameter = wUndercut, tag = $seg06)
-  |> angledLine(angle = tangentToEnd(seg06) + turns::HALF_TURN, length = tDiscHalf, tag = $seg07)
-  |> xLine(length = -1 * (tBell + wUndercut), tag = $seg04)
-  |> angledLine(angle = segAng(seg08) + 180deg, endAbsoluteY = profileStartY())
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg09)
-  |> close()
-  |> revolve(axis = Y)
+bellOuterFaceOffset = 1.66281in
+frontDiscInnerFaceOffset = bellOuterFaceOffset - tDiscHalf
+rearDiscOuterFaceOffset = frontDiscInnerFaceOffset - tVent
+rotorColor = "#f0d77a"
 
-// Drill lug holes
-sketchLugs = startSketchOn(sketchDiscBell, face = seg09)
-  |> circle(center = [-lugSpacing / 2, 0], diameter = lugThreadDiameter)
-  |> patternCircular2d(instances = lugCount, center = [0, 0], arcDegrees = 360deg)
-  |> extrude(length = -tBell * 2)
+bellProfileSketch = sketch(on = -XY) {
+  line1 = line(start = [var 1.5in, var 0in], end = [var 1.5in, var -0.2in])
+  line2 = line(start = [var 1.5in, var -0.2in], end = [var 3.75in, var -0.2in])
+  line3 = line(start = [var 3.75in, var -0.2in], end = [var 3.93418in, var 1.3in])
+  arc1 = arc(start = [var 4.13343in, var 1.28781in], end = [var 3.93418in, var 1.3in], center = [var 4.03343in, var 1.28781in])
+  line4 = line(start = [var 4.13in, var 1.29in], end = [var 6.73in, var 1.3in])
+  line5 = line(start = [var 6.73in, var 1.67in], end = [var 3.73in, var 1.66in])
+  line6 = line(start = [var 3.73343in, var 1.66281in], end = [var 3.52925in, var 0in])
+  line7 = line(start = [var 3.52in, var 0.01in], end = [var 1.49in, var 0.01in])
+  line8 = line(start = [var 6.73in, var 1.3in], end = [var 6.73in, var 1.67in])
+  line9 = line(start = [var 0in, var 0in], end = [var 0in, var 2.32in], construction = true)
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, arc1.end])
+  coincident([arc1.start, line4.start])
+  coincident([line4.end, line8.start])
+  coincident([line8.end, line5.start])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line7.start])
+  coincident([line7.end, line1.start])
+  coincident([line9.start, ORIGIN])
+  vertical(line8)
+  horizontal(line4)
+  horizontal(line5)
+  vertical([line9.end, ORIGIN])
+  horizontalDistance([line9.start, line8.end]) == rotorDiameter / 2
+  distance([line8.start, line8.end]) == tDiscHalf
+}
 
-// Create vents
-sketchVent = startSketchOn(sketchDiscBell, face = seg04)
-  |> startProfile(at = [rVentFillet, rotorDiameter / 2])
-  |> xLine(length = wVent - (2 * rVentFillet))
-  |> tangentialArc(angle = -90deg, radius = rVentFillet)
-  |> yLine(length = -hFrictionSurface + 2 * rVentFillet, tag = $seg10)
-  |> tangentialArc(angle = -90deg, radius = rVentFillet)
-  |> xLine(endAbsolute = profileStartX())
-  |> tangentialArc(angle = -90deg, radius = rVentFillet)
-  |> yLine(length = segLen(seg10))
-  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-ventPad = extrude(sketchVent, length = tVent, method = NEW)
+bellRegion = region(segments = [
+  bellProfileSketch.line1,
+  bellProfileSketch.line2
+])
+hide([bellProfileSketch])
 
-// Pattern vents around the perimeter of the rotor
+lugHoleSketch = sketch(on = XZ) {
+  circle1 = circle(start = [var -1.98004in, var 0in], center = [var -2.25in, var 0in])
+  horizontalDistance([ORIGIN, circle1.center]) == -(lugSpacing / 2)
+  verticalDistance([ORIGIN, circle1.center]) == 0in
+  diameter(circle1) == lugThreadDiameter
+}
+
+lugHoleRegion = region(segments = [lugHoleSketch.circle1])
+hide([lugHoleSketch])
+
+bell = revolve(bellRegion, axis = Y)
+  |> subtract(tools = patternCircular3d(
+       extrude(
+         lugHoleRegion,
+         length = tBell * 4,
+         symmetric = true,
+         method = NEW,
+       ),
+       instances = lugCount,
+       axis = Y,
+       center = [0, 0, 0],
+     ))
+  |> appearance(color = rotorColor, metalness = 70, roughness = 30)
+
+ventPlane = offsetPlane(XZ, offset = -frontDiscInnerFaceOffset - tDiscHalf)
+ventSketch = sketch(on = ventPlane) {
+  line1 = line(start = [var -0.125in, var 3.64in], end = [var 0.125in, var 3.64in])
+  line2 = line(start = [var 0.125in, var 3.64in], end = [var 0.125in, var 6in])
+  line3 = line(start = [var 0.125in, var 6in], end = [var -0.125in, var 6in])
+  line4 = line(start = [var -0.125in, var 6in], end = [var -0.125in, var 3.64in])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  horizontalDistance([ORIGIN, line1.start]) == -(wVent / 2)
+  verticalDistance([ORIGIN, line1.start]) == rotorDiameter / 2 - hFrictionSurface
+  horizontalDistance([line1.start, line1.end]) == wVent
+  verticalDistance([line2.start, line2.end]) == hFrictionSurface
+}
+
+ventRegion = region(segments = [ventSketch.line1, ventSketch.line2])
+hide([ventSketch])
+
 ventSet = patternCircular3d(
-  ventPad,
+  extrude(ventRegion, length = -tVent, method = NEW),
   instances = nVentBosses,
   axis = Y,
   center = [0, 0, 0],
 )
+  |> appearance(color = rotorColor, metalness = 70, roughness = 30)
 
-// Sketch a drilled hole pattern on the rotor discs
-fn drillHole(@t) {
-  rInner = rotorDiameter / 2 - hFrictionSurface
-  rOuter = rotorDiameter / 2
-
-  aStart = aBase
-  aEnd = aBase - aSweep
-
-  rCurrent = rInner + t * (rOuter - rInner)
-  aCurrent = aStart + t * (aEnd - aStart)
-
-  xCenter = rCurrent * cos(aCurrent)
-  yCenter = rCurrent * sin(aCurrent)
-
-  return { x = xCenter, y = yCenter }
+rearDiscPlane = offsetPlane(XZ, offset = -frontDiscInnerFaceOffset - tDiscHalf - tVent)
+rearDiscSketch = sketch(on = rearDiscPlane) {
+  circle1 = circle(start = [var 6in, var 0in], center = [var 0in, var 0in])
+  circle2 = circle(start = [var 3.64in, var 0in], center = [var 0in, var 0in])
+  coincident([circle1.center, ORIGIN])
+  coincident([circle2.center, circle1.center])
+  diameter(circle1) == rotorDiameter
+  diameter(circle2) == rotorDiameter - (2 * hFrictionSurface)
 }
 
-// Use a function to create each rotor disc
-fn createDiscHalf(@face) {
-  sketchFace = startSketchOn(ventPad, face)
-    |> circle(radius = rotorDiameter / 2)
-    |> subtract2d(tool = circle(radius = rotorDiameter / 2 - hFrictionSurface))
+rearDiscRegion = region(point = [4.5in, 0.1in], sketch = rearDiscSketch)
+rearDisc = extrude(rearDiscRegion, length = -tDiscHalf, method = NEW)
+  |> appearance(color = rotorColor, metalness = 70, roughness = 30)
+hide([rearDiscSketch])
 
-  // Create three circles at t = 0.2, 0.5, and 0.8 directly on this sketch
-  c1 = drillHole(0.2)
-  c2 = drillHole(0.5)
-  c3 = drillHole(0.8)
-
-  hole1 = circle(sketchFace, center = [c1.x, c1.y], radius = dDrillDia / 2)
-  hole2 = circle(sketchFace, center = [c2.x, c2.y], radius = dDrillDia / 2)
-  hole3 = circle(sketchFace, center = [c3.x, c3.y], radius = dDrillDia / 2)
-
-  holes = patternCircular2d([hole1, hole2, hole3], instances = nArcs, center = [0, 0])
-
-  profileDrilled = subtract2d(sketchFace, tool = holes)
-
-  discHalf = extrude(profileDrilled, length = tDiscHalf, method = NEW)
-  return discHalf
-}
-
-// Create inboard half
-discInboard = createDiscHalf(START)
-
-// Create outboard half
-discOutboard = patternLinear3d(
-  discInboard,
-  axis = [0, 1, 0],
-  distance = tVent + tDiscHalf,
-  instances = 2,
-)
-
-rotor = appearance(
-  [sketchDiscBell, ventSet, discOutboard],
-  color = "#f0d77a",
-  metalness = 70,
-  roughness = 30,
-)
+rotor = [bell, ventSet, rearDisc]

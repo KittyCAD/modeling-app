@@ -12,14 +12,10 @@ crossSectionDiameter = 10
 sketch = startSketchOn(XY)
 
 // create the profile for the cross section of the torus
-profile = startProfile(
-       sketch,
-       at = [
-         torusInnerDiameter / 2 + crossSectionDiameter / 2,
-         0
-       ],
-     )
-  |> circle(center = profileStart(), radius = crossSectionDiameter / 2)
+profile = sketch(on = sketch) {
+  circle1 = circle(start = [var 20mm, var 0mm], center = [var 15mm, var 0mm])
+}
 
+region001 = region(segments = [profile.circle1])
 // revolve the profile to create the torus
-torus = revolve(profile, axis = Y, angle = 360.0)
+torus = revolve(region001, axis = Y, angle = 360.0)

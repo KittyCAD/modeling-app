@@ -3,38 +3,39 @@ import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 
 import {
   createCallExpressionStdLibKw,
-  createName,
   createLabeledArg,
   createLiteral,
   createLocalName,
+  createName,
   createTagDeclarator,
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
+  insertRegionVariablesAndOffsetPathToNode,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
   createPoint2dExpression,
 } from '@src/lang/modifyAst'
+import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
-  modifyAstWithTagsForSelection,
-  mutateAstWithTagForSketchSegment,
-} from '@src/lang/modifyAst/tagManagement'
-import {
-  getNodeFromPath,
   getVariableExprsFromSelection,
+  getVariableNameFromNodePath,
+  isCallExprWithName,
   valueOrVariable,
 } from '@src/lang/queryAst'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { addHide } from '@src/lang/modifyAst/transforms'
+import { getAxisExpression } from '@src/lang/modifyAst/geometry'
 import {
   getArtifactOfTypes,
   getSweepEdgeCodeRef,
 } from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
+  CallExpressionKw,
+  Expr,
   LabeledArg,
   PathToNode,
   Program,
-  VariableDeclaration,
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
@@ -45,10 +46,17 @@ import {
   KCL_PRELUDE_BODY_TYPE_SURFACE,
 } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
-import type { Selections } from '@src/machines/modelingSharedTypes'
-import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
+import type {
+  EngineRegionSelection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
+import {
+  getFacesExprsFromSelection,
+  isFaceArtifact,
+} from '@src/lang/modifyAst/faces'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { toUtf16 } from '@src/lang/errors'
+import { isEngineRegionSelection } from '@src/lib/selections'
 
 export function addExtrude({
   ast,
@@ -65,6 +73,7 @@ export function addExtrude({
   twistAngleStep,
   twistCenter,
   method,
+  hideSeams,
   bodyType,
   nodeToEdit,
 }: {
@@ -82,6 +91,7 @@ export function addExtrude({
   twistAngleStep?: KclCommandValue
   twistCenter?: KclCommandValue
   method?: KclPreludeExtrudeMethod
+  hideSeams?: boolean
   bodyType?: KclPreludeBodyType
   nodeToEdit?: PathToNode
 }):
@@ -95,15 +105,61 @@ export function addExtrude({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(
-    sketches,
+  // Map the face and sketch selections into a list of kcl expressions to be passed as unlabelled argument
+  const vars: {
+    exprs: Expr[]
+    pathIfPipe?: PathToNode
+  } = { exprs: [] }
+  const res = getFacesExprsFromSelection(
     modifiedAst,
-    wasmInstance,
-    mNodeToEdit
+    sketches,
+    artifactGraph,
+    wasmInstance
   )
-  if (err(vars)) {
-    return vars
+  if (err(res)) return res
+  modifiedAst = res.modifiedAst
+  vars.exprs.push(...res.exprs)
+
+  const nonFaceSelections: Selections = {
+    graphSelections: sketches.graphSelections.filter(
+      (selection) => !isFaceArtifact(selection.artifact)
+    ),
+    otherSelections: sketches.otherSelections,
+  }
+  if (nonFaceSelections.graphSelections.length > 0) {
+    const res = getVariableExprsFromSelection(
+      nonFaceSelections,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      mNodeToEdit
+    )
+    if (err(res)) {
+      return res
+    }
+    vars.pathIfPipe = res.pathIfPipe
+    vars.exprs.push(...res.exprs)
+  }
+
+  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
+  if (engineRegions.length > 0) {
+    const hideResult = addHideCallsForRegionSketches({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(hideResult)) return hideResult
+    modifiedAst = hideResult
+
+    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(regionExprs)) return regionExprs
+    vars.exprs.push(...regionExprs)
   }
 
   // Extra labeled args expressions
@@ -124,11 +180,12 @@ export function addExtrude({
     )
     if (err(tagResult)) return tagResult
     modifiedAst = tagResult.modifiedAst
-    toExpr = [createLabeledArg('to', createLocalName(tagResult.tags[0]))]
+    toExpr = [createLabeledArg('to', tagResult.exprs[0])]
   }
-  const symmetricExpr = symmetric
-    ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
-    : []
+  const symmetricExpr =
+    symmetric !== undefined
+      ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
+      : []
   const bidirectionalLengthExpr = bidirectionalLength
     ? [
         createLabeledArg(
@@ -161,6 +218,10 @@ export function addExtrude({
   const methodExpr = method
     ? [createLabeledArg('method', createLocalName(method))]
     : []
+  const hideSeamsExpr =
+    hideSeams !== undefined
+      ? [createLabeledArg('hideSeams', createLiteral(hideSeams, wasmInstance))]
+      : []
   const bodyTypeExpr = bodyType
     ? [createLabeledArg('bodyType', createLocalName(bodyType))]
     : []
@@ -177,6 +238,7 @@ export function addExtrude({
     ...twistAngleStepExpr,
     ...twistCenterExpr,
     ...methodExpr,
+    ...hideSeamsExpr,
     ...bodyTypeExpr,
   ])
 
@@ -243,6 +305,7 @@ export const SWEEP_MODULE = 'sweep'
 
 export function addSweep({
   ast,
+  artifactGraph,
   sketches,
   path,
   wasmInstance,
@@ -250,9 +313,11 @@ export function addSweep({
   relativeTo,
   tagStart,
   tagEnd,
+  bodyType,
   nodeToEdit,
 }: {
   ast: Node<Program>
+  artifactGraph: ArtifactGraph
   sketches: Selections
   path: Selections
   wasmInstance: ModuleType
@@ -260,6 +325,7 @@ export function addSweep({
   relativeTo?: SweepRelativeTo
   tagStart?: string
   tagEnd?: string
+  bodyType?: KclPreludeBodyType
   nodeToEdit?: PathToNode
 }):
   | {
@@ -268,13 +334,14 @@ export function addSweep({
     }
   | Error {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
-  const modifiedAst = structuredClone(ast)
+  let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
   const vars = getVariableExprsFromSelection(
     sketches,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit
@@ -283,23 +350,49 @@ export function addSweep({
     return vars
   }
 
+  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
+  if (engineRegions.length > 0) {
+    const hideResult = addHideCallsForRegionSketches({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(hideResult)) return hideResult
+    modifiedAst = hideResult
+
+    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(regionExprs)) return regionExprs
+    vars.exprs.push(...regionExprs)
+  }
+
   // Find the path declaration for the labeled argument
-  // TODO: see if we can replace this with `getVariableExprsFromSelection`
-  const pathDeclaration = getNodeFromPath<VariableDeclaration>(
-    ast,
-    path.graphSelections[0].codeRef.pathToNode,
+  const pathVars = getVariableExprsFromSelection(
+    path,
+    artifactGraph,
+    modifiedAst,
     wasmInstance,
-    'VariableDeclaration'
+    mNodeToEdit
   )
-  if (err(pathDeclaration)) {
-    return pathDeclaration
+  if (err(pathVars)) {
+    return pathVars
+  }
+
+  const pathExpr = createVariableExpressionsArray(pathVars.exprs)
+  if (!pathExpr) {
+    return new Error("Couldn't retrieve path selection")
   }
 
   // Extra labeled args expressions
-  const pathExpr = createLocalName(pathDeclaration.node.declaration.id.name)
-  const sectionalExpr = sectional
-    ? [createLabeledArg('sectional', createLiteral(sectional, wasmInstance))]
-    : []
+  const sectionalExpr =
+    sectional !== undefined
+      ? [createLabeledArg('sectional', createLiteral(sectional, wasmInstance))]
+      : []
   const relativeToExpr = relativeTo
     ? [createLabeledArg('relativeTo', createName([SWEEP_MODULE], relativeTo))]
     : []
@@ -309,6 +402,9 @@ export function addSweep({
   const tagEndExpr = tagEnd
     ? [createLabeledArg('tagEnd', createTagDeclarator(tagEnd))]
     : []
+  const bodyTypeExpr = bodyType
+    ? [createLabeledArg('bodyType', createLocalName(bodyType))]
+    : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('sweep', sketchesExpr, [
@@ -317,6 +413,7 @@ export function addSweep({
     ...relativeToExpr,
     ...tagStartExpr,
     ...tagEndExpr,
+    ...bodyTypeExpr,
   ])
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -341,6 +438,7 @@ export function addSweep({
 
 export function addLoft({
   ast,
+  artifactGraph,
   sketches,
   wasmInstance,
   vDegree,
@@ -352,6 +450,7 @@ export function addLoft({
   nodeToEdit,
 }: {
   ast: Node<Program>
+  artifactGraph: ArtifactGraph
   sketches: Selections
   wasmInstance: ModuleType
   vDegree?: KclCommandValue
@@ -368,13 +467,14 @@ export function addLoft({
     }
   | Error {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
-  const modifiedAst = structuredClone(ast)
+  let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
   const vars = getVariableExprsFromSelection(
     sketches,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit
@@ -383,18 +483,40 @@ export function addLoft({
     return vars
   }
 
+  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
+  if (engineRegions.length > 0) {
+    const hideResult = addHideCallsForRegionSketches({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(hideResult)) return hideResult
+    modifiedAst = hideResult
+
+    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(regionExprs)) return regionExprs
+    vars.exprs.push(...regionExprs)
+  }
+
   // Extra labeled args expressions
   const vDegreeExpr = vDegree
     ? [createLabeledArg('vDegree', valueOrVariable(vDegree))]
     : []
-  const bezApproximateRationalExpr = bezApproximateRational
-    ? [
-        createLabeledArg(
-          'bezApproximateRational',
-          createLiteral(bezApproximateRational, wasmInstance)
-        ),
-      ]
-    : []
+  const bezApproximateRationalExpr =
+    bezApproximateRational !== undefined
+      ? [
+          createLabeledArg(
+            'bezApproximateRational',
+            createLiteral(bezApproximateRational, wasmInstance)
+          ),
+        ]
+      : []
   const baseCurveIndexExpr = baseCurveIndex
     ? [createLabeledArg('baseCurveIndex', valueOrVariable(baseCurveIndex))]
     : []
@@ -452,6 +574,7 @@ export function addLoft({
 
 export function addRevolve({
   ast,
+  artifactGraph,
   sketches,
   angle,
   wasmInstance,
@@ -465,6 +588,7 @@ export function addRevolve({
   nodeToEdit,
 }: {
   ast: Node<Program>
+  artifactGraph: ArtifactGraph
   sketches: Selections
   angle: KclCommandValue
   wasmInstance: ModuleType
@@ -483,13 +607,14 @@ export function addRevolve({
     }
   | Error {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
-  const modifiedAst = structuredClone(ast)
+  let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
   const vars = getVariableExprsFromSelection(
     sketches,
+    artifactGraph,
     modifiedAst,
     wasmInstance,
     mNodeToEdit
@@ -497,22 +622,45 @@ export function addRevolve({
   if (err(vars)) {
     return vars
   }
+  const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
+  if (engineRegions.length > 0) {
+    const hideResult = addHideCallsForRegionSketches({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(hideResult)) return hideResult
+    modifiedAst = hideResult
+
+    const regionExprs = insertRegionVariablesAndOffsetPathToNode({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(regionExprs)) return regionExprs
+    vars.exprs.push(...regionExprs)
+  }
 
   // Retrieve axis expression depending on mode
-  const getAxisResult = getAxisExpressionAndIndex(
+  const getAxisResult = getAxisExpression(
     axis,
     edge,
     modifiedAst,
-    wasmInstance
+    wasmInstance,
+    artifactGraph
   )
-  if (err(getAxisResult) || !getAxisResult.generatedAxis) {
+  if (err(getAxisResult)) {
     return new Error('Generated axis selection is missing.')
   }
+  modifiedAst = getAxisResult.modifiedAst
 
   // Extra labeled args expressions
-  const symmetricExpr = symmetric
-    ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
-    : []
+  const symmetricExpr =
+    symmetric !== undefined
+      ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
+      : []
   const bidirectionalAngleExpr = bidirectionalAngle
     ? [
         createLabeledArg(
@@ -581,67 +729,114 @@ export function addRevolve({
 
 // Utilities
 
-export function getAxisExpressionAndIndex(
-  axis: string | undefined,
-  edge: Selections | undefined,
-  ast: Node<Program>,
+function addHideCallsForRegionSketches({
+  engineRegions,
+  modifiedAst,
+  artifactGraph,
+  wasmInstance,
+}: {
+  engineRegions: EngineRegionSelection[]
+  modifiedAst: Node<Program>
+  artifactGraph: ArtifactGraph
   wasmInstance: ModuleType
-) {
-  if (edge) {
-    const pathToAxisSelection = getNodePathFromSourceRange(
-      ast,
-      edge.graphSelections[0]?.codeRef.range
-    )
-    const tagResult = mutateAstWithTagForSketchSegment(
-      ast,
-      pathToAxisSelection,
+}): Error | Node<Program> {
+  let updatedAst = modifiedAst
+  const hiddenSketches = collectHiddenSketchNames(updatedAst)
+  const hiddenSketchIds = new Set<string>()
+
+  for (const regionSelection of engineRegions) {
+    if (hiddenSketchIds.has(regionSelection.sketchId)) {
+      continue
+    }
+
+    const sketchArtifact = artifactGraph.get(regionSelection.sketchId)
+    if (!sketchArtifact || sketchArtifact.type !== 'sketchBlock') {
+      return new Error("Couldn't retrieve sketch block artifact")
+    }
+
+    const sketchVarNameForHide = getVariableNameFromNodePath(
+      sketchArtifact.codeRef.pathToNode,
+      updatedAst,
       wasmInstance
     )
-
-    // Have the tag whether it is already created or a new one is generated
-    if (err(tagResult)) {
-      return tagResult
+    if (!sketchVarNameForHide) {
+      return new Error("Couldn't retrieve sketch block variable")
     }
 
-    const { tag } = tagResult
-    const axisSelection = edge?.graphSelections[0]?.artifact
-    if (!axisSelection) {
-      return new Error('Generated axis selection is missing.')
+    if (hiddenSketches.has(sketchVarNameForHide)) {
+      hiddenSketchIds.add(regionSelection.sketchId)
+      continue
     }
 
-    const generatedAxis = getEdgeTagCall(tag, axisSelection)
-    if (
-      axisSelection.type === 'segment' ||
-      axisSelection.type === 'path' ||
-      axisSelection.type === 'edgeCut'
-    ) {
-      const axisDeclaration = axisSelection.codeRef.pathToNode
-      if (!axisDeclaration) {
-        return new Error('Expected to find axis declaration')
-      }
-
-      const axisIndexInPathToNode =
-        axisDeclaration.findIndex((a) => a[0] === 'body') + 1
-      const value = axisDeclaration[axisIndexInPathToNode][0]
-      if (typeof value !== 'number') {
-        return new Error('expected axis index value to be a number')
-      }
-
-      const axisIndexIfAxis = value
-      return { generatedAxis, axisIndexIfAxis }
-    } else {
-      return { generatedAxis }
+    const hideResult = addHide({
+      ast: updatedAst,
+      artifactGraph,
+      objects: {
+        graphSelections: [
+          {
+            artifact: sketchArtifact,
+            codeRef: sketchArtifact.codeRef,
+          },
+        ],
+        otherSelections: [],
+      },
+      wasmInstance,
+    })
+    if (err(hideResult)) {
+      return hideResult
     }
+
+    updatedAst = hideResult.modifiedAst
+    hiddenSketchIds.add(regionSelection.sketchId)
+    hiddenSketches.add(sketchVarNameForHide)
   }
 
-  if (axis) {
-    return { generatedAxis: createLocalName(axis) }
-  }
-
-  return new Error('Axis or edge selection is missing.')
+  return updatedAst
 }
 
-// Sort of an inverse from getAxisExpressionAndIndex
+function collectHiddenSketchNames(modifiedAst: Node<Program>): Set<string> {
+  const hiddenSketches = new Set<string>()
+
+  for (const bodyItem of modifiedAst.body) {
+    const maybeCall =
+      bodyItem.type === 'VariableDeclaration'
+        ? bodyItem.declaration.init
+        : bodyItem.type === 'ExpressionStatement'
+          ? bodyItem.expression
+          : undefined
+
+    if (!maybeCall || !isCallExprWithName(maybeCall, 'hide')) {
+      continue
+    }
+
+    const sketchNames = getSketchNamesFromHideArg(maybeCall.unlabeled)
+    sketchNames.forEach((name) => hiddenSketches.add(name))
+  }
+
+  return hiddenSketches
+}
+
+function getSketchNamesFromHideArg(
+  hideArg: CallExpressionKw['unlabeled']
+): string[] {
+  if (!hideArg) {
+    return []
+  }
+
+  if (hideArg.type === 'Name') {
+    return [hideArg.name.name]
+  }
+
+  if (hideArg.type === 'ArrayExpression') {
+    return hideArg.elements
+      .filter((element) => element.type === 'Name')
+      .map((element) => element.name.name)
+  }
+
+  return []
+}
+
+// Sort of an inverse from getAxisExpression
 export function retrieveAxisOrEdgeSelectionsFromOpArg(
   opArg: OpArg,
   artifactGraph: ArtifactGraph
@@ -656,6 +851,30 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
   let axis: string | undefined
   let edge: Selections | undefined
   const axisValue = opArg.value
+  const buildEdgeSelectionFromSegmentId = (
+    segmentId: string
+  ): Selections | Error => {
+    const artifact = getArtifactOfTypes(
+      {
+        key: segmentId,
+        types: ['segment'],
+      },
+      artifactGraph
+    )
+    if (err(artifact)) {
+      return new Error("Couldn't find related edge artifact")
+    }
+
+    return {
+      graphSelections: [
+        {
+          artifact,
+          codeRef: artifact.codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+  }
   const nonZero = (val: OpKclValue): number => {
     if (val.type === 'Number') {
       return val.value
@@ -682,26 +901,19 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
   } else if (axisValue.type === 'TagIdentifier' && axisValue.artifact_id) {
     // segment case
     axisOrEdge = 'Edge'
-    const artifact = getArtifactOfTypes(
-      {
-        key: axisValue.artifact_id,
-        types: ['segment'],
-      },
-      artifactGraph
-    )
-    if (err(artifact)) {
-      return new Error("Couldn't find related edge artifact")
+    const edgeSelection = buildEdgeSelectionFromSegmentId(axisValue.artifact_id)
+    if (err(edgeSelection)) {
+      return edgeSelection
     }
-
-    edge = {
-      graphSelections: [
-        {
-          artifact,
-          codeRef: artifact.codeRef,
-        },
-      ],
-      otherSelections: [],
+    edge = edgeSelection
+  } else if (axisValue.type === 'Segment') {
+    // segment case from sketch-solve member expressions (for example: sketch001.line5)
+    axisOrEdge = 'Edge'
+    const edgeSelection = buildEdgeSelectionFromSegmentId(axisValue.artifact_id)
+    if (err(edgeSelection)) {
+      return edgeSelection
     }
+    edge = edgeSelection
   } else if (axisValue.type === 'Uuid') {
     // sweepEdge case
     axisOrEdge = 'Edge'

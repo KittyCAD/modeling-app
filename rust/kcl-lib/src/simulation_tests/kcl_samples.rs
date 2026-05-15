@@ -1,16 +1,20 @@
 //! Run all the KCL samples in the `kcl_samples` directory.
-use std::{
-    fs,
-    panic::{AssertUnwindSafe, catch_unwind},
-    path::{Path, PathBuf},
-};
+use std::fs;
+use std::panic::AssertUnwindSafe;
+use std::panic::catch_unwind;
+use std::path::Path;
+use std::path::PathBuf;
 
 use anyhow::Result;
 use fnv::FnvHashSet;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 use walkdir::WalkDir;
 
 use super::Test;
+use crate::tooling::render_artifacts::RENDERED_MODEL_NAME;
+
+const ALLOWED_FILETYPES: [&str; 3] = ["kcl", "stp", "step"];
 
 lazy_static::lazy_static! {
     /// The directory containing the KCL samples source.
@@ -102,7 +106,7 @@ fn test_after_engine_ensure_kcl_samples_manifest_etc() {
         }
     }
     for tests in &tests {
-        let screenshot_file = OUTPUTS_DIR.join(&tests.name).join(super::RENDERED_MODEL_NAME);
+        let screenshot_file = OUTPUTS_DIR.join(&tests.name).join(RENDERED_MODEL_NAME);
         if !screenshot_file.exists() {
             panic!("Missing screenshot for test: {}", tests.name);
         }
@@ -131,6 +135,10 @@ fn test_after_engine_ensure_kcl_samples_manifest_etc() {
 fn test_after_engine_generate_manifest() {
     // Generate the manifest.json
     generate_kcl_manifest(&INPUTS_DIR).unwrap();
+
+    let manifest_path = INPUTS_DIR.join(MANIFEST_FILE);
+    // Check that the JSON written was valid.
+    let _manifest: Vec<KclMetadata> = serde_json::from_str(&fs::read_to_string(&manifest_path).unwrap()).unwrap();
 }
 
 fn test(test_name: &str, entry_point: std::path::PathBuf) -> Test {
@@ -186,7 +194,6 @@ fn kcl_samples_inputs() -> Vec<Test> {
             // Skip output directories.
             continue;
         }
-        eprintln!("Found KCL sample: {:?}", dir_name.to_string_lossy());
         // Look for the entry point inside the directory.
         let sub_dir = INPUTS_DIR.join(dir_name);
         let main_kcl_path = sub_dir.join("main.kcl");
@@ -220,7 +227,6 @@ fn kcl_samples_outputs() -> Vec<String> {
             continue;
         }
 
-        eprintln!("Found expected KCL sample: {:?}", &dir_name_str);
         outputs.push(dir_name_str.into_owned());
     }
 
@@ -245,14 +251,10 @@ struct KclMetadata {
 
 // Function to read and parse .kcl files
 fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata> {
-    // Find primary kcl file (main.kcl or first sorted file)
-    let primary_kcl_file = files
-        .iter()
-        .find(|file| file.contains("main.kcl"))
-        .unwrap_or_else(|| files.iter().min().unwrap())
-        .clone();
+    // Prefer the sample's root main.kcl
+    let primary_kcl_file = files.iter().find(|file| file.contains("main.kcl"))?;
 
-    let full_path_to_primary_kcl = project_path.join(&primary_kcl_file);
+    let full_path_to_primary_kcl = project_path.join(primary_kcl_file);
 
     // Read the file content
     let content = match fs::read_to_string(&full_path_to_primary_kcl) {
@@ -269,10 +271,11 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
     // Extract title, description, and categories from the first three lines
     let title = lines[0].trim_start_matches(COMMENT_PREFIX).trim().to_string();
     let description = lines[1].trim_start_matches(COMMENT_PREFIX).trim().to_string();
-    let categories = if let Some(categories_line) = lines[2]
-        .trim_start_matches(COMMENT_PREFIX)
-        .trim()
-        .strip_prefix("Categories: ")
+    let categories = if let Some(third_line) = lines.get(2)
+        && let Some(categories_line) = third_line
+            .trim_start_matches(COMMENT_PREFIX)
+            .trim()
+            .strip_prefix("Categories: ")
     {
         categories_line.split(',').map(|s| s.trim().to_string()).collect()
     } else {
@@ -290,7 +293,7 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
     files.sort();
 
     Some(KclMetadata {
-        file: primary_kcl_file,
+        file: primary_kcl_file.to_owned(),
         path_from_project_directory_to_first_file: path_from_project_dir,
         multiple_files: files.len() > 1,
         title,
@@ -301,49 +304,53 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
 }
 
 // Function to scan the directory and generate the manifest.json
-fn generate_kcl_manifest(dir: &Path) -> Result<()> {
+fn generate_kcl_manifest(kcl_samples_root_dir: &Path) -> Result<()> {
     let mut manifest = Vec::new();
 
     // Collect all directory entries first
-    let mut entries: Vec<_> = WalkDir::new(dir)
-        .follow_links(true)
-        .into_iter()
-        .filter_map(|e| e.ok())
-        .collect();
+    let mut entries: Vec<_> = kcl_samples_root_dir.read_dir()?.filter_map(|e| e.ok()).collect();
 
     // Sort directories by name for consistent ordering
     entries.sort_by_key(|a| a.file_name().to_string_lossy().to_string());
 
-    // Loop through all directories and add to manifest if KCL sample
+    // Loop through top-level sample directories and add to manifest if KCL sample
     for entry in entries {
         let path = entry.path();
 
         if path.is_dir() {
-            // Get all .kcl files in the directory
-            let files: Vec<String> = fs::read_dir(path)?
+            // Collect allowed files, preserving nested paths relative to sample dir.
+            let files: Vec<String> = WalkDir::new(&path)
+                .into_iter()
                 .filter_map(Result::ok)
                 .filter(|e| {
                     if let Some(ext) = e.path().extension() {
-                        ext == "kcl"
+                        let ext = ext.to_string_lossy().to_lowercase();
+                        ALLOWED_FILETYPES.contains(&ext.as_str())
                     } else {
                         false
                     }
                 })
-                .map(|e| e.file_name().to_string_lossy().to_string())
+                .map(|e| {
+                    e.path()
+                        .strip_prefix(&path)
+                        .unwrap_or(e.path())
+                        .to_string_lossy()
+                        .replace('\\', "/")
+                })
                 .collect();
 
             if files.is_empty() {
                 continue;
             }
 
-            if let Some(metadata) = get_kcl_metadata(path, &files) {
+            if let Some(metadata) = get_kcl_metadata(&path, &files) {
                 manifest.push(metadata);
             }
         }
     }
 
     // Write the manifest.json
-    let output_path = dir.join(MANIFEST_FILE);
+    let output_path = kcl_samples_root_dir.join(MANIFEST_FILE);
     expectorate::assert_contents(&output_path, &serde_json::to_string_pretty(&manifest).unwrap());
 
     println!(

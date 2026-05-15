@@ -1,6 +1,7 @@
 //! A generator for ArtifactIds that can be stable across executions.
 
-use crate::execution::{ArtifactId, ModuleId};
+use crate::execution::ArtifactId;
+use crate::execution::ModuleId;
 
 const NAMESPACE_KCL: uuid::Uuid = uuid::uuid!("8bda3118-75eb-58c7-a866-bef1dcb495e7");
 

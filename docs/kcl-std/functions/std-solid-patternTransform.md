@@ -243,7 +243,7 @@ fn transform(@replicaId) {
   scale = r * abs(1 - (t * replicaId)) * (5 + cos((replicaId / 8): number(rad)))
   return {
     translate = [0, 0, replicaId * 10],
-    scale = [scale, scale, 0]
+    scale = [scale, scale, 1]
   }
 }
 // Each layer is just a pretty thin cylinder.
@@ -321,9 +321,9 @@ fn chessboard(@i) {
   isEven = rem(i, divisor = 2) == 0
   return [
     {
-  translate = [row * gap, column * gap, 0],
-  replicate = isEven
-}
+      translate = [row * gap, column * gap, 0],
+      replicate = isEven
+    }
   ]
 }
 

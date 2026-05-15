@@ -73,6 +73,7 @@ description: Variables in memory after executing plane_of_chamfer.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

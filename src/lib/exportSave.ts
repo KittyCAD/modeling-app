@@ -4,6 +4,7 @@ import toast from 'react-hot-toast'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { EXPORT_TOAST_MESSAGES } from '@src/lib/constants'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
+import fsZds from '@src/lib/fs-zds'
 
 const save_ = async (file: ModelingAppFile, toastId: string) => {
   try {
@@ -19,13 +20,13 @@ const save_ = async (file: ModelingAppFile, toastId: string) => {
         const testSettingsPath = await window.electron.getAppTestProperty(
           'TEST_SETTINGS_FILE_KEY'
         )
-        const downloadDir = window.electron.join(
+        const downloadDir = fsZds.join(
           testSettingsPath,
           'downloads-during-playwright'
         )
-        await window.electron.mkdir(downloadDir, { recursive: true })
-        await window.electron.writeFile(
-          window.electron.join(downloadDir, file.name),
+        await fsZds.mkdir(downloadDir, { recursive: true })
+        await fsZds.writeFile(
+          fsZds.join(downloadDir, file.name),
           new Uint8Array(file.contents)
         )
         toast.success(EXPORT_TOAST_MESSAGES.SUCCESS + ' [TEST]', {
@@ -54,7 +55,7 @@ const save_ = async (file: ModelingAppFile, toastId: string) => {
       }
 
       // Write the file.
-      await window.electron.writeFile(
+      await fsZds.writeFile(
         filePathMeta.filePath,
         new Uint8Array(file.contents)
       )

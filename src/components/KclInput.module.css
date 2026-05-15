@@ -1,0 +1,42 @@
+.container {
+  @apply absolute;
+  @apply z-[1000];
+  @apply border-2 border-solid border-primary;
+  @apply rounded;
+  z-index: 1000;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.container :global(.cm-editor) {
+  @apply bg-transparent;
+}
+
+/* Remove dotted outline when focused */
+.container :global(.cm-editor.cm-focused) {
+  outline: none;
+}
+
+/* Make caret color match text color */
+.container :global(.cm-content) {
+  caret-color: currentColor;
+}
+
+.container :global(.cm-line) {
+  display: block;
+  padding: 0 6px 0 6px;
+}
+
+.error {
+  @apply border-destroy-80;
+}
+
+/* Light theme */
+.container {
+  @apply bg-chalkboard-10;
+}
+
+/* Dark theme */
+:global(.dark) .container {
+  @apply bg-chalkboard-90;
+}

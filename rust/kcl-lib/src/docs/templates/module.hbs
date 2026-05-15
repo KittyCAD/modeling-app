@@ -9,6 +9,10 @@ excerpt: "{{safe_yaml summary}}"
 layout: manual
 ---
 
+{{#if experimental}}
+**WARNING:** This module is experimental and may change or be removed.
+
+{{/if}}
 {{{summary}}}
 
 {{{description}}}
@@ -17,7 +21,7 @@ layout: manual
 ## Modules
 
 {{#each modules}}
-* [`{{name}}`](/docs/kcl-std/{{file_name}})
+* [`{{name}}`]({{file_name}})
 {{/each}}
 {{/if}}
 
@@ -25,7 +29,7 @@ layout: manual
 ## Functions and constants
 
 {{#each functions}}
-* [`{{name}}`](/docs/kcl-std/{{file_name}})
+* [`{{name}}`]({{file_name}})
 {{/each}}
 {{/if}}
 
@@ -33,6 +37,6 @@ layout: manual
 ## Types
 
 {{#each types}}
-* [`{{name}}`](/docs/kcl-std/{{file_name}})
+* [`{{name}}`]({{file_name}})
 {{/each}}
 {{/if}}

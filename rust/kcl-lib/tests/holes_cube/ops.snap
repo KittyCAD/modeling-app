@@ -389,6 +389,15 @@ description: Operations executed holes_cube.kcl
                   "len": "mm",
                   "angle": "degrees"
                 }
+              },
+              "headClearance": {
+                "type": "Number",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             }
           },
@@ -1048,6 +1057,54 @@ description: Operations executed holes_cube.kcl
           {
             "type": "ProgramBodyItem",
             "index": 26
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "CCW",
+      "value": {
+        "type": "String",
+        "value": "ccw"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 27
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "CW",
+      "value": {
+        "type": "String",
+        "value": "cw"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"

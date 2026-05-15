@@ -1,9 +1,12 @@
 use std::f64::consts::PI;
+use std::f64::consts::TAU;
 
-use kittycad_modeling_cmds::{shared::Angle, units::UnitLength};
+use kittycad_modeling_cmds::shared::Angle;
+use kittycad_modeling_cmds::units::UnitLength;
 
 use super::args::TyF64;
 use crate::execution::types::NumericType;
+use crate::util::MathExt;
 
 pub(crate) fn untype_point(p: [TyF64; 2]) -> ([f64; 2], NumericType) {
     let (x, y, ty) = NumericType::combine_eq_coerce(p[0].clone(), p[1].clone(), None);
@@ -49,7 +52,7 @@ pub(crate) fn point_3d_to_mm(p: [TyF64; 3]) -> [f64; 3] {
 
 /// Get the distance between two points.
 pub(crate) fn distance(a: Coords2d, b: Coords2d) -> f64 {
-    ((b[0] - a[0]).powi(2) + (b[1] - a[1]).powi(2)).sqrt()
+    ((b[0] - a[0]).squared() + (b[1] - a[1]).squared()).sqrt()
 }
 
 /// Get the angle between these points
@@ -90,17 +93,17 @@ pub(crate) fn delta(from_angle: Angle, to_angle: Angle) -> Angle {
         return Angle::from_radians(provisional);
     }
     if provisional > PI {
-        return Angle::from_radians(provisional - 2.0 * PI);
+        return Angle::from_radians(provisional - TAU);
     }
     if provisional < -PI {
-        return Angle::from_radians(provisional + 2.0 * PI);
+        return Angle::from_radians(provisional + TAU);
     }
     Angle::default()
 }
 
 pub(crate) fn normalize_rad(angle: f64) -> f64 {
-    let draft = angle % (2.0 * PI);
-    if draft < 0.0 { draft + 2.0 * PI } else { draft }
+    let draft = angle % (TAU);
+    if draft < 0.0 { draft + TAU } else { draft }
 }
 
 fn calculate_intersection_of_two_lines(line1: &[Coords2d; 2], line2_angle: f64, line2_point: Coords2d) -> Coords2d {
@@ -248,7 +251,11 @@ mod tests {
     use approx::assert_relative_eq;
     use pretty_assertions::assert_eq;
 
-    use super::{Angle, calculate_circle_center, get_x_component, get_y_component};
+    use super::Angle;
+    use super::calculate_circle_center;
+    use super::get_x_component;
+    use super::get_y_component;
+    use crate::util::MathExt;
 
     static EACH_QUAD: [(i32, [i32; 2]); 12] = [
         (-315, [1, 1]),
@@ -414,7 +421,7 @@ mod tests {
         assert_relative_eq!(center[0], 3.0, epsilon = EPS);
         assert_relative_eq!(center[1], 3.0, epsilon = EPS);
         // Verify radius (should be 3 * sqrt(2))
-        let radius = ((center[0] - p1[0]).powi(2) + (center[1] - p1[1]).powi(2)).sqrt();
+        let radius = ((center[0] - p1[0]).squared() + (center[1] - p1[1]).squared()).sqrt();
         assert_relative_eq!(radius, 3.0 * 2.0_f64.sqrt(), epsilon = EPS);
     }
 }
@@ -455,7 +462,7 @@ fn get_angle(point1: Coords2d, point2: Coords2d) -> f64 {
     let delta_y = point2[1] - point1[1];
     let angle = libm::atan2(delta_y, delta_x);
 
-    let result = if angle < 0.0 { angle + 2.0 * PI } else { angle };
+    let result = if angle < 0.0 { angle + TAU } else { angle };
     result * (180.0 / PI)
 }
 
@@ -467,9 +474,9 @@ fn delta_angle(from_angle: f64, to_angle: f64) -> f64 {
     if provisional > -PI && provisional <= PI {
         provisional
     } else if provisional > PI {
-        provisional - 2.0 * PI
+        provisional - TAU
     } else if provisional < -PI {
-        provisional + 2.0 * PI
+        provisional + TAU
     } else {
         provisional
     }
@@ -581,8 +588,8 @@ pub fn get_tangential_arc_to_info(input: TangentialArcInfoInput) -> TangentialAr
         // can't find the intersection of the two lines if they have the same gradient
         // but in this case the center is the midpoint anyway
         center = mid_point;
-        radius =
-            ((input.arc_start_point[0] - center[0]).powi(2) + (input.arc_start_point[1] - center[1]).powi(2)).sqrt();
+        radius = ((input.arc_start_point[0] - center[0]).squared() + (input.arc_start_point[1] - center[1]).squared())
+            .sqrt();
     } else {
         center = intersect_point_n_slope(
             mid_point,
@@ -590,8 +597,8 @@ pub fn get_tangential_arc_to_info(input: TangentialArcInfoInput) -> TangentialAr
             input.arc_start_point,
             tangential_line_perp_slope,
         );
-        radius =
-            ((input.arc_start_point[0] - center[0]).powi(2) + (input.arc_start_point[1] - center[1]).powi(2)).sqrt();
+        radius = ((input.arc_start_point[0] - center[0]).squared() + (input.arc_start_point[1] - center[1]).squared())
+            .sqrt();
     }
 
     let arc_mid_point = get_mid_point(
@@ -763,7 +770,7 @@ mod get_tangential_arc_to_info_tests {
             arc_end_point: [0.0, -1.0],
             obtuse: true,
         });
-        let circumference = 2.0 * PI * result.radius;
+        let circumference = TAU * result.radius;
         let expected_length = circumference * 3.0 / 4.0; // 3 quarters of a circle circle
         assert_relative_eq!(result.arc_length, expected_length);
     }
@@ -776,7 +783,7 @@ mod get_tangential_arc_to_info_tests {
             arc_end_point: [0.0, 1.0],
             obtuse: true,
         });
-        let circumference = 2.0 * PI * result.radius;
+        let circumference = TAU * result.radius;
         let expected_length = circumference / 4.0; // 1 quarters of a circle circle
         assert_relative_eq!(result.arc_length, expected_length);
     }
@@ -789,7 +796,7 @@ mod get_tangential_arc_to_info_tests {
             arc_end_point: [0.0, -1.0],
             obtuse: true,
         });
-        let circumference = 2.0 * PI * result.radius;
+        let circumference = TAU * result.radius;
         let expected_length = circumference * 3.0 / 4.0; // 1 quarters of a circle circle
         assert_relative_eq!(result.arc_length, expected_length);
     }
@@ -802,7 +809,7 @@ mod get_tangential_arc_to_info_tests {
             arc_end_point: [0.0, 1.0],
             obtuse: true,
         });
-        let circumference = 2.0 * PI * result.radius;
+        let circumference = TAU * result.radius;
         let expected_length = circumference / 4.0; // 1 quarters of a circle circle
         assert_relative_eq!(result.arc_length, expected_length);
     }

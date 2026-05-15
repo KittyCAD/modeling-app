@@ -13,9 +13,9 @@ import type {
   Side,
   AreaTypeDefinition,
   ActionTypeDefinition,
-  ActionType,
+  AreaLibrary,
+  ActionLibrary,
 } from '@src/lib/layout/types'
-import { AreaType } from '@src/lib/layout/types'
 import type { ImperativePanelGroupHandle } from 'react-resizable-panels'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -45,7 +45,6 @@ import {
   sideToOrientation,
   orientationToDirection,
   togglePaneLayoutNode,
-  saveLayout,
   shouldDisableFlex,
   defaultLayout,
   isCollapsedPaneLayout,
@@ -69,8 +68,8 @@ import usePlatform from '@src/hooks/usePlatform'
 
 type WithoutRootLayout<T> = Omit<T, 'rootLayout'>
 interface LayoutState {
-  areaLibrary: Record<AreaType, AreaTypeDefinition>
-  actionLibrary: Record<ActionType, ActionTypeDefinition>
+  areaLibrary: AreaLibrary
+  actionLibrary: ActionLibrary
   updateSplitSizes: (props: WithoutRootLayout<IUpdateNodeSizes>) => void
   replaceLayoutNode: (props: WithoutRootLayout<IReplaceLayoutChildNode>) => void
   togglePane: (props: WithoutRootLayout<ITogglePane>) => void
@@ -78,26 +77,18 @@ interface LayoutState {
   enableContextMenus: boolean
 }
 
-const nullAreaLibrary = Object.fromEntries(
-  Object.values(AreaType).map((type) => [
-    type,
-    {
-      hide: () => false,
-      Component: () => <></>,
-    } satisfies AreaTypeDefinition,
-  ])
-  // TS is so annoying, I've held its hand the entire way to this type inference but Object.fromEntries widens the key to string
-) as unknown as Record<AreaType, AreaTypeDefinition>
+const missingAreaDefinition = {
+  hide: () => false,
+  Component: () => <></>,
+} satisfies AreaTypeDefinition
 
-const nullActionLibrary = Object.fromEntries(
-  Object.values(AreaType).map((type) => [
-    type,
-    {
-      execute: () => {},
-    } satisfies ActionTypeDefinition,
-  ])
-  // TS is so annoying, I've held its hand the entire way to this type inference but Object.fromEntries widens the key to string
-) as unknown as Record<ActionType, ActionTypeDefinition>
+const missingActionDefinition = {
+  execute: () => {},
+  useHidden: () => true,
+} satisfies ActionTypeDefinition
+
+const nullAreaLibrary: AreaLibrary = {}
+const nullActionLibrary: ActionLibrary = {}
 
 const LayoutStateContext = createContext<LayoutState>({
   areaLibrary: nullAreaLibrary,
@@ -118,7 +109,7 @@ interface LayoutRootNodeProps {
   getLayout: () => Layout | undefined
   setLayout: (layout: Layout) => void
   // Values that affect the layout (pane buttons, menus, etc).
-  showDebugPanel: SettingsType['app']['showDebugPanel']['current']
+  showDebugPanel: SettingsType['debug']['showPanel']['current']
   notifications: boolean[]
   artifactGraph: ArtifactGraph
   layoutName?: string
@@ -134,13 +125,9 @@ export const LayoutRootNode = memo(
     getLayout,
     setLayout,
     showDebugPanel,
-    layoutName = 'default',
     enableContextMenus = false,
   }: LayoutRootNodeProps) {
     const getLayoutWithFallback = () => getLayout() || defaultLayout
-    useEffect(() => {
-      saveLayout({ layout, layoutName })
-    }, [layout, layoutName])
 
     function updateSplitSizes(props: WithoutRootLayout<IUpdateNodeSizes>) {
       const rootLayout = getLayoutWithFallback()
@@ -220,11 +207,18 @@ function LayoutNode({
   const { areaLibrary } = useLayoutState()
   switch (layout.type) {
     case LayoutType.Splits:
-      return <SplitLayout layout={layout} key={`node-${layout.id}`} />
+      return (
+        <SplitLayout
+          layout={layout}
+          key={`node-${layout.id}`}
+          onClose={onClose}
+        />
+      )
     case LayoutType.Panes:
       return <PaneLayout layout={layout} key={`node-${layout.id}`} />
     default: {
-      const { Component, ...props } = areaLibrary[layout.areaType]
+      const { Component, ...props } =
+        areaLibrary[layout.areaType] ?? missingAreaDefinition
       return <Component areaConfig={props} layout={layout} onClose={onClose} />
     }
   }
@@ -233,11 +227,15 @@ function LayoutNode({
 /**
  * Need to see if we should just roll our own resizable component?
  */
-function SplitLayout({ layout }: { layout: SplitLayoutType }) {
+function SplitLayout({
+  layout,
+  onClose,
+}: { layout: SplitLayoutType; onClose?: (id: string) => void }) {
   return (
     <SplitLayoutContents
       direction={orientationToDirection(layout.orientation)}
       layout={layout}
+      onClose={onClose}
     />
   )
 }
@@ -319,7 +317,14 @@ function SplitLayoutContents({
                 className={`flex bg-default ${disableFlex ? '!flex-none !overflow-visible' : ''}`}
                 minSize={2}
               >
-                <LayoutNode layout={a} onClose={() => onClose?.(a.id)} />
+                <LayoutNode
+                  layout={a}
+                  onClose={(idOverride?: unknown) => {
+                    onClose?.(
+                      typeof idOverride === 'string' ? idOverride : a.id
+                    )
+                  }}
+                />
               </Panel>
               <ResizeHandle
                 direction={direction}
@@ -580,7 +585,8 @@ function NotificationBadge({ pane }: { pane: PaneChild }) {
 function ActionButton({ action, side }: { action: Action; side: Side }) {
   const { actionLibrary } = useLayoutState()
   const platform = usePlatform()
-  const resolvedAction = actionLibrary[action.actionType]
+  const resolvedAction =
+    actionLibrary[action.actionType] ?? missingActionDefinition
   const disabledReason = resolvedAction.useDisabled?.()
   const hidden = resolvedAction.useHidden?.()
   useHotkeys(resolvedAction.shortcut || '', () => resolvedAction.execute(), {

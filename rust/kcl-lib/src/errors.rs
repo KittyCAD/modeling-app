@@ -1,22 +1,38 @@
+use std::collections::BTreeMap;
+
 use indexmap::IndexMap;
-pub use kcl_error::{CompilationError, Severity, Suggestion, Tag};
-use serde::{Deserialize, Serialize};
+pub use kcl_error::CompilationIssue;
+pub use kcl_error::Severity;
+pub use kcl_error::Suggestion;
+pub use kcl_error::Tag;
+use serde::Deserialize;
+use serde::Serialize;
 use thiserror::Error;
-use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
+use tower_lsp::lsp_types::Diagnostic;
+use tower_lsp::lsp_types::DiagnosticSeverity;
+use uuid::Uuid;
 
-#[cfg(feature = "artifact-graph")]
-use crate::execution::{ArtifactCommand, ArtifactGraph, Operation};
-use crate::{
-    ModuleId, SourceRange,
-    exec::KclValue,
-    execution::DefaultPlanes,
-    lsp::{IntoDiagnostic, ToLspRange},
-    modules::{ModulePath, ModuleSource},
-};
+use crate::ExecOutcome;
+use crate::ModuleId;
+use crate::SourceRange;
+use crate::exec::KclValue;
+use crate::execution::ArtifactCommand;
+use crate::execution::ArtifactGraph;
+use crate::execution::DefaultPlanes;
+use crate::execution::Operation;
+use crate::front::Number;
+use crate::front::Object;
+use crate::front::ObjectId;
+use crate::lsp::IntoDiagnostic;
+use crate::lsp::ToLspRange;
+use crate::modules::ModulePath;
+use crate::modules::ModuleSource;
 
-mod details;
-
-pub use details::KclErrorDetails;
+pub trait IsRetryable {
+    /// Returns true if the error is transient and the operation that caused it
+    /// should be retried.
+    fn is_retryable(&self) -> bool;
+}
 
 /// How did the KCL execution fail
 #[derive(thiserror::Error, Debug)]
@@ -38,20 +54,36 @@ impl From<KclErrorWithOutputs> for ExecError {
 }
 
 /// How did the KCL execution fail, with extra state.
-#[cfg_attr(target_arch = "wasm32", expect(dead_code))]
-#[derive(Debug)]
+#[derive(Debug, thiserror::Error)]
+#[error("{error}")]
 pub struct ExecErrorWithState {
     pub error: ExecError,
     pub exec_state: Option<crate::execution::ExecState>,
+    #[cfg(feature = "snapshot-engine-responses")]
+    pub responses: Option<IndexMap<Uuid, kittycad_modeling_cmds::websocket::WebSocketResponse>>,
 }
 
 impl ExecErrorWithState {
     #[cfg_attr(target_arch = "wasm32", expect(dead_code))]
-    pub fn new(error: ExecError, exec_state: crate::execution::ExecState) -> Self {
+    pub fn new(
+        error: ExecError,
+        exec_state: crate::execution::ExecState,
+        #[cfg_attr(not(feature = "snapshot-engine-responses"), expect(unused_variables))] responses: Option<
+            IndexMap<Uuid, kittycad_modeling_cmds::websocket::WebSocketResponse>,
+        >,
+    ) -> Self {
         Self {
             error,
             exec_state: Some(exec_state),
+            #[cfg(feature = "snapshot-engine-responses")]
+            responses,
         }
+    }
+}
+
+impl IsRetryable for ExecErrorWithState {
+    fn is_retryable(&self) -> bool {
+        self.error.is_retryable()
     }
 }
 
@@ -64,11 +96,19 @@ impl ExecError {
     }
 }
 
+impl IsRetryable for ExecError {
+    fn is_retryable(&self) -> bool {
+        matches!(self, ExecError::Kcl(kcl_error) if kcl_error.is_retryable())
+    }
+}
+
 impl From<ExecError> for ExecErrorWithState {
     fn from(error: ExecError) -> Self {
         Self {
             error,
             exec_state: None,
+            #[cfg(feature = "snapshot-engine-responses")]
+            responses: None,
         }
     }
 }
@@ -78,6 +118,8 @@ impl From<ConnectionError> for ExecErrorWithState {
         Self {
             error: error.into(),
             exec_state: None,
+            #[cfg(feature = "snapshot-engine-responses")]
+            responses: None,
         }
     }
 }
@@ -122,8 +164,17 @@ pub enum KclError {
     InvalidExpression { details: KclErrorDetails },
     #[error("max call stack size exceeded: {details:?}")]
     MaxCallStack { details: KclErrorDetails },
+    #[error("refactor: {details:?}")]
+    Refactor { details: KclErrorDetails },
     #[error("engine: {details:?}")]
     Engine { details: KclErrorDetails },
+    #[error("engine hangup: {details:?}")]
+    EngineHangup {
+        details: KclErrorDetails,
+        api_call_id: Option<String>,
+    },
+    #[error("engine internal: {details:?}")]
+    EngineInternal { details: KclErrorDetails },
     #[error("internal error, please report to KittyCAD team: {details:?}")]
     Internal { details: KclErrorDetails },
 }
@@ -134,24 +185,47 @@ impl From<KclErrorWithOutputs> for KclError {
     }
 }
 
+impl IsRetryable for KclError {
+    fn is_retryable(&self) -> bool {
+        matches!(self, KclError::EngineHangup { .. } | KclError::EngineInternal { .. })
+    }
+}
+
+const RETRYABLE_ENGINE_MESSAGE_MARKER_SETS: &[&[&str]] = &[
+    &["modeling connection", "interrupted", "please reconnect"],
+    &["modeling connection", "heartbeats", "please reconnect"],
+];
+
+fn is_retryable_engine_message(message: &str) -> bool {
+    // TODO: Replace string matching with structured engine/API retry metadata once it is available.
+    let message = message.to_ascii_lowercase();
+    RETRYABLE_ENGINE_MESSAGE_MARKER_SETS
+        .iter()
+        .any(|markers| markers.iter().all(|marker| message.contains(marker)))
+}
+
 #[derive(Error, Debug, Serialize, ts_rs::TS, Clone, PartialEq)]
 #[error("{error}")]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct KclErrorWithOutputs {
     pub error: KclError,
-    pub non_fatal: Vec<CompilationError>,
+    pub non_fatal: Vec<CompilationIssue>,
     /// Variables in the top-level of the root module. Note that functions will
     /// have an invalid env ref.
     pub variables: IndexMap<String, KclValue>,
-    #[cfg(feature = "artifact-graph")]
     pub operations: Vec<Operation>,
     // TODO: Remove this field.  Doing so breaks the ts-rs output for some
     // reason.
-    #[cfg(feature = "artifact-graph")]
     pub _artifact_commands: Vec<ArtifactCommand>,
-    #[cfg(feature = "artifact-graph")]
     pub artifact_graph: ArtifactGraph,
+    #[serde(skip)]
+    pub scene_objects: Vec<Object>,
+    #[serde(skip)]
+    pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
+    #[serde(skip)]
+    pub var_solutions: Vec<(SourceRange, Number)>,
+    pub scene_graph: Option<crate::front::SceneGraph>,
     pub filenames: IndexMap<ModuleId, ModulePath>,
     pub source_files: IndexMap<ModuleId, ModuleSource>,
     pub default_planes: Option<DefaultPlanes>,
@@ -161,11 +235,14 @@ impl KclErrorWithOutputs {
     #[allow(clippy::too_many_arguments)]
     pub fn new(
         error: KclError,
-        non_fatal: Vec<CompilationError>,
+        non_fatal: Vec<CompilationIssue>,
         variables: IndexMap<String, KclValue>,
-        #[cfg(feature = "artifact-graph")] operations: Vec<Operation>,
-        #[cfg(feature = "artifact-graph")] artifact_commands: Vec<ArtifactCommand>,
-        #[cfg(feature = "artifact-graph")] artifact_graph: ArtifactGraph,
+        operations: Vec<Operation>,
+        artifact_commands: Vec<ArtifactCommand>,
+        artifact_graph: ArtifactGraph,
+        scene_objects: Vec<Object>,
+        source_range_to_object: BTreeMap<SourceRange, ObjectId>,
+        var_solutions: Vec<(SourceRange, Number)>,
         filenames: IndexMap<ModuleId, ModulePath>,
         source_files: IndexMap<ModuleId, ModuleSource>,
         default_planes: Option<DefaultPlanes>,
@@ -174,33 +251,60 @@ impl KclErrorWithOutputs {
             error,
             non_fatal,
             variables,
-            #[cfg(feature = "artifact-graph")]
             operations,
-            #[cfg(feature = "artifact-graph")]
             _artifact_commands: artifact_commands,
-            #[cfg(feature = "artifact-graph")]
             artifact_graph,
+            scene_objects,
+            source_range_to_object,
+            var_solutions,
+            scene_graph: Default::default(),
             filenames,
             source_files,
             default_planes,
         }
     }
+
     pub fn no_outputs(error: KclError) -> Self {
         Self {
             error,
             non_fatal: Default::default(),
             variables: Default::default(),
-            #[cfg(feature = "artifact-graph")]
             operations: Default::default(),
-            #[cfg(feature = "artifact-graph")]
             _artifact_commands: Default::default(),
-            #[cfg(feature = "artifact-graph")]
             artifact_graph: Default::default(),
+            scene_objects: Default::default(),
+            source_range_to_object: Default::default(),
+            var_solutions: Default::default(),
+            scene_graph: Default::default(),
             filenames: Default::default(),
             source_files: Default::default(),
             default_planes: Default::default(),
         }
     }
+
+    /// This is for when the error is generated after a successful execution.
+    pub fn from_error_outcome(error: KclError, outcome: ExecOutcome) -> Self {
+        KclErrorWithOutputs {
+            error,
+            non_fatal: outcome.issues,
+            variables: outcome.variables,
+            operations: outcome.operations,
+            _artifact_commands: Default::default(),
+            artifact_graph: outcome.artifact_graph,
+            scene_objects: outcome.scene_objects,
+            source_range_to_object: outcome.source_range_to_object,
+            var_solutions: outcome.var_solutions,
+            scene_graph: Default::default(),
+            filenames: outcome.filenames,
+            source_files: Default::default(),
+            default_planes: outcome.default_planes,
+        }
+    }
+
+    pub fn sketch_constraint_report(&self) -> crate::SketchConstraintReport {
+        crate::execution::sketch_constraint_report_from_scene_objects(&self.scene_objects)
+    }
+
     pub fn into_miette_report_with_outputs(self, code: &str) -> anyhow::Result<ReportWithOutputs> {
         let mut source_ranges = self.error.source_ranges();
 
@@ -249,6 +353,15 @@ impl KclErrorWithOutputs {
     }
 }
 
+impl IsRetryable for KclErrorWithOutputs {
+    fn is_retryable(&self) -> bool {
+        matches!(
+            self.error,
+            KclError::EngineHangup { .. } | KclError::EngineInternal { .. }
+        )
+    }
+}
+
 impl IntoDiagnostic for KclErrorWithOutputs {
     fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
         let message = self.error.get_message();
@@ -257,30 +370,32 @@ impl IntoDiagnostic for KclErrorWithOutputs {
         source_ranges
             .into_iter()
             .map(|source_range| {
-                let source = self
-                    .source_files
-                    .get(&source_range.module_id())
-                    .cloned()
-                    .unwrap_or(ModuleSource {
-                        source: code.to_string(),
-                        path: self.filenames.get(&source_range.module_id()).unwrap().clone(),
-                    });
-                let mut filename = source.path.to_string();
-                if !filename.starts_with("file://") {
-                    filename = format!("file:///{}", filename.trim_start_matches("/"));
-                }
+                let source = self.source_files.get(&source_range.module_id()).cloned().or_else(|| {
+                    self.filenames
+                        .get(&source_range.module_id())
+                        .cloned()
+                        .map(|path| ModuleSource {
+                            source: code.to_string(),
+                            path,
+                        })
+                });
 
-                let related_information = if let Ok(uri) = url::Url::parse(&filename) {
-                    Some(vec![tower_lsp::lsp_types::DiagnosticRelatedInformation {
-                        location: tower_lsp::lsp_types::Location {
-                            uri,
-                            range: source_range.to_lsp_range(&source.source),
-                        },
-                        message: message.to_string(),
-                    }])
-                } else {
-                    None
-                };
+                let related_information = source.and_then(|source| {
+                    let mut filename = source.path.to_string();
+                    if !filename.starts_with("file://") {
+                        filename = format!("file:///{}", filename.trim_start_matches("/"));
+                    }
+
+                    url::Url::parse(&filename).ok().map(|uri| {
+                        vec![tower_lsp::lsp_types::DiagnosticRelatedInformation {
+                            location: tower_lsp::lsp_types::Location {
+                                uri,
+                                range: source_range.to_lsp_range(&source.source),
+                            },
+                            message: message.to_string(),
+                        }]
+                    })
+                });
 
                 Diagnostic {
                     range: source_range.to_lsp_range(code),
@@ -327,7 +442,10 @@ impl miette::Diagnostic for ReportWithOutputs {
             KclError::UndefinedValue { .. } => "UndefinedValue",
             KclError::InvalidExpression { .. } => "InvalidExpression",
             KclError::MaxCallStack { .. } => "MaxCallStack",
+            KclError::Refactor { .. } => "Refactor",
             KclError::Engine { .. } => "Engine",
+            KclError::EngineHangup { .. } => "EngineHangup",
+            KclError::EngineInternal { .. } => "EngineInternal",
             KclError::Internal { .. } => "Internal",
         };
         let error_string = format!("KCL {family} error");
@@ -378,7 +496,10 @@ impl miette::Diagnostic for Report {
             KclError::UndefinedValue { .. } => "UndefinedValue",
             KclError::InvalidExpression { .. } => "InvalidExpression",
             KclError::MaxCallStack { .. } => "MaxCallStack",
+            KclError::Refactor { .. } => "Refactor",
             KclError::Engine { .. } => "Engine",
+            KclError::EngineHangup { .. } => "EngineHangup",
+            KclError::EngineInternal { .. } => "EngineInternal",
             KclError::Internal { .. } => "Internal",
         };
         let error_string = format!("KCL {family} error");
@@ -398,6 +519,18 @@ impl miette::Diagnostic for Report {
             .map(|span| miette::LabeledSpan::new_with_span(Some(self.filename.to_string()), span));
         Some(Box::new(iter))
     }
+}
+
+#[derive(Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq, Eq, thiserror::Error, miette::Diagnostic)]
+#[serde(rename_all = "camelCase")]
+#[error("{message}")]
+#[ts(export)]
+pub struct KclErrorDetails {
+    #[label(collection, "Errors")]
+    pub source_ranges: Vec<SourceRange>,
+    pub backtrace: Vec<super::BacktraceItem>,
+    #[serde(rename = "msg")]
+    pub message: String,
 }
 
 impl KclErrorDetails {
@@ -460,8 +593,31 @@ impl KclError {
         KclError::InvalidExpression { details }
     }
 
+    pub fn refactor(message: String) -> KclError {
+        KclError::Refactor {
+            details: KclErrorDetails {
+                source_ranges: Default::default(),
+                backtrace: Default::default(),
+                message,
+            },
+        }
+    }
+
     pub fn new_engine(details: KclErrorDetails) -> KclError {
-        KclError::Engine { details }
+        if details.message.eq_ignore_ascii_case("internal error") {
+            KclError::EngineInternal { details }
+        } else if is_retryable_engine_message(&details.message) {
+            KclError::EngineHangup {
+                details,
+                api_call_id: None,
+            }
+        } else {
+            KclError::Engine { details }
+        }
+    }
+
+    pub fn new_engine_hangup(details: KclErrorDetails, api_call_id: Option<String>) -> KclError {
+        KclError::EngineHangup { details, api_call_id }
     }
 
     pub fn new_lexical(details: KclErrorDetails) -> KclError {
@@ -474,6 +630,10 @@ impl KclError {
 
     pub fn new_type(details: KclErrorDetails) -> KclError {
         KclError::Type { details }
+    }
+
+    pub fn is_undefined_value(&self) -> bool {
+        matches!(self, KclError::UndefinedValue { .. })
     }
 
     /// Get the error message.
@@ -495,7 +655,10 @@ impl KclError {
             KclError::UndefinedValue { .. } => "undefined value",
             KclError::InvalidExpression { .. } => "invalid expression",
             KclError::MaxCallStack { .. } => "max call stack",
+            KclError::Refactor { .. } => "refactor",
             KclError::Engine { .. } => "engine",
+            KclError::EngineHangup { .. } => "engine hangup",
+            KclError::EngineInternal { .. } => "engine internal",
             KclError::Internal { .. } => "internal",
         }
     }
@@ -514,7 +677,10 @@ impl KclError {
             KclError::UndefinedValue { details: e, .. } => e.source_ranges.clone(),
             KclError::InvalidExpression { details: e } => e.source_ranges.clone(),
             KclError::MaxCallStack { details: e } => e.source_ranges.clone(),
+            KclError::Refactor { details: e } => e.source_ranges.clone(),
             KclError::Engine { details: e } => e.source_ranges.clone(),
+            KclError::EngineHangup { details: e, .. } => e.source_ranges.clone(),
+            KclError::EngineInternal { details: e } => e.source_ranges.clone(),
             KclError::Internal { details: e } => e.source_ranges.clone(),
         }
     }
@@ -534,7 +700,10 @@ impl KclError {
             KclError::UndefinedValue { details: e, .. } => &e.message,
             KclError::InvalidExpression { details: e } => &e.message,
             KclError::MaxCallStack { details: e } => &e.message,
+            KclError::Refactor { details: e } => &e.message,
             KclError::Engine { details: e } => &e.message,
+            KclError::EngineHangup { details: e, .. } => &e.message,
+            KclError::EngineInternal { details: e } => &e.message,
             KclError::Internal { details: e } => &e.message,
         }
     }
@@ -553,7 +722,10 @@ impl KclError {
             | KclError::UndefinedValue { details: e, .. }
             | KclError::InvalidExpression { details: e }
             | KclError::MaxCallStack { details: e }
+            | KclError::Refactor { details: e }
             | KclError::Engine { details: e }
+            | KclError::EngineHangup { details: e, .. }
+            | KclError::EngineInternal { details: e }
             | KclError::Internal { details: e } => e.backtrace.clone(),
         }
     }
@@ -573,7 +745,10 @@ impl KclError {
             | KclError::UndefinedValue { details: e, .. }
             | KclError::InvalidExpression { details: e }
             | KclError::MaxCallStack { details: e }
+            | KclError::Refactor { details: e }
             | KclError::Engine { details: e }
+            | KclError::EngineHangup { details: e, .. }
+            | KclError::EngineInternal { details: e }
             | KclError::Internal { details: e } => {
                 e.backtrace = source_ranges
                     .iter()
@@ -604,7 +779,10 @@ impl KclError {
             | KclError::UndefinedValue { details: e, .. }
             | KclError::InvalidExpression { details: e }
             | KclError::MaxCallStack { details: e }
+            | KclError::Refactor { details: e }
             | KclError::Engine { details: e }
+            | KclError::EngineHangup { details: e, .. }
+            | KclError::EngineInternal { details: e }
             | KclError::Internal { details: e } => {
                 if let Some(item) = e.backtrace.last_mut() {
                     item.fn_name = last_fn_name;
@@ -707,8 +885,8 @@ impl From<KclError> for pyo3::PyErr {
     }
 }
 
-impl From<CompilationError> for KclErrorDetails {
-    fn from(err: CompilationError) -> Self {
+impl From<CompilationIssue> for KclErrorDetails {
+    fn from(err: CompilationIssue) -> Self {
         let backtrace = vec![BacktraceItem {
             source_range: err.source_range,
             fn_name: None,
@@ -718,5 +896,24 @@ impl From<CompilationError> for KclErrorDetails {
             backtrace,
             message: err.message,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn missing_filename_mapping_does_not_panic_when_building_diagnostics() {
+        let error = KclErrorWithOutputs::no_outputs(KclError::new_semantic(KclErrorDetails::new(
+            "boom".to_owned(),
+            vec![SourceRange::new(0, 1, ModuleId::from_usize(9))],
+        )));
+
+        let diagnostics = error.to_lsp_diagnostics("x");
+
+        assert_eq!(diagnostics.len(), 1);
+        assert_eq!(diagnostics[0].message, "semantic: boom");
+        assert_eq!(diagnostics[0].related_information, None);
     }
 }

@@ -1,0 +1,38 @@
+// Dog House (Great Dane) - Dimensions
+// Shared dimension constants for the Great Dane dog house.
+// Note: this module defines parameters only; it emits no geometry.
+
+// Define units
+@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+
+// Core dimensions (inches)
+export studThickness = 1.5
+export studDepth = 3.5
+export plateHeight = studThickness
+
+export bedLength = 52
+export bedWidth = 36
+export clearance = 2
+
+export interiorLength = bedLength + 2 * clearance
+export interiorWidth = bedWidth + 2 * clearance
+export interiorWallHeight = 32
+export roofRise = 12
+
+export floorZ = 0
+export innerFloorZ = plateHeight
+
+export eaveZ = innerFloorZ + interiorWallHeight
+export peakZ = eaveZ + roofRise
+
+export frameLength = interiorLength + 2 * studDepth
+export frameWidth = interiorWidth + 2 * studDepth
+
+// Front opening sizing (2x4 frame only)
+export openingSideClearance = 0.5
+export openingWidth = interiorWidth - (2 * openingSideClearance)
+
+// Derived stud heights
+export studBaseZ = plateHeight
+export studTopZ = eaveZ - plateHeight
+export studHeight = studTopZ - studBaseZ

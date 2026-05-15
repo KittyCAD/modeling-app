@@ -1,0 +1,36 @@
+// Dog House (Great Dane) - Floor
+// Floor slats and base layout for the dog house.
+
+// Define units
+@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+
+// Import and define parameters
+import * from "dimensions.kcl"
+import * from "2x4.kcl"
+
+// Floor slat spacing
+floorSlatSpacing = 6
+floorSlatWidth = studDepth
+
+// Floor slats
+// One slat geometry, then a linear 3D pattern to fill the length.
+floorSlatStartY = studDepth
+floorSlatEndY = frameLength - studDepth - floorSlatWidth
+floorSlatSpan = floorSlatEndY - floorSlatStartY
+floorSlatCount = floor(floorSlatSpan / floorSlatSpacing) + 1
+floorSlatActualPitch = floorSlatSpan / (floorSlatCount - 1)
+
+floorSlat = twoByFourX(
+  minX = -interiorWidth / 2,
+  minY = floorSlatStartY,
+  minZ = floorZ,
+  lengthX = interiorWidth,
+) // Single slat across the interior width
+
+
+floorSlats = patternLinear3d(
+  [floorSlat],
+  axis = [0, 1, 0],
+  distance = floorSlatActualPitch,
+  instances = floorSlatCount,
+) // Fill along Y with uniform pitch

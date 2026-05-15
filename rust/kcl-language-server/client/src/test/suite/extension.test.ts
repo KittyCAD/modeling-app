@@ -8,7 +8,6 @@ import { suite, test } from 'mocha'
 // import * as myExtension from '../../extension';
 
 suite('Extension Test Suite', () => {
-  /* eslint-disable */
   vscode.window.showInformationMessage('Start all tests.')
 
   test('Sample test', () => {

@@ -11,10 +11,11 @@ import toast from 'react-hot-toast'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
-import { getSettings, settingsActor } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
 
 function isWorldCoordinateSystemType(x: string): x is WorldCoordinateSystem {
   return x === 'right_handed_up_z' || x === 'right_handed_up_y'
@@ -95,8 +96,14 @@ function cameraViewStateToNamedView(
 }
 
 export function createNamedViewsCommand(
-  engineCommandManager: ConnectionManager
+  engineCommandManager: ConnectionManager,
+  settingsActor: SettingsActorType
 ) {
+  const getSettings = (): SettingsType => {
+    const { currentProject: _, ...settings } =
+      settingsActor.getSnapshot().context
+    return settings
+  }
   // Creates a command to be registered in the command bar.
   // The createNamedViewsCommand will prompt the user for a name and then
   // hit the engine for the camera properties and write them back to disk
@@ -112,7 +119,7 @@ export function createNamedViewsCommand(
     onSubmit: (data) => {
       const invokeAndForgetCreateNamedView = async () => {
         if (!data) {
-          return toast.error('Unable to create named view, missing name')
+          return toast.error('Unable to create named view, missing name.')
         }
 
         // Retrieve camera view state from the engine
@@ -128,7 +135,7 @@ export function createNamedViewsCommand(
           : cameraGetViewResponse
 
         if (!r) {
-          return toast.error('Unable to create named view, websocket failure')
+          return toast.error('Unable to create named view, websocket failure.')
         }
 
         const rr = r
@@ -193,7 +200,7 @@ export function createNamedViewsCommand(
     needsReview: false,
     onSubmit: (data) => {
       if (!data) {
-        return toast.error('Unable to delete named view, missing name')
+        return toast.error('Unable to delete named view, missing name.')
       }
       const idToDelete = data.name
 
@@ -219,7 +226,7 @@ export function createNamedViewsCommand(
           },
         })
       } else {
-        toast.error(`Unable to delete, could not find the named view`)
+        toast.error(`Unable to delete, could not find the named view.`)
       }
     },
     args: {
@@ -258,7 +265,7 @@ export function createNamedViewsCommand(
     onSubmit: (data) => {
       const invokeAndForgetLoadNamedView = async () => {
         if (!data) {
-          return toast.error('Unable to load named view')
+          return toast.error('Unable to load named view.')
         }
 
         // Retrieve application state for namedViews
@@ -274,7 +281,7 @@ export function createNamedViewsCommand(
           const cameraViewState = namedViewToCameraViewState(viewToLoad)
 
           if (err(cameraViewState)) {
-            toast.error(`Unable to load named view ${data.name}`)
+            toast.error(`Unable to load named view ${data.name}.`)
             return
           }
 
@@ -316,7 +323,7 @@ export function createNamedViewsCommand(
           // We do not have the promise of the engine command for ensuring the camera projection has been completed.
           toast.success(`Named view ${name} loaded.`)
         } else {
-          toast.error(`Unable to load named view, could not find named view`)
+          toast.error(`Unable to load named view, could not find named view.`)
         }
       }
       invokeAndForgetLoadNamedView().catch(reportRejection)

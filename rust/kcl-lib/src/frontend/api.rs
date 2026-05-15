@@ -3,14 +3,22 @@
 #![allow(async_fn_in_trait)]
 
 use kcl_error::SourceRange;
-use serde::{Deserialize, Serialize};
+use kittycad_modeling_cmds::units::UnitLength;
+use serde::Deserialize;
+use serde::Serialize;
 
+use crate::ExecOutcome;
 pub use crate::ExecutorSettings as Settings;
-use crate::{ExecOutcome, engine::PlaneName, execution::ArtifactId, pretty::NumericSuffix};
+use crate::NodePath;
+use crate::engine::PlaneName;
+use crate::execution::ArtifactId;
+use crate::pretty::NumericSuffix;
 
 pub trait LifecycleApi {
     async fn open_project(&self, project: ProjectId, files: Vec<File>, open_file: FileId) -> Result<()>;
+    async fn get_project(&self, project: ProjectId) -> Result<Vec<File>>;
     async fn add_file(&self, project: ProjectId, file: File) -> Result<()>;
+    async fn get_file(&self, project: ProjectId, file: FileId) -> Result<File>;
     async fn remove_file(&self, project: ProjectId, file: FileId) -> Result<()>;
     // File changed on disk, etc. outside of the editor or applying undo, restore, etc.
     async fn update_file(&self, project: ProjectId, file: FileId, text: String) -> Result<()>;
@@ -18,7 +26,7 @@ pub trait LifecycleApi {
     async fn refresh(&self, project: ProjectId) -> Result<()>;
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct SceneGraph {
     pub project: ProjectId,
@@ -74,7 +82,51 @@ pub struct SourceDelta {
     pub text: String,
 }
 
-#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, ts_rs::TS)]
+pub struct SketchCheckpointId(u64);
+
+impl SketchCheckpointId {
+    pub(crate) fn new(n: u64) -> Self {
+        Self(n)
+    }
+}
+
+#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct SketchMutationOutcome {
+    pub source_delta: SourceDelta,
+    pub scene_graph_delta: SceneGraphDelta,
+    pub checkpoint_id: Option<SketchCheckpointId>,
+}
+
+#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct NewSketchOutcome {
+    pub source_delta: SourceDelta,
+    pub scene_graph_delta: SceneGraphDelta,
+    pub sketch_id: ObjectId,
+    pub checkpoint_id: Option<SketchCheckpointId>,
+}
+
+#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct EditSketchOutcome {
+    pub scene_graph_delta: SceneGraphDelta,
+    pub checkpoint_id: Option<SketchCheckpointId>,
+}
+
+#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct RestoreSketchCheckpointOutcome {
+    pub source_delta: SourceDelta,
+    pub scene_graph_delta: SceneGraphDelta,
+}
+
+#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, PartialOrd, Ord, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiObjectId")]
 pub struct ObjectId(pub usize);
 
@@ -104,7 +156,7 @@ pub struct File {
     pub text: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiObject")]
 pub struct Object {
     pub id: ObjectId,
@@ -116,14 +168,14 @@ pub struct Object {
 }
 
 impl Object {
-    pub fn placeholder(id: ObjectId, range: SourceRange) -> Self {
+    pub fn placeholder(id: ObjectId, range: SourceRange, node_path: Option<NodePath>) -> Self {
         Object {
             id,
             kind: ObjectKind::Nil,
             label: Default::default(),
             comments: Default::default(),
             artifact_id: ArtifactId::placeholder(),
-            source: SourceRef::Simple { range },
+            source: SourceRef::new(range, node_path),
         }
     }
 }
@@ -137,6 +189,8 @@ pub enum ObjectKind {
     Nil,
     Plane(Plane),
     Face(Face),
+    Wall(Wall),
+    Cap(Cap),
     Sketch(crate::frontend::sketch::Sketch),
     // These need to be named since the nested types are also enums. ts-rs needs
     // a place to put the type tag.
@@ -146,6 +200,23 @@ pub enum ObjectKind {
     Constraint {
         constraint: crate::frontend::sketch::Constraint,
     },
+}
+
+impl ObjectKind {
+    /// What kind of object is this (point, line, arc, etc)
+    /// Suitable for use in user-facing messages.
+    pub fn human_friendly_kind_with_article(&self) -> &'static str {
+        match self {
+            Self::Nil => "a Nil",
+            Self::Plane(..) => "a Plane",
+            Self::Face(..) => "a Face",
+            Self::Wall(..) => "a Wall",
+            Self::Cap(..) => "a Cap",
+            Self::Sketch(..) => "a Sketch",
+            Self::Segment { .. } => "a Segment",
+            Self::Constraint { .. } => "a Constraint",
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -164,16 +235,53 @@ pub struct Face {
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiWall")]
+#[serde(rename_all = "camelCase")]
+pub struct Wall {
+    pub id: ObjectId,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiCap")]
+#[serde(rename_all = "camelCase")]
+pub struct Cap {
+    pub id: ObjectId,
+    pub kind: CapKind,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiCapKind")]
+#[serde(rename_all = "camelCase")]
+pub enum CapKind {
+    Start,
+    End,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiSourceRef")]
 #[serde(tag = "type")]
 pub enum SourceRef {
-    Simple { range: SourceRange },
-    BackTrace { ranges: Vec<SourceRange> },
+    Simple {
+        range: SourceRange,
+        node_path: Option<NodePath>,
+    },
+    BackTrace {
+        ranges: Vec<(SourceRange, Option<NodePath>)>,
+    },
 }
 
 impl From<SourceRange> for SourceRef {
     fn from(value: SourceRange) -> Self {
-        Self::Simple { range: value }
+        Self::Simple {
+            range: value,
+            node_path: None,
+        }
+    }
+}
+
+impl SourceRef {
+    pub fn new(range: SourceRange, node_path: Option<NodePath>) -> Self {
+        Self::Simple { range, node_path }
     }
 }
 
@@ -208,6 +316,18 @@ impl Number {
     }
 }
 
+impl From<(f64, UnitLength)> for Number {
+    fn from((value, units): (f64, UnitLength)) -> Self {
+        // Direct conversion from UnitLength to NumericSuffix (never panics)
+        // The From<UnitLength> for NumericSuffix impl is in execution::types
+        let units_suffix = NumericSuffix::from(units);
+        Number {
+            value,
+            units: units_suffix,
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 #[serde(tag = "type")]
@@ -227,6 +347,12 @@ impl Error {
     pub fn file_id_in_use(id: FileId, path: &str) -> Self {
         Error {
             msg: format!("File ID already in use: {id:?}, currently used for `{path}`"),
+        }
+    }
+
+    pub fn file_id_not_found(project_id: ProjectId, file_id: FileId) -> Self {
+        Error {
+            msg: format!("File ID not found in project: {file_id:?}, project: {project_id:?}"),
         }
     }
 

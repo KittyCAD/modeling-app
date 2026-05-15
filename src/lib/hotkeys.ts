@@ -1,5 +1,8 @@
-import { type Platform } from '@src/lib/utils'
+import type { Platform } from '@src/lib/utils'
 
+/**
+ * @deprecated Prefer registering shortcuts through `keymapValueSpec`.
+ */
 export const SNAP_TO_GRID_HOTKEY = 'mod+g'
 
 const LOWER_CASE_LETTER = /[a-z]/
@@ -8,10 +11,18 @@ const WHITESPACE = /\s+/g
 /**
  * Convert hotkey to display text.
  *
+ * @deprecated Prefer displaying shortcuts from registry keymap metadata.
+ *
  * TODO: We should handle capitalized single letter hotkeys like K as Shift+K,
  * but we don't.
  */
-export function hotkeyDisplay(hotkey: string, platform: Platform): string {
+export function hotkeyDisplay(
+  hotkey: string | undefined,
+  platform: Platform
+): string | undefined {
+  if (!hotkey) {
+    return undefined
+  }
   const isMac = platform === 'macos'
   const isWindows = platform === 'windows'
   // Browsers call it metaKey, but that's a misnomer.

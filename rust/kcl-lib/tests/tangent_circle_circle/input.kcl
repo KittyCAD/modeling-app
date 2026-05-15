@@ -1,0 +1,32 @@
+@settings(experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  // Circle A modeled as two arcs.
+  a_top = arc(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+  a_bot = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([a_top.center, a_bot.center])
+  coincident([a_top.start, a_bot.end])
+  coincident([a_top.end, a_bot.start])
+
+  // Circle B modeled as two arcs.
+  b_top = arc(start = [var 7mm, var 0mm], end = [var 13mm, var 0mm], center = [var 10mm, var 0mm])
+  b_bot = arc(start = [var 13mm, var 0mm], end = [var 7mm, var 0mm], center = [var 10mm, var 0mm])
+  coincident([b_top.center, b_bot.center])
+  coincident([b_top.start, b_bot.end])
+  coincident([b_top.end, b_bot.start])
+
+  // Keep radii fixed so tangency cannot be satisfied by radius drift.
+  radius(a_top) == 5mm
+  radius(a_bot) == 5mm
+  radius(b_top) == 3mm
+  radius(b_bot) == 3mm
+
+  // Fix frame to remove rigid-body ambiguity.
+  fixed([a_top.center, [0mm, 0mm]])
+  b_top.center.at[1] == 0mm
+
+  tangent([a_top, b_top])
+}
+
+assert(s.b_top.center.at[0], isEqualTo = 8mm, tolerance = 0.001)
+assert(s.b_top.center.at[1], isEqualTo = 0mm, tolerance = 0.001)

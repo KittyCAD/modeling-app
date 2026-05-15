@@ -1,22 +1,27 @@
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type RustContext from '@src/lib/rustContext'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { KclManager } from '@src/lang/KclManager'
 import {
-  type ToolEvents,
-  type ToolContext,
-  type TOOL_ID,
-  type SHOWING_RADIUS_PREVIEW,
+  isSketchSolveErrorOutput,
+  toastSketchSolveError,
+} from '@src/machines/sketchSolve/sketchSolveErrors'
+import type {
+  SketchSolveMachineEvent,
+  ToolInput,
+} from '@src/machines/sketchSolve/sketchSolveImpl'
+import {
   type ANIMATING_ARC,
-  showRadiusPreviewListener,
-  animateArcEndPointListener,
+  type SHOWING_RADIUS_PREVIEW,
+  type TOOL_ID,
+  type ToolContext,
+  type ToolEvents,
   addPointListener,
-  removePointListener,
-  sendResultToParent,
+  animateArcEndPointListener,
   createArcActor,
   finalizeArcActor,
+  removePointListener,
+  sendResultToParent,
+  showRadiusPreviewListener,
   storeCreatedArcResult,
 } from '@src/machines/sketchSolve/tools/centerArcToolImpl'
 
@@ -32,12 +37,11 @@ export const machine = setup({
   types: {
     context: {} as ToolContext,
     events: {} as ToolEvents,
-    input: {} as {
-      sceneInfra: SceneInfra
-      rustContext: RustContext
-      kclManager: KclManager
-      sketchId: number
-    },
+    input: {} as ToolInput,
+  },
+  guards: {
+    'invoke output has error': ({ event }) =>
+      'output' in event && isSketchSolveErrorOutput(event.output),
   },
   actions: {
     'show radius preview listener': showRadiusPreviewListener,
@@ -46,6 +50,9 @@ export const machine = setup({
     'remove point listener': removePointListener,
     'send result to parent': assign(sendResultToParent),
     'store created arc result': assign(storeCreatedArcResult),
+    'toast sketch solve error': ({ event }) => {
+      toastSketchSolveError(event)
+    },
   },
   actors: {
     createArc: fromPromise(createArcActor),
@@ -56,9 +63,11 @@ export const machine = setup({
   context: ({ input }): ToolContext => ({
     centerPointId: undefined,
     centerPoint: undefined,
+    centerSnapTarget: undefined,
     arcId: undefined,
     arcEndPointId: undefined,
     arcStartPoint: undefined,
+    startSnapTarget: undefined,
     arcIsSwapped: undefined,
     sceneGraphDelta: {} as SceneGraphDelta,
     sceneInfra: input.sceneInfra,
@@ -93,6 +102,7 @@ export const machine = setup({
             // Just store the center point coordinate, don't create a point segment
             return {
               centerPoint: event.data,
+              centerSnapTarget: event.snapTarget,
             }
           }),
         },
@@ -113,6 +123,12 @@ export const machine = setup({
             if (event.type !== 'add point') return false
             return 'clickNumber' in event ? event.clickNumber === 2 : false
           },
+          actions: assign(({ event }) => {
+            assertEvent(event, 'add point')
+            return {
+              startSnapTarget: event.snapTarget,
+            }
+          }),
         },
         escape: {
           target: 'unequipping',
@@ -134,16 +150,27 @@ export const machine = setup({
           return {
             centerPoint: context.centerPoint,
             startPoint: event.data,
+            centerSnapTarget: context.centerSnapTarget,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
             sketchId: context.sketchId,
           }
         },
-        onDone: {
-          target: animatingArc,
-          actions: ['send result to parent', 'store created arc result'],
+        onDone: [
+          {
+            guard: 'invoke output has error',
+            target: showingRadiusPreview,
+            actions: 'toast sketch solve error',
+          },
+          {
+            target: animatingArc,
+            actions: ['send result to parent', 'store created arc result'],
+          },
+        ],
+        onError: {
+          target: showingRadiusPreview,
+          actions: 'toast sketch solve error',
         },
-        onError: showingRadiusPreview,
       },
     },
 
@@ -169,15 +196,19 @@ export const machine = setup({
         escape: {
           target: 'unequipping',
           actions: ({ self }) => {
-            // Delete draft entities when escaping during animation
-            self._parent?.send({ type: 'delete draft entities' })
+            const sendData: SketchSolveMachineEvent = {
+              type: 'delete draft entities',
+            }
+            self._parent?.send(sendData)
           },
         },
         unequip: {
           target: 'unequipping',
           actions: ({ self }) => {
-            // Delete draft entities when unequipping during animation
-            self._parent?.send({ type: 'delete draft entities' })
+            const sendData: SketchSolveMachineEvent = {
+              type: 'delete draft entities',
+            }
+            self._parent?.send(sendData)
           },
         },
       },
@@ -202,32 +233,48 @@ export const machine = setup({
             centerPoint: context.centerPoint,
             endPoint: event.data,
             sceneGraphDelta: context.sceneGraphDelta,
+            startSnapTarget: context.startSnapTarget,
+            endSnapTarget: event.snapTarget,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
             sketchId: context.sketchId,
             arcIsSwapped: context.arcIsSwapped,
           }
         },
-        onDone: {
-          target: 'ready for center click',
-          actions: [
-            'send result to parent',
-            ({ self }) => {
-              // Clear draft entities after finalization (arc is now committed)
-              self._parent?.send({ type: 'clear draft entities' })
-            },
-            assign({
-              // Clear context values for the next arc
-              centerPoint: undefined,
-              centerPointId: undefined,
-              arcId: undefined,
-              arcEndPointId: undefined,
-              arcStartPoint: undefined,
-              arcIsSwapped: undefined,
-            }),
-          ],
+        onDone: [
+          {
+            guard: 'invoke output has error',
+            target: animatingArc,
+            actions: 'toast sketch solve error',
+          },
+          {
+            target: 'ready for center click',
+            actions: [
+              'send result to parent',
+              ({ self }) => {
+                const sendData: SketchSolveMachineEvent = {
+                  type: 'clear draft entities',
+                }
+                self._parent?.send(sendData)
+              },
+              assign({
+                // Clear context values for the next arc
+                centerPoint: undefined,
+                centerPointId: undefined,
+                centerSnapTarget: undefined,
+                arcId: undefined,
+                arcEndPointId: undefined,
+                arcStartPoint: undefined,
+                startSnapTarget: undefined,
+                arcIsSwapped: undefined,
+              }),
+            ],
+          },
+        ],
+        onError: {
+          target: animatingArc,
+          actions: 'toast sketch solve error',
         },
-        onError: animatingArc,
       },
     },
 
@@ -236,8 +283,10 @@ export const machine = setup({
       entry: [
         'remove point listener',
         ({ self }) => {
-          // Clear draft entities when unequipping normally
-          self._parent?.send({ type: 'clear draft entities' })
+          const sendData: SketchSolveMachineEvent = {
+            type: 'clear draft entities',
+          }
+          self._parent?.send(sendData)
         },
       ],
       description: 'Any teardown logic should go here.',

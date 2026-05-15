@@ -21,10 +21,6 @@ color = 240.0
 # Use millimeters as the default measurement unit
 base_unit = "mm"
 
-[settings.text_editor]
-# Disable text wrapping in the editor
-text_wrapping = false
-
 ```
 
 ## Available Settings
@@ -42,13 +38,6 @@ The settings for the Design Studio.
 
 This setting has the following nested options:
 
-##### allow_orbit_in_sketch_mode
-
-Allow orbiting in sketch mode.
-
-
-**Default:** None
-
 ##### appearance
 
 The settings for the appearance of the app.
@@ -57,40 +46,9 @@ The settings for the appearance of the app.
 **Default:** None
 
 This setting has further nested options. See the schema for full details.
-##### onboarding_status
-
-The onboarding status of the app.
-
-
-**Default:** None
-
-##### show_debug_panel
-
-Whether to show the debug panel, which lets you see various states of the app to aid in development.
-
-
-**Default:** None
-
 ##### stream_idle_mode
 
 When the user is idle, teardown the stream after some time.
-
-
-**Default:** None
-
-
-#### command_bar
-
-Settings that affect the behavior of the command bar.
-
-
-**Default:** None
-
-This setting has the following nested options:
-
-##### include_settings
-
-Whether to include settings in the command bar.
 
 
 **Default:** None
@@ -105,12 +63,19 @@ Settings that affect the behavior while modeling.
 
 This setting has the following nested options:
 
+##### backface_color
+
+The default color to use for surface backfaces.
+
+
+**Default:** None
+
 ##### base_unit
 
-The default unit to use in modeling dimensions.
+The default unit to use in modeling dimensions. If not given, defaults to millimeters.
 
 
-**Default:** `mm`
+**Default:** None
 
 ##### camera_orbit
 
@@ -133,23 +98,9 @@ Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
 
 **Default:** None
 
-##### enable_touch_controls
-
-Toggle touch controls for 3D view navigation
-
-
-**Default:** None
-
 ##### fixed_size_grid
 
 When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level. If true, the grid cells will be fixed-size, where the width is your default length unit. If false, the grid will get larger as you zoom out, and smaller as you zoom in.
-
-
-**Default:** None
-
-##### gizmo_type
-
-Which type of orientation gizmo to use.
 
 
 **Default:** None
@@ -161,100 +112,9 @@ Highlight edges of 3D objects?
 
 **Default:** None
 
-##### major_grid_spacing
-
-The space between major grid lines, specified in the current unit.
-
-
-**Default:** None
-
-##### minor_grids_per_major
-
-The number of minor grid lines per major grid line.
-
-
-**Default:** None
-
-##### mouse_controls
-
-The controls for how to navigate the 3D view.
-
-**Possible values:** `zoo`, `onshape`, `trackpad_friendly`, `solidworks`, `nx`, `creo`, `autocad`
-
-**Default:** None
-
 ##### show_scale_grid
 
 Whether or not to show a scale grid in the 3D modeling view
-
-
-**Default:** None
-
-##### snap_to_grid
-
-When enabled, tools like line, rectangle, etc. will snap to the grid.
-
-
-**Default:** None
-
-##### snaps_per_minor
-
-The number of snaps between minor grid lines. 1 means snapping to each minor grid line.
-
-
-**Default:** None
-
-##### use_new_sketch_mode
-
-Toggle new sketch mode implementation
-
-
-**Default:** None
-
-
-#### project
-
-Settings that affect the behavior of project management.
-
-
-**Default:** None
-
-This setting has the following nested options:
-
-##### default_project_name
-
-The default project name to use when creating a new project.
-
-
-**Default:** None
-
-##### directory
-
-The directory to save and load projects from.
-
-
-**Default:** None
-
-
-#### text_editor
-
-Settings that affect the behavior of the KCL text editor.
-
-
-**Default:** None
-
-This setting has the following nested options:
-
-##### blinking_cursor
-
-Whether to make the cursor blink in the editor.
-
-
-**Default:** None
-
-##### text_wrapping
-
-Whether to wrap text in the editor or overflow with scroll.
 
 
 **Default:** None
@@ -276,9 +136,5 @@ color = 240.0
 [settings.modeling]
 # Use millimeters as the default measurement unit
 base_unit = "mm"
-
-[settings.text_editor]
-# Disable text wrapping in the editor
-text_wrapping = false
 
 ```

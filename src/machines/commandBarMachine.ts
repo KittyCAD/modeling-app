@@ -1,4 +1,3 @@
-import type { MachineManager } from '@src/components/MachineManagerProvider'
 import type { KclManager } from '@src/lang/KclManager'
 import type {
   Command,
@@ -7,17 +6,56 @@ import type {
   KclCommandValue,
 } from '@src/lib/commandTypes'
 import { getCommandArgumentKclValuesOnly } from '@src/lib/commandUtils'
+import { isDesktop } from '@src/lib/isDesktop'
+import type { MachineManager } from '@src/lib/MachineManager'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import toast from 'react-hot-toast'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 import type { ActorRefFrom } from 'xstate'
+import { reportRejection } from '@src/lib/trap'
 
 export type CommandBarActorType = ActorRefFrom<typeof commandBarMachine>
+
+type CommandSubmitPromise = PromiseLike<unknown>
+
+function isCommandSubmitPromise(
+  result: unknown
+): result is CommandSubmitPromise {
+  return (
+    typeof result === 'object' &&
+    result !== null &&
+    'then' in result &&
+    typeof result.then === 'function'
+  )
+}
+
+function handleCommandSubmitResult(commandName: string, result: unknown) {
+  if (!result) return
+
+  if (isCommandSubmitPromise(result)) {
+    Promise.resolve(result)
+      .then((resolved) => {
+        if (resolved instanceof Error) {
+          toast.error(resolved.message)
+        }
+      })
+      .catch((error: unknown) => {
+        reportRejection(error)
+        toast.error(`Failed to execute command: ${commandName}`)
+      })
+    return
+  }
+
+  if (result instanceof Error) {
+    toast.error(result.message)
+  }
+}
 
 export type CommandBarInput = {
   commands: Command[]
   wasmInstancePromise: Promise<ModuleType>
+  machineManager: MachineManager
 }
 export type CommandBarContext = CommandBarInput & {
   selectedCommand?: Command
@@ -93,7 +131,6 @@ export type CommandBarMachineEvent =
       type: 'Change current argument'
       data: { [x: string]: CommandArgumentWithName<unknown> }
     }
-  | { type: 'Set machine manager'; data: MachineManager }
   | { type: 'Set kclManager'; data: KclManager }
 
 export const commandBarMachine = setup({
@@ -113,12 +150,6 @@ export const commandBarMachine = setup({
           ...context.argumentsToSubmit,
           [argName]: argData,
         }
-      },
-    }),
-    'Set machine manager': assign({
-      machineManager: ({ event, context }) => {
-        if (event.type !== 'Set machine manager') return context.machineManager
-        return event.data
       },
     }),
     'Set kclManager': assign({
@@ -141,9 +172,15 @@ export const commandBarMachine = setup({
           resolvedArgs[argName] =
             typeof argValue === 'function' ? argValue(context) : argValue
         }
-        selectedCommand?.onSubmit(resolvedArgs)
+        const result = selectedCommand?.onSubmit(resolvedArgs)
+        if (result) {
+          handleCommandSubmitResult(selectedCommand.name, result)
+        }
       } else {
-        selectedCommand?.onSubmit({ context, event })
+        const result = selectedCommand?.onSubmit({ context, event })
+        if (result) {
+          handleCommandSubmitResult(selectedCommand.name, result)
+        }
       }
     },
     'Set review validation error': assign({
@@ -330,6 +367,33 @@ export const commandBarMachine = setup({
             : !argConfig.required)
       )
     },
+    // Only for add-kcl-file-to-project on web
+    'All required arguments provided': ({ context }) => {
+      if (isDesktop()) return false
+      const { selectedCommand, argumentsToSubmit } = context
+      if (
+        selectedCommand?.name !== 'add-kcl-file-to-project' ||
+        !selectedCommand?.args
+      )
+        return false
+      return Object.entries(selectedCommand.args).every(
+        ([argName, argConfig]) => {
+          if (
+            typeof argConfig.hidden === 'function'
+              ? argConfig.hidden(context)
+              : argConfig.hidden
+          )
+            return true
+          const isRequired =
+            typeof argConfig.required === 'function'
+              ? argConfig.required(context)
+              : argConfig.required
+          if (!isRequired) return true
+          const value = argumentsToSubmit[argName]
+          return value !== undefined && value !== null && value !== ''
+        }
+      )
+    },
     'Has selected command': ({ context }) => !!context.selectedCommand,
   },
   actors: {
@@ -387,7 +451,7 @@ export const commandBarMachine = setup({
                     )
                   } else {
                     // Default message if there is not a custom one sent
-                    toast.error(`Unable to validate ${argName}`)
+                    toast.error(`Unable to validate ${argName}.`)
                     return reject(`unable to validate ${argName}}`)
                   }
                 }
@@ -533,13 +597,6 @@ export const commandBarMachine = setup({
     },
     argumentsToSubmit: {},
     reviewValidationError: undefined,
-    machineManager: {
-      machines: [],
-      machineApiIp: null,
-      currentMachine: null,
-      setCurrentMachine: () => {},
-      noMachinesReason: () => undefined,
-    },
   }),
   id: 'Command Bar',
   initial: 'Closed',
@@ -576,6 +633,10 @@ export const commandBarMachine = setup({
         {
           target: 'Checking Arguments',
           guard: 'All arguments are skippable',
+        },
+        {
+          target: 'Checking Arguments',
+          guard: 'All required arguments provided',
         },
         {
           target: 'Gathering arguments',
@@ -687,11 +748,6 @@ export const commandBarMachine = setup({
     },
   },
   on: {
-    'Set machine manager': {
-      reenter: false,
-      actions: 'Set machine manager',
-    },
-
     Close: {
       target: '.Closed',
       actions: 'Clear selected command',

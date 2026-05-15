@@ -3,10 +3,7 @@ import {
   ONBOARDING_PROJECT_NAME,
   SEARCH_PARAM_ML_PROMPT_KEY,
 } from '@src/lib/constants'
-import {
-  modifiedFanHousingBrowser,
-  modifiedParametersDesktop,
-} from '@src/lib/exampleKcl'
+import { modifiedColdPlate } from '@src/lib/exampleKcl'
 import {
   type DesktopOnboardingPath,
   desktopOnboardingPaths,
@@ -14,8 +11,6 @@ import {
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS, joinRouterPaths } from '@src/lib/paths'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { commandBarActor, systemIOActor } from '@src/lib/singletons'
-import type { IndexLoaderData } from '@src/lib/types'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import {
@@ -28,12 +23,9 @@ import {
   useOnboardingPanes,
 } from '@src/routes/Onboarding/utils'
 import { useEffect, useState } from 'react'
-import {
-  type RouteObject,
-  useRouteLoaderData,
-  useSearchParams,
-} from 'react-router-dom'
+import { type RouteObject, useSearchParams } from 'react-router-dom'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
+import { useApp } from '@src/lib/boot'
 
 type DesktopOnboardingRoute = RouteObject & {
   path: keyof typeof desktopOnboardingPaths
@@ -64,8 +56,9 @@ const onboardingComponents: Record<DesktopOnboardingPath, React.JSX.Element> = {
 }
 
 function Welcome() {
+  const app = useApp()
+  const { systemIOActor } = useApp()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop'
-  const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
 
   // Ensure panes are closed
   useOnboardingPanes()
@@ -76,8 +69,7 @@ function Welcome() {
     systemIOActor.send({
       type: SystemIOMachineEvents.navigateToFile,
       data: {
-        requestedProjectName:
-          loaderData?.project?.name || ONBOARDING_PROJECT_NAME,
+        requestedProjectName: app.project?.name || ONBOARDING_PROJECT_NAME,
         requestedFileName: 'main.kcl',
         requestedSubRoute: joinRouterPaths(
           String(PATHS.ONBOARDING),
@@ -85,14 +77,14 @@ function Welcome() {
         ),
       },
     })
-  }, [loaderData?.project?.name])
+  }, [systemIOActor, app.project?.name])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 grid items-end justify-center p-2">
       <OnboardingCard>
         <h1 className="text-xl font-bold">Welcome to Zoo Design Studio</h1>
         <p className="my-4">
-          Here is an assembly of a CPU fan that was made in Zoo Design Studio.
+          Here is a cold plate that was made in Zoo Design Studio.
         </p>
         <p className="my-4">
           Let’s walk through the basics of how to get started, and how you can
@@ -105,6 +97,7 @@ function Welcome() {
 }
 
 function Scene() {
+  const { systemIOActor } = useApp()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/scene'
 
   // Ensure panes are closed
@@ -114,18 +107,25 @@ function Scene() {
   useEffect(() => {
     // Create if necessary and navigate to the `blank.kcl` file
     systemIOActor.send({
-      type: SystemIOMachineEvents.importFileFromURL,
+      type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
       data: {
         requestedProjectName: ONBOARDING_PROJECT_NAME,
         requestedFileNameWithExtension: 'blank.kcl',
-        requestedCode: '',
+        files: [
+          {
+            requestedProjectName: ONBOARDING_PROJECT_NAME,
+            requestedFileName: 'blank.kcl',
+            requestedCode: '',
+          },
+        ],
+        override: true,
         requestedSubRoute: joinRouterPaths(
           String(PATHS.ONBOARDING),
           thisOnboardingStatus
         ),
       },
     })
-  }, [])
+  }, [systemIOActor])
 
   return (
     <div className="pointer-events-none fixed inset-0 z-50 grid items-end justify-center p-2">
@@ -182,7 +182,7 @@ function TextToCad() {
         </p>
         <p className="my-4">
           Our free plan includes a limited number of Zookeeper generations each
-          month. Upgrade to a paid plan for additional usage. Pro and Org plans
+          month. Upgrade to a paid plan for additional usage. Pro and Team plans
           come with unlimited Zookeeper generations.
         </p>
         <p className="my-4">
@@ -202,7 +202,7 @@ function TextToCadPrompt() {
     '/desktop/text-to-cad-prompt'
   const [searchParams, setSearchParams] = useSearchParams()
   const prompt =
-    'Design a fan housing for a CPU cooler for a 120mm diameter fan with four holes for retaining clips'
+    'Design a cold plate with a serpentine copper coolant tube and recessed channels for thermal management'
 
   // Ensure panes are closed except TTC
   useOnboardingPanes([DefaultLayoutPaneID.TTC])
@@ -236,9 +236,10 @@ function TextToCadPrompt() {
 }
 
 function FeatureTreePane() {
+  const { systemIOActor } = useApp()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/feature-tree-pane'
-  const generatedFileName = 'fan-housing.kcl'
+  const generatedFileName = 'main.kcl'
 
   // Highlight the feature tree pane button if it's present
   useOnboardingHighlight('feature-tree-pane-button')
@@ -259,12 +260,12 @@ function FeatureTreePane() {
         ),
       },
     })
-  }, [])
+  }, [systemIOActor])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-[99] p-8 grid justify-center items-end">
       <OnboardingCard className="col-start-3 col-span-2">
-        <h1 className="text-xl font-bold">CPU Fan Housing</h1>
+        <h1 className="text-xl font-bold">Cold Plate</h1>
         <p className="my-4">
           This is an example of the generated CAD model using Zookeeper. We
           skipped the real generation for this tutorial.
@@ -369,13 +370,14 @@ function OtherPanes() {
 }
 
 function PromptToEdit() {
+  const { systemIOActor } = useApp()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/prompt-to-edit'
 
   // Highlight the text-to-cad button if it's present
   useOnboardingHighlight('ttc-pane-button')
 
   // Open the text-to-cad pane
-  // navigate to the main assembly file
+  // Navigate to the sample file
   useEffect(() => {
     systemIOActor.send({
       type: SystemIOMachineEvents.navigateToFile,
@@ -388,7 +390,7 @@ function PromptToEdit() {
         ),
       },
     })
-  }, [])
+  }, [systemIOActor])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 p-8 grid justify-center items-center">
@@ -398,7 +400,7 @@ function PromptToEdit() {
           Zookeeper not only can <strong>create</strong> a part, but also{' '}
           <strong>modify</strong> an existing part. Still in the right sidebar,
           under the “Zookeeper” pane, you’ll be able to describe the change you
-          want for your part, and our AI will generate the change. minute.
+          want for your part, and our AI will generate the change.
         </p>
         <OnboardingButtons
           currentSlug={thisOnboardingStatus}
@@ -410,10 +412,11 @@ function PromptToEdit() {
 }
 
 function PromptToEditPrompt() {
+  const { commands } = useApp()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/prompt-to-edit-prompt'
   const prompt =
-    'Change the fan diameter to be 150 mm and update the housing size and mounting hole placements to accommodate for the change. Change the housing to be purple.'
+    'Increase the cold plate length to 12 inches and make the copper tube blue.'
 
   // Open the text-to-cad pane
   useOnboardingPanes([DefaultLayoutPaneID.TTC], [DefaultLayoutPaneID.TTC])
@@ -428,11 +431,11 @@ function PromptToEditPrompt() {
 
   // Enter the prompt-to-edit flow with a prebaked prompt
   const [isReady, setIsReady] = useState(
-    isModelingCmdGroupReady(commandBarActor.getSnapshot())
+    isModelingCmdGroupReady(commands.actor.getSnapshot())
   )
   useOnModelingCmdGroupReadyOnce(() => {
     setIsReady(true)
-    commandBarActor.send({
+    commands.send({
       type: 'Find and select command',
       data: {
         groupId: 'modeling',
@@ -462,12 +465,12 @@ function PromptToEditPrompt() {
           </p>
         )}
         <p className="my-4">
-          We are going to use Zookeeper to modify multiple files at once! Let’s
-          update the housing and fan together.
+          We are going to use Zookeeper to modify an existing model. Let’s
+          update the cold plate dimensions and appearance.
         </p>
         <p className="my-4">
           To save you money, we are using a pre-rolled Zookeeper prompt to edit
-          your existing fan housing. You can see the prompt in the window above.
+          your existing cold plate. You can see the prompt in the window above.
           Click next to see an example of what modifying with Zookeeper would
           look like.
         </p>
@@ -481,6 +484,7 @@ function PromptToEditPrompt() {
 }
 
 function PromptToEditResult() {
+  const { systemIOActor } = useApp()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/prompt-to-edit-result'
 
@@ -495,14 +499,9 @@ function PromptToEditResult() {
         requestedProjectName: ONBOARDING_PROJECT_NAME,
         files: [
           {
-            requestedFileName: 'parameters.kcl',
+            requestedFileName: 'main.kcl',
             requestedProjectName: ONBOARDING_PROJECT_NAME,
-            requestedCode: modifiedParametersDesktop,
-          },
-          {
-            requestedFileName: 'fan-housing.kcl',
-            requestedProjectName: ONBOARDING_PROJECT_NAME,
-            requestedCode: modifiedFanHousingBrowser,
+            requestedCode: modifiedColdPlate,
           },
         ],
         override: true,
@@ -512,7 +511,7 @@ function PromptToEditResult() {
         ),
       },
     })
-  }, [])
+  }, [systemIOActor])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-[99] p-8 grid justify-center items-end">
@@ -523,10 +522,9 @@ function PromptToEditResult() {
           skipped the real generation for this tutorial.
         </p>
         <p className="my-4">
-          Zookeeper will make changes across files in your project, so if you
-          have named parameters in another file that need to change to complete
-          your request, it is smart enough to go find their source and change
-          them.
+          Zookeeper can update named parameters and related geometry together,
+          so changes to dimensions and appearance stay connected to the source
+          model.
         </p>
         <p className="my-4">
           All of our Zookeeper capabilities are experimental, so please report

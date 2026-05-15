@@ -1,15 +1,16 @@
-These are principles we try to follow as a team working on this product. Anyone can suggest additions or edits. 
+These are principles we try to follow as a team working on this product. Anyone can suggest additions or edits.
 
 ## 0. Application architecture
+
 1. Use React as a thin view layer unless absolutely necessary, presenting state that is defined outside of React.
 
 2. Never directly import a method from the WASM module (although it is tempting!). Always pass in our WASM instance as a dependency instead. This anti-pattern was removed in #9415.
 
-3. Reduce the usage of circular dependencies in src/lib/singletons.ts.
+3. Reduce the usage of circular dependencies in src/lib/app.ts.
 
 4. Make functions and react components take references to singletons to enable unit testing instead of globally importing a singleton.
 
-5. Know and document the life cycle of the data you are working with 
+5. Know and document the life cycle of the data you are working with
     - How does data get populated?
     - Does data get stale?
     - Does data need to exist across the entire application?
@@ -17,7 +18,7 @@ These are principles we try to follow as a team working on this product. Anyone 
     - Does data need to live in React?
     - Does data need to live in Javascript memory?
     - When is the data available?
-    - Does code depend on data that is async? 
+    - Does code depend on data that is async?
     - Where is the data populated from?
       - User input
       - HTTP request
@@ -26,8 +27,11 @@ These are principles we try to follow as a team working on this product. Anyone 
       - File system (off disk)
 
 ## 1. UX design
+
 1. Animate sparingly
 2. Keep distractions from the scene at a minimum
+3. Prefer title case for commands and settings, e.g. "Center Circle"
+4. Prefer ending phrases with a period, e.g. "Draw a circle."
 
 ## 2. Modeling Codemods, Command Palette, and Testing
 
@@ -46,3 +50,7 @@ These are principles we try to follow as a team working on this product. Anyone 
     - All the codemods were rewritten during [this effort](https://github.com/KittyCAD/modeling-app/milestone/4), to ensure consistency with respect to these principles and scalable testing.
 
 <img width="4550" height="3271" alt="image" src="https://github.com/user-attachments/assets/7cbb945d-ca4e-4b13-8be3-51343cb6dcf1" />
+
+## 3. Code style
+
+1. Never use `any` or `as` in typescript. We do not want leave things untyped or coerce types. You should instead type narrow or use helpers like `hasProperty` and `isRecord` from `@src/lib/utils.ts` where needed.

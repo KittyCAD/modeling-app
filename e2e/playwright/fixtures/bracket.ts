@@ -8,7 +8,7 @@ export const bracket = fs.readFileSync(
     '..',
     '..',
     'public',
-    'kcl-samples',
+    'kcl-samples-legacy',
     'bracket',
     'main.kcl'
   ),

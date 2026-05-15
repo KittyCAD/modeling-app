@@ -1,4 +1,5 @@
-use crate::docs::kcl_doc::{DocData, ModData};
+use crate::docs::kcl_doc::DocData;
+use crate::docs::kcl_doc::ModData;
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum KclType<'i> {

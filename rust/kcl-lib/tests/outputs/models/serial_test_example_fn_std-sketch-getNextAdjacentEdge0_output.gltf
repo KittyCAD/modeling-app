@@ -37,7 +37,7 @@
       ],
       "max": [
         0.014999999664723871,
-        0.008660254068672657,
+        0.008660250343382359,
         0.004999999888241291
       ]
     },
@@ -56,12 +56,12 @@
       "type": "VEC3",
       "min": [
         0.009999999776482582,
-        0.008660254068672657,
+        0.008660250343382359,
         -0
       ],
       "max": [
         0.014999999664723871,
-        0.017320508137345314,
+        0.017320509999990463,
         0.004999999888241291
       ]
     },
@@ -79,13 +79,13 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        0.000000000000000001776356923772673,
-        0.017320508137345314,
+        0,
+        0.017320509999990463,
         -0
       ],
       "max": [
         0.009999999776482582,
-        0.017320508137345314,
+        0.017320509999990463,
         0.004999999888241291
       ]
     },
@@ -103,13 +103,13 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        -0.00413397466763854,
-        0.010160254314541817,
+        -0.004133970011025667,
+        0.010160249657928944,
         -0
       ],
       "max": [
-        0.000000000000000001776356923772673,
-        0.017320508137345314,
+        0,
+        0.017320509999990463,
         0.004999999888241291
       ]
     },
@@ -127,13 +127,13 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        -0.00413397466763854,
+        -0.004133970011025667,
         0,
         -0
       ],
       "max": [
         0,
-        0.007160253822803497,
+        0.007160250097513199,
         0.004999999888241291
       ]
     },
@@ -147,72 +147,72 @@
     {
       "bufferView": 6,
       "byteOffset": 0,
-      "count": 60,
+      "count": 36,
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        -0.004535898566246033,
+        -0.004535899963229895,
         0,
         -0
       ],
       "max": [
         0.014999999664723871,
-        0.017320508137345314,
-        0.00000000000000000000000000000000021301427004838373
+        0.017320509999990463,
+        -0
       ]
     },
     {
       "bufferView": 6,
       "byteOffset": 12,
-      "count": 60,
+      "count": 36,
       "componentType": 5126,
       "type": "VEC3"
     },
     {
       "bufferView": 7,
       "byteOffset": 0,
-      "count": 60,
+      "count": 36,
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        -0.004535898566246033,
+        -0.004535899963229895,
         0,
         0.004999999888241291
       ],
       "max": [
         0.014999999664723871,
-        0.017320508137345314,
+        0.017320509999990463,
         0.004999999888241291
       ]
     },
     {
       "bufferView": 7,
       "byteOffset": 12,
-      "count": 60,
+      "count": 36,
       "componentType": 5126,
       "type": "VEC3"
     },
     {
       "bufferView": 8,
       "byteOffset": 0,
-      "count": 96,
+      "count": 48,
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        -0.004535898566246033,
-        0.007160253822803497,
+        -0.004535899963229895,
+        0.007160250097513199,
         -0
       ],
       "max": [
-        -0.00413397466763854,
-        0.010160254314541817,
+        -0.004133970011025667,
+        0.010160249657928944,
         0.004999999888241291
       ]
     },
     {
       "bufferView": 8,
       "byteOffset": 12,
-      "count": 96,
+      "count": 48,
       "componentType": 5126,
       "type": "VEC3"
     }
@@ -223,8 +223,8 @@
   },
   "buffers": [
     {
-      "byteLength": 6048,
-      "uri": "data:application/octet-stream;base64,AAAAAAAAAAAK16M7AAAAAAAAgL8AAAAAAAAAAAAAAAAAAACAAAAAAAAAgL8AAAAACtcjPAAAAAAK16M7AAAAAAAAgL8AAAAACtcjPAAAAAAK16M7AAAAAAAAgL8AAAAAAAAAAAAAAAAAAACAAAAAAAAAgL8AAAAACtcjPAAAAAAAAACAAAAAAAAAgL8AAAAACtcjPAAAAAAK16M717NdPwAAAL8AAAAACtcjPAAAAAAAAACA17NdPwAAAL8AAAAAj8J1PL3jDTwK16M717NdPwAAAL8AAAAAj8J1PL3jDTwK16M717NdPwAAAL8AAAAACtcjPAAAAAAAAACA17NdPwAAAL8AAAAAj8J1PL3jDTwAAACA17NdPwAAAL8AAAAAj8J1PL3jDTwK16M717NdPwAAAD8AAAAAj8J1PL3jDTwAAACA17NdPwAAAD8AAAAACtcjPL3jjTwK16M717NdPwAAAD8AAAAACtcjPL3jjTwK16M717NdPwAAAD8AAAAAj8J1PL3jDTwAAACA17NdPwAAAD8AAAAACtcjPL3jjTwAAACA17NdPwAAAD8AAAAACtcjPL3jjTwK16M7AAAAAAAAgD8AAAAACtcjPL3jjTwAAACAAAAAAAAAgD8AAAAAbxIDIr3jjTwK16M7AAAAAAAAgD8AAAAAbxIDIr3jjTwK16M7AAAAAAAAgD8AAAAACtcjPL3jjTwAAACAAAAAAAAAgD8AAAAAbxIDIr3jjTwAAACAAAAAAAAAgD8AAAAAbxIDIr3jjTwK16M717NdvwAAAD8AAAAAbxIDIr3jjTwAAACA17NdvwAAAD8AAAAAS3aHuzJ3JjwK16M717NdvwAAAD8AAAAAS3aHuzJ3JjwK16M717NdvwAAAD8AAAAAbxIDIr3jjTwAAACA17NdvwAAAD8AAAAAS3aHuzJ3JjwAAACA17NdvwAAAD8AAAAAS3aHu5Cg6jsK16M717NdvwAAAL8AAAAAS3aHu5Cg6jsAAACA17NdvwAAAL8AAAAAAAAAAAAAAAAK16M717NdvwAAAL8AAAAAAAAAAAAAAAAK16M717NdvwAAAL8AAAAAS3aHu5Cg6jsAAACA17NdvwAAAL8AAAAAAAAAAAAAAAAAAACA17NdvwAAAL8AAAAACtcjPAAAAAAAAACAAAAAgAAAAIAAAIC/AAAAAAAAAAAAAACA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"
+      "byteLength": 3744,
+      "uri": "data:application/octet-stream;base64,AAAAAAAAAAAK16M7AAAAAAAAgL8AAAAAAAAAAAAAAAAAAACAAAAAAAAAgL8AAAAACtcjPAAAAAAK16M7AAAAAAAAgL8AAAAACtcjPAAAAAAK16M7AAAAAAAAgL8AAAAAAAAAAAAAAAAAAACAAAAAAAAAgL8AAAAACtcjPAAAAAAAAACAAAAAAAAAgL8AAAAACtcjPAAAAAAK16M717NdPwAAAL8AAAAACtcjPAAAAAAAAACA17NdPwAAAL8AAAAAj8J1PLnjDTwK16M717NdPwAAAL8AAAAAj8J1PLnjDTwK16M717NdPwAAAL8AAAAACtcjPAAAAAAAAACA17NdPwAAAL8AAAAAj8J1PLnjDTwAAACA17NdPwAAAL8AAAAAj8J1PLnjDTwK16M717NdPwAAAD8AAAAAj8J1PLnjDTwAAACA17NdPwAAAD8AAAAACtcjPL7jjTwK16M717NdPwAAAD8AAAAACtcjPL7jjTwK16M717NdPwAAAD8AAAAAj8J1PLnjDTwAAACA17NdPwAAAD8AAAAACtcjPL7jjTwAAACA17NdPwAAAD8AAAAACtcjPL7jjTwK16M7AAAAAAAAgD8AAAAACtcjPL7jjTwAAACAAAAAAAAAgD8AAAAAAAAAAL7jjTwK16M7AAAAAAAAgD8AAAAAAAAAAL7jjTwK16M7AAAAAAAAgD8AAAAACtcjPL7jjTwAAACAAAAAAAAAgD8AAAAAAAAAAL7jjTwAAACAAAAAAAAAgD8AAAAAAAAAAL7jjTwK16M717NdvwAAAD8AAAAAAAAAAL7jjTwAAACA17NdvwAAAD8AAAAAQXaHuy13JjwK16M717NdvwAAAD8AAAAAQXaHuy13JjwK16M717NdvwAAAD8AAAAAAAAAAL7jjTwAAACA17NdvwAAAD8AAAAAQXaHuy13JjwAAACA17NdvwAAAD8AAAAAQXaHu4ig6jsK16M717NdvwAAAL8AAAAAQXaHu4ig6jsAAACA17NdvwAAAL8AAAAAAAAAAAAAAAAK16M717NdvwAAAL8AAAAAAAAAAAAAAAAK16M717NdvwAAAL8AAAAAQXaHu4ig6jsAAACA17NdvwAAAL8AAAAAAAAAAAAAAAAAAACA17NdvwAAAL8AAAAACtcjPAAAAAAAAACAAAAAgAAAAIAAAIC/AAAAAAAAAAAAAACA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"
     }
   ],
   "bufferViews": [
@@ -272,22 +272,22 @@
     },
     {
       "buffer": 0,
-      "byteLength": 1440,
+      "byteLength": 864,
       "byteOffset": 864,
       "byteStride": 24,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteLength": 1440,
-      "byteOffset": 2304,
+      "byteLength": 864,
+      "byteOffset": 1728,
       "byteStride": 24,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteLength": 2304,
-      "byteOffset": 3744,
+      "byteLength": 1152,
+      "byteOffset": 2592,
       "byteStride": 24,
       "target": 34962
     }
@@ -727,7 +727,7 @@
           "end": 4,
           "t": [
             0,
-            0.009999999999999997
+            0.009999996503124386
           ]
         },
         {
@@ -751,7 +751,7 @@
           "end": 5,
           "t": [
             0,
-            0.009999999999999997
+            0.009999996503124386
           ]
         },
         {
@@ -763,7 +763,7 @@
           "end": 6,
           "t": [
             0,
-            0.009999999999999997
+            0.010000005163378668
           ]
         },
         {
@@ -787,7 +787,7 @@
           "end": 7,
           "t": [
             0,
-            0.009999999999999997
+            0.010000005163378668
           ]
         },
         {
@@ -835,7 +835,7 @@
           "end": 10,
           "t": [
             0,
-            0.008267949192431122
+            0.008267952057704496
           ]
         },
         {
@@ -859,7 +859,7 @@
           "end": 9,
           "t": [
             0,
-            0.008267949192431122
+            0.008267952057704496
           ]
         },
         {
@@ -871,7 +871,7 @@
           "end": 0,
           "t": [
             0,
-            0.00826794919243112
+            0.008267943397447759
           ]
         },
         {
@@ -883,7 +883,7 @@
           "end": 13,
           "t": [
             0,
-            0.00826794919243112
+            0.008267943397447759
           ]
         },
         {
@@ -906,8 +906,8 @@
           "start": 12,
           "end": 10,
           "t": [
-            0,
-            1.0471975511966
+            6.283184273844396,
+            7.330383895495812
           ]
         },
         {
@@ -918,8 +918,8 @@
           "start": 11,
           "end": 13,
           "t": [
-            0,
-            1.0471975511965994
+            6.283184273844397,
+            7.330383895495813
           ]
         }
       ],
@@ -946,52 +946,52 @@
         ],
         [
           0.015,
-          0.008660254037844385,
+          0.00866025,
           -0
         ],
         [
           0.015,
-          0.008660254037844385,
+          0.00866025,
           0.005
         ],
         [
-          0.010000000000000002,
-          0.01732050807568877,
+          0.01,
+          0.01732051,
           -0
         ],
         [
-          0.010000000000000002,
-          0.01732050807568877,
+          0.01,
+          0.01732051,
           0.005
         ],
         [
-          0.0000000000000000017763568394002505,
-          0.01732050807568877,
+          0,
+          0.01732051,
           -0
         ],
         [
-          0.0000000000000000017763568394002505,
-          0.01732050807568877,
+          0,
+          0.01732051,
           0.005
         ],
         [
-          -0.0041339745962155625,
-          0.010160254037844386,
+          -0.00413397,
+          0.01016025,
           -0
         ],
         [
-          -0.0041339745962155625,
-          0.010160254037844386,
+          -0.00413397,
+          0.01016025,
           0.005
         ],
         [
-          -0.0041339745962155625,
-          0.007160254037844384,
+          -0.00413397,
+          0.00716025,
           -0
         ],
         [
-          -0.0041339745962155625,
-          0.007160254037844384,
+          -0.00413397,
+          0.00716025,
           0.005
         ]
       ],
@@ -1020,8 +1020,8 @@
           "type": "plane",
           "plane": {
             "xAxis": [
-              0.5000000000000001,
-              0.8660254037844387,
+              0.5000000016387101,
+              0.8660254028383291,
               0
             ],
             "yAxis": [
@@ -1031,7 +1031,7 @@
             ],
             "origin": [
               0.0125,
-              0.004330127018922192,
+              0.00433013,
               0.0025
             ]
           }
@@ -1040,8 +1040,8 @@
           "type": "plane",
           "plane": {
             "xAxis": [
-              0.4999999999999999,
-              -0.8660254037844387,
+              0.5000000016387101,
+              -0.8660254028383291,
               0
             ],
             "yAxis": [
@@ -1051,7 +1051,7 @@
             ],
             "origin": [
               0.0125,
-              0.012990381056766578,
+              0.01299038,
               0.0025
             ]
           }
@@ -1070,8 +1070,8 @@
               -1
             ],
             "origin": [
-              0.005000000000000002,
-              0.01732050807568877,
+              0.005,
+              0.01732051,
               0.0025
             ]
           }
@@ -1080,8 +1080,8 @@
           "type": "plane",
           "plane": {
             "xAxis": [
-              0.5000000000000003,
-              0.8660254037844385,
+              0.5000000016387101,
+              0.8660254028383291,
               0
             ],
             "yAxis": [
@@ -1090,8 +1090,8 @@
               -1
             ],
             "origin": [
-              -0.0025000000000000005,
-              0.012990381056766576,
+              -0.0025,
+              0.01299038,
               0.0025
             ]
           }
@@ -1100,8 +1100,8 @@
           "type": "plane",
           "plane": {
             "xAxis": [
-              0.5000000000000002,
-              -0.8660254037844385,
+              0.5000000016387101,
+              -0.8660254028383291,
               0
             ],
             "yAxis": [
@@ -1110,8 +1110,8 @@
               1
             ],
             "origin": [
-              -0.002500000000000002,
-              0.004330127018922192,
+              -0.0025,
+              0.00433013,
               0.0025
             ]
           }
@@ -1160,21 +1160,21 @@
           "type": "cylinder",
           "cylinder": {
             "xAxis": [
-              -0.8660254037844383,
-              0.5000000000000008,
-              0.0000000000000008881784197001264
+              -0.8660254028383291,
+              0.5000000016387101,
+              0
             ],
             "yAxis": [
-              -0.5000000000000008,
-              -0.8660254037844383,
-              0.0000000000000005524544980845168
+              -0.5000000016387101,
+              -0.8660254028383291,
+              0
             ],
             "origin": [
-              -0.0015358983848622514,
-              0.008660254037844385,
-              0.0024999999999999974
+              -0.0015359,
+              0.00866025,
+              0.0025
             ],
-            "radius": 0.002999999999999996
+            "radius": 0.003
           }
         }
       ],
@@ -1248,8 +1248,8 @@
               -0
             ],
             "direction": [
-              0.5000000000000001,
-              0.8660254037844387,
+              0.5000001748438417,
+              0.8660253028382762,
               0
             ]
           }
@@ -1259,7 +1259,7 @@
           "line": {
             "origin": [
               0.015,
-              0.008660254037844385,
+              0.00866025,
               -0
             ],
             "direction": [
@@ -1278,8 +1278,8 @@
               0.005
             ],
             "direction": [
-              0.5000000000000001,
-              0.8660254037844387,
+              0.5000001748438417,
+              0.8660253028382762,
               0
             ]
           }
@@ -1289,12 +1289,12 @@
           "line": {
             "origin": [
               0.015,
-              0.008660254037844385,
+              0.00866025,
               -0
             ],
             "direction": [
-              -0.4999999999999999,
-              0.8660254037844387,
+              -0.49999974183119983,
+              0.8660255528382136,
               0
             ]
           }
@@ -1303,8 +1303,8 @@
           "type": "line",
           "line": {
             "origin": [
-              0.010000000000000002,
-              0.01732050807568877,
+              0.01,
+              0.01732051,
               -0
             ],
             "direction": [
@@ -1319,12 +1319,12 @@
           "line": {
             "origin": [
               0.015,
-              0.008660254037844385,
+              0.00866025,
               0.005
             ],
             "direction": [
-              -0.4999999999999999,
-              0.8660254037844387,
+              -0.49999974183119983,
+              0.8660255528382136,
               0
             ]
           }
@@ -1333,8 +1333,8 @@
           "type": "line",
           "line": {
             "origin": [
-              0.010000000000000002,
-              0.01732050807568877,
+              0.01,
+              0.01732051,
               -0
             ],
             "direction": [
@@ -1348,8 +1348,8 @@
           "type": "line",
           "line": {
             "origin": [
-              0.0000000000000000017763568394002505,
-              0.01732050807568877,
+              0,
+              0.01732051,
               -0
             ],
             "direction": [
@@ -1363,8 +1363,8 @@
           "type": "line",
           "line": {
             "origin": [
-              0.010000000000000002,
-              0.01732050807568877,
+              0.01,
+              0.01732051,
               0.005
             ],
             "direction": [
@@ -1378,13 +1378,13 @@
           "type": "line",
           "line": {
             "origin": [
-              0.0000000000000000017763568394002505,
-              0.01732050807568877,
+              0,
+              0.01732051,
               -0
             ],
             "direction": [
-              -0.5000000000000004,
-              -0.8660254037844384,
+              -0.49999927081673834,
+              -0.8660258247781818,
               0
             ]
           }
@@ -1393,13 +1393,13 @@
           "type": "line",
           "line": {
             "origin": [
-              -0.0041339745962155625,
-              0.010160254037844386,
+              -0.004133970000000001,
+              0.01016025,
               0
             ],
             "direction": [
               0,
-              -0.00000000000000000000000000000009860761315262648,
+              0,
               1
             ]
           }
@@ -1408,13 +1408,13 @@
           "type": "line",
           "line": {
             "origin": [
-              -0.0041339745962155625,
-              0.010160254037844386,
+              -0.00413397,
+              0.01016025,
               0.005
             ],
             "direction": [
-              0.5000000000000004,
-              0.8660254037844384,
+              0.49999927081673834,
+              0.8660258247781818,
               0
             ]
           }
@@ -1423,13 +1423,13 @@
           "type": "line",
           "line": {
             "origin": [
-              -0.0041339745962155625,
-              0.007160254037844384,
+              -0.00413397,
+              0.00716025,
               -0
             ],
             "direction": [
-              0.5000000000000003,
-              -0.8660254037844386,
+              0.4999997945409399,
+              -0.86602552240625,
               0
             ]
           }
@@ -1443,8 +1443,8 @@
               0.005
             ],
             "direction": [
-              -0.5000000000000003,
-              0.8660254037844386,
+              -0.4999997945409399,
+              0.86602552240625,
               0
             ]
           }
@@ -1453,13 +1453,13 @@
           "type": "line",
           "line": {
             "origin": [
-              -0.0041339745962155625,
-              0.007160254037844384,
-              0.004999999999999999
+              -0.004133970000000001,
+              0.00716025,
+              0.005
             ],
             "direction": [
               0,
-              0.00000000000000000000000000000009860761315262648,
+              0,
               -1
             ]
           }
@@ -1468,42 +1468,42 @@
           "type": "circle",
           "circle": {
             "xAxis": [
-              -0.8660254037844382,
-              -0.500000000000001,
-              0.000000000000000000000000000000000000000000000005473822126268817
-            ],
-            "yAxis": [
-              -0.500000000000001,
-              0.8660254037844382,
-              0.00000000000000000000000000000008539669799672304
-            ],
-            "origin": [
-              -0.001535898384862251,
-              0.008660254037844385,
+              -0.8660254028383291,
+              -0.5000000016387101,
               0
             ],
-            "radius": 0.0029999999999999966
+            "yAxis": [
+              -0.5000000016387101,
+              0.8660254028383291,
+              0
+            ],
+            "origin": [
+              -0.0015359,
+              0.00866025,
+              0
+            ],
+            "radius": 0.003
           }
         },
         {
           "type": "circle",
           "circle": {
             "xAxis": [
-              -0.8660254037844383,
-              0.5000000000000008,
-              0.000000000000001776356839400253
+              -0.8660254028383291,
+              0.5000000016387101,
+              0
             ],
             "yAxis": [
-              -0.5000000000000008,
-              -0.8660254037844383,
-              0.0000000000000011049089961690333
+              -0.5000000016387101,
+              -0.8660254028383291,
+              0
             ],
             "origin": [
-              -0.0015358983848622507,
-              0.008660254037844385,
-              0.004999999999999994
+              -0.0015359,
+              0.00866025,
+              0.005
             ],
-            "radius": 0.002999999999999996
+            "radius": 0.003
           }
         }
       ]

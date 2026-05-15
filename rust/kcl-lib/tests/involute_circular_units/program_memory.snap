@@ -166,6 +166,7 @@ description: Variables in memory after executing involute_circular_units.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

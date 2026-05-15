@@ -373,8 +373,226 @@ description: Operations executed multi_target_csg.kcl
           }
         ]
       },
-      "sourceRange": [],
-      "isError": true
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "offsetPlane",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "offset": {
+          "value": {
+            "type": "Number",
+            "value": 0.07,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 11
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 11
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "offsetPlane",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "offset": {
+          "value": {
+            "type": "Number",
+            "value": 0.0325,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 13
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 13
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "loft",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 15
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "subtract",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "tools": {
+          "value": {
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 16
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
     }
   ],
   "std::math": [
@@ -596,6 +814,54 @@ description: Operations executed multi_target_csg.kcl
           {
             "type": "ProgramBodyItem",
             "index": 26
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "CCW",
+      "value": {
+        "type": "String",
+        "value": "ccw"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 27
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "CW",
+      "value": {
+        "type": "String",
+        "value": "cw"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"

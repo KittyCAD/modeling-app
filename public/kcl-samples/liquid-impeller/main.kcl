@@ -1,0 +1,99 @@
+// Liquid Impeller
+// An open-style impeller for use with incompressible fluid in a centrifugal pump
+// Categories: Aerospace, Manufacturing
+
+// Set units
+@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+
+// Define parameters
+impellerDiameter = 4
+plateHeight = 0.1
+vaneCount = 7
+vaneHeight = 0.3
+vaneThickness = 0.15
+mountDiameter = 0.25
+
+// Draw the profile of the mounting hole
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 0.09in, var 0.09in], center = [var 0in, var 0in])
+  coincident([circle1.center, ORIGIN])
+  point1 = point(at = [var 0in, var 0in])
+  line1 = line(start = [var -0.25in, var -0.09in], end = [var 0.25in, var -0.09in])
+  line2 = line(start = [var 0.25in, var -0.09in], end = [var 0.25in, var 0.09in])
+  line3 = line(start = [var 0.25in, var 0.09in], end = [var -0.25in, var 0.09in])
+  line4 = line(start = [var -0.25in, var 0.09in], end = [var -0.25in, var -0.09in])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  line5 = line(start = [var -0.25in, var -0.09in], end = [var 0.25in, var 0.09in], construction = true)
+  line6 = line(start = [var 0.25in, var -0.09in], end = [var -0.25in, var 0.09in], construction = true)
+  coincident([line5.start, line1.start])
+  coincident([line5.end, line2.end])
+  coincident([line6.start, line1.end])
+  coincident([line6.end, line4.start])
+  coincident([point1, line5])
+  coincident([point1, line6])
+  equalLength([line5, line6])
+  coincident([point1, circle1.center])
+  diameter(circle1) == mountDiameter
+  distance([line1.start, line1.end]) == 2 * mountDiameter
+  distance([line2.start, line2.end]) == mountDiameter * 0.65
+}
+hide(sketch001)
+region001 = region(point = [0in, 0in], sketch = sketch001)
+mountingHole = extrude(region001, length = plateHeight * 4, bidirectionalLength = plateHeight)
+
+// Revolve the base plate of the impeller
+sketch002 = sketch(on = XZ) {
+  line1 = line(start = [var 0in, var 0in], end = [var 2in, var 0in])
+  line2 = line(start = [var 2in, var 0in], end = [var 2in, var 0.1in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 2in, var 0.1in], end = [var 0.46in, var 0.1in])
+  coincident([line2.end, line3.start])
+  arc4 = arc(start = [var 0.39in, var 0.13in], end = [var 0.46in, var 0.1in], center = [var 0.46in, var 0.2in])
+  coincident([line3.end, arc4.end])
+  line5 = line(start = [var 0.39in, var 0.13in], end = [var 0.25in, var 0.27in])
+  coincident([arc4.start, line5.start])
+  line6 = line(start = [var 0.25in, var 0.27in], end = [var 0in, var 0.27in])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 0in, var 0.27in], end = [var 0in, var 0in])
+  coincident([line6.end, line7.start])
+  coincident([line7.end, line1.start])
+  distance([line1.start, line1.end]) == impellerDiameter / 2
+  distance([line2.start, line2.end]) == plateHeight
+}
+hide(sketch002)
+region002 = region(segments = [sketch002.line1, sketch002.line2])
+basePlate = revolve(region002, axis = Y)
+  // Subtract the mounting hole from the base plate
+  |> subtract(tools = mountingHole)
+
+// Model a vane of the impeller
+sketch003 = sketch(on = offsetPlane(XY, offset = plateHeight)) {
+  arc1 = arc(start = [var 0.37in, var -0.8in], end = [var 1.93in, var 0.52in], center = [var 0.6in, var 0.52in])
+  arc2 = arc(start = [var 0.39in, var -0.65in], end = [var 0.37in, var -0.8in], center = [var 0.38in, var -0.72in])
+  coincident([arc1.start, arc2.end])
+  arc3 = arc(start = [var 0.39in, var -0.65in], end = [var 1.78in, var 0.52in], center = [var 0.6in, var 0.52in])
+  coincident([arc2.start, arc3.start])
+  arc4 = arc(start = [var 1.93in, var 0.52in], end = [var 1.78in, var 0.52in], center = [var 1.86in, var 0.52in])
+  coincident([arc3.end, arc4.end])
+  coincident([arc1.end, arc4.start])
+  radius(arc2) == 0.07in
+  diameter(arc3) == 2.37in
+  radius(arc4) == 0.07in
+}
+hide(sketch003)
+region003 = region(point = [1.4539455in, -0.4978292in], sketch = sketch003)
+vane = extrude(region003, length = vaneHeight)
+  // Pattern the vane around the Z axis
+  |> patternCircular3d(
+       useOriginal = true,
+       instances = vaneCount,
+       axis = Z,
+       center = [0, 0, 0],
+     )

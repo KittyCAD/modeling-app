@@ -33,6 +33,7 @@ description: Variables in memory after executing tangential_arc.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

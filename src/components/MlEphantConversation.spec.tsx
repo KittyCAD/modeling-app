@@ -1,33 +1,80 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
-import { expect, vi, describe, test } from 'vitest'
+import { expect, vi, describe, test, beforeEach, afterEach } from 'vitest'
+
+// Mock modules that access localStorage at import time
+vi.mock('@src/routes/utils', () => ({
+  getAppVersion: () => 'test',
+  isPlaywrightTestEnv: false,
+}))
+
+vi.mock('@src/lib/desktop', () => ({
+  getDesktopAppInfo: () => null,
+  isDesktop: () => false,
+  openExternalBrowserIfDesktop: vi.fn(),
+  DESKTOP_OS_INFO: null,
+}))
+
+// Mock useSingletons which requires heavy initialization
+vi.mock('@src/lib/boot', () => ({
+  useSingletons: () => ({
+    kclManager: {
+      astSignal: { value: null },
+    },
+  }),
+}))
 
 import { MlEphantConversation } from '@src/components/MlEphantConversation'
-import type { Conversation } from '@src/machines/mlEphantManagerMachine'
-import type { MlCopilotMode } from '@kittycad/lib'
-import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
+import type {
+  Conversation,
+  MlCopilotModeId,
+  MlCopilotModeOption,
+} from '@src/machines/mlEphantManagerMachine'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import { MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY } from '@src/components/MakeathonAnnouncement'
+
+const SERVER_MODE_OPTIONS: MlCopilotModeOption[] = [
+  {
+    id: 'standard',
+    label: 'Standard',
+    description: 'Faster reasoning.',
+    icon: 'stopwatch',
+  },
+  {
+    id: 'deep',
+    label: 'Deep',
+    description: 'More thorough reasoning.',
+    icon: 'brain',
+  },
+]
 
 describe('MlEphantConversation', () => {
+  beforeEach(() => {
+    window.localStorage.removeItem(MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY)
+  })
+
   function rendersRequestBubbleThenDisplayResponse(
-    mode: MlCopilotMode = DEFAULT_ML_COPILOT_MODE
+    mode: MlCopilotModeId = 'deep'
   ) {
     vi.useFakeTimers()
 
     let latestConversation: Conversation | undefined = { exchanges: [] }
 
-    const handleProcess = vi.fn((prompt: string) => {
-      latestConversation = {
-        exchanges: [
-          {
-            request: {
-              type: 'user',
-              content: prompt,
+    const handleProcess = vi.fn(
+      (prompt: string, _mode: MlCopilotModeId | undefined, _files: File[]) => {
+        latestConversation = {
+          exchanges: [
+            {
+              request: {
+                type: 'user',
+                content: prompt,
+              },
+              responses: [],
+              deltasAggregated: '',
             },
-            responses: [],
-            deltasAggregated: '',
-          },
-        ],
+          ],
+        }
       }
-    })
+    )
 
     const renderConversation = (
       conversation?: Conversation,
@@ -45,6 +92,12 @@ describe('MlEphantConversation', () => {
           contexts={[]}
           disabled={false}
           hasPromptCompleted={hasPromptCompleted}
+          isProcessing={!hasPromptCompleted}
+          queue={[]}
+          onRemoveFromQueue={() => {}}
+          onSteer={() => {}}
+          initialMlCopilotMode="deep"
+          modeOptions={SERVER_MODE_OPTIONS}
         />
       )
     }
@@ -54,7 +107,7 @@ describe('MlEphantConversation', () => {
     try {
       const promptText = 'Generate a cube with rounded edges'
 
-      if (mode !== DEFAULT_ML_COPILOT_MODE) {
+      if (mode !== 'deep') {
         fireEvent.click(screen.getByTestId('ml-copilot-efforts-button'))
         fireEvent.click(screen.getByTestId(`ml-copilot-effort-button-${mode}`))
       }
@@ -64,7 +117,7 @@ describe('MlEphantConversation', () => {
       fireEvent.input(promptInput, { target: { textContent: promptText } })
       fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
 
-      expect(handleProcess).toHaveBeenCalledWith(promptText, mode)
+      expect(handleProcess).toHaveBeenCalledWith(promptText, mode, [])
 
       act(() => {
         rerender(renderConversation(latestConversation))
@@ -119,7 +172,132 @@ describe('MlEphantConversation', () => {
   })
 
   test('renders request bubble, shows thinking state, then displays response text after completion (non-default reasoning effort)', () => {
-    rendersRequestBubbleThenDisplayResponse('thoughtful')
+    rendersRequestBubbleThenDisplayResponse('standard')
+  })
+
+  test('shows an attachments loading indicator while attachment processing is in progress', () => {
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        isLoadingAttachments={true}
+        conversation={{
+          exchanges: [
+            {
+              request: {
+                type: 'user',
+                content: 'Use these files',
+                additional_files: [
+                  {
+                    name: 'front-view.png',
+                    mimetype: 'image/png',
+                    data: [],
+                  },
+                ],
+              },
+              responses: [],
+              deltasAggregated: '',
+            },
+          ],
+        }}
+        onProcess={vi.fn()}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        contexts={[]}
+        disabled={false}
+        hasPromptCompleted={false}
+        isProcessing={true}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    expect(
+      screen.getByText('Progressively loading attachments into context...')
+    ).toBeInTheDocument()
+  })
+
+  test('omits mode while server mode metadata is unavailable', () => {
+    const handleProcess = vi.fn()
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        conversation={{ exchanges: [] }}
+        onProcess={handleProcess}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        initialMlCopilotMode="standard"
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    expect(
+      screen.queryByTestId('ml-copilot-efforts-button')
+    ).not.toBeInTheDocument()
+
+    fireEvent.change(screen.getByTestId('ml-ephant-conversation-input'), {
+      target: { value: 'Generate a cube' },
+    })
+    fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
+
+    expect(handleProcess).toHaveBeenCalledWith('Generate a cube', undefined, [])
+  })
+
+  test('resets a local mode pick when the mode scope changes', () => {
+    const handleProcess = vi.fn()
+    const renderConversation = (modeScopeKey: string) => (
+      <MlEphantConversation
+        isLoading={false}
+        conversation={{ exchanges: [] }}
+        onProcess={handleProcess}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        initialMlCopilotMode="deep"
+        modeOptions={SERVER_MODE_OPTIONS}
+        modeScopeKey={modeScopeKey}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    const { rerender } = render(renderConversation('project-a'))
+
+    fireEvent.click(screen.getByTestId('ml-copilot-efforts-button'))
+    fireEvent.click(screen.getByTestId('ml-copilot-effort-button-standard'))
+
+    expect(screen.getByTestId('ml-copilot-efforts-button')).toHaveTextContent(
+      'Standard'
+    )
+
+    rerender(renderConversation('project-b'))
+
+    expect(screen.getByTestId('ml-copilot-efforts-button')).toHaveTextContent(
+      'Deep'
+    )
+
+    fireEvent.change(screen.getByTestId('ml-ephant-conversation-input'), {
+      target: { value: 'Generate a cube' },
+    })
+    fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
+
+    expect(handleProcess).toHaveBeenCalledWith('Generate a cube', 'deep', [])
   })
 
   test('does not render unknown response types', () => {
@@ -156,6 +334,10 @@ describe('MlEphantConversation', () => {
         disabled={false}
         hasPromptCompleted={true}
         contexts={[]}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
       />
     )
 
@@ -167,5 +349,644 @@ describe('MlEphantConversation', () => {
     expect(
       screen.getByTestId('ml-response-chat-bubble-thinking')
     ).toBeInTheDocument()
+  })
+
+  test('renders user message additional files as attachments under the prompt', () => {
+    const conversation: Conversation = {
+      exchanges: [
+        {
+          request: {
+            type: 'user',
+            content: 'Use these reference files',
+            additional_files: [
+              {
+                name: 'front-view.png',
+                mimetype: 'image/png',
+                data: [1, 2, 3],
+              },
+              {
+                name: 'requirements.pdf',
+                mimetype: 'application/pdf',
+                data: [4, 5, 6],
+              },
+            ],
+          },
+          responses: [],
+          deltasAggregated: '',
+        },
+      ],
+    }
+
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        conversation={conversation}
+        onProcess={vi.fn()}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    const requestBubble = screen.getByTestId('ml-request-chat-bubble')
+    const attachments = screen.getByTestId('ml-request-chat-bubble-attachments')
+
+    expect(
+      within(requestBubble).getByText('Use these reference files')
+    ).toBeInTheDocument()
+    expect(
+      within(requestBubble).queryByText('Attachments')
+    ).not.toBeInTheDocument()
+    expect(within(attachments).getByText('Attachments')).toBeInTheDocument()
+    expect(within(attachments).getByText('front-view.png')).toBeInTheDocument()
+    expect(
+      within(attachments).getByText('requirements.pdf')
+    ).toBeInTheDocument()
+    expect(within(attachments).queryByText('+ more')).not.toBeInTheDocument()
+  })
+
+  test('expands and collapses user message attachments when there are more than two', () => {
+    const conversation: Conversation = {
+      exchanges: [
+        {
+          request: {
+            type: 'user',
+            content: 'Use these reference files',
+            additional_files: [
+              {
+                name: 'front-view.png',
+                mimetype: 'image/png',
+                data: [1, 2, 3],
+              },
+              {
+                name: 'requirements.pdf',
+                mimetype: 'application/pdf',
+                data: [4, 5, 6],
+              },
+              {
+                name: 'side-view.jpg',
+                mimetype: 'image/jpeg',
+                data: [7, 8, 9],
+              },
+            ],
+          },
+          responses: [],
+          deltasAggregated: '',
+        },
+      ],
+    }
+
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        conversation={conversation}
+        onProcess={vi.fn()}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    const attachments = screen.getByTestId('ml-request-chat-bubble-attachments')
+
+    expect(within(attachments).getByText('front-view.png')).toBeInTheDocument()
+    expect(
+      within(attachments).getByText('requirements.pdf')
+    ).toBeInTheDocument()
+    expect(
+      within(attachments).queryByText('side-view.jpg')
+    ).not.toBeInTheDocument()
+
+    fireEvent.click(within(attachments).getByText('+ more'))
+
+    expect(within(attachments).getByText('side-view.jpg')).toBeInTheDocument()
+    expect(within(attachments).getByText('- collapse')).toBeInTheDocument()
+
+    fireEvent.click(within(attachments).getByText('- collapse'))
+
+    expect(
+      within(attachments).queryByText('side-view.jpg')
+    ).not.toBeInTheDocument()
+    expect(within(attachments).getByText('+ more')).toBeInTheDocument()
+  })
+
+  test('renders the blocked reason from the API response without extra copy', () => {
+    const blockedReason = `You need a payment method to keep using Zookeeper. Go to your [account](${withSiteBaseURL('/account')}) to fix this.`
+
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        onProcess={vi.fn()}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        blockedReason={blockedReason}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    expect(
+      screen.getByText(/You need a payment method to keep using Zookeeper/i)
+    ).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'account' })).toHaveAttribute(
+      'href',
+      withSiteBaseURL('/account')
+    )
+    expect(screen.queryByText(/The user/i)).not.toBeInTheDocument()
+    expect(
+      screen.getByTestId('ml-ephant-conversation-input-button')
+    ).toBeDisabled()
+  })
+
+  test('renders a provided welcome message when the conversation is empty', () => {
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        conversation={{ exchanges: [] }}
+        welcomeMessage={
+          <div data-testid="custom-welcome-message">Welcome content</div>
+        }
+        onProcess={vi.fn()}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    expect(screen.getByTestId('custom-welcome-message')).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('ml-request-chat-bubble')
+    ).not.toBeInTheDocument()
+  })
+
+  test('renders a provided welcome message above conversation exchanges', () => {
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        conversation={{
+          exchanges: [
+            {
+              request: {
+                type: 'user',
+                content: 'Render a bracket',
+              },
+              responses: [
+                {
+                  end_of_stream: {
+                    whole_response: 'Rendered.',
+                  },
+                },
+              ],
+              deltasAggregated: 'Rendered.',
+            },
+          ],
+        }}
+        welcomeMessage={
+          <div data-testid="custom-welcome-message">Welcome content</div>
+        }
+        onProcess={vi.fn()}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    const welcome = screen.getByTestId('custom-welcome-message')
+    const requestBubble = screen.getByTestId('ml-request-chat-bubble')
+
+    expect(
+      welcome.compareDocumentPosition(requestBubble) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    expect(
+      screen.getByTestId('ml-ephant-conversation-welcome-section')
+    ).toHaveClass('border-b')
+  })
+
+  test('renders the Makeathon announcement in the Zookeeper pane', () => {
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        conversation={{ exchanges: [] }}
+        onProcess={vi.fn()}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+        showMakeathonAnnouncement={true}
+      />
+    )
+
+    const announcement = screen.getByTestId('zookeeper-makeathon-announcement')
+    const overlay = screen.getByTestId(
+      'zookeeper-makeathon-announcement-overlay'
+    )
+
+    expect(announcement).toBeVisible()
+    expect(overlay).toBeVisible()
+    expect(
+      within(announcement).getByRole('link', { name: 'Register now' })
+    ).toHaveAttribute('href', withSiteBaseURL('/makeathon'))
+  })
+
+  test('does not render the Makeathon announcement when hidden', () => {
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        conversation={{ exchanges: [] }}
+        onProcess={vi.fn()}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+        showMakeathonAnnouncement={false}
+      />
+    )
+
+    expect(
+      screen.queryByTestId('zookeeper-makeathon-announcement')
+    ).not.toBeInTheDocument()
+  })
+
+  test('dismisses the Makeathon announcement and persists the choice', () => {
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        conversation={{ exchanges: [] }}
+        onProcess={vi.fn()}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+        showMakeathonAnnouncement={true}
+      />
+    )
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'Dismiss Makeathon announcement',
+      })
+    )
+
+    expect(
+      screen.queryByTestId('zookeeper-makeathon-announcement')
+    ).not.toBeInTheDocument()
+    expect(
+      window.localStorage.getItem(MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY)
+    ).toBe('true')
+  })
+
+  test('does not render the Makeathon announcement after persisted dismissal', () => {
+    window.localStorage.setItem(
+      MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY,
+      'true'
+    )
+
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        conversation={{ exchanges: [] }}
+        onProcess={vi.fn()}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+        showMakeathonAnnouncement={true}
+      />
+    )
+
+    expect(
+      screen.queryByTestId('zookeeper-makeathon-announcement')
+    ).not.toBeInTheDocument()
+  })
+
+  describe('file attachments', () => {
+    const createMockFile = (
+      name: string,
+      type: string,
+      size: number = 1024
+    ): File => {
+      const content = new Array(size).fill('a').join('')
+      return new File([content], name, { type })
+    }
+
+    const renderConversation = (handleProcess = vi.fn(), disabled = false) => {
+      return render(
+        <MlEphantConversation
+          isLoading={false}
+          conversation={{ exchanges: [] }}
+          onProcess={handleProcess}
+          onClickClearChat={() => {}}
+          onReconnect={() => {}}
+          onCancel={() => {}}
+          needsReconnect={false}
+          disabled={disabled}
+          hasPromptCompleted={true}
+          contexts={[]}
+          isProcessing={false}
+          queue={[]}
+          onRemoveFromQueue={() => {}}
+          onSteer={() => {}}
+        />
+      )
+    }
+
+    beforeEach(() => {
+      vi.clearAllMocks()
+    })
+
+    afterEach(() => {
+      vi.clearAllMocks()
+    })
+
+    test('displays attachment button', () => {
+      renderConversation()
+      expect(
+        screen.getByTestId('ml-ephant-attachments-button')
+      ).toBeInTheDocument()
+    })
+
+    test('shows attached files when files are added via drag and drop', async () => {
+      renderConversation()
+
+      // The drop container is the div that wraps the textarea
+      const dropContainer = screen
+        .getByTestId('ml-ephant-conversation-input')
+        .closest('div')!
+
+      const pngFile = createMockFile('test-image.png', 'image/png')
+
+      fireEvent.dragEnter(dropContainer, {
+        dataTransfer: { types: ['Files'] },
+      })
+      fireEvent.drop(dropContainer, {
+        dataTransfer: {
+          files: [pngFile],
+          types: ['Files'],
+        },
+      })
+
+      expect(await screen.findByText('test-image.png')).toBeInTheDocument()
+    })
+
+    test('shows attached files when files are pasted', async () => {
+      renderConversation()
+
+      const textarea = screen.getByTestId('ml-ephant-conversation-input')
+      const pdfFile = createMockFile('document.pdf', 'application/pdf')
+
+      const pasteEvent = {
+        preventDefault: vi.fn(),
+        clipboardData: {
+          files: [pdfFile],
+        },
+      }
+
+      fireEvent.paste(textarea, pasteEvent)
+
+      expect(await screen.findByText('document.pdf')).toBeInTheDocument()
+    })
+
+    test('allows removing attached files', async () => {
+      renderConversation()
+
+      const dropContainer = screen
+        .getByTestId('ml-ephant-conversation-input')
+        .closest('div')!
+
+      const pngFile = createMockFile('removable.png', 'image/png')
+
+      fireEvent.drop(dropContainer, {
+        dataTransfer: {
+          files: [pngFile],
+          types: ['Files'],
+        },
+      })
+
+      expect(await screen.findByText('removable.png')).toBeInTheDocument()
+
+      const removeButton = screen.getByRole('button', {
+        name: /Remove removable.png/i,
+      })
+      fireEvent.click(removeButton)
+
+      expect(screen.queryByText('removable.png')).not.toBeInTheDocument()
+    })
+
+    test('sends attachments with prompt on submit', async () => {
+      const handleProcess = vi.fn()
+      renderConversation(handleProcess)
+
+      const dropContainer = screen
+        .getByTestId('ml-ephant-conversation-input')
+        .closest('div')!
+      const textarea = screen.getByTestId('ml-ephant-conversation-input')
+
+      const imageFile = createMockFile('attachment.png', 'image/png')
+
+      fireEvent.drop(dropContainer, {
+        dataTransfer: {
+          files: [imageFile],
+          types: ['Files'],
+        },
+      })
+
+      expect(await screen.findByText('attachment.png')).toBeInTheDocument()
+
+      fireEvent.input(textarea, { target: { textContent: 'Test prompt' } })
+      fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
+
+      expect(handleProcess).toHaveBeenCalledWith(
+        'Test prompt',
+        undefined,
+        expect.arrayContaining([
+          expect.objectContaining({ name: 'attachment.png' }),
+        ])
+      )
+    })
+
+    test('clears attachments after submit', async () => {
+      const handleProcess = vi.fn()
+      renderConversation(handleProcess)
+
+      const dropContainer = screen
+        .getByTestId('ml-ephant-conversation-input')
+        .closest('div')!
+      const textarea = screen.getByTestId('ml-ephant-conversation-input')
+
+      const imageFile = createMockFile('will-clear.png', 'image/png')
+
+      fireEvent.drop(dropContainer, {
+        dataTransfer: {
+          files: [imageFile],
+          types: ['Files'],
+        },
+      })
+
+      expect(await screen.findByText('will-clear.png')).toBeInTheDocument()
+
+      fireEvent.input(textarea, { target: { textContent: 'Test prompt' } })
+      fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
+
+      expect(screen.queryByText('will-clear.png')).not.toBeInTheDocument()
+    })
+
+    test('does not accept files when disabled', () => {
+      renderConversation(vi.fn(), true)
+
+      const dropContainer = screen
+        .getByTestId('ml-ephant-conversation-input')
+        .closest('div')!
+
+      const pngFile = createMockFile('disabled-test.png', 'image/png')
+
+      fireEvent.drop(dropContainer, {
+        dataTransfer: {
+          files: [pngFile],
+          types: ['Files'],
+        },
+      })
+
+      expect(screen.queryByText('disabled-test.png')).not.toBeInTheDocument()
+    })
+
+    test('does not accept paste when disabled', () => {
+      renderConversation(vi.fn(), true)
+
+      const textarea = screen.getByTestId('ml-ephant-conversation-input')
+      const pngFile = createMockFile('disabled-paste.png', 'image/png')
+
+      fireEvent.paste(textarea, {
+        preventDefault: vi.fn(),
+        clipboardData: {
+          files: [pngFile],
+        },
+      })
+
+      expect(screen.queryByText('disabled-paste.png')).not.toBeInTheDocument()
+    })
+
+    test('deduplicates files with same name and size', async () => {
+      renderConversation()
+
+      const dropContainer = screen
+        .getByTestId('ml-ephant-conversation-input')
+        .closest('div')!
+
+      const file1 = createMockFile('duplicate.png', 'image/png', 100)
+      const file2 = createMockFile('duplicate.png', 'image/png', 100)
+
+      fireEvent.drop(dropContainer, {
+        dataTransfer: {
+          files: [file1],
+          types: ['Files'],
+        },
+      })
+
+      expect(await screen.findByText('duplicate.png')).toBeInTheDocument()
+
+      fireEvent.drop(dropContainer, {
+        dataTransfer: {
+          files: [file2],
+          types: ['Files'],
+        },
+      })
+
+      // Should still only have one instance
+      const attachments = screen.getAllByText('duplicate.png')
+      expect(attachments).toHaveLength(1)
+    })
+
+    test('accepts multiple files at once', async () => {
+      renderConversation()
+
+      const dropContainer = screen
+        .getByTestId('ml-ephant-conversation-input')
+        .closest('div')!
+
+      const pngFile = createMockFile('image.png', 'image/png')
+      const pdfFile = createMockFile('doc.pdf', 'application/pdf')
+      const dxfFile = createMockFile('drawing.dxf', 'application/dxf')
+      const jsFile = createMockFile('script.js', 'text/javascript')
+
+      fireEvent.drop(dropContainer, {
+        dataTransfer: {
+          files: [pngFile, pdfFile, dxfFile, jsFile],
+          types: ['Files'],
+        },
+      })
+
+      expect(await screen.findByText('image.png')).toBeInTheDocument()
+      expect(screen.getByText('doc.pdf')).toBeInTheDocument()
+      expect(screen.getByText('drawing.dxf')).toBeInTheDocument()
+      expect(screen.getByText('script.js')).toBeInTheDocument()
+    })
   })
 })

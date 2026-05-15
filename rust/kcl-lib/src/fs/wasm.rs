@@ -3,13 +3,12 @@
 use anyhow::Result;
 use wasm_bindgen::prelude::wasm_bindgen;
 
-use crate::{
-    SourceRange,
-    errors::{KclError, KclErrorDetails},
-    execution::typed_path::TypedPath,
-    fs::FileSystem,
-    wasm::JsFuture,
-};
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::typed_path::TypedPath;
+use crate::fs::FileSystem;
+use crate::wasm::JsFuture;
 
 #[wasm_bindgen(module = "/../../src/lang/std/fileSystemManager.ts")]
 extern "C" {

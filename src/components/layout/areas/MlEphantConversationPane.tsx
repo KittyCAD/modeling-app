@@ -2,10 +2,17 @@ import { reportRejection } from '@src/lib/trap'
 import { NIL as uuidNIL } from 'uuid'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { KclManager } from '@src/lang/KclManager'
-import type { SystemIOActor } from '@src/lib/singletons'
-import { useEffect, useState, useRef } from 'react'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { MlEphantConversation } from '@src/components/MlEphantConversation'
+import { useEffect, useState, useRef, useCallback } from 'react'
+import {
+  type SystemIOActor,
+  SystemIOMachineEvents,
+  SystemIOMachineStates,
+} from '@src/machines/systemIO/utils'
+import {
+  MlEphantConversation,
+  type QueuedMessage,
+} from '@src/components/MlEphantConversation'
+import { MlEphantConversationWelcome } from '@src/components/MlEphantConversationWelcome'
 import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
   MlEphantManagerStates,
@@ -15,11 +22,23 @@ import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import type { FileEntry, Project } from '@src/lib/project'
+import { activeFileRelativeToProject } from '@src/lib/promptToEdit'
 import { useSelector } from '@xstate/react'
-import type { User, MlCopilotServerMessage, MlCopilotMode } from '@kittycad/lib'
 import { useSearchParams } from 'react-router-dom'
 import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
-import { type useModelingContext } from '@src/hooks/useModelingContext'
+import type { useModelingContext } from '@src/hooks/useModelingContext'
+import type { SnapshotFrom } from 'xstate'
+import type { MlCopilotModeId } from '@src/machines/mlEphantManagerMachine'
+
+type MlEphantConversationPaneUser = {
+  block_message?: string
+  image?: string
+}
+
+// Defined outside of React o prevent rerenders
+const awaitingResponseSelector = (
+  snapshot: SnapshotFrom<MlEphantManagerActor>
+) => snapshot.context.awaitingResponse
 
 export const MlEphantConversationPane = (props: {
   mlEphantManagerActor: MlEphantManagerActor
@@ -31,13 +50,23 @@ export const MlEphantConversationPane = (props: {
   sendBillingUpdate: () => void
   loaderFile: FileEntry | undefined
   settings: SettingsType
-  user?: User
+  user?: MlEphantConversationPaneUser
+  showMakeathonAnnouncement?: boolean
+  onMlCopilotModeChange?: (mode: MlCopilotModeId | undefined) => void
 }) => {
   const [defaultPrompt, setDefaultPrompt] = useState('')
   const [searchParams, setSearchParams] = useSearchParams()
   const timeoutReconnect = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined
   )
+  const [queue, setQueue] = useState<QueuedMessage[]>([])
+  const isSubmittingFromQueue = useRef(false)
+  const isClearingChat = useRef(false)
+  const steeredId = useRef<string | null>(null)
+  const loaderFileRef = useRef(props.loaderFile)
+  useEffect(() => {
+    loaderFileRef.current = props.loaderFile
+  })
 
   let conversation = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.conversation
@@ -47,6 +76,25 @@ export const MlEphantConversationPane = (props: {
     return actor.context.abruptlyClosed
   })
 
+  const isPromptRunning = useSelector(
+    props.mlEphantManagerActor,
+    awaitingResponseSelector
+  )
+  const modeOptions = useSelector(props.mlEphantManagerActor, (actor) => {
+    return actor.context.modeOptions
+  })
+  const attachmentsLoadedForCurrentPrompt = useSelector(
+    props.mlEphantManagerActor,
+    (actor) => actor.context.attachmentsLoadedForCurrentPrompt
+  )
+  const defaultMode = useSelector(props.mlEphantManagerActor, (actor) => {
+    return actor.context.defaultMode
+  })
+  const initialMlCopilotMode =
+    props.settings.app.zookeeperMode.project ??
+    props.settings.app.zookeeperMode.user ??
+    defaultMode
+
   if (
     props.mlEphantManagerActor.getSnapshot().matches(S.Await) &&
     !abruptlyClosed
@@ -54,7 +102,11 @@ export const MlEphantConversationPane = (props: {
     conversation = undefined
   }
 
-  const onProcess = async (request: string, mode: MlCopilotMode) => {
+  const onProcess = async (
+    request: string,
+    mode: MlCopilotModeId | undefined,
+    attachments: File[]
+  ) => {
     if (props.theProject === undefined) {
       console.warn('theProject is `undefined` - should not be possible')
       return
@@ -64,28 +116,7 @@ export const MlEphantConversationPane = (props: {
       return
     }
 
-    let project: Project = props.theProject
-
-    if (!window.electron) {
-      // If there is no project, we'll create a fake one. Expectation is for
-      // this to only happen on web.
-      project = {
-        metadata: null,
-        kcl_file_count: 1,
-        directory_count: 0,
-        default_file: '/main.kcl',
-        path: '/' + props.settings.meta.id.current,
-        name: props.settings.meta.id.current,
-        children: [
-          {
-            name: 'main.kcl',
-            path: `/main.kcl`,
-            children: null,
-          },
-        ],
-        readWriteAccess: true,
-      }
-    }
+    const project: Project = props.theProject
 
     const projectFiles = await collectProjectFiles({
       selectedFileContents: props.kclManager.code,
@@ -109,19 +140,11 @@ export const MlEphantConversationPane = (props: {
       selections: props.contextModeling.selectionRanges,
       artifactGraph: props.kclManager.artifactGraph,
       mode,
+      additionalFiles: attachments,
     })
 
     props.sendBillingUpdate()
   }
-
-  const lastExchange = conversation?.exchanges.slice(-1) ?? []
-
-  const isProcessing = lastExchange[0]
-    ? lastExchange[0].responses.some(
-        (x: MlCopilotServerMessage) =>
-          'end_of_stream' in x || 'error' in x || 'info' in x
-      ) === false
-    : false
 
   const needsReconnect = abruptlyClosed
 
@@ -141,6 +164,85 @@ export const MlEphantConversationPane = (props: {
     })
   }
 
+  const onProcessOrQueue = (
+    request: string,
+    mode: MlCopilotModeId | undefined,
+    attachments: File[]
+  ) => {
+    if (isPromptRunning || isSubmittingFromQueue.current) {
+      setQueue((prev) => [
+        ...prev,
+        {
+          id: crypto.randomUUID(),
+          text: request,
+          mode,
+          attachments,
+        },
+      ])
+      return
+    }
+    onProcess(request, mode, attachments).catch(reportRejection)
+  }
+
+  const onRemoveFromQueue = useCallback((id: string) => {
+    if (steeredId.current === id) {
+      steeredId.current = null
+    }
+    setQueue((prev) => prev.filter((msg) => msg.id !== id))
+  }, [])
+
+  const { sendBillingUpdate, mlEphantManagerActor } = props
+  const onSteer = useCallback(
+    (id: string) => {
+      // Mark the message to be processed next without reordering the queue.
+      // The queue will be updated when Zookeeper finishes the current message
+      // and the auto-submit effect picks up the steered message.
+      steeredId.current = id
+      // Interrupt the current prompt; when the response completes,
+      // the auto-submit effect sends the steered message.
+      sendBillingUpdate()
+      mlEphantManagerActor.send({
+        type: MlEphantManagerTransitions.Interrupt,
+      })
+    },
+    [mlEphantManagerActor, sendBillingUpdate]
+  )
+
+  // Auto-submit the next queued message when current processing completes.
+  // If a message was steered, it takes priority over the default FIFO order.
+  useEffect(() => {
+    if (
+      !isPromptRunning &&
+      queue.length > 0 &&
+      !isSubmittingFromQueue.current
+    ) {
+      isSubmittingFromQueue.current = true
+      let next: QueuedMessage
+      if (steeredId.current !== null) {
+        const id = steeredId.current
+        steeredId.current = null
+        const index = queue.findIndex((msg) => msg.id === id)
+        if (index !== -1) {
+          next = queue[index]
+          setQueue((prev) => prev.filter((msg) => msg.id !== id))
+        } else {
+          // Steered message was removed from queue; fall back to FIFO
+          next = queue[0]
+          setQueue((prev) => prev.slice(1))
+        }
+      } else {
+        next = queue[0]
+        setQueue((prev) => prev.slice(1))
+      }
+      onProcess(next.text, next.mode, next.attachments)
+        .catch(reportRejection)
+        .finally(() => {
+          isSubmittingFromQueue.current = false
+        })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPromptRunning, queue])
+
   if (needsReconnect && timeoutReconnect.current === undefined) {
     timeoutReconnect.current = setTimeout(() => {
       onReconnect()
@@ -149,24 +251,104 @@ export const MlEphantConversationPane = (props: {
   }
 
   const onClickClearChat = () => {
-    props.mlEphantManagerActor.send({
-      type: MlEphantManagerTransitions.ConversationClose,
-    })
-    const sub = props.mlEphantManagerActor.subscribe((next) => {
-      if (!next.matches(S.Await)) {
+    let closedConversation = props.mlEphantManagerActor
+      .getSnapshot()
+      .matches(S.Await)
+    let clearedConversationMapping = true
+    let sentDeleteConversationMapping = false
+    let startedFreshConversation = false
+    let sub: ReturnType<typeof props.mlEphantManagerActor.subscribe> | undefined
+    let systemIOSub:
+      | ReturnType<typeof props.systemIOActor.subscribe>
+      | undefined
+
+    const cleanupSubscriptions = () => {
+      sub?.unsubscribe()
+      systemIOSub?.unsubscribe()
+    }
+
+    const startFreshConversation = () => {
+      if (startedFreshConversation) {
         return
       }
-
+      startedFreshConversation = true
       props.mlEphantManagerActor.send({
         type: MlEphantManagerTransitions.CacheSetupAndConnect,
         refParentSend: props.mlEphantManagerActor.send,
         conversationId: undefined,
       })
-      sub.unsubscribe()
+      cleanupSubscriptions()
+    }
+
+    const maybeStartFreshConversation = () => {
+      if (!closedConversation || !clearedConversationMapping) {
+        return
+      }
+      startFreshConversation()
+    }
+
+    isClearingChat.current = true
+    steeredId.current = null
+    setQueue([])
+    const projectId = props.settings.meta.id.current
+    if (projectId !== undefined && projectId !== uuidNIL) {
+      clearedConversationMapping = false
+      const maybeDeleteConversationMapping = () => {
+        if (sentDeleteConversationMapping) {
+          return
+        }
+        if (
+          props.systemIOActor.getSnapshot().value !== SystemIOMachineStates.idle
+        ) {
+          return
+        }
+
+        sentDeleteConversationMapping = true
+        props.systemIOActor.send({
+          type: SystemIOMachineEvents.deleteMlEphantConversation,
+          data: {
+            projectId,
+          },
+        })
+      }
+
+      systemIOSub = props.systemIOActor.subscribe((next) => {
+        if (!sentDeleteConversationMapping) {
+          maybeDeleteConversationMapping()
+          return
+        }
+        if (next.value !== SystemIOMachineStates.idle) {
+          return
+        }
+
+        clearedConversationMapping = true
+        maybeStartFreshConversation()
+      })
+      maybeDeleteConversationMapping()
+    }
+    sub = props.mlEphantManagerActor.subscribe((next) => {
+      if (!next.matches(S.Await)) {
+        return
+      }
+
+      closedConversation = true
+      maybeStartFreshConversation()
     })
+    props.mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions.ConversationClose,
+    })
+
+    if (props.mlEphantManagerActor.getSnapshot().matches(S.Await)) {
+      closedConversation = true
+      maybeStartFreshConversation()
+    }
   }
 
   const tryToGetExchanges = () => {
+    if (isClearingChat.current) {
+      return
+    }
+
     const mlEphantConversations =
       props.systemIOActor.getSnapshot().context.mlEphantConversations
 
@@ -237,6 +419,44 @@ export const MlEphantConversationPane = (props: {
 
         const { context } = mlEphantManagerActorSnapshot
 
+        if (
+          isClearingChat.current &&
+          context.conversationId !== undefined &&
+          context.conversation !== undefined
+        ) {
+          isClearingChat.current = false
+        }
+
+        if (
+          mlEphantManagerActorSnapshot.matches(
+            MlEphantManagerStates.WaitForContinueCheck
+          ) &&
+          props.theProject !== undefined
+        ) {
+          let project: Project = props.theProject
+
+          const currentLoaderFile = loaderFileRef.current
+          void collectProjectFiles({
+            selectedFileContents: props.kclManager.code,
+            fileNames: props.kclManager.execState.filenames,
+            projectContext: project,
+          }).then((projectFiles) => {
+            props.mlEphantManagerActor.send({
+              type: MlEphantManagerStates.ContinueCheck,
+              projectName: project.name,
+              projectFiles,
+              activeFile: currentLoaderFile
+                ? activeFileRelativeToProject({
+                    currentFileEntry: currentLoaderFile,
+                    applicationProjectDirectory:
+                      props.settings.app.projectDirectory.current,
+                  })
+                : undefined,
+            })
+          })
+          return
+        }
+
         if (isProcessing) {
           return
         }
@@ -262,7 +482,7 @@ export const MlEphantConversationPane = (props: {
       subscriptionMlEphantManagerActor.unsubscribe()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [props.settings.meta.id.current])
+  }, [props.settings.meta.id.current, props.theProject?.path])
 
   // We watch the URL for a query parameter to set the defaultPrompt
   // for the conversation.
@@ -278,40 +498,48 @@ export const MlEphantConversationPane = (props: {
     }
   }, [searchParams, setSearchParams])
 
-  const userBlockedOnPayment: () => boolean = () => {
-    if (!props.user || !props.user.block) {
-      return false
-    }
-
-    switch (props.user.block) {
-      case 'missing_payment_method':
-      case 'payment_method_failed':
-        return true
-      default:
-        props.user.block satisfies never // exhaustiveness check
-        return false
-    }
-  }
+  const userBlockedOnPaymentReason = props.user?.block_message
+  const isLoadingAttachments =
+    !attachmentsLoadedForCurrentPrompt && conversation !== undefined
 
   return (
     <MlEphantConversation
       isLoading={conversation === undefined}
+      isLoadingAttachments={isLoadingAttachments}
       contexts={[
         { type: 'selections', data: props.contextModeling.selectionRanges },
       ]}
       conversation={conversation}
-      onProcess={(request: string, mode: MlCopilotMode) => {
-        onProcess(request, mode).catch(reportRejection)
+      welcomeMessage={
+        // Replace this local component with a remote-authored content source
+        // later. `MlEphantConversation` already handles placement and ordering.
+        <MlEphantConversationWelcome />
+      }
+      onProcess={(
+        request: string,
+        mode: MlCopilotModeId | undefined,
+        attachments: File[]
+      ) => {
+        onProcessOrQueue(request, mode, attachments)
       }}
       onClickClearChat={onClickClearChat}
       onReconnect={onReconnect}
       onCancel={onCancel}
-      disabled={isProcessing || needsReconnect}
+      disabled={needsReconnect}
       needsReconnect={needsReconnect}
-      hasPromptCompleted={!isProcessing}
+      hasPromptCompleted={!isPromptRunning}
+      isProcessing={isPromptRunning}
+      queue={queue}
+      onRemoveFromQueue={onRemoveFromQueue}
+      onSteer={onSteer}
       userAvatarSrc={props.user?.image}
-      userBlockedOnPayment={userBlockedOnPayment()}
+      showMakeathonAnnouncement={props.showMakeathonAnnouncement}
+      blockedReason={userBlockedOnPaymentReason}
       defaultPrompt={defaultPrompt}
+      initialMlCopilotMode={initialMlCopilotMode}
+      onMlCopilotModeChange={props.onMlCopilotModeChange}
+      modeOptions={modeOptions}
+      modeScopeKey={props.theProject?.path}
     />
   )
 }

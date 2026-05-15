@@ -44,6 +44,7 @@ description: Variables in memory after executing function_sketch.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

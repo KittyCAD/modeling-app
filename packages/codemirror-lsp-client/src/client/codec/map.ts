@@ -8,7 +8,7 @@ export default class PromiseMap<K, V extends { toString(): string }> {
       initialized = this.#set(key)
     } else {
       // otherwise return the entry
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
       initialized = this.#map.get(key)!
     }
     // if the entry is a pending promise, return it
@@ -22,7 +22,6 @@ export default class PromiseMap<K, V extends { toString(): string }> {
 
   #set(key: K, value?: V): PromiseMap.Entry<V> {
     if (this.#map.has(key)) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return this.#map.get(key)!
     }
     // placeholder resolver for entry

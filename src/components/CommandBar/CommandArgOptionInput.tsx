@@ -8,7 +8,7 @@ import type {
   CommandArgument,
   CommandArgumentOption,
 } from '@src/lib/commandTypes'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import { useApp } from '@src/lib/boot'
 
 const contextSelector = (snapshot: StateFrom<AnyStateMachine> | undefined) =>
   snapshot?.context
@@ -27,7 +27,8 @@ function CommandArgOptionInput({
   placeholder?: string
 }) {
   const actorContext = useSelector(arg.machineActor, contextSelector)
-  const commandBarState = useCommandBarState()
+  const { commands } = useApp()
+  const commandBarState = commands.useState()
   const resolvedOptions = useMemo(
     () =>
       typeof arg.options === 'function'
@@ -46,7 +47,7 @@ function CommandArgOptionInput({
   )
   const inputRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
-  const [shouldSubmitOnChange, setShouldSubmitOnChange] = useState(false)
+  const shouldSubmitOnChange = useRef(false)
   const [selectedOption, setSelectedOption] = useState<
     CommandArgumentOption<unknown>
   >(currentOption || resolvedOptions[0])
@@ -103,7 +104,8 @@ function CommandArgOptionInput({
     setSelectedOption(option)
 
     // But we only submit the value itself
-    if (shouldSubmitOnChange) {
+    if (shouldSubmitOnChange.current) {
+      shouldSubmitOnChange.current = false
       onSubmit(option.value)
     }
   }
@@ -122,9 +124,9 @@ function CommandArgOptionInput({
       ref={formRef}
       onKeyDownCapture={(e) => {
         if (e.key === 'Enter') {
-          setShouldSubmitOnChange(true)
+          shouldSubmitOnChange.current = true
         } else {
-          setShouldSubmitOnChange(false)
+          shouldSubmitOnChange.current = false
         }
       }}
     >
@@ -151,15 +153,15 @@ function CommandArgOptionInput({
             className="flex-grow px-2 py-1 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80 !bg-transparent focus:outline-none"
             onKeyDown={(event) => {
               if (event.metaKey && event.key === 'k')
-                commandBarActor.send({ type: 'Close' })
+                commands.send({ type: 'Close' })
               if (event.key === 'Backspace' && event.metaKey) {
                 stepBack()
               }
 
               if (event.key === 'Enter') {
-                setShouldSubmitOnChange(true)
+                shouldSubmitOnChange.current = true
               } else {
-                setShouldSubmitOnChange(false)
+                shouldSubmitOnChange.current = false
               }
             }}
             value={query}
@@ -181,7 +183,7 @@ function CommandArgOptionInput({
             static
             className="overflow-y-auto max-h-96 cursor-pointer"
             onMouseDown={() => {
-              setShouldSubmitOnChange(true)
+              shouldSubmitOnChange.current = true
             }}
           >
             {filteredOptions?.map((option) => (

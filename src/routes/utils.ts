@@ -4,10 +4,12 @@ import {
   IS_PLAYWRIGHT_KEY,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import { PATHS } from '@src/lib/paths'
+import { PATHS, getRouterSearchFromRequestUrl } from '@src/lib/paths'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
-const isTestEnv = window?.localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
+const hasWindow = typeof window !== 'undefined'
+const isTestEnv =
+  hasWindow && window.localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
 
 export function getAppVersion({
   isTestEnvironment,
@@ -25,8 +27,11 @@ export function getAppVersion({
   }
 
   if (isDesktop) {
-    // @ts-ignore
-    return window.electron.packageJson.version
+    if (hasWindow && window.electron) {
+      // @ts-ignore
+      return window.electron.packageJson.version
+    }
+    return '0.0.0'
   }
 
   // Web based runtimes
@@ -44,9 +49,10 @@ export const APP_VERSION = getAppVersion({
   isDesktop: isDesktop(),
 })
 
-export const PACKAGE_NAME = window.electron
-  ? window.electron.packageJson.name
-  : 'zoo-modeling-app'
+export const PACKAGE_NAME =
+  hasWindow && window.electron
+    ? window.electron.packageJson.name
+    : 'zoo-modeling-app'
 
 export const IS_STAGING = PACKAGE_NAME.indexOf('-staging') > -1
 
@@ -74,10 +80,13 @@ export function getReleaseUrl(version: string = APP_VERSION) {
 }
 
 export function generateSignInUrl() {
-  const queryParamsNext = window.location.search.replace(
-    IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM,
-    ''
-  )
+  const queryParamsNext =
+    typeof window !== 'undefined'
+      ? getRouterSearchFromRequestUrl(
+          window.location.href,
+          isDesktop()
+        ).replace(IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM, '')
+      : ''
   const finalURL =
     typeof window !== 'undefined' &&
     (window.location.origin + encodeURIComponent(queryParamsNext)).replace(

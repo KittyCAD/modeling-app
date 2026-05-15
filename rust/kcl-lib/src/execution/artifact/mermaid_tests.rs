@@ -1,4 +1,4 @@
-//! Tests for the artifact graph that convert it to Mermaid diagrams.
+//! Test-only helpers for rendering the artifact graph as Mermaid diagrams.
 use std::fmt::Write;
 
 use super::*;
@@ -75,6 +75,12 @@ impl Artifact {
             Artifact::Plane(_) => Vec::new(),
             Artifact::Path(a) => {
                 let mut ids = vec![a.plane_id];
+                if let Some(sketch_block_id) = a.sketch_block_id {
+                    ids.push(sketch_block_id);
+                }
+                if let Some(origin_path_id) = a.origin_path_id {
+                    ids.push(origin_path_id);
+                }
                 if let Some(inner_path_id) = a.inner_path_id {
                     ids.push(inner_path_id);
                 }
@@ -83,19 +89,36 @@ impl Artifact {
                 }
                 ids
             }
-            Artifact::Segment(a) => vec![a.path_id],
+            Artifact::Segment(a) => {
+                let mut ids = vec![a.path_id];
+                if let Some(original_id) = a.original_seg_id {
+                    ids.push(original_id);
+                }
+                ids
+            }
             Artifact::Solid2d(a) => vec![a.path_id],
+            Artifact::PrimitiveFace(a) => vec![a.solid_id],
+            Artifact::PrimitiveEdge(a) => vec![a.solid_id],
             Artifact::StartSketchOnFace(a) => vec![a.face_id],
             Artifact::StartSketchOnPlane(a) => vec![a.plane_id],
             Artifact::SketchBlock(a) => a.plane_id.map(|id| vec![id]).unwrap_or_default(),
+            Artifact::SketchBlockConstraint(_) => Vec::new(),
             Artifact::PlaneOfFace(a) => vec![a.face_id],
-            Artifact::Sweep(a) => vec![a.path_id],
+            Artifact::Sweep(a) => {
+                let mut ids = vec![a.path_id];
+                if let Some(trajectory_id) = a.trajectory_id {
+                    ids.push(trajectory_id);
+                }
+                ids
+            }
             Artifact::Wall(a) => vec![a.seg_id, a.sweep_id],
             Artifact::Cap(a) => vec![a.sweep_id],
             Artifact::SweepEdge(a) => vec![a.seg_id, a.sweep_id],
             Artifact::EdgeCut(a) => vec![a.consumed_edge_id],
             Artifact::EdgeCutEdge(a) => vec![a.edge_cut_id],
             Artifact::Helix(a) => a.axis_id.map(|id| vec![id]).unwrap_or_default(),
+            Artifact::GdtAnnotation(_) => Vec::new(),
+            Artifact::Pattern(a) => vec![a.source_id],
         }
     }
 
@@ -110,15 +133,20 @@ impl Artifact {
                 if let Some(composite_solid_id) = a.composite_solid_id {
                     ids.push(composite_solid_id);
                 }
+                ids.extend(&a.pattern_ids);
                 ids
             }
             Artifact::Plane(a) => a.path_ids.clone(),
             Artifact::Path(a) => {
                 // Note: Don't include these since they're parents: plane_id,
-                // inner_path_id, outer_path_id.
+                // sketch_block_id, origin_path_id, inner_path_id,
+                // outer_path_id.
                 let mut ids = a.seg_ids.clone();
                 if let Some(sweep_id) = a.sweep_id {
                     ids.push(sweep_id);
+                }
+                if let Some(sweep_id_trajectory) = a.trajectory_sweep_id {
+                    ids.push(sweep_id_trajectory);
                 }
                 if let Some(solid2d_id) = a.solid2d_id {
                     ids.push(solid2d_id);
@@ -126,10 +154,12 @@ impl Artifact {
                 if let Some(composite_solid_id) = a.composite_solid_id {
                     ids.push(composite_solid_id);
                 }
+                ids.extend(&a.pattern_ids);
                 ids
             }
             Artifact::Segment(a) => {
-                // Note: Don't include these since they're parents: path_id.
+                // Note: Don't include these since they're parents: path_id,
+                // original_seg_id.
                 let mut ids = Vec::new();
                 if let Some(surface_id) = a.surface_id {
                     ids.push(surface_id);
@@ -145,6 +175,14 @@ impl Artifact {
                 // Note: Don't include these since they're parents: path_id.
                 Vec::new()
             }
+            Artifact::PrimitiveFace(_) => {
+                // Note: Don't include these since they're parents: solid_id.
+                Vec::new()
+            }
+            Artifact::PrimitiveEdge(_) => {
+                // Note: Don't include these since they're parents: solid_id.
+                Vec::new()
+            }
             Artifact::StartSketchOnFace { .. } => {
                 // Note: Don't include these since they're parents: face_id.
                 Vec::new()
@@ -153,8 +191,16 @@ impl Artifact {
                 // Note: Don't include these since they're parents: plane_id.
                 Vec::new()
             }
-            Artifact::SketchBlock { .. } => {
-                // Note: Don't include these since they're parents: plane_id (if present).
+            Artifact::SketchBlock(a) => {
+                // Note: Don't include these since they're parents: plane_id.
+                let mut ids = Vec::new();
+                if let Some(path_id) = a.path_id {
+                    ids.push(path_id);
+                }
+                ids
+            }
+            Artifact::SketchBlockConstraint { .. } => {
+                // Note: Constraints don't have artifact graph parents.
                 Vec::new()
             }
             Artifact::PlaneOfFace { .. } => {
@@ -166,6 +212,7 @@ impl Artifact {
                 let mut ids = Vec::new();
                 ids.extend(&a.surface_ids);
                 ids.extend(&a.edge_ids);
+                ids.extend(&a.pattern_ids);
                 ids
             }
             Artifact::Wall(a) => {
@@ -204,9 +251,21 @@ impl Artifact {
                 // Note: Don't include these since they're parents: edge_cut_id.
                 vec![a.surface_id]
             }
-            Artifact::Helix(_) => {
+            Artifact::Helix(a) => {
                 // Note: Don't include these since they're parents: axis_id.
-                Vec::new()
+                let mut ids = Vec::new();
+                if let Some(sweep_id) = a.trajectory_sweep_id {
+                    ids.push(sweep_id);
+                }
+                ids
+            }
+            Artifact::GdtAnnotation(_) => Vec::new(),
+            Artifact::Pattern(a) => {
+                // Note: Don't include source_id since it's the parent.
+                let mut ids = a.copy_ids.clone();
+                ids.extend(&a.copy_face_ids);
+                ids.extend(&a.copy_edge_ids);
+                ids
             }
         }
     }
@@ -270,9 +329,11 @@ impl ArtifactGraph {
                     groups.entry(path_id).or_insert_with(Vec::new).push(id);
                     true
                 }
+                Artifact::PrimitiveFace(_) | Artifact::PrimitiveEdge(_) => false,
                 Artifact::StartSketchOnFace { .. }
                 | Artifact::StartSketchOnPlane { .. }
                 | Artifact::SketchBlock { .. }
+                | Artifact::SketchBlockConstraint { .. }
                 | Artifact::PlaneOfFace { .. }
                 | Artifact::Sweep(_)
                 | Artifact::Wall(_)
@@ -280,7 +341,9 @@ impl ArtifactGraph {
                 | Artifact::SweepEdge(_)
                 | Artifact::EdgeCut(_)
                 | Artifact::EdgeCutEdge(_)
-                | Artifact::Helix(_) => false,
+                | Artifact::Helix(_)
+                | Artifact::GdtAnnotation(_)
+                | Artifact::Pattern(_) => false,
             };
             if !grouped {
                 ungrouped.push(id);
@@ -339,9 +402,10 @@ impl ArtifactGraph {
             Artifact::CompositeSolid(composite_solid) => {
                 writeln!(
                     output,
-                    "{prefix}{id}[\"CompositeSolid {:?}<br>{:?}\"]",
+                    "{prefix}{id}[\"CompositeSolid {:?}<br>{:?}<br>Consumed: {:?}\"]",
                     composite_solid.sub_type,
-                    code_ref_display(&composite_solid.code_ref)
+                    code_ref_display(&composite_solid.code_ref),
+                    composite_solid.consumed
                 )?;
                 node_path_display(output, prefix, None, &composite_solid.code_ref)?;
             }
@@ -354,10 +418,16 @@ impl ArtifactGraph {
                 node_path_display(output, prefix, None, &plane.code_ref)?;
             }
             Artifact::Path(path) => {
+                let path_sub_type = if path.sub_type == PathSubType::Region {
+                    " Region"
+                } else {
+                    ""
+                };
                 writeln!(
                     output,
-                    "{prefix}{id}[\"Path<br>{:?}\"]",
-                    code_ref_display(&path.code_ref)
+                    "{prefix}{id}[\"Path{path_sub_type}<br>{:?}<br>Consumed: {:?}\"]",
+                    code_ref_display(&path.code_ref),
+                    path.consumed
                 )?;
                 node_path_display(output, prefix, None, &path.code_ref)?;
             }
@@ -371,6 +441,22 @@ impl ArtifactGraph {
             }
             Artifact::Solid2d(_solid2d) => {
                 writeln!(output, "{prefix}{id}[Solid2d]")?;
+            }
+            Artifact::PrimitiveFace(face) => {
+                writeln!(
+                    output,
+                    "{prefix}{id}[\"PrimitiveFace<br>{:?}\"]",
+                    code_ref_display(&face.code_ref)
+                )?;
+                node_path_display(output, prefix, None, &face.code_ref)?;
+            }
+            Artifact::PrimitiveEdge(edge) => {
+                writeln!(
+                    output,
+                    "{prefix}{id}[\"PrimitiveEdge<br>{:?}\"]",
+                    code_ref_display(&edge.code_ref)
+                )?;
+                node_path_display(output, prefix, None, &edge.code_ref)?;
             }
             Artifact::StartSketchOnFace(StartSketchOnFace { code_ref, .. }) => {
                 writeln!(
@@ -396,6 +482,15 @@ impl ArtifactGraph {
                 )?;
                 node_path_display(output, prefix, None, code_ref)?;
             }
+            Artifact::SketchBlockConstraint(constraint) => {
+                writeln!(
+                    output,
+                    "{prefix}{id}[\"SketchBlockConstraint {:?}<br>{:?}\"]",
+                    constraint.constraint_type,
+                    code_ref_display(&constraint.code_ref)
+                )?;
+                node_path_display(output, prefix, None, &constraint.code_ref)?;
+            }
             Artifact::PlaneOfFace(PlaneOfFace { code_ref, .. }) => {
                 writeln!(
                     output,
@@ -407,9 +502,10 @@ impl ArtifactGraph {
             Artifact::Sweep(sweep) => {
                 writeln!(
                     output,
-                    "{prefix}{id}[\"Sweep {:?}<br>{:?}\"]",
+                    "{prefix}{id}[\"Sweep {:?}<br>{:?}<br>Consumed: {:?}\"]",
                     sweep.sub_type,
-                    code_ref_display(&sweep.code_ref)
+                    code_ref_display(&sweep.code_ref),
+                    sweep.consumed,
                 )?;
                 node_path_display(output, prefix, None, &sweep.code_ref)?;
             }
@@ -439,10 +535,31 @@ impl ArtifactGraph {
             Artifact::Helix(helix) => {
                 writeln!(
                     output,
-                    "{prefix}{id}[\"Helix<br>{:?}\"]",
-                    code_ref_display(&helix.code_ref)
+                    "{prefix}{id}[\"Helix<br>{:?}: Consumed: {:?}\"]",
+                    code_ref_display(&helix.code_ref),
+                    helix.consumed
                 )?;
                 node_path_display(output, prefix, None, &helix.code_ref)?;
+            }
+            Artifact::GdtAnnotation(annotation) => {
+                writeln!(
+                    output,
+                    "{prefix}{id}[\"GdtAnnotation<br>{:?}\"]",
+                    code_ref_display(&annotation.code_ref)
+                )?;
+                node_path_display(output, prefix, None, &annotation.code_ref)?;
+            }
+            Artifact::Pattern(pattern) => {
+                writeln!(
+                    output,
+                    "{prefix}{id}[\"Pattern {:?}<br>{:?}<br>Copies: {}<br>Faces: {}<br>Edges: {}\"]",
+                    pattern.sub_type,
+                    code_ref_display(&pattern.code_ref),
+                    pattern.copy_ids.len(),
+                    pattern.copy_face_ids.len(),
+                    pattern.copy_edge_ids.len(),
+                )?;
+                node_path_display(output, prefix, None, &pattern.code_ref)?;
             }
         }
         Ok(())
@@ -552,4 +669,25 @@ impl ArtifactGraph {
 
         Ok(())
     }
+}
+
+#[test]
+fn pattern_traversal_links_source_and_copied_geometry() {
+    let source_id = ArtifactId::new(Uuid::new_v4());
+    let copy_id = ArtifactId::new(Uuid::new_v4());
+    let copy_face_id = ArtifactId::new(Uuid::new_v4());
+    let copy_edge_id = ArtifactId::new(Uuid::new_v4());
+
+    let artifact = Artifact::Pattern(Pattern {
+        id: ArtifactId::new(Uuid::new_v4()),
+        sub_type: PatternSubType::Circular,
+        source_id,
+        copy_ids: vec![copy_id],
+        copy_face_ids: vec![copy_face_id],
+        copy_edge_ids: vec![copy_edge_id],
+        code_ref: CodeRef::placeholder(SourceRange::synthetic()),
+    });
+
+    assert_eq!(artifact.back_edges(), vec![source_id]);
+    assert_eq!(artifact.child_ids(), vec![copy_id, copy_face_id, copy_edge_id]);
 }

@@ -40,6 +40,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -209,6 +210,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -375,6 +377,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -541,6 +544,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -707,6 +711,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -873,6 +878,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1039,6 +1045,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1205,6 +1212,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1376,6 +1384,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1542,6 +1551,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1708,6 +1718,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -1874,6 +1885,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2040,6 +2052,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2206,6 +2219,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2372,6 +2386,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2538,6 +2553,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2704,6 +2720,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -2870,6 +2887,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3036,6 +3054,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3202,6 +3221,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3368,6 +3388,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3534,6 +3555,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3700,6 +3722,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -3866,6 +3889,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4032,6 +4056,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4198,6 +4223,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4364,6 +4390,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4530,6 +4557,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4696,6 +4724,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -4862,6 +4891,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5028,6 +5058,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5194,6 +5225,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5360,6 +5392,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5526,6 +5559,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5692,6 +5726,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -5858,6 +5893,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6024,6 +6060,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6190,6 +6227,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6356,6 +6394,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6522,6 +6561,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6688,6 +6728,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -6854,6 +6895,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7020,6 +7062,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7186,6 +7229,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7352,6 +7396,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7518,6 +7563,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7684,6 +7730,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -7850,6 +7897,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8016,6 +8064,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8182,6 +8231,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8348,6 +8398,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8514,6 +8565,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8680,6 +8732,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -8846,6 +8899,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9012,6 +9066,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9178,6 +9233,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [
@@ -9344,6 +9400,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             }
           ],
           "sketch": {
+            "creatorType": "sketch",
             "type": "Sketch",
             "id": "[uuid]",
             "paths": [

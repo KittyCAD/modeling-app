@@ -195,6 +195,7 @@ description: Variables in memory after executing tag_inner_face.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

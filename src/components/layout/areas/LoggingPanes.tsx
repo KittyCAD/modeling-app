@@ -1,7 +1,7 @@
 import ReactJsonView from '@microlink/react-json-view'
 
 import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
-import { kclManager } from '@src/lib/singletons'
+import { useSingletons } from '@src/lib/boot'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 
@@ -15,7 +15,7 @@ export function LogsPane(props: AreaTypeComponentProps) {
       <LayoutPanelHeader
         id={props.layout.id}
         icon="logs"
-        title={props.layout.id}
+        title={props.layout.label}
         Menu={null}
         onClose={props.onClose}
       />
@@ -24,6 +24,7 @@ export function LogsPane(props: AreaTypeComponentProps) {
   )
 }
 export const LogsPaneContent = () => {
+  const { kclManager } = useSingletons()
   const theme = useResolvedTheme()
   const logs = kclManager.logsSignal.value
   return (

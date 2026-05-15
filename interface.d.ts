@@ -1,8 +1,9 @@
 import type { MachinesListing } from 'components/MachineManagerProvider'
 import 'electron'
-import type fs from 'node:fs/promises'
 import type { Stats } from 'fs'
+import type fs from 'node:fs/promises'
 import type path from 'path'
+import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
 import type { dialog, shell } from 'electron'
 import type { WebContentSendPayload } from 'menu/channels'
 import type { ZooLabel } from 'menu/roles'
@@ -16,24 +17,23 @@ declare module 'electron' {
 
 type EnvFn = (value?: string) => string
 
+export type DeviceFlowAuthorization = {
+  userCode: string
+  verificationUri: string
+}
+
 export interface IElectronAPI {
   resizeWindow: (width: number, height: number) => Promise<void>
   open: typeof dialog.showOpenDialog
   save: typeof dialog.showSaveDialog
   openExternal: typeof shell.openExternal
   openInNewWindow: (name: string) => void
-  takeElectronWindowScreenshot: ({
-    width,
-    height,
-  }: {
-    width: number
-    height: number
-  }) => Promise<string>
   showInFolder: typeof shell.showItemInFolder
   /** Require to be called first before {@link loginWithDeviceFlow} */
-  startDeviceFlow: (host: string) => Promise<string>
+  startDeviceFlow: (host: string) => Promise<DeviceFlowAuthorization>
   /** Registered by first calling {@link startDeviceFlow}, which sets up the device flow handle */
   loginWithDeviceFlow: () => Promise<string>
+  cancelDeviceFlow: () => Promise<void>
   platform: typeof process.env.platform
   arch: typeof process.env.arch
   version: typeof process.env.version
@@ -43,33 +43,27 @@ export interface IElectronAPI {
     callback: (eventType: string, path: string) => void
   ) => void
   readFile: typeof fs.readFile
-  copyFile: typeof fs.copyFile
   watchFileOff: (path: string, key: string) => void
-  writeFile: (
-    path: string,
-    data: string | Uint8Array
-  ) => ReturnType<typeof fs.writeFile>
+  writeFile: (path: string, data: string | Uint8Array) => Promise<undefined>
   readdir: (path: string) => Promise<string[]>
-  // This is synchronous.
-  exists: (path: string) => boolean
-  getPath: (name: string) => Promise<string>
+  getPath: (name: 'appData' | 'documents' | 'userData') => Promise<string>
   rm: typeof fs.rm
+  access: typeof fs.access
   stat: (path: string) => Promise<Stats>
   statIsDirectory: (path: string) => Promise<boolean>
   canReadWriteDirectory: (
     path: string
   ) => Promise<{ value: boolean; error: unknown }>
-  path: typeof path
+  path: path
   mkdir: typeof fs.mkdir
-  join: typeof path.join
-  sep: typeof path.sep
-  copy: typeof fs.cp
+  path: typeof path
+  cp: typeof fs.cp
   // No such thing as fs.mv, but our function will use fs.cp as a fallback
   move: (
     source: string | URL,
     destination: string | URL
-  ) => Promise<void | Error>
-  rename: (prev: string, next: string) => ReturnType<typeof fs.rename>
+  ) => Promise<undefined | Error>
+  rename: (prev: string, next: string) => Promise<undefined>
   packageJson: {
     name: string
   }
@@ -91,16 +85,20 @@ export interface IElectronAPI {
   kittycad: (access: string, args: any) => any
   listMachines: (machineApiIp: string) => Promise<MachinesListing>
   getMachineApiIp: () => Promise<string | null>
+  getMachineApiRunning: () => Promise<boolean>
+  setMachineApiState: (signal: 'on' | 'off') => Promise<boolean>
   onUpdateChecking: (callback: () => void) => Electron.IpcRenderer
   onUpdateNotAvailable: (callback: () => void) => Electron.IpcRenderer
   onUpdateDownloadStart: (
-    callback: (value: { version: string }) => void
+    callback: (value: AutoUpdateDownloadProgress) => void
+  ) => Electron.IpcRenderer
+  onUpdateDownloadProgress: (
+    callback: (value: AutoUpdateDownloadProgress) => void
   ) => Electron.IpcRenderer
   onUpdateDownloaded: (
     callback: (value: { version: string; releaseNotes: string }) => void
   ) => Electron.IpcRenderer
   onUpdateError: (callback: (value: { error: Error }) => void) => Electron
-  getPathUserData: () => Promise<string>
   appRestart: () => void
   appCheckForUpdates: () => Promise<unknown>
   getArgvParsed: () => any

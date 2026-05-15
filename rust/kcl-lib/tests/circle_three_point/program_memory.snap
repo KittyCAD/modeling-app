@@ -19,6 +19,7 @@ description: Variables in memory after executing circle_three_point.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

@@ -1,28 +1,69 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { beforeAll, describe, it, expect, vi, beforeEach } from 'vitest'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
 import type { StdLibCallOp } from '@src/lang/queryAst'
 import { err } from '@src/lib/trap'
 import type { WebSocketResponse } from '@kittycad/lib'
 import type { Artifact } from '@src/lang/std/artifactGraph'
+import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 
-// Mock window.electron for desktop environment tests
-const mockElectron = {
-  process: {
-    env: {
-      NODE_ENV: 'development',
+const { mockElectron } = vi.hoisted(() => {
+  // Mock window.electron for desktop environment tests
+  const mockElectron = {
+    writeFile: vi.fn(),
+    readdir: vi.fn(),
+    access: vi.fn(),
+    getPath: vi.fn(),
+    cp: vi.fn(),
+    rm: vi.fn(),
+    mkdir: vi.fn(),
+    rename: vi.fn(),
+    path: {
+      join: vi.fn(),
+      resolve: vi.fn(),
+      relative: vi.fn(),
+      extname: vi.fn(),
+      sep: '/',
+      basename: vi.fn(),
+      dirname: vi.fn(),
     },
-  },
-  getAppTestProperty: vi.fn(),
-  join: vi.fn(),
-  mkdir: vi.fn(),
-}
+    stat: vi.fn(),
+    statIsDirectory: vi.fn(),
+    exists: vi.fn(),
+    readFile: vi.fn(),
+    platform: 'linux',
+    save: vi.fn(),
+    os: {
+      isMac: false,
+      isWindows: false,
+      isLinux: true,
+    },
+    process: {
+      env: {
+        NODE_ENV: 'development',
+      },
+    },
+    getAppTestProperty: vi.fn(),
+    packageJson: {
+      name: '',
+    },
+  }
 
-// Setup global window.electron mock
-Object.defineProperty(globalThis, 'window', {
-  value: {
+  // Setup global window.electron mock
+  vi.stubGlobal('window', {
     electron: mockElectron,
-  },
-  writable: true,
+    localStorage: {
+      getItem: (key: string) => undefined,
+    },
+  })
+
+  return { mockElectron }
+})
+
+beforeAll(async () => {
+  await moduleFsViaModuleImport({
+    type: StorageName.ElectronFS,
+    options: {},
+  })
 })
 
 // Mock dependencies
@@ -32,7 +73,7 @@ const createMockDependencies = (): Parameters<typeof exportSketchToDxf>[1] => ({
     engineConnection: undefined,
     pendingCommands: {},
     sendCommand: vi.fn(),
-    waitForAllCommands: vi.fn().mockResolvedValue([]),
+    waitForAllModelingCommands: vi.fn().mockResolvedValue([]),
     rejectAllModelingCommands: vi.fn(),
     tearDown: vi.fn(),
   } as any,
@@ -83,7 +124,7 @@ describe('DXF Export', () => {
 
     // Reset electron mock
     vi.mocked(mockElectron.getAppTestProperty).mockReset()
-    vi.mocked(mockElectron.join).mockReset()
+    vi.mocked(mockElectron.path.join).mockReset()
     vi.mocked(mockElectron.mkdir).mockReset()
   })
 
@@ -103,6 +144,7 @@ describe('DXF Export', () => {
       const pathArtifact1: Artifact = {
         id: 'path-1',
         type: 'path',
+        subType: 'sketch',
         planeId: 'plane-id',
         segIds: [],
         codeRef: {
@@ -110,10 +152,13 @@ describe('DXF Export', () => {
           range: [0, 0, 0],
           pathToNode: [],
         },
+        trajectorySweepId: null,
+        consumed: false,
       }
       const pathArtifact2: Artifact = {
         id: 'path-2',
         type: 'path',
+        subType: 'sketch',
         planeId: 'plane-id',
         segIds: [],
         compositeSolidId: 'solid-1',
@@ -122,6 +167,8 @@ describe('DXF Export', () => {
           range: [0, 0, 0],
           pathToNode: [],
         },
+        trajectorySweepId: null,
+        consumed: false,
       }
 
       mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact)
@@ -155,10 +202,11 @@ describe('DXF Export', () => {
         return mockDecodedData
       })
 
-      // Mock browser environment - no window.electron
-      // @ts-ignore
-      globalThis.window.electron = undefined
       vi.mocked(mockDeps.browserSaveFile).mockResolvedValue(undefined)
+      mockElectron.save.mockResolvedValue({
+        canceled: false,
+        filePath: '/path/to/sketch.dxf',
+      })
 
       const result = await exportSketchToDxf(mockOperation, mockDeps)
 
@@ -181,11 +229,15 @@ describe('DXF Export', () => {
         },
         true
       )
-      expect(mockDeps.browserSaveFile).toHaveBeenCalledWith(
-        expect.any(Blob),
-        'sketch.dxf',
-        'toast-id'
-      )
+      expect(mockElectron.save).toHaveBeenCalledWith({
+        defaultPath: 'sketch.dxf',
+        filters: [
+          {
+            extensions: ['dxf'],
+            name: 'DXF files',
+          },
+        ],
+      })
     })
 
     it('should successfully export DXF in desktop environment', async () => {
@@ -203,6 +255,7 @@ describe('DXF Export', () => {
       const pathArtifact: Artifact = {
         id: 'path-1',
         type: 'path',
+        subType: 'sketch',
         planeId: 'plane-id',
         segIds: [],
         codeRef: {
@@ -210,6 +263,8 @@ describe('DXF Export', () => {
           range: [0, 0, 0],
           pathToNode: [],
         },
+        trajectorySweepId: null,
+        consumed: false,
       }
 
       mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact)
@@ -242,21 +297,17 @@ describe('DXF Export', () => {
         return mockDecodedData
       })
 
-      // Mock desktop environment - restore window.electron
-      // @ts-ignore
-      globalThis.window.electron = {
-        ...mockElectron,
-        save: vi.fn().mockResolvedValue({
-          canceled: false,
-          filePath: '/path/to/sketch.dxf',
-        }),
-        writeFile: vi.fn().mockResolvedValue(undefined),
-      }
+      mockElectron.save.mockResolvedValue({
+        canceled: false,
+        filePath: '/path/to/sketch.dxf',
+      })
+      mockElectron.writeFile.mockResolvedValue(undefined)
 
       const result = await exportSketchToDxf(mockOperation, mockDeps)
 
       expect(result).toBe(true)
-      expect(globalThis.window.electron!.save).toHaveBeenCalledWith({
+
+      expect(mockElectron.save).toHaveBeenCalledWith({
         defaultPath: 'sketch.dxf',
         filters: [
           {
@@ -265,12 +316,12 @@ describe('DXF Export', () => {
           },
         ],
       })
-      expect(globalThis.window.electron!.writeFile).toHaveBeenCalledWith(
+      expect(mockElectron.writeFile).toHaveBeenCalledWith(
         '/path/to/sketch.dxf',
         expect.any(Uint8Array)
       )
       expect(mockDeps.toast.success).toHaveBeenCalledWith(
-        'DXF export completed',
+        'DXF export completed.',
         { id: 'toast-id' }
       )
     })
@@ -286,7 +337,7 @@ describe('DXF Export', () => {
         expect(result.message).toBe('Could not find plane artifact')
       }
       expect(mockDeps.toast.error).toHaveBeenCalledWith(
-        'Could not find sketch for DXF export'
+        'Could not find sketch for DXF export.'
       )
     })
 
@@ -311,7 +362,7 @@ describe('DXF Export', () => {
         expect(result.message).toBe('Could not find path IDs')
       }
       expect(mockDeps.toast.error).toHaveBeenCalledWith(
-        'Could not find sketch profiles for DXF export'
+        'Could not find sketch profiles for DXF export.'
       )
 
       // Test case 2: plane artifact with pathIds but no path artifacts in graph
@@ -337,7 +388,7 @@ describe('DXF Export', () => {
         expect(result.message).toBe('Could not find sketch entities')
       }
       expect(mockDeps.toast.error).toHaveBeenCalledWith(
-        'Could not find sketch entities for DXF export'
+        'Could not find sketch entities for DXF export.'
       )
     })
 
@@ -356,6 +407,7 @@ describe('DXF Export', () => {
       const pathArtifact: Artifact = {
         id: 'path-1',
         type: 'path',
+        subType: 'sketch',
         planeId: 'plane-id',
         segIds: [],
         codeRef: {
@@ -363,6 +415,8 @@ describe('DXF Export', () => {
           range: [0, 0, 0],
           pathToNode: [],
         },
+        trajectorySweepId: null,
+        consumed: false,
       }
 
       mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact)
@@ -385,7 +439,7 @@ describe('DXF Export', () => {
         expect(result.message).toBe('Engine command failed')
       }
       expect(mockDeps.toast.error).toHaveBeenCalledWith(
-        'Failed to export sketch to DXF',
+        'Failed to export sketch to DXF.',
         { id: 'toast-id' }
       )
 
@@ -403,7 +457,7 @@ describe('DXF Export', () => {
         expect(result.message).toBe('Network error')
       }
       expect(mockDeps.toast.error).toHaveBeenCalledWith(
-        'Failed to export sketch to DXF',
+        'Failed to export sketch to DXF.',
         { id: 'toast-id' }
       )
     })
@@ -423,6 +477,7 @@ describe('DXF Export', () => {
       const pathArtifact: Artifact = {
         id: 'path-1',
         type: 'path',
+        subType: 'sketch',
         planeId: 'plane-id',
         segIds: [],
         codeRef: {
@@ -430,6 +485,8 @@ describe('DXF Export', () => {
           range: [0, 0, 0],
           pathToNode: [],
         },
+        trajectorySweepId: null,
+        consumed: false,
       }
 
       mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact)
@@ -462,16 +519,10 @@ describe('DXF Export', () => {
         return mockDecodedData
       })
 
-      // Mock desktop environment with user cancellation
-      // @ts-ignore
-      globalThis.window.electron = {
-        ...mockElectron,
-        save: vi.fn().mockResolvedValue({
-          canceled: true,
-          filePath: '',
-        }),
-        writeFile: vi.fn(),
-      }
+      mockElectron.save.mockResolvedValue({
+        canceled: true,
+        filePath: '',
+      })
 
       const result = await exportSketchToDxf(mockOperation, mockDeps)
 
@@ -480,7 +531,7 @@ describe('DXF Export', () => {
         expect(result.message).toBe('User canceled save')
       }
       expect(mockDeps.toast.dismiss).toHaveBeenCalledWith('toast-id')
-      expect(globalThis.window.electron!.writeFile).not.toHaveBeenCalled()
+      expect(mockElectron.writeFile).not.toHaveBeenCalled()
     })
 
     it('should prioritize DXF files when multiple files are returned', async () => {
@@ -498,6 +549,7 @@ describe('DXF Export', () => {
       const pathArtifact: Artifact = {
         id: 'path-1',
         type: 'path',
+        subType: 'sketch',
         planeId: 'plane-id',
         segIds: [],
         codeRef: {
@@ -505,6 +557,8 @@ describe('DXF Export', () => {
           range: [0, 0, 0],
           pathToNode: [],
         },
+        trajectorySweepId: null,
+        consumed: false,
       }
 
       mockDeps.kclManager.artifactGraph.set('plane-id', planeArtifact)
@@ -543,10 +597,11 @@ describe('DXF Export', () => {
         return mockDecodedData
       })
 
-      // Mock browser environment
-      // @ts-ignore
-      globalThis.window.electron = undefined
       vi.mocked(mockDeps.browserSaveFile).mockResolvedValue(undefined)
+      mockElectron.save.mockResolvedValue({
+        canceled: false,
+        filePath: '/path/to/sketch.dxf',
+      })
 
       const result = await exportSketchToDxf(mockOperation, mockDeps)
 
@@ -557,11 +612,15 @@ describe('DXF Export', () => {
         'Zmlyc3QtZHhmLWNvbnRlbnQ=',
         await mockDeps.kclManager.wasmInstancePromise
       )
-      expect(mockDeps.browserSaveFile).toHaveBeenCalledWith(
-        expect.any(Blob),
-        'sketch.dxf', // Filename from sketch name, not from selected file
-        'toast-id'
-      )
+      expect(mockElectron.save).toHaveBeenCalledWith({
+        defaultPath: 'sketch.dxf',
+        filters: [
+          {
+            extensions: ['dxf'],
+            name: 'DXF files',
+          },
+        ],
+      })
     })
   })
 })

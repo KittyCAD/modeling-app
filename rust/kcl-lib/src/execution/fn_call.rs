@@ -1,20 +1,37 @@
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
-use crate::{
-    CompilationError, NodePath, SourceRange,
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        BodyType, ExecState, ExecutorContext, KclValue, KclValueControlFlow, Metadata, StatementKind, TagEngineInfo,
-        TagIdentifier, annotations,
-        cad_op::{Group, OpArg, OpKclValue, Operation},
-        control_continue,
-        kcl_value::{FunctionBody, FunctionSource},
-        memory,
-        types::RuntimeType,
-    },
-    parsing::ast::types::{CallExpressionKw, Node, Type},
-};
+use crate::CompilationIssue;
+use crate::NodePath;
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::BodyType;
+use crate::execution::ExecState;
+use crate::execution::ExecutorContext;
+use crate::execution::Geometry;
+use crate::execution::KclValue;
+use crate::execution::KclValueControlFlow;
+use crate::execution::Metadata;
+use crate::execution::Solid;
+use crate::execution::StatementKind;
+use crate::execution::TagEngineInfo;
+use crate::execution::TagIdentifier;
+use crate::execution::annotations;
+use crate::execution::cad_op::Group;
+use crate::execution::cad_op::OpArg;
+use crate::execution::cad_op::OpKclValue;
+use crate::execution::cad_op::Operation;
+use crate::execution::control_continue;
+use crate::execution::kcl_value::FunctionBody;
+use crate::execution::kcl_value::FunctionSource;
+use crate::execution::kcl_value::NamedParam;
+use crate::execution::memory;
+use crate::execution::types::RuntimeType;
+use crate::parsing::ast::types::CallExpressionKw;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::Type;
+use crate::std::solid_consumption::validate_value_not_consumed;
 
 #[derive(Debug, Clone)]
 pub struct Args<Status: ArgsStatus = Desugared> {
@@ -27,6 +44,7 @@ pub struct Args<Status: ArgsStatus = Desugared> {
     /// Labeled args.
     pub labeled: IndexMap<String, Arg>,
     pub source_range: SourceRange,
+    pub node_path: Option<NodePath>,
     pub ctx: ExecutorContext,
     /// If this call happens inside a pipe (|>) expression, this holds the LHS of that |>.
     /// Otherwise it's None.
@@ -55,6 +73,7 @@ impl Args<Sugary> {
         labeled: IndexMap<String, Arg>,
         unlabeled: Vec<(Option<String>, Arg)>,
         source_range: SourceRange,
+        node_path: Option<NodePath>,
         exec_state: &mut ExecState,
         ctx: ExecutorContext,
         fn_name: Option<String>,
@@ -64,6 +83,7 @@ impl Args<Sugary> {
             labeled,
             unlabeled,
             source_range,
+            node_path,
             ctx,
             pipe_value: exec_state.pipe_value().map(|v| Arg::new(v.clone(), source_range)),
             _status: std::marker::PhantomData,
@@ -84,12 +104,18 @@ impl<Status: ArgsStatus> Args<Status> {
 }
 
 impl Args<Desugared> {
-    pub fn new_no_args(source_range: SourceRange, ctx: ExecutorContext, fn_name: Option<String>) -> Args {
+    pub fn new_no_args(
+        source_range: SourceRange,
+        node_path: Option<NodePath>,
+        ctx: ExecutorContext,
+        fn_name: Option<String>,
+    ) -> Args {
         Args {
             fn_name,
             unlabeled: Default::default(),
             labeled: Default::default(),
             source_range,
+            node_path,
             ctx,
             pipe_value: None,
             _status: std::marker::PhantomData,
@@ -188,6 +214,7 @@ impl Node<CallExpressionKw> {
             fn_args,
             unlabeled,
             callsite,
+            self.node_path.clone(),
             exec_state,
             ctx.clone(),
             Some(fn_name.name.name.clone()),
@@ -250,10 +277,26 @@ impl FunctionSource {
     ) -> Result<Option<KclValueControlFlow>, KclError> {
         if self.deprecated {
             exec_state.warn(
-                CompilationError::err(
+                CompilationIssue::err(
                     callsite,
                     format!(
                         "{} is deprecated, see the docs for a recommended replacement",
+                        match &fn_name {
+                            Some(n) => format!("`{n}`"),
+                            None => "This function".to_owned(),
+                        }
+                    ),
+                ),
+                annotations::WARN_DEPRECATED,
+            );
+        } else if let Some(since) = &self.deprecated_since
+            && annotations::version_ge(&exec_state.mod_local.settings.kcl_version, since)
+        {
+            exec_state.warn(
+                CompilationIssue::err(
+                    callsite,
+                    format!(
+                        "{} is deprecated as of KCL {since}. See the docs for a recommended replacement.",
                         match &fn_name {
                             Some(n) => format!("`{n}`"),
                             None => "This function".to_owned(),
@@ -275,6 +318,39 @@ impl FunctionSource {
 
         let args = type_check_params_kw(fn_name.as_deref(), self, args, exec_state)?;
 
+        // Warn if experimental or deprecated arguments are used after desugaring.
+        for (label, arg) in &args.labeled {
+            let Some(param) = self.named_args.get(label.as_str()) else {
+                continue;
+            };
+            if param.experimental {
+                exec_state.warn_experimental(
+                    &match &fn_name {
+                        Some(f) => format!("`{f}({label})`"),
+                        None => label.to_owned(),
+                    },
+                    arg.source_range,
+                );
+            }
+            if let Some(since) = &param.deprecated_since
+                && annotations::version_ge(&exec_state.mod_local.settings.kcl_version, since)
+            {
+                let qualified = match &fn_name {
+                    Some(f) => format!("`{f}({label})`"),
+                    None => format!("`{label}`"),
+                };
+                exec_state.warn(
+                    CompilationIssue::err(
+                        arg.source_range,
+                        format!(
+                            "{qualified} is deprecated as of KCL {since}. See the docs for a recommended replacement."
+                        ),
+                    ),
+                    annotations::WARN_DEPRECATED,
+                );
+            }
+        }
+
         // Don't early return until the stack frame is popped!
         self.body.prep_mem(exec_state);
 
@@ -289,7 +365,7 @@ impl FunctionSource {
         // Do add operations if the KCL being executed is
         // user-defined, or the calling code is user-defined,
         // because that's relevant to the user.
-        let would_trace_stdlib_internals = exec_state.mod_local.inside_stdlib && self.is_std;
+        let would_trace_stdlib_internals = exec_state.mod_local.inside_stdlib && self.is_std();
         // self.include_in_feature_tree is set by the KCL annotation `@(feature_tree = true)`.
         let should_track_operation = !would_trace_stdlib_internals && self.include_in_feature_tree;
         let op = if should_track_operation {
@@ -300,7 +376,7 @@ impl FunctionSource {
                 .collect();
 
             // If you're calling a stdlib function, track that call as an operation.
-            if self.is_std {
+            if self.is_std() {
                 Some(Operation::StdLibCall {
                     name: fn_name.clone().unwrap_or_else(|| "unknown function".to_owned()),
                     unlabeled_arg: args
@@ -335,7 +411,7 @@ impl FunctionSource {
 
         let is_calling_into_stdlib = match &self.body {
             FunctionBody::Rust(_) => true,
-            FunctionBody::Kcl(_) => self.is_std,
+            FunctionBody::Kcl(_) => self.is_std(),
         };
         let is_crossing_into_stdlib = is_calling_into_stdlib && !exec_state.mod_local.inside_stdlib;
         let is_crossing_out_of_stdlib = !is_calling_into_stdlib && exec_state.mod_local.inside_stdlib;
@@ -421,7 +497,7 @@ impl FunctionSource {
             Err(e) => Err(e),
         };
 
-        if self.is_std
+        if self.is_std()
             && let Ok(Some(result)) = &mut result
         {
             update_memory_for_tags_of_geometry(result, exec_state)?;
@@ -440,17 +516,53 @@ impl FunctionBody {
     }
 }
 
+fn originates_from_sketch_block(value: &KclValue) -> bool {
+    match value {
+        KclValue::Uuid { .. } => false,
+        KclValue::Bool { .. } => false,
+        KclValue::Number { .. } => false,
+        KclValue::String { .. } => false,
+        KclValue::SketchVar { .. } => true,
+        KclValue::SketchConstraint { .. } => true,
+        KclValue::Tuple { value, .. } => value.iter().all(originates_from_sketch_block),
+        KclValue::HomArray { value, .. } => value.iter().all(originates_from_sketch_block),
+        // TODO: sketch block result should return true.
+        KclValue::Object { value, .. } => value.values().all(originates_from_sketch_block),
+        KclValue::TagIdentifier(_) => false,
+        KclValue::TagDeclarator(_) => false,
+        KclValue::GdtAnnotation { .. } => false,
+        KclValue::Plane { .. } => false,
+        KclValue::Face { .. } => false,
+        KclValue::BoundedEdge { .. } => false,
+        KclValue::Segment { .. } => true,
+        KclValue::Sketch { value: sketch } => sketch.origin_sketch_id.is_some(),
+        KclValue::Solid { value: solid } => solid
+            .sketch()
+            .map(|sketch| sketch.origin_sketch_id.is_some())
+            .unwrap_or(false),
+        KclValue::Helix { .. } => false,
+        KclValue::ImportedGeometry(_) => false,
+        KclValue::Function { .. } => false,
+        KclValue::Module { .. } => false,
+        KclValue::Type { .. } => false,
+        KclValue::KclNone { .. } => false,
+    }
+}
+
 fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut ExecState) -> Result<(), KclError> {
+    let is_sketch_block = originates_from_sketch_block(&*result);
     // If the return result is a sketch or solid, we want to update the
     // memory for the tags of the group.
     // TODO: This could probably be done in a better way, but as of now this was my only idea
     // and it works.
     match result {
-        KclValue::Sketch { value } => {
+        KclValue::Sketch { value } if !is_sketch_block => {
             for (name, tag) in value.tags.iter() {
                 if exec_state.stack().cur_frame_contains(name) {
                     exec_state.mut_stack().update(name, |v, _| {
-                        v.as_mut_tag().unwrap().merge_info(tag);
+                        if let Some(existing_tag) = v.as_mut_tag() {
+                            existing_tag.merge_info(tag);
+                        }
                     });
                 } else {
                     exec_state
@@ -465,10 +577,29 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
             }
         }
         KclValue::Solid { value } => {
-            for v in &value.value {
+            let surfaces = value.value.clone();
+            if value.sketch_mut().is_none() {
+                // If the solid isn't based on a sketch, then it doesn't have a tag container,
+                // so there's nothing to do here.
+                return Ok(());
+            };
+            // Now that we know there's work to do (because there's a tag container),
+            // run some clones.
+            let solid_copies: Vec<Box<Solid>> = surfaces.iter().map(|_| value.clone()).collect();
+            // Get the tag container. We expect it to always succeed because we already checked
+            // for a tag container above.
+            let Some(sketch) = value.sketch_mut() else {
+                return Ok(());
+            };
+            for (v, mut solid_copy) in surfaces.iter().zip(solid_copies) {
+                if let Some(sketch) = solid_copy.sketch_mut() {
+                    sketch.tags.clear(); // Avoid recursive tags.
+                }
                 if let Some(tag) = v.get_tag() {
                     // Get the past tag and update it.
-                    let tag_id = if let Some(t) = value.sketch.tags.get(&tag.name) {
+                    let mut is_part_of_sketch = false;
+                    let tag_id = if let Some(t) = sketch.tags.get(&tag.name) {
+                        is_part_of_sketch = true;
                         let mut t = t.clone();
                         let Some(info) = t.get_cur_info() else {
                             return Err(KclError::new_internal(KclErrorDetails::new(
@@ -478,8 +609,9 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                         };
 
                         let mut info = info.clone();
+                        info.id = v.get_id();
                         info.surface = Some(v.clone());
-                        info.sketch = value.id;
+                        info.geometry = Geometry::Solid(*solid_copy);
                         t.info.push((exec_state.stack().current_epoch(), info));
                         t
                     } else {
@@ -493,7 +625,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                                     id: v.get_id(),
                                     surface: Some(v.clone()),
                                     path: None,
-                                    sketch: value.id,
+                                    geometry: Geometry::Solid(*solid_copy),
                                 },
                             )],
                             meta: vec![Metadata {
@@ -503,13 +635,24 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                     };
 
                     // update the sketch tags.
-                    value.sketch.merge_tags(Some(&tag_id).into_iter());
+                    sketch.merge_tags(Some(&tag_id).into_iter());
 
                     if exec_state.stack().cur_frame_contains(&tag.name) {
                         exec_state.mut_stack().update(&tag.name, |v, _| {
-                            v.as_mut_tag().unwrap().merge_info(&tag_id);
+                            if let Some(existing_tag) = v.as_mut_tag() {
+                                existing_tag.merge_info(&tag_id);
+                            }
                         });
-                    } else {
+                    } else if !is_sketch_block || !is_part_of_sketch {
+                        // The above condition is saying that we add a tag to
+                        // the stack in either of these cases:
+                        //
+                        // 1. It originates from a legacy sketch v1.
+                        //
+                        // 2. It originates from a sketch block and it's not
+                        // part of the sketch. Instead, it's part of the solid,
+                        // as in tagging a cap face `extrude(tagEnd, tagStart)`
+                        // or chamfer face `chamfer(tag)`.
                         exec_state
                             .mut_stack()
                             .add(
@@ -523,11 +666,15 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
             }
 
             // Find the stale sketch in memory and update it.
-            if !value.sketch.tags.is_empty() {
+            if let Some(sketch) = value.sketch() {
+                if sketch.tags.is_empty() {
+                    return Ok(());
+                }
+                let sketch_tags: Vec<_> = sketch.tags.values().cloned().collect();
                 let sketches_to_update: Vec<_> = exec_state
                     .stack()
                     .find_keys_in_current_env(|v| match v {
-                        KclValue::Sketch { value: sk } => sk.original_id == value.sketch.original_id,
+                        KclValue::Sketch { value: sk } => sk.original_id == sketch.original_id,
                         _ => false,
                     })
                     .cloned()
@@ -536,7 +683,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                 for k in sketches_to_update {
                     exec_state.mut_stack().update(&k, |v, _| {
                         let sketch = v.as_mut_sketch().unwrap();
-                        sketch.merge_tags(value.sketch.tags.values());
+                        sketch.merge_tags(sketch_tags.iter());
                     });
                 }
             }
@@ -598,6 +745,7 @@ fn type_check_params_kw(
     let fn_name = fn_name.or(args.fn_name.as_deref());
     let mut result = Args::new_no_args(
         args.source_range,
+        args.node_path.clone(),
         args.ctx,
         fn_name.map(|f| f.to_string()).or_else(|| args.fn_name.clone()),
     );
@@ -649,7 +797,7 @@ fn type_check_params_kw(
                 result.unlabeled = vec![(None, pipe)];
             } else if let Some(arg) = args.labeled.swap_remove(name) {
                 // Mistakenly labelled
-                exec_state.err(CompilationError::err(
+                exec_state.err(CompilationIssue::err(
                     arg.source_range,
                     format!(
                         "{} expects an unlabeled first argument (`@{name}`), but it is labelled in the call. You might try removing the `{name} = `",
@@ -671,7 +819,9 @@ fn type_check_params_kw(
         {
             let mut arg = unlabeled_arg.1;
             if let Some(ty) = ty {
-                let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false)
+                // Suppress warnings about types because they should only be
+                // warned about once for the function definition.
+                let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false, true)
                     .map_err(|e| KclError::new_semantic(e.into()))?;
                 arg.value = arg.value.coerce(&rty, true, exec_state).map_err(|_| {
                     KclError::new_argument(KclErrorDetails::new(
@@ -693,7 +843,7 @@ fn type_check_params_kw(
             // Try to un-spread args into an array
             if let Some(Type::Array { len, .. }) = ty {
                 if len.satisfied(args.unlabeled.len(), false).is_none() {
-                    exec_state.err(CompilationError::err(
+                    exec_state.err(CompilationIssue::err(
                         args.source_range,
                         format!(
                             "{} expects an array input argument with {} elements",
@@ -744,7 +894,7 @@ fn type_check_params_kw(
         };
 
         let mut errors = args.unlabeled.iter().map(|(_, arg)| {
-            CompilationError::err(
+            CompilationIssue::err(
                 arg.source_range,
                 format!("This argument needs a label, but it doesn't have one{suggestion}"),
             )
@@ -758,11 +908,19 @@ fn type_check_params_kw(
 
     for (label, mut arg) in args.labeled {
         match fn_def.named_args.get(&label) {
-            Some((def, ty)) => {
+            Some(NamedParam {
+                experimental: _,
+                deprecated_since: _,
+                default_value: def,
+                ty,
+            }) => {
                 // For optional args, passing None should be the same as not passing an arg.
                 if !(def.is_some() && matches!(arg.value, KclValue::KclNone { .. })) {
                     if let Some(ty) = ty {
-                        let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false)
+                        // Suppress warnings about types because they should
+                        // only be warned about once for the function
+                        // definition.
+                        let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false, true)
                             .map_err(|e| KclError::new_semantic(e.into()))?;
                         arg.value = arg
                                 .value
@@ -790,7 +948,7 @@ fn type_check_params_kw(
                 }
             }
             None => {
-                exec_state.err(CompilationError::err(
+                exec_state.err(CompilationIssue::err(
                     arg.source_range,
                     format!(
                         "`{label}` is not an argument of {}",
@@ -801,6 +959,19 @@ fn type_check_params_kw(
                 ));
             }
         }
+    }
+
+    let check_consumed_solid_args = fn_def
+        .std_props
+        .as_ref()
+        .is_none_or(|props| props.check_consumed_solid_args);
+    if check_consumed_solid_args {
+        result
+            .unlabeled
+            .iter()
+            .map(|(_, arg)| arg)
+            .chain(result.labeled.values())
+            .try_for_each(|arg| validate_value_not_consumed(&arg.value, exec_state, arg.source_range))?;
     }
 
     Ok(result)
@@ -815,7 +986,7 @@ fn assign_args_to_params_kw(
     // been created.
     let source_ranges = fn_def.ast.as_source_ranges();
 
-    for (name, (default, _)) in fn_def.named_args.iter() {
+    for (name, param) in fn_def.named_args.iter() {
         let arg = args.labeled.get(name);
         match arg {
             Some(arg) => {
@@ -825,7 +996,7 @@ fn assign_args_to_params_kw(
                     arg.source_ranges().pop().unwrap_or(SourceRange::synthetic()),
                 )?;
             }
-            None => match default {
+            None => match &param.default_value {
                 Some(default_val) => {
                     let value = KclValue::from_default_param(default_val.clone(), exec_state);
                     exec_state
@@ -867,7 +1038,9 @@ fn coerce_result_type(
 ) -> Result<Option<KclValue>, KclError> {
     if let Ok(Some(val)) = result {
         if let Some(ret_ty) = &fn_def.return_type {
-            let ty = RuntimeType::from_parsed(ret_ty.inner.clone(), exec_state, ret_ty.as_source_range(), false)
+            // Suppress warnings about types because they should only be warned
+            // about once for the function definition.
+            let ty = RuntimeType::from_parsed(ret_ty.inner.clone(), exec_state, ret_ty.as_source_range(), false, true)
                 .map_err(|e| KclError::new_semantic(e.into()))?;
             let val = val.coerce(&ty, true, exec_state).map_err(|_| {
                 KclError::new_type(KclErrorDetails::new(
@@ -892,10 +1065,16 @@ mod test {
     use std::sync::Arc;
 
     use super::*;
-    use crate::{
-        execution::{ContextType, EnvironmentRef, memory::Stack, parse_execute, types::NumericType},
-        parsing::ast::types::{DefaultParamVal, FunctionExpression, Identifier, Parameter, Program},
-    };
+    use crate::execution::ContextType;
+    use crate::execution::EnvironmentRef;
+    use crate::execution::memory::Stack;
+    use crate::execution::parse_execute;
+    use crate::execution::types::NumericType;
+    use crate::parsing::ast::types::DefaultParamVal;
+    use crate::parsing::ast::types::FunctionExpression;
+    use crate::parsing::ast::types::Identifier;
+    use crate::parsing::ast::types::Parameter;
+    use crate::parsing::ast::types::Program;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_assign_args_to_params() {
@@ -915,6 +1094,8 @@ mod test {
         }
         fn opt_param(s: &'static str) -> Parameter {
             Parameter {
+                experimental: false,
+                deprecated_since: None,
                 identifier: ident(s),
                 param_type: None,
                 default_value: Some(DefaultParamVal::none()),
@@ -924,6 +1105,8 @@ mod test {
         }
         fn req_param(s: &'static str) -> Parameter {
             Parameter {
+                experimental: false,
+                deprecated_since: None,
                 identifier: ident(s),
                 param_type: None,
                 default_value: None,
@@ -1004,7 +1187,7 @@ mod test {
                 Box::new(func_expr),
                 EnvironmentRef::dummy(),
                 crate::execution::kcl_value::KclFunctionSourceParams {
-                    is_std: false,
+                    std_props: None,
                     experimental: false,
                     include_in_feature_tree: false,
                 },
@@ -1018,6 +1201,7 @@ mod test {
                 .collect::<IndexMap<_, _>>();
             let exec_ctxt = ExecutorContext {
                 engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+                engine_batch: crate::engine::EngineBatchContext::default(),
                 fs: Arc::new(crate::fs::FileManager::new()),
                 settings: Default::default(),
                 context_type: ContextType::Mock,
@@ -1030,6 +1214,7 @@ mod test {
                 labeled,
                 unlabeled: Vec::new(),
                 source_range: SourceRange::default(),
+                node_path: None,
                 ctx: exec_ctxt,
                 pipe_value: None,
                 _status: std::marker::PhantomData,

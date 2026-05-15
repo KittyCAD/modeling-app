@@ -1,10 +1,35 @@
 test:
     uv pip install .[test]
-    uv run pytest tests/tests.py
+    mkdir -p test-results
+    uv run pytest tests/tests.py --junitxml=test-results/junit.xml
 
 test-filter name:
     uv pip install .[test]
     uv run pytest tests/tests.py::{{name}}
+
+# One-time setup for local dev loop.
+dev-install:
+    uv pip install -e .[test]
+
+# Fast local rebuild (debug profile).
+dev-build:
+    uv run --no-sync maturin develop --uv
+
+# Fast local rebuild with release optimizations.
+dev-build-release:
+    uv run --no-sync maturin develop --uv --release
+
+# Fast test runs against the currently installed local build.
+test-fast:
+    uv run --no-sync pytest tests/tests.py
+
+test-filter-fast name:
+    uv run --no-sync pytest tests/tests.py::{{name}}
+
+# Inner loop: rebuild local extension, then run one test.
+loop name:
+    uv run --no-sync maturin develop --uv
+    uv run --no-sync pytest tests/tests.py::{{name}}
 
 setup-uv:
     uv python install
@@ -17,3 +42,11 @@ lint:
 
 fmt:
     uv run ruff format
+
+fresh-shell:
+  uv pip uninstall zoo-kcl
+  cargo clean -p kcl-python-bindings
+  rm -rf target/wheels
+
+  uv run maturin develop --uv --release
+  uv run --no-sync python

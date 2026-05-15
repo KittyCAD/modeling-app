@@ -12,15 +12,19 @@ test.describe(
     const booleanOperations = [
       {
         name: 'union',
-        code: 'union([extrude001, extrude006])',
+        code: 'union([extrude001, extrude002])',
       },
       {
         name: 'subtract',
-        code: 'subtract(extrude001, tools = extrude006)',
+        code: 'subtract(extrude001, tools = extrude002)',
       },
       {
         name: 'intersect',
-        code: 'intersect([extrude001, extrude006])',
+        code: 'intersect([extrude001, extrude002])',
+      },
+      {
+        name: 'split',
+        code: 'split([extrude001, extrude002])',
       },
     ] as const
     for (let i = 0; i < booleanOperations.length; i++) {
@@ -42,7 +46,7 @@ test.describe(
           path.resolve(
             __dirname,
             '../../',
-            './rust/kcl-lib/e2e/executor/inputs/boolean-setup-with-sketch-on-faces.kcl'
+            './rust/kcl-lib/e2e/executor/inputs/boolean-setup-with-sketch-solve-on-faces.kcl'
           ),
           'utf-8'
         )
@@ -71,7 +75,11 @@ test.describe(
 
         await test.step(`Test ${operationName} operation`, async () => {
           // Click the boolean operation button in the toolbar
-          await toolbar.selectBoolean(operationName)
+          if (operationName === 'split') {
+            await toolbar.splitButton.click()
+          } else {
+            await toolbar.selectBoolean(operationName)
+          }
 
           // Verify command bar is showing the right command
           await expect(cmdBar.page.getByTestId('command-name')).toContainText(
@@ -102,7 +110,7 @@ test.describe(
             await cmdBar.expectState({
               stage: 'review',
               headerArguments: {
-                Solids: '2 paths',
+                Solids: '2 regions',
               },
               commandName,
             })
@@ -110,8 +118,16 @@ test.describe(
             await cmdBar.expectState({
               stage: 'review',
               headerArguments: {
-                Solids: '1 path',
-                Tools: '1 path',
+                Solids: '1 region',
+                Tools: '1 region',
+              },
+              commandName,
+            })
+          } else if (operationName === 'split') {
+            await cmdBar.expectState({
+              stage: 'review',
+              headerArguments: {
+                Targets: '2 regions',
               },
               commandName,
             })
@@ -120,13 +136,15 @@ test.describe(
           await cmdBar.submit()
           await scene.settled(cmdBar)
           await editor.openPane()
-          await editor.scrollToText(operation.code)
           await editor.expectEditor.toContain(operation.code)
         })
 
         await test.step(`Delete ${operationName} operation via feature tree selection`, async () => {
           await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-          const op = await toolbar.getFeatureTreeOperation('solid001', 0)
+          const op = await toolbar.getFeatureTreeOperation(
+            operationName === 'split' ? 'split001' : 'solid001',
+            0
+          )
           await op.click({ button: 'right' })
           await page.getByTestId('context-menu-delete').click()
           await scene.settled(cmdBar)

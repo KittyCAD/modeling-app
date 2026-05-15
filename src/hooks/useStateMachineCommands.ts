@@ -4,13 +4,15 @@ import type { Actor, AnyStateMachine, EventFrom, StateFrom } from 'xstate'
 
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import { shouldDisableModelingForUnrenderedChanges } from '@src/lib/automaticRendering'
 import type {
   Command,
   StateMachineCommandSetConfig,
   StateMachineCommandSetSchema,
 } from '@src/lib/commandTypes'
 import { createMachineCommand } from '@src/lib/createMachineCommand'
-import { commandBarActor, kclManager } from '@src/lib/singletons'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { useSignals } from '@preact/signals-react/runtime'
 
 interface UseStateMachineCommandsArgs<
   T extends AnyStateMachine,
@@ -44,13 +46,25 @@ export default function useStateMachineCommands<
   onCancel,
   isExecuting,
 }: UseStateMachineCommandsArgs<T, S>) {
+  useSignals()
+  const { commands, settings } = useApp()
+  const { kclManager } = useSingletons()
+  const settingsValues = settings.useSettings()
   const { overallState } = useNetworkContext()
   const { isStreamReady } = useAppState()
+  const disableForUnrenderedChanges = shouldDisableModelingForUnrenderedChanges(
+    {
+      settings: settingsValues,
+      hasEditsSinceLastExecution:
+        kclManager.hasEditsSinceLastExecutionSignal.value,
+    }
+  )
   const shouldDisableEngineCommands =
     (overallState !== NetworkHealthState.Ok &&
       overallState !== NetworkHealthState.Weak) ||
-    kclManager.isExecutingSignal.value ||
-    !isStreamReady
+    isExecuting ||
+    !isStreamReady ||
+    disableForUnrenderedChanges
 
   useEffect(() => {
     const newCommands = Object.keys(commandBarConfig || {})
@@ -70,13 +84,13 @@ export default function useStateMachineCommands<
       })
       .filter((c) => c !== null) as Command[] // TS isn't smart enough to know this filter removes nulls
 
-    commandBarActor.send({
+    commands.send({
       type: 'Add commands',
       data: { commands: newCommands },
     })
 
     return () => {
-      commandBarActor.send({
+      commands.send({
         type: 'Remove commands',
         data: { commands: newCommands },
       })

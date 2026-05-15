@@ -1,4 +1,4 @@
-import type { User } from '@kittycad/lib'
+import type { UserResponse } from '@kittycad/lib'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import {
   Route,
@@ -12,7 +12,7 @@ import { expect, describe, test } from 'vitest'
 
 describe('UserSidebarMenu tests', () => {
   test("Renders user's name and email if available", async () => {
-    const userWellFormed: User = {
+    const userWellFormed: UserResponse = {
       id: '8675309',
       name: 'Test User',
       email: 'kittycad.sidebar.test@example.com',
@@ -52,7 +52,7 @@ describe('UserSidebarMenu tests', () => {
   })
 
   test("Renders just the user's email if no name is available", async () => {
-    const userNoName: User = {
+    const userNoName: UserResponse = {
       id: '8675309',
       email: 'kittycad.sidebar.test@example.com',
       image: 'https://placekitten.com/200/200',
@@ -87,7 +87,7 @@ describe('UserSidebarMenu tests', () => {
   })
 
   test('Renders a menu button if no user avatar is available', async () => {
-    const userNoAvatar: User = {
+    const userNoAvatar: UserResponse = {
       id: '8675309',
       name: 'Test User',
       email: 'kittycad.sidebar.test@example.com',

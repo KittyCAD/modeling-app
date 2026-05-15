@@ -6,7 +6,181 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
   "rust/kcl-lib/tests/sketch_block_arc_using_center_coincident/input.kcl": [
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "arc",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "center": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "end": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 2.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 1.5,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "point",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "at": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -35,7 +209,14 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 4
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -43,7 +224,94 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::horizontal",
+      "name": "line",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "end": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "horizontal",
       "unlabeledArg": {
         "value": {
           "type": "KclNone"
@@ -64,7 +332,14 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 6
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -72,7 +347,94 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::vertical",
+      "name": "line",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "end": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "vertical",
       "unlabeledArg": {
         "value": {
           "type": "KclNone"
@@ -93,7 +455,14 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 8
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -101,7 +470,7 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -130,7 +499,14 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 9
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -138,7 +514,7 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -167,7 +543,14 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 10
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -175,7 +558,132 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "point",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "at": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 11
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "fixed",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": 1.0,
+                  "ty": {
+                    "mm": null,
+                    "type": "Known",
+                    "type": "Length"
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 12
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -204,7 +712,14 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 13
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -212,7 +727,7 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::equalLength",
+      "name": "equalLength",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -241,7 +756,14 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 14
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -249,7 +771,7 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -278,7 +800,14 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 15
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -286,7 +815,7 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "sketch2::coincident",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -315,7 +844,14 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "SketchBlock"
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 16
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -335,9 +871,6 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlock"
           }
         ]
       },
@@ -563,6 +1096,54 @@ description: Operations executed sketch_block_arc_using_center_coincident.kcl
           {
             "type": "ProgramBodyItem",
             "index": 26
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "CCW",
+      "value": {
+        "type": "String",
+        "value": "ccw"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 27
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "CW",
+      "value": {
+        "type": "String",
+        "value": "cw"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"

@@ -1,7 +1,7 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[35, 69, 0]"]
+    2["Path<br>[35, 69, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     3["Segment<br>[75, 95, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
@@ -18,7 +18,7 @@ flowchart LR
     9[Solid2d]
   end
   subgraph path28 [Path]
-    28["Path<br>[396, 440, 0]"]
+    28["Path<br>[396, 440, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     29["Segment<br>[396, 440, 0]"]
       %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
@@ -26,7 +26,7 @@ flowchart LR
   end
   1["Plane<br>[12, 29, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  10["Sweep Extrusion<br>[306, 337, 0]"]
+  10["Sweep Extrusion<br>[306, 337, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   11[Wall]
     %% face_code_ref=[ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
@@ -52,71 +52,83 @@ flowchart LR
   25["SweepEdge Adjacent"]
   26["SweepEdge Opposite"]
   27["SweepEdge Adjacent"]
-  31["Sweep Extrusion<br>[630, 651, 0]"]
+  31["Pattern Transform<br>[446, 505, 0]<br>Copies: 4<br>Faces: 4<br>Edges: 4"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
+  32["Pattern Transform<br>[564, 624, 0]<br>Copies: 5<br>Faces: 5<br>Edges: 5"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
+  33["Pattern Transform<br>[564, 624, 0]<br>Copies: 5<br>Faces: 5<br>Edges: 5"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
+  34["Pattern Transform<br>[564, 624, 0]<br>Copies: 5<br>Faces: 5<br>Edges: 5"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
+  35["Pattern Transform<br>[564, 624, 0]<br>Copies: 5<br>Faces: 5<br>Edges: 5"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
+  36["Pattern Transform<br>[564, 624, 0]<br>Copies: 5<br>Faces: 5<br>Edges: 5"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
+  37["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  32[Wall]
+  38[Wall]
     %% face_code_ref=Missing NodePath
-  33["SweepEdge Opposite"]
-  34["SweepEdge Adjacent"]
-  35["Sweep Extrusion<br>[630, 651, 0]"]
+  39["SweepEdge Opposite"]
+  40["SweepEdge Adjacent"]
+  41["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  36["Sweep Extrusion<br>[630, 651, 0]"]
+  42["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  37["Sweep Extrusion<br>[630, 651, 0]"]
+  43["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  38["Sweep Extrusion<br>[630, 651, 0]"]
+  44["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  39["Sweep Extrusion<br>[630, 651, 0]"]
+  45["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  40["Sweep Extrusion<br>[630, 651, 0]"]
+  46["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  41["Sweep Extrusion<br>[630, 651, 0]"]
+  47["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  42["Sweep Extrusion<br>[630, 651, 0]"]
+  48["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  43["Sweep Extrusion<br>[630, 651, 0]"]
+  49["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  44["Sweep Extrusion<br>[630, 651, 0]"]
+  50["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  45["Sweep Extrusion<br>[630, 651, 0]"]
+  51["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  46["Sweep Extrusion<br>[630, 651, 0]"]
+  52["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  47["Sweep Extrusion<br>[630, 651, 0]"]
+  53["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  48["Sweep Extrusion<br>[630, 651, 0]"]
+  54["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  49["Sweep Extrusion<br>[630, 651, 0]"]
+  55["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  50["Sweep Extrusion<br>[630, 651, 0]"]
+  56["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  51["Sweep Extrusion<br>[630, 651, 0]"]
+  57["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  52["Sweep Extrusion<br>[630, 651, 0]"]
+  58["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  53["Sweep Extrusion<br>[630, 651, 0]"]
+  59["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  54["Sweep Extrusion<br>[630, 651, 0]"]
+  60["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  55["Sweep Extrusion<br>[630, 651, 0]"]
+  61["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  56["Sweep Extrusion<br>[630, 651, 0]"]
+  62["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  57["Sweep Extrusion<br>[630, 651, 0]"]
+  63["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  58["Sweep Extrusion<br>[630, 651, 0]"]
+  64["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  59["Sweep Extrusion<br>[630, 651, 0]"]
+  65["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  60["Sweep Extrusion<br>[630, 651, 0]"]
+  66["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  61["Sweep Extrusion<br>[630, 651, 0]"]
+  67["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  62["Sweep Extrusion<br>[630, 651, 0]"]
+  68["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  63["Sweep Extrusion<br>[630, 651, 0]"]
+  69["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  64["StartSketchOnFace<br>[351, 390, 0]"]
+  70["StartSketchOnFace<br>[351, 390, 0]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
@@ -169,14 +181,14 @@ flowchart LR
   21 <--x 11
   11 --- 28
   29 <--x 11
-  11 <--x 64
+  11 <--x 70
   12 --- 20
   12 --- 21
   23 <--x 12
   13 --- 22
   13 --- 23
   25 <--x 13
-  33 <--x 13
+  39 <--x 13
   14 --- 24
   14 --- 25
   27 <--x 14
@@ -190,13 +202,15 @@ flowchart LR
   26 <--x 17
   28 --- 29
   28 --- 30
-  28 ---- 31
-  29 --- 32
-  29 --- 33
-  29 --- 34
-  31 --- 32
-  31 --- 33
-  31 --- 34
-  32 --- 33
-  32 --- 34
+  28 --- 31
+  28 --- 32
+  28 ---- 37
+  29 --- 38
+  29 --- 39
+  29 --- 40
+  37 --- 38
+  37 --- 39
+  37 --- 40
+  38 --- 39
+  38 --- 40
 ```

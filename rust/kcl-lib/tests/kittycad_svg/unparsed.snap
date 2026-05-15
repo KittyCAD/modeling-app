@@ -3,8 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing kittycad_svg.kcl
 ---
 svg = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(endAbsolute = [2.52, -26.04]) // MoveAbsolute
+  |> startProfile(at = [2.52, -26.04])
   |> line(endAbsolute = [2.52, -25.2]) // VerticalLineAbsolute
   |> line(endAbsolute = [0.84, -25.2]) // HorizontalLineAbsolute
   |> line(endAbsolute = [0.84, -24.36]) // VerticalLineAbsolute
@@ -121,8 +120,9 @@ svg = startSketchOn(XY)
   |> line(endAbsolute = [13.44, -10.08]) // VerticalLineHorizontal
   |> line(endAbsolute = [15.12, -10.08]) // HorizontalLineRelative
   |> line(endAbsolute = [15.12, -13.44]) // VerticalLineHorizontal
-  |> line(endAbsolute = [14.28, -13.44]) // HorizontalLineRelative
-  |> line(endAbsolute = [9.24, -13.44]) // MoveRelative
+  // |> line(endAbsolute = [14.28, -13.44]) // HorizontalLineRelative
+
+  // |> line(endAbsolute = [9.24, -13.44]) // MoveRelative
   |> line(endAbsolute = [11.76, -13.44]) // HorizontalLineRelative
   |> line(endAbsolute = [11.76, -14.28]) // VerticalLineHorizontal
   |> line(endAbsolute = [10.92, -14.28]) // HorizontalLineRelative here
@@ -279,12 +279,11 @@ svg = startSketchOn(XY)
   |> line(endAbsolute = [12.6, -5.04]) // VerticalLineAbsolute
   |> line(endAbsolute = [11.76, -5.04]) // HorizontalLineAbsolute
   |> line(endAbsolute = [11.76, -5.88]) // VerticalLineAbsolute
-  |> line(endAbsolute = [10.92, -5.88]) // HorizontalLineAbsolute
-  |> line(endAbsolute = [10.92, -5.04]) // VerticalLineAbsolute
+  |> line(endAbsolute = [10.92, -5.04]) // HorizontalLineAbsolute
   |> line(endAbsolute = [11.76, -5.04]) // HorizontalLineRelative
   |> line(endAbsolute = [14.28, -10.92]) // MoveRelative
   |> line(endAbsolute = [13.44, -10.92]) // HorizontalLineRelative
   |> line(endAbsolute = [13.44, -13.44]) // VerticalLineHorizontal
   |> line(endAbsolute = [14.28, -13.44]) // HorizontalLineRelative
-  |> close(%)
+  |> close()
   |> extrude(length = 1)

@@ -1,7 +1,7 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[88, 135, 0]"]
+    2["Path<br>[88, 135, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
     3["Segment<br>[141, 163, 0]"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
@@ -40,7 +40,7 @@ flowchart LR
     20[Solid2d]
   end
   subgraph path73 [Path]
-    73["Path<br>[1286, 1346, 0]"]
+    73["Path<br>[1286, 1346, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     74["Segment<br>[1286, 1346, 0]"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
@@ -48,7 +48,7 @@ flowchart LR
   end
   1["Plane<br>[47, 64, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  21["Sweep Extrusion<br>[1054, 1123, 0]"]
+  21["Sweep Extrusion<br>[1054, 1123, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   22[Wall]
     %% face_code_ref=Missing NodePath
@@ -120,7 +120,7 @@ flowchart LR
   71["SweepEdge Adjacent"]
   72["Plane<br>[1239, 1262, 0]"]
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  76["Sweep Extrusion<br>[1364, 1406, 0]"]
+  76["Sweep Extrusion<br>[1364, 1406, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   77[Wall]
     %% face_code_ref=Missing NodePath
@@ -130,7 +130,7 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   80["SweepEdge Opposite"]
   81["SweepEdge Adjacent"]
-  82["CompositeSolid Subtract<br>[1417, 1460, 0]"]
+  82["CompositeSolid Subtract<br>[1417, 1460, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   2 --- 3

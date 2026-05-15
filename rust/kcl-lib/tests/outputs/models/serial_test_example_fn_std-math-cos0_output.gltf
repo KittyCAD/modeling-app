@@ -37,7 +37,7 @@
       ],
       "max": [
         0.003000000026077032,
-        0.001732050790451467,
+        0.0017320499755442142,
         0.004999999888241291
       ]
     },
@@ -61,7 +61,7 @@
       ],
       "max": [
         0.003000000026077032,
-        0.001732050790451467,
+        0.0017320499755442142,
         0.004999999888241291
       ]
     },
@@ -85,7 +85,7 @@
       ],
       "max": [
         0.003000000026077032,
-        0.001732050790451467,
+        0.0017320499755442142,
         -0
       ]
     },
@@ -109,7 +109,7 @@
       ],
       "max": [
         0.003000000026077032,
-        0.001732050790451467,
+        0.0017320499755442142,
         0.004999999888241291
       ]
     },
@@ -128,7 +128,7 @@
   "buffers": [
     {
       "byteLength": 576,
-      "uri": "data:application/octet-stream;base64,AAAAAAAAAAAK16M7AAAAAAAAgL8AAAAAAAAAAAAAAAAAAACAAAAAAAAAgL8AAAAApptEOwAAAAAK16M7AAAAAAAAgL8AAAAApptEOwAAAAAK16M7AAAAAAAAgL8AAAAAAAAAAAAAAAAAAACAAAAAAAAAgL8AAAAApptEOwAAAAAAAACAAAAAAAAAgL8AAAAApptEOwAAAAAK16M7AACAPwAAAAAAAAAApptEOwAAAAAAAACAAACAPwAAAAAAAAAApptEO/sF4zoK16M7AACAPwAAAAAAAAAApptEO/sF4zoK16M7AACAPwAAAAAAAAAApptEOwAAAAAAAACAAACAPwAAAAAAAAAApptEO/sF4zoAAACAAACAPwAAAAAAAAAApptEO/sF4zoK16M7AAAAv9ezXT8AAAAApptEO/sF4zoAAACAAAAAv9ezXT8AAAAAAAAAAAAAAAAK16M7AAAAv9ezXT8AAAAAAAAAAAAAAAAK16M7AAAAv9ezXT8AAAAApptEO/sF4zoAAACAAAAAv9ezXT8AAAAAAAAAAAAAAAAAAACAAAAAv9ezXT8AAAAApptEO/sF4zoAAACAAAAAgAAAAIAAAIC/pptEOwAAAAAAAACAAAAAgAAAAIAAAIC/AAAAAAAAAAAAAACAAAAAgAAAAIAAAIC/pptEO/sF4zoK16M7AAAAAAAAAAAAAIA/AAAAAAAAAAAK16M7AAAAAAAAAAAAAIA/pptEOwAAAAAK16M7AAAAAAAAAAAAAIA/"
+      "uri": "data:application/octet-stream;base64,AAAAAAAAAAAK16M7AAAAAAAAgL8AAAAAAAAAAAAAAAAAAACAAAAAAAAAgL8AAAAApptEOwAAAAAK16M7AAAAAAAAgL8AAAAApptEOwAAAAAK16M7AAAAAAAAgL8AAAAAAAAAAAAAAAAAAACAAAAAAAAAgL8AAAAApptEOwAAAAAAAACAAAAAAAAAgL8AAAAApptEOwAAAAAK16M7AACAPwAAAAAAAAAApptEOwAAAAAAAACAAACAPwAAAAAAAAAApptEO/QF4zoK16M7AACAPwAAAAAAAAAApptEO/QF4zoK16M7AACAPwAAAAAAAAAApptEOwAAAAAAAACAAACAPwAAAAAAAAAApptEO/QF4zoAAACAAACAPwAAAAAAAAAApptEO/QF4zoK16M7AAAAv9ezXT8AAAAApptEO/QF4zoAAACAAAAAv9ezXT8AAAAAAAAAAAAAAAAK16M7AAAAv9ezXT8AAAAAAAAAAAAAAAAK16M7AAAAv9ezXT8AAAAApptEO/QF4zoAAACAAAAAv9ezXT8AAAAAAAAAAAAAAAAAAACAAAAAv9ezXT8AAAAApptEO/QF4zoAAACAAAAAgAAAAIAAAIC/pptEOwAAAAAAAACAAAAAgAAAAIAAAIC/AAAAAAAAAAAAAACAAAAAgAAAAIAAAIC/pptEO/QF4zoK16M7AAAAAAAAAAAAAIA/AAAAAAAAAAAK16M7AAAAAAAAAAAAAIA/pptEOwAAAAAK16M7AAAAAAAAAAAAAIA/"
     }
   ],
   "bufferViews": [
@@ -427,7 +427,7 @@
           "end": 4,
           "t": [
             0,
-            0.001732050807568877
+            0.00173205
           ]
         },
         {
@@ -451,7 +451,7 @@
           "end": 5,
           "t": [
             0,
-            0.001732050807568877
+            0.00173205
           ]
         },
         {
@@ -463,7 +463,7 @@
           "end": 0,
           "t": [
             0,
-            0.0034641016151377543
+            0.0034641012113533864
           ]
         },
         {
@@ -475,7 +475,7 @@
           "end": 3,
           "t": [
             0,
-            0.0034641016151377543
+            0.0034641012113533864
           ]
         }
       ],
@@ -502,12 +502,12 @@
         ],
         [
           0.003,
-          0.001732050807568877,
+          0.00173205,
           -0
         ],
         [
           0.003,
-          0.001732050807568877,
+          0.00173205,
           0.005
         ]
       ],
@@ -526,7 +526,7 @@
               1
             ],
             "origin": [
-              0.0014999999999999996,
+              0.0015,
               0,
               0.0025
             ]
@@ -547,7 +547,7 @@
             ],
             "origin": [
               0.003,
-              0.0008660254037844385,
+              0.00086603,
               0.0025
             ]
           }
@@ -556,8 +556,8 @@
           "type": "plane",
           "plane": {
             "xAxis": [
-              0.8660254037844387,
-              0.49999999999999994,
+              0.866025402838329,
+              0.5000000016387101,
               0
             ],
             "yAxis": [
@@ -567,7 +567,7 @@
             ],
             "origin": [
               0.0015,
-              0.0008660254037844385,
+              0.00086603,
               0.0025
             ]
           }
@@ -694,7 +694,7 @@
           "line": {
             "origin": [
               0.003,
-              0.001732050807568877,
+              0.00173205,
               -0
             ],
             "direction": [
@@ -724,12 +724,12 @@
           "line": {
             "origin": [
               0.003,
-              0.001732050807568877,
+              0.00173205,
               -0
             ],
             "direction": [
-              -0.8660254037844387,
-              -0.49999999999999994,
+              -0.8660255047305425,
+              -0.4999998251561787,
               0
             ]
           }
@@ -739,12 +739,12 @@
           "line": {
             "origin": [
               0.003,
-              0.001732050807568877,
+              0.00173205,
               0.005
             ],
             "direction": [
-              -0.8660254037844387,
-              -0.49999999999999994,
+              -0.8660255047305425,
+              -0.4999998251561787,
               0
             ]
           }

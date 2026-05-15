@@ -18,6 +18,7 @@ export const defaultSelectionFilter: EntityType[] = [
   'solid2d',
   'curve',
   'object',
+  'path',
 ]
 
 /** TODO: This function is not synchronous but is currently treated as such */
@@ -36,7 +37,6 @@ export function setSelectionFilterToDefault({
   handleSelectionBatchFn?: typeof handleSelectionBatch
   wasmInstance: ModuleType
 }) {
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   setSelectionFilter({
     filter: defaultSelectionFilter,
     engineCommandManager,

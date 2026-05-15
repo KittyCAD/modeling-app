@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 import os
 
+import pytest
+from flaky import flaky
+
 import kcl
 from kcl import Point3d
-import pytest
 
 # Get the path to this script's parent directory.
 files_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "files")
@@ -17,19 +19,39 @@ engine_error_file = os.path.join(
     tests_dir, "error_revolve_on_edge_get_edge", "input.kcl"
 )
 cube_step_file = os.path.join(
-    os.path.dirname(os.path.realpath(__file__)), "..", "files", "cube.step"
+    os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "files", "cube.step"
 )
-car_wheel_dir = os.path.join(
+axial_fan = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
     "..",
     "..",
     "..",
     "public",
     "kcl-samples",
-    "car-wheel-assembly",
+    "axial-fan",
+)
+
+box_code = """
+box_width = 25
+box_depth = 25
+box_height = 50
+
+box_sketch = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> xLine(length = box_width)
+  |> yLine(length = box_depth)
+  |> xLine(endAbsolute = profileStartX(%))
+  |> close()
+
+box3D = extrude(box_sketch, length = box_height)
+"""
+
+requires_engine = pytest.mark.skipif(
+    "ZOO_API_TOKEN" not in os.environ, reason="requires ZOO_API_TOKEN"
 )
 
 
+@requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_with_exception():
     # Read from a file.
@@ -41,6 +63,7 @@ async def test_kcl_execute_with_exception():
         assert "lksjndflsskjfnak;jfna##" in str(e)
 
 
+@requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute():
     # Read from a file.
@@ -63,6 +86,31 @@ async def test_kcl_parse():
     # Read from a file.
     result = await kcl.parse(lego_file)
     assert result is True
+
+
+@pytest.mark.asyncio
+async def test_kcl_default_units(tmp_path):
+    kcl_file = tmp_path / "default-units.kcl"
+    kcl_file.write_text(
+        """@settings(defaultLengthUnit = in, defaultAngleUnit = rad)
+
+startSketchOn(XY)
+"""
+    )
+
+    units = await kcl.default_units(str(kcl_file))
+    assert units.length == kcl.UnitLength.Inches
+    assert units.angle == kcl.UnitAngle.Radians
+
+
+@pytest.mark.asyncio
+async def test_kcl_default_units_fallback_default(tmp_path):
+    kcl_file = tmp_path / "default-units.kcl"
+    kcl_file.write_text("startSketchOn(XY)")
+
+    units = await kcl.default_units(str(kcl_file))
+    assert units.length == kcl.UnitLength.Millimeters
+    assert units.angle == kcl.UnitAngle.Degrees
 
 
 @pytest.mark.asyncio
@@ -94,6 +142,7 @@ async def test_kcl_mock_execute_with_engine_exception_should_pass():
     assert result is True
 
 
+@requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_with_engine_exception_should_fail():
     # Read from a file.
@@ -123,6 +172,7 @@ async def test_kcl_mock_execute_code():
         assert result is True
 
 
+@requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_code():
     # Read from a file.
@@ -133,6 +183,7 @@ async def test_kcl_execute_code():
         await kcl.execute_code(code)
 
 
+@requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_code_and_snapshot():
     # Read from a file.
@@ -145,6 +196,7 @@ async def test_kcl_execute_code_and_snapshot():
         assert len(image_bytes) > 0
 
 
+@requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_code_and_export():
     # Read from a file.
@@ -164,20 +216,26 @@ async def test_kcl_execute_code_and_export():
         assert len(contents) > 0
 
 
+@requires_engine
+@flaky
 @pytest.mark.asyncio
 async def test_kcl_execute_dir_assembly():
     # Read from a file.
-    await kcl.execute(car_wheel_dir)
+    await kcl.execute(axial_fan)
 
 
+@requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_and_snapshot():
     # Read from a file.
-    image_bytes = await kcl.execute_and_snapshot(lego_file, kcl.ImageFormat.Jpeg)
+    image_bytes = await kcl.execute_and_snapshot(
+        lego_file, kcl.ImageFormat.Jpeg, zoom=False
+    )
     assert image_bytes is not None
     assert len(image_bytes) > 0
 
 
+@requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_and_snapshot_options():
     camera = kcl.CameraLookAt(
@@ -203,6 +261,7 @@ async def test_kcl_execute_and_snapshot_options():
     assert len(image_bytes) > 0
 
 
+@requires_engine
 @pytest.mark.asyncio
 async def test_import_and_snapshots():
     camera = kcl.CameraLookAt(
@@ -231,12 +290,13 @@ async def test_import_and_snapshots():
         assert len(image_bytes) > 0
 
 
+@requires_engine
 @pytest.mark.asyncio
 async def test_import_and_snapshots_single():
     # Read from a file.
     step_options = kcl.StepImportOptions()
     input_format = kcl.InputFormat3d.Step(step_options)
-    print(cube_step_file)
+    print("The cube_step_file is", cube_step_file)
     image_bytes = await kcl.import_and_snapshot(
         [cube_step_file], input_format, kcl.ImageFormat.Jpeg
     )
@@ -244,14 +304,123 @@ async def test_import_and_snapshots_single():
     assert len(image_bytes) > 0
 
 
+@requires_engine
+@flaky
 @pytest.mark.asyncio
 async def test_kcl_execute_and_snapshot_dir():
     # Read from a file.
-    image_bytes = await kcl.execute_and_snapshot(car_wheel_dir, kcl.ImageFormat.Jpeg)
+    image_bytes = await kcl.execute_and_snapshot(axial_fan, kcl.ImageFormat.Jpeg)
     assert image_bytes is not None
     assert len(image_bytes) > 0
 
 
+@requires_engine
+@pytest.mark.asyncio
+async def test_kcl_execute_and_measure():
+    # Read from a file.
+    with open(lego_file, "r") as f:
+        code = str(f.read())
+        assert code is not None
+        assert len(code) > 0
+
+        # Send the request
+        request = kcl.PhysicalPropertiesRequest()
+        request.set_volume(kcl.UnitVolume.CubicCentimeters)
+        request.set_center_of_mass(kcl.UnitLength.Centimeters)
+        response = await kcl.execute_code_and_measure(code, request)
+        assert response is not None
+
+        # Check the response is as expected.
+        assert response.get_volume() == pytest.approx(0.94557216312, rel=0, abs=1e-5)
+        assert response.get_volume_unit() == kcl.UnitVolume.CubicCentimeters
+        com = response.get_center_of_mass()
+        print(com.x, com.y, com.z)
+        assert com.x == pytest.approx(0.01788371801376342, rel=0, abs=1e-5)
+        assert com.y == pytest.approx(0.24748362600803375, rel=0, abs=1e-5)
+        assert com.z == pytest.approx(-0.0216667298227548, rel=0, abs=1e-5)
+        assert response.get_center_of_mass_unit() == kcl.UnitLength.Centimeters
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_kcl_execute_code_and_measure_bounding_box_cm():
+    request = kcl.PhysicalPropertiesRequest()
+    request.set_bounding_box(kcl.UnitLength.Centimeters)
+    response = await kcl.execute_code_and_measure(box_code, request)
+    assert response is not None
+
+    bounding_box = response.get_bounding_box()
+    center = bounding_box.get_center()
+    dimensions = bounding_box.get_dimensions()
+
+    assert center.x == pytest.approx(1.25, rel=0, abs=1e-5)
+    assert center.y == pytest.approx(1.25, rel=0, abs=1e-5)
+    assert center.z == pytest.approx(2.5, rel=0, abs=1e-5)
+
+    assert dimensions.x == pytest.approx(2.5, rel=0, abs=1e-5)
+    assert dimensions.y == pytest.approx(2.5, rel=0, abs=1e-5)
+    assert dimensions.z == pytest.approx(5.0, rel=0, abs=1e-5)
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_kcl_execute_code_and_measure_bounding_box_mm():
+    request = kcl.PhysicalPropertiesRequest()
+    request.set_bounding_box(kcl.UnitLength.Millimeters)
+    response = await kcl.execute_code_and_measure(box_code, request)
+    assert response is not None
+
+    bounding_box = response.get_bounding_box()
+    center = bounding_box.get_center()
+    dimensions = bounding_box.get_dimensions()
+
+    assert center.x == pytest.approx(12.5, rel=0, abs=1e-5)
+    assert center.y == pytest.approx(12.5, rel=0, abs=1e-5)
+    assert center.z == pytest.approx(25, rel=0, abs=1e-5)
+
+    assert dimensions.x == pytest.approx(25, rel=0, abs=1e-5)
+    assert dimensions.y == pytest.approx(25, rel=0, abs=1e-5)
+    assert dimensions.z == pytest.approx(50, rel=0, abs=1e-5)
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_kcl_execute_code_and_bounding_box():
+    response = await kcl.execute_code_and_bounding_box(box_code)
+    assert response is not None
+
+    center = response.get_center()
+    dimensions = response.get_dimensions()
+
+    assert center.x == pytest.approx(12.5, rel=0, abs=1e-5)
+    assert center.y == pytest.approx(12.5, rel=0, abs=1e-5)
+    assert center.z == pytest.approx(25.0, rel=0, abs=1e-5)
+
+    assert dimensions.x == pytest.approx(25.0, rel=0, abs=1e-5)
+    assert dimensions.y == pytest.approx(25.0, rel=0, abs=1e-5)
+    assert dimensions.z == pytest.approx(50.0, rel=0, abs=1e-5)
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_kcl_execute_and_bounding_box():
+    box_file = os.path.join(files_dir, "box_with_linter_errors.kcl")
+    response = await kcl.execute_and_bounding_box(box_file, [])
+    assert response is not None
+
+    center = response.get_center()
+    dimensions = response.get_dimensions()
+
+    assert center.x == pytest.approx(12.5, rel=0, abs=1e-5)
+    assert center.y == pytest.approx(12.5, rel=0, abs=1e-5)
+    assert center.z == pytest.approx(25.0, rel=0, abs=1e-5)
+
+    assert dimensions.x == pytest.approx(25.0, rel=0, abs=1e-5)
+    assert dimensions.y == pytest.approx(25.0, rel=0, abs=1e-5)
+    assert dimensions.z == pytest.approx(50.0, rel=0, abs=1e-5)
+
+
+@requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_and_export():
     # Read from a file.
@@ -280,7 +449,7 @@ def test_kcl_format():
 
 @pytest.mark.asyncio
 async def test_kcl_format_dir():
-    await kcl.format_dir(car_wheel_dir)
+    await kcl.format_dir(axial_fan)
 
 
 def test_kcl_lint():
@@ -346,6 +515,7 @@ def test_kcl_lint_fix_no_style():
         assert after_fixing.new_code == code
 
 
+@requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_code_and_export_with_bad_units():
     bad_units_file = os.path.join(tests_dir, "bad_units_in_annotation", "input.kcl")
@@ -371,3 +541,135 @@ def test_relevant_file_extensions():
     assert all(isinstance(x, str) and len(x) > 0 for x in exts)
     # kcl should always be included in the set
     assert "kcl" in exts
+
+
+fully_constrained_sketch_code = """
+@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+}
+"""
+
+under_constrained_sketch_code = """
+@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = line(start = [var 1.32mm, var -1.93mm], end = [var 6.08mm, var 2.51mm])
+}
+"""
+
+mixed_sketches_code = """
+@settings(experimentalFeatures = allow)
+
+s1 = sketch(on = YZ) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+}
+
+s2 = sketch(on = XZ) {
+  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+}
+"""
+
+execution_error_after_sketch_code = """
+@settings(experimentalFeatures = allow)
+
+s1 = sketch(on = YZ) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+}
+
+extrude(missing_sketch, length = 5mm)
+"""
+
+parse_error_sketch_code = """
+@settings(experimentalFeatures = allow)
+
+s1 = sketch(on = YZ) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+"""
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_sketch_constraint_status_fully_constrained():
+    report = await kcl.get_sketch_constraint_status_code(fully_constrained_sketch_code)
+    assert len(report.fully_constrained) == 1
+    assert len(report.under_constrained) == 0
+    assert len(report.over_constrained) == 0
+    assert len(report.errors) == 0
+    assert report.is_complete is True
+    assert report.kcl_error is None
+    assert report.fully_constrained[0].status == kcl.ConstraintKind.FullyConstrained
+    assert report.total_sketches() == 1
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_sketch_constraint_status_under_constrained():
+    report = await kcl.get_sketch_constraint_status_code(under_constrained_sketch_code)
+    assert len(report.fully_constrained) == 0
+    assert len(report.under_constrained) == 1
+    assert len(report.over_constrained) == 0
+    assert len(report.errors) == 0
+    assert report.under_constrained[0].status == kcl.ConstraintKind.UnderConstrained
+    assert report.under_constrained[0].free_count > 0
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_sketch_constraint_status_mixed():
+    report = await kcl.get_sketch_constraint_status_code(mixed_sketches_code)
+    assert report.total_sketches() == 2
+    assert len(report.fully_constrained) == 1
+    assert len(report.under_constrained) == 1
+    assert len(report.errors) == 0
+    assert report.is_complete is True
+    assert report.kcl_error is None
+
+
+@pytest.mark.asyncio
+async def test_sketch_constraint_status_parse_error_returns_report():
+    report = await kcl.get_sketch_constraint_status_code(parse_error_sketch_code)
+    assert report.total_sketches() == 0
+    assert len(report.fully_constrained) == 0
+    assert len(report.under_constrained) == 0
+    assert len(report.over_constrained) == 0
+    assert len(report.errors) == 0
+    assert report.is_complete is False
+    assert report.kcl_error is not None
+    assert report.kcl_error.phase == "parse"
+    assert "KCL Syntax error" in report.kcl_error.text
+    assert "Unexpected token" in report.kcl_error.text
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_sketch_constraint_status_execution_error_returns_partial_report():
+    report = await kcl.get_sketch_constraint_status_code(
+        execution_error_after_sketch_code
+    )
+    assert report.total_sketches() == 1
+    assert len(report.fully_constrained) == 1
+    assert len(report.under_constrained) == 0
+    assert len(report.over_constrained) == 0
+    assert len(report.errors) == 0
+    assert report.is_complete is False
+    assert report.kcl_error is not None
+    assert report.kcl_error.phase == "execution"
+    assert "missing_sketch" in report.kcl_error.text

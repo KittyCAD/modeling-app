@@ -102,7 +102,6 @@ onmessage = function (event: MessageEvent) {
       intoServer.enqueue(data)
       const json: jsrpc.JSONRPCRequest = Codec.decode(data)
       if (null != json.id) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         fromServer.responses
           .get(json.id)!
           .then((response) => {

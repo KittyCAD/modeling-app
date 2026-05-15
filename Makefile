@@ -5,43 +5,50 @@ all: check test-unit
 # INSTALL
 
 ifeq ($(OS),Windows_NT)
-export WINDOWS := true
-ifndef MSYSTEM
-export POWERSHELL := true
-endif
+  export WINDOWS := true
+  ifndef MSYSTEM
+    export POWERSHELL := true
+  endif
 endif
 
 ifdef WINDOWS
-PLATFORM := Windows
+  PLATFORM := Windows
 else
-PLATFORM := $(shell uname -s)
-ifeq ($(PLATFORM),Linux)
-export LINUX := true
-endif
+  PLATFORM := $(shell uname -s)
+  ifeq ($(PLATFORM),Linux)
+    export LINUX := true
+  endif
+  ifeq ($(PLATFORM),Darwin)
+    export MACOS := true
+  endif
 endif
 
 ifdef WINDOWS
-CARGO ?= $(USERPROFILE)/.cargo/bin/cargo.exe
 WASM_PACK ?= $(USERPROFILE)/.cargo/bin/wasm-pack.exe
 else
-CARGO ?= $(shell which cargo || echo ~/.cargo/bin/cargo)
 WASM_PACK ?= $(shell which wasm-pack || echo ~/.cargo/bin/wasm-pack)
 endif
 
+.PHONY: bootstrap
+ifdef WINDOWS
+bootstrap:
+	npm run install:rust:windows
+else
+bootstrap: ~/.asdfrc
+	asdf plugin add just
+	asdf plugin add nodejs
+	asdf plugin add python
+	@ echo
+	asdf install
+	npm run install:rust
+endif
+
 .PHONY: install
-install: node_modules/.package-lock.json $(CARGO) $(WASM_PACK) ## Install dependencies
+install: node_modules/.package-lock.json $(WASM_PACK) ## Install dependencies
 
 node_modules/.package-lock.json: package.json package-lock.json
 	npm prune
 	npm install
-
-$(CARGO): rust/rust-toolchain.toml
-ifdef WINDOWS
-	npm run install:rust:windows
-	@ powershell -Command "if (Test-Path '$(CARGO)') { (Get-Item '$(CARGO)').LastWriteTime = Get-Date }"
-else
-	npm run install:rust
-endif
 
 $(WASM_PACK):
 	npm run install:wasm-pack:cargo
@@ -117,7 +124,7 @@ E2E_GREP ?=
 E2E_WORKERS ?=
 E2E_FAILURES ?= 1
 
-ifdef LINUX
+ifdef MACOS
 E2E_MODE ?= changed
 else
 E2E_MODE ?= none
@@ -136,7 +143,9 @@ test-integration: install public/kcl_wasm_lib_bg.wasm ## Run the integration tes
 
 .PHONY: test-e2e
 test-e2e: test-e2e-$(TARGET)
+ifndef E2E_GREP
 	npm run test:e2e:kcl
+endif
 
 .PHONY: test-e2e-web
 test-e2e-web: install build ## Run the web e2e tests
@@ -156,7 +165,7 @@ endif
 
 .PHONY: test-snapshots
 test-snapshots: install build ## Run the snapshot tests
-ifndef LINUX
+ifndef MACOS
 	@ echo "NOTE: Snapshots cannot be updated on $(PLATFORM)"
 endif
 ifdef E2E_GREP

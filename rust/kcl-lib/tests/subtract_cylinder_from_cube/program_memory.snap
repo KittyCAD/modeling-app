@@ -44,6 +44,7 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -210,6 +211,7 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
@@ -355,6 +357,7 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
         }
       ],
       "sketch": {
+        "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [

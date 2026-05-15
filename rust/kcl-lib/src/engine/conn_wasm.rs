@@ -1,21 +1,26 @@
 //! Functions for setting up our WebSocket and WebRTC connections for communications with the
 //! engine.
-use std::{collections::HashMap, sync::Arc};
+use std::collections::HashMap;
+use std::sync::Arc;
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use kcmc::websocket::{OkWebSocketResponseData, WebSocketRequest, WebSocketResponse};
+use kcmc::websocket::OkWebSocketResponseData;
+use kcmc::websocket::WebSocketRequest;
+use kcmc::websocket::WebSocketResponse;
 use kittycad_modeling_cmds as kcmc;
 use tokio::sync::RwLock;
 use uuid::Uuid;
 use wasm_bindgen::prelude::*;
 
-use crate::{
-    SourceRange,
-    engine::{AsyncTasks, EngineStats},
-    errors::{KclError, KclErrorDetails},
-    execution::{DefaultPlanes, IdGenerator},
-};
+use crate::SourceRange;
+use crate::engine::AsyncTasks;
+use crate::engine::EngineBatchContext;
+use crate::engine::EngineStats;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::DefaultPlanes;
+use crate::execution::IdGenerator;
 
 #[wasm_bindgen(module = "/../../src/network/connectionManager.ts")]
 extern "C" {
@@ -24,9 +29,6 @@ extern "C" {
 
     #[wasm_bindgen(constructor)]
     pub fn new() -> EngineCommandManager;
-
-    #[wasm_bindgen(method, js_name = startFromWasm, catch)]
-    pub async fn start_from_wasm(this: &EngineCommandManager, token: &str) -> Result<JsValue, js_sys::Error>;
 
     #[wasm_bindgen(method, js_name = fireModelingCommandFromWasm, catch)]
     fn fire_modeling_cmd_from_wasm(
@@ -54,8 +56,6 @@ extern "C" {
 pub struct EngineConnection {
     manager: Arc<EngineCommandManager>,
     response_context: Arc<ResponseContext>,
-    batch: Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>>,
-    batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
     ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>>,
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
@@ -125,8 +125,6 @@ impl EngineConnection {
         #[allow(clippy::arc_with_non_send_sync)]
         Ok(EngineConnection {
             manager: Arc::new(manager),
-            batch: Arc::new(RwLock::new(Vec::new())),
-            batch_end: Arc::new(RwLock::new(IndexMap::new())),
             response_context,
             ids_of_async_commands: Arc::new(RwLock::new(IndexMap::new())),
             default_planes: Default::default(),
@@ -259,14 +257,6 @@ impl EngineConnection {
 
 #[async_trait::async_trait]
 impl crate::engine::EngineManager for EngineConnection {
-    fn batch(&self) -> Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>> {
-        self.batch.clone()
-    }
-
-    fn batch_end(&self) -> Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>> {
-        self.batch_end.clone()
-    }
-
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>> {
         self.response_context.responses.clone()
     }
@@ -289,11 +279,14 @@ impl crate::engine::EngineManager for EngineConnection {
 
     async fn clear_scene_post_hook(
         &self,
+        batch_context: &EngineBatchContext,
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
     ) -> Result<(), KclError> {
         // Remake the default planes, since they would have been removed after the scene was cleared.
-        let new_planes = self.new_default_planes(id_generator, source_range).await?;
+        let new_planes = self
+            .new_default_planes(batch_context, id_generator, source_range)
+            .await?;
         *self.default_planes.write().await = Some(new_planes);
 
         // Start a new session.

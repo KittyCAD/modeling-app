@@ -9,6 +9,10 @@ layout: manual
 **WARNING:** This type is deprecated.
 
 {{/if}}
+{{#if deprecated_since}}
+**WARNING:** This type is deprecated as of KCL {{deprecated_since}}.
+
+{{/if}}
 {{#if experimental}}
 **WARNING:** This type is experimental and may change or be removed.
 
@@ -34,8 +38,8 @@ layout: manual
 ```
 {{/if}}
 
-{{#if this.image_base64}}
-![Rendered example of {{@root.name}} {{@index}}](data:image/png;base64,{{{this.image_base64}}})
+{{#if this.image_path}}
+![Rendered example of {{@root.name}} {{@index}}]({{this.image_path}})
 {{/if}}
 
 {{/each}}

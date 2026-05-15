@@ -40,31 +40,31 @@ Assign someone to each section of the manual checklist.
 ### Windows via ???
 
 * [ ] Download the release build for this platform
-* [ ] Confirm the application opens (dismiss the updater)
-* [ ] Create a project
-* [ ] Run two basic Zookeeper prompts
+* [ ] Install and run it (ignore the status bar update)
+* [ ] Create a new project
+* [ ] Send and queue two basic Zookeeper prompts
 * [ ] Confirm the result is viewable in an engine stream
-* [ ] Use 'Check for updates' to bring back the updater toast
+* [ ] Click **Restart to update** in the status bar
 * [ ] Confirm the app can update to the previous release
 
 ### macOS via ???
 
 * [ ] Download the release build for this platform
-* [ ] Confirm the application opens (dismiss the updater)
-* [ ] Create a project
-* [ ] Run two basic Zookeeper prompts
+* [ ] Install and run it (ignore the status bar update)
+* [ ] Create a new project
+* [ ] Send and queue two basic Zookeeper prompts
 * [ ] Confirm the result is viewable in an engine stream
-* [ ] Use 'Check for updates' to bring back the updater toast
+* [ ] Click **Restart to update** in the status bar
 * [ ] Confirm the app can update to the previous release
 
 ### Linux via ???
 
 * [ ] Download the release build for this platform
-* [ ] Confirm the application opens (dismiss the updater)
-* [ ] Create a project
-* [ ] Run two basic Zookeeper prompts
+* [ ] Install and run it (ignore the status bar update)
+* [ ] Create a new project
+* [ ] Send and queue two basic Zookeeper prompts
 * [ ] Confirm the result is viewable in an engine stream
-* [ ] Use 'Check for updates' to bring back the updater toast
+* [ ] Click **Restart to update** in the status bar
 * [ ] Confirm the app can update to the previous release
 
 ## 3. Draft release notes
@@ -107,6 +107,20 @@ On success, the files will be uploaded to the public bucket as well as to the Gi
 
 Workflow run: ???
 
+<details><summary>Rollback instructions</summary><br>
+
+If anything goes wrong during the deployment of the new release and it needs to be yanked (or rolled back),
+the quickest way is to locate the previous release publish job and simply re-run it.
+
+1. Head to https://github.com/KittyCAD/modeling-app/actions/workflows/publish-apps.yml
+2. Click the previous `publish-apps` job, eg. https://github.com/KittyCAD/modeling-app/actions/runs/22152987561
+3. Click _Re-run all jobs_ and wait for success
+4. Confirm https://zoo.dev/design-studio/download shows the previous release
+5. Post a message in Discord #release announcing the release got yanked
+6. Mark the yanked release as _Pre-release_, eg. https://github.com/KittyCAD/modeling-app/releases/tag/v1.1.13
+
+</details><br>
+
 # KCL
 
 <details><summary>Instructions</summary><br>
@@ -120,19 +134,6 @@ Paste a link to the PR below.
 
 Release PR: ???
 
-# Website
-
-<details><summary>Instructions</summary><br>
-
-If there are documentation changes, merge the corresponding Dependabot PRs [here](https://github.com/KittyCAD/website/pulls/app%2Fdependabot) for the website.
-You can trigger Dependabot to check for updates [here](https://github.com/KittyCAD/website/network/updates/17261214/jobs).
-
-Paste that link to the PR below or replace `???` with `N/A`.
-
-</details><br>
-
-Release PR: ???
-
 # CLI
 
 <details><summary>Instructions</summary><br>
@@ -141,7 +142,43 @@ Clone https://github.com/KittyCAD/cli and update its dependencies on `kittycad-m
 
 After merging, run `make tag` and follow its instructions. This should publish a CLI release. Then open <https://github.com/KittyCAD/homebrew-kittycad/pulls> and merge the automatic PR to bump the release in Homebrew.
 
-Paste link to the PR below.
+Paste a link to the PR below.
+
+</details><br>
+
+Release PR: ???
+
+# API
+
+<details><summary>Instructions</summary><br>
+
+Clone https://github.com/KittyCAD/api and update its dependencies on `kittycad-modeling-cmds` and `kcl-lib` to the latest versions. Next, run `just redo-openapi` to make sure the OpenAPI spec gets generated from any types we might be exposing from these libs. Open a PR and merge it to main.
+
+Paste a link to the PR below.
+
+</details><br>
+
+Release PR: ???
+
+# Zookeeper
+
+<details><summary>Instructions</summary><br>
+
+Merge the corresponding `zoo-kcl` Dependabot PR [here](https://github.com/KittyCAD/text-to-cad/pulls?q=is%3Apr+zoo-kcl). If none are present, click **Check for updates** [here](https://github.com/KittyCAD/text-to-cad/network/updates/27829916/jobs).
+
+Paste a link to the PR below.
+
+</details><br>
+
+Release PR: ???
+
+# Website
+
+<details><summary>Instructions</summary><br>
+
+Merge the latest `documentation` Dependabot PR [here](https://github.com/KittyCAD/website/pulls?q=is%3Apr+documentation). If none are present, click **Check for updates** [here](https://github.com/KittyCAD/website/network/updates/17261214/jobs).
+
+Paste a link to the PR below or replace `???` with `N/A`.
 
 </details><br>
 

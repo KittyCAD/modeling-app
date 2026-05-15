@@ -1,4 +1,5 @@
 import type { Locator, Page } from '@playwright/test'
+import { closeOnboardingModalIfPresent } from '@e2e/playwright/test-utils'
 import { isArray, uuidv4 } from '@src/lib/utils'
 
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
@@ -153,18 +154,20 @@ export class SceneFixture {
             clickParams.pixelDiff
           )
         }
-        clickParams?.shouldDbClick
-          ? await this.page.mouse.dblclick(resolvedPoint.x, resolvedPoint.y, {
-              delay: clickParams?.delay || 0,
-            })
-          : clickParams?.shouldRightClick
-            ? await this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
-                button: 'right',
-                delay: clickParams?.delay || 0,
-              })
-            : await this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
-                delay: clickParams?.delay || 0,
-              })
+        if (clickParams?.shouldDbClick) {
+          await this.page.mouse.dblclick(resolvedPoint.x, resolvedPoint.y, {
+            delay: clickParams?.delay || 0,
+          })
+        } else if (clickParams?.shouldRightClick) {
+          await this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
+            button: 'right',
+            delay: clickParams?.delay || 0,
+          })
+        } else {
+          await this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
+            delay: clickParams?.delay || 0,
+          })
+        }
       },
       async (moveParams?: MouseParams) => {
         const resolvedPoint = await this.convertPagePositionToStream(
@@ -295,8 +298,15 @@ export class SceneFixture {
 
   /** Likely no where, there's a chance it will click something in the scene, depending what you have in the scene.
    *
-   * Expects the viewPort to be 1000x500 */
-  clickNoWhere = () => this.page.mouse.click(998, 60)
+   * Uses a stream-relative point so it stays away from the toolbar across viewport sizes. */
+  clickNoWhere = async () => {
+    const point = await this.convertPagePositionToStream(
+      998 / 1000,
+      60 / 500,
+      'ratio'
+    )
+    return this.page.mouse.click(point.x, point.y)
+  }
   /** Likely no where, there's a chance it will click something in the scene, depending what you have in the scene.
    */
   moveNoWhere = async (steps?: number) => {
@@ -399,6 +409,8 @@ export class SceneFixture {
   ) => {
     const u = await getUtils(this.page)
 
+    await closeOnboardingModalIfPresent(this.page)
+
     // If the caller expects a KCL error, don't wait for the sketch button to enable.
     if (!expectError) {
       await expect(this.startEditSketchBtn).not.toBeDisabled({
@@ -409,7 +421,7 @@ export class SceneFixture {
     await expect(this.engineConnectionsSpinner).not.toBeVisible()
 
     await cmdBar.openCmdBar()
-    await cmdBar.chooseCommand('Settings · app · show debug panel')
+    await cmdBar.chooseCommand('Settings · debug · show panel')
     await cmdBar.selectOption({ name: 'on' }).click()
 
     await u.openDebugPanel()

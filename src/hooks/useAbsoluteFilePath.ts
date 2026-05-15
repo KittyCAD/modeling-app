@@ -1,12 +1,15 @@
-import { useRouteLoaderData } from 'react-router-dom'
-
-import { BROWSER_PATH, PATHS } from '@src/lib/paths'
-import { type IndexLoaderData } from '@src/lib/types'
+import { PATHS } from '@src/lib/paths'
+import { useApp } from '@src/lib/boot'
 
 export function useAbsoluteFilePath() {
-  const routeData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const app = useApp()
 
-  return (
-    PATHS.FILE + '/' + encodeURIComponent(routeData?.file?.path || BROWSER_PATH)
-  )
+  const executingPath = app.project?.executingPathSignal.value?.value
+
+  if (!executingPath) {
+    console.warn('bug: executingPath undefined, not navigating')
+    return
+  }
+
+  return PATHS.FILE + '/' + encodeURIComponent(executingPath)
 }

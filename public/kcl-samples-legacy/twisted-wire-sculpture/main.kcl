@@ -1,0 +1,83 @@
+// Twisted wires
+// Strange sculpture inspired by hot wire cutting.
+// Categories: Maker
+
+// Parameters
+n = 5 // number of rows/columns
+width = 1 // width of one square
+gap = width // gap between squares
+spacing = width + gap // amount to shift each square over
+height = 20
+baseHeight = 1
+samples = 20
+
+// Derived from parameters
+totalWidth = n * width + (n - 1) * gap // total width of the entire shape, across all squares
+
+
+fn square(length, at, offsetZ) {
+  return startSketchOn(offsetPlane(XY, offset = offsetZ))
+    |> startProfile(at = [
+         at[0] - (totalWidth / 2),
+         at[1] - (totalWidth / 2)
+       ])
+    |> xLine(length)
+    |> yLine(length)
+    |> xLine(length = -length)
+    |> yLine(length = -length)
+    |> close()
+}
+
+fn colorFor(row, column) {
+  // Compute closeness to the grid center and blend between red (center) and grey (far).
+  center = (n - 1) / 2
+  dx = abs(row - center)
+  dy = abs(column - center)
+  dist = sqrt(dx * dx + dy * dy)
+  maxDist = sqrt(2) * center
+  // 1 at center, 0 at farthest corner. Handle n <= 1 safely.
+  closeness = if n <= 1 {
+    1
+  } else {
+    1 - min([1, dist / maxDist])
+  }
+
+  farGrey = 40
+  r = round(farGrey + (255 - farGrey) * closeness)
+  g = round(farGrey * (1 - closeness))
+  b = round(farGrey * (1 - closeness))
+  return appearance::hexString([r, g, b])
+}
+
+// Custom rotation function for easing in/out.
+// Basically, this is smaller at the top/bottom of each tube, and bigger in the middle.
+fn ease(@t) {
+  return if t < 0.5 {
+    8 * pow(t, exp = 4)
+  } else {
+    1 - (8 * pow(1 - t, exp = 4))
+  }
+}
+
+fn tube(@cellNum) {
+  row = rem(cellNum, divisor = n)
+  column = floor(cellNum / n)
+
+  // Sketch a cross-section of the tube.
+  // 'i' determines how high up the tube we're sampling, which affects its rotation.
+  fn tubeSample(@i) {
+    theta = 90deg * ease(i / (samples - 1))
+    crossSection = square(length = width, at = [row * spacing, column * spacing], offsetZ = height / samples * i)
+    return crossSection
+      |> rotate(axis = Z, angle = theta, global = true)
+  }
+
+  return [0..<samples]
+    |> map(f = tubeSample)
+    |> loft()
+    |> appearance(color = colorFor(row, column))
+}
+
+tubes = map([0 ..< n * n], f = tube)
+base = square(length = totalWidth, at = [0, 0], offsetZ = -baseHeight)
+  |> extrude(length = baseHeight)

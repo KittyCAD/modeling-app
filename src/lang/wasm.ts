@@ -1,8 +1,7 @@
 import type { ArtifactGraph as RustArtifactGraph } from '@rust/kcl-lib/bindings/Artifact'
 import type { ArtifactId } from '@rust/kcl-lib/bindings/ArtifactId'
-import type { CompilationError } from '@rust/kcl-lib/bindings/CompilationError'
+import type { CompilationIssue } from '@rust/kcl-lib/bindings/CompilationIssue'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-import type { CoreDumpInfo } from '@rust/kcl-lib/bindings/CoreDumpInfo'
 import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import type { Discovered } from '@rust/kcl-lib/bindings/Discovered'
 import type { ExecOutcome as RustExecOutcome } from '@rust/kcl-lib/bindings/ExecOutcome'
@@ -35,11 +34,10 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type { Coords2d } from '@src/lang/util'
 import { isTopLevelModule } from '@src/lang/util'
-import type { CoreDumpManager } from '@src/lib/coredump'
-import openWindow from '@src/lib/openWindow'
 import { Reason, err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
+import { distance2d } from '@src/lib/utils2d'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 import type { Number } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -50,7 +48,10 @@ export type {
   Artifact,
   Cap as CapArtifact,
   CodeRef,
+  PrimitiveEdge as PrimitiveEdgeArtifact,
   EdgeCut,
+  GdtAnnotationArtifact,
+  PrimitiveFace as PrimitiveFaceArtifact,
   Path as PathArtifact,
   Plane as PlaneArtifact,
   Segment as SegmentArtifact,
@@ -106,6 +107,7 @@ export type SyntaxType =
   | 'NonCodeNode'
   | 'UnaryExpression'
   | 'ImportStatement'
+  | 'SketchBlock'
 
 export type { ExtrudeSurface } from '@rust/kcl-lib/bindings/ExtrudeSurface'
 export type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
@@ -137,8 +139,8 @@ export function defaultNodePath(): NodePath {
 }
 
 const splitErrors = (
-  input: CompilationError[]
-): { errors: CompilationError[]; warnings: CompilationError[] } => {
+  input: CompilationIssue[]
+): { errors: CompilationIssue[]; warnings: CompilationIssue[] } => {
   let errors = []
   let warnings = []
   for (const i of input) {
@@ -154,13 +156,13 @@ const splitErrors = (
 
 export class ParseResult {
   program: Node<Program> | null
-  errors: CompilationError[]
-  warnings: CompilationError[]
+  errors: CompilationIssue[]
+  warnings: CompilationIssue[]
 
   constructor(
     program: Node<Program> | null,
-    errors: CompilationError[],
-    warnings: CompilationError[]
+    errors: CompilationIssue[],
+    warnings: CompilationIssue[]
   ) {
     this.program = program
     this.errors = errors
@@ -177,8 +179,8 @@ class SuccessParseResult extends ParseResult {
 
   constructor(
     program: Node<Program>,
-    errors: CompilationError[],
-    warnings: CompilationError[]
+    errors: CompilationIssue[],
+    warnings: CompilationIssue[]
   ) {
     super(program, errors, warnings)
     this.program = program
@@ -196,7 +198,7 @@ export const parse = (
   if (err(code)) return code
 
   try {
-    const parsed: [Node<Program>, CompilationError[]] =
+    const parsed: [Node<Program>, CompilationIssue[]] =
       instance.parse_wasm(code)
     let errs = splitErrors(parsed[1])
     return new ParseResult(parsed[0], errs.errors, errs.warnings)
@@ -257,7 +259,7 @@ export interface ExecState {
   variables: { [key in string]?: KclValue }
   operations: Operation[]
   artifactGraph: ArtifactGraph
-  errors: CompilationError[]
+  issues: CompilationIssue[]
   filenames: { [x: number]: ModulePath | undefined }
   defaultPlanes: DefaultPlanes | null
 }
@@ -271,7 +273,7 @@ export function emptyExecState(): ExecState {
     variables: {},
     operations: [],
     artifactGraph: defaultArtifactGraph(),
-    errors: [],
+    issues: [],
     filenames: [],
     defaultPlanes: null,
   }
@@ -284,7 +286,7 @@ export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
     variables: execOutcome.variables,
     operations: execOutcome.operations,
     artifactGraph,
-    errors: execOutcome.errors,
+    issues: execOutcome.issues,
     filenames: execOutcome.filenames,
     defaultPlanes: execOutcome.defaultPlanes,
   }
@@ -317,7 +319,16 @@ export function sketchFromKclValueOptional(
   varName: string | null
 ): Sketch | Reason {
   if (obj?.type === 'Sketch') return obj.value
-  if (obj?.type === 'Solid') return obj.value.sketch
+  if (obj?.type === 'Solid') {
+    if (obj?.value.sketch.creatorType == 'sketch') {
+      return obj.value.sketch
+    } else {
+      const created = obj?.value.sketch.creatorType
+      return new Reason(
+        `${varName} is a solid created from a ${created} which we don't support yet`
+      )
+    }
+  }
   if (obj?.type === 'HomArray') {
     // Note: no artifact id, finding the first sketch
     const sketch = obj.value.find((sk) => sk.type === 'Sketch')
@@ -431,10 +442,15 @@ export const recast = (ast: Program, instance: ModuleType): string | Error => {
 export function formatNumberLiteral(
   value: number,
   suffix: NumericSuffix,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  decimals?: number
 ): string | Error {
   try {
-    return wasmInstance.format_number_literal(value, JSON.stringify(suffix))
+    return wasmInstance.format_number_literal(
+      value,
+      JSON.stringify(suffix),
+      decimals
+    )
   } catch (e) {
     return new Error(
       `Error formatting number literal: value=${value}, suffix=${suffix}`,
@@ -635,9 +651,9 @@ export function distanceBetweenPoint2DExpr(
   }
 
   // Calculate distance
-  const dx = x2Converted[0] - x1Converted[0]
-  const dy = y2Converted[0] - y1Converted[0]
-  const distance = Math.hypot(dx, dy)
+  const coord1: Coords2d = [x1Converted[0], y1Converted[0]]
+  const coord2: Coords2d = [x2Converted[0], y2Converted[0]]
+  const distance = distance2d(coord1, coord2)
 
   return { distance, units: targetSuffix }
 }
@@ -692,38 +708,6 @@ export function getTangentialArcToInfo({
     endAngle: result.end_angle,
     ccw: result.ccw > 0,
     arcLength: result.arc_length,
-  }
-}
-
-export async function coreDump(
-  coreDumpManager: CoreDumpManager,
-  wasmInstancePromise: Promise<ModuleType>,
-  openGithubIssue: boolean = false
-): Promise<CoreDumpInfo> {
-  try {
-    console.warn('CoreDump: Initializing core dump')
-    const wasmInstance = await wasmInstancePromise
-    const dump: CoreDumpInfo = await wasmInstance.coredump(coreDumpManager)
-    /* NOTE: this console output of the coredump should include the field
-       `github_issue_url` which is not in the uploaded coredump file.
-       `github_issue_url` is added after the file is uploaded
-       and is only needed for the openWindow operation which creates
-       a new GitHub issue for the user.
-     */
-    if (openGithubIssue && dump.github_issue_url) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      openWindow(dump.github_issue_url)
-    } else {
-      console.error(
-        'github_issue_url undefined. Unable to create GitHub issue for coredump.'
-      )
-    }
-    console.log('CoreDump: final coredump', dump)
-    console.log('CoreDump: final coredump JSON', JSON.stringify(dump))
-    return dump
-  } catch (e: any) {
-    console.error('CoreDump: error', e)
-    return Promise.reject(new Error(`Error getting core dump: ${e}`))
   }
 }
 
@@ -860,8 +844,15 @@ export function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
       case 'AscribedExpressionExpr':
         pathToNode.push(['expr', 'AscribedExpression'])
         break
-      case 'SketchBlock':
-        // TODO: sketch-api: implement arguments and body.
+      case 'SketchBlockArgs':
+        pathToNode.push(['arguments', 'SketchBlockArgs'])
+        break
+      case 'SketchBlockBody':
+        pathToNode.push(['body', 'SketchBlockBody'])
+        break
+      case 'SketchBlockBodyItem':
+        pathToNode.push(['items', 'SketchBlockBodyItem'])
+        pathToNode.push([step.index, 'index'])
         break
       case 'SketchVar':
         // TODO: sketch-api: implement initial.
@@ -956,6 +947,23 @@ export function changeDefaultUnits(
 }
 
 /**
+ * Change the KCL version setting for the kcl file.
+ * @returns the new kcl string with the updated settings.
+ */
+export function changeKclVersion(
+  kcl: string,
+  version: string | null,
+  wasmInstance: ModuleType
+): string | Error {
+  try {
+    return wasmInstance.change_kcl_version(kcl, JSON.stringify(version))
+  } catch (e) {
+    console.error('Caught error changing kcl settings', e)
+    return new Error('Caught error changing kcl settings', { cause: e })
+  }
+}
+
+/**
  * Change the meta settings for the kcl file.
  * @returns the new kcl string with the updated settings.
  */
@@ -1000,6 +1008,10 @@ export function isKclEmptyOrOnlySettings(
  */
 export function getKclVersion(wasmInstance: ModuleType): string {
   return wasmInstance.get_kcl_version()
+}
+
+export function getSketchCheckpointLimit(wasmInstance: ModuleType): number {
+  return wasmInstance.sketch_checkpoint_limit()
 }
 
 /**

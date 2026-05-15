@@ -1,9 +1,9 @@
 import { useRef } from 'react'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+import type { LayoutsWithMetadata } from '@src/lib/layout/types'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
-import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
-import { type UserFeatureEntry, users } from '@kittycad/lib'
+import type { OnboardingStatus } from '@src/lib/onboardingPaths'
 
 import { NIL as uuidNIL } from 'uuid'
 
@@ -12,14 +12,18 @@ import Tooltip from '@src/components/Tooltip'
 import type { CameraSystem } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
 import {
+  DEFAULT_BACKFACE_COLOR,
   DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_PROJECT_NAME,
   REGEXP_UUIDV4,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import type {
+  DynamicSettingsCategories,
+  ResolvedExtensionSettings,
+} from '@src/lib/settings/extensionSettings'
+import type {
   BaseUnit,
-  HideOnPlatformValue,
   SettingProps,
   SettingsLevel,
 } from '@src/lib/settings/settingsTypes'
@@ -28,8 +32,7 @@ import { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
-import { createKCClient, kcCall } from '@src/lib/kcClient'
-import { getTokenFromEnvOrCookie } from '@src/machines/authMachine'
+import { hexToRgba } from '@src/lib/utils'
 
 /**
  * A setting that can be set at the user or project level
@@ -132,64 +135,13 @@ export class Setting<T = unknown> {
 }
 
 const MS_IN_MINUTE = 1000 * 60
+const COLOR_INPUT_DEBOUNCE_MS = 500
 
-/**
- * Helper function to fetch user features and determine if the corresponding setting should be visible
- * Returns 'both' (hidden) if feature flag doesn't exist, or null (visible) if it does
- */
-/**
- * Higher-order function that returns an async hideOnPlatform function.
- * The returned function checks if the specified feature flag exists,
- * and returns null (visible) if it does, or the defaultHide value if it doesn't.
- *
- * @param featureFlagId - The feature flag ID to check for
- * @param defaultHide - The value to return if the feature flag is not found (defaults to 'both')
- * @returns An async function that resolves to the hideOnPlatform value
- */
-function hideWithoutFeatureFlag(
-  featureFlagId: UserFeatureEntry['id'],
-  defaultHide: HideOnPlatformValue = 'both'
-): () => Promise<HideOnPlatformValue | null> {
-  return async (): Promise<HideOnPlatformValue | null> => {
-    try {
-      // Try to get a token - check env first, then cookie for web
-      const token = getTokenFromEnvOrCookie()
-
-      if (!token) {
-        return defaultHide
-      }
-
-      // Use the KittyCAD library to fetch user features
-      const client = createKCClient(token)
-      const featuresData = await kcCall(() =>
-        users.user_features_get({ client })
-      )
-
-      if (featuresData instanceof Error) {
-        console.error('Error fetching user features:', featuresData.message)
-        return defaultHide
-      }
-
-      // Check if the specified feature flag exists
-      const hasFeatureFlag = featuresData.features.find(
-        (feat: { id: string }) => feat.id === featureFlagId
-      )
-
-      if (hasFeatureFlag) {
-        return null // null means visible (no hiding)
-      } else {
-        return defaultHide
-      }
-    } catch (error) {
-      console.error(`Error checking feature flag ${featureFlagId}:`, error)
-      return defaultHide
-    }
-  }
-}
-
-export function createSettings() {
+function createCoreSettings() {
   const settings = {
-    // Gotcha: If you add a new setting here, you will likely need to update rust/kcl-lib/src/settings/types/mod.rs as well.
+    // Gotcha: Only settings that must be understood by Rust/KCL/CLI need a
+    // matching schema in rust/kcl-lib. App-owned settings can stay TS-only if
+    // settingsUtils serializes them through the opaque TOML passthrough.
     app: {
       /**
        * The overall appearance of the app: light, dark, or system
@@ -197,7 +149,7 @@ export function createSettings() {
       theme: new Setting<Themes>({
         hideOnLevel: 'project',
         defaultValue: Themes.System,
-        description: 'The overall appearance of the app',
+        description: 'The overall appearance of the app.',
         validate: (v) => isEnumMember(v, Themes),
         commandConfig: {
           inputType: 'options',
@@ -214,26 +166,35 @@ export function createSettings() {
             })),
         },
       }),
-      /**
-       * Whether to show the debug panel, which lets you see
-       * various states of the app to aid in development
-       */
-      showDebugPanel: new Setting<boolean>({
+      machineApi: new Setting<boolean>({
         defaultValue: false,
-        description: 'Whether to show the debug panel, a development tool',
+        hideOnLevel: 'project',
+        hideOnPlatform: 'web',
+        description:
+          'Whether to enable Machine API discovery and printing controls on desktop.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
         },
       }),
       /**
+       * Zookeeper reasoning mode
+       */
+      zookeeperMode: new Setting<string | undefined>({
+        defaultValue: undefined,
+        hideOnPlatform: 'both',
+        validate: (v) =>
+          v === undefined || (typeof v === 'string' && v.length > 0),
+        description: 'The default reasoning mode for Zookeeper.',
+      }),
+      /**
        * Stream resource saving behavior toggle
        */
       streamIdleMode: new Setting<number | undefined>({
-        defaultValue: 5 * MS_IN_MINUTE,
+        defaultValue: 1 * MS_IN_MINUTE,
         hideOnLevel: 'project',
         hideOnPlatform: 'both',
-        description: 'Save bandwidth & battery',
+        description: 'Save bandwidth & battery.',
         validate: (v) =>
           String(v) == 'undefined' ||
           (Number(v) >= 0 && Number(v) <= 60 * MS_IN_MINUTE),
@@ -272,7 +233,7 @@ export function createSettings() {
         /** Unhide this once we make sketch mode unbreakable */
         hideOnPlatform: 'both',
         defaultValue: false,
-        description: 'Toggle free camera while in sketch mode',
+        description: 'Toggle free camera while in sketch mode.',
         validate: (v) => typeof v === 'boolean',
       }),
       onboardingStatus: new Setting<OnboardingStatus>({
@@ -284,7 +245,7 @@ export function createSettings() {
       }),
       projectDirectory: new Setting<string>({
         defaultValue: '', // gets set async in settingsUtils.ts
-        description: 'The directory to save and load projects from',
+        description: 'The directory to save and load projects from.',
         hideOnLevel: 'project',
         hideOnPlatform: 'web',
         validate: (v) =>
@@ -341,6 +302,38 @@ export function createSettings() {
       }),
     },
     /**
+     * App-owned debug settings.
+     *
+     * These stay in TypeScript and round-trip through an opaque `debug`
+     * section so we can keep app-only debugging tools out of the Rust schema.
+     */
+    debug: {
+      /**
+       * Whether to show the debug panel, which lets you see
+       * various states of the app to aid in development
+       */
+      showPanel: new Setting<boolean>({
+        defaultValue: false,
+        description: 'Whether to show the debug panel, a development tool.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
+      /**
+       * Whether to show the current modeling machine state in the status bar.
+       */
+      showModelingMachineState: new Setting<boolean>({
+        defaultValue: false,
+        description:
+          'Whether to show the current modeling machine state in the status bar.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
+    },
+    /**
      * Settings that affect the behavior while modeling.
      */
     modeling: {
@@ -371,16 +364,53 @@ export function createSettings() {
       enableSSAO: new Setting<boolean>({
         defaultValue: true,
         description:
-          'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled',
+          'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.',
         validate: (v) => typeof v === 'boolean',
         hideOnPlatform: 'both', //for now
+      }),
+      backfaceColor: new Setting<string>({
+        defaultValue: DEFAULT_BACKFACE_COLOR,
+        description: 'Default backface color for surfaces.',
+        hideOnLevel: 'project',
+        validate: (v) => typeof v === 'string' && hexToRgba(v) !== null,
+        commandConfig: {
+          inputType: 'color',
+          defaultValueFromContext: (context) =>
+            context.modeling.backfaceColor.current,
+        },
+        Component: ({ value, updateValue }) => {
+          const colorInputDebounceRef = useRef<
+            ReturnType<typeof setTimeout> | undefined
+          >(undefined)
+
+          return (
+            <div className="flex items-center gap-3">
+              <input
+                type="color"
+                value={value.toLowerCase()}
+                onChange={(event) => {
+                  const nextValue = event.target.value.toUpperCase()
+                  clearTimeout(colorInputDebounceRef.current)
+                  colorInputDebounceRef.current = setTimeout(
+                    () => updateValue(nextValue),
+                    COLOR_INPUT_DEBOUNCE_MS
+                  )
+                }}
+                className="h-9 w-14 cursor-pointer rounded-sm border border-chalkboard-30 bg-transparent p-0"
+              />
+              <span className="text-xs font-mono text-chalkboard-70 dark:text-chalkboard-30">
+                {value.toUpperCase()}
+              </span>
+            </div>
+          )
+        },
       }),
       /**
        * The controls for how to navigate the 3D view
        */
       mouseControls: new Setting<CameraSystem>({
         defaultValue: 'Zoo',
-        description: 'The controls for how to navigate the 3D view',
+        description: 'The controls for how to navigate the 3D view.',
         validate: (v) => cameraSystems.includes(v),
         hideOnLevel: 'project',
         commandConfig: {
@@ -449,16 +479,16 @@ export function createSettings() {
         },
       }),
       /**
-       * Use the new sketch mode implementation - solver (Dev only)
-       * Visibility is controlled by the 'new_sketch_mode' feature flag.
-       * If the feature flag exists, the setting will be visible.
-       * Otherwise, it will be hidden.
+       * Determines if new sketches should use the solver-based sketch mode.
+       * This setting is hidden and defaults to true. It now exists only so
+       * Playwright can set it to false for regression testing.
        */
-      useNewSketchMode: new Setting<boolean>({
+      useSketchSolveMode: new Setting<boolean>({
         hideOnLevel: 'project',
-        hideOnPlatform: hideWithoutFeatureFlag('new_sketch_mode', 'both'),
-        defaultValue: false,
-        description: 'Use the new sketch mode implementation',
+        hideOnPlatform: 'both',
+        defaultValue: true, // checking the feature flag happens in `settingsUtils.ts`
+        description:
+          'Default to the solver-based sketch mode for all new projects.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
@@ -471,7 +501,7 @@ export function createSettings() {
         defaultValue: 'orthographic',
         hideOnLevel: 'project',
         description:
-          'Projection method applied to the 3D view, perspective or orthographic',
+          'Projection method applied to the 3D view, perspective or orthographic.',
         validate: (v) => ['perspective', 'orthographic'].includes(v),
         commandConfig: {
           inputType: 'options',
@@ -500,7 +530,7 @@ export function createSettings() {
       cameraOrbit: new Setting<CameraOrbitType>({
         defaultValue: 'spherical',
         hideOnLevel: 'project',
-        description: 'What methodology to use for orbiting the camera',
+        description: 'What methodology to use for orbiting the camera.',
         validate: (v) => ['spherical', 'trackball'].includes(v),
         commandConfig: {
           inputType: 'options',
@@ -524,7 +554,7 @@ export function createSettings() {
       gizmoType: new Setting<'cube' | 'axis'>({
         defaultValue: 'cube',
         hideOnLevel: 'project',
-        description: 'Which type of orientation gizmo to use',
+        description: 'Which type of orientation gizmo to use.',
         validate: (v) => v === 'cube' || v === 'axis',
         commandConfig: {
           inputType: 'options',
@@ -547,7 +577,7 @@ export function createSettings() {
        */
       highlightEdges: new Setting<boolean>({
         defaultValue: true,
-        description: 'Whether to highlight edges of 3D objects',
+        description: 'Whether to highlight edges of 3D objects.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
@@ -559,7 +589,7 @@ export function createSettings() {
        */
       showScaleGrid: new Setting<boolean>({
         defaultValue: false,
-        description: 'Whether to show a scale grid in the 3D modeling view',
+        description: 'Whether to show a scale grid in the 3D modeling view.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
@@ -578,7 +608,7 @@ export function createSettings() {
       majorGridSpacing: new Setting<number>({
         defaultValue: 1,
         description:
-          'The space between major grid lines, specified in the current unit',
+          'The space between major grid lines, specified in the current unit.',
         validate: (v) => typeof v === 'number',
         commandConfig: {
           inputType: 'number',
@@ -587,7 +617,7 @@ export function createSettings() {
       }),
       minorGridsPerMajor: new Setting<number>({
         defaultValue: 4,
-        description: 'Number of minor grid lines per major grid line',
+        description: 'Number of minor grid lines per major grid line.',
         validate: (v) => typeof v === 'number',
         commandConfig: {
           inputType: 'number',
@@ -598,7 +628,7 @@ export function createSettings() {
       snapToGrid: new Setting<boolean>({
         defaultValue: false,
         description:
-          'Snap the cursor to the unit grid when drawing lines, arcs, and other segment-based tools',
+          'Snap the cursor to the unit grid when drawing lines, arcs, and other segment-based tools.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
@@ -607,7 +637,7 @@ export function createSettings() {
       snapsPerMinor: new Setting<number>({
         defaultValue: 1,
         description:
-          'Number of snaps between minor grid lines. 1 means snapping to every minor grid line',
+          'Number of snaps between minor grid lines. 1 means snapping to every minor grid line.',
         validate: (v) => typeof v === 'number',
         isEnabled: (context) => context.modeling.snapToGrid.current,
         commandConfig: {
@@ -622,7 +652,7 @@ export function createSettings() {
        */
       // reduceMotion: new Setting<boolean>({
       //   defaultValue: false,
-      //   description: 'Whether to turn off animations and other motion effects',
+      //   description: 'Whether to turn off animations and other motion effects.',
       //   validate: (v) => typeof v === 'boolean',
       //   commandConfig: {
       //     inputType: 'boolean',
@@ -636,7 +666,7 @@ export function createSettings() {
        */
       // moveOrthoginalToSketch: new Setting<boolean>({
       //   defaultValue: false,
-      //   description: 'Whether to move to view sketch planes orthogonally',
+      //   description: 'Whether to move to view sketch planes orthogonally.',
       //   validate: (v) => typeof v === 'boolean',
       //   commandConfig: {
       //     inputType: 'boolean',
@@ -644,16 +674,22 @@ export function createSettings() {
       // }),
     },
     /**
-     * Settings that affect the behavior of the KCL text editor.
+     * App-owned editor settings.
+     *
+     * These are intentionally defined only in TypeScript and round-trip through
+     * the settings TOML as an opaque `text_editor` section. That keeps the Rust
+     * schema focused on CLI/KCL concerns and makes this group easier to move
+     * behind a bundled editor/plugin later.
      */
     textEditor: {
       /**
        * Whether to wrap text in the editor or overflow with scroll
        */
       textWrapping: new Setting<boolean>({
+        hideOnLevel: 'project',
         defaultValue: true,
         description:
-          'Whether to wrap text in the editor or overflow with scroll',
+          'Whether to wrap text in the editor or overflow with scroll.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
@@ -663,8 +699,9 @@ export function createSettings() {
        * Whether to make the cursor blink in the editor
        */
       blinkingCursor: new Setting<boolean>({
+        hideOnLevel: 'project',
         defaultValue: true,
-        description: 'Whether to make the cursor blink in the editor',
+        description: 'Whether to make the cursor blink in the editor.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
@@ -672,7 +709,11 @@ export function createSettings() {
       }),
     },
     /**
-     * Settings that affect the behavior of project management.
+     * App-owned project-management settings.
+     *
+     * These stay in TypeScript and round-trip through opaque TOML sections so
+     * they can move into a future project-management extension without
+     * expanding the Rust/CLI schema.
      */
     projects: {
       /**
@@ -681,7 +722,7 @@ export function createSettings() {
       defaultProjectName: new Setting<string>({
         defaultValue: DEFAULT_PROJECT_NAME,
         description:
-          'The default project name to use when creating a new project',
+          'The default project name to use when creating a new project.',
         validate: (v) => typeof v === 'string' && v.length > 0,
         commandConfig: {
           inputType: 'string',
@@ -699,7 +740,7 @@ export function createSettings() {
        */
       // entryPointFileName: new Setting<string>({
       //   defaultValue: PROJECT_ENTRYPOINT,
-      //   description: 'The default file to open when a project is loaded',
+      //   description: 'The default file to open when a project is loaded.',
       //   validate: (v) => typeof v === 'string' && v.length > 0,
       //   commandConfig: {
       //     inputType: 'string',
@@ -710,7 +751,10 @@ export function createSettings() {
       // }),
     },
     /**
-     * Settings that affect the behavior of the command bar.
+     * App-owned command bar settings.
+     *
+     * Keep these TS-only so the command palette can be bundled or extended
+     * independently of the Rust settings schema.
      */
     commandBar: {
       /**
@@ -718,11 +762,39 @@ export function createSettings() {
        */
       includeSettings: new Setting<boolean>({
         defaultValue: true,
-        description: 'Whether to include settings in the command bar',
+        description: 'Whether to include settings in the command bar.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
         },
+      }),
+    },
+    /**
+     * App-owned layout settings.
+     *
+     * These settings are intentionally hidden from the generic settings UI and
+     * command bar. They persist layout state that should travel through the same
+     * user settings file as plugin and other TypeScript-only settings.
+     */
+    layout: {
+      configs: new Setting<LayoutsWithMetadata>({
+        defaultValue: {},
+        hideOnLevel: 'project',
+        hideOnPlatform: 'both',
+        validate: (v) =>
+          typeof v === 'object' &&
+          v !== null &&
+          !isArray(v) &&
+          Object.values(v).every(
+            (layout) =>
+              typeof layout === 'object' &&
+              layout !== null &&
+              'version' in layout &&
+              typeof layout.version === 'string' &&
+              'layout' in layout &&
+              typeof layout.layout === 'object' &&
+              layout.layout !== null
+          ),
       }),
     },
     /** Settings that affect the behavior of the entire app,
@@ -734,7 +806,7 @@ export function createSettings() {
       id: new Setting<string>({
         hideOnLevel: 'user',
         defaultValue: uuidNIL,
-        description: 'The unique project identifier',
+        description: 'The unique project identifier.',
         // Never allow the user to change the id, only view it.
         validate: (v) => REGEXP_UUIDV4.test(v),
         Component: ({ value }) => {
@@ -756,4 +828,48 @@ export function createSettings() {
   return settings
 }
 
-export type SettingsType = ReturnType<typeof createSettings>
+function instantiateExtensionSettings(
+  resolved: ResolvedExtensionSettings
+): DynamicSettingsCategories {
+  return Object.fromEntries(
+    Object.entries(resolved).map(([category, settings]) => [
+      category,
+      Object.fromEntries(
+        Object.entries(settings).map(([settingName, definition]) => [
+          settingName,
+          definition.createSetting(),
+        ])
+      ),
+    ])
+  )
+}
+
+type CoreSettingsType = ReturnType<typeof createCoreSettings>
+
+export type SettingsType = CoreSettingsType & {
+  plugins: Record<string, Setting<boolean>>
+}
+
+export function createSettings(
+  extensionSettings: ResolvedExtensionSettings = {}
+): SettingsType {
+  const settings = createCoreSettings() as SettingsType
+  settings.plugins = {}
+
+  // For now, core settings remain defined here and extension-provided settings
+  // are merged into the same mutable settings object during app bootstrap.
+  // A narrower follow-up can invert this so the signal output becomes the
+  // canonical registry and core settings are just another contribution.
+  Object.entries(instantiateExtensionSettings(extensionSettings)).forEach(
+    ([category, categorySettings]) => {
+      ;(settings as Record<string, Record<string, Setting<any>>>)[category] = {
+        ...((settings as Record<string, Record<string, Setting<any>>>)[
+          category
+        ] ?? {}),
+        ...categorySettings,
+      }
+    }
+  )
+
+  return settings
+}

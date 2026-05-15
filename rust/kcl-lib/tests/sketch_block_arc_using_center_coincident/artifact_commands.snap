@@ -28,6 +28,143 @@ description: Artifact commands sketch_block_arc_using_center_coincident.kcl
         "clobber": false,
         "hide": true
       }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "start_path"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 0.9999999998637178,
+          "y": 0.000000000000024657673419120412,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 0.00000000013634182671751205,
+            "y": -0.00000000013637167332270698
+          },
+          "radius": 0.999999999727376,
+          "start": {
+            "unit": "degrees",
+            "value": 0.000000007814934109277977
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 90.00000000781655
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -0.00000000013657336853705663,
+          "y": 0.000000000000040336985211834335,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 1.000000000000136,
+            "y": 0.000000000000025988806365319692,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -0.00000000000007966494277597656,
+          "y": 0.00000000013655007845307036,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -0.00000000000008132374639772339,
+            "y": 1.0000000004097453,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
     }
   ]
 }
