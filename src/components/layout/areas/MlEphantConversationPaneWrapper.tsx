@@ -44,7 +44,8 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
         delete app.debug.mlEphantManagerActor
       }
     }
-  }, [app, mlEphantManagerActor])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run on mount
+  }, [])
 
   const sendBillingUpdate = () => {
     billing.send({
