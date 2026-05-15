@@ -327,7 +327,7 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("array", "flatten") => (
             |e, a| Box::pin(crate::std::array::flatten(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::array::flatten"),
+            StdFnProps::default("std::array::flatten").skip_consumed_solid_arg_check(),
         ),
         ("prelude", "clone") => (
             |e, a| Box::pin(crate::std::clone::clone(e, a).map(|r| r.map(KclValue::continue_))),
