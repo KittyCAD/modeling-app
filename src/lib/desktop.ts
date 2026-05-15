@@ -325,7 +325,7 @@ const collectAllFilesRecursiveFrom = async (
 
   const children = []
 
-    const entries = await fsZds.readdir(targetPath)
+  const entries = await fsZds.readdir(targetPath)
 
   // Sort all entries so files come first and directories last
   // so a top-most KCL file is returned first.
@@ -491,7 +491,10 @@ export async function getProjectInfo(
   const { value: canReadWriteProjectPath } =
     await canReadWriteDirectory(projectPath)
 
-  const projectSettings = await readProjectSettingsFile(projectPath, wasmInstance)
+  const projectSettings = await readProjectSettingsFile(
+    projectPath,
+    wasmInstance
+  )
   const showAllFiles = projectSettings.settings?.app?.show_all_files === true
 
   // Return walked early if canReadWriteProjectPath is false
