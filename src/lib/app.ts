@@ -49,6 +49,7 @@ import {
   BILLING_CONTEXT_DEFAULTS,
   billingMachine,
 } from '@src/machines/billingMachine'
+import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
   type SettingsActorType,
   getOnlySettingsFromContext,
@@ -156,6 +157,10 @@ export type AppLayoutSystem = {
 
 export type AppRegistrySystem = Registry
 
+export type AppDebug = {
+  mlEphantManagerActor?: MlEphantManagerActor
+}
+
 /** All of the subsystems needed to run the ZDS app */
 export interface AppSubsystems {
   wasmPromise: Promise<ModuleType>
@@ -172,6 +177,7 @@ export interface AppSubsystems {
 
 export class App implements AppSubsystems {
   public projectSignal: Signal<ZDSProject | undefined> = signal(undefined)
+  public debug: AppDebug = {}
   get project() {
     return this.projectSignal.value
   }
