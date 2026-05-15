@@ -13186,7 +13186,7 @@ sketch001 = sketch(on = XZ) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_drag_optional_constraints_do_not_compete_with_required_constraints() {
+    async fn test_drag_fixed_constraints_take_priority_over_required_constraints() {
         let initial_source = "\
 sketch001 = sketch(on = XZ) {
   line1 = line(start = [var 5.87mm, var -5.86mm], end = [var -7.22mm, var -4.4mm])
@@ -13237,6 +13237,7 @@ sketch001 = sketch(on = XZ) {
 
         let dx = -5.0;
         let dy = 3.0;
+        let baseline_graph = frontend.scene_graph.clone();
         let segments = vec![
             ExistingSegmentCtor {
                 id: line1_id,
@@ -13280,10 +13281,13 @@ sketch001 = sketch(on = XZ) {
             scene_delta.exec_outcome.issues
         );
 
-        let line2_end = point_position(&scene_delta.new_graph, line2_end_id);
-        assert!(
-            line2_end.x.value.abs() < 1e-6,
-            "required vertical constraint should not be compromised by drag-only fixed constraints: {line2_end:?}"
+        assert_point_translated(
+            &baseline_graph,
+            &scene_delta.new_graph,
+            line2_end_id,
+            dx,
+            dy,
+            "line2.end",
         );
 
         mock_ctx.close().await;
@@ -13338,9 +13342,10 @@ sketch001 = sketch(on = XZ) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_sketch_setup_select_all_impossible_drag_keeps_required_constraints_authoritative() {
+    async fn test_sketch_setup_select_all_impossible_drag_keeps_drag_constraints_authoritative() {
         let (mut frontend, mock_ctx, sketch_id, sketch_segments) =
             setup_sketch_with_warm_starts(LINE_ARC_TANGENT_DRAG_SOURCE).await;
+        let baseline_graph = frontend.scene_graph.clone();
         let edits = line_arc_tangent_all_segment_edits(&frontend.scene_graph, &sketch_segments, -5.0, 3.0);
 
         let (_src_delta, scene_delta) = frontend
@@ -13349,8 +13354,14 @@ sketch001 = sketch(on = XZ) {
             .unwrap();
         assert_no_solver_failure("select-all impossible drag", &scene_delta);
 
-        let line2_end = point_position(&scene_delta.new_graph, sketch_segments[8]);
-        assert_close("vertical line2.end x", line2_end.x.value, 0.0);
+        assert_point_translated(
+            &baseline_graph,
+            &scene_delta.new_graph,
+            sketch_segments[8],
+            -5.0,
+            3.0,
+            "line2.end",
+        );
         assert_points_coincident(
             &scene_delta.new_graph,
             sketch_segments[1],
@@ -13412,10 +13423,10 @@ sketch001 = sketch(on = XZ) {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_sketch_setup_dragging_each_coincident_pair_keeps_clusters_stable() {
-        for (label, point_a_index, point_b_index, dx, dy, expect_x_from_vertical) in [
-            ("line1.end/arc1.end", 1, 4, -1.2, 0.8, false),
-            ("line2.start/arc1.start", 7, 3, -0.7, 1.1, false),
-            ("line2.end/line1.start", 8, 0, 1.4, 1.3, true),
+        for (label, point_a_index, point_b_index, dx, dy) in [
+            ("line1.end/arc1.end", 1, 4, -1.2, 0.8),
+            ("line2.start/arc1.start", 7, 3, -0.7, 1.1),
+            ("line2.end/line1.start", 8, 0, 1.4, 1.3),
         ] {
             let (mut frontend, mock_ctx, sketch_id, sketch_segments) =
                 setup_sketch_with_warm_starts(LINE_ARC_TANGENT_DRAG_SOURCE).await;
@@ -13440,16 +13451,8 @@ sketch001 = sketch(on = XZ) {
             assert_points_coincident(&scene_delta.new_graph, point_a, point_b, label);
 
             let after = point_position(&scene_delta.new_graph, point_a);
-            if expect_x_from_vertical {
-                assert_close(&format!("{label} vertical x"), after.x.value, 0.0);
-                assert!(
-                    (after.y.value - before.y.value).abs() > dy.abs() * 0.5,
-                    "{label}: expected vertical pair to move with the drag, before={before:?}, after={after:?}"
-                );
-            } else {
-                assert_close(&format!("{label} dragged x"), after.x.value, before.x.value + dx);
-                assert_close(&format!("{label} dragged y"), after.y.value, before.y.value + dy);
-            }
+            assert_close(&format!("{label} dragged x"), after.x.value, before.x.value + dx);
+            assert_close(&format!("{label} dragged y"), after.y.value, before.y.value + dy);
 
             mock_ctx.close().await;
         }

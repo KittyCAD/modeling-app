@@ -44,7 +44,10 @@ import {
   getSettingsFromActorContext,
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
-import { recordSketchSolverDebugOperation } from '@src/machines/sketchSolve/sketchSolverDebugger'
+import {
+  recordSketchSolverDebugOperation,
+  withSketchSolverPrioritySettings,
+} from '@src/machines/sketchSolve/sketchSolverDebugger'
 
 export default class RustContext {
   private rustInstance: ModuleType | null = null
@@ -144,7 +147,7 @@ export default class RustContext {
       const result: SceneGraphDelta = await instance.execute(
         JSON.stringify(node),
         path,
-        JSON.stringify(settings)
+        serializeSettings(settings)
       )
       const outcome = execStateFromRust(result.exec_outcome)
 
@@ -177,7 +180,7 @@ export default class RustContext {
       const result = await instance.executeMock(
         JSON.stringify(node),
         path,
-        JSON.stringify(settings),
+        serializeSettings(settings),
         usePrevMemory
       )
       return execStateFromRust(result)
@@ -197,7 +200,7 @@ export default class RustContext {
     try {
       return await instance.export(
         JSON.stringify(format),
-        JSON.stringify(settings)
+        serializeSettings(settings)
       )
     } catch (e: any) {
       const parsed: RustKclError = JSON.parse(e.toString())
@@ -249,7 +252,7 @@ export default class RustContext {
 
     try {
       const result = await instance.bustCacheAndResetScene(
-        JSON.stringify(settings),
+        serializeSettings(settings),
         path
       )
 
@@ -306,7 +309,7 @@ export default class RustContext {
         checkpointId?: bigint | number | null
       } = await instance.hack_set_program(
         JSON.stringify(program_ast),
-        JSON.stringify(settings)
+        serializeSettings(settings)
       )
       if (result.type !== 'Success') {
         return result
@@ -345,12 +348,18 @@ export default class RustContext {
       } = await instance.sketch_execute_mock(
         JSON.stringify(version),
         JSON.stringify(sketch),
-        JSON.stringify(jsAppSettings(this.settingsActor))
+        serializeSettings(jsAppSettings(this.settingsActor))
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
       if (checkpointId instanceof Error) {
         return Promise.reject(checkpointId)
       }
+      recordSketchSolverMutation(
+        'settle sketch',
+        result.sceneGraphDelta,
+        true,
+        this.settingsActor
+      )
       return {
         kclSource: result.sourceDelta,
         sceneGraphDelta: result.sceneGraphDelta,
@@ -383,7 +392,7 @@ export default class RustContext {
         JSON.stringify(file),
         JSON.stringify(version),
         JSON.stringify(sketchArgs),
-        JSON.stringify(settings)
+        serializeSettings(settings)
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
       if (checkpointId instanceof Error) {
@@ -420,7 +429,7 @@ export default class RustContext {
         JSON.stringify(file),
         JSON.stringify(version),
         JSON.stringify(sketch),
-        JSON.stringify(settings)
+        serializeSettings(settings)
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
       if (checkpointId instanceof Error) {
@@ -472,7 +481,7 @@ export default class RustContext {
         await instance.delete_sketch(
           JSON.stringify(version),
           JSON.stringify(sketch),
-          JSON.stringify(settings)
+          serializeSettings(settings)
         )
       return {
         kclSource: result[0],
@@ -505,7 +514,7 @@ export default class RustContext {
         JSON.stringify(sketch),
         JSON.stringify(segment),
         label,
-        JSON.stringify(settings),
+        serializeSettings(settings),
         createCheckpoint
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
@@ -548,7 +557,7 @@ export default class RustContext {
         JSON.stringify(version),
         JSON.stringify(sketch),
         JSON.stringify(segments),
-        JSON.stringify(settings),
+        serializeSettings(settings),
         createCheckpoint
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
@@ -593,7 +602,7 @@ export default class RustContext {
         JSON.stringify(sketch),
         JSON.stringify(constraintIds),
         JSON.stringify(segmentIds),
-        JSON.stringify(settings),
+        serializeSettings(settings),
         createCheckpoint
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
@@ -636,7 +645,7 @@ export default class RustContext {
         JSON.stringify(version),
         JSON.stringify(sketch),
         JSON.stringify(constraint),
-        JSON.stringify(settings),
+        serializeSettings(settings),
         createCheckpoint
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
@@ -681,7 +690,7 @@ export default class RustContext {
         JSON.stringify(sketch),
         JSON.stringify(constraintId),
         valueExpression,
-        JSON.stringify(settings),
+        serializeSettings(settings),
         createCheckpoint
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
@@ -726,7 +735,7 @@ export default class RustContext {
         JSON.stringify(sketch),
         JSON.stringify(constraintId),
         JSON.stringify(labelPosition),
-        JSON.stringify(settings),
+        serializeSettings(settings),
         createCheckpoint,
         JSON.stringify(anchorSegmentIds)
       )
@@ -774,7 +783,7 @@ export default class RustContext {
         JSON.stringify(previousSegmentEndPointId),
         JSON.stringify(segment),
         label,
-        JSON.stringify(settings),
+        serializeSettings(settings),
         createCheckpoint
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
@@ -857,7 +866,7 @@ export default class RustContext {
         JSON.stringify(version),
         JSON.stringify(sketch),
         flattenedPoints,
-        JSON.stringify(settings)
+        serializeSettings(settings)
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpoint_id)
       if (checkpointId instanceof Error) {
@@ -914,6 +923,10 @@ function normalizeSketchCheckpointId(
   }
 
   return normalized
+}
+
+function serializeSettings(settings: DeepPartial<Configuration>): string {
+  return JSON.stringify(withSketchSolverPrioritySettings(settings))
 }
 
 function recordSketchSolverMutation(

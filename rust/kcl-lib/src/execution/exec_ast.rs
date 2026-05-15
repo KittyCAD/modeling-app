@@ -36,6 +36,7 @@ use crate::execution::Segment;
 use crate::execution::SegmentKind;
 use crate::execution::SegmentRepr;
 use crate::execution::SketchConstraintKind;
+use crate::execution::SketchSolverPriorityBucket;
 use crate::execution::SketchSurface;
 use crate::execution::StatementKind;
 use crate::execution::TagIdentifier;
@@ -204,6 +205,33 @@ fn push_fixed_origin_point(
         origin_x_id.to_constraint_id(range)?,
         origin_y_id.to_constraint_id(range)?,
     ))
+}
+
+fn sketch_solver_constraint_priority_bucket(
+    constraint: &Constraint,
+    is_drag_fixed_constraint: bool,
+) -> SketchSolverPriorityBucket {
+    if is_drag_fixed_constraint {
+        SketchSolverPriorityBucket::DragFixed
+    } else if matches!(constraint, Constraint::Fixed(_, _)) {
+        SketchSolverPriorityBucket::Fixed
+    } else if is_existing_coincident_constraint(constraint) {
+        SketchSolverPriorityBucket::ExistingCoincident
+    } else {
+        SketchSolverPriorityBucket::EverythingElse
+    }
+}
+
+fn is_existing_coincident_constraint(constraint: &Constraint) -> bool {
+    const ZERO_DISTANCE_TOLERANCE: f64 = 1.0e-9;
+
+    match constraint {
+        Constraint::PointsCoincident(_, _) | Constraint::PointArcCoincident(_, _) => true,
+        Constraint::PointLineDistance(_, _, distance)
+        | Constraint::VerticalPointLineDistance(_, _, distance)
+        | Constraint::HorizontalPointLineDistance(_, _, distance) => distance.abs() <= ZERO_DISTANCE_TOLERANCE,
+        _ => false,
+    }
 }
 
 fn datum_point_from_constrainable_or_origin(
@@ -1769,16 +1797,22 @@ impl Node<SketchBlock> {
             .solver_constraints
             .iter()
             .cloned()
-            .map(ezpz::ConstraintRequest::highest_priority)
+            .map(|constraint| {
+                let bucket = sketch_solver_constraint_priority_bucket(&constraint, false);
+                ezpz::ConstraintRequest::new(constraint, ctx.settings.sketch_solver_priority(bucket))
+            })
             .chain(
-                // Interaction constraints are only drag preferences. Keep authored
-                // constraints at higher priority so an impossible drag cannot
-                // deform or invalidate the required sketch solution.
+                // Interaction constraints encode the current drag target. Their
+                // relative priority is configurable from the sketch debugger so
+                // we can tune drag behavior without recompiling.
                 sketch_block_state
                     .solver_optional_constraints
                     .iter()
                     .cloned()
-                    .map(|constraint| ezpz::ConstraintRequest::new(constraint, 1)),
+                    .map(|constraint| {
+                        let bucket = sketch_solver_constraint_priority_bucket(&constraint, true);
+                        ezpz::ConstraintRequest::new(constraint, ctx.settings.sketch_solver_priority(bucket))
+                    }),
             )
             .collect::<Vec<_>>();
         let initial_guesses = sketch_block_state

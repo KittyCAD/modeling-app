@@ -12,9 +12,13 @@ import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettin
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import {
   SKETCH_DEBUGGER_AREA_TYPE,
+  SKETCH_SOLVER_PRIORITY_BUCKETS,
+  SKETCH_SOLVER_PRIORITY_BUCKET_LABELS,
   clearSketchSolverDebugOperations,
   sketchDebuggerLayoutContribution,
   sketchSolverDebuggerOperations,
+  sketchSolverPriorityLevels,
+  setSketchSolverPriorityLevel,
 } from '@src/machines/sketchSolve/sketchSolverDebugger'
 import type { SketchSolverDebuggerOperation } from '@src/machines/sketchSolve/sketchSolverDebugger'
 import {
@@ -70,43 +74,85 @@ function SketchDebuggerPane(props: AreaTypeComponentProps) {
         }
       />
       <div className="min-h-0 flex-1 overflow-auto p-2">
-        {latestOperation ? (
-          <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3">
+          {latestOperation ? (
             <OperationTextBlock
               operation={latestOperation}
               label="Latest edit"
             />
-            {previousOperations.length ? (
-              <details className="border border-chalkboard-20 bg-chalkboard-5 dark:border-chalkboard-80 dark:bg-chalkboard-100">
-                <summary className="cursor-pointer px-2 py-1 font-medium">
-                  Log ({previousOperations.length})
-                </summary>
-                <div className="flex flex-col gap-2 border-t border-chalkboard-20 p-2 dark:border-chalkboard-80">
-                  {previousOperations.map((operation) => (
-                    <details
-                      key={operation.id}
-                      className="border border-chalkboard-20 bg-chalkboard-10 dark:border-chalkboard-80 dark:bg-chalkboard-90"
-                    >
-                      <summary className="cursor-pointer px-2 py-1">
-                        {operation.label} - {operation.phase} -{' '}
-                        {new Date(operation.committedAt).toLocaleTimeString()}
-                      </summary>
-                      <div className="border-t border-chalkboard-20 p-2 dark:border-chalkboard-80">
-                        <OperationTextBlock operation={operation} />
-                      </div>
-                    </details>
-                  ))}
-                </div>
-              </details>
-            ) : null}
-          </div>
-        ) : (
-          <div className="grid min-h-40 place-items-center text-center text-chalkboard-60 dark:text-chalkboard-50">
-            No sketch solver inputs yet.
-          </div>
-        )}
+          ) : (
+            <div className="grid min-h-40 place-items-center text-center text-chalkboard-60 dark:text-chalkboard-50">
+              No sketch solver inputs yet.
+            </div>
+          )}
+          <SketchSolverPriorityOrderList />
+          {latestOperation && previousOperations.length ? (
+            <details className="border border-chalkboard-20 bg-chalkboard-5 dark:border-chalkboard-80 dark:bg-chalkboard-100">
+              <summary className="cursor-pointer px-2 py-1 font-medium">
+                Log ({previousOperations.length})
+              </summary>
+              <div className="flex flex-col gap-2 border-t border-chalkboard-20 p-2 dark:border-chalkboard-80">
+                {previousOperations.map((operation) => (
+                  <details
+                    key={operation.id}
+                    className="border border-chalkboard-20 bg-chalkboard-10 dark:border-chalkboard-80 dark:bg-chalkboard-90"
+                  >
+                    <summary className="cursor-pointer px-2 py-1">
+                      {operation.label} - {operation.phase} -{' '}
+                      {new Date(operation.committedAt).toLocaleTimeString()}
+                    </summary>
+                    <div className="border-t border-chalkboard-20 p-2 dark:border-chalkboard-80">
+                      <OperationTraceText operation={operation} />
+                    </div>
+                  </details>
+                ))}
+              </div>
+            </details>
+          ) : null}
+        </div>
       </div>
     </LayoutPanel>
+  )
+}
+
+function SketchSolverPriorityOrderList() {
+  useSignals()
+
+  const priorityLevels = sketchSolverPriorityLevels.value
+
+  return (
+    <section className="border border-chalkboard-20 bg-chalkboard-10 dark:border-chalkboard-80 dark:bg-chalkboard-100">
+      <header className="border-b border-chalkboard-20 px-2 py-1 dark:border-chalkboard-80">
+        <div className="font-medium">Solver priority</div>
+        <div className="text-[10px] text-chalkboard-60 dark:text-chalkboard-50">
+          Set numeric levels. 0 is highest.
+        </div>
+      </header>
+      <ol className="flex flex-col gap-1 p-2">
+        {SKETCH_SOLVER_PRIORITY_BUCKETS.map((bucket) => (
+          <li
+            key={bucket}
+            className="grid grid-cols-[minmax(0,1fr)_3rem] items-center gap-2 border border-chalkboard-20 bg-chalkboard-5 px-2 py-1 dark:border-chalkboard-80 dark:bg-chalkboard-90"
+          >
+            <span>{SKETCH_SOLVER_PRIORITY_BUCKET_LABELS[bucket]}</span>
+            <input
+              aria-label={`${SKETCH_SOLVER_PRIORITY_BUCKET_LABELS[bucket]} priority`}
+              className="h-6 border border-chalkboard-30 bg-chalkboard-10 px-1 text-right font-mono text-[10px] dark:border-chalkboard-80 dark:bg-chalkboard-100"
+              inputMode="numeric"
+              type="text"
+              value={String(priorityLevels[bucket])}
+              onChange={(event) => {
+                const value = event.currentTarget.value.trim()
+                if (!/^\d+$/.test(value)) {
+                  return
+                }
+                setSketchSolverPriorityLevel(bucket, Number.parseInt(value, 10))
+              }}
+            />
+          </li>
+        ))}
+      </ol>
+    </section>
   )
 }
 
@@ -126,15 +172,25 @@ function OperationTextBlock({
           {new Date(operation.committedAt).toLocaleTimeString()}
         </div>
       </header>
-      <div className="flex flex-col gap-2 p-2">
-        {operation.traces.map((trace, index) => (
-          <TraceTextBlock
-            key={`${operation.id}-${trace.sketchId}-${index}`}
-            trace={trace}
-          />
-        ))}
-      </div>
+      <OperationTraceText operation={operation} />
     </section>
+  )
+}
+
+function OperationTraceText({
+  operation,
+}: {
+  operation: SketchSolverDebuggerOperation
+}) {
+  return (
+    <div className="flex flex-col gap-2 p-2">
+      {operation.traces.map((trace, index) => (
+        <TraceTextBlock
+          key={`${operation.id}-${trace.sketchId}-${index}`}
+          trace={trace}
+        />
+      ))}
+    </div>
   )
 }
 

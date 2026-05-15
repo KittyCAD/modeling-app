@@ -2412,7 +2412,7 @@ describe('createOnDragCallback', () => {
     }
   })
 
-  it('should pin every point in a dragged coincident cluster to the cursor after selected owner edits', async () => {
+  it('should pin every point in a dragged coincident cluster without also dragging selected owners', async () => {
     const getIsSolveInProgress = vi.fn(() => false)
     const setIsSolveInProgress = vi.fn()
     const getLastSuccessfulDragFromPoint = vi.fn(() => new Vector2(15, -5.5))
@@ -2550,22 +2550,13 @@ describe('createOnDragCallback', () => {
       y: { type: 'Var', value: -4.5, units: 'Mm' },
     }
 
-    expect(segments.map((segment) => segment.id)).toEqual([
-      30, 31, 32, 10, 11, 12,
-    ])
+    expect(segments.map((segment) => segment.id)).toEqual([10, 11, 12])
     for (const id of [10, 11, 12]) {
       expect(segments.find((segment) => segment.id === id)?.ctor).toEqual({
         type: 'Point',
         position: expectedPosition,
       })
     }
-    expect(segments.find((segment) => segment.id === 30)?.ctor).toMatchObject({
-      type: 'Line',
-      end: {
-        x: { type: 'Var', value: 17.64, units: 'Mm' },
-        y: { type: 'Var', value: -4.7, units: 'Mm' },
-      },
-    })
   })
 
   it('coalesces the latest drag update while a preview solve is in flight', async () => {
@@ -2805,6 +2796,11 @@ describe('createOnDragCallback', () => {
         position: [12, 2],
       })
     )
+    expect(editSegments).toHaveBeenCalled()
+    const editCall = editSegments.mock.calls[0] as unknown as
+      | [number, number, Array<{ id: number }>, unknown]
+      | undefined
+    expect(editCall?.[2].map((segment) => segment.id)).toEqual([2])
   })
 
   it('should allow drag snapping for a circle child point when its owner circle remains selected', async () => {

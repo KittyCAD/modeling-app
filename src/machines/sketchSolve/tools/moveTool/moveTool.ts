@@ -740,6 +740,20 @@ function getDragPointSnappingCandidate({
   return candidate
 }
 
+function getPointOwnerSegmentIds(
+  pointIds: number[],
+  objects: ApiObject[]
+): Set<number> {
+  const ownerIds = new Set<number>()
+  for (const pointId of pointIds) {
+    const point = objects[pointId]
+    if (isPointSegment(point) && point.kind.segment.owner !== null) {
+      ownerIds.add(point.kind.segment.owner)
+    }
+  }
+  return ownerIds
+}
+
 function hasCoincidentConstraintWithOrigin(
   pointId: number,
   objects: ApiObject[]
@@ -1389,12 +1403,25 @@ export function createOnDragCallback({
       const coincidentClusterDragTarget = isDraggingPointCluster
         ? buildCursorPointPosition(twoD, units)
         : null
+      const draggedPointIds =
+        entityUnderCursorId !== null && isPointSegment(objects[entityUnderCursorId])
+          ? coincidentClusterPointIds
+          : []
+      const draggedPointOwnerIds = getPointOwnerSegmentIds(
+        draggedPointIds,
+        objects
+      )
 
       // Collect all IDs to edit. Coincident point edits are intentionally last:
       // Rust flattens point edits into owner segment edits in order, and the
       // point under the cursor should override broader selected-segment edits.
+      // A selected owner segment is skipped during child-point drags so an arc
+      // endpoint drag does not also translate the arc from its drag-start pose.
       const idsToEdit = new Set<number>()
       for (const id of selectedIds) {
+        if (draggedPointOwnerIds.has(id)) {
+          continue
+        }
         idsToEdit.add(id)
       }
       for (const id of coincidentClusterPointIds) {
@@ -2176,12 +2203,16 @@ export function setUpOnDragAndSelectionClickCallbacks({
                 draggedEntityId !== null
                   ? getCoincidentCluster(draggedEntityId, objects)
                   : []
+              const draggedPointOwnerIds =
+                draggedEntityId !== null && isPointSegment(objects[draggedEntityId])
+                  ? getPointOwnerSegmentIds(coincidentClusterPointIds, objects)
+                  : new Set<number>()
               const idsToEdit = new Set<number>()
               coincidentClusterPointIds.forEach((id) => {
                 idsToEdit.add(id)
               })
               snapshot.context.selectedIds.forEach((id) => {
-                if (isObjectSelectionId(id)) {
+                if (isObjectSelectionId(id) && !draggedPointOwnerIds.has(id)) {
                   idsToEdit.add(id)
                 }
               })
