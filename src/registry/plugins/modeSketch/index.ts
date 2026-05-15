@@ -1,4 +1,5 @@
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
+import { sketchInitialGuessDriftExtension } from '@src/registry/extensions/modeSketch/sketchInitialGuessDrift'
 import { sketchDebuggerPaneExtension } from '@src/registry/extensions/modeSketch/sketchDebuggerPane'
 import { sketchResidualsExtension } from '@src/registry/extensions/modeSketch/sketchResiduals'
 
@@ -8,7 +9,11 @@ const modeSketch = createZdsPlugin({
   id: 'mode-sketch',
   title: 'Sketch mode',
   description: 'Sketch mode design experience extensions.',
-  items: [sketchResidualsExtension, sketchDebuggerPaneExtension],
+  items: [
+    sketchResidualsExtension,
+    sketchInitialGuessDriftExtension,
+    sketchDebuggerPaneExtension,
+  ],
   defaultSetting: 'core',
 })
 

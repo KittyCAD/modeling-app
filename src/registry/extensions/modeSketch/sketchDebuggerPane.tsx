@@ -28,6 +28,7 @@ import {
 } from '@src/registry/contracts/layout'
 import { projectService } from '@src/registry/contracts/project'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
+import toast from 'react-hot-toast'
 
 type SketchDebuggerDebugSettings = SettingsType['debug'] & {
   showSketchDebuggerPane?: { current?: boolean }
@@ -63,13 +64,23 @@ function SketchDebuggerPane(props: AreaTypeComponentProps) {
               {operations.length} solver operation
               {operations.length === 1 ? '' : 's'}
             </div>
-            <button
-              type="button"
-              className="h-7 rounded border border-chalkboard-30 px-2 text-xs hover:bg-chalkboard-20 dark:border-chalkboard-80 dark:hover:bg-chalkboard-90"
-              onClick={clearSketchSolverDebugOperations}
-            >
-              Clear
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                className="h-7 rounded border border-chalkboard-30 px-2 text-xs hover:bg-chalkboard-20 disabled:cursor-not-allowed disabled:opacity-50 dark:border-chalkboard-80 dark:hover:bg-chalkboard-90"
+                disabled={!latestOperation}
+                onClick={() => void copyLatestOperation(latestOperation)}
+              >
+                Copy latest
+              </button>
+              <button
+                type="button"
+                className="h-7 rounded border border-chalkboard-30 px-2 text-xs hover:bg-chalkboard-20 dark:border-chalkboard-80 dark:hover:bg-chalkboard-90"
+                onClick={clearSketchSolverDebugOperations}
+              >
+                Clear
+              </button>
+            </div>
           </div>
         }
       />
@@ -175,6 +186,37 @@ function OperationTextBlock({
       <OperationTraceText operation={operation} />
     </section>
   )
+}
+
+async function copyLatestOperation(
+  operation: SketchSolverDebuggerOperation | undefined
+) {
+  if (!operation) {
+    toast.error('No sketch solver input to copy.')
+    return
+  }
+
+  try {
+    await navigator.clipboard.writeText(formatOperationAsProblemText(operation))
+    toast.success('Latest sketch solver input copied.')
+  } catch {
+    toast.error('Failed to copy latest sketch solver input.')
+  }
+}
+
+function formatOperationAsProblemText(
+  operation: SketchSolverDebuggerOperation
+): string {
+  const header = [
+    `# ${operation.label}`,
+    `# phase ${operation.phase}`,
+    `# committed ${new Date(operation.committedAt).toISOString()}`,
+  ]
+
+  return [
+    header.join('\n'),
+    ...operation.traces.map(formatTraceAsProblemText),
+  ].join('\n\n')
 }
 
 function OperationTraceText({
