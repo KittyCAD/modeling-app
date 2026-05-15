@@ -137,10 +137,12 @@ export async function getNextFileName({
   entryName,
   baseDir,
   wasmInstance,
+  preserveUnknownExtension = false,
 }: {
   entryName: string
   baseDir: string
   wasmInstance: ModuleType
+  preserveUnknownExtension?: boolean
 }) {
   // Check if the file is relevantFile by not using the period
   const extensionNoPeriod = getEXTNoPeriod(entryName)
@@ -151,7 +153,7 @@ export async function getNextFileName({
 
   // Do the following business logic with the period in the extension
   let extension = getEXTWithPeriod(entryName)
-  if (!isRelevantFile || !extension) {
+  if (!preserveUnknownExtension && (!isRelevantFile || !extension)) {
     extension = FILE_EXT
   }
 

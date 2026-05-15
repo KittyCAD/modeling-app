@@ -374,6 +374,7 @@ export const ProjectExplorer = ({
               entryName: file.name,
               baseDir: destinationDirPath,
               wasmInstance,
+              preserveUnknownExtension: true,
             })
 
             const arrayBuffer = await file.arrayBuffer()
