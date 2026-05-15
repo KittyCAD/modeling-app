@@ -99,7 +99,7 @@ test(
     await expect(page.getByText('bracket')).toBeVisible()
     await page.getByText('bracket').click()
 
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     // click ? button
     await page.getByTestId('help-button').click()
@@ -150,14 +150,14 @@ test(
 
     await test.step('Opening the bracket project should load the stream', async () => {
       await homePage.openProject('bracket')
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await u.doAndWaitForImageDiff(
       async () => {
         await toolbar.logoLink.click()
         await homePage.openProject('broken-code')
-        await scene.settled(cmdBar, { expectError: true })
+        await scene.settled({ expectError: true })
 
         await test.step('Verify error appears', async () => {
           await editor.scrollToText(
@@ -213,14 +213,14 @@ test(
 
     await test.step('Opening the bracket project should load the stream', async () => {
       await homePage.openProject('bracket')
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await u.doAndWaitForImageDiff(
       async () => {
         await toolbar.logoLink.click()
         await homePage.openProject('empty')
-        await scene.settled(cmdBar)
+        await scene.settled()
       },
       500,
       scene.streamWrapper
@@ -263,7 +263,7 @@ test(
 
     await test.step('Opening the bracket project should load the stream', async () => {
       await homePage.openProject('bracket')
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await u.doAndWaitForImageDiff(
@@ -271,7 +271,7 @@ test(
         await toolbar.openPane(DefaultLayoutPaneID.Files)
         await toolbar.openFile('empty.kcl')
         await toolbar.closePane(DefaultLayoutPaneID.Files)
-        await scene.settled(cmdBar)
+        await scene.settled()
       },
       500,
       scene.streamWrapper
@@ -321,7 +321,7 @@ test(
 
     await test.step('Opening the bracket project should load the stream', async () => {
       await homePage.openProject('bracket')
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await u.doAndWaitForImageDiff(
@@ -329,7 +329,7 @@ test(
         await toolbar.openPane(DefaultLayoutPaneID.Files)
         await toolbar.openFile('broken-code-test.kcl')
         await toolbar.closePane(DefaultLayoutPaneID.Files)
-        await scene.settled(cmdBar, { expectError: true })
+        await scene.settled({ expectError: true })
 
         await test.step('Verify error appears', async () => {
           await editor.scrollToText(
@@ -375,7 +375,7 @@ test(
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.openProject('broken-code')
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     // Gotcha: Scroll to the text content in code mirror because CodeMirror lazy loads DOM content
     await editor.scrollToText(
@@ -679,7 +679,7 @@ test.describe(`Project management commands`, { tag: ['@desktop'] }, () => {
       page.on('console', console.log)
 
       await projectHomeLink.click()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step(`Run rename command via command palette`, async () => {
@@ -743,7 +743,7 @@ test.describe(`Project management commands`, { tag: ['@desktop'] }, () => {
       page.on('console', console.log)
 
       await projectHomeLink.click()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step(`Run delete command via command palette`, async () => {
@@ -986,7 +986,7 @@ test(
   async ({ homePage, page, scene, cmdBar, toolbar, folderSetupFn }) => {
     await test.step('Create project "test" and add KCL', async () => {
       await homePage.createAndGoToProject('test')
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Return to dashboard', async () => {
@@ -995,7 +995,7 @@ test(
 
     await test.step('Create project "Test" and open it', async () => {
       await homePage.createAndGoToProject('Test')
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Verify duplicate resolves to "Test-1" on dashboard', async () => {
@@ -1094,7 +1094,7 @@ test(
 
     await test.step('Open the project', async () => {
       await page.getByText('router-template-slate').click()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await u.openFilePanel()
@@ -1223,7 +1223,7 @@ test(
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await page.getByText('router-template-slate').click()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await expect(u.codeLocator).toContainText('routerDiameter')
     await expect(u.codeLocator).toContainText('templateGap')
@@ -1593,7 +1593,7 @@ test(
     await test.step('setup, open file pane', async () => {
       await page.getByText('testProject').click()
 
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await page.getByTestId('files-pane-button').click()
     })
@@ -1776,7 +1776,7 @@ test(
     })
 
     await homePage.openProject(projectName)
-    await scene.settled(cmdBar)
+    await scene.settled()
   }
 )
 
@@ -1819,7 +1819,7 @@ test(
     await test.step('Opening the bracket project should load the stream', async () => {
       // expect to see the text bracket
       await homePage.openProject('bracket')
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await editor.expectState({
         activeLines: [lineOfKcl],
@@ -1863,7 +1863,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
     await test.step('Opening the project and entering sketch mode', async () => {
       await expect(page.getByText(projectName)).toBeVisible()
       await page.getByText(projectName).click()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       // go to sketch mode
       await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
@@ -1886,7 +1886,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
       // Exit sketch mode
       await page.keyboard.press('Meta+Escape')
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Going back to dashboard', async () => {

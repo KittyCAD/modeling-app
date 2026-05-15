@@ -163,7 +163,7 @@ sketch001 = startSketchOn(XY)
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await u.codeLocator.click()
     await page.keyboard.type(`sketch001 = startSketchOn(XY)
@@ -1064,7 +1064,7 @@ sketch001 = startSketchOn(XZ)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
     await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
     await page.waitForTimeout(100)
@@ -1115,7 +1115,7 @@ sketch001 = startSketchOn(XZ)
       commandName: 'Extrude',
     })
     await cmdBar.progressCmdBar()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     // expect the code to have changed
     await expect(page.locator('.cm-content')).toHaveText(
@@ -1157,7 +1157,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
     }, ogCode)
 
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     let prevContent = await editor.getCurrentCode()
     await toolbar.editSketch()
@@ -1239,14 +1239,14 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
     await test.step(`Open the empty file`, async () => {
       await projectLink.click()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
     await test.step(`Write the import function line`, async () => {
       await u.codeLocator.fill(`import 'cube.obj'\ncube`)
       await page.waitForTimeout(800)
     })
     await test.step(`Verify that we see no errors`, async () => {
-      await scene.settled(cmdBar)
+      await scene.settled()
       await expect(errorIndicators).toHaveCount(0)
     })
   })
@@ -1264,7 +1264,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
     // wait until scene is ready to be interacted with
     await scene.connectionEstablished()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await toolbar.startSketchBtn.click()
 
@@ -1379,7 +1379,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
       // wait until scene is ready to be interacted with
       await scene.connectionEstablished()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Test toolbar button correct selection', async () => {
@@ -1424,7 +1424,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
     // Wait for connection, this is especially important for this test, because safeParse is invoked when
     // connection is established which would interfere with the test if it happened during later steps.
     await scene.connectionEstablished()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     // Code with no error
     await u.codeLocator.fill(`x = 7`)
