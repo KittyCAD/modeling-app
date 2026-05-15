@@ -261,7 +261,15 @@ export class ToolbarFixture {
     await expect(this.page.getByTestId(operationTestId)).toBeVisible()
     await this.page.getByTestId(operationTestId).click()
   }
-  selectTransform = async (operation: 'translate' | 'rotate' | 'scale') => {
+  selectTransform = async (
+    operation:
+      | 'translate'
+      | 'rotate'
+      | 'scale'
+      | 'clone'
+      | 'mirror3d'
+      | 'appearance'
+  ) => {
     await this.page
       .getByRole('button', { name: 'caret down transform: open menu' })
       .click()

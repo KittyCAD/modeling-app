@@ -512,6 +512,92 @@ sketch001 = extrude(region001, length = -12)`
     })
   })
 
+  test(`Mirror point-and-click`, async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region001 = region(segments = [sketch001.circle1])
+extrude001 = extrude(region001, length = 10)
+plane001 = offsetPlane(YZ, offset = 10)`
+    const expectedMirrorCode =
+      'solid001 = mirror3d(extrude001, across = plane001)'
+
+    await test.step('Settle the scene', async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step(`Go through the command bar flow`, async () => {
+      await toolbar.selectTransform('mirror3d')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'bodies',
+        currentArgValue: '',
+        headerArguments: { Bodies: '', Across: '' },
+        highlightedHeaderArg: 'bodies',
+        commandName: 'Mirror',
+      })
+
+      await editor.selectText('extrude001 = extrude(region001, length = 10)')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'across',
+        currentArgValue: '',
+        headerArguments: { Bodies: '1 sweep', Across: '' },
+        highlightedHeaderArg: 'across',
+        commandName: 'Mirror',
+      })
+
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      const plane = await toolbar.getFeatureTreeOperation('plane001', 0)
+      await plane.click()
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: { Bodies: '1 sweep', Across: '1 plane' },
+        commandName: 'Mirror',
+      })
+      await cmdBar.submit()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step(`Confirm code is added to the editor`, async () => {
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(expectedMirrorCode)
+      await editor.expectState({
+        diagnostics: [],
+        activeLines: [expectedMirrorCode],
+        highlightedCode: '',
+      })
+    })
+
+    await test.step('Delete mirror via feature tree selection', async () => {
+      await editor.closePane()
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'solid001',
+        0
+      )
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain(expectedMirrorCode)
+    })
+  })
+
   const initialCmdBarStateHelix: CmdBarSerialised = {
     stage: 'arguments',
     currentArgKey: 'mode',
