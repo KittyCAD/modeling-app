@@ -160,7 +160,7 @@ impl Node<CallExpressionKw> {
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<KclValueControlFlow, KclError> {
-        exec_state.record_ast_node_visit(self.visited.set_visited(true));
+        ctx.record_ast_node_visit(self.visited.set_visited(true));
         let fn_name = &self.callee;
         let callsite: SourceRange = self.into();
 
@@ -1208,6 +1208,7 @@ mod test {
                 fs: Arc::new(crate::fs::FileManager::new()),
                 settings: Default::default(),
                 context_type: ContextType::Mock,
+                progress: Default::default(),
             };
             let mut exec_state = ExecState::new(&exec_ctxt);
             exec_state.mod_local.stack = Stack::new_for_tests();

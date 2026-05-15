@@ -51,6 +51,8 @@ pub(crate) use state::ConstraintState;
 pub(crate) use state::ConsumedSolidInfo;
 pub(crate) use state::ConsumedSolidKey;
 pub(crate) use state::ConsumedSolidOperation;
+pub use state::AstVisitState;
+pub use state::Progress;
 pub use state::ExecState;
 pub(crate) use state::KclVersion;
 pub use state::MetaSettings;
@@ -739,6 +741,7 @@ pub struct ExecutorContext {
     pub fs: Arc<FileManager>,
     pub settings: ExecutorSettings,
     pub context_type: ContextType,
+    pub progress: Arc<std::sync::Mutex<Progress>>,
 }
 
 /// The executor settings.
@@ -887,6 +890,7 @@ impl ExecutorContext {
             fs,
             settings,
             context_type: ContextType::Live,
+            progress: Default::default(),
         }
     }
 
@@ -897,6 +901,7 @@ impl ExecutorContext {
             fs: self.fs.clone(),
             settings: self.settings.clone(),
             context_type: self.context_type.clone(),
+            progress: self.progress.clone(),
         }
     }
 
@@ -939,6 +944,26 @@ impl ExecutorContext {
         Ok(Self::new_with_engine(engine, settings))
     }
 
+    pub fn progress(&self) -> Progress {
+        self.progress.lock().unwrap().clone()
+    }
+
+    pub(crate) fn register_ast_nodes(&self, count: usize) {
+        self.progress.lock().unwrap().ast_visit.nodes_total = count;
+    }
+
+    pub(crate) fn reset_ast_visit_state(&self) {
+        let mut progress = self.progress.lock().unwrap();
+        progress.ast_visit.nodes_total = 0;
+        progress.ast_visit.nodes_visited = 0;
+    }
+
+    pub(crate) fn record_ast_node_visit(&self, newly_visited: bool) {
+        if newly_visited {
+            self.progress.lock().unwrap().ast_visit.nodes_visited += 1;
+        }
+    }
+
     #[cfg(target_arch = "wasm32")]
     pub fn new(engine: Arc<Box<dyn EngineManager>>, fs: Arc<FileManager>, settings: ExecutorSettings) -> Self {
         Self::new_with_engine_and_fs(engine, fs, settings)
@@ -952,6 +977,7 @@ impl ExecutorContext {
             fs: Arc::new(FileManager::new()),
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
+            progress: Default::default(),
         }
     }
 
@@ -963,6 +989,7 @@ impl ExecutorContext {
             fs,
             settings,
             context_type: ContextType::Mock,
+            progress: Default::default(),
         }
     }
 
@@ -987,6 +1014,7 @@ impl ExecutorContext {
             fs,
             settings,
             context_type: ContextType::Mock,
+            progress: Default::default(),
         })
     }
 
@@ -998,6 +1026,7 @@ impl ExecutorContext {
             fs: Arc::new(FileManager::new()),
             settings: Default::default(),
             context_type: ContextType::MockCustomForwarded,
+            progress: Default::default(),
         }
     }
 
@@ -2087,6 +2116,7 @@ pub(crate) async fn parse_execute_with_project_dir(
             ..Default::default()
         },
         context_type: ContextType::Mock,
+        progress: Default::default(),
     };
     let mut exec_state = ExecState::new(&exec_ctxt);
     let result = exec_ctxt.run(&program, &mut exec_state).await?;

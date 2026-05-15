@@ -23,6 +23,7 @@ pub struct Context {
     response_context: Arc<kcl_lib::wasm_engine::ResponseContext>,
     fs: Arc<FileManager>,
     mock_engine: Arc<Box<dyn EngineManager>>,
+    progress: Arc<std::sync::Mutex<kcl_lib::Progress>>,
     pub(crate) project_manager: ProjectManager,
     pub(crate) frontend: Arc<tokio::sync::RwLock<FrontendState>>,
 }
@@ -44,6 +45,7 @@ impl Context {
             .build_global();
 
         let response_context = Arc::new(kcl_lib::wasm_engine::ResponseContext::new());
+        let progress = Arc::new(std::sync::Mutex::new(kcl_lib::Progress::default()));
         Ok(Self {
             engine: Arc::new(Box::new(
                 kcl_lib::wasm_engine::EngineConnection::new(engine_manager, response_context.clone())
@@ -54,6 +56,7 @@ impl Context {
                 kcl_lib::mock_engine::EngineConnection::new().map_err(|e| format!("{:?}", e))?,
             )),
             response_context,
+            progress,
             project_manager: ProjectManager,
             frontend: Arc::new(tokio::sync::RwLock::new(FrontendState::new())),
         })
@@ -72,18 +75,24 @@ impl Context {
         }
 
         if is_mock {
-            return Ok(kcl_lib::ExecutorContext::new_mock(
-                self.mock_engine.clone(),
-                self.fs.clone(),
-                settings,
-            ));
+            let mut ctx = kcl_lib::ExecutorContext::new_mock(self.mock_engine.clone(), self.fs.clone(), settings);
+            ctx.progress = self.progress.clone();
+            return Ok(ctx);
         }
 
-        Ok(kcl_lib::ExecutorContext::new_with_engine_and_fs(
+        let mut ctx = kcl_lib::ExecutorContext::new_with_engine_and_fs(
             self.engine.clone(),
             self.fs.clone(),
             settings,
-        ))
+        );
+        ctx.progress = self.progress.clone();
+        Ok(ctx)
+    }
+
+    #[wasm_bindgen(js_name = progress)]
+    pub fn progress(&self) -> Result<JsValue, JsValue> {
+        let progress = self.progress.lock().map_err(|e| JsValue::from_str(&e.to_string()))?;
+        JsValue::from_serde(&*progress).map_err(|e| JsValue::from_str(&e.to_string()))
     }
 
     /// Execute a program.

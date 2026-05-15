@@ -103,6 +103,8 @@ pub use errors::ReportWithOutputs;
 pub use execution::ConstraintKind;
 pub use execution::ExecOutcome;
 pub use execution::ExecState;
+pub use execution::AstVisitState;
+pub use execution::Progress;
 pub use execution::ExecutorContext;
 pub use execution::ExecutorSettings;
 pub use execution::MetaSettings;
