@@ -32,6 +32,7 @@ import {
   type Artifact,
   defaultArtifactGraph,
 } from '@src/lang/std/artifactGraph'
+import { numericSuffixToUnitLength } from '@src/lang/unitConversion'
 import type { Coords2d } from '@src/lang/util'
 import { isTopLevelModule } from '@src/lang/util'
 import { Reason, err } from '@src/lib/trap'
@@ -41,7 +42,8 @@ import { distance2d } from '@src/lib/utils2d'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 import type { Number } from '@rust/kcl-lib/bindings/FrontendApi'
-import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
+
+export { baseUnitToNumericSuffix } from '@src/lang/unitConversion'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
@@ -527,64 +529,6 @@ function pointToUnit(
 }
 
 /**
- * Convert a NumericSuffix string to UnitLength.
- * Returns null if the suffix is not a length unit.
- */
-function numericSuffixToUnitLength(suffix: NumericSuffix): UnitLength | null {
-  switch (suffix) {
-    case 'Mm':
-      return 'mm'
-    case 'Cm':
-      return 'cm'
-    case 'M':
-      return 'm'
-    case 'Inch':
-      return 'in'
-    case 'Ft':
-      return 'ft'
-    case 'Yd':
-      return 'yd'
-    // non length units for type completeness
-    case 'None':
-    case 'Deg':
-    case 'Rad':
-    case 'Count':
-    case 'Length':
-    case 'Angle':
-    case 'Unknown':
-      return null
-    default:
-      // this is more of a type completeness check
-      // rather then something we expect to hit at runtime
-      const _exhaustiveCheck: never = suffix
-      return null
-  }
-}
-
-/**
- * Convert a UnitLength to NumericSuffix string.
- */
-function unitLengthToNumericSuffix(unit: UnitLength): NumericSuffix {
-  switch (unit) {
-    case 'mm':
-      return 'Mm'
-    case 'cm':
-      return 'Cm'
-    case 'm':
-      return 'M'
-    case 'in':
-      return 'Inch'
-    case 'ft':
-      return 'Ft'
-    case 'yd':
-      return 'Yd'
-    default:
-      const _exhaustiveCheck: never = unit
-      return 'Mm'
-  }
-}
-
-/**
  * Calculate the distance between two 2D points expressed as Expr coordinates.
  * Both points are converted to a common unit (the unit of the first point) before calculation.
  * Returns the distance value and the unit it's expressed in.
@@ -656,17 +600,6 @@ export function distanceBetweenPoint2DExpr(
   const distance = distance2d(coord1, coord2)
 
   return { distance, units: targetSuffix }
-}
-
-/**
- * Convert BaseUnit to NumericSuffix for use in SegmentCtor.
- * Handles the 'in' -> 'inch' conversion needed for unitLengthToNumericSuffix.
- */
-export function baseUnitToNumericSuffix(
-  defaultLengthUnit?: UnitLength
-): NumericSuffix {
-  const currentUnit = defaultLengthUnit ?? DEFAULT_DEFAULT_LENGTH_UNIT
-  return unitLengthToNumericSuffix(currentUnit)
 }
 
 export function getTangentialArcToInfo({

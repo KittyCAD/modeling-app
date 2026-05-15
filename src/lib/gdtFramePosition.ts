@@ -2,9 +2,9 @@ import type { BoundingBox, FaceIsPlanar, Point3d } from '@kittycad/lib'
 
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 import { createArrayExpression, createLiteral } from '@src/lang/create'
 import { toUtf16 } from '@src/lang/errors'
+import { baseUnitToNumericSuffix } from '@src/lang/unitConversion'
 import type {
   ArtifactId,
   CallExpressionKw,
@@ -416,26 +416,6 @@ function createFramePositionCommandValue(
   }
 }
 
-function unitLengthToNumericSuffix(unit: UnitLength): NumericSuffix {
-  switch (unit) {
-    case 'mm':
-      return 'Mm'
-    case 'cm':
-      return 'Cm'
-    case 'm':
-      return 'M'
-    case 'in':
-      return 'Inch'
-    case 'ft':
-      return 'Ft'
-    case 'yd':
-      return 'Yd'
-    default:
-      const _exhaustiveCheck: never = unit
-      return _exhaustiveCheck
-  }
-}
-
 function createFontSizeCommandValue(
   averageDimension: number,
   outputUnit: UnitLength,
@@ -448,7 +428,7 @@ function createFontSizeCommandValue(
   const valueAst = createLiteral(
     value,
     wasmInstance,
-    unitLengthToNumericSuffix(outputUnit),
+    baseUnitToNumericSuffix(outputUnit),
     4
   )
   const valueText = valueAst.raw
