@@ -5,6 +5,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { createArrayExpression, createLiteral } from '@src/lang/create'
 import { toUtf16 } from '@src/lang/errors'
 import type { NumberLiteralFormatter } from '@src/lang/numberFormat'
+import { traverse } from '@src/lang/queryAst'
 import { baseUnitToNumericSuffix } from '@src/lang/unitConversion'
 import type {
   ArtifactId,
@@ -69,21 +70,6 @@ function getSelectionsFromGdtData(
     return data.edges
   }
   return undefined
-}
-
-function visitAstNodes(value: unknown, onNode: (node: unknown) => void): void {
-  if (typeof value !== 'object' || value === null) {
-    return
-  }
-
-  onNode(value)
-
-  if (isArray(value)) {
-    value.forEach((item) => visitAstNodes(item, onNode))
-    return
-  }
-
-  Object.values(value).forEach((item) => visitAstNodes(item, onNode))
 }
 
 function isGdtCall(node: unknown): node is Node<CallExpressionKw> {
@@ -158,28 +144,30 @@ export function getExistingGdtFontSize(
 
   let fontSize: KclCommandValue | undefined
 
-  visitAstNodes(ast, (node) => {
-    if (!isGdtCall(node)) {
-      return
-    }
+  traverse(ast, {
+    enter: (node) => {
+      if (!isGdtCall(node)) {
+        return
+      }
 
-    const fontSizeArg = node.arguments?.find(
-      (arg) => arg.label?.name === 'fontSize'
-    )
-    if (!fontSizeArg) {
-      return
-    }
+      const fontSizeArg = node.arguments?.find(
+        (arg) => arg.label?.name === 'fontSize'
+      )
+      if (!fontSizeArg) {
+        return
+      }
 
-    const valueText = getSourceTextForExpr(fontSizeArg.arg, sourceCode)
-    if (!valueText) {
-      return
-    }
+      const valueText = getSourceTextForExpr(fontSizeArg.arg, sourceCode)
+      if (!valueText) {
+        return
+      }
 
-    fontSize = {
-      valueAst: structuredClone(fontSizeArg.arg),
-      valueCalculated: valueText,
-      valueText,
-    }
+      fontSize = {
+        valueAst: structuredClone(fontSizeArg.arg),
+        valueCalculated: valueText,
+        valueText,
+      }
+    },
   })
 
   return fontSize
