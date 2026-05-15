@@ -40,7 +40,6 @@ import type { MaybePressOrBlur } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
-import { showWarningToast } from '@src/components/ToastWarning'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const isFileExplorerEntryOpened = (
@@ -108,10 +107,8 @@ const collectDroppedFiles = async (
   wasmInstance: ModuleType
 ): Promise<{
   supported: { file: File; relativePath: string }[]
-  unsupported: string[]
 }> => {
   const supported: { file: File; relativePath: string }[] = []
-  const unsupported: string[] = []
 
   if (entry.isFile) {
     const fileEntry = entry as FileSystemFileEntry
@@ -120,8 +117,6 @@ const collectDroppedFiles = async (
     )
     if (isFileSupportedForImport(file.name, wasmInstance)) {
       supported.push({ file, relativePath: basePath })
-    } else {
-      unsupported.push(joinOSPaths(basePath, file.name))
     }
   } else if (entry.isDirectory) {
     const entries = await readAllDirectoryEntriesRecursively(
@@ -138,11 +133,10 @@ const collectDroppedFiles = async (
         wasmInstance
       )
       supported.push(...result.supported)
-      unsupported.push(...result.unsupported)
     }
   }
 
-  return { supported, unsupported }
+  return { supported }
 }
 
 /**
@@ -330,8 +324,6 @@ export const ProjectExplorer = ({
       const electron = window.electron
 
       const supportedFiles: { file: File; relativePath: string }[] = []
-      const unsupportedFiles: string[] = []
-
       // Collect all entries/files synchronously first
       // DataTransferItemList becomes invalid after async operations
       const entries: FileSystemEntry[] = []
@@ -360,7 +352,6 @@ export const ProjectExplorer = ({
         try {
           const result = await collectDroppedFiles(entry, '', wasmInstance)
           supportedFiles.push(...result.supported)
-          unsupportedFiles.push(...result.unsupported)
         } catch (e) {
           console.error('Failed to collect dropped files:', entry?.name, e)
           failedEntryNames.push(entry?.name || 'dropped item')
@@ -381,20 +372,7 @@ export const ProjectExplorer = ({
       for (const file of fallbackFiles) {
         if (isFileSupportedForImport(file.name, wasmInstance)) {
           supportedFiles.push({ file, relativePath: '' })
-        } else {
-          unsupportedFiles.push(file.name)
         }
-      }
-
-      if (unsupportedFiles.length > 0) {
-        const maxToShow = 5
-        const fileList = unsupportedFiles.slice(0, maxToShow).join(', ')
-        const remaining = unsupportedFiles.length - maxToShow
-        const fileListMessage =
-          remaining > 0 ? `${fileList}, and ${remaining} more` : fileList
-        showWarningToast(fileListMessage, {
-          title: `Unsupported file${unsupportedFiles.length > 1 ? 's' : ''}:`,
-        })
       }
 
       // Copy supported files to the target directory
