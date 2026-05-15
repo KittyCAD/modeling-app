@@ -100,15 +100,14 @@ test(
       // Close the file pane
       await u.closeFilePanel()
       await scene.settled()
+      await page.waitForTimeout(5_000) // delay for re-execution
 
       // Expect zero errors in gutter
-      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible({
-        timeout: 15_000,
-      })
+      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
       // Click the export button
       const exportButton = page.getByTestId('export-pane-button')
-      await expect(exportButton).toBeEnabled({ timeout: 15_000 })
+      await expect(exportButton).toBeEnabled()
       await exportButton.click()
 
       // Select the first format option
