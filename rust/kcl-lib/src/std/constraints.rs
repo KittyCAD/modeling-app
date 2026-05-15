@@ -41,6 +41,7 @@ use crate::front::ArcCtor;
 use crate::front::CircleCtor;
 use crate::front::Coincident;
 use crate::front::Constraint;
+use crate::front::ControlPointSplineCtor;
 use crate::front::EqualRadius;
 use crate::front::Horizontal;
 use crate::front::LineCtor;
@@ -1096,6 +1097,170 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     // Save the segment to be sent to the engine after solving.
     sketch_state.needed_by_engine.push(segment.clone());
 
+    sketch_state.solver_optional_constraints.extend(optional_constraints);
+
+    let meta = segment.meta.clone();
+    let abstract_segment = AbstractSegment {
+        repr: SegmentRepr::Unsolved {
+            segment: Box::new(segment),
+        },
+        meta,
+    };
+    Ok(KclValue::Segment {
+        value: Box::new(abstract_segment),
+    })
+}
+
+pub async fn control_point_spline(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let points: Vec<KclValue> = args.get_kw_arg(
+        "points",
+        &RuntimeType::Array(Box::new(RuntimeType::point2d()), ArrayLen::Minimum(3)),
+        exec_state,
+    )?;
+    let construction_opt = args.get_kw_arg_opt("construction", &RuntimeType::bool(), exec_state)?;
+    let construction = construction_opt.unwrap_or(false);
+
+    if points.len() < 3 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "controlPointSpline requires at least 3 control points".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    let degree = usize::min(3, points.len() - 1) as u32;
+    let mut ctor_points = Vec::with_capacity(points.len());
+    let mut control_values = Vec::with_capacity(points.len());
+    let mut controls = Vec::with_capacity(points.len());
+    let mut control_object_ids = Vec::with_capacity(points.len());
+    let mut control_polygon_edge_object_ids = Vec::with_capacity(points.len().saturating_sub(1));
+
+    for point in points {
+        let KclValue::HomArray { value, .. } = point else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "each control point must be a 2D point".to_owned(),
+                vec![args.source_range],
+            )));
+        };
+        let [x_value, y_value]: [KclValue; 2] = value.try_into().map_err(|_| {
+            KclError::new_semantic(KclErrorDetails::new(
+                "each control point must be a 2D point".to_owned(),
+                vec![args.source_range],
+            ))
+        })?;
+        let Some(x) = x_value.as_unsolved_expr() else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "control point x must be a number or sketch var".to_owned(),
+                vec![args.source_range],
+            )));
+        };
+        let Some(y) = y_value.as_unsolved_expr() else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "control point y must be a number or sketch var".to_owned(),
+                vec![args.source_range],
+            )));
+        };
+        ctor_points.push(Point2d {
+            x: x_value.to_sketch_expr().ok_or_else(|| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    "unable to convert numeric type to suffix".to_owned(),
+                    vec![args.source_range],
+                ))
+            })?,
+            y: y_value.to_sketch_expr().ok_or_else(|| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    "unable to convert numeric type to suffix".to_owned(),
+                    vec![args.source_range],
+                ))
+            })?,
+        });
+        control_values.push([x_value, y_value]);
+        controls.push([x, y]);
+        control_object_ids.push(exec_state.next_object_id());
+    }
+    for _ in 0..controls.len().saturating_sub(1) {
+        control_polygon_edge_object_ids.push(exec_state.next_object_id());
+    }
+
+    let spline_object_id = exec_state.next_object_id();
+    let ctor = ControlPointSplineCtor {
+        points: ctor_points,
+        construction: construction_opt,
+    };
+    let segment = UnsolvedSegment {
+        id: exec_state.next_uuid(),
+        object_id: spline_object_id,
+        kind: UnsolvedSegmentKind::ControlPointSpline {
+            controls,
+            ctor: Box::new(ctor),
+            control_object_ids: control_object_ids.clone(),
+            control_polygon_edge_object_ids: control_polygon_edge_object_ids.clone(),
+            degree,
+            construction,
+        },
+        tag: None,
+        node_path: args.node_path.clone(),
+        meta: vec![args.source_range.into()],
+    };
+
+    #[cfg(feature = "artifact-graph")]
+    let optional_constraints = {
+        let placeholder_control_ids = control_object_ids
+            .iter()
+            .map(|control_object_id| {
+                exec_state.add_placeholder_scene_object(*control_object_id, args.source_range, args.node_path.clone())
+            })
+            .collect::<Vec<_>>();
+        control_polygon_edge_object_ids.iter().for_each(|edge_object_id| {
+            exec_state.add_placeholder_scene_object(*edge_object_id, args.source_range, args.node_path.clone());
+        });
+        let spline_object_id =
+            exec_state.add_placeholder_scene_object(spline_object_id, args.source_range, args.node_path.clone());
+
+        let mut optional_constraints = Vec::new();
+        for (index, [x_value, y_value]) in control_values.iter().enumerate() {
+            let control_object_id = placeholder_control_ids[index];
+            if !(exec_state.segment_ids_edited_contains(&control_object_id)
+                || exec_state.segment_ids_edited_contains(&spline_object_id))
+            {
+                continue;
+            }
+
+            if let Some(x_var) = x_value.as_sketch_var() {
+                let x_initial_value = x_var.initial_value_to_solver_units(
+                    exec_state,
+                    args.source_range,
+                    "edited segment fixed constraint value",
+                )?;
+                optional_constraints.push(SolverConstraint::Fixed(
+                    x_var.id.to_constraint_id(args.source_range)?,
+                    x_initial_value.n,
+                ));
+            }
+
+            if let Some(y_var) = y_value.as_sketch_var() {
+                let y_initial_value = y_var.initial_value_to_solver_units(
+                    exec_state,
+                    args.source_range,
+                    "edited segment fixed constraint value",
+                )?;
+                optional_constraints.push(SolverConstraint::Fixed(
+                    y_var.id.to_constraint_id(args.source_range)?,
+                    y_initial_value.n,
+                ));
+            }
+        }
+        optional_constraints
+    };
+
+    let Some(sketch_state) = exec_state.sketch_block_mut() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "controlPointSpline() can only be used inside a sketch block".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    sketch_state.needed_by_engine.push(segment.clone());
+
+    #[cfg(feature = "artifact-graph")]
     sketch_state.solver_optional_constraints.extend(optional_constraints);
 
     let meta = segment.meta.clone();
@@ -2298,6 +2463,13 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                         }),
                     })
                 }
+                (UnsolvedSegmentKind::ControlPointSpline { .. }, _)
+                | (_, UnsolvedSegmentKind::ControlPointSpline { .. }) => {
+                    Err(KclError::new_semantic(KclErrorDetails::new(
+                        "distance() does not yet support control point spline segments".to_owned(),
+                        vec![args.source_range],
+                    )))
+                }
             }
         }
         // Segment + point-literal branch; for now the only supported Point2d literal here is ORIGIN.
@@ -2379,6 +2551,10 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                         }),
                     })
                 }
+                UnsolvedSegmentKind::ControlPointSpline { .. } => Err(KclError::new_semantic(KclErrorDetails::new(
+                    "distance() does not yet support control point spline segments".to_owned(),
+                    vec![args.source_range],
+                ))),
             }
         }
         _ => Err(KclError::new_semantic(KclErrorDetails::new(
@@ -3408,7 +3584,7 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         )));
     };
 
-    #[derive(Debug, Clone, Copy)]
+    #[derive(Debug, Clone)]
     enum TangentInput {
         Line(LineVars),
         Circular(ArcVars),
@@ -3857,6 +4033,10 @@ fn extract_symmetric_input(segment_value: &KclValue, range: crate::SourceRange) 
                 object_id: unsolved.object_id,
             }))
         }
+        UnsolvedSegmentKind::ControlPointSpline { .. } => Err(KclError::new_semantic(KclErrorDetails::new(
+            "symmetric() does not yet support control point spline segments".to_owned(),
+            vec![range],
+        ))),
     }
 }
 

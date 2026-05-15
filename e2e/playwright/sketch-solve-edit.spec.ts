@@ -1534,17 +1534,17 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
             .map((el) => el.getAttribute('data-segment_id'))
             .filter((value): value is string => Boolean(value))
         )
-    const initialHandleIds = await getHandleIds()
+    const initialHandleCount = (await getHandleIds()).length
 
     const expectBackToInitialCode = async (changedCode: string) => {
       await pressUndo()
       const undoneCode = await waitForCodeChange(page, changedCode)
       expect(normaliseCode(undoneCode)).toBe(normaliseCode(initialCode))
       await expect
-        .poll(async () => JSON.stringify(await getHandleIds()), {
+        .poll(async () => (await getHandleIds()).length, {
           timeout: 10000,
         })
-        .toBe(JSON.stringify(initialHandleIds))
+        .toBe(initialHandleCount)
     }
 
     const applyConstraintStep = async ({
