@@ -32,6 +32,7 @@ import {
   type Artifact,
   defaultArtifactGraph,
 } from '@src/lang/std/artifactGraph'
+export { formatNumberLiteral } from '@src/lang/numberFormat'
 import { numericSuffixToUnitLength } from '@src/lang/unitConversion'
 import type { Coords2d } from '@src/lang/util'
 import { isTopLevelModule } from '@src/lang/util'
@@ -436,29 +437,6 @@ export async function nodePathFromRange(
 
 export const recast = (ast: Program, instance: ModuleType): string | Error => {
   return instance.recast_wasm(JSON.stringify(ast))
-}
-
-/**
- * Format a number with suffix as KCL.
- */
-export function formatNumberLiteral(
-  value: number,
-  suffix: NumericSuffix,
-  wasmInstance: ModuleType,
-  decimals?: number
-): string | Error {
-  try {
-    return wasmInstance.format_number_literal(
-      value,
-      JSON.stringify(suffix),
-      decimals
-    )
-  } catch (e) {
-    return new Error(
-      `Error formatting number literal: value=${value}, suffix=${suffix}`,
-      { cause: e }
-    )
-  }
 }
 
 /**

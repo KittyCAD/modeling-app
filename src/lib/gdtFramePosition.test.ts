@@ -11,7 +11,7 @@ import {
   getPlanarFaceEntityIdsForGdtSelections,
   withDefaultGdtFrameDefaults,
 } from '@src/lib/gdtFramePosition'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { NumberLiteralFormatter } from '@src/lang/numberFormat'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { Artifact, Expr } from '@src/lang/wasm'
@@ -20,7 +20,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const formatNumberLiteral = vi.fn().mockReturnValue('1.2cm')
 const wasmInstance = {
   format_number_literal: formatNumberLiteral,
-} as unknown as ModuleType
+} satisfies NumberLiteralFormatter
 
 function testArtifact<T extends Artifact['type']>(
   artifact: { type: T } & Record<string, unknown>
@@ -425,7 +425,7 @@ describe('GD&T frame defaults', () => {
       engineCommandManager: {
         sendSceneCommand,
       } as unknown as ConnectionManager,
-      wasmInstance: {} as ModuleType,
+      wasmInstance,
     })
 
     expect(result.framePlane).toBe('XZ')
@@ -488,7 +488,7 @@ describe('GD&T frame defaults', () => {
       engineCommandManager: {
         sendSceneCommand,
       } as unknown as ConnectionManager,
-      wasmInstance: {} as ModuleType,
+      wasmInstance,
     })
 
     expect(result.framePlane).toBe('YZ')
@@ -534,7 +534,7 @@ describe('GD&T frame defaults', () => {
       engineCommandManager: {
         sendSceneCommand,
       } as unknown as ConnectionManager,
-      wasmInstance: {} as ModuleType,
+      wasmInstance,
     })
 
     expect(sendSceneCommand).toHaveBeenCalledWith(
@@ -599,7 +599,7 @@ describe('GD&T frame defaults', () => {
       engineCommandManager: {
         sendSceneCommand,
       } as unknown as ConnectionManager,
-      wasmInstance: {} as ModuleType,
+      wasmInstance,
     })
 
     expect(result.framePlane).toBe('XZ')
@@ -622,7 +622,7 @@ describe('GD&T frame defaults', () => {
       engineCommandManager: {
         sendSceneCommand,
       } as unknown as ConnectionManager,
-      wasmInstance: {} as ModuleType,
+      wasmInstance,
     })
 
     expect(sendSceneCommand).not.toHaveBeenCalled()
@@ -648,7 +648,7 @@ describe('GD&T frame defaults', () => {
       } as unknown as ConnectionManager,
       ast,
       sourceCode,
-      wasmInstance: {} as ModuleType,
+      wasmInstance,
     })
 
     expect(sendSceneCommand).not.toHaveBeenCalled()

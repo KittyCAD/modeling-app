@@ -4,6 +4,7 @@ import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { createArrayExpression, createLiteral } from '@src/lang/create'
 import { toUtf16 } from '@src/lang/errors'
+import type { NumberLiteralFormatter } from '@src/lang/numberFormat'
 import { baseUnitToNumericSuffix } from '@src/lang/unitConversion'
 import type {
   ArtifactId,
@@ -23,7 +24,6 @@ import {
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { isEnginePrimitiveSelection } from '@src/lib/selections'
 import { isArray, mmToBaseUnit, roundOff, uuidv4 } from '@src/lib/utils'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EnginePrimitiveSelection,
   Selections,
@@ -403,7 +403,7 @@ export function getAverageBoundingBoxDimension(
 function createFramePositionCommandValue(
   xValue: number,
   yValue: number,
-  wasmInstance: ModuleType
+  wasmInstance: NumberLiteralFormatter
 ): KclCommandValue {
   const valueText = `[${xValue}, ${yValue}]`
   return {
@@ -419,7 +419,7 @@ function createFramePositionCommandValue(
 function createFontSizeCommandValue(
   averageDimension: number,
   outputUnit: UnitLength,
-  wasmInstance: ModuleType
+  wasmInstance: NumberLiteralFormatter
 ): KclCommandValue {
   const value = roundOff(
     averageDimension * GDT_FONT_SIZE_TO_BOUNDING_BOX_AVERAGE_RATIO,
@@ -616,7 +616,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   ast?: Node<Program>
   sourceCode?: string
   outputUnit?: UnitLength
-  wasmInstance: ModuleType
+  wasmInstance: NumberLiteralFormatter
 }): Promise<T> {
   const selections = getSelectionsFromGdtData(data)
   const entityIds = getEngineEntityIdsForGdtSelections(selections)
