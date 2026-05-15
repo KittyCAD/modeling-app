@@ -126,7 +126,7 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
     await test.step('Test setup', async () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await projectCard.click()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Precondition: check the initial code', async () => {

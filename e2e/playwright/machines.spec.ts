@@ -49,7 +49,7 @@ test(
 
     await page.getByText('bracket').click()
 
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     const notFoundText = 'Machine API server was not discovered'
     await expect(page.getByText(notFoundText).first()).not.toBeVisible()
@@ -95,7 +95,7 @@ test(
 
     await page.getByText('bracket').click()
 
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await expect(page.getByText(notFoundText).nth(1)).not.toBeVisible()
 
