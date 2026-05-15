@@ -5,7 +5,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { createArrayExpression, createLiteral } from '@src/lang/create'
 import { toUtf16 } from '@src/lang/errors'
 import type { NumberLiteralFormatter } from '@src/lang/numberFormat'
-import { traverse } from '@src/lang/queryAst'
+import { traverse } from '@src/lang/traverse'
 import { baseUnitToNumericSuffix } from '@src/lang/unitConversion'
 import type {
   ArtifactId,
