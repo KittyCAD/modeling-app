@@ -19,7 +19,7 @@ function CommandBarTextareaInput({
 }) {
   const { commands } = useApp()
   const commandBarState = commands.useState()
-  useHotkeys('mod + k, mod + /', () => commands.send({ type: 'Close' }))
+  useHotkeys('mod + /', () => commands.send({ type: 'Close' }))
   const formRef = useRef<HTMLFormElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   useTextareaAutoGrow(inputRef)

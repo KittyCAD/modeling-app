@@ -2,7 +2,6 @@ import type { ArtifactGraph as RustArtifactGraph } from '@rust/kcl-lib/bindings/
 import type { ArtifactId } from '@rust/kcl-lib/bindings/ArtifactId'
 import type { CompilationIssue } from '@rust/kcl-lib/bindings/CompilationIssue'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-import type { CoreDumpInfo } from '@rust/kcl-lib/bindings/CoreDumpInfo'
 import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import type { Discovered } from '@rust/kcl-lib/bindings/Discovered'
 import type { ExecOutcome as RustExecOutcome } from '@rust/kcl-lib/bindings/ExecOutcome'
@@ -35,7 +34,6 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type { Coords2d } from '@src/lang/util'
 import { isTopLevelModule } from '@src/lang/util'
-import type { CoreDumpManager } from '@src/lib/coredump'
 import { Reason, err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
@@ -52,6 +50,7 @@ export type {
   CodeRef,
   PrimitiveEdge as PrimitiveEdgeArtifact,
   EdgeCut,
+  GdtAnnotationArtifact,
   PrimitiveFace as PrimitiveFaceArtifact,
   Path as PathArtifact,
   Plane as PlaneArtifact,
@@ -709,23 +708,6 @@ export function getTangentialArcToInfo({
     endAngle: result.end_angle,
     ccw: result.ccw > 0,
     arcLength: result.arc_length,
-  }
-}
-
-export async function coreDump(
-  coreDumpManager: CoreDumpManager,
-  wasmInstancePromise: Promise<ModuleType>
-): Promise<CoreDumpInfo> {
-  try {
-    console.warn('CoreDump: Initializing core dump')
-    const wasmInstance = await wasmInstancePromise
-    const dump: CoreDumpInfo = await wasmInstance.coredump(coreDumpManager)
-    console.log('CoreDump: final coredump', dump)
-    console.log('CoreDump: final coredump JSON', JSON.stringify(dump))
-    return dump
-  } catch (e: any) {
-    console.error('CoreDump: error', e)
-    return Promise.reject(new Error(`Error getting core dump: ${e}`))
   }
 }
 

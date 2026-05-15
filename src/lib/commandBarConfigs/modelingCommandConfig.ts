@@ -30,9 +30,9 @@ import {
   KCL_PLANE_XZ,
   KCL_PLANE_YZ,
   KCL_DEFAULT_TOLERANCE,
+  KCL_DEFAULT_DATUM_REFS,
   KCL_DEFAULT_PRECISION,
-  KCL_DEFAULT_FONT_POINT_SIZE,
-  KCL_DEFAULT_FONT_SCALE,
+  KCL_DEFAULT_FONT_SIZE,
   type KclPreludeBodyType,
   KCL_PRELUDE_BODY_TYPE_VALUES,
   KCL_PRELUDE_EXTRUDE_METHOD_VALUES,
@@ -81,6 +81,7 @@ import {
 import {
   addAppearance,
   addClone,
+  addMirror3D,
   addRotate,
   addScale,
   addTranslate,
@@ -93,6 +94,11 @@ import { addBlend, addChamfer, addFillet } from '@src/lang/modifyAst/edges'
 import {
   addFlatnessGdt,
   addDatumGdt,
+  addPositionGdt,
+  addAnnotationGdt,
+  addParallelismGdt,
+  addPerpendicularityGdt,
+  addDistanceGdt,
   addProfileGdt,
   getNextAvailableDatumName,
 } from '@src/lang/modifyAst/gdt'
@@ -247,14 +253,14 @@ export type ModelingCommandSchema = {
   Shell: {
     // Enables editing workflow
     nodeToEdit?: PathToNode
-    // KCL stdlib arguments, note that we'll be inferring solids from faces here
+    // KCL stdlib arguments, with solids inferred from faces here
     faces: Selections
     thickness: KclCommandValue
   }
   Hole: {
     // Enables editing workflow
     nodeToEdit?: PathToNode
-    // KCL stdlib arguments, note that we'll be inferring solids from faces here
+    // KCL stdlib arguments, with solids inferred from faces here
     face: Selections
     cutAt: KclCommandValue
     holeBody: HoleBody
@@ -408,6 +414,10 @@ export type ModelingCommandSchema = {
     objects: Selections
     variableName: string
   }
+  'Mirror 3D': {
+    bodies: Selections
+    across: Selections
+  }
   'Pattern Circular 3D': {
     nodeToEdit?: PathToNode
     solids: Selections
@@ -434,20 +444,70 @@ export type ModelingCommandSchema = {
     framePosition?: KclCommandValue
     framePlane?: string
     leaderScale?: KclCommandValue
-    fontPointSize?: KclCommandValue
-    fontScale?: KclCommandValue
+    fontSize?: KclCommandValue
   }
-  'GDT Profile': {
+  'GDT Position': {
     nodeToEdit?: PathToNode
-    edges: Selections
-    datums?: string
+    objects: Selections
+    datums?: KclCommandValue
     tolerance: KclCommandValue
     precision?: KclCommandValue
     framePosition?: KclCommandValue
     framePlane?: string
     leaderScale?: KclCommandValue
-    fontPointSize?: KclCommandValue
-    fontScale?: KclCommandValue
+    fontSize?: KclCommandValue
+  }
+  'GDT Profile': {
+    nodeToEdit?: PathToNode
+    edges: Selections
+    datums?: KclCommandValue
+    tolerance: KclCommandValue
+    precision?: KclCommandValue
+    framePosition?: KclCommandValue
+    framePlane?: string
+    leaderScale?: KclCommandValue
+    fontSize?: KclCommandValue
+  }
+  'GDT Distance': {
+    nodeToEdit?: PathToNode
+    objects: Selections
+    tolerance: KclCommandValue
+    precision?: KclCommandValue
+    framePosition?: KclCommandValue
+    framePlane?: string
+    leaderScale?: KclCommandValue
+    fontSize?: KclCommandValue
+  }
+  'GDT Perpendicularity': {
+    nodeToEdit?: PathToNode
+    objects: Selections
+    datums?: KclCommandValue
+    tolerance: KclCommandValue
+    precision?: KclCommandValue
+    framePosition?: KclCommandValue
+    framePlane?: string
+    leaderScale?: KclCommandValue
+    fontSize?: KclCommandValue
+  }
+  'GDT Parallelism': {
+    nodeToEdit?: PathToNode
+    objects: Selections
+    datums?: KclCommandValue
+    tolerance: KclCommandValue
+    precision?: KclCommandValue
+    framePosition?: KclCommandValue
+    framePlane?: string
+    leaderScale?: KclCommandValue
+    fontSize?: KclCommandValue
+  }
+  'GDT Annotation': {
+    nodeToEdit?: PathToNode
+    objects: Selections
+    annotation: string
+    framePosition?: KclCommandValue
+    framePlane?: string
+    leaderScale?: KclCommandValue
+    fontSize?: KclCommandValue
   }
   'GDT Datum': {
     nodeToEdit?: PathToNode
@@ -456,8 +516,7 @@ export type ModelingCommandSchema = {
     framePosition?: KclCommandValue
     framePlane?: string
     leaderScale?: KclCommandValue
-    fontPointSize?: KclCommandValue
-    fontScale?: KclCommandValue
+    fontSize?: KclCommandValue
   }
   'Boolean Subtract': {
     solids: Selections
@@ -489,6 +548,64 @@ export type ModelingCommandSchema = {
     selection: Selections
   }
 }
+
+const kclDatumArrayToInput = (value: string) => {
+  const trimmed = value.trim()
+  const quotedDatumRefs = [...trimmed.matchAll(/["']([^"']+)["']/g)].map(
+    ([, datumRef]) => datumRef
+  )
+  if (quotedDatumRefs.length > 0) {
+    return quotedDatumRefs.join(', ')
+  }
+
+  return trimmed
+}
+
+const datumInputToKclArray = (value: string) => {
+  const trimmed = value.trim()
+  if (
+    trimmed === '' ||
+    trimmed.startsWith('[') ||
+    trimmed.startsWith('"') ||
+    trimmed.startsWith("'")
+  ) {
+    return trimmed
+  }
+
+  const datumRefs = trimmed
+    .split(',')
+    .map((datumRef) => datumRef.trim())
+    .filter(Boolean)
+  const isDatumRefList = datumRefs.every((datumRef) =>
+    /^[A-Z][A-Z0-9_-]*$/.test(datumRef)
+  )
+  if (!isDatumRefList) {
+    return trimmed
+  }
+
+  return `[${datumRefs.map((datumRef) => JSON.stringify(datumRef)).join(', ')}]`
+}
+
+const summarizeDatumKclValue = (value?: KclCommandValue) =>
+  value
+    ? kclDatumArrayToInput(
+        value.valueCalculated === 'NAN'
+          ? value.valueText
+          : value.valueCalculated
+      )
+    : ''
+
+const datumsProps = {
+  inputType: 'kcl',
+  defaultValue: KCL_DEFAULT_DATUM_REFS,
+  allowArrays: true,
+  allowStringArrays: true,
+  allowUncalculated: true,
+  inputToKclValue: datumInputToKclArray,
+  kclValueToInput: kclDatumArrayToInput,
+  valueSummary: summarizeDatumKclValue,
+  required: false,
+} satisfies CommandArgumentConfig<KclCommandValue, ModelingMachineContext>
 
 export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   typeof modelingMachine,
@@ -797,7 +914,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         clearSelectionFirst: true,
         required: false,
         multiple: false,
-        description: 'Note: Only parallel faces are supported for now.',
+        description: 'Only parallel faces are supported for now.',
       },
       symmetric: {
         inputType: 'boolean',
@@ -1496,10 +1613,17 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       plane: {
         inputType: 'selection',
-        selectionTypes: ['plane', 'cap', 'wall', 'edgeCut'],
+        selectionTypes: [
+          'plane',
+          'planeOfFace',
+          'cap',
+          'wall',
+          'edgeCut',
+          'enginePrimitiveFace',
+          'primitiveFace',
+        ],
         multiple: false,
         required: true,
-        skip: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       offset: {
@@ -2357,6 +2481,64 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
+  'Mirror 3D': {
+    description: 'Mirror solids across a plane or edge.',
+    icon: 'mirror3d',
+    displayName: 'Mirror',
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addMirror3D({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Mirror 3D']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        variables: kclManager.variables,
+        wasmInstance: await kclManager.wasmInstancePromise,
+      })
+      if (err(modRes)) {
+        return modRes
+      }
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) {
+        return execRes
+      }
+    },
+    args: {
+      bodies: {
+        ...objectsTypesAndFilters,
+        inputType: 'selectionMixed',
+        multiple: true,
+        required: true,
+      },
+      across: {
+        inputType: 'selection',
+        selectionTypes: [
+          'plane',
+          'cap',
+          'wall',
+          'edgeCut',
+          'enginePrimitiveFace',
+          'segment',
+          'sweepEdge',
+          'edgeCutEdge',
+        ],
+        clearSelectionFirst: true,
+        multiple: false,
+        required: true,
+      },
+    },
+  },
   'Pattern Circular 3D': {
     description: 'Create a circular pattern of 3D solids around an axis.',
     icon: 'patternCircular3d',
@@ -2522,7 +2704,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    status: 'experimental',
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -2564,14 +2745,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_LEADER_SCALE,
         required: false,
       },
-      fontPointSize: {
+      fontSize: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_POINT_SIZE,
-        required: false,
-      },
-      fontScale: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_SCALE,
+        defaultValue: KCL_DEFAULT_FONT_SIZE,
         required: false,
       },
     },
@@ -2604,7 +2780,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    status: 'experimental',
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -2644,14 +2819,88 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_LEADER_SCALE,
         required: false,
       },
-      fontPointSize: {
+      fontSize: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_POINT_SIZE,
+        defaultValue: KCL_DEFAULT_FONT_SIZE,
         required: false,
       },
-      fontScale: {
+    },
+  },
+  'GDT Position': {
+    description:
+      'Add position geometric dimensioning & tolerancing annotation to faces and edges.',
+    icon: 'gdtPosition',
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addPositionGdt({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Position']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      objects: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+        multiple: true,
+        required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      datums: {
+        ...datumsProps,
+      },
+      tolerance: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_SCALE,
+        defaultValue: KCL_DEFAULT_TOLERANCE,
+        required: true,
+      },
+      precision: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_PRECISION,
+        required: false,
+      },
+      framePosition: {
+        inputType: 'vector2d',
+        defaultValue: KCL_DEFAULT_ORIGIN_2D,
+        required: false,
+      },
+      framePlane: {
+        inputType: 'options',
+        defaultValue: KCL_PLANE_XY,
+        options: [
+          { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
+          { name: 'XZ Plane', value: KCL_PLANE_XZ },
+          { name: 'YZ Plane', value: KCL_PLANE_YZ },
+        ],
+        required: false,
+      },
+      leaderScale: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LEADER_SCALE,
+        required: false,
+      },
+      fontSize: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_FONT_SIZE,
         required: false,
       },
     },
@@ -2684,7 +2933,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       )
       if (err(execRes)) return execRes
     },
-    status: 'experimental',
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -2697,8 +2945,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       datums: {
-        inputType: 'string',
-        required: false,
+        ...datumsProps,
       },
       tolerance: {
         inputType: 'kcl',
@@ -2730,14 +2977,317 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_LEADER_SCALE,
         required: false,
       },
-      fontPointSize: {
+      fontSize: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_POINT_SIZE,
+        defaultValue: KCL_DEFAULT_FONT_SIZE,
         required: false,
       },
-      fontScale: {
+    },
+  },
+  'GDT Distance': {
+    description:
+      'Add an MBD distance annotation to an edge length or between two faces or edges.',
+    icon: 'dimension',
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addDistanceGdt({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Distance']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) {
+        return modRes
+      }
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) {
+        return execRes
+      }
+    },
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      objects: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+        multiple: true,
+        required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      tolerance: {
         inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_FONT_SCALE,
+        defaultValue: KCL_DEFAULT_TOLERANCE,
+        required: true,
+      },
+      precision: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_PRECISION,
+        required: false,
+      },
+      framePosition: {
+        inputType: 'vector2d',
+        defaultValue: KCL_DEFAULT_ORIGIN_2D,
+        required: false,
+      },
+      framePlane: {
+        inputType: 'options',
+        defaultValue: KCL_PLANE_XY,
+        options: [
+          { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
+          { name: 'XZ Plane', value: KCL_PLANE_XZ },
+          { name: 'YZ Plane', value: KCL_PLANE_YZ },
+        ],
+        required: false,
+      },
+      leaderScale: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LEADER_SCALE,
+        required: false,
+      },
+      fontSize: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_FONT_SIZE,
+        required: false,
+      },
+    },
+  },
+  'GDT Perpendicularity': {
+    description:
+      'Add perpendicularity geometric dimensioning & tolerancing annotation to faces and edges.',
+    icon: 'perpendicular',
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addPerpendicularityGdt({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Perpendicularity']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      objects: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+        multiple: true,
+        required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      datums: {
+        ...datumsProps,
+      },
+      tolerance: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TOLERANCE,
+        required: true,
+      },
+      precision: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_PRECISION,
+        required: false,
+      },
+      framePosition: {
+        inputType: 'vector2d',
+        defaultValue: KCL_DEFAULT_ORIGIN_2D,
+        required: false,
+      },
+      framePlane: {
+        inputType: 'options',
+        defaultValue: KCL_PLANE_XY,
+        options: [
+          { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
+          { name: 'XZ Plane', value: KCL_PLANE_XZ },
+          { name: 'YZ Plane', value: KCL_PLANE_YZ },
+        ],
+        required: false,
+      },
+      leaderScale: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LEADER_SCALE,
+        required: false,
+      },
+      fontSize: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_FONT_SIZE,
+        required: false,
+      },
+    },
+  },
+  'GDT Parallelism': {
+    description:
+      'Add parallelism geometric dimensioning & tolerancing annotation to faces and edges.',
+    icon: 'parallel',
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addParallelismGdt({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Parallelism']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      objects: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+        multiple: true,
+        required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      datums: {
+        ...datumsProps,
+      },
+      tolerance: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TOLERANCE,
+        required: true,
+      },
+      precision: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_PRECISION,
+        required: false,
+      },
+      framePosition: {
+        inputType: 'vector2d',
+        defaultValue: KCL_DEFAULT_ORIGIN_2D,
+        required: false,
+      },
+      framePlane: {
+        inputType: 'options',
+        defaultValue: KCL_PLANE_XY,
+        options: [
+          { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
+          { name: 'XZ Plane', value: KCL_PLANE_XZ },
+          { name: 'YZ Plane', value: KCL_PLANE_YZ },
+        ],
+        required: false,
+      },
+      leaderScale: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LEADER_SCALE,
+        required: false,
+      },
+      fontSize: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_FONT_SIZE,
+        required: false,
+      },
+    },
+  },
+  'GDT Annotation': {
+    description: 'Add model-based definition annotation to faces and edges.',
+    icon: 'text',
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addAnnotationGdt({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Annotation']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      objects: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+        multiple: true,
+        required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      annotation: {
+        inputType: 'text',
+        defaultValue: 'BREAK ALL SHARP EDGES',
+        required: true,
+      },
+      framePosition: {
+        inputType: 'vector2d',
+        defaultValue: KCL_DEFAULT_ORIGIN_2D,
+        required: false,
+      },
+      framePlane: {
+        inputType: 'options',
+        defaultValue: KCL_PLANE_XY,
+        options: [
+          { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
+          { name: 'XZ Plane', value: KCL_PLANE_XZ },
+          { name: 'YZ Plane', value: KCL_PLANE_YZ },
+        ],
+        required: false,
+      },
+      leaderScale: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LEADER_SCALE,
+        required: false,
+      },
+      fontSize: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_FONT_SIZE,
         required: false,
       },
     },
@@ -2891,7 +3441,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
         multiple: true,
         required: true,
-        description: 'Note: Only straight edges are supported now.',
+        description: 'Only straight edges are supported now.',
       },
     },
   },

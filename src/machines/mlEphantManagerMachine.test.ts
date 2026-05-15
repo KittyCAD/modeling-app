@@ -1,16 +1,40 @@
-import { expect, describe, it, vi } from 'vitest'
-import { createActor, fromPromise, waitFor } from 'xstate'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import type { ClientErrorReport } from '@kittycad/lib'
+import type { FileMeta } from '@src/lib/types'
+import { resetReportedClientErrorsForTests } from '@src/lib/clientErrors'
+
 import {
+  type Conversation,
+  type MlCopilotModeOption,
   MlEphantConversationToMarkdown,
+  type MlEphantManagerContext,
   type MlEphantManagerEvents,
   MlEphantManagerStates,
   MlEphantManagerTransitions,
-  type Conversation,
-  type MlEphantManagerContext,
   mlEphantManagerMachine,
+  parseMlCopilotModesResult,
 } from '@src/machines/mlEphantManagerMachine'
 import { S } from '@src/machines/utils'
-import type { FileMeta } from '@src/lib/types'
+import { createActor, fromPromise, waitFor } from 'xstate'
+
+function stubClientErrorFetch() {
+  resetReportedClientErrorsForTests()
+  const reports: ClientErrorReport[] = []
+  const fetchMock = vi
+    .spyOn(globalThis, 'fetch')
+    .mockImplementation(async (_input, init) => {
+      if (typeof init?.body !== 'string') {
+        throw new Error('Expected a client error report request body')
+      }
+      reports.push(JSON.parse(init.body))
+
+      return new Response(JSON.stringify({ accepted: true }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    })
+  return { fetchMock, reports }
+}
 
 class TestSocket extends EventTarget {
   sentPayloads: string[] = []
@@ -49,6 +73,111 @@ const completedConversation: Conversation = {
 }
 
 describe('mlEphantManagerMachine', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  describe('parseMlCopilotModesResult', () => {
+    const modes = [
+      {
+        id: 'standard',
+        label: 'Standard',
+        description: 'Faster reasoning. Best for quick edits and simple tasks.',
+        icon: 'stopwatch',
+      },
+      {
+        id: 'deep',
+        label: 'Deep',
+        description: 'More thorough reasoning. Best for complex designs.',
+        icon: 'brain',
+      },
+    ]
+
+    it('parses the modes_response envelope from the API', () => {
+      expect(
+        parseMlCopilotModesResult({
+          modes_response: { default_mode: 'standard', modes },
+        })
+      ).toStrictEqual({ defaultMode: 'standard', modeOptions: modes })
+    })
+
+    it('returns null for unrelated payloads', () => {
+      expect(parseMlCopilotModesResult({ something_else: true })).toBeNull()
+    })
+
+    it('keeps the response but exposes no options when every mode entry fails validation', () => {
+      expect(
+        parseMlCopilotModesResult({
+          modes_response: {
+            default_mode: 'standard',
+            modes: [
+              {
+                id: 'standard',
+                label: 'Standard',
+                description: 'Faster reasoning.',
+                icon: 'not-a-real-icon',
+              },
+            ],
+          },
+        })
+      ).toStrictEqual({ defaultMode: 'standard', modeOptions: [] })
+    })
+  })
+
+  describe('ModesReceive', () => {
+    it('updates mode metadata before the machine reaches ready', async () => {
+      const ws: TestWebSocket = new TestSocket() as TestWebSocket
+      const modeOptions: MlCopilotModeOption[] = [
+        {
+          id: 'standard',
+          label: 'Standard',
+          description: 'Faster reasoning.',
+          icon: 'stopwatch',
+        },
+      ]
+      const machine = mlEphantManagerMachine.provide({
+        actors: {
+          [MlEphantManagerStates.Setup]: fromPromise<
+            Partial<MlEphantManagerContext>,
+            SetupActorInput
+          >(async () => ({
+            ws,
+            conversation: { exchanges: [] },
+          })),
+        },
+      })
+      const actor = createActor(machine, {
+        input: {
+          apiToken: '',
+        },
+      }).start()
+
+      actor.send({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+      })
+
+      await waitFor(actor, (state) =>
+        state.matches(MlEphantManagerStates.WaitForContinueCheck)
+      )
+
+      actor.send({
+        type: MlEphantManagerTransitions.ModesReceive,
+        defaultMode: 'standard',
+        modeOptions,
+      })
+
+      expect(actor.getSnapshot().context.defaultMode).toBe('standard')
+      expect(actor.getSnapshot().context.modeOptions).toStrictEqual(modeOptions)
+
+      actor.stop()
+    })
+  })
+
   describe('ContinueCheck', () => {
     it('sends continue requests when the last exchange was interrupted', async () => {
       const ws: TestWebSocket = new TestSocket() as TestWebSocket
@@ -115,6 +244,7 @@ describe('mlEphantManagerMachine', () => {
         type: MlEphantManagerStates.ContinueCheck,
         projectName: 'zoo-project',
         projectFiles,
+        activeFile: 'newFile.kcl',
       })
 
       await waitFor(actor, (state) =>
@@ -134,6 +264,7 @@ describe('mlEphantManagerMachine', () => {
             'main.kcl': Array.from(new TextEncoder().encode('cube()')),
             'notes.txt': Array.from(new TextEncoder().encode('notes')),
           },
+          active_file: 'newFile.kcl',
         }),
       ])
 
@@ -198,6 +329,7 @@ describe('mlEphantManagerMachine', () => {
     })
 
     it('keeps recoverable context after an abrupt close', async () => {
+      const { fetchMock } = stubClientErrorFetch()
       const ws: TestWebSocket = new TestSocket() as TestWebSocket
       const machine = mlEphantManagerMachine.provide({
         actors: {
@@ -247,6 +379,67 @@ describe('mlEphantManagerMachine', () => {
       )
       expect(actor.getSnapshot().context.conversationId).toBe('conversation-id')
       expect(actor.getSnapshot().context.abruptlyClosed).toBe(true)
+      expect(fetchMock).not.toHaveBeenCalled()
+
+      actor.stop()
+    })
+  })
+
+  describe('client-side actor errors', () => {
+    it('reports local actor invocation failures', async () => {
+      const { fetchMock, reports } = stubClientErrorFetch()
+      const machine = mlEphantManagerMachine.provide({
+        actors: {
+          [MlEphantManagerStates.Setup]: fromPromise<
+            Partial<MlEphantManagerContext>,
+            SetupActorInput
+          >(async () => ({
+            conversation: { exchanges: [] },
+            conversationId: 'conversation-id',
+          })),
+        },
+      })
+      const actor = createActor(machine, {
+        input: {
+          apiToken: '',
+        },
+      }).start()
+
+      actor.send({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+      })
+
+      await waitFor(actor, (state) =>
+        state.matches(MlEphantManagerStates.WaitForContinueCheck)
+      )
+
+      actor.send({
+        type: MlEphantManagerStates.ContinueCheck,
+        projectName: 'zoo-project',
+        projectFiles: [],
+      })
+
+      await waitFor(actor, (state) => state.matches(S.Await))
+
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+      expect(reports).toHaveLength(1)
+      const report = reports[0]
+      if (!report) {
+        throw new Error('Expected a client error report')
+      }
+      expect(report).toMatchObject({
+        code: 'zookeeper_actor_error',
+        error_name: 'Error',
+        message: 'WebSocket not present',
+      })
+      if (typeof report.stack !== 'string') {
+        throw new Error('Expected client error report stack')
+      }
+      expect(JSON.parse(report.stack)).toMatchObject({
+        source: 'MlEphantManagerMachine',
+        conversationId: 'conversation-id',
+      })
 
       actor.stop()
     })

@@ -110,7 +110,7 @@ test.describe(
         })
 
         // Go to the hotkey for Command Palette.
-        const commandPalette = page.getByText('Toggle Command Palette')
+        const commandPalette = page.getByText('Open Command Palette')
         await commandPalette.scrollIntoViewIfNeeded()
 
         // The heading is above it and should be in view now.
@@ -709,6 +709,7 @@ test.describe(
         const toolbar = page.locator('menu').filter({ hasText: 'Start Sketch' })
 
         await test.step(`Test setup`, async () => {
+          await page.emulateMedia({ colorScheme: 'light' })
           await page.setBodyDimensions({ width: 1200, height: 500 })
           await homePage.goToModelingScene()
           await u.waitForPageLoad()
