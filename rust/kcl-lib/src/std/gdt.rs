@@ -65,6 +65,20 @@ fn gdt_font_scale_for_height_mm(requested_height_mm: f64) -> f32 {
     (requested_height_mm / GDT_FONT_SCALE_1_HEIGHT_MM) as f32
 }
 
+async fn set_engine_scene_units(
+    exec_state: &mut ExecState,
+    args: &Args,
+    units: kcmc::units::UnitLength,
+) -> Result<(), KclError> {
+    let id = exec_state.next_uuid();
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(exec_state, args, id),
+            ModelingCmd::from(mcmd::SetSceneUnits::builder().unit(units).build()),
+        )
+        .await
+}
+
 #[derive(Debug, Clone)]
 enum DistanceEntity {
     Face(Box<Face>),
@@ -1051,6 +1065,7 @@ async fn create_basic_distance_annotation(
 ) -> Result<(), KclError> {
     let meta = vec![Metadata::from(args.source_range)];
     let annotation_id = exec_state.next_uuid();
+    let display_units = exec_state.length_unit();
     let dimension = AnnotationBasicDimension::builder()
         .from_entity_id(from.entity_id)
         .from_entity_pos(from.entity_pos)
@@ -1058,7 +1073,7 @@ async fn create_basic_distance_annotation(
         .to_entity_pos(to.entity_pos)
         .dimension(
             AnnotationMbdBasicDimension::builder()
-                .tolerance(tolerance.to_mm())
+                .tolerance(tolerance.to_length_units(display_units))
                 .build(),
         )
         .plane_id(frame_plane_id)
@@ -1076,7 +1091,13 @@ async fn create_basic_distance_annotation(
         .arrow_scale(leader_scale.map(|n| n.n as f32).unwrap_or(1.0))
         .build();
     let options = AnnotationOptions::builder().dimension(dimension).build();
-    exec_state
+    // The engine formats auto-measured MBD distance labels from its current scene units.
+    // Flip only around this annotation so KCL-authored offset/font values keep their existing mm behavior.
+    let use_display_units = display_units != kcmc::units::UnitLength::Millimeters;
+    if use_display_units {
+        set_engine_scene_units(exec_state, args, display_units).await?;
+    }
+    let annotation_result = exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
             ModelingCmd::from(
@@ -1087,7 +1108,16 @@ async fn create_basic_distance_annotation(
                     .build(),
             ),
         )
-        .await?;
+        .await;
+    let reset_result = if use_display_units {
+        Some(set_engine_scene_units(exec_state, args, kcmc::units::UnitLength::Millimeters).await)
+    } else {
+        None
+    };
+    annotation_result?;
+    if let Some(reset_result) = reset_result {
+        reset_result?;
+    }
     add_gdt_annotation_artifact(exec_state, args, annotation_id);
     annotations.push(GdtAnnotation {
         id: annotation_id,
