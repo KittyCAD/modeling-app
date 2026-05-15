@@ -342,6 +342,13 @@ type ZookeeperErrorContext = Pick<
   readyState: ReturnType<typeof getWebSocketReadyStateLabel>
 }
 
+enum ZookeeperClientErrorCode {
+  ActorError = 'zookeeper_actor_error',
+  SetupError = 'zookeeper_setup_error',
+  WebsocketBinaryDecodeError = 'zookeeper_websocket_binary_decode_error',
+  WebsocketJsonParseError = 'zookeeper_websocket_json_parse_error',
+}
+
 function zookeeperErrorContext(
   context: MlEphantManagerContext
 ): ZookeeperErrorContext {
@@ -357,7 +364,7 @@ function zookeeperErrorContext(
 }
 
 function reportZookeeperClientError(args: {
-  code: string
+  code: ZookeeperClientErrorCode
   error: Error
   dedupeKey?: string
   extra?: Record<string, unknown>
@@ -588,7 +595,7 @@ export const mlEphantManagerMachine = setup({
       if (!isErr(error)) return
 
       reportZookeeperClientError({
-        code: 'zookeeper_actor_error',
+        code: ZookeeperClientErrorCode.ActorError,
         error,
         dedupeKey: `MlEphantManagerMachine:actor-error:${event.type}:${error.message}`,
         extra: {
@@ -604,7 +611,7 @@ export const mlEphantManagerMachine = setup({
       if (!isErr(event.error)) return
 
       reportZookeeperClientError({
-        code: 'zookeeper_setup_error',
+        code: ZookeeperClientErrorCode.SetupError,
         error: event.error,
         dedupeKey: `MlEphantManagerMachine:setup-error:${event.error.message}`,
         extra: {
@@ -780,7 +787,7 @@ export const mlEphantManagerMachine = setup({
                 if (!isErr(msgpackError)) return
 
                 reportZookeeperClientError({
-                  code: 'zookeeper_websocket_binary_decode_error',
+                  code: ZookeeperClientErrorCode.WebsocketBinaryDecodeError,
                   error: msgpackError,
                   dedupeKey: `MlEphantManagerMachine:binary-decode:${String(conversationId)}:${msgpackError.message}`,
                   extra: {
@@ -800,7 +807,7 @@ export const mlEphantManagerMachine = setup({
                 if (!isErr(e)) return
 
                 reportZookeeperClientError({
-                  code: 'zookeeper_websocket_json_parse_error',
+                  code: ZookeeperClientErrorCode.WebsocketJsonParseError,
                   error: e,
                   dedupeKey: `MlEphantManagerMachine:json-parse:${String(conversationId)}:${e.message}`,
                   extra: {
