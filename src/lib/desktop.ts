@@ -290,9 +290,6 @@ const collectAllFilesRecursiveFrom = async (
   const configurationFileNames = new Set([
     SETTINGS_FILE_NAME,
     PROJECT_SETTINGS_FILE_NAME,
-    TELEMETRY_FILE_NAME,
-    TELEMETRY_RAW_FILE_NAME,
-    ENVIRONMENT_FILE_NAME,
   ])
 
   // Make sure the filesystem object exists.
@@ -491,11 +488,8 @@ export async function getProjectInfo(
   const { value: canReadWriteProjectPath } =
     await canReadWriteDirectory(projectPath)
 
-  const projectSettings = await readProjectSettingsFile(
-    projectPath,
-    wasmInstance
-  )
-  const showAllFiles = projectSettings.settings?.app?.show_all_files === true
+  const appSettings = await readAppSettingsFile(wasmInstance)
+  const showAllFiles = appSettings.settings?.app?.show_all_files === true
 
   // Return walked early if canReadWriteProjectPath is false
   let walked = await collectAllFilesRecursiveFrom(

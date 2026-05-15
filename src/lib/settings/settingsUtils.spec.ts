@@ -189,6 +189,7 @@ describe('project settings serialization regression', () => {
           onboardingStatus: 'dismissed',
           allowOrbitInSketchMode: true,
           machineApi: true,
+          showAllFiles: true,
           projectDirectory: '/tmp/projects',
         },
         debug: {
@@ -230,6 +231,7 @@ describe('project settings serialization regression', () => {
     expect(serializedToml).toContain('onboarding_status = "dismissed"')
     expect(serializedToml).toContain('allow_orbit_in_sketch_mode = true')
     expect(serializedToml).toContain('machine_api = true')
+    expect(serializedToml).toContain('show_all_files = true')
     expect(serializedToml).toContain('[settings.debug]')
     expect(serializedToml).toContain('show_panel = true')
     expect(serializedToml).toContain('show_modeling_machine_state = true')
@@ -262,6 +264,7 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.app?.onboardingStatus).toBe('dismissed')
     expect(parsedPayload.app?.allowOrbitInSketchMode).toBe(true)
     expect(parsedPayload.app?.machineApi).toBe(true)
+    expect(parsedPayload.app?.showAllFiles).toBe(true)
     expect(parsedPayload.app?.projectDirectory).toBe('/tmp/projects')
     expect(parsedPayload.debug?.showPanel).toBe(true)
     expect(parsedPayload.debug?.showModelingMachineState).toBe(true)
@@ -430,7 +433,7 @@ describe('project settings serialization regression', () => {
     )
   })
 
-  it('preserves app-owned project settings through wasm round-trip', async () => {
+  it('preserves project-scoped app-owned settings through wasm round-trip', async () => {
     const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
     const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
 
@@ -439,7 +442,6 @@ describe('project settings serialization regression', () => {
         app: {
           onboardingStatus: 'dismissed',
           allowOrbitInSketchMode: true,
-          showAllFiles: true,
         },
         debug: {
           showPanel: false,
@@ -467,7 +469,6 @@ describe('project settings serialization regression', () => {
 
     expect(serializedToml).toContain('onboarding_status = "dismissed"')
     expect(serializedToml).toContain('allow_orbit_in_sketch_mode = true')
-    expect(serializedToml).toContain('show_all_files = true')
     expect(serializedToml).toContain('[settings.debug]')
     expect(serializedToml).toContain('show_panel = false')
     expect(serializedToml).toContain('show_modeling_machine_state = true')
@@ -494,7 +495,6 @@ describe('project settings serialization regression', () => {
     )
     expect(parsedProjectPayload.app?.onboardingStatus).toBe('dismissed')
     expect(parsedProjectPayload.app?.allowOrbitInSketchMode).toBe(true)
-    expect(parsedProjectPayload.app?.showAllFiles).toBe(true)
     expect(parsedProjectPayload.debug?.showPanel).toBe(false)
     expect(parsedProjectPayload.debug?.showModelingMachineState).toBe(true)
     expect(parsedProjectPayload.modeling?.snapToGrid).toBe(true)

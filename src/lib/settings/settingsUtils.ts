@@ -510,6 +510,10 @@ const USER_APP_ONLY_SETTINGS_SECTIONS = [
       { category: 'app', field: 'machineApi' },
       'machine_api'
     ),
+    defineBooleanAppOnlyField(
+      { category: 'app', field: 'showAllFiles' },
+      'show_all_files'
+    ),
   ]),
   defineAppOnlySection('debug', [
     defineBooleanAppOnlyField(
@@ -608,10 +612,6 @@ const PROJECT_APP_ONLY_SETTINGS_SECTIONS = [
     defineBooleanAppOnlyField(
       { category: 'app', field: 'allowOrbitInSketchMode' },
       'allow_orbit_in_sketch_mode'
-    ),
-    defineBooleanAppOnlyField(
-      { category: 'app', field: 'showAllFiles' },
-      'show_all_files'
     ),
   ]),
   defineAppOnlySection('debug', [
