@@ -536,7 +536,7 @@ plane001 = offsetPlane(YZ, offset = 10)`
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step(`Go through the command bar flow`, async () => {
@@ -571,7 +571,7 @@ plane001 = offsetPlane(YZ, offset = 10)`
         commandName: 'Mirror',
       })
       await cmdBar.submit()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step(`Confirm code is added to the editor`, async () => {
@@ -593,7 +593,7 @@ plane001 = offsetPlane(YZ, offset = 10)`
       )
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.not.toContain(expectedMirrorCode)
     })
   })
