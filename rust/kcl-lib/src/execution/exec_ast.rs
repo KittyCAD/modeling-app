@@ -1733,6 +1733,7 @@ impl Node<SketchBlock> {
         // interactions once drag improvements are ready.
         //
         const COINCIDENT_WEIGHT: f64 = 100.0;
+        const FIXED_WEIGHT: f64 = 100.0;
         let constraints = sketch_block_state
             .solver_constraints
             .iter()
@@ -1741,6 +1742,7 @@ impl Node<SketchBlock> {
                 let req = ezpz::ConstraintRequest::highest_priority(c);
                 match c {
                     ezpz::Constraint::PointsCoincident(..) => req.with_weight(COINCIDENT_WEIGHT),
+                    ezpz::Constraint::Fixed(..) => req.with_weight(FIXED_WEIGHT),
                     _ => req,
                 }
             })
@@ -1750,7 +1752,14 @@ impl Node<SketchBlock> {
                     .solver_optional_constraints
                     .iter()
                     .cloned()
-                    .map(|c| ezpz::ConstraintRequest::new(c, 1)),
+                    .map(|c| {
+                        let req = ezpz::ConstraintRequest::new(c, 1);
+                        match c {
+                            ezpz::Constraint::PointsCoincident(..) => req.with_weight(COINCIDENT_WEIGHT),
+                            ezpz::Constraint::Fixed(..) => req.with_weight(FIXED_WEIGHT),
+                            _ => req,
+                        }
+                    }),
             )
             .collect::<Vec<_>>();
         let initial_guesses = sketch_block_state
