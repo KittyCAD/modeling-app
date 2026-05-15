@@ -7,6 +7,7 @@ use super::Digest;
 use super::Expr;
 use super::Node;
 use super::NodeList;
+use super::VisitedState;
 use crate::SourceRange;
 
 // TODO: This should be its own type, similar to Program,
@@ -34,6 +35,9 @@ pub struct ElseIf {
     pub then_val: BoxNode<IfBlock>,
 
     pub digest: Option<Digest>,
+    #[serde(skip)]
+    #[ts(skip)]
+    pub visited: VisitedState,
 }
 
 // Source code metadata

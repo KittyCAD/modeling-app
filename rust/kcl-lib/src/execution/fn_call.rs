@@ -160,6 +160,7 @@ impl Node<CallExpressionKw> {
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<KclValueControlFlow, KclError> {
+        exec_state.record_ast_node_visit(self.visited.set_visited(true));
         let fn_name = &self.callee;
         let callsite: SourceRange = self.into();
 
@@ -1101,6 +1102,7 @@ mod test {
                 default_value: Some(DefaultParamVal::none()),
                 labeled: true,
                 digest: None,
+                visited: Default::default(),
             }
         }
         fn req_param(s: &'static str) -> Parameter {
@@ -1112,6 +1114,7 @@ mod test {
                 default_value: None,
                 labeled: true,
                 digest: None,
+                visited: Default::default(),
             }
         }
         fn additional_program_memory(items: &[(String, KclValue)]) -> Stack {

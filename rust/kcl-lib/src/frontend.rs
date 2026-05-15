@@ -5577,6 +5577,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                         outer_attrs: Default::default(),
                         pre_comments: Default::default(),
                         comment_start: Default::default(),
+                        visited: Default::default(),
                     }));
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
@@ -6085,6 +6086,7 @@ pub(crate) fn to_ast_point2d(point: &Point2d<Expr>) -> anyhow::Result<ast::Expr>
         outer_attrs: Default::default(),
         pre_comments: Default::default(),
         comment_start: Default::default(),
+        visited: Default::default(),
     })))
 }
 
@@ -6126,6 +6128,7 @@ fn to_source_expr(expr: &Expr) -> anyhow::Result<ast::Expr> {
             outer_attrs: Default::default(),
             pre_comments: Default::default(),
             comment_start: Default::default(),
+            visited: Default::default(),
         }))),
         Expr::Var(number) => Ok(ast::Expr::SketchVar(Box::new(ast::Node {
             inner: ast::SketchVar {
@@ -6138,6 +6141,7 @@ fn to_source_expr(expr: &Expr) -> anyhow::Result<ast::Expr> {
                     outer_attrs: Default::default(),
                     pre_comments: Default::default(),
                     comment_start: Default::default(),
+                    visited: Default::default(),
                 })),
                 digest: None,
             },
@@ -6148,6 +6152,7 @@ fn to_source_expr(expr: &Expr) -> anyhow::Result<ast::Expr> {
             outer_attrs: Default::default(),
             pre_comments: Default::default(),
             comment_start: Default::default(),
+            visited: Default::default(),
         }))),
         Expr::Variable(variable) => Ok(ast_name_expr(variable.clone())),
     }
@@ -6178,6 +6183,7 @@ fn ast_name(name: String) -> ast::Node<ast::Name> {
                 outer_attrs: Default::default(),
                 pre_comments: Default::default(),
                 comment_start: Default::default(),
+                visited: Default::default(),
             },
             path: Vec::new(),
             abs_path: false,
@@ -6190,6 +6196,7 @@ fn ast_name(name: String) -> ast::Node<ast::Name> {
         outer_attrs: Default::default(),
         pre_comments: Default::default(),
         comment_start: Default::default(),
+        visited: Default::default(),
     }
 }
 
@@ -6207,6 +6214,7 @@ pub(crate) fn ast_sketch2_name(name: &str) -> ast::Name {
             outer_attrs: Default::default(),
             pre_comments: Default::default(),
             comment_start: Default::default(),
+            visited: Default::default(),
         },
         path: Default::default(),
         abs_path: false,

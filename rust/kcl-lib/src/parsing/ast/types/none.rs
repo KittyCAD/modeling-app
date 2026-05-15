@@ -6,6 +6,7 @@ use serde::Serialize;
 
 use super::super::digest::Digest;
 use super::Node;
+use super::VisitedState;
 use crate::execution::KclValue;
 use crate::parsing::ast::types::ConstraintLevel;
 
@@ -14,7 +15,7 @@ const KCL_NONE_ID: &str = "KCL_NONE_ID";
 /// KCL value for an optional parameter which was not given an argument.
 /// (remember, parameters are in the function declaration,
 /// arguments are in the function call/application).
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, Default, Copy)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, Default)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct KclNone {
@@ -25,6 +26,9 @@ pub struct KclNone {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub digest: Option<Digest>,
+    #[serde(skip)]
+    #[ts(skip)]
+    pub visited: VisitedState,
 }
 
 impl KclNone {
@@ -32,8 +36,10 @@ impl KclNone {
         Self {
             __private: Private {},
             digest: None,
+            visited: VisitedState::default(),
         }
     }
+
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -63,7 +69,7 @@ where
 impl From<&KclNone> for KclValue {
     fn from(none: &KclNone) -> Self {
         KclValue::KclNone {
-            value: *none,
+            value: none.clone(),
             meta: Default::default(),
         }
     }

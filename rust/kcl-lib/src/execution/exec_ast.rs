@@ -1,4 +1,7 @@
 use std::collections::HashMap;
+use std::sync::Arc;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
 
 use async_recursion::async_recursion;
 use ezpz::Constraint;
@@ -107,6 +110,7 @@ use crate::std::StdFnProps;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
 use crate::std::shapes::SketchOrSurface;
+use crate::walk;
 use crate::std::sketch::ensure_sketch_plane_in_engine;
 use crate::std::solver::SOLVER_CONVERGENCE_TOLERANCE;
 use crate::std::solver::create_segments_in_engine;
@@ -628,6 +632,17 @@ impl ExecutorContext {
         path: &ModulePath,
     ) -> Result<ModuleExecutionOutcome, (KclError, Option<EnvironmentRef>, Option<ModuleArtifactState>)> {
         crate::log::log(format!("enter module {path} {}", exec_state.stack()));
+        exec_state.reset_ast_visit_state();
+        let node_count = Arc::new(AtomicUsize::new(0));
+        let node_count_ref = Arc::clone(&node_count);
+        walk::walk(program, |_node: walk::Node<'_>| {
+            _node.set_visited(false);
+            node_count_ref.fetch_add(1, Ordering::Relaxed);
+            Ok::<bool, anyhow::Error>(true)
+        })
+        .map_err(|err| (internal_err(err.to_string(), program), None, None))?;
+        exec_state.register_ast_nodes(node_count.load(Ordering::Relaxed));
+        exec_state.record_ast_node_visit(program.visited.set_visited(true));
 
         // When executing only the new statements in incremental execution or
         // mock executing for sketch mode, we need the scene objects that were
@@ -712,6 +727,7 @@ impl ExecutorContext {
         for statement in block.body() {
             match statement {
                 BodyItem::ImportStatement(import_stmt) => {
+                    exec_state.record_ast_node_visit(import_stmt.visited.set_visited(true));
                     if exec_state.sketch_mode() {
                         continue;
                     }
@@ -874,6 +890,7 @@ impl ExecutorContext {
                     last_expr = None;
                 }
                 BodyItem::ExpressionStatement(expression_statement) => {
+                    exec_state.record_ast_node_visit(expression_statement.visited.set_visited(true));
                     if exec_state.sketch_mode() && sketch_mode_should_skip(&expression_statement.expression) {
                         continue;
                     }
@@ -897,6 +914,8 @@ impl ExecutorContext {
                     }
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
+                    exec_state.record_ast_node_visit(variable_declaration.visited.set_visited(true));
+                    exec_state.record_ast_node_visit(variable_declaration.declaration.visited.set_visited(true));
                     if exec_state.sketch_mode() && sketch_mode_should_skip(&variable_declaration.declaration.init) {
                         continue;
                     }
@@ -1018,6 +1037,7 @@ impl ExecutorContext {
                     last_expr = matches!(body_type, BodyType::Root).then_some(rhs.continue_());
                 }
                 BodyItem::TypeDeclaration(ty) => {
+                    exec_state.record_ast_node_visit(ty.visited.set_visited(true));
                     if exec_state.sketch_mode() {
                         continue;
                     }
@@ -1103,6 +1123,7 @@ impl ExecutorContext {
                     last_expr = None;
                 }
                 BodyItem::ReturnStatement(return_statement) => {
+                    exec_state.record_ast_node_visit(return_statement.visited.set_visited(true));
                     if exec_state.sketch_mode() && sketch_mode_should_skip(&return_statement.argument) {
                         continue;
                     }
@@ -1357,8 +1378,15 @@ impl ExecutorContext {
         statement_kind: StatementKind<'a>,
     ) -> Result<KclValueControlFlow, KclError> {
         let item = match init {
-            Expr::None(none) => KclValue::from(none).continue_(),
-            Expr::Literal(literal) => KclValue::from_literal((**literal).clone(), exec_state).continue_(),
+            Expr::None(none) => {
+                exec_state.record_ast_node_visit(none.visited.set_visited(true));
+                exec_state.record_ast_node_visit(none.inner.visited.set_visited(true));
+                KclValue::from(none).continue_()
+            }
+            Expr::Literal(literal) => {
+                exec_state.record_ast_node_visit(literal.visited.set_visited(true));
+                KclValue::from_literal((**literal).clone(), exec_state).continue_()
+            }
             Expr::TagDeclarator(tag) => tag.execute(exec_state).await?.continue_(),
             Expr::Name(name) => {
                 let being_declared = exec_state.mod_local.being_declared.clone();
@@ -1393,6 +1421,7 @@ impl ExecutorContext {
             }
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
             Expr::FunctionExpression(function_expression) => {
+                exec_state.record_ast_node_visit(function_expression.visited.set_visited(true));
                 let attrs = annotations::get_fn_attrs(annotations, metadata.source_range)?;
                 let experimental = attrs
                     .as_ref()
@@ -1484,27 +1513,30 @@ impl ExecutorContext {
             }
             Expr::CallExpressionKw(call_expression) => call_expression.execute(exec_state, self).await?,
             Expr::PipeExpression(pipe_expression) => pipe_expression.get_result(exec_state, self).await?,
-            Expr::PipeSubstitution(pipe_substitution) => match statement_kind {
-                StatementKind::Declaration { name } => {
-                    let message = format!(
-                        "you cannot declare variable {name} as %, because % can only be used in function calls"
-                    );
+            Expr::PipeSubstitution(pipe_substitution) => {
+                exec_state.record_ast_node_visit(pipe_substitution.visited.set_visited(true));
+                match statement_kind {
+                    StatementKind::Declaration { name } => {
+                        let message = format!(
+                            "you cannot declare variable {name} as %, because % can only be used in function calls"
+                        );
 
-                    return Err(KclError::new_semantic(KclErrorDetails::new(
-                        message,
-                        vec![pipe_substitution.into()],
-                    )));
-                }
-                StatementKind::Expression => match exec_state.mod_local.pipe_value.clone() {
-                    Some(x) => x.continue_(),
-                    None => {
                         return Err(KclError::new_semantic(KclErrorDetails::new(
-                            "cannot use % outside a pipe expression".to_owned(),
+                            message,
                             vec![pipe_substitution.into()],
                         )));
                     }
-                },
-            },
+                    StatementKind::Expression => match exec_state.mod_local.pipe_value.clone() {
+                        Some(x) => x.continue_(),
+                        None => {
+                            return Err(KclError::new_semantic(KclErrorDetails::new(
+                                "cannot use % outside a pipe expression".to_owned(),
+                                vec![pipe_substitution.into()],
+                            )));
+                        }
+                    },
+                }
+            }
             Expr::ArrayExpression(array_expression) => array_expression.execute(exec_state, self).await?,
             Expr::ArrayRangeExpression(range_expression) => range_expression.execute(exec_state, self).await?,
             Expr::ObjectExpression(object_expression) => object_expression.execute(exec_state, self).await?,
@@ -2196,6 +2228,7 @@ impl SketchBlock {
 
 impl Node<SketchVar> {
     pub async fn get_result(&self, exec_state: &mut ExecState, _ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+        exec_state.record_ast_node_visit(self.visited.set_visited(true));
         let Some(sketch_block_state) = &exec_state.mod_local.sketch_block else {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "Cannot use a sketch variable outside of a sketch block".to_owned(),
@@ -2276,7 +2309,10 @@ impl BinaryPart {
         ctx: &ExecutorContext,
     ) -> Result<KclValueControlFlow, KclError> {
         match self {
-            BinaryPart::Literal(literal) => Ok(KclValue::from_literal((**literal).clone(), exec_state).continue_()),
+            BinaryPart::Literal(literal) => {
+                exec_state.record_ast_node_visit(literal.visited.set_visited(true));
+                Ok(KclValue::from_literal((**literal).clone(), exec_state).continue_())
+            }
             BinaryPart::Name(name) => name.get_result(exec_state, ctx).await.cloned().map(KclValue::continue_),
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, ctx).await,
             BinaryPart::CallExpressionKw(call_expression) => call_expression.execute(exec_state, ctx).await,
@@ -2298,6 +2334,7 @@ impl Node<Name> {
         exec_state: &'a mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<&'a KclValue, KclError> {
+        exec_state.record_ast_node_visit(self.visited.set_visited(true));
         let being_declared = exec_state.mod_local.being_declared.clone();
         self.get_result_inner(exec_state, ctx)
             .await
@@ -2407,6 +2444,7 @@ impl Node<MemberExpression> {
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<KclValueControlFlow, KclError> {
+        exec_state.record_ast_node_visit(self.visited.set_visited(true));
         let meta = Metadata {
             source_range: SourceRange::from(self),
         };
@@ -3342,6 +3380,7 @@ impl Node<BinaryExpression> {
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<KclValueControlFlow, KclError> {
+        exec_state.record_ast_node_visit(self.visited.set_visited(true));
         enum State {
             EvaluateLeft(Node<BinaryExpression>),
             FromLeft {
@@ -5117,6 +5156,7 @@ impl Node<UnaryExpression> {
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<KclValueControlFlow, KclError> {
+        exec_state.record_ast_node_visit(self.visited.set_visited(true));
         match self.operator {
             UnaryOperator::Not => {
                 let value = self.argument.get_result(exec_state, ctx).await?;
@@ -5332,6 +5372,7 @@ async fn inner_execute_pipe_body(
 
 impl Node<TagDeclarator> {
     pub async fn execute(&self, exec_state: &mut ExecState) -> Result<KclValue, KclError> {
+        exec_state.record_ast_node_visit(self.visited.set_visited(true));
         let memory_item = KclValue::TagIdentifier(Box::new(TagIdentifier {
             value: self.name.clone(),
             info: Vec::new(),
@@ -5355,6 +5396,7 @@ impl Node<ArrayExpression> {
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<KclValueControlFlow, KclError> {
+        exec_state.record_ast_node_visit(self.visited.set_visited(true));
         let mut results = Vec::with_capacity(self.elements.len());
 
         for element in &self.elements {
@@ -5384,6 +5426,7 @@ impl Node<ArrayRangeExpression> {
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<KclValueControlFlow, KclError> {
+        exec_state.record_ast_node_visit(self.visited.set_visited(true));
         let metadata = Metadata::from(&self.start_element);
         let start_val = ctx
             .execute_expr(
@@ -5470,6 +5513,7 @@ impl Node<ObjectExpression> {
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<KclValueControlFlow, KclError> {
+        exec_state.record_ast_node_visit(self.visited.set_visited(true));
         let mut object = HashMap::with_capacity(self.properties.len());
         for property in &self.properties {
             let metadata = Metadata::from(&property.value);
@@ -5517,6 +5561,7 @@ impl Node<IfExpression> {
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<KclValueControlFlow, KclError> {
+        exec_state.record_ast_node_visit(self.visited.set_visited(true));
         // Check the `if` branch.
         let cond_value = ctx
             .execute_expr(
@@ -5538,6 +5583,7 @@ impl Node<IfExpression> {
 
         // Check any `else if` branches.
         for else_if in &self.else_ifs {
+            exec_state.record_ast_node_visit(else_if.visited.set_visited(true));
             let cond_value = ctx
                 .execute_expr(
                     &else_if.cond,
@@ -5654,6 +5700,7 @@ impl Node<PipeExpression> {
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<KclValueControlFlow, KclError> {
+        exec_state.record_ast_node_visit(self.visited.set_visited(true));
         execute_pipe_body(exec_state, &self.body, self.into(), ctx).await
     }
 }

@@ -1170,6 +1170,7 @@ impl SketchBlock {
                 outer_attrs: Default::default(),
                 pre_comments: Default::default(),
                 comment_start: Default::default(),
+                visited: Default::default(),
             },
             path: Vec::new(),
             abs_path: false,

@@ -62,6 +62,12 @@ pub struct ExecState {
     pub(super) mod_local: ModuleState,
 }
 
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct AstVisitState {
+    pub nodes_total: usize,
+    pub nodes_visited: usize,
+}
+
 pub type ModuleInfoMap = IndexMap<ModuleId, ModuleInfo>;
 
 #[derive(Debug, Clone)]
@@ -82,6 +88,8 @@ pub(super) struct GlobalState {
     pub root_module_artifacts: ModuleArtifactState,
     /// The segments that were edited that triggered this execution.
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
+    /// AST visit counts for the current execution.
+    pub ast_visit: AstVisitState,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -307,6 +315,25 @@ impl ExecState {
         ExecState {
             global: GlobalState::new(&exec_context.settings, Default::default()),
             mod_local: ModuleState::new(ModulePath::Main, ProgramMemory::new(), Default::default(), false, true),
+        }
+    }
+
+    pub fn ast_visit(&self) -> &AstVisitState {
+        &self.global.ast_visit
+    }
+
+    pub(crate) fn register_ast_nodes(&mut self, count: usize) {
+        self.global.ast_visit.nodes_total = count;
+    }
+
+    pub(crate) fn reset_ast_visit_state(&mut self) {
+        self.global.ast_visit.nodes_total = 0;
+        self.global.ast_visit.nodes_visited = 0;
+    }
+
+    pub(crate) fn record_ast_node_visit(&mut self, newly_visited: bool) {
+        if newly_visited {
+            self.global.ast_visit.nodes_visited += 1;
         }
     }
 
@@ -885,6 +912,7 @@ impl GlobalState {
             issues: Default::default(),
             id_to_source: Default::default(),
             segment_ids_edited,
+            ast_visit: Default::default(),
         };
 
         let root_id = ModuleId::default();

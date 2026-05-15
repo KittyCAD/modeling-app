@@ -8,6 +8,8 @@ use std::ops::Deref;
 use std::ops::DerefMut;
 use std::ops::RangeInclusive;
 use std::rc::Rc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 use std::sync::Arc;
 use std::sync::Mutex;
 
@@ -80,6 +82,37 @@ pub struct Node<T> {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub pre_comments: Vec<String>,
     pub comment_start: usize,
+    #[serde(skip)]
+    #[ts(skip)]
+    pub visited: VisitedState,
+}
+
+#[derive(Debug, Default)]
+pub struct VisitedState(AtomicBool);
+
+impl Clone for VisitedState {
+    fn clone(&self) -> Self {
+        Self(AtomicBool::new(self.0.load(Ordering::Relaxed)))
+    }
+}
+
+impl PartialEq for VisitedState {
+    fn eq(&self, other: &Self) -> bool {
+        self.0.load(Ordering::Relaxed) == other.0.load(Ordering::Relaxed)
+    }
+}
+
+impl Eq for VisitedState {}
+
+impl VisitedState {
+    pub fn set_visited(&self, visited: bool) -> bool {
+        if visited {
+            !self.0.swap(true, Ordering::Relaxed)
+        } else {
+            self.0.store(false, Ordering::Relaxed);
+            false
+        }
+    }
 }
 
 impl<T> Node<T> {
@@ -93,6 +126,7 @@ impl<T> Node<T> {
             outer_attrs: Vec::new(),
             pre_comments: Vec::new(),
             comment_start: start,
+            visited: VisitedState::default(),
         }
     }
 
@@ -107,6 +141,7 @@ impl<T> Node<T> {
             outer_attrs: Vec::new(),
             pre_comments: Vec::new(),
             comment_start: start,
+            visited: VisitedState::default(),
         }
     }
 
@@ -120,6 +155,7 @@ impl<T> Node<T> {
             outer_attrs: Vec::new(),
             pre_comments: Vec::new(),
             comment_start: 0,
+            visited: VisitedState::default(),
         }
     }
 
@@ -133,6 +169,7 @@ impl<T> Node<T> {
             outer_attrs: Vec::new(),
             pre_comments: Vec::new(),
             comment_start: start,
+            visited: VisitedState::default(),
         })
     }
 
@@ -153,6 +190,7 @@ impl<T> Node<T> {
             outer_attrs: Vec::new(),
             pre_comments: Vec::new(),
             comment_start: start,
+            visited: VisitedState::default(),
         })
     }
 
@@ -195,6 +233,7 @@ impl<T> Node<T> {
             outer_attrs: self.outer_attrs,
             pre_comments: self.pre_comments,
             comment_start: self.comment_start,
+            visited: self.visited.clone(),
         }
     }
 
@@ -213,8 +252,10 @@ impl<T> Node<T> {
             outer_attrs: self.outer_attrs.clone(),
             pre_comments: self.pre_comments.clone(),
             comment_start: self.start,
+            visited: self.visited.clone(),
         }
     }
+
 }
 
 impl<T> Deref for Node<T> {
@@ -4140,6 +4181,9 @@ pub struct Parameter {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub digest: Option<Digest>,
+    #[serde(skip)]
+    #[ts(skip)]
+    pub visited: VisitedState,
 }
 
 impl Parameter {
@@ -4152,6 +4196,7 @@ impl Parameter {
         let sr = SourceRange::from(self);
         sr.contains_range(range)
     }
+
 }
 
 impl From<&Parameter> for SourceRange {
@@ -4872,6 +4917,7 @@ cylinder = startSketchOn(-XZ)
                         default_value: None,
                         labeled: true,
                         digest: None,
+                        visited: Default::default(),
                     }],
                     body: Program::empty(),
                     return_type: None,
@@ -4894,6 +4940,7 @@ cylinder = startSketchOn(-XZ)
                         default_value: Some(DefaultParamVal::none()),
                         labeled: true,
                         digest: None,
+                        visited: Default::default(),
                     }],
                     body: Program::empty(),
                     return_type: None,
@@ -4917,6 +4964,7 @@ cylinder = startSketchOn(-XZ)
                             default_value: None,
                             labeled: true,
                             digest: None,
+                            visited: Default::default(),
                         },
                         Parameter {
                             experimental: Default::default(),
@@ -4929,6 +4977,7 @@ cylinder = startSketchOn(-XZ)
                             default_value: Some(DefaultParamVal::none()),
                             labeled: true,
                             digest: None,
+                            visited: Default::default(),
                         },
                     ],
                     body: Program::empty(),

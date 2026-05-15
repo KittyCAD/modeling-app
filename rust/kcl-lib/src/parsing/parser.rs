@@ -1579,6 +1579,7 @@ fn else_if(i: &mut TokenSlice) -> ModalResult<Node<ElseIf>> {
             cond,
             then_val,
             digest: Default::default(),
+            visited: Default::default(),
         },
         else_.start,
         end,
@@ -3782,6 +3783,7 @@ fn parameters(i: &mut TokenSlice) -> ModalResult<Vec<Parameter>> {
                     default_value,
                     labeled,
                     digest: None,
+                    visited: Default::default(),
                 })
             },
         )
@@ -3900,6 +3902,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
                     non_code_meta,
                     digest: _,
                 },
+            ..
         } = fn_call;
         if let Some(unlabeled) = unlabeled {
             if is_sketch_block_arg_shorthand(&unlabeled) {
@@ -3925,6 +3928,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
             outer_attrs,
             pre_comments,
             comment_start,
+            visited: Default::default(),
             inner: SketchBlock {
                 arguments,
                 body,
@@ -5659,6 +5663,7 @@ e
                     default_value: Some(DefaultParamVal::none()),
                     labeled: true,
                     digest: None,
+                    visited: Default::default(),
                 }],
                 true,
             ),
@@ -5674,6 +5679,7 @@ e
                     default_value: None,
                     labeled: true,
                     digest: None,
+                    visited: Default::default(),
                 }],
                 true,
             ),
@@ -5690,6 +5696,7 @@ e
                         default_value: None,
                         labeled: true,
                         digest: None,
+                        visited: Default::default(),
                     },
                     Parameter {
                         experimental: Default::default(),
@@ -5702,6 +5709,7 @@ e
                         default_value: Some(DefaultParamVal::none()),
                         labeled: true,
                         digest: None,
+                        visited: Default::default(),
                     },
                 ],
                 true,
@@ -5719,6 +5727,7 @@ e
                         default_value: Some(DefaultParamVal::none()),
                         labeled: true,
                         digest: None,
+                        visited: Default::default(),
                     },
                     Parameter {
                         experimental: Default::default(),
@@ -5731,6 +5740,7 @@ e
                         default_value: None,
                         labeled: true,
                         digest: None,
+                        visited: Default::default(),
                     },
                 ],
                 false,

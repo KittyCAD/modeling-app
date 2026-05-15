@@ -93,6 +93,43 @@ pub enum NodeMut<'a> {
 }
 
 impl Node<'_> {
+    pub fn set_visited(&self, visited: bool) -> bool {
+        match self {
+            Node::Program(n) => n.visited.set_visited(visited),
+            Node::ImportStatement(n) => n.visited.set_visited(visited),
+            Node::ExpressionStatement(n) => n.visited.set_visited(visited),
+            Node::VariableDeclaration(n) => n.visited.set_visited(visited),
+            Node::TypeDeclaration(n) => n.visited.set_visited(visited),
+            Node::ReturnStatement(n) => n.visited.set_visited(visited),
+            Node::VariableDeclarator(n) => n.visited.set_visited(visited),
+            Node::NumericLiteral(n) => n.visited.set_visited(visited),
+            Node::Literal(n) => n.visited.set_visited(visited),
+            Node::TagDeclarator(n) => n.visited.set_visited(visited),
+            Node::Identifier(n) => n.visited.set_visited(visited),
+            Node::Name(n) => n.visited.set_visited(visited),
+            Node::BinaryExpression(n) => n.visited.set_visited(visited),
+            Node::FunctionExpression(n) => n.visited.set_visited(visited),
+            Node::CallExpressionKw(n) => n.visited.set_visited(visited),
+            Node::PipeExpression(n) => n.visited.set_visited(visited),
+            Node::PipeSubstitution(n) => n.visited.set_visited(visited),
+            Node::ArrayExpression(n) => n.visited.set_visited(visited),
+            Node::ArrayRangeExpression(n) => n.visited.set_visited(visited),
+            Node::ObjectExpression(n) => n.visited.set_visited(visited),
+            Node::MemberExpression(n) => n.visited.set_visited(visited),
+            Node::UnaryExpression(n) => n.visited.set_visited(visited),
+            Node::IfExpression(n) => n.visited.set_visited(visited),
+            Node::ElseIf(n) => n.visited.set_visited(visited),
+            Node::LabelledExpression(n) => n.visited.set_visited(visited),
+            Node::AscribedExpression(n) => n.visited.set_visited(visited),
+            Node::SketchBlock(n) => n.visited.set_visited(visited),
+            Node::Block(n) => n.visited.set_visited(visited),
+            Node::SketchVar(n) => n.visited.set_visited(visited),
+            Node::Parameter(p) => p.visited.set_visited(visited),
+            Node::ObjectProperty(n) => n.visited.set_visited(visited),
+            Node::KclNone(n) => n.visited.set_visited(visited),
+        }
+    }
+
     /// Return the digest of the [Node], pulling the underlying Digest from
     /// the AST types.
     ///
