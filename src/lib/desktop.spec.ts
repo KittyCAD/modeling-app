@@ -230,9 +230,13 @@ describe('desktop utilities', () => {
 
     it('shows all non-config non-dot files in project contents', async () => {
       const { instance } = await buildTheWorldNode()
+      const instanceWithProjectSettings = {
+        ...instance,
+        parse_project_settings: vi.fn(() => ({})),
+      }
       const project = await getProjectInfo(
         '/test/projects/valid-project',
-        instance
+        instanceWithProjectSettings
       )
 
       expect(project.children?.map((child) => child.name)).toEqual([
@@ -240,6 +244,43 @@ describe('desktop utilities', () => {
         'file3.kcl',
         'file2.stp',
         'notes.txt',
+        'directory1',
+      ])
+    })
+
+    it('shows config and dot files when project settings enable all files', async () => {
+      mockElectron.readFile.mockImplementation(async (path: string) => {
+        if (path === '/test/projects/valid-project/project.toml') {
+          return '[settings.app]\nshow_all_files = true\n'
+        }
+
+        return ''
+      })
+
+      const { instance } = await buildTheWorldNode()
+      const instanceWithProjectSettings = {
+        ...instance,
+        parse_project_settings: vi.fn(() => ({
+          settings: { app: { show_all_files: true } },
+        })),
+      }
+      const project = await getProjectInfo(
+        '/test/projects/valid-project',
+        instanceWithProjectSettings
+      )
+
+      expect(project.children?.map((child) => child.name)).toEqual([
+        'file1.kcl',
+        'file3.kcl',
+        'file2.stp',
+        'notes.txt',
+        'project.toml',
+        'settings.toml',
+        'boot.txt',
+        'raw-metrics.txt',
+        'environment.txt',
+        '.gitignore',
+        '.hidden-dir',
         'directory1',
       ])
     })

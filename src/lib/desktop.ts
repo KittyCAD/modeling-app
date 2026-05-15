@@ -284,7 +284,8 @@ export async function listProjects(
 
 const collectAllFilesRecursiveFrom = async (
   targetPath: string,
-  canReadWritePath: boolean
+  canReadWritePath: boolean,
+  showAllFiles: boolean
 ) => {
   const configurationFileNames = new Set([
     SETTINGS_FILE_NAME,
@@ -324,7 +325,7 @@ const collectAllFilesRecursiveFrom = async (
 
   const children = []
 
-  const entries = await fsZds.readdir(targetPath)
+    const entries = await fsZds.readdir(targetPath)
 
   // Sort all entries so files come first and directories last
   // so a top-most KCL file is returned first.
@@ -340,7 +341,7 @@ const collectAllFilesRecursiveFrom = async (
 
   for (let e of entries) {
     // ignore hidden files and directories (starting with a dot)
-    if (e.indexOf('.') === 0) {
+    if (!showAllFiles && e.indexOf('.') === 0) {
       continue
     }
 
@@ -350,11 +351,12 @@ const collectAllFilesRecursiveFrom = async (
     if (isEDir) {
       const subChildren = await collectAllFilesRecursiveFrom(
         ePath,
-        canReadWritePath
+        canReadWritePath,
+        showAllFiles
       )
       children.push(subChildren)
     } else {
-      if (configurationFileNames.has(e)) {
+      if (!showAllFiles && configurationFileNames.has(e)) {
         continue
       }
       children.push(
@@ -489,10 +491,14 @@ export async function getProjectInfo(
   const { value: canReadWriteProjectPath } =
     await canReadWriteDirectory(projectPath)
 
+  const projectSettings = await readProjectSettingsFile(projectPath, wasmInstance)
+  const showAllFiles = projectSettings.settings?.app?.show_all_files === true
+
   // Return walked early if canReadWriteProjectPath is false
   let walked = await collectAllFilesRecursiveFrom(
     projectPath,
-    canReadWriteProjectPath
+    canReadWriteProjectPath,
+    showAllFiles
   )
 
   // If the projectPath does not have read write permissions, the default_file is empty string

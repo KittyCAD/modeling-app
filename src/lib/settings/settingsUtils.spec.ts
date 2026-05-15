@@ -439,6 +439,7 @@ describe('project settings serialization regression', () => {
         app: {
           onboardingStatus: 'dismissed',
           allowOrbitInSketchMode: true,
+          showAllFiles: true,
         },
         debug: {
           showPanel: false,
@@ -466,6 +467,7 @@ describe('project settings serialization regression', () => {
 
     expect(serializedToml).toContain('onboarding_status = "dismissed"')
     expect(serializedToml).toContain('allow_orbit_in_sketch_mode = true')
+    expect(serializedToml).toContain('show_all_files = true')
     expect(serializedToml).toContain('[settings.debug]')
     expect(serializedToml).toContain('show_panel = false')
     expect(serializedToml).toContain('show_modeling_machine_state = true')
@@ -492,6 +494,7 @@ describe('project settings serialization regression', () => {
     )
     expect(parsedProjectPayload.app?.onboardingStatus).toBe('dismissed')
     expect(parsedProjectPayload.app?.allowOrbitInSketchMode).toBe(true)
+    expect(parsedProjectPayload.app?.showAllFiles).toBe(true)
     expect(parsedProjectPayload.debug?.showPanel).toBe(false)
     expect(parsedProjectPayload.debug?.showModelingMachineState).toBe(true)
     expect(parsedProjectPayload.modeling?.snapToGrid).toBe(true)

@@ -300,6 +300,13 @@ function createCoreSettings() {
         validate: (_v) => true,
         hideOnLevel: 'user',
       }),
+      showAllFiles: new Setting<boolean>({
+        defaultValue: false,
+        hideOnLevel: 'user',
+        description:
+          'Show all project files in the file pane, including dotfiles and configuration files.',
+        validate: (v) => typeof v === 'boolean',
+      }),
     },
     /**
      * App-owned debug settings.
