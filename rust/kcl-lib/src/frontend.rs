@@ -1211,6 +1211,15 @@ impl SketchApi for FrontendState {
         let original_program = self.program.clone();
         let original_scene_graph = self.scene_graph.clone();
 
+        // Add-constraint operations are often the first committed solve after
+        // a paste or direct code edit. Settle existing sketch-var guesses first
+        // so the new constraint does not amplify stale initial-guess tension.
+        if let Err(err) = self.execute_mock_with_warm_starts(ctx, sketch, true).await {
+            self.program = original_program;
+            self.scene_graph = original_scene_graph;
+            return Err(err);
+        }
+
         let mut new_ast = self.program.ast.clone();
         let sketch_block_ref = match constraint {
             Constraint::Coincident(coincident) => self
@@ -1398,8 +1407,8 @@ impl SketchApi for FrontendState {
         value_expression: String,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
-        let sketch_block_ref =
-            sketch_block_ref_from_id(&self.scene_graph, sketch).map_err(KclErrorWithOutputs::no_outputs)?;
+        let original_program = self.program.clone();
+        let original_scene_graph = self.scene_graph.clone();
 
         let object = self.scene_graph.objects.get(constraint_id.0).ok_or_else(|| {
             KclErrorWithOutputs::no_outputs(KclError::refactor(format!("Object not found: {constraint_id:?}")))
@@ -1409,8 +1418,6 @@ impl SketchApi for FrontendState {
                 "Object is not a constraint: {constraint_id:?}"
             ))));
         }
-
-        let mut new_ast = self.program.ast.clone();
 
         // Parse the expression string into an AST node.
         let (parsed, errors) = Program::parse(&value_expression)
@@ -1441,6 +1448,19 @@ impl SketchApi for FrontendState {
             .try_into()
             .map_err(|e: String| KclErrorWithOutputs::no_outputs(KclError::refactor(e)))?;
 
+        // Editing a dimension has the same failure mode as adding one: stale
+        // sketch-var guesses can pull the solve toward an old local minimum.
+        // Refresh the committed guesses before applying the new dimension value.
+        if let Err(err) = self.execute_mock_with_warm_starts(ctx, sketch, true).await {
+            self.program = original_program;
+            self.scene_graph = original_scene_graph;
+            return Err(err);
+        }
+
+        let sketch_block_ref =
+            sketch_block_ref_from_id(&self.scene_graph, sketch).map_err(KclErrorWithOutputs::no_outputs)?;
+        let mut new_ast = self.program.ast.clone();
+
         self.mutate_ast(
             &mut new_ast,
             constraint_id,
@@ -1448,18 +1468,24 @@ impl SketchApi for FrontendState {
         )
         .map_err(KclErrorWithOutputs::no_outputs)?;
 
-        self.execute_after_edit(
-            ctx,
-            sketch,
-            sketch_block_ref,
-            ExecuteAfterEditOptions {
-                segment_ids_edited: Default::default(),
-                edit_kind: EditDeleteKind::Edit,
-                sketch_var_update_mode: SketchVarUpdateMode::CommitSolvedVars,
-            },
-            &mut new_ast,
-        )
-        .await
+        let result = self
+            .execute_after_edit(
+                ctx,
+                sketch,
+                sketch_block_ref,
+                ExecuteAfterEditOptions {
+                    segment_ids_edited: Default::default(),
+                    edit_kind: EditDeleteKind::Edit,
+                    sketch_var_update_mode: SketchVarUpdateMode::CommitSolvedVars,
+                },
+                &mut new_ast,
+            )
+            .await;
+        if result.is_err() {
+            self.program = original_program;
+            self.scene_graph = original_scene_graph;
+        }
+        result
     }
 
     async fn edit_distance_constraint_label_position(
@@ -10633,7 +10659,7 @@ sketch(on = XY) {
             // The lack indentation is a formatter bug.
             "\
 sketch(on = XY) {
-  arc1 = arc(start = [var 1.83mm, var 3.62mm], end = [var 2.42mm, var 3.3mm], center = [var -0.25mm, var -0.92mm])
+  arc1 = arc(start = [var 1.65mm, var 3.69mm], end = [var 2.43mm, var 3.32mm], center = [var -0.08mm, var -1mm])
   radius(arc1) == 5mm
 }
 "
@@ -10708,7 +10734,7 @@ sketch(on = XY) {
             src_delta.text.as_str(),
             "\
 sketch(on = XY) {
-  arc1 = arc(start = [var 1.83mm, var 3.62mm], end = [var 2.42mm, var 3.3mm], center = [var -0.25mm, var -0.92mm])
+  arc1 = arc(start = [var 1.65mm, var 3.69mm], end = [var 2.43mm, var 3.32mm], center = [var -0.08mm, var -1mm])
   radius(arc1, labelPosition = [10mm, 11mm]) == 5mm
 }
 "

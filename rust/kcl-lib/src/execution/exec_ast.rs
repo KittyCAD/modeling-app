@@ -1,8 +1,9 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use async_recursion::async_recursion;
 use ezpz::Constraint;
 use ezpz::NonLinearSystemError;
+use ezpz::datatypes::inputs::{DatumCircle, DatumCircularArc, DatumLineSegment, DatumPoint};
 use indexmap::IndexMap;
 use kittycad_modeling_cmds as kcmc;
 
@@ -161,6 +162,407 @@ fn sketch_solver_trace(input: SketchSolverTraceInput<'_>) -> crate::execution::S
         initial_guess_count: input.initial_guesses.len(),
         items,
     }
+}
+
+fn append_support_geometry_trace_items(
+    trace: &mut crate::execution::SketchSolverTrace,
+    constraints: &[ezpz::Constraint],
+    initial_guesses: &[(ezpz::Id, f64)],
+    initial_guess_source_ranges: &[Option<SourceRange>],
+    solve_outcome: &Solved,
+) {
+    let mut seen_points = HashSet::new();
+    let mut seen_lines = HashSet::new();
+    let mut seen_circles = HashSet::new();
+
+    for constraint in constraints {
+        collect_support_geometry_from_constraint(
+            trace,
+            constraint,
+            initial_guesses,
+            initial_guess_source_ranges,
+            solve_outcome,
+            &mut seen_points,
+            &mut seen_lines,
+            &mut seen_circles,
+        );
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+fn collect_support_geometry_from_constraint(
+    trace: &mut crate::execution::SketchSolverTrace,
+    constraint: &ezpz::Constraint,
+    initial_guesses: &[(ezpz::Id, f64)],
+    initial_guess_source_ranges: &[Option<SourceRange>],
+    solve_outcome: &Solved,
+    seen_points: &mut HashSet<(ezpz::Id, ezpz::Id)>,
+    seen_lines: &mut HashSet<(ezpz::Id, ezpz::Id, ezpz::Id, ezpz::Id)>,
+    seen_circles: &mut HashSet<(ezpz::Id, ezpz::Id, ezpz::Id)>,
+) {
+    match constraint {
+        Constraint::LineTangentToCircle(line, circle, _) => {
+            push_support_line_trace_item(
+                trace,
+                line,
+                initial_guesses,
+                initial_guess_source_ranges,
+                solve_outcome,
+                seen_lines,
+            );
+            push_support_circle_trace_item(
+                trace,
+                circle,
+                initial_guesses,
+                initial_guess_source_ranges,
+                solve_outcome,
+                seen_circles,
+            );
+        }
+        Constraint::CircleTangentToCircle(circle0, circle1, _) => {
+            for circle in [circle0, circle1] {
+                push_support_circle_trace_item(
+                    trace,
+                    circle,
+                    initial_guesses,
+                    initial_guess_source_ranges,
+                    solve_outcome,
+                    seen_circles,
+                );
+            }
+        }
+        Constraint::Distance(point0, point1, _)
+        | Constraint::VerticalDistance(point0, point1, _)
+        | Constraint::HorizontalDistance(point0, point1, _)
+        | Constraint::PointsCoincident(point0, point1)
+        | Constraint::DistanceVar(point0, point1, _) => {
+            for point in [point0, point1] {
+                push_support_point_trace_item(
+                    trace,
+                    point,
+                    initial_guesses,
+                    initial_guess_source_ranges,
+                    solve_outcome,
+                    seen_points,
+                );
+            }
+        }
+        Constraint::Vertical(line) | Constraint::Horizontal(line) => {
+            push_support_line_trace_item(
+                trace,
+                line,
+                initial_guesses,
+                initial_guess_source_ranges,
+                solve_outcome,
+                seen_lines,
+            );
+        }
+        Constraint::Midpoint(line, point)
+        | Constraint::PointLineDistance(point, line, _)
+        | Constraint::VerticalPointLineDistance(point, line, _)
+        | Constraint::HorizontalPointLineDistance(point, line, _) => {
+            push_support_point_trace_item(
+                trace,
+                point,
+                initial_guesses,
+                initial_guess_source_ranges,
+                solve_outcome,
+                seen_points,
+            );
+            push_support_line_trace_item(
+                trace,
+                line,
+                initial_guesses,
+                initial_guess_source_ranges,
+                solve_outcome,
+                seen_lines,
+            );
+        }
+        Constraint::LinesAtAngle(line0, line1, _) | Constraint::LinesEqualLength(line0, line1) => {
+            for line in [line0, line1] {
+                push_support_line_trace_item(
+                    trace,
+                    line,
+                    initial_guesses,
+                    initial_guess_source_ranges,
+                    solve_outcome,
+                    seen_lines,
+                );
+            }
+        }
+        Constraint::Symmetric(line, point0, point1) => {
+            push_support_line_trace_item(
+                trace,
+                line,
+                initial_guesses,
+                initial_guess_source_ranges,
+                solve_outcome,
+                seen_lines,
+            );
+            for point in [point0, point1] {
+                push_support_point_trace_item(
+                    trace,
+                    point,
+                    initial_guesses,
+                    initial_guess_source_ranges,
+                    solve_outcome,
+                    seen_points,
+                );
+            }
+        }
+        Constraint::CircleRadius(circle, _) => {
+            push_support_circle_trace_item(
+                trace,
+                circle,
+                initial_guesses,
+                initial_guess_source_ranges,
+                solve_outcome,
+                seen_circles,
+            );
+        }
+        Constraint::Arc(arc)
+        | Constraint::ArcRadius(arc, _)
+        | Constraint::PointArcCoincident(arc, _)
+        | Constraint::ArcLength(arc, _)
+        | Constraint::ArcAngle(arc, _) => {
+            push_support_arc_points_trace_items(
+                trace,
+                arc,
+                initial_guesses,
+                initial_guess_source_ranges,
+                solve_outcome,
+                seen_points,
+            );
+        }
+        Constraint::PointsAtAngle(point0, point1, point2, _) => {
+            for point in [point0, point1, point2] {
+                push_support_point_trace_item(
+                    trace,
+                    point,
+                    initial_guesses,
+                    initial_guess_source_ranges,
+                    solve_outcome,
+                    seen_points,
+                );
+            }
+        }
+        Constraint::Fixed(_, _) | Constraint::ScalarEqual(_, _) => {}
+        _ => {}
+    }
+}
+
+fn push_support_arc_points_trace_items(
+    trace: &mut crate::execution::SketchSolverTrace,
+    arc: &DatumCircularArc,
+    initial_guesses: &[(ezpz::Id, f64)],
+    initial_guess_source_ranges: &[Option<SourceRange>],
+    solve_outcome: &Solved,
+    seen_points: &mut HashSet<(ezpz::Id, ezpz::Id)>,
+) {
+    for point in [&arc.start, &arc.end, &arc.center] {
+        push_support_point_trace_item(
+            trace,
+            point,
+            initial_guesses,
+            initial_guess_source_ranges,
+            solve_outcome,
+            seen_points,
+        );
+    }
+}
+
+fn push_support_point_trace_item(
+    trace: &mut crate::execution::SketchSolverTrace,
+    point: &DatumPoint,
+    initial_guesses: &[(ezpz::Id, f64)],
+    initial_guess_source_ranges: &[Option<SourceRange>],
+    solve_outcome: &Solved,
+    seen_points: &mut HashSet<(ezpz::Id, ezpz::Id)>,
+) {
+    if !is_hidden_support_point(point, initial_guess_source_ranges) {
+        return;
+    }
+    let key = (point.id_x(), point.id_y());
+    if !seen_points.insert(key) {
+        return;
+    }
+    let Some(initial_x) = initial_guess_value(initial_guesses, point.id_x()) else {
+        return;
+    };
+    let Some(initial_y) = initial_guess_value(initial_guesses, point.id_y()) else {
+        return;
+    };
+    let Some(resolved_x) = solved_value(solve_outcome, point.id_x()) else {
+        return;
+    };
+    let Some(resolved_y) = solved_value(solve_outcome, point.id_y()) else {
+        return;
+    };
+
+    trace.items.push(crate::execution::SketchSolverTraceItem {
+        kind: "supportGeometry".to_owned(),
+        label: format!("support point {} {}", point.id_x(), point.id_y()),
+        detail: format!(
+            "type point\nvars {} {}\ninitial {} {}\nresolved {} {}",
+            point.id_x(),
+            point.id_y(),
+            initial_x,
+            initial_y,
+            resolved_x,
+            resolved_y
+        ),
+        source_range: None,
+    });
+}
+
+fn push_support_line_trace_item(
+    trace: &mut crate::execution::SketchSolverTrace,
+    line: &DatumLineSegment,
+    initial_guesses: &[(ezpz::Id, f64)],
+    initial_guess_source_ranges: &[Option<SourceRange>],
+    solve_outcome: &Solved,
+    seen_lines: &mut HashSet<(ezpz::Id, ezpz::Id, ezpz::Id, ezpz::Id)>,
+) {
+    if !is_hidden_support_point(&line.p0, initial_guess_source_ranges)
+        && !is_hidden_support_point(&line.p1, initial_guess_source_ranges)
+    {
+        return;
+    }
+    let key = (line.p0.id_x(), line.p0.id_y(), line.p1.id_x(), line.p1.id_y());
+    if !seen_lines.insert(key) {
+        return;
+    }
+    let Some(initial_p0) = initial_point(initial_guesses, &line.p0) else {
+        return;
+    };
+    let Some(initial_p1) = initial_point(initial_guesses, &line.p1) else {
+        return;
+    };
+    let Some(resolved_p0) = solved_point(solve_outcome, &line.p0) else {
+        return;
+    };
+    let Some(resolved_p1) = solved_point(solve_outcome, &line.p1) else {
+        return;
+    };
+
+    trace.items.push(crate::execution::SketchSolverTraceItem {
+        kind: "supportGeometry".to_owned(),
+        label: format!(
+            "support line {} {} {} {}",
+            line.p0.id_x(),
+            line.p0.id_y(),
+            line.p1.id_x(),
+            line.p1.id_y()
+        ),
+        detail: format!(
+            "type line\nvars {} {} {} {}\ninitial {} {} {} {}\nresolved {} {} {} {}",
+            line.p0.id_x(),
+            line.p0.id_y(),
+            line.p1.id_x(),
+            line.p1.id_y(),
+            initial_p0[0],
+            initial_p0[1],
+            initial_p1[0],
+            initial_p1[1],
+            resolved_p0[0],
+            resolved_p0[1],
+            resolved_p1[0],
+            resolved_p1[1]
+        ),
+        source_range: None,
+    });
+}
+
+fn push_support_circle_trace_item(
+    trace: &mut crate::execution::SketchSolverTrace,
+    circle: &DatumCircle,
+    initial_guesses: &[(ezpz::Id, f64)],
+    initial_guess_source_ranges: &[Option<SourceRange>],
+    solve_outcome: &Solved,
+    seen_circles: &mut HashSet<(ezpz::Id, ezpz::Id, ezpz::Id)>,
+) {
+    if !is_hidden_support_point(&circle.center, initial_guess_source_ranges)
+        && !is_hidden_support_scalar(circle.radius.id, initial_guess_source_ranges)
+    {
+        return;
+    }
+    let key = (circle.center.id_x(), circle.center.id_y(), circle.radius.id);
+    if !seen_circles.insert(key) {
+        return;
+    }
+    let Some(initial_center) = initial_point(initial_guesses, &circle.center) else {
+        return;
+    };
+    let Some(initial_radius) = initial_guess_value(initial_guesses, circle.radius.id) else {
+        return;
+    };
+    let Some(resolved_center) = solved_point(solve_outcome, &circle.center) else {
+        return;
+    };
+    let Some(resolved_radius) = solved_value(solve_outcome, circle.radius.id) else {
+        return;
+    };
+
+    trace.items.push(crate::execution::SketchSolverTraceItem {
+        kind: "supportGeometry".to_owned(),
+        label: format!(
+            "support circle {} {} {}",
+            circle.center.id_x(),
+            circle.center.id_y(),
+            circle.radius.id
+        ),
+        detail: format!(
+            "type circle\nvars {} {} {}\ninitial {} {} {}\nresolved {} {} {}",
+            circle.center.id_x(),
+            circle.center.id_y(),
+            circle.radius.id,
+            initial_center[0],
+            initial_center[1],
+            initial_radius,
+            resolved_center[0],
+            resolved_center[1],
+            resolved_radius
+        ),
+        source_range: None,
+    });
+}
+
+fn is_hidden_support_point(point: &DatumPoint, initial_guess_source_ranges: &[Option<SourceRange>]) -> bool {
+    is_hidden_support_scalar(point.id_x(), initial_guess_source_ranges)
+        && is_hidden_support_scalar(point.id_y(), initial_guess_source_ranges)
+}
+
+fn is_hidden_support_scalar(id: ezpz::Id, initial_guess_source_ranges: &[Option<SourceRange>]) -> bool {
+    usize::try_from(id)
+        .ok()
+        .and_then(|index| initial_guess_source_ranges.get(index))
+        .is_some_and(Option::is_none)
+}
+
+fn initial_point(initial_guesses: &[(ezpz::Id, f64)], point: &DatumPoint) -> Option<[f64; 2]> {
+    Some([
+        initial_guess_value(initial_guesses, point.id_x())?,
+        initial_guess_value(initial_guesses, point.id_y())?,
+    ])
+}
+
+fn solved_point(solve_outcome: &Solved, point: &DatumPoint) -> Option<[f64; 2]> {
+    Some([
+        solved_value(solve_outcome, point.id_x())?,
+        solved_value(solve_outcome, point.id_y())?,
+    ])
+}
+
+fn initial_guess_value(initial_guesses: &[(ezpz::Id, f64)], id: ezpz::Id) -> Option<f64> {
+    initial_guesses
+        .iter()
+        .find_map(|(guess_id, value)| (*guess_id == id).then_some(*value))
+}
+
+fn solved_value(solve_outcome: &Solved, id: ezpz::Id) -> Option<f64> {
+    usize::try_from(id)
+        .ok()
+        .and_then(|index| solve_outcome.final_values.get(index).copied())
 }
 
 fn datum_point_from_constrainable(
@@ -1866,20 +2268,16 @@ impl Node<SketchBlock> {
         let config = ezpz::Config::default()
             .with_max_iterations(50)
             .with_convergence_tolerance(SOLVER_CONVERGENCE_TOLERANCE);
-        exec_state
-            .mod_local
-            .artifacts
-            .sketch_solver_traces
-            .push(sketch_solver_trace(SketchSolverTraceInput {
-                sketch_id,
-                source_range: range,
-                required_constraint_count: sketch_block_state.solver_constraints.len(),
-                optional_constraint_count: sketch_block_state.solver_optional_constraints.len(),
-                constraints: &constraints,
-                initial_guesses: &initial_guesses,
-                initial_guess_source_ranges: &initial_guess_source_ranges,
-                config: &config,
-            }));
+        let mut solver_trace = sketch_solver_trace(SketchSolverTraceInput {
+            sketch_id,
+            source_range: range,
+            required_constraint_count: sketch_block_state.solver_constraints.len(),
+            optional_constraint_count: sketch_block_state.solver_optional_constraints.len(),
+            constraints: &constraints,
+            initial_guesses: &initial_guesses,
+            initial_guess_source_ranges: &initial_guess_source_ranges,
+            config: &config,
+        });
         let solve_result = if exec_state.mod_local.freedom_analysis {
             ezpz::solve_analysis(&constraints, initial_guesses.clone(), config).map(|outcome| {
                 let freedom_analysis = FreedomAnalysis::from_ezpz_analysis(outcome.analysis, constraints.len());
@@ -1952,6 +2350,14 @@ impl Node<SketchBlock> {
                 }
             }
         };
+        append_support_geometry_trace_items(
+            &mut solver_trace,
+            &all_constraints,
+            &initial_guesses,
+            &initial_guess_source_ranges,
+            &solve_outcome,
+        );
+        exec_state.mod_local.artifacts.sketch_solver_traces.push(solver_trace);
         // Propagate warnings.
         for warning in &solve_outcome.warnings {
             let message = if let Some(index) = warning.about_constraint.as_ref() {

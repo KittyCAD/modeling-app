@@ -145,7 +145,7 @@ function normalizeSketchSolverPriorityLevels(
   const normalized = { ...DEFAULT_SKETCH_SOLVER_PRIORITY_LEVELS }
   for (const bucket of SKETCH_SOLVER_PRIORITY_BUCKETS) {
     const level = levels[bucket]
-    if (Number.isFinite(level) && level >= 0) {
+    if (typeof level === 'number' && Number.isFinite(level) && level >= 0) {
       normalized[bucket] = Math.trunc(level)
     }
   }

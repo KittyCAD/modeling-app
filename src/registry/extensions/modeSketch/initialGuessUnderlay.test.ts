@@ -24,6 +24,7 @@ import { describe, expect, it } from 'vitest'
 import {
   INITIAL_GUESS_UNDERLAY_OBJECT_NAME,
   buildInitialGuessDriftsForSceneGraph,
+  buildInitialGuessSupportGeometryForSceneGraph,
 } from './initialGuessUnderlay'
 
 function createSketchApiObject(id: number): ApiObject {
@@ -80,6 +81,24 @@ function createTrace(
       label: `guess ${id}`,
       detail: String(value),
       ...(sourceRange === undefined ? {} : { sourceRange }),
+    })),
+  }
+}
+
+function createSupportTrace(
+  sketchId: number,
+  supportItems: Array<{ label: string; detail: string }>
+): SketchSolverTrace {
+  return {
+    sketchId,
+    sourceRange: [0, 0, 0],
+    requiredConstraintCount: 0,
+    optionalConstraintCount: 0,
+    initialGuessCount: 0,
+    items: supportItems.map((item) => ({
+      kind: 'supportGeometry',
+      label: item.label,
+      detail: item.detail,
     })),
   }
 }
@@ -208,5 +227,68 @@ describe('buildInitialGuessDriftsForSceneGraph', () => {
         distance: 1,
       },
     ])
+  })
+})
+
+describe('buildInitialGuessSupportGeometryForSceneGraph', () => {
+  it('builds lowered support geometry from trace items', () => {
+    const sceneGraphDelta = createSceneGraphDelta([createSketchApiObject(0)])
+    sceneGraphDelta.exec_outcome.sketchSolverTraces = [
+      createSupportTrace(0, [
+        {
+          label: 'support point 10 11',
+          detail: 'type point\nvars 10 11\ninitial 1 2\nresolved 3 4',
+        },
+        {
+          label: 'support line 1 2 10 11',
+          detail:
+            'type line\nvars 1 2 10 11\ninitial 0 0 1 2\nresolved 0 0 3 4',
+        },
+        {
+          label: 'support circle 1 2 12',
+          detail: 'type circle\nvars 1 2 12\ninitial 0 0 5\nresolved 1 2 6',
+        },
+      ]),
+    ]
+
+    expect(
+      buildInitialGuessSupportGeometryForSceneGraph(sceneGraphDelta, 0)
+    ).toEqual([
+      {
+        type: 'point',
+        varIds: [10, 11],
+        initial: { x: 1, y: 2 },
+        resolved: { x: 3, y: 4 },
+        distance: Math.hypot(2, 2),
+      },
+      {
+        type: 'line',
+        varIds: [1, 2, 10, 11],
+        initial: { start: { x: 0, y: 0 }, end: { x: 1, y: 2 } },
+        resolved: { start: { x: 0, y: 0 }, end: { x: 3, y: 4 } },
+      },
+      {
+        type: 'circle',
+        varIds: [1, 2, 12],
+        initial: { center: { x: 0, y: 0 }, radius: 5 },
+        resolved: { center: { x: 1, y: 2 }, radius: 6 },
+      },
+    ])
+  })
+
+  it('ignores malformed support geometry trace items', () => {
+    const sceneGraphDelta = createSceneGraphDelta([createSketchApiObject(0)])
+    sceneGraphDelta.exec_outcome.sketchSolverTraces = [
+      createSupportTrace(0, [
+        {
+          label: 'broken support',
+          detail: 'type circle\nvars 1 2\ninitial 0 0 5\nresolved 0 0 5',
+        },
+      ]),
+    ]
+
+    expect(
+      buildInitialGuessSupportGeometryForSceneGraph(sceneGraphDelta, 0)
+    ).toEqual([])
   })
 })
