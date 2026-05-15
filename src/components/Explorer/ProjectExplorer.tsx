@@ -17,7 +17,6 @@ import type {
 } from '@src/components/Explorer/utils'
 import { fsArchiveFile, fsMoveFile } from '@src/editor/plugins/fs'
 import { kclErrorsByFilename } from '@src/lang/errors'
-import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import { FILE_EXT } from '@src/lib/constants'
 import { getNextFileName, sortFilesAndDirectories } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
@@ -25,10 +24,8 @@ import {
   desktopSafePathJoin,
   desktopSafePathSplit,
   enforceFileEXT,
-  getEXTNoPeriod,
   getEXTWithPeriod,
   getParentAbsolutePath,
-  isExtensionARelevantExtension,
   joinOSPaths,
   parentPathRelativeToApplicationDirectory,
   parentPathRelativeToProject,
@@ -91,20 +88,9 @@ const readAllDirectoryEntriesRecursively = async (
   return entries
 }
 
-const isFileSupportedForImport = (
-  fileName: string,
-  wasmInstance: ModuleType
-): boolean => {
-  const extension = getEXTNoPeriod(fileName)
-  if (!extension) return false
-  const supportedExtensions = relevantFileExtensions(wasmInstance)
-  return isExtensionARelevantExtension(extension, supportedExtensions)
-}
-
 const collectDroppedFiles = async (
   entry: FileSystemEntry,
-  basePath: string,
-  wasmInstance: ModuleType
+  basePath: string
 ): Promise<{
   supported: { file: File; relativePath: string }[]
 }> => {
@@ -115,9 +101,7 @@ const collectDroppedFiles = async (
     const file = await new Promise<File>((resolve, reject) =>
       fileEntry.file(resolve, reject)
     )
-    if (isFileSupportedForImport(file.name, wasmInstance)) {
-      supported.push({ file, relativePath: basePath })
-    }
+    supported.push({ file, relativePath: basePath })
   } else if (entry.isDirectory) {
     const entries = await readAllDirectoryEntriesRecursively(
       entry as FileSystemDirectoryEntry
@@ -127,11 +111,7 @@ const collectDroppedFiles = async (
       : entry.name
 
     for (const childEntry of entries) {
-      const result = await collectDroppedFiles(
-        childEntry,
-        newBasePath,
-        wasmInstance
-      )
+      const result = await collectDroppedFiles(childEntry, newBasePath)
       supported.push(...result.supported)
     }
   }
@@ -350,7 +330,7 @@ export const ProjectExplorer = ({
       // Now process entries asynchronously
       for (const entry of entries) {
         try {
-          const result = await collectDroppedFiles(entry, '', wasmInstance)
+          const result = await collectDroppedFiles(entry, '')
           supportedFiles.push(...result.supported)
         } catch (e) {
           console.error('Failed to collect dropped files:', entry?.name, e)
@@ -370,9 +350,7 @@ export const ProjectExplorer = ({
 
       // Process fallback files (browsers without webkitGetAsEntry support)
       for (const file of fallbackFiles) {
-        if (isFileSupportedForImport(file.name, wasmInstance)) {
-          supportedFiles.push({ file, relativePath: '' })
-        }
+        supportedFiles.push({ file, relativePath: '' })
       }
 
       // Copy supported files to the target directory
