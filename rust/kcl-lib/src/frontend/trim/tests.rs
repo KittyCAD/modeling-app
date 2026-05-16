@@ -141,6 +141,7 @@ mod sync {
                 segment: crate::frontend::sketch::Segment::Line(crate::frontend::sketch::Line {
                     start: ObjectId(start_id),
                     end: ObjectId(end_id),
+                    owner: None,
                     ctor,
                     ctor_applicable: false,
                     construction: false,
@@ -954,14 +955,14 @@ mod sync {
         let line_curve = load_curve_handle(&objects[3], &objects, UnitLength::Millimeters).expect("line curve");
 
         let polyline_hits = curve_polyline_intersections(
-            circle_curve,
+            &circle_curve,
             &[Coords2d { x: -2.0, y: 0.0 }, Coords2d { x: 2.0, y: 0.0 }],
             EPSILON_POINT_ON_SEGMENT,
         );
         assert_eq!(polyline_hits.len(), 2);
         assert!(polyline_hits.iter().all(|(_, seg_i)| *seg_i == 0));
 
-        let curve_hits = curve_curve_intersections(circle_curve, line_curve, EPSILON_POINT_ON_SEGMENT);
+        let curve_hits = curve_curve_intersections(&circle_curve, &line_curve, EPSILON_POINT_ON_SEGMENT);
         assert_eq!(curve_hits.len(), 2);
         assert!(curve_hits.iter().any(|p| (p.x - -1.0).abs() < 1e-6 && p.y.abs() < 1e-6));
         assert!(curve_hits.iter().any(|p| (p.x - 1.0).abs() < 1e-6 && p.y.abs() < 1e-6));
@@ -1149,6 +1150,7 @@ mod sync {
                 segment: Segment::Line(Line {
                     start: ObjectId(1),
                     end: ObjectId(2),
+                    owner: None,
                     ctor: SegmentCtor::Line(LineCtor {
                         start: Point2d {
                             x: expr(0.0),
@@ -1258,6 +1260,7 @@ mod sync {
                 segment: Segment::Line(Line {
                     start: ObjectId(1),
                     end: ObjectId(2),
+                    owner: None,
                     ctor: SegmentCtor::Line(LineCtor {
                         start: Point2d {
                             x: expr(0.0),
@@ -4104,4 +4107,111 @@ async fn test_trim_arc_arc_intersection_updates_start_and_preserves_constraints(
         "Expected arc2.start to become point-segment coincident with arc1 after trim, got KCL:\n{}",
         result.kcl_code
     );
+}
+
+#[tokio::test]
+/// Control point spline trim case 1:
+/// tail-trimming a spline should keep the same number of control points, redistribute
+/// them along the kept side, and drop constraints authored on internal control points.
+async fn test_trim_control_point_spline_tail_trim_drops_control_constraints() {
+    let base_kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = YZ) {
+  controlPointSpline(points = [
+    [var -7.66mm, var 11.1mm],
+    [var 0.85mm, var 4.44mm],
+    [var -3.27mm, var -2.28mm]
+  ])
+  controlPointSpline1 = controlPointSpline(points = [
+    [var -12.66mm, var -1.26mm],
+    [var -10.22mm, var 5.67mm],
+    [var -5.67mm, var 3.6mm],
+    [var 0mm, var 9.06mm],
+    [var 5.74mm, var 9.61mm],
+    [var 9.03mm, var 5.65mm]
+  ])
+  vertical([
+    controlPointSpline1.controls[3],
+    ORIGIN
+  ])
+  distance([
+    controlPointSpline1.controls[1],
+    controlPointSpline1.controls[2]
+  ]) == 5
+}
+"#;
+
+    let trim_points = vec![Coords2d { x: -2.81, y: 9.23 }, Coords2d { x: 1.13, y: 6.22 }];
+
+    let result = execute_trim_flow(base_kcl_code, &trim_points, ObjectId(1))
+        .await
+        .expect("trim flow failed");
+    let objects = get_objects_from_kcl(&result.kcl_code).await;
+
+    let large_spline = objects
+        .iter()
+        .find_map(|obj| match &obj.kind {
+            crate::frontend::api::ObjectKind::Segment {
+                segment: crate::frontend::sketch::Segment::ControlPointSpline(spline),
+            } if spline.controls.len() == 6 => Some((obj.id, spline)),
+            _ => None,
+        })
+        .expect("Expected a six-control spline after tail trim");
+
+    let control_positions = large_spline
+        .1
+        .controls
+        .iter()
+        .map(|control_id| {
+            let point = objects
+                .iter()
+                .find(|obj| obj.id == *control_id)
+                .and_then(|obj| match &obj.kind {
+                    crate::frontend::api::ObjectKind::Segment {
+                        segment: crate::frontend::sketch::Segment::Point(point),
+                    } => Some(point),
+                    _ => None,
+                })
+                .expect("Expected spline control point object");
+            Coords2d {
+                x: point.position.x.value,
+                y: point.position.y.value,
+            }
+        })
+        .collect::<Vec<_>>();
+
+    assert_eq!(control_positions.len(), 6);
+    assert!((control_positions[0].x - -12.66).abs() < 1e-2);
+    assert!((control_positions[0].y - -1.26).abs() < 1e-2);
+    assert!((control_positions[5].x - -3.12).abs() < 5e-2);
+    assert!((control_positions[5].y - 6.21).abs() < 5e-2);
+
+    for obj in &objects {
+        let crate::frontend::api::ObjectKind::Constraint { constraint } = &obj.kind else {
+            continue;
+        };
+        match constraint {
+            crate::frontend::sketch::Constraint::Distance(distance)
+            | crate::frontend::sketch::Constraint::HorizontalDistance(distance)
+            | crate::frontend::sketch::Constraint::VerticalDistance(distance) => {
+                assert!(
+                    !distance.point_ids().any(|id| large_spline.1.controls.contains(&id)),
+                    "Tail-trimmed spline should not keep point distance constraints on controls, got KCL:\n{}",
+                    result.kcl_code
+                );
+            }
+            crate::frontend::sketch::Constraint::Vertical(crate::frontend::sketch::Vertical::Points { points })
+            | crate::frontend::sketch::Constraint::Horizontal(crate::frontend::sketch::Horizontal::Points { points }) =>
+            {
+                assert!(
+                    !points.iter().any(
+                        |point| matches!(point, crate::frontend::sketch::ConstraintSegment::Segment(id) if large_spline.1.controls.contains(id))
+                    ),
+                    "Tail-trimmed spline should not keep point-axis constraints on controls, got KCL:\n{}",
+                    result.kcl_code
+                );
+            }
+            _ => {}
+        }
+    }
 }

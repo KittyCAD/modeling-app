@@ -503,6 +503,34 @@ describe('KclManager diagnostics', () => {
     expect(kclManager.code).toBe('external edit')
   })
 
+  it('arms disk watcher when reusing the singleton editor for an opened file', async () => {
+    const { kclManager } = createKclManagerTestHarness('')
+    const path = '/tmp/kcl-manager-watch-open-test.kcl'
+    const readSpy = vi
+      .spyOn(File.ioImplementations, 'read')
+      .mockResolvedValue('opened code')
+    const watchSpy = vi
+      .spyOn(File.ioImplementations, 'watch')
+      .mockImplementation(() => {})
+
+    const opened = await KclManager.fromFile(
+      new File(path, 101),
+      (kclManager as any).systemDeps,
+      kclManager
+    )
+
+    expect(opened).toBe(kclManager)
+    expect(kclManager.watching).toBe(true)
+    expect(watchSpy).toHaveBeenCalledWith(
+      path,
+      expect.any(String),
+      expect.any(Function)
+    )
+
+    readSpy.mockRestore()
+    watchSpy.mockRestore()
+  })
+
   it('does not overwrite dirty editor state when an external reload resolves later', async () => {
     const { kclManager } = createKclManagerTestHarness('local base')
     const deferredRead = createDeferred<string>()
