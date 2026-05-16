@@ -1914,7 +1914,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
   horizontal(line1)
   line2 = line(start = [var 6.79mm, var 3.56mm], end = [var 6.5mm, var -2.56mm])
   coincident([line2.start, line1.end])
-}`
+  }`
       await context.addInitScript(async (code) => {
         localStorage.setItem('persistCode', code)
       }, code)
@@ -1944,11 +1944,14 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
     await test.step('Delete first constraint from feature tree and verify code updates', async () => {
       const caret = await toolbar.getFeatureTreeSketchBlockGroupCaret(0)
-      await caret.click()
+      if ((await caret.getAttribute('aria-expanded')) !== 'true') {
+        await caret.click()
+      }
       const op = await toolbar.getFeatureTreeOperation(
         'Horizontal Constraint',
         0
       )
+      await expect(op).toBeVisible()
       await op.click({ button: 'right' })
       await page.getByRole('button', { name: 'Delete' }).click()
       await scene.settled()
@@ -1957,11 +1960,14 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
     await test.step('Delete second constraint from feature tree and verify code updates', async () => {
       const caret = await toolbar.getFeatureTreeSketchBlockGroupCaret(0)
-      await caret.click()
+      if ((await caret.getAttribute('aria-expanded')) !== 'true') {
+        await caret.click()
+      }
       const op = await toolbar.getFeatureTreeOperation(
         'Coincident Constraint',
         0
       )
+      await expect(op).toBeVisible()
       await op.click({ button: 'right' })
       await page.getByRole('button', { name: 'Delete' }).click()
       await scene.settled()
